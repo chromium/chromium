@@ -8,9 +8,30 @@ import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
 
+import java.util.Map;
+import java.util.Set;
+
 /** Interface for classes whose instances can provide data for indexing. */
 @NullMarked
 public interface SearchIndexProvider {
+    /** Returns the name of the associated {@link PreferenceFragment}. */
+    String getPrefFragmentName();
+
+    /**
+     * Registers the fragment headers of the indexed search prefs by setting headers for ones that
+     * should be displayed.
+     *
+     * @param context The application context.
+     * @param indexData The data object to be populated.
+     * @param providerMap The map of all known providers, keyed by fragment name.
+     * @param processedFragments A set of fragment names that have already been processed.
+     */
+    void registerFragmentHeaders(
+            Context context,
+            SettingsIndexData indexData,
+            Map<String, SearchIndexProvider> providerMap,
+            Set<String> processedFragments);
+
     /**
      * Populates the search index with the static preferences associated with this provider.
      *

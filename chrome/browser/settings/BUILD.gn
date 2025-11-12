@@ -134,6 +134,7 @@ robolectric_library("junit_tests") {
     "//base:base_junit_test_support",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/ui/android/night_mode:java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/junit",
   ]

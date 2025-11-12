@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.settings.search;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -25,7 +26,7 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SettingsIndexDataTest {
-
+    private static final String ROOT_FRAGMENT = "RootFragment";
     private SettingsIndexData mIndexData;
 
     @Before
@@ -64,28 +65,8 @@ public class SettingsIndexDataTest {
                         .build());
     }
 
-    /** Tests the hierarchical disabling logic of removeEntry. */
     @Test
-    public void testRemoveEntry_disablesTargetFragment() {
-        SettingsIndexData.Entry entry =
-                new SettingsIndexData.Entry.Builder("key1", "Title 1", "Parent1")
-                        .setHeader("Header 1")
-                        .setFragment("FragmentToDisable")
-                        .build();
-        mIndexData.addEntry("key1", entry);
-        assertFalse(mIndexData.isDisabledFragment("FragmentToDisable"));
-
-        mIndexData.removeEntry("key1");
-
-        assertNull("Entry should be removed.", mIndexData.getEntry("key1"));
-        assertTrue(
-                "Target fragment should now be disabled.",
-                mIndexData.isDisabledFragment("FragmentToDisable"));
-    }
-
-    /** Tests that simple removal does not disable the target fragment. */
-    @Test
-    public void testRemoveSimpleEntry_doesNotDisableTargetFragment() {
+    public void testRemoveEntry() {
         SettingsIndexData.Entry entry =
                 new SettingsIndexData.Entry.Builder("key1", "Title 1", "Parent1")
                         .setHeader("Header 1")
@@ -93,12 +74,79 @@ public class SettingsIndexDataTest {
                         .build();
         mIndexData.addEntry("key1", entry);
 
-        mIndexData.removeSimpleEntry("key1");
+        mIndexData.removeEntry("key1");
 
         assertNull("Entry should be removed.", mIndexData.getEntry("key1"));
-        assertFalse(
-                "Target fragment should NOT be disabled.",
-                mIndexData.isDisabledFragment("FragmentToKeep"));
+    }
+
+    @Test
+    public void testFinalizeIndex_prunesOrphans() {
+        // Setup: A -> B -> C hierarchy.
+        // A is the top-level preference on the root screen.
+        mIndexData.addEntry(
+                "pref_A",
+                new SettingsIndexData.Entry.Builder("pref_A", "Title A", ROOT_FRAGMENT)
+                        .setFragment("FragmentB")
+                        .build());
+        mIndexData.addEntry(
+                "pref_B",
+                new SettingsIndexData.Entry.Builder("pref_B", "Title B", "FragmentB")
+                        .setFragment("FragmentC")
+                        .build());
+        mIndexData.addEntry(
+                "pref_C",
+                new SettingsIndexData.Entry.Builder("pref_C", "Title C", "FragmentC").build());
+
+        mIndexData.addParentChildLink("FragmentB", "pref_A");
+        mIndexData.addParentChildLink("FragmentC", "pref_B");
+
+        mIndexData.removeEntry("pref_A");
+
+        mIndexData.resolveIndex(ROOT_FRAGMENT);
+
+        // Assertions:
+        assertNull("Parent link pref_A should be gone.", mIndexData.getEntry("pref_A"));
+        assertNull("Orphaned child pref_B should have been pruned.", mIndexData.getEntry("pref_B"));
+        assertNull(
+                "Orphaned grandchild pref_C should have been pruned.",
+                mIndexData.getEntry("pref_C"));
+    }
+
+    @Test
+    public void testFinalizeIndex_handlesMultiParentCorrectly() {
+        // Setup: A child fragment (FragmentC) is reachable from two different parents (A and B).
+        mIndexData.addEntry(
+                "pref_A",
+                new SettingsIndexData.Entry.Builder("pref_A", "Title A", ROOT_FRAGMENT)
+                        .setFragment("FragmentC")
+                        .build());
+        mIndexData.addEntry(
+                "pref_B",
+                new SettingsIndexData.Entry.Builder("pref_B", "Title B", ROOT_FRAGMENT)
+                        .setFragment("FragmentC")
+                        .build());
+        mIndexData.addEntry(
+                "pref_C",
+                new SettingsIndexData.Entry.Builder("pref_C", "Title C", "FragmentC").build());
+
+        mIndexData.addParentChildLink("FragmentC", "pref_A");
+        mIndexData.addParentChildLink("FragmentC", "pref_B");
+
+        mIndexData.removeEntry("pref_A");
+
+        mIndexData.resolveIndex(ROOT_FRAGMENT);
+
+        assertNull("Pruned parent pref_A should be gone.", mIndexData.getEntry("pref_A"));
+        assertNotNull(
+                "The remaining parent link pref_B should still exist.",
+                mIndexData.getEntry("pref_B"));
+        assertNotNull(
+                "Child pref_C should NOT be pruned as it's still reachable.",
+                mIndexData.getEntry("pref_C"));
+        assertEquals(
+                "Child's header should be resolved via the remaining parent B.",
+                "Title B",
+                mIndexData.getEntry("pref_C").header);
     }
 
     /** Tests the core search functionality, including scoring and result ordering. */
@@ -170,5 +218,29 @@ public class SettingsIndexDataTest {
         assertTrue(
                 "Searching for an empty string should return empty results.",
                 mIndexData.search("").isEmpty());
+    }
+
+    @Test
+    public void testClear_removesAllEntriesAndRelationships() {
+        mIndexData.addEntry(
+                "key1",
+                new SettingsIndexData.Entry.Builder("key1", "Title 1", "ParentFragment").build());
+        mIndexData.addParentChildLink("ChildFragment", "key1");
+
+        assertFalse(
+                "Entries map should not be empty before clear.",
+                mIndexData.getEntriesForTesting().isEmpty());
+        assertFalse(
+                "Parent-child map should not be empty before clear.",
+                mIndexData.getChildFragmentToParentKeysForTesting().isEmpty());
+
+        mIndexData.clear();
+
+        assertTrue(
+                "Entries map should be empty after clear.",
+                mIndexData.getEntriesForTesting().isEmpty());
+        assertTrue(
+                "Parent-child map should be empty after clear.",
+                mIndexData.getChildFragmentToParentKeysForTesting().isEmpty());
     }
 }

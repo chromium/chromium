@@ -766,8 +766,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         return AnimationType.PROPERTY;
     }
 
-    // TODO (adelm): Mimic logic from #createPreferences under #initPreferenceXml. Also, clear NO-OP
-    // for #updateDynamicPreferences.
+    // TODO (adelm): Mimic logic from #createPreferences under #updateDynamicPreferences.
     public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new BaseSearchIndexProvider(MainSettings.class.getName(), R.xml.main_preferences);
 }

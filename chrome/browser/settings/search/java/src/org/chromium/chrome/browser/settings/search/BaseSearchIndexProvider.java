@@ -9,7 +9,9 @@ import android.content.Context;
 import androidx.annotation.XmlRes;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A basic SearchIndexProvider implementation that retrieves the preferences to index from xml
@@ -41,14 +43,30 @@ public class BaseSearchIndexProvider implements SearchIndexProvider {
         mXmlRes = xmlRes;
     }
 
+    /** Returns the Preference XML resource. */
+    public @XmlRes int getXmlRes() {
+        return mXmlRes;
+    }
+
     /** Returns the name of the associated {@link PreferenceFragment}. */
+    @Override
     public String getPrefFragmentName() {
         return mPrefFragment;
     }
 
     @Override
+    public void registerFragmentHeaders(
+            Context context,
+            SettingsIndexData indexData,
+            Map<String, SearchIndexProvider> providerMap,
+            Set<String> processedFragments) {
+        PreferenceParser.parseAndRegisterHeaders(
+                context, mXmlRes, mPrefFragment, indexData, providerMap, processedFragments);
+    }
+
+    @Override
     public void initPreferenceXml(Context context, SettingsIndexData indexData) {
-        if (ChromeFeatureList.sSearchInSettings.isEnabled() && mXmlRes != 0) {
+        if (mXmlRes != 0) {
             PreferenceParser.parseAndPopulate(context, mXmlRes, indexData, mPrefFragment);
         }
     }

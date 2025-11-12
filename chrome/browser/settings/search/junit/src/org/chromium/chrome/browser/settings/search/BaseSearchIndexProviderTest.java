@@ -17,13 +17,18 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
+import org.chromium.chrome.browser.settings.MainSettings;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Unit tests for {@link BaseSearchIndexProvider}.
@@ -37,16 +42,58 @@ public class BaseSearchIndexProviderTest {
     private Context mContext;
     private SettingsIndexData mIndexData;
 
+    private BaseSearchIndexProvider mMainSettingsProvider;
     private BaseSearchIndexProvider mAppearanceSettingsProvider;
+    private BaseSearchIndexProvider mThemeSettingsProvider;
 
     @Before
     public void setUp() {
         mContext = ContextUtils.getApplicationContext();
         mIndexData = new SettingsIndexData();
 
+        mMainSettingsProvider =
+                new BaseSearchIndexProvider(MainSettings.class.getName(), R.xml.main_preferences);
         mAppearanceSettingsProvider =
                 new BaseSearchIndexProvider(
                         AppearanceSettingsFragment.class.getName(), R.xml.appearance_preferences);
+        mThemeSettingsProvider =
+                new BaseSearchIndexProvider(
+                        ThemeSettingsFragment.class.getName(),
+                        org.chromium.chrome.browser.night_mode.R.xml.theme_preferences);
+    }
+
+    @Test
+    public void testRegisterFragmentHeaders_buildsParentMapRecursively() {
+        Map<String, SearchIndexProvider> providerMap = new HashMap<>();
+        providerMap.put(mMainSettingsProvider.getPrefFragmentName(), mMainSettingsProvider);
+        providerMap.put(
+                mAppearanceSettingsProvider.getPrefFragmentName(), mAppearanceSettingsProvider);
+        providerMap.put(mThemeSettingsProvider.getPrefFragmentName(), mThemeSettingsProvider);
+        Set<String> processedFragments = new HashSet<>();
+
+        mMainSettingsProvider.registerFragmentHeaders(
+                mContext, mIndexData, providerMap, processedFragments);
+
+        Map<String, List<String>> parentMap = mIndexData.getChildFragmentToParentKeysForTesting();
+        assertFalse("Parent map should not be empty after registration.", parentMap.isEmpty());
+
+        String appearanceFragmentName = AppearanceSettingsFragment.class.getName();
+        assertTrue(
+                "Map should contain a link to AppearanceSettingsFragment.",
+                parentMap.containsKey(appearanceFragmentName));
+        assertEquals(
+                "AppearanceSettings' parent preference should be 'appearance'.",
+                "appearance",
+                parentMap.get(appearanceFragmentName).get(0));
+
+        String themeFragmentName = ThemeSettingsFragment.class.getName();
+        assertTrue(
+                "Map should contain a link to the grandchild ThemeSettingsFragment.",
+                parentMap.containsKey(themeFragmentName));
+        assertEquals(
+                "ThemeSettings' parent preference should be 'ui_theme'.",
+                "ui_theme",
+                parentMap.get(themeFragmentName).get(0));
     }
 
     @Test
@@ -56,50 +103,46 @@ public class BaseSearchIndexProviderTest {
         Map<String, SettingsIndexData.Entry> entries = mIndexData.getEntriesForTesting();
         assertFalse("Index should not be empty after indexing.", entries.isEmpty());
 
-        final String toolbarShortcutKey = "toolbar_shortcut";
-        SettingsIndexData.Entry shortcutEntry = entries.get(toolbarShortcutKey);
-        assertNotNull("'toolbar_shortcut' should be indexed.", shortcutEntry);
-        assertEquals("Key should match the preference key.", toolbarShortcutKey, shortcutEntry.key);
+        final String themeKey = "ui_theme";
+        SettingsIndexData.Entry themeEntry = entries.get(themeKey);
+        assertNotNull("'ui_theme' should be indexed from appearance_preferences.", themeEntry);
+        assertEquals("Key should match the preference key.", themeKey, themeEntry.key);
         assertEquals(
                 "Title should match the string resource.",
-                mContext.getString(R.string.toolbar_shortcut),
-                shortcutEntry.title);
+                mContext.getString(R.string.theme_settings),
+                themeEntry.title);
         assertEquals(
-                "Parent fragment should be AppearanceSettingsFragment.",
+                "Parent fragment name should be correctly set to the provider's fragment.",
                 AppearanceSettingsFragment.class.getName(),
-                shortcutEntry.parentFragment);
+                themeEntry.parentFragment);
     }
 
+    // #updateDynamicPreferences populates these.
     @Test
-    public void testInitPreferenceXml_doesNotIndexIfDisabled() {
-        mIndexData.setDisabledFragment(AppearanceSettingsFragment.class.getName());
-
-        mAppearanceSettingsProvider.initPreferenceXml(mContext, mIndexData);
+    public void testInitPreferenceXml_skipsCustomTitlelessPreferences() {
+        mThemeSettingsProvider.initPreferenceXml(mContext, mIndexData);
 
         assertTrue(
-                "Disabled fragment should not be indexed.",
+                "Index should be empty for XMLs with only title-less custom views.",
                 mIndexData.getEntriesForTesting().isEmpty());
     }
 
     @Test
-    public void testInitPreferenceXml_providerWithNoXml_doesNothing() {
+    public void testProviderWithNoXml_doesNothing() {
         BaseSearchIndexProvider providerWithNoXml =
                 new BaseSearchIndexProvider("some.fragment.Name");
+        Map<String, SearchIndexProvider> providerMap = new HashMap<>();
+        Set<String> processedFragments = new HashSet<>();
 
         providerWithNoXml.initPreferenceXml(mContext, mIndexData);
-
         assertTrue(
-                "Provider with no XML resource should not add any entries.",
+                "Provider with no XML should not add any entries.",
                 mIndexData.getEntriesForTesting().isEmpty());
-    }
 
-    @Test
-    @DisableFeatures({ChromeFeatureList.SEARCH_IN_SETTINGS})
-    public void testInitPreferenceXml_whenFeatureDisabled_returnsNoEntries() {
-        mAppearanceSettingsProvider.initPreferenceXml(mContext, mIndexData);
-
+        providerWithNoXml.registerFragmentHeaders(
+                mContext, mIndexData, providerMap, processedFragments);
         assertTrue(
-                "When SearchInSettings is disabled, no preferences should be indexed.",
-                mIndexData.getEntriesForTesting().isEmpty());
+                "Provider with no XML should not add any parent-child links.",
+                mIndexData.getChildFragmentToParentKeysForTesting().isEmpty());
     }
 }

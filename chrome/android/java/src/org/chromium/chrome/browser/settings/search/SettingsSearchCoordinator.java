@@ -36,11 +36,17 @@ import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.MultiColumnSettings;
 import org.chromium.chrome.browser.settings.search.SettingsIndexData.SearchResults;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 
 /** The coordinator of search in Settings. TODO(jinsukkim): Build a proper MVC structure. */
@@ -183,14 +189,47 @@ public class SettingsSearchCoordinator {
         // This is done to avoid duplicate entries when parsing XML.
         mIndexData.clear();
 
-        for (SearchIndexProvider provider : SearchIndexProviderRegistry.ALL_PROVIDERS) {
-            // This handles both the default "dumb" parsers and our custom "smart" override in
-            // MainSettings.
+        List<SearchIndexProvider> providers = SearchIndexProviderRegistry.ALL_PROVIDERS;
+        Map<String, SearchIndexProvider> providerMap = createProviderMap(providers);
+        Set<String> processedFragments = new HashSet<>();
+
+        String mainSettingsClassName = MainSettings.class.getName();
+        SearchIndexProvider rootProvider = providerMap.get(mainSettingsClassName);
+
+        // The root provider needs to be registered.
+        assert rootProvider != null;
+
+        rootProvider.registerFragmentHeaders(
+                mActivity, mIndexData, providerMap, processedFragments);
+
+        for (SearchIndexProvider provider : providers) {
             provider.initPreferenceXml(mActivity, mIndexData);
-            // This handles dynamic text updates (e.g., TabArchiveSettingsFragment) and code-only
-            // entries (e.g., AboutChromeSettings).
+        }
+
+        // Allow providers to make runtime modifications (e.g., hide preferences). Sometimes we also
+        // need to update the title of a pref.
+        for (SearchIndexProvider provider : providers) {
             provider.updateDynamicPreferences(mActivity, mIndexData);
         }
+
+        // Resolve headers and remove any orphaned entries.
+        mIndexData.resolveIndex(mainSettingsClassName);
+    }
+
+    /**
+     * Creates a map from a fragment's class name to its corresponding SearchIndexProvider for
+     * efficient lookups.
+     *
+     * @param providers A list of {@link SearchIndexProvider}s.
+     * @return A map where keys are fragment class names and values are the providers.
+     */
+    private Map<String, SearchIndexProvider> createProviderMap(
+            List<SearchIndexProvider> providers) {
+        Map<String, SearchIndexProvider> providerMap = new HashMap<>();
+        for (SearchIndexProvider provider : providers) {
+            providerMap.put(provider.getPrefFragmentName(), provider);
+        }
+        return providerMap;
     }
 
     private void enterSearchState() {

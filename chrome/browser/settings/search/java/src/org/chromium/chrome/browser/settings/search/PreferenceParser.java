@@ -21,6 +21,8 @@ import org.chromium.build.annotations.NullMarked;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A utility class for parsing XML preference files and extracting preference attributes into a list
@@ -115,27 +117,80 @@ public class PreferenceParser {
      */
     public static void parseAndPopulate(
             Context context, int xmlRes, SettingsIndexData indexData, String prefFragment) {
-        if (indexData.isDisabledFragment(prefFragment)) {
+        List<Bundle> metadata;
+
+        try {
+            metadata = parsePreferences(context, xmlRes);
+        } catch (IOException | XmlPullParserException e) {
+            Log.e(TAG, "Failed to parse preference xml for populating index", e);
             return;
         }
 
-        try {
-            List<Bundle> metadata = parsePreferences(context, xmlRes);
-            for (Bundle bundle : metadata) {
-                String key = bundle.getString(METADATA_KEY);
-                String title = bundle.getString(METADATA_TITLE);
-                if (TextUtils.isEmpty(key) || TextUtils.isEmpty(title)) continue;
+        for (Bundle bundle : metadata) {
+            String key = bundle.getString(METADATA_KEY);
+            String title = bundle.getString(METADATA_TITLE);
+            if (TextUtils.isEmpty(key) || TextUtils.isEmpty(title)) continue;
 
-                indexData.addEntry(
-                        key,
-                        new SettingsIndexData.Entry.Builder(key, title, prefFragment)
-                                .setHeader(bundle.getString(METADATA_HEADER))
-                                .setSummary(bundle.getString(METADATA_SUMMARY))
-                                .setFragment(bundle.getString(METADATA_FRAGMENT))
-                                .build());
-            }
+            indexData.updateEntry(
+                    key,
+                    new SettingsIndexData.Entry.Builder(key, title, prefFragment)
+                            .setSummary(bundle.getString(METADATA_SUMMARY))
+                            .setFragment(bundle.getString(METADATA_FRAGMENT))
+                            .build());
+        }
+    }
+
+    /**
+     * Parses a preference XML to build a hierarchy of fragment headers for the search index. It
+     * assigns a parent's header to its children and recursively calls itself for nested fragments.
+     *
+     * @param context The application context.
+     * @param xmlRes The XML resource to parse.
+     * @param parentFragmentName The class name of the fragment this XML belongs to.
+     * @param indexData The SettingsIndexData object to populate with headers.
+     * @param providerMap A map of all SearchIndexProviders to find children for recursion.
+     * @param processedFragments A set of fragment names that have already been processed.
+     */
+    public static void parseAndRegisterHeaders(
+            Context context,
+            int xmlRes,
+            String parentFragmentName,
+            SettingsIndexData indexData,
+            Map<String, SearchIndexProvider> providerMap,
+            Set<String> processedFragments) {
+        if (xmlRes == 0 || processedFragments.contains(parentFragmentName)) {
+            return;
+        }
+
+        List<Bundle> metadata;
+
+        try {
+            metadata = PreferenceParser.parsePreferences(context, xmlRes);
         } catch (IOException | XmlPullParserException e) {
-            Log.e(TAG, "Failed to parse preference xml for getting controllers", e);
+            Log.e(TAG, "Failed to parse preference xml for hierarchy registration", e);
+            return;
+        }
+
+        processedFragments.add(parentFragmentName);
+
+        for (Bundle bundle : metadata) {
+            String parentPreferenceKey = bundle.getString(PreferenceParser.METADATA_KEY);
+            String childFragmentName = bundle.getString(PreferenceParser.METADATA_FRAGMENT);
+
+            if (TextUtils.isEmpty(childFragmentName)) {
+                continue;
+            }
+
+            assert !TextUtils.isEmpty(parentPreferenceKey) : "Parent preference key is null/empty.";
+
+            indexData.addParentChildLink(childFragmentName, parentPreferenceKey);
+
+            SearchIndexProvider childProvider = providerMap.get(childFragmentName);
+            // TODO(adelm): Once all prefs have been registered, this should become an assert.
+            if (childProvider != null) {
+                childProvider.registerFragmentHeaders(
+                        context, indexData, providerMap, processedFragments);
+            }
         }
     }
 }
