@@ -28,17 +28,23 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceGroup.PreferencePositionCallback;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.window.layout.WindowMetricsCalculator;
 
 import org.chromium.base.Log;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.MultiColumnSettings;
 import org.chromium.chrome.browser.settings.search.SettingsIndexData.SearchResults;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -64,6 +70,8 @@ public class SettingsSearchCoordinator {
     private final Handler mHandler = new Handler();
     private @Nullable Fragment mResultsFragment;
     private @Nullable Runnable mSearchRunnable;
+    private @Nullable Runnable mRemoveResultChildViewListener;
+    private @MonotonicNonNull HighlightParams mHighlightParams;
 
     // Whether the back action handler for MultiColumnSettings was set. This is set lazily when
     // search UI gets focus for the first time.
@@ -164,6 +172,9 @@ public class SettingsSearchCoordinator {
                         fragmentManager.getBackStackEntryAt(stackCount - 1).getName();
                 if (TextUtils.equals(FRAGMENT_TAG_RESULT, topStackEntry)) {
                     mFragmentState = FS_SEARCH;
+                    mActivity.findViewById(R.id.search_query_container).setVisibility(View.VISIBLE);
+                    EditText queryEdit = mActivity.findViewById(R.id.search_query);
+                    queryEdit.requestFocus();
                 }
             }
             clearFragment(/* addToBackStack= */ false);
@@ -463,7 +474,7 @@ public class SettingsSearchCoordinator {
                                 @NonNull FragmentManager fm,
                                 @NonNull Fragment f,
                                 @NonNull Context context) {
-                            mHandler.post(() -> pf.scrollToPreference(pf.findPreference(key)));
+                            mHandler.post(() -> showResultPreference(pf, key));
                             fm.unregisterFragmentLifecycleCallbacks(this);
                         }
                     },
@@ -476,6 +487,77 @@ public class SettingsSearchCoordinator {
             Log.e(TAG, "Search result fragment cannot be opened: " + preferenceFragment);
             return;
         }
-        if (mFragmentState != FS_RESULTS) mFragmentState = FS_RESULTS;
+        if (mFragmentState != FS_RESULTS) {
+            mFragmentState = FS_RESULTS;
+            mActivity.findViewById(R.id.search_query_container).setVisibility(View.GONE);
+        }
+    }
+
+    private void showResultPreference(PreferenceFragmentCompat fragment, String key) {
+        RecyclerView listView = fragment.getListView();
+        assert listView.getAdapter() instanceof PreferencePositionCallback
+                : "Recycler adapter must implement PreferencePositionCallback";
+        var listAdapter = (PreferencePositionCallback) listView.getAdapter();
+
+        // Zero-based position of the preference view in listView.
+        int pos = listAdapter.getPreferenceAdapterPosition(key);
+        mRemoveResultChildViewListener = null;
+        listView.addOnChildAttachStateChangeListener(
+                new RecyclerView.OnChildAttachStateChangeListener() {
+                    @Override
+                    public void onChildViewAttachedToWindow(@NonNull View view) {
+                        // |attach| events for a preference view may be invoked multiple times,
+                        // intertwined with |detach| in close succession. We should use the last
+                        // event to highlight the corresponding preference view. The listener
+                        // is removed after that.
+                        var viewHolder = fragment.getListView().getChildViewHolder(view);
+                        if (pos == viewHolder.getBindingAdapterPosition()) {
+                            if (mRemoveResultChildViewListener != null) {
+                                mHandler.removeCallbacks(mRemoveResultChildViewListener);
+                            }
+                            mRemoveResultChildViewListener =
+                                    () -> {
+                                        ViewHighlighter.turnOnHighlight(view, getHighlightParams());
+                                        listView.removeOnChildAttachStateChangeListener(this);
+                                        mRemoveResultChildViewListener = null;
+                                    };
+                            mHandler.postDelayed(mRemoveResultChildViewListener, 200);
+                        }
+                    }
+
+                    @Override
+                    public void onChildViewDetachedFromWindow(@NonNull View view) {}
+                });
+
+        // OnScrollListener#onScrolled is always invoked after the recycler view layout pass
+        // is completed. Use this timing to scroll the preference.
+        listView.addOnScrollListener(
+                new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(
+                            @NonNull RecyclerView recyclerView, int newState) {}
+
+                    @Override
+                    public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                        fragment.scrollToPreference(key);
+                        listView.removeOnScrollListener(this);
+                    }
+                });
+    }
+
+    @Initializer
+    @EnsuresNonNull("mHighlightParams")
+    private HighlightParams getHighlightParams() {
+        if (mHighlightParams == null) {
+            // TODO(jinsukkim): Apply containment style.
+            int radius =
+                    mActivity
+                            .getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.settings_item_rounded_corner_radius_inner);
+            mHighlightParams = new HighlightParams(HighlightShape.RECTANGLE);
+            mHighlightParams.setCornerRadius(radius);
+        }
+        return mHighlightParams;
     }
 }
