@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/webui/regional_capabilities_internals/constants.h",
+  "+components/regional_capabilities/access/country_access_reason.h"
+]

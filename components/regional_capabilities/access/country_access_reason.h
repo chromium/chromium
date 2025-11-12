@@ -10,6 +10,7 @@
 class TemplateURLService;
 class ProfileInternalsHandler;
 class SearchEngineChoiceDialogService;
+class RegionalCapabilitiesInternalsUI;
 
 namespace search_engines {
 class SearchEngineChoiceService;
@@ -45,6 +46,10 @@ enum class CountryAccessReason {
   // Added with the initial access control migration, see crbug.com/328040066.
   // TODO(crbug.com/318824817): Remove when the bug root cause is found.
   kSearchEngineChoiceNotifyChoiceMadeDebug,
+
+  // Used to print debug info in the `chrome://regional-capabilities-internals`
+  // Added with the ease QA & debugging, see crbug.com/424381019.
+  kRegionalCapabilitiesInternalsDisplayInDebugUi,
 };
 
 // Pass key inspired from `base::NonCopyablePassKey` that also allows specifying
@@ -62,6 +67,7 @@ class CountryAccessKey {
   friend class ::TemplateURLService;
   friend class ::ProfileInternalsHandler;
   friend class ::SearchEngineChoiceDialogService;
+  friend class ::RegionalCapabilitiesInternalsUI;
   FRIEND_TEST_ALL_PREFIXES(RegionalCapabilitiesCountryIdTest, GetRestricted);
 
   explicit CountryAccessKey(CountryAccessReason reason) : reason(reason) {}

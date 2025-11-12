@@ -22,6 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/program_settings.h"
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
+#include "components/regional_capabilities/regional_capabilities_internals_data_holder.h"
 #include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/regional_capabilities/regional_capabilities_prefs.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
@@ -424,6 +425,10 @@ RegionalCapabilitiesService::GetClientForTesting() {
 
 CountryIdHolder RegionalCapabilitiesService::GetCountryId() {
   return CountryIdHolder(GetCountryIdInternal());
+}
+
+InternalsDataHolder RegionalCapabilitiesService::GetInternalsData() {
+  return InternalsDataHolder(*this);
 }
 
 const ProgramSettings& RegionalCapabilitiesService::GetActiveProgramSettings() {

@@ -16,5 +16,8 @@ specific_include_rules = {
   ],
   ".*regional_capabilities_prefs\.cc": [
     "+components/search_engines/search_engines_pref_names.h",
+  ],
+  ".*regional_capabilities_internals_data_holder\.cc": [
+    "+components/webui/regional_capabilities_internals/constants.h",
   ]
 }

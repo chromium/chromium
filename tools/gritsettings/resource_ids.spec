@@ -1250,6 +1250,10 @@
    "META": {"sizes": {"includes": [30],}},
     "includes": [7480],
   },
+    "<(SHARED_INTERMEDIATE_DIR)/components/webui/regional_capabilities_internals/resources/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [7490],
+  },
   # END components/ section.
 
   # START ios/ section.

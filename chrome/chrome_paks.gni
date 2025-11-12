@@ -136,6 +136,7 @@ template("chrome_extra_paks") {
       "$root_gen_dir/components/internal_debug_pages_disabled_resources.pak",
       "$root_gen_dir/components/metrics/metrics_server_urls.pak",
       "$root_gen_dir/components/net_export_resources.pak",
+      "$root_gen_dir/components/regional_capabilities_internals_resources.pak",
       "$root_gen_dir/components/safe_browsing_resources.pak",
       "$root_gen_dir/components/translate_internals_resources.pak",
       "$root_gen_dir/components/user_actions_ui_resources.pak",

@@ -30,6 +30,7 @@ namespace regional_capabilities {
 
 enum class ActiveRegionalProgram;
 class CountryIdHolder;
+class InternalsDataHolder;
 enum class Program;
 
 // Service for managing the state related to Search Engine Choice (mostly
@@ -150,6 +151,8 @@ class RegionalCapabilitiesService : public KeyedService {
   // more details.
   CountryIdHolder GetCountryId();
 
+  InternalsDataHolder GetInternalsData();
+
   // Returns the metrics enum for the active regional program. This is used for
   // logging only.
   ActiveRegionalProgram GetActiveProgramForMetrics();
@@ -204,6 +207,8 @@ class RegionalCapabilitiesService : public KeyedService {
   // -- JNI Interface End ----------------------------------------------------
 
  private:
+  friend class InternalsDataHolder;
+
   // Returns how features should adjust themselves based on the active country
   // or program.
   const ProgramSettings& GetActiveProgramSettings();

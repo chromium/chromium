@@ -9,6 +9,8 @@ if (is_android) {
 
 static_library("regional_capabilities") {
   sources = [
+    "regional_capabilities_internals_data_holder.cc",
+    "regional_capabilities_internals_data_holder.h",
     "regional_capabilities_metrics.cc",
     "regional_capabilities_metrics.h",
     "regional_capabilities_prefs.cc",
@@ -35,6 +37,7 @@ static_library("regional_capabilities") {
     "//components/prefs",
     "//components/search_engines:search_engine_pref_names",
     "//components/strings",
+    "//components/webui/regional_capabilities_internals:constants",
     "//third_party/abseil-cpp:absl",
     "//third_party/search_engines_data:prepopulated_engines",
     "//third_party/search_engines_data:regional_settings",
@@ -50,6 +53,7 @@ source_set("country_access_reason") {
     ":*",
     "//chrome/browser/search_engine_choice:impl",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/regional_capabilities_internals",
     "//components/search_engines",
   ]
 
