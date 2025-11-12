@@ -275,13 +275,7 @@ extern const base::FeatureParam<base::TimeDelta>(kGlicActorUiDebounceTimer);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>(
-    kGlicActorPageStabilityLocalTimeout);
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<base::TimeDelta>(
     kGlicActorPageStabilityTimeout);
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<base::TimeDelta>(
-    kGlicActorPageStabilityInvokeCallbackDelay);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityMinWait;
 COMPONENT_EXPORT(CHROME_FEATURES)

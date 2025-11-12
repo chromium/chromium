@@ -85,12 +85,12 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
     // Wait until the main thread is settled.
     kWaitForMainThreadIdle,
 
-    // Timeout states - these just log and and move to invoke callback state.
-    kTimeoutGlobal,
-    kTimeoutMainThread,
+    // Timeout state - this just logs and and moves to invoke callback state.
+    kTimeout,
 
-    // If `kGlicActorPageStabilityInvokeCallbackDelay` is set, the callback
-    // passed to NotifyWhenStable() will be delayed by said amount of time.
+    // If `kGlicActorPageStabilityMinWait` is set, the callback passed to
+    // NotifyWhenStable() may be delayed until the said amount of time is
+    // reached.
     kMaybeDelayCallback,
 
     // Invoke the callback passed to NotifyWhenStable and cleanup.
@@ -131,8 +131,6 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
   base::OnceCallback<base::DelayedTaskHandle()>
   PostCancelableMoveToStateClosure(State new_state,
                                    base::TimeDelta delay = base::TimeDelta());
-
-  void SetTimeout(State timeout_type, base::TimeDelta delay);
 
   void DCheckStateTransition(State old_state, State new_state);
 

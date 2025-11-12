@@ -195,29 +195,23 @@ class ActorPageStabilityTestBase : public InProcessBrowserTest {
   ScopedFeatureList scoped_feature_list_;
 };
 
-// Shorten timeouts to test they work.
-// LocalTimeout is the timeout delay used when waiting on non-network actions
-// like an idle main thread and display compositor frame presentation.
-// GlobalTimeout is the timeout delay used end-to-end in the
-template <int LocalTimeout, int GlobalTimeout>
 class ActorPageStabilityTimeoutTest : public ActorPageStabilityTestBase,
                                       public ::testing::WithParamInterface<
                                           ::features::ActorPaintStabilityMode> {
  public:
   ActorPageStabilityTimeoutTest() {
-    std::string local_timeout = absl::StrFormat("%dms", LocalTimeout);
-    std::string global_timeout = absl::StrFormat("%dms", GlobalTimeout);
-    // Make the paint timeouts high enough that the local and global
-    // timeouts apply, to simulate not reaching paint stability.
-    std::string paint_timeout =
-        absl::StrFormat("%dms", GlobalTimeout + LocalTimeout);
+    // Shorten the timeout to test it works.
+    const int kTimeoutInMs = 100;
+    std::string timeout = absl::StrFormat("%dms", kTimeoutInMs);
+    // Make the paint timeouts high enough that the timeout applies, to
+    // simulate not reaching paint stability.
+    std::string paint_timeout = absl::StrFormat("%dms", kTimeoutInMs);
     timeout_scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kGlic, {}},
          {features::kTabstripComboButton, {}},
          {features::kGlicActor,
-          {{"glic-actor-page-stability-local-timeout", local_timeout},
-           {"glic-actor-page-stability-timeout", global_timeout},
+          {{"glic-actor-page-stability-timeout", timeout},
            // Do not use min wait.
            {"glic-actor-page-stability-min-wait", "0ms"},
            {::features::kActorPaintStabilityMode.name,
@@ -238,16 +232,9 @@ class ActorPageStabilityTimeoutTest : public ActorPageStabilityTestBase,
   ScopedFeatureList timeout_scoped_feature_list_;
 };
 
-// Shorten the timeout under test and make the other timeout very long to avoid
-// tripping it.
-using ActorPageStabilityLocalTimeoutTest =
-    ActorPageStabilityTimeoutTest<100, 100000>;
-using ActorPageStabilityGlobalTimeoutTest =
-    ActorPageStabilityTimeoutTest<100000, 100>;
-
 // Ensure that if a network request runs long, the stability monitor will
 // eventually timeout.
-IN_PROC_BROWSER_TEST_P(ActorPageStabilityGlobalTimeoutTest, NetworkTimeout) {
+IN_PROC_BROWSER_TEST_P(ActorPageStabilityTimeoutTest, NetworkTimeout) {
   const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
   const GURL url_fetch = embedded_test_server()->GetURL(kFetchPath);
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -272,25 +259,7 @@ IN_PROC_BROWSER_TEST_P(ActorPageStabilityGlobalTimeoutTest, NetworkTimeout) {
 
 // Ensure that if the main thread never becomes idle the stability monitor will
 // eventually timeout.
-IN_PROC_BROWSER_TEST_P(ActorPageStabilityGlobalTimeoutTest, BusyMainThread) {
-  const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
-  const GURL url_fetch = embedded_test_server()->GetURL(kFetchPath);
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-
-  std::optional<int> button_id = GetDOMNodeId(*main_frame(), "#btnWorkForever");
-  ASSERT_TRUE(button_id);
-  std::unique_ptr<ToolRequest> action =
-      MakeClickRequest(*main_frame(), button_id.value());
-  ActResultFuture result;
-  task().Act(ToRequestList(action), result.GetCallback());
-
-  // Ensure the stability monitor eventually allows completion.
-  ExpectOkResult(result);
-}
-
-// Ensure that if the main thread never becomes idle the stability monitor will
-// eventually timeout on the local timeout.
-IN_PROC_BROWSER_TEST_P(ActorPageStabilityLocalTimeoutTest, BusyMainThread) {
+IN_PROC_BROWSER_TEST_P(ActorPageStabilityTimeoutTest, BusyMainThread) {
   const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
   const GURL url_fetch = embedded_test_server()->GetURL(kFetchPath);
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -308,13 +277,7 @@ IN_PROC_BROWSER_TEST_P(ActorPageStabilityLocalTimeoutTest, BusyMainThread) {
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    ActorPageStabilityGlobalTimeoutTest,
-    testing::Values(::features::ActorPaintStabilityMode::kDisabled,
-                    ::features::ActorPaintStabilityMode::kLogOnly,
-                    ::features::ActorPaintStabilityMode::kEnabled));
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ActorPageStabilityLocalTimeoutTest,
+    ActorPageStabilityTimeoutTest,
     testing::Values(::features::ActorPaintStabilityMode::kDisabled,
                     ::features::ActorPaintStabilityMode::kLogOnly,
                     ::features::ActorPaintStabilityMode::kEnabled));
@@ -513,11 +476,8 @@ class ActorGeneralPageStabilityTest : public ActorPageStabilityTestBase,
         {{::features::kGlicActor,
           {{::features::kActorPaintStabilityMode.name,
             ::features::kActorPaintStabilityMode.GetName(GetParam())},
-           // Effectively disable the timeouts to prevent flakes.
-           {"glic-actor-page-stability-local-timeout", "30000ms"},
-           {"glic-actor-page-stability-timeout", "30000ms"},
-           // Do not use an invoke delay
-           {"glic-actor-page-stability-invoke-callback-delay", "0ms"}}},
+           // Effectively disable the timeout to prevent flakes.
+           {"glic-actor-page-stability-timeout", "30000ms"}}},
          {features::kGlic, {}},
          {features::kTabstripComboButton, {}}},
         /*disabled_features=*/{features::kGlicWarming});

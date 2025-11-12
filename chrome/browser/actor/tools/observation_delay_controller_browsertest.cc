@@ -301,11 +301,8 @@ class ObservationDelayControllerTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kGlicActor,
-          {// Effectively disable the timeouts to prevent flakes.
-           {features::kGlicActorPageStabilityLocalTimeout.name, "30000ms"},
+          {// Effectively disable the timeout to prevent flakes.
            {features::kGlicActorPageStabilityTimeout.name, "30000ms"},
-           // Do not use an invoke delay
-           {features::kGlicActorPageStabilityInvokeCallbackDelay.name, "0ms"},
            // Use small LCP delay.
            {features::kActorObservationDelayLcp.name, "100ms"}}},
          {features::kGlic, {}},
@@ -488,11 +485,8 @@ class ObservationDelayControllerLcpTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kGlicActor,
-          {// Effectively disable the timeouts to prevent flakes.
-           {features::kGlicActorPageStabilityLocalTimeout.name, "30000ms"},
+          {// Effectively disable the timeout to prevent flakes.
            {features::kGlicActorPageStabilityTimeout.name, "30000ms"},
-           // Do not use an invoke delay
-           {features::kGlicActorPageStabilityInvokeCallbackDelay.name, "0ms"},
            // Do not use min wait
            {features::kGlicActorPageStabilityMinWait.name, "0ms"},
            {features::kActorObservationDelayLcp.name, lcp_delay}}},

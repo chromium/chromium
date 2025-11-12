@@ -358,22 +358,9 @@ const base::FeatureParam<bool> kGlicActorUiStandaloneBorderGlow{
 const base::FeatureParam<base::TimeDelta> kGlicActorUiDebounceTimer{
     &kGlicActorUi, kGlicActorUiDebounceTimerName, base::Milliseconds(25)};
 
-// Controls renderer tool observation timeout when waiting on local
-// (non-network) work. This has no effect when kGlicActorPageStabilityMinWait is
-// enabled.
-const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityLocalTimeout{
-    &kGlicActor, "glic-actor-page-stability-local-timeout", base::Seconds(3)};
-
 // The overall observation timeout when waiting on a renderer tool to complete.
 const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityTimeout{
     &kGlicActor, "glic-actor-page-stability-timeout", base::Seconds(4)};
-
-// An artificial delay before signalling the tools that the page has become
-// stable. This has no effect when kGlicActorPageStabilityMinWait is enabled.
-const base::FeatureParam<base::TimeDelta>
-    kGlicActorPageStabilityInvokeCallbackDelay{
-        &kGlicActor, "glic-actor-page-stability-invoke-callback-delay",
-        base::Milliseconds(200)};
 
 // The minimum amount of time to wait for page stability before invoking the
 // callback.

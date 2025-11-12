@@ -435,7 +435,7 @@ class ActorToolAgnosticBrowserTestWithCustomDelay
     // Ensure tool doesn't finish before the tab is closed.
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kGlicActor,
-        {{"glic-actor-page-stability-invoke-callback-delay", "500ms"}});
+        {{"glic-actor-page-stability-min-wait", "500ms"}});
     ActorToolAgnosticBrowserTest::SetUp();
   }
 

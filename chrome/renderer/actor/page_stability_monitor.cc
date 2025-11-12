@@ -42,14 +42,8 @@ namespace {
 // This is a high-level timeout that starts when NotifyWhenStable is called. If
 // it isn't completed after this delay it will timeout. This is relatively long
 // because it often includes waiting on network.
-base::TimeDelta GetGlobalTimeoutDelay() {
+base::TimeDelta GetTimeoutDelay() {
   return features::kGlicActorPageStabilityTimeout.Get();
-}
-
-// Timeout used when waiting on local work. This can be shorter because it's
-// used after network requests are completed.
-base::TimeDelta GetMainThreadTimeoutDelay() {
-  return features::kGlicActorPageStabilityLocalTimeout.Get();
 }
 
 // Minimum amount of time to wait for network/main thread work, and paint
@@ -109,7 +103,8 @@ void PageStabilityMonitor::NotifyWhenStable(base::TimeDelta observation_delay,
     paint_stability_monitor_->Start();
   }
 
-  SetTimeout(State::kTimeoutGlobal, GetGlobalTimeoutDelay());
+  PostMoveToStateClosure(State::kTimeout, GetTimeoutDelay()).Run();
+
   MoveToState(State::kMonitorStartDelay);
 }
 
@@ -236,11 +231,6 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       break;
     }
     case State::kWaitForMainThreadIdle: {
-      // Min wait is going to replace the local timeout so we avoid setting it.
-      // We keep it flag guarded until the min wait feature lands safely.
-      if (GetMinWait().is_zero()) {
-        SetTimeout(State::kTimeoutMainThread, GetMainThreadTimeoutDelay());
-      }
       main_thread_idle_callback_.Reset(base::BindOnce(
           [](base::OnceClosure callback, base::TimeTicks unused_deadline) {
             std::move(callback).Run();
@@ -250,11 +240,7 @@ void PageStabilityMonitor::MoveToState(State new_state) {
           FROM_HERE, main_thread_idle_callback_.callback());
       break;
     }
-    case State::kTimeoutGlobal: {
-      MoveToState(State::kInvokeCallback);
-      break;
-    }
-    case State::kTimeoutMainThread: {
+    case State::kTimeout: {
       MoveToState(State::kInvokeCallback);
       break;
     }
@@ -263,19 +249,13 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       network_idle_callback_.Cancel();
       main_thread_idle_callback_.Cancel();
 
+      paint_stability_monitor_.reset();
+      paint_stability_delayed_handle_.CancelTask();
+
       base::TimeDelta min_wait_time = GetMinWait();
 
-      if (!min_wait_time.is_zero()) {
-        paint_stability_monitor_.reset();
-        paint_stability_delayed_handle_.CancelTask();
-      }
-
       base::TimeDelta callback_invoke_delay;
-
-      if (min_wait_time.is_zero()) {
-        callback_invoke_delay =
-            features::kGlicActorPageStabilityInvokeCallbackDelay.Get();
-      } else {
+      if (min_wait_time.is_positive()) {
         base::TimeDelta elapsed_time =
             base::TimeTicks::Now() - start_monitoring_time_;
         callback_invoke_delay = min_wait_time - elapsed_time;
@@ -365,13 +345,6 @@ PageStabilityMonitor::PostCancelableMoveToStateClosure(State new_state,
       MoveToStateClosure(new_state), delay);
 }
 
-void PageStabilityMonitor::SetTimeout(State timeout_type,
-                                      base::TimeDelta delay) {
-  CHECK(timeout_type == State::kTimeoutGlobal ||
-        timeout_type == State::kTimeoutMainThread);
-  PostMoveToStateClosure(timeout_type, delay).Run();
-}
-
 void PageStabilityMonitor::OnPaintStabilityReached() {
   // Do this in a separate task since this callback can be called synchronously
   // when registered.
@@ -404,12 +377,12 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
               State::kMojoDisconnected}},
           {State::kMonitorStartDelay, {
               State::kWaitForNavigation,
-              State::kTimeoutGlobal,
+              State::kTimeout,
               State::kRenderFrameGoingAway,
               State::kMojoDisconnected}},
           {State::kWaitForNavigation, {
               State::kStartMonitoring,
-              State::kTimeoutGlobal,
+              State::kTimeout,
               State::kRenderFrameGoingAway,
               State::kMojoDisconnected}},
           {State::kStartMonitoring, {
@@ -418,25 +391,21 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
           {State::kWaitForNetworkIdle, {
               State::kWaitForMainThreadIdle,
               State::kPaintStabilityReached,
-              State::kTimeoutGlobal,
+              State::kTimeout,
               State::kRenderFrameGoingAway,
               State::kMojoDisconnected}},
           {State::kWaitForMainThreadIdle, {
               State::kMaybeDelayCallback,
               State::kPaintStabilityReached,
-              State::kTimeoutMainThread,
-              State::kTimeoutGlobal,
+              State::kTimeout,
               State::kRenderFrameGoingAway,
               State::kMojoDisconnected}},
-          {State::kTimeoutMainThread, {
-              State::kInvokeCallback}},
-          {State::kTimeoutGlobal, {
+          {State::kTimeout, {
               State::kInvokeCallback}},
           {State::kMaybeDelayCallback, {
               State::kPaintStabilityReached,
               State::kInvokeCallback,
-              State::kTimeoutMainThread,
-              State::kTimeoutGlobal,
+              State::kTimeout,
               State::kRenderFrameGoingAway,
               State::kMojoDisconnected}},
           {State::kRenderFrameGoingAway, {
@@ -492,10 +461,8 @@ std::string_view PageStabilityMonitor::StateToString(State state) {
       return "WaitForNetworkIdle";
     case State::kWaitForMainThreadIdle:
       return "WaitForMainThreadIdle";
-    case State::kTimeoutGlobal:
-      return "TimeoutGlobal";
-    case State::kTimeoutMainThread:
-      return "TimeoutMainThread";
+    case State::kTimeout:
+      return "Timeout";
     case State::kMaybeDelayCallback:
       return "MaybeDelayCallback";
     case State::kInvokeCallback:
