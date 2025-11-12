@@ -1235,6 +1235,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       video_info.codec = VideoCodec::kH264;
       video_info.profile = H264Parser::ProfileIDCToVideoCodecProfile(
           avc_config->profile_indication);
+      video_info.level = avc_config->avc_level;
       // It can be Dolby Vision stream if there is dvvC box.
       std::tie(video_info, dv_info) = MaybeParseDOVI(reader, video_info);
       frame_bitstream_converter =
