@@ -109,11 +109,9 @@ public class LocationPermissionSubpageSettings extends BaseSiteSettingsFragment
                 findPreference(RADIO_BUTTON_GROUP_KEY);
         if (radioPreference != null) {
             if (isPreciseSelected && locationCategory.hasPreciseOnlyBlockedWarning(getContext())) {
-                radioPreference.setPreciseSummary(
-                        getContext()
-                                .getString(
-                                        R.string
-                                                .website_settings_using_approximate_location_summary));
+                int summaryResId = R.string.website_settings_using_approximate_location_summary;
+                String summary = getContext().getString(summaryResId);
+                radioPreference.setPreciseSummary(summary);
             } else {
                 radioPreference.setPreciseSummary("");
             }
