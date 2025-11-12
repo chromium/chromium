@@ -132,7 +132,11 @@ enum class LensOverlayDismissalSource {
   // The user activated reader mode. Only used on iOS.
   kReaderModeActivated = 33,
 
-  kMaxValue = kReaderModeActivated
+  // The tab was backgrounded while the overlay was initializing. Only used on
+  // Desktop.
+  kTabBackgroundedWhileInitializing = 34,
+
+  kMaxValue = kTabBackgroundedWhileInitializing
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayDismissalSource)
 

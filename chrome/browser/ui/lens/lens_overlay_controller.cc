@@ -344,6 +344,7 @@ void LensOverlayController::TriggerOverlayFadeOutAnimation(
   if (state_ == State::kOff || IsOverlayClosing()) {
     return;
   }
+  state_ = State::kHiding;
 
   // Notify the overlay so it can do any animations or cleanup. The page_ is not
   // guaranteed to exist if CloseUIAsync is called during the setup process.
@@ -562,7 +563,8 @@ bool LensOverlayController::IsOverlayShowing() const {
 }
 
 bool LensOverlayController::IsOverlayActive() const {
-  return IsOverlayShowing() || state_ == State::kHidden;
+  return IsOverlayShowing() || state_ == State::kHidden ||
+         state_ == State::kHiding || state_ == State::kIsReshowing;
 }
 
 bool LensOverlayController::HasRegionSelection() const {
@@ -822,6 +824,10 @@ void LensOverlayController::FetchSupportedLanguages(
 }
 
 void LensOverlayController::FinishReshowOverlay() {
+  if (state_ != State::kIsReshowing) {
+    return;
+  }
+
   if (lens_overlay_blur_layer_delegate_) {
     content::RenderWidgetHost* live_page_widget_host =
         tab_->GetContents()
@@ -831,6 +837,7 @@ void LensOverlayController::FinishReshowOverlay() {
     lens_overlay_blur_layer_delegate_->Show(live_page_widget_host);
   }
   SetOverlayWebViewOpacity(1.0f);
+  state_ = State::kOverlay;
 }
 
 void LensOverlayController::TryShowTranslateFeaturePromo(
@@ -1202,7 +1209,7 @@ void LensOverlayController::ClearTextSelection() {
 }
 
 void LensOverlayController::ClearRegionSelection() {
-  if (!IsOverlayShowing()) {
+  if (!IsOverlayActive()) {
     return;
   }
   lens_search_controller_->ClearVisualSelectionThumbnail();
@@ -2118,12 +2125,18 @@ void LensOverlayController::TabWillEnterBackground(tabs::TabInterface* tab) {
 
   // If the overlay is active, background it.
   if (IsOverlayActive()) {
-    // If the overlay is currently showing, then we should hide the UI.
-    if (IsOverlayShowing()) {
+    const bool is_in_transitional_state =
+        state_ == State::kIsReshowing || state_ == State::kHiding;
+
+    // If the overlay is in a transitional state, the state to restore to is
+    // kHidden. Otherwise, restore to the current state.
+    backgrounded_state_ = is_in_transitional_state ? State::kHidden : state_;
+
+    // If the overlay UI is showing, hide it.
+    if (overlay_web_view_ && overlay_web_view_->GetVisible()) {
       HideOverlay();
     }
 
-    backgrounded_state_ = state_;
     state_ = State::kBackground;
     UpdateEntryPointsState();
 
@@ -2612,21 +2625,18 @@ void LensOverlayController::HideOverlay() {
   NotifyIsOverlayShowing(false);
 }
 
-void LensOverlayController::HideOverlayAndMaybeSetHiddenState() {
-  // If the overlay is not showing, there is nothing to hide.
-  if (IsOverlayShowing()) {
-    HideOverlay();
+void LensOverlayController::HideOverlayAndSetHiddenState() {
+  if (state_ != State::kHiding) {
+    return;
   }
-
-  // If the side panel is open, set the overlay state to kHidden.
-  if (state_ == State::kOverlay && IsResultsSidePanelShowing()) {
-    state_ = State::kHidden;
-  }
+  HideOverlay();
+  state_ = State::kHidden;
 }
 
 void LensOverlayController::ReshowOverlay() {
   // The overlay must be in the kHidden state to be restored properly.
   CHECK(state_ == State::kHidden);
+  state_ = State::kIsReshowing;
   use_aim_for_visual_search_ = true;
 
   // Clear any previous selections to ensure a clean state.
@@ -2916,6 +2926,10 @@ void LensOverlayController::OnScreenshotTaken(
 }
 
 void LensOverlayController::ReshowOverlayPart2() {
+  if (state_ != State::kIsReshowing) {
+    return;
+  }
+
   // Create the new RGB bitmap asynchronously to prevent the main thread from
   // blocking on the encoding.
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -2927,7 +2941,7 @@ void LensOverlayController::ReshowOverlayPart2() {
 }
 
 void LensOverlayController::ReshowOverlayPart3(const SkBitmap& rgb_screenshot) {
-  if (state_ == State::kOff || IsOverlayClosing()) {
+  if (state_ != State::kIsReshowing) {
     return;
   }
 
@@ -2944,8 +2958,6 @@ void LensOverlayController::ReshowOverlayPart3(const SkBitmap& rgb_screenshot) {
   if (lens_overlay_blur_layer_delegate_) {
     lens_overlay_blur_layer_delegate_->Hide();
   }
-
-  state_ = State::kOverlay;
 
   // Set the overlay web view opacity to near-zero instead of using
   // `SetVisible(false)`. Setting visibility to false prevents animation frames

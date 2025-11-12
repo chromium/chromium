@@ -92,6 +92,7 @@ chromium-metrics-reviews@google.com.
   <int value="31" label="Search with camera requested"/>
   <int value="32" label="FRE promo next button"/>
   <int value="33" label="Reader mode activated"/>
+  <int value="34" label="Tab backgrounded while initializing"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_dismissal_source.h:LensOverlayDismissalSource) -->

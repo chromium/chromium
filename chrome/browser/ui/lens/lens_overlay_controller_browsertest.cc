@@ -500,6 +500,7 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
 
   void OnOverlayReshown(const SkBitmap& screenshot) override {
     last_received_screenshot_ = screenshot;
+    overlay_page_->OnOverlayReshown(screenshot);
   }
 
   void Reset() {
@@ -563,6 +564,9 @@ class LensOverlayControllerFake : public lens::TestLensOverlayController {
     // Reset the receiver to close any existing connection.
     fake_overlay_page_receiver_.reset();
     fake_overlay_page_.overlay_page_.reset();
+    if (!should_bind_overlay_) {
+      return;
+    }
 
     // Set up the fake overlay page to intercept the mojo call.
     fake_overlay_page_.overlay_page_.Bind(std::move(page));
@@ -578,6 +582,7 @@ class LensOverlayControllerFake : public lens::TestLensOverlayController {
   void FlushForTesting() { fake_overlay_page_receiver_.FlushForTesting(); }
 
   LensOverlayPageFake fake_overlay_page_;
+  bool should_bind_overlay_ = true;
   bool is_screenshot_possible_ = true;
   mojo::Receiver<lens::mojom::LensPage> fake_overlay_page_receiver_{
       &fake_overlay_page_};
@@ -8904,50 +8909,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
                    ->IsCapturingBackgroundImageForTesting());
 }
 
-// Regression test for crbug.com/6893132.
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
-                       BackgroundBlurWhenSwitchTabs) {
-  // Load the initial page and ensure it has finished painting.
-  WaitForPaint();
-
-  // State should start in off.
-  auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Grab the index of the currently active tab so we can return to it later.
-  int active_controller_tab_index =
-      browser()->tab_strip_model()->active_index();
-
-  // Showing UI should change the state to screenshot and eventually to overlay.
-  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
-
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kStartingWebUI; }));
-
-  // Quickly switch to a new tab.
-  WaitForPaint(kDocumentWithNamedElement,
-               WindowOpenDisposition::NEW_FOREGROUND_TAB,
-               ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
-                   ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  // The original tab is now in the background, which should cause the
-  // overlay to transition to kBackground.
-  // Wait for this transition to complete.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kBackground; }));
-
-  // Switch back to the original tab.
-  browser()->tab_strip_model()->ActivateTabAt(active_controller_tab_index);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-
-  // The blur layer delegate should exist now, but it should not be actively
-  // capturing since the blur is applied to a static screenshot in a normal tab.
-  ASSERT_TRUE(controller->GetLensOverlayBlurLayerDelegateForTesting());
-  EXPECT_FALSE(controller->GetLensOverlayBlurLayerDelegateForTesting()
-                   ->IsCapturingBackgroundImageForTesting());
-}
-
 // TODO(crbug.com/422479353): Flaky on Linux MSan.
 #if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
 #define MAYBE_BackgroundBlurLiveInitiallyInSplitTab \
@@ -9697,6 +9658,115 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
   // Verify histograms were recorded correctly.
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked", 1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Shown", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
+                       BackgroundOverlayDuringReshow) {
+  WaitForPaint();
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Issue a region search to open the side panel.
+  controller->IssueLensRegionRequestForTesting(kTestRegion->Clone(),
+                                               /*is_click=*/false);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsLensResultsSidePanelShowing(); }));
+
+  // Request a close via the close button on the overlay UI.
+  GetLensSearchController()->HideOverlay(
+      lens::LensOverlayDismissalSource::kOverlayCloseButton);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kHidden; }));
+
+  // Opening the overlay in the current session should start reshowing the
+  // overlay.
+  GetLensSearchController()->OpenLensOverlayInCurrentSession();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kIsReshowing; }));
+
+  // Grab the index of the currently active tab so we can return to it later.
+  int active_controller_tab_index =
+      browser()->tab_strip_model()->active_index();
+
+  // Opening a new tab should background the overlay UI.
+  WaitForPaint(kDocumentWithNamedElement,
+               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
+                   ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kBackground; }));
+  EXPECT_EQ(controller->backgrounded_state_for_testing(), State::kHidden);
+
+  // Returning back to the previous tab should show the side panel, but not the
+  // overlay.
+  browser()->tab_strip_model()->ActivateTabAt(active_controller_tab_index);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return IsLensResultsSidePanelShowing(); }));
+  EXPECT_EQ(controller->state(), State::kHidden);
+
+  // Opening the overlay in the current session should reshow the overlay again.
+  GetLensSearchController()->OpenLensOverlayInCurrentSession();
+  ASSERT_TRUE(controller->state() == State::kIsReshowing);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
+                       BackgroundOverlayDuringInitialization) {
+  WaitForPaint();
+  auto* search_controller = GetLensSearchController();
+  auto* controller = GetLensOverlayController();
+  ASSERT_TRUE(search_controller->IsOff());
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Issue a text search request to open the side panel without the overlay.
+  search_controller->IssueTextSearchRequest(
+      LensOverlayInvocationSource::kContentAreaContextMenuText, "query", {},
+      AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      /*is_zero_prefix_suggestion=*/false,
+      /*suppress_contextualization=*/true);
+
+  // Wait for side panel to be visible.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsLensResultsSidePanelShowing(); }));
+  ASSERT_TRUE(GetLensOverlaySidePanelCoordinator()->IsEntryShowing());
+  ASSERT_FALSE(search_controller->IsOff());
+
+  // Opening the overlay in the current session should start showing the
+  // overlay. Block binding the overlay to test the initialization path.
+  auto* fake_controller =
+      static_cast<LensOverlayControllerFake*>(GetLensOverlayController());
+  ASSERT_TRUE(fake_controller);
+  fake_controller->should_bind_overlay_ = false;
+  search_controller->OpenLensOverlayInCurrentSession();
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+
+  // Grab the index of the currently active tab so we can return to it later.
+  int active_controller_tab_index =
+      browser()->tab_strip_model()->active_index();
+
+  // Opening a new tab should background the overlay UI.
+  WaitForPaint(kDocumentWithNamedElement,
+               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
+                   ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // The overlay controller should go to kOff state.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOff; }));
+
+  // Returning back to the previous tab should not show the overlay or side
+  // panel UI.
+  browser()->tab_strip_model()->ActivateTabAt(active_controller_tab_index);
+  EXPECT_FALSE(IsLensResultsSidePanelShowing());
+  // Overlay controller state should be kOff.
+  EXPECT_EQ(controller->state(), State::kOff);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
