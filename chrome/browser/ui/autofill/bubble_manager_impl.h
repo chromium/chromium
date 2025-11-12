@@ -37,6 +37,7 @@ class BubbleManagerImpl : public BubbleManager {
   void OnBubbleHiddenByController(BubbleControllerBase& controller_to_hide,
                                   bool show_next_bubble) override;
   bool HasPendingBubbleOfSameType(const BubbleType bubble_type) const override;
+  bool HasConflictingPendingBubble(const BubbleType bubble_type) const override;
 
  private:
   struct PendingRequest {
