@@ -87,8 +87,9 @@ void TestBrowserAutofillManager::OnSelectControlSelectionChanged(
 }
 
 void TestBrowserAutofillManager::OnSelectFieldOptionsDidChange(
-    const FormData& form) {
-  AutofillManager::OnSelectFieldOptionsDidChange(form);
+    const FormData& form,
+    const FieldGlobalId& field_id) {
+  AutofillManager::OnSelectFieldOptionsDidChange(form, field_id);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 

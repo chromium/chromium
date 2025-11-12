@@ -279,7 +279,9 @@ class BrowserAutofillManager : public AutofillManager {
   void OnDidAutofillFormImpl(const FormData& form) override;
   void OnDidEndTextFieldEditingImpl() override;
   void OnHidePopupImpl() override;
-  void OnSelectFieldOptionsDidChangeImpl(const FormData& form) override;
+  void OnSelectFieldOptionsDidChangeImpl(
+      const FormData& form,
+      const FieldGlobalId& field_id) override;
   void OnJavaScriptChangedAutofilledValueImpl(
       const FormData& form,
       const FieldGlobalId& field_id,

@@ -135,7 +135,8 @@ TEST_F(PerFillMetricsTest, RefillTriggerReason_OnSelectFieldOptionsDidChange) {
   FillForm(form, &credit_card);
 
   base::HistogramTester histogram_tester;
-  autofill_manager().OnSelectFieldOptionsDidChange(form);
+  autofill_manager().OnSelectFieldOptionsDidChange(
+      form, form.fields().back().global_id());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.RefillTriggerReason",

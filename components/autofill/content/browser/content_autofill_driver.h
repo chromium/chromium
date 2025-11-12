@@ -285,7 +285,8 @@ class ContentAutofillDriver : public AutofillDriver,
       const std::u16string& old_value) override;
   void SelectControlSelectionChanged(const FormData& form,
                                      FieldRendererId field_id) override;
-  void SelectFieldOptionsDidChange(const FormData& form) override;
+  void SelectFieldOptionsDidChange(const FormData& form,
+                                   FieldRendererId field_id) override;
   void CaretMovedInFormField(const FormData& form,
                              FieldRendererId field_id,
                              const gfx::Rect& caret_bounds) override;

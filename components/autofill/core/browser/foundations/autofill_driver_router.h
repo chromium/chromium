@@ -223,9 +223,11 @@ class AutofillDriverRouter {
       AutofillDriver& source,
       FormData form,
       const FieldGlobalId& field_id);
-  void SelectFieldOptionsDidChange(RoutedCallback<const FormData&> callback,
-                                   AutofillDriver& source,
-                                   FormData form);
+  void SelectFieldOptionsDidChange(
+      RoutedCallback<const FormData&, const FieldGlobalId&> callback,
+      AutofillDriver& source,
+      FormData form,
+      const FieldGlobalId& field_id);
 
   // Events called by the browser, passed to the renderer:
   // Keep in alphabetic order.

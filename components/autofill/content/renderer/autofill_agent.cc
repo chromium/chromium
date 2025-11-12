@@ -463,8 +463,10 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
     DeferMsg(&mojom::AutofillDriver::SelectControlSelectionChanged, form,
              field_id);
   }
-  void SelectFieldOptionsDidChange(const FormData& form) override {
-    DeferMsg(&mojom::AutofillDriver::SelectFieldOptionsDidChange, form);
+  void SelectFieldOptionsDidChange(const FormData& form,
+                                   FieldRendererId field_id) override {
+    DeferMsg(&mojom::AutofillDriver::SelectFieldOptionsDidChange, form,
+             field_id);
   }
   void AskForValuesToFill(const FormData& form,
                           FieldRendererId field_id,
@@ -1928,7 +1930,7 @@ void AutofillAgent::BatchSelectOptionChange(FieldRendererId element_id) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver();
         autofill_driver && !field->options().empty()) {
-      autofill_driver->SelectFieldOptionsDidChange(form);
+      autofill_driver->SelectFieldOptionsDidChange(form, field->renderer_id());
     }
   }
 }

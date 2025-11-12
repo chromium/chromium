@@ -55,7 +55,8 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
                             const FieldGlobalId& field_id) override;
   void OnSelectControlSelectionChanged(const FormData& form,
                                        const FieldGlobalId& field_id) override;
-  void OnSelectFieldOptionsDidChange(const FormData& form) override;
+  void OnSelectFieldOptionsDidChange(const FormData& form,
+                                     const FieldGlobalId& field_id) override;
   void OnAskForValuesToFill(
       const FormData& form,
       const FieldGlobalId& field_id,

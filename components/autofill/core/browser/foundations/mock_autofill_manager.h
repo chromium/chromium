@@ -36,7 +36,7 @@ class MockAutofillManager : public AutofillManager {
   MOCK_METHOD(void, OnHidePopupImpl, (), (override));
   MOCK_METHOD(void,
               OnSelectFieldOptionsDidChangeImpl,
-              (const FormData& form),
+              (const FormData& form, const FieldGlobalId& field_id),
               (override));
   MOCK_METHOD(void,
               OnJavaScriptChangedAutofilledValueImpl,

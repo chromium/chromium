@@ -2337,9 +2337,9 @@ bool BrowserAutofillManager::ShouldClearPreviewedForm() {
 }
 
 void BrowserAutofillManager::OnSelectFieldOptionsDidChangeImpl(
-    const FormData& form) {
-  raw_ptr<FormStructure, VectorExperimental> form_structure =
-      FindCachedFormById(form.global_id());
+    const FormData& form,
+    const FieldGlobalId& field_id) {
+  FormStructure* form_structure = FindCachedFormById(form.global_id());
   if (!form_structure) {
     return;
   }

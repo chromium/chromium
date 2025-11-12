@@ -39,6 +39,7 @@
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/language_detection/core/constants.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/translate/core/browser/language_state.h"
@@ -429,14 +430,17 @@ void AutofillManager::OnSuggestionsHidden() {
   NotifyObservers(&Observer::OnSuggestionsHidden);
 }
 
-void AutofillManager::OnSelectFieldOptionsDidChange(const FormData& form) {
+void AutofillManager::OnSelectFieldOptionsDidChange(
+    const FormData& form,
+    const FieldGlobalId& field_id) {
   if (!IsValidFormData(form)) {
     return;
   }
   NotifyObservers(&Observer::OnBeforeSelectFieldOptionsDidChange,
                   form.global_id());
   ParseFormAsync(
-      form, ParsingCallback(&AutofillManager::OnSelectFieldOptionsDidChangeImpl)
+      form, ParsingCallback(&AutofillManager::OnSelectFieldOptionsDidChangeImpl,
+                            field_id)
                 .Then(NotifyObserversCallback(
                     &Observer::OnAfterSelectFieldOptionsDidChange,
                     form.global_id())));

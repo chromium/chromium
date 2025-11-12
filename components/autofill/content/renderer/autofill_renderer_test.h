@@ -68,7 +68,7 @@ class MockAutofillDriver : public mojom::AutofillDriver {
               (override));
   MOCK_METHOD(void,
               SelectFieldOptionsDidChange,
-              (const FormData& form),
+              (const FormData& form, FieldRendererId field_id),
               (override));
   MOCK_METHOD(void,
               JavaScriptChangedAutofilledValue,

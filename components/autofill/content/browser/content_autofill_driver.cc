@@ -23,6 +23,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -645,10 +646,12 @@ void ContentAutofillDriver::DidEndTextFieldEditing() {
                  &AutofillManager::OnDidEndTextFieldEditing);
 }
 
-void ContentAutofillDriver::SelectFieldOptionsDidChange(const FormData& form) {
-  RouteToManager(*this, router(),
-                 &AutofillDriverRouter::SelectFieldOptionsDidChange,
-                 &AutofillManager::OnSelectFieldOptionsDidChange, form);
+void ContentAutofillDriver::SelectFieldOptionsDidChange(
+    const FormData& form,
+    FieldRendererId field_id) {
+  RouteToManager(
+      *this, router(), &AutofillDriverRouter::SelectFieldOptionsDidChange,
+      &AutofillManager::OnSelectFieldOptionsDidChange, form, field_id);
 }
 
 void ContentAutofillDriver::JavaScriptChangedAutofilledValue(

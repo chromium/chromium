@@ -400,9 +400,10 @@ void AutofillDriverRouter::DidEndTextFieldEditing(RoutedCallback<> callback,
 }
 
 void AutofillDriverRouter::SelectFieldOptionsDidChange(
-    RoutedCallback<const FormData&> callback,
+    RoutedCallback<const FormData&, const FieldGlobalId&> callback,
     AutofillDriver& source,
-    FormData form) {
+    FormData form,
+    const FieldGlobalId& field_id) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
@@ -410,7 +411,7 @@ void AutofillDriverRouter::SelectFieldOptionsDidChange(
 
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
   auto* target = DriverOfFrame(browser_form.host_frame());
-  callback(CHECK_DEREF(target), browser_form);
+  callback(CHECK_DEREF(target), browser_form, field_id);
 }
 
 void AutofillDriverRouter::JavaScriptChangedAutofilledValue(

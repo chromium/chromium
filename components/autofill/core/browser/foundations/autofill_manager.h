@@ -256,7 +256,8 @@ class AutofillManager
                                     const FieldGlobalId& field_id);
   virtual void OnSelectControlSelectionChanged(const FormData& form,
                                                const FieldGlobalId& field_id);
-  virtual void OnSelectFieldOptionsDidChange(const FormData& form);
+  virtual void OnSelectFieldOptionsDidChange(const FormData& form,
+                                             const FieldGlobalId& field_id);
   virtual void OnFocusOnFormField(const FormData& form,
                                   const FieldGlobalId& field_id);
   void OnFocusOnNonFormField();
@@ -395,7 +396,9 @@ class AutofillManager
   virtual void OnSelectControlSelectionChangedImpl(
       const FormData& form,
       const FieldGlobalId& field_id) = 0;
-  virtual void OnSelectFieldOptionsDidChangeImpl(const FormData& form) = 0;
+  virtual void OnSelectFieldOptionsDidChangeImpl(
+      const FormData& form,
+      const FieldGlobalId& field_id) = 0;
   virtual void OnFocusOnFormFieldImpl(const FormData& form,
                                       const FieldGlobalId& field_id) = 0;
   virtual void OnFocusOnNonFormFieldImpl() = 0;
