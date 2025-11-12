@@ -25,7 +25,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContextStub, SelectedFileInfo, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -847,6 +847,15 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
+  async setSearchContext(context: SearchContextStub|null) {
+    if (!context) {
+      return;
+    }
+    this.input_ = context.input;
+    await this.$.context.setStateFromSearchContext(
+        context, this.searchboxHandler_);
+  }
+
   private closeComposebox_() {
     this.resetModes();
     this.fire('close-composebox', {composeboxText: this.input_});
@@ -1039,7 +1048,7 @@ export class ComposeboxElement extends I18nMixinLit
     this.searchboxHandler_.queryAutocomplete(this.input_, false);
   }
 
-  private clearAllInputs() {
+  clearAllInputs() {
     this.input_ = '';
     this.$.context.resetContextFiles();
     this.contextFilesSize_ = 0;

@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
 
+#include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
+#include "components/omnibox/browser/searchbox.mojom.h"
 
 OmniboxPopupAimHandler::OmniboxPopupAimHandler(
     mojo::PendingReceiver<omnibox_popup_aim::mojom::PageHandler> receiver,
@@ -16,8 +18,19 @@ OmniboxPopupAimHandler::OmniboxPopupAimHandler(
 
 OmniboxPopupAimHandler::~OmniboxPopupAimHandler() = default;
 
-void OmniboxPopupAimHandler::OnShow() {
-  page_->OnShow();
+void OmniboxPopupAimHandler::OnShow(
+    std::unique_ptr<SearchboxContextData::Context> context) {
+  if (!context) {
+    page_->OnShow(nullptr);
+    return;
+  }
+
+  auto search_context = searchbox::mojom::SearchContextStub::New();
+  search_context->input = context->text;
+  search_context->attachments = std::move(context->file_infos);
+  search_context->tool_mode = context->mode;
+
+  page_->OnShow(std::move(search_context));
 }
 
 void OmniboxPopupAimHandler::OnClose() {

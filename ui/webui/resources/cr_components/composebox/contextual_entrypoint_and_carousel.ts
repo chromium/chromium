@@ -12,7 +12,8 @@ import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {ToolMode} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {PageHandlerRemote as SearchboxPageHandlerRemote, SearchContextStub, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
@@ -364,6 +365,62 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     const newFiles = new Map(this.files_);
     newFiles.set(file.uuid, file);
     this.files_ = newFiles;
+  }
+
+  async setStateFromSearchContext(
+      context: SearchContextStub,
+      searchboxHandler: SearchboxPageHandlerRemote) {
+    for (const attachment of context.attachments) {
+      if (attachment.fileAttachment) {
+        const fileAttachment = attachment.fileAttachment;
+        const composeboxFile: ComposeboxFile = {
+          uuid: fileAttachment.uuid,
+          name: fileAttachment.name,
+          objectUrl: null,
+          dataUrl: fileAttachment.imageDataUrl ?? null,
+          type: fileAttachment.mimeType,
+          // TODO(crbug.com/459920356): Properly set the upload status and
+          // handle updates.
+          status: FileUploadStatus.kUploadSuccessful,
+          url: null,
+          tabId: null,
+          isDeletable: true,
+        };
+        this.onFileContextAdded(composeboxFile);
+      } else if (attachment.tabAttachment) {
+        const tabAttachment = attachment.tabAttachment;
+        // TODO(crbug.com/459920991): Figure out if we should delay upload.
+        const {token} = await searchboxHandler.addTabContext(
+            tabAttachment.tabId, /*delay_upload=*/ true);
+        if (!token) {
+          continue;
+        }
+
+        const composeboxFile: ComposeboxFile = {
+          uuid: token,
+          name: tabAttachment.title,
+          objectUrl: null,
+          dataUrl: null,
+          type: 'tab',
+          status: FileUploadStatus.kNotUploaded,
+          url: tabAttachment.url,
+          tabId: tabAttachment.tabId,
+          isDeletable: true,
+        };
+        this.onFileContextAdded(composeboxFile);
+      }
+    }
+
+    switch (context.toolMode) {
+      case ToolMode.kDeepSearch:
+        this.setInitialMode(ComposeboxMode.DEEP_SEARCH);
+        break;
+      case ToolMode.kCreateImage:
+        this.setInitialMode(ComposeboxMode.CREATE_IMAGE);
+        break;
+      default:
+        this.resetModes();
+    }
   }
 
   protected onDeleteFile_(e: CustomEvent) {

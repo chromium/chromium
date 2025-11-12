@@ -155,6 +155,16 @@ union SearchContextAttachmentStub {
   TabAttachmentStub tab_attachment;
 };
 
+// Represents the context of a search query.
+struct SearchContextStub {
+  // The input text of the search query.
+  string input;
+  // A list of attachments to the search context.
+  array<SearchContextAttachmentStub> attachments;
+  // The mode of the search query.
+  ToolMode tool_mode;
+};
+
 // Information about a contextual input.
 struct SelectedFileInfo {
   // Name of the file.
