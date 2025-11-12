@@ -57,9 +57,6 @@ export const CURSOR_SIZE_PIXEL = 32;
 // The cursor image url css variable name.
 export const CURSOR_IMG_URL = '--cursor-img-url';
 
-// The delay in milliseconds before the screenshot fade out.
-const FADE_OUT_DELAY_MS = 250;
-
 // Returns true if the event is a keystroke that should not activate a control.
 function shouldIgnoreKeyboardEvent(event: Event|undefined): boolean {
   return event instanceof KeyboardEvent &&
@@ -341,8 +338,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private cursorOffsetY: number = 6;
   private hasInitialFlashAnimationEnded = false;
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
-  // The timeout ID for the background image fade out animation.
-  private backgroundImageFadeOutTimeoutId: number = -1;
 
   // The ID returned by requestAnimationFrame for the updateCursorPosition,
   // onPointerMove, and handleResize functions.
@@ -367,14 +362,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       this.browserProxy.callbackRouter.notifyOverlayClosing.addListener(() => {
         this.isClosing = true;
         this.removeDragListeners();
-
-        // Set a timeout to make the background image canvas hidden. This is
-        // done to prevent the old screenshot from flashing before rendering the
-        // new screenshot when the overlay is reshown.
-        clearTimeout(this.backgroundImageFadeOutTimeoutId);
-        this.backgroundImageFadeOutTimeoutId = setTimeout(() => {
-          this.hideBackgroundImageCanvas = true;
-        }, FADE_OUT_DELAY_MS);
       }),
       this.browserProxy.callbackRouter.onCopyCommand.addListener(
           this.onCopyCommand.bind(this)),
@@ -1374,9 +1361,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   }
 
   private onOverlayReshown(screenshotBitmap: ImageBitmap) {
-    // Clear the existing timeout if the overlay was reshown very quickly.
-    clearTimeout(this.backgroundImageFadeOutTimeoutId);
-
     // Render the new screenshot.
     renderScreenshot(this.$.backgroundImageCanvas, screenshotBitmap);
 
