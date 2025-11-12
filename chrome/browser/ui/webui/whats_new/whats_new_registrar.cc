@@ -11,6 +11,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/lens/lens_features.h"
 #include "components/performance_manager/public/features.h"
+#include "components/sync/base/features.h"
 #include "components/user_education/webui/whats_new_registry.h"
 #include "pdf/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -55,6 +56,10 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   registry->RegisterModule(WhatsNewModule(::features::kSideBySide,
                                           "agale@google.com",
                                           BrowserCommand::kOpenSplitView));
+  // M143
+  registry->RegisterModule(
+      WhatsNewModule(::syncer::kSyncAccountSettings, "vizcay@google.com",
+                     BrowserCommand::kOpenAutofillSettings));
 
   // M144
 #if BUILDFLAG(ENABLE_PDF)
