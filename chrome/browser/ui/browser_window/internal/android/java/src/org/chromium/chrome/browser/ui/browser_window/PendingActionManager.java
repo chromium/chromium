@@ -133,6 +133,8 @@ final class PendingActionManager {
      */
     void requestAction(@PendingAction int action) {
         assert action != PendingAction.SET_BOUNDS : "Use requestSetBounds() and provide a Rect.";
+        assert action != PendingAction.MAXIMIZE : "Use requestMaximize() and provide a Rect.";
+        assert action != PendingAction.RESTORE : "Use requestRestore() and provide a Rect.";
         switch (action) {
             case PendingAction.SHOW:
                 requestShow();
@@ -148,13 +150,31 @@ final class PendingActionManager {
                 break;
             case PendingAction.HIDE:
             case PendingAction.CLOSE:
-            case PendingAction.MAXIMIZE:
             case PendingAction.MINIMIZE:
-            case PendingAction.RESTORE:
                 requestGlobalOverrideAction(action);
                 break;
             default:
                 assert false : "Unsupported pending action.";
+        }
+    }
+
+    void requestMaximize(Rect futureBounds) {
+        synchronized (mPendingActionsLock) {
+            mPendingActions[0] = PendingAction.MAXIMIZE;
+            mPendingActions[1] = PendingAction.NONE;
+
+            mPendingBoundsInDp = futureBounds;
+            updateFutureStatesLocked();
+        }
+    }
+
+    void requestRestore(Rect futureBounds) {
+        synchronized (mPendingActionsLock) {
+            mPendingActions[0] = PendingAction.RESTORE;
+            mPendingActions[1] = PendingAction.NONE;
+
+            mPendingBoundsInDp = futureBounds;
+            updateFutureStatesLocked();
         }
     }
 
@@ -418,7 +438,9 @@ final class PendingActionManager {
                     break;
             }
 
-            if (action == PendingAction.SET_BOUNDS) {
+            if (action == PendingAction.SET_BOUNDS
+                    || action == PendingAction.MAXIMIZE
+                    || action == PendingAction.RESTORE) {
                 mFutureBoundsInDp = mPendingBoundsInDp;
             }
         }

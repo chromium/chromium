@@ -38,11 +38,7 @@ public class PendingActionManagerUnitTest {
     };
 
     private static final @PendingAction int[] NO_INPUT_GLOBAL_OVERRIDE_ACTIONS = {
-        PendingAction.HIDE,
-        PendingAction.CLOSE,
-        PendingAction.MAXIMIZE,
-        PendingAction.MINIMIZE,
-        PendingAction.RESTORE
+        PendingAction.HIDE, PendingAction.CLOSE, PendingAction.MINIMIZE,
     };
 
     private static final @PendingAction int[] SECONDARY_ACTIONS = {
@@ -455,7 +451,7 @@ public class PendingActionManagerUnitTest {
     @Test
     public void testIsMaximizedFuture_afterRequestMaximize_returnsTrue() {
         // Arrange.
-        mManager.requestAction(PendingAction.MAXIMIZE);
+        mManager.requestMaximize(new Rect());
 
         // Assert.
         Assert.assertTrue(
@@ -466,7 +462,7 @@ public class PendingActionManagerUnitTest {
     @Test
     public void testIsActiveFuture_afterRequestMaximize_returnsTrue() {
         // Arrange.
-        mManager.requestAction(PendingAction.MAXIMIZE);
+        mManager.requestMaximize(new Rect());
 
         // Assert.
         Assert.assertEquals(
@@ -526,6 +522,10 @@ public class PendingActionManagerUnitTest {
             mManager.clearPendingActionsForTesting();
             if (lowerPrecedenceAction == PendingAction.SET_BOUNDS) {
                 mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1);
+            } else if (lowerPrecedenceAction == PendingAction.MAXIMIZE) {
+                mManager.requestMaximize(new Rect());
+            } else if (lowerPrecedenceAction == PendingAction.RESTORE) {
+                mManager.requestRestore(new Rect());
             } else {
                 mManager.requestAction(lowerPrecedenceAction);
             }
@@ -573,6 +573,10 @@ public class PendingActionManagerUnitTest {
             // Arrange.
             if (higherPrecedenceAction == PendingAction.SET_BOUNDS) {
                 mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1);
+            } else if (higherPrecedenceAction == PendingAction.MAXIMIZE) {
+                mManager.requestMaximize(new Rect());
+            } else if (higherPrecedenceAction == PendingAction.RESTORE) {
+                mManager.requestRestore(new Rect());
             } else {
                 mManager.requestAction(higherPrecedenceAction);
             }
@@ -609,8 +613,11 @@ public class PendingActionManagerUnitTest {
                 // Arrange.
                 if (primaryAction == PendingAction.SET_BOUNDS) {
                     mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1);
+                } else if (primaryAction == PendingAction.MAXIMIZE) {
+                    mManager.requestMaximize(new Rect());
                 } else {
-                    mManager.requestAction(primaryAction);
+                    Assert.assertEquals(PendingAction.RESTORE, primaryAction);
+                    mManager.requestRestore(new Rect());
                 }
                 mManager.requestAction(priorSecondaryAction);
 
@@ -653,9 +660,13 @@ public class PendingActionManagerUnitTest {
                 // Arrange.
                 if (priorPrimaryAction == PendingAction.SET_BOUNDS) {
                     mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1);
+                } else if (priorPrimaryAction == PendingAction.MAXIMIZE) {
+                    mManager.requestMaximize(new Rect());
                 } else {
-                    mManager.requestAction(priorPrimaryAction);
+                    Assert.assertEquals(PendingAction.RESTORE, priorPrimaryAction);
+                    mManager.requestRestore(new Rect());
                 }
+
                 mManager.requestAction(priorSecondaryAction);
 
                 // Act.

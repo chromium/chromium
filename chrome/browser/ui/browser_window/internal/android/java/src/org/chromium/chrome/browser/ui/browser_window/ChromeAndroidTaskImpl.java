@@ -605,7 +605,8 @@ final class ChromeAndroidTaskImpl
         }
 
         if (mState.get() == State.PENDING_CREATE) {
-            mPendingActionManager.requestAction(PendingAction.MAXIMIZE);
+            // TODO(crbug.com/459857984): remove empty bound and set a correct bound.
+            mPendingActionManager.requestMaximize(new Rect());
             return;
         }
 
@@ -638,7 +639,8 @@ final class ChromeAndroidTaskImpl
             return;
         }
         if (mState.get() == State.PENDING_CREATE) {
-            mPendingActionManager.requestAction(PendingAction.RESTORE);
+            // TODO(crbug.com/459857984): remove empty bound and set a correct bound.
+            mPendingActionManager.requestRestore(new Rect());
             return;
         }
 
@@ -862,8 +864,7 @@ final class ChromeAndroidTaskImpl
     @GuardedBy("mActivityScopedObjectsLock")
     private Rect getCurrentBoundsInDpLocked(ActivityWindowAndroid activityWindowAndroid) {
         Rect boundsInPx = getCurrentBoundsInPxLocked(activityWindowAndroid);
-        return DisplayUtil.scaleToEnclosingRect(
-                boundsInPx, 1.0f / activityWindowAndroid.getDisplay().getDipScale());
+        return convertBoundsInPxToDp(boundsInPx, activityWindowAndroid.getDisplay());
     }
 
     @GuardedBy("mActivityScopedObjectsLock")
@@ -979,7 +980,9 @@ final class ChromeAndroidTaskImpl
                         (pair) -> {
                             var actions =
                                     mPendingActionManager.getAndClearTargetPendingActions(
-                                            PendingAction.MAXIMIZE, PendingAction.SET_BOUNDS);
+                                            PendingAction.MAXIMIZE,
+                                            PendingAction.SET_BOUNDS,
+                                            PendingAction.RESTORE);
                             maybeSetStateIdle(actions);
                         },
                         (e) -> {
@@ -1041,7 +1044,8 @@ final class ChromeAndroidTaskImpl
         }
         Rect maxBoundsInPx =
                 ChromeAndroidTaskBoundsConstraints.getMaxBoundsInPx(activity.getWindowManager());
-        mPendingActionManager.requestAction(PendingAction.MAXIMIZE);
+        mPendingActionManager.requestMaximize(
+                convertBoundsInPxToDp(maxBoundsInPx, activityWindowAndroid.getDisplay()));
         mState.set(State.PENDING_UPDATE);
         setBoundsInPxLocked(activity, activityWindowAndroid.getDisplay(), maxBoundsInPx);
     }
@@ -1071,6 +1075,9 @@ final class ChromeAndroidTaskImpl
         if (isMinimizedInternalLocked(activityWindowAndroid)) {
             activateInternalLocked();
         }
+        mPendingActionManager.requestRestore(
+                convertBoundsInPxToDp(mRestoredBoundsInPx, activityWindowAndroid.getDisplay()));
+        mState.set(State.PENDING_UPDATE);
         setBoundsInPxLocked(activity, activityWindowAndroid.getDisplay(), mRestoredBoundsInPx);
     }
 
@@ -1099,6 +1106,11 @@ final class ChromeAndroidTaskImpl
             }
         }
         mState.set(State.IDLE);
+    }
+
+    @VisibleForTesting
+    static Rect convertBoundsInPxToDp(Rect boundsInPx, DisplayAndroid displayAndroid) {
+        return DisplayUtil.scaleToEnclosingRect(boundsInPx, 1.0f / displayAndroid.getDipScale());
     }
 
     @Nullable Rect getRestoredBoundsInPxForTesting() {
