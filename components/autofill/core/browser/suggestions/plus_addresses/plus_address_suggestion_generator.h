@@ -43,10 +43,15 @@ class PlusAddressSuggestionGenerator : public SuggestionGenerator {
       base::OnceCallback<void(ReturnedSuggestions)> callback) override;
 
  private:
+  // Returns the type of suggestion data this generator is supposed to fetch.
+  // Returns `std::nullopt` if no suggestion data should be fetched at all.
+  std::optional<SuggestionDataSource> GetSourceToSuggest(
+      const AutofillField* trigger_autofill_field,
+      const AutofillClient& client);
+
   raw_ptr<AutofillPlusAddressDelegate> plus_address_delegate_;
 
-  // TODO(crbug.com/409962888): remove [[maybe_unused]] when logic is added
-  [[maybe_unused]] bool is_manually_triggered_;
+  bool is_manually_triggered_ = false;
 
   base::WeakPtrFactory<PlusAddressSuggestionGenerator> weak_ptr_factory_{this};
 };

@@ -99,6 +99,9 @@ std::vector<autofill::Suggestion> PlusAddressSuggestionHelper::GetSuggestions(
     // content matches the suggestion text. In cases where the field was
     // previously autofilled or suggestions were manually triggered, no prefix
     // matching should be applied.
+    // TODO(crbug.com/409962888): Remove filtering and add a CHECK once
+    // `BrowserAutofillManager` doesn't call
+    // PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses() anymore.
     if (is_plus_address_manually_triggered || focused_field.is_autofilled() ||
         plus_address.starts_with(normalized_field_value)) {
       suggestions.push_back(

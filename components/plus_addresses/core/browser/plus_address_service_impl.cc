@@ -300,6 +300,8 @@ std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
     const url::Origin& origin,
     const autofill::FormFieldData& focused_field,
     bool is_plus_address_manually_triggered) {
+  // TODO(crbug.com/409962888): Remove early return and add a CHECK once
+  // `BrowserAutofillManager` doesn't call this method anymore.
   if (!IsPlusAddressFillingEnabled(origin)) {
     return {};
   }
