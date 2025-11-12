@@ -132,9 +132,6 @@ constexpr char kNavigationDataHostStatusHistogram[] =
 constexpr char kRegisterDataHostOutcomeHistogram[] =
     "Conversions.RegisterDataHostOutcome";
 
-constexpr char kProcessRegisterDataHostDelayHistogram[] =
-    "Conversions.ProcessRegisterDataHostDelay";
-
 constexpr char kNavigationUnexpectedRegistrationHistogram[] =
     "Conversions.NavigationUnexpectedRegistration";
 
@@ -1652,8 +1649,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   // kProcessedImmediately = 0, kDeferred = 1
   histograms.ExpectBucketCount(kRegisterDataHostOutcomeHistogram, 0, 1);
   histograms.ExpectBucketCount(kRegisterDataHostOutcomeHistogram, 1, 2);
-  histograms.ExpectTimeBucketCount(kProcessRegisterDataHostDelayHistogram,
-                                   base::Seconds(20), 2);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -2900,8 +2895,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   // kDeferred = 1
   histograms.ExpectUniqueSample(kRegisterDataHostOutcomeHistogram, 1, 1);
-  histograms.ExpectTimeBucketCount(kProcessRegisterDataHostDelayHistogram,
-                                   base::Seconds(2), 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -2980,8 +2973,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   // kDeferred = 1
   histograms.ExpectUniqueSample(kRegisterDataHostOutcomeHistogram, 1, 1);
-  histograms.ExpectTimeBucketCount(kProcessRegisterDataHostDelayHistogram,
-                                   base::Microseconds(0), 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -3134,9 +3125,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   histograms.ExpectUniqueSample(
       "Conversions.DeferredDataHostProcessedAfterTimeout", true, 1);
-
-  histograms.ExpectTimeBucketCount(kProcessRegisterDataHostDelayHistogram,
-                                   base::Seconds(20), 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,

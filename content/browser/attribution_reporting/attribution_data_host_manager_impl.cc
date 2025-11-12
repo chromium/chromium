@@ -596,7 +596,6 @@ class AttributionDataHostManagerImpl::RegistrationContext {
 struct AttributionDataHostManagerImpl::DeferredReceiver {
   mojo::PendingReceiver<attribution_reporting::mojom::DataHost> data_host;
   RegistrationContext context;
-  base::TimeTicks initial_registration_time = base::TimeTicks::Now();
 };
 
 struct AttributionDataHostManagerImpl::HeaderPendingDecode {
@@ -2320,9 +2319,6 @@ void AttributionDataHostManagerImpl::MaybeBindDeferredReceivers(
   base::UmaHistogramBoolean("Conversions.DeferredDataHostProcessedAfterTimeout",
                             due_to_timeout);
   for (auto& deferred_receiver : it->second) {
-    base::UmaHistogramMediumTimes(
-        "Conversions.ProcessRegisterDataHostDelay",
-        base::TimeTicks::Now() - deferred_receiver.initial_registration_time);
     receivers_.Add(this, std::move(deferred_receiver.data_host),
                    std::move(deferred_receiver.context));
   }
@@ -2351,7 +2347,6 @@ void AttributionDataHostManagerImpl::ClearRegistrationsDeferUntilNavigation(
     auto it = registrations_.find(id);
 
     bool ok = it != registrations_.end();
-    base::UmaHistogramBoolean("Conversions.DataHostRegistrationInSet", ok);
 
     if (!ok) {
       continue;

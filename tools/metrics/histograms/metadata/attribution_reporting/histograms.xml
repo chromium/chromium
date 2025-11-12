@@ -456,20 +456,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Conversions.DataHostRegistrationInSet" enum="Boolean"
-    expires_after="2025-12-21">
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records whether a registration ID to be processed in
-    AttributionDataHostManagerImpl::ClearRegistrationsDeferUntilNavigation is
-    still present in the set at the time it's ready to be processed, in order to
-    account for concurrent modification of that set, including by reentrant
-    calls to the method itself. Recordings of false would have resulted in
-    crashes or undefined behavior like http://crbug.com/427800555.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.DbVersionOnReportSentAndDeleted" units="Report"
     expires_after="2026-04-26">
   <owner>tquintanilla@chromium.org</owner>
@@ -896,17 +882,6 @@ chromium-metrics-reviews@google.com.
     If we do receive registrations after a buffer has been flushed, we still
     attempt to send them to the OS with a previously used input event and emit
     this histogram.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.ProcessRegisterDataHostDelay" units="ms"
-    expires_after="2025-12-14">
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the delay between a data host registration being deferred by the
-    AttributionDataHostManagerImpl and it being processed. Only recorded for
-    data host that are deferred rather than processed immediately or dropped.
   </summary>
 </histogram>
 
