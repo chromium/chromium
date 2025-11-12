@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_TEST_BLOCKLIST_STATE_FETCHER_H_
-#define CHROME_BROWSER_EXTENSIONS_TEST_BLOCKLIST_STATE_FETCHER_H_
+#ifndef EXTENSIONS_BROWSER_TEST_BLOCKLIST_STATE_FETCHER_H_
+#define EXTENSIONS_BROWSER_TEST_BLOCKLIST_STATE_FETCHER_H_
 
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/extensions/blocklist_state_fetcher.h"
-#include "chrome/common/safe_browsing/crx_info.pb.h"
+#include "components/safe_browsing/core/common/proto/crx_info.pb.h"
+#include "extensions/browser/blocklist_state_fetcher.h"
 
 namespace extensions {
 
@@ -43,4 +43,4 @@ class TestBlocklistStateFetcher {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_TEST_BLOCKLIST_STATE_FETCHER_H_
+#endif  // EXTENSIONS_BROWSER_TEST_BLOCKLIST_STATE_FETCHER_H_

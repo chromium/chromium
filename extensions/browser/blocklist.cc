@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/blocklist.h"
+#include "extensions/browser/blocklist.h"
 
 #include <algorithm>
 #include <iterator>
@@ -16,18 +16,18 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/blocklist_factory.h"
-#include "chrome/browser/extensions/blocklist_state_fetcher.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/storage_partition.h"
+#include "extensions/browser/blocklist_state_fetcher.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 
@@ -46,12 +46,8 @@ namespace {
 class LazySafeBrowsingDatabaseManager {
  public:
   LazySafeBrowsingDatabaseManager() {
-#if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
-    if (g_browser_process && g_browser_process->safe_browsing_service()) {
-      instance_ =
-          g_browser_process->safe_browsing_service()->database_manager();
-    }
-#endif
+    instance_ =
+        ExtensionsBrowserClient::Get()->GetSafeBrowsingDatabaseManager();
   }
 
   scoped_refptr<SafeBrowsingDatabaseManager> get() { return instance_; }
@@ -172,7 +168,7 @@ Blocklist::Observer::~Observer() {
   blocklist_->RemoveObserver(this);
 }
 
-Blocklist::Blocklist() {
+Blocklist::Blocklist(content::BrowserContext* context) : context_(context) {
   auto& lazy_database_manager = g_database_manager.Get();
   // Using base::Unretained is safe because when this object goes away, the
   // subscription will automatically be destroyed.
@@ -184,11 +180,6 @@ Blocklist::Blocklist() {
 }
 
 Blocklist::~Blocklist() = default;
-
-// static
-Blocklist* Blocklist::Get(content::BrowserContext* context) {
-  return BlocklistFactory::GetForBrowserContext(context);
-}
 
 void Blocklist::GetBlocklistedIDs(const std::set<ExtensionId>& ids,
                                   GetBlocklistedIDsCallback callback) {
@@ -264,8 +255,9 @@ void Blocklist::ReturnBlocklistStateMap(
   BlocklistStateMap extensions_state;
   for (const auto& blocklisted_id : blocklisted_ids) {
     auto cache_it = blocklist_state_cache_.find(blocklisted_id);
-    if (cache_it != blocklist_state_cache_.end())
+    if (cache_it != blocklist_state_cache_.end()) {
       extensions_state[blocklisted_id] = cache_it->second;
+    }
     // If for some reason we still haven't cached the state of this extension,
     // we silently skip it.
   }
@@ -277,8 +269,11 @@ void Blocklist::RequestExtensionsBlocklistState(
     const std::set<ExtensionId>& ids,
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!state_fetcher_)
-    state_fetcher_ = std::make_unique<BlocklistStateFetcher>();
+  if (!state_fetcher_) {
+    state_fetcher_ = std::make_unique<BlocklistStateFetcher>(
+        context_->GetDefaultStoragePartition()
+            ->GetURLLoaderFactoryForBrowserProcess());
+  }
 
   state_requests_.emplace_back(std::vector<ExtensionId>(ids.begin(), ids.end()),
                                std::move(callback));
@@ -392,8 +387,9 @@ void Blocklist::ObserveNewDatabase() {
 }
 
 void Blocklist::NotifyObservers() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnBlocklistUpdated();
+  }
 }
 
 }  // namespace extensions

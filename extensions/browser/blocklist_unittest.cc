@@ -2,20 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/blocklist.h"
+#include "extensions/browser/blocklist.h"
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/extensions/blocklist_state_fetcher.h"
-#include "chrome/browser/extensions/fake_safe_browsing_database_manager.h"
-#include "chrome/browser/extensions/scoped_database_manager_for_test.h"
-#include "chrome/browser/extensions/test_blocklist.h"
-#include "chrome/browser/extensions/test_blocklist_state_fetcher.h"
-#include "chrome/browser/extensions/test_extension_prefs.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
+#include "extensions/browser/blocklist_state_fetcher.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/fake_safe_browsing_database_manager.h"
+#include "extensions/browser/scoped_database_manager_for_test.h"
+#include "extensions/browser/test_blocklist.h"
+#include "extensions/browser/test_blocklist_state_fetcher.h"
+#include "extensions/browser/test_extension_prefs.h"
+#include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/common/extension_id.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -24,17 +29,33 @@ namespace {
 class BlocklistTest : public testing::Test {
  public:
   BlocklistTest()
-      : test_prefs_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
+      : test_prefs_(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                    std::make_unique<content::TestBrowserContext>()) {
+    ExtensionsBrowserClient::Set(&extensions_browser_client_);
+    extensions_browser_client_.SetMainContext(browser_context());
+  }
 
  protected:
   ExtensionId AddExtension(const ExtensionId& id) {
     return test_prefs_.AddExtension(id)->id();
   }
 
+  content::BrowserContext* browser_context() {
+    return test_prefs_.browser_context();
+  }
+
+  void TearDown() override {
+    BrowserContextDependencyManager::GetInstance()
+        ->DestroyBrowserContextServices(browser_context());
+    ExtensionsBrowserClient::Set(nullptr);
+
+    testing::Test::TearDown();
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
-
   TestExtensionPrefs test_prefs_;
+  TestExtensionsBrowserClient extensions_browser_client_;
 };
 
 template <typename T>
@@ -49,7 +70,7 @@ TEST_F(BlocklistTest, OnlyIncludesRequestedIDs) {
   ExtensionId b = AddExtension("b");
   ExtensionId c = AddExtension("c");
 
-  Blocklist blocklist;
+  Blocklist blocklist(browser_context());
   TestBlocklist tester(&blocklist);
   tester.SetBlocklistState(a, BLOCKLISTED_MALWARE, false);
   tester.SetBlocklistState(b, BLOCKLISTED_MALWARE, false);
@@ -69,7 +90,7 @@ TEST_F(BlocklistTest, OnlyIncludesRequestedIDs) {
 TEST_F(BlocklistTest, SafeBrowsing) {
   ExtensionId a = AddExtension("a");
 
-  Blocklist blocklist;
+  Blocklist blocklist(browser_context());
   TestBlocklist tester(&blocklist);
   tester.DisableSafeBrowsing();
 
@@ -92,7 +113,7 @@ TEST_F(BlocklistTest, SafeBrowsing) {
 
 // Test getting different blocklist states from Blocklist.
 TEST_F(BlocklistTest, GetBlocklistStates) {
-  Blocklist blocklist;
+  Blocklist blocklist(browser_context());
   TestBlocklist tester(&blocklist);
 
   ExtensionId a = AddExtension("a");
@@ -140,7 +161,7 @@ TEST_F(BlocklistTest, GetBlocklistStates) {
 // Test both Blocklist and BlocklistStateFetcher by requesting the blocklist
 // states, sending fake requests and parsing the responses.
 TEST_F(BlocklistTest, FetchBlocklistStates) {
-  Blocklist blocklist;
+  Blocklist blocklist(browser_context());
   scoped_refptr<FakeSafeBrowsingDatabaseManager> blocklist_db(
       new FakeSafeBrowsingDatabaseManager(true));
   ScopedDatabaseManagerForTest scoped_blocklist_db(blocklist_db);
@@ -153,7 +174,7 @@ TEST_F(BlocklistTest, FetchBlocklistStates) {
   blocklist_db->SetUnsafe(a, b);
 
   // Prepare real fetcher.
-  BlocklistStateFetcher* fetcher = new BlocklistStateFetcher();
+  BlocklistStateFetcher* fetcher = new BlocklistStateFetcher(nullptr);
   TestBlocklistStateFetcher fetcher_tester(fetcher);
   blocklist.SetBlocklistStateFetcherForTest(fetcher);
 

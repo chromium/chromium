@@ -8,6 +8,7 @@ include_rules = [
   "+components/javascript_dialogs",
   "+components/keyed_service",
   "+components/pref_registry",
+  "+components/safe_browsing",
   "+components/services/unzip/content",
   "+components/services/unzip/public",
   "+components/sessions",

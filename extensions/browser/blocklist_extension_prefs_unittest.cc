@@ -5,11 +5,9 @@
 #include "extensions/browser/blocklist_extension_prefs.h"
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_service_test_base.h"
-#include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extensions_test.h"
 
 namespace extensions {
 
@@ -21,11 +19,16 @@ constexpr char kExtensionId[] = "behllobkkfkfnphdnhnkndlbkcpglgmj";
 }  // namespace
 
 // Test suite to test blocklist extension prefs.
-class BlocklistExtensionPrefsUnitTest : public ExtensionServiceTestBase {
+class BlocklistExtensionPrefsUnitTest : public ExtensionsTest {
  public:
   void SetUp() override {
-    InitializeEmptyExtensionService();
-    extension_prefs_ = ExtensionPrefs::Get(profile());
+    ExtensionsTest::SetUp();
+    extension_prefs_ = ExtensionPrefs::Get(browser_context());
+  }
+
+  void TearDown() override {
+    extension_prefs_ = nullptr;
+    ExtensionsTest::TearDown();
   }
 
   ExtensionPrefs* extension_prefs() { return extension_prefs_; }

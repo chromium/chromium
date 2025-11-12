@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_TEST_BLOCKLIST_H_
-#define CHROME_BROWSER_EXTENSIONS_TEST_BLOCKLIST_H_
+#ifndef EXTENSIONS_BROWSER_TEST_BLOCKLIST_H_
+#define EXTENSIONS_BROWSER_TEST_BLOCKLIST_H_
 
 #include <map>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/extensions/blocklist.h"
-#include "chrome/browser/extensions/blocklist_state_fetcher.h"
-#include "chrome/browser/extensions/scoped_database_manager_for_test.h"
+#include "extensions/browser/blocklist.h"
+#include "extensions/browser/blocklist_state_fetcher.h"
+#include "extensions/browser/scoped_database_manager_for_test.h"
 #include "extensions/buildflags/buildflags.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -98,4 +98,4 @@ class TestBlocklist {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_TEST_BLOCKLIST_H_
+#endif  // EXTENSIONS_BROWSER_TEST_BLOCKLIST_H_

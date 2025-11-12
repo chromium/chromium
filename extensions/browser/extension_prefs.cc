@@ -430,6 +430,12 @@ ExtensionPrefs* ExtensionPrefs::Get(content::BrowserContext* context) {
   return ExtensionPrefsFactory::GetInstance()->GetForBrowserContext(context);
 }
 
+void ExtensionPrefs::Shutdown() {
+  browser_context_ = nullptr;
+  prefs_ = nullptr;
+  clock_ = nullptr;
+}
+
 static std::string MakePathRelative(const base::FilePath& parent,
                                     const base::FilePath& child) {
   if (!parent.IsParent(child)) {

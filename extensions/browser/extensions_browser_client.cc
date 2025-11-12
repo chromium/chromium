@@ -267,4 +267,14 @@ bool ExtensionsBrowserClient::UpdatesFromWebstore(
   return true;
 }
 
+scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+ExtensionsBrowserClient::GetSafeBrowsingDatabaseManager() const {
+  return nullptr;
+}
+
+std::optional<safe_browsing::V4ProtocolConfig>
+ExtensionsBrowserClient::GetV4ProtocolConfig() const {
+  return std::nullopt;
+}
+
 }  // namespace extensions

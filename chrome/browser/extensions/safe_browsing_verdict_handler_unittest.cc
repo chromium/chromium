@@ -6,12 +6,12 @@
 
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
-#include "chrome/browser/extensions/test_blocklist.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/safe_browsing/buildflags.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/test_blocklist.h"
 #include "extensions/test/extension_state_tester.h"
 
 // The blocklist tests rely on the safe-browsing database.

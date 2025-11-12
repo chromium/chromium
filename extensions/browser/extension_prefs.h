@@ -233,6 +233,9 @@ class ExtensionPrefs : public KeyedService {
   // Convenience function to get the ExtensionPrefs for a BrowserContext.
   static ExtensionPrefs* Get(content::BrowserContext* context);
 
+  // KeyedService:
+  void Shutdown() override;
+
   // Add or remove an observer from the ExtensionPrefs.
   void AddObserver(ExtensionPrefsObserver* observer);
   void RemoveObserver(ExtensionPrefsObserver* observer);

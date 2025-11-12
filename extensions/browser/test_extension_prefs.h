@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_TEST_EXTENSION_PREFS_H_
-#define CHROME_BROWSER_EXTENSIONS_TEST_EXTENSION_PREFS_H_
+#ifndef EXTENSIONS_BROWSER_TEST_EXTENSION_PREFS_H_
+#define EXTENSIONS_BROWSER_TEST_EXTENSION_PREFS_H_
 
 #include <memory>
 #include <string>
@@ -11,7 +11,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
-#include "chrome/test/base/testing_profile.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 
@@ -24,6 +23,10 @@ namespace base {
 class SequencedTaskRunner;
 }
 
+namespace content {
+class BrowserContext;
+}
+
 namespace sync_preferences {
 class PrefServiceSyncable;
 }
@@ -33,7 +36,6 @@ class PrefRegistrySyncable;
 }
 
 namespace extensions {
-class ChromeAppSorting;
 class Extension;
 class ExtensionPrefs;
 
@@ -41,8 +43,9 @@ class ExtensionPrefs;
 // in tests.
 class TestExtensionPrefs {
  public:
-  explicit TestExtensionPrefs(
-      const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+  TestExtensionPrefs(
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+      std::unique_ptr<content::BrowserContext> browser_context);
 
   TestExtensionPrefs(const TestExtensionPrefs&) = delete;
   TestExtensionPrefs& operator=(const TestExtensionPrefs&) = delete;
@@ -50,7 +53,7 @@ class TestExtensionPrefs {
   virtual ~TestExtensionPrefs();
 
   ExtensionPrefs* prefs();
-  TestingProfile* profile();
+  content::BrowserContext* browser_context();
 
   PrefService* pref_service();
   const scoped_refptr<user_prefs::PrefRegistrySyncable>& pref_registry();
@@ -103,8 +106,6 @@ class TestExtensionPrefs {
   // active after calling RecreateExtensionPrefs(). Defaults to false.
   void set_extensions_disabled(bool extensions_disabled);
 
-  ChromeAppSorting* app_sorting();
-
   static void AddDefaultManifestKeys(const std::string& name,
                                      base::Value::Dict& dict);
 
@@ -120,13 +121,14 @@ class TestExtensionPrefs {
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
  private:
-  // `clock_` is injected to an ExtensionPrefs that associated to `profile_`.
-  // Put `clock_` above `profile_` to outlive it.
+  // `clock_` is injected to an ExtensionPrefs that associated to
+  // `browser_context_`. Put `clock_` above `browser_context_` to outlive it.
   std::unique_ptr<IncrementalClock> clock_;
-  TestingProfile profile_;
-  bool extensions_disabled_;
+  std::unique_ptr<content::BrowserContext> browser_context_;
+
+  bool extensions_disabled_ = false;
 };
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_TEST_EXTENSION_PREFS_H_
+#endif  // EXTENSIONS_BROWSER_TEST_EXTENSION_PREFS_H_

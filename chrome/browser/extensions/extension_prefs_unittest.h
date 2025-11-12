@@ -9,8 +9,8 @@
 
 #include <array>
 
-#include "chrome/browser/extensions/test_extension_prefs.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/test_extension_prefs.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -52,8 +52,7 @@ class ExtensionPrefsTest : public testing::Test {
 
  protected:
   ExtensionPrefs* prefs() { return prefs_.prefs(); }
-  ChromeAppSorting* app_sorting() { return prefs_.app_sorting(); }
-
+  ChromeAppSorting* app_sorting();
   content::BrowserTaskEnvironment task_environment_;
   TestExtensionPrefs prefs_;
 };

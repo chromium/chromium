@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_OMAHA_ATTRIBUTES_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/extensions/blocklist.h"
+#include "extensions/browser/blocklist.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/buildflags/buildflags.h"

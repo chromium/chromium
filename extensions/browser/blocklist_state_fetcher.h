@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_BLOCKLIST_STATE_FETCHER_H_
-#define CHROME_BROWSER_EXTENSIONS_BLOCKLIST_STATE_FETCHER_H_
+#ifndef EXTENSIONS_BROWSER_BLOCKLIST_STATE_FETCHER_H_
+#define EXTENSIONS_BROWSER_BLOCKLIST_STATE_FETCHER_H_
 
 #include <algorithm>
 #include <memory>
@@ -30,7 +30,8 @@ class BlocklistStateFetcher {
  public:
   using RequestCallback = base::OnceCallback<void(BlocklistState)>;
 
-  BlocklistStateFetcher();
+  explicit BlocklistStateFetcher(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   BlocklistStateFetcher(const BlocklistStateFetcher&) = delete;
   BlocklistStateFetcher& operator=(const BlocklistStateFetcher&) = delete;
@@ -75,4 +76,4 @@ class BlocklistStateFetcher {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_BLOCKLIST_STATE_FETCHER_H_
+#endif  // EXTENSIONS_BROWSER_BLOCKLIST_STATE_FETCHER_H_

@@ -260,6 +260,10 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
                                        const ExtensionId& id) override;
   bool UpdatesFromWebstore(content::BrowserContext* context,
                            const Extension& extension) override;
+  scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+  GetSafeBrowsingDatabaseManager() const override;
+  std::optional<safe_browsing::V4ProtocolConfig> GetV4ProtocolConfig()
+      const override;
 
   static void set_did_chrome_update_for_testing(bool did_update);
 

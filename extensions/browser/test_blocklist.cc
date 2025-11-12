@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/test_blocklist.h"
+#include "extensions/browser/test_blocklist.h"
 
 #include <set>
 
@@ -10,9 +10,10 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/extensions/blocklist.h"
-#include "chrome/browser/extensions/blocklist_state_fetcher.h"
-#include "chrome/browser/extensions/fake_safe_browsing_database_manager.h"
+#include "extensions/browser/blocklist.h"
+#include "extensions/browser/blocklist_state_fetcher.h"
+#include "extensions/browser/fake_safe_browsing_database_manager.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace extensions {
 
@@ -24,7 +25,8 @@ void Assign(BlocklistState* out, BlocklistState in) {
 
 }  // namespace
 
-BlocklistStateFetcherMock::BlocklistStateFetcherMock() : request_count_(0) {}
+BlocklistStateFetcherMock::BlocklistStateFetcherMock()
+    : BlocklistStateFetcher(nullptr), request_count_(0) {}
 
 BlocklistStateFetcherMock::~BlocklistStateFetcherMock() = default;
 
@@ -33,8 +35,9 @@ void BlocklistStateFetcherMock::Request(const std::string& id,
   ++request_count_;
 
   BlocklistState result = NOT_BLOCKLISTED;
-  if (base::Contains(states_, id))
+  if (base::Contains(states_, id)) {
     result = states_[id];
+  }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
@@ -66,8 +69,9 @@ TestBlocklist::~TestBlocklist() {
 }
 
 void TestBlocklist::Attach(Blocklist* blocklist) {
-  if (blocklist_)
+  if (blocklist_) {
     Detach();
+  }
 
   blocklist_ = blocklist;
   blocklist_->SetBlocklistStateFetcherForTest(&state_fetcher_mock_);
@@ -99,15 +103,17 @@ void TestBlocklist::SetBlocklistState(const std::string& extension_id,
       break;
   }
 
-  if (notify)
+  if (notify) {
     blocklist_db_->NotifyUpdate();
+  }
 }
 
 void TestBlocklist::Clear(bool notify) {
   state_fetcher_mock_.Clear();
   blocklist_db_->ClearUnsafe();
-  if (notify)
+  if (notify) {
     blocklist_db_->NotifyUpdate();
+  }
 }
 
 BlocklistState TestBlocklist::GetBlocklistState(

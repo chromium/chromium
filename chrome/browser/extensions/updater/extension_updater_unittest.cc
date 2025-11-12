@@ -45,7 +45,6 @@
 #include "chrome/browser/extensions/fake_crx_installer.h"
 #include "chrome/browser/extensions/mock_crx_installer.h"
 #include "chrome/browser/extensions/sync/extension_sync_data.h"
-#include "chrome/browser/extensions/test_extension_prefs.h"
 #include "chrome/browser/extensions/test_extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/extensions/updater/chrome_extension_downloader_factory.h"
@@ -69,6 +68,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/browser/test_extension_prefs.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/browser/updater/extension_downloader_test_delegate.h"
@@ -486,9 +486,10 @@ class ExtensionUpdaterTest : public testing::Test {
 
   void SetUp() override {
     prefs_ = std::make_unique<TestExtensionPrefs>(
-        base::SingleThreadTaskRunner::GetCurrentDefault());
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        std::make_unique<TestingProfile>());
     // The registrar needs a delegate in order to call certain methods on it.
-    ExtensionRegistrar::Get(prefs_->profile())
+    ExtensionRegistrar::Get(prefs_->browser_context())
         ->Init(&stub_extension_registrar_delegate_,
                /*extensions_enabled=*/true,
                base::CommandLine::ForCurrentProcess(), base::FilePath(),
@@ -501,14 +502,16 @@ class ExtensionUpdaterTest : public testing::Test {
     // those objects are released.
     RunUntilIdle();
     // Reset the ExtensionRegistrar delegate.
-    ExtensionRegistrar::Get(prefs_->profile())
+    ExtensionRegistrar::Get(prefs_->browser_context())
         ->Init(/*delegate=*/nullptr, /*extensions_enabled=*/true,
                base::CommandLine::ForCurrentProcess(), base::FilePath(),
                base::FilePath());
     prefs_.reset();
   }
 
-  TestingProfile* profile() { return prefs_->profile(); }
+  Profile* profile() {
+    return Profile::FromBrowserContext(prefs_->browser_context());
+  }
 
   ExtensionPrefs* extension_prefs() { return prefs_->prefs(); }
 
@@ -1635,7 +1638,7 @@ class ExtensionUpdaterTest : public testing::Test {
     TestCrxInstallerFactory crx_installer_factory;
     crx_installer_factory.AddFakeCrxInstaller(kTestExtensionId, mock_installer);
 
-    ExtensionUpdater updater(prefs_->profile());
+    ExtensionUpdater updater(this->profile());
     updater.InitAndEnable(extension_prefs(), pref_service(), kUpdateFrequency,
                           nullptr, factory.GetDownloaderFactory());
     updater.set_crx_installer_factory_for_test(&crx_installer_factory);
@@ -2138,7 +2141,8 @@ class ExtensionUpdaterTest : public testing::Test {
     // Set up 2 mock extensions, one with a google.com update url and one
     // without.
     prefs_ = std::make_unique<TestExtensionPrefs>(
-        base::SingleThreadTaskRunner::GetCurrentDefault());
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        std::make_unique<TestingProfile>());
     ExtensionDownloaderTestHelper helper;
     TestDownloaderFactory factory(helper.url_loader_factory());
     TestCrxInstallerFactory crx_installer_factory;

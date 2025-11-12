@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/scoped_database_manager_for_test.h"
+#include "extensions/browser/scoped_database_manager_for_test.h"
 
-#include "chrome/browser/extensions/blocklist.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "extensions/browser/blocklist.h"
 
 using safe_browsing::SafeBrowsingDatabaseManager;
 

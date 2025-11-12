@@ -396,8 +396,6 @@ static_library("test_support") {
       "../browser/extensions/test_extension_action_dispatcher_observer.h",
       "../browser/extensions/test_extension_environment.cc",
       "../browser/extensions/test_extension_environment.h",
-      "../browser/extensions/test_extension_prefs.cc",
-      "../browser/extensions/test_extension_prefs.h",
       "../browser/extensions/user_scripts_test_util.cc",
       "../browser/extensions/user_scripts_test_util.h",
       "../browser/ui/webui/extensions/extension_settings_test_base.cc",
@@ -9515,9 +9513,6 @@ test("unit_tests") {
       "../browser/extensions/api/tabs/tabs_api_unittest.cc",
       "../browser/extensions/api/tabs/windows_util_unittest.cc",
       "../browser/extensions/app_tab_helper_unittest.cc",
-      "../browser/extensions/blocklist_check_unittest.cc",
-      "../browser/extensions/blocklist_extension_prefs_unittest.cc",
-      "../browser/extensions/blocklist_state_fetcher_unittest.cc",
       "../browser/extensions/blocklist_states_interaction_unittest.cc",
       "../browser/extensions/bookmarks/bookmarks_helpers_unittest.cc",
       "../browser/extensions/chrome_app_icon_unittest.cc",
@@ -9692,7 +9687,6 @@ test("unit_tests") {
       "//chrome/common/apps/platform_apps",
       "//chrome/common/extensions:extension_features_unittest",
       "//chrome/common/extensions/api",
-      "//chrome/common/safe_browsing:proto",
       "//chrome/renderer:process_state",
       "//chrome/renderer/extensions",
       "//chrome/utility/image_writer:unit_tests",
@@ -9702,6 +9696,7 @@ test("unit_tests") {
       "//components/password_manager/core/browser/sharing",
       "//components/password_manager/core/browser/sharing:test_support",
       "//components/safe_browsing:buildflags",
+      "//components/safe_browsing/core/common/proto:crx_info_proto",
       "//components/services/storage/privileged/mojom",
       "//components/services/unzip:in_process",
       "//components/value_store",
@@ -9800,12 +9795,11 @@ test("unit_tests") {
         "../browser/extensions/api/messaging/native_messaging_policy_handler_unittest.cc",
       ]
     }
+  }
 
-    if (safe_browsing_mode == 1) {
-      sources += [ "../browser/extensions/blocklist_unittest.cc" ]
-      deps +=
-          [ "//components/safe_browsing/content/browser:client_side_detection" ]
-    }
+  if (safe_browsing_mode == 1) {
+    deps +=
+        [ "//components/safe_browsing/content/browser:client_side_detection" ]
   }
 
   if (is_win || is_mac || is_linux) {

@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/blocklist_state_fetcher.h"
+#include "extensions/browser/blocklist_state_fetcher.h"
 
 #include <array>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "chrome/browser/extensions/test_blocklist_state_fetcher.h"
-#include "chrome/common/safe_browsing/crx_info.pb.h"
+#include "components/safe_browsing/core/common/proto/crx_info.pb.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/test_blocklist_state_fetcher.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -28,7 +29,7 @@ class BlocklistStateFetcherTest : public testing::Test {
 };
 
 TEST_F(BlocklistStateFetcherTest, RequestBlocklistState) {
-  BlocklistStateFetcher fetcher;
+  BlocklistStateFetcher fetcher(nullptr);
   TestBlocklistStateFetcher tester(&fetcher);
 
   tester.SetBlocklistVerdict(
@@ -42,7 +43,7 @@ TEST_F(BlocklistStateFetcherTest, RequestBlocklistState) {
 }
 
 TEST_F(BlocklistStateFetcherTest, RequestMultipleBlocklistStates) {
-  BlocklistStateFetcher fetcher;
+  BlocklistStateFetcher fetcher(nullptr);
   TestBlocklistStateFetcher tester(&fetcher);
 
   tester.SetBlocklistVerdict(

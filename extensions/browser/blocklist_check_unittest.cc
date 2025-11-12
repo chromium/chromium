@@ -2,16 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/blocklist_check.h"
+#include "extensions/browser/blocklist_check.h"
 
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/extensions/blocklist.h"
-#include "chrome/browser/extensions/test_blocklist.h"
-#include "chrome/browser/extensions/test_extension_prefs.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
+#include "extensions/browser/blocklist.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/preload_check.h"
 #include "extensions/browser/preload_check_test_util.h"
+#include "extensions/browser/test_blocklist.h"
+#include "extensions/browser/test_extension_prefs.h"
+#include "extensions/browser/test_extensions_browser_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,27 +25,44 @@ namespace {
 class BlocklistCheckTest : public testing::Test {
  public:
   BlocklistCheckTest()
-      : test_prefs_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
+      : test_prefs_(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                    std::make_unique<content::TestBrowserContext>()) {
+    ExtensionsBrowserClient::Set(&extensions_browser_client_);
+    extensions_browser_client_.SetMainContext(test_prefs_.browser_context());
+    blocklist_ = std::make_unique<Blocklist>(test_prefs_.browser_context());
+    test_blocklist_ = std::make_unique<TestBlocklist>();
+  }
 
  protected:
   void SetUp() override {
-    test_blocklist_.Attach(&blocklist_);
+    test_blocklist_->Attach(blocklist_.get());
     extension_ = test_prefs_.AddExtension("foo");
   }
 
-  void SetBlocklistState(BlocklistState state) {
-    test_blocklist_.SetBlocklistState(extension_->id(), state, /*notify=*/true);
+  void TearDown() override {
+    test_blocklist_.reset();
+    blocklist_.reset();
+    BrowserContextDependencyManager::GetInstance()
+        ->DestroyBrowserContextServices(test_prefs_.browser_context());
+
+    testing::Test::TearDown();
   }
 
-  Blocklist* blocklist() { return &blocklist_; }
+  void SetBlocklistState(BlocklistState state) {
+    test_blocklist_->SetBlocklistState(extension_->id(), state,
+                                       /*notify=*/true);
+  }
+
+  Blocklist* blocklist() { return blocklist_.get(); }
   scoped_refptr<Extension> extension_;
   PreloadCheckRunner runner_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestExtensionPrefs test_prefs_;
-  Blocklist blocklist_;
-  TestBlocklist test_blocklist_;
+  TestExtensionsBrowserClient extensions_browser_client_;
+  std::unique_ptr<Blocklist> blocklist_;
+  std::unique_ptr<TestBlocklist> test_blocklist_;
 };
 
 }  // namespace

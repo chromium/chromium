@@ -18,7 +18,6 @@
 #include "chrome/browser/extensions/extension_menu_icon_loader.h"
 #include "chrome/browser/extensions/menu_manager_test_observer.h"
 #include "chrome/browser/extensions/test_extension_menu_icon_loader.h"
-#include "chrome/browser/extensions/test_extension_prefs.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/api/context_menus.h"
@@ -33,6 +32,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/browser/state_store_test_observer.h"
+#include "extensions/browser/test_extension_prefs.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
@@ -58,7 +58,8 @@ class MenuManagerTest : public testing::Test {
       : profile_(new TestingProfile()),
         manager_(profile_.get(),
                  ExtensionSystem::Get(profile_.get())->state_store()),
-        prefs_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+        prefs_(base::SingleThreadTaskRunner::GetCurrentDefault(),
+               std::make_unique<TestingProfile>()),
         next_id_(1) {}
 
   MenuManagerTest(const MenuManagerTest&) = delete;

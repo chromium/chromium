@@ -9045,7 +9045,7 @@ static_library("test_support") {
     "//chrome/browser/translate",
     "//chrome/common",
     "//chrome/common/notifications",
-    "//chrome/common/safe_browsing:proto",
+    "//components/consent_auditor:test_support",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/lookalikes/core",
     "//components/lookalikes/core:proto",
@@ -9067,6 +9067,7 @@ static_library("test_support") {
     "//components/reporting/util:task_runner_context",
     "//components/safe_browsing/content/browser/notification_content_detection",
     "//components/safe_browsing/content/browser/notification_content_detection:test_utils",
+    "//components/safe_browsing/core/common/proto:crx_info_proto",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/search_engines:test_support",
     "//components/security_interstitials/content:security_interstitial_page",
@@ -9232,17 +9233,6 @@ static_library("test_support") {
       "local_discovery/fake_service_discovery_device_lister.h",
       "local_discovery/service_discovery_client_test_helpers.cc",
       "local_discovery/service_discovery_client_test_helpers.h",
-    ]
-  }
-
-  if (safe_browsing_mode == 1 || safe_browsing_mode == 2) {
-    sources += [
-      "extensions/fake_safe_browsing_database_manager.cc",
-      "extensions/fake_safe_browsing_database_manager.h",
-    ]
-    deps += [
-      "//chrome/browser/safe_browsing",
-      "//components/safe_browsing/core/browser/db:test_database_manager",
     ]
   }
 

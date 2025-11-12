@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/test_blocklist_state_fetcher.h"
+#include "extensions/browser/test_blocklist_state_fetcher.h"
 
 #include "base/containers/contains.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"

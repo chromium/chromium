@@ -5286,8 +5286,8 @@ static_library("ui") {
     ]
 
     deps += [
-      "//chrome/common/safe_browsing:proto",
       "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
+      "//components/safe_browsing/core/common/proto:crx_info_proto",
       "//components/safe_browsing/core/common/proto:csd_proto",
     ]
   }

@@ -18,7 +18,9 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
+#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -33,6 +35,7 @@
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_observer.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/install_tracker.h"
@@ -46,6 +49,10 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/chrome_app_sorting.h"
+#endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -61,7 +68,8 @@ static void AddPattern(URLPatternSet* extent, const std::string& pattern) {
 }
 
 ExtensionPrefsTest::ExtensionPrefsTest()
-    : prefs_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
+    : prefs_(base::SingleThreadTaskRunner::GetCurrentDefault(),
+             std::make_unique<TestingProfile>()) {}
 
 ExtensionPrefsTest::~ExtensionPrefsTest() = default;
 
@@ -79,15 +87,35 @@ void ExtensionPrefsTest::TearDown() {
   // Shutdown the InstallTracker early, which is a dependency on some
   // ExtensionPrefTests (and depends on PrefService being available in
   // shutdown).
-  InstallTrackerFactory::GetForBrowserContext(prefs_.profile())->Shutdown();
+  InstallTrackerFactory::GetForBrowserContext(prefs_.browser_context())
+      ->Shutdown();
 
   // Reset ExtensionPrefs, and re-verify.
   prefs_.ResetPrefRegistry();
   RegisterPreferences(prefs_.pref_registry().get());
   prefs_.RecreateExtensionPrefs();
+
+  // Hack: After recreating ExtensionPrefs, the AppSorting also needs to be
+  // recreated. (ExtensionPrefs is never recreated in non-test code.)
+  static_cast<TestExtensionSystem*>(
+      ExtensionSystem::Get(prefs_.browser_context()))
+      ->RecreateAppSorting();
+
   Verify();
   prefs_.pref_service()->CommitPendingWrite();
   base::RunLoop().RunUntilIdle();
+
+  testing::Test::TearDown();
+}
+
+ChromeAppSorting* ExtensionPrefsTest::app_sorting() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  return static_cast<ChromeAppSorting*>(
+      ExtensionSystem::Get(prefs_.browser_context())->app_sorting());
+#else
+  // Android doesn't support Chrome Apps, hence has no app sorting.
+  NOTREACHED();
+#endif
 }
 
 // Tests the LastPingDay/SetLastPingDay functions.
@@ -1234,7 +1262,8 @@ using ExtensionPrefsSimpleTest = testing::Test;
 // getter collapses unknown values to DISABLE_UNKNOWN.
 TEST_F(ExtensionPrefsSimpleTest, DisableReasonsRawManipulation) {
   content::BrowserTaskEnvironment task_environment;
-  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault());
+  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                           std::make_unique<TestingProfile>());
   std::string extension_id = prefs.AddExtension("Test Extension")->id();
 
   ExtensionPrefs* extension_prefs = prefs.prefs();
@@ -1302,7 +1331,8 @@ TEST_F(ExtensionPrefsSimpleTest, ProfileExtensionPrefsMapTest) {
                                      PrefScope::kProfile};
 
   content::BrowserTaskEnvironment task_environment_;
-  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault());
+  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                           std::make_unique<TestingProfile>());
 
   auto* registry = prefs.pref_registry().get();
   registry->RegisterBooleanPref(kTestBooleanPref.name, false);
@@ -1337,7 +1367,8 @@ TEST_F(ExtensionPrefsSimpleTest, ProfileExtensionPrefsMapTest) {
 TEST_F(ExtensionPrefsSimpleTest, DisableReasonsObserverTest) {
   content::BrowserTaskEnvironment task_environment;
   TestExtensionPrefs test_prefs(
-      base::SingleThreadTaskRunner::GetCurrentDefault());
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      std::make_unique<TestingProfile>());
   const ExtensionId extension_id = test_prefs.AddExtensionAndReturnId("test");
 
   class Observer : public ExtensionPrefsObserver {
@@ -1434,7 +1465,8 @@ TEST_F(ExtensionPrefsSimpleTest, ExtensionSpecificPrefsMapTest) {
                                      PrefScope::kExtensionSpecific};
 
   content::BrowserTaskEnvironment task_environment_;
-  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault());
+  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                           std::make_unique<TestingProfile>());
 
   std::string extension_id = prefs.AddExtensionAndReturnId("1");
   prefs.prefs()->SetBooleanPref(extension_id, kTestBooleanPref, true);
@@ -1482,7 +1514,8 @@ TEST_F(ExtensionPrefsSimpleTest, ExtensionSpecificPrefsMapTest) {
 
 TEST_F(ExtensionPrefsSimpleTest, HasOnlyDisableReasonTest) {
   content::BrowserTaskEnvironment task_environment;
-  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault());
+  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                           std::make_unique<TestingProfile>());
   std::string extension_id = prefs.AddExtension("Test Extension")->id();
   ExtensionPrefs* extension_prefs = prefs.prefs();
 
@@ -1513,7 +1546,8 @@ TEST_F(ExtensionPrefsSimpleTest, HasOnlyDisableReasonTest) {
 
 TEST_F(ExtensionPrefsSimpleTest, RemoveDisableReasons) {
   content::BrowserTaskEnvironment task_environment;
-  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault());
+  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                           std::make_unique<TestingProfile>());
   std::string extension_id = prefs.AddExtension("Test Extension")->id();
   ExtensionPrefs* extension_prefs = prefs.prefs();
   extension_prefs->AddDisableReasons(

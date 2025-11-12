@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_SCOPED_DATABASE_MANAGER_FOR_TEST_H_
-#define CHROME_BROWSER_EXTENSIONS_SCOPED_DATABASE_MANAGER_FOR_TEST_H_
+#ifndef EXTENSIONS_BROWSER_SCOPED_DATABASE_MANAGER_FOR_TEST_H_
+#define EXTENSIONS_BROWSER_SCOPED_DATABASE_MANAGER_FOR_TEST_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
@@ -31,4 +31,4 @@ class ScopedDatabaseManagerForTest {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_SCOPED_DATABASE_MANAGER_FOR_TEST_H_
+#endif  // EXTENSIONS_BROWSER_SCOPED_DATABASE_MANAGER_FOR_TEST_H_

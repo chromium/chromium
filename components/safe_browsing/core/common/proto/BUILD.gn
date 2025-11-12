@@ -29,6 +29,10 @@ proto_extras("csd_proto_extras") {
   protobuf_full_support = true
 }
 
+proto_library("crx_info_proto") {
+  sources = [ "crx_info.proto" ]
+}
+
 proto_library("webui_proto") {
   sources = [ "webui.proto" ]
 }

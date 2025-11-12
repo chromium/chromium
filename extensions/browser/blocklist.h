@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_BLOCKLIST_H_
-#define CHROME_BROWSER_EXTENSIONS_BLOCKLIST_H_
+#ifndef EXTENSIONS_BROWSER_BLOCKLIST_H_
+#define EXTENSIONS_BROWSER_BLOCKLIST_H_
 
 #include <list>
 #include <map>
@@ -65,14 +65,12 @@ class Blocklist : public KeyedService {
 
   using DatabaseReadyCallback = base::OnceCallback<void(bool)>;
 
-  Blocklist();
+  explicit Blocklist(content::BrowserContext* context);
 
   Blocklist(const Blocklist&) = delete;
   Blocklist& operator=(const Blocklist&) = delete;
 
   ~Blocklist() override;
-
-  static Blocklist* Get(content::BrowserContext* context);
 
   // From the set of extension IDs passed in via `ids`, asynchronously checks
   // which are blocklisted and includes them in the resulting map passed
@@ -144,6 +142,8 @@ class Blocklist : public KeyedService {
   void ReturnBlocklistStateMap(GetBlocklistedIDsCallback callback,
                                const std::set<ExtensionId>& blocklisted_ids);
 
+  raw_ptr<content::BrowserContext> context_;
+
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::CallbackListSubscription database_updated_subscription_;
@@ -169,4 +169,4 @@ class Blocklist : public KeyedService {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_BLOCKLIST_H_
+#endif  // EXTENSIONS_BROWSER_BLOCKLIST_H_

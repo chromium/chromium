@@ -23,8 +23,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/blocklist.h"
-#include "chrome/browser/extensions/blocklist_check.h"
+#include "chrome/browser/extensions/blocklist_factory.h"
 #include "chrome/browser/extensions/convert_user_script.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -46,6 +45,8 @@
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/blocklist.h"
+#include "extensions/browser/blocklist_check.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
@@ -674,8 +675,8 @@ void CrxInstaller::CheckInstall() {
 
   policy_check_ = std::make_unique<PolicyCheck>(profile_, extension());
   requirements_check_ = std::make_unique<RequirementsChecker>(extension());
-  blocklist_check_ =
-      std::make_unique<BlocklistCheck>(Blocklist::Get(profile_), extension_);
+  blocklist_check_ = std::make_unique<BlocklistCheck>(
+      BlocklistFactory::GetForBrowserContext(profile_), extension_);
 
   check_group_->AddCheck(policy_check_.get());
   check_group_->AddCheck(requirements_check_.get());
