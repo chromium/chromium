@@ -208,6 +208,8 @@ class CC_EXPORT EventMetrics {
   // events.
   EventMetrics(const EventMetrics& other);
 
+  void CoalesceWith(const EventMetrics& newer_event);
+
   // Copy timestamps of dispatch stages (up to and including
   // `last_dispatch_stage`) from `other`.
   void CopyTimestampsFrom(const EventMetrics& other,
