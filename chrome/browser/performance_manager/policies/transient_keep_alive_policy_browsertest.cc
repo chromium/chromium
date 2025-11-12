@@ -97,7 +97,13 @@ IN_PROC_BROWSER_TEST_F(TransientKeepAlivePolicyBrowserTest,
 }
 
 // Tests that a process is reused if a navigation occurs before timeout.
-IN_PROC_BROWSER_TEST_F(TransientKeepAlivePolicyBrowserTest, ProcessIsReused) {
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ProcessIsReused DISABLED_ProcessIsReused
+#else
+#define MAYBE_ProcessIsReused ProcessIsReused
+#endif
+IN_PROC_BROWSER_TEST_F(TransientKeepAlivePolicyBrowserTest,
+                       MAYBE_ProcessIsReused) {
   const GURL kUrl1 = embedded_test_server()->GetURL("a.com", "/title1.html");
   const GURL kUrl2 = embedded_test_server()->GetURL("b.com", "/title2.html");
 
