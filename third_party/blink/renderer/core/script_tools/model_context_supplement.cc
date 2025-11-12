@@ -61,7 +61,7 @@ ModelContext* ModelContextSupplement::modelContext() {
 }
 
 ModelContextTesting* ModelContextSupplement::modelContextTesting() {
-  if (!model_context_testing_) {
+  if (!model_context_testing_ && modelContext()) {
     model_context_testing_ =
         MakeGarbageCollected<ModelContextTesting>(modelContext());
   }
