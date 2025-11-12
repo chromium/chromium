@@ -296,6 +296,10 @@ const base::FeatureParam<bool> kCloseComposeboxByClickOutside(
                                                     &kNtpComposebox,
                                                     "CloseComposeboxByClickOutside",
                                                     true);
+const base::FeatureParam<bool> kAddTabUploadDelayOnRecentTabChipClick(
+    &kNtpComposebox,
+    "AddTabUploadDelayOnRecentTabChipClick",
+    true);
 
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 

@@ -311,7 +311,6 @@ export class AppElement extends AppElementBase {
        * Whether the scrim is shown in Realbox Next.
        */
       showScrim_: {type: Boolean, reflect: true},
-      delayTabUpload: {type: Boolean, reflect: true},
     };
   }
 
@@ -390,7 +389,6 @@ export class AppElement extends AppElementBase {
   protected accessor searchboxInputFocused_: boolean = false;
   protected accessor composeboxInputFocused_: boolean = false;
   protected accessor showScrim_: boolean = false;
-  protected accessor delayTabUpload: boolean = false;
 
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
@@ -929,17 +927,6 @@ export class AppElement extends AppElementBase {
 
   protected onVoiceSearchOverlayClose_() {
     this.showVoiceSearchOverlay_ = false;
-  }
-
-  protected onActionChipClick_(e: CustomEvent<{
-    searchboxText: string,
-    contextFiles: ContextualUpload[],
-    mode: ComposeboxMode,
-  }>) {
-    if (e.detail.contextFiles.length === 1) {
-      this.delayTabUpload = true;
-    }
-    this.openComposebox_(e);
   }
 
   /**

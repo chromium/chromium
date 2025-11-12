@@ -84,6 +84,8 @@ extern const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox;
 extern const base::FeatureParam<bool> kCloseComposeboxByEscape;
 // Whether to exit AI mode when the user clicks outside the composebox.
 extern const base::FeatureParam<bool> kCloseComposeboxByClickOutside;
+// Whether to delay an upload if tab context is added from the recent tab chip.
+extern const base::FeatureParam<bool> kAddTabUploadDelayOnRecentTabChipClick;
 
 bool IsNtpComposeboxEnabled(Profile* profile);
 
