@@ -6,6 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/strings/string_view_util.h"
 #include "crypto/evp.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
@@ -135,7 +136,7 @@ std::string NetParsedCertificate::GetCommonName() const {
 }
 
 std::string NetParsedCertificate::GetSpkiTlv() const {
-  return cert_->tbs().spki_tlv.AsString();
+  return std::string(base::as_string_view(cert_->tbs().spki_tlv));
 }
 
 ErrorOr<uint64_t> NetParsedCertificate::GetSerialNumber() const {

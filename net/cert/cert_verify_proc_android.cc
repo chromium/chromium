@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/string_view_util.h"
 #include "crypto/hash.h"
 #include "net/android/cert_verify_result_android.h"
 #include "net/android/network_library.h"
@@ -133,7 +134,7 @@ android::CertVerifyStatusAndroid AttemptVerificationAfterAIAFetch(
     std::vector<std::string>* verified_chain) {
   std::vector<std::string> cert_bytes;
   for (const auto& cert : certs) {
-    cert_bytes.push_back(cert->der_cert().AsString());
+    cert_bytes.emplace_back(base::as_string_view(cert->der_cert()));
   }
 
   bool is_issued_by_known_root;

@@ -13,6 +13,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "net/base/features.h"
@@ -322,7 +323,7 @@ class TrustStoreNSSTestBase : public ::testing::Test {
       return "newintermediate_";
     if (cert->der_cert() == newrootrollover_->der_cert())
       return "newrootrollover_";
-    return cert->der_cert().AsString();
+    return std::string(base::as_string_view(cert->der_cert()));
   }
 
   bool HasTrust(const bssl::ParsedCertificateList& certs,

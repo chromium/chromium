@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/logging.h"
+#include "base/strings/string_view_util.h"
 #include "crypto/sha2.h"
 #include "net/cert/cert_net_fetcher.h"
 #include "third_party/boringssl/src/include/openssl/pki/ocsp.h"
@@ -342,7 +343,7 @@ CRLSet::Result CheckChainRevocationUsingCRLSet(
     bssl::CertPathErrors* errors) {
   // Iterate from the root certificate towards the leaf (the root certificate is
   // also checked for revocation by CRLSet).
-  std::string issuer_spki_hash;
+  std::array<uint8_t, 32> issuer_spki_hash;
   for (size_t reverse_i = 0; reverse_i < certs.size(); ++reverse_i) {
     size_t i = certs.size() - reverse_i - 1;
     const bssl::ParsedCertificate* cert = certs[i].get();
@@ -353,25 +354,26 @@ CRLSet::Result CheckChainRevocationUsingCRLSet(
     const bool is_target = i == 0;
 
     // Check for revocation using the certificate's SPKI.
-    std::string spki_hash =
-        crypto::SHA256HashString(cert->tbs().spki_tlv.AsStringView());
-    CRLSet::Result result = crl_set->CheckSPKI(spki_hash);
+    std::array<uint8_t, 32> spki_hash =
+        crypto::SHA256Hash(cert->tbs().spki_tlv);
+    CRLSet::Result result = crl_set->CheckSPKI(base::as_string_view(spki_hash));
 
     // Check for revocation using the certificate's Subject.
     if (result != CRLSet::REVOKED) {
-      result = crl_set->CheckSubject(cert->tbs().subject_tlv.AsStringView(),
-                                     spki_hash);
+      result =
+          crl_set->CheckSubject(base::as_string_view(cert->tbs().subject_tlv),
+                                base::as_string_view(spki_hash));
     }
 
     // Check for revocation using the certificate's serial number and issuer's
     // SPKI.
     if (result != CRLSet::REVOKED && !is_root) {
-      result =
-          crl_set->CheckSerial(cert->tbs().serial_number, issuer_spki_hash);
+      result = crl_set->CheckSerial(cert->tbs().serial_number,
+                                    base::as_string_view(issuer_spki_hash));
     }
 
     // Prepare for the next iteration.
-    issuer_spki_hash = std::move(spki_hash);
+    issuer_spki_hash = spki_hash;
 
     switch (result) {
       case CRLSet::REVOKED:

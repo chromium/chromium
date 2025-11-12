@@ -200,8 +200,8 @@ base::Value::List PEMCertValueList(const bssl::ParsedCertificateList& certs) {
   base::Value::List value;
   for (const auto& cert : certs) {
     std::string pem;
-    X509Certificate::GetPEMEncodedFromDER(cert->der_cert().AsStringView(),
-                                          &pem);
+    X509Certificate::GetPEMEncodedFromDER(
+        base::as_string_view(cert->der_cert()), &pem);
     value.Append(std::move(pem));
   }
   return value;

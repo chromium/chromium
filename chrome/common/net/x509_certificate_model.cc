@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -945,10 +946,11 @@ std::optional<std::string> ProcessUserNoticeDisplayText(
       }
       break;
     case CBS_ASN1_UTF8STRING:
-      if (!base::IsStringUTF8AllowingNoncharacters(value.AsStringView())) {
+      if (!base::IsStringUTF8AllowingNoncharacters(
+              base::as_string_view(value))) {
         return std::nullopt;
       }
-      display_text = value.AsString();
+      display_text = base::as_string_view(value);
       break;
     default:
       return std::nullopt;

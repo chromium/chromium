@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "crypto/sha2.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "net/cert/x509_certificate.h"
@@ -290,8 +291,9 @@ TrustStoreChrome::TrustStoreChrome(const ChromeRootStoreData& root_store_data,
 
   for (const auto& anchor : root_store_data.trust_anchors()) {
     if (!anchor.constraints.empty()) {
-      constraints.emplace_back(anchor.certificate->der_cert().AsStringView(),
-                               anchor.constraints);
+      constraints.emplace_back(
+          base::as_string_view(anchor.certificate->der_cert()),
+          anchor.constraints);
     }
 
     // If the anchor is configured to enforce expiry and/or X.509 constraints,
@@ -438,7 +440,7 @@ TrustStoreChrome::GetConstraintsForCert(
     }
   }
 
-  auto it = constraints_.find(cert->der_cert().AsStringView());
+  auto it = constraints_.find(base::as_string_view(cert->der_cert()));
   if (it != constraints_.end()) {
     return it->second;
   }

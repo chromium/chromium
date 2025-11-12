@@ -355,9 +355,7 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
               net::x509_util::DefaultParseCertificateOptions(),
               /*errors=*/nullptr);
       EXPECT_TRUE(cert);
-      std::string spki_string = cert->tbs().spki_tlv.AsString();
-      distrusted_spkis.push_back(
-          std::vector<uint8_t>(spki_string.begin(), spki_string.end()));
+      distrusted_spkis.push_back(base::ToVector(cert->tbs().spki_tlv));
     }
     instance_params.additional_distrusted_spkis = distrusted_spkis;
     return instance_params;

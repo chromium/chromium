@@ -65,8 +65,9 @@ const char kCertificateHeader[] = "CERTIFICATE";
 std::vector<std::string> ParsedCertificateListAsDER(
     bssl::ParsedCertificateList list) {
   std::vector<std::string> result;
-  for (const auto& it : list)
-    result.push_back(it->der_cert().AsString());
+  for (const auto& it : list) {
+    result.emplace_back(base::as_string_view(it->der_cert()));
+  }
   return result;
 }
 

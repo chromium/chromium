@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
+#include "base/strings/string_view_util.h"
 #include "components/trusted_vault/securebox.h"
 #include "crypto/signature_verifier.h"
 #include "net/cert/asn1_util.h"
@@ -397,7 +398,7 @@ std::vector<std::unique_ptr<SecureBoxPublicKey>> ExtractEndpointPublicKeys(
     // Extract the public key from the SPKI.
     std::string_view ec_point_oct;
     if (!net::asn1::ExtractSubjectPublicKeyFromSPKI(
-            certificate->tbs().spki_tlv.AsStringView(), &ec_point_oct)) {
+            base::as_string_view(certificate->tbs().spki_tlv), &ec_point_oct)) {
       continue;
     }
     // ExtractSubjectPublicKeyFromSPKI does not remove the initial octet

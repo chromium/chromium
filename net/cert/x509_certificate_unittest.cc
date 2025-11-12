@@ -608,8 +608,8 @@ TEST(X509CertificateTest, ExtractExtension) {
   std::string_view contents;
   ASSERT_TRUE(asn1::ExtractExtensionFromDERCert(
       x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()),
-      bssl::der::Input(bssl::kBasicConstraintsOid).AsStringView(), &present,
-      &critical, &contents));
+      base::as_string_view(bssl::kBasicConstraintsOid), &present, &critical,
+      &contents));
   EXPECT_TRUE(present);
   EXPECT_TRUE(critical);
   ASSERT_EQ(std::string_view("\x30\x00", 2), contents);
@@ -625,8 +625,8 @@ TEST(X509CertificateTest, ExtractExtension) {
   ASSERT_TRUE(uid_cert);
   ASSERT_TRUE(asn1::ExtractExtensionFromDERCert(
       x509_util::CryptoBufferAsStringPiece(uid_cert->cert_buffer()),
-      bssl::der::Input(bssl::kBasicConstraintsOid).AsStringView(), &present,
-      &critical, &contents));
+      base::as_string_view(bssl::kBasicConstraintsOid), &present, &critical,
+      &contents));
   EXPECT_TRUE(present);
   EXPECT_FALSE(critical);
   ASSERT_EQ(std::string_view("\x30\x00", 2), contents);

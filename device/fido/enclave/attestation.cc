@@ -583,9 +583,7 @@ base::expected<CertificateParts, const char*> ParseVcekCertificate(
     return base::unexpected("trailing data inside VCEK certificate");
   }
 
-  return CertificateParts{
-      base::as_byte_span(tbs_certificate.AsStringView()),
-      base::as_byte_span(signature->bytes().AsStringView())};
+  return CertificateParts{tbs_certificate, signature->bytes()};
 }
 
 // Verify the signature on the VCEK certificate by the issuing certificate.
