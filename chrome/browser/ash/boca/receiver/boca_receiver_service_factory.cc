@@ -6,6 +6,8 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/boca/receiver/boca_receiver_service.h"
+#include "chrome/browser/gcm/gcm_profile_service_factory.h"
+#include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace ash {
@@ -28,14 +30,18 @@ BocaReceiverServiceFactory::BocaReceiverServiceFactory()
           "BocaReceiverService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              .Build()) {}
+              .Build()) {
+  DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
+  DependsOn(instance_id::InstanceIDProfileServiceFactory::GetInstance());
+}
 
 BocaReceiverServiceFactory::~BocaReceiverServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 BocaReceiverServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<BocaReceiverService>();
+  Profile* profile = Profile::FromBrowserContext(context);
+  return std::make_unique<BocaReceiverService>(profile);
 }
 
 }  // namespace ash
