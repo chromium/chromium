@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertSame;
 
-import static org.chromium.components.browser_ui.styles.ChromeColors.getSettingsContainerBackgroundColor;
+import static org.chromium.components.browser_ui.styles.SemanticColorUtils.getSettingsContainerBackgroundColor;
 import static org.chromium.components.browser_ui.widget.containment.ContainmentItem.DEFAULT_COLOR;
 import static org.chromium.components.browser_ui.widget.containment.ContainmentItem.DEFAULT_MARGIN;
 import static org.chromium.components.browser_ui.widget.containment.ContainmentItemController.TRANSPARENT_BACKGROUND_COLOR;

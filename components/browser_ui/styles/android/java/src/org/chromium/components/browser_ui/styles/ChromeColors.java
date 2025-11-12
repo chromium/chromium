@@ -180,15 +180,4 @@ public class ChromeColors {
                 ? context.getColor(R.color.baseline_neutral_90)
                 : SemanticColorUtils.getDefaultControlColorActive(context);
     }
-
-    /**
-     * Returns the background color for settings containers. TODO(crbug.com/452839781): This is
-     * going to be merged into SemanticColorUtils.getSettingsContainerBackgroundColor.
-     *
-     * @param context The {@link Context} used to retrieve the color.
-     * @return The {@link ColorInt} for the settings container background.
-     */
-    public static @ColorInt int getSettingsContainerBackgroundColor(Context context) {
-        return SemanticColorUtils.getSettingsContainerBackgroundColor(context);
-    }
 }

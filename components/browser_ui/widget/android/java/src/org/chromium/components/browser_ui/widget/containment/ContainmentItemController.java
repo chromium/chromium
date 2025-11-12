@@ -4,7 +4,7 @@
 
 package org.chromium.components.browser_ui.widget.containment;
 
-import static org.chromium.components.browser_ui.styles.ChromeColors.getSettingsContainerBackgroundColor;
+import static org.chromium.components.browser_ui.styles.SemanticColorUtils.getSettingsContainerBackgroundColor;
 import static org.chromium.components.browser_ui.widget.containment.ContainmentItem.DEFAULT_COLOR;
 import static org.chromium.components.browser_ui.widget.containment.ContainmentItem.DEFAULT_MARGIN;
 
