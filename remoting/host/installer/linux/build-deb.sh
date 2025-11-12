@@ -49,10 +49,9 @@ usage() {
   echo "-s     path to the top of the src tree."
   echo "-o     output directory path."
   echo "-O     option (no options currently defined)"
-  echo "-b     build timestamp (Epoch seconds)"
 }
 
-while getopts ":s:o:O:phb:" OPTNAME
+while getopts ":s:o:O:ph" OPTNAME
 do
   case $OPTNAME in
     s )
@@ -66,9 +65,6 @@ do
       ;;
     O )
       OPTION="$OPTARG"
-      ;;
-    b )
-      BUILD_TIMESTAMP="$OPTARG"
       ;;
     h )
       usage
@@ -128,14 +124,12 @@ echo "Building version $version_full $revision_text"
 
 # Create a fresh debian/changelog.
 export DEBEMAIL="The Chromium Authors <chromium-dev@chromium.org>"
-DATE_RFC5322="$(date --rfc-email -d "@$BUILD_TIMESTAMP")"
 rm -f debian/changelog
 debchange --create \
   --package "$PACKAGE" \
   --newversion "$version_full" \
   --force-distribution \
   --distribution unstable \
-  --date "$DATE_RFC5322" \
   "New Debian package $revision_text"
 
 
@@ -153,8 +147,7 @@ process_template \
 # but it seems that we don't currently, so this is the most expediant fix.
 SAVE_LDLP=$LD_LIBRARY_PATH
 unset LD_LIBRARY_PATH
-SOURCE_DATE_EPOCH="$BUILD_TIMESTAMP" \
-  BUILD_DIR=$OUTPUT_PATH SRC_DIR=${SCRIPTDIR}/../../../.. \
+BUILD_DIR=$OUTPUT_PATH SRC_DIR=${SCRIPTDIR}/../../../.. \
   dpkg-buildpackage -b -us -uc
 LD_LIBRARY_PATH=$SAVE_LDLP
 
