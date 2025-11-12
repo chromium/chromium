@@ -15,6 +15,13 @@
 #include "ui/color/color_recipe.h"
 #include "ui/gfx/color_palette.h"
 
+namespace {
+
+constexpr SkColor kColorSysSurface3_Light = SkColorSetRGB(0xEF, 0xF3, 0xFA);
+constexpr SkColor kColorSysSurface_Light = SkColorSetRGB(0xFF, 0xFF, 0xFF);
+
+}  // namespace
+
 void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
                                      const ui::ColorProviderKey& key) {
   if (!ShouldApplyChromeMaterialOverrides(key)) {
@@ -85,10 +92,8 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorComposeboxUploadButtonDisabled] = {
       dark_mode ? SkColorSetRGB(0x56, 0x59, 0x5E)
                 : SkColorSetRGB(0xAD, 0xAF, 0xB8)};
-  mixer[kColorComposeboxFileChipBackground] = {
-      SkColorSetRGB(0xF3, 0xF6, 0xFC)};
-  mixer[kColorComposeboxFileChipFaviconBackground] = {
-      SkColorSetRGB(0xEA, 0xF0, 0xF9)};
+  mixer[kColorComposeboxFileChipBackground] = {kColorSysSurface3_Light};
+  mixer[kColorComposeboxFileChipFaviconBackground] = {kColorSysSurface_Light};
   mixer[kColorComposeboxFileChipText] = {
       SkColorSetRGB(0x1F, 0x1F, 0x1F)};
   mixer[kColorComposeboxPdfChipIcon] = {

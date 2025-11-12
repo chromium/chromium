@@ -24,6 +24,9 @@ namespace {
 constexpr float kNtpElementLuminosityChangeForLightBackgroundParam = 0.1f;
 constexpr float kNtpElementLuminosityChangeForDarkBackgroundParam = 0.2f;
 
+constexpr SkColor kColorSysSurface3_Light = SkColorSetRGB(0xEF, 0xF3, 0xFA);
+constexpr SkColor kColorSysSurface_Light = SkColorSetRGB(0xFF, 0xFF, 0xFF);
+
 ui::ColorTransform GetContrastingColorTransform(
     ui::ColorTransform input_transform,
     std::optional<float> luminosity_change = std::nullopt) {
@@ -309,10 +312,8 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorComposeboxUploadButtonDisabled] = {
       dark_mode ? SkColorSetRGB(0x56, 0x59, 0x5E)
                 : SkColorSetRGB(0xAD, 0xAF, 0xB8)};
-  mixer[kColorComposeboxFileChipBackground] = {
-      SkColorSetRGB(0xED, 0xF2, 0xFA)};
-  mixer[kColorComposeboxFileChipFaviconBackground] = {
-      SkColorSetRGB(0xEA, 0xF0, 0xF9)};
+  mixer[kColorComposeboxFileChipBackground] = {kColorSysSurface3_Light};
+  mixer[kColorComposeboxFileChipFaviconBackground] = {kColorSysSurface_Light};
   mixer[kColorComposeboxFileChipText] = {
       SkColorSetRGB(0x1F, 0x1F, 0x1F)};
   mixer[kColorComposeboxPdfChipIcon] = {
