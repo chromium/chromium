@@ -1,0 +1,10 @@
+<Root> [box: 0,0 800x600]
+  <Container> [box: 0,0 800x60]
+    <Container> [box: 0,0 800x60]
+      <Container> [box: 0,0 100x20]
+        <Paragraph> [box: 0,0 100x20]
+          <Text> "Flow content" [box: 0,0 70x20] [fragmentBox#0 0,0 40x10] [fragmentBox#1 0,10 70x10]
+      <Container> [box: 0,20 100x40]
+        <Container> [box: 0,30 30x10]
+          <Text> "ABS" [box: 0,30 30x10]
+

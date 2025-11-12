@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href="./resources/consistent-rendering.css" rel="stylesheet" />
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="./resources/content-extraction-test-helpers.js"></script>
+<script src="../resources/ahem.js"></script>
+<style>
+  #flow-container {
+    width: 10ch;
+  }
+
+  #absolute-container {
+    width: 10ch;
+    height: 40px;
+    position: relative;
+  }
+
+  #absolute-container > div {
+    position: absolute;
+    top: 10px;
+    left: 0;
+  }
+</style>
+<script>
+function runTest() {
+  finishTest(dumpContentNodeTree(document));
+}
+</script>
+</head>
+<body onload="runTest()">
+  <div id="flow-container">
+    <p>Flow content</p>
+  </div>
+  <div id="absolute-container">
+    <div>ABS</div>
+  </div>
+</body>
+</html>

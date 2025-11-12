@@ -1181,7 +1181,8 @@ void LayoutBox::QuadsInAncestorInternal(Vector<gfx::QuadF>& quads,
   }
 }
 
-gfx::RectF LayoutBox::LocalBoundingBoxRectForAccessibility() const {
+gfx::RectF LayoutBox::LocalBoundingBoxRectForAccessibility(
+    IncludeDescendants include_descendants) const {
   NOT_DESTROYED();
   PhysicalSize size = StitchedSize();
   return gfx::RectF(0, 0, size.width.ToFloat(), size.height.ToFloat());

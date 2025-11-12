@@ -94,7 +94,8 @@ void LayoutSVGModelObject::AddOutlineRects(OutlineRectCollector& collector,
     *info = OutlineInfo::GetUnzoomedFromStyle(StyleRef());
 }
 
-gfx::RectF LayoutSVGModelObject::LocalBoundingBoxRectForAccessibility() const {
+gfx::RectF LayoutSVGModelObject::LocalBoundingBoxRectForAccessibility(
+    IncludeDescendants include_descendants) const {
   NOT_DESTROYED();
   return DecoratedBoundingBox();
 }

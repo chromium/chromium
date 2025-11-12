@@ -140,7 +140,8 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   void AbsoluteQuadsForRange(Vector<gfx::QuadF>&,
                              unsigned start_offset = 0,
                              unsigned end_offset = INT_MAX) const;
-  gfx::RectF LocalBoundingBoxRectForAccessibility() const final;
+  gfx::RectF LocalBoundingBoxRectForAccessibility(
+      IncludeDescendants include_descendants) const final;
 
   std::optional<bool> IgnoreWhitespaceForAccessibility() const {
     NOT_DESTROYED();

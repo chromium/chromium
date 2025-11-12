@@ -5,7 +5,11 @@
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.h"
 
 #include <cstddef>
+#include <optional>
+#include <string>
 
+#include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/with_feature_override.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -19,20 +23,37 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
+#include "third_party/blink/renderer/core/layout/hit_test_request.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
+#include "third_party/blink/renderer/core/scroll/scrollable_area.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
+#include "third_party/blink/renderer/platform/graphics/visual_rect_flags.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 using ClickabilityReason = mojom::blink::AIPageContentClickabilityReason;
@@ -64,11 +85,22 @@ class AIPageContentAgentTest : public testing::Test {
   void SetUp() override {
     helper_.InitializeWithSettings(&UpdateWebSettings);
     helper_.Resize(kWindowSize);
+    helper_.LoadAhem();
     ASSERT_TRUE(helper_.LocalMainFrame());
   }
 
   void TearDown() override {
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
+  }
+
+  void LoadAhem() {
+    helper_.LoadAhem();
+    test::RunPendingTasks();
+    helper_.LocalMainFrame()
+        ->GetFrame()
+        ->GetDocument()
+        ->View()
+        ->UpdateAllLifecyclePhasesForTest();
   }
 
   void CheckListItemWithText(const mojom::blink::AIPageContentNode& node,
@@ -327,6 +359,37 @@ class AIPageContentAgentTest : public testing::Test {
     return *html.children_nodes[0];
   }
 
+  const mojom::blink::AIPageContentNode* FindNodeByDomNodeId(
+      DOMNodeId dom_node_id) {
+    const auto& root = ContentRootNode();
+    Vector<const mojom::blink::AIPageContentNode*> stack;
+    stack.push_back(&root);
+    while (!stack.empty()) {
+      const auto* node = stack.back();
+      stack.pop_back();
+      if (node->content_attributes &&
+          node->content_attributes->dom_node_id.has_value() &&
+          *node->content_attributes->dom_node_id == dom_node_id) {
+        return node;
+      }
+      for (size_t i = node->children_nodes.size(); i > 0; --i) {
+        stack.push_back(node->children_nodes[i - 1].get());
+      }
+    }
+    return nullptr;
+  }
+
+  const mojom::blink::AIPageContentNode* FindNodeBySelector(String selector) {
+    Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+    EXPECT_TRUE(document);
+    Element* element = document->QuerySelector(AtomicString(selector));
+    EXPECT_TRUE(element) << "Couldn't find element with selector = "
+                         << selector;
+    DOMNodeId dom_node_id = DOMNodeIds::IdForNode(element);
+    EXPECT_GE(dom_node_id, 1);
+    return FindNodeByDomNodeId(dom_node_id);
+  }
+
   void CheckHitTestableButNotInteractive(
       const mojom::blink::AIPageContentNode& node) {
     CHECK(node.content_attributes->node_interaction_info);
@@ -397,6 +460,7 @@ TEST_F(AIPageContentAgentTest, Basic) {
 
   const auto& text_attributes = *text_node.content_attributes;
   ASSERT_TRUE(text_attributes.geometry);
+  EXPECT_FALSE(text_attributes.node_interaction_info);
   EXPECT_EQ(text_attributes.geometry->outer_bounding_box.x(), -20);
   EXPECT_EQ(text_attributes.geometry->outer_bounding_box.y(), -10);
 }
@@ -1491,7 +1555,6 @@ TEST_P(AIPageContentAgentTestWithSubScroller, Overflow) {
           GetParam()),
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  SCOPED_TRACE(GetParam());
   GetAIPageContent();
 
   const auto& root = ContentRootNode();
@@ -3321,6 +3384,84 @@ TEST_F(AIPageContentAgentTest, PaidContentSubframeMicrodata) {
                    mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
 }
 
+TEST_F(AIPageContentAgentTest, AnchorInInlineWithFloatingSibling) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<!DOCTYPE html>"
+      "<body style='margin:0; font: 1px/1px Ahem'>"
+      "  <span>"
+      "  <a href='https://www.google.com'>"
+      "    <div style='position: relative; float: left;'>text in div</div>"
+      "    <span>text</span>"
+      "  </a>"
+      "  </span>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  LoadAhem();
+  GetAIPageContentWithActionableElements();
+
+  const mojom::blink::AIPageContentNode* anchor = FindNodeBySelector("a");
+  ASSERT_TRUE(anchor->content_attributes->geometry);
+  CheckAnchorNode(*anchor, blink::KURL("https://www.google.com/"), {});
+  ASSERT_TRUE(anchor->content_attributes->node_interaction_info);
+  EXPECT_TRUE(anchor->content_attributes->node_interaction_info
+                  ->document_scoped_z_order);
+  CheckGeometry(*anchor, gfx::Rect(11, 0, 4, 1), gfx::Rect(11, 0, 4, 1));
+}
+
+TEST_F(AIPageContentAgentTest, OverflowHiddenGeometry) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div style='width: 100px; height: 100px; overflow-y: hidden;'>"
+      "     <article style='width: 50px; height: 300px;'></article>"
+      "   </div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& outer = ContentRootNode().children_nodes[0];
+  const auto& article = outer->children_nodes[0];
+  CheckAnnotatedRole(*article,
+                     mojom::blink::AIPageContentAnnotatedRole::kArticle);
+
+  EXPECT_GT(*article->content_attributes->node_interaction_info
+                 ->document_scoped_z_order,
+            *outer->content_attributes->node_interaction_info
+                 ->document_scoped_z_order);
+
+  CheckGeometry(*outer, gfx::Rect(8, 8, 100, 100), gfx::Rect(8, 8, 100, 100));
+  CheckGeometry(*article, gfx::Rect(8, 8, 50, 300), gfx::Rect(8, 8, 50, 100));
+}
+
+TEST_F(AIPageContentAgentTest, OverflowVisibleGeometry) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <section style='width: 100px; height: 100px; overflow-y: visible;'>"
+      "    <article style='width: 50px; height: 300px;'></article>"
+      "  </section>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& outer = ContentRootNode().children_nodes[0];
+  const auto& article = outer->children_nodes[0];
+  CheckAnnotatedRole(*article,
+                     mojom::blink::AIPageContentAnnotatedRole::kArticle);
+
+  EXPECT_GT(*article->content_attributes->node_interaction_info
+                 ->document_scoped_z_order,
+            *outer->content_attributes->node_interaction_info
+                 ->document_scoped_z_order);
+
+  CheckGeometry(*outer, gfx::Rect(8, 8, 100, 100), gfx::Rect(8, 8, 100, 100));
+  CheckGeometry(*article, gfx::Rect(8, 8, 50, 300), gfx::Rect(8, 8, 50, 300));
+}
+
 TEST_F(AIPageContentAgentTest, BlurGeometry) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
@@ -3336,6 +3477,9 @@ TEST_F(AIPageContentAgentTest, BlurGeometry) {
   CheckAnnotatedRole(*section,
                      mojom::blink::AIPageContentAnnotatedRole::kSection);
 
+  // Although blurring causes the rectangle to show outside of the 100x100 rect,
+  // the extra area is not hit testable, and is therefore not included in the
+  // visible bounding box.
   CheckGeometry(*section, gfx::Rect(8, 8, 100, 100), gfx::Rect(8, 8, 100, 100));
 }
 
@@ -3463,6 +3607,50 @@ TEST_F(AIPageContentAgentTest, LabelWithForSibling) {
                   ->clickability_reasons.empty());
   EXPECT_EQ(label.content_attributes->label_for_dom_node_id,
             input.content_attributes->dom_node_id);
+}
+
+TEST_F(AIPageContentAgentTest, LabelGeometry) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<style>body * { margin:0; padding:0; font:1px/1px 'Ahem'; }</style>"
+      "<body style='margin: 3px;'>"
+      " <label for='myCheckbox'>1234567890</label>"
+      " <input type='checkbox' id='myCheckbox' "
+      "        style='width:1px;height:1px;appearance:none;'/>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  LoadAhem();
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& root = ContentRootNode();
+  EXPECT_EQ(root.children_nodes.size(), 2u);
+
+  const auto& label = *root.children_nodes[0];
+  CheckContainerNode(label);
+  ASSERT_TRUE(label.content_attributes->node_interaction_info);
+  EXPECT_TRUE(label.content_attributes->node_interaction_info
+                  ->clickability_reasons.empty());
+
+  const auto& input = *root.children_nodes[1];
+  CheckFormControlNode(input, mojom::blink::FormControlType::kInputCheckbox);
+  ASSERT_TRUE(input.content_attributes->node_interaction_info);
+  CheckHitTestableAndInteractive(input,
+                                 {ClickabilityReason::kClickableControl});
+  EXPECT_EQ(input.content_attributes->form_control_data->redaction_decision,
+            mojom::AIPageContentRedactionDecision::kNoRedactionNecessary);
+
+  EXPECT_EQ(label.content_attributes->label_for_dom_node_id,
+            input.content_attributes->dom_node_id);
+
+  ASSERT_TRUE(label.content_attributes->geometry);
+  const auto& label_geometry = *label.content_attributes->geometry;
+  // With the 1px Ahem font loaded above, each glyph occupies a 1x1 cell so the
+  // 10-character label spans exactly 10x1 CSS pixels.
+  EXPECT_EQ(label_geometry.outer_bounding_box, gfx::Rect(3, 3, 10, 1));
+  EXPECT_EQ(label_geometry.visible_bounding_box,
+            label_geometry.outer_bounding_box);
 }
 
 TEST_F(AIPageContentAgentTest, LabelWithForDescendant) {
@@ -4326,14 +4514,15 @@ TEST_F(AIPageContentAgentTest, ClipPathEmpty) {
       helper_.LocalMainFrame(), R"(
       <body>
         <style>
+          body { margin: 0; }
           div {
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 200px;
+            left: 300px;
             width: 100px;
             height: 100px;
             background: red;
-            clip-path: circle(0%);
+            clip-path: circle(0 at left top);
           }
         </style>
         <div onclick=console.log(1)></div>
@@ -4344,7 +4533,538 @@ TEST_F(AIPageContentAgentTest, ClipPathEmpty) {
 
   const auto& div_node = *ContentRootNode().children_nodes[0];
 
-  CheckGeometry(div_node, gfx::Rect(), gfx::Rect());
+  const auto& geometry = *div_node.content_attributes->geometry;
+  EXPECT_TRUE(geometry.outer_bounding_box.IsEmpty());
+  EXPECT_TRUE(geometry.visible_bounding_box.IsEmpty());
+}
+
+TEST_F(AIPageContentAgentTest, InlineWithFloatAndInlineContentGeometry) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"HTML(
+      <body>
+        <style>
+          body { margin: 0; font: 10px/10px Ahem; }
+          a { position: absolute; top: 0; left: 0; color: black; }
+          #floater { float: left; width: 30px; height: 10px; background: #ccc; }
+        </style>
+        <a id="target" href="#"><span id="floater"></span>XX</a>
+      </body>)HTML",
+      url_test_helpers::ToKURL("http://example.com"));
+
+  LoadAhem();
+
+  GetAIPageContentWithActionableElements();
+
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  ASSERT_TRUE(document);
+  Element* anchor_element = document->getElementById(AtomicString("target"));
+  ASSERT_TRUE(anchor_element);
+  LayoutObject* anchor_layout_object = anchor_element->GetLayoutObject();
+  ASSERT_TRUE(anchor_layout_object);
+  const auto* anchor_box =
+      DynamicTo<LayoutBoxModelObject>(anchor_layout_object);
+  ASSERT_TRUE(anchor_box);
+
+  const mojom::blink::AIPageContentNode* anchor_node =
+      FindNodeBySelector("#target");
+
+  ASSERT_TRUE(anchor_node);
+  ASSERT_TRUE(anchor_node->content_attributes->geometry);
+  const auto& anchor_geometry = *anchor_node->content_attributes->geometry;
+
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 10), anchor_geometry.outer_bounding_box);
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 10), anchor_geometry.visible_bounding_box);
+
+  const mojom::blink::AIPageContentNode* floater_node =
+      FindNodeBySelector("#floater");
+  ASSERT_TRUE(floater_node);
+  ASSERT_TRUE(floater_node->content_attributes->geometry);
+  const auto& floater_geometry = *floater_node->content_attributes->geometry;
+
+  EXPECT_EQ(gfx::Rect(0, 0, 30, 10), floater_geometry.outer_bounding_box);
+  EXPECT_EQ(gfx::Rect(0, 0, 30, 10), floater_geometry.visible_bounding_box);
+}
+
+TEST_F(AIPageContentAgentTest, ActionableModeKeepsContainerQuadGeometry) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"HTML(
+      <body style="margin: 0; font: 10px/10px Ahem;">
+        <details id="wrapper">
+          <summary>Expandable</summary>
+          Contents.
+        </details>
+      </body>)HTML",
+      url_test_helpers::ToKURL("http://example.com"));
+
+  LoadAhem();
+
+  GetAIPageContentWithActionableElements();
+
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  ASSERT_TRUE(document);
+  Element* wrapper_element = document->getElementById(AtomicString("wrapper"));
+  ASSERT_TRUE(wrapper_element);
+  DOMNodeId wrapper_dom_node_id = DOMNodeIds::IdForNode(wrapper_element);
+
+  const auto* wrapper_node = FindNodeByDomNodeId(wrapper_dom_node_id);
+  ASSERT_TRUE(wrapper_node);
+  CheckContainerNode(*wrapper_node);
+  ASSERT_TRUE(wrapper_node->content_attributes->geometry);
+  const auto& geometry = *wrapper_node->content_attributes->geometry;
+
+  LayoutObject* wrapper_layout_object = wrapper_element->GetLayoutObject();
+  ASSERT_TRUE(wrapper_layout_object);
+  const auto* wrapper_box =
+      DynamicTo<LayoutBoxModelObject>(wrapper_layout_object);
+  ASSERT_TRUE(wrapper_box);
+
+  EXPECT_EQ(gfx::Rect(0, 0, 1000, 10), geometry.outer_bounding_box);
+  EXPECT_EQ(gfx::Rect(0, 0, 1000, 10), geometry.visible_bounding_box);
+}
+
+TEST_F(AIPageContentAgentTest, InlineWithFloatInlineBoxUnionGeometry) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"HTML(
+      <body style="margin: 0; font: 10px/10px Ahem;">
+        <a id="inline-float-union">
+          <span id="inline-wrapper">
+            <span id="floated" class="inner-float">1</span>
+            <span id="inline-box" style="display:inline-block; width: 4px; height: 20px;">2</span>
+          </span>
+        </a>
+        <style>
+          .inner-float {
+            width: 20px;
+            height: 20px;
+            display: block;
+            float: left;
+          }
+        </style>
+      </body>)HTML",
+      url_test_helpers::ToKURL("http://example.com"));
+
+  LoadAhem();
+
+  GetAIPageContentWithActionableElements();
+
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  ASSERT_TRUE(document);
+
+  // As there is no clipping for either node, the outer box == visible box.
+
+  {
+    const auto* anchor_node = FindNodeBySelector("#inline-float-union");
+    ASSERT_TRUE(anchor_node);
+    ASSERT_TRUE(anchor_node->content_attributes);
+    ASSERT_TRUE(anchor_node->content_attributes->geometry);
+
+    const auto& anchor_geometry = *anchor_node->content_attributes->geometry;
+    EXPECT_EQ(anchor_geometry.outer_bounding_box,
+              anchor_geometry.visible_bounding_box);
+  }
+
+  {
+    const auto* container_node = FindNodeBySelector("#inline-wrapper");
+    ASSERT_TRUE(container_node);
+    ASSERT_TRUE(container_node->content_attributes);
+    ASSERT_TRUE(container_node->content_attributes->geometry);
+    const auto& container_geometry =
+        *container_node->content_attributes->geometry;
+    EXPECT_EQ(container_geometry.outer_bounding_box,
+              container_geometry.visible_bounding_box);
+  }
+}
+
+TEST_F(AIPageContentAgentTest, InlineWithOnlyFloatGeometry) {
+  // An inline anchor with no inline text content but containing a floated
+  // descendant should not inherit geometry from the float.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"(
+      <body>
+        <style>
+          body { margin: 0; }
+          a { position: absolute; left: 0; top: 0; }
+          #floater { float: left; width: 20px; height: 10px; background: #000; }
+        </style>
+        <a href="#"><span><span id="floater"></span></span></a>
+      </body>)",
+      url_test_helpers::ToKURL("http://example.com"));
+
+  // Use actionable mode so the anchor is included in the APC tree.
+  GetAIPageContentWithActionableElements();
+
+  // Find the first node that has anchor data (iterative DFS, no std::function).
+  const auto& root = ContentRootNode();
+  const mojom::blink::AIPageContentNode* anchor_node = nullptr;
+  Vector<const mojom::blink::AIPageContentNode*> stack;
+  stack.push_back(&root);
+  while (!stack.empty()) {
+    const auto* node = stack.back();
+    stack.pop_back();
+    if (node->content_attributes && node->content_attributes->anchor_data) {
+      anchor_node = node;
+      break;
+    }
+    // Push children in reverse so traversal order matches natural order.
+    for (size_t i = node->children_nodes.size(); i > 0; --i) {
+      stack.push_back(node->children_nodes[i - 1].get());
+    }
+  }
+  ASSERT_TRUE(anchor_node);
+
+  ASSERT_TRUE(anchor_node->content_attributes->geometry);
+  const auto& anchor_geom = *anchor_node->content_attributes->geometry;
+
+  // Inline elements that keep their own fragment should retain geometry even
+  // when their only ink comes from a floating descendant.
+  EXPECT_EQ(anchor_geom.outer_bounding_box, gfx::Rect(0, 0, 20, 10));
+  EXPECT_EQ(anchor_geom.visible_bounding_box, gfx::Rect(0, 0, 20, 10));
+}
+
+TEST_F(AIPageContentAgentTest, StructuralWrapperWithoutPaintGeometry) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <body style="margin: 0; font: 10px/10px Ahem;">
+        <a id="wrapper" href="#" style="position: relative; display: inline-block;">
+          <span id="child" style="position: absolute; left: 0; top: 0;
+                                   width: 10px; height: 10px;
+                                   background: black; color: white;">X</span>
+        </a>
+      </body>)HTML",
+      url_test_helpers::ToKURL("http://example.com"));
+
+  LoadAhem();
+
+  GetAIPageContentWithActionableElements();
+
+  auto* wrapper_node = FindNodeBySelector("#wrapper");
+  ASSERT_TRUE(wrapper_node);
+  EXPECT_TRUE(wrapper_node->content_attributes->anchor_data);
+  ASSERT_TRUE(wrapper_node->content_attributes->geometry);
+  const auto& wrapper_geometry = *wrapper_node->content_attributes->geometry;
+  EXPECT_TRUE(wrapper_geometry.visible_bounding_box.IsEmpty());
+  EXPECT_TRUE(wrapper_geometry.outer_bounding_box.IsEmpty());
+
+  auto* child_node = FindNodeBySelector("#child");
+  ASSERT_TRUE(child_node);
+  ASSERT_TRUE(child_node->content_attributes->geometry);
+  const auto& child_geometry = *child_node->content_attributes->geometry;
+  EXPECT_FALSE(child_geometry.visible_bounding_box.IsEmpty());
+  EXPECT_FALSE(child_geometry.outer_bounding_box.IsEmpty());
+}
+
+TEST_F(AIPageContentAgentTest, InlineBlockFixedDescendantKeepsGeometry) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <style>
+        body { margin: 0; font: 10px/10px Ahem; }
+        .content { padding: 60px 0 0 40px; }
+        a.inline-block-anchor {
+          display: inline-block;
+          width: 100px;
+          height: 100px;
+          border: 1px solid black;
+        }
+        .fixed-box {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 200px;
+          height: 25px;
+        }
+      </style>
+      <body>
+        <div class="content">
+          <a id="anchor" class="inline-block-anchor" href="#test">
+            <div class="fixed-box">a</div>
+          </a>
+        </div>
+      </body>)HTML",
+      url_test_helpers::ToKURL("http://example.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto* anchor_node = FindNodeBySelector("#anchor");
+  ASSERT_TRUE(anchor_node);
+  const auto& attributes = *anchor_node->content_attributes;
+  EXPECT_EQ(attributes.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kAnchor);
+  ASSERT_TRUE(attributes.geometry);
+
+  const auto& geometry = *attributes.geometry;
+  EXPECT_EQ(gfx::Rect(40, 60, 102, 102), geometry.outer_bounding_box);
+  EXPECT_EQ(geometry.outer_bounding_box, geometry.visible_bounding_box);
+}
+
+TEST_F(AIPageContentAgentTest, TableTextClippedByScrollerBeforeScroll) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <style>
+        body { margin: 0; font: 10px/10px Ahem; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        main {
+          width: 70px;
+          height: 30px;
+          overflow: auto;
+        }
+        table {
+          width: 120%;
+          height: 30px;
+          table-layout: fixed;
+          border-collapse: collapse;
+        }
+        td.small10x10 {
+          width: 100px;
+          height: 3ch;
+          vertical-align: top;
+          font: 10px/10px Ahem;
+        }
+      </style>
+      <body>
+        <main id="scroller">
+          <table>
+            <tr>
+              <td id="cell" class="small10x10">ABC DEF GHI JKL MNO PQR STU VWX YZ 0123456789</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td style="height: 100vh; width: 100vh;"></td>
+            </tr>
+          </table>
+        </main>
+      </body>)HTML",
+      url_test_helpers::ToKURL("http://example.com"));
+
+  LoadAhem();
+
+  GetAIPageContentWithActionableElements();
+
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  ASSERT_TRUE(document);
+
+  Element* cell = document->getElementById(AtomicString("cell"));
+  ASSERT_TRUE(cell);
+  Node* text = cell->firstChild();
+  ASSERT_TRUE(text);
+  ASSERT_TRUE(text->IsTextNode());
+
+  const auto* text_node = FindNodeByDomNodeId(DOMNodeIds::IdForNode(text));
+  ASSERT_TRUE(text_node);
+  ASSERT_TRUE(text_node->content_attributes->geometry);
+
+  Element* scroller_element =
+      document->getElementById(AtomicString("scroller"));
+  ASSERT_TRUE(scroller_element);
+
+  const auto& geometry = *text_node->content_attributes->geometry;
+  const auto& fragments = geometry.fragment_visible_bounding_boxes;
+  const ComputedStyle& before_style = text->GetLayoutObject()->StyleRef();
+  LocalFrame* local_frame = document->GetFrame();
+  ASSERT_TRUE(local_frame);
+  EXPECT_NEAR(before_style.ComputedFontSize(), 10.0f, 0.01f);
+  EXPECT_NEAR(before_style.GetFont()->GetFontDescription().ComputedSize(),
+              10.0f, 0.01f);
+
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 50), geometry.outer_bounding_box);
+  EXPECT_EQ(gfx::Rect(0, 0, 70, 30), geometry.visible_bounding_box);
+  ASSERT_EQ(fragments.size(), 3u);
+  EXPECT_EQ(fragments[0], gfx::Rect(0, 0, 70, 10));
+  EXPECT_EQ(fragments[1], gfx::Rect(0, 10, 70, 10));
+  EXPECT_EQ(fragments[2], gfx::Rect(0, 20, 70, 10));
+}
+
+TEST_F(AIPageContentAgentTest, TableTextClippedByScrollerAfterScroll) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <style>
+        body { margin: 0; font: 10px/10px Ahem; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        main {
+          width: 70px;
+          height: 30px;
+          overflow: auto;
+        }
+        table {
+          width: 120%;
+          height: 30px;
+          table-layout: fixed;
+          border-collapse: collapse;
+        }
+        td.small10x10 {
+          width: 100px;
+          height: 3ch;
+          vertical-align: top;
+          font: 10px/10px Ahem;
+        }
+      </style>
+      <body>
+        <main id="scroller">
+          <table>
+            <tr>
+              <td id="cell" class="small10x10">ABC DEF GHI JKL MNO PQR STU VWX YZ 0123456789</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td style="height: 100vh; width: 100vh;"></td>
+            </tr>
+          </table>
+        </main>
+      </body>)HTML",
+      url_test_helpers::ToKURL("http://example.com"));
+
+  LoadAhem();
+
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  ASSERT_TRUE(document);
+
+  Element* scroller = document->getElementById(AtomicString("scroller"));
+  ASSERT_TRUE(scroller);
+  scroller->setScrollLeft(15);
+  scroller->setScrollTop(15);
+
+  LocalFrameView* view = document->View();
+  ASSERT_TRUE(view);
+  test::RunPendingTasks();
+  view->UpdateAllLifecyclePhasesForTest();
+
+  GetAIPageContentWithActionableElements();
+
+  Element* cell = document->getElementById(AtomicString("cell"));
+  ASSERT_TRUE(cell);
+  Node* text = cell->firstChild();
+  ASSERT_TRUE(text);
+  ASSERT_TRUE(text->IsTextNode());
+
+  const auto* text_node = FindNodeByDomNodeId(DOMNodeIds::IdForNode(text));
+  ASSERT_TRUE(text_node);
+  ASSERT_TRUE(text_node->content_attributes->geometry);
+
+  const auto& geometry = *text_node->content_attributes->geometry;
+  const auto& fragments = geometry.fragment_visible_bounding_boxes;
+  const ComputedStyle& after_style = text->GetLayoutObject()->StyleRef();
+  std::string fragments_trace;
+  for (size_t i = 0; i < fragments.size(); ++i) {
+    if (!fragments_trace.empty()) {
+      fragments_trace.append("; ");
+    }
+    std::string fragment_rect = fragments[i].ToString();
+    fragments_trace.append(
+        base::StringPrintf("%zu:%s", i, fragment_rect.c_str()));
+  }
+  LocalFrame* local_frame = document->GetFrame();
+  ASSERT_TRUE(local_frame);
+  EXPECT_NEAR(after_style.ComputedFontSize(), 10.0f, 0.01f);
+  EXPECT_NEAR(after_style.GetFont()->GetFontDescription().ComputedSize(), 10.0f,
+              0.01f);
+
+  EXPECT_EQ(gfx::Rect(-15, -15, 100, 50), geometry.outer_bounding_box);
+  EXPECT_EQ(gfx::Rect(0, 0, 70, 30), geometry.visible_bounding_box);
+  ASSERT_EQ(fragments.size(), 4u);
+  EXPECT_EQ(fragments[0], gfx::Rect(0, 0, 55, 5));
+  EXPECT_EQ(fragments[1], gfx::Rect(0, 5, 55, 10));
+  EXPECT_EQ(fragments[2], gfx::Rect(0, 15, 70, 10));
+  EXPECT_EQ(fragments[3], gfx::Rect(0, 25, 70, 5));
+}
+
+TEST_F(AIPageContentAgentTest, IframeInlineTextClippedWhenViewportScrolled) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <style>
+        body { margin: 0; height: 2000px; font: 10px/10px Ahem; }
+        iframe {
+          border: none;
+          width: 100px;
+          height: 200px;
+        }
+      </style>
+      <body>
+        <iframe id="target" srcdoc="
+          <style>
+            body { margin: 0; font: 10px/10px Ahem; }
+            p { margin: 0; background: red; }
+          </style>
+          <body>
+            <p id='inner'>ABC DEF GHI JKL MNO PQR STU</p>
+          </body>">
+        </iframe>
+      </body>)HTML",
+      url_test_helpers::ToKURL("http://example.com"));
+
+  LoadAhem();
+
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  ASSERT_TRUE(document);
+  Element* scrolling_element = document->scrollingElement();
+  ASSERT_TRUE(scrolling_element);
+  scrolling_element->setScrollLeft(15);
+  scrolling_element->setScrollTop(15);
+
+  LocalFrameView* view = document->View();
+  ASSERT_TRUE(view);
+  test::RunPendingTasks();
+  view->UpdateAllLifecyclePhasesForTest();
+
+  HTMLIFrameElement* iframe_element = DynamicTo<HTMLIFrameElement>(
+      document->getElementById(AtomicString("target")));
+  ASSERT_TRUE(iframe_element);
+  LocalFrame* child_frame =
+      DynamicTo<LocalFrame>(iframe_element->ContentFrame());
+  ASSERT_TRUE(child_frame);
+  // Load Ahem inside the iframe before we snapshot geometry to avoid races on
+  // platforms where font activation is asynchronous.
+  PageTestBase::LoadAhem(*child_frame);
+  test::RunPendingTasks();
+  if (LocalFrameView* child_view = child_frame->View()) {
+    child_view->UpdateAllLifecyclePhasesForTest();
+  }
+  Document* child_document = child_frame->GetDocument();
+  ASSERT_TRUE(child_document);
+
+  Element* inner_p = child_document->getElementById(AtomicString("inner"));
+  ASSERT_TRUE(inner_p);
+  Node* inner_text = inner_p->firstChild();
+  ASSERT_TRUE(inner_text);
+  ASSERT_TRUE(inner_text->IsTextNode());
+
+  GetAIPageContentWithActionableElements();
+
+  const auto* text_node =
+      FindNodeByDomNodeId(DOMNodeIds::IdForNode(inner_text));
+  ASSERT_TRUE(text_node);
+  ASSERT_TRUE(text_node->content_attributes->geometry);
+
+  const auto& geometry = *text_node->content_attributes->geometry;
+  const auto& fragments = geometry.fragment_visible_bounding_boxes;
+  const ComputedStyle& iframe_style = inner_text->GetLayoutObject()->StyleRef();
+  std::string fragments_trace;
+  for (size_t i = 0; i < fragments.size(); ++i) {
+    if (!fragments_trace.empty()) {
+      fragments_trace.append("; ");
+    }
+    std::string fragment_rect = fragments[i].ToString();
+    fragments_trace.append(
+        base::StringPrintf("%zu:%s", i, fragment_rect.c_str()));
+  }
+  EXPECT_NEAR(iframe_style.ComputedFontSize(), 10.0f, 0.01f);
+  EXPECT_NEAR(iframe_style.GetFont()->GetFontDescription().ComputedSize(),
+              10.0f, 0.01f);
+  EXPECT_EQ(
+      AtomicString("Ahem"),
+      iframe_style.GetFont()->GetFontDescription().FirstFamily().FamilyName());
+
+  EXPECT_EQ(gfx::Rect(0, -15, 70, 40), geometry.outer_bounding_box);
+  EXPECT_EQ(gfx::Rect(0, 0, 70, 25), geometry.visible_bounding_box);
+  ASSERT_EQ(fragments.size(), 3u);
+  EXPECT_EQ(fragments[0], gfx::Rect(0, 0, 70, 5));
+  EXPECT_EQ(fragments[1], gfx::Rect(0, 5, 70, 10));
+  EXPECT_EQ(fragments[2], gfx::Rect(0, 15, 30, 10));
 }
 
 TEST_F(AIPageContentAgentTest, CSSHoverPseudoClass) {
@@ -4417,32 +5137,6 @@ class AIPageContentAgentTestZOrder : public base::test::WithFeatureOverride,
             blink::features::kAIPageContentZOrderEarlyFiltering) {}
   ~AIPageContentAgentTestZOrder() override = default;
 };
-
-TEST_P(AIPageContentAgentTestZOrder,
-       AnchorInInlineWithFloatingSiblingHitTesting) {
-  frame_test_helpers::LoadHTMLString(
-      helper_.LocalMainFrame(),
-      "<body>"
-      "  <span>"
-      "  <a href='https://www.google.com'>"
-      "    <div style='position: relative; float: left;'>text in div</div>"
-      "    <span>text</span>"
-      "  </a>"
-      "  </span>"
-      "</body>",
-      url_test_helpers::ToKURL("http://foobar.com"));
-
-  GetAIPageContentWithActionableElements();
-
-  const auto& root = ContentRootNode();
-  const auto& span = *root.children_nodes.at(0);
-  const auto& anchor = *span.children_nodes.at(0);
-
-  CheckAnchorNode(anchor, blink::KURL("https://www.google.com/"), {});
-  ASSERT_TRUE(anchor.content_attributes->node_interaction_info);
-  EXPECT_TRUE(anchor.content_attributes->node_interaction_info
-                  ->document_scoped_z_order);
-}
 
 TEST_P(AIPageContentAgentTestZOrder, HitTestElementsBasic) {
   frame_test_helpers::LoadHTMLString(
@@ -4753,6 +5447,34 @@ TEST_P(AIPageContentAgentTestZOrder, HitTestElementsRelativePos) {
   CheckGeometry(*article, gfx::Rect(158, 8, 50, 50), gfx::Rect());
 }
 
+TEST_P(AIPageContentAgentTestZOrder, LabelWithText) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body style='margin:0; font:1px/1px Ahem'>"
+      "  <label>xyz</label>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  LoadAhem();
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& body = ContentRootNode();
+  ASSERT_EQ(body.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kContainer);
+  const auto& label = *body.children_nodes.at(0);
+  ASSERT_EQ(label.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kContainer);
+  const auto& text = *label.children_nodes.at(0);
+  ASSERT_EQ(text.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kText);
+
+  SCOPED_TRACE("Label");
+  CheckGeometry(label, gfx::Rect(0, 0, 3, 1), gfx::Rect(0, 0, 3, 1));
+  SCOPED_TRACE("Text");
+  CheckGeometry(text, gfx::Rect(0, 0, 3, 1), gfx::Rect(0, 0, 3, 1));
+}
+
 TEST_P(AIPageContentAgentTestZOrder, HitTestElementsAnchorWithSpanParent) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
@@ -4890,6 +5612,44 @@ TEST_P(AIPageContentAgentTestZOrder, HitTestElementsAnchorWithSpanParent) {
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AIPageContentAgentTestZOrder);
+
+TEST_F(AIPageContentAgentTest, LinkWithOverflowGeometry) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <style>"
+      "    a {"
+      "      display: inline-block;"
+      "      width: 20px;"
+      "      height: 20px;"
+      "      overflow: visible;"
+      "    }"
+      "  </style>"
+      "  <a href='#' style='font-size: 50px'>Text that will overflow</a>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& root = ContentRootNode();
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  auto& anchor_node = *root.children_nodes[0];
+  CheckAnchorNode(anchor_node, url_test_helpers::ToKURL("http://foobar.com/#"),
+                  {});
+
+  const auto& geometry = *anchor_node.content_attributes->geometry;
+  // Visible overflow is not currently included in the outer_bounding_box or
+  // visible_bounding_box. This may not be the correct choice given that visible
+  // overflow is hit testable. However, this is not a major concern because
+  // events bubble up. If we see a problem case caused by the lack of overflow
+  // inclusion we can attempt to incorporate hit test rects (which was attempted
+  // previously but was non-trivial).
+  EXPECT_EQ(geometry.outer_bounding_box.width(), 20);
+  EXPECT_EQ(geometry.outer_bounding_box.width(), 20);
+  EXPECT_EQ(geometry.visible_bounding_box.width(), 20);
+  EXPECT_EQ(geometry.visible_bounding_box.height(), 20);
+}
 
 }  // namespace
 }  // namespace blink

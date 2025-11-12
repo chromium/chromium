@@ -156,7 +156,8 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   // Returns the bounding box of all quads returned by `LocalQuadsForSelf`.
   gfx::RectF LocalBoundingBoxRectF() const;
 
-  gfx::RectF LocalBoundingBoxRectForAccessibility() const final;
+  gfx::RectF LocalBoundingBoxRectForAccessibility(
+      IncludeDescendants include_descendants) const final;
 
   PhysicalRect PhysicalLinesBoundingBox() const;
   PhysicalRect LinesVisualOverflowBoundingBox() const;
@@ -242,6 +243,17 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
                             const LayoutBoxModelObject* ancestor,
                             MapCoordinatesFlags mode,
                             bool map_to_ancestor) const;
+
+  // Collects rectangles that the outline of this object would be drawing along
+  // the outside of, even if the object isn't styled with a outline for now.
+  // If include_descendants is true, then descendant rects are aggregated,
+  // causing visible overflow to be included (note that visible overflow is hit
+  // testable).
+  void AddOutlineRectsInternal(OutlineRectCollector&,
+                               OutlineInfo*,
+                               const PhysicalOffset& additional_offset,
+                               OutlineType,
+                               IncludeDescendants include_descendants) const;
 
   LayoutObjectChildList* VirtualChildren() final {
     NOT_DESTROYED();

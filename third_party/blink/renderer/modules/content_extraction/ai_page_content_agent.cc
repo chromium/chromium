@@ -112,7 +112,8 @@ gfx::Rect ComputeVisibleBoundingBox(const LayoutObject& object) {
   // Get the object's local bounding box before viewport clipping.
   gfx::RectF object_rect =
       ClipPathClipper::LocalClipPathBoundingBox(object).value_or(
-          object.LocalBoundingBoxRectForAccessibility());
+          object.LocalBoundingBoxRectForAccessibility(
+              LayoutObject::IncludeDescendants(false)));
 
   // Transform the local bounding box to viewport coordinates, applying:
   // 1. All CSS transforms (translate, scale, rotate, etc.)
@@ -153,7 +154,9 @@ gfx::Rect ComputeOuterBoundingBox(const LayoutObject& object) {
     return gfx::ToEnclosingRect(absolute_quad.BoundingBox());
   }
 
-  return object.AbsoluteBoundingBoxRect(kMapToViewportFlags);
+  gfx::Rect absolute_box = object.AbsoluteBoundingBoxRect(kMapToViewportFlags);
+  // Normalize empty boxes to make test results easier to read.
+  return absolute_box.IsEmpty() ? gfx::Rect() : absolute_box;
 }
 
 // Processes fragment bounding boxes for layout objects that can be split.
@@ -190,9 +193,6 @@ void ComputeFragmentBoundingBoxes(
           fragment_enclosing_rect_in_viewport_coords);
     }
   }
-
-  // AddFragmentRectsAfterClipping(object, geometry.visible_bounding_box,
-  //                               fragment_rects_in_viewport_coords);
 
   if (fragment_rects_in_viewport_coords.size() > 1) {
     geometry.fragment_visible_bounding_boxes =

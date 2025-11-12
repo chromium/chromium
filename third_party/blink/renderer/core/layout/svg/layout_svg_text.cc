@@ -345,7 +345,8 @@ void LayoutSVGText::QuadsInAncestorInternal(
       LocalToAncestorQuad(gfx::QuadF(DecoratedBoundingBox()), ancestor, mode));
 }
 
-gfx::RectF LayoutSVGText::LocalBoundingBoxRectForAccessibility() const {
+gfx::RectF LayoutSVGText::LocalBoundingBoxRectForAccessibility(
+    IncludeDescendants include_descendants) const {
   NOT_DESTROYED();
   return DecoratedBoundingBox();
 }

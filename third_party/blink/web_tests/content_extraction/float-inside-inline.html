@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test for link with floated child</title>
+  <link href="./resources/consistent-rendering.css" rel="stylesheet">
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
+  <script src="./resources/content-extraction-test-helpers.js"></script>
+  <style>
+    * {
+        box-sizing: border-box;
+    }
+
+    .inner-float {
+        width: 20px;
+        height: 20px;
+        display: block;
+        float: left;
+    }
+  </style>
+</head>
+<body onload="runTest()">
+  <div>
+    <!-- Inline with only a deep floated descendant (baseline float salvage). -->
+    <a href="#">
+      <span>
+        <span>
+          <span class="inner-float">X</span>
+        </span>
+      </span>
+    </a>
+    <!-- Inline with a border providing geometry instead of text. -->
+    <a>
+      <span>
+        <span>
+          <span class="inner-float" style="border: 1px">Y</span>
+        </span>
+      </span>
+    </a>
+    <!-- Inline contains a deep float plus an adjacent inline-block; union should include both. -->
+    <a>
+      <span>
+        <span>
+          <span class="inner-float">1</span>
+        </span>
+        <span style="display:inline-block; width: 4px; height: 20px;">2</span>
+      </span>
+    </a>
+  </div>
+  <script>
+    function runTest() {
+      // The bug is about the bounding box of the link being incorrect.
+      // We dump the content node tree of the link element to check its box.
+      finishTest(dumpContentNodeTree(document));
+    }
+  </script>
+</body>
+</html>

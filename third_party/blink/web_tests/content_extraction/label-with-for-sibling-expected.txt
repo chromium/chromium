@@ -1,0 +1,7 @@
+<Root> [box: 0,0 800x600]
+  <Container> [box: 0,0 800x36]
+    <Container> [box: 8,8 784x20]
+      <FormControl> [box: 8,8 18x18]
+      <Container> [box: 36,18 90x10]
+        <Text> "Check me!" [box: 36,18 90x10]
+
