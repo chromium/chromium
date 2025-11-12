@@ -107,6 +107,26 @@ TabStoragePackagerAndroid::TabStoragePackagerAndroid(Profile* profile)
       Java_TabStoragePackager_create(env, reinterpret_cast<intptr_t>(this)));
 }
 
+bool TabStoragePackagerAndroid::IsOffTheRecord(
+    const TabCollection* collection) const {
+  const TabCollection* root_collection = GetRootCollection(collection);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return static_cast<bool>(Java_TabStoragePackager_isOffTheRecord(
+      env, java_obj_, profile_,
+      static_cast<const TabStripCollection*>(root_collection)));
+}
+
+std::string TabStoragePackagerAndroid::GetWindowTag(
+    const TabCollection* collection) const {
+  const TabCollection* root_collection = GetRootCollection(collection);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_TabStoragePackager_getWindowTag(
+      env, java_obj_, profile_,
+      static_cast<const TabStripCollection*>(root_collection));
+}
+
 std::unique_ptr<StoragePackage> TabStoragePackagerAndroid::Package(
     const TabInterface* tab) {
   JNIEnv* env = base::android::AttachCurrentThread();

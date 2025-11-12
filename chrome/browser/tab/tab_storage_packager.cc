@@ -149,6 +149,17 @@ std::unique_ptr<Payload> TabStoragePackager::PackageChildren(
   return std::make_unique<ChildrenPayload>(std::move(children_proto));
 }
 
+const TabCollection* TabStoragePackager::GetRootCollection(
+    const TabCollection* collection) const {
+  CHECK(collection);
+  const TabCollection* parent = collection->GetParentCollection();
+  while (parent) {
+    collection = parent;
+    parent = collection->GetParentCollection();
+  }
+  return collection;
+}
+
 std::unique_ptr<Payload> TabStoragePackager::PackageTabGroupTabCollectionData(
     const TabGroupTabCollection* collection,
     StorageIdMapping& mapping) {

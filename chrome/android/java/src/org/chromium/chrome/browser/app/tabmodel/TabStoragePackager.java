@@ -60,6 +60,22 @@ public class TabStoragePackager {
             this.activeTabSupplier = activeTabSupplier;
         }
 
+        /** Returns a unique tag for the window the {@link TabModel} is associated with. */
+        String getWindowTag() {
+            switch (tabModelType) {
+                case TabModelType.INCOGNITO:
+                case TabModelType.REGULAR: // Fall through.
+                    assert windowId != TabWindowManager.INVALID_WINDOW_ID
+                            : "Regular or incognito tab model must have a valid window ID.";
+                    return Integer.toString(windowId);
+                case TabModelType.ARCHIVED:
+                    return ArchivedTabModelOrchestrator.ARCHIVED_TAB_SELECTOR_UNIQUE_TAG;
+                default:
+                    assert false : "Unknown tab model type: " + tabModelType;
+                    return "";
+            }
+        }
+
         /**
          * @param windowId The {@link WindowId} the {@link TabModel} is associated with.
          * @param isOffTheRecord Whether the tab model is off the record.
@@ -175,6 +191,22 @@ public class TabStoragePackager {
                         info.windowId,
                         info.tabModelType,
                         info.activeTabSupplier.get());
+    }
+
+    @CalledByNative
+    public boolean isOffTheRecord(
+            @JniType("Profile*") Profile profile,
+            @JniType("const TabStripCollection*") TabStripCollection collection) {
+        TabModelInfo info = getTabModelInfo(profile, collection);
+        return info.tabModelType == TabModelType.INCOGNITO;
+    }
+
+    @CalledByNative
+    public @JniType("std::string") String getWindowTag(
+            @JniType("Profile*") Profile profile,
+            @JniType("const TabStripCollection*") TabStripCollection collection) {
+        TabModelInfo info = getTabModelInfo(profile, collection);
+        return info.getWindowTag();
     }
 
     private void configureRemoveFromCacheOnDestroy(

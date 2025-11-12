@@ -47,6 +47,8 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
       delete;
 
   // TabStoragePackager override:
+  bool IsOffTheRecord(const TabCollection* collection) const override;
+  std::string GetWindowTag(const TabCollection* collection) const override;
   std::unique_ptr<StoragePackage> Package(const TabInterface* tab) override;
 
   // Returns a pointer to TabStoragePackage (as a long in Java). The caller is

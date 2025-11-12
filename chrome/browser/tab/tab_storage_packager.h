@@ -47,10 +47,20 @@ class TabStoragePackager {
   std::unique_ptr<Payload> PackagePayload(const TabCollection* collection,
                                           StorageIdMapping& mapping);
 
+  // Whether the `collection`'s root node is off-the-record.
+  virtual bool IsOffTheRecord(const TabCollection* collection) const = 0;
+
+  // Returns a unique window tag for the `collection`'s root node. On Android,
+  // the window tag may be shared between an off-the-record and a regular
+  // collection.
+  virtual std::string GetWindowTag(const TabCollection* collection) const = 0;
+
  protected:
   virtual std::unique_ptr<Payload> PackageTabStripCollectionData(
       const TabStripCollection* collection,
       StorageIdMapping& mapping) = 0;
+
+  const TabCollection* GetRootCollection(const TabCollection* collection) const;
 
  private:
   std::unique_ptr<Payload> PackageTabGroupTabCollectionData(
