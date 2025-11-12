@@ -206,7 +206,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1333745675627230582">Iniciar o jogo do Dinossauro do Chrome</translation>
 <translation id="1333989956347591814">É possível que sua atividade <ph name="BEGIN_EMPHASIS" />ainda esteja visível<ph name="END_EMPHASIS" /> para:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Os websites que você visita
+          <ph name="LIST_ITEM" />Os sites que você visita
           <ph name="LIST_ITEM" />Seu empregador ou sua escola
           <ph name="LIST_ITEM" />Seu provedor de acesso à Internet
         <ph name="END_LIST" /></translation>
@@ -254,7 +254,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1408696301184924537">Salve o IBAN na sua Conta do Google para que ele seja usado automaticamente da próxima vez</translation>
 <translation id="1408787208417187241">Três grampos na parte superior</translation>
-<translation id="1410365862999780287">Como outros usuários deste dispositivo não terão acesso à sua atividade, você pode navegar com mais privacidade. Isso não vai mudar a forma como os dados são coletados pelos sites que você acessa e pelos serviços que eles usam, incluindo o Google. Os downloads, favoritos e itens da Lista de leitura ainda serão salvos.</translation>
+<translation id="1410365862999780287">Como outros usuários deste dispositivo não terão acesso à sua atividade, você pode navegar com mais privacidade. Isso não vai mudar a forma como os dados são coletados pelos sites que você acessa e pelos serviços que eles usam, incluindo o Google. Os itens da Lista de Leitura, downloads e favoritos ainda serão salvos.</translation>
 <translation id="1410941016594047814">Envelope de convite</translation>
 <translation id="1413809658975081374">Erro de privacidade</translation>
 <translation id="1414134146594747368">Pré-escola</translation>
@@ -318,7 +318,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="151720253492607760">Continuar sem permissão</translation>
 <translation id="1517433312004943670">Número de telefone necessário</translation>
 <translation id="1519264250979466059">Data da versão</translation>
-<translation id="1521655867290435174">Planilhas Google</translation>
+<translation id="1521655867290435174">Google Planilhas</translation>
 <translation id="1524669537550112617">Aluguel de imóveis mobiliados</translation>
 <translation id="1527263332363067270">Aguardando conexão...</translation>
 <translation id="1528311629279578926">A conexão está bloqueada porque foi iniciada por uma página pública para se conectar a dispositivos ou servidores na sua rede particular. Atualize esta página para permitir a conexão.</translation>
@@ -541,7 +541,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1871739799120352748">Preço alto</translation>
 <translation id="1874224422119691492">É possível escolher se você quer usar o bloqueio de tela para preencher senhas nas <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">Bandeja de fotos</translation>
-<translation id="1875512691959384712">Formulários Google</translation>
+<translation id="1875512691959384712">Google Formulários</translation>
 <translation id="1876116428946561107">Você não tem nenhum endereço salvo. Adicione um endereço para usá-lo no Chrome.</translation>
 <translation id="1876399092304384674">Por data</translation>
 <translation id="1877026089748256423">O Google Chrome está desatualizado</translation>
@@ -1297,7 +1297,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3145945101586104090">Falha ao decodificar resposta</translation>
 <translation id="3147941219998826815">Viagens de baixo custo e de última hora</translation>
 <translation id="3150653042067488994">Erro temporário do servidor</translation>
-<translation id="3150889484970506196">Botão "Criar uma planilha". Ative para criar rapidamente um novo arquivo do Planilhas Google</translation>
+<translation id="3150889484970506196">Botão "Criar uma planilha". Ative para criar um novo arquivo do Google Planilhas em instantes</translation>
 <translation id="3154506275960390542">Essa página inclui um formulário que pode não ser enviado de forma segura. Os dados que você envia podem ser vistos por outras pessoas enquanto elas navegam ou ser modificados por um invasor para alterar o que o servidor recebe.</translation>
 <translation id="3154987252551138431">Ocorreu um erro com o Compartilhar por proximidade</translation>
 <translation id="315504272643575312">Sua conta é gerenciada por <ph name="MANAGER" />.</translation>
@@ -2325,7 +2325,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4822493756793346865">Os preços normais são baseados em lojas na Web nos últimos 90 dias.</translation>
 <translation id="4822922322149719535">Revisar o registro de erros</translation>
 <translation id="4823699521959851389">O <ph name="SHORT_PRODUCT_NAME" /> precisa da seguinte permissão do seu dispositivo: <ph name="PERMISSION" /></translation>
-<translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo do Planilhas Google</translation>
+<translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo do Google Planilhas</translation>
 <translation id="4826588772550366629">a câmera e o microfone</translation>
 <translation id="4827283332383516812">Excluir cartão</translation>
 <translation id="4830443836091007686">Itens selecionados: <ph name="ITEMS" /></translation>
@@ -2878,7 +2878,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5729442113829771034">Educação infantil</translation>
 <translation id="5730040223043577876">O Chrome recomenda redefinir sua senha se você a reutilizou em outros sites.</translation>
 <translation id="5732392974455271431">Seus responsáveis podem desbloqueá-lo para você</translation>
-<translation id="573555826359077410">Botão "Criar formulário". Ative para criar rapidamente um novo arquivo no Formulários Google</translation>
+<translation id="573555826359077410">Botão "Criar formulário". Ative para criar um novo arquivo no Google Formulários em instantes</translation>
 <translation id="5738385766833540397">Gerencie como você recebe alertas de redução no preço de produtos monitorados.</translation>
 <translation id="5739619009927381786">Use a impressão digital para desbloquear a tela na próxima etapa. Ou <ph name="BEGIN_LINK" />verifique de outra maneira<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Para compartilhar, participar e colaborar em grupos de guias, sincronize o histórico e as guias</translation>
@@ -4107,7 +4107,7 @@ Mais detalhes:
 <translation id="772128550427553158">O CVC aparece na parte frontal do seu cartão.</translation>
 <translation id="7724603315864178912">Recortar</translation>
 <translation id="7730057435797792985">Ordenar</translation>
-<translation id="7734285854693414638">Criar rapidamente um novo arquivo no Formulários Google</translation>
+<translation id="7734285854693414638">Criar um novo arquivo no Google Formulários em instantes</translation>
 <translation id="773466115871691567">Sempre traduzir páginas em <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="7736959720849233795">Copiar endereço do link</translation>
 <translation id="7740996059027112821">Padrão</translation>
@@ -4265,7 +4265,7 @@ Mais detalhes:
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para definir o Chrome como navegador padrão do sistema.</translation>
 <translation id="8027077570865220386">Bandeja 15</translation>
 <translation id="8027585818882015174">Botão "Executar a confirmação de segurança do Chrome". Ative para executar a confirmação de segurança nas configurações do Chrome</translation>
-<translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo no Formulários Google</translation>
+<translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar um novo arquivo no Google Formulários em instantes</translation>
 <translation id="8028892419725165118">Jogos casuais</translation>
 <translation id="8028960012888758725">Cortar ao término da impressão</translation>
 <translation id="8028993641010258682">Tamanho</translation>
@@ -4296,7 +4296,7 @@ Mais detalhes:
 <translation id="8070495475341517754">Passeios turísticos guiados</translation>
 <translation id="8073647227500388356">Veículos autônomos</translation>
 <translation id="8075588646978457437">Papel autoadesivo</translation>
-<translation id="8075736640322370409">Criar rapidamente um novo arquivo do Planilhas Google</translation>
+<translation id="8075736640322370409">Criar rapidamente um novo arquivo do Google Planilhas</translation>
 <translation id="8075898834294118863">Gerenciar configurações do site</translation>
 <translation id="8076492880354921740">Guias</translation>
 <translation id="8076880883123051368">Sua Conta do Google pode armazenar outras formas de histórico de navegação em <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, como sua <ph name="BEGIN_LINK_GAA" />Atividade nos apps do Gemini<ph name="END_LINK_GAA" /></translation>
