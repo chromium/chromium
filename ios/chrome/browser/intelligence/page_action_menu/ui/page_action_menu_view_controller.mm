@@ -805,13 +805,7 @@ const CGFloat kDividerWidth = 1.0;
       initWithImage:DefaultSymbolWithPointSize(kChevronRightSymbol,
                                                kSmallButtonIconSize)];
   chevronIcon.translatesAutoresizingMaskIntoConstraints = NO;
-  chevronIcon.tintColor = [UIColor colorNamed:kTextSecondaryColor];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [chevronIcon.widthAnchor constraintEqualToConstant:kSmallButtonIconSize],
-    [chevronIcon.heightAnchor constraintEqualToConstant:kSmallButtonIconSize],
-  ]];
-
+  chevronIcon.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
   return chevronIcon;
 }
 
