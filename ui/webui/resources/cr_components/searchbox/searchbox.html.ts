@@ -49,8 +49,7 @@ ${this.ntpRealboxNextEnabled ? html`
     </div>
   ` : nothing}
 
-  ${this.searchboxLayoutMode.startsWith('Tall') &&
-      this.composeButtonEnabled ? html`
+  ${this.composeButtonEnabled ? html`
     <cr-searchbox-compose-button id="composeButton"
         @compose-click="${this.onComposeButtonClick_}">
     </cr-searchbox-compose-button>
@@ -127,13 +126,6 @@ ${this.ntpRealboxNextEnabled ? html`
           title="${this.i18n('lensSearchButtonLabel')}">
       </button>
     </div>
-  ` : nothing}
-
-  ${!this.searchboxLayoutMode.startsWith('Tall') &&
-      this.composeButtonEnabled ? html`
-    <cr-searchbox-compose-button id="composeButton"
-        @compose-click="${this.onComposeButtonClick_}">
-    </cr-searchbox-compose-button>
   ` : nothing}
 
 <!--_html_template_end_-->`;
