@@ -12,7 +12,6 @@
 
 #include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -96,10 +95,6 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
 
   // Iterate through the tab strip model, getting the data for each tab
   auto* tab_strip_model = browser_window_interface->GetTabStripModel();
-  UMA_HISTOGRAM_COUNTS_1000(
-      "NewTabPage.Composebox.ActiveTabsCountOnContextMenuOpen",
-      tab_strip_model->count());
-
   for (int i = 0; i < tab_strip_model->count(); i++) {
     content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
     tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(i);
@@ -140,8 +135,6 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
                     [](const std::pair<const std::string, int>& pair) {
                       return pair.second > 1;
                     });
-  UMA_HISTOGRAM_COUNTS_100000(
-      "NewTabPage.Composebox.DuplicateTabTitlesShownCount", duplicate_count);
 
   // Sort the tabs by last active time, and truncate to the maximum number of
   // tabs to return.
@@ -155,6 +148,11 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
                       return a->last_active > b->last_active;
                     });
   tabs.resize(max_tab_suggestions);
+
+  if (auto* metrics_recorder = GetMetricsRecorder()) {
+    metrics_recorder->RecordTabContextMenuMetrics(tab_strip_model->count(),
+                                                  duplicate_count);
+  }
 
   // Invoke the callback with the results.
   std::move(callback).Run(std::move(tabs));
@@ -327,58 +325,58 @@ void ContextualSearchboxHandler::RecordTabClickedMetric(
   bool has_duplicate_title = false;
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_);
-  if (browser_window_interface) {
-    std::vector<std::pair<int, base::TimeTicks>> last_active_times;
-    auto* tab_strip_model = browser_window_interface->GetTabStripModel();
-    int tab_index = tab_strip_model->GetIndexOfTab(tab);
-    if (tab_index != TabStripModel::kNoTab) {
-      TabRendererData current_tab_renderer_data =
-          TabRendererData::FromTabInModel(tab_strip_model, tab_index);
-      const std::u16string& current_title = current_tab_renderer_data.title;
-
-      int title_count = 0;
-      for (int i = 0; i < tab_strip_model->count(); i++) {
-        TabRendererData tab_renderer_data =
-            TabRendererData::FromTabInModel(tab_strip_model, i);
-        if (tab_renderer_data.title == current_title) {
-          title_count++;
-        }
-
-        if (tab_renderer_data.tab_interface) {
-          last_active_times.emplace_back(
-              i, tab_renderer_data.tab_interface->GetContents()
-                     ->GetLastActiveTimeTicks());
-        }
-      }
-      if (title_count > 1) {
-        has_duplicate_title = true;
-      }
-
-      std::vector<std::pair<int, base::TimeTicks>>
-          reverse_chron_last_active_times(last_active_times.begin(),
-                                          last_active_times.end());
-      std::sort(reverse_chron_last_active_times.begin(),
-                reverse_chron_last_active_times.end(),
-                [](const std::pair<int, base::TimeTicks>& a,
-                   const std::pair<int, base::TimeTicks>& b) {
-                  return a.second > b.second;
-                });
-      for (size_t i = 0; i < reverse_chron_last_active_times.size(); ++i) {
-        if (reverse_chron_last_active_times[i].first == tab_index) {
-          base::UmaHistogramCounts100(
-              "ContextualSearch.AddedTabContextRecencyRanking." +
-                  GetMetricsRecorder()->GetMetricsSuffix(),
-              i);
-          break;
-        }
-      }
-    }
+  if (!browser_window_interface) {
+    return;
   }
 
-  UMA_HISTOGRAM_BOOLEAN("NewTabPage.Composebox.TabContextAdded", true);
+    auto* tab_strip_model = browser_window_interface->GetTabStripModel();
+    int tab_index = tab_strip_model->GetIndexOfTab(tab);
+    if (tab_index == TabStripModel::kNoTab) {
+      return;
+    }
 
-  UMA_HISTOGRAM_BOOLEAN("NewTabPage.Composebox.TabWithDuplicateTitleClicked",
-                        has_duplicate_title);
+    TabRendererData current_tab_renderer_data =
+        TabRendererData::FromTabInModel(tab_strip_model, tab_index);
+    const std::u16string& current_title = current_tab_renderer_data.title;
+
+    int title_count = 0;
+    std::vector<std::pair<int, base::TimeTicks>> last_active_times;
+    for (int i = 0; i < tab_strip_model->count(); i++) {
+      TabRendererData tab_renderer_data =
+          TabRendererData::FromTabInModel(tab_strip_model, i);
+      if (tab_renderer_data.title == current_title) {
+        title_count++;
+      }
+
+      if (tab_renderer_data.tab_interface) {
+        last_active_times.emplace_back(
+            i, tab_renderer_data.tab_interface->GetContents()
+                   ->GetLastActiveTimeTicks());
+      }
+    }
+    if (title_count > 1) {
+      has_duplicate_title = true;
+    }
+
+    std::vector<std::pair<int, base::TimeTicks>>
+        reverse_chron_last_active_times(last_active_times.begin(),
+                                        last_active_times.end());
+    std::sort(reverse_chron_last_active_times.begin(),
+              reverse_chron_last_active_times.end(),
+              [](const std::pair<int, base::TimeTicks>& a,
+                 const std::pair<int, base::TimeTicks>& b) {
+                return a.second > b.second;
+              });
+    std::optional<int> recency_ranking;
+    for (size_t i = 0; i < reverse_chron_last_active_times.size(); ++i) {
+      if (reverse_chron_last_active_times[i].first == tab_index) {
+        recency_ranking = i;
+        break;
+      }
+    }
+
+    metrics_recorder->RecordTabClickedMetrics(has_duplicate_title,
+                                              recency_ranking);
 }
 
 void ContextualSearchboxHandler::DeleteContext(

@@ -658,8 +658,8 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextAddedMetric) {
   handler().AddTabContext(tab_id, false, callback.Get());
 
   // Check that the histogram was recorded.
-  histogram_tester().ExpectUniqueSample("NewTabPage.Composebox.TabContextAdded",
-                                        true, 1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.TabContextAdded.NewTabPage", true, 1);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest,
@@ -728,7 +728,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   handler().AddTabContext(tab_a1->GetHandle().raw_value(), false,
                           callback1.Get());
   histogram_tester().ExpectUniqueSample(
-      "NewTabPage.Composebox.TabWithDuplicateTitleClicked", true, 1);
+      "ContextualSearch.TabWithDuplicateTitleClicked.NewTabPage", true, 1);
 
   // Click on a tab with a unique title.
   base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback2;
@@ -736,9 +736,9 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   handler().AddTabContext(tab_b1->GetHandle().raw_value(), false,
                           callback2.Get());
   histogram_tester().ExpectBucketCount(
-      "NewTabPage.Composebox.TabWithDuplicateTitleClicked", false, 1);
+      "ContextualSearch.TabWithDuplicateTitleClicked.NewTabPage", false, 1);
   histogram_tester().ExpectTotalCount(
-      "NewTabPage.Composebox.TabWithDuplicateTitleClicked", 2);
+      "ContextualSearch.TabWithDuplicateTitleClicked.NewTabPage", 2);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest,
@@ -771,7 +771,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   handler().AddTabContext(tab_a1->GetHandle().raw_value(), false,
                           callback1.Get());
   histogram_tester().ExpectUniqueSample(
-      "NewTabPage.Composebox.TabWithDuplicateTitleClicked", false, 1);
+      "ContextualSearch.TabWithDuplicateTitleClicked.NewTabPage", false, 1);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextRecencyRankingMetric) {
@@ -894,7 +894,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, DuplicateTabsShownMetric) {
   auto tabs = tab_info_future.Take();
 
   histogram_tester().ExpectUniqueSample(
-      "NewTabPage.Composebox.DuplicateTabTitlesShownCount", 2, 1);
+      "ContextualSearch.DuplicateTabTitlesShownCount.NewTabPage", 2, 1);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest, ActiveTabsCountMetric) {
@@ -908,7 +908,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, ActiveTabsCountMetric) {
   auto tabs = tab_info_future.Take();
 
   histogram_tester().ExpectUniqueSample(
-      "NewTabPage.Composebox.ActiveTabsCountOnContextMenuOpen", 3, 1);
+      "ContextualSearch.ActiveTabsCountOnContextMenuOpen.NewTabPage", 3, 1);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest, GetTabPreview_InvalidTab) {

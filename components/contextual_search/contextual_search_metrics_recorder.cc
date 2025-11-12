@@ -175,6 +175,34 @@ void ContextualSearchMetricsRecorder::RecordFileDeletedMetrics(
       success);
 }
 
+void ContextualSearchMetricsRecorder::RecordTabClickedMetrics(
+    bool has_duplicate_title,
+    std::optional<int> recency_ranking) {
+  base::UmaHistogramBoolean(
+      "ContextualSearch.TabContextAdded." + GetMetricsSuffix(), true);
+
+  base::UmaHistogramBoolean(
+      "ContextualSearch.TabWithDuplicateTitleClicked." + GetMetricsSuffix(),
+      has_duplicate_title);
+
+  if (recency_ranking) {
+    base::UmaHistogramCounts100(
+        "ContextualSearch.AddedTabContextRecencyRanking." + GetMetricsSuffix(),
+        *recency_ranking);
+  }
+}
+
+void ContextualSearchMetricsRecorder::RecordTabContextMenuMetrics(
+    int total_tab_count,
+    int duplicate_title_count) {
+  base::UmaHistogramCounts1000(
+      "ContextualSearch.ActiveTabsCountOnContextMenuOpen." + GetMetricsSuffix(),
+      total_tab_count);
+  base::UmaHistogramCounts1000(
+      "ContextualSearch.DuplicateTabTitlesShownCount." + GetMetricsSuffix(),
+      duplicate_title_count);
+}
+
 void ContextualSearchMetricsRecorder::NotifySessionStarted() {
   session_metrics_->session_elapsed_timer =
       std::make_unique<base::ElapsedTimer>();

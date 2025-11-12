@@ -98,6 +98,12 @@ class ContextualSearchMetricsRecorder {
                                 lens::MimeType file_type,
                                 FileUploadStatus file_status);
 
+  void RecordTabClickedMetrics(bool has_duplicate_title,
+                               std::optional<int> recency_ranking);
+
+  void RecordTabContextMenuMetrics(int total_tab_count,
+                                   int duplicate_title_count);
+
   std::string GetMetricsSuffix() const { return metrics_suffix_; }
 
  private:

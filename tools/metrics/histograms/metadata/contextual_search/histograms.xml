@@ -35,6 +35,19 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram
+    name="ContextualSearch.ActiveTabsCountOnContextMenuOpen.{ContextualSearchSource}"
+    units="count" expires_after="2026-06-10">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks the total number of active tabs a user has at the time in which they
+    open the composeboxcontext menu. This metric is recorded regardless of
+    whether or not a query was issued with the tab.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
     name="ContextualSearch.AddedTabContextRecencyRanking.{ContextualSearchSource}"
     units="rank" expires_after="2026-06-10">
   <owner>hujasonx@google.com</owner>
@@ -44,6 +57,18 @@ chromium-metrics-reviews@google.com.
     when a tab is added as context through the composebox context menu. This
     metric is recorded regardless of whether or not a query was issued with the
     tab.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.DuplicateTabTitlesShownCount.{ContextualSearchSource}"
+    units="count" expires_after="2026-06-10">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded during each session and records the number of tabs shown in the
+    context menu UI that have duplicate titles.
   </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
@@ -262,6 +287,31 @@ chromium-metrics-reviews@google.com.
     Tracks the number of queries submitted per session. Multiple queries may be
     submitted when the AIM page is opened in a new tab or window and the
     composebox remains open. Recorded at the end of the session.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram name="ContextualSearch.TabContextAdded.{ContextualSearchSource}"
+    units="count" expires_after="2026-06-10">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks the total number of times a tab is added as context through the
+    composebox context menu. This metric is recorded regardless of whether or
+    not a query was issued with the tab.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.TabWithDuplicateTitleClicked.{ContextualSearchSource}"
+    units="count" expires_after="2026-06-10">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks the total number of times a tab with a duplicate title is clicked
+    through the composebox context menu. This metric is recorded regardless of
+    whether or not a query was issued with the tab.
   </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
