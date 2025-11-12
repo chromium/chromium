@@ -814,6 +814,12 @@ BASE_FEATURE(kAutofillShowBubblesBasedOnPriorities,
 // If enabled, a pre-filled field will not be filled.
 BASE_FEATURE(kAutofillSkipPreFilledFields, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, select-option-change signals are throttled separately by
+// element. Previously, they were throttled together irrespective of the
+// element.
+BASE_FEATURE(kAutofillSplitTimersForSelectOptionChanges,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If this feature is enabled, the AddressFieldParser does NOT try to parse
 // address lines once it has found a street name and house number or other
 // combinations of fields that indicate that an address form uses structured

@@ -40,6 +40,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/optional_ref.h"
 #include "base/types/zip.h"
@@ -555,7 +556,7 @@ void AutofillAgent::Reset() {
   last_queried_element_ = {};
   form_cache_.Reset();
   is_dom_content_loaded_ = false;
-  select_option_change_batch_timer_.Stop();
+  select_option_change_batch_timer_.clear();
   datalist_option_change_batch_timer_.Stop();
   process_forms_after_dynamic_change_timer_.Stop();
   process_forms_form_extraction_timer_.Stop();
@@ -1894,18 +1895,23 @@ void AutofillAgent::SelectFieldOptionsChanged(
     return;
   }
 
-  if (select_option_change_batch_timer_.IsRunning()) {
-    select_option_change_batch_timer_.Stop();
-  }
+  FieldRendererId element_id = form_util::GetFieldRendererId(element);
+  base::OneShotTimer& timer =
+      base::FeatureList::IsEnabled(
+          features::kAutofillSplitTimersForSelectOptionChanges)
+          ? select_option_change_batch_timer_[element_id]
+          : select_option_change_batch_timer_[FieldRendererId()];
 
-  select_option_change_batch_timer_.Start(
-      FROM_HERE, kWaitTimeForOptionsChanges,
-      base::BindRepeating(&AutofillAgent::BatchSelectOptionChange,
-                          base::Unretained(this),
-                          form_util::GetFieldRendererId(element)));
+  if (timer.IsRunning()) {
+    timer.Stop();
+  }
+  timer.Start(FROM_HERE, kWaitTimeForOptionsChanges,
+              base::BindRepeating(&AutofillAgent::BatchSelectOptionChange,
+                                  base::Unretained(this), element_id));
 }
 
 void AutofillAgent::BatchSelectOptionChange(FieldRendererId element_id) {
+  select_option_change_batch_timer_.erase(element_id);
   WebFormControlElement element =
       form_util::GetFormControlByRendererId(element_id);
   if (!element) {
