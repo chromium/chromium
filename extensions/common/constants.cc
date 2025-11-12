@@ -94,11 +94,11 @@ bool IsSystemUIApp(std::string_view extension_id) {
 
 bool IsQuickOfficeExtension(std::string_view extension_id) {
   constexpr auto kQuickOfficeIds = base::MakeFixedFlatSet<std::string_view>({
-      // clang-format off
+#if BUILDFLAG(IS_CHROMEOS)
       kQuickOfficeComponentExtensionId,
+#endif
       kQuickOfficeInternalExtensionId,
       kQuickOfficeExtensionId,
-      // clang-format on
   });
   return base::Contains(kQuickOfficeIds, extension_id);
 }

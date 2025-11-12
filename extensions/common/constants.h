@@ -273,9 +273,11 @@ inline constexpr char kChromeVoxExtensionId[] =
 // The extension id of the PDF extension.
 inline constexpr char kPdfExtensionId[] = "mhjfbmdgcfjbbpaeojofohoefgiehjai";
 
+#if BUILDFLAG(IS_CHROMEOS)
 // The extension id of the Office Viewer component extension.
 inline constexpr char kQuickOfficeComponentExtensionId[] =
     "bpmcpldpdmajfigpchkicefoigmkfalc";
+#endif
 
 // The extension id of the Office Viewer extension on the internal webstore.
 inline constexpr char kQuickOfficeInternalExtensionId[] =
