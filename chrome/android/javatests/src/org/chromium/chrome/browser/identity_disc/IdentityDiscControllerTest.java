@@ -382,10 +382,18 @@ public class IdentityDiscControllerTest {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         ViewUtils.waitForVisibleView(withId(R.id.optional_toolbar_button));
 
-        // Identity Disc should not be visible, when switched from sign in state to incognito NTP.
-        mActivityTestRule.newIncognitoTabFromMenu();
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.optional_toolbar_button), ViewUtils.VIEW_GONE);
+        var incognitoNewTabPageStation = mPage.openAppMenu().openNewIncognitoTab();
+
+        // When switched from sign in state to incognito NTP, Identity Disc shouldn't be seen.
+        var chromeTabbedActivity = incognitoNewTabPageStation.getActivity();
+        if (chromeTabbedActivity.isIncognitoWindow()) {
+            // For an incognito window, Identity Disc shouldn't be inflated.
+            Assert.assertNull(chromeTabbedActivity.findViewById(R.id.optional_toolbar_button));
+        } else {
+            // For an incognito tab, Identity Disc is inflated, but shouldn't be visible.
+            ViewUtils.waitForViewCheckingState(
+                    withId(R.id.optional_toolbar_button), ViewUtils.VIEW_GONE);
+        }
     }
 
     @Test
