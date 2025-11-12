@@ -22,7 +22,7 @@ namespace ui {
 // within the context of X11.
 class NativePixmapEGLX11Binding : public NativePixmapGLBinding {
  public:
-  explicit NativePixmapEGLX11Binding(gfx::BufferFormat format);
+  NativePixmapEGLX11Binding();
   ~NativePixmapEGLX11Binding() override;
 
   static bool IsSharedImageFormatSupported(viz::SharedImageFormat format);

@@ -27,28 +27,9 @@ bool IsFormatSupported(viz::SharedImageFormat format) {
   return format == viz::SinglePlaneFormat::kBGRA_8888;
 }
 
-uint8_t Depth(gfx::BufferFormat format) {
-  switch (format) {
-    case gfx::BufferFormat::BGRA_8888:
-      return 32;
-    default:
-      NOTREACHED();
-  }
-}
-
-uint8_t Bpp(gfx::BufferFormat format) {
-  switch (format) {
-    case gfx::BufferFormat::BGRA_8888:
-      return 32;
-    default:
-      NOTREACHED();
-  }
-}
-
-x11::Pixmap XPixmapFromNativePixmap(const gfx::NativePixmap& native_pixmap,
-                                    gfx::BufferFormat buffer_format) {
-  const uint8_t depth = Depth(buffer_format);
-  const uint8_t bpp = Bpp(buffer_format);
+x11::Pixmap XPixmapFromNativePixmap(const gfx::NativePixmap& native_pixmap) {
+  const uint8_t depth = 32;
+  const uint8_t bpp = 32;
   const auto fd = HANDLE_EINTR(dup(native_pixmap.GetDmaBufFd(0)));
   if (fd < 0) {
     VPLOG(1) << "Could not import the dma-buf as an XPixmap because the FD "
@@ -134,7 +115,7 @@ inline EGLDisplay FromXDisplay() {
 
 namespace ui {
 
-NativePixmapEGLX11Binding::NativePixmapEGLX11Binding(gfx::BufferFormat format)
+NativePixmapEGLX11Binding::NativePixmapEGLX11Binding()
     : display_(gl::FromXDisplay()) {}
 
 NativePixmapEGLX11Binding::~NativePixmapEGLX11Binding() {
@@ -222,10 +203,8 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLX11Binding::Create(
     return nullptr;
   }
 
-  auto buffer_format = viz::SharedImageFormatToBufferFormat(plane_format);
-  auto binding = std::make_unique<NativePixmapEGLX11Binding>(buffer_format);
-  x11::Pixmap pixmap =
-      gl::XPixmapFromNativePixmap(*native_pixmap, buffer_format);
+  auto binding = std::make_unique<NativePixmapEGLX11Binding>();
+  x11::Pixmap pixmap = gl::XPixmapFromNativePixmap(*native_pixmap);
   if (pixmap == x11::Pixmap::None) {
     return nullptr;
   }
