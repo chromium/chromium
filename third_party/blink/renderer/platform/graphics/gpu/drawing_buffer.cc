@@ -2030,7 +2030,6 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       {color_buffer_format_, size, color_space_, origin, back_buffer_alpha_type,
        usage, "WebGLDrawingBuffer"},
       gpu::kNullSurfaceHandle);
-  GLenum texture_target = back_buffer_shared_image->GetTextureTarget();
 
   staging_texture_needed_ = false;
   if (requested_alpha_type_ == kUnpremul_SkAlphaType &&
@@ -2050,12 +2049,13 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   // Import the backbuffer of swap chain or allocated SharedImage into GL.
   std::unique_ptr<gpu::SharedImageTexture> si_texture =
       back_buffer_shared_image->CreateGLTexture(gl_);
+  GLenum si_texture_target = back_buffer_shared_image->GetTextureTarget();
   scoped_refptr<DrawingBuffer::ColorBuffer> color_buffer =
       base::MakeRefCounted<ColorBuffer>(weak_factory_.GetWeakPtr(),
                                         std::move(back_buffer_shared_image),
                                         std::move(si_texture));
   color_buffer->BeginAccess(gpu::SyncToken(), /*readonly=*/false);
-  gl_->BindTexture(texture_target, color_buffer->texture_id());
+  gl_->BindTexture(si_texture_target, color_buffer->texture_id());
 
   // Clear the alpha channel if RGB emulation is required.
   if (DefaultBufferRequiresAlphaChannelToBePreserved()) {
@@ -2065,13 +2065,13 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     gl_->GenFramebuffers(1, &fbo);
     gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo);
     gl_->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                              texture_target, color_buffer->texture_id(), 0);
+                              si_texture_target, color_buffer->texture_id(), 0);
     gl_->ClearColor(0, 0, 0, 1);
     gl_->ColorMask(false, false, false, true);
     gl_->Disable(GL_SCISSOR_TEST);
     gl_->Clear(GL_COLOR_BUFFER_BIT);
     gl_->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                              texture_target, 0, 0);
+                              si_texture_target, 0, 0);
     gl_->DeleteFramebuffers(1, &fbo);
   }
 
