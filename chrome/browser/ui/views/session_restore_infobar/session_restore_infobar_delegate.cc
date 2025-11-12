@@ -195,4 +195,9 @@ bool SessionRestoreInfoBarDelegate::LinkClicked(
   return ConfirmInfoBarDelegate::LinkClicked(disposition);
 }
 
+std::optional<std::u16string>
+SessionRestoreInfoBarDelegate::GetLinkAccessibleText() const {
+  return l10n_util::GetStringUTF16(IDS_SESSION_RESTORE_LINK_ARIA_LABEL);
+}
+
 }  // namespace session_restore_infobar

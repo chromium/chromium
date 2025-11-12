@@ -80,6 +80,7 @@ class SessionRestoreInfoBarDelegate : public ConfirmInfoBarDelegate {
   void InfoBarDismissed() override;
   GURL GetLinkURL() const override;
   bool LinkClicked(WindowOpenDisposition disposition) override;
+  std::optional<std::u16string> GetLinkAccessibleText() const override;
 
  private:
   void OnSessionRestorePrefChanged();
