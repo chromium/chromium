@@ -10,7 +10,6 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
-- android
 - fuchsia
 items:
 - caption: Enable bookmark bar
@@ -25,6 +24,7 @@ owners:
 schema:
   type: boolean
 supported_on:
+- android:144-
 - chrome.*:12-
 - chrome_os:12-
 tags: []
