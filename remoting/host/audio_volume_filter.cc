@@ -18,8 +18,7 @@ bool AudioVolumeFilter::Apply(base::span<int16_t> data) {
     return false;
   }
 
-  const auto data_bytes = base::as_bytes(data);
-  if (silence_detector_.IsSilence(data_bytes)) {
+  if (silence_detector_.IsSilence(base::as_bytes(data))) {
     return false;
   }
 

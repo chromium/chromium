@@ -45,7 +45,7 @@ bool AudioSilenceDetector::IsSilence(base::span<const unsigned char> samples) {
   // Potentially this loop can be optimized (e.g. using SSE or adding special
   // case for threshold_==0), but it's not worth worrying about because the
   // amount of data it processes is relatively small.
-  CHECK_EQ(samples.size() % sizeof(unsigned char), 0U);
+  CHECK_EQ(samples.size() % sizeof(int16_t), 0U);
   // SAFETY: `samples` is a span of bytes that's filled by the audio queue.
   // The size is multiple of sizeof(int16_t), so it's safe to interpret as a
   // span of int16_t.
