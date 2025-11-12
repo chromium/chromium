@@ -178,7 +178,6 @@ GlicInstanceImpl::GlicInstanceImpl(
           profile,
           metrics),
       sharing_manager_(&attached_mode_sharing_manager_),
-      last_non_hidden_panel_state_kind_(mojom::PanelStateKind::kAttached),
       zero_state_suggestions_manager_(
           std::make_unique<GlicZeroStateSuggestionsManager>(
               &sharing_manager_,
