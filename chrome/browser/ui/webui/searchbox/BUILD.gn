@@ -60,6 +60,7 @@ source_set("searchbox") {
     "//chrome/browser/ui/views/location_bar",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/metrics_reporter",
+    "//chrome/browser/ui/webui/omnibox_popup/mojom",
     "//components/bookmarks/browser",
     "//components/contextual_search:public",
     "//components/lens",
