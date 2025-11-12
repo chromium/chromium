@@ -1131,5 +1131,22 @@ TEST_F(AnchorElementInteractionViewportHeuristicsTest,
   EXPECT_EQ(hosts_[0]->calls_.size(), 0u);
 }
 
+// Regression test for https://crbug.com/458237344.
+TEST_F(AnchorElementInteractionViewportHeuristicsTest,
+       IgnoreSameDocumentNavigation) {
+  String body = R"HTML(
+    <body style="margin: 0px">
+      <div style="height: 50px"></div>
+      <a href="https://example.com/#head" style="height: 50px; display: block;">foo</a>
+    </body>
+  )HTML";
+  RunBasicTestFixture({.main_resource_body = body,
+                       .pointer_down_location = gfx::PointF(100, 150),
+                       .scroll_delta = -25});
+
+  ASSERT_EQ(hosts_.size(), 1u);
+  EXPECT_EQ(hosts_[0]->calls_.size(), 0u);
+}
+
 }  // namespace
 }  // namespace blink
