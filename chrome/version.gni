@@ -59,6 +59,8 @@ if (target_os == "android") {
     if (is_desktop_android) {
       _version_dictionary_template +=
           "chrome_desktop_version_code = \"@CHROME_DESKTOP_VERSION_CODE@\" "
+      _version_dictionary_template +=
+          "chrome_desktop_beta_version_code = \"@CHROME_DESKTOP_BETA_VERSION_CODE@\" "
     }
     _version_dictionary_template +=
         "chrome_32_version_code = \"@CHROME_32_VERSION_CODE@\" "
@@ -179,6 +181,7 @@ if (is_mac) {
                            "chrome_beta_version_code",
                            "chrome_auto_version_code",
                            "chrome_desktop_version_code",
+                           "chrome_desktop_beta_version_code",
                            "chrome_32_version_code",
                            "monochrome_version_code",
                            "monochrome_32_version_code",
@@ -256,7 +259,10 @@ if (is_android && current_toolchain == default_toolchain) {
   ]
 
   if (defined(chrome_desktop_version_code)) {
-    lines_to_write += [ "ChromeDesktop: $chrome_desktop_version_code" ]
+    lines_to_write += [
+      "ChromeDesktop: $chrome_desktop_version_code",
+      "ChromeDesktopOpenBeta: $chrome_desktop_beta_version_code"
+    ]
   }
 
   if (target_cpu == "arm64") {
@@ -336,7 +342,9 @@ if (is_android) {
   # Changing chrome_version_code here to prevent different output
   # in the android_chrome_versions.txt above
   if (_use_stable_package_name_for_trichrome) {
-    if (is_high_end_android) {
+    if (defined(chrome_desktop_beta_version_code)) {
+      chrome_version_code = chrome_desktop_beta_version_code
+    } else if (is_high_end_android) {
       chrome_version_code = chrome_high_beta_version_code
     } else {
       chrome_version_code = chrome_beta_version_code
