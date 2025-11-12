@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.permissions;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.view.View;
 
 import androidx.test.filters.MediumTest;
 
@@ -102,8 +103,10 @@ public class LocationPrecisionChooserRenderTest {
 
         mPermissionRule.waitForDialogShownState(true);
 
-        mRenderTestRule.render(
-                mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view), goldenViewId);
+        View modalDialogView = mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view);
+        RenderTestRule.sanitize(modalDialogView);
+
+        mRenderTestRule.render(modalDialogView, goldenViewId);
     }
 
     @Test

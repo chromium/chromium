@@ -108,9 +108,7 @@ class PasswordManagerDialogMediator implements View.OnLayoutChangeListener {
         // The space for the illustration can't be guaranteed if the controls state provider
         // is not available (yet or anymore).
         if (mBrowserControlsStateProvider == null) return false;
-        heightPx -=
-                ChromeTabModalPresenter.getContainerTopMargin(
-                        mResources, mBrowserControlsStateProvider);
+        heightPx -= ChromeTabModalPresenter.getContainerTopMargin(mBrowserControlsStateProvider);
         heightPx -= ChromeTabModalPresenter.getContainerBottomMargin(mBrowserControlsStateProvider);
         return heightPx
                 >= mResources.getDimensionPixelSize(

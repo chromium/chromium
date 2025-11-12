@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.view.View;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
@@ -110,9 +111,10 @@ public class PermissionPromptRenderTest {
                 "initiate_getCurrentPosition()");
 
         mPermissionRule.waitForDialogShownState(true);
+        View modalDialogView = mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view);
+        RenderTestRule.sanitize(modalDialogView);
 
-        mRenderTestRule.render(
-                mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view), goldenViewId);
+        mRenderTestRule.render(modalDialogView, goldenViewId);
     }
 
     @Test

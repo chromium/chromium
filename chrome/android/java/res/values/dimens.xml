@@ -109,9 +109,6 @@ found in the LICENSE file.
     <dimen name="signin_chooser_padding">16dp</dimen>
     <dimen name="signin_screen_top_padding">50dp</dimen>
 
-    <!-- ModalDialogView dimensions -->
-    <dimen name="tab_modal_scrim_vertical_margin">16dp</dimen>
-
     <!-- Should match toolbar_height_no_shadow -->
     <dimen name="control_container_height">@dimen/default_action_bar_height</dimen>
     <dimen name="custom_tabs_control_container_height">@dimen/default_action_bar_height</dimen>
