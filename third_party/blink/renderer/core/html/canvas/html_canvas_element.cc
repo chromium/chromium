@@ -1163,7 +1163,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
   // Grab a snapshot.
   scoped_refptr<StaticBitmapImage> snapshot =
       context_->PaintRenderingResultsToSnapshot(kFrontBuffer,
-                                                FlushReason::kPaint);
+                                                FlushReason::kOther);
 
   if (snapshot) {
     SkBlendMode composite_operator =

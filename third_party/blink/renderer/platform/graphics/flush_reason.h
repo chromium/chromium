@@ -73,15 +73,10 @@ enum class FlushReason {
   // This inhibits vector printing.
   kDrawListener = 13,
 
-  // The canvas contents were painted to its parent content layer, this
-  // is the non-composited presentation code path.
-  // This should never happen while printing.
-  kPaint = 14,
-
   // The canvas is being printed.
-  kPrinting = 15,
+  kPrinting = 14,
 
-  kOther = 16,
+  kOther = 15,
 
   kMaxValue = kOther,
 };
