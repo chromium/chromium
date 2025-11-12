@@ -280,6 +280,10 @@ void MandatoryReauthBubbleControllerImpl::DoShowBubble() {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+bool MandatoryReauthBubbleControllerImpl::CanBeReshown() const {
+  return current_bubble_type_ != MandatoryReauthBubbleType::kInactive;
+}
+
 BubbleType MandatoryReauthBubbleControllerImpl::GetBubbleType() const {
   return BubbleType::kMandatoryReauth;
 }
