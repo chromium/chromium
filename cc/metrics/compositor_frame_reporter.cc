@@ -15,7 +15,6 @@
 #include <string>
 #include <type_traits>
 #include <utility>
-#include <variant>
 
 #include "base/check.h"
 #include "base/debug/alias.h"
@@ -1914,81 +1913,17 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
 }
 
 void CompositorFrameReporter::ReportScrollJankMetrics() {
-  // In order for the fast scroll and fling continuity rules of the scroll jank
-  // v4 metric to work correctly, they need to be informed about `EventMetrics`
-  // that didn't cause frame updates.
-  DCHECK(!dropped_non_damaging_events_metrics_);
-
-  const auto end_timestamp = viz_breakdown_.presentation_feedback.timestamp;
-  // TODO(crbug.com/452613902): Revert the logic to before
-  // https://crrev.com/c/6931550 (i.e. get rid of
-  // `FrameJankReportingStage::CalculateStages()`).
-  FrameJankReportingStage::List stages =
-      FrameJankReportingStage::CalculateStages(events_metrics_);
-  for (FrameJankReportingStage& stage : stages) {
-    auto* updates =
-        std::get_if<FrameJankReportingStage::ScrollUpdates>(&stage.stage);
-    if (updates == nullptr) {
-      continue;
-    }
-    if (updates->is_scroll_start) {
-      if (global_trackers_.predictor_jank_tracker) {
-        global_trackers_.predictor_jank_tracker->ResetCurrentScrollReporting();
-      }
-      if (global_trackers_.scroll_jank_dropped_frame_tracker) {
-        global_trackers_.scroll_jank_dropped_frame_tracker->OnScrollStarted();
-      }
-      if (global_trackers_.scroll_jank_ukm_reporter) {
-        global_trackers_.scroll_jank_ukm_reporter->EmitScrollJankUkm();
-        global_trackers_.scroll_jank_ukm_reporter->SetEarliestScrollEvent(
-            *updates->latest_event);
-      }
-    }
-
-    TRACE_EVENT("input,input.scrolling", "PresentedFrameInformation",
-                [events_metrics = std::cref(events_metrics_),
-                 &updates](perfetto::EventContext& ctx) {
-                  TraceScrollJankMetrics(events_metrics,
-                                         updates->fling_input_count,
-                                         updates->normal_input_count, ctx);
-                });
-
-    if (global_trackers_.predictor_jank_tracker) {
-      global_trackers_.predictor_jank_tracker->ReportLatestScrollDelta(
-          updates->total_predicted_delta, end_timestamp, args_.interval,
-          updates->latest_event->trace_id());
-    }
-    if (global_trackers_.scroll_jank_dropped_frame_tracker) {
-      global_trackers_.scroll_jank_dropped_frame_tracker
-          ->ReportLatestPresentationData(*updates->latest_event,
-                                         updates->last_coalesced_ts,
-                                         end_timestamp, args_.interval);
-    }
-    if (global_trackers_.scroll_jank_ukm_reporter) {
-      global_trackers_.scroll_jank_ukm_reporter
-          ->UpdateLatestFrameAndEmitPredictorJank(end_timestamp);
-    }
-  }
-  if (global_trackers_.scroll_jank_v4_processor) {
-    global_trackers_.scroll_jank_v4_processor
-        ->ProcessEventsMetricsForPresentedFrame(events_metrics_, end_timestamp,
-                                                args_);
-  }
+  ReportScrollJankV1Metrics();
+  ReportScrollJankV4Metrics();
 }
 
-// static
-CompositorFrameReporter::FrameJankReportingStage::List
-CompositorFrameReporter::FrameJankReportingStage::CalculateStages(
-    const EventMetrics::List& events_metrics) {
-  FrameJankReportingStage::List stages;
-
+void CompositorFrameReporter::ReportScrollJankV1Metrics() {
   int32_t fling_input_count = 0;
   int32_t normal_input_count = 0;
   float total_predicted_delta = 0;
   bool had_earliest_gesture_scroll = false;
   bool had_latest_gesture_scroll = false;
-  std::optional<base::TimeTicks> scroll_start_ts = std::nullopt;
-  std::optional<base::TimeTicks> scroll_end_ts = std::nullopt;
+  bool is_scroll_start = false;
 
   // This handles cases when we have multiple scroll events. Events for dropped
   // frames are reported by the reporter for next presented frame which could
@@ -1998,35 +1933,13 @@ CompositorFrameReporter::FrameJankReportingStage::CalculateStages(
   ScrollUpdateEventMetrics* latest_event = nullptr;
   base::TimeTicks latest_event_generation_ts = base::TimeTicks::Min();
   base::TimeTicks last_coalesced_ts = base::TimeTicks::Min();
-
-  // We expect that `events_metrics` contains:
-  //   E. Zero or one scroll ends (`kGestureScrollEnd` or
-  //      `kInertialGestureScrollEnd`).
-  //   F. Zero or one first scroll updates (`kFirstGestureScrollUpdate`).
-  //   U. Zero or more continuing scroll updates (`kGestureScrollUpdate` or
-  //      `kInertialGestureScrollUpdate`s).
-  // Furthermore, we expect that:
-  //   * If there's as scroll end (E), it comes:
-  //       * either before all scroll updates (F/U), in which case we assume
-  //         that it ends the previous scroll,
-  //       * or after all scroll updates (F/U), in which case we assume that
-  //         it ends the current scroll.
-  //   * If there's a first scroll update (F), it precedes all continuing scroll
-  //     updates (U).
-  // So E?F?U* and F?U*E? are the two possible orderings. Based on local
-  // testing, the first ordering is much more likely.
-  for (auto& event : events_metrics) {
+  for (auto& event : events_metrics_) {
     EventMetrics::EventType event_type = event->type();
+    bool caused_frame_update = event->caused_frame_update();
     base::TimeTicks generation_ts = event->GetDispatchStageTimestamp(
         EventMetrics::DispatchStage::kGenerated);
-    bool caused_frame_update = event->caused_frame_update();
     TRACE_EVENT("input", "GestureType", "gesture", event_type, "generation_ts",
                 generation_ts, "caused_frame_update", caused_frame_update);
-    if (event_type == EventMetrics::EventType::kGestureScrollEnd ||
-        event_type == EventMetrics::EventType::kInertialGestureScrollEnd) {
-      scroll_end_ts = generation_ts;
-      continue;
-    }
     if (!caused_frame_update) {
       continue;
     }
@@ -2047,7 +1960,7 @@ CompositorFrameReporter::FrameJankReportingStage::CalculateStages(
     // `latest_event`. Otherwise UKMs will not be emitted.
     switch (event_type) {
       case EventMetrics::EventType::kFirstGestureScrollUpdate:
-        scroll_start_ts = generation_ts;
+        is_scroll_start = true;
         [[fallthrough]];
       case EventMetrics::EventType::kGestureScrollUpdate:
         normal_input_count += scroll_update->coalesced_event_count();
@@ -2061,7 +1974,7 @@ CompositorFrameReporter::FrameJankReportingStage::CalculateStages(
 
     if ((!had_latest_gesture_scroll ||
          generation_ts > latest_event_generation_ts) &&
-        (scroll_update->did_scroll() || scroll_start_ts)) {
+        (scroll_update->did_scroll() || is_scroll_start)) {
       latest_event = scroll_update;
       latest_event_generation_ts = generation_ts;
       had_latest_gesture_scroll = true;
@@ -2070,37 +1983,60 @@ CompositorFrameReporter::FrameJankReportingStage::CalculateStages(
         std::max(last_coalesced_ts, scroll_update->last_timestamp());
   }
 
-  // If the generation timestamp of the scroll END is less than or equal to the
-  // generation timestamp of all scroll UPDATES, then we assume that the
-  // scroll end belongs to the PREVIOUS scroll (the E?F?U* ordering above). Note
-  // that this case also covers the scenario where there were no scroll updates
-  // in this frame (i.e. `had_latest_gesture_scroll` is false).
-  if (scroll_end_ts && *scroll_end_ts <= earliest_event_generation_ts) {
-    stages.emplace_back(ScrollEnd{});
-  }
-
   if (!had_latest_gesture_scroll) {
-    return stages;
+    return;
+  }
+  if (is_scroll_start) {
+    if (global_trackers_.predictor_jank_tracker) {
+      global_trackers_.predictor_jank_tracker->ResetCurrentScrollReporting();
+    }
+    if (global_trackers_.scroll_jank_dropped_frame_tracker) {
+      global_trackers_.scroll_jank_dropped_frame_tracker->OnScrollStarted();
+    }
+    if (global_trackers_.scroll_jank_ukm_reporter) {
+      global_trackers_.scroll_jank_ukm_reporter->EmitScrollJankUkm();
+      global_trackers_.scroll_jank_ukm_reporter->SetEarliestScrollEvent(
+          *latest_event);
+    }
   }
 
-  stages.emplace_back(ScrollUpdates{
-      .is_scroll_start = scroll_start_ts.has_value(),
-      .latest_event =
-          base::raw_ref<ScrollUpdateEventMetrics>::from_ptr(latest_event),
-      .last_coalesced_ts = last_coalesced_ts,
-      .fling_input_count = fling_input_count,
-      .normal_input_count = normal_input_count,
-      .total_predicted_delta = total_predicted_delta,
-  });
+  TRACE_EVENT("input,input.scrolling", "PresentedFrameInformation",
+              [events_metrics = std::cref(events_metrics_), fling_input_count,
+               normal_input_count](perfetto::EventContext& ctx) {
+                TraceScrollJankMetrics(events_metrics, fling_input_count,
+                                       normal_input_count, ctx);
+              });
 
-  // If the generation timestamp of the scroll END is greater than the
-  // generation timestamp of at least one scroll UPDATE, then we assume that the
-  // scroll end belongs to the CURRENT scroll (the F?U*E? ordering above).
-  if (scroll_end_ts && *scroll_end_ts > earliest_event_generation_ts) {
-    stages.emplace_back(ScrollEnd{});
+  const auto end_timestamp = viz_breakdown_.presentation_feedback.timestamp;
+  if (global_trackers_.predictor_jank_tracker) {
+    global_trackers_.predictor_jank_tracker->ReportLatestScrollDelta(
+        total_predicted_delta, end_timestamp, args_.interval,
+        latest_event->trace_id());
   }
+  if (global_trackers_.scroll_jank_dropped_frame_tracker) {
+    global_trackers_.scroll_jank_dropped_frame_tracker
+        ->ReportLatestPresentationData(*latest_event, last_coalesced_ts,
+                                       end_timestamp, args_.interval);
+  }
+  if (global_trackers_.scroll_jank_ukm_reporter) {
+    global_trackers_.scroll_jank_ukm_reporter
+        ->UpdateLatestFrameAndEmitPredictorJank(end_timestamp);
+  }
+}
 
-  return stages;
+void CompositorFrameReporter::ReportScrollJankV4Metrics() {
+  // In order for the fast scroll and fling continuity rules of the scroll jank
+  // v4 metric to work correctly, they need to be informed about `EventMetrics`
+  // that didn't cause frame updates.
+  DCHECK(!dropped_non_damaging_events_metrics_);
+
+  if (auto* scroll_jank_v4_processor =
+          global_trackers_.scroll_jank_v4_processor) {
+    scroll_jank_v4_processor->ProcessEventsMetricsForPresentedFrame(
+        events_metrics_,
+        /* presentation_ts= */ viz_breakdown_.presentation_feedback.timestamp,
+        args_);
+  }
 }
 
 void CompositorFrameReporter::ReportPaintMetric() const {
@@ -2371,17 +2307,5 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
   info.termination_time = frame_termination_time_;
   return info;
 }
-
-CompositorFrameReporter::FrameJankReportingStage::FrameJankReportingStage(
-    std::variant<
-        CompositorFrameReporter::FrameJankReportingStage::ScrollUpdates,
-        CompositorFrameReporter::FrameJankReportingStage::ScrollEnd> stage)
-    : stage(stage) {}
-
-CompositorFrameReporter::FrameJankReportingStage::FrameJankReportingStage(
-    const CompositorFrameReporter::FrameJankReportingStage& stage) = default;
-
-CompositorFrameReporter::FrameJankReportingStage::~FrameJankReportingStage() =
-    default;
 
 }  // namespace cc
