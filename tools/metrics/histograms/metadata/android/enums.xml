@@ -2732,8 +2732,8 @@ chromium-metrics-reviews@google.com.
   <int value="100" label="staticGetSafeBrowsingPrivacyPolicyUrl"/>
   <int value="101" label="staticIsMultiProcessEnabled"/>
   <int value="102" label="staticGetVariationsHeader"/>
-  <int value="103" label="staticSetDefaultTrafficStatsTag"/>
-  <int value="104" label="staticSetDefaultTrafficStatsUid"/>
+  <int value="103" label="(Obsolete) staticSetDefaultTrafficStatsTag"/>
+  <int value="104" label="(Obsolete) staticSetDefaultTrafficStatsUid"/>
   <int value="105" label="staticSetRendererLibraryPrefetchMode"/>
   <int value="106" label="staticGetRendererLibraryPrefetchMode"/>
   <int value="107" label="getDefaultCookieManager"/>

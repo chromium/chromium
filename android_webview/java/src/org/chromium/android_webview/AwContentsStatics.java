@@ -196,10 +196,12 @@ public class AwContentsStatics {
         return header;
     }
 
+    // Note that this can be called before browser process initialization.
     public static void setDefaultTrafficStatsTag(int tag) {
         sDefaultTrafficStatsTag = tag;
     }
 
+    // Note that this can be called before browser process initialization.
     public static void setDefaultTrafficStatsUid(int uid) {
         sDefaultTrafficStatsUid = uid;
     }

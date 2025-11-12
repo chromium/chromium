@@ -264,8 +264,6 @@ public class SharedStatics {
     }
 
     public void setDefaultTrafficStatsTag(int tag) {
-        mAwInit.triggerAndWaitForChromiumStarted(
-                WebViewChromiumAwInit.CallSite.STATIC_SET_DEFAULT_TRAFFIC_STATS_TAG);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.SET_DEFAULT_TRAFFICSTATS_TAG")) {
             recordStaticApiCall(ApiCall.SET_DEFAULT_TRAFFICSTATS_TAG);
@@ -274,8 +272,6 @@ public class SharedStatics {
     }
 
     public void setDefaultTrafficStatsUid(int uid) {
-        mAwInit.triggerAndWaitForChromiumStarted(
-                WebViewChromiumAwInit.CallSite.STATIC_SET_DEFAULT_TRAFFIC_STATS_UID);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.SET_DEFAULT_TRAFFICSTATS_UID")) {
             recordStaticApiCall(ApiCall.SET_DEFAULT_TRAFFICSTATS_UID);
