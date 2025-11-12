@@ -32,7 +32,6 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
-#include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -120,8 +119,7 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
 }
 
 void ShutdownIfNoBrowsers() {
-  if (KeepAliveRegistry::GetInstance()->IsOriginRegistered(
-          KeepAliveOrigin::BROWSER)) {
+  if (GetTotalBrowserCount() > 0) {
     return;
   }
 
@@ -160,10 +158,9 @@ void CloseAllBrowsers() {
   // If there are no browsers and closing the last browser would quit the
   // application, send the APP_TERMINATING action here. Otherwise, it will be
   // sent by RemoveBrowser() when the last browser has closed.
-  const auto* const keep_alive_registry = KeepAliveRegistry::GetInstance();
-  if (!keep_alive_registry->IsOriginRegistered(KeepAliveOrigin::BROWSER) &&
+  if (GetTotalBrowserCount() == 0 &&
       (browser_shutdown::IsTryingToQuit() ||
-       !keep_alive_registry->IsKeepingAlive())) {
+       !KeepAliveRegistry::GetInstance()->IsKeepingAlive())) {
     ShutdownIfNoBrowsers();
     return;
   }

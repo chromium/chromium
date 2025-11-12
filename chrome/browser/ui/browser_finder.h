@@ -177,8 +177,10 @@ Browser* FindLastActiveWithProfile(Profile* profile);
 // WARNING #2: This will always return nullptr in unit tests run on the bots.
 Browser* FindLastActive();
 
-// Returns the number of browsers across all profiles. This does not include
-// pending delete browsers.
+// Returns the number of browsers across all profiles.
+//
+// WARNING: This function includes browsers scheduled for deletion whereas
+// the majority of other functions do not.
 size_t GetTotalBrowserCount();
 
 // Returns the number of browsers with the Profile `profile`.
