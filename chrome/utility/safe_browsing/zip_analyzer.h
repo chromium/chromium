@@ -9,7 +9,6 @@
 #define CHROME_UTILITY_SAFE_BROWSING_ZIP_ANALYZER_H_
 
 #include "base/files/file.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/utility/safe_browsing/archive_analyzer.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"

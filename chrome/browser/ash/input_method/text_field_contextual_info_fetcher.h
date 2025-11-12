@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chromeos/ui/base/app_types.h"
 #include "url/gurl.h"

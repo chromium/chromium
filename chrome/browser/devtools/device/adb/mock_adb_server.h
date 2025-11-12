@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
 // Single instance mock ADB server for use in browser tests. Runs on IO thread.

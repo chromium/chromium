@@ -14,7 +14,6 @@
 #include <string_view>
 
 #include "base/containers/heap_array.h"
-#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/to_string.h"

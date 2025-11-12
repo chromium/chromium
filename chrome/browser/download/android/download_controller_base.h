@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/functional/callback.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_start_observer.h"
 #include "content/public/browser/context_menu_params.h"
