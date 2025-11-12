@@ -894,6 +894,17 @@ public class TabGridDialogTest {
         BookmarkEditActivity activity = BookmarkTestUtil.waitForEditActivity();
         activity.finish();
 
+        // After finishing the BookmarkEditActivity, the ChromeTabbedActivity needs a moment
+        // to regain window focus. Without waiting, Espresso might try to interact with the UI
+        // before it's ready, leading to a RootViewWithoutFocusException.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "ChromeTabbedActivity did not regain window focus.",
+                            cta.getWindow().getDecorView().hasWindowFocus(),
+                            Matchers.is(true));
+                });
+
         mSelectionEditorRobot.resultRobot.verifyTabListEditorIsVisible();
     }
 
