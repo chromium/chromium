@@ -249,11 +249,15 @@ void ActorTask::SetState(State new_state) {
 void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
                     ActCallback callback) {
   if (IsUnderUserControl()) {
+    journal_->Log(GURL(), id(), "ActorTask::Act",
+                  JournalDetailsBuilder().AddError("Task is paused").Build());
     std::move(callback).Run(MakeResult(mojom::ActionResultCode::kTaskPaused),
                             std::nullopt, {});
     return;
   }
   if (IsCompleted()) {
+    journal_->Log(GURL(), id(), "ActorTask::Act",
+                  JournalDetailsBuilder().AddError("Task is Stopped").Build());
     std::move(callback).Run(MakeResult(mojom::ActionResultCode::kTaskWentAway),
                             std::nullopt, {});
     return;

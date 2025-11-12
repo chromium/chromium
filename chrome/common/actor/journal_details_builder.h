@@ -27,10 +27,26 @@ class JournalDetailsBuilder {
 
   template <typename ValueType>
     requires(requires(const ValueType& value) { base::ToString(value); })
+  JournalDetailsBuilder& Add(std::string_view key, const ValueType& value) & {
+    details_.push_back(
+        mojom::JournalDetails::New(std::string(key), base::ToString(value)));
+    return *this;
+  }
+
+  template <typename ValueType>
+    requires(requires(const ValueType& value) { base::ToString(value); })
   JournalDetailsBuilder AddError(const ValueType& value) && {
     details_.push_back(
         mojom::JournalDetails::New("error", base::ToString(value)));
     return std::move(*this);
+  }
+
+  template <typename ValueType>
+    requires(requires(const ValueType& value) { base::ToString(value); })
+  JournalDetailsBuilder& AddError(const ValueType& value) & {
+    details_.push_back(
+        mojom::JournalDetails::New("error", base::ToString(value)));
+    return *this;
   }
 
   std::vector<mojom::JournalDetailsPtr> Build() && {

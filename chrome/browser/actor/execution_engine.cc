@@ -57,6 +57,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "ui/event_dispatcher.h"
 #include "url/origin.h"
 
@@ -561,6 +562,16 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
   CHECK(!actions.empty());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(task_->GetState(), ActorTask::State::kActing);
+
+  {
+    JournalDetailsBuilder journal_details;
+    for (size_t i = 0; i < actions.size(); ++i) {
+      journal_details.Add(absl::StrFormat("Actions[%d]", i),
+                          actions[i]->JournalEvent());
+    }
+    journal_->Log(GURL::EmptyGURL(), task_->id(), "ExecutionEngine::Act",
+                  std::move(journal_details).Build());
+  }
 
   if (!action_sequence_.empty()) {
     journal_->Log(
