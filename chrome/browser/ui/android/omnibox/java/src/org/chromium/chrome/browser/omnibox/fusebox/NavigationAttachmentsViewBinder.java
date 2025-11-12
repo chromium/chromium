@@ -43,11 +43,6 @@ class NavigationAttachmentsViewBinder {
         } else if (propertyKey == NavigationAttachmentsProperties.POPUP_AI_MODE_CLICKED) {
             view.popup.mAiModeButton.setOnClickListener(
                     v -> model.get(NavigationAttachmentsProperties.POPUP_AI_MODE_CLICKED).run());
-        } else if (propertyKey == NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_CLICKED) {
-            view.popup.mCreateImageButton.setOnClickListener(
-                    v ->
-                            model.get(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_CLICKED)
-                                    .run());
         } else if (propertyKey == NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE) {
             boolean visible = model.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE);
             view.attachmentsView.setVisibility(visible ? View.VISIBLE : View.GONE);
@@ -77,6 +72,11 @@ class NavigationAttachmentsViewBinder {
         } else if (propertyKey
                 == NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE) {
             // TODO(https://crbug.com/457465693): Set create image tool visibility.
+        } else if (propertyKey == NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_CLICKED) {
+            view.popup.mCreateImageButton.setOnClickListener(
+                    v ->
+                            model.get(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_CLICKED)
+                                    .run());
         } else if (propertyKey == NavigationAttachmentsProperties.POPUP_FILE_BUTTON_VISIBLE) {
             view.popup.mFileButton.setVisibility(
                     model.get(NavigationAttachmentsProperties.POPUP_FILE_BUTTON_VISIBLE)

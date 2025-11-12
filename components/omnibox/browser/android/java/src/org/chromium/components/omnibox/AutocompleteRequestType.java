@@ -17,7 +17,8 @@ import java.lang.annotation.Target;
 @IntDef({
     AutocompleteRequestType.SEARCH,
     AutocompleteRequestType.SEARCH_PREFETCH,
-    AutocompleteRequestType.AI_MODE
+    AutocompleteRequestType.AI_MODE,
+    AutocompleteRequestType.CREATE_IMAGE
 })
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.TYPE_USE})

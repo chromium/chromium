@@ -72,10 +72,6 @@ class NavigationAttachmentsProperties {
     public static final WritableObjectPropertyKey<Runnable> POPUP_AI_MODE_CLICKED =
             new WritableObjectPropertyKey<>();
 
-    /** Action to perform when the user clicks the 'Create Image' button in the popup. */
-    public static final WritableObjectPropertyKey<Runnable> POPUP_CREATE_IMAGE_CLICKED =
-            new WritableObjectPropertyKey<>();
-
     /** Action to perform when the user clicks the Camera button in the popup. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_CAMERA_CLICKED =
             new WritableObjectPropertyKey<>();
@@ -91,6 +87,10 @@ class NavigationAttachmentsProperties {
     /** Whether the create image button in the popup is visible. */
     public static final WritableBooleanPropertyKey POPUP_CREATE_IMAGE_BUTTON_VISIBLE =
             new WritableBooleanPropertyKey();
+
+    /** Action to perform when the user clicks the 'Create Image' button in the popup. */
+    public static final WritableObjectPropertyKey<Runnable> POPUP_CREATE_IMAGE_CLICKED =
+            new WritableObjectPropertyKey<>();
 
     /** Whether the File button in the popup is visible. */
     public static final WritableBooleanPropertyKey POPUP_FILE_BUTTON_VISIBLE =
@@ -135,11 +135,11 @@ class NavigationAttachmentsProperties {
         POPUP_CLIPBOARD_BUTTON_VISIBLE,
         POPUP_CLIPBOARD_CLICKED,
         POPUP_CREATE_IMAGE_BUTTON_VISIBLE,
+        POPUP_CREATE_IMAGE_CLICKED,
         POPUP_FILE_CLICKED,
         POPUP_FILE_BUTTON_VISIBLE,
         POPUP_GALLERY_CLICKED,
         POPUP_TAB_PICKER_CLICKED,
-        POPUP_CREATE_IMAGE_CLICKED,
         RECENT_TABS_HEADER_VISIBLE,
         SHOW_DEDICATED_MODE_BUTTON
     };
