@@ -6,6 +6,8 @@
 
 #include <fstream>
 #include <iostream>
+#include <optional>
+#include <string>
 
 #include "ash/ambient/ambient_access_token_controller.h"
 #include "ash/ambient/ambient_constants.h"
@@ -159,7 +161,7 @@ void OnUrlDownloaded(
     base::OnceCallback<void(std::string&&)> callback,
     std::unique_ptr<network::SimpleURLLoader> simple_loader,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (simple_loader->NetError() == net::OK && response_body) {
     std::move(callback).Run(std::move(*response_body));
     return;

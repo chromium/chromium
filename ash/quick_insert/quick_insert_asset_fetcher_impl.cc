@@ -5,6 +5,7 @@
 #include "ash/quick_insert/quick_insert_asset_fetcher_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -37,7 +38,7 @@ bool IsValidGifMediaUrl(const GURL& url) {
 
 void OnGifMediaDownloaded(base::WeakPtr<const network::SimpleURLLoader> loader,
                           DownloadGifMediaToStringCallback callback,
-                          std::unique_ptr<std::string> response_body) {
+                          std::optional<std::string> response_body) {
   if (loader && loader->NetError() == net::OK && response_body) {
     std::move(callback).Run(*response_body);
     return;

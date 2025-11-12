@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/trial_group/trial_group_checker.h"
 
 #include <optional>
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -38,7 +39,7 @@ void TrialGroupChecker::SetServerUrl(GURL server_url) {
 }
 
 void TrialGroupChecker::OnRequestComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   const int net_error = loader_->NetError();
 
   int response_code = 0;

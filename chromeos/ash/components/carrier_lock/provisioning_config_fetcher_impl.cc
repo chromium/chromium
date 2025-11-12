@@ -4,6 +4,9 @@
 
 #include "chromeos/ash/components/carrier_lock/provisioning_config_fetcher_impl.h"
 
+#include <optional>
+#include <string>
+
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
@@ -156,7 +159,7 @@ RestrictedNetworks ProvisioningConfigFetcherImpl::GetNumberOfNetworks() {
 }
 
 void ProvisioningConfigFetcherImpl::OnDownloadToStringComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   simple_url_loader_.reset();
   if (!response_body) {
     LOG(ERROR) << "Provisioning response body is empty";

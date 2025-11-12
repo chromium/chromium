@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "base/containers/contains.h"
@@ -322,7 +323,7 @@ void HelpContentProvider::OnHelpContentSearchResponse(
     const uint32_t max_results,
     GetHelpContentsCallback callback,
     std::unique_ptr<network::SimpleURLLoader> url_loader,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (IsLoaderSuccessful(url_loader.get()) && response_body) {
     DVLOG(2) << "HelpContentProvider response body: " << *response_body;
     // Send the JSON string to a dedicated service for safe parsing.

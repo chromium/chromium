@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_OS_FEEDBACK_UI_BACKEND_HELP_CONTENT_PROVIDER_H_
 #define ASH_WEBUI_OS_FEEDBACK_UI_BACKEND_HELP_CONTENT_PROVIDER_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
@@ -97,7 +98,7 @@ class HelpContentProvider : os_feedback_ui::mojom::HelpContentProvider {
       const uint32_t max_results,
       GetHelpContentsCallback callback,
       std::unique_ptr<network::SimpleURLLoader> url_loader,
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
   // Called when the data decoder service provides parsed JSON data for a
   // server response.
   void OnResponseJsonParsed(const uint32_t max_results,
