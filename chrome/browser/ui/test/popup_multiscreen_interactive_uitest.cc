@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/test/fullscreen_test_util.h"
 #include "chrome/browser/ui/test/popup_test_base.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -47,11 +46,6 @@ namespace {
 class MAYBE_PopupMultiScreenTest : public PopupTestBase,
                                    public ::testing::WithParamInterface<bool> {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PopupTestBase::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-
   void SetUpOnMainThread() override {
     if (!SetUpVirtualDisplays()) {
       GTEST_SKIP() << "Skipping test; unavailable multi-screen support.";
@@ -219,7 +213,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest,
 // Tests opening a popup on another screen from a cross-origin iframe.
 IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, CrossOriginIFrame) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_server.SetCertHostnames({"a.com", "b.com"});
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
   content::SetupCrossSiteRedirector(&https_server);
   ASSERT_TRUE(https_server.Start());
