@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "components/signin/public/identity_manager/oauth_consumer_ids.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 #include "google_apis/tasks/tasks_api_requests.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/models/list_model.h"

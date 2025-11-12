@@ -10,7 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
-#include "components/signin/public/identity_manager/oauth_consumer_ids.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 
 namespace signin {
 class IdentityManager;

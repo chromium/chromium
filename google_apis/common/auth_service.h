@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
-#include "components/signin/public/identity_manager/oauth_consumer_ids.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 #include "google_apis/common/auth_service_interface.h"
 #include "google_apis/gaia/core_account_id.h"
 

@@ -21,7 +21,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_classroom_course_work_item.h"
-#include "components/signin/public/identity_manager/oauth_consumer_ids.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
 

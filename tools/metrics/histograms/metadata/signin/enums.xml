@@ -772,7 +772,7 @@ chromium-metrics-reviews@google.com.
   <int value="77" label="YouTube Music"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->
+<!-- LINT.ThenChange(//components/signin/public/base/oauth_consumer_id.h:OAuthConsumerId) -->
 
 <!-- LINT.IfChange(OAuthMultiloginDeviceBoundSessionParsingError) -->
 

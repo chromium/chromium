@@ -41,6 +41,7 @@ static_library("base") {
     "hybrid_encryption_key.h",
     "multilogin_parameters.cc",
     "multilogin_parameters.h",
+    "oauth_consumer_id.h",
     "persistent_repeating_timer.cc",
     "persistent_repeating_timer.h",
     "session_binding_utils.cc",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_OAUTH_CONSUMER_IDS_H_
-#define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_OAUTH_CONSUMER_IDS_H_
+#ifndef COMPONENTS_SIGNIN_PUBLIC_BASE_OAUTH_CONSUMER_ID_H_
+#define COMPONENTS_SIGNIN_PUBLIC_BASE_OAUTH_CONSUMER_ID_H_
 
 namespace signin {
 
@@ -96,4 +96,4 @@ enum class OAuthConsumerId {
 
 }  // namespace signin
 
-#endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_OAUTH_CONSUMER_IDS_H_
+#endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_OAUTH_CONSUMER_ID_H_

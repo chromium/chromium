@@ -12,7 +12,7 @@
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/boca/babelorca/token_fetcher.h"
-#include "components/signin/public/identity_manager/oauth_consumer_ids.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 
 namespace signin {
 class AccessTokenFetcher;

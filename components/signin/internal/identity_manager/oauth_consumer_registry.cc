@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/notreached.h"
-#include "components/signin/public/identity_manager/oauth_consumer_ids.h"
 #include "google_apis/gaia/gaia_constants.h"
 
 namespace {

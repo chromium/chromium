@@ -104,8 +104,8 @@ void OAuthTokenFetcher::OnOAuthTokenRequestCompleted(
         std::move(access_token_info.token), access_token_info.expiration_time));
     return;
   }
-  VLOG(1) << "OAuth token fetch failed for consumer:"
-          << GetOAuthConsumerFromId(oauth_consumer_id_).GetName()
+  VLOG(1) << "OAuth token fetch failed for consumer id:"
+          << static_cast<int>(oauth_consumer_id_)
           << " with error: " << error.state();
   std::move(callback).Run(std::nullopt);
 }
