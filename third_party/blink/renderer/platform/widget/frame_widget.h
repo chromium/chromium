@@ -52,7 +52,7 @@ namespace blink {
 
 class AnimationFrameTimingInfo;
 class LocalFrame;
-// In interface exposed within Blink from local root frames that provides
+// An interface exposed within Blink from local root frames that provides
 // local-root specific things related to compositing and input. This
 // class extends the FrameWidgetInputHandler implementation. All API calls
 // on this class occur on the main thread. input/FrameWidgetInputHandlerImpl
