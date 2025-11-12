@@ -3975,5 +3975,42 @@ TEST_F(LayerContextImplTest, UpdateDisplayTreeWithTargetSurfaceRanges) {
           ranges[2]));
 }
 
+TEST_F(LayerContextImplTest, UpdateDisplayTreeWithNextFrameToken) {
+  auto update = CreateDefaultUpdate();
+  const uint32_t kTestNextFrameToken = 12345;
+  update->next_frame_token = kTestNextFrameToken;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(layer_context_impl_->host_impl()->next_frame_token(),
+            kTestNextFrameToken);
+}
+
+TEST_F(LayerContextImplTest, UpdateDisplayTreeWithSendFrameTokenToEmbedder) {
+  auto update = CreateDefaultUpdate();
+  const bool kTestSendFrameTokenToEmbedder = true;
+  update->send_frame_token_to_embedder = kTestSendFrameTokenToEmbedder;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(layer_context_impl_->host_impl()->send_frame_token_to_embedder(),
+            kTestSendFrameTokenToEmbedder);
+}
+
+TEST_F(LayerContextImplTest, UpdateDisplayTreeWithFullTreeDamaged) {
+  auto update = CreateDefaultUpdate();
+  const bool kTestFullTreeDamaged = true;
+  update->full_tree_damaged = kTestFullTreeDamaged;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  cc::LayerTreeImpl* active_tree =
+      layer_context_impl_->host_impl()->active_tree();
+  gfx::Rect viewport_rect = active_tree->GetDeviceViewport();
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(
+      viewport_rect,
+      layer_context_impl_->host_impl()->viewport_damage_rect_for_testing());
+}
+
 }  // namespace
 }  // namespace viz
