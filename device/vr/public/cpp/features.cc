@@ -50,7 +50,7 @@ BASE_FEATURE(kOpenXR,
 // to gate such support in a generic way. Note that this feature should not be
 // used for features we intend to ship simultaneously on both OpenXR and ArCore.
 // For those features, a feature-specific flag should be created if needed.
-BASE_FEATURE(kOpenXrExtendedFeatureSupport, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOpenXrExtendedFeatureSupport, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the OpenXr runtime is allowed to try to use the spatial
 // entities framework.
