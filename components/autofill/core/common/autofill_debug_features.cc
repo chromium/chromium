@@ -4,7 +4,10 @@
 
 #include "components/autofill/core/common/autofill_debug_features.h"
 
+#include "base/component_export.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 
 namespace autofill::features::debug {
 

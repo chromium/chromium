@@ -8,11 +8,10 @@
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 
 // The features in this namespace contains are not meant to be rolled out. They
-// are are only intended for manual debugging and testing purposes.
+// are only intended for manual debugging and testing purposes.
 namespace autofill::features::debug {
 
 COMPONENT_EXPORT(AUTOFILL)
