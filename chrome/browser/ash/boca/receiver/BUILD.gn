@@ -6,6 +6,10 @@ assert(is_chromeos)
 
 static_library("receiver") {
   sources = [
+    "boca_receiver_service.cc",
+    "boca_receiver_service.h",
+    "boca_receiver_service_factory.cc",
+    "boca_receiver_service_factory.h",
     "receiver_handler_delegate_impl.cc",
     "receiver_handler_delegate_impl.h",
   ]

@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/ash/boca/on_task/locked_quiz_session_manager_factory.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
+#include "chrome/browser/ash/boca/receiver/boca_receiver_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/calendar/calendar_keyed_service_factory.h"
@@ -151,6 +152,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   bluetooth::DebugLogsManagerFactory::GetInstance();
   boca::LockedQuizSessionManagerFactory::GetInstance();
   BocaManagerFactory::GetInstance();
+  BocaReceiverServiceFactory::GetInstance();
   borealis::BorealisServiceFactory::GetInstance();
   BrowserProcessPlatformPart::EnsureFactoryBuilt();
   bruschetta::BruschettaServiceFactory::GetInstance();
