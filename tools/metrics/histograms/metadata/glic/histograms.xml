@@ -620,6 +620,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Instance.Floaty.InitialMode" enum="GlicWebClientMode"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the initial mode (Text or Audio) when a Glic Floaty is shown.
+    Recorded each time a Floaty instance is shown with a specified initial mode.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Instance.Floaty.OpenDuration" units="ms"
     expires_after="2026-06-01">
   <owner>birnie@google.com</owner>
@@ -1648,6 +1658,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Tab.DaisyChainDepth" units="count"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the depth of a tab in a daisy chain. Depth 1 means opened directly
+    from Glic. Depth 2 means opened from a tab that was opened from Glic, and so
+    on. Recorded each time a tab is bound via daisy chaining from another tab.
+  </summary>
+</histogram>
+
 <histogram name="Glic.TabContext.PdfContentsRequested" enum="PdfRequestStates"
     expires_after="2026-03-22">
   <owner>carlosk@chromium.org</owner>
@@ -1803,6 +1824,16 @@ chromium-metrics-reviews@google.com.
     <variant name="Other"/>
     <variant name="UnknownCause"/>
   </token>
+</histogram>
+
+<histogram name="Glic.Turn.Source" enum="GlicTurnSource"
+    expires_after="2026-10-16">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the source of the turn, including the UI mode (Side Panel or Floaty)
+    and the input mode (Text or Audio). Recorded at the end of each turn.
+  </summary>
 </histogram>
 
 <histogram name="Glic.Usage.Hotkey" enum="GlicHotkeyUsage"

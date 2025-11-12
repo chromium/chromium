@@ -271,7 +271,7 @@ bool GlicFloatingUi::IsShowing() const {
 
 void GlicFloatingUi::Show(const ShowOptions& options) {
   FloatingPanelCanAttachChanged(source_tab_.Get() != nullptr);
-  instance_metrics_->OnShowInFloaty();
+  instance_metrics_->OnShowInFloaty(options);
   GlicProfileManager::GetInstance()->SetCurrentDetachedGlic(profile_);
   GetGlicWidget()->Show();
   GetGlicView()->SetWebContents(delegate_->host().webui_contents());

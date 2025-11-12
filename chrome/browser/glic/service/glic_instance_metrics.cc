@@ -50,6 +50,19 @@ std::string GetDaisyChainSourceString(DaisyChainSource source) {
   }
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(GlicTurnSource)
+enum class GlicTurnSource {
+  kUnknown = 0,
+  kSidePanelText = 1,
+  kSidePanelAudio = 2,
+  kFloatyText = 3,
+  kFloatyAudio = 4,
+  kMaxValue = kFloatyAudio,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicTurnSource)
+
 }  // namespace
 
 GlicInstanceMetrics::GlicInstanceMetrics() : session_manager_(this) {}
@@ -220,18 +233,28 @@ void GlicInstanceMetrics::OnSwitchToConversation(
 }
 
 void GlicInstanceMetrics::OnShowInSidePanel(tabs::TabInterface* tab) {
+  current_ui_mode_ = EmbedderType::kSidePanel;
   if (!tab) {
     return;
   }
-  side_panel_open_times_[tab->GetHandle().raw_value()] = base::TimeTicks::Now();
+  side_panel_open_times_[tab->GetHandle()] = base::TimeTicks::Now();
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Show.SidePanel"));
   LogEvent(GlicInstanceEvent::kSidePanelShown);
 }
 
-void GlicInstanceMetrics::OnShowInFloaty() {
+void GlicInstanceMetrics::OnShowInFloaty(const ShowOptions& options) {
+  current_ui_mode_ = EmbedderType::kFloaty;
   floaty_open_time_ = base::TimeTicks::Now();
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Show.Floaty"));
   LogEvent(GlicInstanceEvent::kFloatyShown);
+
+  if (const auto* floaty_options =
+          std::get_if<FloatingShowOptions>(&options.embedder_options)) {
+    if (floaty_options->initial_mode != mojom::WebClientMode::kUnknown) {
+      base::UmaHistogramEnumeration("Glic.Instance.Floaty.InitialMode",
+                                    floaty_options->initial_mode);
+    }
+  }
 }
 
 void GlicInstanceMetrics::OnFloatyClosed() {
@@ -247,8 +270,8 @@ void GlicInstanceMetrics::OnSidePanelClosed(tabs::TabInterface* tab) {
   if (!tab) {
     return;
   }
-  int tab_id = tab->GetHandle().raw_value();
-  auto it = side_panel_open_times_.find(tab_id);
+  tabs::TabHandle tab_handle = tab->GetHandle();
+  auto it = side_panel_open_times_.find(tab_handle);
   if (it == side_panel_open_times_.end()) {
     return;
   }
@@ -268,24 +291,28 @@ void GlicInstanceMetrics::OnUnbindEmbedder(EmbedderKey key) {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.UnBind"));
   LogEvent(GlicInstanceEvent::kUnbindEmbedder);
 
-  auto* tab_ptr = std::get_if<tabs::TabInterface*>(&key);
+  tabs::TabInterface** tab_ptr = std::get_if<tabs::TabInterface*>(&key);
   if (tab_ptr) {
-    auto* tab = *tab_ptr;
-    int tab_id = tab->GetHandle().raw_value();
-    auto it = side_panel_open_times_.find(tab_id);
+    tabs::TabInterface* tab = *tab_ptr;
+    tabs::TabHandle tab_handle = tab->GetHandle();
+    auto it = side_panel_open_times_.find(tab_handle);
     if (it != side_panel_open_times_.end()) {
       base::UmaHistogramCustomTimes("Glic.Instance.SidePanel.OpenDuration",
                                     base::TimeTicks::Now() - it->second,
                                     base::Milliseconds(1), base::Hours(1), 50);
       side_panel_open_times_.erase(it);
     }
+    tab_depths_.erase(tab_handle);
     if (bound_tab_count_ > 0) {
       bound_tab_count_--;
     }
   }
 }
 
-void GlicInstanceMetrics::OnDaisyChain(DaisyChainSource source, bool success) {
+void GlicInstanceMetrics::OnDaisyChain(DaisyChainSource source,
+                                       bool success,
+                                       tabs::TabInterface* new_tab,
+                                       tabs::TabInterface* source_tab) {
   base::RecordAction(base::UserMetricsAction(
       base::StrCat({"Glic.Instance.DaisyChain.",
                     GetDaisyChainSourceString(source), ".",
@@ -293,6 +320,23 @@ void GlicInstanceMetrics::OnDaisyChain(DaisyChainSource source, bool success) {
           .c_str()));
   if (success) {
     LogEvent(GlicInstanceEvent::kTabBoundViaDaisyChain);
+    if (new_tab) {
+      // Track the depth of tabs opened via daisy-chaining (one tab opening
+      // another).
+      int depth = 1;
+      // If the new tab was opened from an existing tab, try to find the parent
+      // tab's depth and increment it.
+      if (source == DaisyChainSource::kTabContents && source_tab) {
+        auto it = tab_depths_.find(source_tab->GetHandle());
+        if (it != tab_depths_.end()) {
+          depth = it->second + 1;
+        }
+      }
+      tab_depths_[new_tab->GetHandle()] = depth;
+      if (source == DaisyChainSource::kTabContents) {
+        base::UmaHistogramExactLinear("Glic.Tab.DaisyChainDepth", depth, 50);
+      }
+    }
   } else {
     LogEvent(GlicInstanceEvent::kDaisyChainFailed);
   }
@@ -500,6 +544,8 @@ void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
   session_manager_.OnUserInputSubmitted(mode);
   LogEvent(GlicInstanceEvent::kUserInputSubmitted);
   turn_.input_submitted_time_ = base::TimeTicks::Now();
+  turn_.ui_mode_ = current_ui_mode_;
+  turn_.input_mode_ = mode;
   input_mode_ = mode;
   inputs_modes_used_.Put(mode);
 }
@@ -571,6 +617,40 @@ void GlicInstanceMetrics::OnTurnCompleted(mojom::WebClientModel model,
                                           base::TimeDelta duration) {
   base::UmaHistogramEnumeration("Glic.Turn.InvocationSource",
                                 last_invocation_source_);
+
+  GlicTurnSource turn_source;
+  switch (turn_.ui_mode_) {
+    case EmbedderType::kSidePanel:
+      switch (turn_.input_mode_) {
+        case mojom::WebClientMode::kText:
+          turn_source = GlicTurnSource::kSidePanelText;
+          break;
+        case mojom::WebClientMode::kAudio:
+          turn_source = GlicTurnSource::kSidePanelAudio;
+          break;
+        case mojom::WebClientMode::kUnknown:
+          turn_source = GlicTurnSource::kUnknown;
+          break;
+      }
+      break;
+    case EmbedderType::kFloaty:
+      switch (turn_.input_mode_) {
+        case mojom::WebClientMode::kText:
+          turn_source = GlicTurnSource::kFloatyText;
+          break;
+        case mojom::WebClientMode::kAudio:
+          turn_source = GlicTurnSource::kFloatyAudio;
+          break;
+        case mojom::WebClientMode::kUnknown:
+          turn_source = GlicTurnSource::kUnknown;
+          break;
+      }
+      break;
+    case EmbedderType::kUnknown:
+      turn_source = GlicTurnSource::kUnknown;
+      break;
+  }
+  base::UmaHistogramEnumeration("Glic.Turn.Source", turn_source);
 
   LogEvent(GlicInstanceEvent::kTurnCompleted);
   base::UmaHistogramMediumTimes(model == mojom::WebClientModel::kActor
