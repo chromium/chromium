@@ -1764,6 +1764,9 @@ BASE_FEATURE(kQuickUnlockFingerprint, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kQuickUnlockPinAutosubmitBackfill,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables reordering of screens in the recovery flow.
+BASE_FEATURE(kRecoveryFlowReorder, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables Release Notes notifications on non-stable ChromeOS
 // channels. Used for testing.
 BASE_FEATURE(kReleaseNotesNotificationAllChannels,
@@ -3316,6 +3319,10 @@ bool IsProjectorUseDVSPlaybackEndpointEnabled() {
 
 bool IsQuickDimEnabled() {
   return base::FeatureList::IsEnabled(kQuickDim) && switches::HasHps();
+}
+
+bool IsRecoveryFlowReorderEnabled() {
+  return base::FeatureList::IsEnabled(kRecoveryFlowReorder);
 }
 
 bool IsRenderArcNotificationsByChromeEnabled() {

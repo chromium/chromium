@@ -55,6 +55,8 @@ class SigninUI {
   // After users update from CloudReady to a new OS version show them new
   // license agreement and data collection consent.
   virtual void ShowNewTermsForFlexUsers() = 0;
+  // Show the password selection screen for the user.
+  virtual void ShowPasswordSelectionScreen() = 0;
 
   virtual void StartEncryptionMigration(
       std::unique_ptr<UserContext> user_context,

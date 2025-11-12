@@ -1813,7 +1813,11 @@ void WizardController::OnCryptohomeRecoveryScreenExit(
         case WizardContext::AuthChangeFlow::kInitialSetup:
           NOTREACHED() << "Recovery can not be used during initial setup.";
         case WizardContext::AuthChangeFlow::kRecovery:
-          ShowPasswordSelectionScreen();
+          if (ash::features::IsRecoveryFlowReorderEnabled()) {
+            ObtainContextAndLoginAuthenticated();
+          } else {
+            ShowPasswordSelectionScreen();
+          }
           return;
         case WizardContext::AuthChangeFlow::kReauthentication:
           // Proceed with login
@@ -1977,7 +1981,7 @@ void WizardController::OnPersonalizedRecomendAppsScreenExit(
     case PersonalizedRecommendAppsScreen::Result::kDataMalformed:
     case PersonalizedRecommendAppsScreen::Result::kError:
     case PersonalizedRecommendAppsScreen::Result::kTimeout:
-        ShowPerksDiscoveryScreen();
+      ShowPerksDiscoveryScreen();
       break;
   }
 }
@@ -2609,14 +2613,31 @@ void WizardController::OnFactorSetupSuccessScreenExit(
         case WizardContext::AuthChangeFlow::kInitialSetup:
           ShowFingerprintSetupScreen();
           return;
-        case WizardContext::AuthChangeFlow::kRecovery:
         case WizardContext::AuthChangeFlow::kReauthentication:
           // Proceed with login
+          ObtainContextAndLoginAuthenticated();
+          return;
+        case WizardContext::AuthChangeFlow::kRecovery:
+          if (ash::features::IsRecoveryFlowReorderEnabled()) {
+            ObtainContextAndFinalizeAuth();
+            return;
+          }
           ObtainContextAndLoginAuthenticated();
           return;
       }
     }
     case FactorSetupSuccessScreen::Result::kTimedOut:
+      // After the recovery re-order changes there is a strong invariant that
+      // auth factors are only reset in the recovery flow after a cryptohome
+      // mount. In that case the safest way to logout is to restart the chrome
+      // process.
+      if (ash::features::IsRecoveryFlowReorderEnabled() &&
+          wizard_context_->knowledge_factor_setup.auth_setup_flow ==
+              WizardContext::AuthChangeFlow::kRecovery) {
+        chrome::AttemptUserExit();
+        return;
+      }
+
       ShowLoginScreen();
       return;
   }
@@ -2679,12 +2700,34 @@ void WizardController::OnPinSetupScreenExit(PinSetupScreen::Result result) {
         CHECK_EQ(wizard_context_->knowledge_factor_setup.auth_setup_flow,
                  WizardContext::AuthChangeFlow::kRecovery);
         CHECK(features::IsAllowPasswordlessRecoveryEnabled());
+
+        if (features::IsRecoveryFlowReorderEnabled()) {
+          ObtainContextAndFinalizeAuth();
+          return;
+        }
         ObtainContextAndLoginAuthenticated();
         return;
     }
   } else {
     FinishAuthFactorsSetup();
   }
+}
+
+void WizardController::ObtainContextAndFinalizeAuth() {
+  CHECK(wizard_context_->extra_factors_token);
+  auto token = std::move(wizard_context_->extra_factors_token);
+  wizard_context_->extra_factors_token = std::nullopt;
+
+  ash::AuthSessionStorage::Get()->Withdraw(
+      *token, base::BindOnce(&WizardController::FinalizeAuthWithContext,
+                             weak_factory_.GetWeakPtr()));
+}
+
+void WizardController::FinalizeAuthWithContext(
+    std::unique_ptr<UserContext> context) {
+  ash::LoginDisplayHost::default_host()
+      ->GetExistingUserController()
+      ->FinalizeAuthAndStartSession(*context);
 }
 
 void WizardController::ObtainContextAndLoginAuthenticated() {
@@ -2758,7 +2801,7 @@ void WizardController::OnRecommendAppsScreenExit(
     case RecommendAppsScreen::Result::kSkipped:
     case RecommendAppsScreen::Result::kNotApplicable:
     case RecommendAppsScreen::Result::kLoadError:
-        ShowPerksDiscoveryScreen();
+      ShowPerksDiscoveryScreen();
       break;
   }
 }
@@ -2966,7 +3009,7 @@ void WizardController::OnOobeFlowFinished() {
   // Check if pre-consent metrics is still enabled.
   if (metrics::CrOSPreConsentMetricsManager::Get()) {
     LOG(ERROR) << "OOBE flow is finished and Pre-consent metrics is still "
-      << "enabled. Disabling pre-consent metrics.";
+               << "enabled. Disabling pre-consent metrics.";
     metrics::CrOSPreConsentMetricsManager::Get()->Disable();
   }
 

@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/local_password_setup_handler.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
@@ -68,6 +70,18 @@ void LocalPasswordSetupScreen::ShowImpl() {
   }
   EstablishKnowledgeFactorGuard(base::BindOnce(
       &LocalPasswordSetupScreen::DoShow, weak_factory_.GetWeakPtr()));
+
+  if (ash::features::IsRecoveryFlowReorderEnabled() &&
+      context()->knowledge_factor_setup.auth_setup_flow ==
+          WizardContext::AuthChangeFlow::kRecovery &&
+      context()->extra_factors_token) {
+    session_refresher_ = AuthSessionStorage::Get()->KeepAlive(
+        context()->extra_factors_token.value());
+  }
+}
+
+void LocalPasswordSetupScreen::HideImpl() {
+  session_refresher_.reset();
 }
 
 void LocalPasswordSetupScreen::DoShow() {

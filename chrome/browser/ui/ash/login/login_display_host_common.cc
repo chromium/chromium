@@ -40,6 +40,7 @@
 #include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
+#include "chrome/browser/ash/login/screens/osauth/password_selection_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/recovery_eligibility_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
@@ -67,6 +68,7 @@
 #include "chrome/browser/ui/webui/ash/login/locale_switch_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/management_transition_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/offline_login_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/password_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
@@ -579,6 +581,10 @@ void LoginDisplayHostCommon::ShowNewTermsForFlexUsers() {
 
   wizard_context_->is_cloud_ready_update_flow = true;
   StartWizard(TermsOfServiceScreenView::kScreenId);
+}
+
+void LoginDisplayHostCommon::ShowPasswordSelectionScreen() {
+  StartWizard(PasswordSelectionScreenView::kScreenId);
 }
 
 void LoginDisplayHostCommon::SetAuthSessionForOnboarding(

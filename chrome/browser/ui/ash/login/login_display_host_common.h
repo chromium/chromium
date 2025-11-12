@@ -89,6 +89,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
 
   void SAMLConfirmPassword(::login::StringList scraped_passwords,
                            std::unique_ptr<UserContext> user_context) final;
+  void ShowPasswordSelectionScreen() final;
   WizardContext* GetWizardContextForTesting() final;
 
   // BrowserController::Observer:

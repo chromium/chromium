@@ -151,6 +151,12 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // timer.
   void ConfigureAutoLogin();
 
+  void FinalizeAuthAndStartSession(const UserContext& user_context,
+                                   bool has_auth_cookies);
+  void FinalizeAuthAndStartSession(const UserContext& user_context);
+
+  bool MaybeShowPasswordSelectionScreen(const UserContext& user_context);
+
   DemoLoginController* GetDemoLoginControllerForTest();
 
  private:
@@ -349,6 +355,9 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // Initialized with `kExternal` as more restricted mode.
   LoginPerformer::AuthorizationMode auth_mode_ =
       LoginPerformer::AuthorizationMode::kExternal;
+
+  // Whether the user has auth cookies.
+  std::optional<bool> has_auth_cookies_;
 
   // Timer when the signin screen was first displayed. Used to measure the time
   // from showing the screen until a successful login is performed.

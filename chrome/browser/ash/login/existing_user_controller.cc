@@ -766,11 +766,48 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
           LoginPerformer::AuthorizationMode::kExternal &&
       (user_context.GetAccessToken().empty() ||
        user_context.GetAuthFlow() == UserContext::AUTH_FLOW_GAIA_WITH_SAML);
+  if (ash::features::IsRecoveryFlowReorderEnabled()) {
+    has_auth_cookies_ = has_auth_cookies;
+  }
 
   // LoginPerformer instance will delete itself in case of successful auth.
   login_performer_->set_delegate(nullptr);
   std::ignore = login_performer_.release();
 
+  if (MaybeShowPasswordSelectionScreen(user_context)) {
+    return;
+  }
+  FinalizeAuthAndStartSession(user_context, has_auth_cookies);
+}
+
+bool ExistingUserController::MaybeShowPasswordSelectionScreen(
+    const UserContext& user_context) {
+  if (!ash::features::IsRecoveryFlowReorderEnabled() ||
+      auth_mode_ != LoginPerformer::AuthorizationMode::kExternal ||
+      GetLoginDisplayHost()
+              ->GetWizardContext()
+              ->knowledge_factor_setup.auth_setup_flow !=
+          WizardContext::AuthChangeFlow::kRecovery) {
+    return false;
+  }
+  GetLoginDisplayHost()->GetWizardContext()->extra_factors_token =
+      AuthSessionStorage::Get()->Store(
+          std::make_unique<UserContext>(user_context));
+  GetLoginDisplayHost()->GetSigninUI()->ShowPasswordSelectionScreen();
+
+  return true;
+}
+
+void ExistingUserController::FinalizeAuthAndStartSession(
+    const UserContext& user_context) {
+  CHECK(ash::features::IsRecoveryFlowReorderEnabled());
+  CHECK(has_auth_cookies_.has_value());
+  FinalizeAuthAndStartSession(user_context, *has_auth_cookies_);
+}
+
+void ExistingUserController::FinalizeAuthAndStartSession(
+    const UserContext& user_context,
+    const bool has_auth_cookies) {
   const bool is_enterprise_managed =
       ash::InstallAttributes::Get()->IsEnterpriseManaged();
 
