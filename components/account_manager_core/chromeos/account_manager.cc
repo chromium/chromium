@@ -281,16 +281,16 @@ void AccountManager::SetPrefService(PrefService* pref_service) {
 }
 
 void AccountManager::InitializeInEphemeralMode(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  InitializeInEphemeralMode(url_loader_factory,
+    URLLoaderFactoryParam url_loader_factory) {
+  InitializeInEphemeralMode(std::move(url_loader_factory),
                             /* initialization_callback= */
                             base::DoNothing());
 }
 
 void AccountManager::InitializeInEphemeralMode(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    URLLoaderFactoryParam url_loader_factory,
     base::OnceClosure initialization_callback) {
-  Initialize(/* home_dir= */ base::FilePath(), url_loader_factory,
+  Initialize(/* home_dir= */ base::FilePath(), std::move(url_loader_factory),
              /* delay_network_call_runner= */
              base::BindRepeating(
                  [](base::OnceClosure closure) { std::move(closure).Run(); }),
@@ -299,19 +299,20 @@ void AccountManager::InitializeInEphemeralMode(
 
 void AccountManager::Initialize(
     const base::FilePath& home_dir,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    URLLoaderFactoryParam url_loader_factory,
     DelayNetworkCallRunner delay_network_call_runner) {
-  Initialize(home_dir, url_loader_factory, delay_network_call_runner,
+  Initialize(home_dir, std::move(url_loader_factory), delay_network_call_runner,
              base::DoNothing());
 }
 
 void AccountManager::Initialize(
     const base::FilePath& home_dir,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    URLLoaderFactoryParam url_loader_factory,
     DelayNetworkCallRunner delay_network_call_runner,
     base::OnceClosure initialization_callback) {
   Initialize(
-      home_dir, url_loader_factory, std::move(delay_network_call_runner),
+      home_dir, std::move(url_loader_factory),
+      std::move(delay_network_call_runner),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()}),
       std::move(initialization_callback));
@@ -319,7 +320,7 @@ void AccountManager::Initialize(
 
 void AccountManager::Initialize(
     const base::FilePath& home_dir,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    URLLoaderFactoryParam url_loader_factory,
     DelayNetworkCallRunner delay_network_call_runner,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     base::OnceClosure initialization_callback) {
@@ -339,7 +340,7 @@ void AccountManager::Initialize(
 
   home_dir_ = home_dir;
   init_state_ = InitializationState::kInProgress;
-  url_loader_factory_ = url_loader_factory;
+  url_loader_factory_ = std::move(url_loader_factory);
   delay_network_call_runner_ = std::move(delay_network_call_runner);
   task_runner_ = task_runner;
 
@@ -690,8 +691,8 @@ void AccountManager::RemoveObserver(AccountManager::Observer* observer) {
 }
 
 void AccountManager::SetUrlLoaderFactoryForTests(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  url_loader_factory_ = url_loader_factory;
+    URLLoaderFactoryParam url_loader_factory) {
+  url_loader_factory_ = std::move(url_loader_factory);
 }
 
 std::unique_ptr<OAuth2AccessTokenFetcher>
@@ -800,7 +801,7 @@ void AccountManager::RevokeGaiaTokenOnServer(const std::string& refresh_token) {
 
   pending_token_revocation_requests_.emplace_back(
       std::make_unique<GaiaTokenRevocationRequest>(
-          url_loader_factory_, delay_network_call_runner_, refresh_token,
+          GetUrlLoaderFactory(), delay_network_call_runner_, refresh_token,
           weak_factory_.GetWeakPtr()));
 }
 
@@ -840,7 +841,22 @@ AccountManager::GetUrlLoaderFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
 
-  return url_loader_factory_;
+  // Forces the value if it is a callback, i.e., expected to be evaluated on
+  // the timing to use, which is now.
+  // TODO(crbug.com/458695293): Get rid of this laziness by updating the
+  // initialization of AccountManager in tests.
+  if (auto* callback = std::get_if<
+          base::OnceCallback<scoped_refptr<network::SharedURLLoaderFactory>()>>(
+          &url_loader_factory_)) {
+    scoped_refptr<network::SharedURLLoaderFactory> factory =
+        std::move(*callback).Run();
+    url_loader_factory_ = std::move(factory);
+  }
+
+  auto* ptr = std::get_if<scoped_refptr<network::SharedURLLoaderFactory>>(
+      &url_loader_factory_);
+  CHECK(ptr);
+  return *ptr;
 }
 
 base::WeakPtr<AccountManager> AccountManager::GetWeakPtr() {

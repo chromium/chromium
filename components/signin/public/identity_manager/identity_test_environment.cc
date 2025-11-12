@@ -224,22 +224,35 @@ IdentityTestEnvironment::BuildIdentityManagerForTests(
   account_manager::AccountManager* account_manager =
       account_manager_factory->GetAccountManager(user_data_dir.value());
 
+  // TODO(crbug.com/458695293): If this is called during profile creation,
+  // calling GetURLLoaderFactory here can introduce a circular dependency.
+  // So, while there's some risk of UAF theoretically, practically we don't
+  // have such cases in our tests. We're going to move this initialization out
+  // anyways, so the risk should be gone. See the bug for more details.
   if (user_data_dir.empty()) {
-    account_manager->InitializeInEphemeralMode(
-        signin_client->GetURLLoaderFactory());
+    account_manager->InitializeInEphemeralMode(base::BindOnce(
+        &SigninClient::GetURLLoaderFactory, base::Unretained(signin_client)));
   } else {
     account_manager::AccountManager::DelayNetworkCallRunner
         immediate_callback_runner =
             base::BindRepeating([](base::OnceClosure closure) -> void {
               std::move(closure).Run();
             });
-    account_manager->Initialize(user_data_dir,
-                                signin_client->GetURLLoaderFactory(),
-                                immediate_callback_runner, base::DoNothing());
+    account_manager->Initialize(
+        user_data_dir,
+        base::BindOnce(&SigninClient::GetURLLoaderFactory,
+                       base::Unretained(signin_client)),
+        immediate_callback_runner, base::DoNothing());
   }
   account_manager->SetPrefService(pref_service);
-  account_manager->SetUrlLoaderFactoryForTests(
-      signin_client->GetURLLoaderFactory());
+
+  // TODO(crbug.com/458695293): AccountManager::Initialize() may already have
+  // been called before this method. In that case, the Initialize() calls above
+  // are almost no-ops. Even so, still set the URLLoaderFactory from
+  // SigninClient here.
+  // Consider removing this along with the removal of Initialize().
+  account_manager->SetUrlLoaderFactoryForTests(base::BindOnce(
+      &SigninClient::GetURLLoaderFactory, base::Unretained(signin_client)));
 
   auto* account_manager_facade =
       account_manager_factory->GetAccountManagerFacade(user_data_dir.value());

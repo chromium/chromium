@@ -11,6 +11,7 @@
 #include <ostream>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/component_export.h"
@@ -59,6 +60,15 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   using DelayNetworkCallRunner =
       base::RepeatingCallback<void(base::OnceClosure)>;
 
+  // Allows lazily returning SharedURLLoaderFactory for the short term
+  // workaround to avoid initialization order issue. crbug.com/458695293 If the
+  // callback is held, on using the value, it should be invoked to take the
+  // actual factory. Then, the factory should be kept and should be used
+  // repeatedly.
+  using URLLoaderFactoryParam = std::variant<
+      scoped_refptr<network::SharedURLLoaderFactory>,
+      base::OnceCallback<scoped_refptr<network::SharedURLLoaderFactory>()>>;
+
   class Observer {
    public:
     Observer();
@@ -104,10 +114,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // |ash::DelayNetworkCall|. Cannot use |ash::DelayNetworkCall| due
   // to linking/dependency constraints.
   // This method MUST be called at least once in the lifetime of AccountManager.
-  void Initialize(
-      const base::FilePath& home_dir,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      DelayNetworkCallRunner delay_network_call_runner);
+  void Initialize(const base::FilePath& home_dir,
+                  URLLoaderFactoryParam url_loader_factory,
+                  DelayNetworkCallRunner delay_network_call_runner);
 
   // Same as above except that it accepts an |initialization_callback|, which
   // will be called after Account Manager has been fully initialized.
@@ -116,23 +125,20 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // Note: During initialization, there is no ordering guarantee between
   // |initialization_callback| and Account Manager's observers getting their
   // callbacks.
-  void Initialize(
-      const base::FilePath& home_dir,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      DelayNetworkCallRunner delay_network_call_runner,
-      base::OnceClosure initialization_callback);
+  void Initialize(const base::FilePath& home_dir,
+                  URLLoaderFactoryParam url_loader_factory,
+                  DelayNetworkCallRunner delay_network_call_runner,
+                  base::OnceClosure initialization_callback);
 
   // Initializes |AccountManager| for ephemeral / in-memory usage.
   // Useful for tests that cannot afford to write to disk and clean up after
   // themselves.
-  void InitializeInEphemeralMode(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  void InitializeInEphemeralMode(URLLoaderFactoryParam url_loader_factory);
 
   // Same as above, except it allows clients to provide a callback which will be
   // called after initialization.
-  void InitializeInEphemeralMode(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      base::OnceClosure initialization_callback);
+  void InitializeInEphemeralMode(URLLoaderFactoryParam url_loader_factory,
+                                 base::OnceClosure initialization_callback);
 
   // Returns |true| if |AccountManager| has been fully initialized.
   bool IsInitialized() const;
@@ -184,8 +190,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   void RemoveObserver(Observer* observer);
 
   // Sets the provided URL Loader Factory. Used only by tests.
-  void SetUrlLoaderFactoryForTests(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  void SetUrlLoaderFactoryForTests(URLLoaderFactoryParam url_loader_factory);
 
   // Creates and returns an `OAuth2AccessTokenFetcher` using the refresh token
   // stored for `account_key`.
@@ -258,12 +263,11 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   using AccountMap = std::map<::account_manager::AccountKey, AccountInfo>;
 
   // Same as the public |Initialize| except for a |task_runner|.
-  void Initialize(
-      const base::FilePath& home_dir,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      DelayNetworkCallRunner delay_network_call_runner,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      base::OnceClosure initialization_callback);
+  void Initialize(const base::FilePath& home_dir,
+                  URLLoaderFactoryParam url_loader_factory,
+                  DelayNetworkCallRunner delay_network_call_runner,
+                  scoped_refptr<base::SequencedTaskRunner> task_runner,
+                  base::OnceClosure initialization_callback);
 
   // Loads accounts from disk and returns the result.
   static AccountMap LoadAccountsFromDisk(
@@ -339,7 +343,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   InitializationState init_state_ = InitializationState::kNotStarted;
 
   // All tokens, if channel bound, are bound to |url_loader_factory_|.
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  URLLoaderFactoryParam url_loader_factory_;
 
   // An indirect way to access `ash::DelayNetworkCall`. We cannot use
   // `ash::DelayNetworkCall` directly here due to linking/dependency
