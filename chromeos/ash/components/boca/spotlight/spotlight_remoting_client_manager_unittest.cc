@@ -64,7 +64,7 @@ class MockRemotingClientIOProxy : public RemotingClientIOProxy {
               (std::string crd_connection_code,
                std::string oauth_access_token,
                std::string authorized_helper_email,
-               base::OnceClosure crd_session_ended_callback),
+               base::WeakPtr<Observer> observer),
               (override));
   MOCK_METHOD(void, StopCrdClient, (base::OnceClosure), (override));
 };
@@ -88,15 +88,9 @@ class SpotlightRemotingClientManagerImplTest : public testing::Test {
   std::unique_ptr<RemotingClientIOProxy> CreateTestRemotingIOProxy(
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory,
-      SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback,
-      SpotlightAudioStreamConsumer::AudioPacketReceivedCallback
-          audio_packet_received_callback,
-      SpotlightCrdStateUpdatedCallback status_updated_callback) {
+      scoped_refptr<base::SequencedTaskRunner> observer_task_runner) {
     auto mock_proxy = std::make_unique<NiceMock<MockRemotingClientIOProxy>>();
     remoting_client_io_proxy_ = mock_proxy.get();
-    frame_received_callback_ = std::move(frame_received_callback);
-    audio_packet_received_callback_ = std::move(audio_packet_received_callback);
-    status_updated_callback_ = std::move(status_updated_callback);
     return mock_proxy;
   }
 
@@ -107,10 +101,6 @@ class SpotlightRemotingClientManagerImplTest : public testing::Test {
   raw_ptr<NiceMock<MockSpotlightOAuthTokenFetcher>> token_fetcher_ = nullptr;
   raw_ptr<NiceMock<MockRemotingClientIOProxy>> remoting_client_io_proxy_ =
       nullptr;
-  SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback_;
-  SpotlightAudioStreamConsumer::AudioPacketReceivedCallback
-      audio_packet_received_callback_;
-  SpotlightCrdStateUpdatedCallback status_updated_callback_;
 };
 
 TEST_F(SpotlightRemotingClientManagerImplTest,
@@ -138,6 +128,8 @@ TEST_F(SpotlightRemotingClientManagerImplTest, StartCrdClientFailsToGetToken) {
 
 TEST_F(SpotlightRemotingClientManagerImplTest, StartCrdClientSuccess) {
   base::RunLoop run_loop;
+  base::WeakPtr<RemotingClientIOProxy::Observer> observer;
+  base::test::TestFuture<void> stop_future;
   EXPECT_CALL(*token_fetcher_, Start)
       .WillOnce(
           [](SpotlightOAuthTokenFetcher::OAuthTokenCallback oauth_callback) {
@@ -147,21 +139,23 @@ TEST_F(SpotlightRemotingClientManagerImplTest, StartCrdClientSuccess) {
               StartCrdClient(std::string(kValidConnectionCode),
                              std::string(kTestOAuthToken),
                              std::string(kTestRobotEmail), _))
-      .WillOnce([&run_loop]() { run_loop.Quit(); });
+      .WillOnce([&run_loop, &observer](
+                    std::string, std::string, std::string,
+                    base::WeakPtr<RemotingClientIOProxy::Observer> obs) {
+        observer = obs;
+        run_loop.Quit();
+      });
   manager_->StartCrdClient(std::string(kValidConnectionCode), base::DoNothing(),
                            base::DoNothing(), base::DoNothing(),
                            base::DoNothing());
   run_loop.Run();
-}
+  EXPECT_TRUE(observer);
 
-TEST_F(SpotlightRemotingClientManagerImplTest, StopCrdClient) {
-  base::test::TestFuture<void> stop_future;
-  manager_->StartCrdClient(std::string(kValidConnectionCode), base::DoNothing(),
-                           base::DoNothing(), base::DoNothing(),
-                           base::DoNothing());
   EXPECT_CALL(*remoting_client_io_proxy_, StopCrdClient)
       .WillOnce([](base::OnceClosure cb) { std::move(cb).Run(); });
   manager_->StopCrdClient(stop_future.GetCallback());
+  // Observer should be invalidated on stop.
+  EXPECT_FALSE(observer);
   EXPECT_TRUE(stop_future.Wait());
 }
 
@@ -171,39 +165,51 @@ TEST_F(SpotlightRemotingClientManagerImplTest, GetDeviceRobotEmail) {
   EXPECT_EQ(manager_->GetDeviceRobotEmail(), std::string(kTestRobotEmail));
 }
 
-TEST_F(SpotlightRemotingClientManagerImplTest, HandleCrdSessionEnded) {
+TEST_F(SpotlightRemotingClientManagerImplTest, OnCrdSessionEnded) {
+  base::RunLoop run_loop;
   base::test::TestFuture<void> session_ended_future;
+  base::WeakPtr<RemotingClientIOProxy::Observer> observer;
   EXPECT_CALL(*token_fetcher_, Start)
       .WillOnce(
           [](SpotlightOAuthTokenFetcher::OAuthTokenCallback oauth_callback) {
             std::move(oauth_callback).Run(std::string(kTestOAuthToken));
           });
   EXPECT_CALL(*remoting_client_io_proxy_, StartCrdClient)
-      .WillOnce([](std::string, std::string, std::string,
-                   base::OnceClosure crd_session_ended_callback) {
-        std::move(crd_session_ended_callback).Run();
+      .WillOnce([&run_loop, &observer](
+                    std::string, std::string, std::string,
+                    base::WeakPtr<RemotingClientIOProxy::Observer> obs) {
+        observer = obs;
+        run_loop.Quit();
       });
   manager_->StartCrdClient(
       std::string(kValidConnectionCode), session_ended_future.GetCallback(),
       base::DoNothing(), base::DoNothing(), base::DoNothing());
+  run_loop.Run();
+  observer->OnCrdSessionEnded();
   EXPECT_TRUE(session_ended_future.Wait());
 }
 
 TEST_F(SpotlightRemotingClientManagerImplTest, StatusUpdated) {
   base::RunLoop run_loop;
   base::test::RepeatingTestFuture<CrdConnectionState> status_updated_future;
+  base::WeakPtr<RemotingClientIOProxy::Observer> observer;
   EXPECT_CALL(*token_fetcher_, Start)
       .WillOnce(
           [](SpotlightOAuthTokenFetcher::OAuthTokenCallback oauth_callback) {
             std::move(oauth_callback).Run(std::string(kTestOAuthToken));
           });
   EXPECT_CALL(*remoting_client_io_proxy_, StartCrdClient)
-      .WillOnce([&run_loop]() { run_loop.Quit(); });
+      .WillOnce([&run_loop, &observer](
+                    std::string, std::string, std::string,
+                    base::WeakPtr<RemotingClientIOProxy::Observer> obs) {
+        observer = obs;
+        run_loop.Quit();
+      });
   manager_->StartCrdClient(std::string(kValidConnectionCode), base::DoNothing(),
                            base::DoNothing(), base::DoNothing(),
                            status_updated_future.GetCallback());
   run_loop.Run();
-  status_updated_callback_.Run(CrdConnectionState::kConnected);
+  observer->OnStateUpdated(CrdConnectionState::kConnected);
   EXPECT_EQ(status_updated_future.Take(), CrdConnectionState::kConnected);
 }
 
@@ -212,18 +218,24 @@ TEST_F(SpotlightRemotingClientManagerImplTest, FrameReceived) {
   base::test::RepeatingTestFuture<SkBitmap,
                                   std::unique_ptr<webrtc::DesktopFrame>>
       frame_received_future;
+  base::WeakPtr<RemotingClientIOProxy::Observer> observer;
   EXPECT_CALL(*token_fetcher_, Start)
       .WillOnce(
           [](SpotlightOAuthTokenFetcher::OAuthTokenCallback oauth_callback) {
             std::move(oauth_callback).Run(std::string(kTestOAuthToken));
           });
   EXPECT_CALL(*remoting_client_io_proxy_, StartCrdClient)
-      .WillOnce([&run_loop]() { run_loop.Quit(); });
+      .WillOnce([&run_loop, &observer](
+                    std::string, std::string, std::string,
+                    base::WeakPtr<RemotingClientIOProxy::Observer> obs) {
+        observer = obs;
+        run_loop.Quit();
+      });
   manager_->StartCrdClient(std::string(kValidConnectionCode), base::DoNothing(),
                            frame_received_future.GetCallback(),
                            base::DoNothing(), base::DoNothing());
   run_loop.Run();
-  frame_received_callback_.Run(SkBitmap(), nullptr);
+  observer->OnFrameReceived(SkBitmap(), nullptr);
   EXPECT_TRUE(frame_received_future.Wait());
 }
 
@@ -234,19 +246,25 @@ TEST_F(SpotlightRemotingClientManagerImplTest, FrameReceivedTimeout) {
                                   std::unique_ptr<webrtc::DesktopFrame>>
       frame_received_future;
   base::test::RepeatingTestFuture<CrdConnectionState> status_updated_future;
+  base::WeakPtr<RemotingClientIOProxy::Observer> observer;
   EXPECT_CALL(*token_fetcher_, Start)
       .WillOnce(
           [](SpotlightOAuthTokenFetcher::OAuthTokenCallback oauth_callback) {
             std::move(oauth_callback).Run(std::string(kTestOAuthToken));
           });
   EXPECT_CALL(*remoting_client_io_proxy_, StartCrdClient)
-      .WillOnce([&start_run_loop]() { start_run_loop.Quit(); });
+      .WillOnce([&start_run_loop, &observer](
+                    std::string, std::string, std::string,
+                    base::WeakPtr<RemotingClientIOProxy::Observer> obs) {
+        observer = obs;
+        start_run_loop.Quit();
+      });
   manager_->StartCrdClient(std::string(kValidConnectionCode), base::DoNothing(),
                            frame_received_future.GetCallback(),
                            base::DoNothing(),
                            status_updated_future.GetCallback());
   start_run_loop.Run();
-  frame_received_callback_.Run(SkBitmap(), nullptr);
+  observer->OnFrameReceived(SkBitmap(), nullptr);
   EXPECT_TRUE(frame_received_future.Wait());
 
   EXPECT_CALL(*remoting_client_io_proxy_, StopCrdClient)
@@ -257,11 +275,25 @@ TEST_F(SpotlightRemotingClientManagerImplTest, FrameReceivedTimeout) {
 }
 
 TEST_F(SpotlightRemotingClientManagerImplTest, CallStopCrdClientOnTimeout) {
+  base::RunLoop run_loop;
   base::test::TestFuture<void> stop_future;
   base::test::RepeatingTestFuture<SkBitmap,
                                   std::unique_ptr<webrtc::DesktopFrame>>
       frame_received_future;
   std::optional<CrdConnectionState> updated_state;
+  base::WeakPtr<RemotingClientIOProxy::Observer> observer;
+  EXPECT_CALL(*token_fetcher_, Start)
+      .WillOnce(
+          [](SpotlightOAuthTokenFetcher::OAuthTokenCallback oauth_callback) {
+            std::move(oauth_callback).Run(std::string(kTestOAuthToken));
+          });
+  EXPECT_CALL(*remoting_client_io_proxy_, StartCrdClient)
+      .WillOnce([&observer, &run_loop](
+                    std::string, std::string, std::string,
+                    base::WeakPtr<RemotingClientIOProxy::Observer> obs) {
+        observer = obs;
+        run_loop.Quit();
+      });
   manager_->StartCrdClient(
       std::string(kValidConnectionCode), base::DoNothing(),
       frame_received_future.GetCallback(), base::DoNothing(),
@@ -270,7 +302,8 @@ TEST_F(SpotlightRemotingClientManagerImplTest, CallStopCrdClientOnTimeout) {
             manager_->StopCrdClient(stop_future.GetCallback());
             updated_state = state;
           }));
-  frame_received_callback_.Run(SkBitmap(), nullptr);
+  run_loop.Run();
+  observer->OnFrameReceived(SkBitmap(), nullptr);
   EXPECT_TRUE(frame_received_future.Wait());
   EXPECT_CALL(*remoting_client_io_proxy_, StopCrdClient)
       .WillOnce([](base::OnceClosure cb) { std::move(cb).Run(); });
@@ -286,19 +319,25 @@ TEST_F(SpotlightRemotingClientManagerImplTest,
   base::test::RepeatingTestFuture<SkBitmap,
                                   std::unique_ptr<webrtc::DesktopFrame>>
       frame_received_future;
+  base::WeakPtr<RemotingClientIOProxy::Observer> observer;
   EXPECT_CALL(*token_fetcher_, Start)
       .WillOnce(
           [](SpotlightOAuthTokenFetcher::OAuthTokenCallback oauth_callback) {
             std::move(oauth_callback).Run(std::string(kTestOAuthToken));
           });
   EXPECT_CALL(*remoting_client_io_proxy_, StartCrdClient)
-      .WillOnce([&run_loop]() { run_loop.Quit(); });
+      .WillOnce([&run_loop, &observer](
+                    std::string, std::string, std::string,
+                    base::WeakPtr<RemotingClientIOProxy::Observer> obs) {
+        observer = obs;
+        run_loop.Quit();
+      });
   manager_->StartCrdClient(std::string(kValidConnectionCode), base::DoNothing(),
                            frame_received_future.GetCallback(),
                            base::DoNothing(), base::DoNothing());
   run_loop.Run();
   task_environment_.FastForwardBy(base::Seconds(3));
-  frame_received_callback_.Run(SkBitmap(), nullptr);
+  observer->OnFrameReceived(SkBitmap(), nullptr);
   EXPECT_TRUE(frame_received_future.Wait());
 
   EXPECT_CALL(*remoting_client_io_proxy_, StopCrdClient).Times(0);
@@ -310,18 +349,24 @@ TEST_F(SpotlightRemotingClientManagerImplTest, AudioPacketReceived) {
   base::RunLoop run_loop;
   base::test::RepeatingTestFuture<std::unique_ptr<remoting::AudioPacket>>
       audio_packet_received_future;
+  base::WeakPtr<RemotingClientIOProxy::Observer> observer;
   EXPECT_CALL(*token_fetcher_, Start)
       .WillOnce(
           [](SpotlightOAuthTokenFetcher::OAuthTokenCallback oauth_callback) {
             std::move(oauth_callback).Run(std::string(kTestOAuthToken));
           });
   EXPECT_CALL(*remoting_client_io_proxy_, StartCrdClient)
-      .WillOnce([&run_loop]() { run_loop.Quit(); });
+      .WillOnce([&run_loop, &observer](
+                    std::string, std::string, std::string,
+                    base::WeakPtr<RemotingClientIOProxy::Observer> obs) {
+        observer = obs;
+        run_loop.Quit();
+      });
   manager_->StartCrdClient(
       std::string(kValidConnectionCode), base::DoNothing(), base::DoNothing(),
       audio_packet_received_future.GetCallback(), base::DoNothing());
   run_loop.Run();
-  audio_packet_received_callback_.Run(nullptr);
+  observer->OnAudioPacketReceived(nullptr);
   EXPECT_TRUE(audio_packet_received_future.Wait());
 }
 

@@ -40,6 +40,25 @@ class SpotlightAudioStreamConsumer;
 
 class RemotingClientIOProxy {
  public:
+  class Observer {
+   public:
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
+    virtual ~Observer() = default;
+
+    virtual void OnCrdSessionEnded() = 0;
+    virtual void OnStateUpdated(CrdConnectionState state) = 0;
+    virtual void OnFrameReceived(
+        SkBitmap bitmap,
+        std::unique_ptr<webrtc::DesktopFrame> frame) = 0;
+    virtual void OnAudioPacketReceived(
+        std::unique_ptr<remoting::AudioPacket> packet) = 0;
+
+   protected:
+    Observer() = default;
+  };
+
   RemotingClientIOProxy(const RemotingClientIOProxy&) = delete;
   RemotingClientIOProxy& operator=(const RemotingClientIOProxy&) = delete;
 
@@ -49,7 +68,7 @@ class RemotingClientIOProxy {
   virtual void StartCrdClient(std::string crd_connection_code,
                               std::string oauth_access_token,
                               std::string authorized_helper_email,
-                              base::OnceClosure crd_session_ended_callback) = 0;
+                              base::WeakPtr<Observer> observer) = 0;
 
   // Stops the `remoting::RemotingClient` if there is an active session and
   // releases the resources for the next session.
@@ -91,10 +110,7 @@ class RemotingClientIOProxyImpl : public RemotingClientIOProxy,
   RemotingClientIOProxyImpl(
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory,
-      SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback,
-      SpotlightAudioStreamConsumer::AudioPacketReceivedCallback
-          audio_packet_received_callback,
-      SpotlightCrdStateUpdatedCallback status_updated_callback,
+      scoped_refptr<base::SequencedTaskRunner> observer_task_runner,
       CreateRemotingClientWrapperCb create_remoting_client_wrapper_cb =
           base::BindRepeating(
               &RemotingClientIOProxyImpl::CreateRemotingClientWrapper));
@@ -113,7 +129,7 @@ class RemotingClientIOProxyImpl : public RemotingClientIOProxy,
   void StartCrdClient(std::string crd_connection_code,
                       std::string oauth_access_token,
                       std::string authorized_helper_email,
-                      base::OnceClosure crd_session_ended_callback) override;
+                      base::WeakPtr<Observer> observer) override;
   void StopCrdClient(base::OnceClosure on_stopped_callback) override;
 
  private:
@@ -123,19 +139,7 @@ class RemotingClientIOProxyImpl : public RemotingClientIOProxy,
       std::unique_ptr<SpotlightAudioStreamConsumer> audio_stream_consumer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
-  // Accepts the CRD ended event on the current sequence and forwards it to the
-  // `crd_session_ended_callback_`.
-  void HandleCrdSessionEnded();
-
-  // Update the `status_updated_callback_` with the CrdConnectionState.
   void UpdateState(CrdConnectionState state);
-
-  // Receives the frame on the current sequence and forwards it to the
-  // `frame_received_callback_`.
-  void OnFrameReceived(SkBitmap bitmap,
-                       std::unique_ptr<webrtc::DesktopFrame> frame);
-
-  void OnAudioPacketReceived(std::unique_ptr<remoting::AudioPacket> packet);
 
   // Releases the `RemoteClientWrapper` and `SpotlightFrameConsumer` used
   // for a previous session.
@@ -148,14 +152,8 @@ class RemotingClientIOProxyImpl : public RemotingClientIOProxy,
   std::unique_ptr<network::PendingSharedURLLoaderFactory>
       pending_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-  // Callback for handling an update that the crd session has ended.
-  base::OnceClosure crd_session_ended_callback_;
-  // Callback for receiving a completed frame from `SpotlightFrameConsumer`.
-  SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback_;
-  SpotlightAudioStreamConsumer::AudioPacketReceivedCallback
-      audio_packet_received_callback_;
-  // Callback for `CrdConnectionState` updates.
-  SpotlightCrdStateUpdatedCallback status_updated_callback_;
+  const scoped_refptr<base::SequencedTaskRunner> observer_task_runner_;
+  base::WeakPtr<Observer> observer_;
   std::unique_ptr<RemotingClientWrapper> remoting_client_wrapper_;
   CreateRemotingClientWrapperCb create_remoting_client_wrapper_cb_;
 

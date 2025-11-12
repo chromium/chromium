@@ -49,15 +49,8 @@ SpotlightRemotingClientManagerImpl::SpotlightRemotingClientManagerImpl(
       io_thread_.task_runner(),
       create_remoting_io_proxy_cb.Run(
           url_loader_factory->Clone(),
-          base::BindPostTaskToCurrentDefault(base::BindRepeating(
-              &SpotlightRemotingClientManagerImpl::HandleFrameReceived,
-              weak_factory_.GetWeakPtr())),
-          base::BindPostTaskToCurrentDefault(base::BindRepeating(
-              &SpotlightRemotingClientManagerImpl::HandleAudioPacketReceived,
-              weak_factory_.GetWeakPtr())),
-          base::BindPostTaskToCurrentDefault(base::BindRepeating(
-              &SpotlightRemotingClientManagerImpl::UpdateState,
-              weak_factory_.GetWeakPtr()))));
+          /*observer_task_runner=*/base::SequencedTaskRunner::
+              GetCurrentDefault()));
 }
 
 SpotlightRemotingClientManagerImpl::~SpotlightRemotingClientManagerImpl() {
@@ -112,11 +105,10 @@ void SpotlightRemotingClientManagerImpl::StopCrdClient(
     std::move(on_stopped_callback).Run();
     return;
   }
-
+  Reset();
   remoting_client_io_proxy_->AsyncCall(&RemotingClientIOProxy::StopCrdClient)
       .WithArgs(
           base::BindPostTaskToCurrentDefault(std::move(on_stopped_callback)));
-  Reset();
 }
 
 std::string SpotlightRemotingClientManagerImpl::GetDeviceRobotEmail() {
@@ -128,14 +120,9 @@ std::unique_ptr<RemotingClientIOProxy>
 SpotlightRemotingClientManagerImpl::CreateRemotingIOProxy(
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
-    SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback,
-    SpotlightAudioStreamConsumer::AudioPacketReceivedCallback
-        audio_packet_received_callback,
-    SpotlightCrdStateUpdatedCallback status_updated_callback) {
+    scoped_refptr<base::SequencedTaskRunner> observer_task_runner) {
   return std::make_unique<RemotingClientIOProxyImpl>(
-      std::move(pending_url_loader_factory), std::move(frame_received_callback),
-      std::move(audio_packet_received_callback),
-      std::move(status_updated_callback));
+      std::move(pending_url_loader_factory), observer_task_runner);
 }
 
 void SpotlightRemotingClientManagerImpl::HandleOAuthTokenRetrieved(
@@ -144,28 +131,29 @@ void SpotlightRemotingClientManagerImpl::HandleOAuthTokenRetrieved(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!oauth_access_token.has_value() || oauth_access_token->empty()) {
     LOG(ERROR) << "[Boca] Failed to retrieve OAuth token for Spotlight";
-    UpdateState(CrdConnectionState::kFailed);
+    OnStateUpdated(CrdConnectionState::kFailed);
     return;
   }
 
   remoting_client_io_proxy_->AsyncCall(&RemotingClientIOProxy::StartCrdClient)
       .WithArgs(std::move(crd_connection_code),
                 std::move(oauth_access_token.value()), GetDeviceRobotEmail(),
-                base::BindPostTaskToCurrentDefault(base::BindOnce(
-                    &SpotlightRemotingClientManagerImpl::HandleCrdSessionEnded,
-                    weak_factory_.GetWeakPtr())));
+                weak_factory_.GetWeakPtr());
 }
 
-void SpotlightRemotingClientManagerImpl::HandleCrdSessionEnded() {
+void SpotlightRemotingClientManagerImpl::OnCrdSessionEnded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!crd_session_ended_callback_) {
     return;
   }
-  std::move(crd_session_ended_callback_).Run();
+  base::OnceClosure session_ended_callback =
+      std::move(crd_session_ended_callback_);
   Reset();
+  std::move(session_ended_callback).Run();
 }
 
-void SpotlightRemotingClientManagerImpl::UpdateState(CrdConnectionState state) {
+void SpotlightRemotingClientManagerImpl::OnStateUpdated(
+    CrdConnectionState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!status_updated_callback_) {
     return;
@@ -177,7 +165,7 @@ void SpotlightRemotingClientManagerImpl::UpdateState(CrdConnectionState state) {
   }
 }
 
-void SpotlightRemotingClientManagerImpl::HandleFrameReceived(
+void SpotlightRemotingClientManagerImpl::OnFrameReceived(
     SkBitmap bitmap,
     std::unique_ptr<webrtc::DesktopFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -188,12 +176,12 @@ void SpotlightRemotingClientManagerImpl::HandleFrameReceived(
   frame_timeout_timer_.Stop();
   frame_timeout_timer_.Start(
       FROM_HERE, kFrameTimeout,
-      base::BindOnce(&SpotlightRemotingClientManagerImpl::UpdateState,
+      base::BindOnce(&SpotlightRemotingClientManagerImpl::OnStateUpdated,
                      weak_factory_.GetWeakPtr(), CrdConnectionState::kTimeout));
   frame_received_callback_.Run(std::move(bitmap), std::move(frame));
 }
 
-void SpotlightRemotingClientManagerImpl::HandleAudioPacketReceived(
+void SpotlightRemotingClientManagerImpl::OnAudioPacketReceived(
     std::unique_ptr<remoting::AudioPacket> packet) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!audio_packet_received_callback_) {
@@ -204,6 +192,7 @@ void SpotlightRemotingClientManagerImpl::HandleAudioPacketReceived(
 
 void SpotlightRemotingClientManagerImpl::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  weak_factory_.InvalidateWeakPtrs();
   crd_session_ended_callback_.Reset();
   frame_received_callback_.Reset();
   audio_packet_received_callback_.Reset();
