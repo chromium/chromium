@@ -277,6 +277,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.ConcurrentVisibility.Duration" units="ms"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the duration of a single period of Concurrent Visibility. Concurrent
+    Visibility is defined as a continuous period of time where two or more Glic
+    instances are visible simultaneously. Recorded when the number of visible
+    instances drops below two.
+  </summary>
+</histogram>
+
+<histogram name="Glic.ConcurrentVisibility.PeakCount" units="instances"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the maximum number of Glic instances that were visible
+    simultaneously during a single period of Concurrent Visibility. Recorded
+    when the period of Concurrent Visibility ends.
+  </summary>
+</histogram>
+
 <histogram name="Glic.DetachedFromBrowser" enum="GlicAttachChangeReason"
     expires_after="2026-01-15">
   <owner>dullweber@chromium.org</owner>

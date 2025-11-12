@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notimplemented.h"
 #include "base/time/time.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/service/glic_instance_coordinator_metrics.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/glic_instance_metrics.h"
@@ -90,7 +90,8 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
       memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kGlicKeyedService,
-          this) {
+          this),
+      metrics_(this) {
   if (base::FeatureList::IsEnabled(features::kGlicDaisyChainNewTabs)) {
     tab_creation_observer_ = std::make_unique<GlicTabCreationObserver>(
         profile_,
@@ -132,6 +133,7 @@ void GlicInstanceCoordinatorImpl::OnInstanceVisibilityChanged(
   if (instance == active_instance_) {
     ComputeContentAccessIndicator();
   }
+  metrics_.OnInstanceVisibilityChanged();
 }
 
 void GlicInstanceCoordinatorImpl::NotifyActiveInstanceChanged() {

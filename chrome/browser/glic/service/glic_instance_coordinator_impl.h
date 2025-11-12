@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/service/glic_instance_coordinator_metrics.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/glic_tab_creation_observer.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -52,7 +53,8 @@ class GlicInstanceCoordinator : public GlicWindowController {};
 class GlicInstanceCoordinatorImpl
     : public GlicInstanceCoordinator,
       public GlicInstanceImpl::InstanceCoordinatorDelegate,
-      public base::MemoryPressureListener {
+      public base::MemoryPressureListener,
+      public GlicInstanceCoordinatorMetrics::DataProvider {
  public:
   GlicInstanceCoordinatorImpl(const GlicInstanceCoordinatorImpl&) = delete;
   GlicInstanceCoordinatorImpl& operator=(const GlicInstanceCoordinatorImpl&) =
@@ -85,9 +87,10 @@ class GlicInstanceCoordinatorImpl
   void ContextAccessIndicatorChanged(GlicInstanceImpl& instance,
                                      bool enabled) override;
 
+  // GlicWindowController and GlicInstanceCoordinatorMetrics::DataProvider implementation
+  std::vector<GlicInstance*> GetInstances() override;
   // GlicWindowController implementation
   HostManager& host_manager() override;
-  std::vector<GlicInstance*> GetInstances() override;
   GlicInstance* GetInstanceForTab(const tabs::TabInterface* tab) const override;
 
   // Toggles the side panel for the active tab if `browser` is provided,
@@ -192,6 +195,8 @@ class GlicInstanceCoordinatorImpl
       memory_pressure_listener_registration_;
 
   bool warming_enabled_ = true;
+
+  GlicInstanceCoordinatorMetrics metrics_;
 
   std::unique_ptr<GlicTabCreationObserver> tab_creation_observer_;
 
