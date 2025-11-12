@@ -768,7 +768,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1517467582299994451">Para transmitir com um código, ative as configurações de sincronização do navegador Chrome</translation>
 <translation id="1519090060276706457">A restauração das janelas está demorando mais do que o esperado</translation>
 <translation id="1521442365706402292">Gerenciar certificados</translation>
-<translation id="1521655867290435174">Planilhas Google</translation>
+<translation id="1521655867290435174">Google Planilhas</translation>
 <translation id="1521774566618522728">Ativo hoje</translation>
 <translation id="1521933835545997395">Conectado ao smartphone Android</translation>
 <translation id="1523279371236772909">Visualizado no último mês</translation>
@@ -2030,6 +2030,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2359345697448000899">Gerencie suas extensões clicando em Extensões no menu Ferramentas.</translation>
 <translation id="2359556993567737338">Conectar dispositivo Bluetooth</translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="2360047907847684514">Turbine seu navegador com extensões e temas</translation>
 <translation id="2360792123962658445">Para acessar um resumo da página, pesquisas relacionadas e outras informações úteis, selecione o botão do painel lateral da Pesquisa Google na barra de ferramentas</translation>
 <translation id="236117173274098341">Otimizar</translation>
 <translation id="2361340419970998028">Enviando feedback…</translation>
@@ -8359,6 +8360,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6787839852456839824">Atalhos do teclado</translation>
 <translation id="6788210894632713004">Extensão descompactada</translation>
 <translation id="6789592661892473991">Divisão horizontal</translation>
+<translation id="6789665473250283877">Remover <ph name="TOOL_NAME" /></translation>
 <translation id="6789834167207639931">Digite a senha da sua Conta do Google de novo na próxima tela para concluir a recuperação</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6790497603648687708">A extensão <ph name="EXTENSION_NAME" /> foi adicionada remotamente</translation>
@@ -8612,6 +8614,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6961327401577924850">Os sites geralmente procuram dispositivos Bluetooth para recursos como a configuração ou sincronização de um sensor de baixa energia, um tracker de condicionamento físico e saúde ou uma lâmpada de iluminação inteligente</translation>
 <translation id="6963772203726867701">Não detectado</translation>
 <translation id="6963872466817251924">Destaque do cursor de texto</translation>
+<translation id="6964239097707154771">são complementos do Chrome que ajudam você a fazer muito mais</translation>
 <translation id="6964390816189577014">Hero</translation>
 <translation id="6964760285928603117">Remover do grupo</translation>
 <translation id="6965382102122355670">OK</translation>

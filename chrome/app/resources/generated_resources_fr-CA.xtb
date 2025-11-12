@@ -2017,6 +2017,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2359345697448000899">Pour gérer les extensions, cliquer sur « Extensions » dans le menu « Outils ».</translation>
 <translation id="2359556993567737338">Connecter un appareil Bluetooth</translation>
 <translation id="2359808026110333948">Continuer</translation>
+<translation id="2360047907847684514">Optimisez votre navigateur avec des extensions et des thèmes</translation>
 <translation id="2360792123962658445">Pour obtenir un résumé de la page, des recherches associées et d'autres informations utiles à propos de cette page, sélectionnez le bouton Recherche Google du panneau latéral dans la barre d'outils</translation>
 <translation id="236117173274098341">Optimiser</translation>
 <translation id="2361340419970998028">Envoi des commentaires en cours…</translation>
@@ -8345,6 +8346,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6787839852456839824">Raccourcis clavier</translation>
 <translation id="6788210894632713004">Extension non compressée</translation>
 <translation id="6789592661892473991">Séparation horizontale</translation>
+<translation id="6789665473250283877">Retirer <ph name="TOOL_NAME" /></translation>
 <translation id="6789834167207639931">Entrez à nouveau le mot de passe de votre compte Google sur l'écran suivant afin de terminer la récupération</translation>
 <translation id="6790428901817661496">Jouer</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> a été ajoutée à distance</translation>
@@ -8598,6 +8600,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="6961327401577924850">Les sites recherchent généralement les appareils Bluetooth pour proposer des fonctionnalités comme la configuration ou la synchronisation d'une balise à faible consommation d'énergie, d'un moniteur de santé ou d'activité physique, ou d'une ampoule intelligente</translation>
 <translation id="6963772203726867701">Non détecté</translation>
 <translation id="6963872466817251924">Surligneur du curseur de texte</translation>
+<translation id="6964239097707154771">sont des modules complémentaires pour Chrome qui vous aident à être plus productif</translation>
 <translation id="6964390816189577014">Héros</translation>
 <translation id="6964760285928603117">Supprimer du groupe</translation>
 <translation id="6965382102122355670">OK</translation>

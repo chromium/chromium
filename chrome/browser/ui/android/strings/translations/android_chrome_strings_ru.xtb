@@ -1319,7 +1319,7 @@
 <translation id="6734310707649923383">Вы сможете посмотреть посещенные страницы или удалить их из истории.</translation>
 <translation id="6737429434215739253">Закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />", которой ведется запись</translation>
 <translation id="6738867403308150051">Скачивание…</translation>
-<translation id="6745063744988317486">Моно</translation>
+<translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Проверьте данные аккаунта</translation>
 <translation id="6746834324024491643">Чтобы синхронизировать пароли и другие данные на всех устройствах, войдите в аккаунт <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Открыть новую вкладку. Чтобы изменить функцию кнопки, нажмите и удерживайте ее.</translation>
@@ -1539,7 +1539,7 @@
 <translation id="7525248386620136756">Закрыты и сохранены: <ph name="TAB_GROUPS_AND_TABS_PART" />.</translation>
 <translation id="7545347190366646170">Пользователи, у которых есть доступ</translation>
 <translation id="7554643625247105821">Не удалось проверить версию Chrome</translation>
-<translation id="7557508262441527045">Выполнен выход.</translation>
+<translation id="7557508262441527045">Выполнен выход</translation>
 <translation id="7573665567024262965">Выберите приложения по умолчанию</translation>
 <translation id="7577900504646297215">Управление интересами</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Скачан <ph name="FILES_DOWNLOADED_ONE" /> файл}one{Скачан <ph name="FILES_DOWNLOADED_MANY" /> файл}few{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файла}many{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файлов}other{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файла}}</translation>

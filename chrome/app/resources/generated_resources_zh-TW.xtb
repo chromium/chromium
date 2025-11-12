@@ -2016,6 +2016,7 @@
 <translation id="2359345697448000899">如要管理擴充功能，只要按一下 [工具] 選單裡的 [擴充功能] 即可。</translation>
 <translation id="2359556993567737338">連線至藍牙裝置</translation>
 <translation id="2359808026110333948">繼續</translation>
+<translation id="2360047907847684514">善用擴充功能和主題，瀏覽器更實用便利</translation>
 <translation id="2360792123962658445">如要取得這個頁面的摘要、相關搜尋內容和其他實用資訊，請選取工具列中的 Google 搜尋側邊面板按鈕</translation>
 <translation id="236117173274098341">最佳化</translation>
 <translation id="2361340419970998028">正在傳送意見回饋…</translation>
@@ -8329,6 +8330,7 @@
 <translation id="6787839852456839824">鍵盤快速鍵</translation>
 <translation id="6788210894632713004">未封裝擴充功能</translation>
 <translation id="6789592661892473991">水平分割</translation>
+<translation id="6789665473250283877">移除「<ph name="TOOL_NAME" />」</translation>
 <translation id="6789834167207639931">在下一個畫面中再次輸入 Google 帳戶密碼，完成復原程序</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6790497603648687708">「<ph name="EXTENSION_NAME" />」是從遠端新增的項目</translation>
@@ -8582,6 +8584,7 @@
 <translation id="6961327401577924850">一般來說，網站掃描藍牙裝置的原因是為了執行功能，例如設定或同步低功耗信標、健康/健身智慧手環或智慧型燈泡</translation>
 <translation id="6963772203726867701">未偵測到</translation>
 <translation id="6963872466817251924">文字游標醒目顯示工具</translation>
+<translation id="6964239097707154771">這些是 Chrome 的外掛程式，可助你事半功倍</translation>
 <translation id="6964390816189577014">英雄</translation>
 <translation id="6964760285928603117">從群組中移除</translation>
 <translation id="6965382102122355670">確定</translation>

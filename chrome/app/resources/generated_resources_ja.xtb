@@ -2012,6 +2012,7 @@
 <translation id="2359345697448000899">[ツール] メニューの [拡張機能] をクリックして拡張機能を管理できます。</translation>
 <translation id="2359556993567737338">Bluetooth デバイスの接続</translation>
 <translation id="2359808026110333948">続行</translation>
+<translation id="2360047907847684514">拡張機能とテーマでブラウザを強化</translation>
 <translation id="2360792123962658445">このページに関して、概要、関連する検索、その他の有益な情報を確認するには、ツールバーの Google 検索サイドパネル ボタンを選択します</translation>
 <translation id="236117173274098341">最適化</translation>
 <translation id="2361340419970998028">フィードバックを送信しています...</translation>
@@ -2096,7 +2097,7 @@
 <translation id="2428939361789119025">Wi-Fi をオフにする</translation>
 <translation id="2431027948063157455">Google アシスタントを読み込めませんでした。ネットワーク接続を確認してから、もう一度お試しください。</translation>
 <translation id="243179355394256322">お客様の組織では、デバイスの登録は権限のあるユーザーしか行えません。このユーザーにはデバイスを登録する権限がありません。管理コンソールの [ユーザー] で、ユーザーに「Google Meet ハードウェアの登録」管理者権限があることをご確認ください。</translation>
-<translation id="2431896368788252518">パーソナル コンテキストを表示して管理します</translation>
+<translation id="2431896368788252518">パーソナライズ設定を表示して管理します</translation>
 <translation id="243275146591958220">ダウンロードをキャンセル</translation>
 <translation id="2433237965825924228">独立したウェブアプリは、認証デバイスと、そのデバイスで読み取り可能なスマートカードを制御できます。通常、スマートカードには、ユーザーの認証に使用する識別子が含まれます。</translation>
 <translation id="2433452467737464329">ページを自動更新するには URL に次のようなクエリ パラメータを追加してください: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -3140,7 +3141,7 @@
 <translation id="3151539355209957474">開始時間</translation>
 <translation id="3151786313568798007">向き</translation>
 <translation id="3152356229013609796">スマートフォンの通知を確認する、閉じる、返信するなどの操作を行います</translation>
-<translation id="3154754096046236400">パーソナル コンテキスト</translation>
+<translation id="3154754096046236400">パーソナライズ設定</translation>
 <translation id="3155163173539279776">Chromium を再起動します</translation>
 <translation id="3155394504825881014">タブグループをブックマーク フォルダに変換</translation>
 <translation id="3156511682997763015">10 秒早送り</translation>
@@ -8325,6 +8326,7 @@
 <translation id="6787839852456839824">キーボード ショートカット</translation>
 <translation id="6788210894632713004">パッケージ化されていない拡張機能</translation>
 <translation id="6789592661892473991">横に分割</translation>
+<translation id="6789665473250283877"><ph name="TOOL_NAME" /> を削除</translation>
 <translation id="6789834167207639931">復元を完了するには、次の画面で Google アカウントのパスワードをもう一度入力してください</translation>
 <translation id="6790428901817661496">再生</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> がリモートで追加されました</translation>
@@ -8578,6 +8580,7 @@
 <translation id="6961327401577924850">Bluetooth Low Energy ビーコン、ヘルス トラッカー、フィットネス トラッカー、スマート電球の設定や同期などの機能に対応するために、サイトは通常 Bluetooth デバイスを検出します。</translation>
 <translation id="6963772203726867701">検出されませんでした</translation>
 <translation id="6963872466817251924">テキスト カーソルのハイライト表示</translation>
+<translation id="6964239097707154771">は、Chrome でさまざまな機能を利用できるようにするアドオンです</translation>
 <translation id="6964390816189577014">ヒーロー</translation>
 <translation id="6964760285928603117">グループから削除</translation>
 <translation id="6965382102122355670">OK</translation>

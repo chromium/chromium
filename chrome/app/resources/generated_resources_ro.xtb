@@ -2017,6 +2017,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2359345697448000899">Gestionați extensiile făcând clic pe Extensii în meniul Instrumente.</translation>
 <translation id="2359556993567737338">Conectează dispozitivul Bluetooth</translation>
 <translation id="2359808026110333948">Continuă</translation>
+<translation id="2360047907847684514">Optimizează browserul cu extensii și teme</translation>
 <translation id="2360792123962658445">Pentru a obține un rezumat al paginii, căutări similare și alte informații utile despre această pagină, selectează butonul din panoul lateral Căutare Google din bara de instrumente</translation>
 <translation id="236117173274098341">Optimizează</translation>
 <translation id="2361340419970998028">Se trimite feedbackul...</translation>
@@ -8342,6 +8343,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6787839852456839824">Comenzi rapide de la tastatură</translation>
 <translation id="6788210894632713004">Extensie neîmpachetată</translation>
 <translation id="6789592661892473991">Împarte pe orizontală</translation>
+<translation id="6789665473250283877">Elimină <ph name="TOOL_NAME" /></translation>
 <translation id="6789834167207639931">Introdu din nou parola Contului Google în ecranul următor pentru a finaliza recuperarea</translation>
 <translation id="6790428901817661496">Redă</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> a fost adăugată de la distanță</translation>
@@ -8595,6 +8597,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6961327401577924850">Site-urile caută de obicei dispozitive Bluetooth pentru funcții cum ar fi configurarea sau sincronizarea unui semnalizator cu consum redus de energie, a unui tracker de sănătate sau fitness ori a unui bec inteligent</translation>
 <translation id="6963772203726867701">Nu s-a detectat</translation>
 <translation id="6963872466817251924">Evidențiator al cursorului pentru text</translation>
+<translation id="6964239097707154771">sunt suplimente pentru Chrome care te pot ajuta să faci mai multe</translation>
 <translation id="6964390816189577014">Erou</translation>
 <translation id="6964760285928603117">Elimină din grup</translation>
 <translation id="6965382102122355670">OK</translation>
