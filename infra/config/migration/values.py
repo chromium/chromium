@@ -104,7 +104,7 @@ class ValueBuilder(abc.ABC):
 
   @abc.abstractmethod
   def _output_stream(self, indent: str) -> typing.Iterable[str] | None:
-    raise NotImplementedError()
+    raise NotImplementedError()  # pragma: no cover
 
 
 class _CompoundValueBuilder(ValueBuilder):
@@ -130,13 +130,13 @@ class _CompoundValueBuilder(ValueBuilder):
   @abc.abstractmethod
   def _prefix(self) -> str:
     """The text of the opening of the compound value."""
-    raise NotImplementedError()
+    raise NotImplementedError()  # pragma: no cover
 
   @property
   @abc.abstractmethod
   def _suffix(self) -> str:
     """The text of the closing of the compound value."""
-    raise NotImplementedError()
+    raise NotImplementedError()  # pragma: no cover
 
   @abc.abstractmethod
   def _entries(self, indent: str) -> typing.Iterable[str] | None:
@@ -150,7 +150,7 @@ class _CompoundValueBuilder(ValueBuilder):
       are entries that produce text, otherwise None. The elements of the
       iterable will be concatenated in the final string.
     """
-    raise NotImplementedError()
+    raise NotImplementedError()  # pragma: no cover
 
   def _output_stream(self, indent: str) -> typing.Iterable[str] | None:
     """The text of the compound value.
