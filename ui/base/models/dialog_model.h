@@ -388,8 +388,9 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
       return *this;
     }
 
-    // Overrides default button. Can only be called once. The new default button
-    // must exist.
+    // Overrides default button. Can only be called once. The new default may be
+    // set to kNone, but if not, the specified button must already exist in the
+    // model.
     Builder& OverrideDefaultButton(mojom::DialogButton button);
 
     // Sets which field should be initially focused in the dialog model. Must be
