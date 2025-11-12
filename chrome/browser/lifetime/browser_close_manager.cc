@@ -80,11 +80,9 @@ void BrowserCloseManager::CancelBrowserClose() {
   }
 
   browser_shutdown::SetTryingToQuit(false);
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [](BrowserWindowInterface* browser) {
-        browser->GetBrowserForMigrationOnly()->ResetTryToCloseWindow();
-        return true;
-      });
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    browser->ResetTryToCloseWindow();
+  }
 }
 
 void BrowserCloseManager::TryToCloseBrowsers() {
@@ -93,20 +91,13 @@ void BrowserCloseManager::TryToCloseBrowsers() {
   // stop closing. CallBeforeUnloadHandlers prompts the user and calls
   // OnBrowserReportCloseable with the result. If the user confirms the close,
   // this will trigger TryToCloseBrowsers to try again.
-  bool should_stop = false;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [this, &should_stop](BrowserWindowInterface* browser) {
-        if (browser->GetBrowserForMigrationOnly()->TryToCloseWindow(
-                false,
-                base::BindRepeating(
-                    &BrowserCloseManager::OnBrowserReportCloseable, this))) {
-          current_browser_ = browser;
-          should_stop = true;
-        }
-        return !should_stop;
-      });
-  if (should_stop) {
-    return;
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    if (browser->TryToCloseWindow(
+            false, base::BindRepeating(
+                       &BrowserCloseManager::OnBrowserReportCloseable, this))) {
+      current_browser_ = browser;
+      return;
+    }
   }
 
   // This is the success endpoint. If we get here, all beforeunload handlers
