@@ -456,7 +456,7 @@ export class SearchboxElement extends SearchboxElementBase implements
   private callbackRouter_: PageCallbackRouter;
   protected dragAndDropHandler: DragAndDropHandler|null = null;
   private dragAndDropEnabled_: boolean =
-      loadTimeData.getBoolean('dragAndDropEnabled');
+      loadTimeData.getBoolean('composeboxContextDragAndDropEnabled');
   private autocompleteResultChangedListenerId_: number|null = null;
   private inputTextChangedListenerId_: number|null = null;
   private thumbnailChangedListenerId_: number|null = null;

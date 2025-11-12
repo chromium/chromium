@@ -222,7 +222,7 @@ export class ComposeboxElement extends I18nMixinLit
   private composeboxCloseByEscape_: boolean =
       loadTimeData.getBoolean('composeboxCloseByEscape');
   private dragAndDropEnabled_: boolean =
-      loadTimeData.getBoolean('dragAndDropEnabled');
+      loadTimeData.getBoolean('composeboxContextDragAndDropEnabled');
   protected accessor inVoiceSearchMode_: boolean = false;
   private selectedMatch_: AutocompleteMatch|null = null;
 

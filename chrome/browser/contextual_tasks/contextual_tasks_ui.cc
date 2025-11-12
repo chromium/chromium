@@ -99,9 +99,6 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxShowContextMenuDescription", true);
   // Send event when escape is pressed.
   source->AddBoolean("composeboxCloseByEscape", true);
-  source->AddBoolean("dragAndDropEnabled", false);
-  source->AddBoolean("steadyComposeboxShowVoiceSearch", false);
-  source->AddBoolean("expandedComposeboxShowVoiceSearch", false);
 
   source->AddBoolean("isLensSearchbox", true);
   source->AddBoolean(
@@ -126,7 +123,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxShowCreateImageButton", false);
   source->AddBoolean("composeboxShowRecentTabChip", false);
   source->AddBoolean("composeboxShowSubmit", true);
-  source->AddBoolean("dragAndDropEnabled", true);
+  source->AddBoolean("composeboxContextDragAndDropEnabled", false);
   source->AddBoolean("steadyComposeboxShowVoiceSearch", false);
   source->AddBoolean("expandedComposeboxShowVoiceSearch", false);
   source->AddBoolean("composeboxShowContextMenuTabPreviews", false);
