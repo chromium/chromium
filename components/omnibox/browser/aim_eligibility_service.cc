@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
@@ -23,6 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -39,6 +41,16 @@
 namespace {
 
 // UMA histograms:
+// Histogram for whether the primary account exists.
+static constexpr char kEligibilityRequestPrimaryAccountExistsHistogramName[] =
+    "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountExists";
+// Histogram for whether the primary account was found in the cookie jar.
+static constexpr char
+    kEligibilityRequestPrimaryAccountInCookieJarHistogramName[] =
+        "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountInCookieJar";
+// Histogram for the eligibility request session index.
+static constexpr char kEligibilityRequestPrimaryAccountIndexHistogramName[] =
+    "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountIndex";
 // Histogram for the eligibility request status.
 static constexpr char kEligibilityRequestStatusHistogramName[] =
     "Omnibox.AimEligibility.EligibilityRequestStatus";
@@ -62,6 +74,7 @@ static constexpr char kEligibilityRequestRetriesSucceededHistogramName[] =
 
 static constexpr char kRequestPath[] = "/async/folae";
 static constexpr char kRequestQuery[] = "async=_fmt:pb";
+static constexpr char kAuthUserQueryKey[] = "authuser";
 
 // Reflects the default value for the `kAIModeSettings` pref; 0 = allowed, 1 =
 // disallowed. Pref value is determined by: `AIModeSettings` policy,
@@ -77,23 +90,34 @@ constexpr int kMaxRetries = 3;
 constexpr char kResponsePrefName[] =
     "aim_eligibility_service.aim_eligibility_response";
 
-// Returns the request URL or an empty GURL if a valid URL cannot be created;
-// e.g., Google is not the default search provider.
-GURL GetRequestUrl(const TemplateURLService* template_url_service) {
-  if (!search::DefaultSearchProviderIsGoogle(template_url_service)) {
-    return GURL();
+// Returns a non-empty account info if the primary account exists.
+CoreAccountInfo GetPrimaryAccountInfo(
+    signin::IdentityManager* identity_manager) {
+  if (!identity_manager) {
+    return CoreAccountInfo();
+  }
+  return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+}
+
+// Returns the index of the primary account in the cookie jar or std::nullopt if
+// the primary account does not exist or is not found in the cookie jar.
+std::optional<size_t> GetSessionIndexForPrimaryAccount(
+    signin::IdentityManager* identity_manager) {
+  CoreAccountInfo primary_account_info =
+      GetPrimaryAccountInfo(identity_manager);
+  if (primary_account_info.gaia.empty()) {
+    return std::nullopt;
   }
 
-  GURL base_gurl(
-      template_url_service->search_terms_data().GoogleBaseURLValue());
-  if (!base_gurl.is_valid()) {
-    return GURL();
+  auto accounts_in_cookie_jar = identity_manager->GetAccountsInCookieJar();
+  const auto& accounts = accounts_in_cookie_jar.GetAllAccounts();
+  for (size_t i = 0; i < accounts.size(); ++i) {
+    if (accounts[i].gaia_id == primary_account_info.gaia) {
+      return i;
+    }
   }
 
-  GURL::Replacements replacements;
-  replacements.SetPathStr(kRequestPath);
-  replacements.SetQueryStr(kRequestQuery);
-  return base_gurl.ReplaceComponents(replacements);
+  return std::nullopt;
 }
 
 const net::NetworkTrafficAnnotationTag kRequestTrafficAnnotation =
@@ -446,6 +470,58 @@ void AimEligibilityService::LoadMostRecentResponse() {
   most_recent_response_source_ = EligibilityResponseSource::kPrefs;
 }
 
+GURL AimEligibilityService::GetRequestUrl(
+    RequestSource request_source,
+    const TemplateURLService* template_url_service,
+    signin::IdentityManager* identity_manager) {
+  if (!search::DefaultSearchProviderIsGoogle(template_url_service)) {
+    return GURL();
+  }
+
+  GURL base_gurl(
+      template_url_service->search_terms_data().GoogleBaseURLValue());
+  if (!base_gurl.is_valid()) {
+    return GURL();
+  }
+
+  GURL::Replacements replacements;
+  replacements.SetPathStr(kRequestPath);
+  replacements.SetQueryStr(kRequestQuery);
+  GURL url = base_gurl.ReplaceComponents(replacements);
+
+  // Get the index of the primary account in the cookie jar.
+  std::optional<size_t> session_index =
+      GetSessionIndexForPrimaryAccount(identity_manager);
+  // Log whether the primary account exists, if so whether it was found in the
+  // cookie jar, and if so its index in the cookie jar.
+  auto primary_account_info = GetPrimaryAccountInfo(identity_manager);
+  const bool primary_account_exists = !primary_account_info.gaia.empty();
+  LogEligibilityRequestPrimaryAccountExists(primary_account_exists,
+                                            request_source);
+  if (primary_account_exists) {
+    const bool primary_account_in_cookie_jar = session_index.has_value();
+    LogEligibilityRequestPrimaryAccountInCookieJar(
+        primary_account_in_cookie_jar, request_source);
+    if (primary_account_in_cookie_jar) {
+      LogEligibilityRequestPrimaryAccountIndex(*session_index, request_source);
+      // Add authuser=<primary account session index> if applicable.
+      // By default the endpoint uses the first account in the cookie jar to
+      // authenticate the request. When the primary account is not set or found
+      // in the cookie jar, the endpoint should not assume the first account in
+      // the cookie jar is the primary account.
+      // TODO(crbug.com/452304766): Find a way to force the endpoint to treat
+      // these as signed-out sessions.
+      if (base::FeatureList::IsEnabled(
+              omnibox::kAimServerEligibilityForPrimaryAccountEnabled)) {
+        return net::AppendQueryParameter(url, kAuthUserQueryKey,
+                                         base::NumberToString(*session_index));
+      }
+    }
+  }
+
+  return url;
+}
+
 void AimEligibilityService::StartServerEligibilityRequest(
     RequestSource request_source) {
   CHECK(initialized_);
@@ -456,7 +532,8 @@ void AimEligibilityService::StartServerEligibilityRequest(
   }
 
   // Request URL may be invalid.
-  GURL request_url = GetRequestUrl(template_url_service_.get());
+  GURL request_url = GetRequestUrl(request_source, template_url_service_.get(),
+                                   identity_manager_);
   if (!request_url.is_valid()) {
     return;
   }
@@ -569,6 +646,36 @@ std::string AimEligibilityService::GetHistogramNameSlicedByRequestSource(
     return "";
   };
   return base::StrCat({histogram_name, request_source_suffix(request_source)});
+}
+
+void AimEligibilityService::LogEligibilityRequestPrimaryAccountExists(
+    bool exists,
+    RequestSource request_source) const {
+  const auto& name = kEligibilityRequestPrimaryAccountExistsHistogramName;
+  const auto& sliced_name =
+      GetHistogramNameSlicedByRequestSource(name, request_source);
+  base::UmaHistogramBoolean(name, exists);
+  base::UmaHistogramBoolean(sliced_name, exists);
+}
+
+void AimEligibilityService::LogEligibilityRequestPrimaryAccountInCookieJar(
+    bool in_cookie_jar,
+    RequestSource request_source) const {
+  const auto& name = kEligibilityRequestPrimaryAccountInCookieJarHistogramName;
+  const auto& sliced_name =
+      GetHistogramNameSlicedByRequestSource(name, request_source);
+  base::UmaHistogramBoolean(name, in_cookie_jar);
+  base::UmaHistogramBoolean(sliced_name, in_cookie_jar);
+}
+
+void AimEligibilityService::LogEligibilityRequestPrimaryAccountIndex(
+    size_t session_index,
+    RequestSource request_source) const {
+  const auto& name = kEligibilityRequestPrimaryAccountIndexHistogramName;
+  const auto& sliced_name =
+      GetHistogramNameSlicedByRequestSource(name, request_source);
+  base::UmaHistogramSparse(name, session_index);
+  base::UmaHistogramSparse(sliced_name, session_index);
 }
 
 void AimEligibilityService::LogEligibilityRequestStatus(

@@ -13,7 +13,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AimServerEligibilityEnabled"
+                        "AimServerEligibilityEnabled",
+                        "AimServerEligibilityForPrimaryAccountEnabled"
                     ]
                 }
             ]
