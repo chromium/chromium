@@ -276,39 +276,34 @@ GURL ContextualTasksUiService::GetDefaultAiPageUrl() {
 void ContextualTasksUiService::OnTaskChangedInPanel(
     BrowserWindowInterface* browser_window_interface,
     const base::Uuid& task_id) {
+  // If a new thread is started in the panel, affiliated tabs should change
+  // their thread to the new one.
+  // TODO(https://crbug.com/451705724): differentiate new thread from existing
+  // thread, possibly using `task_id.is_valid()`.
   DCHECK(task_id.is_valid());
 
-  std::vector<SessionID> session_ids =
-      context_controller_->GetTabsAssociatedWithTask(task_id);
-  if (session_ids.empty()) {
-    // If the thread is closed, there will be no tabs associated to it.
-    // TODO(https://crbug.com/451705724): close the panel and open the
-    // contextual task in the current tab.
-  } else {
-    // If the active tab is associated with the task, do nothing.
-    TabStripModel* tab_strip_model =
-        browser_window_interface->GetTabStripModel();
-    content::WebContents* active_contents =
-        tab_strip_model->GetActiveWebContents();
-    SessionID active_id = SessionTabHelper::IdForTab(active_contents);
-    if (base::Contains(session_ids, active_id)) {
+  TabStripModel* tab_strip_model = browser_window_interface->GetTabStripModel();
+  content::WebContents* active_contents =
+      tab_strip_model->GetActiveWebContents();
+  SessionID active_id = SessionTabHelper::IdForTab(active_contents);
+
+  if (kTaskScopedSidpePanel.Get()) {
+    // If the current tab is associated with any task, change associations for
+    // all tabs associated with that task.
+    std::optional<ContextualTask> current_task =
+        context_controller_->GetContextualTaskForTab(active_id);
+    if (current_task) {
+      std::vector<SessionID> tab_ids =
+          context_controller_->GetTabsAssociatedWithTask(
+              current_task->GetTaskId());
+      for (const auto& id : tab_ids) {
+        context_controller_->AssociateTabWithTask(task_id, id);
+      }
       return;
     }
-
-    // Navigate to the most recently associated tab.
-    int tab_count = tab_strip_model->GetTabCount();
-    for (auto& session_id : base::Reversed(session_ids)) {
-      for (int i = 0; i < tab_count; ++i) {
-        tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
-        if (session_id == SessionTabHelper::IdForTab(tab->GetContents())) {
-          tab_strip_model->ActivateTabAt(
-              i, TabStripUserGestureDetails(
-                     TabStripUserGestureDetails::GestureType::kOther));
-          return;
-        }
-      }
-    }
   }
+
+  context_controller_->AssociateTabWithTask(task_id, active_id);
 }
 
 bool ContextualTasksUiService::IsAiUrl(const GURL& url) {

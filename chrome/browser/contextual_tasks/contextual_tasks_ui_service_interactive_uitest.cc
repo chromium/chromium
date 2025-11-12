@@ -121,8 +121,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
       }));
   browser()->tab_strip_model()->RemoveObserver(&observer);
 }
-IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
-                       OnTaskChangedInPanel_ActivatesMostRecentTab) {
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksUiServiceInteractiveUiTest,
+    OnTaskChangedInPanel_SwitchAllTabAffiliation_ActivatesMostRecentTab) {
   // Add two new tabs.
   chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, true);
   chrome::AddTabAt(browser(), GURL(chrome::kChromeUIHistoryURL), -1, true);
@@ -135,23 +137,32 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
           browser()->profile());
   ASSERT_TRUE(service);
 
-  // Create a task and associate it with the two new tabs.
-  ContextualTask task = contextual_tasks_controller->CreateTask();
+  // Create two tasks.
+  ContextualTask task1 = contextual_tasks_controller->CreateTask();
+  ContextualTask task2 = contextual_tasks_controller->CreateTask();
+
+  // Associate the two new tabs with the first task.
   content::WebContents* tab1_contents =
       browser()->tab_strip_model()->GetWebContentsAt(1);
   content::WebContents* tab2_contents =
       browser()->tab_strip_model()->GetWebContentsAt(2);
-  contextual_tasks_controller->AssociateTabWithTask(
-      task.GetTaskId(), sessions::SessionTabHelper::IdForTab(tab1_contents));
-  contextual_tasks_controller->AssociateTabWithTask(
-      task.GetTaskId(), sessions::SessionTabHelper::IdForTab(tab2_contents));
+  SessionID tab1_id = sessions::SessionTabHelper::IdForTab(tab1_contents);
+  SessionID tab2_id = sessions::SessionTabHelper::IdForTab(tab2_contents);
+  contextual_tasks_controller->AssociateTabWithTask(task1.GetTaskId(), tab1_id);
+  contextual_tasks_controller->AssociateTabWithTask(task1.GetTaskId(), tab2_id);
 
   // Activate the first tab.
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
 
-  // Call OnTaskChangedInPanel and verify that the second tab is activated.
-  service->OnTaskChangedInPanel(browser(), task.GetTaskId());
-  EXPECT_EQ(2, browser()->tab_strip_model()->active_index());
+  // Call OnTaskChangedInPanel and verify that both tabs are now associated with
+  // the second task.
+  service->OnTaskChangedInPanel(browser(), task2.GetTaskId());
+  EXPECT_EQ(task2.GetTaskId(),
+            contextual_tasks_controller->GetContextualTaskForTab(tab1_id)
+                ->GetTaskId());
+  EXPECT_EQ(task2.GetTaskId(),
+            contextual_tasks_controller->GetContextualTaskForTab(tab2_id)
+                ->GetTaskId());
 }
 }  // namespace contextual_tasks

@@ -30,6 +30,13 @@ extern std::string GetContextualTasksAiPageUrl();
 // Returns the domains for the sign in page.
 extern std::vector<std::string> GetContextualTasksSignInDomains();
 
+// If true, the side panel is task scoped. Meaning that for all tabs associated
+// with the same task, they will share the same side panel. If the side panel
+// changed to another task for one tab, all tabs associated with the former task
+// will become associated with the new task. When set to false, task change in
+// the side panel only affects the current tab.
+extern const base::FeatureParam<bool> kTaskScopedSidpePanel;
+
 namespace flag_descriptions {
 
 extern const char kContextualTasksName[];

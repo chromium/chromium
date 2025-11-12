@@ -40,6 +40,10 @@ const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity(
     "ContextualTasksContextOnlyUseTitles",
     false);
 
+const base::FeatureParam<bool> kTaskScopedSidpePanel(&kContextualTasksContext,
+                                                     "TaskScopedSidpePanel",
+                                                     true);
+
 std::string GetContextualTasksAiPageUrl() {
   return kContextualTasksAiPageUrl.Get();
 }
