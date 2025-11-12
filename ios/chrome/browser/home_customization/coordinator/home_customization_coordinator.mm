@@ -168,9 +168,10 @@ CGFloat const kSheetCornerRadius = 30;
   _discoverViewController = nil;
   _dimView = nil;
 
-  // Reenable interaction with the NTP when the presentation controller is
-  // dismissed.
-  self.baseViewController.view.accessibilityElementsHidden = NO;
+  // Enable accessibility in the presenting view, as UIKit doesn't enable it
+  // automatically.
+  self.currentPageViewController.presentingViewController.view
+      .accessibilityElementsHidden = NO;
 
   [super stop];
 }
@@ -209,10 +210,6 @@ CGFloat const kSheetCornerRadius = 30;
     _dimView.translatesAutoresizingMaskIntoConstraints = NO;
     _dimView.backgroundColor = UIColor.clearColor;
 
-    // Disable accesibility interactions while the first page is being presented
-    // so the user can't interact with the NTP.
-    self.baseViewController.view.accessibilityElementsHidden = YES;
-
     // Add a tap gesture recognizer to the dim view so that tapping outside the
     // presented half sheet (on the dimmed view) can trigger dismissal.
     UIGestureRecognizer* tapGesture = [[UITapGestureRecognizer alloc]
@@ -249,6 +246,10 @@ CGFloat const kSheetCornerRadius = 30;
 
   // Set the currently presented modal as the interactable one for voiceover.
   self.currentPageViewController.view.accessibilityViewIsModal = YES;
+
+  // Disable accessibility in the presenting view, as UIKit doesn't disable it
+  // automatically.
+  menuPage.presentingViewController.view.accessibilityElementsHidden = YES;
 }
 
 - (void)dismissMenuPage {
