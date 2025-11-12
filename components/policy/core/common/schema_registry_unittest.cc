@@ -13,8 +13,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::Mock;
 using ::testing::_;
+using ::testing::Mock;
 
 namespace policy {
 
@@ -243,6 +243,62 @@ TEST(SchemaRegistryTest, Combined) {
   Mock::VerifyAndClearExpectations(&observer);
 
   combined.RemoveObserver(&observer);
+}
+
+TEST(SchemaRegistryTest, Combined_DestroyedAfterTracked) {
+  const auto schema = Schema::Parse(kTestSchema);
+  ASSERT_TRUE(schema.has_value()) << schema.error();
+
+  MockSchemaRegistryObserver observer;
+  std::unique_ptr<CombinedSchemaRegistry> combined =
+      std::make_unique<CombinedSchemaRegistry>();
+  std::unique_ptr<SchemaRegistry> registry = std::make_unique<SchemaRegistry>();
+  combined->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnSchemaRegistryUpdated).Times(0);
+  registry->RegisterComponent(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, "abc"),
+                              *schema);
+  Mock::VerifyAndClearExpectations(&observer);
+
+  // Starting to track a registry issues notifications when it comes with new
+  // schemas.
+  EXPECT_CALL(observer, OnSchemaRegistryUpdated(true));
+  combined->Track(registry.get());
+  Mock::VerifyAndClearExpectations(&observer);
+
+  combined->RemoveObserver(&observer);
+
+  // Destroy the tracked SchemaRegistry before the CombinedSchemaRegistry.
+  registry.reset();
+  combined.reset();
+}
+
+TEST(SchemaRegistryTest, Combined_DestroyedBeforeTracked) {
+  const auto schema = Schema::Parse(kTestSchema);
+  ASSERT_TRUE(schema.has_value()) << schema.error();
+
+  MockSchemaRegistryObserver observer;
+  std::unique_ptr<SchemaRegistry> registry = std::make_unique<SchemaRegistry>();
+  std::unique_ptr<CombinedSchemaRegistry> combined =
+      std::make_unique<CombinedSchemaRegistry>();
+  combined->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnSchemaRegistryUpdated).Times(0);
+  registry->RegisterComponent(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, "abc"),
+                              *schema);
+  Mock::VerifyAndClearExpectations(&observer);
+
+  // Starting to track a registry issues notifications when it comes with new
+  // schemas.
+  EXPECT_CALL(observer, OnSchemaRegistryUpdated(true));
+  combined->Track(registry.get());
+  Mock::VerifyAndClearExpectations(&observer);
+
+  combined->RemoveObserver(&observer);
+
+  // Destroy the CombinedSchemaRegistry before the tracked SchemaRegistry.
+  combined.reset();
+  registry.reset();
 }
 
 TEST(SchemaRegistryTest, ForwardingSchemaRegistry) {

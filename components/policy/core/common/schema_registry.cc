@@ -133,7 +133,13 @@ CombinedSchemaRegistry::CombinedSchemaRegistry()
   SetAllDomainsReady();
 }
 
-CombinedSchemaRegistry::~CombinedSchemaRegistry() = default;
+CombinedSchemaRegistry::~CombinedSchemaRegistry() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto registry : registries_) {
+    registry->RemoveObserver(this);
+    registry->RemoveInternalObserver(this);
+  }
+}
 
 void CombinedSchemaRegistry::Track(SchemaRegistry* registry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
