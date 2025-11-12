@@ -126,16 +126,25 @@ NSArray<NSString*>* ArgumentsFromConfiguration(
   [arguments insertObject:disabledString atIndex:1];
   [arguments insertObject:variationString atIndex:2];
 
-  // For the app to use the same language as the test module. This workaround
-  // the fact that EarlGrey tests depends on localizable strings (unfortunate)
-  // even though the test module does not have access to the system locale. To
-  // make this work, we force the app to use the same locale as used by the
-  // test module (which is the first item in -preferredLocalizations).
-  NSArray<NSString*>* languages = [NSBundle mainBundle].preferredLocalizations;
-  if (languages.count != 0) {
-    NSString* language = [languages firstObject];
+  if (configuration.language.has_value()) {
+    NSString* language =
+        base::SysUTF8ToNSString(configuration.language.value());
     [arguments addObject:@"-AppleLanguages"];
     [arguments addObject:[NSString stringWithFormat:@"(%@)", language]];
+  } else {
+    // For the app to use the same language as the test module. This workaround
+    // the fact that EarlGrey tests depends on localizable strings (unfortunate)
+    // even though the test module does not have access to the system locale. To
+    // make this work, we force the app to use the same locale as used by the
+    // test module (which is the first item in -preferredLocalizations).
+    NSArray<NSString*>* languages =
+        [NSBundle mainBundle].preferredLocalizations;
+    if (languages.count != 0) {
+      NSString* language = [languages firstObject];
+      [arguments addObject:@"-AppleLanguages"];
+      [arguments addObject:[NSString stringWithFormat:@"(%@)", language]];
+    }
   }
+
   return arguments;
 }

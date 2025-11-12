@@ -54,6 +54,17 @@
   [ChromeEarlGreyUI closeToolsMenu];
 }
 
+// Tests that app works correctly when using a gendered language for the UI.
+- (void)testGenderedLanguage {
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.language = "de-DE";
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  // Open the tools menu to display a bunch of localized strings.
+  // Test passes by not crashing.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI closeToolsMenu];
+}
+
 // Tests that helpers from chrome_actions.h are available for use in tests.
 - (void)testToggleSettingsSwitch {
   AppLaunchConfiguration config = [self appConfigurationForTestCase];

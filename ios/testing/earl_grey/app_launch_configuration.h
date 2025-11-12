@@ -46,6 +46,8 @@ struct AppLaunchConfiguration {
   std::optional<std::string> iph_feature_enabled;
   // Additional arguments to be directly forwarded to the app.
   std::vector<std::string> additional_args;
+  // Override the app's language.
+  std::optional<std::string> language;
   // Relaunch policy.
   RelaunchPolicy relaunch_policy = NoForceRelaunchAndResetState;
 };
