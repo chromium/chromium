@@ -1169,6 +1169,62 @@ TEST_F(TileDisplayLayerImplTest, AppendQuadsAppendsDebugBordersForOomTile) {
             raw_layer->safe_opaque_background_color());
 }
 
+// Verifies that AppendQuads() appends debug borders for a not-ready tile when
+// debug borders are enabled.
+TEST_F(TileDisplayLayerImplTest,
+       AppendQuadsAppendsDebugBordersForNotReadyTile) {
+  // Enable debug borders.
+  LayerTreeDebugState debug_state;
+  debug_state.show_debug_borders.set(DebugBorderType::LAYER);
+  host_impl()->SetDebugState(debug_state);
+
+  // Set up the layer.
+  constexpr gfx::Size kLayerBounds(100, 100);
+  constexpr gfx::Rect kLayerRect(kLayerBounds);
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+  raw_layer->SetBounds(kLayerBounds);
+  raw_layer->SetRecordedBounds(kLayerRect);
+  raw_layer->draw_properties().visible_layer_rect = kLayerRect;
+  raw_layer->draw_properties().opacity = 1.0f;
+
+  // Add a tiling with a not-ready tile.
+  auto& tiling = raw_layer->GetOrCreateTilingFromScaleKey(1.0);
+  tiling.SetTileSize(kLayerBounds);
+  tiling.SetTilingRect(kLayerRect);
+  tiling.SetTileContents(TileIndex{0, 0},
+                         TileDisplayLayerImpl::NoContents{
+                             mojom::MissingTileReason::kResourceNotReady},
+                         /*update_damage=*/true);
+
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  // Append quads.
+  auto render_pass = viz::CompositorRenderPass::Create();
+  AppendQuadsData data;
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                         render_pass.get(), &data);
+
+  // Verify that a layer debug border, a missing tile debug border, and a
+  // checkerboarded quad for the missing content were appended.
+  ASSERT_EQ(render_pass->quad_list.size(), 3u);
+  auto it = render_pass->quad_list.begin();
+
+  EXPECT_EQ((*it)->material, viz::DrawQuad::Material::kDebugBorder);
+  EXPECT_EQ(viz::DebugBorderDrawQuad::MaterialCast(*it)->color,
+            DebugColors::ContainerLayerBorderColor());
+  ++it;
+  EXPECT_EQ((*it)->material, viz::DrawQuad::Material::kDebugBorder);
+  EXPECT_EQ(viz::DebugBorderDrawQuad::MaterialCast(*it)->color,
+            DebugColors::MissingTileBorderColor());
+  ++it;
+  EXPECT_EQ((*it)->material, viz::DrawQuad::Material::kSolidColor);
+  EXPECT_EQ(viz::SolidColorDrawQuad::MaterialCast(*it)->color,
+            raw_layer->safe_opaque_background_color());
+}
+
 TEST_F(TileDisplayLayerImplTest, TileResourceIsOOM) {
   auto layer = std::make_unique<TileDisplayLayerImpl>(
       CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
