@@ -30,6 +30,9 @@ ci.defaults.set(
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
     execution_timeout = ci_constants.DEFAULT_EXECUTION_TIMEOUT,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
     health_spec = health_spec.default(),
     notifies = ["cr-fuchsia"],
     service_account = ci_constants.DEFAULT_SERVICE_ACCOUNT,
