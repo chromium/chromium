@@ -12,15 +12,21 @@ import org.chromium.chrome.browser.tab.Tab;
 @NullMarked
 public class MediaCapturePickerTabObserver implements AllTabObserver.Observer {
     private final AllTabObserver.Observer mDelegate;
+    private final MediaCapturePickerManager.Params mParams;
 
-    public MediaCapturePickerTabObserver(AllTabObserver.Observer delegate) {
+    public MediaCapturePickerTabObserver(
+            AllTabObserver.Observer delegate, MediaCapturePickerManager.Params params) {
         mDelegate = delegate;
+        mParams = params;
     }
 
     @Override
     public void onTabAdded(Tab tab) {
         // We do not support capture of native pages.
         if (tab.isNativePage()) return;
+
+        // Filter out all tabs that are not this tab for capture this tab.
+        if (mParams.captureThisTab && tab.getWebContents() != mParams.webContents) return;
 
         mDelegate.onTabAdded(tab);
     }
@@ -29,6 +35,9 @@ public class MediaCapturePickerTabObserver implements AllTabObserver.Observer {
     public void onTabRemoved(Tab tab) {
         // We do not support capture of native pages.
         if (tab.isNativePage()) return;
+
+        // Filter out all tabs that are not this tab for capture this tab.
+        if (mParams.captureThisTab && tab.getWebContents() != mParams.webContents) return;
 
         mDelegate.onTabRemoved(tab);
     }

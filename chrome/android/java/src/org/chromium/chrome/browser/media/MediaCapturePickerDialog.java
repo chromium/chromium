@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.app.tabmodel.AllTabObserver;
 import org.chromium.chrome.browser.media.MediaCapturePickerHeadlessFragment.CaptureAction;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.media.capture.ScreenCapture;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -45,9 +44,8 @@ import java.util.Map;
 @NullMarked
 public class MediaCapturePickerDialog implements AllTabObserver.Observer {
     // This web contents is the one that is receiving the shared content.
-    private final WebContents mWebContents;
     private final ModalDialogManager mModalDialogManager;
-    private final String mAppName;
+    private final MediaCapturePickerManager.Params mParams;
     private final View mDialogView;
     private final LinearLayout mButtonsView;
     private final View mPositiveButton;
@@ -106,9 +104,8 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
             MediaCapturePickerManager.Params params,
             MediaCapturePickerManager.Delegate delegate) {
         // TODO(crbug.com/352187279): Support all parameters in `params`.
-        mWebContents = params.webContents;
+        mParams = params;
         mModalDialogManager = ((ModalDialogManagerHolder) context).getModalDialogManager();
-        mAppName = params.appName;
         mDelegate = delegate;
 
         mDialogView =
@@ -132,6 +129,10 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
 
         mPositiveButton = mButtonsView.findViewById(R.id.positive_button);
         mScreenButton = mButtonsView.findViewById(R.id.screen_button);
+
+        if (params.captureThisTab) {
+            mScreenButton.setVisibility(View.GONE);
+        }
 
         // Share audio should be on by default.
         mAudioSwitch = mButtonsView.findViewById(R.id.media_capture_picker_audio_share_switch);
@@ -167,7 +168,7 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
         fragment.startAndroidCapturePrompt(
                 (action, result) -> {
                     if (action != CaptureAction.CAPTURE_CANCELLED) {
-                        ScreenCapture.onPick(mWebContents, result);
+                        ScreenCapture.onPick(mParams.webContents, result);
                     }
 
                     assumeNonNull(mDelegate);
@@ -192,7 +193,7 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
     }
 
     void show() {
-        var allTabObserver = new AllTabObserver(new MediaCapturePickerTabObserver(this));
+        var allTabObserver = new AllTabObserver(new MediaCapturePickerTabObserver(this, mParams));
 
         var controller =
                 new ModalDialogProperties.Controller() {
@@ -229,7 +230,8 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
                 };
 
         Resources resources = mDialogView.getResources();
-        var title = resources.getString(R.string.media_capture_picker_dialog_title, mAppName);
+        var title =
+                resources.getString(R.string.media_capture_picker_dialog_title, mParams.appName);
 
         assert mPropertyModel == null;
         mPropertyModel =
