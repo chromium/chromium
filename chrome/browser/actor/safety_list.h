@@ -35,6 +35,9 @@ class SafetyList {
 
   size_t size() const { return patterns_.size(); }
 
+  bool ContainsUrlPairWithWildcardSource(const GURL& source,
+                                         const GURL& destination) const;
+
   bool ContainsUrlPair(const GURL& source, const GURL& destination) const;
 
   static SafetyList ParsePatternListFromJson(

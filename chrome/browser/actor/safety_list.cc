@@ -24,6 +24,21 @@ bool SafetyList::ContainsUrlPair(const GURL& source,
   });
 }
 
+bool SafetyList::ContainsUrlPairWithWildcardSource(
+    const GURL& source,
+    const GURL& destination) const {
+  return std::ranges::any_of(patterns_, [&](const SafetyListPatterns& pattern) {
+    // A full wildcard [*] is not included in `HasDomainWildcard()`, so we check
+    // for that as well.
+    bool has_domain_wildcard =
+        pattern.source.GetScope() ==
+            ContentSettingsPattern::Scope::kFullWildcard ||
+        pattern.source.HasDomainWildcard();
+    return has_domain_wildcard && pattern.source.Matches(source) &&
+           pattern.destination.Matches(destination);
+  });
+}
+
 SafetyList::SafetyList(Patterns patterns) : patterns_(std::move(patterns)) {}
 
 SafetyList::~SafetyList() = default;
