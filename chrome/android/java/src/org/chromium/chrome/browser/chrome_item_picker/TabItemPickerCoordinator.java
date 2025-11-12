@@ -337,4 +337,8 @@ public class TabItemPickerCoordinator {
 
         return coordinator;
     }
+
+    public @Nullable ItemPickerNavigationProvider getItemPickerNavigationProviderForTesting() {
+        return mNavigationProvider;
+    }
 }
