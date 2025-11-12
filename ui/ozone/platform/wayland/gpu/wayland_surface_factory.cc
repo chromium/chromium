@@ -105,9 +105,8 @@ std::unique_ptr<NativePixmapGLBinding> GLOzoneEGLWayland::ImportNativePixmap(
     const gfx::ColorSpace& color_space,
     GLenum target,
     GLuint texture_id) {
-  return NativePixmapEGLBinding::Create(
-      pixmap, viz::SharedImageFormatToBufferFormat(plane_format), plane,
-      plane_size, color_space, target, texture_id);
+  return NativePixmapEGLBinding::Create(pixmap, plane_format, plane, plane_size,
+                                        color_space, target, texture_id);
 }
 
 scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateViewGLSurface(

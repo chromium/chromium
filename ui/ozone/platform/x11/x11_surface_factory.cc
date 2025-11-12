@@ -148,7 +148,7 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
     auto buffer_format = viz::SharedImageFormatToBufferFormat(plane_format);
     switch (GetNativePixmapSupportType()) {
       case NativePixmapSupportType::kDMABuf: {
-        return NativePixmapEGLBinding::Create(pixmap, buffer_format, plane,
+        return NativePixmapEGLBinding::Create(pixmap, plane_format, plane,
                                               plane_size, color_space, target,
                                               texture_id);
       }

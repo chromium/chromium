@@ -196,9 +196,9 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
       const gfx::ColorSpace& color_space,
       GLenum target,
       GLuint texture_id) override {
-    return NativePixmapEGLBinding::Create(
-        pixmap, viz::SharedImageFormatToBufferFormat(plane_format), plane,
-        plane_size, color_space, target, texture_id);
+    return NativePixmapEGLBinding::Create(pixmap, plane_format, plane,
+                                          plane_size, color_space, target,
+                                          texture_id);
   }
 
   raw_ptr<GbmSurfaceFactory> surface_factory_;

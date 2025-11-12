@@ -33,7 +33,7 @@ class NativePixmapEGLBinding : public NativePixmapGLBinding {
   // (limited or null), and |color_space| conveys this.
   static std::unique_ptr<NativePixmapGLBinding> Create(
       scoped_refptr<gfx::NativePixmap> pixmap,
-      gfx::BufferFormat plane_format,
+      viz::SharedImageFormat plane_format,
       gfx::BufferPlane plane,
       gfx::Size plane_size,
       const gfx::ColorSpace& color_space,

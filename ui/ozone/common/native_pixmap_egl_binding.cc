@@ -60,7 +60,7 @@ bool NativePixmapEGLBinding::IsSharedImageFormatSupported(
 // static
 std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLBinding::Create(
     scoped_refptr<gfx::NativePixmap> pixmap,
-    gfx::BufferFormat plane_format,
+    viz::SharedImageFormat plane_format,
     gfx::BufferPlane plane,
     gfx::Size plane_size,
     const gfx::ColorSpace& color_space,
@@ -68,8 +68,8 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLBinding::Create(
     GLuint texture_id) {
   DCHECK_GT(texture_id, 0u);
 
-  auto binding =
-      std::make_unique<NativePixmapEGLBinding>(plane_size, plane_format, plane);
+  auto binding = std::make_unique<NativePixmapEGLBinding>(
+      plane_size, viz::SharedImageFormatToBufferFormat(plane_format), plane);
 
   if (!binding->InitializeFromNativePixmap(std::move(pixmap), color_space,
                                            target, texture_id)) {
