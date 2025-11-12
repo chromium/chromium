@@ -2302,11 +2302,6 @@ bool AutocompleteController::OnMemoryDump(
   return true;
 }
 
-void AutocompleteController::SetStartStopTimerDurationForTesting(
-    base::TimeDelta duration) {
-  config_.stop_timer_duration = duration;
-}
-
 size_t AutocompleteController::InjectAdHocMatch(AutocompleteMatch match) {
   size_t index = internal_result_.size();
   // Append the match exactly as it is provided, with no change to

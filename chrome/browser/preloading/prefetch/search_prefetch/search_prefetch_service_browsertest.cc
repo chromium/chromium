@@ -2019,10 +2019,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   AutocompleteController* autocomplete_controller =
       location_bar->GetOmniboxController()->autocomplete_controller();
 
-  // Prevent the stop timer from killing the hints fetch early.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(10));
-  autocomplete_controller->Start(input);
+  InitializeAutocompleteControllerWithExtendedTimer(autocomplete_controller,
+                                                    input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
@@ -2058,10 +2056,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   AutocompleteController* autocomplete_controller =
       location_bar->GetOmniboxController()->autocomplete_controller();
 
-  // Prevent the stop timer from killing the hints fetch early.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(10));
-  autocomplete_controller->Start(input);
+  InitializeAutocompleteControllerWithExtendedTimer(autocomplete_controller,
+                                                    input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
@@ -2089,10 +2085,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   AutocompleteController* autocomplete_controller =
       location_bar->GetOmniboxController()->autocomplete_controller();
 
-  // Prevent the stop timer from killing the hints fetch early.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(10));
-  autocomplete_controller->Start(input);
+  InitializeAutocompleteControllerWithExtendedTimer(autocomplete_controller,
+                                                    input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
@@ -2130,10 +2124,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   AutocompleteController* autocomplete_controller =
       location_bar->GetOmniboxController()->autocomplete_controller();
 
-  // Prevent the stop timer from killing the hints fetch early.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(10));
-  autocomplete_controller->Start(input);
+  InitializeAutocompleteControllerWithExtendedTimer(autocomplete_controller,
+                                                    input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
@@ -2173,10 +2165,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   AutocompleteController* autocomplete_controller =
       location_bar->GetOmniboxController()->autocomplete_controller();
 
-  // Prevent the stop timer from killing the hints fetch early.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(10));
-  autocomplete_controller->Start(input);
+  InitializeAutocompleteControllerWithExtendedTimer(autocomplete_controller,
+                                                    input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
@@ -2212,10 +2202,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   AutocompleteController* autocomplete_controller =
       location_bar->GetOmniboxController()->autocomplete_controller();
 
-  // Prevent the stop timer from killing the hints fetch early.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(10));
-  autocomplete_controller->Start(input);
+  InitializeAutocompleteControllerWithExtendedTimer(autocomplete_controller,
+                                                    input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
@@ -2254,10 +2242,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   AutocompleteController* autocomplete_controller =
       location_bar->GetOmniboxController()->autocomplete_controller();
 
-  // Prevent the stop timer from killing the hints fetch early.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(10));
-  autocomplete_controller->Start(input);
+  InitializeAutocompleteControllerWithExtendedTimer(autocomplete_controller,
+                                                    input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
@@ -2321,10 +2307,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   AutocompleteController* autocomplete_controller =
       location_bar->GetOmniboxController()->autocomplete_controller();
 
-  // Prevent the stop timer from killing the hints fetch early.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(10));
-  autocomplete_controller->Start(input);
+  InitializeAutocompleteControllerWithExtendedTimer(autocomplete_controller,
+                                                    input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
@@ -2365,10 +2349,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   AutocompleteController* autocomplete_controller =
       location_bar->GetOmniboxController()->autocomplete_controller();
 
-  // Prevent the stop timer from killing the hints fetch early.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(10));
-  autocomplete_controller->Start(input);
+  InitializeAutocompleteControllerWithExtendedTimer(autocomplete_controller,
+                                                    input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
@@ -3904,10 +3886,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   AutocompleteController* autocomplete_controller =
       location_bar->GetOmniboxController()->autocomplete_controller();
 
-  // Prevent the stop timer from killing the hints fetch early.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(10));
-  autocomplete_controller->Start(input);
+  InitializeAutocompleteControllerWithExtendedTimer(autocomplete_controller,
+                                                    input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
@@ -3955,10 +3935,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   AutocompleteController* autocomplete_controller =
       location_bar->GetOmniboxController()->autocomplete_controller();
 
-  // Prevent the stop timer from killing the hints fetch early.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(10));
-  autocomplete_controller->Start(input);
+  InitializeAutocompleteControllerWithExtendedTimer(autocomplete_controller,
+                                                    input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
@@ -4012,10 +3990,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   AutocompleteController* autocomplete_controller =
       location_bar->GetOmniboxController()->autocomplete_controller();
 
-  // Prevent the stop timer from killing the hints fetch early.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(10));
-  autocomplete_controller->Start(input);
+  InitializeAutocompleteControllerWithExtendedTimer(autocomplete_controller,
+                                                    input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
@@ -4237,10 +4213,8 @@ IN_PROC_BROWSER_TEST_P(SearchNavigationPrefetchDefaultMatchBrowserTest,
   AutocompleteController* autocomplete_controller =
       location_bar->GetOmniboxController()->autocomplete_controller();
 
-  // Prevent the stop timer from killing the hints fetch early.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(10));
-  autocomplete_controller->Start(input);
+  InitializeAutocompleteControllerWithExtendedTimer(autocomplete_controller,
+                                                    input);
 
   ui_test_utils::WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());

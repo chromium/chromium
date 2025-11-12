@@ -27,8 +27,6 @@
 #include "content/public/test/browser_test.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
-namespace {
-
 using metrics::OmniboxEventProto;
 using ui_test_utils::WaitForAutocompleteDone;
 
@@ -48,7 +46,7 @@ class OmniboxMetricsTest : public InProcessBrowserTest {
 
     // Prevent the stop timer from killing the hints fetch early, which might
     // cause test flakiness due to timeout.
-    controller()->SetStartStopTimerDurationForTesting(base::Seconds(30));
+    controller()->config_.stop_timer_duration = base::Seconds(30);
   }
 
  protected:
@@ -68,8 +66,6 @@ class OmniboxMetricsTest : public InProcessBrowserTest {
         ->edit_model();
   }
 };
-
-}  // namespace
 
 IN_PROC_BROWSER_TEST_F(OmniboxMetricsTest, LogSearchEngineUsed) {
   AutocompleteInput input(

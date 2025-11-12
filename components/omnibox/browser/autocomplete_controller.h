@@ -54,6 +54,10 @@ class VoiceSuggestProvider;
 class ZeroSuggestProvider;
 struct OmniboxLog;
 
+namespace extensions {
+class UnscopedOmniboxApiTest;
+}  // namespace extensions
+
 // The header used to report whether a navigation to google.com is coming from
 // omnibox. Only set when the navigation is initiated from the Gemini
 // built-in keyword.
@@ -289,9 +293,6 @@ class AutocompleteController : public AutocompleteProviderListener,
     return last_time_default_match_changed_;
   }
 
-  // Sets the provider timeout duration for future calls to |Start()|.
-  void SetStartStopTimerDurationForTesting(base::TimeDelta duration);
-
   // Returns the AutocompleteProviderClient owned by the controller.
   AutocompleteProviderClient* autocomplete_provider_client() const {
     return provider_client_.get();
@@ -315,6 +316,10 @@ class AutocompleteController : public AutocompleteProviderListener,
   friend class OmniboxSuggestionButtonRowBrowserTest;
   friend class ZeroSuggestPrefetchTabHelperBrowserTest;
   friend class OmniboxEditModelPopupTest;
+  friend class OmniboxMetricsTest;
+  friend class OmniboxSearchAggregatorTest;
+  friend class extensions::UnscopedOmniboxApiTest;
+  friend class SearchPreloadResponseController;
 #if BUILDFLAG(IS_IOS)
   friend class OmniboxInttestAutocompleteController;
 #endif

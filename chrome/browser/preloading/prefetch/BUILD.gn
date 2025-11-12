@@ -18,7 +18,10 @@ source_set("test_support") {
     "//net:test_support",
   ]
 
-  deps = [ "//content/public/browser" ]
+  deps = [
+    "//components/omnibox/browser",
+    "//content/public/browser",
+  ]
 
   if (enable_extensions) {
     sources += [

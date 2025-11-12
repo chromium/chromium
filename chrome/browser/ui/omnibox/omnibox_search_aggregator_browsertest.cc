@@ -148,7 +148,7 @@ class OmniboxSearchAggregatorTest : public InProcessBrowserTest {
 
     // Prevent the stop timer from killing the hints fetch early, which might
     // cause test flakiness due to timeout.
-    controller()->SetStartStopTimerDurationForTesting(base::Seconds(30));
+    controller()->config_.stop_timer_duration = base::Seconds(30);
 
     // Setup an identity profile.
     identity_test_env_adaptor_ =

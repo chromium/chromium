@@ -373,6 +373,26 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
     return result;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Helper method to prepare autocomplete context and trigger
+  // prerender/prefetch
+  void PrepareAutocompleteContextAndTrigger(
+      LocationBar* location_bar,
+      const std::string& prerender_query) {
+    // Prepare some context.
+    AutocompleteInput input(
+        base::ASCIIToUTF16(prerender_query), metrics::OmniboxEventProto::BLANK,
+        ChromeAutocompleteSchemeClassifier(browser()->profile()));
+    AutocompleteController* autocomplete_controller =
+        location_bar->GetOmniboxController()->autocomplete_controller();
+
+    // Trigger prerender and prefetch.
+    InitializeAutocompleteControllerWithExtendedTimer(autocomplete_controller,
+                                                      input);
+    ui_test_utils::WaitForAutocompleteDone(browser());
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
  private:
   void ResetPointerPosition() {
 #if !BUILDFLAG(IS_ANDROID)
@@ -1369,22 +1389,9 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, TriggerAndActivate) {
       GetSearchUrl(prerender_query, UrlType::kPrefetch);
   GURL expected_prerender_url =
       GetSearchUrl(prerender_query, UrlType::kPrerender);
-
-  // 2. Prepare some context.
-  AutocompleteInput input(
-      base::ASCIIToUTF16(prerender_query), metrics::OmniboxEventProto::BLANK,
-      ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
-  AutocompleteController* autocomplete_controller =
-      location_bar->GetOmniboxController()->autocomplete_controller();
-
-  // Prevent the stop timer from killing the hints fetch early.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(10));
-
-  // 3. Trigger prerender and prefetch.
-  autocomplete_controller->Start(input);
-  ui_test_utils::WaitForAutocompleteDone(browser());
+  // 2. Prepare some context and trigger prerender/prefetch.
+  PrepareAutocompleteContextAndTrigger(location_bar, prerender_query);
   ChangeAutocompleteResult(search_query_1, prerender_query,
                            PrerenderHint::kEnabled, PrefetchHint::kEnabled);
   registry_observer.WaitForTrigger(expected_prerender_url);
@@ -1435,22 +1442,9 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   GURL expected_prerender_url =
       GetSearchUrl(prerender_query, UrlType::kPrerender);
   GURL expected_real_url = GetSearchUrl(prerender_query, UrlType::kReal);
-
-  // 2. Prepare some context.
-  AutocompleteInput input(
-      base::ASCIIToUTF16(prerender_query), metrics::OmniboxEventProto::BLANK,
-      ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
-  AutocompleteController* autocomplete_controller =
-      location_bar->GetOmniboxController()->autocomplete_controller();
-
-  // Prevent the stop timer from killing the hints fetch early.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(10));
-
-  // 3. Trigger prerender and prefetch.
-  autocomplete_controller->Start(input);
-  ui_test_utils::WaitForAutocompleteDone(browser());
+  // 2. Prepare some context and trigger prerender/prefetch.
+  PrepareAutocompleteContextAndTrigger(location_bar, prerender_query);
   ChangeAutocompleteResult(prerender_query, prerender_query,
                            PrerenderHint::kEnabled, PrefetchHint::kEnabled);
   registry_observer.WaitForTrigger(expected_prerender_url);

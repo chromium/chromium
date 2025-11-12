@@ -974,13 +974,18 @@ class UnscopedOmniboxApiTest : public OmniboxApiTestBase {
         {omnibox::kAiModeOmniboxEntryPoint});
   }
 
+  // Helper function to set the stop timer duration for the autocomplete
+  // controller.
+  void SetStopTimerDuration(base::TimeDelta duration) {
+    GetAutocompleteController()->config_.stop_timer_duration = duration;
+  }
+
  private:
   void SetUpOnMainThread() override {
     OmniboxApiTestBase::SetUpOnMainThread();
     // Prevent the stop timer from killing the hints fetch early, which might
     // cause test flakiness due to timeout.
-    GetAutocompleteController()->SetStartStopTimerDurationForTesting(
-        base::Seconds(30));
+    SetStopTimerDuration(base::Seconds(30));
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1626,8 +1631,7 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, MultipleUnscopedExtensions) {
 
   // Prevent the stop timer from killing the hints fetch early, which might
   // cause test flakiness due to timeout.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(20));
+  SetStopTimerDuration(base::Seconds(20));
 
   // Test that our extension can send suggestions back to us.
   AutocompleteInput input(u"input", metrics::OmniboxEventProto::NTP,
