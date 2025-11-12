@@ -590,6 +590,7 @@ allowed_hosts = [
   'chromium-style-perftest',
   'chromium-telemetry',
   'chromium-webrtc-resources',
+  'meet-bundles',
   'perfetto',
 ]
 
@@ -1110,13 +1111,14 @@ deps = {
   },
   'src/content/test/data/gpu/meet_effects': {
     'dep_type': 'gcs',
-    'bucket': 'chromium-telemetry',
+    'bucket': 'meet-bundles',
+    'condition': 'non_git_source',
     'objects': [
       {
-        'object_name': 'meet-gpu-tests/827463640.tar.gz',
-        'sha256sum': '407e7142167b03820130086f2f7482f5dea89297d0a6771ca26767b4e84772b1',
-        'size_bytes': 216535134,
-        'generation': 1762179060727319,
+        'object_name': 'meet-gpu-tests/831275051.tar.gz',
+        'sha256sum': '9669697db5c18b676f3c8ddefacc0541b28a2bec2d44fa65eff2fbb82af8c2af',
+        'size_bytes': 226443998,
+        'generation': 1762939888998876,
       },
     ],
   },
