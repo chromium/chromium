@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_TRANSITIONS_NAVIGATION_ENTRY_SCREENSHOT_H_
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_TRANSITIONS_NAVIGATION_ENTRY_SCREENSHOT_H_
 
+#include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/supports_user_data.h"
@@ -69,6 +70,95 @@ class CONTENT_EXPORT NavigationEntryScreenshot
       public viz::ContextLostObserver,
       private cc::TextureLayerClient {
  public:
+  class SharedImageProvider : public base::RefCounted<SharedImageProvider> {
+   public:
+    virtual scoped_refptr<gpu::ClientSharedImage> Get() = 0;
+    // Returns a callback that performs cleanup operations upon release of the
+    // obtained shared image. Implementors of this interface can keep a
+    // reference of themselves in this callback to prevent the destructor from
+    // running until the callback is used.
+    virtual viz::ReleaseCallback CreateCallback() = 0;
+    virtual gfx::Size Size() const = 0;
+
+   protected:
+    // Implementors of this interface should perform clean up operations upon
+    // destruction.
+    virtual ~SharedImageProvider() = default;
+
+   private:
+    friend class base::RefCounted<SharedImageProvider>;
+  };
+
+  class SharedImageHolder : public SharedImageProvider {
+   public:
+    static scoped_refptr<SharedImageProvider> Create(
+        scoped_refptr<gpu::ClientSharedImage> shared_image,
+        viz::ReleaseCallback release_callback);
+    SharedImageHolder(const SharedImageHolder&) = delete;
+    SharedImageHolder& operator=(const SharedImageHolder&) = delete;
+
+    // Returns a callback that stores the parameters in order to run the actual
+    // callback on destruction.
+    // The callback keeps an instance of this holder so that it's not destroyed
+    // prematurely. The release callback is called only once all users have
+    // released the references.
+    viz::ReleaseCallback CreateCallback() override;
+
+    scoped_refptr<gpu::ClientSharedImage> Get() override;
+    gfx::Size Size() const override;
+
+   protected:
+    ~SharedImageHolder() override;
+
+   private:
+    SharedImageHolder(scoped_refptr<gpu::ClientSharedImage> shared_image,
+                      viz::ReleaseCallback release_callback);
+    void DoReleaseCallback(const gpu::SyncToken& sync_token, bool is_lost);
+
+    scoped_refptr<gpu::ClientSharedImage> shared_image_;
+    viz::ReleaseCallback release_callback_;
+
+    gpu::SyncToken destruction_sync_token_;
+    bool is_lost_ = false;
+  };
+
+  class HardwareBufferHolder : public SharedImageProvider {
+   public:
+    static scoped_refptr<SharedImageProvider> Create(
+        scoped_refptr<viz::RasterContextProvider> context_provider,
+        gfx::ColorSpace color_space,
+        base::android::ScopedHardwareBufferHandle hardware_buffer,
+        base::OnceClosure release_callback);
+
+    HardwareBufferHolder(const HardwareBufferHolder&) = delete;
+    HardwareBufferHolder& operator=(const HardwareBufferHolder&) = delete;
+
+    // Returns a callback that just holds a reference to this object in order to
+    // prevent the destructor from running until after this callback is called.
+    viz::ReleaseCallback CreateCallback() override;
+
+    scoped_refptr<gpu::ClientSharedImage> Get() override;
+    gfx::Size Size() const override;
+
+   protected:
+    ~HardwareBufferHolder() override;
+
+   private:
+    HardwareBufferHolder(
+        scoped_refptr<viz::RasterContextProvider> context_provider,
+        gfx::ColorSpace color_space,
+        base::android::ScopedHardwareBufferHandle hardware_buffer,
+        base::OnceClosure release_callback);
+
+    // A raw ptr is enough as the owner of the holder manages them together.
+    scoped_refptr<viz::RasterContextProvider> context_provider_;
+    scoped_refptr<gpu::ClientSharedImage> cached_shared_image_;
+    gfx::ColorSpace color_space_;
+    base::android::ScopedHardwareBufferHandle hardware_buffer_;
+    const gfx::Size size_;
+    base::OnceClosure release_callback_;
+  };
+
   using ScreenshotCallback = base::RepeatingCallback<
       void(const SkBitmap& bitmap, bool requested, SkBitmap& out_override)>;
 
@@ -80,8 +170,7 @@ class CONTENT_EXPORT NavigationEntryScreenshot
                             NavigationTransitionData::UniqueId unique_id,
                             bool supports_etc_non_power_of_two);
   NavigationEntryScreenshot(
-      scoped_refptr<gpu::ClientSharedImage> shared_image,
-      viz::ReleaseCallback release_callback,
+      scoped_refptr<SharedImageProvider> shared_image,
       NavigationTransitionData::UniqueId unique_id,
       bool supports_etc_non_power_of_two,
       scoped_refptr<viz::RasterContextProvider> context_provider,
@@ -135,8 +224,6 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   size_t CompressedSizeForTesting() const;
 
  private:
-  class SharedImageHolder;
-
   void DestroyOnFailure();
   void OnCompressionFinished(sk_sp<SkPixelRef> compressed_bitmap);
 
@@ -165,7 +252,7 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   // entry.
   std::optional<cc::UIResourceBitmap> bitmap_;
 
-  scoped_refptr<SharedImageHolder> shared_image_holder_;
+  scoped_refptr<SharedImageProvider> shared_image_provider_;
 
   // The compressed bitmap generated on a worker thread. `bitmap_` is discarded
   // when the compressed bitmap is available and this screenshot is no longer

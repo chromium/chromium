@@ -172,7 +172,43 @@ void CacheScreenshotImpl(base::WeakPtr<NavigationControllerImpl> controller,
                        is_copied_from_embedder);
 }
 
-#if BUILDFLAG(IS_ANDROID)
+void CacheScreenshotFromSharedImageProvider(
+    base::WeakPtr<NavigationControllerImpl> controller,
+    base::WeakPtr<NavigationRequest> navigation_request,
+    scoped_refptr<viz::RasterContextProvider> raster_context_provider,
+    NavigationTransitionData::UniqueId screenshot_id,
+    bool is_copied_from_embedder,
+    int copy_output_request_sequence,
+    bool supports_etc_non_power_of_two,
+    scoped_refptr<NavigationEntryScreenshot::SharedImageProvider>
+        shared_image_provider) {
+  int entry_index =
+      NavigationTransitionUtils::FindEntryIndexForNavigationTransitionID(
+          controller.get(), screenshot_id);
+  NavigationEntryImpl* entry = controller->GetEntryAtIndex(entry_index);
+  if (!entry ||
+      entry->navigation_transition_data().copy_output_request_sequence() !=
+          copy_output_request_sequence) {
+    // The entry has changed state since this request occurred so ignore it.
+    return;
+  }
+
+  auto& screenshot_callback = GetTestScreenshotCallback();
+  auto bound_screenshot_callback =
+      screenshot_callback
+          ? base::BindRepeating(screenshot_callback, entry_index)
+          : NavigationEntryScreenshot::ScreenshotCallback();
+
+  auto screenshot = std::make_unique<NavigationEntryScreenshot>(
+      std::move(shared_image_provider), screenshot_id,
+      supports_etc_non_power_of_two, std::move(raster_context_provider),
+      bound_screenshot_callback);
+  NavigationEntryScreenshotCache* cache =
+      controller->GetNavigationEntryScreenshotCache();
+  cache->SetScreenshot(std::move(navigation_request), std::move(screenshot),
+                       is_copied_from_embedder);
+}
+
 void CacheScreenshotSharedImageImpl(
     base::WeakPtr<NavigationControllerImpl> controller,
     base::WeakPtr<NavigationRequest> navigation_request,
@@ -204,33 +240,13 @@ void CacheScreenshotSharedImageImpl(
     return;
   }
 
-  int entry_index =
-      NavigationTransitionUtils::FindEntryIndexForNavigationTransitionID(
-          controller.get(), screenshot_id);
-  NavigationEntryImpl* entry = controller->GetEntryAtIndex(entry_index);
-  if (!entry ||
-      entry->navigation_transition_data().copy_output_request_sequence() !=
-          copy_output_request_sequence) {
-    // The entry has changed state since this request occurred so ignore it.
-    return;
-  }
-
-  auto& screenshot_callback = GetTestScreenshotCallback();
-  auto bound_screenshot_callback =
-      screenshot_callback
-          ? base::BindRepeating(screenshot_callback, entry_index)
-          : NavigationEntryScreenshot::ScreenshotCallback();
-
-  auto screenshot = std::make_unique<NavigationEntryScreenshot>(
-      std::move(shared_image), std::move(release_callback), screenshot_id,
-      supports_etc_non_power_of_two, std::move(raster_context_provider),
-      bound_screenshot_callback);
-  NavigationEntryScreenshotCache* cache =
-      controller->GetNavigationEntryScreenshotCache();
-  cache->SetScreenshot(std::move(navigation_request), std::move(screenshot),
-                       is_copied_from_embedder);
+  CacheScreenshotFromSharedImageProvider(
+      controller, navigation_request, raster_context_provider, screenshot_id,
+      is_copied_from_embedder, copy_output_request_sequence,
+      supports_etc_non_power_of_two,
+      NavigationEntryScreenshot::SharedImageHolder::Create(
+          std::move(shared_image), std::move(release_callback)));
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 // We only want to capture screenshots for navigation entries reachable via
 // session history navigations. Namely, we don't capture for navigations where

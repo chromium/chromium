@@ -59,7 +59,7 @@ class TextureLayer::TransferableResourceHolder
 
   void DoReleaseCallback(const gpu::SyncToken& sync_token, bool is_lost) {
     destruction_sync_token_ = sync_token;
-    is_lost_ = is_lost;
+    is_lost_ = is_lost_ || is_lost;
   }
 
   const viz::TransferableResource resource_;
