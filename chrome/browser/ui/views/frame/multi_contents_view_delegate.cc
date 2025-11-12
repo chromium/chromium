@@ -4,16 +4,20 @@
 
 #include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_visual_data.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "url/url_constants.h"
@@ -70,7 +74,8 @@ void MultiContentsViewDelegateImpl::HandleLinkDrop(
     const ui::DropTargetEvent& event) {
   auto urls = event.data().GetURLs(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
   CHECK(!urls.empty());
-  CHECK(!tab_strip_model_->GetActiveTab()->IsSplit());
+  tabs::TabInterface* active_tab = tab_strip_model_->GetActiveTab();
+  CHECK(!active_tab->IsSplit());
 
   // Disallow javascript: URLs to prevent self-XSS.
   std::vector<GURL> filtered_urls;
@@ -98,8 +103,17 @@ void MultiContentsViewDelegateImpl::HandleLinkDrop(
   params.tabstrip_index = new_tab_idx;
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.initiator_origin = event.data().GetRendererTaintedOrigin();
+  if (active_tab->IsPinned()) {
+    params.tabstrip_add_types |= AddTabTypes::ADD_PINNED;
+  }
+  if (active_tab->GetGroup()) {
+    params.group = active_tab->GetGroup().value();
+  }
 
-  Navigate(&params);
+  // If the navigation failed, don't try to create a split view.
+  if (!Navigate(&params)) {
+    return;
+  }
 
   // Create a split with the previously active tab, which should be before or
   // after the newly created tab.
