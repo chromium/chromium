@@ -2109,9 +2109,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @CalledByNative
     private void handleLiveRegionNodeChanged(int id) {
-        // If TYPE_ANNOUNCEMENT is not disabled, our node change will be routed through
-        // announceLiveRegionText() instead.
-        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)) {
+        // NOTE: If we are using TYPE_ANNOUNCEMENT for live region changes instead of
+        // WINDOW_CONTENT_CHANGED, our node change will be routed through announceLiveRegionText()
+        // below instead.
+        if (ContentFeatureMap.isEnabled(
+                ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE)) {
             if (isAccessibilityEnabled()) {
                 AccessibilityEvent event =
                         buildAccessibilityEvent(id, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);

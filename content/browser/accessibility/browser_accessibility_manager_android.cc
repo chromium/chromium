@@ -331,16 +331,23 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     }
     case ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED: {
       // This event is fired when an object appears in a live region.
-      // Speak its text unless the experimental deprecation of the announce
-      // approach is enabled, in which case we fire a window content
-      // changed event will inform the framework of the node change.
       if (base::FeatureList::IsEnabled(
-              features::kAccessibilityDeprecateTypeAnnounce)) {
+              features::kAccessibilityImproveLiveRegionAnnounce)) {
+        // When enabled, fire a WINDOW_CONTENT_CHANGED event to inform the
+        // Android Framework of the node that changed.
         wcax->HandleLiveRegionNodeChanged(android_node->GetUniqueId());
-      } else {
+      } else if (!base::FeatureList::IsEnabled(
+                     features::kAccessibilityDeprecateTypeAnnounce)) {
+        // If we don't support WINDOW_CONTENT_CHANGED events BUT have not yet
+        // deprecated TYPE_ANNOUNCEMENT, we should fire a TYPE_ANNOUNCEMENT
+        // event which contains the text of the changed node.
         std::u16string text = android_node->GetTextContentUTF16();
         wcax->AnnounceLiveRegionText(text);
       }
+      // If kAccessibilityImproveLiveRegionAnnounce is disabled and
+      // kAccessibilityDeprecateTypeAnnounce is enabled, we choose not to fire
+      // an event here. However, this should not happen in practice as we should
+      // not deprecate TYPE_ANNOUNCEMENT until we have landed its replacements.
       break;
     }
     case ui::AXEventGenerator::Event::MENU_POPUP_START: {

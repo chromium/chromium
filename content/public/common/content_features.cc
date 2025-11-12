@@ -1283,6 +1283,14 @@ const base::FeatureParam<bool> kAccessibilityDeprecateJavaNodeCacheDisableCache{
 BASE_FEATURE(kAccessibilityDeprecateTypeAnnounce,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, WINDOW_CONTENT_CHANGED events will be sent for each
+// LIVE_REGION_NODE_CHANGED rather than TYPE_ANNOUNCEMENT.
+// kAccessibilityDeprecateTypeAnnounce also encompasses ariaNotify, whereas this
+// flag does not. This flag focuses solely on the LIVE_REGION_NODE_CHANGED
+// generated events.
+BASE_FEATURE(kAccessibilityImproveLiveRegionAnnounce,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the second iteration of AccessibilityPageZoom, which continues
 // the work completed in the first experiment and the subsequent fast-follow.
 // This version of the experiment explores enabling OS-level adjustments.

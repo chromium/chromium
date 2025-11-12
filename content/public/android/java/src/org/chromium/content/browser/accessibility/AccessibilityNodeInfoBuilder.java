@@ -406,11 +406,12 @@ public class AccessibilityNodeInfoBuilder {
         node.setTooltipText(tooltipText);
         node.setExpandedState(expandedState);
 
-        // Deliberately don't call setLiveRegion because TalkBack speaks the entire region anytime
-        // it changes. Instead Chrome will call announceLiveRegionText() only on the nodes that
-        // change. This approach is deprecated, so when the experimental flag is enabled, use live
-        // regions as expected.
-        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)) {
+        // If we have enabled WINDOW_CONTENT_CHANGED live region events or deprecated
+        // TYPE_ANNOUNCEMENT, we should properly mark live region root nodes. Otherwise, we choose
+        // to use AnnounceLiveRegionText() to make this announcement for us.
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+                || ContentFeatureMap.isEnabled(
+                        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE)) {
             node.setLiveRegion(liveRegion);
         }
 

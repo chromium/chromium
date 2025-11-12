@@ -26,6 +26,9 @@ public class ContentFeatureList {
     public static final String ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE =
             "AccessibilityDeprecateTypeAnnounce";
 
+    public static final String ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE =
+            "AccessibilityImproveLiveRegionAnnounce";
+
     public static final String ACCESSIBILITY_PAGE_ZOOM_V2 = "AccessibilityPageZoomV2";
 
     public static final String ANDROID_DESKTOP_ZOOM_SCALING = "AndroidDesktopZoomScaling";

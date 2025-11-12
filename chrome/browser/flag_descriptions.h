@@ -4794,6 +4794,13 @@ inline constexpr char kAccessibilityDeprecateTypeAnnounceDescription[] =
     "When enabled, TYPE_ANNOUNCE events will no longer be sent for live "
     "regions in the web contents.";
 
+inline constexpr char kAccessibilityImproveLiveRegionAnnounceName[] =
+    "Accessibility Improve Live Region Announcement";
+inline constexpr char kAccessibilityImproveLiveRegionAnnounceDescription[] =
+    "When enabled, live region announcements will be sent to Android via "
+    "WINDOW_CONTENT_CHANGED events corresponding to each live region element "
+    "change rather than via TYPE_ANNOUNCEMENT.";
+
 inline constexpr char kAccessibilitySetSelectableOnAllNodesWithTextName[] =
     "AccessibilitySetSelectableOnAllNodesWithTextName";
 inline constexpr char
