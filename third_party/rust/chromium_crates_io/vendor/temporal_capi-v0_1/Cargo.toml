@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.83.0"
 name = "temporal_capi"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["boa-dev"]
 build = false
 include = [
@@ -70,11 +70,11 @@ version = "0.2.19"
 default-features = false
 
 [dependencies.temporal_rs]
-version = "~0.1.0"
+version = "0.1.2"
 default-features = false
 
 [dependencies.timezone_provider]
-version = "~0.1.0"
+version = "0.1.2"
 
 [dependencies.writeable]
 version = "0.6.0"

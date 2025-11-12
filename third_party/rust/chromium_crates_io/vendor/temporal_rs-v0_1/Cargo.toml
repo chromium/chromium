@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.83.0"
 name = "temporal_rs"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["boa-dev"]
 build = false
 exclude = [
@@ -56,6 +56,7 @@ all-features = true
 [features]
 compiled_data = ["tzdb"]
 default = ["sys"]
+float64_representable_durations = []
 log = ["dep:log"]
 std = []
 sys = [
@@ -104,7 +105,7 @@ version = "0.2.19"
 default-features = false
 
 [dependencies.timezone_provider]
-version = "~0.1.0"
+version = "0.1.2"
 
 [dependencies.tinystr]
 version = "0.8.0"

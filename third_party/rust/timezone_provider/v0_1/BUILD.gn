@@ -41,7 +41,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "timezone_provider"
   cargo_pkg_description = "Time zone data providers"
   cargo_pkg_repository = "https://github.com/boa-dev/temporal"
-  cargo_pkg_version = "0.1.1"
+  cargo_pkg_version = "0.1.2"
 
   allow_unsafe = true
 

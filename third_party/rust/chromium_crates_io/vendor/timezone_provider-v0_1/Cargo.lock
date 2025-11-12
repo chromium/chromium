@@ -268,7 +268,7 @@ dependencies = [
 
 [[package]]
 name = "timezone_provider"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "combine",
  "databake",
@@ -413,9 +413,9 @@ dependencies = [
 
 [[package]]
 name = "zoneinfo_rs"
-version = "0.0.17"
+version = "0.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b6e467569e4762b1b48082eae64c83ca20b75c493e1e388fe1d8eefd4fe87ced"
+checksum = "1012c2595a5f0a3e7e28bae3e360ec9739e01523292132f9096218c612a01f32"
 dependencies = [
  "hashbrown",
  "indexmap",

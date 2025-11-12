@@ -8,6 +8,7 @@ pub mod ffi {
 
     #[diplomat::enum_convert(icu_calendar::AnyCalendarKind, needs_wildcard)]
     pub enum AnyCalendarKind {
+        Iso,
         Buddhist,
         Chinese,
         Coptic,
@@ -20,7 +21,6 @@ pub mod ffi {
         HijriTabularTypeIIFriday,
         HijriTabularTypeIIThursday,
         HijriUmmAlQura,
-        Iso,
         Japanese,
         JapaneseExtended,
         Persian,

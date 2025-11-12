@@ -159,10 +159,9 @@ fn negative_fields_to_string() {
 
 #[test]
 fn preserve_precision_loss() {
-    const MAX_SAFE_INT: i64 = 9_007_199_254_740_991;
     let duration = Duration::from_partial_duration(PartialDuration {
-        milliseconds: Some(MAX_SAFE_INT),
-        microseconds: Some(MAX_SAFE_INT as i128),
+        milliseconds: Some(MAX_SAFE_INTEGER),
+        microseconds: Some(MAX_SAFE_INTEGER as i128),
         ..Default::default()
     })
     .unwrap();
@@ -198,8 +197,6 @@ fn duration_from_str() {
 
 #[test]
 fn duration_max_safe() {
-    const MAX_SAFE_INTEGER: i64 = 9007199254740991;
-
     // From test262 built-ins/Temporal/Duration/prototype/subtract/result-out-of-range-3.js
     assert!(Duration::new(0, 0, 0, 0, 0, 0, 0, 0, 9_007_199_254_740_991_926_258, 0).is_err());
 
@@ -405,11 +402,11 @@ fn test_duration_compare() {
     }
 }
 
-const MAX_SAFE_INT: i64 = 9_007_199_254_740_991;
+const MAX_SAFE_INTEGER: i64 = 9_007_199_254_740_991;
 
 #[test]
 fn duration_round_out_of_range_norm_conversion() {
-    let duration = Duration::new(0, 0, 0, 0, 0, 0, MAX_SAFE_INT, 0, 0, 999_999_999).unwrap();
+    let duration = Duration::new(0, 0, 0, 0, 0, 0, MAX_SAFE_INTEGER, 0, 0, 999_999_999).unwrap();
     let err = duration.round_with_provider(
         RoundingOptions {
             largest_unit: Some(Unit::Nanosecond),
@@ -426,8 +423,8 @@ fn duration_round_out_of_range_norm_conversion() {
 #[cfg_attr(not(feature = "float64_representable_durations"), should_panic)]
 fn duration_float64_representable() {
     // built-ins/Temporal/Duration/prototype/add/float64-representable-integer
-    let duration = Duration::new(0, 0, 0, 0, 0, 0, 0, 0, MAX_SAFE_INT as i128, 0).unwrap();
-    let duration2 = Duration::new(0, 0, 0, 0, 0, 0, 0, 0, MAX_SAFE_INT as i128 - 1, 0).unwrap();
+    let duration = Duration::new(0, 0, 0, 0, 0, 0, 0, 0, MAX_SAFE_INTEGER as i128, 0).unwrap();
+    let duration2 = Duration::new(0, 0, 0, 0, 0, 0, 0, 0, MAX_SAFE_INTEGER as i128 - 1, 0).unwrap();
     let added = duration.add(&duration2).unwrap();
     assert_eq!(added.microseconds, 18014398509481980);
     assert_eq!(
@@ -440,4 +437,18 @@ fn duration_float64_representable() {
         added, added_plus_one,
         "Should not internally use a more accurate representation when adding"
     );
+}
+
+#[test]
+#[cfg(feature = "compiled_data")]
+fn total_full_numeric_precision() {
+    // Tests that Duration::total operates without any loss of precision
+
+    // built-ins/Temporal/Duration/prototype/total/precision-exact-mathematical-values-6
+    let d = Duration::new(0, 0, 0, 0, 816, 0, 0, 0, 0, 2_049_187_497_660).unwrap();
+    assert_eq!(d.total(Unit::Hour, None).unwrap(), 816.56921874935);
+
+    // built-ins/Temporal/Duration/prototype/total/precision-exact-mathematical-values-7
+    let d = Duration::new(0, 0, 0, 0, 0, 0, 0, MAX_SAFE_INTEGER + 1, 1999, 0).unwrap();
+    assert_eq!(d.total(Unit::Millisecond, None).unwrap(), 9007199254740994.);
 }

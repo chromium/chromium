@@ -11,7 +11,7 @@ members = [
 
 [workspace.package]
 edition = "2021"
-version = "0.1.1"
+version = "0.1.2"
 rust-version = "1.83.0"
 authors = ["boa-dev"]
 license = "MIT OR Apache-2.0"
@@ -29,9 +29,9 @@ exclude = [
 
 [workspace.dependencies]
 # Self
-temporal_rs = { version = "~0.1.0", path = ".", default-features = false }
-timezone_provider = { version = "~0.1.0", path = "./provider" }
-zoneinfo_rs = { version = "~0.0.17", path = "./zoneinfo" }
+temporal_rs = { version = "0.1.2", path = ".", default-features = false }
+timezone_provider = { version = "0.1.2", path = "./provider" }
+zoneinfo_rs = { version = "0.0.18", path = "./zoneinfo" }
 
 # Dependencies
 rustc-hash = "2.1.0"
@@ -104,6 +104,10 @@ tzdb = [
     "timezone_provider/tzif",
 ]
 std = []
+# https://github.com/boa-dev/temporal/issues/613
+# ECMA-conformant implementations must store durations as float64-representable numbers
+# Rust users probably should not enable this, unless they wish to match the quirks of JavaScript
+float64_representable_durations = []
 
 [package.metadata.cargo-all-features]
 denylist = ["default"]

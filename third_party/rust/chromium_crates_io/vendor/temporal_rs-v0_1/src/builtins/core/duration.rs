@@ -393,9 +393,18 @@ impl Duration {
             // https://github.com/boa-dev/temporal/issues/613
             // With float64_representable_durations enabled, force all smaller units
             // to be in the float64-representable range.
+            #[cfg(feature = "float64_representable_durations")]
             milliseconds: milliseconds as f64 as u64,
+            #[cfg(feature = "float64_representable_durations")]
             microseconds: microseconds as f64 as u128,
+            #[cfg(feature = "float64_representable_durations")]
             nanoseconds: nanoseconds as f64 as u128,
+            #[cfg(not(feature = "float64_representable_durations"))]
+            milliseconds,
+            #[cfg(not(feature = "float64_representable_durations"))]
+            microseconds,
+            #[cfg(not(feature = "float64_representable_durations"))]
+            nanoseconds,
         }
     }
 

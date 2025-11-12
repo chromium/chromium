@@ -1186,3 +1186,24 @@ fn test_relativeto_back_transition() {
 
     })
 }
+
+#[test]
+fn test_canonical_equals() {
+    // intl402/Temporal/ZonedDateTime/prototype/equals/canonical-not-equal
+    test_all_providers!(provider: {
+        let one = parse_zdt_with_compatible("2025-01-01T01:00:00[Africa/Accra]", provider).unwrap();
+        let two = parse_zdt_with_compatible("2025-01-01T01:00:00[Africa/Abidjan]", provider).unwrap();
+        assert!(!one.equals_with_provider(&two, provider).unwrap());
+
+        // Spec explicitly lists this case https://tc39.es/ecma402/#sec-use-of-iana-time-zone-database
+        let one = parse_zdt_with_compatible("2025-01-01T01:00:00[Europe/Prague]", provider).unwrap();
+        let two = parse_zdt_with_compatible("2025-01-01T01:00:00[Europe/Bratislava]", provider).unwrap();
+        assert!(!one.equals_with_provider(&two, provider).unwrap());
+
+
+        // This should work, though
+        let one = parse_zdt_with_compatible("2025-01-01T01:00:00[Asia/Kolkata]", provider).unwrap();
+        let two = parse_zdt_with_compatible("2025-01-01T01:00:00[Asia/Calcutta]", provider).unwrap();
+        assert!(one.equals_with_provider(&two, provider).unwrap());
+    })
+}
