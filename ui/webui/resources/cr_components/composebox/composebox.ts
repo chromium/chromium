@@ -185,6 +185,10 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor errorScrimVisible_: boolean = false;
   protected accessor contextFilesSize_: number = 0;
   protected lastQueriedInput_: string = '';
+  protected showVoiceSearchInSteadyComposebox_: boolean =
+      loadTimeData.getBoolean('steadyComposeboxShowVoiceSearch');
+  protected showVoiceSearchInExpandedComposebox_: boolean =
+      loadTimeData.getBoolean('expandedComposeboxShowVoiceSearch');
   private showTypedSuggest_: boolean =
       loadTimeData.getBoolean('composeboxShowTypedSuggest');
   private showZps: boolean = loadTimeData.getBoolean('composeboxShowZps');
@@ -419,6 +423,12 @@ export class ComposeboxElement extends I18nMixinLit
 
   protected shouldShowSmartComposeInlineHint_() {
     return !!this.smartComposeInlineHint_;
+  }
+
+  protected shouldShowVoiceSearch_(): boolean {
+    const isExpanded = this.showDropdown_ || this.contextFilesSize_ > 0;
+    return isExpanded ? this.showVoiceSearchInExpandedComposebox_ :
+                        this.showVoiceSearchInSteadyComposebox_;
   }
 
   protected onFileValidationError_(e: CustomEvent<{errorMessage: string}>) {

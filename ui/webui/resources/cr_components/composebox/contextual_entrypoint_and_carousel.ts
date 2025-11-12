@@ -87,6 +87,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       tabSuggestions: {type: Array},
       entrypointName: {type: String},
       parentFocused: {type: Boolean},
+      showVoiceSearch: {
+        reflect: true,
+        type: Boolean,
+      },
 
       // =========================================================================
       // Protected properties
@@ -133,6 +137,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   accessor tabSuggestions: TabInfo[] = [];
   accessor carouselOnTop_: boolean = false;
   accessor parentFocused: boolean = false;
+  accessor showVoiceSearch: boolean = false;
 
   protected accessor attachmentFileTypes_: string =
       loadTimeData.getString('composeboxAttachmentFileTypes');

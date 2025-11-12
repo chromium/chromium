@@ -65,6 +65,7 @@ ${this.ntpRealboxNextEnabled ? html`
           @open-voice-search="${this.onVoiceSearchClick_}"
           @get-tab-preview="${this.getTabPreview_}"
           ?show-dropdown="${this.dropdownIsVisible}"
+          ?show-voice-search="${this.shouldShowVoiceSearch_}"
           realbox-layout-mode="${this.realboxLayoutMode}"
           .parentFocused="${this.inputFocused_}">
         <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"

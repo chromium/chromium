@@ -74,6 +74,10 @@ extern const base::FeatureParam<bool> kEnableDragAndDrop;
 extern const base::FeatureParam<bool> kShowSubmit;
 // Whether to show the smart compose in the composebox.
 extern const base::FeatureParam<bool> kShowSmartCompose;
+// Whether to show the voice search button in steady state composebox.
+extern const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox;
+// Whether to show the voice search button in expanded composebox.
+extern const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox;
 
 bool IsNtpComposeboxEnabled(Profile* profile);
 
@@ -117,6 +121,9 @@ BASE_DECLARE_FEATURE(kNtpRealboxNext);
 
 // Whether to show a series of cycling placeholder texts on the search input UI.
 extern const base::FeatureParam<bool> kCyclingPlaceholders;
+
+// Whether to show the voice search button in the realbox.
+extern const base::FeatureParam<bool> kShowVoiceSearchInExpandedRealbox;
 
 // Enum for `kRealboxLayoutMode`.
 enum class RealboxLayoutMode {

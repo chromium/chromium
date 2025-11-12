@@ -260,6 +260,15 @@ const base::FeatureParam<bool> kShowCreateImageTool(&kNtpComposebox,
 
 const base::FeatureParam<bool> kShowSubmit(&kNtpComposebox, "ShowSubmit", true);
 
+const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox(&kNtpComposebox,
+                                                "ShowVoiceSearchInSteadyComposebox",
+                                                false);
+
+const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox(
+                                                &kNtpComposebox,
+                                                "ShowVoiceSearchInExpandedComposebox",
+                                                false);
+
 const base::FeatureParam<bool> kShowSmartCompose(&kNtpComposebox,
                                                  "ShowSmartCompose",
                                                  true);
@@ -318,6 +327,11 @@ BASE_FEATURE(kNtpRealboxNext, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kCyclingPlaceholders(&kNtpRealboxNext,
                                                     "CyclingPlaceholders",
                                                     false);
+
+const base::FeatureParam<bool> kShowVoiceSearchInExpandedRealbox(
+    &kNtpRealboxNext,
+    "ShowVoiceSearchInExpandedRealbox",
+    false);
 
 const base::FeatureParam<RealboxLayoutMode>::Option
     kRealboxLayoutModeOptions[] = {
