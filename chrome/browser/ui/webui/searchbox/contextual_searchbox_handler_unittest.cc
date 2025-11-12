@@ -300,10 +300,86 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery) {
       .Times(1)
       .WillOnce(testing::Invoke(&query_controller(),
                                 &MockQueryController::InitializeIfNeededBase));
+
+  // There should be no delayed uploads if there are no cached tab snapshot.
+  EXPECT_CALL(query_controller(),
+              StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
+      .Times(0);
+
   handler().NotifySessionStarted();
   run_loop.Run();
 
   SubmitQueryAndWaitForNavigation();
+
+  std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
+      search_url_request_info = std::make_unique<
+          ComposeboxQueryController::CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = kQueryText;
+  search_url_request_info->query_start_time = base::Time::Now();
+  GURL expected_url =
+      query_controller().CreateSearchUrl(std::move(search_url_request_info));
+  GURL actual_url =
+      web_contents()->GetController().GetLastCommittedEntry()->GetURL();
+
+  // Ensure navigation occurred.
+  EXPECT_EQ(StripTimestampsFromAimUrl(expected_url),
+            StripTimestampsFromAimUrl(actual_url));
+
+  EXPECT_THAT(session_states,
+              testing::ElementsAre(SessionState::kSessionStarted,
+                                   SessionState::kQuerySubmitted,
+                                   SessionState::kNavigationOccurred));
+}
+
+TEST_F(ContextualSearchboxHandlerTest, SubmitQuery_DelayUpload) {
+  // Arrange
+  // Wait until the state changes to kClusterInfoReceived.
+  base::RunLoop run_loop;
+  query_controller().set_on_query_controller_state_changed_callback(
+      base::BindLambdaForTesting(
+          [&](ComposeboxQueryController::QueryControllerState state) {
+            if (state == ComposeboxQueryController::QueryControllerState::
+                             kClusterInfoReceived) {
+              run_loop.Quit();
+            }
+          }));
+
+  std::vector<SessionState> session_states;
+  auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
+  ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
+
+  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged)
+      .Times(3)
+      .WillRepeatedly([&](SessionState session_state) {
+        session_states.push_back(session_state);
+      });
+
+  // Start the session.
+  EXPECT_CALL(query_controller(), InitializeIfNeeded)
+      .Times(1)
+      .WillOnce(testing::Invoke(&query_controller(),
+                                &MockQueryController::InitializeIfNeededBase));
+
+  // Set a cached tab context snapshot.
+  handler().tab_context_snapshot_ =
+      std::make_pair(base::UnguessableToken::Create(),
+                     std::make_unique<lens::ContextualInputData>());
+  ASSERT_TRUE(handler().tab_context_snapshot_.has_value());
+
+  // The file should be uploaded if there is a cached tab snapshot.
+  EXPECT_CALL(query_controller(),
+              StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
+      .Times(1);
+
+  handler().NotifySessionStarted();
+  run_loop.Run();
+
+  // Act
+  SubmitQueryAndWaitForNavigation();
+
+  // Assert
+  // Once the cached tab snapshot is uploaded, it should be cleared.
+  ASSERT_FALSE(handler().tab_context_snapshot_.has_value());
 
   std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
       search_url_request_info = std::make_unique<
@@ -445,9 +521,12 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext) {
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext_DelayUpload) {
+  // Arrange
   auto sample_url = GURL("https://www.google.com");
   tabs::TabInterface* tab = AddTab(sample_url);
   const int sample_tab_id = tab->GetHandle().raw_value();
+
+  composebox_query::mojom::FileUploadStatus status;
 
   tabs::TabFeatures* tab_features = tab->GetTabFeatures();
   MockTabContextualizationController* tab_contextualization_controller =
@@ -463,23 +542,40 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext_DelayUpload) {
           });
 
   // `ComposeboxQueryController::StartFileUploadFlow` should not be called when
-  // tab context is added and upload should be delayed.
+  // tab context is added, upload should be delayed, and the tab context
+  // should be cached.
+  ASSERT_FALSE(handler().tab_context_snapshot_.has_value());
   EXPECT_CALL(query_controller(),
               StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
       .Times(0);
+  EXPECT_CALL(mock_searchbox_page_, OnContextualInputStatusChanged)
+      .Times(1)
+      .WillOnce(
+          [&status](
+              const base::UnguessableToken& file_token,
+              composebox_query::mojom::FileUploadStatus file_upload_status,
+              std::optional<composebox_query::mojom::FileUploadErrorType>
+                  file_upload_error_type) { status = file_upload_status; });
+
   base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback;
   EXPECT_CALL(callback, Run).Times(1);
 
   auto sample_contextual_input_data =
       std::make_unique<lens::ContextualInputData>();
   sample_contextual_input_data->page_url = sample_url;
-  handler().AddTabContext(sample_tab_id, /*delay_upload=*/true, callback.Get());
 
-  // Flush the mojo pipe to ensure the callback is run.
+  // Act
+  handler().AddTabContext(sample_tab_id, /*delay_upload=*/true, callback.Get());
+  // Flush the mojo pipe to ensure the callback is run and captures the status.
   mock_searchbox_page_.FlushForTesting();
+
+  // Assert
+  ASSERT_TRUE(handler().tab_context_snapshot_.has_value());
+  ASSERT_EQ(composebox_query::mojom::FileUploadStatus::kProcessing, status);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest, DeleteContext_DelayUpload) {
+  // Arrange
   auto sample_url = GURL("https://www.google.com");
   tabs::TabInterface* tab = AddTab(sample_url);
   const int sample_tab_id = tab->GetHandle().raw_value();
@@ -515,13 +611,18 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, DeleteContext_DelayUpload) {
   std::set<base::UnguessableToken> deleted_tokens =
       handler().deleted_context_tokens();
   EXPECT_EQ(deleted_tokens.size(), 0u);
+  ASSERT_TRUE(handler().tab_context_snapshot_.has_value());
+  ASSERT_EQ(file_token, handler().tab_context_snapshot_.value().first);
 
+  // Act
   // Delete context.
   handler().DeleteContext(file_token);
   mock_searchbox_page_.FlushForTesting();
 
+  // Assert
   deleted_tokens = handler().deleted_context_tokens();
   ASSERT_TRUE(deleted_tokens.contains(file_token));
+  ASSERT_FALSE(handler().tab_context_snapshot_.has_value());
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContextNotFound) {
