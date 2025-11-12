@@ -189,28 +189,6 @@ autofill::AutofillProfile CreateNewAutofillProfile(
   return autofill::AutofillProfile(record_type, address_country_code);
 }
 
-autofill::DenseSet<EntityType> GetWalletStorableEntityTypes(
-    const autofill::AutofillClient* ac) {
-  constexpr autofill::DenseSet<EntityType> all_wallet_types{
-      EntityType(EntityTypeName::kFlightReservation),
-      EntityType(EntityTypeName::kVehicle)};
-
-  if (!ac) {
-    return {};
-  }
-
-  autofill::DenseSet<EntityType> result;
-  for (const EntityType type : all_wallet_types) {
-    if (MayPerformAutofillAiAction(
-            *ac, autofill::AutofillAiAction::kAddServerEntityInstanceInSettings,
-            type)) {
-      result.insert(type);
-    }
-  }
-
-  return result;
-}
-
 }  // namespace
 
 namespace extensions {
@@ -1099,16 +1077,11 @@ AutofillPrivateGetEntityInstanceByGuidFunction::Run() {
 
 ExtensionFunction::ResponseAction
 AutofillPrivateGetWritableEntityTypesFunction::Run() {
-  auto local_types = autofill::DenseSet<EntityType>::all();
-  const autofill::DenseSet<EntityType> wallet_types =
-      GetWalletStorableEntityTypes(autofill_client());
-  // If a type can be stored both locally and in Wallet, Wallet type is
-  // preferred.
-  local_types.erase_all(wallet_types);
+  auto all_types = autofill::DenseSet<EntityType>::all();
 
   std::vector<autofill_private::EntityType> result;
-  result.reserve(local_types.size() + wallet_types.size());
-  for (EntityType entity_type : local_types) {
+  result.reserve(all_types.size());
+  for (EntityType entity_type : all_types) {
     if (!entity_type.enabled(
             autofill_client()->GetVariationConfigCountryCode())) {
       continue;
@@ -1119,14 +1092,7 @@ AutofillPrivateGetWritableEntityTypesFunction::Run() {
     result.push_back(autofill_ai_util::EntityTypeToPrivateApiEntityType(
         entity_type, /*supports_wallet_storage=*/false));
   }
-  for (EntityType entity_type : wallet_types) {
-    if (!entity_type.enabled(
-            autofill_client()->GetVariationConfigCountryCode())) {
-      continue;
-    }
-    result.push_back(autofill_ai_util::EntityTypeToPrivateApiEntityType(
-        entity_type, /*supports_wallet_storage=*/true));
-  }
+
   return RespondNow(ArgumentList(
       autofill_private::GetWritableEntityTypes::Results::Create(result)));
 }
