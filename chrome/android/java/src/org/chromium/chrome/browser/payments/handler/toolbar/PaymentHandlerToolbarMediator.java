@@ -10,6 +10,7 @@ import androidx.annotation.DrawableRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
@@ -19,6 +20,8 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
+
+import java.util.function.Supplier;
 
 /**
  * PaymentHandlerToolbar mediator, which is responsible for receiving events from the view and
@@ -48,17 +51,26 @@ import org.chromium.url.GURL;
     /** The delegate of PaymentHandlerToolbarMediator. */
     /* package */ interface PaymentHandlerToolbarMediatorDelegate {
         /** Get the security level of PaymentHandler's WebContents. */
+        @ConnectionSecurityLevel
         int getSecurityLevel();
+
+        /** Get the malicious content status of PaymentHandler's WebContents. */
+        @ConnectionMaliciousContentStatus
+        int getMaliciousContentStatus();
 
         /**
          * Get the security icon resource for a given security level.
+         *
          * @param securityLevel The security level.
          */
         @DrawableRes
-        int getSecurityIconResource(@ConnectionSecurityLevel int securityLevel);
+        int getSecurityIconResource(
+                @ConnectionSecurityLevel int securityLevel,
+                Supplier<@ConnectionMaliciousContentStatus Integer> maliciousContentStatus);
 
         /**
          * Get the content description of the security icon for a given security level.
+         *
          * @param securityLevel The security level.
          */
         String getSecurityIconContentDescription(@ConnectionSecurityLevel int securityLevel);
@@ -146,7 +158,10 @@ import org.chromium.url.GURL;
     }
 
     private void setSecurityState(@ConnectionSecurityLevel int securityLevel) {
-        @DrawableRes int iconRes = mDelegate.getSecurityIconResource(securityLevel);
+        @DrawableRes
+        int iconRes =
+                mDelegate.getSecurityIconResource(
+                        securityLevel, mDelegate::getMaliciousContentStatus);
         mModel.set(PaymentHandlerToolbarProperties.SECURITY_ICON, iconRes);
         String contentDescription = mDelegate.getSecurityIconContentDescription(securityLevel);
         mModel.set(

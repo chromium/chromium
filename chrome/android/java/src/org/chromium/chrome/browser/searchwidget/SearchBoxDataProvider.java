@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferen
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.url.GURL;
 
@@ -125,6 +126,11 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     @Override
     public int getSecurityLevel() {
         return ConnectionSecurityLevel.NONE;
+    }
+
+    @Override
+    public @ConnectionMaliciousContentStatus int getMaliciousContentStatus() {
+        return ConnectionMaliciousContentStatus.NONE;
     }
 
     @Override

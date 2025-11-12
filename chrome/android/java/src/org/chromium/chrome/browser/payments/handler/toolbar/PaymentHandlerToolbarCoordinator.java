@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarMediator.PaymentHandlerToolbarMediatorDelegate;
 import org.chromium.components.omnibox.SecurityStatusIcon;
 import org.chromium.components.page_info.PageInfoController;
+import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.WebContents;
@@ -71,6 +72,7 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
         mActivity = activity;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         int defaultSecurityLevel = ConnectionSecurityLevel.NONE;
+        int defaultMaliciousContentStatus = ConnectionMaliciousContentStatus.NONE;
         mModel =
                 new PropertyModel.Builder(PaymentHandlerToolbarProperties.ALL_KEYS)
                         .with(PaymentHandlerToolbarProperties.PROGRESS_VISIBLE, true)
@@ -79,7 +81,8 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
                                 PaymentHandlerToolbarMediator.MINIMUM_LOAD_PROGRESS)
                         .with(
                                 PaymentHandlerToolbarProperties.SECURITY_ICON,
-                                getSecurityIconResource(defaultSecurityLevel))
+                                getSecurityIconResource(
+                                        defaultSecurityLevel, () -> defaultMaliciousContentStatus))
                         .with(
                                 PaymentHandlerToolbarProperties.SECURITY_ICON_CONTENT_DESCRIPTION,
                                 getSecurityIconContentDescription(defaultSecurityLevel))
@@ -138,9 +141,18 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
 
     // Implement PaymentHandlerToolbarMediatorDelegate.
     @Override
-    public @DrawableRes int getSecurityIconResource(@ConnectionSecurityLevel int securityLevel) {
+    public @ConnectionMaliciousContentStatus int getMaliciousContentStatus() {
+        return SecurityStateModel.getMaliciousContentStatusForWebContents(mWebContents);
+    }
+
+    // Implement PaymentHandlerToolbarMediatorDelegate.
+    @Override
+    public @DrawableRes int getSecurityIconResource(
+            @ConnectionSecurityLevel int securityLevel,
+            Supplier<@ConnectionMaliciousContentStatus Integer> maliciousContentStatus) {
         return SecurityStatusIcon.getSecurityIconResource(
                 securityLevel,
+                maliciousContentStatus,
                 mIsSmallDevice,
                 /* skipIconForNeutralState= */ false,
                 /* useLockIconForSecureState= */ true);

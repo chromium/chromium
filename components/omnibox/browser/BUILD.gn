@@ -561,6 +561,7 @@ if (is_android) {
       "android/java/res/drawable/action_call.xml",
       "android/java/res/drawable/action_directions.xml",
       "android/java/res/drawable/action_reviews.xml",
+      "android/java/res/drawable/enterprise_management.xml",
       "android/java/res/drawable/ic_settings_tune_24dp.xml",
       "android/java/res/drawable/omnibox_dangerous.xml",
       "android/java/res/values/colors.xml",
@@ -650,6 +651,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/omnibox/AutocompleteInputUnitTest.java",
       "android/java/src/org/chromium/components/omnibox/AutocompleteResultUnitTest.java",
+      "android/java/src/org/chromium/components/omnibox/SecurityStatusIconUnitTest.java",
     ]
     deps = [
       ":browser_java",
@@ -663,6 +665,7 @@ if (is_android) {
       "//components/cached_flags:java",
       "//components/embedder_support/android:util_java",
       "//components/omnibox/common:features_java",
+      "//components/security_state/core:security_state_enums_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/junit",
       "//third_party/metrics_proto:metrics_proto_java",

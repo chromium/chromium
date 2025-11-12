@@ -16,6 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.url.GURL;
 
@@ -144,6 +145,10 @@ public interface LocationBarDataProvider {
     /** Returns the current {@link ConnectionSecurityLevel}. */
     @ConnectionSecurityLevel
     int getSecurityLevel();
+
+    /** Returns the current {@link ConnectionMaliciousContentStatus}. */
+    @ConnectionMaliciousContentStatus
+    int getMaliciousContentStatus();
 
     /**
      * Returns the current page classification.

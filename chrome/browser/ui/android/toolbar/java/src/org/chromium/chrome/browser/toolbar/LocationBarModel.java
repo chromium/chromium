@@ -49,12 +49,14 @@ import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.omnibox.SecurityStatusIcon;
+import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /** Provides a way of accessing toolbar data and state. */
 @NullMarked
@@ -649,6 +651,15 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     @Override
+    public @ConnectionMaliciousContentStatus int getMaliciousContentStatus() {
+        @Nullable Tab tab = getTab();
+        if (tab == null) {
+            return ConnectionMaliciousContentStatus.NONE;
+        }
+        return getMaliciousContentStatusFromStateModel(tab.getWebContents());
+    }
+
+    @Override
     public int getPageClassification(@AutocompleteRequestType int type) {
         if (type == AutocompleteRequestType.AI_MODE) {
             return PageClassification.NTP_COMPOSEBOX_VALUE;
@@ -667,6 +678,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         boolean isOfflinePage = isOfflinePage();
         return getSecurityIconResource(
                 getSecurityLevel(getTab(), isOfflinePage),
+                this::getMaliciousContentStatus,
                 !isTablet,
                 isOfflinePage,
                 isPaintPreview(),
@@ -705,9 +717,16 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     @VisibleForTesting
+    @ConnectionMaliciousContentStatus
+    int getMaliciousContentStatusFromStateModel(@Nullable WebContents webContents) {
+        return SecurityStateModel.getMaliciousContentStatusForWebContents(webContents);
+    }
+
+    @VisibleForTesting
     @DrawableRes
     int getSecurityIconResource(
             int securityLevel,
+            Supplier<@ConnectionMaliciousContentStatus Integer> maliciousContentStatus,
             boolean isSmallDevice,
             boolean isOfflinePage,
             boolean isPaintPreview,
@@ -743,6 +762,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
         return SecurityStatusIcon.getSecurityIconResource(
                 securityLevel,
+                maliciousContentStatus,
                 isSmallDevice,
                 skipIconForNeutralState,
                 /* useLockIconForSecureState= */ false);

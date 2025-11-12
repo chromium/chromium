@@ -173,6 +173,9 @@ public class PageInfoConnectionController
         rowParams.iconResId =
                 SecurityStatusIcon.getSecurityIconResource(
                         securityLevel,
+                        () ->
+                                SecurityStateModel.getMaliciousContentStatusForWebContents(
+                                        mWebContents),
                         /* isSmallDevice= */ false,
                         /* skipIconForNeutralState= */ false,
                         /* useLockIconForSecureState= */ true);
