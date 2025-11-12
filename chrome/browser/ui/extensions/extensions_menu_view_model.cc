@@ -243,6 +243,19 @@ base::debug::CrashKeyString* GetCurrentSiteAccessCrashKey() {
   return crash_key;
 }
 
+base::debug::CrashKeyString* GetCurrentSiteInteractionCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_site_interaction_before_granting",
+      base::debug::CrashKeySize::Size64);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetCurrentUrlCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_web_contents_before_granting", base::debug::CrashKeySize::Size64);
+  return crash_key;
+}
+
 base::debug::CrashKeyString* GetSiteAccessToggleStateCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
       "ext_toggle_state_before_granting", base::debug::CrashKeySize::Size64);
@@ -261,6 +274,33 @@ std::string GetCurrentSiteAccessCrashValue(
     default:
       return "InvalidValue";
   }
+}
+
+std::string GetCurrentSiteInteractionCrashValue(
+    SitePermissionsHelper::SiteInteraction site_interaction) {
+  switch (site_interaction) {
+    case SitePermissionsHelper::SiteInteraction::kNone:
+      return "None";
+    case SitePermissionsHelper::SiteInteraction::kWithheld:
+      return "Withheld";
+    case SitePermissionsHelper::SiteInteraction::kActiveTab:
+      return "ActiveTab";
+    case SitePermissionsHelper::SiteInteraction::kGranted:
+      return "Granted";
+    default:
+      return "InvalidValue";
+  }
+}
+
+std::string GetCurrentUrlCrashValue(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return "empty web conents";
+  }
+  auto url = web_contents->GetLastCommittedURL();
+  if (url.is_empty()) {
+    return "empty url";
+  }
+  return url.GetHost();
 }
 
 std::string GetSiteAccessToggleStateCrashValue(
@@ -290,11 +330,18 @@ class ScopedGrantSiteAccessCrashKeys {
  public:
   explicit ScopedGrantSiteAccessCrashKeys(
       PermissionsManager::UserSiteAccess current_site_access,
+      SitePermissionsHelper::SiteInteraction current_site_interaction,
+      content::WebContents* web_contents,
       ExtensionsMenuViewModel::MenuItemInfo::SiteAccessToggleState
           site_access_toggle_state)
       : current_site_access_crash_key_(
             GetCurrentSiteAccessCrashKey(),
             GetCurrentSiteAccessCrashValue(current_site_access)),
+        current_site_interaction_crash_key_(
+            GetCurrentSiteInteractionCrashKey(),
+            GetCurrentSiteInteractionCrashValue(current_site_interaction)),
+        current_url_crash_key_(GetCurrentUrlCrashKey(),
+                               GetCurrentUrlCrashValue(web_contents)),
         site_access_toggle_state_crash_key_(
             GetSiteAccessToggleStateCrashKey(),
             GetSiteAccessToggleStateCrashValue(site_access_toggle_state)) {}
@@ -303,6 +350,11 @@ class ScopedGrantSiteAccessCrashKeys {
  private:
   // The current site access of the extension when GrantSiteAccess() was called.
   base::debug::ScopedCrashKeyString current_site_access_crash_key_;
+  // The current site interaction of the extension when GrantSiteAccess() was
+  // called.
+  base::debug::ScopedCrashKeyString current_site_interaction_crash_key_;
+  // The current URL (hostname) when GrantSiteAccess() was called.
+  base::debug::ScopedCrashKeyString current_url_crash_key_;
   // The site access toggle state of the extension before toggle was selected
   // that calls GrantSiteAccess().
   base::debug::ScopedCrashKeyString site_access_toggle_state_crash_key_;
@@ -394,8 +446,14 @@ void ExtensionsMenuViewModel::GrantSiteAccess(
       permissions_manager->GetUserSiteAccess(*extension, url);
   CHECK(CanUserCustomizeExtensionSiteAccess(*extension, *profile,
                                             *toolbar_model, *web_contents));
+
+  // TODO(crbug.com/456129773): Remove crash keys when site toggle crash is
+  // fixed.
+  auto current_site_interaction =
+      SitePermissionsHelper(profile).GetSiteInteraction(*extension,
+                                                        web_contents);
   debug::ScopedGrantSiteAccessCrashKeys grant_site_access_crash_keys(
-      current_site_access,
+      current_site_access, current_site_interaction, web_contents,
       GetSiteAccessToggleState(*extension, *profile, *toolbar_model,
                                *web_contents));
   CHECK_EQ(current_site_access, PermissionsManager::UserSiteAccess::kOnClick);
