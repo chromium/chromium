@@ -31,7 +31,7 @@ void TrustedVaultClientBackend::NotifyKeysChanged(
     return;
   }
   for (Observer& observer : it->second) {
-    observer.OnTrustedVaultKeysChanged();
+    observer.OnTrustedVaultKeysChanged(std::nullopt);
   }
 }
 

@@ -233,7 +233,8 @@ bool TrustedVaultKeysChangedStateChecker::IsExitConditionSatisfied(
   return keys_changed_;
 }
 
-void TrustedVaultKeysChangedStateChecker::OnTrustedVaultKeysChanged() {
+void TrustedVaultKeysChangedStateChecker::OnTrustedVaultKeysChanged(
+    std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger) {
   keys_changed_ = true;
   CheckExitCondition();
 }

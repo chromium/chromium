@@ -120,7 +120,9 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   DataTypeSet GetAllEncryptedDataTypes() const override;
 
   // TrustedVaultClient::Observer implementation.
-  void OnTrustedVaultKeysChanged() override;
+  void OnTrustedVaultKeysChanged(
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger)
+      override;
   void OnTrustedVaultRecoverabilityChanged() override;
 
  private:

@@ -139,8 +139,10 @@ class TrustedVaultKeysChangedStateChecker
   // StatusChangeChecker overrides.
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
-  // TrustedVaultClient::Observer overrides.
-  void OnTrustedVaultKeysChanged() override;
+  // TrustedVaultClient::Observer implementation.
+  void OnTrustedVaultKeysChanged(
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger)
+      override;
   void OnTrustedVaultRecoverabilityChanged() override;
 
  private:

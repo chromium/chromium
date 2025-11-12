@@ -6,6 +6,7 @@
 #define COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -60,7 +61,12 @@ class TrustedVaultClient {
     ~Observer() override = default;
 
     // Invoked when the keys inside the vault have changed.
-    virtual void OnTrustedVaultKeysChanged() = 0;
+    // The `trigger` parameter indicates which user action most likely caused
+    // the keys to have changed.
+    // If `trigger` is not set, then keys weren't changed because of an explicit
+    // user interaction with trusted vault related UIs.
+    virtual void OnTrustedVaultKeysChanged(
+        std::optional<TrustedVaultUserActionTriggerForUMA> trigger) = 0;
 
     // Invoked when the recoverability of the keys has changed.
     virtual void OnTrustedVaultRecoverabilityChanged() = 0;

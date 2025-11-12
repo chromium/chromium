@@ -186,7 +186,7 @@ void FakeTrustedVaultClient::StoreKeys(
   cached_keys.keys = keys;
   cached_keys.marked_as_stale = false;
   for (Observer& observer : observer_list_) {
-    observer.OnTrustedVaultKeysChanged();
+    observer.OnTrustedVaultKeysChanged(std::nullopt);
   }
 }
 

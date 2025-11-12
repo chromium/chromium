@@ -130,7 +130,7 @@ void TrustedVaultClientAndroid::AddTrustedRecoveryMethodCompleted(
 
 void TrustedVaultClientAndroid::NotifyKeysChanged(JNIEnv* env) {
   for (Observer& observer : observer_list_) {
-    observer.OnTrustedVaultKeysChanged();
+    observer.OnTrustedVaultKeysChanged(std::nullopt);
   }
 }
 

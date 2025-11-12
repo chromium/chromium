@@ -528,7 +528,8 @@ void SyncServiceCrypto::OnPassphraseTypeChanged(PassphraseType type,
   delegate_->CryptoStateChanged();
 }
 
-void SyncServiceCrypto::OnTrustedVaultKeysChanged() {
+void SyncServiceCrypto::OnTrustedVaultKeysChanged(
+    std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (state_.required_user_action) {
     case RequiredUserAction::kUnknownDuringInitialization:

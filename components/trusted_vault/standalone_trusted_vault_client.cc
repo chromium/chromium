@@ -449,7 +449,7 @@ void StandaloneTrustedVaultClient::GetLastKeyVersionForTesting(
 void StandaloneTrustedVaultClient::NotifyTrustedVaultKeysChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (Observer& observer : observer_list_) {
-    observer.OnTrustedVaultKeysChanged();
+    observer.OnTrustedVaultKeysChanged(std::nullopt);
   }
 }
 
