@@ -34,13 +34,19 @@ class ContextualTasksSidePanelCoordinator {
  public:
   // A data structure to hold the cache and state of the side panel per thread.
   struct WebContentsCacheItem {
-    WebContentsCacheItem(std::unique_ptr<content::WebContents> wc, bool open);
+    WebContentsCacheItem(std::unique_ptr<content::WebContents> wc,
+                         std::optional<base::Uuid> task,
+                         bool open);
     ~WebContentsCacheItem();
     WebContentsCacheItem(const WebContentsCacheItem&) = delete;
     WebContentsCacheItem& operator=(const WebContentsCacheItem&) = delete;
 
-    // Own the WebContents from the side panel
+    // Own the WebContents from the side panel.
     std::unique_ptr<content::WebContents> web_contents;
+
+    // The cached WebContents can be either associated with a task, or without a
+    // task in zero state.
+    std::optional<base::Uuid> task_id;
 
     // Whether the side panel is open.
     bool is_open;
@@ -130,8 +136,11 @@ class ContextualTasksSidePanelCoordinator {
   // WebContents cache for each task.
   // It's okay to assume there is only 1 WebContents per task per window.
   // Different windows do not share the WebContents with the same task.
-  std::map<base::Uuid, std::unique_ptr<WebContentsCacheItem>>
+  std::vector<std::unique_ptr<WebContentsCacheItem>>
       task_id_to_web_contents_cache_;
+
+  // Finds a WebContentsCacheItem by task_id. Returns nullptr if not found.
+  WebContentsCacheItem* FindWebContentsCacheItem(const base::Uuid& task_id);
 
   ui::ScopedUnownedUserData<ContextualTasksSidePanelCoordinator>
       scoped_unowned_user_data_;

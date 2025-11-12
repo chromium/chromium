@@ -65,8 +65,9 @@ namespace contextual_tasks {
 
 ContextualTasksSidePanelCoordinator::WebContentsCacheItem::WebContentsCacheItem(
     std::unique_ptr<content::WebContents> wc,
+    std::optional<base::Uuid> task,
     bool open)
-    : web_contents(std::move(wc)), is_open(open) {}
+    : web_contents(std::move(wc)), task_id(task), is_open(open) {}
 ContextualTasksSidePanelCoordinator::WebContentsCacheItem::
     ~WebContentsCacheItem() = default;
 
@@ -167,9 +168,16 @@ void ContextualTasksSidePanelCoordinator::TransferWebContentsFromTab(
     const base::Uuid& task_id,
     std::unique_ptr<content::WebContents> web_contents) {
   SetBrowserWindowInterface(web_contents.get(), browser_window_);
-  task_id_to_web_contents_cache_.emplace(
-      task_id, std::make_unique<WebContentsCacheItem>(std::move(web_contents),
-                                                      /*is_open=*/true));
+  WebContentsCacheItem* item = FindWebContentsCacheItem(task_id);
+  if (item) {
+    item->web_contents = std::move(web_contents);
+    item->is_open = true;
+  } else {
+    auto new_item =
+        std::make_unique<WebContentsCacheItem>(std::move(web_contents), task_id,
+                                               /*is_open=*/true);
+    task_id_to_web_contents_cache_.push_back(std::move(new_item));
+  }
   UpdateWebContentsForActiveTab();
 }
 
@@ -203,9 +211,9 @@ void ContextualTasksSidePanelCoordinator::UpdateSidePanelVisibility() {
   }
 
   bool is_open = false;
-  auto it = task_id_to_web_contents_cache_.find(task->GetTaskId());
-  if (it != task_id_to_web_contents_cache_.end()) {
-    is_open = it->second->is_open;
+  WebContentsCacheItem* item = FindWebContentsCacheItem(task->GetTaskId());
+  if (item) {
+    is_open = item->is_open;
   }
 
   // If state is open and the side panel is closed, open the side panel.
@@ -228,9 +236,9 @@ void ContextualTasksSidePanelCoordinator::UpdateOpenStateForCurrentTask(
     return;
   }
 
-  auto it = task_id_to_web_contents_cache_.find(task->GetTaskId());
-  if (it != task_id_to_web_contents_cache_.end()) {
-    it->second->is_open = is_open;
+  WebContentsCacheItem* item = FindWebContentsCacheItem(task->GetTaskId());
+  if (item) {
+    item->is_open = is_open;
   }
 }
 
@@ -266,6 +274,17 @@ ContextualTasksSidePanelCoordinator::CreateSidePanelView(
   return web_view;
 }
 
+ContextualTasksSidePanelCoordinator::WebContentsCacheItem*
+ContextualTasksSidePanelCoordinator::FindWebContentsCacheItem(
+    const base::Uuid& task_id) {
+  for (const auto& item : task_id_to_web_contents_cache_) {
+    if (item->task_id && item->task_id == task_id) {
+      return item.get();
+    }
+  }
+  return nullptr;
+}
+
 content::WebContents* ContextualTasksSidePanelCoordinator::
     MaybeGetOrCreateSidePanelWebContentsForActiveTab() {
   std::optional<ContextualTask> task = GetCurrentTask();
@@ -274,14 +293,16 @@ content::WebContents* ContextualTasksSidePanelCoordinator::
   }
 
   base::Uuid task_id = task->GetTaskId();
-  if (!base::Contains(task_id_to_web_contents_cache_, task_id)) {
-    task_id_to_web_contents_cache_.emplace(
-        task_id, std::make_unique<WebContentsCacheItem>(
-                     CreateWebContents(browser_window_),
-                     /*is_open=*/true));
+  WebContentsCacheItem* item = FindWebContentsCacheItem(task_id);
+  if (!item) {
+    auto new_item = std::make_unique<WebContentsCacheItem>(
+        CreateWebContents(browser_window_), task_id,
+        /*is_open=*/true);
+    task_id_to_web_contents_cache_.push_back(std::move(new_item));
+    item = task_id_to_web_contents_cache_.back().get();
   }
 
-  return task_id_to_web_contents_cache_.at(task_id)->web_contents.get();
+  return item->web_contents.get();
 }
 
 void ContextualTasksSidePanelCoordinator::Hide() {
