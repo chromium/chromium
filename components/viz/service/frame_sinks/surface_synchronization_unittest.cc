@@ -736,10 +736,14 @@ TEST_F(SurfaceSynchronizationTest, ResourcesOnlyReturnedOnce) {
   // The parent submits a CompositorFrame that depends on |child_id| before
   // the child submits a CompositorFrame. The CompositorFrame also has
   // resources in its resource list.
-  TransferableResource resource;
+  auto shared_image = gpu::ClientSharedImage::CreateForTesting(
+      {SinglePlaneFormat::kALPHA_8, gfx::Size(1234, 5678), gfx::ColorSpace(),
+       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ});
+  TransferableResource resource = TransferableResource::Make(
+      shared_image, TransferableResource::ResourceSource::kTest,
+      gpu::SyncToken());
   resource.id = ResourceId(1337);
-  resource.format = SinglePlaneFormat::kALPHA_8;
-  resource.size = gfx::Size(1234, 5678);
   std::vector<TransferableResource> resource_list = {resource};
   parent_support().SubmitCompositorFrame(
       parent_id.local_surface_id(),
