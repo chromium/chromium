@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
@@ -32,6 +33,10 @@ void ReadAnythingEntryPointController::InvokePageAction(
     side_panel_open_trigger = SidePanelOpenTrigger::kPinnedEntryToolbarButton;
   } else {
     side_panel_open_trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
+    auto* const user_ed = BrowserUserEducationInterface::From(bwi);
+    user_ed->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHReadingModePageActionLabelFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   }
 
   // TODO(crbug.com/447418049): Open immersive reading mode via this entrypoint.
@@ -62,13 +67,18 @@ void ReadAnythingEntryPointController::UpdatePageActionVisibility(
 
   page_actions::PageActionController* page_action_controller =
       bwi->GetActiveTabInterface()->GetTabFeatures()->page_action_controller();
+  auto* const user_ed = BrowserUserEducationInterface::From(bwi);
   // No need to show the chip if reading mode is already open.
   // TODO(crbug.com/447418049): Check for immersive reading mode here too.
   if (should_show_page_action && !IsReadAnythingEntryShowing(bwi)) {
     page_action_controller->Show(kActionSidePanelShowReadAnything);
     page_action_controller->ShowSuggestionChip(
         kActionSidePanelShowReadAnything);
+    user_ed->MaybeShowFeaturePromo(
+        feature_engagement::kIPHReadingModePageActionLabelFeature);
   } else {
+    user_ed->AbortFeaturePromo(
+        feature_engagement::kIPHReadingModePageActionLabelFeature);
     page_action_controller->Hide(kActionSidePanelShowReadAnything);
   }
 }

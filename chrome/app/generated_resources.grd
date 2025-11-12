@@ -9781,6 +9781,14 @@ Keep your key file in a safe place. You will need it to create new versions of y
                desc="Text for the in-product-help bubble shown for the reading mode bubble when Side Panel Pinning is enabled.">
         To see a simplified view of this page, go to More Tools > Reading Mode
       </message>
+      <message name="IDS_READING_MODE_OMNIBOX_ENTRY_POINT_PROMO"
+               desc="Text for the in-product-help bubble shown for the reading mode omnibox entry point.">
+        Read comfortably with minimal distractions
+      </message>
+      <message name="IDS_READING_MODE_OMNIBOX_ENTRY_POINT_PROMO_SCREEN_READER"
+               desc="Text for the in-product-help bubble shown for the reading mode omnibox entry point for use when surfacing the bubble to a screen reader">
+        Read comfortably with minimal distractions using the Reading mode button on the toolbar
+      </message>
      <message name="IDS_READING_MODE_VOICE_PREVIEW_STRING" desc="Message to be played when a user previews a voice for Read Aloud.">
         Hi. This is a preview
       </message>

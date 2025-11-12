@@ -529,6 +529,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_ReadingMode"
       summary="educating users to click the side panel icon to open reading
                mode"/>
+  <variant name="IPH_ReadingModePageActionLabel"
+      summary="promotes the new omnibox entrypoint for reading mode"/>
   <variant name="IPH_ReadingModeSidePanel"
       summary="promotes use of reading mode in the side panel"/>
   <variant name="IPH_ReadLaterAppMenuBookmarks" summary="read later app menu"/>

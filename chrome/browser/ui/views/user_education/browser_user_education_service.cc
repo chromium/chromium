@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
@@ -118,6 +119,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/common/extension_urls.h"
 #include "pdf/buildflags.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1115,6 +1117,39 @@ void MaybeRegisterChromeFeaturePromos(
                 }
                 return nullptr;
               }))));
+
+  if (features::IsReadAnythingOmniboxChipEnabled()) {
+    // kIPHReadingModePageActionLabelFeature:
+    registry.RegisterFeature(std::move(
+        FeaturePromoSpecification::CreateForToastPromo(
+            feature_engagement::kIPHReadingModePageActionLabelFeature,
+            kOmniboxElementId, IDS_READING_MODE_OMNIBOX_ENTRY_POINT_PROMO,
+            IDS_READING_MODE_OMNIBOX_ENTRY_POINT_PROMO_SCREEN_READER,
+            FeaturePromoSpecification::AcceleratorInfo())
+            .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+            .SetMetadata(144, "kristislee@google.com, komo-eng@google.com",
+                         "Triggered when the Reading mode page action appears.")
+            .SetAnchorElementFilter(base::BindRepeating(
+                [](const ui::ElementTracker::ElementList& elements)
+                    -> ui::TrackedElement* {
+                  if (elements.empty()) {
+                    return nullptr;
+                  }
+                  BrowserView* const browser_view =
+                      views::ElementTrackerViews::GetInstance()
+                          ->GetFirstMatchingViewAs<BrowserView>(
+                              kBrowserViewElementId, elements[0]->context());
+                  IconLabelBubbleView* page_action_view =
+                      browser_view->toolbar_button_provider()
+                          ->GetPageActionView(kActionSidePanelShowReadAnything);
+                  if (!page_action_view || !page_action_view->GetVisible()) {
+                    return nullptr;
+                  } else {
+                    return views::ElementTrackerViews::GetInstance()
+                        ->GetElementForView(page_action_view, true);
+                  }
+                }))));
+  }
 
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(

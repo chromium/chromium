@@ -168,26 +168,32 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingCUJTest, ShowAndHideIphAfterNavigation) {
 }
 
 class ReadAnythingOmniboxTest
-    : public PageActionInteractiveTestMixin<InteractiveBrowserTest> {
+    : public PageActionInteractiveTestMixin<InteractiveFeaturePromoTest> {
  public:
+  template <typename... Args>
+  explicit ReadAnythingOmniboxTest(Args&&... args)
+      : PageActionInteractiveTestMixin(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::kIPHReadingModePageActionLabelFeature})) {}
+
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     features_.InitWithFeatures(
-        {features::kReadAnythingOmniboxChip, features::kPageActionsMigration},
+        {features::kReadAnythingOmniboxChip, features::kPageActionsMigration,
+         feature_engagement::kIPHReadingModePageActionLabelFeature},
         {});
     distillable_url_ = embedded_test_server()->GetURL("/long_text_page.html");
     non_distillable_url_ = GURL("chrome://blank");
-    InteractiveBrowserTest::SetUp();
+    InteractiveFeaturePromoTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
+    InteractiveFeaturePromoTest::SetUpOnMainThread();
     embedded_test_server()->StartAcceptingConnections();
   }
 
   void TearDownOnMainThread() override {
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-    InteractiveBrowserTest::TearDownOnMainThread();
+    InteractiveFeaturePromoTest::TearDownOnMainThread();
   }
 
   using PageActionInteractiveTestMixin::InvokePageAction;
@@ -252,4 +258,49 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest, HideOmniboxAfterEntryShown) {
                   WaitForWebContentsReady(kActiveTab),
                   WaitForPageActionChipVisible(), InvokePageAction(),
                   WaitForPageActionChipNotVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest, ShowAndHideIphAfterTabSwitch) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+  RunTestSequence(
+      // First tab is non-distillable, second tab is distillable.
+      InstrumentTab(kFirstTab),
+      NavigateWebContents(kFirstTab, non_distillable_url_),
+      AddInstrumentedTab(kSecondTab, distillable_url_),
+
+      // Select the second tab, wait for promo to show.
+      SelectTab(kTabStripElementId, 1),
+      WaitForPromo(feature_engagement::kIPHReadingModePageActionLabelFeature),
+
+      // Select the first tab, wait for promo to hide.
+      SelectTab(kTabStripElementId, 0),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest, ShowAndHideIphAfterNavigation) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  RunTestSequence(
+      InstrumentTab(kActiveTab),
+      NavigateWebContents(kActiveTab, distillable_url_),
+      // Show the Iph after navigating to a distillable domain.
+      WaitForPromo(feature_engagement::kIPHReadingModePageActionLabelFeature),
+      // Hide the Iph after navigating to a non-distillable domain.
+      NavigateWebContents(kActiveTab, non_distillable_url_),
+      WaitForWebContentsReady(kActiveTab),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest, HideIPHAfterEntryShown) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  RunTestSequence(
+      InstrumentTab(kActiveTab),
+      NavigateWebContents(kActiveTab, distillable_url_),
+      WaitForWebContentsReady(kActiveTab), WaitForPageActionChipVisible(),
+      WaitForPromo(feature_engagement::kIPHReadingModePageActionLabelFeature),
+      InvokePageAction(),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
