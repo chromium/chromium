@@ -7,24 +7,20 @@ import './expandable_list.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import type {ServiceInfo} from './device.mojom-webui.js';
 import {connectToDevice} from './device_broker.js';
 import {ExpandableListElement} from './expandable_list.js';
+import type {ServiceListItemElement} from './service_list_item.js';
 import {showSnackbar, SnackbarType} from './snackbar.js';
 
 /**
  * A list that displays ServiceListItems.
  */
-export class ServiceListElement extends ExpandableListElement {
-  constructor() {
-    super();
+export class ServiceListElement extends ExpandableListElement<ServiceInfo> {
+  private deviceAddress_: string|null = null;
+  private servicesRequested_: boolean = false;
 
-    /** @private {?string} */
-    this.deviceAddress_ = null;
-    /** @private {boolean} */
-    this.servicesRequested_ = false;
-  }
-
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.classList.add('service-list');
@@ -32,16 +28,15 @@ export class ServiceListElement extends ExpandableListElement {
 
   /**
    * Sets the empty message text.
-   * @param {string} message
    */
-  setEmptyMessage(message) {
-    const emptyMessage = this.shadowRoot.querySelector('.empty-message');
+  override setEmptyMessage(message: string) {
+    const emptyMessage = this.shadowRoot!.querySelector('.empty-message')!;
     emptyMessage.textContent = message;
   }
 
-  /** @override */
-  createItem(data) {
-    const item = document.createElement('service-list-item');
+  override createItem(data: ServiceInfo): ServiceListItemElement {
+    const item =
+        document.createElement('service-list-item') as ServiceListItemElement;
     assert(this.deviceAddress_);
     item.initialize(data, this.deviceAddress_);
     return item;
@@ -51,9 +46,8 @@ export class ServiceListElement extends ExpandableListElement {
    * Loads the service list with an array of ServiceInfo from the
    * device with |deviceAddress|. If no active connection to the device
    * exists, one is created.
-   * @param {string} deviceAddress
    */
-  load(deviceAddress) {
+  load(deviceAddress: string) {
     this.setEmptyMessage('No Services Found');
 
     if (this.servicesRequested_ || !this.isSpinnerShowing()) {
@@ -64,22 +58,22 @@ export class ServiceListElement extends ExpandableListElement {
     this.servicesRequested_ = true;
 
     connectToDevice(this.deviceAddress_)
-        .then(function(device) {
+        .then((device) => {
           return device.getServices();
-        }.bind(this))
-        .then(function(response) {
+        })
+        .then((response) => {
           this.setData(response.services || []);
           this.setSpinnerShowing(false);
           this.servicesRequested_ = false;
-        }.bind(this))
-        .catch(function(error) {
+        })
+        .catch((error) => {
           this.servicesRequested_ = false;
           showSnackbar(
               deviceAddress + ': ' + error.message, SnackbarType.ERROR, 'Retry',
-              function() {
+              () => {
                 this.load(deviceAddress);
-              }.bind(this));
-        }.bind(this));
+              });
+        });
   }
 }
 

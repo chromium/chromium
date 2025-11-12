@@ -8,62 +8,63 @@
  */
 import './device_table.js';
 
-import {DeviceCollection} from './device_collection.js';
+import type {DeviceInfo} from './device.mojom-webui.js';
+import type {DeviceCollection} from './device_collection.js';
+import type {DeviceTableElement} from './device_table.js';
 import {Page} from './page.js';
 
 /**
  * Enum of scan status for the devices page.
- * @enum {number}
  */
-export const ScanStatus = {
-  OFF: 0,
-  STARTING: 1,
-  ON: 2,
-  STOPPING: 3,
-};
+export enum ScanStatus {
+  OFF = 0,
+  STARTING = 1,
+  ON = 2,
+  STOPPING = 3,
+}
 
 
 /**
  * Page that contains a header and a DevicesView.
  */
 export class DevicesPage extends Page {
+  deviceTable: DeviceTableElement;
+  private scanBtn_: HTMLButtonElement;
+
   constructor() {
     super('devices', 'Devices', 'devices');
 
-    this.deviceTable = document.createElement('device-table');
+    this.deviceTable =
+        document.createElement('device-table') as DeviceTableElement;
     this.pageDiv.appendChild(this.deviceTable);
-    this.scanBtn_ = this.pageDiv.querySelector('#scan-btn');
-    this.scanBtn_.addEventListener('click', event => {
+    this.scanBtn_ = this.pageDiv.querySelector<HTMLButtonElement>('#scan-btn')!;
+    this.scanBtn_.addEventListener('click', _event => {
       this.pageDiv.dispatchEvent(new CustomEvent('scanpressed'));
     });
   }
 
   /**
    * Sets the device collection for the page's device table.
-   * @param {!DeviceCollection} devices
    */
-  setDevices(devices) {
+  setDevices(devices: DeviceCollection) {
     this.deviceTable.setDevices(devices);
   }
 
   /**
    * Updates the inspect status of the given |deviceInfo| in the device table.
-   * @param {!DeviceInfo} deviceInfo
-   * @param {boolean} isInspecting
    */
-  setInspecting(deviceInfo, isInspecting) {
+  setInspecting(deviceInfo: DeviceInfo, isInspecting: boolean) {
     this.deviceTable.setInspecting(deviceInfo, isInspecting);
   }
 
   /**
    * If Bluetooth is currently powered off do not show start discovery button.
-   * @param {boolean} powered
    */
-  updatedScanButtonVisibility(powered) {
+  updatedScanButtonVisibility(powered: boolean) {
     this.scanBtn_.hidden = !powered;
   }
 
-  setScanStatus(status) {
+  setScanStatus(status: ScanStatus) {
     switch (status) {
       case ScanStatus.OFF:
         this.scanBtn_.disabled = false;

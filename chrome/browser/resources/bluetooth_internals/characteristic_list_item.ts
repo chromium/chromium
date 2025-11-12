@@ -10,7 +10,12 @@ import './value_control.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from './characteristic_list_item.html.js';
+import type {DescriptorListElement} from './descriptor_list.js';
 import {Property} from './device.mojom-webui.js';
+import type {CharacteristicInfo} from './device.mojom-webui.js';
+import type {ExpandableListItemElement} from './expandable_list_item.js';
+import type {ObjectFieldSetElement} from './object_fieldset.js';
+import type {ValueControlElement} from './value_control.js';
 
 /** Property names for the CharacteristicInfo fieldset */
 const INFO_PROPERTY_NAMES = {
@@ -43,32 +48,29 @@ const PROPERTIES_PROPERTY_NAMES = {
  * CharacteristicInfo object.
  */
 export class CharacteristicListItemElement extends CustomElement {
-  static get template() {
+  static override get template() {
     return getTemplate();
   }
 
-  constructor() {
-    super();
-
-    /** @type {?CharacteristicInfo} */
-    this.info = null;
-    /** @private {string} */
-    this.deviceAddress_ = '';
-    /** @private {string} */
-    this.serviceId_ = '';
-  }
+  info: CharacteristicInfo|null = null;
+  private deviceAddress_: string = '';
+  private serviceId_: string = '';
 
   connectedCallback() {
     this.classList.add('characteristic-list-item');
-    this.shadowRoot.querySelector('expandable-list-item')
+    this.shadowRoot!
+        .querySelector<ExpandableListItemElement>('expandable-list-item')!
         .addEventListener('list-item-expanded', () => {
-          const list = this.shadowRoot.querySelector('descriptor-list');
-          list.load(this.deviceAddress_, this.serviceId_, this.info.id);
+          const list = this.shadowRoot!.querySelector<DescriptorListElement>(
+              'descriptor-list');
+          list!.load(this.deviceAddress_, this.serviceId_, this.info!.id);
         });
 
-    const propertiesBtn = this.shadowRoot.querySelector('.show-all-properties');
+    const propertiesBtn =
+        this.shadowRoot!.querySelector('.show-all-properties')!;
     const propertiesFieldSet =
-        this.shadowRoot.querySelector('object-field-set.properties');
+        this.shadowRoot!.querySelector<ObjectFieldSetElement>(
+            'object-field-set.properties')!;
     propertiesBtn.addEventListener('click', () => {
       propertiesFieldSet.toggleAttribute(
           'show-all', !propertiesFieldSet.showAll);
@@ -77,35 +79,34 @@ export class CharacteristicListItemElement extends CustomElement {
     });
   }
 
-  /**
-   * @param {!CharacteristicInfo} characteristicInfo
-   * @param {string} deviceAddress
-   * @param {string} serviceId
-   */
-  initialize(characteristicInfo, deviceAddress, serviceId) {
+  initialize(
+      characteristicInfo: CharacteristicInfo, deviceAddress: string,
+      serviceId: string) {
     this.info = characteristicInfo;
     this.deviceAddress_ = deviceAddress;
     this.serviceId_ = serviceId;
 
-    this.shadowRoot.querySelector('.header-value').textContent =
+    this.shadowRoot!.querySelector('.header-value')!.textContent =
         this.info.uuid.uuid;
 
     // Create content for display in expanded content container.
     const characteristicFieldSet =
-        this.shadowRoot.querySelector('object-field-set.characteristics');
-    characteristicFieldSet.dataset.nameMap =
+        this.shadowRoot!.querySelector<ObjectFieldSetElement>(
+            'object-field-set.characteristics')!;
+    characteristicFieldSet.dataset['nameMap'] =
         JSON.stringify(INFO_PROPERTY_NAMES);
-    characteristicFieldSet.dataset.value = JSON.stringify({
+    characteristicFieldSet.dataset['value'] = JSON.stringify({
       id: this.info.id,
       'uuid.uuid': this.info.uuid.uuid,
     });
     characteristicFieldSet.hidden = false;
 
     const propertiesFieldSet =
-        this.shadowRoot.querySelector('object-field-set.properties');
-    propertiesFieldSet.dataset.nameMap =
+        this.shadowRoot!.querySelector<ObjectFieldSetElement>(
+            'object-field-set.properties')!;
+    propertiesFieldSet.dataset['nameMap'] =
         JSON.stringify(PROPERTIES_PROPERTY_NAMES);
-    propertiesFieldSet.dataset.value = JSON.stringify({
+    propertiesFieldSet.dataset['value'] = JSON.stringify({
       broadcast: (this.info.properties & Property.BROADCAST) > 0,
       read: (this.info.properties & Property.READ) > 0,
       write_without_response:
@@ -129,14 +130,15 @@ export class CharacteristicListItemElement extends CustomElement {
     });
     propertiesFieldSet.hidden = false;
 
-    const valueControl = this.shadowRoot.querySelector('value-control');
-    valueControl.dataset.options = JSON.stringify({
+    const valueControl =
+        this.shadowRoot!.querySelector<ValueControlElement>('value-control')!;
+    valueControl.dataset['options'] = JSON.stringify({
       deviceAddress: this.deviceAddress_,
       serviceId: this.serviceId_,
       characteristicId: this.info.id,
       properties: this.info.properties,
     });
-    valueControl.dataset.value = JSON.stringify(this.info.lastKnownValue);
+    valueControl.dataset['value'] = JSON.stringify(this.info.lastKnownValue);
     valueControl.hidden = false;
   }
 }

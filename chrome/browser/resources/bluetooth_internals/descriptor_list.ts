@@ -12,6 +12,8 @@ import './expandable_list.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import type {DescriptorListItemElement} from './descriptor_list_item.js';
+import type {DescriptorInfo} from './device.mojom-webui.js';
 import {connectToDevice} from './device_broker.js';
 import {ExpandableListElement} from './expandable_list.js';
 import {showSnackbar, SnackbarType} from './snackbar.js';
@@ -19,27 +21,21 @@ import {showSnackbar, SnackbarType} from './snackbar.js';
 /**
  * A list that displays DescriptorListItems.
  */
-export class DescriptorListElement extends ExpandableListElement {
-  constructor() {
-    super();
+export class DescriptorListElement extends
+    ExpandableListElement<DescriptorInfo> {
+  private deviceAddress_: string|null = null;
+  private serviceId_: string|null = null;
+  private characteristicId_: string|null = null;
+  private descriptorsRequested_: boolean = false;
 
-    /** @private {?string} */
-    this.deviceAddress_ = null;
-    /** @private {?string} */
-    this.serviceId_ = null;
-    /** @private {?string} */
-    this.characteristicId_ = null;
-    /** @private {boolean} */
-    this.descriptorsRequested_ = false;
-  }
-
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.classList.add('descriptor-list');
   }
 
-  createItem(data) {
-    const item = document.createElement('descriptor-list-item');
+  createItem(data: DescriptorInfo): DescriptorListItemElement {
+    const item = document.createElement('descriptor-list-item') as
+        DescriptorListItemElement;
     assert(this.deviceAddress_);
     assert(this.serviceId_);
     assert(this.characteristicId_);
@@ -53,11 +49,8 @@ export class DescriptorListElement extends ExpandableListElement {
    * the device with |deviceAddress|, service with |serviceId|, and
    * characteristic with |characteristicId|. If no active connection to the
    * device exists, one is created.
-   * @param {string} deviceAddress
-   * @param {string} serviceId
-   * @param {string} characteristicId
    */
-  load(deviceAddress, serviceId, characteristicId) {
+  load(deviceAddress: string, serviceId: string, characteristicId: string) {
     this.setEmptyMessage('No Descriptors Found');
     if (this.descriptorsRequested_ || !this.isSpinnerShowing()) {
       return;
@@ -69,22 +62,22 @@ export class DescriptorListElement extends ExpandableListElement {
     this.descriptorsRequested_ = true;
 
     connectToDevice(deviceAddress)
-        .then(function(device) {
+        .then((device) => {
           return device.getDescriptors(serviceId, characteristicId);
-        }.bind(this))
-        .then(function(response) {
+        })
+        .then((response) => {
           this.setData(response.descriptors || []);
           this.setSpinnerShowing(false);
           this.descriptorsRequested_ = false;
-        }.bind(this))
-        .catch(function(error) {
+        })
+        .catch((error) => {
           this.descriptorsRequested_ = false;
           showSnackbar(
               deviceAddress + ': ' + error.message, SnackbarType.ERROR, 'Retry',
-              function() {
+              () => {
                 this.load(deviceAddress, serviceId, characteristicId);
-              }.bind(this));
-        }.bind(this));
+              });
+        });
   }
 }
 

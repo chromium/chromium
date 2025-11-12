@@ -23,7 +23,7 @@ import {getTemplate} from './object_fieldset.html.js';
  * display.
  */
 export class ObjectFieldSetElement extends CustomElement {
-  static get template() {
+  static override get template() {
     return getTemplate();
   }
 
@@ -35,33 +35,32 @@ export class ObjectFieldSetElement extends CustomElement {
     return ['data-value', 'show-all'];
   }
 
-  /** @return {boolean} */
-  get showAll() {
+  get showAll(): boolean {
     return this.hasAttribute('show-all');
   }
 
-  /** @return {Object} */
-  get value() {
-    return this.dataset.value ? JSON.parse(this.dataset.value) : null;
+  get value(): object|null {
+    return this.dataset['value'] ? JSON.parse(this.dataset['value']) : null;
   }
 
   /**
    * Deletes and recreates the table structure with current object data if the
    * object data or "show-all" property have changed.
    */
-  attributeChangedCallback(name, oldValue, newValue) {
+  attributeChangedCallback(
+      name: string, oldValue: string|null, newValue: string|null) {
     assert(name === 'data-value' || name === 'show-all');
-    if (newValue === oldValue || !this.dataset.value) {
+    if (newValue === oldValue || !this.dataset['value']) {
       return;
     }
 
-    const fieldset = this.shadowRoot.querySelector('fieldset');
-    fieldset.innerHTML = trustedTypes.emptyHTML;
+    const fieldset = this.shadowRoot!.querySelector('fieldset')!;
+    fieldset.innerHTML = window.trustedTypes!.emptyHTML;
 
-    const nameMap = JSON.parse(this.dataset.nameMap);
-    const valueObject = JSON.parse(this.dataset.value);
+    const nameMap = JSON.parse(this.dataset['nameMap']!);
+    const valueObject: Record<string, any> = JSON.parse(this.dataset['value']);
     assert(valueObject);
-    Object.keys(valueObject).forEach(function(propName) {
+    Object.keys(valueObject).forEach((propName) => {
       const value = valueObject[propName];
       if (value === false && !this.showAll) {
         return;
@@ -76,7 +75,7 @@ export class ObjectFieldSetElement extends CustomElement {
       newField.appendChild(nameDiv);
 
       const valueDiv = document.createElement('div');
-      valueDiv.dataset.field = propName;
+      valueDiv.dataset['field'] = propName;
 
       if (typeof (value) === 'boolean') {
         valueDiv.classList.add('toggle-status');
@@ -87,7 +86,7 @@ export class ObjectFieldSetElement extends CustomElement {
 
       newField.appendChild(valueDiv);
       fieldset.appendChild(newField);
-    }, this);
+    });
   }
 }
 
