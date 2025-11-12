@@ -691,6 +691,36 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, FailedFilling) {
                 .request_latency_ms());
 }
 
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest, ProvisionallySaveFailed) {
+  auto form_manager =
+      CreateFormManager(/*credentials_to_seed=*/{*existing_credential()});
+
+  base::test::TestFuture<bool> completion_future;
+  auto verifier =
+      CreateVerifier(form_manager.get(), completion_future.GetCallback());
+
+  EXPECT_CALL(*capture_content_for_submit_form_step(), Run).Times(0);
+  // Expect a call to FillChangePasswordForm, although the returned form is
+  // empty.
+  EXPECT_CALL(driver(), FillChangePasswordForm)
+      .WillOnce(RunOnceCallback<5>(CreateEmptyTestPasswordFormData()));
+  verifier->FillChangePasswordForm(form_manager.get(), kUsername, kOldPassword,
+                                   kNewPassword);
+  task_environment()->RunUntilIdle();
+
+  EXPECT_TRUE(verifier->form_waiter());
+
+  // Verify that Chrome attempts to fill and submit a newly found form.
+  EXPECT_CALL(driver(), FillChangePasswordForm)
+      .WillOnce(RunOnceCallback<5>(CreateFilledTestPasswordFormData()));
+  EXPECT_CALL(*capture_content_for_submit_form_step(), Run).Times(1);
+  auto new_form_manager = CreateFormManagerFromFormData(
+      CreateTestPasswordFormData("", "", 101, 102), /*credentials_to_seed=*/{});
+  static_cast<password_manager::PasswordFormManagerObserver*>(
+      verifier->form_waiter())
+      ->OnPasswordFormParsed(new_form_manager.get());
+}
+
 TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
        SubmissionBeforeFillingIsDoneIgnored) {
   auto form_manager = CreateFormManager(/*credentials_to_seed=*/{});

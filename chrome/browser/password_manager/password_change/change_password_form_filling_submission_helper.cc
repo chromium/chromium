@@ -238,12 +238,21 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
     return;
   }
 
-  if (auto logger = GetLoggerIfAvailable(client_)) {
-    logger->LogBoolean(Logger::STRING_PASSWORD_CHANGE_FORM_FILLING_RESULT,
-                       submitted_form.has_value());
+  bool provisionally_saved = false;
+  if (submitted_form) {
+    provisionally_saved = form_manager_->ProvisionallySave(
+        submitted_form.value(), form_manager_->GetDriver().get(),
+        base::LRUCache<password_manager::PossibleUsernameFieldIdentifier,
+                       password_manager::PossibleUsernameData>(
+            password_manager::kMaxSingleUsernameFieldsToStore));
   }
 
-  if (!submitted_form) {
+  if (auto logger = GetLoggerIfAvailable(client_)) {
+    logger->LogBoolean(Logger::STRING_PASSWORD_CHANGE_FORM_FILLING_RESULT,
+                       provisionally_saved);
+  }
+
+  if (!provisionally_saved) {
     // Change password form disappeared, some websites practice updating form
     // dynamically which resets the form. Try to find a new change-pwd form.
     form_waiter_ =
@@ -261,11 +270,6 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
     return;
   }
 
-  form_manager_->ProvisionallySave(
-      submitted_form.value(), form_manager_->GetDriver().get(),
-      base::LRUCache<password_manager::PossibleUsernameFieldIdentifier,
-                     password_manager::PossibleUsernameData>(
-          password_manager::kMaxSingleUsernameFieldsToStore));
   // Sanity check: the generated password is provisionally saved as the primary
   // one.
   CHECK_EQ(form_manager_->GetPendingCredentials().password_value,
