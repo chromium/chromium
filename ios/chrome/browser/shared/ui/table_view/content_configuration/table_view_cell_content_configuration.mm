@@ -124,6 +124,9 @@
 }
 
 - (NSArray<NSString*>*)accessibilityUserInputLabels {
+  if (!self.title) {
+    return [super accessibilityUserInputLabels];
+  }
   return @[ self.title ];
 }
 
