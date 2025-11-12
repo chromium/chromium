@@ -204,6 +204,7 @@ bool Printer::RequiresDriverlessUsb() const {
           "epson et-8550 series",          // b/301387697
           "epson wf-110 series",           // b/287159028
           "hp deskjet 2600 series",        // b/399480007
+          "hp deskjet 2700 series",        // b/459435424
           "hp deskjet 4100 series",        // b/279387801
           "hp officejet 8010 series",      // b/401543989
           "hp officejet 8020 series",      // b/401543989
