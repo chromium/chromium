@@ -21,7 +21,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/common/types_util.h"
@@ -37,7 +36,6 @@
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/data_sharing/public/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
@@ -88,11 +86,7 @@ class FakeObserver : public SearchController::Observer {
 class SearchControllerTest : public testing::Test {
  public:
   SearchControllerTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    // TODO(b/459530669) : Remove the DataSharingJoinOnly flag from the disable list.
-    scoped_feature_list_.InitAndDisableFeature(
-        data_sharing::features::kDataSharingJoinOnly);
-  }
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   SearchControllerTest(const SearchControllerTest&) = delete;
   SearchControllerTest& operator=(const SearchControllerTest&) = delete;
   ~SearchControllerTest() override = default;
@@ -165,7 +159,6 @@ class SearchControllerTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   display::test::TestScreen test_screen_{/*create_dispay=*/true,
                                          /*register_screen=*/true};

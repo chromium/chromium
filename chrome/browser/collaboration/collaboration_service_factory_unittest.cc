@@ -42,8 +42,7 @@ class CollaborationServiceFactoryTest : public testing::Test {
           {{data_sharing::features::kDataSharingFeature, {}}}, {});
     } else {
       scoped_feature_list_.InitWithFeaturesAndParameters(
-          {}, {{data_sharing::features::kDataSharingFeature,
-                data_sharing::features::kDataSharingJoinOnly}});
+          {}, {{data_sharing::features::kDataSharingFeature}});
     }
   }
 

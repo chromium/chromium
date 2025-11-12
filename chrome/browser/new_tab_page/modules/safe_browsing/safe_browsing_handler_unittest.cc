@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/new_tab_page/modules/safe_browsing/safe_browsing_handler.h"
-
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/mock_callback.h"
@@ -14,7 +13,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/data_sharing/public/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
@@ -44,11 +42,7 @@ class MockSafeBrowsingMetricsCollector : public SafeBrowsingMetricsCollector {
 
 class SafeBrowsingHandlerTest : public ::testing::Test {
  public:
-  SafeBrowsingHandlerTest() : manager_(TestingBrowserProcess::GetGlobal()) {
-    // TODO(b/459533934) : Remove the DataSharingJoinOnly flag from the disable list.
-    scoped_feature_list_.InitAndDisableFeature(
-        data_sharing::features::kDataSharingJoinOnly);
-  }
+  SafeBrowsingHandlerTest() : manager_(TestingBrowserProcess::GetGlobal()) {}
 
   void SetUp() override {
     ASSERT_TRUE(manager_.SetUp());
@@ -95,7 +89,6 @@ class SafeBrowsingHandlerTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfileManager manager_;
   mojo::PendingRemote<ntp::safe_browsing::mojom::SafeBrowsingHandler>
       safe_browsing_handler_remote_;

@@ -33,7 +33,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/data_sharing/public/features.h"
 #include "components/gcm_driver/crypto/gcm_crypto_test_helpers.h"
 #include "components/gcm_driver/fake_gcm_client_factory.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
@@ -136,9 +135,7 @@ class PushMessagingServiceTest : public ::testing::Test {
   ~PushMessagingServiceTest() override = default;
 
   void SetUp() override {
-    // TODO(b/459533947) : Remove the DataSharingJoinOnly flag from the disable list.
-    scoped_feature_list_.InitAndDisableFeature(
-        data_sharing::features::kDataSharingJoinOnly);
+    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
     profile_ = std::make_unique<PushMessagingTestingProfile>();
 
     // Override the GCM Profile service so that we can send fake messages.
@@ -270,8 +267,6 @@ class PushMessagingServiceTest : public ::testing::Test {
   content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   content::BrowserTaskEnvironment task_environment_{
@@ -507,15 +502,15 @@ TEST_F(PushMessagingServiceTest, NormalizeSenderInfo) {
 #define MAYBE_RemoveExpiredSubscriptions RemoveExpiredSubscriptions
 #endif
 TEST_F(PushMessagingServiceTest, MAYBE_RemoveExpiredSubscriptions) {
-  scoped_feature_list_.Reset();
   // (1) Enable push subscriptions with expiration time and
   // `pushsubscriptionchange` events
+  base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitWithFeatures(
       /* enabled features */
       {features::kPushSubscriptionWithExpirationTime,
        features::kPushSubscriptionChangeEventOnInvalidation},
       /* disabled features */
-      {data_sharing::features::kDataSharingJoinOnly});
+      {});
 
   const GURL origin(kTestOrigin);
   SetPermission(origin, CONTENT_SETTING_ALLOW);

@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
@@ -236,11 +235,8 @@ class MockDeviceInfoSyncService : public syncer::DeviceInfoSyncService {
 
 class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
-  TabGroupsPageHandlerTest() {
-    // TODO(b/459534621) : Remove the DataSharingJoinOnly flag from the disable list.
-    scoped_feature_list_.InitAndDisableFeature(
-        data_sharing::features::kDataSharingJoinOnly);
-  }
+  TabGroupsPageHandlerTest() = default;
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
@@ -426,8 +422,6 @@ class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
 
   raw_ptr<MockDeviceInfoSyncService> mock_device_info_sync_service_;
   std::unique_ptr<MockDeviceInfoTracker> mock_device_info_tracker_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_WithDeviceInfo) {

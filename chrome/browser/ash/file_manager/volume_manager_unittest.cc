@@ -24,7 +24,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/ash/arc/fileapi/arc_media_view_util.h"
@@ -56,7 +55,6 @@
 #include "chromeos/components/disks/disks_prefs.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
-#include "components/data_sharing/public/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/storage_monitor/storage_info.h"
@@ -327,12 +325,6 @@ std::unique_ptr<KeyedService> CreateFileSystemOperationRunnerForTesting(
 
 class VolumeManagerTest : public testing::Test {
  protected:
-  VolumeManagerTest() {
-    // TODO(b/459532116) : Remove the DataSharingJoinOnly flag from the disable list.
-    scoped_feature_list_.InitAndDisableFeature(
-        data_sharing::features::kDataSharingJoinOnly);
-  }
-
   // Helper class that contains per-profile objects.
   class ProfileEnvironment {
    public:
@@ -443,7 +435,6 @@ class VolumeManagerTest : public testing::Test {
   }
   ProfileEnvironment* primary_profile() { return primary_profile_.get(); }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::ScopedCommandLine scoped_command_line_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<FakeDiskMountManager> disk_mount_manager_;

@@ -24,7 +24,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -63,7 +62,6 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/data_sharing/public/features.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/page_navigator.h"
@@ -322,9 +320,6 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
   ~BookmarkBarViewEventTestBase() override = default;
 
   void SetUp() override {
-    // TODO(b/459532130) : Remove the DataSharingJoinOnly flag from the disable list.
-    feature_list_.InitAndDisableFeature(
-        data_sharing::features::kDataSharingJoinOnly);
     // Inject the publisher dependency to AppService.
     publisher_host_factory_resetter_ =
         apps::AppServiceProxyFactory::GetInstance()->SetPublisherHostFactory(
@@ -539,7 +534,6 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
   std::unique_ptr<ChromeContentBrowserClient> browser_content_client_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<Browser> browser_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class BookmarkBarViewDragTestBase : public BookmarkBarViewEventTestBase,
