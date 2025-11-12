@@ -1187,6 +1187,14 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
   }
 
+  void ExpectStrokeCounts(int started,
+                          int modified_finished,
+                          int unmodified_finished) {
+    EXPECT_EQ(started, client().stroke_started_count());
+    EXPECT_EQ(modified_finished, client().modified_stroke_finished_count());
+    EXPECT_EQ(unmodified_finished, client().unmodified_stroke_finished_count());
+  }
+
   const std::vector<int>& updated_ink_thumbnail_page_indices() const {
     return updated_ink_thumbnail_page_indices_;
   }
@@ -1577,9 +1585,8 @@ TEST_P(PdfInkModuleStrokeTest, AnnotationWithMouseInterruptedByPenEvents) {
       MouseEventBuilder().CreateLeftMouseUpAtPosition(kMouseUpPoint).Build();
   EXPECT_FALSE(ink_module().HandleInputEvent(mouse_up_event));
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
   EXPECT_EQ(2, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
   EXPECT_EQ(0, GetInputOfTypeCountForPage(
@@ -1606,9 +1613,8 @@ TEST_P(PdfInkModuleStrokeTest, AnnotationWithPenIgnoresMouseEvents) {
                      base::span_from_ref(kMouseUpPoint));
   EXPECT_TRUE(ink_module().HandleInputEvent(pen_end_event));
 
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
   EXPECT_EQ(0, GetInputOfTypeCountForPage(
@@ -1806,9 +1812,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStroke) {
   EXPECT_THAT(
       VisibleStrokeInputPositions(),
       ElementsAre(Pair(0, ElementsAre(ElementsAreArray(kMousePoints)))));
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // Stroke with the eraser tool.
@@ -1818,9 +1823,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStroke) {
   // Now there are no visible strokes left.
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Erasing increments the modified stroke count.
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   // Stroke again. The stroke that have already been erased should stay erased.
@@ -1830,9 +1834,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStroke) {
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Nothing got erased, so the modified count stays the same, and the
   // unmodified stroke count goes up by 1 instead.
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   // PDF thumbnail never needed to be updated.
@@ -1853,9 +1856,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseOnPageWithoutStrokes) {
   // Verify there are still no visible strokes and the StrokeFinished() call is
   // for being unmodified.
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(0, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/0,
+                     /*unmodified_finished=*/1);
   EXPECT_TRUE(updated_ink_thumbnail_page_indices().empty());
 }
 
@@ -1867,9 +1869,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeEntirelyOffPage) {
   EXPECT_THAT(
       VisibleStrokeInputPositions(),
       ElementsAre(Pair(0, ElementsAre(ElementsAreArray(kMousePoints)))));
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // Stroke with the eraser tool outside of the page.
@@ -1883,9 +1884,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeEntirelyOffPage) {
   EXPECT_THAT(
       VisibleStrokeInputPositions(),
       ElementsAre(Pair(0, ElementsAre(ElementsAreArray(kMousePoints)))));
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 }
 
@@ -1907,9 +1907,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
   const auto kVisibleStrokesMatcher = ElementsAre(
       Pair(0, ElementsAre(ElementsAreArray(kMousePoints), kStroke2Matcher)));
   EXPECT_THAT(VisibleStrokeInputPositions(), kVisibleStrokesMatcher);
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   // Stroke with the eraser tool at `kMouseMovePoint`, where it should
@@ -1923,9 +1922,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
   // the strokes. This third stroke causes the unmodified stroke finished count
   // to go up by 1.
   EXPECT_THAT(VisibleStrokeInputPositions(), kVisibleStrokesMatcher);
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   // Stroke with the eraser tool again, but follow the stroke inputs. This will
@@ -1941,9 +1939,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
 
   // Check that there are now no visible strokes.
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
-  EXPECT_EQ(5, client().stroke_started_count());
-  EXPECT_EQ(4, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/5, /*modified_finished=*/4,
+                     /*unmodified_finished=*/1);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0, 0, 0));
 }
 
@@ -1953,9 +1950,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokesAcrossTwoPages) {
 
   // Start out without any strokes.
   EXPECT_TRUE(StrokeInputPositions().empty());
-  EXPECT_EQ(0, client().stroke_started_count());
-  EXPECT_EQ(0, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/0, /*modified_finished=*/0,
+                     /*unmodified_finished=*/0);
   EXPECT_TRUE(updated_ink_thumbnail_page_indices().empty());
 
   ExpectStrokesAdded(/*strokes_affected=*/2);
@@ -1967,9 +1963,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokesAcrossTwoPages) {
       base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage0),
       kTwoPageVerticalLayoutPoint3InsidePage0);
   EXPECT_THAT(StrokeInputPositions(), ElementsAre(Pair(0, SizeIs(1))));
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // A stroke in the second page generates a stroke only for that page.
@@ -1979,9 +1974,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokesAcrossTwoPages) {
       kTwoPageVerticalLayoutPoint3InsidePage1);
   EXPECT_THAT(StrokeInputPositions(),
               ElementsAre(Pair(0, SizeIs(1)), Pair(1, SizeIs(1))));
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 1));
 
   // Erasing across the two pages should erase everything.
@@ -1995,9 +1989,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokesAcrossTwoPages) {
                                kTwoPageVerticalLayoutPoint1InsidePage1},
       kTwoPageVerticalLayoutPoint3InsidePage1);
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(3, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/3,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 1, 0, 1));
 }
 
@@ -2020,9 +2013,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokePageExitAndReentry) {
                           kTwoPageVerticalLayoutPageExitAndReentrySegment1),
                       ElementsAreArray(
                           kTwoPageVerticalLayoutPageExitAndReentrySegment2)))));
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // Select the eraser tool and call ApplyStrokeWithMouseAtPoints() again with
@@ -2043,9 +2035,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokePageExitAndReentry) {
                           kTwoPageVerticalLayoutPageExitAndReentrySegment2)))));
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Erasing increments the modified stroke count.
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 }
 
@@ -2057,9 +2048,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeWithTouch) {
   EXPECT_THAT(
       VisibleStrokeInputPositions(),
       ElementsAre(Pair(0, ElementsAre(ElementsAreArray(kMousePoints)))));
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // Stroke with the eraser tool.
@@ -2074,9 +2064,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeWithTouch) {
   // Now there are no visible strokes left.
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Erasing increments the modified stroke count.
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   // Stroke again. The stroke that have already been erased should stay erased.
@@ -2088,9 +2077,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeWithTouch) {
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Nothing got erased, so the modified count stays the same, and the
   // unmodified stroke count goes up by 1 instead.
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   // Stroke again with the mouse gets the same results.
@@ -2100,9 +2088,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeWithTouch) {
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Nothing got erased, so the modified count stays the same, and the
   // unmodified stroke count goes up by 1 instead.
-  EXPECT_EQ(4, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(2, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/4, /*modified_finished=*/2,
+                     /*unmodified_finished=*/2);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 }
 
@@ -2114,9 +2101,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeWithPen) {
   EXPECT_THAT(
       VisibleStrokeInputPositions(),
       ElementsAre(Pair(0, ElementsAre(ElementsAreArray(kMousePoints)))));
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // Stroke with the eraser tool.
@@ -2131,9 +2117,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeWithPen) {
   // Now there are no visible strokes left.
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Erasing increments the modified stroke count.
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   // Stroke again. The stroke that have already been erased should stay erased.
@@ -2145,9 +2130,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeWithPen) {
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Nothing got erased, so the modified count stays the same, and the
   // unmodified stroke count goes up by 1 instead.
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   // Stroke again with the mouse gets the same results.
@@ -2157,9 +2141,8 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeWithPen) {
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Nothing got erased, so the modified count stays the same, and the
   // unmodified stroke count goes up by 1 instead.
-  EXPECT_EQ(4, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(2, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/4, /*modified_finished=*/2,
+                     /*unmodified_finished=*/2);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 }
 
@@ -2566,18 +2549,16 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoBasic) {
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);
   // RunStrokeCheckTest() performed the only stroke.
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   PerformUndo();
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Undo/redo here and below do not trigger StrokeFinished().
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   // Spurious undo message is a no-op.
@@ -2587,9 +2568,8 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoBasic) {
   PerformUndo();
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   VerifyAndClearExpectations();
@@ -2598,9 +2578,8 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoBasic) {
   PerformRedo();
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0, 0));
 
   // Spurious redo message is a no-op.
@@ -2610,9 +2589,8 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoBasic) {
   PerformRedo();
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0, 0));
 }
 
@@ -2703,9 +2681,8 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoAnnotationModeDisabled) {
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);
   // RunStrokeCheckTest() performed the only stroke.
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // Disable annotation mode. Undo/redo should still work.
@@ -2716,17 +2693,15 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoAnnotationModeDisabled) {
   PerformUndo();
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
   PerformRedo();
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0, 0));
 }
 
@@ -3479,9 +3454,8 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleUndoRedoTest {
   void VerifySingleSelectionTest(
       base::span<const PdfInkInputData> expected_inputs,
       float expected_size) {
-    EXPECT_EQ(1, client().stroke_started_count());
-    EXPECT_EQ(1, client().modified_stroke_finished_count());
-    EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+    ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                       /*unmodified_finished=*/0);
     EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
     std::optional<ink::StrokeInputBatch> expected_batch =
@@ -3541,9 +3515,8 @@ TEST_P(PdfInkModuleTextHighlightTest, PenDoesNotSelectText) {
   ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPointInsidePage0},
                                kEndPointInsidePage0);
 
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // The stroke inputs should match exactly.
@@ -3698,9 +3671,8 @@ TEST_P(PdfInkModuleTextHighlightTest, MultipleSelection) {
   ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPoint2InsidePage0},
                                kEndPoint2InsidePage0);
 
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   std::optional<ink::StrokeInputBatch> expected_selection0_batch =
@@ -3755,9 +3727,8 @@ TEST_P(PdfInkModuleTextHighlightTest, OneClickCount) {
 
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
 
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(0, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/0,
+                     /*unmodified_finished=*/1);
   EXPECT_TRUE(updated_ink_thumbnail_page_indices().empty());
 
   EXPECT_TRUE(CollectVisibleStrokes().empty());
@@ -3786,9 +3757,8 @@ TEST_P(PdfInkModuleTextHighlightTest, TwoClickCount) {
           .Build();
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   std::optional<ink::StrokeInputBatch> expected_batch =
@@ -3814,9 +3784,8 @@ TEST_P(PdfInkModuleTextHighlightTest, TwoClickCount) {
           .Build();
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, ThreeClickCount) {
@@ -3851,9 +3820,8 @@ TEST_P(PdfInkModuleTextHighlightTest, ThreeClickCount) {
   // One unmodified stroke: From the single-click.
   // Three ink thumbnail updates: one from the double-click rect, one from the
   // undo, and another from the triple-click rect.
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0, 0));
 
   std::optional<ink::StrokeInputBatch> expected_batch =
@@ -3879,9 +3847,8 @@ TEST_P(PdfInkModuleTextHighlightTest, ThreeClickCount) {
           .Build();
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, MouseUpOnNonSelection) {
@@ -3920,9 +3887,8 @@ TEST_P(PdfInkModuleTextHighlightTest, MouseUpOnNonSelection) {
           .Build();
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   std::optional<ink::StrokeInputBatch> expected_batch =
@@ -3984,9 +3950,8 @@ TEST_P(PdfInkModuleTextHighlightTest, MultiplePages) {
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 
   // All the selection strokes are considered one stroke.
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 1));
 
   std::optional<ink::StrokeInputBatch> expected_page0_batch =
@@ -4063,9 +4028,8 @@ TEST_P(PdfInkModuleTextHighlightTest, TouchOneClickCount) {
                                  base::span_from_ref(kStartPointInsidePage0));
   EXPECT_TRUE(ink_module().HandleInputEvent(touch_event));
 
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(0, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/0,
+                     /*unmodified_finished=*/1);
   EXPECT_TRUE(updated_ink_thumbnail_page_indices().empty());
 
   EXPECT_TRUE(CollectVisibleStrokes().empty());
@@ -4122,9 +4086,8 @@ TEST_P(PdfInkModuleTextHighlightTest, PenOneClickCount) {
                              base::span_from_ref(kStartPointInsidePage0));
   EXPECT_TRUE(ink_module().HandleInputEvent(pen_event));
 
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(0, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/0,
+                     /*unmodified_finished=*/1);
   EXPECT_TRUE(updated_ink_thumbnail_page_indices().empty());
 
   EXPECT_TRUE(CollectVisibleStrokes().empty());
@@ -4296,9 +4259,8 @@ TEST_P(PdfInkModuleTextHighlightTest, IgnoreVerySmallTextSelection) {
 
   // The test case should not crash. Instead, the very small text selection
   // simply gets ignored.
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   EXPECT_TRUE(updated_ink_thumbnail_page_indices().empty());
   EXPECT_TRUE(CollectVisibleStrokes().empty());
 }
@@ -4332,9 +4294,8 @@ TEST_P(PdfInkModuleTextHighlightTest,
   // event should not cause a crash.
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
 }
 
 TEST_P(PdfInkModuleTextHighlightTest,
@@ -4368,9 +4329,8 @@ TEST_P(PdfInkModuleTextHighlightTest,
       CreateTouchEvent(blink::WebInputEvent::Type::kTouchStart,
                        base::span_from_ref(kStartPointInsidePage0))));
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
 }
 
 class PdfInkModuleTextHighlightMetricsTest
@@ -4416,9 +4376,8 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest,
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   ValidateHighlightMetricCounts(0);
 }
 
@@ -4449,17 +4408,15 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest,
        PdfInkInputData(gfx::PointF(35.0, 20.0))},
       /*expected_size=*/10.0);
 
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   ValidateHighlightMetricCounts(1);
 
   PerformUndo();
   PerformRedo();
 
-  EXPECT_EQ(1, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
   ValidateHighlightMetricCounts(1);
 }
 
@@ -4484,9 +4441,8 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, Color) {
   ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPointInsidePage0},
                                kEndPointInsidePage0);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
   histograms().ExpectBucketCount(kTextHighlightColorMetric,
                                  StrokeMetricHighlighterColor::kOrange, 1);
   histograms().ExpectTotalCount(kTextHighlightColorMetric, 2);
@@ -4515,9 +4471,8 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, InputDevice) {
                                {base::span_from_ref(kEndPointInsidePage0)},
                                base::span_from_ref(kEndPointInsidePage0));
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
   histograms().ExpectBucketCount(kTextHighlightInputDeviceMetric,
                                  StrokeMetricInputDeviceType::kTouch, 1);
   histograms().ExpectTotalCount(kTextHighlightInputDeviceMetric, 2);
@@ -4527,9 +4482,8 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, InputDevice) {
                              {base::span_from_ref(kEndPointInsidePage0)},
                              base::span_from_ref(kEndPointInsidePage0));
 
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(3, client().modified_stroke_finished_count());
-  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/3,
+                     /*unmodified_finished=*/0);
   histograms().ExpectBucketCount(kTextHighlightInputDeviceMetric,
                                  StrokeMetricInputDeviceType::kPen, 1);
   histograms().ExpectTotalCount(kTextHighlightInputDeviceMetric, 3);
@@ -4547,25 +4501,22 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickDelay) {
   SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(0);
 
   // Fast forward to just one ms before the timer should fire.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs - kOneMs);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(0);
 
   // Fast forward by one ms so the timer fires.
   GetPdfTestTaskEnvironment().FastForwardBy(kOneMs);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(1);
 }
 
@@ -4588,33 +4539,29 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickMove) {
           .Build();
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_event));
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(0);
 
   // Fast forward by the click time duration.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(1);
 
   // Now move and release at a new position.
   MouseMoveAndUpAtPoint(kEndPointInsidePage0, /*click_count=*/2);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(1);
 
   // Fast forward by the click time duration.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(1);
 }
 
@@ -4631,9 +4578,8 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickMoveHighlight) {
   SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(0);
 
   // Text highlight elsewhere.
@@ -4645,17 +4591,15 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickMoveHighlight) {
 
   // There should be reports for the double-click highlight and the new
   // highlight.
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(2);
 
   // Fast forward by the click time duration.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs);
 
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(2);
 }
 
@@ -4671,33 +4615,29 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, ThreeClickDelay) {
   SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(0);
 
   // Fast forward to just one ms before the timer would fire.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs - kOneMs);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(0);
 
   // Click the third time.
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/3);
 
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(1);
 
   // Fast forward by the click time duration.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs);
 
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(1);
 }
 
@@ -4713,9 +4653,8 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, ThreeClickMove) {
   SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
 
-  EXPECT_EQ(2, client().stroke_started_count());
-  EXPECT_EQ(1, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(0);
 
   // Click the third time, but without mouseup.
@@ -4726,25 +4665,22 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, ThreeClickMove) {
           .Build();
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_event));
 
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(1);
 
   // Fast forward by the click time duration.
   GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs);
 
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(1);
 
   // Now move and release at a new position.
   MouseMoveAndUpAtPoint(kEndPointInsidePage0, /*click_count=*/3);
 
-  EXPECT_EQ(3, client().stroke_started_count());
-  EXPECT_EQ(2, client().modified_stroke_finished_count());
-  EXPECT_EQ(1, client().unmodified_stroke_finished_count());
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/2,
+                     /*unmodified_finished=*/1);
   ValidateHighlightMetricCounts(1);
 }
 
