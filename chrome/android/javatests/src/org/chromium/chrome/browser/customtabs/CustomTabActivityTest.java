@@ -180,6 +180,7 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.CctTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.ReferrerCondition;
@@ -254,8 +255,7 @@ public class CustomTabActivityTest {
                     + "   </script>"
                     + "</body></html>";
 
-    @Rule
-    public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
+    @Rule public CctTransitTestRule mCustomTabActivityTestRule = new CctTransitTestRule();
 
     @Rule
     public FreshCtaTransitTestRule mChromeTabbedActivityTestRule =
@@ -1773,12 +1773,12 @@ public class CustomTabActivityTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PrefService prefs = UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
-                    int old_block_pref = prefs.getInteger(COOKIE_CONTROLS_MODE);
+                    int oldBlockPref = prefs.getInteger(COOKIE_CONTROLS_MODE);
                     prefs.setInteger(COOKIE_CONTROLS_MODE, CookieControlsMode.OFF);
                     Assert.assertTrue(connection.maySpeculate(sessionHolder));
                     prefs.setInteger(COOKIE_CONTROLS_MODE, CookieControlsMode.BLOCK_THIRD_PARTY);
                     Assert.assertFalse(connection.maySpeculate(sessionHolder));
-                    prefs.setInteger(COOKIE_CONTROLS_MODE, old_block_pref);
+                    prefs.setInteger(COOKIE_CONTROLS_MODE, oldBlockPref);
                 });
     }
 
@@ -1976,8 +1976,8 @@ public class CustomTabActivityTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         final CustomTabActivity cctActivity = mCustomTabActivityTestRule.getActivity();
-        final CallbackHelper mCctHiddenCallback = new CallbackHelper();
-        final CallbackHelper mTabbedModeShownCallback = new CallbackHelper();
+        final CallbackHelper cctHiddenCallback = new CallbackHelper();
+        final CallbackHelper tabbedModeShownCallback = new CallbackHelper();
         final AtomicReference<ChromeTabbedActivity> tabbedActivity = new AtomicReference<>();
 
         ActivityStateListener listener =
@@ -1985,12 +1985,12 @@ public class CustomTabActivityTest {
                     if (activity == cctActivity
                             && (newState == ActivityState.STOPPED
                                     || newState == ActivityState.DESTROYED)) {
-                        mCctHiddenCallback.notifyCalled();
+                        cctHiddenCallback.notifyCalled();
                     }
 
                     if (activity instanceof ChromeTabbedActivity
                             && newState == ActivityState.RESUMED) {
-                        mTabbedModeShownCallback.notifyCalled();
+                        tabbedModeShownCallback.notifyCalled();
                         tabbedActivity.set((ChromeTabbedActivity) activity);
                     }
                 };
@@ -2009,8 +2009,8 @@ public class CustomTabActivityTest {
                             false);
                 });
 
-        mCctHiddenCallback.waitForCallback("CCT not hidden.", 0);
-        mTabbedModeShownCallback.waitForCallback("Tabbed mode not shown.", 0);
+        cctHiddenCallback.waitForCallback("CCT not hidden.", 0);
+        tabbedModeShownCallback.waitForCallback("Tabbed mode not shown.", 0);
 
         CriteriaHelper.pollUiThread(() -> tabbedActivity.get().areTabModelsInitialized());
 
@@ -2297,7 +2297,7 @@ public class CustomTabActivityTest {
         connection.newSession(token.getSessionAsCustomTab());
         connection.overridePackageNameForSessionForTesting(token, "org.chromium.testapp");
         intent.putExtra(EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 50);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        mCustomTabActivityTestRule.startActivityCompletely(intent);
 
         // A Normal CCT height is set to MATCH_PARENT while Partial CCT has non-zero value.
         int fullHeight = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -2360,7 +2360,7 @@ public class CustomTabActivityTest {
         intent.putExtra(EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP, 100);
         intent.putExtra(EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 300);
         intent.putExtra(EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION, true);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        mCustomTabActivityTestRule.startActivityCompletely(intent);
 
         rotateCustomTabActivity(
                 mCustomTabActivityTestRule.getActivity(), Layout.Orientation.LANDSCAPE);
@@ -2418,7 +2418,7 @@ public class CustomTabActivityTest {
         intent.putExtra(EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP, 600);
         intent.putExtra(EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 300);
         intent.putExtra(EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 300);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        mCustomTabActivityTestRule.startActivityCompletely(intent);
 
         rotateCustomTabActivity(
                 mCustomTabActivityTestRule.getActivity(), Layout.Orientation.PORTRAIT);
@@ -2460,7 +2460,7 @@ public class CustomTabActivityTest {
         connection.overridePackageNameForSessionForTesting(token, "org.chromium.testapp");
         intent.putExtra(EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 300);
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        mCustomTabActivityTestRule.startActivityCompletely(intent);
 
         assertThat(mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting())
                 .isInstanceOf(BaseCustomTabRootUiCoordinator.class);
