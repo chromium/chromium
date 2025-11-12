@@ -57,7 +57,7 @@ bool CorruptDownloadedSizeMetadata(
     const ::google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>&
         downloaded_icon_sizes) {
   for (const auto& downloaded_icon : downloaded_icon_sizes) {
-    if (downloaded_icon.icon_sizes().empty() ||
+    if (downloaded_icon.icon_sizes().empty() &&
         !downloaded_icon.has_purpose()) {
       return true;
     }
