@@ -104,7 +104,11 @@ AtkObject* GetAtkObject(AXPlatformNodeDelegate* node) {
 base::Value::Dict AXTreeFormatterAuraLinux::BuildTree(
     AXPlatformNodeDelegate* root) const {
   base::Value::Dict dict;
-  RecursiveBuildTree(GetAtkObject(root), &dict);
+  AtkObject* atk_root = GetAtkObject(root);
+  if (!atk_root) {
+    return dict;
+  }
+  RecursiveBuildTree(atk_root, &dict);
   return dict;
 }
 
@@ -118,6 +122,10 @@ base::Value::Dict AXTreeFormatterAuraLinux::BuildNode(
 void AXTreeFormatterAuraLinux::RecursiveBuildTree(
     AtkObject* atk_node,
     base::Value::Dict* dict) const {
+  if (!atk_node || !dict) {
+    return;
+  }
+
   AXPlatformNodeAuraLinux* platform_node =
       AXPlatformNodeAuraLinux::FromAtkObject(atk_node);
   DCHECK(platform_node);
@@ -154,6 +162,10 @@ void AXTreeFormatterAuraLinux::RecursiveBuildTree(
 void AXTreeFormatterAuraLinux::RecursiveBuildTree(
     AtspiAccessible* node,
     base::Value::Dict* dict) const {
+  if (!node || !dict) {
+    return;
+  }
+
   AddProperties(node, dict);
 
   GError* error = nullptr;
