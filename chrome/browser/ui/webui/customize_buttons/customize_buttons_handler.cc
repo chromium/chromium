@@ -137,8 +137,6 @@ void CustomizeButtonsHandler::SetCustomizeChromeSidePanelVisible(
   CHECK(tab);
   auto* contents = tab->GetContents();
   feature_promo_helper_->RecordPromoFeatureUsageAndClosePromo(
-      feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature, contents);
-  feature_promo_helper_->RecordPromoFeatureUsageAndClosePromo(
       feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature,
       contents);
   feature_promo_helper_->RecordPromoFeatureUsageAndClosePromo(

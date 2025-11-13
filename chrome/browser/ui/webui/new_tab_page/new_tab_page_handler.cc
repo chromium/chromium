@@ -492,8 +492,6 @@ NewTabPageHandler::NewTabPageHandler(
     segmentation_platform::SegmentationPlatformService*
         segmentation_platform_service,
     content::WebContents* web_contents,
-    std::unique_ptr<NewTabPageFeaturePromoHelper>
-        customize_chrome_feature_promo_helper,
     const base::Time& ntp_navigation_start_time,
     const std::vector<ntp::ModuleIdDetail>* module_id_details)
     : SettingsEnabledObserver(
@@ -506,7 +504,7 @@ NewTabPageHandler::NewTabPageHandler(
       segmentation_platform_service_(segmentation_platform_service),
       profile_(profile),
       web_contents_(web_contents),
-      feature_promo_helper_(std::move(customize_chrome_feature_promo_helper)),
+      feature_promo_helper_(std::make_unique<NewTabPageFeaturePromoHelper>()),
       ntp_navigation_start_time_(ntp_navigation_start_time),
       module_id_details_(module_id_details),
       logger_(profile,
@@ -870,31 +868,6 @@ void NewTabPageHandler::UpdateFooterVisibility() {
   auto* footer_controller = browser->GetFeatures().new_tab_footer_controller();
   CHECK(footer_controller);
   OnFooterVisibilityUpdated(footer_controller->GetFooterVisible(web_contents_));
-}
-
-void NewTabPageHandler::MaybeShowFeaturePromo(
-    new_tab_page::mojom::IphFeature iph_feature) {
-  CHECK(profile_);
-  CHECK(profile_->GetPrefs());
-
-  // If a sign-in dialog is being currently displayed, the promo should not be
-  // shown to avoid conflict. The sign-in dialog would be shown as soon as the
-  // browser is opened, before the promo.
-  bool is_signin_modal_dialog_open =
-      feature_promo_helper_->IsSigninModalDialogOpen(web_contents_.get());
-  if (is_signin_modal_dialog_open) {
-    return;
-  }
-
-  switch (iph_feature) {
-    case new_tab_page::mojom::IphFeature::kCustomizeChrome: {
-      feature_promo_helper_->MaybeShowFeaturePromo(
-          feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
-          web_contents_.get());
-    } break;
-    default:
-      NOTREACHED();
-  }
 }
 
 void NewTabPageHandler::OnAppRendered(double time) {

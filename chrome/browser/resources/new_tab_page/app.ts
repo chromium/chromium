@@ -45,7 +45,7 @@ import type {LogoElement} from './logo.js';
 import {recordBoolean, recordDuration, recordEnumeration, recordLinearValue, recordLoadDuration, recordSparseValueWithPersistentHash} from './metrics_utils.js';
 import {ParentTrustedDocumentProxy} from './modules/microsoft_auth_frame_connector.js';
 import type {PageCallbackRouter, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
-import {IphFeature, NtpBackgroundImageSource} from './new_tab_page.mojom-webui.js';
+import {NtpBackgroundImageSource} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import type {MicrosoftAuthUntrustedDocumentRemote} from './ntp_microsoft_auth_shared_ui.mojom-webui.js';
 import {ShowNtpPromosResult} from './ntp_promo.mojom-webui.js';
@@ -790,7 +790,6 @@ export class AppElement extends AppElementBase {
       this.registerHelpBubble(
           CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID,
           ['ntp-customize-buttons', '#customizeButton'], {fixed: true});
-      this.pageHandler_.maybeShowFeaturePromo(IphFeature.kCustomizeChrome);
       return true;
     }
     return false;

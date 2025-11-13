@@ -293,8 +293,6 @@ should be able to be added at any place in this file.
       summary="For Customize Chrome Auto Open feature."/>
   <variant name="_DesktopCustomizeChromeExperiment"
       summary="For Customize Chrome feature."/>
-  <variant name="_DesktopCustomizeChromeRefresh"
-      summary="For Customize Chrome refresh feature."/>
   <variant name="_DesktopPwaInstall" summary="For desktop PWA install icon."/>
   <variant name="_DesktopPWAsLinkCapturingLaunch"
       summary="For desktop PWAs launched via Link Capturing."/>

@@ -579,39 +579,6 @@ void MaybeRegisterChromeFeaturePromos(
                        "Chrome yet or have not interacted with the 'Customize "
                        "Chrome' button.")));
 
-  // kIPHDesktopCustomizeChromeRefreshFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForCustomAction(
-          feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
-          kTopContainerElementId, IDS_IPH_CUSTOMIZE_CHROME_REFRESH_BODY,
-          IDS_IPH_CUSTOMIZE_CHROME_REFRESH_CUSTOM_ACTION,
-          base::BindRepeating(
-              [](ContextPtr ctx,
-                 user_education::FeaturePromoHandle promo_handle) {
-                ShowPromoInPage::Params params;
-                params.bubble_anchor_id =
-                    CustomizeButtonsHandler::kCustomizeChromeButtonElementId;
-                params.bubble_arrow =
-                    user_education::HelpBubbleArrow::kBottomRight;
-                params.bubble_text = l10n_util::GetStringUTF16(
-                    IDS_IPH_CUSTOMIZE_CHROME_REFRESH_POINTER_BODY);
-                ShowPromoInPage::Start(GetBrowser(ctx), std::move(params));
-              }))
-          .SetBubbleArrow(HelpBubbleArrow::kNone)
-          .SetCustomActionIsDefault(false)
-          .SetCustomActionDismissText(IDS_PROMO_DISMISS_BUTTON)
-          // This provides backwards-compatibility with legacy conditions used
-          // before feature auto-configuration was enabled.
-          .SetAdditionalConditions(std::move(
-              AdditionalConditions().AddAdditionalCondition(AdditionalCondition{
-                  feature_engagement::events::kCustomizeChromeOpened,
-                  AdditionalConditions::Constraint::kAtMost, 0})))
-          // See: crbug.com/1494923
-          .OverrideFocusOnShow(false)
-          .SetMetadata(119, "mickeyburks@chromium.org",
-                       "Triggered after user is updated to "
-                       "the new Chrome Refresh design.")));
-
   // kIPHDesktopCustomizeChromeAutoPromoFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(

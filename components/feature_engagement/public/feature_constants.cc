@@ -59,9 +59,6 @@ BASE_FEATURE(kIPHDesktopSharedHighlightingFeature,
 BASE_FEATURE(kIPHDesktopCustomizeChromeExperimentFeature,
              "IPH_DesktopCustomizeChromeExperiment",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHDesktopCustomizeChromeRefreshFeature,
-             "IPH_DesktopCustomizeChromeRefresh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDesktopCustomizeChromeAutoOpenFeature,
              "IPH_DesktopCustomizeChromeAutoOpen",
              base::FEATURE_DISABLED_BY_DEFAULT);

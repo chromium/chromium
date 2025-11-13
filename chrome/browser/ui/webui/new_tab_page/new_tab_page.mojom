@@ -25,12 +25,6 @@ import "url/mojom/url.mojom";
   kWallpaperSearchInspiration,
 };
 
-// Enum representing the in product help promo to trigger.
-enum IphFeature {
-  kCustomizeChrome,
-  kCustomizeModules,
-};
-
 // The background image URL and styling.
 struct BackgroundImage {
   // URL to the background image. Can point to untrusted content.
@@ -257,8 +251,6 @@ interface PageHandler {
   UpdateActionChipsVisibility();
   // Triggers a call to |FooterVisibilityUpdated|.
   UpdateFooterVisibility();
-  // Attempts to trigger the specified in product help promo.
-  MaybeShowFeaturePromo(IphFeature iph_feature);
   // Increments count of times the compose button was shown.
   IncrementComposeButtonShownCount();
   // Opens Customize Chrome if eligibility conditions are met.

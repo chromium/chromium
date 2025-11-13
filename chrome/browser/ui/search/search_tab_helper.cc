@@ -32,12 +32,10 @@
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
-#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/feature_engagement/public/feature_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -50,7 +48,6 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
-#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
@@ -181,8 +178,6 @@ void SearchTabHelper::OnTabActivated() {
   if (search::IsInstantNTP(web_contents()) && instant_service_) {
     instant_service_->OnNewTabPageOpened();
   }
-
-  CloseNTPCustomizeChromeFeaturePromo();
 }
 
 void SearchTabHelper::OnTabDeactivated() {
@@ -214,8 +209,6 @@ void SearchTabHelper::DidStartNavigation(
           entry, l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
     }
   }
-
-  CloseNTPCustomizeChromeFeaturePromo();
 }
 
 void SearchTabHelper::TitleWasSet(content::NavigationEntry* entry) {
@@ -325,24 +318,6 @@ Profile* SearchTabHelper::profile() const {
 
 bool SearchTabHelper::IsInputInProgress() const {
   return search::IsOmniboxInputInProgress(web_contents());
-}
-
-void SearchTabHelper::CloseNTPCustomizeChromeFeaturePromo() {
-  const base::Feature& customize_chrome_feature =
-      feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature;
-  if (web_contents()->GetController().GetVisibleEntry()->GetURL() ==
-      GURL(chrome::kChromeUINewTabPageURL)) {
-    return;
-  }
-  auto* const tab = tabs::TabInterface::MaybeGetFromContents(web_contents());
-  if (!tab || !tab->IsActivated()) {
-    return;
-  }
-  if (auto* const interface =
-          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
-              web_contents())) {
-    interface->AbortFeaturePromo(customize_chrome_feature);
-  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchTabHelper);

@@ -96,8 +96,6 @@ class NewTabPageHandler
                     segmentation_platform::SegmentationPlatformService*
                         segmentation_platform_service,
                     content::WebContents* web_contents,
-                    std::unique_ptr<NewTabPageFeaturePromoHelper>
-                        customize_chrome_feature_promo_helper,
                     const base::Time& ntp_navigation_start_time,
                     const std::vector<ntp::ModuleIdDetail>* module_id_details);
 
@@ -142,8 +140,6 @@ class NewTabPageHandler
   void GetModulesOrder(GetModulesOrderCallback callback) override;
   void UpdateModulesLoadable() override;
   void UpdateActionChipsVisibility() override;
-  void MaybeShowFeaturePromo(
-      new_tab_page::mojom::IphFeature iph_feature) override;
   void OnAppRendered(double time) override;
   void OnOneGoogleBarRendered(double time) override;
   void OnPromoRendered(double time,

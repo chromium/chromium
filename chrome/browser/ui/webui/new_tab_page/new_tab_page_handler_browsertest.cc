@@ -121,7 +121,6 @@ class NewTabPageHandlerBaseBrowserTest : public InProcessBrowserTest {
         LogoServiceFactory::GetForProfile(profile()),
         /*sync_service=*/nullptr,
         /*segmentation_platform_service=*/nullptr, web_contents(),
-        std::make_unique<NewTabPageFeaturePromoHelper>(),
         /*ntp_navigation_start_time=*/base::Time::Now(),
         /*module_id_details=*/nullptr);
     testing::Mock::VerifyAndClearExpectations(mock_page());

@@ -857,10 +857,6 @@ suite('NewTabPageAppTest', () => {
   });
 
   suite('CustomizeChromeSidePanel', () => {
-    test('customize chrome in product help might show on startup'), () => {
-      assertEquals(1, handler.getCallCount('maybeShowFeaturePromo'));
-    };
-
     test('clicking customize button opens side panel', () => {
       // Act.
       getCustomizeButton().click();

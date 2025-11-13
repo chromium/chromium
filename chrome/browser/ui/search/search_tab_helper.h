@@ -122,8 +122,6 @@ class SearchTabHelper : public content::WebContentsObserver,
   // (which defaults the behavior to silent deletions).
   void OnDeleteAutocompleteMatchConfirm(uint8_t line, bool accepted);
 
-  void CloseNTPCustomizeChromeFeaturePromo();
-
   SearchIPCRouter ipc_router_;
 
   raw_ptr<InstantService> instant_service_;

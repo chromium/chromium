@@ -1120,8 +1120,7 @@ void NewTabPageUI::CreatePageHandler(
       SyncServiceFactory::GetForProfile(profile_),
       segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
           profile_),
-      web_contents(), std::make_unique<NewTabPageFeaturePromoHelper>(),
-      navigation_start_time_, &module_id_details_);
+      web_contents(), navigation_start_time_, &module_id_details_);
 }
 
 void NewTabPageUI::ConnectToParentDocument(

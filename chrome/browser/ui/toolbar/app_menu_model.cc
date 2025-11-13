@@ -1501,11 +1501,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
             "WrenchMenu.TimeToAction.ShowCustomizeChromeSidePanel", delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL);
-      // Close IPH for side panel menu, if shown.
-      BrowserUserEducationInterface::From(browser())
-          ->NotifyFeaturePromoFeatureUsed(
-              feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
-              FeaturePromoFeatureUsedAction::kIgnorePromoIfPresent);
       break;
     // Zoom menu
     case IDC_ZOOM_MINUS:
