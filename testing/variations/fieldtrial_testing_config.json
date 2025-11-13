@@ -8816,21 +8816,6 @@
             ]
         }
     ],
-    "DirectCompositorThreadIpcWin": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DirectCompositorThreadIpc"
-                    ]
-                }
-            ]
-        }
-    ],
     "DirtyWritebackMaxBytes": [
         {
             "platforms": [
@@ -18517,7 +18502,42 @@
                 "chromeos",
                 "ios",
                 "linux",
-                "mac",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledConservative",
+                    "params": {
+                        "MacCriticalDiskSpacePressureThresholdMB": "250"
+                    },
+                    "enable_features": [
+                        "AndroidBcivBottomControls",
+                        "AndroidBrowserControlsInViz",
+                        "AsyncSetCookie",
+                        "AvoidCloneArgsOnExtensionFunctionDispatch",
+                        "AvoidUnnecessaryGetMinimizeButtonOffset",
+                        "AvoidUnnecessaryShouldRenderRichAnimation",
+                        "CompressParkableStrings",
+                        "FastPathNoRaster",
+                        "GCOnArrayBufferAllocationFailure",
+                        "MacAllowBackgroundingRenderProcesses",
+                        "MacCriticalDiskSpacePressure",
+                        "MvcUpdateViewWhenModelChanged",
+                        "NoPreReadMainDllIfSsd",
+                        "PageAllocatorRetryOnCommitFailure",
+                        "ReducePPMs",
+                        "ReloadTabUiResourcesIfChanged",
+                        "RemoveCancelledScriptedIdleTasks",
+                        "ScreenWinDisplayLookupByHMONITOR",
+                        "SlimDirectReceiverIpc",
+                        "TerminationTargetPolicy",
+                        "UpdateDirectManipulationHelperOnParentChange"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
                 "windows"
             ],
             "experiments": [
@@ -18534,6 +18554,7 @@
                         "AvoidUnnecessaryGetMinimizeButtonOffset",
                         "AvoidUnnecessaryShouldRenderRichAnimation",
                         "CompressParkableStrings",
+                        "DirectCompositorThreadIpc",
                         "FastPathNoRaster",
                         "GCOnArrayBufferAllocationFailure",
                         "MacAllowBackgroundingRenderProcesses",
