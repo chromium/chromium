@@ -138,7 +138,7 @@ export class ComposeboxElement extends I18nMixinLit
       tabSuggestions_: {type: Array},
       errorScrimVisible_: {type: Boolean},
       contextFilesSize_: {type: Number},
-      realboxLayoutMode: {
+      searchboxLayoutMode: {
         type: String,
         reflect: true,
       },
@@ -149,7 +149,7 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   accessor ntpRealboxNextEnabled: boolean = false;
-  accessor realboxLayoutMode: string = '';
+  accessor searchboxLayoutMode: string = '';
   accessor carouselOnTop_: boolean = false;
   // If isCollapsible is set to true, the composebox will be a pill shape until
   // it gets focused, at which point it will expand. If false, defaults to the

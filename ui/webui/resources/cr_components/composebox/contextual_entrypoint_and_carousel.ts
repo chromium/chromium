@@ -83,7 +83,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       // Public properties
       // =========================================================================
       showDropdown: {type: Boolean},
-      realboxLayoutMode: {type: String},
+      searchboxLayoutMode: {type: String},
       tabSuggestions: {type: Array},
       entrypointName: {type: String},
       parentFocused: {type: Boolean},
@@ -132,7 +132,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   accessor showDropdown: boolean = false;
-  accessor realboxLayoutMode: string = '';
+  accessor searchboxLayoutMode: string = '';
   accessor entrypointName: string = '';
   accessor tabSuggestions: TabInfo[] = [];
   accessor carouselOnTop_: boolean = false;

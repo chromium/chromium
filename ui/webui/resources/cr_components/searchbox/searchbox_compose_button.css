@@ -171,7 +171,7 @@
   height: var(--cr-searchbox-icon-size);
 }
 
-:host-context([realbox-layout-mode^='Tall']) .glow-container {
+:host-context([searchbox-layout-mode^='Tall']) .glow-container {
   top: var(--cr-searchbox-compose-button-position-top);
   transform: none;
 }

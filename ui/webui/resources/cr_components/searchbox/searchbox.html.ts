@@ -11,7 +11,7 @@ export function getHtml(this: SearchboxElement) {
   return html`<!--_html_template_start_-->
 ${this.ntpRealboxNextEnabled ? html`
 <ntp-error-scrim id="errorScrim"
-    ?compact-mode="${this.realboxLayoutMode === 'Compact'}">
+    ?compact-mode="${this.searchboxLayoutMode === 'Compact'}">
 </ntp-error-scrim>` : nothing}
 <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout_}"
     @keydown="${this.onInputWrapperKeydown_}">
@@ -43,7 +43,7 @@ ${this.ntpRealboxNextEnabled ? html`
     </div>
   ` : nothing}
 
-  ${this.realboxLayoutMode.startsWith('Tall') &&
+  ${this.searchboxLayoutMode.startsWith('Tall') &&
       this.composeButtonEnabled ? html`
     <cr-searchbox-compose-button id="composeButton"
         @compose-click="${this.onComposeButtonClick_}">
@@ -66,7 +66,7 @@ ${this.ntpRealboxNextEnabled ? html`
           @get-tab-preview="${this.getTabPreview_}"
           ?show-dropdown="${this.dropdownIsVisible}"
           ?show-voice-search="${this.shouldShowVoiceSearch_}"
-          realbox-layout-mode="${this.realboxLayoutMode}"
+          searchbox-layout-mode="${this.searchboxLayoutMode}"
           .parentFocused="${this.inputFocused_}">
         <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
             exportparts="dropdown-content"
@@ -123,7 +123,7 @@ ${this.ntpRealboxNextEnabled ? html`
     </div>
   ` : nothing}
 
-  ${!this.realboxLayoutMode.startsWith('Tall') &&
+  ${!this.searchboxLayoutMode.startsWith('Tall') &&
       this.composeButtonEnabled ? html`
     <cr-searchbox-compose-button id="composeButton"
         @compose-click="${this.onComposeButtonClick_}">
