@@ -313,7 +313,7 @@ bool GetSystemMemoryInfo(SystemMemoryInfo* meminfo) {
     // inexact, but even in the case where `speculative_count` is less than
     // `free_count`, the computed `meminfo->free` will only be an approximation
     // given that the two inputs come from different points in time.
-    meminfo->free = ByteCount();
+    meminfo->free = ByteCount(0);
   }
 
   meminfo->speculative =
@@ -411,6 +411,14 @@ int ProcessMetrics::GetOpenFdCount() const {
 
 int ProcessMetrics::GetOpenFdSoftLimit() const {
   return checked_cast<int>(GetMaxFds());
+}
+
+ByteCount SystemMemoryInfo::GetAvailablePhysicalMemory() const {
+  // Available memory is free memory plus memory that can be reclaimed without
+  // writing to disk, which on macOS is the file-backed cache. This corresponds
+  // to (free_count - speculative_count + external_page_count) from
+  // vm_statistics64.
+  return free + file_backed;
 }
 
 }  // namespace base

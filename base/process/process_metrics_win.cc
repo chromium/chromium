@@ -314,4 +314,10 @@ BASE_EXPORT bool GetSystemPerformanceInfo(SystemPerformanceInfo* info) {
   return true;
 }
 
+ByteCount SystemMemoryInfo::GetAvailablePhysicalMemory() const {
+  // Use ullAvailPhys from MEMORYSTATUSEX, which represents physical memory
+  // available without paging.
+  return avail_phys;
+}
+
 }  // namespace base

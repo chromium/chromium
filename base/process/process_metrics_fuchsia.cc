@@ -9,6 +9,7 @@
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
 
 namespace base {
@@ -71,6 +72,14 @@ ProcessMetrics::GetMemoryInfo() const {
 bool GetSystemMemoryInfo(SystemMemoryInfo* meminfo) {
   // TODO(https://crbug.com/42050627).
   return false;
+}
+
+ByteCount SystemMemoryInfo::GetAvailablePhysicalMemory() const {
+  NOTIMPLEMENTED();
+  // GetSystemMemoryInfo() is not implemented on Fuchsia, so this struct will
+  // contain default (zero) values. Return a zero ByteCount to satisfy the
+  // linker.
+  return ByteCount(0);
 }
 
 }  // namespace base

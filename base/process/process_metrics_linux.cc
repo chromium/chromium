@@ -1043,4 +1043,10 @@ int ProcessMetrics::GetIdleWakeupsPerSecond() {
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
 
+ByteCount SystemMemoryInfo::GetAvailablePhysicalMemory() const {
+  // Use MemAvailable from /proc/meminfo if available (Linux 3.14+), otherwise
+  // fall back to MemFree.
+  return available.is_positive() ? available : free;
+}
+
 }  // namespace base
