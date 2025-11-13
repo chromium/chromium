@@ -24,9 +24,9 @@ class OmniboxPopupPresenter : public OmniboxPopupPresenterBase {
   ~OmniboxPopupPresenter() override;
 
  protected:
-  // OmniboxPopupPresenterBase overrides;
-  std::optional<size_t> GetShowingWebUIContentIndex() const override;
-  void ShowWebUIContent(size_t index) override;
+  // OmniboxPopupPresenterBase overrides:
+  bool ShouldShowLocationBarCutout() const override;
+  bool ShouldReceiveFocus() const override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_

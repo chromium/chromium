@@ -17,8 +17,8 @@
 #include "ui/views/widget/widget.h"
 
 class LocationBarView;
-class OmniboxController;
-class OmniboxPopupWebUIContent;
+class OmniboxPopupWebUIBaseContent;
+class RoundedOmniboxResultsFrame;
 
 // A base assistant class for OmniboxPopupViewWebUI, this manages "n" WebViews
 // and a Widget to present the WebUI. This class is an implementation detail and
@@ -35,33 +35,24 @@ class OmniboxPopupPresenterBase {
   virtual ~OmniboxPopupPresenterBase();
 
   // Show or hide the popup widget with web view.
-  void Show(bool ai_mode);
+  void Show();
   void Hide();
 
   // Tells whether the popup widget exists.
   bool IsShown() const;
 
-  virtual std::optional<size_t> GetShowingWebUIContentIndex() const;
-
   void SetWidgetContentHeight(int content_height);
 
  protected:
-  views::View* GetOmniboxPopupWebUIContainer() const;
-
-  // Add a new OmniboxPopupWebUIContent view navigated to the given URL. This is
-  // inserted into the WebUI container.
-  OmniboxPopupWebUIContent* AddOmniboxPopupWebUIContent(
-      OmniboxController* controller,
-      std::string_view content_url,
-      bool include_location_bar_cutout,
-      bool wants_focus);
+  // The container for the WebUI WebView.
+  views::View* GetUIContainer() const;
 
   // Returns the currently "active" Popup content, whichever one is visible or
   // going to be visible within the popup.
-  OmniboxPopupWebUIContent* GetActivePopupWebUIContent() const;
+  OmniboxPopupWebUIBaseContent* GetWebUIContent() const;
 
-  // Show the index'th child view within the WebUI container
-  virtual void ShowWebUIContent(size_t index) = 0;
+  // Sets the webview content reference.
+  void SetWebUIContent(OmniboxPopupWebUIBaseContent* webui_content);
 
   // Create the Widget if not already created. Returns true if widget was just
   // created.
@@ -69,6 +60,16 @@ class OmniboxPopupPresenterBase {
 
   // Called when the widget has just been destroyed.
   virtual void WidgetDestroyed();
+
+  // Returns whether or not the popup should include the location bar cutout.
+  virtual bool ShouldShowLocationBarCutout() const;
+
+  // Returns whether the WebUI content view receive focus.
+  virtual bool ShouldReceiveFocus() const;
+
+  LocationBarView* location_bar_view() const {
+    return location_bar_view_.get();
+  }
 
  private:
   friend class OmniboxPopupViewWebUITest;
@@ -78,12 +79,19 @@ class OmniboxPopupPresenterBase {
   // Remove observation and reset widget, optionally requesting it to close.
   void ReleaseWidget();
 
+  // Returns the frame view of the widget if it exists. CHECKs if no widget
+  // created
+  RoundedOmniboxResultsFrame* GetResultsFrame() const;
+
   // The location bar view that owns `this`.
   const raw_ptr<LocationBarView> location_bar_view_;
 
   // The container for both the WebUI suggestions list and other WebUI
   // containers
   std::unique_ptr<views::View> owned_omnibox_popup_webui_container_;
+
+  // The WebUI content WebView. Owned by the container.
+  raw_ptr<OmniboxPopupWebUIBaseContent> omnibox_popup_webui_content_ = nullptr;
 
   // The popup widget that contains this WebView. Created and closed by `this`;
   // owned and destroyed by the OS.

@@ -26,10 +26,11 @@ export class OmniboxAimAppElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.eventTracker_.add(
-        document.documentElement, 'visibilitychange',
-        this.onVisibilitychange_.bind(this));
-    this.onVisibilitychange_();
+
+    const composebox = this.shadowRoot.querySelector('cr-composebox');
+    assert(composebox);
+    composebox.focusInput();
+
     if (!this.isDebug_) {
       this.eventTracker_.add(
           document.documentElement, 'contextmenu', (e: Event) => {
@@ -41,16 +42,6 @@ export class OmniboxAimAppElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
-  }
-
-  private onVisibilitychange_() {
-    if (document.visibilityState !== 'visible') {
-      return;
-    }
-
-    const composebox = this.shadowRoot.querySelector('cr-composebox');
-    assert(composebox);
-    composebox.focusInput();
   }
 }
 

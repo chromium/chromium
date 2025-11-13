@@ -42,14 +42,13 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
   void ProvideButtonFocusHint(size_t line) override;
   void OnDragCanceled() override;
   void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) const override;
-  void OpenAiMode() override;
-  bool IsAiModeOpen() const override;
 
   // OmniboxEditModel::Observer:
   void OnSelectionChanged(OmniboxPopupSelection old_selection,
                           OmniboxPopupSelection selection) override {}
   void OnMatchIconUpdated(size_t index) override {}
   void OnContentsChanged() override;
+  void OnAiModeChanged(bool ai_mode) override {}
 
  protected:
   friend class OmniboxPopupViewWebUITest;
@@ -57,8 +56,6 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
                            PopupLoadsAndAcceptsCalls);
 
  private:
-  void UpdatePopupAppearanceInternal(bool ai_mode);
-
   // Time when this instance was constructed, or null after use for histogram.
   base::TimeTicks construction_time_;
 

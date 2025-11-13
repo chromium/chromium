@@ -73,8 +73,6 @@ class OmniboxPopupViewViews : public views::View,
   void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) const override;
   std::u16string_view GetAccessibleButtonTextForResult(
       size_t line) const override;
-  void OpenAiMode() override;
-  bool IsAiModeOpen() const override;
 
   // views::View:
   bool OnMouseDragged(const ui::MouseEvent& event) override;
@@ -91,6 +89,7 @@ class OmniboxPopupViewViews : public views::View,
                           OmniboxPopupSelection new_selection) override;
   void OnMatchIconUpdated(size_t match_index) override;
   void OnContentsChanged() override;
+  void OnAiModeChanged(bool ai_mode) override {}
 
   void FireAXEventsForNewActiveDescendant(View* descendant_view);
 

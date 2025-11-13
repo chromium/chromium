@@ -26,28 +26,17 @@ OmniboxPopupPresenterBase::~OmniboxPopupPresenterBase() {
   ReleaseWidget();
 }
 
-void OmniboxPopupPresenterBase::Show(bool ai_mode) {
+void OmniboxPopupPresenterBase::Show() {
   bool widget_created = EnsureWidgetCreated();
 
-  ShowWebUIContent(ai_mode ? 1 : 0);
+  GetResultsFrame()->SetCutoutVisibility(ShouldShowLocationBarCutout());
 
-  AsViewClass<RoundedOmniboxResultsFrame>(widget_->GetContentsView())
-      ->SetCutoutVisibility(
-          GetActivePopupWebUIContent()->include_location_bar_cutout());
-
-  VLOG(4) << "widget_created = " << (widget_created ? "true" : "false");
   if (widget_created) {
     widget_->ShowInactive();
 
-    if (ai_mode) {
-      SetWidgetContentHeight(1);
-    }
-
-    if (auto* content = GetActivePopupWebUIContent()) {
+    if (auto* content = GetWebUIContent()) {
       content->GetWebContents()->WasShown();
-      VLOG(4) << "content->wants_focus() = "
-              << (content->wants_focus() ? "true" : "false");
-      if (content->wants_focus()) {
+      if (ShouldReceiveFocus()) {
         widget_->Activate();
         content->RequestFocus();
       }
@@ -66,17 +55,12 @@ bool OmniboxPopupPresenterBase::IsShown() const {
   return !!widget_;
 }
 
-std::optional<size_t> OmniboxPopupPresenterBase::GetShowingWebUIContentIndex()
-    const {
-  return std::nullopt;
-}
-
 void OmniboxPopupPresenterBase::SetWidgetContentHeight(int content_height) {
   if (widget_) {
     // The width is known, and is the basis for consistent web content rendering
     // so width is specified exactly; then only height adjusts dynamically.
     gfx::Rect widget_bounds = location_bar_view_->GetBoundsInScreen();
-    if (GetActivePopupWebUIContent()->include_location_bar_cutout()) {
+    if (ShouldShowLocationBarCutout()) {
       widget_bounds.Inset(
           -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
       widget_bounds.set_height(widget_bounds.height() + content_height);
@@ -89,36 +73,21 @@ void OmniboxPopupPresenterBase::SetWidgetContentHeight(int content_height) {
   }
 }
 
-views::View* OmniboxPopupPresenterBase::GetOmniboxPopupWebUIContainer() const {
+views::View* OmniboxPopupPresenterBase::GetUIContainer() const {
   if (owned_omnibox_popup_webui_container_) {
     return owned_omnibox_popup_webui_container_.get();
   }
-  CHECK(widget_);
-  return views::AsViewClass<RoundedOmniboxResultsFrame>(
-             widget_->GetContentsView())
-      ->GetContents();
+  return GetResultsFrame()->GetContents();
 }
 
-OmniboxPopupWebUIContent*
-OmniboxPopupPresenterBase::AddOmniboxPopupWebUIContent(
-    OmniboxController* controller,
-    std::string_view content_url,
-    bool include_location_bar_cutout,
-    bool wants_focus) {
-  return GetOmniboxPopupWebUIContainer()->AddChildView(
-      std::make_unique<OmniboxPopupWebUIContent>(
-          this, location_bar_view_.get(), controller, content_url,
-          include_location_bar_cutout, wants_focus));
+OmniboxPopupWebUIBaseContent* OmniboxPopupPresenterBase::GetWebUIContent()
+    const {
+  return omnibox_popup_webui_content_;
 }
 
-OmniboxPopupWebUIContent*
-OmniboxPopupPresenterBase::GetActivePopupWebUIContent() const {
-  for (auto child : GetOmniboxPopupWebUIContainer()->children()) {
-    if (child->GetVisible()) {
-      return views::AsViewClass<OmniboxPopupWebUIContent>(child);
-    }
-  }
-  NOTREACHED() << "No visible Web Contents";
+void OmniboxPopupPresenterBase::SetWebUIContent(
+    OmniboxPopupWebUIBaseContent* webui_content) {
+  omnibox_popup_webui_content_ = webui_content;
 }
 
 bool OmniboxPopupPresenterBase::EnsureWidgetCreated() {
@@ -132,7 +101,8 @@ bool OmniboxPopupPresenterBase::EnsureWidgetCreated() {
   const views::Widget* parent_widget = location_bar_view_->GetWidget();
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
-      views::Widget::InitParams::TYPE_POPUP);
+      ShouldReceiveFocus() ? views::Widget::InitParams::TYPE_WINDOW_FRAMELESS
+                           : views::Widget::InitParams::TYPE_POPUP);
 #if BUILDFLAG(IS_WIN)
   // On Windows use the software compositor to ensure that we don't block
   // the UI thread during command buffer creation. See http://crbug.com/125248
@@ -141,11 +111,6 @@ bool OmniboxPopupPresenterBase::EnsureWidgetCreated() {
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent = parent_widget->GetNativeView();
   params.context = parent_widget->GetNativeWindow();
-
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) ||
-      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup)) {
-    params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
-  }
 
   RoundedOmniboxResultsFrame::OnBeforeWidgetInit(&params, widget_.get());
 
@@ -162,18 +127,29 @@ bool OmniboxPopupPresenterBase::EnsureWidgetCreated() {
 
 void OmniboxPopupPresenterBase::WidgetDestroyed() {}
 
+bool OmniboxPopupPresenterBase::ShouldShowLocationBarCutout() const {
+  return false;
+}
+
+bool OmniboxPopupPresenterBase::ShouldReceiveFocus() const {
+  return true;
+}
+
 void OmniboxPopupPresenterBase::OnWidgetClosed(
     views::Widget::ClosedReason closed_reason) {
-  owned_omnibox_popup_webui_container_ =
-      AsViewClass<RoundedOmniboxResultsFrame>(widget_->GetContentsView())
-          ->ExtractContents();
+  owned_omnibox_popup_webui_container_ = GetResultsFrame()->ExtractContents();
   widget_.reset();
   WidgetDestroyed();
 }
 
 void OmniboxPopupPresenterBase::ReleaseWidget() {
   if (widget_) {
-    VLOG(4) << "ReleaseWidget()";
     widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   }
+}
+
+RoundedOmniboxResultsFrame* OmniboxPopupPresenterBase::GetResultsFrame() const {
+  CHECK(widget_);
+  return views::AsViewClass<RoundedOmniboxResultsFrame>(
+      widget_->GetContentsView());
 }
