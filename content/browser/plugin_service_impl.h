@@ -49,7 +49,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   std::optional<WebPluginInfo> GetPluginInfoByPathForTesting(
       const base::FilePath& plugin_path) override;
   void GetPlugins(GetPluginsCallback callback) override;
-  std::vector<WebPluginInfo> GetPluginsSynchronous() override;
+  const std::vector<WebPluginInfo>& GetPluginsSynchronous() override;
   void SetFilter(PluginServiceFilter* filter) override;
   PluginServiceFilter* GetFilter() override;
   void RefreshPlugins() override;

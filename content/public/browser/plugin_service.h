@@ -81,7 +81,7 @@ class CONTENT_EXPORT PluginService {
 
   // Synchronously loads plugins if necessary and returns the list of plugin
   // infos.
-  virtual std::vector<WebPluginInfo> GetPluginsSynchronous() = 0;
+  virtual const std::vector<WebPluginInfo>& GetPluginsSynchronous() = 0;
 
   virtual void SetFilter(PluginServiceFilter* filter) = 0;
   virtual PluginServiceFilter* GetFilter() = 0;

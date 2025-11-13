@@ -70,8 +70,7 @@ class PluginListTest : public testing::Test {
 };
 
 TEST_F(PluginListTest, GetPlugins) {
-  std::vector<WebPluginInfo> plugins;
-  plugin_list_->GetPlugins(&plugins);
+  const std::vector<WebPluginInfo>& plugins = plugin_list_->GetPlugins();
   EXPECT_EQ(2u, plugins.size());
   EXPECT_TRUE(Contains(plugins, foo_plugin_));
   EXPECT_TRUE(Contains(plugins, bar_plugin_));
@@ -85,8 +84,7 @@ TEST_F(PluginListTest, BadPluginDescription) {
   plugin_list_->RegisterInternalPlugin(plugin_3043, false);
   // Now we should have them in the state we specified above.
   plugin_list_->RefreshPlugins();
-  std::vector<WebPluginInfo> plugins;
-  plugin_list_->GetPlugins(&plugins);
+  const std::vector<WebPluginInfo>& plugins = plugin_list_->GetPlugins();
   ASSERT_TRUE(Contains(plugins, plugin_3043));
 }
 
@@ -105,8 +103,7 @@ TEST_F(PluginListTest, GetPluginInfoArray) {
   EXPECT_EQ(0u, actual_mime_types.size());
 
   // Refresh it.
-  plugin_list_->GetPlugins(&plugins);
-  plugins.clear();
+  plugin_list_->GetPlugins();
 
   // The file type of the URL is supported by |foo_plugin_|. However,
   // GetPluginInfoArray should not match |foo_plugin_| because the MIME type is

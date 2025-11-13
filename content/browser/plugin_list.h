@@ -54,7 +54,7 @@ class CONTENT_EXPORT PluginList {
   std::vector<WebPluginInfo> GetInternalPluginsForTesting() const;
 
   // Get all the plugins synchronously, loading them if necessary.
-  void GetPlugins(std::vector<WebPluginInfo>* plugins);
+  const std::vector<WebPluginInfo>& GetPlugins();
 
   // Returns the list of plugins without loading them.
   const std::vector<WebPluginInfo>& GetPluginsForTesting() const;

@@ -137,11 +137,9 @@ void PluginServiceImpl::GetPlugins(GetPluginsCallback callback) {
       FROM_HERE, base::BindOnce(std::move(callback), GetPluginsSynchronous()));
 }
 
-std::vector<WebPluginInfo> PluginServiceImpl::GetPluginsSynchronous() {
+const std::vector<WebPluginInfo>& PluginServiceImpl::GetPluginsSynchronous() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::vector<WebPluginInfo> plugins;
-  PluginList::Singleton()->GetPlugins(&plugins);
-  return plugins;
+  return PluginList::Singleton()->GetPlugins();
 }
 
 void PluginServiceImpl::RegisterPlugins() {

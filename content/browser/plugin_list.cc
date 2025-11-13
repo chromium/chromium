@@ -139,10 +139,10 @@ void PluginList::LoadPlugins() {
   list_is_stale_ = false;
 }
 
-void PluginList::GetPlugins(std::vector<WebPluginInfo>* plugins) {
+const std::vector<WebPluginInfo>& PluginList::GetPlugins() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   LoadPlugins();
-  plugins->insert(plugins->end(), plugins_list_.begin(), plugins_list_.end());
+  return plugins_list_;
 }
 
 const std::vector<WebPluginInfo>& PluginList::GetPluginsForTesting() const {
