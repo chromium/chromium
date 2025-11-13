@@ -1978,6 +1978,9 @@
     'profile_keyed_service': {
       'filepath': 'chrome/browser/profiles/profile_keyed_service_browsertest.cc',
     },
+    'proto_extras': {
+      'filepath': 'components/proto_extras',
+    },
     'psm_libs': {
       'filepath': 'third_party/private_membership/|' \
                   'third_party/shell-encryption/'
@@ -3272,6 +3275,7 @@
     'privacy_guide_desktop': ['rainhard+watch@chromium.org'],
     'private_aggregation': ['alexmt+watch@chromium.org'],
     'profile_keyed_service': ['rsult@google.com'],
+    'proto_extras': ['drubery+watch@chromium.org'],
     'psm_libs': ['amraboelkher+watch@chromium.org'],
     'push_messaging': ['peter@chromium.org'],
     'quick_answers': ['croissant-eng+reviews@chromium.org'],
