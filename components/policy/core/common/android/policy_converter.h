@@ -25,6 +25,7 @@ class Value;
 namespace policy {
 
 class Schema;
+class SchemaRegistry;
 
 namespace android {
 
@@ -32,7 +33,7 @@ namespace android {
 // java classes, allows transforming Android |Bundle|s into |PolicyBundle|s.
 class POLICY_EXPORT PolicyConverter {
  public:
-  explicit PolicyConverter(const Schema* policy_schema);
+  explicit PolicyConverter(const SchemaRegistry* schema_registry);
   PolicyConverter(const PolicyConverter&) = delete;
   PolicyConverter& operator=(const PolicyConverter&) = delete;
   ~PolicyConverter();
@@ -76,7 +77,7 @@ class POLICY_EXPORT PolicyConverter {
   void SetPolicyValueForTesting(const std::string& key, base::Value raw_value);
 
  private:
-  const raw_ptr<const Schema> policy_schema_;
+  const raw_ptr<const SchemaRegistry> schema_registry_;
 
   PolicyBundle policy_bundle_;
 
