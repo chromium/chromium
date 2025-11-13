@@ -471,6 +471,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Customization.Theme.Type"
+    enum="NtpBackgroundImageType" expires_after="2026-05-10">
+  <owner>hanxi@chromium.org</owner>
+  <owner>yyanting@google.com</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the type of theme selected for the New Tab Page background. This is
+    logged once per cold startup and every time when user changes the type of
+    theme for NTP background. This metric is logged on Android only.
+  </summary>
+</histogram>
+
 <histogram
     name="NewTabPage.Customization.Theme.UploadImage.PreviewInteractions"
     enum="NtpCustomizationThemeUploadImagePreviewInteractions"

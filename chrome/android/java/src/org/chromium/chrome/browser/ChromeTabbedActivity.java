@@ -3547,6 +3547,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
         if (mAuxiliarySearchController != null) {
             mAuxiliarySearchController.onDeferredStartup();
         }
+
+        NtpCustomizationMetricsUtils.recordNtpThemeType();
     }
 
     @Override

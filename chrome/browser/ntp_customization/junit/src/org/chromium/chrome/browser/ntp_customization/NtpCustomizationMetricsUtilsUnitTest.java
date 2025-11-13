@@ -9,6 +9,11 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.EntryPointType.MAIN_MENU;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.EntryPointType.TOOL_BAR;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.COLOR_FROM_HEX;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator.PreviewInteractionType.CANCEL;
 import static org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator.PreviewInteractionType.SAVE;
 
@@ -22,6 +27,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator.PreviewInteractionType;
 
 /** Unit tests for {@link NtpCustomizationMetricsUtils} */
@@ -110,6 +116,24 @@ public class NtpCustomizationMetricsUtilsUnitTest {
             HistogramWatcher histogramWatcher =
                     HistogramWatcher.newSingleRecordWatcher(histogramName, type);
             NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewInteractions(type);
+            histogramWatcher.assertExpected();
+        }
+    }
+
+    @Test
+    public void testRecordNtpThemeType() {
+        String histogramName = "NewTabPage.Customization.Theme.Type";
+        @NtpBackgroundImageType
+        int[] backgroundImageTypes =
+                new int[] {
+                    DEFAULT, IMAGE_FROM_DISK, CHROME_COLOR, COLOR_FROM_HEX, THEME_COLLECTION
+                };
+
+        for (@NtpBackgroundImageType int type : backgroundImageTypes) {
+            NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(type);
+            HistogramWatcher histogramWatcher =
+                    HistogramWatcher.newSingleRecordWatcher(histogramName, type);
+            NtpCustomizationMetricsUtils.recordNtpThemeType();
             histogramWatcher.assertExpected();
         }
     }

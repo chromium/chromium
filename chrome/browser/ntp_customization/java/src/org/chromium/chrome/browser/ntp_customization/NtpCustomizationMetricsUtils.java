@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator;
 
 /** The utility class for logging the NTP customization bottom sheet's metrics. */
@@ -45,6 +46,21 @@ public class NtpCustomizationMetricsUtils {
     @VisibleForTesting
     static final String HISTOGRAM_THEME_UPLOAD_IMAGE_PREVIEW_INTERACTIONS =
             HISTOGRAM_THEME_UPLOAD_IMAGE_PREFIX + ".PreviewInteractions";
+
+    @VisibleForTesting
+    static final String HISTOGRAM_THEME_TYPE = HISTOGRAM_NTP_CUSTOMIZATION_PREFIX + ".Theme.Type";
+
+    /**
+     * Records the type of theme selected for the New Tab Page background. This is logged once on
+     * cold startup and every time when user changes the type of theme for NTP background.
+     *
+     * @param themeType The type of the NTP customization theme.
+     */
+    public static void recordNtpThemeType() {
+        int themeType = NtpCustomizationUtils.getNtpBackgroundImageTypeFromSharedPreference();
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_THEME_TYPE, themeType, NtpBackgroundImageType.NUM_ENTRIES);
+    }
 
     /**
      * Records the total number of times each NTP customization bottom sheet is shown. Each opening

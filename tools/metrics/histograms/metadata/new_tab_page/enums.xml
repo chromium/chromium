@@ -263,6 +263,15 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Wallpaper search inspiration image"/>
 </enum>
 
+<enum name="NtpBackgroundImageType">
+  <summary>The type of background image for the New Tab Page.</summary>
+  <int value="0" label="Default"/>
+  <int value="1" label="Upload image"/>
+  <int value="2" label="Chrome color"/>
+  <int value="3" label="Theme collection"/>
+  <int value="4" label="Color from hex"/>
+</enum>
+
 <enum name="NTPCalendarAction">
   <summary>Calendar module user actions</summary>
   <int value="0" label="Expanded event header clicked"/>

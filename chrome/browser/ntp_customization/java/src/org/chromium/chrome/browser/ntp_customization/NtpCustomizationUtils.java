@@ -80,6 +80,7 @@ import java.util.concurrent.Executor;
 @NullMarked
 public class NtpCustomizationUtils {
 
+    // LINT.IfChange(NtpBackgroundImageType)
     @IntDef({
         NtpBackgroundImageType.DEFAULT,
         NtpBackgroundImageType.IMAGE_FROM_DISK,
@@ -96,6 +97,8 @@ public class NtpCustomizationUtils {
         int COLOR_FROM_HEX = 4;
         int NUM_ENTRIES = 5;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NtpBackgroundImageType)
 
     @VisibleForTesting static final String NTP_BACKGROUND_IMAGE_FILE = "ntp_background_image";
     private static final String TAG = "NtpCustomization";
