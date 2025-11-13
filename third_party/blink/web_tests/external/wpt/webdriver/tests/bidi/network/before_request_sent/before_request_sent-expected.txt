@@ -1,5 +1,0 @@
-This is a wdspec test.
-[FAIL] test_destination_initiator
-  AssertionError
-Harness: the test ran to completion.
-
