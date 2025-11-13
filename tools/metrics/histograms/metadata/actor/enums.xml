@@ -95,6 +95,11 @@ chromium-metrics-reviews@google.com.
   <int value="906" label="LoginDeviceReauthRequired"/>
   <int value="907" label="LoginDeviceReauthFailed"/>
   <int value="1000" label="MediaControlNoMedia"/>
+  <int value="1100" label="FormFillingAutofillUnavailable"/>
+  <int value="1101" label="FormFillingNoSuggestionsAvailable"/>
+  <int value="1102" label="FormFillingDialogError"/>
+  <int value="1103" label="FormFillingFieldNotFound"/>
+  <int value="1104" label="FormFillingUnknownAutofillError"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/common/actor.mojom:ActionResultCode) -->

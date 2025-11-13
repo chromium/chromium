@@ -22,6 +22,7 @@
 #include "base/notimplemented.h"
 #include "base/state_transitions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/types/id_type.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -84,8 +85,11 @@ void PostTaskForActCallback(
     mojom::ActionResultPtr result,
     std::optional<size_t> index_of_failed_action,
     std::vector<ActionResultWithLatencyInfo> action_results) {
-  UMA_HISTOGRAM_ENUMERATION("Actor.ExecutionEngine.Action.ResultCode",
-                            result->code);
+  // Using a sparse histogram instead of a linear (i.e. enumeration) histogram
+  // here because, the linear histograms are limited to 1000 values in
+  // base/metrics/histogram.cc.
+  base::UmaHistogramSparse("Actor.ExecutionEngine.Action.ResultCode",
+                           base::to_underlying(result->code));
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), std::move(result),

@@ -278,7 +278,82 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, NoSuggestions) {
       *active_tab(), {PageTarget(*address_home_line1)});
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(
+      result, mojom::ActionResultCode::kFormFillingNoSuggestionsAvailable);
+}
+
+// Test that if the dialog is not shown an error is returned from the tool.
+IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogNotShown) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/autofill/autofill_test_form.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  WaitForTabObservation();
+  std::optional<DomNode> address_home_line1 =
+      GetDomNodeOnPage(*main_frame(), "#ADDRESS_HOME_LINE1");
+  ASSERT_TRUE(address_home_line1);
+
+  autofill::ActorFormFillingRequest request;
+  autofill::ActorSuggestion suggestion;
+  suggestion.id = autofill::ActorSuggestionId(123);
+  suggestion.title = "My Address";
+  request.suggestions.push_back(suggestion);
+  std::vector<autofill::ActorFormFillingRequest> requests = {request};
+
+  EXPECT_CALL(mock_form_filling_service(), GetSuggestions(_, _, _))
+      .WillOnce(RunOnceCallback<2>(requests));
+
+  auto dialog_error_response =
+      webui::mojom::SelectAutofillSuggestionsDialogResponse::New(
+          actor_task().id().value(),
+          webui::mojom::SelectAutofillSuggestionsDialogResult::NewErrorReason(
+              webui::mojom::SelectAutofillSuggestionsDialogErrorReason::
+                  kDialogPromiseNoSubscriber));
+  EXPECT_CALL(mock_execution_engine(), RequestToShowAutofillSuggestions(_, _))
+      .WillOnce(RunOnceCallback<1>(std::move(dialog_error_response)));
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
+      *active_tab(), {PageTarget(*address_home_line1)});
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kFormFillingDialogError);
+}
+
+// Test that if the dialog returns no selected suggestions then an error is
+// returned from the tool.
+IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
+                       DialogResponseWithEmptySelectedSuggestions) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/autofill/autofill_test_form.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  WaitForTabObservation();
+  std::optional<DomNode> address_home_line1 =
+      GetDomNodeOnPage(*main_frame(), "#ADDRESS_HOME_LINE1");
+  ASSERT_TRUE(address_home_line1);
+
+  autofill::ActorFormFillingRequest request;
+  autofill::ActorSuggestion suggestion;
+  suggestion.id = autofill::ActorSuggestionId(123);
+  suggestion.title = "My Address";
+  request.suggestions.push_back(suggestion);
+  std::vector<autofill::ActorFormFillingRequest> requests = {request};
+
+  EXPECT_CALL(mock_form_filling_service(), GetSuggestions(_, _, _))
+      .WillOnce(RunOnceCallback<2>(requests));
+
+  auto dialog_with_empty_selected_suggestions =
+      webui::mojom::SelectAutofillSuggestionsDialogResponse::New(
+          actor_task().id().value(),
+          webui::mojom::SelectAutofillSuggestionsDialogResult::
+              NewSelectedSuggestions({}));
+  EXPECT_CALL(mock_execution_engine(), RequestToShowAutofillSuggestions(_, _))
+      .WillOnce(RunOnceCallback<1>(
+          std::move(dialog_with_empty_selected_suggestions)));
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
+      *active_tab(), {PageTarget(*address_home_line1)});
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kFormFillingDialogError);
 }
 
 // Test that when the form filling service fails to fill, an error is returned
@@ -304,13 +379,14 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, FillFails) {
 
   EXPECT_CALL(mock_form_filling_service(), FillSuggestions(_, _, _))
       .WillOnce(RunOnceCallback<2>(
-          base::unexpected(autofill::ActorFormFillingError::kNoSuggestions)));
+          base::unexpected(autofill::ActorFormFillingError::kOther)));
 
   std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
       *active_tab(), {PageTarget(*address_home_line1)});
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kFormFillingUnknownAutofillError);
 }
 
 // Test that when multiple suggestions are provided by the form filling service,
@@ -368,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, TimeOfUseValidationFails) {
       MakeAttemptFormFillingRequest(*active_tab(), {target});
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result, mojom::ActionResultCode::kFormFillingFieldNotFound);
 }
 
 // Test that the request passed to the GetSuggestions() call contains the form
@@ -424,7 +500,8 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
   actor_task().Act(
       ToRequestList(std::unique_ptr<ToolRequest>(std::move(action))),
       result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(
+      result, mojom::ActionResultCode::kFormFillingNoSuggestionsAvailable);
 }
 
 // Test that the request passed to the RequestToShowAutofillSuggestions() call
@@ -466,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
   actor_task().Act(
       ToRequestList(std::unique_ptr<ToolRequest>(std::move(action))),
       result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result, mojom::ActionResultCode::kFormFillingDialogError);
 }
 
 // Test that when switches::kAttemptFormFillingToolSkipsUI is enabled, the

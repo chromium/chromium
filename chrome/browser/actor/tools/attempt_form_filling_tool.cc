@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/actor/actor_switches.h"
 #include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
@@ -85,6 +86,31 @@ ConvertRequestedDataToProtoEnum(
   }
 }
 
+mojom::ActionResultPtr FromServiceError(autofill::ActorFormFillingError error) {
+  switch (error) {
+    case autofill::ActorFormFillingError::kAutofillNotAvailable:
+      return MakeResult(
+          mojom::ActionResultCode::kFormFillingAutofillUnavailable,
+          /*requires_page_stabilization=*/false, "Autofill is not available.");
+    case autofill::ActorFormFillingError::kNoSuggestions:
+      return MakeResult(
+          mojom::ActionResultCode::kFormFillingNoSuggestionsAvailable,
+          /*requires_page_stabilization=*/false,
+          "No autofill suggestions available for the fields.");
+    case autofill::ActorFormFillingError::kNoForm:
+      return MakeResult(
+          mojom::ActionResultCode::kObservedTargetElementDestroyed,
+          /*requires_page_stabilization=*/false,
+          "The form was not found or has changed.");
+    case autofill::ActorFormFillingError::kOther:
+      return MakeResult(
+          mojom::ActionResultCode::kFormFillingUnknownAutofillError,
+          /*requires_page_stabilization=*/false,
+          "An unknown error occurred in the form filling service.");
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 AttemptFormFillingTool::AttemptFormFillingTool(
@@ -137,8 +163,7 @@ mojom::ActionResultPtr AttemptFormFillingTool::TimeOfUseValidation(
 
   if (!last_observation) {
     ACTOR_LOG() << "APC was null during TimeOfUseValidation.";
-    // TODO(crbug.com/454017250): Use form filling specific ActionResultCode
-    // values.
+    // Return a generic error for the unexpected state.
     return MakeErrorResult();
   }
 
@@ -148,25 +173,25 @@ mojom::ActionResultPtr AttemptFormFillingTool::TimeOfUseValidation(
       autofill::FieldGlobalId current_field_id =
           GetFieldIdFromPageTarget(last_observation, tab, trigger_field);
       if (!current_field_id) {
-        // TODO(crbug.com/454017250): Use form filling specific ActionResultCode
-        // values.
-        return MakeErrorResult();
+        return MakeResult(mojom::ActionResultCode::kFormFillingFieldNotFound,
+                          /*requires_page_stabilization=*/false,
+                          "Trigger field not found.");
       }
       field_ids.push_back(current_field_id);
     }
     if (field_ids.empty()) {
-      // TODO(crbug.com/454017250): Use form filling specific ActionResultCode
-      // values.
-      return MakeErrorResult();
+      return MakeResult(mojom::ActionResultCode::kArgumentsInvalid,
+                        /*requires_page_stabilization=*/false,
+                        "At least one trigger field must be provided.");
     }
     service_fill_requests_.emplace_back(request.requested_data,
                                         std::move(field_ids));
   }
 
   if (service_fill_requests_.empty()) {
-    // TODO(crbug.com/454017250): Use form filling specific ActionResultCode
-    // values.
-    return MakeErrorResult();
+    return MakeResult(mojom::ActionResultCode::kArgumentsInvalid,
+                      /*requires_page_stabilization=*/false,
+                      "At least one form filling requests must be provided.");
   }
   return MakeOkResult();
 }
@@ -203,13 +228,8 @@ void AttemptFormFillingTool::OnSuggestionsRetrieved(
     base::expected<std::vector<autofill::ActorFormFillingRequest>,
                    autofill::ActorFormFillingError> suggestions_result) {
   if (!suggestions_result.has_value()) {
-    // TODO(crbug.com/454017250): Use form filling specific ActionResultCode
-    // values.
     std::move(invoke_callback)
-        .Run(MakeResult(
-            mojom::ActionResultCode::kError,
-            /*requires_page_stabilization=*/false,
-            "No suggestions returned by the actor form filling service."));
+        .Run(FromServiceError(suggestions_result.error()));
     return;
   }
 
@@ -255,9 +275,17 @@ void AttemptFormFillingTool::OnSuggestionsSelected(
     ToolCallback invoke_callback,
     webui::mojom::SelectAutofillSuggestionsDialogResponsePtr dialog_response) {
   if (dialog_response->result->is_error_reason()) {
-    // TODO(crbug.com/454017250): Use form filling specific ActionResultCode
-    // values.
-    std::move(invoke_callback).Run(MakeErrorResult());
+    std::move(invoke_callback)
+        .Run(MakeResult(mojom::ActionResultCode::kFormFillingDialogError,
+                        /*requires_page_stabilization=*/false,
+                        "Showing suggestions to the user failed."));
+    return;
+  }
+  if (dialog_response->result->get_selected_suggestions().empty()) {
+    std::move(invoke_callback)
+        .Run(MakeResult(mojom::ActionResultCode::kFormFillingDialogError,
+                        /*requires_page_stabilization=*/false,
+                        "Dialog response contains no selected suggestions."));
     return;
   }
   std::vector<autofill::ActorFormFillingSelection> selection_response;
@@ -265,9 +293,10 @@ void AttemptFormFillingTool::OnSuggestionsSelected(
        dialog_response->result->get_selected_suggestions()) {
     uint32_t id = 0;
     if (!base::StringToUint(response->selected_suggestion_id, &id)) {
-      // TODO(crbug.com/454017250): Use form filling specific ActionResultCode
-      // values.
-      std::move(invoke_callback).Run(MakeErrorResult());
+      std::move(invoke_callback)
+          .Run(MakeResult(mojom::ActionResultCode::kError,
+                          /*requires_page_stabilization=*/false,
+                          "Invalid suggestion ID received."));
       return;
     }
     autofill::ActorFormFillingSelection selection;
@@ -284,9 +313,8 @@ void AttemptFormFillingTool::OnSuggestionsSelected(
       *tab, std::move(selection_response),
       base::BindOnce([](base::expected<void, autofill::ActorFormFillingError>
                             result) {
-        // TODO(crbug.com/454017250): Use form filling specific
-        // ActionResultCode values.
-        return result.has_value() ? MakeOkResult() : MakeErrorResult();
+        return result.has_value() ? MakeOkResult()
+                                  : FromServiceError(result.error());
       }).Then(std::move(invoke_callback)));
 }
 

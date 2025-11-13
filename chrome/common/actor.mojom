@@ -423,6 +423,28 @@ enum ActionResultCode {
   kMediaControlNoMedia = 1000,
 
   // Please see the comment above about adding new values.
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 1100-1199: Errors for form filling.
+
+  // Autofill is not available.
+  kFormFillingAutofillUnavailable = 1100,
+
+  // No autofill suggestions are available for the fields.
+  kFormFillingNoSuggestionsAvailable = 1101,
+
+  // The user could not choose a suggestion because of an error showing the
+  // suggestion selection dialog.
+  kFormFillingDialogError = 1102,
+
+  // The trigger field for form filling was not found. It could be that the page
+  // has changed since the action was requested.
+  kFormFillingFieldNotFound = 1103,
+
+  // An error occurred during autofill.
+  kFormFillingUnknownAutofillError = 1104,
+
+  // Please see the comment above about adding new values.
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActionResultCode)
