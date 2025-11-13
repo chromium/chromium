@@ -7,7 +7,6 @@ package org.chromium.net.impl;
 import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_API_LEVEL;
 import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
 
-import android.content.Context;
 import android.net.http.HttpEngine;
 import android.util.Log;
 
@@ -17,7 +16,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
-import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.telemetry.ExperimentalOptions;
 import org.chromium.net.telemetry.OptionalBoolean;
 
@@ -31,29 +29,21 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
 
     private static boolean sLibraryLoaderUnsupportedLogged;
     private static boolean sNQEUnsupportedLogged;
-    private boolean mHasCustomUserAgent;
 
-    private final Context mContext;
     private final HttpEngine.Builder mBackend;
 
-    public AndroidHttpEngineBuilderWrapper(Context context, HttpEngine.Builder backend) {
-        this.mContext = context;
+    public AndroidHttpEngineBuilderWrapper(HttpEngine.Builder backend) {
         this.mBackend = backend;
     }
 
     @Override
     public String getDefaultUserAgent() {
-        // This code cannot simply delegate to mBackend.getDefaultUserAgent(). This override is
-        // necessary to make sure that older versions of HttpEngine used through the wrapper use the
-        // correct UserAgent.
-        return UserAgent.from(
-                mContext, CronetSource.CRONET_SOURCE_PLATFORM, HttpEngine.getVersionString());
+        return mBackend.getDefaultUserAgent();
     }
 
     @Override
     public ICronetEngineBuilder setUserAgent(String userAgent) {
         mBackend.setUserAgent(userAgent);
-        mHasCustomUserAgent = userAgent != null;
         return this;
     }
 
@@ -161,11 +151,6 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
      */
     @Override
     public ExperimentalCronetEngine build() {
-        // Having this line here guarantees a UserAgent.java from shared jar is used.
-        // The impl UserAgent might be old or new, so this needs to happen in cronet-api.
-        if (!mHasCustomUserAgent) {
-            setUserAgent(getDefaultUserAgent());
-        }
         return new AndroidHttpEngineWrapper(mBackend.build());
     }
 

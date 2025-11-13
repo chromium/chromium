@@ -151,8 +151,6 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
     private boolean mNetworkQualityEstimatorEnabled;
     private @Nullable VersionSafeProxyOptions mProxyOptions;
 
-    private final CronetSource mCronetSource;
-
     /**
      * Default config enables SPDY and QUIC, disables SDCH and HTTP cache.
      *
@@ -162,7 +160,6 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         var startUptimeMillis = SystemClock.uptimeMillis();
         boolean successful = false;
         mApplicationContext = context.getApplicationContext();
-        mCronetSource = cronetSource;
         mLogger = CronetLoggerFactory.createLogger(mApplicationContext, cronetSource);
         try {
             enableQuic(true);
@@ -214,7 +211,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
 
     @Override
     public String getDefaultUserAgent() {
-        return UserAgent.from(mApplicationContext, mCronetSource, ImplVersion.getCronetVersion());
+        return UserAgent.from(mApplicationContext);
     }
 
     @Override
@@ -278,10 +275,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
      * @return QUIC User Agent ID string.
      */
     String getDefaultQuicUserAgentId() {
-        return mQuicEnabled
-                ? UserAgent.getQuicUserAgentIdFrom(
-                        mApplicationContext, ImplVersion.getCronetVersion())
-                : "";
+        return mQuicEnabled ? UserAgent.getQuicUserAgentIdFrom(mApplicationContext) : "";
     }
 
     @Override
