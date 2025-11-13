@@ -12,7 +12,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Rect;
-import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
@@ -183,10 +182,9 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             if (assumeNonNull(mIntentDataProvider).isAuthTab()) return;
 
             // Only record for Custom Tabs that we think are launched for auth purposes.
-            Uri urlToLoad = Uri.parse(mIntentDataProvider.getUrlToLoad());
-            if (!urlToLoad.isHierarchical()) return;
+            GURL urlToLoad = new GURL(mIntentDataProvider.getUrlToLoad());
+            String redirectUri = UrlUtilities.getValueForKeyInQuery(urlToLoad, "redirect_uri");
 
-            String redirectUri = urlToLoad.getQueryParameter("redirect_uri");
             if (TextUtils.isEmpty(redirectUri)) return;
 
             int schemeEnum = CustomTabAuthUrlHeuristics.getAuthSchemeEnum(url.getScheme());
