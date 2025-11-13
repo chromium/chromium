@@ -88,9 +88,16 @@
     chips-fade-in 200ms 350ms ease-in forwards;
 }
 
-.action-chip:hover {
-  --chip-background-color:
-    var(--color-new-tab-page-action-chip-background-hover);
+.action-chip::before {
+  background-color: transparent;
+  content: '';
+  inset: 0;
+  position: absolute;
+  z-index: -1;
+}
+
+.action-chip:hover::before {
+  background-color: var(--color-new-tab-page-action-chip-background-hover);
 }
 
 .action-chip-icon-container {
