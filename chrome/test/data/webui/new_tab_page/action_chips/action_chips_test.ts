@@ -8,7 +8,6 @@ import type {TabInfo} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
 import {ActionChipsHandlerRemote} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
 import {ActionChipsApiProxyImpl, ActionChipsType} from 'chrome://new-tab-page/lazy_load.js';
 import type {ActionChipsElement} from 'chrome://new-tab-page/lazy_load.js';
-import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -32,10 +31,17 @@ suite('NewTabPageActionChipsTest', () => {
     document.body.append(chips);
   });
 
+  test('should render base chips', () => {
+    const actionChipsContainer =
+        chips.shadowRoot.querySelector<HTMLHtmlElement>(
+            '.action-chips-wrapper');
+    assertTrue(!!actionChipsContainer);
+  });
+
   test('nano banana chip triggers chip click event', async () => {
     // Setup.
     const nanoBananaChip =
-        chips.shadowRoot.querySelector<CrButtonElement>('#nano-banana');
+        chips.shadowRoot.querySelector<HTMLButtonElement>('#nano-banana');
     assertTrue(!!nanoBananaChip);
     const whenActionChipClicked =
         eventToPromise('action-chip-click', document.body);
@@ -59,7 +65,7 @@ suite('NewTabPageActionChipsTest', () => {
   test('deep search chip triggers chip click event', async () => {
     // Setup.
     const deepSearchChip =
-        chips.shadowRoot.querySelector<CrButtonElement>('#deep-search');
+        chips.shadowRoot.querySelector<HTMLButtonElement>('#deep-search');
     assertTrue(!!deepSearchChip);
     const whenActionChipClicked =
         eventToPromise('action-chip-click', document.body);

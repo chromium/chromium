@@ -647,6 +647,9 @@
   E_CPONLY(kColorSearchboxSelectionBackground) \
   E_CPONLY(kColorSearchboxSelectionForeground) \
   E_CPONLY(kColorSearchboxShadow) \
+  /* Action chips colors. */ \
+  E_CPONLY(kColorNewTabPageActionChipBackground) \
+  E_CPONLY(kColorNewTabPageActionChipBackgroundHover) \
   /* The colors used for saved tab group chips on the bookmark bar. */ \
   E_CPONLY(kColorSavedTabGroupForegroundGrey) \
   E_CPONLY(kColorSavedTabGroupForegroundBlue) \

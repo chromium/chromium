@@ -10,6 +10,96 @@
  * #include=cr-shared-style-lit cr-icons-lit
  * #css_wrapper_metadata_end */
 
-p {
-  color: blue;
+:host {
+  --chip-background-color: var(--color-new-tab-page-action-chip-background);
+  --ntp-chips-container-width: 449px;
+}
+
+.action-chips-wrapper {
+  margin-bottom: 62px;
+  margin-top: 8px;
+  max-width: calc(var(--ntp-chips-container-width) + 2px);
+}
+
+.action-chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+  overflow: hidden;
+  width: 100%;
+}
+
+.banana {
+  background-image: url(chrome://new-tab-page/icons/banana.svg);
+  background-size: 24px;
+}
+
+.deep-search {
+  background-image: url(chrome://new-tab-page/icons/deep_search.svg);
+  background-size: 24px;
+}
+
+.action-chip {
+  align-items: center;
+  background-color: var(--chip-background-color);
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  gap: 12px;
+  height: 56px;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 8px 14px;
+  position: relative;
+  width: 240px;
+}
+
+.action-chip:hover {
+  --chip-background-color:
+    var(--color-new-tab-page-action-chip-background-hover);
+}
+
+.action-chip-icon-container {
+  border-radius: 100%;
+  height: 24px;
+  width: 24px;
+}
+
+.action-chip-text-container {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chip-title {
+  color: var(--ntp-theme-text-color);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.chip-body {
+  color: #474747;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+@media (min-width: 560px) {
+  :host {
+    --ntp-chips-container-width: 449px;
+  }
+}
+
+@media (min-width: 672px) {
+  :host {
+    --ntp-chips-container-width: 561px;
+  }
+}
+
+@media (min-width: 900px) {
+  :host {
+    --ntp-chips-container-width: 746px;
+  }
 }

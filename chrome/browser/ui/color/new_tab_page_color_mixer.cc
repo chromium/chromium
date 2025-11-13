@@ -243,6 +243,9 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   using ThemeType = ui::ColorProviderKey::ThemeInitializerSupplier::ThemeType;
   const bool dark_mode =
       key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
+  ui::ColorTransform element_background_color = SelectBasedOnNtpBackground(
+      kColorNewTabPageBackground, {gfx::kGoogleGrey900},
+      GetContrastingColorTransform(kColorNewTabPageBackground));
 
   ui::ColorMixer& mixer = provider->AddMixer();
   mixer[kColorNewTabPageBackground] = {kColorToolbar};
@@ -414,6 +417,17 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabFooterText] =
       ui::GetColorWithMaxContrast({kColorNewTabFooterBackground});
   mixer[kColorNewTabFooterLogoBackground] = {SK_ColorWHITE};
+
+  // Action chips colors.
+  mixer[kColorNewTabPageActionChipBackground] =
+      SelectBasedOnWhiteInput({kColorNewTabPageBackground}, gfx::kGoogleGrey100,
+                              element_background_color);
+  mixer[kColorNewTabPageActionChipBackgroundHover] = SelectBasedOnDarkInput(
+      element_background_color,
+      ui::SetAlpha(SK_ColorWHITE,
+                   /* 10% opacity */ 0.1 * SK_AlphaOPAQUE),
+      ui::SetAlpha(gfx::kGoogleGrey900,
+                   /* 10% opacity */ 0.1 * SK_AlphaOPAQUE));
 }
 
 void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {

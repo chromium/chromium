@@ -1,9 +1,27 @@
-<p>Action Chips</p>
-<!-- TODO(crbug.com/450383981) Remove button and move click functionality
-to actual Nano Banana once implemented (crbug.com/450022467) -->
-<cr-button id="nano-banana" @click="${this.onCreateImageClick_}">
-  Nano Banana
-</cr-button>
-<cr-button id="deep-search" @click="${this.onDeepSearchClick_}">
-  Deep Search
-</cr-button>
+<div class="action-chips-wrapper">
+  <div class="action-chips-container">
+    <button class="action-chip">
+      <div class="action-chip-icon-container"></div>
+      <div class="action-chip-text-container">
+        <span class="chip-title">Chip title</span>
+        <span class="chip-body">Chip text</span>
+      </div>
+    </button>
+    <button class="action-chip" id="deep-search"
+        @click="${this.onDeepSearchClick_}">
+      <div class="action-chip-icon-container deep-search"></div>
+      <div class="action-chip-text-container">
+        <span class="chip-title">Research a topic</span>
+        <span class="chip-body">Interior design courses</span>
+      </div>
+    </button>
+    <button class="action-chip" id="nano-banana"
+        @click="${this.onCreateImageClick_}">
+      <div class="action-chip-icon-container banana"></div>
+      <div class="action-chip-text-container">
+        <span class="chip-title">Create image</span>
+        <span class="chip-body">Make a majestic eagle</span>
+      </div>
+    </button>
+  </div>
+</div>
