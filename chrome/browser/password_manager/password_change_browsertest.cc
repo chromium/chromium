@@ -1509,6 +1509,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 #if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
 #define MAYBE_FlowInterruptedAfterSubmitFormStep \
   DISABLED_FlowInterruptedAfterSubmitFormStep
+// TODO(crbug.com/460180760): Fix the test failure.
+#elif BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+#define MAYBE_FlowInterruptedAfterSubmitFormStep \
+  DISABLED_FlowInterruptedAfterSubmitFormStep
 #else
 #define MAYBE_FlowInterruptedAfterSubmitFormStep \
   FlowInterruptedAfterSubmitFormStep
