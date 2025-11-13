@@ -340,19 +340,19 @@ void ManifestTest::RunTestcase(const Testcase& testcase, ExpectType type) {
                                   testcase.manifest_filename_.c_str()));
 
   switch (type) {
-    case EXPECT_TYPE_ERROR:
+    case ExpectType::kError:
       LoadAndExpectError(testcase.manifest_filename_.c_str(),
                          testcase.expected_error_,
                          testcase.location_,
                          testcase.flags_);
       break;
-    case EXPECT_TYPE_WARNING:
+    case ExpectType::kWarning:
       LoadAndExpectWarning(testcase.manifest_filename_.c_str(),
                            testcase.expected_error_,
                            testcase.location_,
                            testcase.flags_);
       break;
-    case EXPECT_TYPE_SUCCESS:
+    case ExpectType::kSuccess:
       LoadAndExpectSuccess(testcase.manifest_filename_.c_str(),
                            testcase.location_,
                            testcase.flags_);

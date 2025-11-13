@@ -65,7 +65,7 @@ TEST_F(PlatformAppsManifestTest, PlatformApps) {
                    errors::kInvalidManifestVersionUnsupported, "either 2 or 3",
                    "apps")),
   };
-  RunTestcases(error_testcases, EXPECT_TYPE_ERROR);
+  RunTestcases(error_testcases, ExpectType::kError);
 
   const Testcase warning_testcases[] = {
       Testcase(
@@ -77,7 +77,7 @@ TEST_F(PlatformAppsManifestTest, PlatformApps) {
                "apps, "
                "but this is a packaged app."),
   };
-  RunTestcases(warning_testcases, EXPECT_TYPE_WARNING);
+  RunTestcases(warning_testcases, ExpectType::kWarning);
 
   LoadAndExpectWarnings(
       "init_invalid_platform_app_4.json",
@@ -99,7 +99,7 @@ TEST_F(PlatformAppsManifestTest, PlatformAppContentSecurityPolicy) {
                "'app.content_security_policy' is not allowed for specified "
                "extension "
                "ID.")};
-  RunTestcases(warning_testcases, EXPECT_TYPE_WARNING);
+  RunTestcases(warning_testcases, ExpectType::kWarning);
 
   // Allowlisted ones can (this is the ID corresponding to the base 64 encoded
   // key in the init_platform_app_csp.json manifest.)

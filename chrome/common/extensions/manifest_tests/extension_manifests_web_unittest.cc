@@ -41,7 +41,7 @@ TEST_F(ChromeManifestTest, AppWebUrls) {
                ErrorUtils::FormatErrorMessage(
                    errors::kInvalidWebURL, base::NumberToString(1),
                    errors::kCannotClaimAllHostsInExtent))};
-  RunTestcases(testcases, EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, ExpectType::kError);
 
   LoadAndExpectSuccess("web_urls_has_port.json");
 

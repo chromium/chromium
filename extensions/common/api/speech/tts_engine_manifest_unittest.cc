@@ -56,7 +56,7 @@ TEST_F(TtsManifestTest, TtsEngine) {
       Testcase("tts_engine_invalid_buffer_size_4.json",
                errors::kInvalidTtsRequiresSampleRateAndBufferSize),
   };
-  RunTestcases(testcases, EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, ExpectType::kError);
 
   LoadAndExpectSuccess("tts_engine_valid_voices.json");
   LoadAndExpectSuccess("tts_engine_valid_sample_rate_buffer_size.json");

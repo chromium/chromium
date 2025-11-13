@@ -61,7 +61,7 @@ TEST_F(AppLaunchManifestTest, AppLaunchContainer) {
       Testcase("launch_height_negative.json",
                ErrorUtils::FormatErrorMessage(errors::kInvalidLaunchValue,
                                               keys::kLaunchHeight))};
-  RunTestcases(testcases, EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, ExpectType::kError);
 }
 
 TEST_F(AppLaunchManifestTest, AppLaunchURL) {
@@ -91,7 +91,7 @@ TEST_F(AppLaunchManifestTest, AppLaunchURL) {
       Testcase("launch_url_invalid_localized.json",
                ErrorUtils::FormatErrorMessage(errors::kInvalidLaunchValue,
                                               keys::kLaunchWebURL))};
-  RunTestcases(testcases, EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, ExpectType::kError);
 
   scoped_refptr<Extension> extension =
       LoadAndExpectSuccess("launch_local_path.json");

@@ -33,7 +33,7 @@ TEST_F(ContentSecurityPolicyManifestTest, InsecureContentSecurityPolicy) {
                ErrorUtils::FormatErrorMessage(
                    errors::kInvalidCSPMissingSecureSrc,
                    keys::kContentSecurityPolicy, "object-src"))};
-  RunTestcases(testcases, EXPECT_TYPE_WARNING);
+  RunTestcases(testcases, ExpectType::kWarning);
 }
 
 }  // namespace extensions

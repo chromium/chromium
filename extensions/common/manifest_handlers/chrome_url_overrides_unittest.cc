@@ -24,7 +24,7 @@ using URLOverridesManifestTest = ManifestTest;
 TEST_F(URLOverridesManifestTest, Override) {
   RunTestcase(
       Testcase("override_newtab_and_history.json", errors::kMultipleOverrides),
-      EXPECT_TYPE_ERROR);
+      ExpectType::kError);
 
   scoped_refptr<extensions::Extension> extension;
 

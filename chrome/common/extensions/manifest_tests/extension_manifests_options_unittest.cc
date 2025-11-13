@@ -91,7 +91,7 @@ TEST_F(OptionsPageManifestTest, OptionsPageInApps) {
       // Forbid absolute URL for options page in packaged apps.
       Testcase("packaged_app_absolute_options.json",
                extensions::manifest_errors::kInvalidOptionsPage)};
-  RunTestcases(testcases, EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, ExpectType::kError);
 }
 
 // Tests for the options_ui.page manifest field.
@@ -112,7 +112,7 @@ TEST_F(OptionsPageManifestTest, OptionsUIPage) {
 
   RunTestcase(Testcase("options_ui_page_bad_url.json",
                        "'page': expected page, got null"),
-              EXPECT_TYPE_WARNING);
+              ExpectType::kWarning);
 }
 
 // Runs TestOptionsUIChromeStyleAndOpenInTab with and without the

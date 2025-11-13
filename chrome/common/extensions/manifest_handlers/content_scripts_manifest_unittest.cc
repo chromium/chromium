@@ -59,7 +59,7 @@ TEST_F(ContentScriptsManifestTest, MatchPattern) {
                "Error at key 'content_scripts'. Parsing array failed at index "
                "0: Error at key 'matches': Parsing array failed at index 0: "
                "expected string, got integer")};
-  RunTestcases(testcases, EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, ExpectType::kError);
 
   LoadAndExpectSuccess("ports_in_content_scripts.json");
 }

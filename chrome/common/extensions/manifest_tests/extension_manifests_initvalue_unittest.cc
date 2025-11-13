@@ -112,7 +112,7 @@ TEST_F(InitValueManifestTest, InitFromValueInvalid) {
       Testcase("init_invalid_short_name_type.json", errors::kInvalidShortName),
   };
 
-  RunTestcases(testcases, EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, ExpectType::kError);
 }
 
 TEST_F(InitValueManifestTest, InitFromValueValid) {
@@ -173,7 +173,7 @@ TEST_F(InitValueManifestTest, InitFromValueValid) {
       // distinguish between API and host permissions.
       Testcase("init_valid_permissions_unknown.json")};
 
-  RunTestcases(testcases, EXPECT_TYPE_SUCCESS);
+  RunTestcases(testcases, ExpectType::kSuccess);
 }
 
 TEST_F(InitValueManifestTest, InitFromValueValidNameInRTL) {
