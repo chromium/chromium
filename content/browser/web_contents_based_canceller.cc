@@ -13,19 +13,13 @@ namespace content {
 std::unique_ptr<WebContentsBasedCanceller> WebContentsBasedCanceller::Create(
     RenderFrameHost* rfh,
     CancelCondition condition) {
-  if (!rfh->IsActive()) {
-    return nullptr;
-  }
-  WebContents* web_contents = WebContents::FromRenderFrameHost(rfh);
-  if (!web_contents) {
-    return nullptr;
-  }
-  if (condition == CancelCondition::kVisibility &&
-      web_contents->GetVisibility() == Visibility::HIDDEN) {
-    return nullptr;
-  }
   // `make_unique` would force the constructor to be public.
-  return base::WrapUnique(new WebContentsBasedCanceller(rfh, condition));
+  auto canceller =
+      base::WrapUnique(new WebContentsBasedCanceller(rfh, condition));
+  if (canceller->CanShow()) {
+    return canceller;
+  }
+  return nullptr;
 }
 
 WebContentsBasedCanceller::WebContentsBasedCanceller(
@@ -37,45 +31,57 @@ WebContentsBasedCanceller::WebContentsBasedCanceller(
 
 WebContentsBasedCanceller::~WebContentsBasedCanceller() = default;
 
+bool WebContentsBasedCanceller::CanShow() {
+  RenderFrameHost* render_frame_host = document_.AsRenderFrameHostIfValid();
+  if (!render_frame_host) {
+    return false;
+  }
+  return CanShowForVisibility(web_contents()->GetVisibility()) &&
+         CanShowForRFHActiveState();
+}
+
+bool WebContentsBasedCanceller::CanShowForVisibility(Visibility visibility) {
+  return condition_ != CancelCondition::kVisibility ||
+         visibility != Visibility::HIDDEN;
+}
+
+bool WebContentsBasedCanceller::CanShowForRFHActiveState() {
+  RenderFrameHost* render_frame_host = document_.AsRenderFrameHostIfValid();
+  return render_frame_host && render_frame_host->IsActive();
+}
+
 void WebContentsBasedCanceller::SetCancelCallback(
     CancelCallback cancel_callback) {
   CHECK(cancel_callback_.is_null());
-  RenderFrameHost* render_frame_host = document_.AsRenderFrameHostIfValid();
-  if (!render_frame_host) {
-    // The document has been destroyed already.
+  // Check all conditions immediately. This ensures that even if
+  // SetCancelCallback is called later (in a different task), we are not leaving
+  // a window for a race.
+  if (!CanShow()) {
     std::move(cancel_callback).Run();
     return;
   }
   cancel_callback_ = std::move(cancel_callback);
-  // Trigger both handlers immediately. This ensures that even if
-  // SetCancelCallback is called later (in a different task), we are not leaving
-  // a window for a race.
-  OnVisibilityChanged(web_contents()->GetVisibility());
-  RenderFrameHostStateChanged(render_frame_host,
-                              render_frame_host->GetLifecycleState(),
-                              render_frame_host->GetLifecycleState());
 }
 
 void WebContentsBasedCanceller::OnVisibilityChanged(Visibility visibility) {
   // TODO(https://crbug.com/446032849): Remove this.
   VLOG(1) << "Visibility changed: " << static_cast<int>(visibility);
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/457495639): We need a different way to detect when a
+  // WebContents is no longer displayed to the user for android since the
+  // intent to select a file always causes a HIDDEN event as the whole app
+  // receives onStop().
+  return;
+#else
   if (cancel_callback_.is_null()) {
     return;
   }
-  if (condition_ == CancelCondition::kVisibility &&
-      visibility == Visibility::HIDDEN) {
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/457495639): We need a different way to detect when a
-    // WebContents is no longer displayed to the user for android since the
-    // intent to select a file always causes a HIDDEN event as the whole app
-    // receives onStop().
-    VLOG(1) << "Ignoring for android";
-#else
+  if (!CanShowForVisibility(visibility)) {
     // TODO(https://crbug.com/446032849): Remove this.
     VLOG(1) << "Cancelling";
     std::move(cancel_callback_).Run();
-#endif
   }
+#endif
 }
 
 void WebContentsBasedCanceller::RenderFrameHostStateChanged(
@@ -88,16 +94,7 @@ void WebContentsBasedCanceller::RenderFrameHostStateChanged(
     return;
   }
 
-  RenderFrameHost* render_frame_host = document_.AsRenderFrameHostIfValid();
-  if (!render_frame_host) {
-    // TODO(https://crbug.com/446032849): Remove this.
-    VLOG(1) << "Cancelling.";
-    std::move(cancel_callback_).Run();
-    return;
-  }
-  if (changed_render_frame_host == render_frame_host &&
-      !changed_render_frame_host->IsActive()) {
-    // TODO(https://crbug.com/446032849): Remove this.
+  if (!CanShowForRFHActiveState()) {
     VLOG(1) << "Cancelling.";
     std::move(cancel_callback_).Run();
     return;
@@ -106,6 +103,7 @@ void WebContentsBasedCanceller::RenderFrameHostStateChanged(
 
 void WebContentsBasedCanceller::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
+  VLOG(1) << "Finished navigation";
   if (!document_.AsRenderFrameHostIfValid()) {
     // TODO(https://crbug.com/446032849): Remove this.
     VLOG(1) << "Cancelling";

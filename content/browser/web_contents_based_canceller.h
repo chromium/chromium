@@ -60,6 +60,9 @@ class CONTENT_EXPORT WebContentsBasedCanceller : public WebContentsObserver {
  private:
   WebContentsBasedCanceller(RenderFrameHost* render_frame_host,
                             CancelCondition condition);
+  bool CanShow();
+  bool CanShowForVisibility(Visibility visibility);
+  bool CanShowForRFHActiveState();
 
   // WebContentsObserver
   void OnVisibilityChanged(Visibility visibility) override;
