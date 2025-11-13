@@ -51,6 +51,10 @@ void GlicActorNudgeController::OnStateUpdate(
   switch (actor_task_nudge_state.text) {
     case tabs::ActorTaskNudgeState::Text::kDefault:
       tab_strip_action_container_->HideGlicActorTaskIcon();
+      // All bubbles should close when the nudge is hidden.
+      if (bubble_controller->GetBubbleWidget()) {
+        bubble_controller->GetBubbleWidget()->Close();
+      }
       break;
     case tabs::ActorTaskNudgeState::Text::kNeedsAttention:
       UpdateNudgeLabelOrRetrigger(
