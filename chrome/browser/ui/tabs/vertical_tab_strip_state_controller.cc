@@ -4,11 +4,15 @@
 
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_service.h"
+#include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_service.h"
+#include "components/sessions/core/session_id.h"
 #include "ui/actions/actions.h"
 #include "ui/views/vector_icons.h"
 
@@ -16,8 +20,13 @@ namespace tabs {
 
 VerticalTabStripStateController::VerticalTabStripStateController(
     PrefService* pref_service,
-    actions::ActionItem* root_action_item)
-    : pref_service_(pref_service), root_action_item_(root_action_item) {
+    actions::ActionItem* root_action_item,
+    SessionService* session_service,
+    SessionID session_id)
+    : pref_service_(pref_service),
+      root_action_item_(root_action_item),
+      session_service_(session_service),
+      session_id_(session_id) {
   pref_change_registrar_.Init(pref_service_);
 
   pref_change_registrar_.Add(
@@ -27,10 +36,19 @@ VerticalTabStripStateController::VerticalTabStripStateController(
 
   UpdateCollapseActionItem();
 
+  if (session_service_) {
+    session_service_->AddObserver(this);
+  }
+
   // TODO(crbug.com/455559992): Add uncollapsed text logic for collapse button.
 }
 
-VerticalTabStripStateController::~VerticalTabStripStateController() = default;
+VerticalTabStripStateController::~VerticalTabStripStateController() {
+  if (session_service_) {
+    session_service_->RemoveObserver(this);
+    session_service_ = nullptr;
+  }
+}
 
 bool VerticalTabStripStateController::ShouldDisplayVerticalTabs() const {
   return pref_service_->GetBoolean(prefs::kVerticalTabsEnabled);
@@ -78,6 +96,13 @@ VerticalTabStripStateController::RegisterOnStateChanged(
 }
 
 void VerticalTabStripStateController::NotifyStateChanged() {
+  if (session_service_) {
+    session_service_->AddWindowExtraData(session_id_, kCollapsedKey,
+                                         base::ToString(state_.collapsed));
+    session_service_->AddWindowExtraData(
+        session_id_, kUncollapsedWidthKey,
+        base::NumberToString(state_.uncollapsed_width));
+  }
   UpdateCollapseActionItem();
   on_state_changed_callback_list_.Notify(this);
 }
@@ -92,6 +117,14 @@ void VerticalTabStripStateController::UpdateCollapseActionItem() {
   if (collapse_action) {
     collapse_action->SetImage(
         ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon));
+  }
+}
+
+void VerticalTabStripStateController::OnDestroying(
+    SessionServiceBase* service) {
+  if (service == session_service_) {
+    session_service_->RemoveObserver(this);
+    session_service_ = nullptr;
   }
 }
 

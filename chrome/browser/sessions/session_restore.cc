@@ -64,10 +64,12 @@
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -1156,8 +1158,28 @@ class SessionRestoreImpl : public BrowserListObserver {
     params.initial_workspace = workspace;
     params.initial_visible_on_all_workspaces_state = visible_on_all_workspaces;
     params.creation_source = Browser::CreationSource::kSessionRestore;
-    Browser* browser = Browser::Create(params);
 
+    if (tabs::IsVerticalTabsFeatureEnabled()) {
+      if (extra_data.contains(
+              tabs::VerticalTabStripStateController::kCollapsedKey)) {
+        params.vertical_tab_strip_collapsed =
+            extra_data.at(
+                tabs::VerticalTabStripStateController::kCollapsedKey) == "true";
+      }
+
+      if (extra_data.contains(
+              tabs::VerticalTabStripStateController::kUncollapsedWidthKey)) {
+        int uncollapsed_width = 0;
+        if (base::StringToInt(
+                extra_data.at(tabs::VerticalTabStripStateController::
+                                  kUncollapsedWidthKey),
+                &uncollapsed_width)) {
+          params.vertical_tab_strip_uncollapsed_width = uncollapsed_width;
+        }
+      }
+    }
+
+    Browser* browser = Browser::Create(params);
     return browser;
   }
 

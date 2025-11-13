@@ -12,8 +12,11 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
+#include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -228,6 +231,56 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
 
   // Quit and restore a second time.
   QuitMultiWindowBrowserAndRestore(profile);
+}
+
+class SessionRestoreVerticalTabsInteractiveTest
+    : public SessionRestoreInteractiveTest {
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_{tabs::kVerticalTabs};
+
+  const bool kIsCollapsed = true;
+  const int kUncollapsedWidth = 200;
+};
+
+// Verify that in restoring a browser the vertical tab strip's collapsed state
+// and uncollapsed width are preserved.
+IN_PROC_BROWSER_TEST_F(SessionRestoreVerticalTabsInteractiveTest,
+                       VerifyVerticalTabsSessionRestore) {
+  // Enable vertical tabs.
+  browser()
+      ->browser_window_features()
+      ->vertical_tab_strip_state_controller()
+      ->SetVerticalTabsEnabled(true);
+
+  // Set Collapsed State and Uncollapsed Width.
+  browser()
+      ->browser_window_features()
+      ->vertical_tab_strip_state_controller()
+      ->SetCollapsed(kIsCollapsed);
+  browser()
+      ->browser_window_features()
+      ->vertical_tab_strip_state_controller()
+      ->SetUncollapsedWidth(kUncollapsedWidth);
+
+  ASSERT_TRUE(browser()
+                  ->browser_window_features()
+                  ->vertical_tab_strip_state_controller()
+                  ->IsCollapsed() == kIsCollapsed);
+  ASSERT_TRUE(browser()
+                  ->browser_window_features()
+                  ->vertical_tab_strip_state_controller()
+                  ->GetUncollapsedWidth() == 200);
+
+  // Quit and restore.
+  Browser* restored_browser = QuitBrowserAndRestore(browser());
+
+  // Verify states persist after session restore.
+  ASSERT_TRUE(restored_browser->browser_window_features()
+                  ->vertical_tab_strip_state_controller()
+                  ->IsCollapsed() == kIsCollapsed);
+  ASSERT_TRUE(restored_browser->browser_window_features()
+                  ->vertical_tab_strip_state_controller()
+                  ->GetUncollapsedWidth() == kUncollapsedWidth);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

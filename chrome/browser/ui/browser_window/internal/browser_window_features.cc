@@ -25,6 +25,7 @@
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/breadcrumb_manager_browser_agent.h"
@@ -290,7 +291,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     if (tabs::IsVerticalTabsFeatureEnabled()) {
       vertical_tab_strip_state_controller_ =
           std::make_unique<tabs::VerticalTabStripStateController>(
-              profile->GetPrefs(), browser_actions_->root_action_item());
+              profile->GetPrefs(), browser_actions_->root_action_item(),
+              SessionServiceFactory::GetForProfile(browser_->GetProfile()),
+              browser_->GetSessionID());
     }
   }
 
