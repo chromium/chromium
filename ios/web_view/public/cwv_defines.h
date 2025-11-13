@@ -138,4 +138,7 @@
 // Supports -[CWVDownloadTask redirectedURL]
 #define IOS_WEB_VIEW_SUPPORTS_DOWNLOAD_TASK_REDIRECTED_URL 1
 
+// Supports VCN.
+#define IOS_WEB_VIEW_SUPPORTS_VCN 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_
