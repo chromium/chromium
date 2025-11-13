@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -133,13 +134,17 @@ public class PulseDrawable extends Drawable implements Animatable {
      * Creates a {@link PulseDrawable} that will fill the bounds with a pulsing color.
      *
      * @param context The {@link Context} under which the drawable is created.
-     * @param cornerRadius The corner radius in pixels of the highlight rectangle, 0 may be passed
-     *     if the rectangle should not be rounded.
+     * @param topCornerRadius The top corner radius in pixels of the highlight rectangle. 0 may be
+     *     passed if the rectangle should not be rounded.
+     * @param bottomCornerRadius The bottom corner radius in pixels of the highlight rectangle.
      * @param pulseEndAuthority The {@link PulseEndAuthority} associated with this drawable.
      * @return A new {@link PulseDrawable} instance.
      */
     public static PulseDrawable createRoundedRectangle(
-            Context context, @Px int cornerRadius, PulseEndAuthority pulseEndAuthority) {
+            Context context,
+            @Px int topCornerRadius,
+            @Px int bottomCornerRadius,
+            PulseEndAuthority pulseEndAuthority) {
         Painter painter =
                 new Painter() {
                     @Override
@@ -154,7 +159,22 @@ public class PulseDrawable extends Drawable implements Animatable {
                             Canvas canvas,
                             float interpolation) {
                         Rect bounds = drawable.getBounds();
-                        canvas.drawRoundRect(new RectF(bounds), cornerRadius, cornerRadius, paint);
+                        if (topCornerRadius == bottomCornerRadius) {
+                            canvas.drawRoundRect(
+                                    new RectF(bounds), topCornerRadius, topCornerRadius, paint);
+                        } else {
+                            float[] radii =
+                                    new float[] {
+                                        topCornerRadius, topCornerRadius,
+                                        topCornerRadius, topCornerRadius,
+                                        bottomCornerRadius, bottomCornerRadius,
+                                        bottomCornerRadius, bottomCornerRadius
+                                    };
+                            Path path = new Path();
+                            RectF rectF = new RectF(bounds);
+                            path.addRoundRect(rectF, radii, Path.Direction.CW);
+                            canvas.drawPath(path, paint);
+                        }
                     }
                 };
 
@@ -168,11 +188,14 @@ public class PulseDrawable extends Drawable implements Animatable {
      * {@link PulseEndAuthority}).
      *
      * @param context The {@link Context} under which the drawable is created.
-     * @param cornerRadius The corner radius in pixels of the highlight rectangle.
+     * @param topCornerRadius The top corner radius in pixels of the highlight rectangle.
+     * @param bottomCornerRadius The bottom corner radius in pixels of the highlight rectangle.
      * @return A new {@link PulseDrawable} instance.
      */
-    public static PulseDrawable createRoundedRectangle(Context context, @Px int cornerRadius) {
-        return createRoundedRectangle(context, cornerRadius, new EndlessPulser());
+    public static PulseDrawable createRoundedRectangle(
+            Context context, @Px int topCornerRadius, @Px int bottomCornerRadius) {
+        return createRoundedRectangle(
+                context, topCornerRadius, bottomCornerRadius, new EndlessPulser());
     }
 
     /**

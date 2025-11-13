@@ -70,9 +70,11 @@ public class ViewHighlighter {
         // Only valid for HighlightShape.CIRCLE.
         // Used to customize the size of pulse if needed.
         private PulseDrawable.@Nullable Bounds mCircleRadius;
-        // Only valid for HighlightShape.RECTANGLE The corner radius od rectangle in pixels. Used
+        // Only valid for HighlightShape.RECTANGLE The corner radius of rectangle in pixels. Used
         // to created a rounded rectangle.
-        @Px private int mCornerRadius;
+        @Px private int mTopCornerRadius;
+        @Px private int mBottomCornerRadius;
+
         // How far the highlight should extend past the bounds of the view.
         @Px private int mHighlightExtension;
 
@@ -116,22 +118,62 @@ public class ViewHighlighter {
         }
 
         /**
-         *  Only supported for {@code HighlightShape#RECTANGLE}.
-         *  @param radius value in pixels of a corner radius of a rounded rectangle highlight
+         * Only supported for {@code HighlightShape#RECTANGLE}.
+         *
+         * @param radius value in pixels of a corner radius of a rounded rectangle highlight
          */
         public void setCornerRadius(@Px int radius) {
             assert mShape == HighlightShape.RECTANGLE;
-            mCornerRadius = radius;
+            mTopCornerRadius = radius;
+            mBottomCornerRadius = radius;
         }
 
-        /** @return value in pixels of a corner radius of a rounded rectangle highlight */
+        /**
+         * Only supported for {@code HighlightShape#RECTANGLE}.
+         *
+         * @param radius value in pixels of a top corner radius of a rounded rectangle highlight
+         */
+        public void setTopCornerRadius(@Px int radius) {
+            assert mShape == HighlightShape.RECTANGLE;
+            mTopCornerRadius = radius;
+        }
+
+        /**
+         * Only supported for {@code HighlightShape#RECTANGLE}.
+         *
+         * @param radius value in pixels of a bottom corner radius of a rounded rectangle highlight
+         */
+        public void setBottomCornerRadius(@Px int radius) {
+            assert mShape == HighlightShape.RECTANGLE;
+            mBottomCornerRadius = radius;
+        }
+
+        /**
+         * @return value in pixels of a corner radius of a rounded rectangle highlight
+         */
         public @Px int getCornerRadius() {
-            return mCornerRadius;
+            assert mTopCornerRadius == mBottomCornerRadius
+                    : "Top/Bottom have different corner radius";
+            return mTopCornerRadius;
+        }
+
+        /**
+         * @return value in pixels of a top corner radius of a rounded rectangle highlight
+         */
+        public @Px int getTopCornerRadius() {
+            return mTopCornerRadius;
+        }
+
+        /**
+         * @return value in pixels of a bottom corner radius of a rounded rectangle highlight
+         */
+        public @Px int getBottomCornerRadius() {
+            return mBottomCornerRadius;
         }
 
         /**
          * @param highlightExtension How far the highlight should be extended past the bounds of the
-         *        view.
+         *     view.
          */
         public void setHighlightExtension(@Px int highlightExtension) {
             mHighlightExtension = highlightExtension;
@@ -236,12 +278,15 @@ public class ViewHighlighter {
                             params.getBoundsRespectPadding(),
                             params.getCircleRadius());
         } else {
+            int topRadius = params.getTopCornerRadius();
+            int bottomRadius = params.getBottomCornerRadius();
             drawable =
                     createRectangle(
                             view,
                             params.getNumPulses(),
                             params.getBoundsRespectPadding(),
-                            params.getCornerRadius());
+                            topRadius,
+                            bottomRadius);
         }
         attachViewAsHighlight(view, drawable, params.getHighlightExtension());
     }
@@ -305,16 +350,25 @@ public class ViewHighlighter {
      * Helper method to create a rectangular drawable from the values of {@code HighlightParams}.
      */
     private static PulseDrawable createRectangle(
-            View view, int numPulses, boolean boundsRespectPadding, @Px int cornerRadius) {
+            View view,
+            int numPulses,
+            boolean boundsRespectPadding,
+            @Px int topCornerRadius,
+            @Px int bottomCornerRadius) {
         PulseDrawable drawable = null;
         Context context = view.getContext();
 
         if (numPulses != 0) {
             drawable =
                     PulseDrawable.createRoundedRectangle(
-                            context, cornerRadius, new NumberPulser(view, numPulses));
+                            context,
+                            topCornerRadius,
+                            bottomCornerRadius,
+                            new NumberPulser(view, numPulses));
         } else {
-            drawable = PulseDrawable.createRoundedRectangle(context, cornerRadius);
+            drawable =
+                    PulseDrawable.createRoundedRectangle(
+                            context, topCornerRadius, bottomCornerRadius);
         }
 
         if (boundsRespectPadding) {

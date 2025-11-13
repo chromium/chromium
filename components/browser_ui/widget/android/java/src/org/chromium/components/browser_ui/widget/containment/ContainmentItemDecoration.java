@@ -89,4 +89,9 @@ public class ContainmentItemDecoration extends RecyclerView.ItemDecoration {
         mUpdateBackgrounds = false;
         super.onDraw(c, parent, state);
     }
+
+    /** Returns the {@link ContainerStyle} object for a given position. */
+    public @Nullable ContainerStyle getContainerStyle(int position) {
+        return mPreferenceStyles != null ? mPreferenceStyles.get(position) : null;
+    }
 }

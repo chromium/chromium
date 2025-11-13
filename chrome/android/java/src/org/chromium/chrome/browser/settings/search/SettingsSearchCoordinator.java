@@ -36,12 +36,12 @@ import org.chromium.base.Log;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
-import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.MultiColumnSettings;
 import org.chromium.chrome.browser.settings.search.SettingsIndexData.SearchResults;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -67,12 +67,11 @@ public class SettingsSearchCoordinator {
     private final AppCompatActivity mActivity;
     private final BooleanSupplier mUseMultiColumnSupplier;
     private @Nullable final MultiColumnSettings mMultiColumnSettings;
+    private final Map<Fragment, ContainmentItemDecoration> mItemDecorations;
     private final Handler mHandler = new Handler();
     private @Nullable Fragment mResultsFragment;
     private @Nullable Runnable mSearchRunnable;
     private @Nullable Runnable mRemoveResultChildViewListener;
-    private @MonotonicNonNull HighlightParams mHighlightParams;
-
     // Whether the back action handler for MultiColumnSettings was set. This is set lazily when
     // search UI gets focus for the first time.
     private boolean mMultiColumnSettingsBackActionHandlerSet;
@@ -119,11 +118,13 @@ public class SettingsSearchCoordinator {
     public SettingsSearchCoordinator(
             AppCompatActivity activity,
             BooleanSupplier useMultiColumnSupplier,
-            @Nullable MultiColumnSettings multiColumnSettings) {
+            @Nullable MultiColumnSettings multiColumnSettings,
+            Map<Fragment, ContainmentItemDecoration> itemDecorations) {
         mActivity = activity;
         mUseMultiColumnSupplier = useMultiColumnSupplier;
         mMultiColumnSettings = multiColumnSettings;
         mFragmentState = FS_SETTINGS;
+        mItemDecorations = itemDecorations;
     }
 
     /** Initializes search UI, sets up listeners, backpress action handler, etc. */
@@ -517,7 +518,8 @@ public class SettingsSearchCoordinator {
                             }
                             mRemoveResultChildViewListener =
                                     () -> {
-                                        ViewHighlighter.turnOnHighlight(view, getHighlightParams());
+                                        ViewHighlighter.turnOnHighlight(
+                                                view, getHighlightParams(fragment, pos));
                                         listView.removeOnChildAttachStateChangeListener(this);
                                         mRemoveResultChildViewListener = null;
                                     };
@@ -545,19 +547,16 @@ public class SettingsSearchCoordinator {
                 });
     }
 
-    @Initializer
-    @EnsuresNonNull("mHighlightParams")
-    private HighlightParams getHighlightParams() {
-        if (mHighlightParams == null) {
-            // TODO(jinsukkim): Apply containment style.
-            int radius =
-                    mActivity
-                            .getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen.settings_item_rounded_corner_radius_inner);
-            mHighlightParams = new HighlightParams(HighlightShape.RECTANGLE);
-            mHighlightParams.setCornerRadius(radius);
+    private HighlightParams getHighlightParams(PreferenceFragmentCompat fragment, int pos) {
+        var highlightParams = new HighlightParams(HighlightShape.RECTANGLE);
+        var itemDecoration = mItemDecorations.get(fragment);
+        if (itemDecoration != null) {
+            var style = itemDecoration.getContainerStyle(pos);
+            if (style != null) {
+                highlightParams.setTopCornerRadius((int) style.getTopRadius());
+                highlightParams.setBottomCornerRadius((int) style.getBottomRadius());
+            }
         }
-        return mHighlightParams;
+        return highlightParams;
     }
 }
