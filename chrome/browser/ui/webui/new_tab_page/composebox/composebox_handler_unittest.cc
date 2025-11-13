@@ -164,10 +164,10 @@ TEST_F(ComposeboxHandlerTest, SetDeepSearchMode) {
           }));
 
   // Start the session.
-  EXPECT_CALL(query_controller(), NotifySessionStarted)
+  EXPECT_CALL(query_controller(), InitializeIfNeeded)
       .Times(1)
-      .WillOnce(testing::Invoke(
-          &query_controller(), &MockQueryController::NotifySessionStartedBase));
+      .WillOnce(testing::Invoke(&query_controller(),
+                                &MockQueryController::InitializeIfNeededBase));
   handler().NotifySessionStarted();
   run_loop.Run();
 
@@ -219,10 +219,10 @@ TEST_F(ComposeboxHandlerTest, SetCreateImageMode) {
           }));
 
   // Start the session.
-  EXPECT_CALL(query_controller(), NotifySessionStarted)
+  EXPECT_CALL(query_controller(), InitializeIfNeeded)
       .Times(1)
-      .WillOnce(testing::Invoke(
-          &query_controller(), &MockQueryController::NotifySessionStartedBase));
+      .WillOnce(testing::Invoke(&query_controller(),
+                                &MockQueryController::InitializeIfNeededBase));
   handler().NotifySessionStarted();
   run_loop.Run();
 

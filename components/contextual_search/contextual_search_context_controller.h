@@ -53,8 +53,6 @@ class ContextualSearchContextController {
     // Does nothing if `enable_multi_context_input_flow` is false or if
     // `enable_viewport_images` is false.
     bool use_separate_request_ids_for_multi_context_viewport_images = true;
-    // Whether or not to clear state upon starting a new session.
-    bool clear_previous_state_on_session_start = false;
   };
 
   // Observer interface for the Page Handler to get updates on file upload
@@ -99,9 +97,8 @@ class ContextualSearchContextController {
 
   virtual ~ContextualSearchContextController() = default;
 
-  // Session management.
-  virtual void NotifySessionStarted() = 0;
-  virtual void NotifySessionAbandoned() = 0;
+  // Called when a UI is associated with the context controller.
+  virtual void InitializeIfNeeded() = 0;
 
   // Called when a query has been submitted. `query_start_time` is the time
   // that the user clicked the submit button.

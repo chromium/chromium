@@ -196,23 +196,11 @@ TEST_F(ContextualSearchboxHandlerTest, SessionStarted) {
   auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
   ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
 
-  EXPECT_CALL(query_controller(), NotifySessionStarted);
+  EXPECT_CALL(query_controller(), InitializeIfNeeded);
   EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged)
       .WillOnce(testing::SaveArg<0>(&state_arg));
   handler().NotifySessionStarted();
   EXPECT_EQ(state_arg, SessionState::kSessionStarted);
-}
-
-TEST_F(ContextualSearchboxHandlerTest, SessionAbandoned) {
-  SessionState state_arg = SessionState::kNone;
-  auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
-  ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
-
-  EXPECT_CALL(query_controller(), NotifySessionAbandoned);
-  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged)
-      .WillOnce(testing::SaveArg<0>(&state_arg));
-  handler().NotifySessionAbandoned();
-  EXPECT_EQ(state_arg, SessionState::kSessionAbandoned);
 }
 
 TEST_F(ContextualSearchboxHandlerTest, AddFile_Pdf) {
@@ -304,10 +292,10 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery) {
       });
 
   // Start the session.
-  EXPECT_CALL(query_controller(), NotifySessionStarted)
+  EXPECT_CALL(query_controller(), InitializeIfNeeded)
       .Times(1)
-      .WillOnce(testing::Invoke(
-          &query_controller(), &MockQueryController::NotifySessionStartedBase));
+      .WillOnce(testing::Invoke(&query_controller(),
+                                &MockQueryController::InitializeIfNeededBase));
   handler().NotifySessionStarted();
   run_loop.Run();
 

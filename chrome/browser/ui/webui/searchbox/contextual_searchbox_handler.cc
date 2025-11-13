@@ -285,7 +285,7 @@ ContextualSearchboxHandler::GetMetricsRecorder() {
 
 void ContextualSearchboxHandler::NotifySessionStarted() {
   if (auto* query_controller = GetQueryController()) {
-    query_controller->NotifySessionStarted();
+    query_controller->InitializeIfNeeded();
     if (auto* metrics_recorder = GetMetricsRecorder()) {
       metrics_recorder->NotifySessionStateChanged(
           contextual_search::SessionState::kSessionStarted);
@@ -294,12 +294,9 @@ void ContextualSearchboxHandler::NotifySessionStarted() {
 }
 
 void ContextualSearchboxHandler::NotifySessionAbandoned() {
-  if (auto* query_controller = GetQueryController()) {
-    query_controller->NotifySessionAbandoned();
-    if (auto* metrics_recorder = GetMetricsRecorder()) {
-      metrics_recorder->NotifySessionStateChanged(
-          contextual_search::SessionState::kSessionAbandoned);
-    }
+  if (auto* metrics_recorder = GetMetricsRecorder()) {
+    metrics_recorder->NotifySessionStateChanged(
+        contextual_search::SessionState::kSessionAbandoned);
   }
 }
 
@@ -527,7 +524,7 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
 void ContextualSearchboxHandler::OnGetTabPageContext(
     const base::UnguessableToken& context_token,
     std::unique_ptr<lens::ContextualInputData> page_content_data) {
-  if (deleted_context_tokens_.contains(context_token))  {
+  if (deleted_context_tokens_.contains(context_token)) {
     // Tab was deleted before the file upload flow could start.
     deleted_context_tokens_.erase(context_token);
     return;

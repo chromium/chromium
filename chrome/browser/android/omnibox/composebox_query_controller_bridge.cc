@@ -68,11 +68,11 @@ void ComposeboxQueryControllerBridge::Destroy(JNIEnv* env) {
 }
 
 void ComposeboxQueryControllerBridge::NotifySessionStarted(JNIEnv* env) {
-  query_controller_->NotifySessionStarted();
+  query_controller_->InitializeIfNeeded();
 }
 
 void ComposeboxQueryControllerBridge::NotifySessionAbandoned(JNIEnv* env) {
-  query_controller_->NotifySessionAbandoned();
+  // No-op.
 }
 
 base::android::ScopedJavaLocalRef<jobject>

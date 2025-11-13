@@ -48,8 +48,7 @@ class MockQueryController
           query_controller_config_params);
   ~MockQueryController() override;
 
-  MOCK_METHOD(void, NotifySessionStarted, (), (override));
-  MOCK_METHOD(void, NotifySessionAbandoned, (), (override));
+  MOCK_METHOD(void, InitializeIfNeeded, (), (override));
   MOCK_METHOD(void,
               StartFileUploadFlow,
               (const base::UnguessableToken& file_token,
@@ -63,8 +62,8 @@ class MockQueryController
               (const base::UnguessableToken& file_token),
               (override));
 
-  void NotifySessionStartedBase() {
-    TestComposeboxQueryController::NotifySessionStarted();
+  void InitializeIfNeededBase() {
+    TestComposeboxQueryController::InitializeIfNeeded();
   }
 };
 

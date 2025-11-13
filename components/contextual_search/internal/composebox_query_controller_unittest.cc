@@ -111,7 +111,7 @@ class ComposeboxQueryControllerTest
       bool enable_multi_context_input_flow = false,
       bool enable_viewport_images = true,
       bool use_separate_request_ids_for_multi_context_viewport_images = true,
-      bool clear_previous_state_on_session_start = false) {
+      bool enable_cluster_info_ttl = false) {
     // Create the config params.
     auto config_params =
         std::make_unique<ContextualSearchContextController::ConfigParams>();
@@ -123,14 +123,13 @@ class ComposeboxQueryControllerTest
     config_params->enable_viewport_images = enable_viewport_images;
     config_params->use_separate_request_ids_for_multi_context_viewport_images =
         use_separate_request_ids_for_multi_context_viewport_images;
-    config_params->clear_previous_state_on_session_start =
-        clear_previous_state_on_session_start;
 
     // Create the controller.
     controller_ = std::make_unique<TestComposeboxQueryController>(
         identity_manager(), shared_url_loader_factory_,
         version_info::Channel::UNKNOWN, kLocale, template_url_service(),
-        fake_variations_client_.get(), std::move(config_params));
+        fake_variations_client_.get(), std::move(config_params),
+        enable_cluster_info_ttl);
     controller_->AddObserver(this);
 
     // Initialize the cluster info response.
@@ -411,22 +410,36 @@ class ComposeboxQueryControllerTest
 };
 
 TEST_F(ComposeboxQueryControllerTest,
-       NotifySessionStartedIssuesClusterInfoRequest) {
+       InitializeIfNeededIssuesClusterInfoRequest) {
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
 }
 
+TEST_F(ComposeboxQueryControllerTest, InitializeIfNeededSecondTimeDoesNothing) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the session again.
+  controller().InitializeIfNeeded();
+
+  // Assert: No cluster info request is made.
+  EXPECT_TRUE(controller_state_future_.IsEmpty());
+}
+
 TEST_F(ComposeboxQueryControllerTest,
-       NotifySessionStartedIssuesClusterInfoRequestWithOAuth) {
+       InitializeIfNeededIssuesClusterInfoRequestWithOAuth) {
   // Arrange: Make primary account available.
   identity_test_env()->MakePrimaryAccountAvailable(
       kTestUser, signin::ConsentLevel::kSignin);
 
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       access_token_info().token, access_token_info().expiration_time,
       access_token_info().id_token);
@@ -436,84 +449,21 @@ TEST_F(ComposeboxQueryControllerTest,
 }
 
 TEST_F(ComposeboxQueryControllerTest,
-       NotifySessionStartedIssuesClusterInfoRequestFailure) {
+       InitializeIfNeededIssuesClusterInfoRequestFailure) {
   // Arrange: Simulate an error in the cluster info request.
   controller().set_next_cluster_info_request_should_return_error(true);
 
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo(
       /*expected_state=*/QueryControllerState::kClusterInfoInvalid);
 }
 
-TEST_F(ComposeboxQueryControllerTest, NotifySessionStartedClearPreviousState) {
-  CreateController(
-      /*send_lns_surface=*/false,
-      /*suppress_lns_surface_param_if_no_image=*/true,
-      /*enable_multi_context_input_flow=*/false,
-      /*enable_viewport_images=*/true,
-      /*use_separate_request_ids_for_multi_context_viewport_images=*/true,
-      /*clear_previous_state_on_session_start=*/true);
-
-  // Act: Start the session.
-  controller().NotifySessionStarted();
-
-  // Assert: Validate cluster info request and state changes.
-  WaitForClusterInfo();
-
-  // Act: Start the file upload flow.
-  const base::UnguessableToken file_token = base::UnguessableToken::Create();
-  StartPdfFileUploadFlow(file_token,
-                         /*file_data=*/std::vector<uint8_t>());
-
-  // Assert: Validate file upload request and status changes.
-  WaitForFileUpload(file_token, lens::MimeType::kPdf);
-
-  // Check that file is in cache.
-  EXPECT_TRUE(controller().GetFileInfoForTesting(file_token));
-
-  // Act: Restart the session, but clear state on session start.
-  controller().NotifySessionStarted();
-
-  // Assert: Validate state is cleared, and re-fetched.
-  EXPECT_FALSE(controller().GetFileInfoForTesting(file_token));
-
-  WaitForClusterInfo(
-      /*expected_state=*/QueryControllerState::kClusterInfoReceived,
-      /*fetch_request_count=*/2);
-}
-
-TEST_F(ComposeboxQueryControllerTest, NotifySessionAbandoned) {
-  // Act: Start the session.
-  controller().NotifySessionStarted();
-
-  // Assert: Validate cluster info request and state changes.
-  WaitForClusterInfo();
-
-  // Act: Start the file upload flow.
-  const base::UnguessableToken file_token = base::UnguessableToken::Create();
-  StartPdfFileUploadFlow(file_token,
-                         /*file_data=*/std::vector<uint8_t>());
-
-  // Assert: Validate file upload request and status changes.
-  WaitForFileUpload(file_token, lens::MimeType::kPdf);
-
-  // Check that file is in cache.
-  EXPECT_TRUE(controller().GetFileInfoForTesting(file_token));
-
-  // Act: End the session.
-  controller().NotifySessionAbandoned();
-
-  // Check that file is no longer in cache.
-  EXPECT_FALSE(controller().GetFileInfoForTesting(file_token));
-  EXPECT_EQ(QueryControllerState::kOff, controller().query_controller_state());
-}
-
 TEST_F(ComposeboxQueryControllerTest, UploadFileRequestFailure) {
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -542,7 +492,7 @@ TEST_F(ComposeboxQueryControllerTest,
   controller().set_next_cluster_info_request_should_return_error(true);
 
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Act: Start the file upload flow.
   const base::UnguessableToken file_token = base::UnguessableToken::Create();
@@ -567,7 +517,7 @@ TEST_F(ComposeboxQueryControllerTest,
 #if !BUILDFLAG(IS_IOS)
 TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -658,7 +608,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
 
 TEST_F(ComposeboxQueryControllerTest, UploadEmptyImageFileRequestFailure) {
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -681,7 +631,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadEmptyImageFileRequestFailure) {
 
 TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -771,7 +721,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
 
 TEST_F(ComposeboxQueryControllerTest, UploadPageContextPdfFileRequestSuccess) {
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -914,7 +864,7 @@ TEST_F(
       /*use_separate_request_ids_for_multi_context_viewport_images=*/true);
 
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -1030,7 +980,7 @@ TEST_F(
 TEST_F(ComposeboxQueryControllerTest,
        UploadPageContextPdfFileWithViewportRequestSuccess) {
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -1182,7 +1132,7 @@ TEST_F(ComposeboxQueryControllerTest,
 TEST_F(ComposeboxQueryControllerTest,
        UploadPageContextWebpageContentWithViewportRequestSuccess) {
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -1371,7 +1321,7 @@ TEST_F(ComposeboxQueryControllerTest,
                    /*enable_viewport_images=*/false);
 
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -1419,7 +1369,7 @@ TEST_F(ComposeboxQueryControllerTest,
 TEST_F(ComposeboxQueryControllerTest,
        UploadPageContextWebpageContentWithPageContextIneligibleFailure) {
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -1449,7 +1399,7 @@ TEST_F(ComposeboxQueryControllerTest,
 
 TEST_F(ComposeboxQueryControllerTest, UploadInvalidMimeTypeFileRequestFailure) {
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -1476,7 +1426,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadFileRequestSuccessWithOAuth) {
       kTestUser, signin::ConsentLevel::kSignin);
 
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       access_token_info().token, access_token_info().expiration_time,
       access_token_info().id_token);
@@ -1501,7 +1451,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadFileAndWaitForClusterInfoExpire) {
   controller().set_enable_cluster_info_ttl(true);
 
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -1539,7 +1489,7 @@ TEST_F(ComposeboxQueryControllerTest,
       controller_state_future.GetRepeatingCallback());
 
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Act: Start the file upload flow without waiting for the cluster info
   // request to complete.
@@ -1625,120 +1575,12 @@ TEST_F(ComposeboxQueryControllerTest, CreateClientContextHasCorrectValues) {
   EXPECT_EQ(client_context.locale_context().time_zone(), kTimeZone);
 }
 
-TEST_F(ComposeboxQueryControllerTest, AbandonSessionClearsFiles) {
-  // Act: Start the session.
-  controller().NotifySessionStarted();
-
-  // Assert: Validate cluster info request and state changes.
-  WaitForClusterInfo();
-
-  // Act: Start the file upload flow.
-  const base::UnguessableToken file_token = base::UnguessableToken::Create();
-  StartPdfFileUploadFlow(file_token,
-                         /*file_data=*/std::vector<uint8_t>());
-
-  // Assert: Validate file upload request and status changes.
-  WaitForFileUpload(file_token, lens::MimeType::kPdf);
-
-  // Act: Abandon the session.
-  controller().NotifySessionAbandoned();
-
-  // Assert: Validate the state change.
-  EXPECT_EQ(QueryControllerState::kOff, controller_state_future_.Take());
-
-  // Act: Start the session again.
-  controller().NotifySessionStarted();
-
-  // Assert: Validate the state change.
-  EXPECT_EQ(QueryControllerState::kAwaitingClusterInfoResponse,
-            controller_state_future_.Take());
-
-  // Assert: Validate the state change.
-  EXPECT_EQ(QueryControllerState::kClusterInfoReceived,
-            controller_state_future_.Take());
-
-  // Act: Generate the destination URL for the query.
-  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
-      std::make_unique<CreateSearchUrlRequestInfo>();
-  search_url_request_info->query_text = "test";
-  search_url_request_info->query_start_time = kTestQueryStartTime;
-  GURL aim_url =
-      controller().CreateSearchUrl(std::move(search_url_request_info));
-
-  // Assert: Lens request id is NOT added to unimodal text queries.
-  std::string vsrid_value;
-  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kRequestIdParameterKey,
-                                          &vsrid_value));
-
-  // Assert: Visual input type is NOT added to unimodal text queries.
-  std::string vit_value;
-  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kVisualInputTypeParameterKey,
-                                          &vit_value));
-
-  // Assert: Gsession id is NOT added to unimodal text queries.
-  std::string gsession_id_value;
-  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kSessionIdQueryParameterKey,
-                                          &gsession_id_value));
-
-  // Check that the timestamps are attached to the url.
-  std::string qsubts_value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(
-      aim_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
-
-  std::string cud_value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(
-      aim_url, kClientUploadDurationQueryParameter, &cud_value));
-}
-
-TEST_F(ComposeboxQueryControllerTest,
-       AbandonSessionPreventsMultipleClusterInfoFetch) {
-  // Enable cluster info TTL.
-  controller().set_enable_cluster_info_ttl(true);
-
-  // Act: Start the session.
-  controller().NotifySessionStarted();
-
-  // Assert: Validate cluster info request and state changes.
-  WaitForClusterInfo();
-
-  // Act: Abandon the session.
-  controller().NotifySessionAbandoned();
-
-  // Assert: Validate the state change.
-  EXPECT_EQ(QueryControllerState::kOff, controller_state_future_.Take());
-
-  // Act: Start the session again.
-  controller().NotifySessionStarted();
-
-  // Assert: Validate the state change.
-  EXPECT_EQ(QueryControllerState::kAwaitingClusterInfoResponse,
-            controller_state_future_.Take());
-
-  // Assert: Validate the state change.
-  EXPECT_EQ(QueryControllerState::kClusterInfoReceived,
-            controller_state_future_.Take());
-
-  // Wait 45 minutes, long enough for the cluster info to expire once.
-  task_environment().FastForwardBy(base::Minutes(45));
-
-  // Assert: Validate the state change sequence.
-  EXPECT_EQ(QueryControllerState::kClusterInfoInvalid,
-            controller_state_future_.Take());
-  EXPECT_EQ(QueryControllerState::kAwaitingClusterInfoResponse,
-            controller_state_future_.Take());
-  EXPECT_EQ(QueryControllerState::kClusterInfoReceived,
-            controller_state_future_.Take());
-
-  // Assert: The cluster info fetch request was only sent 3 times.
-  EXPECT_EQ(controller().num_cluster_info_fetch_requests_sent(), 3);
-}
-
 TEST_F(ComposeboxQueryControllerTest,
        UnimodalTextQuerySubmittedWithInvalidClusterInfoSuccess) {
   controller().set_next_cluster_info_request_should_return_error(true);
 
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo(QueryControllerState::kClusterInfoInvalid);
@@ -1778,7 +1620,7 @@ TEST_F(ComposeboxQueryControllerTest,
 
 TEST_F(ComposeboxQueryControllerTest, QuerySubmitted) {
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -1824,7 +1666,7 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmitted) {
 
 TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedPdf) {
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -1893,7 +1735,7 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedPdf) {
 TEST_F(ComposeboxQueryControllerTest,
        QuerySubmittedWithUploadedPdfStandardSearch) {
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -1988,7 +1830,7 @@ TEST_F(ComposeboxQueryControllerTest,
 #if !BUILDFLAG(IS_IOS)
 TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedImage) {
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -2056,13 +1898,27 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedImage) {
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
+// TODO(crbug.com/457765080): De-flake and re-enable on iOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_QuerySubmittedWithUploadedPdfButInvalidClusterInfoIsUnimodal \
+  DISABLED_QuerySubmittedWithUploadedPdfButInvalidClusterInfoIsUnimodal
+#else
+#define MAYBE_QuerySubmittedWithUploadedPdfButInvalidClusterInfoIsUnimodal \
+  QuerySubmittedWithUploadedPdfButInvalidClusterInfoIsUnimodal
+#endif
 TEST_F(ComposeboxQueryControllerTest,
-       QuerySubmittedWithUploadedPdfButInvalidClusterInfoIsUnimodal) {
-  // Enable cluster info TTL.
-  controller().set_enable_cluster_info_ttl(true);
+       MAYBE_QuerySubmittedWithUploadedPdfButInvalidClusterInfoIsUnimodal) {
+  // Arrange: Create the controller with cluster info TTL enabled.
+  CreateController(
+      /*send_lns_surface=*/true,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_multi_context_input_flow=*/false,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_multi_context_viewport_images=*/true,
+      /*enable_cluster_info_ttl=*/true);
 
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -2111,7 +1967,7 @@ TEST_F(ComposeboxQueryControllerTest,
 
 TEST_F(ComposeboxQueryControllerTest, DeleteFile_Success) {
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -2187,7 +2043,7 @@ TEST_F(ComposeboxQueryControllerTest, DeleteFile_Failed) {
       }));
 
   // Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Delete file.
   const bool deleted =
@@ -2198,7 +2054,7 @@ TEST_F(ComposeboxQueryControllerTest, DeleteFile_Failed) {
 
 TEST_F(ComposeboxQueryControllerTest, ClearFiles) {
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -2227,7 +2083,7 @@ TEST_F(ComposeboxQueryControllerTest,
                    /*suppress_lns_surface_param_if_no_image=*/true);
 
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -2261,7 +2117,7 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithLnsSurfaceAndNoImage) {
                    /*suppress_lns_surface_param_if_no_image=*/false);
 
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -2297,7 +2153,7 @@ TEST_F(ComposeboxQueryControllerTest,
                    /*enable_multi_context_input_flow=*/true);
 
   // Act: Start the session.
-  controller().NotifySessionStarted();
+  controller().InitializeIfNeeded();
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
@@ -2366,12 +2222,12 @@ TEST_F(ComposeboxQueryControllerTest,
                 .GetFileInfoForTesting(first_file_token)
                 ->GetRequestIdForTesting()
                 ->long_context_id(),
-            0);
+            1);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(second_file_token)
                 ->GetRequestIdForTesting()
                 ->long_context_id(),
-            0);
+            1);
   EXPECT_EQ(first_file_upload_request->objects_request()
                 .request_context()
                 .request_id()
@@ -2396,12 +2252,12 @@ TEST_F(ComposeboxQueryControllerTest,
                 .request_context()
                 .request_id()
                 .long_context_id(),
-            0);
+            1);
   EXPECT_EQ(second_file_upload_request->objects_request()
                 .request_context()
                 .request_id()
                 .long_context_id(),
-            0);
+            1);
   EXPECT_EQ(first_file_upload_request->objects_request()
                 .request_context()
                 .request_id()

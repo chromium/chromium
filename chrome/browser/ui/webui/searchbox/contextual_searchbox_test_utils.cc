@@ -25,8 +25,8 @@ MockQueryController::MockQueryController(
                                     locale,
                                     template_url_service,
                                     variations_client,
-                                    std::move(query_controller_config_params)) {
-}
+                                    std::move(query_controller_config_params),
+                                    /*enable_cluster_info_ttl=*/false) {}
 MockQueryController::~MockQueryController() = default;
 
 content::WebContents* TestWebContentsDelegate::OpenURLFromTab(
