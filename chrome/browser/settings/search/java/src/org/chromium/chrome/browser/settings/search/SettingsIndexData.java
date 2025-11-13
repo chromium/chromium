@@ -113,7 +113,7 @@ public class SettingsIndexData {
          */
         public static class Builder {
             private final String mKey;
-            private final String mTitle;
+            private String mTitle;
             private @Nullable String mHeader;
             private @Nullable String mSummary;
             private @Nullable String mFragment;
@@ -148,6 +148,11 @@ public class SettingsIndexData {
                 mFragment = original.fragment;
                 mExtras = original.extras;
                 mParentFragment = original.parentFragment;
+            }
+
+            public Builder setTitle(String title) {
+                mTitle = title;
+                return this;
             }
 
             public Builder setHeader(@Nullable String header) {

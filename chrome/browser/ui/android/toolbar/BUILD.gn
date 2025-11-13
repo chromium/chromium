@@ -171,6 +171,7 @@ android_library("java") {
     "//chrome/browser/search_engines/android:java",
     "//chrome/browser/segmentation_platform:factory_java",
     "//chrome/browser/settings:java",
+    "//chrome/browser/settings:search_java",
     "//chrome/browser/share/android:java_resources",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/tab:java",

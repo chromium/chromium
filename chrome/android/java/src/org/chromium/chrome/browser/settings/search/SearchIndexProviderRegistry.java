@@ -24,5 +24,9 @@ public final class SearchIndexProviderRegistry {
             List.of(
                     org.chromium.chrome.browser.about_settings.AboutChromeSettings
                             .SEARCH_INDEX_DATA_PROVIDER,
-                    org.chromium.chrome.browser.settings.MainSettings.SEARCH_INDEX_DATA_PROVIDER);
+                    org.chromium.chrome.browser.settings.MainSettings.SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.toolbar.adaptive.settings
+                            .AdaptiveToolbarSettingsFragment.SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment
+                            .SEARCH_INDEX_DATA_PROVIDER);
 }
