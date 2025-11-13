@@ -619,7 +619,8 @@ public class ToolbarControlContainerTest {
                 mHomeButtonDisplay,
                 /* extensionToolbarCoordinator= */ null,
                 mThemeColorProvider,
-                mIncognitoStateProvider);
+                mIncognitoStateProvider,
+                /* incognitoWindowCountSupplier= */ null);
 
         controlContainer.toggleLocationBarOnlyMode(true);
         verify(mProgressBar).setVisibility(View.GONE);

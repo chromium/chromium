@@ -199,7 +199,8 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             @Nullable HomeButtonDisplay homeButtonDisplay,
             @Nullable ExtensionToolbarCoordinator extensionToolbarCoordinator,
             TopControlsStacker topControlsStacker,
-            BrowserControlsStateProvider browserControlsStateProvider) {
+            BrowserControlsStateProvider browserControlsStateProvider,
+            Supplier<Integer> incognitoWindowCountSupplier) {
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
         mControlContainer = controlContainer;
@@ -275,7 +276,8 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                 homeButtonDisplay,
                 extensionToolbarCoordinator,
                 normalThemeColorProvider,
-                incognitoStateProvider);
+                incognitoStateProvider,
+                incognitoWindowCountSupplier);
         mAppMenuButtonHelperSupplier = appMenuButtonHelperSupplier;
         new OneShotCallback<>(mAppMenuButtonHelperSupplier, this::setAppMenuButtonHelper);
         homepageEnabledSupplier.addObserver(

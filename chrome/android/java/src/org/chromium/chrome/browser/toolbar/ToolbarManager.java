@@ -99,6 +99,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.IncognitoNtpOmniboxAutofocusManager;
 import org.chromium.chrome.browser.ntp.IncognitoNtpUtils;
@@ -1964,7 +1965,10 @@ public class ToolbarManager
                                 : mHomeButtonCoordinator,
                         mExtensionToolbarCoordinator,
                         topControlsStacker,
-                        mBrowserControlsSizer);
+                        mBrowserControlsSizer,
+                        () ->
+                                MultiWindowUtils.getInstanceCountWithFallback(
+                                        MultiInstanceManager.PersistedInstanceType.OFF_THE_RECORD));
 
         mHomepageStateListener =
                 () -> {

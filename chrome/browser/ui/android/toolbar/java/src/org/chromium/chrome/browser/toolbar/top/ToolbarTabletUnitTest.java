@@ -331,7 +331,8 @@ public final class ToolbarTabletUnitTest {
                 /* homeButtonDisplay= */ null,
                 /* extensionToolbarCoordinator= */ null,
                 mThemeColorProvider,
-                mIncognitoStateProvider);
+                mIncognitoStateProvider,
+                /* incognitoWindowCountSupplier= */ () -> 1);
         when(mToolbarDataProvider.getNewTabPageDelegate()).thenReturn(mNewTabPageDelegate);
         when(mToolbarDataProvider.isIncognitoBranded()).thenReturn(true);
         mToolbarTablet.onTabOrModelChanged();
@@ -432,9 +433,10 @@ public final class ToolbarTabletUnitTest {
                 mBackButtonCoordinator,
                 mForwardButtonCoordinator,
                 /* homeButtonDisplay= */ null,
-                null,
+                /* extensionToolbarCoordinator= */ null,
                 mThemeColorProvider,
-                mIncognitoStateProvider);
+                mIncognitoStateProvider,
+                /* incognitoWindowCountSupplier= */ () -> 1);
         when(mToolbarDataProvider.getNewTabPageDelegate()).thenReturn(mNewTabPageDelegate);
         when(mToolbarDataProvider.isIncognitoBranded()).thenReturn(true);
         mToolbarTablet.onTabOrModelChanged();
@@ -551,7 +553,8 @@ public final class ToolbarTabletUnitTest {
                 /* homeButtonDisplay= */ null,
                 /* extensionToolbarCoordinator= */ null,
                 mThemeColorProvider,
-                mIncognitoStateProvider);
+                mIncognitoStateProvider,
+                /* incognitoWindowCountSupplier= */ () -> 1);
         ImageButton btn = mToolbarTablet.findViewById(R.id.forward_button);
 
         doReturn(null).when(mToolbarDataProvider).getTab();

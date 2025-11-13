@@ -68,6 +68,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** The Toolbar object for Tablet screens. */
 @SuppressLint("Instantiatable")
@@ -372,7 +373,8 @@ public class ToolbarTablet extends ToolbarLayout {
             @Nullable HomeButtonDisplay homeButtonDisplay,
             @Nullable ExtensionToolbarCoordinator extensionToolbarCoordinator,
             ThemeColorProvider themeColorProvider,
-            IncognitoStateProvider incognitoStateProvider) {
+            IncognitoStateProvider incognitoStateProvider,
+            @Nullable Supplier<Integer> incognitoWindowCountSupplier) {
         assert tabSwitcherButtonCoordinator != null;
         super.initialize(
                 toolbarDataProvider,
@@ -389,18 +391,21 @@ public class ToolbarTablet extends ToolbarLayout {
                 homeButtonDisplay,
                 extensionToolbarCoordinator,
                 themeColorProvider,
-                incognitoStateProvider);
+                incognitoStateProvider,
+                incognitoWindowCountSupplier);
         mReloadButtonCoordinator = assertNonNull(reloadButtonCoordinator);
         mBackButtonCoordinator = assertNonNull(backButtonCoordinator);
         mForwardButtonCoordinator = assertNonNull(forwardButtonCoordinator);
         menuButtonCoordinator.setVisibility(true);
         mExtensionToolbarCoordinator = extensionToolbarCoordinator;
 
+        assert incognitoWindowCountSupplier != null;
         mIncognitoIndicatorCoordinator =
                 new IncognitoIndicatorCoordinator(
                         /* parentToolbar= */ this,
                         themeColorProvider,
                         incognitoStateProvider,
+                        incognitoWindowCountSupplier,
                         mToolbarButtonsVisible);
 
         if (homeButtonDisplay instanceof ToolbarWidthConsumer) {

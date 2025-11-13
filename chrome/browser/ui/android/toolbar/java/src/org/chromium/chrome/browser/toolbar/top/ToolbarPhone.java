@@ -110,6 +110,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /** Phone specific toolbar implementation. */
 @NullMarked
@@ -401,7 +402,8 @@ public class ToolbarPhone extends ToolbarLayout
             @Nullable HomeButtonDisplay homeButtonDisplay,
             @Nullable ExtensionToolbarCoordinator extensionToolbarCoordinator,
             ThemeColorProvider themeColorProvider,
-            IncognitoStateProvider incognitoStateProvider) {
+            IncognitoStateProvider incognitoStateProvider,
+            @Nullable Supplier<Integer> incognitoWindowCountSupplier) {
         assert tabSwitcherButtonCoordinator != null;
         super.initialize(
                 toolbarDataProvider,
@@ -418,7 +420,8 @@ public class ToolbarPhone extends ToolbarLayout
                 homeButtonDisplay,
                 extensionToolbarCoordinator,
                 themeColorProvider,
-                incognitoStateProvider);
+                incognitoStateProvider,
+                /* incognitoWindowCountSupplier= */ null);
         mUserEducationHelper = userEducationHelper;
         mTrackerSupplier = trackerSupplier;
         mHomeButtonDisplay = assumeNonNull(homeButtonDisplay);

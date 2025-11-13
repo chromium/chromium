@@ -230,7 +230,8 @@ public class CustomTabToolbarUnitTest {
                 /* homeButtonDisplay= */ null,
                 null,
                 mThemeColorProvider,
-                mIncognitoStateProvider);
+                mIncognitoStateProvider,
+                /* incognitoWindowCountSupplier= */ null);
         if (!ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
             mToolbar.initVisibilityRule(mActivity, () -> mAppMenuHandler, mIntentDataProvider);
         }
