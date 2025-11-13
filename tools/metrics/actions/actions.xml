@@ -7270,7 +7270,7 @@ should be able to be added at any place in this file.
 
 <action name="BookmarkNavigatorWidgetAdded">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User added the &quot;bookmark navigator&quot; widget, which shows a
     navigable hierarchy of the user's bookmarks, to their homescreen on Android.
@@ -26112,9 +26112,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileGroupPanelOpenGroup">
-  <owner>lpromero@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the Tab Group panel of the Tab Grid opened a saved group.
   </description>
@@ -26189,36 +26188,32 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileInactiveTabGridEntered">
-  <owner>alionadangla@chromium.org</owner>
-  <owner>lpromero@google.com</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User entered the iOS Inactive Tabs grid (from anywhere).
   </description>
 </action>
 
 <action name="MobileInactiveTabGridExited">
-  <owner>alionadangla@chromium.org</owner>
-  <owner>lpromero@google.com</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User exited the iOS Inactive Tabs grid (by any means).
   </description>
 </action>
 
 <action name="MobileInactiveTabsCloseAll">
-  <owner>alionadangla@chromium.org</owner>
-  <owner>lpromero@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User pressed 'Close All Inactive' from the inactive tabs view. iOS only.
   </description>
 </action>
 
 <action name="MobileInactiveTabsCloseAllConfirm">
-  <owner>alionadangla@chromium.org</owner>
-  <owner>lpromero@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User pressed 'Close All' from the 'Close All Inactive' confirmation toast.
     iOS only.
@@ -26226,9 +26221,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileInactiveTabsSettingsBack">
-  <owner>alionadangla@chromium.org</owner>
-  <owner>lpromero@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Reported when user goes back from Inactive Tabs Settings UI to Tabs Settings
     screen. iOS only.
@@ -26236,9 +26230,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileInactiveTabsSettingsClose">
-  <owner>alionadangla@chromium.org</owner>
-  <owner>lpromero@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Reported when Inactive Tabs Settings UI was dismissed. iOS only.
   </description>
@@ -26742,7 +26735,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileMenuAddToOrEditBookmark">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User pressed the star icon in the app menu to add or edit a bookmark for the
     current page.
@@ -27925,27 +27918,24 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileOpenGroupClosed">
-  <owner>lpromero@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User tried to open a group that is currently closed.
   </description>
 </action>
 
 <action name="MobileOpenGroupOpenInBrowser">
-  <owner>lpromero@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User tried to open a group that is currently opened in the same browser.
   </description>
 </action>
 
 <action name="MobileOpenGroupOpenInOtherBrowser">
-  <owner>lpromero@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User tried to open a group that is currently opened in another browser.
   </description>
@@ -29428,8 +29418,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGridCloseTabGroupControlTapped">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the iOS tab grid tapped on the close control of a tab group cell.
   </description>
@@ -29516,8 +29506,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGridIncognitoTabGroupOpenCurrentTab">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User opened the currently active tab from an incognito Tab Group in the Tab
     Grid.
@@ -29525,8 +29515,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGridMoveToExistingTab">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>User moves from a Tab to an existing other Tab.</description>
 </action>
 
@@ -29545,18 +29535,16 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGridOpenInactiveTab">
-  <owner>alionadangla@chromium.org</owner>
-  <owner>lpromero@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the iOS tab grid opened an inactive tab by tapping on it.
   </description>
 </action>
 
 <action name="MobileTabGridOpenInactiveTabSearchResult">
-  <owner>alionadangla@chromium.org</owner>
-  <owner>lpromero@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the iOS tab grid opened an inactive tab by tapping on it from search
     results.
@@ -29572,16 +29560,16 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGridOpenIncognitoTabGroup">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the iOS tab grid opened an incognito tab group by tapping on it.
   </description>
 </action>
 
 <action name="MobileTabGridOpenIncognitoTabGroupSearchResult">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the iOS tab grid opened an incognito tab Group by tapping on it from
     search results.
@@ -29589,8 +29577,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGridOpenIncognitoTabSearchResult">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the iOS tab grid opened an incognito tab by tapping on it from
     search results.
@@ -29598,24 +29586,24 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGridOpenRegularTab">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the iOS tab grid opened a regular tab by tapping on it.
   </description>
 </action>
 
 <action name="MobileTabGridOpenRegularTabGroup">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the iOS tab grid opened a regular tab group by tapping on it.
   </description>
 </action>
 
 <action name="MobileTabGridOpenRegularTabGroupSearchResult">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the iOS tab grid opened a regular tab group by tapping on it from
     search results.
@@ -29623,8 +29611,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGridOpenRegularTabSearchResult">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the iOS tab grid opened a regular tab by tapping on it from search
     results.
@@ -29632,8 +29620,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGridOpenSearchResultInAnotherWindow">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the iOS tab grid opened a tab from another window by tapping on it
     from search results.
@@ -29641,8 +29629,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGridOpenTabGroupSearchResultInAnotherWindow">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the iOS tab grid opened a tab group from another window by tapping
     on it from search results.
@@ -29650,15 +29638,16 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGridPinnedTabSelected">
-  <owner>ewannpv@chromium.org</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User selected a tab in the iOS tab grid pinned tabs section.
   </description>
 </action>
 
 <action name="MobileTabGridRegularTabGroupOpenCurrentTab">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User opened the currently active tab from a regular Tab Group in the Tab
     Grid.
@@ -29842,16 +29831,16 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGridTabGroupCellTapped">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the iOS tab grid tapped on a tab group cell.
   </description>
 </action>
 
 <action name="MobileTabGridTabGroupCreateNewTab">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     On the iOS tab grid, with a tab group open, the user pressed the
     &quot;Plus&quot; icon to open a new tab in the group.
@@ -29859,8 +29848,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGridTabGroupDismissed">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     On the iOS tab grid, with a tab group open, the user pressed the
     &quot;Back&quot; button or the `Esc` key to dismiss the tab group.
@@ -29877,16 +29866,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGridUserScrolled">
-  <owner>lpromero@chromium.org</owner>
-  <owner>alionadangla@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>User in the iOS tab grid scrolled the grid of tabs.</description>
 </action>
 
 <action name="MobileTabGridUserScrolledToTop">
-  <owner>lpromero@chromium.org</owner>
-  <owner>alionadangla@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the iOS tab grid tapped the status bar to scroll to the top of the
     grid of tabs.
@@ -29894,8 +29881,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGroupIndicatorShowMenu">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Logged on iOS when the user triggered action menu by tapping the tab group
     indicator view.
@@ -29903,8 +29890,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGroupIndicatorShowNTPMenu">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     Logged on iOS when the user triggered action menu by tapping the tab group
     indicator view on NTP.
@@ -29912,64 +29899,64 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGroupUserCanceledGroupEdition">
-  <owner>alionadangla@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the iOS tab group edition view, canceled the group edition.
   </description>
 </action>
 
 <action name="MobileTabGroupUserCanceledNewGroupCreation">
-  <owner>alionadangla@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the iOS tab group edition view, canceled the group creation.
   </description>
 </action>
 
 <action name="MobileTabGroupUserCreatedNewGroup">
-  <owner>alionadangla@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the iOS tab group edition view, confirmed the group creation.
   </description>
 </action>
 
 <action name="MobileTabGroupUserUpdatedGroup">
-  <owner>alionadangla@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the iOS tab group edition view, updated the group.
   </description>
 </action>
 
 <action name="MobileTabGroupUserUpdatedGroupColor">
-  <owner>alionadangla@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the iOS tab group edition view, updated the color of the group.
   </description>
 </action>
 
 <action name="MobileTabGroupUserUpdatedGroupName">
-  <owner>alionadangla@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User in the iOS tab group edition view, updated the name of the group.
   </description>
 </action>
 
 <action name="MobileTabIncognitoGridTabGroupOpenTab">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User opened an unselected tab from an incognito Tab Group in the Tab Grid.
   </description>
 </action>
 
 <action name="MobileTabNewTab">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User opens a new Tab. This includes an opening from the Toolbar, the
     Overflow Menu and the Tab Grid (incognito + regular).
@@ -29979,7 +29966,6 @@ should be able to be added at any place in this file.
 <action name="MobileTabPickupSettingsBack">
   <obsolete>Deprecated as of 07/2024</obsolete>
   <owner>ewannpv@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
   <description>
     Reported when user goes back from Tab Pickup Settings UI to Tabs Settings
     screen. iOS only.
@@ -29989,14 +29975,14 @@ should be able to be added at any place in this file.
 <action name="MobileTabPickupSettingsClose">
   <obsolete>Deprecated as of 07/2024</obsolete>
   <owner>ewannpv@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
   <description>
     Reported when Tab Pickup Settings UI was dismissed. iOS only.
   </description>
 </action>
 
 <action name="MobileTabPinned">
-  <owner>ewannpv@chromium.org</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User pins a Tab. This includes pinning a tab from the tab strip, tab grid
     and overflow menu.
@@ -30004,8 +29990,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabRegularGridTabGroupOpenTab">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User opened an unselected tab from a regular Tab Group in the Tab Grid.
   </description>
@@ -30073,9 +30059,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabStripAddItemToGroup">
-  <owner>qpubert@google.com</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User opened the context menu for a tab cell in the tab strip and tapped an
     existing group in the &quot;Add Tab to Group&quot; menu, to move this tab to
@@ -30084,8 +30069,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabStripCloseTab">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User tapped on the close button of a tab strip tab. Obsolete until
     19/02/2024.
@@ -30093,9 +30078,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabStripCreateGroupWithItem">
-  <owner>qpubert@google.com</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User opened the context menu for a tab cell in the tab strip and tapped
     &quot;Add Tab to New Group&quot; to create a new tab group containing this
@@ -30104,9 +30088,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabStripDeleteGroup">
-  <owner>qpubert@google.com</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User opened the context menu for a group cell in the tab strip and tapped
     &quot;Delete Group&quot; to delete a group and close all its tabs (iPad
@@ -30115,29 +30098,24 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabStripGroupCollapse">
-  <owner>qpubert@google.com</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User tapped a group cell in the tab strip to collapse the group (iPad only).
   </description>
 </action>
 
 <action name="MobileTabStripGroupExpand">
-  <owner>qpubert@google.com</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User tapped a group cell in the tab strip to expand the group (iPad only).
   </description>
 </action>
 
 <action name="MobileTabStripNewTab">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User opened a tab using the tab strip new ta button. Obsolete until
     19/02/2024.
@@ -30145,9 +30123,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabStripNewTabInGroup">
-  <owner>qpubert@google.com</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User opened the context menu for a group cell in the tab strip and tapped
     &quot;New Tab in Group&quot; to open a new tab in a group (iPad only).
@@ -30155,9 +30132,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabStripRenameGroup">
-  <owner>qpubert@google.com</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User opened the context menu for a group cell in the tab strip and tapped
     &quot;Rename Group&quot; to rename the group or customize the group color
@@ -30177,9 +30153,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabStripUngroupTabs">
-  <owner>qpubert@google.com</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User opened the context menu for a group cell in the tab strip and tapped
     &quot;Ungroup&quot; to delete the group while keeping all its tabs (iPad
@@ -30219,7 +30194,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabUnpinned">
-  <owner>ewannpv@chromium.org</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <description>
     User unpins a Tab. This includes unpinning a tab from the tab strip, tab
     grid and overflow menu.
@@ -40425,7 +40401,6 @@ should be able to be added at any place in this file.
 <action name="Settings.Tabs.TabPickup">
   <obsolete>Deprecated as of 07/2024</obsolete>
   <owner>ewannpv@chromium.org</owner>
-  <owner>chromeleon@chromium.org</owner>
   <description>
     Reported when user navigates to Tab Pickup Tabs Settings. iOS only.
   </description>

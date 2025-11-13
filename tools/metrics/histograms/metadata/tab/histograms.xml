@@ -828,8 +828,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tab.PullDownGesture" enum="PullDownGestureAction"
     expires_after="2026-05-11">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Record the action executed when the user performs a pull down gesture. This
     feature is currently iOS only.
@@ -1075,8 +1075,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabGroups.CountAtStartup" units="groups"
     expires_after="2026-04-11">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>[iOS] The number of tab groups opened at cold launch.</summary>
 </histogram>
 
@@ -1956,8 +1956,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabGroups.TabsPerGroupCountAtStartup" units="tabs"
     expires_after="2026-05-03">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>[iOS] The number of tabs per group at cold launch.</summary>
 </histogram>
 
@@ -2177,9 +2177,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.ActiveCountAtStartup" units="tabs"
     expires_after="2026-04-26">
-  <owner>alionadangla@chromium.org</owner>
-  <owner>lpromero@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     [iOS] Records the number of tabs that are considered active as per the
     current tab inactivity threshold. This is recorded at cold launch.
@@ -2295,7 +2294,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.CountAtStartup" units="tabs" expires_after="2026-04-26">
   <owner>marq@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     [Android] The number of tabs opened at cold launch. iOS uses
     Tabs.CountAtStartup2
@@ -2304,7 +2303,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.CountAtStartup2" units="tabs" expires_after="2026-04-26">
   <owner>marq@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     [iOS] The number of tabs opened at cold launch. With a wider range than
     Tabs.CountAtStartup (100 -&gt; 1M)
@@ -2335,8 +2334,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.DroppedDuplicatesCountOn{Occasion}" units="tabs"
     expires_after="2025-12-12">
-  <owner>lpromero@google.com</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     [iOS] The number of invalid duplicated tabs dropped {Occasion}.
 
@@ -2364,9 +2363,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.DuplicatesCountAtStartup" units="tabs"
     expires_after="2026-04-26">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>lpromero@google.com</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     [iOS] The number of redundant active tabs restored at cold launch.
 
@@ -2400,9 +2398,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.InactiveCountAtStartup" units="tabs"
     expires_after="2026-04-26">
-  <owner>alionadangla@chromium.org</owner>
-  <owner>lpromero@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     [iOS] Records the number of tabs that are considered inactive as per the
     current tab inactivity threshold. This is recorded at cold launch.
@@ -2573,9 +2570,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.OldCountAtStartup2" units="tabs"
     expires_after="2025-12-12">
-  <owner>alionadangla@chromium.org</owner>
-  <owner>lpromero@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     [iOS] Number of tabs older than 21 days. Recorded at cold launch.
   </summary>
@@ -2779,8 +2775,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.PinnedCountAtStartup" units="tabs"
     expires_after="2026-04-26">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>[iOS] The number of pinned tabs opened at cold launch.</summary>
 </histogram>
 
@@ -2872,8 +2868,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.RestoredFromInactiveCount" units="tabs"
     expires_after="2026-02-22">
-  <owner>lpromero@google.com</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Recorded on disabling Inactive Tabs (for example in case of an unlaunch).
     The number of tabs rescued from the orphan inactive tabs browser after the
@@ -3920,8 +3916,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.TimeSinceCreationAtStartup" enum="IOSAllOpenTabsAge"
     expires_after="2026-04-26">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     [iOS] The age of tabs opened at cold launch. The age of a tab is the time
     elapsed since its creation.
@@ -3930,8 +3926,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.UnusedCountAtStartup2" units="tabs"
     expires_after="2026-12-12">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     [iOS] The number of old/unused tabs opened at cold launch. Inactive tab is a
     tab that has been not interacted with for more than 7 days.

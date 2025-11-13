@@ -6546,9 +6546,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabGrid.CloseTabs" units="Tabs" expires_after="2026-06-01">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The number of Tab Grid items closed with a bulk or a 'Close All' operation.
     A Tab can be recoreded twice if it is restored and closed again.
@@ -6557,7 +6556,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabGrid.Selection.AddToBookmarks" units="Tabs"
     expires_after="2026-11-01">
-  <owner>gambard@chromium.org</owner>
+  <owner>huitingyu@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
     The number of Tab Grid items bookmarked with a single add to bookmarks
@@ -6567,7 +6566,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabGrid.Selection.AddToReadingList" units="Tabs"
     expires_after="2026-11-01">
-  <owner>gambard@chromium.org</owner>
+  <owner>huitingyu@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
     The number of Tab Grid items added to reading list with a single add to
@@ -6577,7 +6576,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabGrid.Selection.CloseTabs" units="Tabs"
     expires_after="2026-11-01">
-  <owner>gambard@chromium.org</owner>
+  <owner>huitingyu@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
     The number of Tab Grid items closed with a single Close Tab(s) operation
@@ -6597,8 +6596,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabGrid.TabSelected.TimeSinceLastActivation" units="ms"
     expires_after="2025-12-08">
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Recorded when a tab is selected from the TabGrid. Time spent since the last
     time this tab was made active.
@@ -6607,8 +6606,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabStrip.DragDropGroups" enum="IOSTabSwitcherDragDropTabs"
     expires_after="2026-06-01">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Records tab group drag and drop interactions on the tab strip. An
     interaction is recorded twice (one drag and one drop).
@@ -6617,9 +6616,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabStrip.DragDropTabs" enum="IOSTabSwitcherDragDropTabs"
     expires_after="2026-06-01">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Records tab drag and drop interactions on the tab strip. An interaction is
     recorded twice (one drag and one drop).
@@ -6628,9 +6626,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabStrip.DragInteraction" enum="Boolean"
     expires_after="2026-06-01">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Tracks whether the user moved a tabStrip tab to a new index. Recorded when
     the user stops the drag interaction.
@@ -6639,23 +6636,22 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabStrip.DragOrigin" enum="IOSTabSwitcherDragOrigin"
     expires_after="2026-06-01">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>Records the origin of dropped items in the tab strip.</summary>
 </histogram>
 
 <histogram name="IOS.TabStrip.DragOrigin.Group" enum="IOSTabSwitcherDragOrigin"
     expires_after="2026-06-01">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>Records the origin of dropped tab groups in the tab strip.</summary>
 </histogram>
 
 <histogram name="IOS.TabStrip.TapInteraction" enum="Boolean"
     expires_after="2026-06-01">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Tracks whether the user tapped on a tabStrip tab that is not the active one.
     Recorded when the tabStrip tab is tapped.
@@ -6664,8 +6660,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabSwitcher.DragDropGroups"
     enum="IOSTabSwitcherDragDropTabs" expires_after="2026-06-01">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Records tab group drag and drop interactions on the tab switcher. An
     interaction is recorded twice (one drag and one drop).
@@ -6674,8 +6670,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabSwitcher.DragDropMultiSelect"
     enum="IOSTabSwitcherDragDropTabs" expires_after="2026-06-01">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Records multi-selection drag and drop interactions on the tab switcher. An
     interaction is recorded twice (one drag and one drop).
@@ -6684,9 +6680,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabSwitcher.DragDropTabs"
     enum="IOSTabSwitcherDragDropTabs" expires_after="2026-06-01">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Records tab drag and drop interactions on the tab switcher. An interaction
     is recorded twice (one drag and one drop).
@@ -6695,15 +6690,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabSwitcher.DragOrigin" enum="IOSTabSwitcherDragOrigin"
     expires_after="2026-06-01">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>Records the origin of dropped items in the tab switcher.</summary>
 </histogram>
 
 <histogram name="IOS.TabSwitcher.DragOrigin.Group"
     enum="IOSTabSwitcherDragOrigin" expires_after="2026-06-01">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Records the origin of dropped tab groups in the tab switcher.
   </summary>
@@ -6711,8 +6706,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabSwitcher.Group.DragOrigin"
     enum="IOSTabSwitcherDragOrigin" expires_after="2026-04-10">
-  <owner>alionadangla@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Records the origin of dropped items in the tab group view. This is recorded
     when items are drop in the tab group view.
@@ -6721,9 +6716,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabSwitcher.Idle.IncognitoTabGridPage" enum="Boolean"
     expires_after="2026-06-01">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Tracks whether the user closed the incognito tab grid page without doing any
     meaningful action on any tab grid pages. Meaningful actions are creating,
@@ -6734,9 +6728,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabSwitcher.Idle.RegularTabGridPage" enum="Boolean"
     expires_after="2026-06-01">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Tracks whether the user closed the regular tab grid page without doing any
     meaningful action on any tab grid pages. Meaningful actions are creating,
@@ -6747,9 +6740,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabSwitcher.Idle.TabGroups" enum="Boolean"
     expires_after="2026-06-01">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Tracks whether the user closed the tab groups page without doing any
     meaningful action on any tab grid pages. Meaningful action is opening a tab.
@@ -6760,9 +6752,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabSwitcher.PageChangeInteraction"
     enum="IOSTabSwitcherPageChangeInteraction" expires_after="2026-06-01">
-  <owner>marq@chromium.org</owner>
-  <owner>ewannpv@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The UI interaction by which the user changed the visible page in the tab
     switcher. Note that drag interactions can be recorded multiple time for a
@@ -6772,8 +6763,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabSwitcher.PinnedTabs.DragDropTabs"
     enum="IOSTabSwitcherDragDropTabs" expires_after="2026-06-01">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     Records tab drag and drop interactions in the pinned tab view. An
     interaction is recorded twice (one drag and one drop).
@@ -6782,16 +6773,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabSwitcher.PinnedTabs.DragOrigin"
     enum="IOSTabSwitcherDragOrigin" expires_after="2026-06-01">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>Records the origin of dropped items in the pinned tab view.</summary>
 </histogram>
 
 <histogram name="IOS.TabSwitcher.TimeSpent" units="ms"
     expires_after="2026-07-02">
-  <owner>alionadangla@chromium.org</owner>
-  <owner>lpromero@google.com</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The time the Tab switcher is displayed to the user. This histogram will
     always be recorded once the user exit the tab switcher. Note: this metric
@@ -6801,9 +6791,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabSwitcher.TimeSpentOpeningExistingTab" units="ms"
     expires_after="2026-07-02">
-  <owner>alionadangla@chromium.org</owner>
-  <owner>lpromero@google.com</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The time it takes for a user to open an existing tab. If the user opens a
     new tab or closes the tab switcher, this is not recorded.
@@ -6812,9 +6801,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.TabSwitcher.TimeSpentScrolling" units="ms"
     expires_after="2026-07-02">
-  <owner>lpromero@google.com</owner>
-  <owner>alionadangla@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
+  <owner>huitingyu@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The time spent while the tab grid is scrolled by the user. This includes the
     deceleration time.
