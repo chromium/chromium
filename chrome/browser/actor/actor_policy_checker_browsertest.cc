@@ -140,8 +140,6 @@ class ActorPolicyCheckerBrowserTestBase : public ActorToolsTest {
         base::StrCat({"given_name-", account->email}),
         base::StrCat({"local-", account->email}),
         base::StrCat({"full_name-", account->email}));
-
-    AddUserStatusPref(/*is_enterprise_account_data_protected=*/false);
   }
 
   void ClearPrimaryAccount() { identity_test_env_->ClearPrimaryAccount(); }
