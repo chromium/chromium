@@ -26,6 +26,13 @@ class UnguessableToken;
 
 class OmniboxEditModel;
 
+// Struct to store file data and mime type.
+struct FileData {
+  std::string bytes;
+  std::string mime_type;
+  std::string name;
+};
+
 class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
  public:
   OmniboxPopupFileSelector();
@@ -43,12 +50,13 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
       contextual_search::ContextualSearchContextController* query_controller,
       OmniboxEditModel* edit_model);
 
-  void OnFileDataReady(base::FilePath file_path, std::string file_bytes);
+  void OnFileDataReady(std::unique_ptr<FileData> file_data);
 
   void UpdateSearchboxContextData(base::UnguessableToken file_token,
-                                  base::FilePath file_path,
                                   lens::MimeType mime_type,
-                                  const std::string& image_data_url);
+                                  const std::string& image_data_url,
+                                  std::string file_name,
+                                  std::string mime_string);
 
   // ui::SelectFileDialog::Listener:
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
