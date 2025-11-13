@@ -11,7 +11,6 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/gmock_callback_support.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
@@ -46,14 +45,10 @@
 
 namespace autofill::payments {
 
-using ::base::test::RunOnceCallback;
-using ::testing::NiceMock;
-using ::testing::Return;
-
 TestPaymentsAutofillClient::TestPaymentsAutofillClient(AutofillClient* client)
     : client_(CHECK_DEREF(client)),
       mock_save_and_fill_manager_(
-          std::make_unique<NiceMock<MockSaveAndFillManager>>()),
+          std::make_unique<testing::NiceMock<MockSaveAndFillManager>>()),
       mock_merchant_promo_code_manager_(
           &client_->GetPersonalDataManager().payments_data_manager()) {}
 
@@ -227,7 +222,7 @@ void TestPaymentsAutofillClient::ShowAutofillErrorDialog(
 PaymentsWindowManager* TestPaymentsAutofillClient::GetPaymentsWindowManager() {
   if (!payments_window_manager_) {
     payments_window_manager_ =
-        std::make_unique<NiceMock<MockPaymentsWindowManager>>();
+        std::make_unique<testing::NiceMock<MockPaymentsWindowManager>>();
   }
   return payments_window_manager_.get();
 }
@@ -323,7 +318,7 @@ void TestPaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {
 
 MockIbanManager* TestPaymentsAutofillClient::GetIbanManager() {
   if (!mock_iban_manager_) {
-    mock_iban_manager_ = std::make_unique<NiceMock<MockIbanManager>>(
+    mock_iban_manager_ = std::make_unique<testing::NiceMock<MockIbanManager>>(
         &client_->GetPersonalDataManager().payments_data_manager());
   }
   return mock_iban_manager_.get();
@@ -332,7 +327,8 @@ MockIbanManager* TestPaymentsAutofillClient::GetIbanManager() {
 MockIbanAccessManager* TestPaymentsAutofillClient::GetIbanAccessManager() {
   if (!mock_iban_access_manager_) {
     mock_iban_access_manager_ =
-        std::make_unique<NiceMock<MockIbanAccessManager>>(&client_.get());
+        std::make_unique<testing::NiceMock<MockIbanAccessManager>>(
+            &client_.get());
   }
   return mock_iban_access_manager_.get();
 }
@@ -423,8 +419,8 @@ TestPaymentsAutofillClient::CreateCreditCardInternalAuthenticator(
 MockMandatoryReauthManager*
 TestPaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
   if (!mock_payments_mandatory_reauth_manager_) {
-    mock_payments_mandatory_reauth_manager_ =
-        std::make_unique<NiceMock<payments::MockMandatoryReauthManager>>();
+    mock_payments_mandatory_reauth_manager_ = std::make_unique<
+        testing::NiceMock<payments::MockMandatoryReauthManager>>();
   }
   return mock_payments_mandatory_reauth_manager_.get();
 }
@@ -484,10 +480,14 @@ void TestPaymentsAutofillClient::
       *GetOrCreatePaymentsMandatoryReauthManager();
 
   ON_CALL(mandatory_reauth_manager, GetAuthenticationMethod)
-      .WillByDefault(
-          Return(payments::MandatoryReauthAuthenticationMethod::kBiometric));
+      .WillByDefault(testing::Return(
+          payments::MandatoryReauthAuthenticationMethod::kBiometric));
+
   ON_CALL(mandatory_reauth_manager, Authenticate)
-      .WillByDefault(RunOnceCallback<0>(true));
+      .WillByDefault(
+          testing::WithArg<0>([](base::OnceCallback<void(bool)> callback) {
+            std::move(callback).Run(true);
+          }));
 }
 #endif
 

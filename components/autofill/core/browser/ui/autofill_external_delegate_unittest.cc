@@ -93,7 +93,7 @@
 namespace autofill {
 namespace {
 
-using ::base::test::RunOnceCallback;
+using base::test::RunOnceCallback;
 using test::CreateTestAddressFormData;
 using ::testing::_;
 using ::testing::AllOf;
@@ -1291,10 +1291,17 @@ TEST_F(AutofillExternalDelegateTest, TestVerifiedEmailSuggestion_Fill) {
   EXPECT_CALL(autofill_manager(),
               FillOrPreviewForm(mojom::ActionPersistence::kFill,
                                 HasQueriedFormId(), IsQueriedFieldId(), _, _));
-  // Expect that the delegate gets notified and pretend that the user has
-  // accepted the prompt.
-  EXPECT_CALL(mock, NotifySuggestionAccepted(_, /*show_modal=*/true, _))
-      .WillOnce(RunOnceCallback<2>(/*accepted=*/true));
+  // Expect that the delegate gets notified.
+  EXPECT_CALL(mock, NotifySuggestionAccepted)
+      .WillOnce(::testing::WithArgs<1, 2>(
+          [](bool show_modal,
+             IdentityCredentialDelegate::OnFederatedTokenReceivedCallback
+                 callback) {
+            // Email verifications prompt the user
+            EXPECT_TRUE(show_modal);
+            // Pretend that the user has accepted the prompt
+            std::move(callback).Run(/*accepted=*/true);
+          }));
 
   // Test fill.
   external_delegate().DidAcceptSuggestion(suggestion,
@@ -1315,10 +1322,17 @@ TEST_F(AutofillExternalDelegateTest,
   ON_CALL(autofill_client(), GetIdentityCredentialDelegate)
       .WillByDefault(Return(&mock));
 
-  // Expect that the delegate gets notified and pretend that the user has
-  // rejected the prompt.
-  EXPECT_CALL(mock, NotifySuggestionAccepted(_, /*show_modal=*/true, _))
-      .WillOnce(RunOnceCallback<2>(/*accepted=*/false));
+  // Expect that the delegate gets notified.
+  EXPECT_CALL(mock, NotifySuggestionAccepted)
+      .WillOnce(::testing::WithArgs<1, 2>(
+          [](bool show_modal,
+             IdentityCredentialDelegate::OnFederatedTokenReceivedCallback
+                 callback) {
+            // Email verifications prompt the user
+            EXPECT_TRUE(show_modal);
+            // Pretend that the user has rejected the prompt
+            std::move(callback).Run(/*accepted=*/false);
+          }));
 
   // Test fill.
   external_delegate().DidAcceptSuggestion(suggestion,

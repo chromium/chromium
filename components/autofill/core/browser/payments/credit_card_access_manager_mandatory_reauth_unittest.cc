@@ -5,7 +5,6 @@
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -28,8 +27,6 @@
 
 namespace autofill {
 namespace {
-
-using ::base::test::RunOnceCallback;
 
 using PaymentsRpcCardType =
     payments::PaymentsAutofillClient::PaymentsRpcCardType;
@@ -69,12 +66,16 @@ class CreditCardAccessManagerMandatoryReauthTestBase
       ON_CALL(mandatory_reauth_manager(),
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
               AuthenticateWithMessage)
-          .WillByDefault(RunOnceCallback<1>(
+          .WillByDefault(testing::WithArg<1>(
 #elif BUILDFLAG(IS_ANDROID)
               Authenticate)
-          .WillByDefault(RunOnceCallback<0>(
+          .WillByDefault(testing::WithArg<0>(
 #endif
-              MandatoryReauthResponseIsSuccess()));
+              [mandatory_reauth_response_is_success =
+                   MandatoryReauthResponseIsSuccess()](
+                  base::OnceCallback<void(bool)> callback) {
+                std::move(callback).Run(mandatory_reauth_response_is_success);
+              }));
     } else {
       EXPECT_CALL(mandatory_reauth_manager(),
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)

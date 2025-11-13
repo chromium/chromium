@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 
-#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -28,8 +27,6 @@
 
 namespace autofill {
 namespace {
-
-using ::base::test::RunOnceCallback;
 
 constexpr char16_t kFullIbanValue[] = u"CH5604835012345678009";
 constexpr int64_t kInstrumentId = 12345678;
@@ -381,7 +378,10 @@ class IbanAccessManagerMandatoryReauthTest : public IbanAccessManagerTest {
 
   void SetUpDeviceAuthenticatorResponseMock(bool success) {
     ON_CALL(mandatory_reauth_manager(), StartDeviceAuthentication)
-        .WillByDefault(RunOnceCallback<1>(success));
+        .WillByDefault(testing::WithArg<1>(
+            [success](base::OnceCallback<void(bool)> callback) {
+              std::move(callback).Run(success);
+            }));
   }
 
   payments::MockMandatoryReauthManager& mandatory_reauth_manager() {
