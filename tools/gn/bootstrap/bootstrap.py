@@ -102,7 +102,7 @@ def main(argv):
     append_to_env('LDFLAGS', [
         '-nodefaultlibs', 'libc++.gn.so',
         '-lpthread', '-lc', '-lm',
-        '-Wl,-rpath="\$$ORIGIN/."', '-Wl,-rpath-link=.'
+        r'-Wl,-rpath="\$$ORIGIN/."', '-Wl,-rpath-link=.'
     ])
     append_to_env('CXXFLAGS', [
         '-nostdinc++', '-isystem../../../buildtools/third_party/libc++',
