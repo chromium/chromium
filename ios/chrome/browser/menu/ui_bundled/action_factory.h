@@ -245,6 +245,10 @@ class TabGroup;
 // group.
 - (UIAction*)actionToShowRecentActivity:(ProceduralBlock)block;
 
+// Creates a UIAction instance for opening Gemini with an image attachment.
+// Invokes the given `block` when executed.
+- (UIAction*)actionToOpenImageInGeminiWithBlock:(ProceduralBlock)block;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_MENU_UI_BUNDLED_ACTION_FACTORY_H_

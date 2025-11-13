@@ -24,6 +24,8 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
@@ -41,11 +43,13 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_share_url_command.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/enhanced_calendar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -496,6 +500,24 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 
   __weak __typeof(self) weakSelf = self;
 
+  // Launch the Gemini experience with an image attached.
+  // TODO(crbug.com/457469273): Add more eligibility checks.
+  if (IsImageContextMenuGeminiEntryPointEnabled()) {
+    ProceduralBlock geminiElementCallback = ^{
+      [weakSelf openGeminiWithImageURL:imageURL referrer:referrer];
+    };
+    UIMenuElement* geminiElement = [actionFactory
+        actionToOpenImageInGeminiWithBlock:geminiElementCallback];
+
+    // Wrap the Gemini element in an inline menu to create a distinct section.
+    UIMenu* geminiSection = [UIMenu menuWithTitle:@""
+                                            image:nil
+                                       identifier:nil
+                                          options:UIMenuOptionsDisplayInline
+                                         children:@[ geminiElement ]];
+    [imageMenuElements addObject:geminiSection];
+  }
+
   // Image saving.
   NSArray<UIMenuElement*>* imageSavingElements =
       [self imageSavingElementsWithURL:imageURL
@@ -555,6 +577,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   imageFetcher->GetImageData(imageURL, referrer, ^(NSData* rawData) {
     // Arbitrary web image data requires sanitization before use.
     [weakSelf sanitizeImageData:rawData
+                       mimeType:kJPEGImageMimeType
                      completion:^(NSData* transcodedData) {
                        if (usingLens) {
                          [weakSelf searchImageUsingLensWithData:transcodedData];
@@ -568,12 +591,13 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 
 // Sanitizes a web image data before use by passing it through the transcoder.
 - (void)sanitizeImageData:(NSData*)imageData
+                 mimeType:(std::string)mimeType
                completion:(void (^)(NSData*))completion {
   if (!_imageTranscoder) {
     _imageTranscoder = std::make_unique<web::JavaScriptImageTranscoder>();
   }
   _imageTranscoder->TranscodeImage(
-      imageData, @"image/jpeg", nil, nil, nil,
+      imageData, base::SysUTF8ToNSString(mimeType), nil, nil, nil,
       base::BindOnce(^(NSData* result, NSError* error) {
         if (error) {
           completion(nil);
@@ -1011,6 +1035,38 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
       data_controls::DataControlsTabHelper::GetOrCreateForWebState(
           self.webState);
   return data_controls_tab_helper->ShouldAllowShare();
+}
+
+// Opens the Gemini overlay with an image attached. Fetches the image from
+// `imageURL` using `referrer`, and then sanitizes/transcodes the image.
+- (void)openGeminiWithImageURL:(GURL)imageURL referrer:(web::Referrer)referrer {
+  ImageFetchTabHelper* imageFetcher =
+      ImageFetchTabHelper::FromWebState(self.webState);
+  CHECK(imageFetcher);
+
+  __weak ContextMenuConfigurationProvider* weakSelf = self;
+  imageFetcher->GetImageData(imageURL, referrer, ^(NSData* imageData) {
+    // Safely transcode image data.
+    [weakSelf sanitizeImageData:imageData
+                       mimeType:kPortableNetworkGraphicMimeType
+                     completion:^(NSData* transcodedData) {
+                       UIImage* imageFromData = nil;
+                       if (transcodedData) {
+                         imageFromData = [UIImage imageWithData:imageData];
+                       }
+
+                       [weakSelf openGeminiWithImage:imageFromData];
+                     }];
+  });
+}
+
+// Opens the Gemini overlay with an image attached. The sanitized `image` is
+// passed to Gemini.
+- (void)openGeminiWithImage:(UIImage*)image {
+  id<BWGCommands> handler =
+      HandlerForProtocol(_browser->GetCommandDispatcher(), BWGCommands);
+  [handler startBWGFlowWithImageAttachment:image
+                                entryPoint:bwg::EntryPoint::ImageContextMenu];
 }
 
 @end

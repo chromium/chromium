@@ -25,7 +25,9 @@ enum class EntryPoint {
   TabReopen = 4,
   // Gemini was opened from the Diamond prototype.
   Diamond = 5,
-  kMaxValue = Diamond,
+  // Gemini was opened via the image long-press context menu.
+  ImageContextMenu = 6,
+  kMaxValue = ImageContextMenu,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiEntryPoint)
 

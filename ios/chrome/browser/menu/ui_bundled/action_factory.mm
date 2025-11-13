@@ -18,10 +18,22 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
+
+namespace {
+
+// The emoji that is drawn into a UIImage for the Gemini entry point action.
+constexpr NSString* kGeminiActionImageEmoji = @"🍌";
+
+// The ratio of canvas to font point size to allow for the canvas to have some
+// padding around the emoji, which fixes clipping.
+constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
+
+}  // namespace
 
 @interface ActionFactory ()
 
@@ -784,6 +796,40 @@
                          image:image
                           type:MenuActionType::RecentActivityInSharedTabGroup
                          block:block];
+}
+
+- (UIAction*)actionToOpenImageInGeminiWithBlock:(ProceduralBlock)block {
+  // Create the canvas slightly bigger than the emoji's text point size, to
+  // allow for the parts that overflow.
+  CGSize imageSize =
+      CGSizeMake(kSymbolActionPointSize * kEmojiCanvasPaddingRatio,
+                 kSymbolActionPointSize * kEmojiCanvasPaddingRatio);
+
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:imageSize];
+
+  // Create a UIImage from an emoji.
+  UIImage* emojiImage =
+      [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+        NSDictionary* attrs = @{
+          NSFontAttributeName : [UIFont systemFontOfSize:kSymbolActionPointSize]
+        };
+
+        // Center the draw point of the emoji in the canvas.
+        CGSize textSize = [kGeminiActionImageEmoji sizeWithAttributes:attrs];
+        CGPoint drawPoint =
+            CGPointMake((imageSize.width - textSize.width) / 2.0,
+                        (imageSize.height - textSize.height) / 2.0);
+
+        [kGeminiActionImageEmoji drawAtPoint:drawPoint withAttributes:attrs];
+      }];
+
+  return
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_GEMINI_IMAGE_CONTEXT_MENU_ENTRY_POINT)
+                      image:emojiImage
+                       type:MenuActionType::GeminiWithImageAttachment
+                      block:block];
 }
 
 @end

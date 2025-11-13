@@ -209,6 +209,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
   _BWGCommandsHandler = HandlerForProtocol(dispatcher, BWGCommands);
   _helpCommandsHandler = HandlerForProtocol(dispatcher, HelpCommands);
 
+  // TODO(crbug.com/455906590): Pipe the image to the Gemini overlay.
   _mediator = [[BWGMediator alloc]
       initWithPrefService:_prefService
              webStateList:self.browser->GetWebStateList()

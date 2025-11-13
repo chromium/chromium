@@ -3128,10 +3128,16 @@ const char kChromeAppStoreUrl[] =
 #pragma mark - BWGCommands
 
 - (void)startBWGFlowWithEntryPoint:(bwg::EntryPoint)entryPoint {
+  [self startBWGFlowWithImageAttachment:nil entryPoint:entryPoint];
+}
+
+- (void)startBWGFlowWithImageAttachment:(UIImage*)image
+                             entryPoint:(bwg::EntryPoint)entryPoint {
   _BWGCoordinator =
       [[BWGCoordinator alloc] initWithBaseViewController:self.viewController
                                                  browser:self.browser
                                           fromEntryPoint:entryPoint];
+  _BWGCoordinator.imageAttachment = image;
   [_BWGCoordinator start];
 }
 
