@@ -55,6 +55,12 @@ def generate_nameset(name, default_config, formatter_fn, output):
 
 
 def generate_config(default_config, output):
+    # Temporary measure: Copy per-element attribute to global attribute list.
+    if "elements" in default_config:
+        for elem in default_config.get("elements"):
+            if "attributes" in elem:
+                default_config.get("attributes").extend(elem.get("attributes"))
+
     generate_nameset("elements", default_config, element, output)
     generate_nameset("removeElements", default_config, element, output)
     generate_nameset("replaceWithChildrenElements", default_config, element,
