@@ -74,6 +74,7 @@ class CORE_EXPORT ImageRecordsManager {
       if (largest_pending_image_ && (largest_pending_image_ == it->value)) {
         largest_pending_image_ = nullptr;
       }
+      it->value->OnImageOrTextRemovedWhilePending();
       pending_images_.erase(it);
       // Leave out |images_queued_for_paint_time_| intentionally because the
       // null record can be removed in

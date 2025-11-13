@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
@@ -28,6 +29,7 @@
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -173,6 +175,7 @@ void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
     const DOMPaintTimingInfo& paint_timing_info,
     uint32_t last_queued_frame_index,
     bool is_recording_lcp) {
+  ImageRecord* largest_removed_image = nullptr;
   while (!images_queued_for_paint_time_.empty()) {
     ImageRecord* record = images_queued_for_paint_time_.front();
     // Not ready for this frame yet - we're done with the queue for now.
@@ -195,12 +198,17 @@ void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
       continue;
     }
 
-    // A record may be in |images_queued_for_paint_time_| twice, for instance if
-    // is already loaded by the time of its first paint.
-    // If it's no longer pending for any other reason, move on.
+    // A record may be in `images_queued_for_paint_time_` twice if it's already
+    // loaded by the time of its first contentful paint. It will also be removed
+    // from that collection if the image was removed between painting it and
+    // running this callback, in which case we still want to set its paint time.
     auto it = pending_images_.find(record->Hash());
     if (it == pending_images_.end()) {
-      continue;
+      if (!RuntimeEnabledFeatures::
+              PaintTimingRecordTimingForDetachedPaintedElementsEnabled() ||
+          !record->WasImageOrTextRemovedWhilePending()) {
+        continue;
+      }
     }
 
     // Set paint time if it hasn't been set. Note for first video frame with
@@ -208,6 +216,23 @@ void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
     if (!record->HasPaintTime()) {
       record->SetPaintTime(presentation_timestamp, paint_timing_info);
     }
+
+    // While we want to record the paint time for detached images since this is
+    // used downstream by soft navigation heuristics, we don't want these to
+    // affect hard LCP in order to match the long-standing behavior.
+    //
+    // TODO(crbug.com/454082773): we should consider allowing these to be LCP
+    // candidates since they would have been shown to the user, and since it
+    // better matches the LCP spec.
+    if (it == pending_images_.end()) {
+      if (is_recording_lcp &&
+          (!largest_removed_image ||
+           largest_removed_image->RecordedSize() < record->RecordedSize())) {
+        largest_removed_image = record;
+      }
+      continue;
+    }
+
     // Update largest if necessary.
     if (is_recording_lcp &&
         (!largest_painted_image_ ||
@@ -216,6 +241,19 @@ void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
     }
     // Remove from pending.
     pending_images_.erase(it);
+  }
+
+  if (largest_removed_image) {
+    // Use `LargestImage()` instead of `largest_painted_image_` since it's
+    // what's used to determine the largest image candidate. This might not end
+    // up affecting metrics, but it could, and it could be emitted to
+    // performance timeline (depending on the largest text).
+    ImageRecord* largest_image = LargestImage();
+    if (!largest_image ||
+        largest_image->RecordedSize() < largest_removed_image->RecordedSize()) {
+      UseCounter::Count(frame_view_->GetFrame().DomWindow(),
+                        WebFeature::kLcpCandidateRemovedWhilePaintTimePending);
+    }
   }
 }
 
