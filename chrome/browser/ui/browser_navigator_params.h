@@ -228,7 +228,7 @@ struct NavigateParams {
     // (crbug.com/1315749).
     kShowWindowInactive
   };
-  // Default is kNoAction (don't show or activate the window).
+  // WARNING: Default depends on the constructor used.
   // If disposition is NEW_WINDOW or NEW_POPUP, and |window_action| is set to
   // kNoAction, |window_action| will be set to kShowWindow.
   WindowAction window_action = WindowAction::kNoAction;
