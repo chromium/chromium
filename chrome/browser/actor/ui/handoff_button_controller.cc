@@ -309,16 +309,14 @@ void HandoffButtonController::CreateAndShowButton(const std::u16string& text,
   tab_dialog_params->get_dialog_bounds =
       base::BindRepeating(&HandoffButtonController::GetHandoffButtonBounds,
                           base::Unretained(this), widget.get());
-
-  tab_dialog_manager->ShowDialog(widget.get(), std::move(tab_dialog_params));
   widget_ = std::move(widget);
   widget_->SetHoveredCallback(
       base::BindRepeating(&HandoffButtonController::UpdateButtonHoverStatus,
                           weak_ptr_factory_.GetWeakPtr()));
-
   widget_->MakeCloseSynchronous(
       base::BindOnce(&HandoffButtonController::OnWidgetDestroying,
                      weak_ptr_factory_.GetWeakPtr()));
+  tab_dialog_manager->ShowDialog(widget_.get(), std::move(tab_dialog_params));
 }
 
 void HandoffButtonController::ShouldShowButton(bool& show) {
