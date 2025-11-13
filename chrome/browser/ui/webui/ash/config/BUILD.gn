@@ -99,7 +99,6 @@ static_library("config") {
     "//chrome/browser/ui/webui/ash/office_fallback",
     "//chrome/browser/ui/webui/ash/parent_access",
     "//chrome/browser/ui/webui/ash/power_ui",
-    "//chrome/browser/ui/webui/ash/scalable_iph",
     "//chrome/browser/ui/webui/ash/sensor_info",
     "//chrome/browser/ui/webui/ash/set_time",
     "//chrome/browser/ui/webui/ash/settings",
