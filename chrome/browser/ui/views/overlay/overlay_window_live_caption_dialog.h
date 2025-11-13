@@ -36,8 +36,6 @@ class OverlayWindowLiveCaptionDialog : public views::View {
   void OnLiveTranslateEnabledChanged();
   void TargetLanguageChanged();
 
-  void OnGestureTapEvent(ui::GestureEvent* event);
-
   views::ToggleButton* live_caption_button_for_testing() const {
     return live_caption_button_;
   }

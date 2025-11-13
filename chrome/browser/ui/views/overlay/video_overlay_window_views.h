@@ -161,7 +161,13 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
 
   gfx::Size& GetNaturalSize();
 
-  bool OnGestureEventHandledOrIgnored(ui::GestureEvent* event);
+  // Shows the controls on a gesture tap if they are not already shown. Returns
+  // true if the controls were shown.
+  bool ShowControlsForGestureIfNecessary(ui::GestureEvent* event);
+
+  // Hides the live caption dialog on a gesture tap if it's shown and the tap is
+  // outside of the dialog. Returns true if the dialog was hidden.
+  bool HideLiveCaptionDialogForGestureIfNecessary(ui::GestureEvent* event);
 
   // Returns true if the controls (e.g. close button, play/pause button) are
   // visible.
@@ -542,9 +548,8 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
 
   // Used for when the title changes visibility. The title and controls top
   // scrim must be animated together.
-  std::unique_ptr<OverlayControlsFadeAnimation> title_fade_animation_;
   std::unique_ptr<OverlayControlsFadeAnimation>
-      controls_top_scrim_fade_animation_;
+      title_and_top_scrim_fade_animation_;
 
   // Callback to get / create an overlay view.  This is a callback to let tests
   // provide alternate implementations.

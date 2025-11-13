@@ -253,13 +253,7 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
   }
 
   void GestureTapOnView(views::View* view) {
-    gfx::Point touchpoint = views::View::ConvertPointFromScreen(
-        overlay_window().GetRootView(),
-        view->GetBoundsInScreen().CenterPoint());
-    ui::GestureEvent tap_event(
-        touchpoint.x(), touchpoint.y(), 0, base::TimeTicks::Now(),
-        ui::GestureEventDetails(ui::EventType::kGestureTap));
-    overlay_window().OnGestureEvent(&tap_event);
+    event_generator_->GestureTapAt(view->GetBoundsInScreen().CenterPoint());
   }
 
   TestingProfile& profile() { return profile_; }
@@ -951,6 +945,8 @@ TEST_F(VideoOverlayWindowViewsTest, ReplayAndForward10SecondsSeekVideo) {
   testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
 }
 
+// Gesture events are not supported on Mac.
+#if !BUILDFLAG(IS_MAC)
 TEST_F(VideoOverlayWindowViewsTest,
        ReplayAndForward10SecondsSeekVideo_GestureTap) {
   overlay_window().ShowInactive();
@@ -1008,6 +1004,7 @@ TEST_F(VideoOverlayWindowViewsTest,
   GestureTapOnView(forward_10_seconds_button);
   testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
 }
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(VideoOverlayWindowViewsTest, DisplaysFavicon) {
   overlay_window().ForceControlsVisibleForTesting(true);
@@ -1378,6 +1375,9 @@ TEST_F(VideoOverlayWindowViewsTest, LiveCaption_MouseClickOutside) {
   EXPECT_FALSE(live_caption_dialog->IsDrawn());
 }
 
+// Gesture events are not supported on Mac.
+#if !BUILDFLAG(IS_MAC)
+
 TEST_F(VideoOverlayWindowViewsTest, LiveCaption_GestureTapOutside) {
   overlay_window().ForceControlsVisibleForTesting(true);
   OverlayWindowLiveCaptionButton* live_caption_button =
@@ -1468,6 +1468,8 @@ TEST_F(VideoOverlayWindowViewsTest, LiveCaption_GestureTap) {
   profile().GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, false);
   profile().GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled, false);
 }
+
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(VideoOverlayWindowViewsTest, InitialTitleAndScrimVisibility) {
   overlay_window().ForceControlsVisibleForTesting(false);
@@ -1563,8 +1565,6 @@ TEST_F(VideoOverlayWindowViewsTest, TopControlsAreAlwaysOnTheRight) {
     // the window is in.
     const auto pip_window_bounds = overlay_window().GetWindowBoundsInScreen();
     const auto check_control_bounds = [&](const views::View* button_view) {
-      SCOPED_TRACE(testing::Message()
-                   << "Button view: " << button_view->layer()->name());
       EXPECT_GT(button_view->GetMirroredBounds().x(),
                 pip_window_bounds.width() / 2);
       EXPECT_LT(button_view->GetMirroredBounds().y(),

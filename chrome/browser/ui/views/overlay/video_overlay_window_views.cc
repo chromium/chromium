@@ -101,11 +101,6 @@ constexpr gfx::Size kMinWindowSize(284, 160);
 
 constexpr int kOverlayBorderThickness = 10;
 
-#if BUILDFLAG(IS_CHROMEOS)
-// The opacity of the resize handle control.
-constexpr double kResizeHandleOpacity = 0.38;
-#endif
-
 // Minimum padding between the overlay view, if shown, and the window.
 constexpr gfx::Size kOverlayViewPadding(64, 46);
 
@@ -204,11 +199,8 @@ class ControlsBackgroundView : public views::View {
 
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    const SkColor color =
-        GetColorProvider()->GetColor(kColorPipWindowScrimFull);
-    layer()->SetColor(SkColorSetA(color, SK_AlphaOPAQUE));
-    layer()->SetOpacity(static_cast<float>(SkColorGetA(color)) /
-                        SK_AlphaOPAQUE);
+    SetBackground(views::CreateSolidBackground(
+        GetColorProvider()->GetColor(kColorPipWindowScrimFull)));
   }
 };
 
@@ -725,24 +717,37 @@ void VideoOverlayWindowViews::OnMouseEvent(ui::MouseEvent* event) {
   views::Widget::OnMouseEvent(event);
 }
 
-bool VideoOverlayWindowViews::OnGestureEventHandledOrIgnored(
+bool VideoOverlayWindowViews::ShowControlsForGestureIfNecessary(
     ui::GestureEvent* event) {
   if (event->type() != ui::EventType::kGestureTap) {
-    return true;
+    return false;
   }
-
-  // Every time a user taps on the window, restart the timer to automatically
-  // hide the controls.
-  hide_controls_timer_.Reset();
 
   // If the controls were not shown, make them visible. All controls related
   // layers are expected to have the same visibility.
-  // TODO(apacible): This placeholder logic should be updated with touchscreen
-  // specific investigation. https://crbug/854373
   if (!AreControlsVisible()) {
     UpdateControlsVisibility(true);
     return true;
   }
+  return false;
+}
+
+bool VideoOverlayWindowViews::HideLiveCaptionDialogForGestureIfNecessary(
+    ui::GestureEvent* event) {
+  if (event->type() != ui::EventType::kGestureTap) {
+    return false;
+  }
+
+  if (!live_caption_dialog_->GetVisible()) {
+    return false;
+  }
+
+  if (!GetLiveCaptionDialogBounds().Contains(event->location())) {
+    SetLiveCaptionDialogVisibility(false);
+    event->SetHandled();
+    return true;
+  }
+
   return false;
 }
 
@@ -841,37 +846,38 @@ void VideoOverlayWindowViews::UpdateControlsVisibility(bool is_visible,
   if (should_animate) {
     // Animate the title and top scrim.
     if (title_is_visible != AreTitleAndScrimVisible()) {
-      title_fade_animation_ = std::make_unique<OverlayControlsFadeAnimation>(
-          *GetTitleView(), title_is_visible
-                               ? OverlayControlsFadeAnimation::Type::kToShown
-                               : OverlayControlsFadeAnimation::Type::kToHidden);
-      controls_top_scrim_fade_animation_ =
+      const std::vector<raw_ptr<views::View>> title_and_scrim = {
+          title_view_, controls_top_scrim_view_};
+      title_and_top_scrim_fade_animation_ =
           std::make_unique<OverlayControlsFadeAnimation>(
-              *GetControlsTopScrimView(),
+              title_and_scrim,
               title_is_visible ? OverlayControlsFadeAnimation::Type::kToShown
                                : OverlayControlsFadeAnimation::Type::kToHidden);
-
-      title_fade_animation_->Start();
-      controls_top_scrim_fade_animation_->Start();
+      title_and_top_scrim_fade_animation_->Start();
     }
 
     // Animate the main controls.
     if (wanted_visibility != AreControlsVisible()) {
+      const std::vector<raw_ptr<views::View>> controls = {
+          controls_container_view_, controls_scrim_view_,
+          controls_bottom_scrim_view_};
       fade_animation_ = std::make_unique<OverlayControlsFadeAnimation>(
-          *GetControlsContainerView(),
-          wanted_visibility ? OverlayControlsFadeAnimation::Type::kToShown
-                            : OverlayControlsFadeAnimation::Type::kToHidden);
+          controls, wanted_visibility
+                        ? OverlayControlsFadeAnimation::Type::kToShown
+                        : OverlayControlsFadeAnimation::Type::kToHidden);
       fade_animation_->Start();
     }
   } else {
     // Instantly set the opacity for the title, top scrim and main controls.
-    title_fade_animation_.reset();
-    controls_top_scrim_fade_animation_.reset();
+    title_and_top_scrim_fade_animation_.reset();
     fade_animation_.reset();
 
     GetTitleView()->layer()->SetOpacity(title_is_visible ? 1.0 : 0.0);
     GetControlsTopScrimView()->layer()->SetOpacity(title_is_visible ? 1.0
                                                                     : 0.0);
+    controls_scrim_view_->layer()->SetOpacity(wanted_visibility ? 1.0 : 0.0);
+    controls_bottom_scrim_view_->layer()->SetOpacity(wanted_visibility ? 1.0
+                                                                       : 0.0);
     GetControlsContainerView()->layer()->SetOpacity(wanted_visibility ? 1.0
                                                                       : 0.0);
     GetControlsContainerView()->SetVisible(wanted_visibility);
@@ -1272,30 +1278,15 @@ void VideoOverlayWindowViews::SetUpViews() {
   video_view->layer()->SetName("VideoView");
 
   // views::View that holds the scrim, which appears with the controls. -------
-  controls_scrim_view->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  controls_scrim_view->SetPaintToLayer(ui::LAYER_TEXTURED);
+  controls_scrim_view->layer()->SetFillsBoundsOpaquely(false);
   controls_scrim_view->layer()->SetName("ControlsScrimView");
 
   // views::View that is a parent of all the controls. Makes hiding and showing
   // all the controls at once easier.
-  controls_container_view->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  controls_container_view->SetPaintToLayer(ui::LAYER_TEXTURED);
   controls_container_view->layer()->SetFillsBoundsOpaquely(false);
   controls_container_view->layer()->SetName("ControlsContainerView");
-
-  // views::View that closes the window. --------------------------------------
-  close_controls_view->SetPaintToLayer(ui::LAYER_TEXTURED);
-  close_controls_view->layer()->SetFillsBoundsOpaquely(false);
-  close_controls_view->layer()->SetName("CloseControlsView");
-
-  // Contains controls for playback. ----------------------------------------
-  playback_controls_container_view->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-  playback_controls_container_view->layer()->SetFillsBoundsOpaquely(false);
-  playback_controls_container_view->layer()->SetName(
-      "PlaybackControlsContainerView");
-
-  // Contains controls for video conferencing. ------------------------------
-  vc_controls_container_view->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-  vc_controls_container_view->layer()->SetFillsBoundsOpaquely(false);
-  vc_controls_container_view->layer()->SetName("VcControlsContainerView");
 
   // The scrim for the top controls. ----------------------------------------
   controls_top_scrim_view->SetPaintToLayer(ui::LAYER_TEXTURED);
@@ -1307,26 +1298,6 @@ void VideoOverlayWindowViews::SetUpViews() {
   controls_bottom_scrim_view->layer()->SetFillsBoundsOpaquely(false);
   controls_bottom_scrim_view->layer()->SetName("ControlsBottomScrimView");
 
-  // views::View that displays the website's favicon. -----------------------
-  favicon_view->SetPaintToLayer(ui::LAYER_TEXTURED);
-  favicon_view->layer()->SetFillsBoundsOpaquely(false);
-  favicon_view->layer()->SetName("FaviconView");
-
-  // Displays the source title (website's origin or extension/PWA name). ----
-  origin->SetPaintToLayer(ui::LAYER_TEXTURED);
-  origin->layer()->SetFillsBoundsOpaquely(false);
-  origin->layer()->SetName("Origin");
-
-  // views::View that closes the window without pausing. --------------------
-  minimize_button->SetPaintToLayer(ui::LAYER_TEXTURED);
-  minimize_button->layer()->SetFillsBoundsOpaquely(false);
-  minimize_button->layer()->SetName("OverlayWindowMinimizeButton");
-
-  // views::View that closes the window and focuses initiator tab. ----------
-  back_to_tab_button->SetPaintToLayer(ui::LAYER_TEXTURED);
-  back_to_tab_button->layer()->SetFillsBoundsOpaquely(false);
-  back_to_tab_button->layer()->SetName("BackToTabControlsView");
-
   // views::View that displays the window title. The window title consists of
   // the origin and favicon. Always displayed together with the controls top
   // scrim view.
@@ -1334,95 +1305,43 @@ void VideoOverlayWindowViews::SetUpViews() {
   title_view->layer()->SetFillsBoundsOpaquely(false);
   title_view->layer()->SetName("TitleView");
 
-  // views::View that holds the previous-track image button. ------------------
-  previous_track_controls_view->SetPaintToLayer(ui::LAYER_TEXTURED);
-  previous_track_controls_view->layer()->SetFillsBoundsOpaquely(false);
-  previous_track_controls_view->layer()->SetName("PreviousTrackControlsView");
-
-  // views::View that toggles play/pause/replay. ------------------------------
-  play_pause_controls_view->SetPaintToLayer(ui::LAYER_TEXTURED);
-  play_pause_controls_view->layer()->SetFillsBoundsOpaquely(false);
-  play_pause_controls_view->layer()->SetName("PlayPauseControlsView");
-  play_pause_controls_view->SetPlaybackState(
-      controller_->IsPlayerActive() ? kPlaying : kPaused);
-
-  // views::View that holds the next-track image button. ----------------------
-  next_track_controls_view->SetPaintToLayer(ui::LAYER_TEXTURED);
-  next_track_controls_view->layer()->SetFillsBoundsOpaquely(false);
-  next_track_controls_view->layer()->SetName("NextTrackControlsView");
-
-  replay_10_seconds_button->SetPaintToLayer(ui::LAYER_TEXTURED);
-  replay_10_seconds_button->layer()->SetFillsBoundsOpaquely(false);
-  replay_10_seconds_button->layer()->SetName("Replay10SecondsButton");
-
-  forward_10_seconds_button->SetPaintToLayer(ui::LAYER_TEXTURED);
-  forward_10_seconds_button->layer()->SetFillsBoundsOpaquely(false);
-  forward_10_seconds_button->layer()->SetName("Forward10SecondsButton");
-
-  progress_view->SetPaintToLayer(ui::LAYER_TEXTURED);
-  progress_view->layer()->SetFillsBoundsOpaquely(false);
-  progress_view->layer()->SetName("ProgressView");
-
-  timestamp->SetPaintToLayer(ui::LAYER_TEXTURED);
-  timestamp->layer()->SetFillsBoundsOpaquely(false);
-  timestamp->layer()->SetName("Timestamp");
-
-  live_status->SetPaintToLayer(ui::LAYER_TEXTURED);
-  live_status->layer()->SetFillsBoundsOpaquely(false);
-  live_status->layer()->SetName("LiveStatus");
-
-  live_caption_button->SetPaintToLayer(ui::LAYER_TEXTURED);
-  live_caption_button->layer()->SetFillsBoundsOpaquely(false);
-  live_caption_button->layer()->SetName("LiveCaptionButton");
-
-  live_caption_dialog->SetPaintToLayer(ui::LAYER_TEXTURED);
-  live_caption_dialog->layer()->SetFillsBoundsOpaquely(false);
-  live_caption_dialog->layer()->SetName("LiveCaptionDialog");
-
-  toggle_microphone_button->SetPaintToLayer(ui::LAYER_TEXTURED);
-  toggle_microphone_button->layer()->SetFillsBoundsOpaquely(false);
-  toggle_microphone_button->layer()->SetName("ToggleMicrophoneButton");
-
-  toggle_camera_button->SetPaintToLayer(ui::LAYER_TEXTURED);
-  toggle_camera_button->layer()->SetFillsBoundsOpaquely(false);
-  toggle_camera_button->layer()->SetName("ToggleCameraButton");
-
-  hang_up_button->SetPaintToLayer(ui::LAYER_TEXTURED);
-  hang_up_button->layer()->SetFillsBoundsOpaquely(false);
-  hang_up_button->layer()->SetName("HangUpButton");
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // views::View that shows the affordance that the window can be resized. ----
-  resize_handle_view->SetPaintToLayer(ui::LAYER_TEXTURED);
-  resize_handle_view->layer()->SetFillsBoundsOpaquely(false);
-  resize_handle_view->layer()->SetName("ResizeHandleView");
-  resize_handle_view->layer()->SetOpacity(kResizeHandleOpacity);
-#endif
-
-  // Set up view::Views hierarchy. --------------------------------------------
+  // Set up proper layer order. The scrims and title are on a separate layer
+  // from the controls so we can animate their opacity individually (so that we
+  // can show the title (origin + favicon) and top scrim without showing
+  // everything else.
+  //
+  // All interactable controls MUST remain on a single topmost layer
+  // (`controls_container_view_`) in order for gesture events to work properly.
   window_background_view_ =
       AddChildView(&view_holder_, std::move(window_background_view));
   video_view_ = AddChildView(&view_holder_, std::move(video_view));
   controls_scrim_view_ =
-      controls_container_view->AddChildView(std::move(controls_scrim_view));
-  controls_bottom_scrim_view_ = controls_container_view->AddChildView(
-      std::move(controls_bottom_scrim_view));
-  playback_controls_container_view_ = controls_container_view->AddChildView(
+      AddChildView(&view_holder_, std::move(controls_scrim_view));
+  controls_top_scrim_view_ =
+      AddChildView(&view_holder_, std::move(controls_top_scrim_view));
+  controls_bottom_scrim_view_ =
+      AddChildView(&view_holder_, std::move(controls_bottom_scrim_view));
+  title_view_ = AddChildView(&view_holder_, std::move(title_view));
+  controls_container_view_ =
+      AddChildView(&view_holder_, std::move(controls_container_view));
+
+  playback_controls_container_view_ = controls_container_view_->AddChildView(
       std::move(playback_controls_container_view));
-  vc_controls_container_view_ = controls_container_view->AddChildView(
+  vc_controls_container_view_ = controls_container_view_->AddChildView(
       std::move(vc_controls_container_view));
 
   // Initialize the favicon view with the default icon.
-  favicon_view_ = title_view->AddChildView(std::move(favicon_view));
+  favicon_view_ = title_view_->AddChildView(std::move(favicon_view));
   UpdateFavicon(gfx::ImageSkia());
 
-  origin_ = title_view->AddChildView(std::move(origin));
+  origin_ = title_view_->AddChildView(std::move(origin));
+
   minimize_button_ =
-      controls_container_view->AddChildView(std::move(minimize_button));
+      controls_container_view_->AddChildView(std::move(minimize_button));
   back_to_tab_button_ =
-      controls_container_view->AddChildView(std::move(back_to_tab_button));
+      controls_container_view_->AddChildView(std::move(back_to_tab_button));
   close_controls_view_ =
-      controls_container_view->AddChildView(std::move(close_controls_view));
+      controls_container_view_->AddChildView(std::move(close_controls_view));
 
   replay_10_seconds_button_ = playback_controls_container_view_->AddChildView(
       std::move(replay_10_seconds_button));
@@ -1447,7 +1366,7 @@ void VideoOverlayWindowViews::SetUpViews() {
   live_caption_button_ = playback_controls_container_view_->AddChildView(
       std::move(live_caption_button));
   live_caption_dialog_ =
-      controls_container_view->AddChildView(std::move(live_caption_dialog));
+      controls_container_view_->AddChildView(std::move(live_caption_dialog));
 
   toggle_camera_button_ = vc_controls_container_view_->AddChildView(
       std::move(toggle_camera_button));
@@ -1458,15 +1377,8 @@ void VideoOverlayWindowViews::SetUpViews() {
 
 #if BUILDFLAG(IS_CHROMEOS)
   resize_handle_view_ =
-      controls_container_view->AddChildView(std::move(resize_handle_view));
+      controls_container_view_->AddChildView(std::move(resize_handle_view));
 #endif
-
-  // The top scrim is added before the other views so it is drawn behind them.
-  controls_top_scrim_view_ =
-      AddChildView(&view_holder_, std::move(controls_top_scrim_view));
-  controls_container_view_ =
-      AddChildView(&view_holder_, std::move(controls_container_view));
-  title_view_ = AddChildView(&view_holder_, std::move(title_view));
 }
 
 void VideoOverlayWindowViews::OnRootViewReady() {
@@ -1600,6 +1512,7 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
   gfx::Rect middle_controls_bounds = gfx::BoundingRect(
       top_controls_bounds.bottom_left(), bottom_controls_bounds.top_right());
 
+  title_view_->SetSize(bounds.size());
   playback_controls_container_view_->SetSize(bounds.size());
   vc_controls_container_view_->SetSize(bounds.size());
   controls_top_scrim_view_->SetBoundsRect(
@@ -2049,66 +1962,23 @@ void VideoOverlayWindowViews::OnNativeWidgetRemovingFromCompositor() {
 void VideoOverlayWindowViews::OnGestureEvent(ui::GestureEvent* event) {
   MaybeUpdateMeetsUserInteraction(*event);
 
-  if (OnGestureEventHandledOrIgnored(event)) {
+  // Every time a user taps on the window, restart the timer to automatically
+  // hide the controls.
+  hide_controls_timer_.Reset();
+
+  // Use the gesture to show the controls if necessary.
+  if (ShowControlsForGestureIfNecessary(event)) {
     return;
   }
 
-  if (live_caption_dialog_ && live_caption_dialog_->GetVisible()) {
-    if (!GetLiveCaptionDialogBounds().Contains(event->location())) {
-      // Hide the live caption dialog if it's visible and the user taps outside
-      // of it.
-      SetLiveCaptionDialogVisibility(false);
-      event->SetHandled();
-      return;
-    }
-
-    // Otherwise, let the live caption dialog handle the gesture.
-    live_caption_dialog_->OnGestureTapEvent(event);
+  // Use the gesture to hide the live caption dialog if it's visible and the
+  // user taps outside of it.
+  if (HideLiveCaptionDialogForGestureIfNecessary(event)) {
     return;
   }
 
-  if (GetBackToTabControlsBounds().Contains(event->location())) {
-    controller_->CloseAndFocusInitiator();
-    event->SetHandled();
-  } else if (GetSkipAdControlsBounds().Contains(event->location())) {
-    controller_->SkipAd();
-    event->SetHandled();
-  } else if (GetCloseControlsBounds().Contains(event->location())) {
-    CloseAndPauseIfAvailable();
-    event->SetHandled();
-  } else if (GetMinimizeControlsBounds().Contains(event->location())) {
-    PictureInPictureWindowManager::GetInstance()
-        ->ExitPictureInPictureViaWindowUi(
-            PictureInPictureWindowManager::UiBehavior::kCloseWindowOnly);
-    event->SetHandled();
-  } else if (GetPlayPauseControlsBounds().Contains(event->location())) {
-    TogglePlayPause();
-    event->SetHandled();
-  } else if (GetNextTrackControlsBounds().Contains(event->location())) {
-    controller_->NextTrack();
-    event->SetHandled();
-  } else if (GetPreviousTrackControlsBounds().Contains(event->location())) {
-    controller_->PreviousTrack();
-    event->SetHandled();
-  } else if (GetToggleMicrophoneButtonBounds().Contains(event->location())) {
-    controller_->ToggleMicrophone();
-    event->SetHandled();
-  } else if (GetToggleCameraButtonBounds().Contains(event->location())) {
-    controller_->ToggleCamera();
-    event->SetHandled();
-  } else if (GetHangUpButtonBounds().Contains(event->location())) {
-    controller_->HangUp();
-    event->SetHandled();
-  } else if (GetReplay10SecondsButtonBounds().Contains(event->location())) {
-    Replay10Seconds();
-    event->SetHandled();
-  } else if (GetForward10SecondsButtonBounds().Contains(event->location())) {
-    Forward10Seconds();
-    event->SetHandled();
-  } else if (GetLiveCaptionButtonBounds().Contains(event->location())) {
-    OnLiveCaptionButtonPressed();
-    event->SetHandled();
-  }
+  // Otherwise, just use default gesture event handling.
+  views::Widget::OnGestureEvent(event);
 }
 
 gfx::Rect VideoOverlayWindowViews::GetBackToTabControlsBounds() {
@@ -2500,19 +2370,13 @@ void VideoOverlayWindowViews::OnInitialTitleTimerFired() {
 }
 
 bool VideoOverlayWindowViews::AreTitleAndScrimVisible() const {
-  if (title_fade_animation_) {
-    // The title and scrim are animated together, so their animations should
-    // either both exist or both not exist.
-    DCHECK(controls_top_scrim_fade_animation_);
-    DCHECK_EQ(title_fade_animation_->type(),
-              controls_top_scrim_fade_animation_->type());
-    return (title_fade_animation_->type() ==
+  if (title_and_top_scrim_fade_animation_) {
+    return (title_and_top_scrim_fade_animation_->type() ==
             OverlayControlsFadeAnimation::Type::kToShown);
   }
 
   // If no animation is active, check the opacity of the layers. They should
   // also be in sync.
-  DCHECK(!controls_top_scrim_fade_animation_);
   DCHECK_EQ(GetTitleView()->layer()->opacity(),
             GetControlsTopScrimView()->layer()->opacity());
   return GetTitleView()->layer()->opacity() > 0;

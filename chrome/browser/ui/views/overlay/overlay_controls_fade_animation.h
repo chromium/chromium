@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OVERLAY_OVERLAY_CONTROLS_FADE_ANIMATION_H_
 #define CHROME_BROWSER_UI_VIEWS_OVERLAY_OVERLAY_CONTROLS_FADE_ANIMATION_H_
 
-#include "base/memory/raw_ref.h"
+#include <vector>
+
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/animation/linear_animation.h"
 
 namespace views {
@@ -23,8 +25,10 @@ class OverlayControlsFadeAnimation : public gfx::LinearAnimation {
     kToHidden,
   };
 
-  // `controls` MUST outlive `this`.
-  OverlayControlsFadeAnimation(views::View& controls, Type type);
+  // Every element of `controls` MUST outlive `this`.
+  OverlayControlsFadeAnimation(
+      const std::vector<raw_ptr<views::View>>& controls,
+      Type type);
   OverlayControlsFadeAnimation(const OverlayControlsFadeAnimation&) = delete;
   OverlayControlsFadeAnimation& operator=(const OverlayControlsFadeAnimation&) =
       delete;
@@ -36,7 +40,7 @@ class OverlayControlsFadeAnimation : public gfx::LinearAnimation {
   Type type() const { return type_; }
 
  private:
-  const raw_ref<views::View> controls_;
+  const std::vector<raw_ptr<views::View>> controls_;
   const Type type_;
 };
 
