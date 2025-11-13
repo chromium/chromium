@@ -25,6 +25,9 @@ const MAX_WAIT_TIME_MS = loadTimeData.getInteger('maxLoadingTimeMs');
 const RELOAD_MAX_WAIT_TIME_RELOAD_MS =
     loadTimeData.getInteger('reloadMaxLoadingTimeMs');
 
+// If unified FRE is enabled to change formatting for sidepanel ui.
+const IS_UNIFIED_FRE = loadTimeData.getBoolean('isUnifiedFre');
+
 // Minimum height for FRE.
 const MIN_HEIGHT = 200;
 
@@ -104,6 +107,12 @@ export class FreAppController {
 
 
     this.webview = this.createWebview();
+
+    // TODO(b/459795708): Remove when FRE is deduplicated and unified fre is
+    // launched.
+    const frePanelStateKindSection = getRequiredElement('fre-local-panels');
+    frePanelStateKindSection.classList.toggle('side-panel', IS_UNIFIED_FRE);
+    frePanelStateKindSection.classList.toggle('floating', !IS_UNIFIED_FRE);
 
     window.addEventListener('online', () => {
       this.online();
@@ -257,6 +266,9 @@ export class FreAppController {
              '.panel')) {
       panel.hidden = panel.id !== id;
     }
+
+    const frePanelStateKindSection = getRequiredElement('fre-local-panels');
+    frePanelStateKindSection.classList.toggle('hidden', id === 'freGuestPanel');
 
     // After making the guest panel visible, programmatically move focus
     // to the content inside the webview. This ensures that screen readers

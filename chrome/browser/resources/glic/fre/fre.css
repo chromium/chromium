@@ -218,3 +218,17 @@ body {
   cursor: pointer;
   text-decoration: underline;
 }
+
+#fre-local-panels {
+  height: 100%;
+}
+
+#fre-app-container .side-panel .notice {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+#fre-app-container .side-panel .notice p {
+  width: 300px;
+}
