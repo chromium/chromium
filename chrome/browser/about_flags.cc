@@ -13313,15 +13313,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          enterprise_signals::features::kProfileSignalsReportingEnabled)},
 
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-    {"enable-extensions-for-corp-desktop-android",
-     flag_descriptions::kEnableExtensionsForCorpDesktopAndroidName,
-     flag_descriptions::kEnableExtensionsForCorpDesktopAndroidDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         extensions_features::kEnableExtensionsForCorpDesktopAndroid)},
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-enable-keyboard-accessory-chip-width-adjustment",
      flag_descriptions::kAutofillEnableKeyboardAccessoryChipWidthAdjustmentName,
