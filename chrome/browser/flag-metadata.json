@@ -9129,14 +9129,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "scalable-iph-debug",
-    "owners": [
-      "//chromeos/ash/components/scalable_iph/OWNERS",
-      "scalable-iph-eng@google.com"
-    ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "scheduler-configuration",
     "owners": [ "kerrnel@chromium.org", "mnissler@chromium.org" ],
     // This flag never expires because some users need to override CPU security

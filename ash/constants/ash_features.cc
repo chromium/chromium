@@ -1790,9 +1790,6 @@ BASE_FEATURE(kResetShortcutCustomizations, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables ChromeOS scalable IPH.
 BASE_FEATURE(kScalableIph, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables debug feature of ChromeOS Scalable Iph.
-BASE_FEATURE(kScalableIphDebug, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Set all ScalableIph client side config to tracking only config.
 BASE_FEATURE(kScalableIphTrackingOnly, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -3334,10 +3331,6 @@ bool IsSameAppWindowCycleEnabled() {
 
 bool IsScalableIphEnabled() {
   return base::FeatureList::IsEnabled(kScalableIph);
-}
-
-bool IsScalableIphDebugEnabled() {
-  return base::FeatureList::IsEnabled(kScalableIphDebug);
 }
 
 bool IsScalableIphTrackingOnlyEnabled() {

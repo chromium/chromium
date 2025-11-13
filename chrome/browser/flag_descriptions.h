@@ -7690,10 +7690,6 @@ inline constexpr char kArcWindowPredictorName[] = "Enable ARC window predictor";
 inline constexpr char kArcWindowPredictorDescription[] =
     "Enables the window state and bounds predictor for ARC task windows";
 
-inline constexpr char kScalableIphDebugName[] = "Scalable Iph Debug";
-inline constexpr char kScalableIphDebugDescription[] =
-    "Enables debug feature of Scalable Iph";
-
 inline constexpr char kShelfAutoHideSeparationName[] =
     "Enable separate shelf auto-hide preferences.";
 inline constexpr char kShelfAutoHideSeparationDescription[] =

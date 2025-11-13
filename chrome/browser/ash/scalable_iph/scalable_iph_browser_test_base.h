@@ -141,9 +141,6 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   // Set false in the constructor to disable `ash::features::kScalableIph`.
   bool enable_scalable_iph_ = true;
 
-  // Set false in the constructor to disable `ash::features::kScalableIphDebug`.
-  bool enable_scalable_iph_debug_ = true;
-
   // Set false in the constructor to not enforce scalable IPH set-up.
   // If `enable_scalable_iph_` is set to false, this should also be false.
   bool setup_scalable_iph_ = true;

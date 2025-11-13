@@ -270,14 +270,6 @@ void ScalableIphBrowserTestBase::InitializeScopedFeatureList() {
         base::test::FeatureRef(ash::features::kScalableIph));
   }
 
-  if (enable_scalable_iph_debug_) {
-    enabled_features.push_back(
-        base::test::FeatureRefAndParams(ash::features::kScalableIphDebug, {}));
-  } else {
-    disabled_features.push_back(
-        base::test::FeatureRef(ash::features::kScalableIphDebug));
-  }
-
   scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                      disabled_features);
 }

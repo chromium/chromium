@@ -91,10 +91,6 @@ using TestEnvironment =
 using UserSessionType =
     ::ash::CustomizableTestEnvBrowserTestBase::UserSessionType;
 
-constexpr char kTestLogMessage[] = "test-log-message";
-constexpr char kTestLogMessagePattern[] = "*test-log-message*";
-constexpr char kScalableIphDebugLogTextUrl[] =
-    "chrome-untrusted://scalable-iph-debug/log.txt";
 constexpr char16_t kTestGameWindowTitle[] = u"ScalableIphTestGameWindow";
 
 BASE_FEATURE(kScalableIphTestTwo,
@@ -275,21 +271,6 @@ class ScalableIphBrowserTestGameMultiUser : public ScalableIphBrowserTestGame {
   ScalableIphBrowserTestGameMultiUser() { enable_multi_user_ = true; }
 };
 
-class ScalableIphBrowserTestDebugOff : public ScalableIphBrowserTest {
- public:
-  ScalableIphBrowserTestDebugOff() { enable_scalable_iph_debug_ = false; }
-};
-
-class ScalableIphBrowserTestFeatureOffDebugOn : public ScalableIphBrowserTest {
- public:
-  ScalableIphBrowserTestFeatureOffDebugOn() {
-    enable_scalable_iph_ = false;
-    setup_scalable_iph_ = false;
-    CHECK(enable_scalable_iph_debug_)
-        << "Debug feature is on by default for ScalableIphBrowserTest";
-  }
-};
-
 // Preinstalled apps only deploy on Google Chrome branded builds of Chromium.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 class ScalableIphBrowserTestPreinstallApps : public ScalableIphBrowserTest {
@@ -455,11 +436,9 @@ class ScalableIphBrowserTestCustomConditionBase
 
     base::test::FeatureRefAndParams scalable_iph_feature(
         ash::features::kScalableIph, {});
-    base::test::FeatureRefAndParams scalable_iph_debug_feature(
-        ash::features::kScalableIphDebug, {});
 
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {scalable_iph_feature, scalable_iph_debug_feature, test_config}, {});
+        {scalable_iph_feature, test_config}, {});
   }
 
   virtual void AppendCustomCondition(base::FieldTrialParams& params) = 0;
@@ -1117,100 +1096,6 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestGameMultiUser,
 
   window->SetProperty(ash::kAppIDKey,
                       std::string(extension_misc::kGeForceNowAppId));
-}
-
-// Logging feature is on by default in `ScalableIphBrowserTest`.
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, Log) {
-  constexpr char kTestFileNamePattern[] = "*scalable_iph_browsertest.cc*";
-
-  scalable_iph::ScalableIph* scalable_iph =
-      ScalableIphFactory::GetForBrowserContext(browser()->profile());
-  CHECK(scalable_iph);
-
-  // `logging::SetLogMessageHandler` takes a function pointer. Use a static
-  // variable as a captureless lambda can be converted to a function pointer.
-  static base::NoDestructor<std::vector<std::string>> captured_logs;
-  CHECK_EQ(nullptr, logging::GetLogMessageHandler());
-  logging::SetLogMessageHandler([](int severity, const char* file, int line,
-                                   size_t message_start,
-                                   const std::string& str) {
-    captured_logs->push_back(str);
-    return true;
-  });
-
-  SCALABLE_IPH_LOG(scalable_iph->GetLogger()) << kTestLogMessage;
-
-  logging::SetLogMessageHandler(nullptr);
-
-  EXPECT_TRUE(base::MatchPattern(scalable_iph->GetLogger()->GenerateLog(),
-                                 kTestLogMessagePattern));
-  EXPECT_TRUE(base::MatchPattern(scalable_iph->GetLogger()->GenerateLog(),
-                                 kTestFileNamePattern));
-
-  std::string log_output = base::JoinString(*captured_logs, "");
-  if (DCHECK_IS_ON()) {
-    EXPECT_TRUE(base::MatchPattern(log_output, kTestLogMessagePattern));
-  } else {
-    EXPECT_FALSE(base::MatchPattern(log_output, kTestLogMessagePattern));
-  }
-
-  // Confirms that the debug page is accessible.
-  content::RenderFrameHost* render_frame_host = ui_test_utils::NavigateToURL(
-      browser(), GURL(kScalableIphDebugLogTextUrl));
-  ASSERT_TRUE(render_frame_host);
-  const network::mojom::URLResponseHead* head =
-      render_frame_host->GetLastResponseHead();
-  ASSERT_TRUE(head);
-  ASSERT_TRUE(head->headers);
-  EXPECT_EQ(net::HTTP_OK, head->headers->response_code());
-}
-
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestDebugOff, NoLog) {
-  scalable_iph::ScalableIph* scalable_iph =
-      ScalableIphFactory::GetForBrowserContext(browser()->profile());
-  CHECK(scalable_iph);
-
-  // `logging::SetLogMessageHandler` takes a function pointer. Use a static
-  // variable as a captureless lambda can be converted to a function pointer.
-  static base::NoDestructor<std::vector<std::string>> captured_logs;
-  CHECK_EQ(nullptr, logging::GetLogMessageHandler());
-  logging::SetLogMessageHandler([](int severity, const char* file, int line,
-                                   size_t message_start,
-                                   const std::string& str) {
-    captured_logs->push_back(str);
-    return true;
-  });
-
-  SCALABLE_IPH_LOG(scalable_iph->GetLogger()) << kTestLogMessage;
-
-  logging::SetLogMessageHandler(nullptr);
-
-  EXPECT_TRUE(scalable_iph->GetLogger()->IsLogEmptyForTesting());
-
-  std::string log_output = base::JoinString(*captured_logs, "");
-  EXPECT_FALSE(base::MatchPattern(log_output, kTestLogMessagePattern));
-
-  // Confirms that the debug page is not accessible if the flag is off.
-  content::RenderFrameHost* render_frame_host = ui_test_utils::NavigateToURL(
-      browser(), GURL(kScalableIphDebugLogTextUrl));
-  ASSERT_TRUE(render_frame_host);
-  // Last response head is nullptr if there is no response. See the comment
-  // of `RenderFrameHost::GetLastResponseHead` for details.
-  EXPECT_FALSE(render_frame_host->GetLastResponseHead());
-}
-
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestFeatureOffDebugOn,
-                       LogPageAvailable) {
-  content::RenderFrameHost* render_frame_host = ui_test_utils::NavigateToURL(
-      browser(), GURL(kScalableIphDebugLogTextUrl));
-  ASSERT_TRUE(render_frame_host);
-  const network::mojom::URLResponseHead* head =
-      render_frame_host->GetLastResponseHead();
-  ASSERT_TRUE(head);
-  ASSERT_TRUE(head->headers);
-  EXPECT_EQ(net::HTTP_OK, head->headers->response_code())
-      << "Debug log page is expected to be available even if ScalableIph "
-         "feature itself is off.";
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestMultipleIphs, OneIphAtATime) {

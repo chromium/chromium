@@ -135,10 +135,6 @@ void ApplyExperiment(
         base::test::FeatureRef(*GetFeature(std::string(disabled_feature))));
   }
 
-  // Enable `ScalableIphDebug` for easier debug.
-  enable_features.push_back(
-      base::test::FeatureRefAndParams(ash::features::kScalableIphDebug, {}));
-
   scoped_feature_list->InitAndEnableFeaturesWithParameters(enable_features,
                                                            disable_features);
 }

@@ -71,7 +71,8 @@ std::string CollectServiceStartUpDebugLog(
 
 bool ScalableIphDebugUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return ash::features::IsScalableIphDebugEnabled();
+  // TODO(crbug.com/385152937): Remove this class.
+  return false;
 }
 
 ScalableIphDebugUI::ScalableIphDebugUI(content::WebUI* web_ui)

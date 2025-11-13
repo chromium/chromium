@@ -24,7 +24,8 @@ constexpr int kLogSizeLimit = 100 * 200 * 60;
 
 // static
 bool Logger::IsEnabled() {
-  return ash::features::IsScalableIphDebugEnabled();
+  // TODO(crbug.com/385152937): Remove this class.
+  return false;
 }
 
 Logger::Logger() = default;

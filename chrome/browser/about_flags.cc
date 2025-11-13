@@ -8871,9 +8871,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"scalable-iph-debug", flag_descriptions::kScalableIphDebugName,
-     flag_descriptions::kScalableIphDebugDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kScalableIphDebug)},
     {"settings-app-notification-settings",
      flag_descriptions::kSettingsAppNotificationSettingsName,
      flag_descriptions::kSettingsAppNotificationSettingsDescription, kOsCrOS,
