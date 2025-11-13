@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_context_menu_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "components/favicon_base/favicon_types.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
@@ -29,13 +30,18 @@ OmniboxContextMenu::OmniboxContextMenu(
       std::move(menu), views::MenuRunner::HAS_MNEMONICS |
                            views::MenuRunner::MENU_ITEM_CONTEXT_MENU);
   ui::SimpleMenuModel* menu_model = controller_->menu_model();
+  menu_model->SetMenuModelDelegate(this);
   for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
     views::MenuModelAdapter::AppendMenuItemFromModel(
         menu_model, i, menu_, menu_model->GetCommandIdAt(i));
   }
 }
 
-OmniboxContextMenu::~OmniboxContextMenu() = default;
+OmniboxContextMenu::~OmniboxContextMenu() {
+  if (controller_ && controller_->menu_model()) {
+    controller_->menu_model()->SetMenuModelDelegate(nullptr);
+  }
+}
 
 void OmniboxContextMenu::RunMenuAt(const gfx::Point& point,
                                    ui::mojom::MenuSourceType source_type) {
@@ -70,4 +76,15 @@ std::optional<SkColor> OmniboxContextMenu::GetLabelColor(int command_id) const {
 
 bool OmniboxContextMenu::IsCommandEnabled(int command_id) const {
   return command_id != ui::MenuModel::kTitleId;
+}
+
+void OmniboxContextMenu::OnIconChanged(int command_id) {
+  const std::optional<size_t> index =
+      controller_->menu_model()->GetIndexOfCommandId(command_id);
+  DCHECK(index.has_value());
+  views::MenuItemView* menu_item =
+      menu_->GetSubmenu()->GetMenuItemAt(index.value());
+  if (menu_item) {
+    menu_item->SetIcon(controller_->menu_model()->GetIconAt(index.value()));
+  }
 }
