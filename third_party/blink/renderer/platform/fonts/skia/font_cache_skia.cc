@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
+#include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/skia/sktypeface_factory.h"
@@ -66,24 +67,10 @@ AtomicString ToAtomicString(const SkString& str) {
   return AtomicString::FromUTF8(std::string_view(str.begin(), str.end()));
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// This function is called on android or when we are emulating android fonts on
-// linux and the embedder has overriden the default fontManager with
-// WebFontRendering::setSkiaFontMgr.
-// static
-const FontPlatformData* FontCache::CreateFontPlatformDataForCharacter(
-    SkFontMgr* fm,
-    UChar32 c,
-    const FontDescription& font_description,
-    const char* family_name,
-    FontFallbackPriority fallback_priority) {
-  DCHECK(fm);
-
-  Bcp47Vector locales =
-      GetBcp47LocaleForRequest(font_description, fallback_priority);
-  sk_sp<SkTypeface> typeface(fm->matchFamilyStyleCharacter(
-      family_name, font_description.SkiaFontStyle(), locales.data(),
-      locales.size(), c));
+namespace {
+const FontPlatformData* CreateFontPlatformDataForTypeface(
+    sk_sp<SkTypeface> typeface,
+    const FontDescription& font_description) {
   if (!typeface) {
     return nullptr;
   }
@@ -104,8 +91,26 @@ const FontPlatformData* FontCache::CreateFontPlatformDataForCharacter(
       font_description.TextRendering(), ResolvedFontFeatures(),
       font_description.Orientation());
 }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
+}  // namespace
+
+// static
+const FontPlatformData* FontCache::CreateFontPlatformDataForCharacter(
+    SkFontMgr* fm,
+    UChar32 c,
+    const FontDescription& font_description,
+    const char* family_name,
+    FontFallbackPriority fallback_priority) {
+  DCHECK(fm);
+
+  Bcp47Vector locales =
+      GetBcp47LocaleForRequest(font_description, fallback_priority);
+  sk_sp<SkTypeface> typeface(fm->matchFamilyStyleCharacter(
+      family_name, font_description.SkiaFontStyle(), locales.data(),
+      locales.size(), c));
+
+  return CreateFontPlatformDataForTypeface(std::move(typeface),
+                                           font_description);
+}
 
 void FontCache::PlatformInit() {}
 
@@ -218,6 +223,20 @@ const SimpleFontData* FontCache::GetLastResortFallbackFont(
     ++last_resort_fallback_attempt;
   }
 #endif
+
+  if (!font_platform_data) {
+    // At least try to match locale.
+    font_platform_data = FontCache::CreateFontPlatformDataForCharacter(
+        &*FontManager(), ' ', description, nullptr,
+        FontFallbackPriority::kText);
+  }
+
+  if (!font_platform_data) {
+    // Match anything.
+    font_platform_data = CreateFontPlatformDataForTypeface(
+        FontManager()->legacyMakeTypeface(nullptr, description.SkiaFontStyle()),
+        description);
+  }
 
   // 0 <= last_resort_fallback_attempt <= 8, so set the max to 9 and put failed
   // attempts in that bucket.
