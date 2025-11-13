@@ -1114,6 +1114,67 @@ TEST_F(TileDisplayLayerImplTest,
   EXPECT_EQ(viz::TileDrawQuad::MaterialCast(*it)->resource_id, resource_id);
 }
 
+// Verifies that AppendQuads() appends debug borders for an extra-high-res
+// resource tile when debug borders are enabled.
+TEST_F(TileDisplayLayerImplTest,
+       AppendQuadsAppendsDebugBordersForExtraHighResResourceTile) {
+  // Enable debug borders.
+  LayerTreeDebugState debug_state;
+  debug_state.show_debug_borders.set(DebugBorderType::LAYER);
+  host_impl()->SetDebugState(debug_state);
+
+  // Set up the layer.
+  constexpr gfx::Size kLayerBounds(100, 100);
+  constexpr gfx::Rect kLayerRect(kLayerBounds);
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+  raw_layer->SetBounds(kLayerBounds);
+  raw_layer->SetRecordedBounds(kLayerRect);
+  raw_layer->draw_properties().visible_layer_rect = kLayerRect;
+  raw_layer->draw_properties().opacity = 1.0f;
+
+  // Add an above-high-res tiling with a resource tile.
+  auto& tiling = raw_layer->GetOrCreateTilingFromScaleKey(2.0);
+  tiling.SetTileSize(kLayerBounds);
+  tiling.SetTilingRect(kLayerRect);
+
+  auto resource_id = host_impl()->resource_provider()->ImportResource(
+      viz::TransferableResource::Make(
+          gpu::ClientSharedImage::CreateForTesting(),
+          viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
+      base::DoNothing());
+  TileDisplayLayerImpl::TileContents contents_resource =
+      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds);
+  tiling.SetTileContents(TileIndex{0, 0}, contents_resource,
+                         /*update_damage=*/true);
+
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  // Append quads.
+  auto render_pass = viz::CompositorRenderPass::Create();
+  AppendQuadsData data;
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                         render_pass.get(), &data);
+
+  // Verify that a layer debug border, a tile debug border, and a content quad
+  // were appended.
+  ASSERT_EQ(render_pass->quad_list.size(), 3u);
+  auto it = render_pass->quad_list.begin();
+
+  EXPECT_EQ((*it)->material, viz::DrawQuad::Material::kDebugBorder);
+  EXPECT_EQ(viz::DebugBorderDrawQuad::MaterialCast(*it)->color,
+            DebugColors::ContainerLayerBorderColor());
+  ++it;
+  EXPECT_EQ((*it)->material, viz::DrawQuad::Material::kDebugBorder);
+  EXPECT_EQ(viz::DebugBorderDrawQuad::MaterialCast(*it)->color,
+            DebugColors::AboveHighResTileBorderColor());
+  ++it;
+  EXPECT_EQ((*it)->material, viz::DrawQuad::Material::kTiledContent);
+  EXPECT_EQ(viz::TileDrawQuad::MaterialCast(*it)->resource_id, resource_id);
+}
+
 // Verifies that AppendQuads() appends debug borders for an OOM tile when debug
 // borders are enabled.
 TEST_F(TileDisplayLayerImplTest, AppendQuadsAppendsDebugBordersForOomTile) {
