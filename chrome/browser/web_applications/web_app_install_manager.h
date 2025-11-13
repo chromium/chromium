@@ -46,8 +46,18 @@ class WebAppInstallManager {
   virtual void NotifyWebAppWillBeUninstalled(const webapps::AppId& app_id);
   virtual void NotifyWebAppInstallManagerDestroyed();
 
-  // Collects icon read/write errors (unbounded) if the |kRecordWebAppDebugInfo|
-  // flag is enabled to be used by: chrome://web-app-internals
+  // If the |kRecordWebAppDebugInfo| feature flag is enabled, this class will
+  // collect error logs from web app commands. The logs are stored in memory and
+  // also persisted to a file in the user's profile directory. This log is used
+  // to display debug information on the chrome://web-app-internals page.
+  //
+  // The process works as follows:
+  // 1. `WebAppCommandManager` calls `TakeCommandErrorLog` to pass a command's
+  //    error log.
+  // 2. The log is appended to an in-memory `ErrorLog`.
+  // 3. `MaybeWriteErrorLog` is called to schedule a write to disk. To avoid
+  //    performance issues, writes are coalesced.
+  // 4. On startup, the persisted error log is read from disk.
   using ErrorLog = base::Value::List;
   const ErrorLog* error_log() const { return error_log_.get(); }
 

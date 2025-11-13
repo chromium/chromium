@@ -21,7 +21,17 @@ enum class WebAppUrlLoaderResult;
 
 namespace web_app {
 
-// This class is used to accumulate a single log entry
+// Helper class to accumulate structured error information during a web app
+// installation process. This is only enabled if the
+// |kRecordWebAppDebugInfo| feature flag is enabled. The logs are sent to the
+// WebAppInstallManager and are exposed in chrome://web-app-internals.
+//
+// An InstallErrorLogEntry is typically created at the beginning of an install
+// command and is passed around. Various stages of the installation process can
+// log errors to it. At the end of the command, if any errors were logged, the
+// entire log entry is sent to the install manager. This is done by the command
+// calling `WebAppCommandManager::LogToInstallManager`, which then calls
+// `WebAppInstallManager::TakeCommandErrorLog`.
 class InstallErrorLogEntry {
  public:
   explicit InstallErrorLogEntry(bool background_installation,
