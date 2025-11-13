@@ -763,6 +763,48 @@ TEST_F(DownloadListMediatorTest, TestDeleteDownloadItem) {
   [mock_consumer_ verify];
 }
 
+// Regression test: deleteDownloadItem should work even when the file doesn't
+// exist on disk. This is important for canceled or failed downloads that may
+// not have created files.
+TEST_F(DownloadListMediatorTest, TestDeleteDownloadItemFileNotExists) {
+  const std::string downloadId = "missing_file_download";
+  const std::string fileName = "missing_file.pdf";
+
+  // Create a download record but intentionally don't create the actual file.
+  DownloadRecord record;
+  record.download_id = downloadId;
+  record.file_path = base::FilePath(fileName);
+  record.state = web::DownloadTask::State::kCancelled;
+
+  DownloadListItem* item =
+      [[DownloadListItem alloc] initWithDownloadRecord:record];
+
+  // Verify the file doesn't exist before deletion.
+  base::FilePath fullPath = downloads_path_.Append(fileName);
+  EXPECT_FALSE(base::PathExists(fullPath));
+
+  // Set up RunLoop to wait for async file deletion completion.
+  base::RunLoop run_loop;
+  auto quit_closure = run_loop.QuitClosure();
+
+  // The service should still remove the record even if file deletion fails.
+  EXPECT_CALL(*mock_service_, RemoveDownloadByIdAsync(downloadId, _))
+      .Times(1)
+      .WillOnce([quit_closure](const std::string& id, auto callback) {
+        if (callback) {
+          std::move(callback).Run(true);
+        }
+        quit_closure.Run();
+      });
+
+  [mediator_ deleteDownloadItem:item];
+
+  // Wait for the async operation to complete.
+  run_loop.Run();
+
+  [mock_consumer_ verify];
+}
+
 // Test class specifically for incognito mediator testing - equivalent to
 // DownloadListMediatorTest.
 class DownloadListMediatorIncognitoTest : public PlatformTest {

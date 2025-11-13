@@ -122,6 +122,9 @@ NSString* const kStatusTextEmptyString = @"";
 }
 
 - (base::FilePath)filePath {
+  if (_downloadRecord.file_path.empty()) {
+    return base::FilePath();
+  }
   return ConvertToAbsoluteDownloadPath(_downloadRecord.file_path);
 }
 

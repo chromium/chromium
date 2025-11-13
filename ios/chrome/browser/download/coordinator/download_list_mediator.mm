@@ -235,10 +235,9 @@ using CategorizationResult =
   if (!_downloadRecordService) {
     return;
   }
-
-  if (success) {
-    _downloadRecordService->RemoveDownloadByIdAsync(downloadIdString);
-  }
+  // Canceled or failed downloads may not have files to delete.
+  // Just remove the record regardless of file deletion result.
+  _downloadRecordService->RemoveDownloadByIdAsync(downloadIdString);
 }
 
 - (void)cancelDownloadItem:(DownloadListItem*)item {

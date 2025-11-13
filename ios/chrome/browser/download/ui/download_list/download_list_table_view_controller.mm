@@ -241,7 +241,12 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
       [_diffableDataSource itemIdentifierForIndexPath:indexPath];
 
   CHECK(item);
-
+  if (item.downloadState != web::DownloadTask::State::kComplete) {
+    return;
+  }
+  if (item.filePath.empty()) {
+    return;
+  }
   base::FilePath filePath = item.filePath;
   std::string mimeType = base::SysNSStringToUTF8(item.mimeType);
 
