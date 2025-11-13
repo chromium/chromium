@@ -1138,6 +1138,9 @@ public final class ProductionSupportedFlagList {
                 "When enabled, WebView#preconnect will use a ConnectionKeepAliveConfig for"
                     + " NetworkContext::PreconnectSocket in HTTP2, and will be informed when the"
                     + " connection drops"),
+        Flag.baseFeature(
+                ContentFeatures.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
+                "When enabled, TYPE_ANNOUNCE events will no longer be sent from Chrome."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
