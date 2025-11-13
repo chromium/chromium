@@ -518,7 +518,8 @@ void ManagePasswordsUIController::OnCredentialLeak(
   }
 
   if (password_manager::IsPasswordChangeSupported(details.leak_type) &&
-      !password_manager::IsPasswordSavedAsBackup(details.leak_type)) {
+      !password_manager::IsPasswordSavedAsBackup(details.leak_type) &&
+      !details.credentials.IsLikelySignupForm()) {
     auto* password_change_service = GetPasswordChangeService(web_contents());
     CHECK(password_change_service);
 

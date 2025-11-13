@@ -311,6 +311,19 @@ password_manager::PasswordForm CreatePasswordForm(
   return password_form;
 }
 
+password_manager::PasswordForm CreateSignUpForm(
+    const std::string& url,
+    const std::u16string& username,
+    const std::u16string& password) {
+  PasswordForm password_form = CreatePasswordForm(url, username, password);
+
+  // HasNewPasswordElement() && HasUsernameElement()
+  password_form.new_password_element_renderer_id = autofill::FieldRendererId(1);
+  password_form.username_element_renderer_id = autofill::FieldRendererId(2);
+
+  return password_form;
+}
+
 }  // namespace
 
 class ManagePasswordsUIControllerTest : public base::test::WithFeatureOverride,
@@ -2450,6 +2463,81 @@ TEST_P(ManagePasswordsUIControllerTest,
   controller()->OnUpdatePasswordSubmitted(
       CreateFormManagerWithBestMatches(best_matches, &submitted_form()));
   EXPECT_EQ(controller()->GetState(), password_manager::ui::INACTIVE_STATE);
+}
+
+TEST_P(ManagePasswordsUIControllerTest, AutomatedPasswordChangeOffered) {
+  PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindLambdaForTesting([](content::BrowserContext* context)
+                                     -> std::unique_ptr<KeyedService> {
+        return std::make_unique<MockPasswordChangeService>();
+      }));
+
+  std::vector<PasswordForm> matches = {test_local_form()};
+  auto test_form_manager =
+      CreateFormManagerWithBestMatches(matches, &submitted_form());
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnUpdatePasswordSubmitted(std::move(test_form_manager));
+
+  auto* password_change_service = static_cast<MockPasswordChangeService*>(
+      PasswordChangeServiceFactory::GetForProfile(profile()));
+  EXPECT_CALL(*password_change_service, GetPasswordChangeDelegate)
+      .WillRepeatedly(Return(nullptr));
+  EXPECT_CALL(
+      *password_change_service,
+      OfferPasswordChangeUi(
+          CreatePasswordForm(kExampleUrl, kExampleUsername, kExamplePassword),
+          web_contents()));
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+
+  // The old leak check dialog is not offered.
+  EXPECT_CALL(*controller(), CreateCredentialLeakPrompt).Times(0);
+
+  controller()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
+      password_manager::CreateLeakType(
+          password_manager::IsSaved(true), password_manager::IsReused(false),
+          password_manager::IsSyncing(false),
+          password_manager::HasChangePasswordUrl(true)),
+      CreatePasswordForm(kExampleUrl, kExampleUsername, kExamplePassword),
+      /*in_account_store=*/false));
+}
+
+TEST_P(ManagePasswordsUIControllerTest,
+       AutomatedPasswordChangeNotOfferedForSignUpForm) {
+  PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindLambdaForTesting([](content::BrowserContext* context)
+                                     -> std::unique_ptr<KeyedService> {
+        return std::make_unique<MockPasswordChangeService>();
+      }));
+
+  std::vector<PasswordForm> matches = {test_local_form()};
+  auto test_form_manager =
+      CreateFormManagerWithBestMatches(matches, &submitted_form());
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnUpdatePasswordSubmitted(std::move(test_form_manager));
+
+  // Automated password change is not offered.
+  auto* password_change_service = static_cast<MockPasswordChangeService*>(
+      PasswordChangeServiceFactory::GetForProfile(profile()));
+  EXPECT_CALL(*password_change_service, GetPasswordChangeDelegate).Times(0);
+  EXPECT_CALL(*password_change_service, OfferPasswordChangeUi).Times(0);
+
+  // The old leak detection dialog is displayed.
+  auto dialog_prompt = std::make_unique<PasswordLeakDialogMock>();
+  CredentialLeakDialogController* dialog_controller = nullptr;
+  EXPECT_CALL(*dialog_prompt, ShowCredentialLeakPrompt);
+  EXPECT_CALL(*controller(), CreateCredentialLeakPrompt)
+      .WillOnce(DoAll(SaveArg<0>(&dialog_controller),
+                      Return(std::move(dialog_prompt))));
+
+  controller()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
+      password_manager::CreateLeakType(
+          password_manager::IsSaved(true), password_manager::IsReused(false),
+          password_manager::IsSyncing(false),
+          password_manager::HasChangePasswordUrl(true)),
+      CreateSignUpForm(kExampleUrl, kExampleUsername, kExamplePassword),
+      /*in_account_store=*/false));
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ManagePasswordsUIControllerTest);
