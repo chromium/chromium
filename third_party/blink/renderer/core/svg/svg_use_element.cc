@@ -93,8 +93,8 @@ SVGUseElement::SVGUseElement(Document& document)
           CSSPropertyID::kHeight)),
       element_url_is_local_(true),
       needs_shadow_tree_recreation_(false) {
-  DCHECK(HasCustomStyleCallbacks());
-
+  DCHECK(HasCustomStyleCallbacks() ||
+         RuntimeEnabledFeatures::Svg2CascadeEnabled());
   CreateUserAgentShadowRoot();
 }
 
