@@ -1133,6 +1133,11 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
                 "When enabled, sends live region node changes via WINDOW_CONTENT_CHANGED events"
                         + " instead of TYPE_ANNOUNCEMENT."),
+        Flag.baseFeature(
+                "ConnectionKeepAliveForHttp2",
+                "When enabled, WebView#preconnect will use a ConnectionKeepAliveConfig for"
+                    + " NetworkContext::PreconnectSocket in HTTP2, and will be informed when the"
+                    + " connection drops"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
