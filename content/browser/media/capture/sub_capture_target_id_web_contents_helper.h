@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/token.h"
 #include "base/uuid.h"
 #include "build/build_config.h"

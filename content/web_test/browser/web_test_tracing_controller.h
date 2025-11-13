@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/files/file.h"
-#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "content/common/content_export.h"
 

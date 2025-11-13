@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
 #include "base/types/strong_alias.h"
 #include "content/common/content_export.h"
 
