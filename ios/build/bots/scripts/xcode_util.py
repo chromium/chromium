@@ -448,8 +448,30 @@ def install_runtime_dmg(mac_toolchain, runtime_cache_folder,
         break
       except Exception as e:
         if attempt < DMG_ADD_MAX_RETRIES and e.returncode == 5:
+          stderr_output = "Not available"
+          stdout_output = "Not available"
+
+          if isinstance(e, subprocess.CalledProcessError):
+            if e.stderr:
+              stderr_output = e.stderr.decode('utf-8', errors='replace')
+            if e.output:
+              stdout_output = e.output.decode('utf-8', errors='replace')
+
           logging.warning(
-              'Adding iOS/tvOS runtime failed with exit code 5. Retrying...')
+              f'Adding runtime failed (Attempt {attempt}).\n'
+              f'Exit Code: {e.returncode}\n'
+              f'STDERR: {stderr_output}\n'
+              f'STDOUT: {stdout_output}',
+              exc_info=True)
+
+          # TODO(crbug.com/460133386): Sometimes iOS SDK could be in verifying state
+          # which in term cause SDK to not show in the CLI output. In such case,
+          # we should ignore this error and assume the runtime SDK is already installed.
+          if "Duplicate of" in stdout_output:
+            logging.info(
+                "Runtime already exists (detected 'Duplicate of'). Treating as success."
+            )
+            return
           time.sleep(DMG_ADD_RETRY_DELAY)
         else:
           raise
