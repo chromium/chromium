@@ -1226,7 +1226,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseOnDataMaskingRulesTriggeredTest,
                           detectorId: "12345",
                           displayName: "display_name",
                           maskType:'mask_type',
-                          pattern:'pattern'
+                          pattern:'pattern',
+                          maskText:'mask_text'
                         }
                       ],
                       ruleId:'rule_id',
@@ -1272,6 +1273,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseOnDataMaskingRulesTriggeredTest,
   data_masking->set_mask_type("mask_type");
   data_masking->set_pattern("pattern");
   data_masking->set_detector_id("12345");
+  data_masking->set_mask_text("mask_text");
 
   router->OnUrlFilteringVerdict(GURL(kTestUrl), response);
 
@@ -1294,13 +1296,15 @@ IN_PROC_BROWSER_TEST_F(EnterpriseOnDataMaskingRulesTriggeredTest, WithRules) {
                       displayName: "display_name_1",
                       detectorId: "id_1",
                       maskType:'mask_type_1',
-                      pattern:'pattern_1'
+                      pattern:'pattern_1',
+                      maskText:'mask_text_1'
                     },
                     {
                       displayName: "display_name_2",
                       detectorId: "id_2",
                       maskType:'mask_type_2',
-                      pattern:'pattern_2'
+                      pattern:'pattern_2',
+                      maskText:'mask_text_2'
                     }
                   ],
                 },
@@ -1312,7 +1316,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseOnDataMaskingRulesTriggeredTest, WithRules) {
                       displayName: "display_name_3",
                       detectorId: "id_3",
                       maskType:'mask_type_3',
-                      pattern:'pattern_3'
+                      pattern:'pattern_3',
+                      maskText:'mask_text_3'
                     }
                   ]
                 }
@@ -1346,12 +1351,14 @@ IN_PROC_BROWSER_TEST_F(EnterpriseOnDataMaskingRulesTriggeredTest, WithRules) {
   data_masking_1->set_mask_type("mask_type_1");
   data_masking_1->set_pattern("pattern_1");
   data_masking_1->set_detector_id("id_1");
+  data_masking_1->set_mask_text("mask_text_1");
 
   auto* data_masking_2 = rule_1->add_data_masking_actions();
   data_masking_2->set_display_name("display_name_2");
   data_masking_2->set_mask_type("mask_type_2");
   data_masking_2->set_pattern("pattern_2");
   data_masking_2->set_detector_id("id_2");
+  data_masking_2->set_mask_text("mask_text_2");
 
   auto* rule_2 =
       response.add_threat_info()->mutable_matched_url_navigation_rule();
@@ -1363,6 +1370,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseOnDataMaskingRulesTriggeredTest, WithRules) {
   data_masking_3->set_mask_type("mask_type_3");
   data_masking_3->set_pattern("pattern_3");
   data_masking_3->set_detector_id("id_3");
+  data_masking_3->set_mask_text("mask_text_3");
 
   EnterpriseReportingPrivateEventRouterFactory::GetInstance()
       ->GetForProfile(profile())

@@ -302,6 +302,7 @@ namespace enterprise.reportingPrivate {
     DOMString? maskType;
     DOMString? pattern;
     DetectorType? detectorType;
+    DOMString? maskText;
   };
 
   // Information for a data leak prevention rule that was used to mask data.
