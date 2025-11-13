@@ -46,6 +46,7 @@ class NativeMethod:
         and proxy.needs_implicit_array_element_class_param(self.return_type))
 
     if self.is_proxy:
+      class_without_prefix = java_class.class_without_prefix
       # Signature with all reference types changed to "Object".
       self.proxy_signature = self.signature.to_proxy()
       if self.needs_implicit_array_element_class_param:
@@ -58,11 +59,12 @@ class NativeMethod:
       # "native" prefix to not conflict with interface method names.
       self.per_file_name = f'native{self.capitalized_name}'
       # Method name within the GEN_JNI class.
-      self.proxy_name = f'{java_class.to_cpp()}_{self.name}'
+      self.proxy_name = f'{class_without_prefix.to_cpp()}_{self.name}'
       # Method name within the J class (when is_hashing=True).
       # TODO(agrieve): No need to mangle before hashing.
       self.hashed_name = proxy.hashed_name(
-          common.jni_mangle(f'{java_class.full_name_with_slashes}/{self.name}'),
+          common.jni_mangle(
+              f'{class_without_prefix.full_name_with_slashes}/{self.name}'),
           self.is_test_only)
       # Method name within the J class (when is_muxing=True).
       self.muxed_name = proxy.muxed_name(self.muxed_signature)

@@ -55,7 +55,7 @@ inline jclass this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerSt
 namespace jni_zero::tests {
 
 // Java to native functions
-JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1addStructB(
+JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1addStructB(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeCPPClass,
@@ -72,7 +72,7 @@ static void JNI_SampleForTests_ClassUnderSamePackageTest(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& arg);
 
-JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1classUnderSamePackageTest(
+JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1classUnderSamePackageTest(
     JNIEnv* env,
     jclass jcaller,
     jobject arg) {
@@ -81,7 +81,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1J
       jni_zero::JavaRef<jobject>::CreateLeaky(env, arg));
 }
 
-JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1destroy(
+JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1destroy(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeCPPClass,
@@ -101,7 +101,7 @@ static jni_zero::ScopedJavaLocalRef<jclass> JNI_SampleForTests_GetClass(
     JNIEnv* env,
     const jni_zero::JavaRef<jclass>& _env);
 
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1getClass(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1getClass(
     JNIEnv* env,
     jclass jcaller,
     jobject _env) {
@@ -116,7 +116,7 @@ static jdouble JNI_SampleForTests_GetDoubleFunction(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& ret);
 
-JNI_ZERO_BOUNDARY_EXPORT jdouble Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1getDoubleFunction(
+JNI_ZERO_BOUNDARY_EXPORT jdouble Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1getDoubleFunction(
     JNIEnv* env,
     jclass jcaller,
     jobject ret) {
@@ -129,7 +129,7 @@ JNI_ZERO_BOUNDARY_EXPORT jdouble Java_this_is_a_package_prefix_org_jni_1zero_GEN
 // Forward declaration. To be implemented by the including .cc file.
 static jfloat JNI_SampleForTests_GetFloatFunction(JNIEnv* env);
 
-JNI_ZERO_BOUNDARY_EXPORT jfloat Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1getFloatFunction(
+JNI_ZERO_BOUNDARY_EXPORT jfloat Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1getFloatFunction(
     JNIEnv* env,
     jclass jcaller) {
   auto _ret = JNI_SampleForTests_GetFloatFunction(env);
@@ -141,7 +141,7 @@ static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForTests_GetNonPODDatatyp
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& _jcaller);
 
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1getNonPODDatatype(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1getNonPODDatatype(
     JNIEnv* env,
     jclass jcaller,
     jobject _jcaller) {
@@ -156,7 +156,7 @@ static jni_zero::ScopedJavaLocalRef<jthrowable> JNI_SampleForTests_GetThrowable(
     JNIEnv* env,
     const jni_zero::JavaRef<jthrowable>& arg0);
 
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1getThrowable(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1getThrowable(
     JNIEnv* env,
     jclass jcaller,
     jobject arg0) {
@@ -175,7 +175,7 @@ static jlong JNI_SampleForTests_Init(
     jni_zero::tests::CPPClass* convertedType,
     std::vector<jni_zero::ScopedJavaLocalRef<jobject>>& nonConvertedArray);
 
-JNI_ZERO_BOUNDARY_EXPORT jlong Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1init(
+JNI_ZERO_BOUNDARY_EXPORT jlong Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1init(
     JNIEnv* env,
     jclass jcaller,
     jobject caller,
@@ -202,7 +202,7 @@ JNI_ZERO_BOUNDARY_EXPORT jlong Java_this_is_a_package_prefix_org_jni_1zero_GEN_1
   return _ret;
 }
 
-JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1iterateAndDoSomethingWithStructB(
+JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1iterateAndDoSomethingWithStructB(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeCPPClass,
@@ -217,7 +217,7 @@ static std::vector<jni_zero::ScopedJavaLocalRef<jobject>> JNI_SampleForTests_Lis
     JNIEnv* env,
     std::vector<std::string>& items);
 
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1listTest2(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1listTest2(
     JNIEnv* env,
     jclass jcaller,
     jobject items) {
@@ -234,7 +234,7 @@ static std::map<std::string, std::string> JNI_SampleForTests_MapTest2(
     JNIEnv* env,
     std::map<std::string, std::string>& arg0);
 
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1mapTest2(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1mapTest2(
     JNIEnv* env,
     jclass jcaller,
     jobject arg0) {
@@ -246,7 +246,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
   return converted_ret;
 }
 
-JNI_ZERO_BOUNDARY_EXPORT jint Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1method(
+JNI_ZERO_BOUNDARY_EXPORT jint Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1method(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeCPPClass,
@@ -262,7 +262,7 @@ JNI_ZERO_BOUNDARY_EXPORT jint Java_this_is_a_package_prefix_org_jni_1zero_GEN_1J
   return _ret;
 }
 
-JNI_ZERO_BOUNDARY_EXPORT jdouble Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1methodOtherP0(
+JNI_ZERO_BOUNDARY_EXPORT jdouble Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1methodOtherP0(
     JNIEnv* env,
     jclass jcaller,
     jlong nativePtr,
@@ -284,7 +284,7 @@ static std::vector<bool> JNI_SampleForTests_PrimitiveArrays(
     std::vector<float>& f,
     std::vector<double>& d);
 
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1primitiveArrays(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1primitiveArrays(
     JNIEnv* env,
     jclass jcaller,
     jobject b,
@@ -328,7 +328,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
   return converted_ret;
 }
 
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1returnAString(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1returnAString(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeCPPClass,
@@ -342,7 +342,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
 // Forward declaration. To be implemented by the including .cc file.
 static MyEnum JNI_SampleForTests_ReturnFromEnum(JNIEnv* env);
 
-JNI_ZERO_BOUNDARY_EXPORT jint Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1returnFromEnum(
+JNI_ZERO_BOUNDARY_EXPORT jint Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1returnFromEnum(
     JNIEnv* env,
     jclass jcaller) {
   auto _ret = JNI_SampleForTests_ReturnFromEnum(env);
@@ -356,7 +356,7 @@ static void JNI_SampleForTests_SetNonPODDatatype(
     const jni_zero::JavaRef<jobject>& obj,
     const jni_zero::JavaRef<jobject>& rect);
 
-JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1setNonPODDatatype(
+JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1setNonPODDatatype(
     JNIEnv* env,
     jclass jcaller,
     jobject obj,

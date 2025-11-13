@@ -5,72 +5,69 @@
 package this.is.a.package.prefix.org.jni_zero;
 
 public class GEN_JNI {
-  public static void this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_foo() {
+  public static void org_jni_1zero_SampleForAnnotationProcessor_foo() {
     this.is.a.package.prefix.J.N.V();
   }
-  public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnClass() {
+  public static Object org_jni_1zero_SampleForAnnotationProcessor_returnClass() {
     return this.is.a.package.prefix.J.N.O(0);
   }
-  public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnClasses() {
+  public static Object org_jni_1zero_SampleForAnnotationProcessor_returnClasses() {
     return this.is.a.package.prefix.J.N.O(1);
   }
-  public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts() {
+  public static Object org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts() {
     return this.is.a.package.prefix.J.N.O(2);
   }
-  public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString() {
+  public static Object org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString() {
     return this.is.a.package.prefix.J.N.O(3);
   }
-  public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings() {
+  public static Object org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings() {
     return this.is.a.package.prefix.J.N.O(4);
   }
-  public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnObject() {
+  public static Object org_jni_1zero_SampleForAnnotationProcessor_returnObject() {
     return this.is.a.package.prefix.J.N.O(5);
   }
-  public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnObjects() {
+  public static Object org_jni_1zero_SampleForAnnotationProcessor_returnObjects() {
     return this.is.a.package.prefix.J.N.O(6);
   }
-  public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnString() {
+  public static Object org_jni_1zero_SampleForAnnotationProcessor_returnString() {
     return this.is.a.package.prefix.J.N.O(7);
   }
-  public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStrings() {
+  public static Object org_jni_1zero_SampleForAnnotationProcessor_returnStrings() {
     return this.is.a.package.prefix.J.N.O(8);
   }
-  public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStruct() {
+  public static Object org_jni_1zero_SampleForAnnotationProcessor_returnStruct() {
     return this.is.a.package.prefix.J.N.O(9);
   }
-  public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStructs() {
+  public static Object org_jni_1zero_SampleForAnnotationProcessor_returnStructs() {
     return this.is.a.package.prefix.J.N.O(10);
   }
-  public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnThrowable() {
+  public static Object org_jni_1zero_SampleForAnnotationProcessor_returnThrowable() {
     return this.is.a.package.prefix.J.N.O(11);
   }
-  public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnThrowables() {
+  public static Object org_jni_1zero_SampleForAnnotationProcessor_returnThrowables() {
     return this.is.a.package.prefix.J.N.O(12);
   }
-  public static boolean this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_hasPhalange() {
+  public static boolean org_jni_1zero_SampleForAnnotationProcessor_hasPhalange() {
     return this.is.a.package.prefix.J.N.Z();
   }
-  public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_bar(
-      Object sample) {
+  public static Object org_jni_1zero_SampleForAnnotationProcessor_bar(Object sample) {
     return this.is.a.package.prefix.J.N.OO(0, sample);
   }
-  public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects(
+  public static Object org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects(
       Object __arrayClazz) {
     return this.is.a.package.prefix.J.N.OO(1, __arrayClazz);
   }
-  public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_revString(
+  public static Object org_jni_1zero_SampleForAnnotationProcessor_revString(
       Object stringToReverse) {
     return this.is.a.package.prefix.J.N.OO(2, stringToReverse);
   }
-  public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_sendSamplesToNative(
-      Object strs) {
+  public static Object org_jni_1zero_SampleForAnnotationProcessor_sendSamplesToNative(Object strs) {
     return this.is.a.package.prefix.J.N.OO(3, strs);
   }
-  public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_sendToNative(
-      Object strs) {
+  public static Object org_jni_1zero_SampleForAnnotationProcessor_sendToNative(Object strs) {
     return this.is.a.package.prefix.J.N.OO(4, strs);
   }
-  public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(
+  public static Object org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(
       int zint,
       Object ints,
       long zlong,
@@ -105,7 +102,7 @@ public class GEN_JNI {
         zshort,
         zbool);
   }
-  public static void this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(
+  public static void org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(
       Object clazz,
       Object classes,
       Object throwable,
