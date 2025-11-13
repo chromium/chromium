@@ -1,6 +1,6 @@
 [package]
 name = "zip"
-version = "5.1.1"
+version = "6.0.0"
 authors = [
     "Mathijs van de Nes <git@mathijs.vd-nes.nl>",
     "Marli Frost <marli@frost.red>",

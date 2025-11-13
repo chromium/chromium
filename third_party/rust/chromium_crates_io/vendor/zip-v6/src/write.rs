@@ -143,9 +143,9 @@ pub(crate) mod zip_writer {
     /// use std::io::Write;
     /// use zip::write::SimpleFileOptions;
     ///
-    /// // We use a buffer here, though you'd normally use a `File`
-    /// let mut buf = [0; 65536];
-    /// let mut zip = ZipWriter::new(std::io::Cursor::new(&mut buf[..]));
+    /// // We use a cursor + vec here, though you'd normally use a `File`
+    /// let mut cur = std::io::Cursor::new(Vec::new());
+    /// let mut zip = ZipWriter::new(&mut cur);
     ///
     /// let options = SimpleFileOptions::default().compression_method(zip::CompressionMethod::Stored);
     /// zip.start_file("hello_world.txt", options)?;
@@ -154,6 +154,9 @@ pub(crate) mod zip_writer {
     /// // Apply the changes you've made.
     /// // Dropping the `ZipWriter` will have the same effect, but may silently fail
     /// zip.finish()?;
+    ///
+    /// // raw zip data is available as a Vec<u8>
+    /// let zip_bytes = cur.into_inner();
     ///
     /// # Ok(())
     /// # }
@@ -289,12 +292,13 @@ pub struct ExtendedFileOptions {
 
 impl ExtendedFileOptions {
     /// Adds an extra data field, unless we detect that it's invalid.
-    pub fn add_extra_data(
+    pub fn add_extra_data<D: AsRef<[u8]>>(
         &mut self,
         header_id: u16,
-        data: Box<[u8]>,
+        data: D,
         central_only: bool,
     ) -> ZipResult<()> {
+        let data = data.as_ref();
         let len = data.len() + 4;
         if self.extra_data.len() + self.central_extra_data.len() + len > u16::MAX as usize {
             Err(invalid!("Extra data field would be longer than allowed"))
@@ -321,12 +325,12 @@ impl ExtendedFileOptions {
     pub(crate) fn add_extra_data_unchecked(
         vec: &mut Vec<u8>,
         header_id: u16,
-        data: Box<[u8]>,
+        data: &[u8],
     ) -> Result<(), ZipError> {
         vec.reserve_exact(data.len() + 4);
         vec.write_u16_le(header_id)?;
         vec.write_u16_le(data.len() as u16)?;
-        vec.write_all(&data)?;
+        vec.write_all(data)?;
         Ok(())
     }
 
@@ -532,10 +536,10 @@ impl<T: FileOptionExtension> FileOptions<'_, T> {
 }
 impl FileOptions<'_, ExtendedFileOptions> {
     /// Adds an extra data field.
-    pub fn add_extra_data(
+    pub fn add_extra_data<D: AsRef<[u8]>>(
         &mut self,
         header_id: u16,
-        data: Box<[u8]>,
+        data: D,
         central_only: bool,
     ) -> ZipResult<()> {
         self.extended_options
@@ -928,27 +932,22 @@ impl<W: Write + Seek> ZipWriter<W> {
         let mut aes_extra_data_start = 0;
         #[cfg(feature = "aes-crypto")]
         if let Some(EncryptWith::Aes { mode, .. }) = options.encrypt_with {
-            let aes_dummy_extra_data =
-                vec![0x02, 0x00, 0x41, 0x45, mode as u8, 0x00, 0x00].into_boxed_slice();
+            let aes_dummy_extra_data = [0x02, 0x00, 0x41, 0x45, mode as u8, 0x00, 0x00];
             aes_extra_data_start = extra_data.len() as u64;
             ExtendedFileOptions::add_extra_data_unchecked(
                 &mut extra_data,
                 0x9901,
-                aes_dummy_extra_data,
+                &aes_dummy_extra_data,
             )?;
         } else if let Some((mode, vendor, underlying)) = options.aes_mode {
             // For raw copies of AES entries, write the correct AES extra data immediately
-            let mut body = Vec::with_capacity(7);
-            body.write_u16_le(vendor as u16)?; // vendor version (1 or 2)
-            body.extend_from_slice(b"AE"); // vendor id
-            body.push(mode as u8); // strength
-            body.write_u16_le(underlying.serialize_to_u16())?; // real compression method
+            let mut body = [0; 7];
+            [body[0], body[1]] = (vendor as u16).to_le_bytes(); // vendor version (1 or 2)
+            [body[2], body[3]] = *b"AE"; // vendor id
+            body[4] = mode as u8; // strength
+            [body[5], body[6]] = underlying.serialize_to_u16().to_le_bytes(); // real compression method
             aes_extra_data_start = extra_data.len() as u64;
-            ExtendedFileOptions::add_extra_data_unchecked(
-                &mut extra_data,
-                0x9901,
-                body.into_boxed_slice(),
-            )?;
+            ExtendedFileOptions::add_extra_data_unchecked(&mut extra_data, 0x9901, &body)?;
         }
 
         let (compression_method, aes_mode) = match options.encrypt_with {
@@ -978,11 +977,7 @@ impl<W: Write + Seek> ZipWriter<W> {
                 let mut pad_body = vec![0; pad_length - 4];
                 debug_assert!(pad_body.len() >= 2);
                 [pad_body[0], pad_body[1]] = options.alignment.to_le_bytes();
-                ExtendedFileOptions::add_extra_data_unchecked(
-                    &mut extra_data,
-                    0xa11e,
-                    pad_body.into_boxed_slice(),
-                )?;
+                ExtendedFileOptions::add_extra_data_unchecked(&mut extra_data, 0xa11e, &pad_body)?;
                 debug_assert_eq!((extra_data.len() as u64 + header_end) % align, 0);
             }
         }

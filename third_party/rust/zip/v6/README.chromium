@@ -1,10 +1,10 @@
 Name: zip
 URL: https://crates.io/crates/zip
-Version: 5.1.1
-Revision: 6423fee132a8819c82c2cf73ea6fb07dd3016b72
+Version: 6.0.0
+Revision: abfc23d19e5c6038cba27eb3a897bc34c6d5bf86
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: MIT
-License File: //third_party/rust/chromium_crates_io/vendor/zip-v5/LICENSE
+License File: //third_party/rust/chromium_crates_io/vendor/zip-v6/LICENSE
 Shipped: yes
 Security Critical: yes
 

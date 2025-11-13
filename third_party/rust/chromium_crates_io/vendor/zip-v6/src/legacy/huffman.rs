@@ -213,7 +213,7 @@ mod tests {
         assert_eq!(
             d.huffman_decode(
                 8,
-                &mut BitReader::endian(&mut Cursor::new(vec![!0x0]), LittleEndian)
+                &mut BitReader::endian(&mut Cursor::new(&[!0x0]), LittleEndian)
             )
             .unwrap(),
             0
@@ -223,7 +223,7 @@ mod tests {
         assert_eq!(
             d.huffman_decode(
                 8,
-                &mut BitReader::endian(&mut Cursor::new(vec![!0b110]), LittleEndian)
+                &mut BitReader::endian(&mut Cursor::new(&[!0b110]), LittleEndian)
             )
             .unwrap(),
             0b011
@@ -233,7 +233,7 @@ mod tests {
         assert_eq!(
             d.huffman_decode(
                 8,
-                &mut BitReader::endian(&mut Cursor::new(vec![!0b1111]), LittleEndian)
+                &mut BitReader::endian(&mut Cursor::new(&[!0b1111]), LittleEndian)
             )
             .unwrap(),
             0b10001
@@ -243,7 +243,7 @@ mod tests {
         assert_eq!(
             d.huffman_decode(
                 8,
-                &mut BitReader::endian(&mut Cursor::new(vec![!0b11111]), LittleEndian)
+                &mut BitReader::endian(&mut Cursor::new(&[!0b11111]), LittleEndian)
             )
             .unwrap(),
             0b10000
@@ -253,7 +253,7 @@ mod tests {
         assert!(d
             .huffman_decode(
                 8,
-                &mut BitReader::endian(&mut Cursor::new(vec![!0x7f]), LittleEndian)
+                &mut BitReader::endian(&mut Cursor::new(&[!0x7f]), LittleEndian)
             )
             .is_err());
     }

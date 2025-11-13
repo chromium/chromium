@@ -1053,14 +1053,16 @@ impl<R: Read + Seek> ZipArchive<R> {
     ) -> ZipResult<ZipFile<'_, R>> {
         self.index_for_path(path)
             .ok_or(ZipError::FileNotFound)
-            .and_then(|index| self.by_index_with_optional_password(index, Some(password)))
+            .and_then(|index| {
+                self.by_index_with_options(index, ZipReadOptions::new().password(Some(password)))
+            })
     }
 
     /// Search for a file entry by path
     pub fn by_path<T: AsRef<Path>>(&mut self, path: T) -> ZipResult<ZipFile<'_, R>> {
         self.index_for_path(path)
             .ok_or(ZipError::FileNotFound)
-            .and_then(|index| self.by_index_with_optional_password(index, None))
+            .and_then(|index| self.by_index_with_options(index, ZipReadOptions::new()))
     }
 
     /// Get the index of a file entry by path, if it's present.
@@ -1116,7 +1118,7 @@ impl<R: Read + Seek> ZipArchive<R> {
         let Some(index) = self.shared.files.get_index_of(name) else {
             return Err(ZipError::FileNotFound);
         };
-        self.by_index_with_optional_password(index, password)
+        self.by_index_with_options(index, ZipReadOptions::new().password(password))
     }
 
     /// Get a contained file by index, decrypt with given password
@@ -1137,12 +1139,12 @@ impl<R: Read + Seek> ZipArchive<R> {
         file_number: usize,
         password: &[u8],
     ) -> ZipResult<ZipFile<'_, R>> {
-        self.by_index_with_optional_password(file_number, Some(password))
+        self.by_index_with_options(file_number, ZipReadOptions::new().password(Some(password)))
     }
 
     /// Get a contained file by index
     pub fn by_index(&mut self, file_number: usize) -> ZipResult<ZipFile<'_, R>> {
-        self.by_index_with_optional_password(file_number, None)
+        self.by_index_with_options(file_number, ZipReadOptions::new())
     }
 
     /// Get a contained file by index without decompressing it
@@ -1159,10 +1161,11 @@ impl<R: Read + Seek> ZipArchive<R> {
         })
     }
 
-    fn by_index_with_optional_password(
+    /// Get a contained file by index with options.
+    pub fn by_index_with_options(
         &mut self,
         file_number: usize,
-        mut password: Option<&[u8]>,
+        mut options: ZipReadOptions<'_>,
     ) -> ZipResult<ZipFile<'_, R>> {
         let (_, data) = self
             .shared
@@ -1170,14 +1173,24 @@ impl<R: Read + Seek> ZipArchive<R> {
             .get_index(file_number)
             .ok_or(ZipError::FileNotFound)?;
 
-        match (password, data.encrypted) {
-            (None, true) => return Err(ZipError::UnsupportedArchive(ZipError::PASSWORD_REQUIRED)),
-            (Some(_), false) => password = None, //Password supplied, but none needed! Discard.
-            _ => {}
+        if options.ignore_encryption_flag {
+            // Always use no password when we're ignoring the encryption flag.
+            options.password = None;
+        } else {
+            // Require and use the password only if the file is encrypted.
+            match (options.password, data.encrypted) {
+                (None, true) => {
+                    return Err(ZipError::UnsupportedArchive(ZipError::PASSWORD_REQUIRED))
+                }
+                // Password supplied, but none needed! Discard.
+                (Some(_), false) => options.password = None,
+                _ => {}
+            }
         }
         let limit_reader = find_content(data, &mut self.reader)?;
 
-        let crypto_reader = make_crypto_reader(data, limit_reader, password, data.aes_mode)?;
+        let crypto_reader =
+            make_crypto_reader(data, limit_reader, options.password, data.aes_mode)?;
 
         Ok(ZipFile {
             data: Cow::Borrowed(data),
@@ -1553,6 +1566,38 @@ pub(crate) fn parse_single_extra_field<R: Read>(
 pub trait HasZipMetadata {
     /// Get the file metadata
     fn get_metadata(&self) -> &ZipFileData;
+}
+
+/// Options for reading a file from an archive.
+#[derive(Default)]
+pub struct ZipReadOptions<'a> {
+    /// The password to use when decrypting the file.  This is ignored if not required.
+    password: Option<&'a [u8]>,
+
+    /// Ignore the value of the encryption flag and proceed as if the file were plaintext.
+    ignore_encryption_flag: bool,
+}
+
+impl<'a> ZipReadOptions<'a> {
+    /// Create a new set of options with the default values.
+    #[must_use]
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Set the password, if any, to use.  Return for chaining.
+    #[must_use]
+    pub fn password(mut self, password: Option<&'a [u8]>) -> Self {
+        self.password = password;
+        self
+    }
+
+    /// Set the ignore encryption flag.  Return for chaining.
+    #[must_use]
+    pub fn ignore_encryption_flag(mut self, ignore: bool) -> Self {
+        self.ignore_encryption_flag = ignore;
+        self
+    }
 }
 
 /// Methods for retrieving information on zip files
@@ -2065,6 +2110,7 @@ fn generate_chrono_datetime(datetime: &DateTime) -> Option<chrono::NaiveDateTime
 
 #[cfg(test)]
 mod test {
+    use crate::read::ZipReadOptions;
     use crate::result::ZipResult;
     use crate::write::SimpleFileOptions;
     use crate::CompressionMethod::Stored;
@@ -2372,6 +2418,25 @@ mod test {
                 file.name()
             );
         }
+        Ok(())
+    }
+
+    #[test]
+    fn test_ignore_encryption_flag() -> ZipResult<()> {
+        let mut reader = ZipArchive::new(Cursor::new(include_bytes!(
+            "../tests/data/ignore_encryption_flag.zip"
+        )))?;
+
+        // Get the file entry by ignoring its encryption flag.
+        let mut file =
+            reader.by_index_with_options(0, ZipReadOptions::new().ignore_encryption_flag(true))?;
+        let mut contents = String::new();
+        assert_eq!(file.name(), "plaintext.txt");
+
+        // The file claims it is encrypted, but it is not.
+        assert!(file.encrypted());
+        file.read_to_string(&mut contents)?; // ensures valid UTF-8
+        assert_eq!(contents, "This file is not encrypted.\n");
         Ok(())
     }
 }
