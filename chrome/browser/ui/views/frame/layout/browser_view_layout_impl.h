@@ -39,14 +39,9 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
   ProposedLayout CalculateProposedLayout(
       const BrowserLayoutParams& params) const;
 
-  // Lay out the main container of the browser.
-  void CalculateMainContainerLayout(ProposedLayout& layout,
-                                    const BrowserLayoutParams& params,
-                                    bool needs_exclusion) const;
-
   // Lay out the top container of the browser. Returns the bounds calculated.
   gfx::Rect CalculateTopContainerLayout(ProposedLayout& layout,
-                                        const BrowserLayoutParams& params,
+                                        BrowserLayoutParams params,
                                         bool needs_exclusion) const;
 
   // When the top container is floating, it needs to have its layout applied
