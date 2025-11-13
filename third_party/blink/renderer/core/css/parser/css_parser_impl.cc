@@ -1503,20 +1503,21 @@ StyleRuleFontFace* CSSParserImpl::ConsumeFontFaceRule(
   if (observer_) {
     observer_->StartRuleHeader(StyleRule::kFontFace, prelude_offset_start);
     observer_->EndRuleHeader(prelude_offset_end);
-    // TODO(sesse): Is this really right?
-    observer_->StartRuleBody(prelude_offset_end);
-    observer_->EndRuleBody(prelude_offset_end);
+    observer_->StartRuleBody(stream.Offset());
   }
 
   if (style_sheet_) {
     style_sheet_->SetHasFontFaceRule();
   }
 
-  base::AutoReset<CSSParserObserver*> disable_observer(&observer_, nullptr);
   ConsumeBlockContents(stream, StyleRule::kFontFace, CSSNestingType::kNone,
                        /*parent_rule_for_nesting=*/nullptr,
                        /*nested_declarations_start_index=*/kNotFound,
                        /*child_rules=*/nullptr);
+
+  if (observer_) {
+    observer_->EndRuleBody(stream.LookAheadOffset());
+  }
 
   return MakeGarbageCollected<StyleRuleFontFace>(CreateCSSPropertyValueSet(
       parsed_properties_, kCSSFontFaceRuleMode, context_->GetDocument()));
@@ -3285,6 +3286,7 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
       (rule_type == StyleRule::kStyle || rule_type == StyleRule::kScope ||
        rule_type == StyleRule::kKeyframe || rule_type == StyleRule::kProperty ||
        rule_type == StyleRule::kPositionTry ||
+       rule_type == StyleRule::kFontFace ||
        rule_type == StyleRule::kFontPaletteValues)) {
     if (!id) {
       // If we skipped the relevant Consume*() calls above due to an invalid

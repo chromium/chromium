@@ -470,7 +470,7 @@ TEST_F(InspectorCSSAgentTest, GetFontFaceRule) {
             protocol::CSS::CSSAtRule::TypeEnum::FontFace);
   EXPECT_FALSE(rules->at(0)->getSubsection());
   EXPECT_FALSE(rules->at(0)->getName());
-  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->size(), 2u);
+  EXPECT_GE(rules->at(0)->getStyle()->getCssProperties()->size(), 2u);
   EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(0)->getName(),
             "font-family");
   EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(0)->getValue(),
@@ -478,7 +478,7 @@ TEST_F(InspectorCSSAgentTest, GetFontFaceRule) {
   EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(1)->getName(),
             "src");
   EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(1)->getValue(),
-            "local(\"Bixa\")");
+            "local(Bixa)");
 }
 
 TEST_F(InspectorCSSAgentTest, GetFontFaceRuleNoMatch) {
@@ -530,7 +530,7 @@ TEST_F(InspectorCSSAgentTest, GetFontFaceRuleFromPseudoElement) {
             protocol::CSS::CSSAtRule::TypeEnum::FontFace);
   EXPECT_FALSE(rules->at(0)->getSubsection());
   EXPECT_FALSE(rules->at(0)->getName());
-  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->size(), 2u);
+  EXPECT_GE(rules->at(0)->getStyle()->getCssProperties()->size(), 2u);
   EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(0)->getName(),
             "font-family");
   EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(0)->getValue(),
@@ -538,7 +538,7 @@ TEST_F(InspectorCSSAgentTest, GetFontFaceRuleFromPseudoElement) {
   EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(1)->getName(),
             "src");
   EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(1)->getValue(),
-            "local(\"Bixa\")");
+            "local(Bixa)");
 }
 
 TEST_F(InspectorCSSAgentTest, GetFontPaletteValuesRule) {

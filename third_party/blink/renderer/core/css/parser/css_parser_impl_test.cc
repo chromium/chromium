@@ -193,8 +193,8 @@ TEST(CSSParserImplTest, AtFontFaceOffsets) {
             StyleRule::RuleType::kFontFace);
   EXPECT_EQ(test_css_parser_observer.rule_header_start_, 11u);
   EXPECT_EQ(test_css_parser_observer.rule_header_end_, 11u);
-  EXPECT_EQ(test_css_parser_observer.rule_body_start_, 11u);
-  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 11u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_start_, 12u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 13u);
 }
 
 TEST(CSSParserImplTest, AtKeyframesOffsets) {
