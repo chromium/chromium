@@ -57,7 +57,7 @@
 <translation id="1201402288615127009">繼續</translation>
 <translation id="1204075260022434100">{count,plural, =1{這個書籤已儲存到帳戶 ({email}) 中的「{title}」}other{{count} 個書籤已儲存到帳戶 ({email}) 中的「{title}」}}</translation>
 <translation id="1207493287814084192">下午 5:30</translation>
-<translation id="1217294226280635614">分割檢視畫面</translation>
+<translation id="1217294226280635614">分割畫面</translation>
 <translation id="1219674500290482172">無法連線至網際網路。</translation>
 <translation id="1223498995510244364">摘要</translation>
 <translation id="1227113644794103810">閒置分頁</translation>
@@ -1591,7 +1591,7 @@
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">在「設定」中設為預設…</translation>
 <translation id="7007970306646738803">請選擇如何處理這部裝置上的現有瀏覽資料，例如分頁、歷史記錄和密碼。</translation>
-<translation id="7015418667643980944">分割檢視畫面</translation>
+<translation id="7015418667643980944">分割畫面</translation>
 <translation id="7016070607649558507">你有 1 組低強度密碼，請立即修正以確保安全。</translation>
 <translation id="7016958933495968912">探索的選項</translation>
 <translation id="7029809446516969842">密碼</translation>
@@ -1627,7 +1627,7 @@
 <translation id="7186568385131859684">控管在各項 Google 服務中將瀏覽記錄和其他資料搭配使用的方式</translation>
 <translation id="719133302483559673">管理興趣和偏好設定。</translation>
 <translation id="7191382490098297347">相機膠卷圖片</translation>
-<translation id="7203496777391039568">我們會確保貴機構的資料隱私與安全</translation>
+<translation id="7203496777391039568">我們會確保貴組織的資料隱私與安全</translation>
 <translation id="720399613139435155">無法翻譯</translation>
 <translation id="7204922488054642675">個人化新聞</translation>
 <translation id="7206979415662233817">服務條款</translation>
