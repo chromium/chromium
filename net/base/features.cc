@@ -379,12 +379,6 @@ const base::FeatureParam<bool> kIpPrivacyUseQuicProxiesOnly{
     /*name=*/"IpPrivacyUseQuicProxiesOnly",
     /*default_value=*/false};
 
-const base::FeatureParam<bool>
-    kIpPrivacyUseQuicProxiesWithoutWaitingForConnectResponse{
-        &kEnableIpProtectionProxy,
-        /*name=*/"IpPrivacyUseQuicProxiesWithoutWaitingForConnectResponse",
-        /*default_value=*/false};
-
 const base::FeatureParam<bool> kIpPrivacyFallbackToDirect{
     &kEnableIpProtectionProxy,
     /*name=*/"IpPrivacyFallbackToDirect",
@@ -841,6 +835,9 @@ BASE_FEATURE(kDnsResponseDiscardPartialQuestions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAddAutomaticWithDohFallbackMode,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUseQuicProxiesWithoutWaitingForConnectResponse,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace net::features

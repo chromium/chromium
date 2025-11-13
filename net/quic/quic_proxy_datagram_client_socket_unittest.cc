@@ -172,11 +172,8 @@ class QuicProxyDatagramClientSocketWriteWithoutConnectResponseTest
     : public QuicProxyDatagramClientSocketTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        net::features::kEnableIpProtectionProxy,
-        {{net::features::
-              kIpPrivacyUseQuicProxiesWithoutWaitingForConnectResponse.name,
-          "true"}});
+    scoped_feature_list_.InitAndEnableFeature(
+        net::features::kUseQuicProxiesWithoutWaitingForConnectResponse);
   }
 
   void InitializeClientSocket() override {

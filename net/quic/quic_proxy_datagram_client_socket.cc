@@ -5,6 +5,7 @@
 #include "net/quic/quic_proxy_datagram_client_socket.h"
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
@@ -507,8 +508,8 @@ int QuicProxyDatagramClientSocket::DoReadReply() {
     // haven't received a response to the CONNECT-UDP request yet, bypass
     // processing response headers and consider tunnel "established" so
     // datagrams can be sent and traffic is not blocked.
-    if (net::features::kIpPrivacyUseQuicProxiesWithoutWaitingForConnectResponse
-            .Get() &&
+    if (base::FeatureList::IsEnabled(
+            net::features::kUseQuicProxiesWithoutWaitingForConnectResponse) &&
         stream_handle_->SupportsH3Datagram()) {
       next_state_ = STATE_CONNECT_COMPLETE;
       awaiting_connect_response_ = true;
