@@ -50,11 +50,12 @@ class WptReportUploader(object):
             ("chromium", "ci", "ios-wpt-fyi-rel"),
         ]
         for builder in builders:
-            reports = []
+            reports, screenshot_files = [], []
             _log.info("Uploading report for %s" % builder[2])
             build = self.fetch_latest_complete_build(*builder)
             if build:
                 _log.info("Find latest completed build %d" % build.get("number"))
+
                 # pylint: disable=unsubscriptable-object
                 urls = self._host.results_fetcher.fetch_wpt_report_urls(
                     build["id"])
@@ -68,8 +69,15 @@ class WptReportUploader(object):
                     # Ignore retry results on subsequent lines.
                     initial_report, _, _ = body.partition(b'\n')
                     reports.append(initial_report)
+
+                urls = self._host.results_fetcher.fetch_wpt_screenshot_urls(
+                    build['id'])
+                for url in urls:
+                    _log.info('Fetching wpt screenshots from %s', url)
+                    screenshot_files.append(self._host.web.get_binary(url))
+
             if reports:
-                files = self.encode_result_files(reports)
+                files = self.encode_result_files(reports, screenshot_files)
                 rv = rv | self.upload_results(files)
             else:
                 _log.error("No result to upload, skip...")
@@ -136,13 +144,48 @@ class WptReportUploader(object):
             raise Exception('The response received from the server was corrupted in-transit.')
         return decrypt_response.plaintext.decode('utf-8')
 
-    def encode_result_files(self, reports: list[bytes]) -> FileFormData:
-        files = []
+    def encode_result_files(self, reports: list[bytes],
+                            screenshot_files: list[bytes]) -> FileFormData:
+        files, reports_total_size = [], 0
         for shard, report in enumerate(reports):
             file_info = (f'result_{shard}.json.gz', gzip.compress(report),
                          'application/gzip')
+            reports_total_size += len(file_info[1])
             files.append(('result_file', file_info))
+
+        # wpt.fyi runs on AppEngine, which limits requests to 32 MB [0].
+        # Conservatively estimate how large the screenshot file is allowed to
+        # be. This is not an exact computation because compressing the
+        # screenshot file is likely to help. Also, throw in a very generous
+        # 1 MB of slack for encoding the framing of `multipart/form-data`.
+        #
+        # wpt.fyi will remember screenshots by their hash. On subsequent test
+        # runs, the test runner will skip serializing known screenshots [1],
+        # causing the `wpt_screenshot.txt` files to shrink over time as long as
+        # new test runs don't generate too many unique screenshots. Therefore,
+        # it's ok if we drop some screenshots here, since they'll have a chance
+        # to be uploaded later.
+        #
+        # [0]: https://cloud.google.com/appengine/docs/standard/how-requests-are-handled?tab=python#quotas_and_limits
+        # [1]: https://github.com/web-platform-tests/wpt/blob/c498c7f6347671efddbc842d98c994f8899bc847/tools/wptrunner/wptrunner/formatters/wptscreenshot.py#L30
+        screenshots_size_limit = 31_000_000 - reports_total_size
+        screenshots = self.merge_screenshots(screenshot_files,
+                                             screenshots_size_limit)
+        screenshot_file_info = ('screenshots.txt.gz',
+                                gzip.compress(screenshots), 'application/gzip')
+        files.append(('screenshot_file', screenshot_file_info))
         return files
+
+    def merge_screenshots(self, files: list[bytes],
+                          size_limit: int) -> bytearray:
+        merged_screenshots = bytearray()
+        for screenshot_file in files:
+            for screenshot in screenshot_file.splitlines(keepends=True):
+                if len(merged_screenshots) + len(screenshot) <= size_limit:
+                    merged_screenshots.extend(screenshot)
+                else:
+                    return merged_screenshots
+        return merged_screenshots
 
     def upload_results(self, files: FileFormData) -> int:
         """Upload the test results to wpt.fyi

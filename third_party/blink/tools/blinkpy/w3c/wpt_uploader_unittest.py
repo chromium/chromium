@@ -44,8 +44,9 @@ class WptReportUploaderTest(LoggingTestCase):
     def test_encode_result_files(self):
         uploader = WptReportUploader(self.host)
         files = uploader.encode_result_files(
-            [b'{"time_start":0}', b'{"time_start":1}'])
-        self.assertEqual(2, len(files), files)
+            [b'{"time_start":0}', b'{"time_start":1}'],
+            [b'data:image/png;base64,iVBORw\n'])
+        self.assertEqual(3, len(files), files)
 
         form_field, (filename, payload, content_type) = files[0]
         self.assertEqual('result_file', form_field)
@@ -62,3 +63,22 @@ class WptReportUploaderTest(LoggingTestCase):
             'time_start': 1,
         }, json.loads(gzip.decompress(payload)))
         self.assertEqual('application/gzip', content_type)
+
+        form_field, (filename, payload, content_type) = files[2]
+        self.assertEqual('screenshot_file', form_field)
+        self.assertEqual('screenshots.txt.gz', filename)
+        self.assertEqual(b'data:image/png;base64,iVBORw\n',
+                         gzip.decompress(payload))
+        self.assertEqual('application/gzip', content_type)
+
+    def test_merge_screenshots(self):
+        uploader = WptReportUploader(self.host)
+        screenshots = [b'a\nb\n', b'c\n']
+        self.assertEqual(b'a\nb\nc\n',
+                         uploader.merge_screenshots(screenshots, size_limit=6))
+        self.assertEqual(b'a\nb\n',
+                         uploader.merge_screenshots(screenshots, size_limit=5))
+        self.assertEqual(b'a\nb\n',
+                         uploader.merge_screenshots(screenshots, size_limit=4))
+        self.assertEqual(b'a\n',
+                         uploader.merge_screenshots(screenshots, size_limit=3))
