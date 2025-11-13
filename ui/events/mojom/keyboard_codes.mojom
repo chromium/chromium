@@ -7,7 +7,6 @@ module ui.mojom;
 // Cross platform keyboard codes.
 //
 // Because the web has standardized on Win32 keyboard codes, so does mojo.
-// TODO: shouldn't need extensible, see http://crbug.com/582279
 [Extensible]
 enum KeyboardCode {
   BACK                      = 0x08,
@@ -180,7 +179,7 @@ enum KeyboardCode {
   NONAME                    = 0xFC,
   PA1                       = 0xFD,
   OEM_CLEAR                 = 0xFE,
-  UNKNOWN                   = 0,
+  [Default] UNKNOWN         = 0,
 
   // POSIX specific VKEYs. Note that as of Windows SDK 7.1, 0x97-9F, 0xD8-DA,
   // and 0xE8 are unassigned.
