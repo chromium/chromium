@@ -1214,7 +1214,7 @@ CHROMEOS_KEVIN_PERF_FYI = PerfPlatform('chromeos-kevin-perf-fyi',
 LINUX_PERF_FYI = PerfPlatform('linux-perf-fyi',
                               '',
                               _LINUX_PERF_FYI_BENCHMARK_CONFIGS,
-                              4,
+                              1,
                               'linux',
                               crossbench=_CROSSBENCH_BENCHMARKS_ALL,
                               is_fyi=True)
