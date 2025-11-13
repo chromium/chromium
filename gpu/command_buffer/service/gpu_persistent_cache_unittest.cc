@@ -27,20 +27,16 @@ class GpuPersistentCacheTest : public testing::Test {
     auto db_path = temp_dir_.GetPath().AppendASCII("test.db");
     auto journal_path = temp_dir_.GetPath().AppendASCII("test.journal");
 
-    persistent_cache::BackendParams params;
-
-    params.type = persistent_cache::BackendType::kSqlite;
-    params.db_file = CreateFile(db_path);
-    params.db_file_is_writable = true;
-    params.journal_file = CreateFile(journal_path);
-    params.journal_file_is_writable = true;
-    params.shared_lock = base::UnsafeSharedMemoryRegion::Create(
+    cache_params_.type = persistent_cache::BackendType::kSqlite;
+    cache_params_.db_file = CreateFile(db_path);
+    cache_params_.db_file_is_writable = true;
+    cache_params_.journal_file = CreateFile(journal_path);
+    cache_params_.journal_file_is_writable = true;
+    cache_params_.shared_lock = base::UnsafeSharedMemoryRegion::Create(
         sizeof(persistent_cache::LockState));
-    ASSERT_TRUE(params.db_file.IsValid());
-    ASSERT_TRUE(params.journal_file.IsValid());
-    ASSERT_TRUE(params.shared_lock.IsValid());
-
-    cache_.InitializeCache(std::move(params));
+    ASSERT_TRUE(cache_params_.db_file.IsValid());
+    ASSERT_TRUE(cache_params_.journal_file.IsValid());
+    ASSERT_TRUE(cache_params_.shared_lock.IsValid());
   }
 
  protected:
@@ -49,15 +45,32 @@ class GpuPersistentCacheTest : public testing::Test {
                                 base::File::FLAG_READ | base::File::FLAG_WRITE);
   }
 
+  void InitializeCache() { cache_.InitializeCache(std::move(cache_params_)); }
+
   void RunStoreAndLoadDataMultiThreaded(int num_threads);
 
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
+  persistent_cache::BackendParams cache_params_;
   GpuPersistentCache cache_{"Test"};
 };
 
+TEST_F(GpuPersistentCacheTest, StoreAndLoadDataBeforeInitialize) {
+  // Don't initialize cache.
+  const std::string key = "my_key";
+  const std::string value = "my_value";
+
+  // StoreData() won't do anything but also won't crash.
+  cache_.StoreData(key.c_str(), key.size(), value.c_str(), value.size());
+
+  // LoadData() will return zero size since there is no cache yet.
+  EXPECT_EQ(cache_.LoadData(key.c_str(), key.size(), nullptr, 0), 0u);
+}
+
 // Tests basic store and load functionality on a single thread.
 TEST_F(GpuPersistentCacheTest, StoreAndLoadData) {
+  InitializeCache();
+
   const std::string key = "my_key";
   const std::string value = "my_value";
   cache_.StoreData(key.c_str(), key.size(), value.c_str(), value.size());
@@ -72,6 +85,8 @@ TEST_F(GpuPersistentCacheTest, StoreAndLoadData) {
 
 // Tests that loading a non-existent key returns 0.
 TEST_F(GpuPersistentCacheTest, LoadNonExistentKey) {
+  InitializeCache();
+
   const std::string key = "non_existent_key";
   std::vector<char> buffer(16);
   size_t loaded_size =
@@ -136,14 +151,19 @@ void GpuPersistentCacheTest::RunStoreAndLoadDataMultiThreaded(int num_threads) {
 // Tests that the cache can be safely written to and read from by multiple
 // threads concurrently.
 TEST_F(GpuPersistentCacheTest, StoreAndLoadDataMultiThreaded) {
+  InitializeCache();
+
   RunStoreAndLoadDataMultiThreaded(8);
 }
 
-// Some internal sql code especially tracings checks that they are called on a correct
-// sequence. This test verifies that we can use the cache on multiple threads without
-// violating sequence checkers. There is no need to stress test with many threads like the
-// above StoreAndLoadDataMultiThreaded. A minimal number of threads should suffice
+// Some internal sql code especially tracings checks that they are called on a
+// correct sequence. This test verifies that we can use the cache on multiple
+// threads without violating sequence checkers. There is no need to stress test
+// with many threads like the above StoreAndLoadDataMultiThreaded. A minimal
+// number of threads should suffice.
 TEST_F(GpuPersistentCacheTest, StoreAndLoadDataMultiThreadedWithSqlTrace) {
+  InitializeCache();
+
   base::test::TracingEnvironment tracing_environment;
   base::trace_event::TraceLog::GetInstance()->SetEnabled(
       base::trace_event::TraceConfig("sql", ""));

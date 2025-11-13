@@ -10,7 +10,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/synchronization/lock_subtle.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "components/persistent_cache/entry.h"
@@ -19,15 +18,6 @@
 namespace gpu {
 
 namespace {
-
-// We have to enable lock tracking to allow PersistentCache to be used on
-// multiple threads/different sequences.
-#if DCHECK_IS_ON()
-#define SCOPED_LOCK(lock) \
-  base::AutoLock auto_lock(lock, base::subtle::LockTracking::kEnabled)
-#else
-#define SCOPED_LOCK(lock) base::AutoLock auto_lock(lock)
-#endif  // DCHECK_IS_ON()
 
 constexpr size_t kMaxLoadStoreForTrackingCacheAvailable = 100;
 
@@ -55,16 +45,16 @@ class ScopedHistogramTimer {
 GpuPersistentCache::GpuPersistentCache(std::string_view cache_prefix)
     : cache_prefix_(cache_prefix) {}
 
-GpuPersistentCache::~GpuPersistentCache() {
-  SCOPED_LOCK(lock_);
-  persistent_cache_.reset();
-}
+GpuPersistentCache::~GpuPersistentCache() = default;
 
 void GpuPersistentCache::InitializeCache(
     persistent_cache::BackendParams backend_params) {
-  SCOPED_LOCK(lock_);
+  CHECK(!initialized_.IsSet());
   persistent_cache_ =
       persistent_cache::PersistentCache::Open(std::move(backend_params));
+  if (persistent_cache_) {
+    initialized_.Set();
+  }
 }
 
 size_t GpuPersistentCache::LoadData(const void* key,
@@ -88,18 +78,19 @@ size_t GpuPersistentCache::LoadData(const void* key,
 std::unique_ptr<persistent_cache::Entry> GpuPersistentCache::LoadEntry(
     std::string_view key) {
   ScopedHistogramTimer timer(GetHistogramName("Load"));
-  SCOPED_LOCK(lock_);
+  const bool initialized = initialized_.IsSet();
   TRACE_EVENT1("gpu", "GpuPersistentCache::LoadEntry", "persistent_cache_",
-               !!persistent_cache_);
+               initialized);
 
   // Track cache available for the 1st kMaxLoadStoreForTrackingCacheAvailable
   // loads.
-  if (++load_count_ <= kMaxLoadStoreForTrackingCacheAvailable) {
+  if (load_count_.fetch_add(1, std::memory_order_relaxed) <
+      kMaxLoadStoreForTrackingCacheAvailable) {
     base::UmaHistogramBoolean(GetHistogramName("Load.CacheAvailable"),
-                              !!persistent_cache_);
+                              initialized);
   }
 
-  if (!persistent_cache_) {
+  if (!initialized) {
     timer.SetEnabled(false);
     return nullptr;
   }
@@ -113,18 +104,19 @@ void GpuPersistentCache::StoreData(const void* key,
                                    const void* value,
                                    size_t value_size) {
   ScopedHistogramTimer timer(GetHistogramName("Store"));
-  SCOPED_LOCK(lock_);
+  const bool initialized = initialized_.IsSet();
   TRACE_EVENT1("gpu", "GpuPersistentCache::StoreData", "persistent_cache_",
-               !!persistent_cache_);
+               initialized);
 
   // Track cache available for the 1st kMaxLoadStoreForTrackingCacheAvailable
   // stores.
-  if (++store_count_ <= kMaxLoadStoreForTrackingCacheAvailable) {
+  if (store_count_.fetch_add(1, std::memory_order_relaxed) <
+      kMaxLoadStoreForTrackingCacheAvailable) {
     base::UmaHistogramBoolean(GetHistogramName("Store.CacheAvailable"),
-                              !!persistent_cache_);
+                              initialized);
   }
 
-  if (!persistent_cache_) {
+  if (!initialized) {
     timer.SetEnabled(false);
     return;
   }
