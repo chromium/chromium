@@ -30,6 +30,12 @@ void PluginRegistryImpl::Bind(
 }
 
 void PluginRegistryImpl::GetPlugins(bool refresh, GetPluginsCallback callback) {
+  RenderProcessHost* rph = RenderProcessHost::FromID(render_process_id_);
+  if (!rph) {
+    std::move(callback).Run(std::vector<blink::mojom::PluginInfoPtr>());
+    return;
+  }
+
   auto* plugin_service = PluginServiceImpl::GetInstance();
 
   // Don't refresh if the specified threshold has not been passed.  Note that
@@ -47,27 +53,13 @@ void PluginRegistryImpl::GetPlugins(bool refresh, GetPluginsCallback callback) {
     }
   }
 
-  plugin_service->GetPluginsAsync(
-      base::BindOnce(&PluginRegistryImpl::GetPluginsComplete,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void PluginRegistryImpl::GetPluginsComplete(
-    GetPluginsCallback callback,
-    const std::vector<WebPluginInfo>& all_plugins) {
   PluginServiceFilter* filter = PluginServiceImpl::GetInstance()->GetFilter();
   std::vector<blink::mojom::PluginInfoPtr> plugins;
-  RenderProcessHost* rph = RenderProcessHost::FromID(render_process_id_);
-  if (!rph) {
-    std::move(callback).Run(std::move(plugins));
-    return;
-  }
-
-  base::flat_set<std::string> mime_handler_view_mime_types =
+  const base::flat_set<std::string> mime_handler_view_mime_types =
       GetContentClient()->browser()->GetPluginMimeTypesWithExternalHandlers(
           rph->GetBrowserContext());
 
-  for (const auto& plugin : all_plugins) {
+  for (const auto& plugin : plugin_service->GetPlugins()) {
     if (!filter ||
         filter->IsPluginAvailable(rph->GetBrowserContext(), plugin)) {
       auto plugin_blink = blink::mojom::PluginInfo::New();
