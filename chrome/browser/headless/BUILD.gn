@@ -9,10 +9,15 @@ import("//testing/test.gni")
 
 source_set("headless") {
   sources = [
+    "headless_mode_platform.h",
     "headless_mode_switches.h",
     "headless_mode_util.cc",
     "headless_mode_util.h",
   ]
+
+  if (is_mac) {
+    sources += [ "headless_mode_platform_mac.mm" ]
+  }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
