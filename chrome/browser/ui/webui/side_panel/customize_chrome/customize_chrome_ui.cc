@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/rand_util.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
@@ -36,6 +37,7 @@
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
 #include "components/ntp_tiles/features.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_frame_host.h"
@@ -298,6 +300,12 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
   source->AddBoolean("imageErrorDetectionEnabled",
                      base::FeatureList::IsEnabled(
                          ntp_features::kNtpBackgroundImageErrorDetection));
+
+  const auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile_);
+  source->AddBoolean(
+      "aimPolicyEnabled",
+      aim_eligibility_service && aim_eligibility_service->IsAimEligible());
 
   source->AddBoolean("footerEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpFooter));

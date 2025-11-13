@@ -194,22 +194,35 @@ suite('AppTest', () => {
     });
   });
 
-  [true, false].forEach((flagEnabled) => {
-    suite(`NtpNextFeaturesEnabled_${flagEnabled}`, () => {
-      suiteSetup(() => {
-        loadTimeData.overrideValues({
-          'ntpNextFeaturesEnabled': flagEnabled,
-        });
-      });
+  // Testing Tool Chips visibility on initial flag load values.
+  [true, false].forEach(
+      (aimPolicyEnabled) => [true, false].forEach(
+          (ntpNextFeaturesEnabled) => suite(
+              'Render Tool Chips with aimPolicyEnabled: ' + aimPolicyEnabled +
+                  ' and ntpNextFeaturesEnabled: ' + ntpNextFeaturesEnabled,
+              () => {
+                // Arrange
+                const expectedVisibility =
+                    ntpNextFeaturesEnabled && aimPolicyEnabled;
+                suiteSetup(() => {
+                  loadTimeData.overrideValues({
+                    'ntpNextFeaturesEnabled': ntpNextFeaturesEnabled,
+                    'aimPolicyEnabled': aimPolicyEnabled,
+                  });
+                });
 
-      test(`ntp next features does ${flagEnabled ? '' : 'not '}show the
-        Tool Chips Toggle section in Customize Chrome side panel`, () => {
-        assertEquals(
-            !!customizeChromeApp.shadowRoot.querySelector('#tools'),
-            flagEnabled);
-      });
-    });
-  });
+                // Assert
+                test(
+                    `Expected for tool chips settings to ${
+                        expectedVisibility ? 'show' : 'not show'} in the ` +
+                        'Customize Chrome side panel',
+                    () => {
+                      assertEquals(
+                          !!customizeChromeApp.shadowRoot.querySelector(
+                              '#tools'),
+                          expectedVisibility);
+                    });
+              })));
 
   test('source tab type should update the cards', async () => {
     const idsControlledByIsSourceTabFirstPartyNtp = [
