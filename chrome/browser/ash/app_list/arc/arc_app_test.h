@@ -156,6 +156,8 @@ class ArcAppTest {
   bool FindPackage(const std::string& package_name);
   void CreateFakeAppsAndPackages();
 
+  const UserManagerMode user_manager_mode_;
+
   // Unowned pointer.
   raw_ptr<Profile> profile_ = nullptr;
 

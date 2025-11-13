@@ -93,7 +93,8 @@ std::vector<arc::mojom::AppInfoPtr> ArcAppTest::CloneApps(
 }
 
 ArcAppTest::ArcAppTest(UserManagerMode user_manager_mode)
-    : fake_user_manager_(user_manager_mode == UserManagerMode::kDoNothing
+    : user_manager_mode_(user_manager_mode),
+      fake_user_manager_(user_manager_mode == UserManagerMode::kDoNothing
                              ? nullptr
                              : std::make_unique<ash::FakeChromeUserManager>()) {
   CreateFakeAppsAndPackages();
@@ -120,9 +121,14 @@ void ArcAppTest::PreProfileSetUp() {
   }
 
   // ChromeBrowserMainPartsAsh::PreCreateMainMessageLoop:
-  if (!session_manager::SessionManager::Get()) {
+  if (user_manager_mode_ == UserManagerMode::kCreate) {
+    CHECK(!session_manager::SessionManager::Get())
+        << "Test should let ArcAppTest initializes SessionManager";
     session_manager_ = std::make_unique<session_manager::SessionManager>(
         std::make_unique<session_manager::FakeSessionManagerDelegate>());
+  } else {
+    CHECK(session_manager::SessionManager::Get())
+        << "Test should initialize SessionManager too";
   }
 
   // ChromeBrowserMainPartsAsh::PreMainMessageLoopRun:

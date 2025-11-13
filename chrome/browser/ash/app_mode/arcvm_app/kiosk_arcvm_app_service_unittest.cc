@@ -16,10 +16,12 @@
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_stop_reason.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
@@ -89,23 +91,31 @@ class KioskArcvmAppServiceTest : public testing::Test {
   KioskArcvmAppServiceTest() = default;
 
   void SetUp() override {
-    // TODO(crbug.com/418638940): Refactor to use ChromeAshTestBase.
-    ash_test_helper_.SetUp();
-    wm_helper_ = std::make_unique<exo::WMHelper>();
-
     arc_app_test_.set_persist_service_manager(true);
     arc_app_test_.PreProfileSetUp();
 
+    // TODO(crbug.com/418638940): Refactor to use ChromeAshTestBase.
+    ash_test_helper_ = std::make_unique<AshTestHelper>();
+    ash_test_helper_->SetUp();
+
+    wm_helper_ = std::make_unique<exo::WMHelper>();
+
+    // KioskArcvmAppManager depends on CrosSettings.
+    ASSERT_TRUE(ash::CrosSettings::IsInitialized());
+    app_manager_ = std::make_unique<KioskArcvmAppManager>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        &kiosk_cryptohome_remover_);
+
     profile_ = std::make_unique<TestingProfile>();
     profile_->set_profile_name(kAppEmail);
+
     arc_app_test_.PostProfileSetUp(profile_.get());
+
     app_info_ = arc::mojom::AppInfo::New(kAppName, kAppPackageName,
                                          kAppClassName, /*sticky=*/true);
     arc_policy_bridge_ =
         arc::ArcPolicyBridge::GetForBrowserContextForTesting(profile_.get());
-    app_manager_ = std::make_unique<KioskArcvmAppManager>(
-        TestingBrowserProcess::GetGlobal()->local_state(),
-        &kiosk_cryptohome_remover_);
+
     // Initialize KioskArcvmAppService to listen to KioskArcvmAppManager
     // updates.
     KioskArcvmAppService::Get(profile());
@@ -118,9 +128,13 @@ class KioskArcvmAppServiceTest : public testing::Test {
   }
 
   void TearDown() override {
+    arc_policy_bridge_ = nullptr;
     arc_app_test_.PreProfileTearDown();
-    ash_test_helper_.TearDown();
     profile_.reset();
+    app_manager_.reset();
+    wm_helper_.reset();
+    ash_test_helper_->TearDown();
+    ash_test_helper_.reset();
     arc_app_test_.PostProfileTearDown();
   }
 
@@ -171,10 +185,13 @@ class KioskArcvmAppServiceTest : public testing::Test {
   // Number of times app tried to be launched.
   size_t launch_requests_ = 0;
 
-  AshTestHelper ash_test_helper_;
+  std::unique_ptr<AshTestHelper> ash_test_helper_;
 
   content::BrowserTaskEnvironment task_environment;
   ArcAppTest arc_app_test_;
+
+  ScopedTestingCrosSettings scoped_testing_cros_settings_;
+
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   arc::mojom::AppInfoPtr app_info_;
 
@@ -185,7 +202,7 @@ class KioskArcvmAppServiceTest : public testing::Test {
   std::unique_ptr<KioskArcvmAppManager> app_manager_;
   std::unique_ptr<exo::WMHelper> wm_helper_;
 
-  raw_ptr<arc::ArcPolicyBridge, DanglingUntriaged> arc_policy_bridge_;
+  raw_ptr<arc::ArcPolicyBridge> arc_policy_bridge_ = nullptr;
 };
 
 TEST_F(KioskArcvmAppServiceTest, LaunchConditions) {

@@ -21,8 +21,8 @@ OverviewTracingTestBase::OverviewTracingTestBase()
 OverviewTracingTestBase::~OverviewTracingTestBase() = default;
 
 void OverviewTracingTestBase::SetUp() {
-  ChromeAshTestBase::SetUp();
   arc_app_test_.PreProfileSetUp();
+  ChromeAshTestBase::SetUp();
   profile_ = std::make_unique<TestingProfile>();
   arc_app_test_.PostProfileSetUp(profile_.get());
 
@@ -52,9 +52,8 @@ void OverviewTracingTestBase::TearDown() {
 
   profile_.reset();
 
-  arc_app_test_.PostProfileTearDown();
-
   ChromeAshTestBase::TearDown();
+  arc_app_test_.PostProfileTearDown();
 }
 
 void OverviewTracingTestBase::CommitAndPresentFrames(

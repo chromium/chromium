@@ -48,10 +48,10 @@ void GameControlsTestBase::EnableDisplayMode(DisplayMode mode) {
 }
 
 void GameControlsTestBase::SetUp() {
-  ChromeAshTestBase::SetUp();
-
   arc_app_test_.set_wait_compatibility_mode(true);
   arc_app_test_.PreProfileSetUp();
+
+  ChromeAshTestBase::SetUp();
 
   profile_ = std::make_unique<TestingProfile>();
   arc_app_test_.PostProfileSetUp(profile_.get());
@@ -80,8 +80,8 @@ void GameControlsTestBase::TearDown() {
   arc_test_input_overlay_manager_.reset();
   arc_app_test_.PreProfileTearDown();
   profile_.reset();
-  arc_app_test_.PostProfileTearDown();
   ChromeAshTestBase::TearDown();
+  arc_app_test_.PostProfileTearDown();
 }
 
 }  // namespace arc::input_overlay
