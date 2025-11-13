@@ -595,6 +595,7 @@ void ExecutionEngine::KickOffNextAction(
   }
 
   SetState(State::kStartAction);
+  action_start_time_ = base::TimeTicks::Now();
 
   if (GetNextAction().RequiresUrlCheckInCurrentTab()) {
     SafetyChecksForNextAction();
@@ -729,7 +730,6 @@ void ExecutionEngine::ExecuteNextAction() {
   CHECK(tool_controller_);
 
   ++next_action_index_;
-  action_start_time_ = base::TimeTicks::Now();
 
   SetState(State::kToolCreateAndVerify);
   tool_controller_->CreateToolAndValidate(
