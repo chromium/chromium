@@ -131,6 +131,8 @@ TEST_F(DevToolsUIBindingsTest, SanitizeFrontendURL) {
        "devtools://devtools/?panel=sources"},
       {"devtools://devtools/?panel=resources",
        "devtools://devtools/?panel=resources"},
+      {"devtools://devtools/?panel=performance",
+       "devtools://devtools/?panel=performance"},
       {"devtools://devtools/?panel=unsupported", "devtools://devtools/"},
   };
 

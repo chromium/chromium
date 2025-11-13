@@ -323,7 +323,8 @@ domain Target
       # This can be the page or tab target ID.
       TargetID targetId
       # The id of the panel we want DevTools to open initially. Currently
-      # supported panels are elements, console, network, sources and resources.
+      # supported panels are elements, console, network, sources, resources
+      # and performance.
       optional string panelId
     returns
       # The targetId of DevTools page target.
