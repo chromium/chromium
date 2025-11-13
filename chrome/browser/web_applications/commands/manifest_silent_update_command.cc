@@ -526,7 +526,7 @@ void ManifestSilentUpdateCommand::OnWebAppInfoCreatedFromManifest(
   if (web_app_comparison_.IsNameChangeOnly() &&
       !silently_update_app_identity_) {
     proto::PendingUpdateInfo update;
-    update.set_name(base::UTF16ToUTF8(new_install_info_->title));
+    update.set_name(base::UTF16ToUTF8(new_install_info_->title.value()));
     WritePendingUpdateInfoThenComplete(
         std::move(update),
         ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
@@ -632,7 +632,8 @@ void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist() {
   std::optional<proto::PendingUpdateInfo> pending_update_info;
   if (!web_app_comparison_.name_equality()) {
     pending_update_info = proto::PendingUpdateInfo();
-    pending_update_info->set_name(base::UTF16ToUTF8(new_install_info_->title));
+    pending_update_info->set_name(
+        base::UTF16ToUTF8(new_install_info_->title.value()));
     new_install_info_->title = base::UTF8ToUTF16(web_app->untranslated_name());
   }
 

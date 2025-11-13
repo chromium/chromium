@@ -218,7 +218,7 @@ ManifestDataChanges GetManifestDataChanges(
 
   // TODO(crbug.com/40201597): Check whether translations have been updated.
   result.app_name_changed =
-      new_install_info.title !=
+      new_install_info.title.value() !=
       base::UTF8ToUTF16(existing_web_app.untranslated_name());
 
   // TODO(crbug.com/40254036): Run these bitmap comparisons off the UI thread.

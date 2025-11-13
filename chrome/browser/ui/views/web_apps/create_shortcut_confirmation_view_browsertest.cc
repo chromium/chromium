@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
                         bool result,
                         std::unique_ptr<web_app::WebAppInstallInfo> info) {
       is_accepted = result;
-      title = info->title;
+      title = info->title.value();
     };
 
     content::WebContents* web_contents =

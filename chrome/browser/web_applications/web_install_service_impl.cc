@@ -567,7 +567,7 @@ void WebInstallServiceImpl::OnInstallInfoFromInstallUrlFetched(
   SkBitmap icon_bitmap_to_use = dialog_info.bitmaps[kIconSizeForLaunchDialog];
 
   // Name to display in the dialog.
-  std::u16string app_title = install_info->title;
+  std::u16string app_title = install_info->title.value();
   base::TrimWhitespace(app_title, base::TRIM_ALL, &app_title);
   if (!dialog_info.is_maskable) {
     OnIconFinalizedTriggerDialog(std::move(callback_with_metrics), app_id,

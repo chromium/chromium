@@ -126,7 +126,7 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
   webapps::AppId InstallApp(std::unique_ptr<WebAppInstallInfo> info,
                             Profile* profile) {
     GURL start_url = info->start_url();
-    std::u16string title = info->title;
+    std::u16string title = info->title.value();
 
     base::RunLoop run_loop;
     webapps::AppId app_id;

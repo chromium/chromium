@@ -427,7 +427,7 @@ class ManifestUpdateCheckCommandTest : public WebAppTest {
     manifest->id = GenerateManifestIdFromStartUrlOnly(info.start_url());
     manifest->scope = info.scope;
     manifest->display = info.display_mode;
-    manifest->name = info.title;
+    manifest->name = info.title.value();
     manifest->has_theme_color = info.theme_color.has_value();
     if (manifest->has_theme_color) {
       manifest->theme_color = info.theme_color.value();

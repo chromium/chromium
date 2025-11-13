@@ -178,8 +178,8 @@ class SubAppsListView : public views::ScrollView {
                            weak_ptr_factory_.GetWeakPtr(), icon_index));
       }
 
-      auto* sub_app_label =
-          box->AddChildView(std::make_unique<views::Label>(sub_app->title));
+      auto* sub_app_label = box->AddChildView(
+          std::make_unique<views::Label>(sub_app->title.value()));
       sub_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
       sub_app_label->SetMultiLine(true);
       sub_app_label->SetGroup(
