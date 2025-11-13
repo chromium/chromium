@@ -31,7 +31,6 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -70,6 +69,8 @@ const char* kOtherPermittedHost = "b.example";
 const char* kNotPermittedHost = "c.example";
 const char* kPermittedSubdomain = "sub.a.example";
 const char* kNotPermittedSubdomain = "notallowedsub.a.example";
+const char* kActiveTabHost = "active-tab.example";
+const char* kCrossOriginHost = "other.com";
 const char* kPermissionPattern1 = "https://a.example/*";
 const char* kPermissionPattern1Sub = "https://sub.a.example/*";
 const char* kPermissionPattern2 = "https://b.example/*";
@@ -122,14 +123,11 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
     base::FilePath test_data_dir;
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
     test_server()->ServeFilesFromDirectory(test_data_dir);
+    test_server()->SetCertHostnames({kPermittedHost, kOtherPermittedHost,
+                                     kNotPermittedHost, kPermittedSubdomain,
+                                     kNotPermittedSubdomain, kActiveTabHost,
+                                     kCrossOriginHost});
     ASSERT_TRUE(test_server()->Start());
-  }
-
-  // Ignore cert errors for HTTPS test server, in order to use hostnames other
-  // than localhost or 127.0.0.1.
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
  protected:
@@ -647,7 +645,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
   // Set up a test scenario:
   // - top-level frame: kActiveTabHost
-  constexpr char kActiveTabHost[] = "active-tab.example";
   GURL original_document_url =
       test_server()->GetURL(kActiveTabHost, "/title1.html");
   auto* web_contents = GetActiveWebContents();
@@ -707,7 +704,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
   // Navigating the tab to a different origin should revoke extension's access
   // to the tab.
-  GURL cross_origin_url = test_server()->GetURL("other.com", "/title1.html");
+  GURL cross_origin_url =
+      test_server()->GetURL(kCrossOriginHost, "/title1.html");
   EXPECT_NE(url::Origin::Create(cross_origin_url),
             url::Origin::Create(original_document_url));
   ASSERT_TRUE(NavigateToURL(web_contents, cross_origin_url));
@@ -741,7 +739,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   // Set up a test scenario:
   // - top-level frame: kActiveTabHost
   // - subframe: extension
-  constexpr char kActiveTabHost[] = "active-tab.example";
   auto* web_contents = GetActiveWebContents();
   ASSERT_TRUE(NavigateToURL(
       web_contents, test_server()->GetURL(kActiveTabHost, "/title1.html")));
@@ -869,7 +866,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   // - tab1: top-level frame: kActiveTabHost
   // - tab2: top-level frame: extension (for triggering fetches in the
   //                                     extension's service worker)
-  constexpr char kActiveTabHost[] = "active-tab.example";
   GURL original_document_url =
       test_server()->GetURL(kActiveTabHost, "/title1.html");
   auto* web_contents = GetActiveWebContents();
@@ -944,7 +940,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
   // Navigating the tab to a different origin should revoke extension's access
   // to the tab.
-  GURL cross_origin_url = test_server()->GetURL("other.com", "/title1.html");
+  GURL cross_origin_url =
+      test_server()->GetURL(kCrossOriginHost, "/title1.html");
   EXPECT_NE(url::Origin::Create(cross_origin_url),
             url::Origin::Create(original_document_url));
   ASSERT_TRUE(NavigateToURL(web_contents, cross_origin_url));

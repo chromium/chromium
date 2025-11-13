@@ -31,7 +31,6 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/media_device_salt/media_device_salt_service.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/media_device_id.h"
 #include "content/public/browser/web_contents.h"
@@ -254,12 +253,11 @@ class HangoutServicesBrowserTest : public AudioWaitingExtensionTest {
     command_line->AppendSwitchASCII(
         switches::kAutoplayPolicy,
         switches::autoplay::kNoUserGestureRequiredPolicy);
-    // This is necessary to use https with arbitrary hostnames.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   void SetUpOnMainThread() override {
     https_server().AddDefaultHandlers(GetChromeTestDataDir());
+    https_server().SetCertHostnames({"meet.google.com"});
     host_resolver()->AddRule("*", "127.0.0.1");
     AudioWaitingExtensionTest::SetUpOnMainThread();
   }
