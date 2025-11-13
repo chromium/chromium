@@ -11241,6 +11241,12 @@ const FeatureEntry kFeatureEntries[] = {
                                     kLensAimSuggestionsVariations,
                                     "LensAimSuggestions")},
 
+    {"lens-aim-gradient-suggest-background",
+     flag_descriptions::kLensAimSuggestionsGradientBackgroundName,
+     flag_descriptions::kLensAimSuggestionsGradientBackgroundDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(lens::features::kLensAimSuggestionsGradientBackground)},
+
 #if BUILDFLAG(IS_ANDROID)
 
     {"history-opt-in-educational-tip",

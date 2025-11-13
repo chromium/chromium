@@ -106,6 +106,9 @@ BASE_FEATURE(kLensSidePanelEnableWebviewResults,
 
 BASE_FEATURE(kLensAimSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensAimSuggestionsGradientBackground,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLensSearchZeroStateCsb, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensVideoCitations, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1071,6 +1074,11 @@ bool GetAimSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kLensAimSuggestions) &&
          kLensAimSuggestionsType.Get() !=
              LensAimSuggestionsType::kNone;
+}
+
+bool GetAimSuggestionsGradientBackgroundEnabled() {
+  return GetAimSuggestionsEnabled() &&
+         base::FeatureList::IsEnabled(kLensAimSuggestionsGradientBackground);
 }
 
 LensAimSuggestionsType GetLensAimSuggestionsType() {

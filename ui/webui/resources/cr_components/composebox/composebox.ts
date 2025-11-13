@@ -378,6 +378,10 @@ export class ComposeboxElement extends I18nMixinLit
     return this.smartComposeInlineHint_;
   }
 
+  getMatchesElement(): ComposeboxDropdownElement {
+    return this.$.matches;
+  }
+
   protected initializeState_(text: string = '', files: ContextualUpload[] = [],
                              mode: ComposeboxMode = ComposeboxMode.DEFAULT) {
     if (text) {

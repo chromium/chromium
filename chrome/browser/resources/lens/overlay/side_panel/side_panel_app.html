@@ -3,6 +3,7 @@
     --cr-searchbox-height: 52px;
     --cr-searchbox-min-width: min(calc(100%), 1100px);
     --composebox-collapsed-height: 90px;
+    --composebox-margin-bottom: 30px;
     --aim-header-height: 66px;
     --context-carousel-inline-end-spacing: 24px;
     --context-carousel-inline-start-spacing: 24px;
@@ -340,6 +341,14 @@
     position: absolute;
   }
 
+  /* When the gradient is enabled, the container only spans the height of the composebox and dropdown. */
+  :host([enable-lens-aim-suggestions][enable-lens-aim-suggestions-gradient-background][is-composebox-focused])
+    #composeboxContainer:has(#composebox[show-dropdown_]) {
+    height: calc(var(--composebox-height) + var(--composebox-dropdown-height) + var(--composebox-margin-bottom));
+    background-color: var(--search-background-color);
+    inset-block-start: auto;
+  }
+
   :host([enable-lens-aim-suggestions][is-composebox-focused])
     #composeboxContainer:has(#composebox[show-dropdown_]) {
     background-color: var(--search-background-color);
@@ -356,7 +365,7 @@
     box-shadow: none;
     position: relative;
     width: calc(100% - 32px); /* 16px on each side */
-    margin-bottom: 30px;
+    margin-bottom: var(--composebox-margin-bottom);
   }
 
   #composebox::part(text-container) {
@@ -453,7 +462,7 @@
     position: fixed;
     flex-direction: column-reverse;
     bottom: 0;
-    transform: translateY(calc(-1 * (var(--composebox-height) + 30px)));
+    transform: translateY(calc(-1 * (var(--composebox-height) + var(--composebox-margin-bottom))));
   }
 
 
@@ -594,13 +603,13 @@
   </cr-button>
 </cr-toast>
 
-<div id="composeboxContainer">
+<div id="composeboxContainer" style$="--composebox-height: [[composeboxHeight_]]px;
+ --composebox-dropdown-height: [[composeboxDropdownHeight_]]px;">
   <cr-composebox
     id="composebox"
     is-collapsible
     hide-file-inputs_
     carousel-on-top_
-    style$="--composebox-height: [[composeboxHeight_]]px;"
     lens-button-disabled_$="[[isOverlayShowing]]"
   >
     <!-- Currently an empty div that has height to force the input textarea to

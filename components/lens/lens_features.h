@@ -147,6 +147,10 @@ BASE_DECLARE_FEATURE(kLensSidePanelEnableWebviewResults);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensAimSuggestions);
 
+// Enables configuring the gradient background for AIM suggestions.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensAimSuggestionsGradientBackground);
+
 // Enables the zero state contextual searchbox feature which opens the SRP
 // immediately when entering Lens entry points.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -834,6 +838,10 @@ extern bool GetShouldComposeboxContextualizeOnFocus();
 // Whether lens should show AIM suggestions.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetAimSuggestionsEnabled();
+
+// Whether lens should show AIM suggestions with a gradient background.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetAimSuggestionsGradientBackgroundEnabled();
 
 // Enum for the parameter values.
 enum class LensAimSuggestionsType {
