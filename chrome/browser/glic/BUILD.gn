@@ -435,7 +435,6 @@ source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
-    "glic_profile_manager_interactive_uitest.cc",
     "glic_settings_util_interactive_uitest.cc",
     "glic_user_status_interactive_uitest.cc",
     "host/glic_actor_click_tool_interactive_uitest.cc",
@@ -463,6 +462,13 @@ source_set("interactive_ui_tests") {
     "widget/glic_window_controller_interactive_uitest.cc",
     "widget/glic_window_resize_animation_interactive_uitest.cc",
   ]
+
+  # ChromeOS disallows multi profile. So, ProfileManager is not supported.
+  # See also crbug.com/450679848.
+  if (!is_chromeos) {
+    sources += [ "glic_profile_manager_interactive_uitest.cc" ]
+  }
+
   deps = [
     ":glic",
     ":impl",
