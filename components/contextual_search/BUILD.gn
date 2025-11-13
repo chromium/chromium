@@ -8,6 +8,7 @@ source_set("public") {
     "contextual_search_context_controller.h",
     "contextual_search_metrics_recorder.h",
     "contextual_search_service.h",
+    "contextual_search_session_handle.h",
     "contextual_search_types.h",
   ]
 
@@ -30,6 +31,9 @@ source_set("impl") {
   sources = [
     "contextual_search_metrics_recorder.cc",
     "contextual_search_service.cc",
+    "contextual_search_session_entry.h",
+    "contextual_search_session_entry.cc",
+    "contextual_search_session_handle.cc",
   ]
 
   deps = [
