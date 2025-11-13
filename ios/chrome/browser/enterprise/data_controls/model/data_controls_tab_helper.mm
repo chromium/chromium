@@ -129,40 +129,6 @@ void DataControlsTabHelper::ShouldAllowCut(
   ShouldAllowCopy(std::move(callback));
 }
 
-void DataControlsTabHelper::ShouldAllowShare(
-    base::OnceCallback<void(bool)> callback) {
-  if (!IsClipboardDataControlsEnabled()) {
-    std::move(callback).Run(true);
-    return;
-  }
-
-  ProfileIOS* profile =
-      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-  const GURL& source_url = web_state_->GetLastCommittedURL();
-
-  Verdict verdict = IsShareAllowedByPolicy(source_url, profile);
-  std::string domain = GetManagementDomain(profile);
-
-  switch (verdict.level()) {
-    case Rule::Level::kWarn:
-      ShowWarningDialog(
-          DataControlsDialog::Type::kClipboardShareWarn, domain,
-          base::BindOnce(&DataControlsTabHelper::FinishShare,
-                         weak_factory_.GetWeakPtr(), source_url,
-                         std::move(verdict), std::move(callback)));
-      break;
-    case Rule::Level::kBlock:
-      ShowRestrictSnackbar(domain);
-      [[fallthrough]];
-    case Rule::Level::kReport:
-    case Rule::Level::kAllow:
-    case Rule::Level::kNotSet:
-      FinishShare(source_url, std::move(verdict), std::move(callback),
-                  /*bypassed=*/false);
-      break;
-  }
-}
-
 bool DataControlsTabHelper::ShouldAllowShare() {
   if (!IsClipboardDataControlsEnabled()) {
     return true;

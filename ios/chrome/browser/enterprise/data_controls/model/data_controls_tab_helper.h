@@ -44,9 +44,6 @@ class DataControlsTabHelper
   void ShouldAllowCut(base::OnceCallback<void(bool)> callback);
 
   // Determines if sharing should be allowed.
-  void ShouldAllowShare(base::OnceCallback<void(bool)> callback);
-
-  // Determines if sharing should be allowed.
   bool ShouldAllowShare();
 
   // Sets the command handler for Data Controls.
