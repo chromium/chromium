@@ -126,7 +126,6 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
   private loadingStageStartTimestampMs?: DOMHighResTimeStamp;
 
   private panelStateKind: PanelStateKind = PanelStateKind.kHidden;
-  private fromFre: boolean = false;
 
   state: WebUiState|undefined;
 
@@ -137,9 +136,8 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
 
   browserProxy: BrowserProxyImpl;
 
-  constructor(browserProxy: BrowserProxyImpl, fromFre: boolean) {
+  constructor(browserProxy: BrowserProxyImpl) {
     this.browserProxy = browserProxy;
-    this.fromFre = fromFre;
 
     window.addEventListener('online', () => {
       this.online();
@@ -344,7 +342,6 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
       {
         onEnter: () => {
           this.trackLoadingStageEnd();
-          this.fromFre = false;
           $.guestPanel.classList.toggle('show-header', false);
           this.showPanel('guestPanel');
         },
@@ -488,8 +485,6 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
   }
 
   private showLoading(): void {
-    const sidePanelLoadingElement = getRequiredElement('sidePanelLoading');
-    sidePanelLoadingElement.classList.toggle('from-fre', this.fromFre);
     this.showPanel('loadingPanel');
     // After kMinHoldLoadingTimeMs, transition to finish-loading or ready. Note
     // that we do not transition from show-loading to ready before the timeout.

@@ -140,52 +140,25 @@ webview:not([hidden]) {
 #loadingPanel #sidePanelLoading .p3 {
   height: 56px;
   border-radius: 12px;
-  margin-bottom: 23px;
+  margin-top: 48px;
+  margin-bottom: 18px;
 }
 
 #loadingPanel #sidePanelLoading .p4 {
-  height: 32px;
+  flex: 4;
   border-radius: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 18px;
 }
 
 #loadingPanel #sidePanelLoading .p5 {
-  height: 32px;
+  flex: 4;
   border-radius: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 18px;
 }
 
 #loadingPanel #sidePanelLoading .p6 {
-  height: 32px;
+  height: 172px;
   border-radius: 12px;
-}
-
-#loadingPanel #sidePanelLoading .p7 {
-  height: 132px;
-  border-radius: 12px;
-}
-
-#sidePanelLoading.from-fre .center-group {
-  justify-content: start;
-  margin-top: 20px;
-}
-
-#loadingPanel #sidePanelLoading.from-fre .p3 {
-  margin-bottom: 17px;
-}
-
-#loadingPanel #sidePanelLoading.from-fre .p4 {
-  margin-bottom: 2px;
-  height: 64px;
-}
-
-#loadingPanel #sidePanelLoading.from-fre .p5 {
-  margin-bottom: 2px;
-  height: 64px;
-}
-
-#loadingPanel #sidePanelLoading.from-fre .p6 {
-  height: 64px;
 }
 
 .panel .header {
