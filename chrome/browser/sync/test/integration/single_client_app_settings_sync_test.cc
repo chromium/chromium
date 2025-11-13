@@ -27,6 +27,11 @@ class SingleClientAppSettingsSyncTest : public AppsSyncTestBase {
  public:
   SingleClientAppSettingsSyncTest() : AppsSyncTestBase(SINGLE_CLIENT) {}
   ~SingleClientAppSettingsSyncTest() override = default;
+
+  // APP_SETTINGS is only supported with Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientAppSettingsSyncTest, Basics) {
