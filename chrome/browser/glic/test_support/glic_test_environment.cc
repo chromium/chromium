@@ -19,8 +19,8 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace glic {
-namespace internal {
 
+namespace internal {
 GlicTestEnvironmentConfig& GetConfig() {
   static GlicTestEnvironmentConfig config;
   return config;
@@ -105,13 +105,20 @@ class GlicTestEnvironmentServiceFactory : public ProfileKeyedServiceFactory {
 
 }  // namespace internal
 
+std::vector<base::test::FeatureRef> GetDefaultEnabledGlicTestFeatures() {
+  return {features::kGlic, features::kTabstripComboButton,
+          features::kGlicRollout};
+}
+std::vector<base::test::FeatureRef> GetDefaultDisabledGlicTestFeatures() {
+  return {features::kGlicWarming, features::kGlicFreWarming};
+}
+
 GlicTestEnvironment::GlicTestEnvironment(
     const GlicTestEnvironmentConfig& config,
     std::vector<base::test::FeatureRef> enabled_features,
-    std::vector<base::test::FeatureRef> disabled_features) {
+    std::vector<base::test::FeatureRef> disabled_features)
+    : shared_(enabled_features, disabled_features) {
   internal::GetConfig() = config;
-
-  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
   // The service factory needs to be created before any services are created.
   internal::GlicTestEnvironmentServiceFactory::GetInstance();
@@ -138,6 +145,10 @@ GlicTestEnvironmentService* GlicTestEnvironment::GetService(Profile* profile,
                                                             bool create) {
   return internal::GlicTestEnvironmentServiceFactory::GetForProfile(profile,
                                                                     create);
+}
+
+void GlicTestEnvironmentService::SetModelExecutionCapability(bool enabled) {
+  ::glic::SetModelExecutionCapability(profile_, enabled);
 }
 
 void GlicTestEnvironment::OnWillCreateBrowserContextKeyedServices(
@@ -184,7 +195,7 @@ GlicTestEnvironmentService::GlicTestEnvironmentService(Profile* profile)
   }
   if (config.force_signin_and_model_execution_capability) {
     SigninWithPrimaryAccount(profile);
-    SetModelExecutionCapability(profile, true);
+    SetModelExecutionCapability(true);
   }
 }
 
@@ -205,6 +216,29 @@ void GlicTestEnvironmentService::SetResultForFutureCookieSyncInFre(
 
 void GlicTestEnvironmentService::SetFRECompletion(prefs::FreStatus fre_status) {
   ::glic::SetFRECompletion(profile_, fre_status);
+}
+
+GlicUnitTestEnvironment::GlicUnitTestEnvironment(
+    const GlicTestEnvironmentConfig& config)
+    : config_(config),
+      shared_(GetDefaultEnabledGlicTestFeatures(),
+              GetDefaultDisabledGlicTestFeatures()) {}
+
+GlicUnitTestEnvironment::~GlicUnitTestEnvironment() = default;
+
+void GlicUnitTestEnvironment::SetupProfile(Profile* profile) {
+  if (config_.force_signin_and_model_execution_capability) {
+    ::glic::ForceSigninAndModelExecutionCapability(profile);
+  }
+  if (config_.fre_status) {
+    glic::SetFRECompletion(profile, *config_.fre_status);
+  }
+}
+
+internal::GlicTestEnvironmentShared::GlicTestEnvironmentShared(
+    std::vector<base::test::FeatureRef> enabled_features,
+    std::vector<base::test::FeatureRef> disabled_features) {
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
 }  // namespace glic

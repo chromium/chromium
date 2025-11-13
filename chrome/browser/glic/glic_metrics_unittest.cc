@@ -16,6 +16,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/global_features.h"
@@ -626,26 +627,14 @@ TEST_F(GlicMetricsTest, ImpressionIncompleteFreNotPermittedByPolicy) {
 class GlicMetricsFeaturesEnabledTest : public GlicMetricsTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {
-            features::kGlic,
-            features::kTabstripComboButton,
-            features::kGlicRollout,
-        },
-        {});
     SetUpProfile();
     // When Glic is enabled before the profile is setup GlicKeyedService starts
     // and creates it's own GlicMetrics. Do not setup GlicMetrics again here so
     // that duplicate metrics observers are not bound.
   }
 
-  void TearDown() override {
-    scoped_feature_list_.Reset();
-    GlicMetricsTest::TearDown();
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  GlicUnitTestEnvironment glic_test_env_;
 };
 
 TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionBeforeFre) {

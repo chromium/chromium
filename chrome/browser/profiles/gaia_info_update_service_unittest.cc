@@ -56,6 +56,7 @@
 #include "chrome/browser/background/startup_launch_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #endif
 
 using signin::constants::kNoHostedDomainFound;
@@ -121,8 +122,9 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
   }
 
   void RecreateGAIAInfoUpdateService() {
-    if (service_)
+    if (service_) {
       service_->Shutdown();
+    }
 
     service_ = std::make_unique<GAIAInfoUpdateService>(
         profile(), identity_manager(),
@@ -147,8 +149,9 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
   }
 
   TestingProfile* profile() {
-    if (!profile_)
+    if (!profile_) {
       CreateProfile("Person 1");
+    }
     return profile_.get();
   }
 
@@ -188,7 +191,9 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
         .SetChromeSigninInterceptionUserChoice(gaia_id,
                                                ChromeSigninUserChoice::kSignin);
   }
-
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicUnitTestEnvironment glic_test_env_;
+#endif
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;

@@ -4,6 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -16,14 +17,10 @@ class GlicWebUIBrowserTest : public WebUIMochaBrowserTest {
  protected:
   GlicWebUIBrowserTest() { set_test_loader_host(chrome::kChromeUIGlicHost); }
 
-  void SetUp() override {
-    features_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton}, {});
-    WebUIMochaBrowserTest::SetUp();
-  }
+  void SetUp() override { WebUIMochaBrowserTest::SetUp(); }
 
  private:
-  base::test::ScopedFeatureList features_;
+  glic::GlicTestEnvironment glic_test_env_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicWebUIBrowserTest, UnitTestWebview) {

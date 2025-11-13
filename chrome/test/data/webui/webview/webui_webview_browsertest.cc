@@ -34,6 +34,10 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -48,14 +52,7 @@
 
 class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
  public:
-  WebUIWebViewBrowserTest() {
-#if BUILDFLAG(ENABLE_GLIC)
-    // Required to enable chrome://glic.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton},
-        /*disabled_features=*/{});
-#endif
-  }
+  WebUIWebViewBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     base::FilePath test_data_dir;
@@ -130,7 +127,10 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
             false);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(ENABLE_GLIC)
+  // Required to enable chrome://glic.
+  glic::GlicTestEnvironment glic_test_env_;
+#endif
 };
 
 // Checks that hiding and showing the WebUI host page doesn't break guests in

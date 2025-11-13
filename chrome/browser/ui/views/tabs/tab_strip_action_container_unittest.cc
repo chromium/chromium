@@ -38,6 +38,7 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
@@ -115,11 +116,11 @@ class TabStripActionContainerTest : public ChromeViewsTestBase,
     ASSERT_TRUE(testing_profile_manager_->SetUp());
     TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
     profile_ = std::make_unique<TestingProfile>();
+#if BUILDFLAG(ENABLE_GLIC)
+    glic_test_environment_.SetupProfile(profile_.get());
+#endif  // BUILDFLAG(ENABLE_GLIC)
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_.get(), nullptr);
-#if BUILDFLAG(ENABLE_GLIC)
-    glic::ForceSigninAndModelExecutionCapability(profile_.get());
-#endif  // BUILDFLAG(ENABLE_GLIC)
   }
 
   void TearDown() override {
@@ -180,6 +181,9 @@ class TabStripActionContainerTest : public ChromeViewsTestBase,
   }
 
  protected:
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicUnitTestEnvironment glic_test_environment_;
+#endif
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   std::unique_ptr<TabStrip> tab_strip_;
   std::unique_ptr<TabStripModel> tab_strip_model_;

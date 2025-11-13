@@ -68,9 +68,7 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
  protected:
   GlicUserStatusBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlic, {}},
-         {features::kTabstripComboButton, {}},
-         {features::kGlicRollout, {}},
+        {{features::kGlicRollout, {}},
          {features::kGlicShareImage, {}},
          {features::kGlicUserStatusCheck,
           {{features::kGlicUserStatusRequestDelay.name, "200ms"},
@@ -228,6 +226,7 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
     return most_recent_request_.value();
   }
 
+  GlicTestEnvironment glic_test_env_;
   base::test::ScopedFeatureList feature_list_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;
