@@ -13,9 +13,6 @@ import sys
 import tempfile
 from typing import Any, Dict, IO, List, Optional, Set, Union
 
-# vpython-provided modules.
-import six
-
 # //testing imports.
 from unexpected_passes_common import data_types
 
@@ -359,7 +356,7 @@ def RecursivePrintToFile(element: ElementType, depth: int,
   """
   if element is None:
     element = str(element)
-  if isinstance(element, six.string_types):
+  if isinstance(element, str):
     file_handle.write(('  ' * depth) + element + '\n')
   elif isinstance(element, dict):
     for k, v in element.items():
@@ -384,7 +381,7 @@ def _RecursiveHtmlToFile(element: ElementType, file_handle: IO) -> None:
     element: A dict, list, or str/unicode to output.
     file_handle: An open file-like object to output to.
   """
-  if isinstance(element, six.string_types):
+  if isinstance(element, str):
     file_handle.write('<p>%s</p>\n' % _LinkifyString(element))
   elif isinstance(element, dict):
     for k, v in element.items():

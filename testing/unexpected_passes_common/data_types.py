@@ -11,9 +11,6 @@ import logging
 from typing import (Any, Dict, FrozenSet, Generator, Iterable, List, Optional,
                     Set, Tuple, Type, Union)
 
-# vpython-provided modules.
-import six
-
 # //third_party/catapult/third_party/typ imports.
 from typ import expectations_parser
 from typ import reduced_glob
@@ -856,7 +853,7 @@ class BuilderEntry():
 
 
 def IsStringType(s: Any) -> bool:
-  return isinstance(s, six.string_types)
+  return isinstance(s, str)
 
 
 Expectation = BaseExpectation
