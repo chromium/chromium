@@ -27,9 +27,9 @@ ${this.searchboxLayoutMode_ ? html`
       part="contextual-entrypoint-and-carousel"
       exportparts="composebox-entrypoint, context-menu-entrypoint-icon"
       entrypoint-name="Omnibox"
-      ?show-dropdown="${this.result_?.matches.length ?? 0}"
       searchbox-layout-mode="${this.searchboxLayoutMode_}"
-      @click="${this.onContextualEntryPointClicked_}">
+      ?show-dropdown="${this.result_?.matches.length ?? 0}"
+      @context-menu-entrypoint-click="${this.onContextualEntryPointClicked_}">
     ${searchboxDropdown}
   </contextual-entrypoint-and-carousel>
 </div>` : html`
