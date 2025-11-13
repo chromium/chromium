@@ -422,9 +422,6 @@ struct Suggestion {
 #if DCHECK_IS_ON()
   bool Invariant() const {
     switch (type) {
-      case SuggestionType::kCreateNewPlusAddressInline:
-      case SuggestionType::kPlusAddressError:
-        return std::holds_alternative<PlusAddressPayload>(payload);
       case SuggestionType::kIdentityCredential:
         return std::holds_alternative<IdentityCredentialPayload>(payload);
       case SuggestionType::kPasswordEntry:

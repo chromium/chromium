@@ -45,18 +45,8 @@ class PlusAddressSuggestionHelper final {
       const autofill::FormFieldData& focused_field,
       bool is_plus_address_manually_triggered);
 
-  // Updates `suggestion` with a refreshed plus address by setting a new
-  // payload.
-  void RefreshPlusAddressForSuggestion(autofill::Suggestion& suggestion);
-
   // Returns a suggestion for managing plus addresses.
   static autofill::Suggestion GetManagePlusAddressSuggestion();
-
-  // Returns a suggestion for displaying an error during plus address
-  // reservation. The type of `error` determines which string to show and
-  // whether to offer refresh.
-  static autofill::Suggestion GetPlusAddressErrorSuggestion(
-      const PlusAddressRequestError& error);
 
   // Updates `suggestion` to have `plus_address` as the proposed suggestions.
   // `CHECK`s that `suggestion` is of type `kCreateNewPlusAddressInline`.
@@ -69,21 +59,10 @@ class PlusAddressSuggestionHelper final {
                                            autofill::Suggestion& suggestion);
 
  private:
-  // Returns a suggestion to create a new plus address.
-  autofill::Suggestion CreateNewPlusAddressSuggestion();
 
   // Returns whether it is allowed to generate plus addresses inline. This is
   // true on Desktop platforms if the user has accepted the legal notice.
   bool IsInlineGenerationEnabled() const;
-
-  // Returns a suggestion to generate a new plus address inline. If there are
-  // pre-allocated plus addresses, it adds the next suggested plus address as
-  // payload. Otherwise, the payload is left empty (and the UI will need to
-  // request a suggested plus address on showing the suggestion). If
-  // `refreshed_suggestion` is true, the function will return a plus address
-  // that's different to the last one that was offered.
-  autofill::Suggestion CreateNewPlusAddressInlineSuggestion(
-      bool refreshed_suggestion);
 
   const raw_ref<const PlusAddressSettingService> setting_service_;
   const raw_ref<PlusAddressAllocator> allocator_;

@@ -190,11 +190,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   PlusAddressCallback CreateInlinePlusAddressCallback(
       SuggestionType suggestion_type);
 
-  // Informs the `AutofillPlusAddress` delegate and passes callbacks for
-  // hiding/updating suggestions UI and filling.
-  void DidAcceptCreateNewPlusAddressInlineSuggestion(
-      const Suggestion& suggestion);
-
   // Called when a credit card is scanned using device camera.
   void OnCreditCardScanned(const CreditCard& card);
 

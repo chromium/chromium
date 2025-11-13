@@ -372,7 +372,6 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
   if (suggestion.type == autofill::SuggestionType::kAddressEntry ||
       suggestion.type == autofill::SuggestionType::kCreditCardEntry ||
-      suggestion.type == autofill::SuggestionType::kCreateNewPlusAddress ||
       suggestion.type == autofill::SuggestionType::kVirtualCreditCardEntry ||
       suggestion.type ==
           autofill::SuggestionType::kAddressFieldByFieldFilling) {
@@ -633,9 +632,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       // changes
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
     } else if (popup_suggestion.type ==
-                   autofill::SuggestionType::kFillExistingPlusAddress ||
-               popup_suggestion.type ==
-                   autofill::SuggestionType::kCreateNewPlusAddress) {
+               autofill::SuggestionType::kFillExistingPlusAddress) {
       // Show any plus_address suggestions.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
       if (!popup_suggestion.labels.empty() &&

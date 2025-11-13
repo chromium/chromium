@@ -255,8 +255,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kComposeProactiveNudge:
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeSavedStateNotification:
-    case SuggestionType::kCreateNewPlusAddress:
-    case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
@@ -279,7 +277,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kTroubleSigningInEntry:
     case SuggestionType::kFreeformFooter:
     case SuggestionType::kPasswordFieldByFieldFilling:
-    case SuggestionType::kPlusAddressError:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kSeparator:
@@ -593,15 +590,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           mojom::FieldActionType::kReplaceAll, query_form_, query_field_,
           suggestion.main_text.value, suggestion.type, EMAIL_ADDRESS);
       break;
-    case SuggestionType::kCreateNewPlusAddressInline:
-      if (std::optional<std::u16string> plus_address =
-              suggestion.GetPayload<Suggestion::PlusAddressPayload>().address) {
-        manager_->FillOrPreviewField(mojom::ActionPersistence::kPreview,
-                                     mojom::FieldActionType::kReplaceAll,
-                                     query_form_, query_field_, *plus_address,
-                                     suggestion.type, EMAIL_ADDRESS);
-      }
-      break;
     case SuggestionType::kAddressFieldByFieldFilling:
       CHECK(suggestion.field_by_field_filling_type_used);
       if (std::optional<AutofillProfile> profile =
@@ -661,7 +649,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kComposeProactiveNudge:
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeSavedStateNotification:
-    case SuggestionType::kCreateNewPlusAddress:
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddresses:
@@ -673,7 +660,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kManageLoyaltyCard:
     case SuggestionType::kManagePlusAddress:
     case SuggestionType::kMixedFormMessage:
-    case SuggestionType::kPlusAddressError:
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
@@ -777,26 +763,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           query_form_, query_field_, suggestion.main_text.value,
           SuggestionType::kFillExistingPlusAddress, EMAIL_ADDRESS);
-      break;
-    case SuggestionType::kCreateNewPlusAddress: {
-      if (AutofillPlusAddressDelegate* plus_address_delegate =
-              manager_->client().GetPlusAddressDelegate()) {
-        plus_address_delegate->RecordAutofillSuggestionEvent(
-            AutofillPlusAddressDelegate::SuggestionEvent::
-                kCreateNewPlusAddressChosen);
-      }
-      manager_->client().OfferPlusAddressCreation(
-          manager_->client().GetLastCommittedPrimaryMainFrameOrigin(),
-          trigger_source_ ==
-              AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses,
-          CreatePlusAddressCallback(SuggestionType::kCreateNewPlusAddress));
-      break;
-    }
-    case SuggestionType::kCreateNewPlusAddressInline:
-      DidAcceptCreateNewPlusAddressInlineSuggestion(suggestion);
-      // The delegate handles hiding the popup.
-      return;
-    case SuggestionType::kPlusAddressError:
       break;
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeProactiveNudge:
@@ -948,25 +914,6 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
     case SuggestionType::kComposeResumeNudge:
       NOTIMPLEMENTED();
       return;
-    case SuggestionType::kCreateNewPlusAddressInline:
-    case SuggestionType::kPlusAddressError:
-      if (AutofillPlusAddressDelegate* plus_address_delegate =
-              manager_->client().GetPlusAddressDelegate()) {
-        ClearPreviewedForm();
-        base::span<const Suggestion> suggestions =
-            manager_->client().GetAutofillSuggestions();
-        // TODO(crbug.com/362445807): Change the signature of
-        // DidPerformButtonActionForSuggestion to pass all suggestions and an
-        // index of the currently focused one.
-        auto it = std::ranges::find(suggestions, suggestion);
-        CHECK(it != suggestions.end());
-        plus_address_delegate->OnClickedRefreshInlineSuggestion(
-            manager_->client().GetLastCommittedPrimaryMainFrameOrigin(),
-            manager_->client().GetAutofillSuggestions(),
-            /*current_suggestion_index=*/it - suggestions.begin(),
-            CreateUpdateSuggestionsCallback());
-      }
-      return;
     default:
       NOTREACHED();
   }
@@ -1018,10 +965,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kManageIban:
     case SuggestionType::kManageLoyaltyCard:
     case SuggestionType::kManagePlusAddress:
-    case SuggestionType::kCreateNewPlusAddress:
-    case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kFillExistingPlusAddress:
-    case SuggestionType::kPlusAddressError:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kScanCreditCard:
@@ -1460,74 +1404,6 @@ PlusAddressCallback AutofillExternalDelegate::CreateInlinePlusAddressCallback(
           manager_->client().GetWeakPtr(),
           trigger_source_ ==
               AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses));
-}
-
-void AutofillExternalDelegate::DidAcceptCreateNewPlusAddressInlineSuggestion(
-    const Suggestion& suggestion) {
-  AutofillPlusAddressDelegate* delegate =
-      manager_->client().GetPlusAddressDelegate();
-  if (!delegate) {
-    return;
-  }
-
-  base::span<const Suggestion> suggestions =
-      manager_->client().GetAutofillSuggestions();
-  // TODO(crbug.com/362445807): Change the signature of DidAcceptSuggestion to
-  // pass all suggestions and an index of the currently focused one.
-  auto it = std::ranges::find(suggestions, suggestion);
-  CHECK(it != suggestions.end());
-
-  auto show_affiliation_error = base::BindOnce(
-      [](base::WeakPtr<AutofillExternalDelegate> self,
-         base::OnceCallback<void(const std::u16string&)> fill_callback,
-         std::u16string affiliated_domain,
-         std::u16string affiliated_plus_address) {
-        if (!self) {
-          return;
-        }
-        base::OnceClosure bound_fill_callback =
-            base::BindOnce(std::move(fill_callback), affiliated_plus_address);
-        self->manager_->client().ShowPlusAddressAffiliationError(
-            std::move(affiliated_domain), std::move(affiliated_plus_address),
-            std::move(bound_fill_callback));
-      },
-      GetWeakPtr(),
-      CreateSingleFieldFillCallback(SuggestionType::kCreateNewPlusAddressInline,
-                                    /*field_type_used=*/EMAIL_ADDRESS));
-
-  auto show_error = base::BindOnce(
-      [](base::WeakPtr<AutofillExternalDelegate> self,
-         AutofillClient::PlusAddressErrorDialogType error_dialog_type,
-         base::OnceClosure on_accepted) {
-        if (!self) {
-          return;
-        }
-        self->manager_->client().ShowPlusAddressError(error_dialog_type,
-                                                      std::move(on_accepted));
-      },
-      GetWeakPtr());
-
-  base::OnceClosure reshow_suggestions = base::BindOnce(
-      [](base::WeakPtr<AutofillExternalDelegate> self, FieldGlobalId field) {
-        if (!self) {
-          return;
-        }
-        // Manual fallbacks are used as a trigger source to guarantee that a
-        // plus address suggestion will show.
-        self->manager_->driver().RendererShouldTriggerSuggestions(
-            field,
-            AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
-      },
-      GetWeakPtr(), query_field_.global_id());
-
-  delegate->OnAcceptedInlineSuggestion(
-      manager_->client().GetLastCommittedPrimaryMainFrameOrigin(), suggestions,
-      /*current_suggestion_index=*/it - suggestions.begin(),
-      CreateUpdateSuggestionsCallback(), CreateHideSuggestionsCallback(),
-      CreateInlinePlusAddressCallback(
-          SuggestionType::kCreateNewPlusAddressInline),
-      std::move(show_affiliation_error), std::move(show_error),
-      std::move(reshow_suggestions));
 }
 
 }  // namespace autofill

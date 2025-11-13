@@ -105,9 +105,6 @@ bool IsSuggestionHandledInPasswordManager(SuggestionType type) {
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kAutocompleteEntry:
     case SuggestionType::kFillExistingPlusAddress:
-    case SuggestionType::kCreateNewPlusAddress:
-    case SuggestionType::kCreateNewPlusAddressInline:
-    case SuggestionType::kPlusAddressError:
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeProactiveNudge:
     case SuggestionType::kComposeSavedStateNotification:

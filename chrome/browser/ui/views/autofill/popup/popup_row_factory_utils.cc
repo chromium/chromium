@@ -80,10 +80,6 @@ constexpr int kCustomIconSize = 16;
 // The size of a close or delete icon.
 constexpr int kCloseIconSize = 16;
 
-// The size of a refresh icon.
-constexpr int kRefreshIconSize = 16;
-constexpr int kRefreshInkDropRadius = 12;
-
 // Popup items that use a leading icon instead of a trailing one.
 constexpr auto kPopupItemTypesUsingLeadingIcons = DenseSet<SuggestionType>(
     {SuggestionType::kAllLoyaltyCardsEntry,
@@ -268,9 +264,7 @@ std::vector<std::unique_ptr<views::View>> CreateSubtextViews(
               ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
               IsDeactivatedPasswordOrPasskey(suggestion) ? kDisabledTextStyle
                                                          : kMinorTextStyle));
-      if (suggestion.type == SuggestionType::kPlusAddressError) {
-        label->SetEnabledColor(ui::kColorSysError);
-      } else if (!IsDeactivatedPasswordOrPasskey(suggestion)) {
+      if (!IsDeactivatedPasswordOrPasskey(suggestion)) {
         label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
       }
       // To make sure the popup width will not exceed its maximum value,
@@ -615,58 +609,6 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
       PopupRowWithButtonView::ButtonSelectBehavior::kUnselectSuggestion);
 }
 
-// Creates the row for creating a plus address inline.
-// TODO(crbug.com/362445807): Add pixel tests once the layout is complete.
-std::unique_ptr<PopupRowView> CreateNewPlusAddressInlineSuggestion(
-    base::WeakPtr<AutofillPopupController> controller,
-    PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
-    PopupRowView::SelectionDelegate& selection_delegate,
-    int line_number,
-    std::optional<user_education::DisplayNewBadge> show_new_badge) {
-  auto view = std::make_unique<PopupRowContentView>();
-
-  const Suggestion& suggestion = controller->GetSuggestionAt(line_number);
-  std::unique_ptr<views::Label> main_text_label =
-      CreateMainTextLabel(suggestion, show_new_badge);
-  FormatLabel(*main_text_label, suggestion.main_text,
-              FillingProduct::kPlusAddresses, kAutofillSuggestionMaxWidth);
-  popup_cell_utils::AddSuggestionContentToView(
-      suggestion, std::move(main_text_label), CreateMinorTextLabels(suggestion),
-      /*description_label=*/nullptr,
-      CreateSubtextViews(*view, suggestion, FillingProduct::kPlusAddresses),
-      popup_cell_utils::GetIconImageView(suggestion), *view);
-
-  // If no refresh is offered, we can just use a "normal" `PopupRowView`.
-  if (!suggestion.GetPayload<Suggestion::PlusAddressPayload>().offer_refresh) {
-    return std::make_unique<PopupRowView>(a11y_selection_delegate,
-                                          selection_delegate, controller,
-                                          line_number, std::move(view));
-  }
-
-  base::RepeatingClosure action = base::BindRepeating(
-      &AutofillPopupController::PerformButtonActionForSuggestion, controller,
-      line_number, SuggestionButtonAction());
-  std::unique_ptr<views::ImageButton> button =
-      views::CreateVectorImageButtonWithNativeTheme(
-          CreateExecuteSoonWrapper(std::move(action)),
-          vector_icons::kReloadIcon, kRefreshIconSize);
-
-  button->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_TOOLTIP));
-  button->GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
-  button->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
-      IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_A11Y_NAME));
-  button->SetVisible(false);
-  views::InstallFixedSizeCircleHighlightPathGenerator(button.get(),
-                                                      kRefreshInkDropRadius);
-
-  return std::make_unique<PopupRowWithButtonView>(
-      a11y_selection_delegate, selection_delegate, controller, line_number,
-      std::move(view), std::move(button),
-      PopupRowWithButtonView::ButtonVisibility::kShowOnHoverOrSelect,
-      PopupRowWithButtonView::ButtonSelectBehavior::kSelectSuggestion);
-}
-
 }  // namespace
 
 std::unique_ptr<PopupRowView> CreatePopupRowView(
@@ -726,12 +668,6 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
           CreateComposePopupRowContentView(suggestion, show_new_badge));
-    }
-    case SuggestionType::kCreateNewPlusAddressInline:
-    case SuggestionType::kPlusAddressError: {
-      return CreateNewPlusAddressInlineSuggestion(
-          controller, a11y_selection_delegate, selection_delegate, line_number,
-          show_new_badge);
     }
     case SuggestionType::kIbanEntry:
     case SuggestionType::kVirtualCreditCardEntry: {

@@ -51,25 +51,6 @@ class FakePlusAddressService : public PlusAddressService {
       autofill::SuggestionType suggestion_type) override;
   void DidFillPlusAddress() override;
   size_t GetPlusAddressesCount() override;
-  void OnClickedRefreshInlineSuggestion(
-      const url::Origin& last_committed_primary_main_frame_origin,
-      base::span<const autofill::Suggestion> current_suggestions,
-      size_t current_suggestion_index,
-      UpdateSuggestionsCallback update_suggestions_callback) override;
-  void OnShowedInlineSuggestion(
-      const url::Origin& primary_main_frame_origin,
-      base::span<const autofill::Suggestion> current_suggestions,
-      UpdateSuggestionsCallback update_suggestions_callback) override;
-  void OnAcceptedInlineSuggestion(
-      const url::Origin& primary_main_frame_origin,
-      base::span<const autofill::Suggestion> current_suggestions,
-      size_t current_suggestion_index,
-      UpdateSuggestionsCallback update_suggestions_callback,
-      HideSuggestionsCallback hide_suggestions_callback,
-      PlusAddressCallback fill_field_callback,
-      ShowAffiliationErrorDialogCallback show_affiliation_error_dialog,
-      ShowErrorDialogCallback show_error_dialog,
-      base::OnceClosure reshow_suggestions) override;
   std::map<std::string, std::string> GetPlusAddressHatsData() const override;
 
   // PlusAddressService:

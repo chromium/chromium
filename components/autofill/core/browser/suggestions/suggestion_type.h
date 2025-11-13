@@ -112,10 +112,10 @@ enum class SuggestionType {
   kSaveAndFillCreditCardEntry = 62,
 
   // Plus address suggestions.
-  kCreateNewPlusAddress = 39,
-  kCreateNewPlusAddressInline = 52,
+  // kCreateNewPlusAddress = 39, // DEPRECATED
+  // kCreateNewPlusAddressInline = 52, // DEPRECATED
   kFillExistingPlusAddress = 40,
-  kPlusAddressError = 57,
+  // kPlusAddressError = 57, // DEPRECATED
 
   // Promotion suggestions.
   kMerchantPromoCodeEntry = 41,

@@ -59,32 +59,6 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
               (override));
   MOCK_METHOD(void, DidFillPlusAddress, (), (override));
   MOCK_METHOD(size_t, GetPlusAddressesCount, (), (override));
-  MOCK_METHOD(void,
-              OnClickedRefreshInlineSuggestion,
-              (const url::Origin&,
-               base::span<const Suggestion>,
-               size_t,
-               base::OnceCallback<void(std::vector<Suggestion>,
-                                       AutofillSuggestionTriggerSource)>),
-              (override));
-  MOCK_METHOD(void,
-              OnShowedInlineSuggestion,
-              (const url::Origin&,
-               base::span<const Suggestion>,
-               UpdateSuggestionsCallback),
-              (override));
-  MOCK_METHOD(void,
-              OnAcceptedInlineSuggestion,
-              (const url::Origin&,
-               base::span<const Suggestion>,
-               size_t,
-               UpdateSuggestionsCallback,
-               HideSuggestionsCallback,
-               PlusAddressCallback,
-               ShowAffiliationErrorDialogCallback,
-               ShowErrorDialogCallback,
-               base::OnceClosure),
-              (override));
   MOCK_METHOD((std::map<std::string, std::string>),
               GetPlusAddressHatsData,
               (),

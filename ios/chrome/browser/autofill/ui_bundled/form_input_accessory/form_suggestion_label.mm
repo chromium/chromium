@@ -274,10 +274,7 @@ bool IsPasswordSuggestion(FormSuggestion* suggestion) {
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kIbanEntry:
     case SuggestionType::kBnplEntry:
-    case SuggestionType::kCreateNewPlusAddress:
-    case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kFillExistingPlusAddress:
-    case SuggestionType::kPlusAddressError:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kWebauthnCredential:

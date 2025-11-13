@@ -306,8 +306,6 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
     case SuggestionType::kComposeProactiveNudge:
     case SuggestionType::kComposeSavedStateNotification:
-    case SuggestionType::kCreateNewPlusAddress:
-    case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kCreditCardEntry:
     case SuggestionType::kBnplEntry:
     case SuggestionType::kDatalistEntry:
@@ -321,7 +319,6 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kTroubleSigningInEntry:
     case SuggestionType::kFreeformFooter:
     case SuggestionType::kPasswordFieldByFieldFilling:
-    case SuggestionType::kPlusAddressError:
     case SuggestionType::kFillPassword:
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kScanCreditCard:
@@ -2176,15 +2173,6 @@ void BrowserAutofillManager::DidShowSuggestions(
 
   const DenseSet<SuggestionType> shown_suggestion_types(suggestions,
                                                         &Suggestion::type);
-
-  if (shown_suggestion_types.contains(
-          SuggestionType::kCreateNewPlusAddressInline)) {
-    if (auto* plus_address_delegate = client().GetPlusAddressDelegate()) {
-      plus_address_delegate->OnShowedInlineSuggestion(
-          client().GetLastCommittedPrimaryMainFrameOrigin(), suggestions,
-          update_suggestions_callback);
-    }
-  }
 
   if (std::ranges::any_of(suggestions, [](const Suggestion& suggestion) {
         const Suggestion::AutofillProfilePayload* profile_payload =

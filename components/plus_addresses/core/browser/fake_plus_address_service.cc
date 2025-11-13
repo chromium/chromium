@@ -95,34 +95,6 @@ size_t FakePlusAddressService::GetPlusAddressesCount() {
   return plus_profiles_.size();
 }
 
-void FakePlusAddressService::OnClickedRefreshInlineSuggestion(
-    const url::Origin& last_committed_primary_main_frame_origin,
-    base::span<const autofill::Suggestion> current_suggestions,
-    size_t current_suggestion_index,
-    UpdateSuggestionsCallback update_suggestions_callback) {
-  NOTIMPLEMENTED();
-}
-
-void FakePlusAddressService::OnShowedInlineSuggestion(
-    const url::Origin& primary_main_frame_origin,
-    base::span<const autofill::Suggestion> current_suggestions,
-    UpdateSuggestionsCallback update_suggestions_callback) {
-  NOTIMPLEMENTED();
-}
-
-void FakePlusAddressService::OnAcceptedInlineSuggestion(
-    const url::Origin& primary_main_frame_origin,
-    base::span<const autofill::Suggestion> current_suggestions,
-    size_t current_suggestion_index,
-    UpdateSuggestionsCallback update_suggestions_callback,
-    HideSuggestionsCallback hide_suggestions_callback,
-    PlusAddressCallback fill_field_callback,
-    ShowAffiliationErrorDialogCallback show_affiliation_error_dialog,
-    ShowErrorDialogCallback show_error_dialog,
-    base::OnceClosure reshow_suggestions) {
-  NOTIMPLEMENTED();
-}
-
 std::map<std::string, std::string>
 FakePlusAddressService::GetPlusAddressHatsData() const {
   return {{hats::kPlusAddressesCount, base::ToString(GetPlusProfiles().size())},

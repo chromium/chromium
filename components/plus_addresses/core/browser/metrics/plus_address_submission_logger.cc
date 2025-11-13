@@ -66,11 +66,6 @@ bool IsCartOrCheckoutUrl(const GURL& url) {
          commerce_heuristics::IsVisitCart(url);
 }
 
-bool IsPlusAddressCreationSuggestion(SuggestionType suggestion_type) {
-  return suggestion_type == SuggestionType::kCreateNewPlusAddress ||
-         suggestion_type == SuggestionType::kCreateNewPlusAddressInline;
-}
-
 }  // namespace
 
 PlusAddressSubmissionLogger::Record::Record(
@@ -149,16 +144,10 @@ void PlusAddressSubmissionLogger::OnPlusAddressSuggestionShown(
       .SetFieldCountRendererForm(ukm::GetExponentialBucketMinForCounts1000(
           field_count_in_renderer_form))
       .SetManagedProfile(account_info.IsManaged() == signin::Tribool::kTrue)
-      // NewlyCreatedPlusAddress may be reset during submission if no plus
-      // address was submitted.
-      .SetNewlyCreatedPlusAddress(
-          IsPlusAddressCreationSuggestion(suggestion_type))
       .SetPasswordFormType(base::to_underlying(form_type))
       .SetPlusAddressCount(
           base::to_underlying(ToPlusAddressCountBucket(plus_address_count)))
-      .SetSuggestionContext(base::to_underlying(suggestion_context))
-      .SetWasShownCreateSuggestion(
-          IsPlusAddressCreationSuggestion(suggestion_type));
+      .SetSuggestionContext(base::to_underlying(suggestion_context));
   records_[&manager].insert_or_assign(field, std::move(record));
 }
 
@@ -222,9 +211,6 @@ void PlusAddressSubmissionLogger::OnAfterFormSubmitted(
     // and we pick an arbitrary one.
     if (!has_recorded_submission) {
       Record& record = it->second;
-      if (!plus_address_submitted) {
-        record.ukm_builder.SetNewlyCreatedPlusAddress(false);
-      }
       record.ukm_builder.SetSubmittedPlusAddress(plus_address_submitted);
       record.ukm_builder.Record(manager.client().GetUkmRecorder());
       has_recorded_submission = true;

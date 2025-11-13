@@ -49,29 +49,6 @@ Suggestion CreateFillPlusAddressSuggestion(std::u16string plus_address) {
   return suggestion;
 }
 
-// Returns the labels for a create new plus address suggestion.
-// `forwarding_address` is the email that traffic is forwarded to.
-std::vector<std::vector<Suggestion::Text>> CreateLabelsForCreateSuggestion(
-    bool has_accepted_notice) {
-  // On Android, there are no labels since the Keyboard Accessory only allows
-  // for single line chips.
-  if constexpr (BUILDFLAG(IS_ANDROID)) {
-    return {};
-  }
-  if (!has_accepted_notice) {
-    return {};
-  }
-
-  // On iOS the `forwarding_address` is not shown due to size constraints.
-  if constexpr (BUILDFLAG(IS_IOS)) {
-    return {{Suggestion::Text(l10n_util::GetStringUTF16(
-        IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
-  }
-
-  return {{Suggestion::Text(l10n_util::GetStringUTF16(
-      IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
-}
-
 }  // namespace
 
 PlusAddressSuggestionHelper::PlusAddressSuggestionHelper(
@@ -111,49 +88,12 @@ std::vector<autofill::Suggestion> PlusAddressSuggestionHelper::GetSuggestions(
   return suggestions;
 }
 
-void PlusAddressSuggestionHelper::RefreshPlusAddressForSuggestion(
-    Suggestion& suggestion) {
-  CHECK(IsInlineGenerationEnabled());
-  suggestion =
-      CreateNewPlusAddressInlineSuggestion(/*refreshed_suggestion=*/true);
-}
-
 // static
 Suggestion PlusAddressSuggestionHelper::GetManagePlusAddressSuggestion() {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT),
       SuggestionType::kManagePlusAddress);
   suggestion.icon = Suggestion::Icon::kGoogleMonochrome;
-  return suggestion;
-}
-
-// static
-Suggestion PlusAddressSuggestionHelper::GetPlusAddressErrorSuggestion(
-    const PlusAddressRequestError& error) {
-  Suggestion suggestion(
-      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
-      SuggestionType::kPlusAddressError);
-  suggestion.icon = Suggestion::Icon::kError;
-
-  // Refreshing does not make sense for a quota error, since those will persist
-  // for a significant amount of time.
-  Suggestion::PlusAddressPayload payload;
-  payload.offer_refresh = !error.IsQuotaError();
-  suggestion.payload = std::move(payload);
-
-  // The label depends on the error type.
-  std::u16string label_text;
-  if (error.IsQuotaError()) {
-    label_text =
-        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_RESERVE_QUOTA_ERROR_TEXT);
-  } else if (error.IsTimeoutError()) {
-    label_text =
-        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_RESERVE_TIMEOUT_ERROR_TEXT);
-  } else {
-    label_text =
-        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_RESERVE_GENERIC_ERROR_TEXT);
-  }
-  suggestion.labels = {{Suggestion::Text(std::move(label_text))}};
   return suggestion;
 }
 
@@ -180,25 +120,6 @@ void PlusAddressSuggestionHelper::SetLoadingStateForSuggestion(
   suggestion.payload = std::move(existing_payload);
 }
 
-autofill::Suggestion
-PlusAddressSuggestionHelper::CreateNewPlusAddressSuggestion() {
-  if (IsInlineGenerationEnabled()) {
-    return CreateNewPlusAddressInlineSuggestion(/*refreshed_suggestion=*/false);
-  }
-
-  Suggestion suggestion(
-      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
-      SuggestionType::kCreateNewPlusAddress);
-
-  suggestion.labels =
-      CreateLabelsForCreateSuggestion(setting_service_->GetHasAcceptedNotice());
-  suggestion.icon = Suggestion::Icon::kPlusAddress;
-  suggestion.feature_for_new_badge = &features::kPlusAddressesEnabled;
-  suggestion.iph_metadata = Suggestion::IPHMetadata(
-      &feature_engagement::kIPHPlusAddressCreateSuggestionFeature);
-  return suggestion;
-}
-
 bool PlusAddressSuggestionHelper::IsInlineGenerationEnabled() const {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (!setting_service_->GetHasAcceptedNotice()) {
@@ -208,39 +129,6 @@ bool PlusAddressSuggestionHelper::IsInlineGenerationEnabled() const {
 #else
   return false;
 #endif
-}
-
-autofill::Suggestion
-PlusAddressSuggestionHelper::CreateNewPlusAddressInlineSuggestion(
-    bool refreshed_suggestion) {
-  Suggestion suggestion(
-      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
-      SuggestionType::kCreateNewPlusAddressInline);
-
-  PlusAddressAllocator::AllocationMode mode =
-      refreshed_suggestion
-          ? PlusAddressAllocator::AllocationMode::kNewPlusAddress
-          : PlusAddressAllocator::AllocationMode::kAny;
-  if (std::optional<PlusProfile> profile =
-          allocator_->AllocatePlusAddressSynchronously(origin_, mode)) {
-    SetSuggestedPlusAddressForSuggestion(profile->plus_address, suggestion);
-    // Set IPH and new badge information only if allocation is synchronous.
-    // Otherwise, they will be showing only during the loading stage and then be
-    // hidden automatically.
-    suggestion.feature_for_new_badge = &features::kPlusAddressesEnabled;
-    suggestion.iph_metadata = Suggestion::IPHMetadata(
-        &feature_engagement::kIPHPlusAddressCreateSuggestionFeature);
-    suggestion.voice_over = l10n_util::GetStringFUTF16(
-        IDS_PLUS_ADDRESS_CREATE_INLINE_SUGGESTION_A11Y_VOICE_OVER,
-        base::UTF8ToUTF16(*profile->plus_address));
-  } else {
-    suggestion.payload = Suggestion::PlusAddressPayload();
-    SetLoadingStateForSuggestion(/*is_loading=*/true, suggestion);
-  }
-  suggestion.icon = Suggestion::Icon::kPlusAddress;
-  suggestion.labels =
-      CreateLabelsForCreateSuggestion(setting_service_->GetHasAcceptedNotice());
-  return suggestion;
 }
 
 }  // namespace plus_addresses

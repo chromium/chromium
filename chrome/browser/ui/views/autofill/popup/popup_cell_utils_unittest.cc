@@ -71,45 +71,6 @@ TEST(PopupCellUtilsTest,
             vector_icons::kSubmenuArrowChromeRefreshIcon.name);
 }
 
-// Tests that if a throbber is used instead of an icon the preferred size of the
-// `PopupRowContentView` does not change.
-TEST(PopupCellUtilsTest, SettingIsLoadingMaintainsPreferredSize) {
-  // Needed for the throbber.
-  base::test::TaskEnvironment task_environment;
-  // Needed to construct a `PopupRowContentView`.
-  ChromeLayoutProvider layout_provider;
-  Suggestion suggestion(SuggestionType::kCreateNewPlusAddressInline);
-  suggestion.icon = Suggestion::Icon::kPlusAddress;
-
-  auto make_main_label = []() {
-    return std::make_unique<views::Label>(u"Create new plus address");
-  };
-  auto make_icon = [&]() {
-    return popup_cell_utils::GetIconImageView(suggestion);
-  };
-
-  // Ensure that the test is meaningful: The throbber and the icon should have
-  // different minimum sizes.
-  ASSERT_NE(std::make_unique<views::Throbber>()->GetMinimumSize(),
-            make_icon()->GetMinimumSize());
-
-  auto first_content_view = std::make_unique<PopupRowContentView>();
-  popup_cell_utils::AddSuggestionContentToView(
-      suggestion, make_main_label(), /*minor_text_labels=*/{},
-      /*description_label=*/nullptr, /*subtext_views=*/{}, make_icon(),
-      *first_content_view);
-
-  suggestion.is_loading = Suggestion::IsLoading(true);
-  auto second_content_view = std::make_unique<PopupRowContentView>();
-  popup_cell_utils::AddSuggestionContentToView(
-      suggestion, make_main_label(), /*minor_text_labels=*/{},
-      /*description_label=*/nullptr, /*subtext_views=*/{}, make_icon(),
-      *second_content_view);
-
-  EXPECT_EQ(first_content_view->GetPreferredSize(),
-            second_content_view->GetPreferredSize());
-}
-
 const VoiceOverTestParam kVoiceOverTestCases[] = {
     // This is a VCN suggestion without either product description nor
     // card nickname.

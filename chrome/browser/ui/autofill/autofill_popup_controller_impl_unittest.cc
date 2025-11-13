@@ -160,31 +160,6 @@ TEST_F(AutofillPopupControllerImplTest,
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
 }
 
-// Tests that reshowing the suggestions does not update the threshold if the
-// trigger source is `kPlusAddressUpdatedInBrowserProcess`.
-TEST_F(AutofillPopupControllerImplTest,
-       AcceptSuggestionTimeoutIsNotUpdatedOnPlusAddressUpdate) {
-  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
-
-  ShowSuggestions(manager(), {SuggestionType::kCreateNewPlusAddressInline});
-
-  client().suggestion_controller(manager()).OnPopupPainted();
-  // Calls before the threshold are ignored.
-  client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
-  task_environment()->FastForwardBy(base::Milliseconds(100));
-  client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
-  task_environment()->FastForwardBy(base::Milliseconds(400));
-
-  // Update the suggestions.
-  ShowSuggestions(
-      manager(), {SuggestionType::kCreateNewPlusAddressInline},
-      AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
-  client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
-}
-
 TEST_F(AutofillPopupControllerImplTest, SubPopupIsCreatedWithViewFromParent) {
   base::WeakPtr<AutofillSuggestionController> sub_controller =
       client().suggestion_controller(manager()).OpenSubPopup(

@@ -98,16 +98,15 @@ UIImage* defaultIconForType(FormSuggestion* suggestion) {
     case autofill::SuggestionType::kGeneratePasswordEntry:
       return MakeSymbolMulticolor(
           CustomSymbolWithPointSize(kPasswordManagerSymbol, kSymbolPointSize));
-    case autofill::SuggestionType::kCreateNewPlusAddress:
     case autofill::SuggestionType::kFillExistingPlusAddress: {
       BOOL isPlusAddressFeaturesEnabled = base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressesEnabled);
       return isPlusAddressFeaturesEnabled
-          ? SymbolWithPalette(
-                DefaultSymbolWithPointSize(kShieldedEnvelope, kSymbolPointSize),
-                @[
-                  [UIColor colorNamed:kTextPrimaryColor],
-                ])
+                 ? SymbolWithPalette(DefaultSymbolWithPointSize(
+                                         kShieldedEnvelope, kSymbolPointSize),
+                                     @[
+                                       [UIColor colorNamed:kTextPrimaryColor],
+                                     ])
                  : nil;
     }
     case autofill::SuggestionType::kAddressEntry: {

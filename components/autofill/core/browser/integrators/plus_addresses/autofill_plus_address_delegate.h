@@ -148,50 +148,6 @@ class AutofillPlusAddressDelegate {
   // current profile.
   virtual size_t GetPlusAddressesCount() = 0;
 
-  using UpdateSuggestionsCallback =
-      base::OnceCallback<void(std::vector<Suggestion>,
-                              AutofillSuggestionTriggerSource)>;
-
-  // Calls `update_suggestions_callback` with updated suggestions. The updated
-  // suggestions may either contain a "loading new proposed plus address"
-  // suggestion, or the new proposed plus address if one is cached.
-  virtual void OnClickedRefreshInlineSuggestion(
-      const url::Origin& last_committed_primary_main_frame_origin,
-      base::span<const Suggestion> current_suggestions,
-      size_t current_suggestion_index,
-      UpdateSuggestionsCallback update_suggestions_callback) = 0;
-
-  // Checks whether any of the suggestions still require a suggested plus
-  // address and, if so, trigger a network request for one. On completion of
-  // that request, it runs `update_suggestions_callback`.
-  virtual void OnShowedInlineSuggestion(
-      const url::Origin& primary_main_frame_origin,
-      base::span<const Suggestion> current_suggestions,
-      UpdateSuggestionsCallback update_suggestions_callback) = 0;
-
-  using HideSuggestionsCallback =
-      base::OnceCallback<void(SuggestionHidingReason)>;
-  using PlusAddressErrorDialogType = AutofillClient::PlusAddressErrorDialogType;
-  using ShowErrorDialogCallback =
-      base::OnceCallback<void(PlusAddressErrorDialogType, base::OnceClosure)>;
-  // A callback to inform the user that there is an affiliated domain (first
-  // parameter) with an existing plus address (second parameter).
-  using ShowAffiliationErrorDialogCallback =
-      base::OnceCallback<void(std::u16string, std::u16string)>;
-  // Attempts to create the plus address in
-  // `current_suggestions[current_suggestion_index]` for
-  // `primary_main_frame_origin`.
-  virtual void OnAcceptedInlineSuggestion(
-      const url::Origin& primary_main_frame_origin,
-      base::span<const Suggestion> current_suggestions,
-      size_t current_suggestion_index,
-      UpdateSuggestionsCallback update_suggestions_callback,
-      HideSuggestionsCallback hide_suggestions_callback,
-      PlusAddressCallback fill_field_callback,
-      ShowAffiliationErrorDialogCallback show_affiliation_error_dialog,
-      ShowErrorDialogCallback show_error_dialog,
-      base::OnceClosure reshow_suggestions) = 0;
-
   // Returns survey specific data for plus address HaTS surveys. Subsequent
   // calls can return different data.
   virtual std::map<std::string, std::string> GetPlusAddressHatsData() const = 0;

@@ -883,15 +883,6 @@ TEST_P(FormSuggestionControllerTest, CopyAndAdjustPlusAddressSuggestions) {
       suggestionWithValue:@""
        displayDescription:nil
                      icon:nil
-                     type:autofill::SuggestionType::kCreateNewPlusAddress
-                  payload:autofill::Suggestion::Payload()
-           requiresReauth:NO];
-  [suggestions addObject:suggestion];
-
-  suggestion = [FormSuggestion
-      suggestionWithValue:@""
-       displayDescription:nil
-                     icon:nil
                      type:autofill::SuggestionType::kFillExistingPlusAddress
                   payload:autofill::Suggestion::Payload()
            requiresReauth:NO];
@@ -901,7 +892,6 @@ TEST_P(FormSuggestionControllerTest, CopyAndAdjustPlusAddressSuggestions) {
       [suggestion_controller_ copyAndAdjustSuggestions:suggestions];
   EXPECT_EQ(adjusted_suggestions.count, suggestions.count);
   EXPECT_TRUE(adjusted_suggestions[0].icon);
-  EXPECT_TRUE(adjusted_suggestions[1].icon);
 }
 
 std::string ParamToString(const testing::TestParamInfo<bool>& params_info) {
