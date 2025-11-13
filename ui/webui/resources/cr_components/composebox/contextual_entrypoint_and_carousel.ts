@@ -223,8 +223,11 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     return this.addedTabsIds_.has(recentTab.tabId);
   }
 
-  addDroppedFiles(files: FileList|null) {
-    this.processFiles_(files);
+  addFiles(files: FileList|null) {
+    // TODO(crbug.com/457182498):update isImage logic to handle mixed file types.
+    const isImage =
+        !!files && Array.from(files).some(f => f.type.startsWith('image/'));
+    this.processFiles_(files, isImage);
   }
 
   setContextFiles(files: ComposeboxFile[]) {
@@ -364,8 +367,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
   protected processFiles_(files: FileList|null, isImage: boolean = false) {
     // Multiple is set to false in the input so only one file is expected.
-    if (!files || files.length === 0 ||
-        this.files_.size >= this.maxFileCount_) {
+    if (!files || files.length === 0) {
+      return;
+    }
+    if ((this.files_.size + files.length) > this.maxFileCount_) {
       this.recordFileValidationMetric_(
           ComposeboxFileValidationError.TOO_MANY_FILES);
       return;

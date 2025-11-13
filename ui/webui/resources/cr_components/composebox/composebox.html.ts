@@ -26,7 +26,8 @@ export function getHtml(this: ComposeboxElement) {
       @dragenter="${this.handleDragEnter_}"
       @dragover="${this.handleDragOver_}"
       @drop="${this.handleDrop_}"
-      @dragleave="${this.handleDragLeave_}">
+      @dragleave="${this.handleDragLeave_}"
+      @paste="${this.onPaste_}">
     <div id="inputContainer" part="input-container">
       <div id="textContainer" part="text-container">
         <div id="iconContainer" part="icon-container">
