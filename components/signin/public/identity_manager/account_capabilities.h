@@ -27,6 +27,10 @@ namespace supervised_user {
 class FamilyLinkUserCapabilitiesObserver;
 }  // namespace supervised_user
 
+namespace signin {
+class AccountInfoSerializer;
+}  // namespace signin
+
 // Stores the information about account capabilities. Capabilities provide
 // information about state and features of Gaia accounts.
 class AccountCapabilities {
@@ -47,8 +51,9 @@ class AccountCapabilities {
       JNIEnv* env) const;
 #endif
 
-#if BUILDFLAG(IS_IOS)
   explicit AccountCapabilities(base::flat_map<std::string, bool> capabilities);
+
+#if BUILDFLAG(IS_IOS)
   const base::flat_map<std::string, bool>& ConvertToAccountCapabilitiesIOS();
 #endif
 
@@ -161,6 +166,9 @@ class AccountCapabilities {
   static base::span<const std::string_view>
   GetSupportedAccountCapabilityNames();
 
+  // Returns the capability state using the service name.
+  signin::Tribool GetCapabilityByName(std::string_view name) const;
+
   friend std::optional<AccountCapabilities> AccountCapabilitiesFromValue(
       const base::Value::Dict& account_capabilities);
   friend class AccountCapabilitiesFetcherGaia;
@@ -170,11 +178,8 @@ class AccountCapabilities {
   friend class ios::AccountCapabilitiesFetcherIOS;
 #endif
   friend class AccountCapabilitiesTestMutator;
-  friend class AccountTrackerService;
+  friend class signin::AccountInfoSerializer;
   friend class supervised_user::FamilyLinkUserCapabilitiesObserver;
-
-  // Returns the capability state using the service name.
-  signin::Tribool GetCapabilityByName(std::string_view name) const;
 
   base::flat_map<std::string, bool> capabilities_map_;
 };

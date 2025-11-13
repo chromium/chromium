@@ -247,11 +247,11 @@ AccountCapabilities::ConvertToJavaAccountCapabilities(JNIEnv* env) const {
 }
 #endif
 
-#if BUILDFLAG(IS_IOS)
 AccountCapabilities::AccountCapabilities(
     base::flat_map<std::string, bool> capabilities)
     : capabilities_map_(std::move(capabilities)) {}
 
+#if BUILDFLAG(IS_IOS)
 const base::flat_map<std::string, bool>&
 AccountCapabilities::ConvertToAccountCapabilitiesIOS() {
   return capabilities_map_;

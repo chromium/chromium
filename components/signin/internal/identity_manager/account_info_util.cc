@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/values.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
@@ -97,8 +98,7 @@ std::optional<AccountCapabilities> AccountCapabilitiesFromValue(
     return std::nullopt;
   }
 
-  // 1. Create "capability name" -> "boolean value" mapping.
-  std::map<std::string, bool, std::less<>> boolean_capabilities;
+  base::flat_map<std::string, bool> capabilities_map;
   for (const auto& capability_value : *list) {
     const std::string* name =
         capability_value.GetDict().FindString(kAccountCapabilityNameKey);
@@ -109,20 +109,16 @@ std::optional<AccountCapabilities> AccountCapabilitiesFromValue(
     // Check whether a capability has a boolean value.
     std::optional<bool> boolean_value =
         capability_value.GetDict().FindBool(kAccountCapabilityBooleanValueKey);
-    if (boolean_value.has_value()) {
-      boolean_capabilities[*name] = *boolean_value;
+    if (!boolean_value) {
+      continue;
+    }
+
+    // Add the capability to the map if it's supported in Chrome.
+    if (base::Contains(AccountCapabilities::GetSupportedAccountCapabilityNames(),
+                       *name)) {
+      capabilities_map.insert({*name, *boolean_value});
     }
   }
 
-  // 2. Fill AccountCapabilities fields based on the mapping.
-  AccountCapabilities capabilities;
-  for (std::string_view name :
-       AccountCapabilities::GetSupportedAccountCapabilityNames()) {
-    auto it = boolean_capabilities.find(name);
-    if (it != boolean_capabilities.end()) {
-      capabilities.capabilities_map_[std::string(name)] = it->second;
-    }
-  }
-
-  return capabilities;
+  return AccountCapabilities(std::move(capabilities_map));
 }

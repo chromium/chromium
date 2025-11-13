@@ -16,7 +16,6 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -197,18 +196,11 @@ class AccountTrackerService {
 
   // Load the current state of the account info from the preferences file.
   void LoadFromPrefs();
-  AccountInfo LoadAccountInfoFromDict(const base::Value::Dict& dict);
-  AccountCapabilities LoadAccountCapabilities(const base::Value::Dict& dict);
   void SaveToPrefs(const AccountInfo& account);
 
-  // Helper methods for SaveToPrefs.
   base::Value::Dict* FindOrCreateDictForAccount(
       ScopedListPrefUpdate& update,
       const CoreAccountId& account_id);
-  void UpdateDictForAccount(base::Value::Dict& dict,
-                            const AccountInfo& account_info);
-  void SaveAccountCapabilitiesToDict(base::Value::Dict& dict,
-                                     const AccountCapabilities& capabilities);
 
   void RemoveFromPrefs(const AccountInfo& account);
 
