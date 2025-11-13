@@ -67,6 +67,9 @@ HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
       user_image_manager_(user_image_manager),
       home_background_image_service_(home_background_image_service),
       weak_ptr_factory_{this} {
+  if (!IsNTPBackgroundCustomizationEnabled()) {
+    return;
+  }
   pref_change_registrar_.Init(pref_service_);
   PrefChangeRegistrar::NamedChangeCallback callback = base::BindRepeating(
       &HomeBackgroundCustomizationService::OnPolicyPrefsChanged,
