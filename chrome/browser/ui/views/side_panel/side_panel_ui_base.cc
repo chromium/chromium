@@ -50,16 +50,18 @@ SidePanelUIBase::~SidePanelUIBase() = default;
 
 void SidePanelUIBase::Show(
     SidePanelEntry::Id entry_id,
-    std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
-  Show(SidePanelEntry::Key(entry_id), open_trigger);
+    std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
+    bool suppress_animations) {
+  Show(SidePanelEntry::Key(entry_id), open_trigger, suppress_animations);
 }
 
 void SidePanelUIBase::Show(
     SidePanelEntry::Key entry_key,
-    std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
+    std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
+    bool suppress_animations) {
   std::optional<UniqueKey> unique_key = GetUniqueKeyForKey(entry_key);
   CHECK(unique_key.has_value());
-  Show(unique_key.value(), open_trigger, /*suppress_animations=*/false);
+  Show(unique_key.value(), open_trigger, suppress_animations);
 }
 
 std::optional<SidePanelEntry::Id> SidePanelUIBase::GetCurrentEntryId(
