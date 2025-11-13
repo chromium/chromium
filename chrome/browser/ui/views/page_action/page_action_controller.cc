@@ -232,12 +232,21 @@ void PageActionControllerImpl::ClearOverrideAccessibleName(
 void PageActionControllerImpl::OverrideImage(
     actions::ActionId action_id,
     const ui::ImageModel& override_image) {
-  FindPageActionModel(action_id).SetOverrideImage(PassKey(), override_image);
+  OverrideImage(action_id, override_image, PageActionColorSource::kForeground);
+}
+
+void PageActionControllerImpl::OverrideImage(
+    actions::ActionId action_id,
+    const ui::ImageModel& override_image,
+    PageActionColorSource color_source) {
+  FindPageActionModel(action_id).SetOverrideImage(PassKey(), override_image,
+                                                  color_source);
 }
 
 void PageActionControllerImpl::ClearOverrideImage(actions::ActionId action_id) {
-  FindPageActionModel(action_id).SetOverrideImage(
-      PassKey(), /*override_image=*/std::nullopt);
+  auto& model = FindPageActionModel(action_id);
+  model.SetOverrideImage(PassKey(), /*override_image=*/std::nullopt,
+                         model.GetColorSource());
 }
 
 void PageActionControllerImpl::OverrideTooltip(

@@ -20,6 +20,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_metrics_recorder_interface.h"
+#include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "components/tabs/public/tab_interface.h"
@@ -127,9 +128,14 @@ class PageActionController {
   // By default, the page action will have an image which can be shared in the
   // other places that rely on the same action item. However, features can
   // provide a custom image to use for the page action for a specific context
-  // (tab).
+  // (tab). The source of the icon's color can be controlled with
+  // `color_source`, which defaults to using foreground color.
   virtual void OverrideImage(actions::ActionId action_id,
                              const ui::ImageModel& override_image) = 0;
+  virtual void OverrideImage(actions::ActionId action_id,
+                             const ui::ImageModel& override_image,
+                             PageActionColorSource color_source) = 0;
+
   virtual void ClearOverrideImage(actions::ActionId action_id) = 0;
 
   // By default, the page action will have an tooltip which can be shared in the
@@ -226,6 +232,9 @@ class PageActionControllerImpl : public PageActionController,
   void ClearOverrideAccessibleName(actions::ActionId action_id) override;
   void OverrideImage(actions::ActionId action_id,
                      const ui::ImageModel& override_image) override;
+  void OverrideImage(actions::ActionId action_id,
+                     const ui::ImageModel& override_image,
+                     PageActionColorSource color_source) override;
   void ClearOverrideImage(actions::ActionId action_id) override;
   void OverrideTooltip(actions::ActionId action_id,
                        const std::u16string& override_tooltip) override;

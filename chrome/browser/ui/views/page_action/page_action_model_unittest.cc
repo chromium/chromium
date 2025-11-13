@@ -152,11 +152,13 @@ TEST_F(PageActionModelTest, OverrideImage) {
       ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(/*size=*/32));
 
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
-  model_.SetOverrideImage(PassKey(), kOverrideImage);
+  model_.SetOverrideImage(PassKey(), kOverrideImage,
+                          PageActionColorSource::kForeground);
   EXPECT_EQ(model_.GetImage(), kOverrideImage);
 
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
-  model_.SetOverrideImage(PassKey(), std::nullopt);
+  model_.SetOverrideImage(PassKey(), std::nullopt,
+                          PageActionColorSource::kForeground);
   EXPECT_EQ(model_.GetImage(), kTestImage);
 }
 
@@ -278,6 +280,38 @@ TEST_F(PageActionModelTest, ActionActive) {
   model_.SetActionActive(PassKey(), false);
   EXPECT_FALSE(model_.GetActionActive());
   testing::Mock::VerifyAndClearExpectations(&observer_);
+}
+
+TEST_F(PageActionModelTest, OverrideImageWithColorSource) {
+  model_.SetActionItemProperties(
+      PassKey(), ActionItem::Builder().SetImage(kTestImage).Build().get());
+  EXPECT_EQ(model_.GetImage(), kTestImage);
+  EXPECT_EQ(model_.GetColorSource(), PageActionColorSource::kForeground);
+
+  ui::ImageModel kOverrideImage =
+      ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(/*size=*/32));
+
+  // Override with a new image and color source.
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetOverrideImage(PassKey(), kOverrideImage,
+                          PageActionColorSource::kCascadingAccent);
+  EXPECT_EQ(model_.GetImage(), kOverrideImage);
+  EXPECT_EQ(model_.GetColorSource(), PageActionColorSource::kCascadingAccent);
+
+  // Override with the same image and color source should not notify.
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(0);
+  model_.SetOverrideImage(PassKey(), kOverrideImage,
+                          PageActionColorSource::kCascadingAccent);
+  EXPECT_EQ(model_.GetImage(), kOverrideImage);
+  EXPECT_EQ(model_.GetColorSource(), PageActionColorSource::kCascadingAccent);
+
+  // Clear override image, should revert to default image and preserve color
+  // source.
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetOverrideImage(PassKey(), std::nullopt,
+                          PageActionColorSource::kCascadingAccent);
+  EXPECT_EQ(model_.GetImage(), kTestImage);
+  EXPECT_EQ(model_.GetColorSource(), PageActionColorSource::kCascadingAccent);
 }
 
 }  // namespace

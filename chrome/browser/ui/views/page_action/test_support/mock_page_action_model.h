@@ -31,6 +31,7 @@ class MockPageActionModel : public PageActionModelInterface {
   MOCK_METHOD(const std::u16string&, GetTooltipText, (), (const, override));
   MOCK_METHOD(const ui::ImageModel&, GetImage, (), (const, override));
   MOCK_METHOD(bool, GetActionActive, (), (const, override));
+  MOCK_METHOD(PageActionColorSource, GetColorSource, (), (const, override));
   MOCK_METHOD(bool, GetActionItemIsShowingBubble, (), (const, override));
   MOCK_METHOD(void,
               AddObserver,
@@ -83,7 +84,8 @@ class MockPageActionModel : public PageActionModelInterface {
   MOCK_METHOD(void,
               SetOverrideImage,
               (base::PassKey<PageActionController>,
-               const std::optional<ui::ImageModel>& override_text),
+               const std::optional<ui::ImageModel>& override_text,
+               PageActionColorSource color_source),
               (override));
   MOCK_METHOD(void,
               SetOverrideTooltip,

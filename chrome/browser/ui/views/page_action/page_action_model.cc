@@ -164,6 +164,10 @@ bool PageActionModel::GetActionActive() const {
   return action_active_;
 }
 
+PageActionColorSource PageActionModel::GetColorSource() const {
+  return color_source_;
+}
+
 void PageActionModel::SetOverrideText(
     base::PassKey<PageActionController>,
     const std::optional<std::u16string>& override_text) {
@@ -186,11 +190,13 @@ void PageActionModel::SetOverrideAccessibleName(
 
 void PageActionModel::SetOverrideImage(
     base::PassKey<PageActionController>,
-    const std::optional<ui::ImageModel>& override_image) {
-  if (override_image_ == override_image) {
+    const std::optional<ui::ImageModel>& override_image,
+    PageActionColorSource color_source) {
+  if (override_image_ == override_image && color_source == color_source_) {
     return;
   }
   override_image_ = override_image;
+  color_source_ = color_source;
   NotifyChange();
 }
 

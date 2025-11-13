@@ -559,16 +559,32 @@ TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideImage) {
   ui::ImageModel override_image =
       ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(/*size=*/32));
 
-  EXPECT_CALL(
-      models().Get(kFirstActionItemId),
-      SetOverrideImage(_, std::optional<ui::ImageModel>(override_image)))
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetOverrideImage(_, std::optional<ui::ImageModel>(override_image),
+                               PageActionColorSource::kForeground))
       .Times(1);
   controller().OverrideImage(kFirstActionItemId, override_image);
 
   EXPECT_CALL(models().Get(kFirstActionItemId),
-              SetOverrideImage(_, std::optional<ui::ImageModel>(std::nullopt)))
+              SetOverrideImage(_, std::optional<ui::ImageModel>(std::nullopt),
+                               PageActionColorSource::kForeground))
       .Times(1);
   controller().ClearOverrideImage(kFirstActionItemId);
+}
+
+TEST_F(PageActionControllerMockModelTest, OverrideImageWithColorSource) {
+  controller().Initialize(tab_interface(), {kFirstActionItemId},
+                          properties_provider_);
+
+  ui::ImageModel override_image =
+      ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(/*size=*/32));
+
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetOverrideImage(_, std::optional<ui::ImageModel>(override_image),
+                               PageActionColorSource::kCascadingAccent))
+      .Times(1);
+  controller().OverrideImage(kFirstActionItemId, override_image,
+                             PageActionColorSource::kCascadingAccent);
 }
 
 TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideTooltip) {

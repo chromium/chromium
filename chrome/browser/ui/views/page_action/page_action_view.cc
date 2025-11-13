@@ -228,11 +228,14 @@ void PageActionView::UpdateIconImage() {
     return;
   }
   const auto& icon_image = observation_.GetSource()->GetImage();
+  const SkColor icon_color = observation_.GetSource()->GetColorSource() ==
+                                     PageActionColorSource::kForeground
+                                 ? GetForegroundColor()
+                                 : views::GetCascadingAccentColor(this);
   // If image does not have a vector icon, set it directly.
   if (icon_image.IsVectorIcon()) {
-    const gfx::ImageSkia image =
-        gfx::CreateVectorIcon(*icon_image.GetVectorIcon().vector_icon(),
-                              icon_size_, GetForegroundColor());
+    const gfx::ImageSkia image = gfx::CreateVectorIcon(
+        *icon_image.GetVectorIcon().vector_icon(), icon_size_, icon_color);
 
     if (!image.isNull()) {
       SetImageModel(ui::ImageModel::FromImageSkia(image));
