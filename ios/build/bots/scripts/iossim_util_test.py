@@ -372,6 +372,14 @@ RUNTIMES_LIST = {
         "state": "Ready",
         "version": "18.2"
     },
+    "GGGGGG": {
+        "build": "GGGGGG",
+        "kind": "Legacy Download",
+        "deletable": True,
+        "identifier": "GGGGGG",
+        "state": "Unusable",
+        "version": "18.2"
+    },
 }
 
 RUNTIMES_MATCH_LIST = {
@@ -698,6 +706,17 @@ class GetiOSSimUtil(test_runner_test.TestCase):
       iossim_util.delete_least_recently_used_simulator_runtimes()
 
       self.assertEqual(mock_delete_simulator_runtime.call_count, 0)
+
+  def test_delete_stale_simulator_runtimes(self, _, _2):
+    with mock.patch('iossim_util.delete_simulator_runtime') \
+       as mock_delete_simulator_runtime:
+      iossim_util.delete_stale_simulator_runtimes()
+
+      calls = [
+          mock.call('GGGGGG', True),
+      ]
+
+      self.assertEqual(mock_delete_simulator_runtime.call_count, 1)
 
   @mock.patch('builtins.open', new_callable=mock.mock_open)
   @mock.patch.object(plistlib, 'dump')

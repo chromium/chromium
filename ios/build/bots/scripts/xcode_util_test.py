@@ -277,14 +277,18 @@ class InstallTest(XcodeUtilTest):
                       'iossim_util.override_default_iphonesim_runtime'
                   ) as mock_override_default_iphonesim_runtime:
                     with mock.patch('os.environ.get', return_value=True):
-                      result = xcode_util.install_runtime_dmg(
-                          mac_toolchain='mac_toolchain',
-                          runtime_cache_folder='/path/to/runtime_cache_folder',
-                          platform_type=constants.IOSPlatformType.IPHONEOS,
-                          platform_version='15.0',
-                          xcode_build_version='15a123')
+                      with mock.patch(
+                          'iossim_util.delete_stale_simulator_runtimes'
+                      ) as mock_delete_stale_simulator_runtimes:
+                        result = xcode_util.install_runtime_dmg(
+                            mac_toolchain='mac_toolchain',
+                            runtime_cache_folder='/path/to/runtime_cache_folder',
+                            platform_type=constants.IOSPlatformType.IPHONEOS,
+                            platform_version='15.0',
+                            xcode_build_version='15a123')
 
     mock_delete_least_recently_used_simulator_runtimes.assert_called_once_with()
+    mock_delete_stale_simulator_runtimes.assert_called_once_with()
     mock_get_simulator_runtime_info_by_build.assert_called_once_with('20C52')
     mock__install_runtime_dmg.assert_called_once_with(
         'mac_toolchain', '/path/to/runtime_cache_folder',

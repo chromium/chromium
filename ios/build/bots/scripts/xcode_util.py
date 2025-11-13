@@ -428,11 +428,13 @@ def install_runtime_dmg(mac_toolchain, runtime_cache_folder,
     raise test_runner_errors.RuntimeBuildNotFoundError(platform_version)
 
   # check if the desired runtime build already exists on disk
-  if iossim_util.get_simulator_runtime_info_by_build(
-      runtime_build_to_install) is None:
+  runtime_info = iossim_util.get_simulator_runtime_info_by_build(
+      runtime_build_to_install)
+  if runtime_info is None:
 
     # clean up least used runtime first to free up disk space if possible.
     iossim_util.delete_least_recently_used_simulator_runtimes()
+    iossim_util.delete_stale_simulator_runtimes()
 
     _install_runtime_dmg(mac_toolchain, runtime_cache_folder, platform_type,
                          platform_version, xcode_build_version)
@@ -464,14 +466,19 @@ def install_runtime_dmg(mac_toolchain, runtime_cache_folder,
               f'STDOUT: {stdout_output}',
               exc_info=True)
 
-          # TODO(crbug.com/460133386): Sometimes iOS SDK could be in verifying state
+          # TODO(crbug.com/460133386): Sometimes iOS SDK could be in a bad state
           # which in term cause SDK to not show in the CLI output. In such case,
-          # we should ignore this error and assume the runtime SDK is already installed.
-          if "Duplicate of" in stdout_output:
-            logging.info(
-                "Runtime already exists (detected 'Duplicate of'). Treating as success."
+          # we should attempt to delete the original SDK and re-install.
+          match = re.search(r"Duplicate of\s+([A-F0-9\-]+)", stdout_output)
+          if match:
+            duplicate_uuid = match.group(1)
+            logging.warning(
+                f"Conflict detected. Found duplicate runtime UUID: {duplicate_uuid}"
             )
-            return
+            logging.info(
+                f"Attempting to delete duplicate runtime: {duplicate_uuid}")
+            iossim_util.delete_simulator_runtime(duplicate_uuid, True)
+            iossim_util.delete_stale_simulator_runtimes()
           time.sleep(DMG_ADD_RETRY_DELAY)
         else:
           raise
@@ -480,7 +487,7 @@ def install_runtime_dmg(mac_toolchain, runtime_cache_folder,
   else:
     LOGGER.debug(
         'Runtime %s already exists, no need to install from mac_toolchain',
-        runtime_build_to_install)
+        runtime_info)
 
 
 def version():
