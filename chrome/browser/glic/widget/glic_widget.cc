@@ -54,6 +54,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/wm/window_util.h"
+#include "chromeos/ui/base/window_properties.h"
 #endif
 
 namespace glic {
@@ -311,6 +312,8 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(views::WidgetDelegate* delegate,
 #endif  // BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(IS_CHROMEOS)
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
+  params.init_properties_container.SetProperty(
+      chromeos::kShouldHaveHighlightBorderOverlay, true);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (user_resizable) {
