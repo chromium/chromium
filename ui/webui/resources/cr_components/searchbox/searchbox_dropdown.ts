@@ -322,7 +322,8 @@ export class SearchboxDropdownElement extends CrLitElement {
    */
   protected matchesForGroup_(groupId: number): AutocompleteMatch[] {
     return (this.result?.matches ?? [])
-        .filter(match => match.suggestionGroupId === groupId);
+        .filter(
+            match => (match.suggestionGroupId === groupId && !match.isHidden));
   }
 
   /**

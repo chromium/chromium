@@ -581,6 +581,10 @@ struct AutocompleteMatch {
   // Returns whether or not the row for this match should be hidden in the UI,
   // based on its starter pack. This is currently used to hide suggestions in
   // the 'Gemini' scope when the starter pack expansion feature is enabled.
+  //
+  // The match must remain in the `AutocompleteResult` set to maintain correct
+  // match indexing and focus tracking required by keyword features and
+  // `OmniboxEditModel::OpenMatch()`.
   bool ShouldHideBasedOnStarterPack(
       const TemplateURLService* template_url_service) const;
 
