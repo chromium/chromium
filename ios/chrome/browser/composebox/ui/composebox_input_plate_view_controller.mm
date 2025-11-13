@@ -283,40 +283,12 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
         constraintEqualToConstant:kFadeViewWidth],
   ]];
 
-  // Action buttons
-  UIButton* plusButton = [self createPlusButton];
-  _sendButton = [self createSendButton];
-
-  _aimButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  _aimButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [_aimButton addTarget:self
-                 action:@selector(aimButtonTapped)
-       forControlEvents:UIControlEventTouchUpInside];
-  [self updateAIMButtonAppearance];
-
-  [_aimButton.heightAnchor constraintEqualToConstant:kAIMButtonHeight].active =
-      YES;
-  self.aimButtonWidthConstraint =
-      [_aimButton.widthAnchor constraintEqualToConstant:kAIMButtonWidth];
-  self.aimButtonWidthConstraint.active = YES;
-
-  // Horizontal stack view for buttons
-  UIView* spacerView = [[UIView alloc] init];
-  [spacerView setContentHuggingPriority:UILayoutPriorityFittingSizeLevel
-                                forAxis:UILayoutConstraintAxisHorizontal];
-  UIStackView* buttonsStackView =
-      [[UIStackView alloc] initWithArrangedSubviews:@[
-        plusButton, _aimButton, spacerView, _sendButton, _micButton, _lensButton
-      ]];
-  buttonsStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  [buttonsStackView setCustomSpacing:kShortcutsSpacing afterView:_micButton];
-  buttonsStackView.axis = UILayoutConstraintAxisHorizontal;
-  buttonsStackView.spacing = kButtonsStackViewSpacing;
-  buttonsStackView.alignment = UIStackViewAlignmentBottom;
+  // Toolbar view
+  UIView* toolbarView = [self createToolbarView];
 
   // Main vertical stack view
   _inputPlateStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-    _carouselContainer, _omniboxContainer, buttonsStackView
+    _carouselContainer, _omniboxContainer, toolbarView
   ]];
   _inputPlateStackView.translatesAutoresizingMaskIntoConstraints = NO;
   _inputPlateStackView.axis = UILayoutConstraintAxisVertical;
@@ -882,6 +854,41 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
   AddSizeConstraints(lensButton,
                      CGSizeMake(kGenericButtonWidth, kGenericButtonHeight));
   return lensButton;
+}
+
+- (UIView*)createToolbarView {
+  // Action buttons
+  UIButton* plusButton = [self createPlusButton];
+  _sendButton = [self createSendButton];
+
+  _aimButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  _aimButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [_aimButton addTarget:self
+                 action:@selector(aimButtonTapped)
+       forControlEvents:UIControlEventTouchUpInside];
+  [self updateAIMButtonAppearance];
+
+  [_aimButton.heightAnchor constraintEqualToConstant:kAIMButtonHeight].active =
+      YES;
+  self.aimButtonWidthConstraint =
+      [_aimButton.widthAnchor constraintEqualToConstant:kAIMButtonWidth];
+  self.aimButtonWidthConstraint.active = YES;
+
+  // Horizontal stack view for buttons
+  UIView* spacerView = [[UIView alloc] init];
+  [spacerView setContentHuggingPriority:UILayoutPriorityFittingSizeLevel
+                                forAxis:UILayoutConstraintAxisHorizontal];
+  UIStackView* buttonsStackView =
+      [[UIStackView alloc] initWithArrangedSubviews:@[
+        plusButton, _aimButton, spacerView, _sendButton, _micButton, _lensButton
+      ]];
+  buttonsStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  [buttonsStackView setCustomSpacing:kShortcutsSpacing afterView:_micButton];
+  buttonsStackView.axis = UILayoutConstraintAxisHorizontal;
+  buttonsStackView.spacing = kButtonsStackViewSpacing;
+  buttonsStackView.alignment = UIStackViewAlignmentBottom;
+
+  return buttonsStackView;
 }
 
 @end
