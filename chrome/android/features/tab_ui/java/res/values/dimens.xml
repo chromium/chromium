@@ -187,4 +187,6 @@ found in the LICENSE file.
     <dimen name="pinned_tab_strip_out_of_bounds_scroll_amount">5dp</dimen>
     <!-- Derived from potential height of the bar and some extra buffer. -->
     <dimen name="pinned_tabs_strip_row_coverage_height">85dp</dimen>
+    <!-- Height of the pinned tab strip 40dp item height + 2 * 16dp margin. -->
+    <dimen name="pinned_tab_strip_height">72dp</dimen>
 </resources>

@@ -5,12 +5,11 @@
 package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.graphics.Color;
-import android.view.ViewPropertyAnimator;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
@@ -35,22 +34,12 @@ public class PinnedTabStripViewBinderTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private RecyclerView mRecyclerView;
-    @Mock private ViewPropertyAnimator mViewPropertyAnimator;
     @Mock private PinnedTabStripAnimationManager mAnimationManager;
 
     private PropertyModel mPropertyModel;
 
     @Before
     public void setUp() {
-        when(mRecyclerView.animate()).thenReturn(mViewPropertyAnimator);
-        when(mViewPropertyAnimator.alpha(any(Float.class))).thenReturn(mViewPropertyAnimator);
-        when(mViewPropertyAnimator.translationY(any(Float.class)))
-                .thenReturn(mViewPropertyAnimator);
-        when(mViewPropertyAnimator.withEndAction(any(Runnable.class)))
-                .thenReturn(mViewPropertyAnimator);
-        when(mViewPropertyAnimator.withStartAction(any(Runnable.class)))
-                .thenReturn(mViewPropertyAnimator);
-
         mPropertyModel =
                 new PropertyModel.Builder(PinnedTabStripProperties.ALL_KEYS)
                         .with(PinnedTabStripProperties.IS_VISIBLE, false)
@@ -68,13 +57,13 @@ public class PinnedTabStripViewBinderTest {
     @Test
     public void testSetIsVisible_becomesVisible() {
         mPropertyModel.set(PinnedTabStripProperties.IS_VISIBLE, true);
-        verify(mAnimationManager).animateShowPinnedTabBar(any());
+        verify(mAnimationManager).animatePinnedTabBarVisibility(eq(true), any());
     }
 
     @Test
     public void testSetIsVisible_becomesHidden() {
         mPropertyModel.set(PinnedTabStripProperties.IS_VISIBLE, false);
-        verify(mAnimationManager).animateHidePinnedTabBar(any());
+        verify(mAnimationManager).animatePinnedTabBarVisibility(eq(false), any());
     }
 
     @Test

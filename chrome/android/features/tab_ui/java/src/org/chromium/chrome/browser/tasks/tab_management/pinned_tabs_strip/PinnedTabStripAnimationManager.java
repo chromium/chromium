@@ -8,7 +8,9 @@ import static org.chromium.ui.interpolators.Interpolators.STANDARD_INTERPOLATOR;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.RectEvaluator;
 import android.animation.ValueAnimator;
+import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -45,6 +47,8 @@ class PinnedTabStripAnimationManager {
         int UNSELECTED = 1;
     }
 
+    private boolean mIsHiding;
+
     /**
      * Constructor for PinnedTabStripAnimationManager.
      *
@@ -66,94 +70,90 @@ class PinnedTabStripAnimationManager {
         this(recyclerView, new AnimationHandler());
     }
 
-    /**
-     * Animates the pinned tab bar to show with a fade-in and slide-down effect.
-     *
-     * @param animationRunningSupplier Supplier to notify about animation status.
-     */
-    void animateShowPinnedTabBar(ObservableSupplierImpl<Boolean> animationRunningSupplier) {
-        boolean isVisible = mRecyclerView.getVisibility() == View.VISIBLE;
-
-        if (isVisible) {
-            mRecyclerView.setAlpha(1f);
-            mRecyclerView.setTranslationY(0);
-            setStripVisibilityAnimationRunning(animationRunningSupplier, false);
-            return;
+    void animatePinnedTabBarVisibility(
+            boolean shouldBeVisible,
+            ObservableSupplierImpl<Boolean> isVisibilityAnimationRunningSupplier) {
+        // Ensure the recyclerView is at least invisible so that it has a valid size.
+        if (shouldBeVisible && mRecyclerView.getVisibility() == View.GONE) {
+            mRecyclerView.setVisibility(View.INVISIBLE);
         }
-
         mRecyclerView.post(
-                () -> {
-                    int height = mRecyclerView.getHeight();
-                    mRecyclerView.setVisibility(View.VISIBLE);
-                    mRecyclerView.setAlpha(0.0f);
-                    mRecyclerView.setTranslationY(-height);
-
-                    ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
-                    animator.setDuration(STRIP_VISIBILITY_ANIMATION_DURATION_MS);
-                    animator.setInterpolator(STANDARD_INTERPOLATOR);
-                    animator.addUpdateListener(
-                            animation -> {
-                                float val = (float) animation.getAnimatedValue();
-                                mRecyclerView.setAlpha(val);
-                                mRecyclerView.setTranslationY(height * (val - 1f));
-                            });
-
-                    animator.addListener(
-                            new AnimatorListenerAdapter() {
-                                @Override
-                                public void onAnimationStart(Animator animation) {
-                                    setStripVisibilityAnimationRunning(
-                                            animationRunningSupplier, true);
-                                }
-
-                                @Override
-                                public void onAnimationEnd(Animator animation) {
-                                    setStripVisibilityAnimationRunning(
-                                            animationRunningSupplier, false);
-                                }
-                            });
-
-                    mPinnedTabBarVisibilityAnimationHandler.startAnimation(animator);
-                });
+                () -> updateVisibility(shouldBeVisible, isVisibilityAnimationRunningSupplier));
     }
 
-    /**
-     * Animates the pinned tab bar to hide with a fade-out and slide-up effect.
-     *
-     * @param animationRunningSupplier Supplier to notify about animation status.
-     */
-    void animateHidePinnedTabBar(ObservableSupplierImpl<Boolean> animationRunningSupplier) {
-        mPinnedTabBarVisibilityAnimationHandler.forceFinishAnimation();
-        boolean isVisible = mRecyclerView.getVisibility() == View.VISIBLE;
-        if (!isVisible) {
-            setStripVisibilityAnimationRunning(animationRunningSupplier, false);
+    private void updateVisibility(
+            boolean shouldBeVisible,
+            ObservableSupplierImpl<Boolean> isVisibilityAnimationRunningSupplier) {
+        TabListRecyclerView recyclerView = mRecyclerView;
+        boolean currentlyVisible = recyclerView.getVisibility() == View.VISIBLE;
+
+        boolean visibleOrShowing = currentlyVisible && !mIsHiding;
+        boolean hiddenOrHiding = !currentlyVisible || (currentlyVisible && mIsHiding);
+        // We are already in the right state (or transitioning to it) so no-op.
+        if ((shouldBeVisible && visibleOrShowing) || (!shouldBeVisible && hiddenOrHiding)) {
             return;
         }
 
-        int height = mRecyclerView.getHeight();
-        ValueAnimator animator = ValueAnimator.ofFloat(1f, 0f);
-        animator.setDuration(STRIP_VISIBILITY_ANIMATION_DURATION_MS);
-        animator.setInterpolator(STANDARD_INTERPOLATOR);
+        mPinnedTabBarVisibilityAnimationHandler.forceFinishAnimation();
+
+        float startAlpha;
+        float endAlpha;
+        Rect startRect;
+        Rect endRect;
+        int width = recyclerView.getMeasuredWidth();
+        int height = recyclerView.getMeasuredHeight();
+        if (shouldBeVisible) {
+            startAlpha = 0.0f;
+            endAlpha = 1.0f;
+            startRect = new Rect(0, 0, width, 1);
+            endRect = new Rect(0, 0, width, height);
+            mIsHiding = false;
+        } else {
+            startAlpha = 1.0f;
+            endAlpha = 0.0f;
+            startRect = new Rect(0, 0, width, height);
+            endRect = new Rect(0, 0, width, 1);
+            mIsHiding = true;
+        }
+
+        recyclerView.setAlpha(startAlpha);
+        recyclerView.setClipBounds(startRect);
+        recyclerView.setVisibility(View.VISIBLE);
+        ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
+        float alphaRange = endAlpha - startAlpha;
+        RectEvaluator rectEvaluator = new RectEvaluator();
         animator.addUpdateListener(
                 animation -> {
-                    float val = (float) animation.getAnimatedValue();
-                    mRecyclerView.setAlpha(val);
-                    mRecyclerView.setTranslationY(height * (val - 1f));
+                    float t = animation.getAnimatedFraction();
+                    float interpolatedAlpha = startAlpha + alphaRange * t;
+                    recyclerView.setAlpha(interpolatedAlpha);
+                    Rect interpolatedRect = rectEvaluator.evaluate(t, startRect, endRect);
+                    recyclerView.setClipBounds(interpolatedRect);
                 });
-
+        animator.setDuration(STRIP_VISIBILITY_ANIMATION_DURATION_MS);
+        animator.setInterpolator(STANDARD_INTERPOLATOR);
         animator.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationStart(Animator animation) {
-                        setStripVisibilityAnimationRunning(animationRunningSupplier, true);
+                        isVisibilityAnimationRunningSupplier.set(true);
                     }
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        mRecyclerView.setVisibility(View.GONE);
-                        setStripVisibilityAnimationRunning(animationRunningSupplier, false);
+                        // Always remove the clip bounds so the next time the animation is updated
+                        // or if the configuration changes (screen size, orientation, etc.) we are
+                        // in a good state.
+                        recyclerView.setClipBounds(null);
+                        // Skip setting to GONE if we are invisible due to another animation.
+                        if (!shouldBeVisible && recyclerView.getVisibility() != View.INVISIBLE) {
+                            recyclerView.setVisibility(View.GONE);
+                        }
+                        mIsHiding = false;
+                        isVisibilityAnimationRunningSupplier.set(false);
                     }
                 });
+
         mPinnedTabBarVisibilityAnimationHandler.startAnimation(animator);
     }
 
@@ -166,7 +166,7 @@ class PinnedTabStripAnimationManager {
         mPinnedTabBarVisibilityAnimationHandler.forceFinishAnimation();
         mRecyclerView.setVisibility(View.VISIBLE);
         mRecyclerView.setAlpha(1.0f);
-        mRecyclerView.setTranslationY(0);
+        mRecyclerView.setClipBounds(null);
         setStripVisibilityAnimationRunning(animationRunningSupplier, false);
     }
 
