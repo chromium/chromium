@@ -312,13 +312,13 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
     BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
         "http://media.example.com/manifest.m3u8", kSimpleMultivariantPlaylist);
     BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-        "http://example.com/hi.m3u8", kSimpleMediaPlaylist);
+        "http://example.com/low.m3u8", kSimpleMediaPlaylist);
     EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
     InitializeEngine();
     task_environment_.RunUntilIdle();
 
     auto rendition = std::make_unique<StrictMock<MockHlsRendition>>(
-        GURL("http://example.com/hi.m3u8"));
+        GURL("http://example.com/low.m3u8"));
     EXPECT_CALL(*rendition, GetDuration()).WillOnce(Return(base::Seconds(30)));
     auto* rendition_ptr = rendition.get();
     engine_->AddRenditionForTesting("primary", std::move(rendition));
@@ -580,7 +580,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistNoAlternates) {
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kSimpleMultivariantPlaylist);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-      "http://example.com/hi.m3u8", kSimpleMediaPlaylist);
+      "http://example.com/low.m3u8", kSimpleMediaPlaylist);
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
@@ -606,7 +606,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistWithAlternates) {
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/eng-audio.m3u8", kSingleInfoMediaPlaylist);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-      "http://media.example.com/hi/video-only.m3u8", kSimpleMediaPlaylist);
+      "http://media.example.com/low/video-only.m3u8", kSimpleMediaPlaylist);
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
@@ -763,12 +763,12 @@ TEST_F(HlsManifestDemuxerEngineTest, SeekAfterErrorFails) {
 TEST_F(HlsManifestDemuxerEngineTest, TestSeekDuringAdaptation) {
   auto* rendition_ptr = SetUpInterruptTest();
   EXPECT_EQ(rendition_ptr->MediaPlaylistUri(),
-            GURL("http://example.com/hi.m3u8"));
+            GURL("http://example.com/low.m3u8"));
 
   // Start the adaptation and hold it from finishing.
   base::OnceClosure continue_adaptation = StartAndCaptureNetworkAdaptation(
-      rendition_ptr, "http://example.com/low.m3u8", kSimpleMediaPlaylist,
-      1380000);
+      rendition_ptr, "http://example.com/hi.m3u8", kSimpleMediaPlaylist,
+      45600001);
 
   // Start a seek. It should wait while the adaptation is pending.
   EXPECT_CALL(*this, SeekFinished()).Times(0);
@@ -795,7 +795,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestSeekDuringAdaptation) {
   std::move(continue_adaptation).Run();
   task_environment_.RunUntilIdle();
   EXPECT_EQ(rendition_ptr->MediaPlaylistUri(),
-            GURL("http://example.com/low.m3u8"));
+            GURL("http://example.com/hi.m3u8"));
   task_environment_.RunUntilIdle();
 }
 
@@ -830,7 +830,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestSeekDuringTimeUpdate) {
   // Finish the update, seek should complete.
   std::move(continue_update).Run();
   EXPECT_EQ(rendition_ptr->MediaPlaylistUri(),
-            GURL("http://example.com/hi.m3u8"));
+            GURL("http://example.com/low.m3u8"));
   task_environment_.RunUntilIdle();
 }
 
@@ -843,12 +843,12 @@ TEST_F(HlsManifestDemuxerEngineTest, TestAdaptDuringTimeUpdate) {
 
   // Start an adaptation. It should wait while the update is pending.
   ExpectNoNetworkRequests();
-  engine_->UpdateNetworkSpeed(1380000);
+  engine_->UpdateNetworkSpeed(45600001);
   task_environment_.RunUntilIdle();
 
   // When the update finishes, the adaptation requests the low quality stream.
   BindUrlAssignmentThunk<StringHlsDataSourceStreamFactory>(
-      "http://example.com/low.m3u8", kSimpleMediaPlaylist);
+      "http://example.com/hi.m3u8", kSimpleMediaPlaylist);
   std::move(continue_update).Run();
   task_environment_.RunUntilIdle();
 }
@@ -861,12 +861,12 @@ TEST_F(HlsManifestDemuxerEngineTest, TestAdaptDuringSeek) {
 
   // Start an adaptation. It should wait while the seek is pending.
   ExpectNoNetworkRequests();
-  engine_->UpdateNetworkSpeed(1380000);
+  engine_->UpdateNetworkSpeed(45600001);
   task_environment_.RunUntilIdle();
 
-  // When the seek finishes, the adaptation requests the low quality stream.
+  // When the seek finishes, the adaptation requests the high quality stream.
   BindUrlAssignmentThunk<StringHlsDataSourceStreamFactory>(
-      "http://example.com/low.m3u8", kSimpleMediaPlaylist);
+      "http://example.com/hi.m3u8", kSimpleMediaPlaylist);
   EXPECT_CALL(*this, SeekFinished());
   std::move(continue_seek).Run();
   task_environment_.RunUntilIdle();
@@ -877,8 +877,8 @@ TEST_F(HlsManifestDemuxerEngineTest, TestTimeUpdateDuringAdaptation) {
 
   // Start the adaptation and hold it from finishing.
   base::OnceClosure continue_adaptation = StartAndCaptureNetworkAdaptation(
-      rendition_ptr, "http://example.com/low.m3u8", kSimpleMediaPlaylist,
-      1380000);
+      rendition_ptr, "http://example.com/hi.m3u8", kSimpleMediaPlaylist,
+      55600001);
 
   // Start the time update
   EXPECT_CALL(*rendition_ptr, CheckState(_, _, _)).Times(0);
@@ -1052,7 +1052,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestOriginTainting) {
       "http://media.example.com/manifest.m3u8", kSimpleMultivariantPlaylist,
       /*taint_origin=*/true);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-      "http://example.com/hi.m3u8", kSimpleMediaPlaylist);
+      "http://example.com/low.m3u8", kSimpleMediaPlaylist);
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();

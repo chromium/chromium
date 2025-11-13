@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "media/formats/hls/abr_algorithm.h"
 #include "media/formats/hls/multivariant_playlist.h"
 #include "media/formats/hls/rendition.h"
 #include "media/formats/hls/types.h"
@@ -105,7 +106,9 @@ RenditionManager::~RenditionManager() = default;
 RenditionManager::RenditionManager(scoped_refptr<MultivariantPlaylist> playlist,
                                    SelectedCB reselect_cb,
                                    IsTypeSupportedCallback is_type_supported_cb)
-    : playlist_(std::move(playlist)), reselect_cb_(std::move(reselect_cb)) {
+    : playlist_(std::move(playlist)),
+      reselect_cb_(std::move(reselect_cb)),
+      abr_algorithm_(std::make_unique<EwmaAbrAlgorithm>()) {
   selectable_variants_ = FilterVariants(playlist_.get(), &audio_only_,
                                         std::move(is_type_supported_cb));
   for (const auto& variant : selectable_variants_) {
@@ -123,6 +126,7 @@ const VariantStream* RenditionManager::SelectBestVariant() const {
   }
 
   const VariantStream* best = *selectable_variants_.begin();
+  const auto abr_speed = abr_algorithm_->GetABRSpeed();
 
   for (const VariantStream* option : selectable_variants_) {
     if (option->GetResolution().has_value()) {
@@ -133,7 +137,7 @@ const VariantStream* RenditionManager::SelectBestVariant() const {
       }
     }
 
-    if (network_bps_ < option->GetBandwidth()) {
+    if (abr_speed < option->GetBandwidth()) {
       // This variant is predicted to have a bandwidth requirement greater than
       // the connection speed to the host, so don't consider it.
       return best;
@@ -245,11 +249,19 @@ void RenditionManager::UpdatePlayerResolution(const gfx::Size& resolution) {
 }
 
 void RenditionManager::UpdateNetworkSpeed(uint64_t network_bps) {
-  AdaptationReason reason = network_bps_ > network_bps
+  const auto old_speed = abr_algorithm_->GetABRSpeed();
+  abr_algorithm_->UpdateNetworkSpeed(network_bps);
+  const auto new_speed = abr_algorithm_->GetABRSpeed();
+
+  AdaptationReason reason = old_speed > new_speed
                                 ? AdaptationReason::kNetworkDowngrade
                                 : AdaptationReason::kNetworkUpgrade;
-  network_bps_ = network_bps;
   Reselect(base::BindOnce(reselect_cb_, reason));
+}
+
+void RenditionManager::SetAbrAlgorithmForTesting(
+    std::unique_ptr<ABRAlgorithm> abr_algorithm) {
+  abr_algorithm_ = std::move(abr_algorithm);
 }
 
 std::vector<MediaTrack> RenditionManager::GetSelectableExtraRenditions() const {

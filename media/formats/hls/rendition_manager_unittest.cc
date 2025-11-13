@@ -174,7 +174,7 @@ TEST_F(HlsRenditionManagerTest, MixedAVTypes) {
       "#EXT-X-STREAM-INF:BANDWIDTH=65000,CODECS=\"audio.codec\"",
       "http://example.com/audio-only.m3u8");
 
-  EXPECT_CALL(*this, VariantSelected("/hi.m3u8", "NONE"));
+  EXPECT_CALL(*this, VariantSelected("/low.m3u8", "NONE"));
   rm.Reselect(GetVariantCb());
 }
 
@@ -205,6 +205,8 @@ TEST_F(HlsRenditionManagerTest, MultipleVariantResolutions) {
       "video/wqhd.m3u8",
       "#EXT-X-STREAM-INF:BANDWIDTH=10,CODECS=\"V\",RESOLUTION=7680x4320",
       "video/8kuhd.m3u8");
+
+  rm.SetAbrAlgorithmForTesting(std::make_unique<FixedAbrAlgorithm>(100000000));
 
   EXPECT_CALL(*this, VariantSelected("/video/8kuhd.m3u8", "NONE"));
   rm.Reselect(GetVariantCb());
@@ -500,7 +502,7 @@ TEST_F(HlsRenditionManagerTest, MP4SplitCodecs) {
       "v10/prog_index.m3u8");
 
   EXPECT_CALL(*this,
-              VariantSelected("/v9/prog_index.m3u8", "/a1/prog_index.m3u8"));
+              VariantSelected("/v1/prog_index.m3u8", "/a1/prog_index.m3u8"));
   rm.Reselect(GetVariantCb());
 }
 
@@ -555,11 +557,16 @@ TEST_F(HlsRenditionManagerTest, MultipleRenditionGroupsVariantsOutOfOrder) {
       "audio.codec\",AUDIO=\"surround\",RESOLUTION=1921x818,SUBTITLES=\"subs\"",
       "video/6000kbit.m3u8");
 
+  // We have bitrates of: [258157, 520929, 831270, 1144430, 1558322, 4149264]
+  // Set the abr to the highest level for the start of the test.
+  rm.SetAbrAlgorithmForTesting(std::make_unique<FixedAbrAlgorithm>(100000000));
+
   // All variants are playable, so the best one selected. The default audio
   // override is also selected.
   EXPECT_CALL(*this, VariantSelected("/video/10000kbit.m3u8",
                                      "/audio/surround/en/320kbit.m3u8"));
   rm.Reselect(GetVariantCb());
+  testing::Mock::VerifyAndClearExpectations(this);
 
   // Notify a network downgrade, but not one that would preclude our 10285kbps
   // stream. Verify no response.
@@ -646,16 +653,16 @@ TEST_F(HlsRenditionManagerTest, CantSelectRenditionWithNoURI) {
         "200.m3u8");
 
     // The C rendition is autoselectable, but has no URL
-    EXPECT_CALL(*this, VariantSelected("/200.m3u8", "NONE"));
+    EXPECT_CALL(*this, VariantSelected("/100.m3u8", "NONE"));
     rm.Reselect(GetVariantCb());
 
     // The user has selected B explicitly, so we use B as the primary rendition.
     const auto renditions = rm.GetSelectableExtraRenditions();
-    EXPECT_CALL(*this, VariantSelected("/200.m3u8", "/B.m3u8"));
+    EXPECT_CALL(*this, VariantSelected("/100.m3u8", "/B.m3u8"));
     rm.SetPreferredExtraRendition(renditions[1].track_id());
 
     // The user has selected C explicitly, but too bad, it has no URI.
-    EXPECT_CALL(*this, VariantSelected("/200.m3u8", "NONE"));
+    EXPECT_CALL(*this, VariantSelected("/100.m3u8", "NONE"));
     rm.SetPreferredExtraRendition(renditions[2].track_id());
   }
 }
@@ -672,7 +679,7 @@ TEST_F(HlsRenditionManagerTest, AudioOnlyRenditionSelectionOverrides) {
         "200.m3u8");
 
     // Nothing is auto-selectable
-    EXPECT_CALL(*this, VariantSelected("/200.m3u8", "NONE"));
+    EXPECT_CALL(*this, VariantSelected("/100.m3u8", "NONE"));
     rm.Reselect(GetVariantCb());
 
     // The user has selected B explicitly, so we use B as the primary rendition.
