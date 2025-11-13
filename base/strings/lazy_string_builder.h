@@ -14,6 +14,7 @@
 #include <type_traits>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/memory/stack_allocated.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
@@ -89,7 +90,7 @@ class BASE_EXPORT LazyStringBuilder {
   // Appends a single std::string_view to the output string. The contents of
   // `view` are referenced, not copied. Can be used with std::strings as long as
   // they outlive this object.
-  void AppendByReference(std::string_view view);
+  void AppendByReference(std::string_view view LIFETIME_CAPTURE_BY(this));
 
   // Prevent AppendByReference() from being called for rvalue strings, as it
   // would result in a dangling reference. Use AppendByValue() instead.
@@ -97,7 +98,7 @@ class BASE_EXPORT LazyStringBuilder {
 
   // This overload is needed to disambiguate calls to AppendByReference() with
   // string constants.
-  void AppendByReference(const char* str) {
+  void AppendByReference(const char* str LIFETIME_CAPTURE_BY(this)) {
     AppendByReference(std::string_view(str));
   }
 
@@ -112,10 +113,9 @@ class BASE_EXPORT LazyStringBuilder {
   // used for runtime-allocated strings; they must use AppendByValue().
   template <typename... T>
     requires(sizeof...(T) > 1 &&
-             (std::convertible_to<T, std::string_view> && ...))
-  void AppendByReference(T&&... views) {
-    static_assert((!std::same_as<T, std::string> && ...),
-                  "Use AppendByValue() for rvalue strings");
+             (std::convertible_to<T, std::string_view> && ...) &&
+             (!std::same_as<T, std::string> && ...))
+  void AppendByReference(T&&... views LIFETIME_CAPTURE_BY(this)) {
     AppendInternal({std::string_view(views)...});
   }
 

@@ -8,6 +8,8 @@
 #include "base/strings/lazy_string_builder.h"
 
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/strings/string_number_conversions.h"
 
@@ -23,9 +25,22 @@ void WontCompileRValueString() {
   builder.AppendByReference(std::string("foo"));  // expected-error {{call to deleted member function}}
   builder.AppendByReference(NumberToString(3));  // expected-error {{call to deleted member function}}
   builder.AppendByReference(std::move(movable));  // expected-error {{call to deleted member function}}
-  builder.AppendByReference("hello ", std::string("world"));  // expected-error@base/strings/lazy_string_builder.h:* {{static assertion failed}}
-  builder.AppendByReference("value: ", NumberToString(7));  // expected-error@base/strings/lazy_string_builder.h:* {{static assertion failed}}
-  builder.AppendByReference("", std::move(movable));  // expected-error@base/strings/lazy_string_builder.h:* {{static assertion failed}}
+  builder.AppendByReference("hello ", std::string("world"));  // expected-error {{no matching member function for call}}
+  builder.AppendByReference("value: ", NumberToString(7));  // expected-error {{no matching member function for call}}
+  builder.AppendByReference("", std::move(movable));  // expected-error {{no matching member function for call}}
+}
+
+void WontCompileLifetimeError() {
+  auto builder = LazyStringBuilder::CreateForTesting();
+  builder.AppendByReference(std::string_view(NumberToString(3)));  // expected-error {{object whose reference is captured by 'builder' will be destroyed at the end of the full-expression}}
+  builder.AppendByReference("", std::string_view(NumberToString(3)));  // expected-error {{object whose reference is captured by 'builder' will be destroyed at the end of the full-expression}}
+  builder.AppendByReference(NumberToString(3).c_str());  // expected-error {{object whose reference is captured by 'builder' will be destroyed at the end of the full-expression}}
+  builder.AppendByReference("", NumberToString(3).c_str());  // expected-error {{object whose reference is captured by 'builder' will be destroyed at the end of the full-expression}}
+}
+
+void WontCompileLocal(LazyStringBuilder& builder) {
+  builder.AppendByReference(std::vector({'a', '\0'}).data());  // expected-error {{object whose reference is captured by 'builder' will be destroyed at the end of the full-expression}}
+  builder.AppendByReference("", std::vector({'a', '\0'}).data());  // expected-error {{object whose reference is captured by 'builder' will be destroyed at the end of the full-expression}}
 }
 
 void WontCompileConstructorAccessRestricted() {
