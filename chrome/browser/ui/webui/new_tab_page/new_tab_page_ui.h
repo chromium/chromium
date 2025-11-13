@@ -21,6 +21,8 @@
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_groups/tab_groups.mojom.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo_handler.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
@@ -117,6 +119,7 @@ class NewTabPageUI
       public help_bubble::mojom::HelpBubbleHandlerFactory,
       public ntp_promo::mojom::NtpPromoHandlerFactory,
       public NtpCustomBackgroundServiceObserver,
+      public action_chips::mojom::ActionChipsHandlerFactory,
       content::WebContentsObserver {
  public:
   explicit NewTabPageUI(content::WebUI* web_ui);
@@ -238,6 +241,10 @@ class NewTabPageUI
       mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandlerFactory>
           pending_receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<action_chips::mojom::ActionChipsHandlerFactory>
+          pending_receiver);
+
   void ConnectToParentDocument(
       mojo::PendingRemote<new_tab_page::mojom::MicrosoftAuthUntrustedDocument>
           child_page);
@@ -289,6 +296,11 @@ class NewTabPageUI
   void CreateNtpPromoHandler(
       mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> client,
       mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> handler)
+      override;
+
+  // action_chips::mojom::ActionChipsHandlerFactory:
+  void CreateActionChipsHandler(
+      mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler> handler)
       override;
 
   // NtpCustomBackgroundServiceObserver:
@@ -346,6 +358,9 @@ class NewTabPageUI
   std::unique_ptr<NtpPromoHandler> ntp_promo_handler_;
   mojo::Receiver<ntp_promo::mojom::NtpPromoHandlerFactory>
       ntp_promo_handler_factory_receiver_{this};
+  std::unique_ptr<ActionChipsHandler> action_chips_handler_;
+  mojo::Receiver<action_chips::mojom::ActionChipsHandlerFactory>
+      action_chips_handler_factory_receiver_{this};
 #if !defined(OFFICIAL_BUILD)
   std::unique_ptr<FooHandler> foo_handler_;
 #endif

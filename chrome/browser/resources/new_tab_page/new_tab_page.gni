@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//ui/webui/webui_features.gni")
+import("./action_chips/action_chips.gni")
 import("./modules/modules.gni")
 import("./ntp_promo/ntp_promo.gni")
 
@@ -20,36 +21,37 @@ all_ts_files = [
                  "transparency.ts",
                  "utils.ts",
                  "window_proxy.ts",
-               ] + modules_ts_files + ntp_promo_ts_files
+               ] + modules_ts_files + ntp_promo_ts_files + action_chips_ts_files
 
 # Files holding a Polymer element definition and have an equivalent .html file.
-all_web_component_files = [
-                            "action_chips/action_chips.ts",
-                            "app.ts",
-                            "doodle_share_dialog.ts",
-                            "iframe.ts",
-                            "lens_form.ts",
-                            "lens_upload_dialog.ts",
-                            "logo.ts",
-                            "middle_slot_promo.ts",
-                            "voice_search_overlay.ts",
-                          ] + modules_web_component_files
+all_web_component_files =
+    [
+      "app.ts",
+      "doodle_share_dialog.ts",
+      "iframe.ts",
+      "lens_form.ts",
+      "lens_upload_dialog.ts",
+      "logo.ts",
+      "middle_slot_promo.ts",
+      "voice_search_overlay.ts",
+    ] + modules_web_component_files + action_chips_web_component_files
 
-all_css_files = [
-                  "action_chips/action_chips.css",
-                  "app.css",
-                  "doodle_share_dialog.css",
-                  "iframe.css",
-                  "lens_form.css",
-                  "lens_upload_dialog.css",
-                  "logo.css",
-                  "middle_slot_promo.css",
-                  "voice_search_overlay.css",
-                ] + modules_css_files + ntp_promo_css_files
+all_css_files =
+    [
+      "app.css",
+      "doodle_share_dialog.css",
+      "iframe.css",
+      "lens_form.css",
+      "lens_upload_dialog.css",
+      "logo.css",
+      "middle_slot_promo.css",
+      "voice_search_overlay.css",
+    ] + modules_css_files + ntp_promo_css_files + action_chips_css_files
 
 if (optimize_webui) {
   # Transpiled Mojo JS files to be excluded from the bundle in optimized builds.
   mojo_js_files = [
+    "action_chips.mojom-webui.js",
     "calendar_data.mojom-webui.js",
     "ntp_promo.mojom-webui.js",
     "customize_chrome.mojom-webui.js",

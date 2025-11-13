@@ -7,8 +7,11 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {ComposeboxMode} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import type {ActionChipsHandlerInterface, TabInfo} from '../action_chips.mojom-webui.js';
+
 import {getCss} from './action_chips.css.js';
 import {getHtml} from './action_chips.html.js';
+import {ActionChipsApiProxyImpl} from './action_chips_proxy.js';
 
 /**
  * TODO: Move the enum to the Mojo model once it's created.
@@ -49,6 +52,13 @@ export class ActionChipsElement extends CrLitElement {
     return getCss();
   }
 
+  private handler: ActionChipsHandlerInterface;
+  private mostRecentTab_: TabInfo|null = null;
+
+  get mostRecentTab(): TabInfo|null {
+    return this.mostRecentTab_;
+  }
+
   override render() {
     return getHtml.bind(this)();
   }
@@ -75,6 +85,24 @@ export class ActionChipsElement extends CrLitElement {
   private onActionChipClick_(query: string, mode: ComposeboxMode) {
     this.fire(
         'action-chip-click', {searchboxText: query, contextFiles: [], mode});
+  }
+
+  static override get properties() {
+    return {
+      mostRecentTab_: {type: Object, state: true},
+    };
+  }
+
+  constructor() {
+    super();
+    this.handler = ActionChipsApiProxyImpl.getInstance().getHandler();
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.handler.getMostRecentTab().then((result) => {
+      this.mostRecentTab_ = result ? result.tab : null;
+    });
   }
 }
 

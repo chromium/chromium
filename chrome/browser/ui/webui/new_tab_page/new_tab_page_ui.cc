@@ -48,6 +48,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -58,6 +59,7 @@
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/aim_entrypoint_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
@@ -1070,6 +1072,15 @@ void NewTabPageUI::BindInterface(
   ntp_promo_handler_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
+void NewTabPageUI::BindInterface(
+    mojo::PendingReceiver<action_chips::mojom::ActionChipsHandlerFactory>
+        pending_receiver) {
+  if (action_chips_handler_factory_receiver_.is_bound()) {
+    action_chips_handler_factory_receiver_.reset();
+  }
+  action_chips_handler_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
 void NewTabPageUI::CreatePageHandler(
     mojo::PendingRemote<new_tab_page::mojom::Page> pending_page,
     mojo::PendingReceiver<new_tab_page::mojom::PageHandler>
@@ -1176,6 +1187,12 @@ void NewTabPageUI::CreateNtpPromoHandler(
     mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> handler) {
   ntp_promo_handler_ = NtpPromoHandler::Create(
       std::move(client), std::move(handler), web_contents());
+}
+
+void NewTabPageUI::CreateActionChipsHandler(
+    mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler> handler) {
+  action_chips_handler_ = std::make_unique<ActionChipsHandler>(
+      std::move(handler), profile_, web_ui());
 }
 
 // OnColorProviderChanged can be called during the destruction process and

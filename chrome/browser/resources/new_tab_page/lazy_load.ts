@@ -10,6 +10,8 @@
  * elements (either not visible by default or not as performance critical).
  */
 
+import './action_chips/action_chips.js';
+import './action_chips/action_chips_proxy.js';
 import './ntp_promo/ntp_promo_proxy.js';
 import './ntp_promo/individual_promos.js';
 import './middle_slot_promo.js';
@@ -28,6 +30,7 @@ export {ComposeboxFileThumbnailElement} from 'chrome://resources/cr_components/c
 export {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 export {PluralStringProxyImpl as NTPPluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 export {ActionChipsElement, ActionChipsType} from './action_chips/action_chips.js';
+export {ActionChipsApiProxyImpl} from './action_chips/action_chips_proxy.js';
 export {LensErrorType, LensFormElement, LensSubmitType} from './lens_form.js';
 export {LensUploadDialogAction, LensUploadDialogElement, LensUploadDialogError} from './lens_upload_dialog.js';
 export {MiddleSlotPromoElement, PromoDismissAction} from './middle_slot_promo.js';
