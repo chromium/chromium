@@ -329,8 +329,7 @@ export class ComposeboxElement extends I18nMixinLit
             this.i18n('composeboxSmartComposeTitle'));
       } else {
         // Unset the height override so input can expand through typing.
-        this.$.input.style.height =
-            'calc-size(fit-content, min(size + 4px, 190px))';
+        this.$.input.style.height = 'unset';
       }
     }
   }

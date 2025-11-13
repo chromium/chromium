@@ -58,7 +58,7 @@ export function getHtml(this: ComposeboxElement) {
       </div>
       <contextual-entrypoint-and-carousel id="context" part="context-entrypoint"
           class="${this.carouselOnTop_ && this.isCollapsible ? 'icon-fade' : ''}"
-          exportparts="context-menu-entrypoint-icon, cr-composebox-file-carousel, upload-container, voice-icon"
+          exportparts="context-menu-entrypoint-icon, cr-composebox-file-carousel, upload-container, voice-icon, carousel-divider"
           .tabSuggestions="${this.tabSuggestions_}"
           entrypoint-name="Composebox"
           @add-tab-context="${this.addTabContext_}"
@@ -110,6 +110,9 @@ export function getHtml(this: ComposeboxElement) {
         ?disabled="${this.lensButtonDisabled_}"
         @mousedown="${this.onLensIconMouseDown_}">
     </cr-icon-button>
+    <!-- Elements rendered under the input container. -->
+    <!-- TODO: Move the submit button and Lens icon into this slot. -->
+    <slot name="footer"></slot>
     <!-- A seperate container is needed for the submit button so the
        expand/collapse animation can be applied without affecting the submit
        button enabled/disabled state. -->
