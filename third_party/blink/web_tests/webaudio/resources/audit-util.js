@@ -262,6 +262,13 @@ function computeSNR(actual, expected) {
   return signalPower / noisePower;
 }
 
+// Similar to computeSNR(), computes the signal-to-noise ratio (SNR) between
+// |actual| and |expected|. However, this method returns the SNR as a power
+// ratio expressed in decibels so it is easier to reason about.
+function computeSnrInDecibels(actual, expected) {
+  return 10 * Math.log10(computeSNR(actual, expected));
+}
+
 // BufferLoader – utility for fetching & decoding multiple audio files.
 function BufferLoader(context, urlList, callback) {
   this.context = context;
