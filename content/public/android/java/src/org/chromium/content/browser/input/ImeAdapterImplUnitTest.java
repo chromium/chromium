@@ -225,6 +225,16 @@ public class ImeAdapterImplUnitTest {
     }
 
     @Test
+    public void testCommitContent() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        adapter.commitContent(/* dataUrl= */ "atestingdataurl");
+
+        verify(mImeAdapterImplJni).insertMediaFromURL(anyLong(), eq("atestingdataurl"));
+    }
+
+    @Test
     public void testPerformSpellCheck() {
         ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
         adapter.onConnectedToRenderProcess();
