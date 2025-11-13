@@ -117,6 +117,11 @@ class SingleClientAppListSyncTest : public SyncTest {
     SyncAppListHelper::GetInstance();
     return true;
   }
+
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
 };
 
 class SingleClientAppListSyncTestWithVerifier
@@ -247,6 +252,11 @@ class SingleClientAppListOsSyncTest : public SyncTest {
  public:
   SingleClientAppListOsSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientAppListOsSyncTest() override = default;
+
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientAppListOsSyncTest,
