@@ -769,7 +769,18 @@ export class SearchboxElement extends SearchboxElementBase {
     this.queryAutocomplete_(this.$.input.value);
   }
 
-  protected onInputPaste_() {
+  protected onInputPaste_(e: ClipboardEvent) {
+    if (e.clipboardData?.files && e.clipboardData.files.length > 0) {
+      const files = Array.from(e.clipboardData.files);
+      if (files.length > 0) {
+        e.preventDefault();
+        const dataTransfer = new DataTransfer();
+        files.forEach(file => dataTransfer.items.add(file));
+        this.$.context.addFiles(dataTransfer.files);
+        return;
+      }
+    }
+
     this.pastedInInput_ = true;
   }
 
