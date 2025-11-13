@@ -5829,7 +5829,7 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
   CanvasResourceProviderBitmap* resource_provider_bitmap =
       static_cast<CanvasResourceProviderBitmap*>(resource_provider);
 
-  resource_provider_bitmap->ExternalCanvasDrawHelper(
+  return resource_provider_bitmap->DoExternalDrawAndSnapshot(
       [&](MemoryManagedPaintCanvas& canvas) {
         if (!image->IsOpaque()) {
           canvas.clear(SkColors::kTransparent);
@@ -5844,8 +5844,6 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
         image->Draw(&canvas, flags, gfx::RectF(dest_rect), gfx::RectF(src_rect),
                     draw_options);
       });
-
-  return resource_provider_bitmap->Snapshot(FlushReason::kOther);
 }
 
 WebGLTexture* WebGLRenderingContextBase::ValidateTexImageBinding(

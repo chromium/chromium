@@ -428,6 +428,13 @@ class PLATFORM_EXPORT CanvasResourceProviderBitmap
   scoped_refptr<StaticBitmapImage> Snapshot(
       FlushReason reason,
       ImageOrientation = ImageOrientationEnum::kDefault) override;
+  scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
+      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
+      ImageOrientation orientation = ImageOrientationEnum::kDefault) {
+    draw_callback(Canvas());
+    return Snapshot(FlushReason::kOther, orientation);
+  }
+
   void RasterRecord(cc::PaintRecord last_recording) override;
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,
