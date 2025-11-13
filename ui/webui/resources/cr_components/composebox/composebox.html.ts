@@ -73,7 +73,7 @@ export function getHtml(this: ComposeboxElement) {
       </div>
       <contextual-entrypoint-and-carousel id="context" part="context-entrypoint"
           class="${this.carouselOnTop_ && this.isCollapsible ? 'icon-fade' : ''}"
-          exportparts="context-menu-entrypoint-icon, cr-composebox-file-carousel, upload-container, voice-icon, carousel-divider"
+          exportparts="context-menu-entrypoint-icon, cr-composebox-file-carousel, upload-container, voice-icon, carousel-divider, carousel-container"
           .tabSuggestions="${this.tabSuggestions_}"
           .entrypointName="${this.entrypointName ? this.entrypointName : 'Composebox'}"
           @add-tab-context="${this.addTabContext_}"
@@ -90,7 +90,7 @@ export function getHtml(this: ComposeboxElement) {
           ?carousel-on-top_="${this.carouselOnTop_}"
           ?show-voice-search="${this.shouldShowVoiceSearch_()}"
           .parentFocused="${true}"
-          .submitButtonShown="${this.submitEnabled_ && this.showSubmit_}">
+          .submitButtonShown="${this.ntpRealboxNextEnabled && this.submitEnabled_ && this.showSubmit_}">
         <cr-composebox-dropdown
             id="matches"
             part="dropdown"

@@ -80,7 +80,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       this.searchboxLayoutMode === 'TallTopContext' && this.showVoiceSearch ?
           voiceSearchButton :
           ''}
-          ${
+        ${
       this.searchboxLayoutMode === 'TallTopContext' && this.submitButtonShown ?
           html`<slot name="submit-button"></slot>` :
           ''}
@@ -90,16 +90,23 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
   ${this.searchboxLayoutMode === 'Compact' ? contextMenu : ''}
-  ${this.showFileCarousel_ ? html`
-    <cr-composebox-file-carousel
-      part="cr-composebox-file-carousel"
-      id="carousel"
-      class="${this.carouselOnTop_ ? 'top' : ''}"
-      .files="${Array.from(this.files_.values())}"
-      @delete-file="${this.onDeleteFile_}">
-    </cr-composebox-file-carousel> ` : ''}
+  <div part="carousel-container">
+    ${this.showFileCarousel_ ? html`
+      <cr-composebox-file-carousel
+        part="cr-composebox-file-carousel"
+        id="carousel"
+        class="${this.carouselOnTop_ ? 'top' : ''}"
+        .files="${Array.from(this.files_.values())}"
+        @delete-file="${this.onDeleteFile_}">
+      </cr-composebox-file-carousel> ` : ''}
+    ${this.submitButtonShown && this.searchboxLayoutMode === 'Compact' ?
+      html`<slot name="submit-button"></slot>` :
+      ''}
+  </div>
   ${this.searchboxLayoutMode === 'TallTopContext' ? contextMenu : ''}
-  ${this.showDropdown && (this.showFileCarousel_ || this.searchboxLayoutMode === 'TallTopContext') ? html`
+  ${this.showDropdown && (this.showFileCarousel_ ||
+    this.searchboxLayoutMode === 'TallTopContext' ||
+    (this.submitButtonShown && this.searchboxLayoutMode === 'Compact')) ? html`
   <div class="carousel-divider" part="carousel-divider"></div>` : ''}
   <!-- Suggestions are slotted in from the parent component. -->
   <slot id="dropdownMatches"></slot>
