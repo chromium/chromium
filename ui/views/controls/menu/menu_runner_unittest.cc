@@ -33,6 +33,7 @@
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/menu/test_menu_item_view.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/test/menu_test_utils.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_base.h"
@@ -992,6 +993,26 @@ TEST_F(MenuRunnerTest, ShowMenuHostDurationMetricsDoesNotLog) {
   histogram_tester.ExpectTotalCount(histogram_name, 0);
   run_loop.Run();
   histogram_tester.ExpectTotalCount(histogram_name, 0);
+}
+
+TEST_F(MenuRunnerTest, FirstMenuItemSelectedWhenOpenedFromKeyboard) {
+  if (!PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard) {
+    GTEST_SKIP() << "Behavior not present on this platform";
+  }
+  InitMenuRunner(MenuRunner::INVOKED_FROM_KEYBOARD);
+
+  menu_item_view()->AppendMenuItem(3, u"Three");
+
+  // Call RunMenuAt with MenuSourceType::kNone; we should infer kKeyboard from
+  // the RunType set above.
+  menu_runner()->RunMenuAt(owner(),
+                           /*button_controller=*/nullptr, gfx::Rect(),
+                           MenuAnchorPosition::kTopLeft,
+                           ui::mojom::MenuSourceType::kNone);
+
+  EXPECT_TRUE(IsItemSelected(TestCommandIds::kItem1));
+  EXPECT_FALSE(IsItemSelected(TestCommandIds::kItem2));
+  EXPECT_FALSE(IsItemSelected(3));
 }
 
 }  // namespace views::test

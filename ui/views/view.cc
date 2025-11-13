@@ -2711,10 +2711,22 @@ void View::Focus() {
     AXVirtualView* const focused_virtual_child =
         view_accessibility_ ? view_accessibility_->FocusedVirtualChild()
                             : nullptr;
-    if (focused_virtual_child) {
-      focused_virtual_child->NotifyEvent(ax::mojom::Event::kFocus, true);
-    } else {
-      NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
+
+    // Rare edge case: the top-level window can briefly lose focus to a child
+    // widget that is then destroyed (e.g., another widget opens, gains focus,
+    // and sets the popup-focus override). Destruction reactivates the top-level
+    // window, so we guard against inconsistent focus state here.
+    //
+    // TODO(crbug.com/40672441): Clean this up when we manage focus correctly
+    // with ViewsAX and remove the concept of popup focus override.
+    if (!ui::AXPlatformNode::GetPopupFocusOverride() ||
+        ui::AXPlatformNode::GetPopupFocusOverride() ==
+            GetNativeViewAccessible()) {
+      if (focused_virtual_child) {
+        focused_virtual_child->NotifyEvent(ax::mojom::Event::kFocus, true);
+      } else {
+        NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
+      }
     }
   }
 

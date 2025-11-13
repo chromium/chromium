@@ -51,6 +51,7 @@
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/menu_test_utils.h"
 #include "ui/views/test/views_test_base.h"
@@ -3520,10 +3521,10 @@ TEST_F(MenuControllerTest, RemoveEmptyMenuMenuItemWhileSelected) {
   EXPECT_EQ(item, submenu->children()[0]);
 }
 
-#if BUILDFLAG(IS_WIN)
-// The following tests are only relevant on platforms that select the first
-// menu item when a menu is opened via keyboard input.
 TEST_F(MenuControllerTest, FirstMenuItemSelectedWhenOpenedFromKeyboard) {
+  if (!PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard) {
+    GTEST_SKIP() << "Behavior not present on this platform";
+  }
   // Use existing menu items from the test setup.
   MenuItemView* root = menu_item();
   MenuItemView* item1 = root->GetSubmenu()->GetMenuItemAt(0);
@@ -3543,6 +3544,9 @@ TEST_F(MenuControllerTest, FirstMenuItemSelectedWhenOpenedFromKeyboard) {
 }
 
 TEST_F(MenuControllerTest, NoItemSelectedWhenOpenedFromMouse) {
+  if (!PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard) {
+    GTEST_SKIP() << "Behavior not present on this platform";
+  }
   // Use existing menu items from the test setup.
   MenuItemView* root = menu_item();
   MenuItemView* item1 = root->GetSubmenu()->GetMenuItemAt(0);
@@ -3563,6 +3567,10 @@ TEST_F(MenuControllerTest, NoItemSelectedWhenOpenedFromMouse) {
 
 TEST_F(MenuControllerTest,
        FirstMenuItemButtonHotTrackedWhenOpenedFromKeyboard) {
+  if (!PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard) {
+    GTEST_SKIP() << "Behavior not present on this platform";
+  }
+
   // Set up a menu with one button in the first menu item.
   SubmenuView* const submenu = menu_item()->GetSubmenu();
   MenuItemView* first_item = submenu->GetMenuItemAt(0);
@@ -3591,6 +3599,9 @@ TEST_F(MenuControllerTest,
 
 TEST_F(MenuControllerTest,
        FirstMenuItemButtonNotHotTrackedWhenOpenedFromMouse) {
+  if (!PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard) {
+    GTEST_SKIP() << "Behavior not present on this platform";
+  }
   // Set up a menu with one button in the first menu item.
   SubmenuView* const submenu = menu_item()->GetSubmenu();
   MenuItemView* first_item = submenu->GetMenuItemAt(0);
@@ -3616,6 +3627,5 @@ TEST_F(MenuControllerTest,
 
   EXPECT_FALSE(button1->IsHotTracked());
 }
-#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace views
