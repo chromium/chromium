@@ -24,12 +24,11 @@ class ScreenScreenOrientation final
 
   static ScreenOrientation* orientation(Screen&);
 
-  explicit ScreenScreenOrientation(Screen& screen);
+  explicit ScreenScreenOrientation() = default;
 
   void Trace(Visitor*) const override;
 
  private:
-  Member<Screen> screen_;
   Member<ScreenOrientation> orientation_;
 };
 
