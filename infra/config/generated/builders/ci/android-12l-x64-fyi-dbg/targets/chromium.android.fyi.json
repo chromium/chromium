@@ -1208,7 +1208,6 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable_fyi.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
