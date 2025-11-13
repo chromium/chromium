@@ -269,6 +269,11 @@ message AutofillAiUserPromptMetrics {
   AutofillAiEntityType entity_type = 5 [features = { field_presence: IMPLICIT }];
 
   AutofillAiPromptUserDecision result = 6 [features = { field_presence: IMPLICIT }];
+
+  // The signature of the form. This is the hash identifier used to denote this
+  // form for query and voting purposes. See
+  // components/autofill/core/common/signatures.cc for more details.
+  uint64 form_signature = 7 [features = { field_presence: IMPLICIT }];
 }
 
 enum AutofillAiFieldEventType {

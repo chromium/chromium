@@ -361,7 +361,7 @@ message ContentAttributes {
 }
 
 // The geometry of the content, in the page coordinate system.
-// Next ID: 6
+// Next ID: 7
 // NOTE: If `visual_bounding_box` is empty, i.e., the content is offscreen and
 // it's in an iframe, the `outer_bounding_box` may be incorrect. See crbug.com/384996050
 // for details.
@@ -385,6 +385,14 @@ message Geometry {
   // ancestor clipping. These are the element bounds visible to the user and
   // hit-testable in the DOM.
   BoundingRect visible_bounding_box = 2 [features = { field_presence: EXPLICIT }];
+
+  // Multiple boxes are used when there are multiple rectangles belonging to
+  // the same node, e.g.: across multiple lines, columns or pages. In layout
+  // terms, a node that does this is called a fragmentainer.
+  // Each rectangle represents a hit testable fragment belonging to the node.
+  // An empty array indicates that the node is not fragmented or is entirely
+  // offscreen. Relative to viewport origin.
+  repeated BoundingRect fragment_visible_bounding_boxes = 6;
 
   // Whether the content node is fixed or sticky position. This may suggest
   // that the node is a header, footer, or sidebar.

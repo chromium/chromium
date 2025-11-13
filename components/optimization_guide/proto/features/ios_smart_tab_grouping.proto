@@ -56,5 +56,21 @@ message IosSmartTabGroupingRequest {
 // Next ID: 2
 message IosSmartTabGroupingResponse {
   // Resulting tab groups.
-  repeated TabGroup tab_groups = 1;
+  repeated TabGroupMinimal tab_groups = 1;
+}
+
+// The minimal representation of a tab group for iOS Smart Tab Grouping.
+// Next ID: 5
+message TabGroupMinimal {
+  // The label that describes this tab group.
+  string label = 1 [features = { field_presence: EXPLICIT }];
+
+  // The ids of the tabs that belong in this group.
+  repeated int64 tab_ids = 2;
+
+  // The id of the pre-existing tab group this corresponds to, if any.
+  string group_id = 3 [features = { field_presence: EXPLICIT }];
+
+  // The emoji that represents this tab group, encoded in UTF-8.
+  string emoji = 4 [features = { field_presence: EXPLICIT }];
 }
