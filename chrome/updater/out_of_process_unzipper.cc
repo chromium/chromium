@@ -156,7 +156,7 @@ void OutOfProcessUnzipper::Unzip(const base::FilePath& zip_path,
                                  const base::FilePath& output_path,
                                  UnzipCompleteCallback callback) {
   // For now, run in-process until the mojo Unzip interface supports symlink
-  // preservation.
+  // preservation and preserving file mtimes on POSIX (crbug.com/40840483).
   std::move(callback).Run(zip::Unzip(zip_path, output_path, {},
   // Allow internal symbolic links in zip files on macOS.
 #if BUILDFLAG(IS_POSIX)
