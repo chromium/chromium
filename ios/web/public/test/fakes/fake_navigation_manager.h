@@ -7,7 +7,6 @@
 
 #import <optional>
 
-#include "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"

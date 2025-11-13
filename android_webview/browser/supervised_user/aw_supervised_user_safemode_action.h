@@ -7,7 +7,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "url/gurl.h"

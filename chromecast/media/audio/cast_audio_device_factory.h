@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_MEDIA_AUDIO_CAST_AUDIO_DEVICE_FACTORY_H_
 #define CHROMECAST_MEDIA_AUDIO_CAST_AUDIO_DEVICE_FACTORY_H_
 
-#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromecast/base/bitstream_audio_codecs.h"
 #include "media/audio/audio_sink_parameters.h"

@@ -14,8 +14,6 @@
 #include <variant>
 
 #include "base/base_export.h"
-// TODO(pmonette): Fix IWYU issues, and remove this include.
-#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/memory_pressure_level.h"
 #include "base/memory/scoped_refptr.h"

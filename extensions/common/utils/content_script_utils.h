@@ -9,7 +9,6 @@
 
 #include "base/auto_reset.h"
 #include "base/files/file_path.h"
-#include "base/functional/callback.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/api/scripts_internal.h"
 #include "extensions/common/extension.h"

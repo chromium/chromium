@@ -8,7 +8,6 @@
 #include <dawn/dawn_proc_table.h>
 #include <dawn/webgpu.h>
 
-#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "gpu/command_buffer/client/interface_base.h"

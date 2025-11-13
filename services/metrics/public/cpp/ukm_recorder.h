@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/feature_list.h"
-#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"

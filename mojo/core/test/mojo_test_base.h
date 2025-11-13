@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "mojo/core/test/multiprocess_test_helper.h"

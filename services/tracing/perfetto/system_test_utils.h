@@ -9,8 +9,6 @@
 #include <optional>
 #include <string>
 
-#include "base/functional/callback.h"
-
 namespace base {
 class ScopedTempDir;
 }

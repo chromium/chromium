@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/functional/callback.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
 #include "device/bluetooth/dbus/bluetooth_device_client.h"

@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback.h"
-
 namespace remoting {
 
 namespace protocol {

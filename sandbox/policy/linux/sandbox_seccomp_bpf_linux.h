@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/scoped_file.h"
-#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"

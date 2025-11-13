@@ -6,7 +6,6 @@
 #define DEVICE_VR_VR_DEVICE_BASE_H_
 
 #include "base/component_export.h"
-#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"

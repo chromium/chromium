@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/functional/callback.h"
 #include "components/guest_view/browser/guest_view_base.h"
 
 class GURL;

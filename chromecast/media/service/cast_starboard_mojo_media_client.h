@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_MEDIA_SERVICE_CAST_STARBOARD_MOJO_MEDIA_CLIENT_H_
 #define CHROMECAST_MEDIA_SERVICE_CAST_STARBOARD_MOJO_MEDIA_CLIENT_H_
 
-#include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "chromecast/media/service/create_mojo_media_client.h"
 #include "media/mojo/services/mojo_media_client.h"

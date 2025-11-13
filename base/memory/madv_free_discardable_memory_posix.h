@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/functional/callback.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"

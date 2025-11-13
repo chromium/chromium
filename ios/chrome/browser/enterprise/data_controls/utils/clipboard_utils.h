@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_UTILS_CLIPBOARD_UTILS_H_
 #define IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_UTILS_CLIPBOARD_UTILS_H_
 
-#import "base/functional/callback.h"
 #import "base/functional/callback_forward.h"
 #import "components/enterprise/data_controls/core/browser/verdict.h"
 #import "ios/web/public/web_state.h"

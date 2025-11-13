@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_SSL_MODEL_IOS_CAPTIVE_PORTAL_BLOCKING_PAGE_H_
 #define IOS_CHROME_BROWSER_SSL_MODEL_IOS_CAPTIVE_PORTAL_BLOCKING_PAGE_H_
 
-#include "base/functional/callback.h"
 #include "ios/components/security_interstitials/ios_security_interstitial_page.h"
 #include "url/gurl.h"
 

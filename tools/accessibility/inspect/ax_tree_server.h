@@ -6,7 +6,6 @@
 #define AX_TREE_SERVER_H_
 
 #include "base/files/file_path.h"
-#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 

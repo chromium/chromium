@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "media/base/audio_latency.h"
 
 namespace audio {
