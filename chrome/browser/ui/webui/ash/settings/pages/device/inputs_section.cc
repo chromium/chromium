@@ -74,30 +74,6 @@ base::span<const SearchConcept> GetDefaultSearchConcepts() {
   return tags;
 }
 
-base::span<const SearchConcept> GetSuggestionsSearchConcepts() {
-  static constexpr auto tags = std::to_array<SearchConcept>({
-      {IDS_OS_SETTINGS_TAG_LANGUAGES_SUGGESTIONS,
-       mojom::kInputSubpagePath,
-       mojom::SearchResultIcon::kLanguage,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kInput}},
-  });
-  return tags;
-}
-
-base::span<const SearchConcept> GetEmojiSuggestionSearchConcepts() {
-  static constexpr auto tags = std::to_array<SearchConcept>({
-      {IDS_OS_SETTINGS_TAG_LANGUAGES_EMOJI_SUGGESTIONS,
-       mojom::kInputSubpagePath,
-       mojom::SearchResultIcon::kLanguage,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kShowEmojiSuggestions}},
-  });
-  return tags;
-}
-
 base::span<const SearchConcept> GetSpellCheckSearchConcepts() {
   static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_EDIT_DICTIONARY,
@@ -319,16 +295,14 @@ void AddInputMethodOptionsLoadTimeData(
   html_source->AddBoolean("allowFirstPartyVietnameseInput", true);
 }
 
-void AddSuggestionsLoadTimeData(content::WebUIDataSource* html_source,
-                                bool allow_emoji_suggestion_settings_to_show) {
+void AddSuggestionsLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"suggestionsTitle", IDS_SETTINGS_SUGGESTIONS_TITLE},
       {"emojiSuggestionTitle", IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_TITLE},
       {"emojiSuggestionDescription",
        IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_DESCRIPTION}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
-  html_source->AddBoolean("allowEmojiSuggestion",
-                          allow_emoji_suggestion_settings_to_show);
+  html_source->AddBoolean("allowEmojiSuggestion", false);
 }
 
 }  // namespace
@@ -356,13 +330,6 @@ InputsSection::InputsSection(Profile* profile,
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetDefaultSearchConcepts());
-
-  bool should_show_emoji_suggestions_settings =
-      ShouldShowEmojiSuggestionsSettings();
-  if (should_show_emoji_suggestions_settings) {
-    updater.AddSearchTags(GetSuggestionsSearchConcepts());
-    updater.AddSearchTags(GetEmojiSuggestionSearchConcepts());
-  }
 
   UpdateSpellCheckSearchTags();
 
@@ -516,8 +483,7 @@ void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       input_method::IsPhysicalKeyboardAutocorrectAllowed(*pref_service_),
       input_method::IsPhysicalKeyboardPredictiveWritingAllowed(*pref_service_));
 
-  AddSuggestionsLoadTimeData(html_source,
-                             ShouldShowEmojiSuggestionsSettings());
+  AddSuggestionsLoadTimeData(html_source);
 }
 
 void InputsSection::AddHandlers(content::WebUI* web_ui) {
@@ -631,10 +597,6 @@ void InputsSection::InputMethodChanged(
     Profile* profile,
     bool show_message) {
   UpdateAutocorrectTags(manager);
-}
-
-bool InputsSection::ShouldShowEmojiSuggestionsSettings() const {
-  return false;
 }
 
 bool InputsSection::IsSpellCheckEnabled() const {

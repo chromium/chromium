@@ -45,7 +45,6 @@ class InputsSection : public OsSettingsSection,
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
  private:
-  bool ShouldShowEmojiSuggestionsSettings() const;
   bool IsSpellCheckEnabled() const;
   void UpdateSpellCheckSearchTags();
   void UpdateAutocorrectTags(input_method::InputMethodManager* manager);
