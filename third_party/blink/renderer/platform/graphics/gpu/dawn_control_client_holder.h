@@ -9,12 +9,14 @@
 
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace base {
 
@@ -27,6 +29,8 @@ namespace blink {
 namespace scheduler {
 class EventLoop;
 }  // namespace scheduler
+
+class WebGPUMailboxTexture;
 
 // This class holds the WebGraphicsContext3DProviderWrapper and a strong
 // reference to the WebGPU APIChannel.
@@ -63,6 +67,9 @@ class PLATFORM_EXPORT DawnControlClientHolder
   // Ensure commands on this client are flushed by the end of the task.
   void EnsureFlush(scheduler::EventLoop& event_loop);
 
+  void TrackMailboxTexture(base::WeakPtr<WebGPUMailboxTexture>);
+  void UntrackMailboxTexture(base::WeakPtr<WebGPUMailboxTexture>);
+
  private:
   friend class RefCounted<DawnControlClientHolder>;
   ~DawnControlClientHolder();
@@ -72,6 +79,7 @@ class PLATFORM_EXPORT DawnControlClientHolder
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   scoped_refptr<gpu::webgpu::APIChannel> api_channel_;
   WebGPURecyclableResourceCache recyclable_resource_cache_;
+  Vector<base::WeakPtr<WebGPUMailboxTexture>> mailbox_textures_;
 
   base::WeakPtrFactory<DawnControlClientHolder> weak_ptr_factory_{this};
 };

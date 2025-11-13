@@ -990,6 +990,10 @@ const wgpu::dawn::wire::client::Texture& WebGPUTextureScopedAccess::texture() {
   return *texture_.get();
 }
 
+void WebGPUTextureScopedAccess::ClearContext() {
+  webgpu_ = nullptr;
+}
+
 void WebGPUTextureScopedAccess::SetNeedsPresent(bool needs_present) {
   needs_present_ = needs_present;
 }

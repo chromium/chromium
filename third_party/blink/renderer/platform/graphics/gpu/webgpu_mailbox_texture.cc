@@ -201,6 +201,7 @@ WebGPUMailboxTexture::WebGPUMailboxTexture(
       shared_image_(std::move(shared_image)),
       finished_access_callback_(std::move(finished_access_callback)),
       recyclable_canvas_resource_(std::move(recyclable_canvas_resource)) {
+  dawn_control_client_->TrackMailboxTexture(weak_ptr_factory_.GetWeakPtr());
 #if BUILDFLAG(USE_DAWN)
   DCHECK(dawn_control_client_->GetContextProviderWeakPtr());
 
@@ -259,6 +260,11 @@ gpu::SyncToken WebGPUMailboxTexture::Dissociate() {
         recyclable_canvas_resource_->SetCompletionSyncToken(
             finished_access_token);
       }
+    } else {
+      // The context is lost, which means that WebGPUInterface may be already
+      // destroyed. So, set WebGPUTextureScopedAccess' raw_ptr reference to
+      // null to avoid its automatic dangling pointer check on destruction.
+      scoped_access_->ClearContext();
     }
     // Run the finished access callback even if the context provider is lost.
     // The callback could be holding on to refs that need to be released.
@@ -285,6 +291,7 @@ void WebGPUMailboxTexture::SetCompletionSyncToken(const gpu::SyncToken& token) {
 }
 
 WebGPUMailboxTexture::~WebGPUMailboxTexture() {
+  dawn_control_client_->UntrackMailboxTexture(weak_ptr_factory_.GetWeakPtr());
   Dissociate();
 }
 

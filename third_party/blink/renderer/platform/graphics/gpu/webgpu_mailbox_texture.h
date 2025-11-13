@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
@@ -92,6 +93,10 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
       base::OnceCallback<void(const gpu::SyncToken&)> finished_access_callback,
       std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource);
 
+  base::WeakPtr<WebGPUMailboxTexture> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   wgpu::Device device_;
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
@@ -99,6 +104,7 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
   base::OnceCallback<void(const gpu::SyncToken&)> finished_access_callback_;
   std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource_;
   scoped_refptr<WebGPUTextureAlphaClearer> alpha_clearer_;
+  base::WeakPtrFactory<WebGPUMailboxTexture> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

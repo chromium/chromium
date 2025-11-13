@@ -575,6 +575,11 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT WebGPUTextureScopedAccess {
   void SetNeedsPresent(bool needs_present);
   const wgpu::dawn::wire::client::Texture& texture();
 
+  // This method is used to clear the context before the object is destroyed.
+  // This is necessary to avoid a dangling pointer crash when the context is
+  // lost.
+  void ClearContext();
+
  private:
   friend class ClientSharedImage;
   WebGPUTextureScopedAccess(
@@ -586,7 +591,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT WebGPUTextureScopedAccess {
       uint64_t usage,
       webgpu::MailboxFlags mailbox_flags);
 
-  const raw_ptr<webgpu::WebGPUInterface> webgpu_;
+  raw_ptr<webgpu::WebGPUInterface> webgpu_;
   std::unique_ptr<wgpu::dawn::wire::client::Texture> texture_;
   raw_ptr<gpu::ClientSharedImage> shared_image_;
   uint32_t device_id_ = 0;
