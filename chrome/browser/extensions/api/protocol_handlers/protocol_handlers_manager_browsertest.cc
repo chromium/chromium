@@ -21,6 +21,10 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
+#endif
+
 namespace {
 
 static constexpr const char kExtensionPath[] =
@@ -63,6 +67,20 @@ class ProtocolHandlersManagerBrowserTest : public ExtensionBrowserTest {
   content::WebContents* GetWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
+
+  // TODO(crbug.com/40482153): Figure out why we need to add a Testing Factory
+  // only for Mac and eventually solve it so that we can get rid of this
+  // mac-specific code.
+#if BUILDFLAG(IS_MAC)
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
+    Profile* profile = Profile::FromBrowserContext(context);
+    ProtocolHandlerRegistryFactory::GetInstance()->SetTestingFactory(
+        profile, custom_handlers::SimpleProtocolHandlerRegistryFactory::
+                     GetDefaultFactory());
+  }
+#endif
 
  private:
   base::test::ScopedFeatureList feature_list_;

@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/protocol_handlers/protocol_handlers_manager.h"
 
+#include "base/check_is_test.h"
 #include "base/lazy_instance.h"
 #include "base/one_shot_event.h"
 #include "components/custom_handlers/protocol_handler.h"
@@ -101,7 +102,11 @@ void ProtocolHandlersManager::OnExtensionLoaded(
 
   auto* registry = ExtensionsBrowserClient::Get()->GetProtocolHandlerRegistry(
       browser_context);
-  CHECK(registry);
+  // Can be null for tests using dummy profiles.
+  if (!registry) {
+    CHECK_IS_TEST();
+    return;
+  }
 
   RegisterHandlersIfNeeded(extension->id(), *info, *registry);
 }
@@ -118,7 +123,11 @@ void ProtocolHandlersManager::OnExtensionUnloaded(
 
   auto* registry = ExtensionsBrowserClient::Get()->GetProtocolHandlerRegistry(
       browser_context);
-  CHECK(registry);
+  // Can be null for tests using dummy profiles.
+  if (!registry) {
+    CHECK_IS_TEST();
+    return;
+  }
 
   UnregisterHandlersIfNeeded(extension->id(), *info, *registry);
 }
@@ -129,7 +138,11 @@ void ProtocolHandlersManager::ProtocolHandlersSanityCheck() {
   auto* ph_registry =
       ExtensionsBrowserClient::Get()->GetProtocolHandlerRegistry(
           browser_context_);
-  DCHECK(ph_registry);
+  // Can be null for tests using dummy profiles.
+  if (!ph_registry) {
+    CHECK_IS_TEST();
+    return;
+  }
   for (const auto& handler : ph_registry->GetExtensionProtocolHandlers()) {
     DCHECK(handler.extension_id());
     if (!enabled_ids.contains(*handler.extension_id())) {

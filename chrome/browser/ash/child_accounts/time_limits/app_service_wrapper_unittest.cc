@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/child_accounts/apps/app_test_utils.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -43,7 +42,6 @@
 #include "chromeos/ash/experiences/arc/mojom/app_permissions.mojom.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "components/app_constants/constants.h"
-#include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -109,10 +107,6 @@ class AppServiceWrapperTest : public ::testing::Test {
     arc_app_test_.PreProfileSetUp();
     profile_ = std::make_unique<TestingProfile>();
     tested_wrapper_ = std::make_unique<AppServiceWrapper>(profile_.get());
-
-    ProtocolHandlerRegistryFactory::GetInstance()->SetTestingFactory(
-        profile_.get(), custom_handlers::SimpleProtocolHandlerRegistryFactory::
-                            GetDefaultFactory());
 
     auto* extension_system(static_cast<extensions::TestExtensionSystem*>(
         extensions::ExtensionSystem::Get(profile_.get())));

@@ -27,7 +27,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -44,7 +43,6 @@
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/features.h"
@@ -255,12 +253,6 @@ class ThemeSyncableServiceTest : public testing::Test,
     extension_test_util::SetGalleryUpdateURL(GURL(kCustomThemeUrl));
 
     TestingProfile::Builder builder;
-    // Use SimpleProtocolHandlerRegistryFactory to prevent OS integration during
-    // the protocol registration process.
-    builder.AddTestingFactory(
-        ProtocolHandlerRegistryFactory::GetInstance(),
-        custom_handlers::SimpleProtocolHandlerRegistryFactory::
-            GetDefaultFactory());
     builder.AddTestingFactory(
         ThemeServiceFactory::GetInstance(),
         base::BindRepeating([](content::BrowserContext* context)

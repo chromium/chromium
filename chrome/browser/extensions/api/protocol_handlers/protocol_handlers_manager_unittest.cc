@@ -8,6 +8,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/switches.h"
 
@@ -27,10 +28,20 @@ class ProtocolHandlersManagerServiceTest : public ExtensionServiceTestBase {
   }
 
  protected:
+  TestingProfile::TestingFactories GetTestingFactories() const {
+    // Use SimpleProtocolHandlerRegistryFactory to prevent OS integration during
+    // the protocol registration process.
+    return TestingProfile::TestingFactories{TestingProfile::TestingFactory{
+        ProtocolHandlerRegistryFactory::GetInstance(),
+        custom_handlers::SimpleProtocolHandlerRegistryFactory::
+            GetDefaultFactory()}};
+  }
+
   // Initialize an ExtensionService with a few already-installed extensions
   // registering protocol handlers..
   void CreateExtensionService(bool extensions_enabled) {
     ExtensionServiceInitParams params;
+    params.testing_factories = GetTestingFactories();
     params.extensions_enabled = extensions_enabled;
     ASSERT_TRUE(params.ConfigureByTestDataDirectory(
         data_dir().AppendASCII("protocol_handlers_api")));

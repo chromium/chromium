@@ -6,7 +6,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_command_line.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/activity_log/activity_log_task_runner.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -14,7 +13,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/uninstall_reason.h"
@@ -42,15 +40,6 @@ class ActivityLogEnabledTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     ChromeRenderViewHostTestHarness::TearDown();
     SetActivityLogTaskRunnerForTesting(nullptr);
-  }
-
-  TestingProfile::TestingFactories GetTestingFactories() const override {
-    // Use SimpleProtocolHandlerRegistryFactory to prevent OS integration during
-    // the protocol registration process.
-    return TestingProfile::TestingFactories{TestingProfile::TestingFactory{
-        ProtocolHandlerRegistryFactory::GetInstance(),
-        custom_handlers::SimpleProtocolHandlerRegistryFactory::
-            GetDefaultFactory()}};
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

@@ -20,7 +20,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
@@ -44,7 +43,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/crx_verifier.h"
-#include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
 #include "components/policy/core/common/policy_service_impl.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -208,13 +206,6 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
   profile_builder.AddTestingFactory(
       ExtensionGarbageCollectorFactory::GetInstance(),
       base::BindRepeating(&ExtensionGarbageCollectorFactory::BuildInstanceFor));
-
-  // Use SimpleProtocolHandlerRegistryFactory to prevent OS integration during
-  // the protocol registration process.
-  profile_builder.AddTestingFactory(
-      ProtocolHandlerRegistryFactory::GetInstance(),
-      custom_handlers::SimpleProtocolHandlerRegistryFactory::
-          GetDefaultFactory());
 
   profile_builder.AddTestingFactories(std::move(params.testing_factories));
 
