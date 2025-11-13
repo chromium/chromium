@@ -334,6 +334,7 @@
   E_CPONLY(kColorNewTabPageOverlayForeground) \
   E_CPONLY(kColorNewTabPageOverlaySecondaryForeground) \
   E_CPONLY(kColorNewTabPagePrimaryForeground) \
+  E_CPONLY(kColorNewTabPageRealboxNextIconHover) \
   E_CPONLY(kColorNewTabPageSearchBoxBackground) \
   E_CPONLY(kColorNewTabPageSearchBoxBackgroundHovered) \
   E_CPONLY(kColorNewTabPageSearchBoxResultsTextDimmedSelected) \
