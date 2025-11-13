@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -22,6 +23,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
+#include "components/data_sharing/public/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -47,7 +49,12 @@ inline std::u16string utf16(const char* ascii) {
 
 class InSessionPasswordChangeManagerTest : public testing::Test {
  public:
-  InSessionPasswordChangeManagerTest() { UserDataAuthClient::InitializeFake(); }
+  InSessionPasswordChangeManagerTest() {
+    // TODO(b/459532359) : Remove the DataSharingJoinOnly flag from the disable list.
+    scoped_feature_list_.InitAndDisableFeature(
+        data_sharing::features::kDataSharingJoinOnly);
+    UserDataAuthClient::InitializeFake();
+  }
 
   ~InSessionPasswordChangeManagerTest() override {
     UserDataAuthClient::Shutdown();
@@ -98,6 +105,7 @@ class InSessionPasswordChangeManagerTest : public testing::Test {
     EXPECT_FALSE(Notification().has_value());
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment test_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

@@ -64,6 +64,7 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/mock_component_updater_service.h"
+#include "components/data_sharing/public/features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -947,7 +948,11 @@ class IsolatedWebAppRetryTest : public IsolatedWebAppPolicyManagerTestBase {
             /*is_mgs_session_install_enabled=*/false,
             /*is_user_session=*/true,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    features_.InitAndDisableFeature(kIwaPolicyManagerOnDemandComponentUpdate);
+    // TODO(b/459534539) : Remove the DataSharingJoinOnly flag from the disable list.
+    features_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{kIwaPolicyManagerOnDemandComponentUpdate,
+                               data_sharing::features::kDataSharingJoinOnly});
   }
 
  protected:

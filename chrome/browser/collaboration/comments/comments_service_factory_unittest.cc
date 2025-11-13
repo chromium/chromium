@@ -63,7 +63,8 @@ TEST_F(CommentsServiceFactoryTest, FeatureEnabledUsesNullInIncognito) {
 TEST_F(CommentsServiceFactoryTest, DataSharingDisabledUsesEmptyService) {
   scoped_feature_list_.InitWithFeatures(
       {features::kCollaborationComments},
-      {data_sharing::features::kDataSharingFeature});
+      {data_sharing::features::kDataSharingFeature,
+       data_sharing::features::kDataSharingJoinOnly});
   profile_ = TestingProfile::Builder().Build();
 
   CommentsService* service =

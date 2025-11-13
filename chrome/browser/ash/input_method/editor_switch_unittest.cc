@@ -24,6 +24,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "components/data_sharing/public/features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -630,9 +631,11 @@ TEST_P(EditorSwitchTriggerTest, TestEditorMode) {
                                test_case.additional_enabled_flags.end());
   // TODO: b:329215512: Remove the OrcaUseAccountCapabilities from the disable
   // list.
+  // TODO(b/459532441) : Remove the DataSharingJoinOnly flag from the disable list.
   feature_list.InitWithFeatures(
       /*enabled_features=*/base_enabled_features,
-      /*disabled_features=*/{ash::features::kOrcaUseAccountCapabilities});
+      /*disabled_features=*/{ash::features::kOrcaUseAccountCapabilities,
+                             data_sharing::features::kDataSharingJoinOnly});
   ScopedBrowserLocale browser_locale(test_case.locale);
 
   std::unique_ptr<TestingProfile> profile =
@@ -714,12 +717,14 @@ TEST_P(EditorSwitchDenylistTest, IsBlockedWhenVisitingUrlInDenylist) {
   const EditorMode& expected_mode = std::get<1>(test_case);
   content::BrowserTaskEnvironment task_environment;
   base::test::ScopedFeatureList feature_list;
+  // TODO(b/459532441) : Remove the DataSharingJoinOnly flag from the disable list.
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kOrca,
                             chromeos::features::kFeatureManagementOrca,
                             chromeos::features::kOrcaInternationalize},
       /*disabled_features=*/{ash::features::kOrcaUseAccountCapabilities,
-                             ash::features::kOrcaOnWorkspace});
+                             ash::features::kOrcaOnWorkspace,
+                             data_sharing::features::kDataSharingJoinOnly});
   ScopedBrowserLocale browser_locale("en");
 
   std::unique_ptr<TestingProfile> profile =
@@ -761,9 +766,12 @@ class InternationalizeTestSuite : public TestWithParam<InputMethodTestCase> {
  public:
   InternationalizeTestSuite()
       : browser_locale_("en"),
-        profile_(CreateTestingProfile("testuser@gmail.com")),
         geolocation_provider_(kAllowedTestCountry),
         context_(&context_observer_, &system_, &geolocation_provider_) {
+    // TODO(b/459532441) : Remove the DataSharingJoinOnly flag from the disable list.
+    scoped_feature_list_.InitAndDisableFeature(
+        data_sharing::features::kDataSharingJoinOnly);
+    profile_ = CreateTestingProfile("testuser@gmail.com");
     auto mock_notifier = net::test::MockNetworkChangeNotifier::Create();
     profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
     mock_notifier->SetConnectionType(
@@ -785,6 +793,9 @@ class InternationalizeTestSuite : public TestWithParam<InputMethodTestCase> {
   FakeEditorSwitchObserver switch_observer_;
   EditorGeolocationMockProvider geolocation_provider_;
   EditorContext context_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class EditorSwitchDefaultFlagsTest : public InternationalizeTestSuite {};

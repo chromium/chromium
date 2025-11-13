@@ -142,6 +142,8 @@ class VersioningMessageControllerImplTest : public testing::Test {
     } else {
       disabled_features.emplace_back(
           data_sharing::features::kDataSharingFeature);
+      disabled_features.emplace_back(
+          data_sharing::features::kDataSharingJoinOnly);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);

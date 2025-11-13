@@ -25,14 +25,15 @@ class DataSharingServiceFactoryTest : public testing::Test {
   ~DataSharingServiceFactoryTest() override = default;
 
   void InitService(bool enable_feature) {
-    profile_ = TestingProfile::Builder().Build();
     if (enable_feature) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
           {{data_sharing::features::kDataSharingFeature, {}}}, {});
     } else {
       scoped_feature_list_.InitWithFeaturesAndParameters(
-          {}, {{data_sharing::features::kDataSharingFeature}});
+          {}, {{data_sharing::features::kDataSharingFeature,
+                data_sharing::features::kDataSharingJoinOnly}});
     }
+    profile_ = TestingProfile::Builder().Build();
   }
 
   content::BrowserTaskEnvironment task_environment_;

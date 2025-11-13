@@ -25,6 +25,7 @@
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
+#include "components/data_sharing/public/features.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
@@ -67,7 +68,17 @@ scoped_refptr<const Extension> CreateExtensionWithOptionalPermissions(
       .Build();
 }
 
-class PermissionsUpdaterTest : public ExtensionServiceTestBase {};
+class PermissionsUpdaterTest : public ExtensionServiceTestBase {
+ public:
+  PermissionsUpdaterTest() {
+    // TODO(b/459532362) : Remove the DataSharingJoinOnly flag from the disable list.
+    scoped_feature_list_.InitAndDisableFeature(
+        data_sharing::features::kDataSharingJoinOnly);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 void AddPattern(URLPatternSet* extent, const std::string& pattern) {
   int schemes = URLPattern::SCHEME_ALL;

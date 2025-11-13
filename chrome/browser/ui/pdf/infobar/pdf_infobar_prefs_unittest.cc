@@ -5,9 +5,11 @@
 #include "chrome/browser/ui/pdf/infobar/pdf_infobar_prefs.h"
 
 #include "base/time/time.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/data_sharing/public/features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,7 +18,12 @@ namespace pdf::infobar {
 
 class PdfInfoBarPrefsTest : public testing::Test {
  protected:
-  PdfInfoBarPrefsTest() : profile_(std::make_unique<TestingProfile>()) {}
+  PdfInfoBarPrefsTest() {
+    // TODO(b/460188042) : Remove the DataSharingJoinOnly flag from the disable list.
+    scoped_feature_list_.InitAndDisableFeature(
+        data_sharing::features::kDataSharingJoinOnly);
+    profile_ = std::make_unique<TestingProfile>();
+  }
 
   TestingPrefServiceSimple* local_state() {
     return TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
@@ -32,7 +39,9 @@ class PdfInfoBarPrefsTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  const std::unique_ptr<TestingProfile> profile_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 TEST_F(PdfInfoBarPrefsTest, SetInfoBarShownRecently) {

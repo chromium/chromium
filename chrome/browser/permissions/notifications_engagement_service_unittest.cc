@@ -6,9 +6,11 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/data_sharing/public/features.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,8 +23,12 @@ constexpr char kSuspiciousKey[] = "suspicious_count";
 
 class NotificationsEngagementServiceTest : public testing::Test {
  public:
-  NotificationsEngagementServiceTest()
-      : profile_(std::make_unique<TestingProfile>()) {}
+  NotificationsEngagementServiceTest() {
+    // TODO(b/459533946) : Remove the DataSharingJoinOnly flag from the disable list.
+    scoped_feature_list_.InitAndDisableFeature(
+        data_sharing::features::kDataSharingJoinOnly);
+    profile_ = std::make_unique<TestingProfile>();
+  }
 
   void SetUp() override;
 
@@ -42,6 +48,7 @@ class NotificationsEngagementServiceTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfile> profile_;
 };
 

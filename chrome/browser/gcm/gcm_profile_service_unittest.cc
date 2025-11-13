@@ -14,12 +14,14 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/gcm/gcm_product_util.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/data_sharing/public/features.h"
 #include "components/gcm_driver/fake_gcm_app_handler.h"
 #include "components/gcm_driver/fake_gcm_client.h"
 #include "components/gcm_driver/fake_gcm_client_factory.h"
@@ -138,6 +140,7 @@ class GCMProfileServiceTest : public testing::Test {
   GCMClient::Result send_result() const { return send_result_; }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   std::unique_ptr<TestingProfile> profile_;
@@ -157,7 +160,11 @@ GCMProfileServiceTest::GCMProfileServiceTest()
       gcm_profile_service_(nullptr),
       gcm_app_handler_(new FakeGCMAppHandler),
       registration_result_(GCMClient::UNKNOWN_ERROR),
-      send_result_(GCMClient::UNKNOWN_ERROR) {}
+      send_result_(GCMClient::UNKNOWN_ERROR) {
+  // TODO(b/459533933) : Remove the DataSharingJoinOnly flag from the disable list.
+  feature_list_.InitAndDisableFeature(
+      data_sharing::features::kDataSharingJoinOnly);
+}
 
 GCMProfileServiceTest::~GCMProfileServiceTest() = default;
 

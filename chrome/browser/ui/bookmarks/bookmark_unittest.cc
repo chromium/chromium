@@ -244,12 +244,6 @@ TEST_F(BookmarkTest, SomeTabsInMultipleGroups) {
 }
 
 TEST_F(BookmarkTest, GetURLsAndFoldersForTabGroup) {
-  // Deflake the test by setting TabGroupSyncService initialized.
-  tab_groups::TabGroupSyncService* service =
-      static_cast<tab_groups::TabGroupSyncService*>(
-          tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-              browser()->profile()));
-  service->SetIsInitializedForTesting(true);
   const std::vector<GURL> urls = {GURL("http://localhost:8000/"),
                                   GURL("http://localhost:8001/"),
                                   GURL("http://localhost:8002/")};

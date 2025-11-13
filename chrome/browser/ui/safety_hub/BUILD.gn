@@ -267,6 +267,7 @@ source_set("unit_tests") {
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/content_settings/core/test:test_support",
+    "//components/data_sharing/public:features",
     "//components/password_manager/core/browser/password_store:test_support",
     "//components/permissions",
     "//components/permissions:permissions_common",

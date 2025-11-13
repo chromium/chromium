@@ -29,7 +29,8 @@ BASE_FEATURE(kDataSharingFeature,
 BASE_FEATURE(kDataSharingAccountDataMigration,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDataSharingJoinOnly, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDataSharingJoinOnly,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDataSharingNonProductionEnvironment,
              base::FEATURE_DISABLED_BY_DEFAULT);

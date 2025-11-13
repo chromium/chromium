@@ -63,6 +63,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/tabs:test_support",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//components/data_sharing/public:features",
     "//components/infobars/content",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
