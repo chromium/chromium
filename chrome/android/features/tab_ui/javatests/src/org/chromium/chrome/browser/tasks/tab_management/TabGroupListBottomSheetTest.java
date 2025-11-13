@@ -8,6 +8,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
+import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestinations;
+
+import android.util.Pair;
 
 import androidx.test.filters.MediumTest;
 
@@ -21,6 +24,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.ImportantFormFactors;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -35,6 +40,8 @@ import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 /**
  * Tests for the {@link androidx.recyclerview.widget.RecyclerView.ViewHolder} classes for {@link
@@ -111,7 +118,9 @@ public class TabGroupListBottomSheetTest {
 
     @Test
     @MediumTest
-    public void testNewGroup_IncognitoNewTabPageStation() {
+    @Restriction(DeviceFormFactor.PHONE)
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testNewGroup_IncognitoNewTabPageStation_Phone() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
                 Journeys.prepareTabs(firstPage, 1, 2, "about:blank", WebPageStation::newBuilder);
@@ -137,7 +146,39 @@ public class TabGroupListBottomSheetTest {
 
     @Test
     @MediumTest
-    public void testNewGroup_IncognitoWebPageStation() {
+    @ImportantFormFactors(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testNewGroup_IncognitoNewTabPageStation_Tablet() {
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        Pair<WebPageStation, WebPageStation> pageStations =
+                Journeys.prepareTabsSeparateWindows(
+                        firstPage, 1, 2, "about:blank", WebPageStation::newBuilder);
+
+        IncognitoTabSwitcherStation tabSwitcher = pageStations.second.openIncognitoTabSwitcher();
+        TabSwitcherGroupCardFacility groupCard = Journeys.mergeAllTabsToNewGroup(tabSwitcher);
+
+        IncognitoNewTabPageStation ntpStation =
+                groupCard.clickCard().openNewIncognitoTab().openAppMenu().openNewIncognitoTab();
+
+        assertTabGroupsExist(ntpStation);
+        assertCurrentTabIsNotInGroup(ntpStation);
+
+        ntpStation
+                .openAppMenu()
+                .selectAddToGroupWithBottomSheet()
+                .clickNewTabGroupRow()
+                .pressDoneToExit();
+        RegularNewTabPageStation finalStation = ntpStation.openAppMenu().openNewTab();
+
+        assertFinalDestinations(pageStations.first, ntpStation, finalStation);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testNewGroup_IncognitoWebPageStation_Phone() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
                 Journeys.prepareTabs(firstPage, 1, 2, "about:blank", WebPageStation::newBuilder);
@@ -165,6 +206,42 @@ public class TabGroupListBottomSheetTest {
                 webPageStation.openIncognitoTabAppMenu().openNewTab();
 
         assertFinalDestination(finalStation);
+    }
+
+    @Test
+    @MediumTest
+    @ImportantFormFactors(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testNewGroup_IncognitoWebPageStation_Tablet() {
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        Pair<WebPageStation, WebPageStation> pageStations =
+                Journeys.prepareTabsSeparateWindows(
+                        firstPage, 1, 2, "about:blank", WebPageStation::newBuilder);
+
+        IncognitoTabSwitcherStation tabSwitcher = pageStations.second.openIncognitoTabSwitcher();
+        TabSwitcherGroupCardFacility groupCard = Journeys.mergeAllTabsToNewGroup(tabSwitcher);
+
+        WebPageStation webPageStation =
+                groupCard
+                        .clickCard()
+                        .openNewIncognitoTab()
+                        .openAppMenu()
+                        .openNewIncognitoTab()
+                        .loadAboutBlank();
+
+        assertTabGroupsExist(webPageStation);
+        assertCurrentTabIsNotInGroup(webPageStation);
+
+        webPageStation
+                .openIncognitoTabAppMenu()
+                .selectAddToGroupWithBottomSheet()
+                .clickNewTabGroupRow()
+                .pressDoneToExit();
+        RegularNewTabPageStation finalStation =
+                webPageStation.openIncognitoTabAppMenu().openNewTab();
+
+        assertFinalDestinations(pageStations.first, webPageStation, finalStation);
     }
 
     private static void assertTabGroupsExist(CtaPageStation pageStation) {
