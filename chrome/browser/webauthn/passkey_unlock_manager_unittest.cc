@@ -15,6 +15,8 @@
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
 #include "content/public/test/browser_task_environment.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
+#include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "device/fido/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,10 +46,6 @@ class MockPasskeyUnlockManagerObserver : public PasskeyUnlockManager::Observer {
 };
 
 class PasskeyUnlockManagerTest : public testing::Test {
- public:
-  PasskeyUnlockManagerTest() = default;
-  ~PasskeyUnlockManagerTest() override = default;
-
  protected:
   void SetUp() override {
     TestingProfile::Builder builder;
@@ -77,9 +75,6 @@ class PasskeyUnlockManagerTest : public testing::Test {
     test_sync_service()->GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/true,
         /*types=*/{});
-    passkey_unlock_manager_ =
-        PasskeyUnlockManagerFactory::GetForProfile(profile_.get());
-    passkey_unlock_manager_->AddObserver(observer_.get());
   }
 
   void TearDown() override {
@@ -107,6 +102,16 @@ class PasskeyUnlockManagerTest : public testing::Test {
 
   syncer::TestSyncService* test_sync_service() { return test_sync_service_; }
 
+  void DisableUVKeySupport() {
+    fake_provider_.emplace<crypto::ScopedNullUserVerifyingKeyProvider>();
+  }
+
+  void SetUpPasskeyUnlockManager() {
+    passkey_unlock_manager_ =
+        PasskeyUnlockManagerFactory::GetForProfile(profile_.get());
+    passkey_unlock_manager_->AddObserver(observer_.get());
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_{device::kPasskeyUnlockManager};
@@ -115,19 +120,26 @@ class PasskeyUnlockManagerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<testing::StrictMock<MockPasskeyUnlockManagerObserver>>
       observer_;
+  std::variant<crypto::ScopedFakeUserVerifyingKeyProvider,
+               crypto::ScopedNullUserVerifyingKeyProvider,
+               crypto::ScopedFailingUserVerifyingKeyProvider>
+      fake_provider_;
 };
 
 TEST_F(PasskeyUnlockManagerTest, IsCreated) {
+  SetUpPasskeyUnlockManager();
   EXPECT_NE(passkey_unlock_manager(), nullptr);
 }
 
 TEST_F(PasskeyUnlockManagerTest, NotifyOnPasskeysChangedWhenPasskeyAdded) {
+  SetUpPasskeyUnlockManager();
   EXPECT_CALL(observer(), OnPasskeyUnlockManagerStateChanged());
   sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey();
   passkey_model()->AddNewPasskeyForTesting(passkey);
 }
 
 TEST_F(PasskeyUnlockManagerTest, ErrorUiShownWithPasskeysAndActiveSync) {
+  SetUpPasskeyUnlockManager();
   // With passkeys and active sync, the manager should notify and the error UI
   // should be shown.
   EXPECT_CALL(observer(), OnPasskeyUnlockManagerStateChanged());
@@ -136,6 +148,7 @@ TEST_F(PasskeyUnlockManagerTest, ErrorUiShownWithPasskeysAndActiveSync) {
 }
 
 TEST_F(PasskeyUnlockManagerTest, ErrorUiHiddenWhenTrustedVaultKeyRequired) {
+  SetUpPasskeyUnlockManager();
   // Start with a passkey and active sync.
   EXPECT_CALL(observer(), OnPasskeyUnlockManagerStateChanged());
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
@@ -150,6 +163,7 @@ TEST_F(PasskeyUnlockManagerTest, ErrorUiHiddenWhenTrustedVaultKeyRequired) {
 }
 
 TEST_F(PasskeyUnlockManagerTest, ErrorUiHiddenWhenSyncDisallowed) {
+  SetUpPasskeyUnlockManager();
   // Start with a passkey and active sync.
   EXPECT_CALL(observer(), OnPasskeyUnlockManagerStateChanged());
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
@@ -164,6 +178,7 @@ TEST_F(PasskeyUnlockManagerTest, ErrorUiHiddenWhenSyncDisallowed) {
 
 TEST_F(PasskeyUnlockManagerTest,
        ErrorUiHiddenWhenTrustedVaultRecoverabilityDegraded) {
+  SetUpPasskeyUnlockManager();
   // Start with a passkey and active sync.
   EXPECT_CALL(observer(), OnPasskeyUnlockManagerStateChanged());
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
@@ -179,6 +194,7 @@ TEST_F(PasskeyUnlockManagerTest,
 }
 
 TEST_F(PasskeyUnlockManagerTest, ErrorUiHiddenWhenPasskeysNotSynced) {
+  SetUpPasskeyUnlockManager();
   // Start with a passkey and active sync.
   EXPECT_CALL(observer(), OnPasskeyUnlockManagerStateChanged());
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
@@ -190,6 +206,27 @@ TEST_F(PasskeyUnlockManagerTest, ErrorUiHiddenWhenPasskeysNotSynced) {
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kPreferences});
   test_sync_service()->FireStateChanged();
+  EXPECT_FALSE(passkey_unlock_manager()->ShouldDisplayErrorUi());
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+// On Chrome OS, AreUserVerifyingKeysSupported always returns true, thus this
+// test cannot establish its preconditions.
+#define MAYBE_ErrorUiHiddenWithoutUVKeys DISABLED_ErrorUiHiddenWithoutUVKeys
+#else
+#define MAYBE_ErrorUiHiddenWithoutUVKeys ErrorUiHiddenWithoutUVKeys
+#endif
+
+TEST_F(PasskeyUnlockManagerTest, MAYBE_ErrorUiHiddenWithoutUVKeys) {
+  DisableUVKeySupport();
+  SetUpPasskeyUnlockManager();
+
+  EXPECT_CALL(observer(), OnPasskeyUnlockManagerStateChanged());
+  passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
+
+  // With passkeys and active sync, the passkey unlock manager should notify its
+  // observers and the error UI should be shown, but doesn't show when there is
+  // no UV key support.
   EXPECT_FALSE(passkey_unlock_manager()->ShouldDisplayErrorUi());
 }
 

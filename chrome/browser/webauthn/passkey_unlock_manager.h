@@ -98,8 +98,14 @@ class PasskeyUnlockManager : public KeyedService,
   void AsynchronouslyCheckGpmPinAvailability();
   // Caches `has_system_uv_`.
   void AsynchronouslyCheckSystemUVAvailability();
+  // Callback for `AsynchronouslyCheckSystemUVAvailability`.
+  void OnHaveSystemUVAvailability(bool has_system_uv);
   // Caches `enclave_ready_`.
   void AsynchronouslyLoadEnclaveManager();
+
+  // Helpers for ShouldDisplayErrorUi().
+  bool ArePasskeysLocked();
+  bool ArePasskeysUnlockable();
 
   void Shutdown() override;
 

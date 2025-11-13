@@ -41,7 +41,7 @@ PasskeyUnlockManager::PasskeyUnlockManager(Profile* profile) {
   }
   UpdateHasPasskeys();
   UpdateSyncState();
-  NotifyObservers();
+  AsynchronouslyCheckSystemUVAvailability();
 }
 
 PasskeyUnlockManager::~PasskeyUnlockManager() = default;
@@ -57,9 +57,7 @@ void PasskeyUnlockManager::RemoveObserver(Observer* observer) {
 }
 
 bool PasskeyUnlockManager::ShouldDisplayErrorUi() {
-  // TODO(crbug.com/450238902): Implement this method: check if passkeys are
-  // locked and if they are unlockable.
-  return has_passkeys_.value_or(false) && sync_active_;
+  return ArePasskeysLocked() && ArePasskeysUnlockable();
 }
 
 void PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(Browser* browser) {
@@ -146,8 +144,16 @@ void PasskeyUnlockManager::AsynchronouslyCheckGpmPinAvailability() {
 }
 
 void PasskeyUnlockManager::AsynchronouslyCheckSystemUVAvailability() {
-  // TODO(crbug.com/450271375): Implement and call in the constructor.
-  NOTIMPLEMENTED();
+  enclave_manager()->AreUserVerifyingKeysSupported(
+      base::BindOnce(&PasskeyUnlockManager::OnHaveSystemUVAvailability,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+void PasskeyUnlockManager::OnHaveSystemUVAvailability(bool has_system_uv) {
+  bool error_ui_was_visible = ShouldDisplayErrorUi();
+  has_system_uv_ = has_system_uv;
+  if (error_ui_was_visible != ShouldDisplayErrorUi()) {
+    NotifyObservers();
+  }
 }
 
 void PasskeyUnlockManager::AsynchronouslyLoadEnclaveManager() {
@@ -160,6 +166,17 @@ void PasskeyUnlockManager::AsynchronouslyLoadEnclaveManager() {
                      std::move(callback));
   task_runner->PostDelayedTask(FROM_HERE, std::move(delayed_task),
                                base::Minutes(4));
+}
+
+bool PasskeyUnlockManager::ArePasskeysLocked() {
+  // TODO(crbug.com/450238902): Also check enclave manager readiness.
+  return has_passkeys_.value_or(false) && sync_active_;
+}
+
+bool PasskeyUnlockManager::ArePasskeysUnlockable() {
+  // TODO(crbug.com/450238902): Also check GPM PIN availability.
+  // TODO(crbug.com/450551870): Check for more verification methods.
+  return has_system_uv_.value_or(false);
 }
 
 void PasskeyUnlockManager::Shutdown() {
