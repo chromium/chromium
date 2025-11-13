@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_multi_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_row_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
@@ -57,6 +58,7 @@ OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(OmniboxViewViews* omnibox_view,
         std::make_unique<OmniboxPopupPresenter>(location_bar_view, controller);
   }
   controller->edit_model()->set_popup_view(this);
+  edit_model_observation_.Observe(controller->edit_model());
 }
 
 OmniboxPopupViewWebUI::~OmniboxPopupViewWebUI() {
