@@ -421,21 +421,18 @@ inline bool Is8BitChar(char16_t c) {
 }
 
 template <typename CHAR>
-inline bool DecodeEscaped(const CHAR* spec,
+inline bool DecodeEscaped(std::basic_string_view<CHAR> spec,
                           size_t* begin,
-                          size_t end,
                           unsigned char* unescaped_value) {
-  if (*begin + 3 > end || !Is8BitChar(UNSAFE_TODO(spec[*begin + 1])) ||
-      !Is8BitChar(UNSAFE_TODO(spec[*begin + 2]))) {
+  if (*begin + 3 > spec.length() || !Is8BitChar(spec[*begin + 1]) ||
+      !Is8BitChar(spec[*begin + 2])) {
     // Invalid escape sequence because there's not enough room, or the
     // digits are not ASCII.
     return false;
   }
 
-  unsigned char first =
-      static_cast<unsigned char>(UNSAFE_TODO(spec[*begin + 1]));
-  unsigned char second =
-      static_cast<unsigned char>(UNSAFE_TODO(spec[*begin + 2]));
+  unsigned char first = static_cast<unsigned char>(spec[*begin + 1]);
+  unsigned char second = static_cast<unsigned char>(spec[*begin + 2]);
   if (!IsHexChar(first) || !IsHexChar(second)) {
     // Invalid hex digits, fail.
     return false;

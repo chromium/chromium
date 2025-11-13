@@ -257,8 +257,7 @@ bool DoPartialPathInternal(std::optional<std::basic_string_view<CHAR>> path,
         } else if (out_ch == '%') {
           // Handle escape sequences.
           unsigned char unused_unescaped_value;
-          if (DecodeEscaped(path_value.data(), &i, path_value.size(),
-                            &unused_unescaped_value)) {
+          if (DecodeEscaped(path_value, &i, &unused_unescaped_value)) {
             // Valid escape sequence. We should just copy it exactly.
             output->push_back('%');
             output->push_back(static_cast<char>(path_value[i - 1]));
