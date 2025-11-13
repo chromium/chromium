@@ -437,10 +437,11 @@ TEST_P(DisplayMediaAccessHandlerActiveRfhTest, ProcessRequest) {
                  /*expect_result=*/true, /*expect_picker=*/active_rfh_,
                  request);
 
-  EXPECT_EQ(result,
-            active_rfh_
-                ? blink::mojom::MediaStreamRequestResult::OK
-                : blink::mojom::MediaStreamRequestResult::INVALID_STATE);
+  EXPECT_EQ(
+      result,
+      active_rfh_
+          ? blink::mojom::MediaStreamRequestResult::OK
+          : blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

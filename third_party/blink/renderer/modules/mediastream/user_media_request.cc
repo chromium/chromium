@@ -945,6 +945,9 @@ void UserMediaRequest::Fail(Result error, const String& message) {
       break;
     case Result::INVALID_STATE:
     case Result::FAILED_DUE_TO_SHUTDOWN:
+      // TODO(crbug.com/453600255): Use `result_enum` kContextDestroyed and
+      // `exception_code` kInvalidStateError for
+      // FAILED_DUE_TO_SHUTDOWN once all new enum values are added.
     case Result::TAB_CAPTURE_FAILURE:
     case Result::SCREEN_CAPTURE_FAILURE:
     case Result::CAPTURE_FAILURE:
@@ -968,10 +971,10 @@ void UserMediaRequest::Fail(Result error, const String& message) {
       result_enum = UserMediaRequestResult::kSecurityError;
       break;
     case Result::CONSTRAINT_NOT_SATISFIED:
-    case Result::REQUEST_CANCELLED:
       // TODO(crbug.com/416456028): Either handle these or document why
       // they cannot be encountered by this method.
       NOTREACHED();
+    case Result::REQUEST_CANCELLED:  // Deprecated, use FAILED_DUE_TO_SHUTDOWN
     case Result::NUM_MEDIA_REQUEST_RESULTS:
       NOTREACHED();  // Not a valid enum value.
   }
@@ -1014,8 +1017,8 @@ void UserMediaRequest::ContextDestroyed() {
       callbacks_->OnError(
           nullptr,
           MakeGarbageCollected<V8MediaStreamError>(
-              MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
-                                                 "Context destroyed")),
+              MakeGarbageCollected<DOMException>(
+                  DOMExceptionCode::kInvalidStateError, "Context destroyed")),
           capture_controller_, UserMediaRequestResult::kContextDestroyed);
     }
     client_ = nullptr;

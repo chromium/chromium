@@ -531,7 +531,7 @@ ScriptPromise<IDLResolvedType> MediaDevices::SendUserMediaRequest(
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid()) {
     resolver->RecordAndThrowDOMException(
-        exception_state, DOMExceptionCode::kNotSupportedError,
+        exception_state, DOMExceptionCode::kInvalidStateError,
         "No media device client available; "
         "is this a detached window?",
         UserMediaRequestResult::kContextDestroyed);

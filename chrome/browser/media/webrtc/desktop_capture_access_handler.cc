@@ -277,7 +277,7 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
               pending_request->request.render_frame_id))) {
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
-             MediaStreamRequestResult::INVALID_STATE,
+             MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
              /*ui=*/nullptr);
     return;
   }

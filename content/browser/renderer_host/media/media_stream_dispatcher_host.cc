@@ -364,7 +364,8 @@ void MediaStreamDispatcherHost::GenerateStreamsChecksOnUIThread(
       RenderFrameHostImpl::FromID(render_frame_host_id);
   if (!render_frame_host || !render_frame_host->IsActive()) {
     std::move(result_callback)
-        .Run(base::unexpected(MediaStreamRequestResult::INVALID_STATE));
+        .Run(
+            base::unexpected(MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN));
     return;
   }
 
@@ -390,7 +391,8 @@ void MediaStreamDispatcherHost::CheckRequestAllScreensAllowed(
 
   if (!render_frame_host || !render_frame_host->IsActive()) {
     std::move(result_callback)
-        .Run(base::unexpected(MediaStreamRequestResult::INVALID_STATE));
+        .Run(
+            base::unexpected(MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN));
     return;
   }
 

@@ -1432,8 +1432,9 @@ TEST_P(MediaStreamDispatcherHostActiveRfhTest,
     GenerateStreamAndWaitForResult(kPageRequestId, controls, expectation);
   } else {
     DeactivateMainRfh();
-    GenerateStreamAndWaitForFailure(kPageRequestId, controls,
-                                    MediaStreamRequestResult::INVALID_STATE);
+    GenerateStreamAndWaitForFailure(
+        kPageRequestId, controls,
+        MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN);
   }
 }
 

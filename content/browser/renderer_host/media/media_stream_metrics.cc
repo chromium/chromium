@@ -33,7 +33,7 @@ enum class MediaStreamRequestResult2 {
   kKillSwitchOn = 14,
   kSystemPermissionDenied = 15,
   kDeviceInUse = 16,
-  kRequestCancelled = 17,
+  kRequestCancelled = 17,  // Deprecated
   kStartTimeout = 18,
   kPermissionDeniedByUser = 19,
   kAudioDeviceSocketError = 20,

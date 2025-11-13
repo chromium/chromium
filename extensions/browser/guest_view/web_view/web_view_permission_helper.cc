@@ -270,7 +270,7 @@ void WebViewPermissionHelper::OnMediaPermissionResponse(
       !web_view_guest()->embedder_web_contents()->GetDelegate()) {
     std::move(callback).Run(
         blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::INVALID_STATE,
+        blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
         std::unique_ptr<content::MediaStreamUI>());
     return;
   }

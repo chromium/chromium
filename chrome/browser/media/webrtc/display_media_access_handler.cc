@@ -196,7 +196,7 @@ void DisplayMediaAccessHandler::HandleRequest(
       request.render_process_id, request.render_frame_id);
   if (!rfh || !rfh->IsActive()) {
     std::move(callback).Run(blink::mojom::StreamDevicesSet(),
-                            MediaStreamRequestResult::INVALID_STATE,
+                            MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
                             /*ui=*/nullptr);
     return;
   }
