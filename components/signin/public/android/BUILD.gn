@@ -109,16 +109,17 @@ generate_jni("test_support_jni_headers") {
   namespace = "signin"
   sources = [
     "java/src/org/chromium/components/signin/test/util/AccountCapabilitiesFetcherTestUtil.java",
+    "java/src/org/chromium/components/signin/test/util/AccountInfoSerializer.java",
     "java/src/org/chromium/components/signin/test/util/AccountManagerFacadeUtil.java",
   ]
 }
 
 android_library("signin_java_test_support") {
   testonly = true
+  srcjar_deps = [ ":test_support_jni_headers" ]
   deps = [
     ":java",
     ":signin_test_resources",
-    ":test_support_jni_headers",
     "//base:base_java",
     "//base:base_java_test_support",
     "//components/cached_flags:java",
@@ -135,6 +136,7 @@ android_library("signin_java_test_support") {
     "java/src/org/chromium/components/signin/test/util/AccountCapabilitiesBuilder.java",
     "java/src/org/chromium/components/signin/test/util/AccountCapabilitiesFetcherTestUtil.java",
     "java/src/org/chromium/components/signin/test/util/AccountHolder.java",
+    "java/src/org/chromium/components/signin/test/util/AccountInfoSerializer.java",
     "java/src/org/chromium/components/signin/test/util/AccountManagerFacadeUtil.java",
     "java/src/org/chromium/components/signin/test/util/FakeAccountInfoService.java",
     "java/src/org/chromium/components/signin/test/util/FakeAccountManagerDelegate.java",

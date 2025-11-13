@@ -87,7 +87,10 @@ source_set("identity_manager") {
       "profile_oauth2_token_service_delegate_android.cc",
       "profile_oauth2_token_service_delegate_android.h",
     ]
-    deps += [ "//components/signin/public/android:jni_headers" ]
+    deps += [
+      "//components/signin/public/android:jni_headers",
+      "//google_apis/gaia/android:jni_headers",
+    ]
   } else {
     sources += [
       "account_capabilities_fetcher_factory_gaia.cc",
@@ -256,6 +259,11 @@ static_library("test_support") {
     "mock_profile_oauth2_token_service_observer.cc",
     "mock_profile_oauth2_token_service_observer.h",
   ]
+
+  if (is_android) {
+    sources += [ "account_info_serializer_jni.cc" ]
+    deps = [ "//components/signin/public/android:test_support_jni_headers" ]
+  }
 
   if (is_chromeos) {
     sources += [
