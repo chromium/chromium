@@ -5,12 +5,20 @@
 #ifndef CHROME_BROWSER_UI_WALLET_WALLETABLE_PASS_SAVE_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_WALLET_WALLETABLE_PASS_SAVE_BUBBLE_VIEW_H_
 
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/wallet/walletable_pass_bubble_view_base.h"
+#include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace views {
+class StyledLabel;
+class View;
+}  // namespace views
 
 namespace wallet {
 
@@ -26,6 +34,20 @@ class WalletablePassSaveBubbleView : public WalletablePassBubbleViewBase {
                                content::WebContents* web_contents,
                                WalletablePassSaveBubbleController* controller);
   ~WalletablePassSaveBubbleView() override;
+
+  // LocationBarBubbleDelegateView:
+  void AddedToWidget() override;
+
+ private:
+  std::unique_ptr<views::StyledLabel> GetSubtitleLabel();
+
+  int GetDialogTitleResourceId() const;
+
+  int GetHeaderImageResourceId() const;
+
+  void OnGoToWalletClicked();
+
+  const raw_ref<const optimization_guide::proto::WalletablePass> pass_;
 };
 
 }  // namespace wallet
