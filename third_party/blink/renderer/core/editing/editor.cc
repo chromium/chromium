@@ -961,8 +961,12 @@ void Editor::SyncSelection(SyncCondition force_sync) {
     return;
   }
 
-  frame_->Client()->DidChangeSelection(
-      !GetFrameSelection().GetSelectionInDOMTree().IsRange(), force_sync);
+  // Update frame Client() provided the iframe has not been removed already. See
+  // https://crbug.com/459123383 .
+  if (frame_->Client()) {
+    frame_->Client()->DidChangeSelection(
+        !GetFrameSelection().GetSelectionInDOMTree().IsRange(), force_sync);
+  }
 }
 
 SpellChecker& Editor::GetSpellChecker() const {
