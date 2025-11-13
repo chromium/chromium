@@ -227,16 +227,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
   }
 
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    // The position of the contextual entrypoint might change in the tall modes,
-    // so the context menu needs to be repositioned accordingly.
-    if (this.searchboxLayoutMode !== 'Compact' && this.contextMenuEnabled_)  {
-      this.$.contextEntrypoint.repositionMenu();
-    }
-  }
-
   private computeRecentTabInContext_(): boolean {
     const recentTab = this.tabSuggestions?.[0];
     if (!recentTab) {
@@ -253,6 +243,11 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   setContextFiles(files: ContextualUpload[]) {
     for (const file of files) {
       if ('tabId' in file) {
+        // If the composebox is being initialized with tab context, we want to
+        // keep the context menu open to allow for multi-tab selection.
+        if (this.contextMenuEnabled_)  {
+          this.$.contextEntrypoint.openMenuForMultiSelection();
+        }
         this.addTabContext_(new CustomEvent('addTabContext', {
           detail: {
             id: file.tabId,

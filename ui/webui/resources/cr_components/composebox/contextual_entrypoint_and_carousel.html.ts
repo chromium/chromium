@@ -68,6 +68,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
             .hasImageFiles="${this.hasImageFiles()}"
             .disabledTabIds="${this.addedTabsIds_}"
             .fileNum="${this.files_.size}"
+            .searchboxLayoutMode="${this.searchboxLayoutMode}"
             ?inputs-disabled="${this.inputsDisabled_}"
             ?show-context-menu-description="${showDescription}">
         </cr-composebox-context-menu-entrypoint>
