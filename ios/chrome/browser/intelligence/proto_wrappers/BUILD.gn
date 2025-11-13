@@ -95,11 +95,13 @@ source_set("unit_tests") {
   sources = [
     "page_context_extractor_java_script_feature_unittest.mm",
     "page_context_utils_unittest.mm",
+    "page_context_wrapper_metrics_unittest.mm",
     "page_context_wrapper_unittest.mm",
   ]
   deps = [
     ":metrics_constants",
     ":page_context_extractor_feature",
+    ":page_context_metrics",
     ":proto_wrappers",
     ":utils",
     "//base/test:test_support",
