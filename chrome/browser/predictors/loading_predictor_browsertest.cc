@@ -2759,7 +2759,6 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_THAT(status.cors_error_status,
               Optional(network::CorsErrorStatus(
                   network::mojom::CorsError::kInsecurePrivateNetwork,
-                  network::mojom::IPAddressSpace::kUnknown,
                   network::mojom::IPAddressSpace::kLoopback)));
 }
 

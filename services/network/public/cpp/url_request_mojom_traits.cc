@@ -200,7 +200,6 @@ bool StructTraits<
   out->is_fetch_later_api = data.is_fetch_later_api();
   out->is_favicon = data.is_favicon();
   out->original_destination = data.original_destination();
-  out->target_ip_address_space = data.target_ip_address_space();
   out->attribution_reporting_support = data.attribution_reporting_support();
   out->attribution_reporting_eligibility =
       data.attribution_reporting_eligibility();

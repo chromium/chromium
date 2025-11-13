@@ -42,16 +42,10 @@ enum class PrivateNetworkAccessCheckResult {
   // Private network request: blocked because policy is `kBlock`.
   kBlockedByPolicyBlock = 5,
 
-  // Request carries a `target_ip_address_space` that matches the resource
-  // address space.
-  kAllowedByTargetIpAddressSpace = 6,
-
-  // Request carries a `target_ip_address_space` that differs from the actual
-  // resource address space. This may be indicative of a DNS rebinding attack.
-  kBlockedByTargetIpAddressSpace = 7,
-
   // Deleted
   //
+  // kAllowedByTargetIpAddressSpace = 6,
+  // kBlockedByTargetIpAddressSpace = 7,
   // kBlockedByPolicyPreflightWarn = 8,
   // kBlockedByPolicyPreflightBlock = 9,
   // kAllowedByPolicyPreflightWarn = 10,

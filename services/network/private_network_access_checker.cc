@@ -32,25 +32,13 @@ PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
     : client_security_state_(client_security_state),
       should_block_local_request_(url_load_options &
                                   mojom::kURLLoadOptionBlockLocalRequest),
-      target_address_space_(request.target_ip_address_space),
       request_initiator_(request.request_initiator),
       required_address_space_(request.required_ip_address_space) {
   SetRequestUrl(request.url);
-
-  if (!client_security_state_ ||
-      client_security_state_->private_network_request_policy ==
-          mojom::PrivateNetworkRequestPolicy::kAllow) {
-    // No client security state means PNA is implicitly disabled. A policy of
-    // `kAllow` means PNA is explicitly disabled. In both cases, the target IP
-    // address space should not be set on the request.
-    DCHECK_EQ(target_address_space_, mojom::IPAddressSpace::kUnknown)
-        << request.url;
-  }
 }
 
 PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
     const GURL& url,
-    mojom::IPAddressSpace target_ip_address_space,
     const std::optional<url::Origin>& request_initiator,
     mojom::IPAddressSpace required_ip_address_space,
     const mojom::ClientSecurityState* client_security_state,
@@ -58,19 +46,9 @@ PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
     : client_security_state_(client_security_state),
       should_block_local_request_(url_load_options &
                                   mojom::kURLLoadOptionBlockLocalRequest),
-      target_address_space_(target_ip_address_space),
       request_initiator_(request_initiator),
       required_address_space_(required_ip_address_space) {
   SetRequestUrl(url);
-
-  if (!client_security_state_ ||
-      client_security_state_->private_network_request_policy ==
-          mojom::PrivateNetworkRequestPolicy::kAllow) {
-    // No client security state means PNA is implicitly disabled. A policy of
-    // `kAllow` means PNA is explicitly disabled. In both cases, the target IP
-    // address space should not be set on the request.
-    CHECK_EQ(target_address_space_, mojom::IPAddressSpace::kUnknown) << url;
-  }
 }
 
 PrivateNetworkAccessChecker::~PrivateNetworkAccessChecker() = default;
@@ -119,24 +97,6 @@ void PrivateNetworkAccessChecker::ResetForRedirect(const GURL& new_url) {
 }
 
 void PrivateNetworkAccessChecker::ResetForRetry() {
-  // The target IP address space is no longer relevant, it only applied to the
-  // URL before the first redirect/retry. Consider the following scenario:
-  //
-  // 1. `https://public.example` fetches `http://localhost/foo`
-  // 2. `OnConnected()` notices that the remote endpoint's IP address space is
-  //    `kLoopback`, fails the request with
-  //    `CorsError::UnexpectedPrivateNetworkAccess`.
-  // 3. A preflight request is sent with `target_ip_address_space_` set to
-  //    `kLoopback`, succeeds.
-  // 4. `http://localhost/foo` redirects the GET request to
-  //    `https://public2.example/bar`.
-  //
-  // The target IP address space `kLoopback` should not be applied to the new
-  // connection obtained to `https://public2.example`.
-  //
-  // See also: https://crbug.com/1293891
-  target_address_space_ = mojom::IPAddressSpace::kUnknown;
-
   response_address_space_ = std::nullopt;
 }
 
@@ -159,12 +119,11 @@ mojom::IPAddressSpace PrivateNetworkAccessChecker::ClientAddressSpace() const {
 
 Result PrivateNetworkAccessChecker::CheckInternal(
     mojom::IPAddressSpace resource_address_space) {
-  // If we are connecting to a local IP endpoint over HTTP without a target IP
-  // address space, record whether we could have successfully inferred the
-  // target IP address space from the request URL.
+  // If we are connecting to a local IP endpoint over HTTP, record whether we
+  // could have successfully inferred the target IP address space from the
+  // request URL.
   if (resource_address_space == mojom::IPAddressSpace::kLocal &&
-      is_request_url_scheme_http_ &&
-      target_address_space_ == mojom::IPAddressSpace::kUnknown) {
+      is_request_url_scheme_http_) {
     base::UmaHistogramBoolean(
         "Security.PrivateNetworkAccess.PrivateIpInferrable",
         request_url_private_ip_.has_value());
@@ -191,23 +150,10 @@ Result PrivateNetworkAccessChecker::CheckInternal(
     return Result::kAllowedByPolicyAllow;
   }
 
-  if (target_address_space_ != mojom::IPAddressSpace::kUnknown) {
-    if (resource_address_space == target_address_space_) {
-      return Result::kAllowedByTargetIpAddressSpace;
-    }
-
-    return Result::kBlockedByTargetIpAddressSpace;
-  }
-
   // A single response may connect to two different IP address spaces without
   // a redirect in between. This can happen due to split range requests, where
   // a single `URLRequest` issues multiple network transactions, or when we
   // create a new connection after auth credentials have been provided, etc.
-  //
-  // `response_address_space_` behaves similarly to `target_address_space_`,
-  // except `kUnknown` is also subject to checks (instead
-  // `response_address_space_ == std::nullopt` indicates that no check
-  // should be performed).
   if (response_address_space_.has_value() &&
       resource_address_space != *response_address_space_) {
     // See also https://crbug.com/1334689.

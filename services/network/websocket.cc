@@ -221,14 +221,11 @@ int WebSocket::WebSocketEventHandler::OnURLRequestConnected(
     return net::OK;
   }
 
-  // target_ip_address_space is always kUnknown as LNA doesn't do preflights.
-  //
   // required_ip_address_space is always kUnknown as websockets API doesn't have
   // a targetAddressSpace parameter like fetch() does to bypass mixed content
   // checks.
   PrivateNetworkAccessChecker checker(
       request->url(),
-      /*target_ip_address_space=*/network::mojom::IPAddressSpace::kUnknown,
       request->initiator(),
       /*required_ip_address_space=*/network::mojom::IPAddressSpace::kUnknown,
       impl_->client_security_state_.get(), impl_->options_);

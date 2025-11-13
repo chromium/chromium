@@ -470,50 +470,6 @@ TEST(PrivateNetworkAccessCheckerTest, CheckBlockedByPolicyBlock) {
                                       Result::kBlockedByPolicyBlock, 1);
 }
 
-// TODO(crbug.com/394636065): remove when we remove target_ip_address_space
-TEST(PrivateNetworkAccessCheckerTest, CheckBlockedByTargetIpAddressSpace) {
-  base::HistogramTester histogram_tester;
-
-  mojom::ClientSecurityState client_security_state;
-  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
-  client_security_state.private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
-
-  ResourceRequest request;
-  request.target_ip_address_space = mojom::IPAddressSpace::kPublic;
-
-  PrivateNetworkAccessChecker checker(request, &client_security_state,
-                                      mojom::kURLLoadOptionNone);
-
-  EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
-            Result::kBlockedByTargetIpAddressSpace);
-
-  histogram_tester.ExpectUniqueSample(
-      kCheckResultHistogramName, Result::kBlockedByTargetIpAddressSpace, 1);
-}
-
-// TODO(crbug.com/394636065): remove when we remove target_ip_address_space
-TEST(PrivateNetworkAccessCheckerTest, CheckAllowedByTargetIpAddressSpace) {
-  base::HistogramTester histogram_tester;
-
-  mojom::ClientSecurityState client_security_state;
-  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
-  client_security_state.private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
-
-  ResourceRequest request;
-  request.target_ip_address_space = mojom::IPAddressSpace::kLocal;
-
-  PrivateNetworkAccessChecker checker(request, &client_security_state,
-                                      mojom::kURLLoadOptionNone);
-
-  EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
-            Result::kAllowedByTargetIpAddressSpace);
-
-  histogram_tester.ExpectUniqueSample(
-      kCheckResultHistogramName, Result::kAllowedByTargetIpAddressSpace, 1);
-}
-
 TEST(PrivateNetworkAccessCheckerTest,
      CheckBlockedByInconsistentIpAddressSpace) {
   mojom::ClientSecurityState client_security_state;
@@ -645,29 +601,6 @@ TEST(PrivateNetworkAccessCheckerTest, CachedTransportAddressSpace) {
   EXPECT_EQ(checker.ResponseAddressSpace(), mojom::IPAddressSpace::kLoopback);
 }
 
-TEST(PrivateNetworkAccessCheckerTest, ResetTargetAddressSpace) {
-  mojom::ClientSecurityState client_security_state;
-  client_security_state.ip_address_space = mojom::IPAddressSpace::kLocal;
-  client_security_state.private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
-
-  ResourceRequest request;
-  request.target_ip_address_space = mojom::IPAddressSpace::kPublic;
-
-  PrivateNetworkAccessChecker checker(request, &client_security_state,
-                                      mojom::kURLLoadOptionNone);
-
-  checker.ResetForRedirect(GURL("http://foo.com"));
-
-  // The target address space has been cleared.
-  EXPECT_EQ(checker.TargetAddressSpace(), mojom::IPAddressSpace::kUnknown);
-
-  // This succeeds even though the IP address space does not match the target
-  // passed at construction time, thanks to `ResetForRedirect()`.
-  EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
-            Result::kAllowedNoLessPublic);
-}
-
 TEST(PrivateNetworkAccessCheckerTest, ResetResponseAddressSpace) {
   PrivateNetworkAccessChecker checker(
       ResourceRequest(), kNullClientSecurityState, mojom::kURLLoadOptionNone);
@@ -706,28 +639,6 @@ TEST(PrivateNetworkAccessCheckerTest,
   ResourceRequest request;
   request.url = GURL("https://192.168.1.1");
   PrivateNetworkAccessChecker checker(request, kNullClientSecurityState,
-                                      mojom::kURLLoadOptionNone);
-
-  checker.Check(DirectTransport(PrivateEndpoint()));
-
-  histogram_tester.ExpectTotalCount(
-      "Security.PrivateNetworkAccess.PrivateIpInferrable", 0);
-}
-
-TEST(PrivateNetworkAccessCheckerTest,
-     DoesNotRecordPrivateIpInferrableHistogramWithTargetIpAddressSpace) {
-  mojom::ClientSecurityState client_security_state;
-  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
-  client_security_state.private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
-
-  base::HistogramTester histogram_tester;
-
-  ResourceRequest request;
-  request.url = GURL("http://192.168.1.1");
-  request.target_ip_address_space = mojom::IPAddressSpace::kLocal;
-
-  PrivateNetworkAccessChecker checker(request, &client_security_state,
                                       mojom::kURLLoadOptionNone);
 
   checker.Check(DirectTransport(PrivateEndpoint()));

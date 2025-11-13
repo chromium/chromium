@@ -638,7 +638,6 @@ mojom::ClientSecurityStatePtr NewSecurityState() {
 CorsErrorStatus InsecurePrivateNetworkCorsErrorStatus(
     mojom::IPAddressSpace resource_address_space) {
   return CorsErrorStatus(mojom::CorsError::kInsecurePrivateNetwork,
-                         mojom::IPAddressSpace::kUnknown,
                          resource_address_space);
 }
 
@@ -879,8 +878,6 @@ class URLLoaderTest : public testing::Test {
     request.trusted_params->enabled_client_hints.swap(enabled_client_hints_);
 
     request.headers.MergeFrom(additional_headers_);
-
-    request.target_ip_address_space = target_ip_address_space_;
 
     request.client_side_content_decoding_enabled =
         client_side_content_decoding_enabled_;
@@ -1149,9 +1146,6 @@ class URLLoaderTest : public testing::Test {
   void set_additional_headers(const net::HttpRequestHeaders& headers) {
     additional_headers_ = headers;
   }
-  void set_target_ip_address_space(mojom::IPAddressSpace address_space) {
-    target_ip_address_space_ = address_space;
-  }
   void set_accept_ch_frame_observer_for_next_request(
       MockAcceptCHFrameObserver* observer) {
     accept_ch_frame_observer_ = observer;
@@ -1310,8 +1304,6 @@ class URLLoaderTest : public testing::Test {
   raw_ptr<MockDevToolsObserver> devtools_observer_ = nullptr;
   scoped_refptr<ResourceRequestBody> request_body_;
   net::HttpRequestHeaders additional_headers_;
-  mojom::IPAddressSpace target_ip_address_space_ =
-      mojom::IPAddressSpace::kUnknown;
   net::CookieSettingOverrides cookie_setting_overrides_;
   std::optional<int> partial_decoder_decoding_buffer_size_;
   base::WeakPtr<DevtoolsDurableMessage> durable_message_;
@@ -1416,82 +1408,6 @@ TEST_F(URLLoaderTest, MissingClientSecurityStateIsOk) {
   EXPECT_EQ(net::OK, LoadRequest(CreateCrossOriginResourceRequest()));
 }
 
-// This test verifies that when the request's `target_ip_address_space` matches
-// the resource's IP address space, then the request is allowed even if it
-// would otherwise be blocked by policy.
-TEST_F(URLLoaderTest, MatchingTargetIPAddressSpaceIsOk) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  ResourceRequest request = CreateCrossOriginResourceRequest();
-  request.target_ip_address_space = mojom::IPAddressSpace::kLoopback;
-
-  EXPECT_EQ(net::OK, LoadRequest(request));
-}
-
-// This test verifies that when the request's `target_ip_address_space` does not
-// match the resource's IP address space, and the policy is `kPermissionBlock`,
-// then the request is blocked.
-TEST_F(URLLoaderTest, MismatchingTargetIPAddressSpaceIsBlocked) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
-  client_security_state->private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  ResourceRequest request = CreateCrossOriginResourceRequest();
-  request.target_ip_address_space = mojom::IPAddressSpace::kLocal;
-
-  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
-  EXPECT_THAT(
-      client()->completion_status().cors_error_status,
-      Optional(CorsErrorStatus(mojom::CorsError::kInvalidPrivateNetworkAccess,
-                               mojom::IPAddressSpace::kLocal,
-                               mojom::IPAddressSpace::kLoopback)));
-}
-
-// This test verifies that when the request's `target_ip_address_space` does not
-// match the resource's IP address space, and the policy is `kPermissionBlock`,
-// then `URLLoader::OnConnected()` returns the right error code. This error code
-// causes any cache entry in use to be invalidated.
-TEST_F(URLLoaderTest, MismatchingTargetIPAddressSpaceErrorCode) {
-  auto client_security_state = NewSecurityState();
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
-  client_security_state->private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  ResultObserver connected_callback_result_observer;
-
-  net::TransportInfo info = net::DefaultTransportInfo();
-  info.endpoint = net::IPEndPoint(net::IPAddress(127, 0, 0, 1), 80);
-  auto interceptor = std::make_unique<FakeTransportInfoInterceptor>(info);
-
-  interceptor->SetConnectedCallbackResultObserver(
-      &connected_callback_result_observer);
-
-  const GURL url("http://fake-endpoint");
-
-  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
-      url, std::move(interceptor));
-
-  ResourceRequest request = CreateResourceRequest("GET", url);
-  request.request_initiator =
-      url::Origin::Create(GURL("http://other-origin.test/"));
-  request.target_ip_address_space = mojom::IPAddressSpace::kLocal;
-
-  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
-  EXPECT_THAT(
-      client()->completion_status().cors_error_status,
-      Optional(CorsErrorStatus(mojom::CorsError::kInvalidPrivateNetworkAccess,
-                               mojom::IPAddressSpace::kLocal,
-                               mojom::IPAddressSpace::kLoopback)));
-
-  EXPECT_THAT(connected_callback_result_observer.results(),
-              ElementsAre(IsError(net::ERR_INCONSISTENT_IP_ADDRESS_SPACE)));
-}
-
 // This test verifies that when the request calls `URLLoader::OnConnected()`
 // twice with endpoints belonging to different IP address spaces, the request
 // fails. In that case `URLLoader::OnConnected()` returns the right error code,
@@ -1527,11 +1443,10 @@ TEST_F(URLLoaderTest, InconsistentIPAddressSpaceIsBlocked) {
   EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
-      Optional(CorsErrorStatus(mojom::CorsError::kInvalidPrivateNetworkAccess,
-                               // TODO(crbug.com/40208529): Expect
-                               // `kPublic` here instead, for better debugging.
-                               mojom::IPAddressSpace::kUnknown,
-                               mojom::IPAddressSpace::kLoopback)));
+      Optional(CorsErrorStatus(
+          mojom::CorsError::kInvalidPrivateNetworkAccess,
+          /*resource_address_space=*/mojom::IPAddressSpace::kLoopback,
+          /*inconsistent_address_space=*/mojom::IPAddressSpace::kPublic)));
 
   // The first connection was fine, but the second was inconsistent.
   EXPECT_THAT(connected_callback_result_observer.results(),
@@ -1989,11 +1904,10 @@ TEST_F(URLLoaderTest, SecurePublicToLoopbackPermissionDenied) {
 
   EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
             LoadRequest(request));
-  EXPECT_THAT(
-      client()->completion_status().cors_error_status,
-      Optional(CorsErrorStatus(
-          mojom::CorsError::kLocalNetworkAccessPermissionDenied,
-          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLoopback)));
+  EXPECT_THAT(client()->completion_status().cors_error_status,
+              Optional(CorsErrorStatus(
+                  mojom::CorsError::kLocalNetworkAccessPermissionDenied,
+                  mojom::IPAddressSpace::kLoopback)));
 }
 
 TEST_F(URLLoaderTest, SecurePublicToLoopbackPermissionGranted) {
@@ -2013,11 +1927,10 @@ TEST_F(URLLoaderTest, SecurePublicToLoopbackPermissionGranted) {
   ResourceRequest request = CreateCrossOriginResourceRequest();
 
   EXPECT_EQ(net::OK, LoadRequest(request));
-  EXPECT_THAT(
-      client()->completion_status().cors_error_status,
-      Optional(CorsErrorStatus(
-          mojom::CorsError::kLocalNetworkAccessPermissionDenied,
-          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLoopback)));
+  EXPECT_THAT(client()->completion_status().cors_error_status,
+              Optional(CorsErrorStatus(
+                  mojom::CorsError::kLocalNetworkAccessPermissionDenied,
+                  mojom::IPAddressSpace::kLoopback)));
 }
 
 TEST_F(URLLoaderTest, SecureLocalToLoopbackLNAPermissionNotRequired) {
@@ -2246,16 +2159,15 @@ TEST_F(URLLoaderTest, PrivateNetworkRequestPolicyOnRequest) {
       mojom::PrivateNetworkRequestPolicy::kBlock;
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
-  request.target_ip_address_space = mojom::IPAddressSpace::kLocal;
   request.trusted_params.emplace();
   request.trusted_params->client_security_state =
       std::move(client_security_state);
 
-  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
+            LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
-      Optional(CorsErrorStatus(mojom::CorsError::kInvalidPrivateNetworkAccess,
-                               mojom::IPAddressSpace::kLocal,
+      Optional(CorsErrorStatus(mojom::CorsError::kInsecurePrivateNetwork,
                                mojom::IPAddressSpace::kLoopback)));
 }
 
@@ -2277,18 +2189,17 @@ TEST_F(URLLoaderTest, PrivateNetworkRequestPolicyOnRequestAndFactory) {
       mojom::PrivateNetworkRequestPolicy::kBlock;
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
-  request.target_ip_address_space = mojom::IPAddressSpace::kLocal;
   request.trusted_params.emplace();
   request.trusted_params->client_security_state =
       std::move(client_security_state);
 
   // The request should be blocked, based on the per-request value, rather than
   // the factory value.
-  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
+            LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
-      Optional(CorsErrorStatus(mojom::CorsError::kInvalidPrivateNetworkAccess,
-                               mojom::IPAddressSpace::kLocal,
+      Optional(CorsErrorStatus(mojom::CorsError::kInsecurePrivateNetwork,
                                mojom::IPAddressSpace::kLoopback)));
 }
 

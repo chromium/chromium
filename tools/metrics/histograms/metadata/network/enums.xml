@@ -1462,7 +1462,7 @@ chromium-metrics-reviews@google.com.
   <int value="53" label="devtools_accepted_stream_types"/>
   <int value="54" label="net_log_create_info"/>
   <int value="55" label="net_log_reference_info"/>
-  <int value="56" label="target_ip_address_space"/>
+  <int value="56" label="target_ip_address_space (deprecated)"/>
   <int value="57" label="storage_access_api_status"/>
   <int value="58" label="attribution_reporting_support"/>
   <int value="59" label="attribution_reporting_eligibility"/>

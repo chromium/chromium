@@ -19,8 +19,8 @@ bool StructTraits<network::mojom::CorsErrorStatusDataView,
   }
 
   out->cors_error = data.cors_error();
-  out->target_address_space = data.target_address_space();
   out->resource_address_space = data.resource_address_space();
+  out->inconsistent_address_space = data.inconsistent_address_space();
   out->has_authorization_covered_by_wildcard_on_preflight =
       data.has_authorization_covered_by_wildcard_on_preflight();
   return true;

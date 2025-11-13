@@ -149,10 +149,6 @@ void DidCreateScriptLoader(
   } else if (completion_status->cors_error_status) {
     response_address_space =
         completion_status->cors_error_status->resource_address_space;
-    if (response_address_space == network::mojom::IPAddressSpace::kUnknown) {
-      response_address_space =
-          completion_status->cors_error_status->target_address_space;
-    }
   }
 
   if (client_security_state && ancestor_render_frame_host_id) {

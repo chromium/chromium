@@ -322,11 +322,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="AllowedByPolicyWarn"/>
   <int value="4" label="BlockedByLoadOption"/>
   <int value="5" label="BlockedByPolicyBlock"/>
-  <int value="6" label="AllowedByTargetIpAddressSpace"/>
-  <int value="7" label="BlockedByTargetIpAddressSpace"/>
-  <int value="8" label="BlockedByPolicyPreflightWarn"/>
-  <int value="9" label="BlockedByPolicyPreflightBlock"/>
-  <int value="10" label="AllowedByPolicyPreflightWarn"/>
+  <int value="6" label="(Deprecated) AllowedByTargetIpAddressSpace"/>
+  <int value="7" label="(Deprecated) BlockedByTargetIpAddressSpace"/>
+  <int value="8" label="(Deprecated) BlockedByPolicyPreflightWarn"/>
+  <int value="9" label="(Deprecated) BlockedByPolicyPreflightBlock"/>
+  <int value="10" label="(Deprecated) AllowedByPolicyPreflightWarn"/>
   <int value="11" label="BlockedByInconsistentIpAddressSpace"/>
   <int value="12" label="AllowedPotentiallyTrustworthySameOrigin"/>
   <int value="13" label="LNAPermissionRequired"/>

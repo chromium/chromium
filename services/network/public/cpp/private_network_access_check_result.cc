@@ -24,14 +24,10 @@ std::string_view PrivateNetworkAccessCheckResultToStringPiece(Result result) {
       return "allowed-by-policy-allow";
     case Result::kAllowedByPolicyWarn:
       return "allowed-by-policy-warn";
-    case Result::kAllowedByTargetIpAddressSpace:
-      return "allowed-by-target-ip-address-space";
     case Result::kBlockedByLoadOption:
       return "blocked-by-load-option";
     case Result::kBlockedByPolicyBlock:
       return "insecure-private-network";
-    case Result::kBlockedByTargetIpAddressSpace:
-      return "blocked-by-target-ip-address-space";
     case Result::kBlockedByInconsistentIpAddressSpace:
       return "blocked-by-inconsistent-ip-address-space";
     case Result::kAllowedPotentiallyTrustworthySameOrigin:
@@ -57,7 +53,6 @@ std::optional<CorsError> PrivateNetworkAccessCheckResultToCorsError(
     case Result::kAllowedNoLessPublic:
     case Result::kAllowedByPolicyAllow:
     case Result::kAllowedByPolicyWarn:
-    case Result::kAllowedByTargetIpAddressSpace:
     case Result::kAllowedPotentiallyTrustworthySameOrigin:
     case Result::kLNAAllowedByPolicyWarn:
       return std::nullopt;
@@ -66,7 +61,6 @@ std::optional<CorsError> PrivateNetworkAccessCheckResultToCorsError(
       // does not fit.
     case Result::kBlockedByPolicyBlock:
       return CorsError::kInsecurePrivateNetwork;
-    case Result::kBlockedByTargetIpAddressSpace:
     case Result::kBlockedByInconsistentIpAddressSpace:
     case Result::kBlockedByRequiredIpAddressSpaceMismatch:
       return CorsError::kInvalidPrivateNetworkAccess;

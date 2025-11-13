@@ -108,7 +108,6 @@ namespace {
   DO_FIELD(devtools_accepted_stream_types) __VA_ARGS__             \
   DO_FIELD(net_log_create_info) __VA_ARGS__                        \
   DO_FIELD(net_log_reference_info) __VA_ARGS__                     \
-  DO_FIELD(target_ip_address_space) __VA_ARGS__                    \
   DO_FIELD(storage_access_api_status) __VA_ARGS__                  \
   DO_FIELD(attribution_reporting_support) __VA_ARGS__              \
   DO_FIELD(attribution_reporting_eligibility) __VA_ARGS__          \
@@ -210,7 +209,7 @@ enum class FieldsForUma {
   kDevtoolsAcceptedStreamTypes = 53,
   kNetLogCreateInfo = 54,
   kNetLogReferenceInfo = 55,
-  kTargetIpAddressSpace = 56,
+  // DEPRECATED: kTargetIpAddressSpace = 56,
   kStorageAccessApiStatus = 57,
   kAttributionReportingSupport = 58,
   kAttributionReportingEligibility = 59,
@@ -284,7 +283,6 @@ constexpr auto kUmaEnumMap = base::MakeFixedFlatMap<Fields, FieldsForUma>({
      FieldsForUma::kDevtoolsAcceptedStreamTypes},
     {Fields::knet_log_create_info, FieldsForUma::kNetLogCreateInfo},
     {Fields::knet_log_reference_info, FieldsForUma::kNetLogReferenceInfo},
-    {Fields::ktarget_ip_address_space, FieldsForUma::kTargetIpAddressSpace},
     {Fields::kstorage_access_api_status, FieldsForUma::kStorageAccessApiStatus},
     {Fields::kattribution_reporting_support,
      FieldsForUma::kAttributionReportingSupport},

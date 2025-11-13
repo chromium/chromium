@@ -363,7 +363,6 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
                                             request.net_log_create_info) &&
          OptionalNetLogInfoEqualsForTesting(net_log_reference_info,
                                             request.net_log_reference_info) &&
-         target_ip_address_space == request.target_ip_address_space &&
          shared_dictionary_writer_enabled ==
              request.shared_dictionary_writer_enabled &&
          socket_tag == request.socket_tag &&

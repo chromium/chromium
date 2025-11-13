@@ -122,24 +122,30 @@ struct CorsErrorStatus {
   // Contains request method name, or header name that didn't pass a CORS check.
   string failed_parameter;
 
-  // The target IP address space set on the URL request.
-  // See `ResourceRequest::target_ip_address_space`.
-  // Set if (but not only if) `cors_error` is one of:
-  //
-  // - `kInvalidPrivateNetworkAccess`
-  // - `kPreflightMissingAllowPrivateNetwork`
-  // - `kPreflightInvalidAllowPrivateNetwork`
-  //
-  IPAddressSpace target_address_space = IPAddressSpace.kUnknown;
-
   // The address space of the requested resource.
-  // Set iff `cors_error` is one of:
+  // This defaults to kUnknown, and is overridden iff `cors_error` is one of:
   //
   // - `kInsecurePrivateNetwork`
   // - `kInvalidPrivateNetworkAccess`
-  // - `kUnexpectedPrivateNetworkAccess`
-  //
+  // - `kLocalNetworkAccessPermissionDenied`
   IPAddressSpace resource_address_space = IPAddressSpace.kUnknown;
+
+  // The other IP address space set on the URL request.
+  // This defaults to kUnknown, and is overridden iff `cors_error` is
+  // `kInvalidPrivateNetworkAccess`, which happens in 2 situations:
+  //
+  //   * The request had a `required_address_space` set but the
+  //     `resource_address_space` did not match. In this case, this will be set
+  //     to the `required_address_space`.
+  // or
+  //
+  //   * The request connects to two different IP address spaces. See the
+  //     comment in services/network/private_network_access_checker.cc.
+  //     In this case, this will be set to the second IP address space.
+  //
+  // TODO(crbug.com/394636065): consider using 2 separate fields for the two
+  // separate situations listed above.
+  IPAddressSpace inconsistent_address_space = IPAddressSpace.kUnknown;
 
   // True when there is an "authorization" header on the request and it is
   // covered by the wildcard in the preflight response.

@@ -18581,7 +18581,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   EXPECT_THAT(bidder_status.cors_error_status,
               Optional(network::CorsErrorStatus(
                   network::mojom::CorsError::kInsecurePrivateNetwork,
-                  network::mojom::IPAddressSpace::kUnknown,
                   network::mojom::IPAddressSpace::kLoopback)));
 }
 
@@ -18639,7 +18638,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
       seller_status.cors_error_status,
       Optional(network::CorsErrorStatus(
           network::mojom::CorsError::kLocalNetworkAccessPermissionDenied,
-          network::mojom::IPAddressSpace::kUnknown,
           network::mojom::IPAddressSpace::kLoopback)));
 }
 
@@ -18719,7 +18717,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
     EXPECT_THAT(report_status.cors_error_status,
                 Optional(network::CorsErrorStatus(
                     network::mojom::CorsError::kInsecurePrivateNetwork,
-                    network::mojom::IPAddressSpace::kUnknown,
                     network::mojom::IPAddressSpace::kLoopback)));
   }
 }

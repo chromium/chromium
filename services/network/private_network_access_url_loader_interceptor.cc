@@ -33,6 +33,11 @@ net::Error PrivateNetworkAccessUrlLoaderInterceptor::OnConnected(
     mojom::DevToolsObserver* devtools_observer,
     const std::optional<std::string>& devtools_request_id,
     mojom::URLLoaderNetworkServiceObserver* url_loader_network_observer) {
+  // Save the last response address space, if any, in case it is needed for an
+  // error message.
+  std::optional<mojom::IPAddressSpace> last_response_address_space =
+      checker_.ResponseAddressSpace();
+
   // Now that the request endpoint's address has been resolved, check if
   // this request should be blocked per Private Network Access.
   PrivateNetworkAccessCheckResult result =
@@ -56,20 +61,39 @@ net::Error PrivateNetworkAccessUrlLoaderInterceptor::OnConnected(
         ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY;
   }
 
+  if (result == PrivateNetworkAccessCheckResult::
+                    kBlockedByRequiredIpAddressSpaceMismatch) {
+    // Error here is that we were expecting the resource to be in the
+    // required_address_space, but the resource was served in the
+    // response_address_space.
+    std::move(set_cors_error_status_callback)
+        .Run(CorsErrorStatus(
+            *cors_error,
+            /*resource_address_space=*/*checker_.ResponseAddressSpace(),
+            /*inconsistent_address_space=*/checker_.RequiredAddressSpace()));
+    return net::ERR_INCONSISTENT_IP_ADDRESS_SPACE;
+  }
+
+  if (result ==
+      PrivateNetworkAccessCheckResult::kBlockedByInconsistentIpAddressSpace) {
+    // Error here is that we initially saw the request served from an IP in the
+    // last_response_address_space, but then saw it served again from an IP the
+    // response_address_space.
+    DCHECK(last_response_address_space);
+    std::move(set_cors_error_status_callback)
+        .Run(CorsErrorStatus(
+            *cors_error,
+            /*resource_address_space=*/*checker_.ResponseAddressSpace(),
+            /*inconsistent_address_space=*/
+            last_response_address_space.value_or(
+                mojom::IPAddressSpace::kUnknown)));
+    return net::ERR_INCONSISTENT_IP_ADDRESS_SPACE;
+  }
+
   // Report the CORS error back to the URLLoader. This ensures the final
   // URLLoaderCompletionStatus reflects the PNA failure reason.
   std::move(set_cors_error_status_callback)
-      .Run(CorsErrorStatus(*cors_error, checker_.TargetAddressSpace(),
-                           *checker_.ResponseAddressSpace()));
-
-  if (result == PrivateNetworkAccessCheckResult::
-                    kBlockedByInconsistentIpAddressSpace ||
-      result ==
-          PrivateNetworkAccessCheckResult::kBlockedByTargetIpAddressSpace ||
-      result == PrivateNetworkAccessCheckResult::
-                    kBlockedByRequiredIpAddressSpaceMismatch) {
-    return net::ERR_INCONSISTENT_IP_ADDRESS_SPACE;
-  }
+      .Run(CorsErrorStatus(*cors_error, *checker_.ResponseAddressSpace()));
 
   // Local network access permission is required for this connection.
   if (url_loader_network_observer &&

@@ -416,10 +416,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.net_log_reference_info;
   }
-  static network::mojom::IPAddressSpace target_ip_address_space(
-      const network::ResourceRequest& request) {
-    return request.target_ip_address_space;
-  }
   static net::StorageAccessApiStatus storage_access_api_status(
       const network::ResourceRequest& request) {
     return request.storage_access_api_status;

@@ -593,8 +593,6 @@ void WebTransport::OnLocalNetworkAccessCheck(
     return;
   }
 
-  // target_ip_address_space is always kUnknown as LNA doesn't do preflights.
-  //
   // required_ip_address_space is always kUnknown as WebTransport is always
   // https, so there is no need for mixed content check bypasses.
   //
@@ -602,7 +600,6 @@ void WebTransport::OnLocalNetworkAccessCheck(
   // content/public/browser/content_browser_client.h.
   PrivateNetworkAccessChecker checker(
       url_,
-      /*target_ip_address_space=*/network::mojom::IPAddressSpace::kUnknown,
       origin_,
       /*required_ip_address_space=*/network::mojom::IPAddressSpace::kUnknown,
       client_security_state_.get(), /*url_load_options=*/0);

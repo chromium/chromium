@@ -245,17 +245,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   std::optional<net::NetLogSource> net_log_create_info;
   std::optional<net::NetLogSource> net_log_reference_info;
 
-  // Used internally by the network service. Should not be modified by external
-  // callers, which should pass in address space of the request initiator via
-  // the ClientSecurityState includde either in URLLoaderFactoryParams or
-  // ResourceRequest::TrustedParams.
-  //
-  // See
-  // https://source.chromium.org/chromium/chromium/src/+/main:services/network/public/mojom/url_request.mojom
-  // for more details.
-  mojom::IPAddressSpace target_ip_address_space =
-      mojom::IPAddressSpace::kUnknown;
-
   net::StorageAccessApiStatus storage_access_api_status =
       net::StorageAccessApiStatus::kNone;
   network::mojom::AttributionSupport attribution_reporting_support =

@@ -205,7 +205,7 @@ String GetErrorStringForIssueSummary(const network::CorsErrorStatus& status,
       break;
     case CorsError::kInvalidPrivateNetworkAccess:
       Append(builder, {"Request had a target IP address space of `",
-                       ShortAddressSpace(status.target_address_space),
+                       ShortAddressSpace(status.inconsistent_address_space),
                        "` yet the resource is in address space `",
                        ShortAddressSpace(status.resource_address_space), "`."});
       break;
@@ -362,7 +362,7 @@ String GetErrorStringForConsoleMessage(const network::CorsErrorStatus& status,
       break;
     case CorsError::kInvalidPrivateNetworkAccess:
       Append(builder, {"Request had a target IP address space of `",
-                       ShortAddressSpace(status.target_address_space),
+                       ShortAddressSpace(status.inconsistent_address_space),
                        "` yet the resource is in address space `",
                        ShortAddressSpace(status.resource_address_space), "`."});
       break;
