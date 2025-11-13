@@ -676,6 +676,30 @@ void EventReportValidatorBase::ExpectDataControlsSensitiveDataEvent(
 }
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
+void EventReportValidatorBase::ExpectSensitiveDataEvent(
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent
+        expected_sensitive_data_event) {
+  EXPECT_CALL(*client_, UploadSecurityEvent)
+      .WillOnce(
+          [this, expected_sensitive_data_event](
+              bool include_device_info,
+              ::chrome::cros::reporting::proto::UploadEventsRequest request,
+              base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                  callback) {
+            // There should only be 1 event per test.
+            ASSERT_EQ(1, request.events_size());
+            ASSERT_TRUE(request.events().Get(0).has_sensitive_data_event());
+            auto sensitive_data_event =
+                request.events().Get(0).sensitive_data_event();
+            EXPECT_THAT(sensitive_data_event,
+                        EqualsProto(expected_sensitive_data_event));
+
+            if (!done_closure_.is_null()) {
+              done_closure_.Run();
+            }
+          });
+}
+
 void EventReportValidatorBase::ValidateField(
     const base::Value::Dict* value,
     const std::string& field_key,

@@ -133,6 +133,10 @@ class EventReportValidatorBase {
       int64_t expected_content_size);
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
+  void ExpectSensitiveDataEvent(
+      chrome::cros::reporting::proto::DlpSensitiveDataEvent
+          expected_sensitive_data_event);
+
   // Closure to run once all expected events are validated.
   void SetDoneClosure(base::RepeatingClosure closure);
 

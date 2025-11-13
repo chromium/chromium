@@ -44,6 +44,8 @@ namespace enterprise_connectors::test {
 // return different mimetype strings for the same file.
 class EventReportValidator : public EventReportValidatorBase {
  public:
+  using EventReportValidatorBase::ExpectSensitiveDataEvent;
+
   explicit EventReportValidator(policy::MockCloudPolicyClient* client);
   ~EventReportValidator();
 
@@ -88,10 +90,6 @@ class EventReportValidator : public EventReportValidatorBase {
       extensions::api::enterprise_reporting_private::DataMaskingEvent
           expected_event);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-  void ExpectSensitiveDataEvent(
-      chrome::cros::reporting::proto::DlpSensitiveDataEvent
-          expected_sensitive_data_event);
 
   void ExpectSensitiveDataEvents(
       const std::vector<chrome::cros::reporting::proto::DlpSensitiveDataEvent>
