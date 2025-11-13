@@ -950,6 +950,10 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // created.
   void ReshowOverlayPart3(const SkBitmap& rgb_bitmap);
 
+  // Sets the opacity of the overlay web view. No-op if the web view does not
+  // exist.
+  void SetOverlayWebViewOpacity(float opacity);
+
   // Shorthand to grab the LensSearchboxController for this instance of Lens.
   lens::LensSearchboxController* GetLensSearchboxController();
 

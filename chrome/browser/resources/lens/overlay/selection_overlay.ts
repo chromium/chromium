@@ -1392,9 +1392,13 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         this.selectionOverlayRect.width, this.selectionOverlayRect.height);
 
     // Allow the new screenshot to render / allow any resizing that needs to
-    // happen before finishing the reshow overlay flow.
+    // happen before finishing the reshow overlay flow. This needs an extra
+    // animation frame after the next render to ensure the new screenshot is
+    // painted at least once.
     afterNextRender(this.$.backgroundImageCanvas, () => {
-      this.onFinishReshowOverlay();
+      requestAnimationFrame(() => {
+        this.onFinishReshowOverlay();
+      });
     });
   }
 
