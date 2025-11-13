@@ -171,6 +171,7 @@ chromium-metrics-reviews@google.com.
     <variant name="OnViewChanged"/>
     <variant name="OpenGlicSettingsPage"/>
     <variant name="OpenOsPermissionSettingsMenu"/>
+    <variant name="OpenPasswordManagerSettingsPage"/>
     <variant name="PauseActorTask"/>
     <variant name="PerformActions"/>
     <variant name="PinTabs"/>

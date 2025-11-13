@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
@@ -207,6 +208,7 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
             {features::kGlicUserStatusCheck,
              {{features::kGlicUserStatusRefreshApi.name, "true"},
               {features::kGlicUserStatusThrottleInterval.name, "2s"}}},
+            {features::kGlicOpenPasswordManagerSettingsPageApi, {}},
         },
         /*disabled_features=*/
         {
@@ -967,6 +969,16 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testOpenGlicSettingsPage) {
       InstrumentTab(kSettingsTab),
       WaitForWebContentsReady(
           kSettingsTab, chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage)));
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
+                       testOpenPasswordManagerSettingsPage) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPasswordManagerTab);
+
+  RunTestSequence(
+      InstrumentNextTab(kPasswordManagerTab), Do([this]() { ExecuteJsTest(); }),
+      WaitForWebContentsReady(kPasswordManagerTab,
+                              GURL(GetGooglePasswordManagerSubPageURLStr())));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetPanelStateAttached) {

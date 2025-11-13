@@ -673,6 +673,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     this.handler.openGlicSettingsPage(optionsMojo);
   }
 
+  glicBrowserOpenPasswordManagerSettingsPage(): void {
+    this.handler.openPasswordManagerSettingsPage();
+  }
+
   glicBrowserClosePanel(): void {
     return this.handler.closePanel();
   }

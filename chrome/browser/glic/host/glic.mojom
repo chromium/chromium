@@ -334,6 +334,8 @@ struct WebClientInitialState {
   bool enable_activate_tab;
   // Whether kGlicGetTabByIdApi is enabled.
   bool enable_get_tab_by_id;
+  // Whether kGlicOpenPasswordManagerSettingsPageApi is enabled.
+  bool enable_open_password_manager_settings_page;
 };
 
 // Options for getting tab context.
@@ -541,6 +543,9 @@ interface WebClientHandler {
 
   // Opens the glic settings page.
   OpenGlicSettingsPage(OpenSettingsOptions options);
+
+  // Opens the password manager settings page.
+  OpenPasswordManagerSettingsPage();
 
   // Closes the Glic panel.
   ClosePanel();

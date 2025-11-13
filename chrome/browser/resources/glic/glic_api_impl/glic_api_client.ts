@@ -637,6 +637,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!state.enableGetTabById) {
       this.getTabById = undefined;
     }
+
+    if (!state.enableOpenPasswordManagerSettingsPage) {
+      this.openPasswordManagerSettingsPage = undefined;
+    }
   }
 
   webClientInitialized(
@@ -696,6 +700,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   openGlicSettingsPage(options?: OpenSettingsOptions): void {
     this.sender.requestNoResponse('glicBrowserOpenGlicSettingsPage', {options});
+  }
+
+  openPasswordManagerSettingsPage?(): void {
+    this.sender.requestNoResponse(
+        'glicBrowserOpenPasswordManagerSettingsPage', undefined);
   }
 
   closePanel(): Promise<void> {

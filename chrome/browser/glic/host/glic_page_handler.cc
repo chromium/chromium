@@ -828,6 +828,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::FeatureList::IsEnabled(features::kGlicActivateTabApi);
     state->enable_get_tab_by_id =
         base::FeatureList::IsEnabled(features::kGlicGetTabByIdApi);
+    state->enable_open_password_manager_settings_page =
+        base::FeatureList::IsEnabled(
+            features::kGlicOpenPasswordManagerSettingsPageApi);
 
     std::move(callback).Run(std::move(state));
   }
@@ -898,6 +901,14 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             base::UserMetricsAction("GlicSessionSettingsOpened.Default"));
         break;
     }
+  }
+
+  void OpenPasswordManagerSettingsPage() override {
+    if (!base::FeatureList::IsEnabled(
+            features::kGlicOpenPasswordManagerSettingsPageApi)) {
+      return;
+    }
+    ::glic::OpenPasswordManagerSettingsPage(profile_);
   }
 
   void ClosePanel() override { host().ClosePanel(page_handler_); }
