@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/download/download_test_file_activity_observer.h"
@@ -388,6 +389,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   const GURL other_url = embedded_test_server()->GetURL("/title1.html");
+  base::UserActionTester user_action_tester;
 
   RunTestSequence(
       // clang-format off
@@ -400,7 +402,11 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
       FocusWebContents(kOtherTabId),
       WaitForTaskTabForground(/*expected_foreground=*/false),
       ActivateTaskTab(),
-      WaitForTaskTabForground(/*expected_foreground=*/true));
+      WaitForTaskTabForground(/*expected_foreground=*/true),
+      Do([&]() {
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+      "Glic.Instance.TaskTabForegrounded"));
+      }));
   // clang-format on
 }
 
