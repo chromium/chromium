@@ -263,6 +263,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     task_info_delegate_->SetTaskId(std::nullopt);
     task_info_delegate_->SetThreadId(std::nullopt);
     task_info_delegate_->SetThreadTitle(std::nullopt);
+    ui_service_->OnTaskChangedInPanel(browser_, base::Uuid());
     return;
   }
 

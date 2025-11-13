@@ -248,6 +248,12 @@ void ContextualTasksServiceImpl::DisassociateTabFromTask(
   if (it != tasks_.end()) {
     it->second.RemoveTabId(tab_id);
   }
+
+  // If the task doesn't have a thread and tabs associated with it,
+  // it can be safely removed here.
+  if (!it->second.GetThread() && it->second.GetTabIds().empty()) {
+    RemoveTaskInternal(task_id, TriggerSource::kLocal);
+  }
 }
 
 std::optional<ContextualTask>

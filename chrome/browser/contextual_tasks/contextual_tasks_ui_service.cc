@@ -278,9 +278,12 @@ void ContextualTasksUiService::OnTaskChangedInPanel(
     const base::Uuid& task_id) {
   // If a new thread is started in the panel, affiliated tabs should change
   // their thread to the new one.
-  // TODO(https://crbug.com/451705724): differentiate new thread from existing
-  // thread, possibly using `task_id.is_valid()`.
-  DCHECK(task_id.is_valid());
+  base::Uuid new_task_id = task_id;
+  if (!task_id.is_valid()) {
+    // If the panel is in zero state, create an empty task.
+    ContextualTask task = context_controller_->CreateTask();
+    new_task_id = task.GetTaskId();
+  }
 
   TabStripModel* tab_strip_model = browser_window_interface->GetTabStripModel();
   content::WebContents* active_contents =
@@ -297,13 +300,13 @@ void ContextualTasksUiService::OnTaskChangedInPanel(
           context_controller_->GetTabsAssociatedWithTask(
               current_task->GetTaskId());
       for (const auto& id : tab_ids) {
-        context_controller_->AssociateTabWithTask(task_id, id);
+        context_controller_->AssociateTabWithTask(new_task_id, id);
       }
       return;
     }
   }
 
-  context_controller_->AssociateTabWithTask(task_id, active_id);
+  context_controller_->AssociateTabWithTask(new_task_id, active_id);
 }
 
 bool ContextualTasksUiService::IsAiUrl(const GURL& url) {

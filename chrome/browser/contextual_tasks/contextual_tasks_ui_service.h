@@ -82,7 +82,8 @@ class ContextualTasksUiService : public KeyedService {
   virtual GURL GetDefaultAiPageUrl();
 
   // Called when the side panel in a given browser window started showing a new
-  // task.
+  // task. If |task_id| is invalid, the panel is in a zero-state that is waiting
+  // for user to create a new task.
   virtual void OnTaskChangedInPanel(
       BrowserWindowInterface* browser_window_interface,
       const base::Uuid& task_id);

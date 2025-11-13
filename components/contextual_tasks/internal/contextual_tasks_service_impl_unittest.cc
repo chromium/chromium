@@ -1393,6 +1393,23 @@ TEST_F(ContextualTasksServiceImplTest,
       service_->GetTabsAssociatedWithTask(task1.GetTaskId()), tab_id));
 }
 
+TEST_F(ContextualTasksServiceImplTest,
+       DisassociateTabFromTask_RemovesEmptyTask) {
+  ContextualTask task = service_->CreateTask();
+  SessionID tab_id = SessionID::FromSerializedValue(1);
+
+  // Associate the tab with the task.
+  service_->AssociateTabWithTask(task.GetTaskId(), tab_id);
+  EXPECT_TRUE(service_->GetContextualTaskForTab(tab_id).has_value());
+  EXPECT_TRUE(GetTaskById(task.GetTaskId()).has_value());
+
+  // Disassociate the tab. The task should be removed since it has no thread
+  // and no other tabs.
+  service_->DisassociateTabFromTask(task.GetTaskId(), tab_id);
+  EXPECT_FALSE(service_->GetContextualTaskForTab(tab_id).has_value());
+  EXPECT_FALSE(GetTaskById(task.GetTaskId()).has_value());
+}
+
 class ContextualTasksServiceImplEphemeralOnlyTest
     : public ContextualTasksServiceImplTest {
  public:
