@@ -4,11 +4,6 @@
 //
 // Library functions related to the OEM Deal Confirmation Code.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "rlz/win/lib/machine_deal.h"
 
 #include <windows.h>
@@ -17,6 +12,7 @@
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -66,16 +62,17 @@ bool IsGoodDccChar(char ch) {
 // kMaxDccLength+1 long.
 void NormalizeDcc(const char* raw_dcc, char* normalized_dcc) {
   size_t index = 0;
-  for (; raw_dcc[index] != 0 && index < rlz_lib::kMaxDccLength; ++index) {
-    char current = raw_dcc[index];
+  for (; UNSAFE_TODO(raw_dcc[index]) != 0 && index < rlz_lib::kMaxDccLength;
+       ++index) {
+    char current = UNSAFE_TODO(raw_dcc[index]);
     if (IsGoodDccChar(current)) {
-      normalized_dcc[index] = current;
+      UNSAFE_TODO(normalized_dcc[index]) = current;
     } else {
-      normalized_dcc[index] = '.';
+      UNSAFE_TODO(normalized_dcc[index]) = '.';
     }
   }
 
-  normalized_dcc[index] = 0;
+  UNSAFE_TODO(normalized_dcc[index]) = 0;
 }
 
 bool GetResponseLine(const char* response_text, int response_length,
@@ -89,16 +86,16 @@ bool GetResponseLine(const char* response_text, int response_length,
     return false;
 
   int line_begin = *search_index;
-  const char* line_end = strchr(response_text + line_begin, '\n');
+  const char* line_end = UNSAFE_TODO(strchr(response_text + line_begin, '\n'));
 
   if (line_end == NULL || line_end - response_text > response_length) {
-    line_end = response_text + response_length;
+    line_end = UNSAFE_TODO(response_text + response_length);
     *search_index = -1;
   } else {
     *search_index = line_end - response_text + 1;
   }
 
-  response_line->assign(response_text + line_begin,
+  response_line->assign(UNSAFE_TODO(response_text + line_begin),
                         line_end - response_text - line_begin);
   return true;
 }
@@ -251,7 +248,7 @@ bool MachineDealCode::GetAsCgi(char* cgi, int cgi_size) {
 
   base::strlcpy(cgi, cgi_arg.c_str(), cgi_size);
 
-  if (!Get(cgi + cgi_arg_length, cgi_size - cgi_arg_length)) {
+  if (!Get(UNSAFE_TODO(cgi + cgi_arg_length), cgi_size - cgi_arg_length)) {
     cgi[0] = 0;
     return false;
   }

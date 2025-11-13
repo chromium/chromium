@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <windows.h>
 
 #include <Sddl.h>  // For ConvertSidToStringSidW.
@@ -14,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/strings/utf_string_conversions.h"
 #include "rlz/lib/assert.h"
@@ -33,9 +29,9 @@ bool GetSystemVolumeSerialNumber(int* number) {
   if (!GetSystemDirectoryW(system_path, MAX_PATH))
     return false;
 
-  wchar_t* first_slash = wcspbrk(system_path, L"\\/");
+  wchar_t* first_slash = UNSAFE_TODO(wcspbrk(system_path, L"\\/"));
   if (first_slash != NULL)
-    *(first_slash + 1) = 0;
+    *(UNSAFE_TODO(first_slash + 1)) = 0;
 
   DWORD number_local = 0;
   if (!GetVolumeInformationW(system_path, NULL, 0, &number_local, NULL, NULL,

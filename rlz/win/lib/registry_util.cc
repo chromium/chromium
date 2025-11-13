@@ -5,15 +5,11 @@
 // A helper library to keep track of a user's key by SID.
 // Used by RLZ libary. Also to be used by SearchWithGoogle library.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "rlz/win/lib/registry_util.h"
 
 #include <windows.h>
 
+#include "base/compiler_specific.h"
 #include "base/process/process_info.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
@@ -38,8 +34,9 @@ bool RegKeyReadValue(const base::win::RegKey& key, const wchar_t* name,
   }
 
   // Note that RLZ string are always ASCII by design.
-  strncpy(value, base::WideToUTF8(value_string).c_str(), *value_size);
-  value[*value_size - 1] = 0;
+  UNSAFE_TODO(
+      strncpy(value, base::WideToUTF8(value_string).c_str(), *value_size));
+  UNSAFE_TODO(value[*value_size - 1]) = 0;
   return true;
 }
 
