@@ -67,6 +67,9 @@ BASE_FEATURE(kGlicEnableAutoLoginDialogs, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicEnableAutoLoginPersistedPermissions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicSkipAwaitVisualStateForNewTabs,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicTabScreenshotPaintPreviewBackend,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
