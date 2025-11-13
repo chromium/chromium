@@ -118,9 +118,6 @@ suite('<os-settings-input-page>', () => {
 
   setup(() => {
     clearBody();
-    loadTimeData.overrideValues({
-      allowEmojiSuggestion: true,
-    });
     Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT);
   });
 
@@ -1449,53 +1446,6 @@ suite('<os-settings-input-page>', () => {
       searchInput.setValue('');
       keyDownOn(searchInput, 19, [], 'Escape');
       assertFalse(dialog.$.dialog.open);
-    });
-  });
-
-  suite('Suggestions', () => {
-    suite('when emoji suggestions are not available', () => {
-      setup(() => {
-        loadTimeData.overrideValues({allowEmojiSuggestion: false});
-      });
-    });
-
-    test('Emoji suggestion toggle is visible', async () => {
-      await createInputPage();
-      const emojiSuggestionToggle =
-          inputPage.shadowRoot!.querySelector('#emojiSuggestionToggle');
-      assertTrue(isVisible(emojiSuggestionToggle));
-    });
-
-    test('Deep link to emoji suggestion toggle', async () => {
-      await createInputPage();
-
-      const params = new URLSearchParams();
-      const setting = settingMojom.Setting.kShowEmojiSuggestions;
-      params.append('settingId', setting.toString());
-      Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT, params);
-      flush();
-
-      const deepLinkElement = inputPage.shadowRoot!.querySelector<HTMLElement>(
-          '#emojiSuggestionToggle');
-      assertTrue(!!deepLinkElement);
-      await waitAfterNextRender(deepLinkElement);
-      assertEquals(
-          deepLinkElement, inputPage.shadowRoot!.activeElement,
-          `Emoji suggestion toggle should be focused for settingId=${
-              setting}.`);
-    });
-
-    suite('when the emoji suggestions is not allowed', () => {
-      setup(() => {
-        loadTimeData.overrideValues({allowEmojiSuggestion: false});
-      });
-
-      test('Suggestions section is not visible', async () => {
-        await createInputPage();
-        const suggestionsSection =
-            inputPage.shadowRoot!.querySelector('#suggestionsSection');
-        assertFalse(isVisible(suggestionsSection));
-      });
     });
   });
 });

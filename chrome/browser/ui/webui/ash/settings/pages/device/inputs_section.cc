@@ -295,16 +295,6 @@ void AddInputMethodOptionsLoadTimeData(
   html_source->AddBoolean("allowFirstPartyVietnameseInput", true);
 }
 
-void AddSuggestionsLoadTimeData(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"suggestionsTitle", IDS_SETTINGS_SUGGESTIONS_TITLE},
-      {"emojiSuggestionTitle", IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_TITLE},
-      {"emojiSuggestionDescription",
-       IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_DESCRIPTION}};
-  html_source->AddLocalizedStrings(kLocalizedStrings);
-  html_source->AddBoolean("allowEmojiSuggestion", false);
-}
-
 }  // namespace
 
 InputsSection::InputsSection(Profile* profile,
@@ -482,8 +472,6 @@ void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       html_source,
       input_method::IsPhysicalKeyboardAutocorrectAllowed(*pref_service_),
       input_method::IsPhysicalKeyboardPredictiveWritingAllowed(*pref_service_));
-
-  AddSuggestionsLoadTimeData(html_source);
 }
 
 void InputsSection::AddHandlers(content::WebUI* web_ui) {

@@ -621,9 +621,6 @@
   </message>
 
   <!-- Suggestions Section -->
-  <message name="IDS_SETTINGS_SUGGESTIONS_TITLE" desc="The label for the suggestions section, which contains features to help users type faster or more expressively such as suggesting personal information or suggesting emoji to use.">
-    Suggestions
-  </message>
   <message name="IDS_SETTINGS_SUGGESTIONS_PERSONAL_INFO_TITLE" desc="The label for personal information suggestion section. The feature shows inline suggestions for the users’s name, address, and phone number.">
     Personal information suggestions
   </message>
@@ -635,12 +632,6 @@
   </message>
   <message name="IDS_SETTINGS_SUGGESTIONS_MANAGE_PERSONAL_INFO" desc="The label for opening Chrome's browser settings page for managing personal addresses">
     Manage personal information
-  </message>
-  <message name="IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_TITLE" desc="The label for emoji suggestion (when an user types a word, some emojis might be suggested for the user to insert after) section.">
-    Emoji suggestions
-  </message>
-  <message name="IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_DESCRIPTION" desc="The description for emoji suggestion (when an user types a word, some emojis might be suggested for the user to insert after) section.">
-    Get emoji suggestions based on what you're typing
   </message>
 
   <!-- Input Method Options Section -->
