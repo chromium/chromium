@@ -22,7 +22,7 @@ namespace page_content_annotations {
 
 namespace {
 
-constexpr base::FilePath::CharType kPageContentAnnotationsDatabaseDirName[] =
+constexpr base::FilePath::CharType kPageContentAnnotationsDatabaseName[] =
     FILE_PATH_LITERAL("annotated_page_contents_db");
 
 constexpr base::TimeDelta kStartupDeleteDelay = base::Seconds(25);
@@ -32,8 +32,7 @@ constexpr base::TimeDelta kPeriodicDeleteDelay = base::Days(1);
 
 PageContentCache::PageContentCache(os_crypt_async::OSCryptAsync* os_crypt_async,
                                    const base::FilePath& profile_dir)
-    : database_path_(
-          profile_dir.Append(kPageContentAnnotationsDatabaseDirName)),
+    : database_path_(profile_dir.Append(kPageContentAnnotationsDatabaseName)),
       store_(base::ThreadPool::CreateSequencedTaskRunner(
                  {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
                   base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
@@ -78,14 +77,16 @@ void PageContentCache::GetAllTabIds(GetAllTabIdsCallback callback) {
 void PageContentCache::RecordMetrics(std::set<int64_t> eligible_tab_ids) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&base::ComputeDirectorySize, database_path_),
+      base::BindOnce(&base::GetFileSize, database_path_),
       base::BindOnce(&PageContentCache::OnCacheSizeCalculated,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(eligible_tab_ids)));
 }
 
-void PageContentCache::OnCacheSizeCalculated(std::set<int64_t> eligible_tab_ids,
-                                             int64_t total_cache_size) {
+void PageContentCache::OnCacheSizeCalculated(
+    std::set<int64_t> eligible_tab_ids,
+    std::optional<int64_t> total_cache_size_optional) {
+  int64_t total_cache_size = total_cache_size_optional.value_or(0);
   base::UmaHistogramMemoryKB(
       "OptimizationGuide.PageContentCache.TotalCacheSize",
       total_cache_size / 1024);

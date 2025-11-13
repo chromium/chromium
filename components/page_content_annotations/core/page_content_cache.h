@@ -77,7 +77,7 @@ class PageContentCache {
  private:
   void OnOsCryptAsyncReady(os_crypt_async::Encryptor encryptor);
   void OnCacheSizeCalculated(std::set<int64_t> eligible_tab_ids,
-                             int64_t total_cache_size);
+                             std::optional<int64_t> total_cache_size_optional);
   void OnReceiveAllCachedTabIds(int64_t total_cache_size,
                                 std::set<int64_t> eligible_tab_ids,
                                 std::vector<int64_t> cached_tab_ids);
