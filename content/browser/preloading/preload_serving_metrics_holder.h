@@ -46,6 +46,7 @@ class CONTENT_EXPORT PreloadServingMetricsHolder final
   void SetPrerenderInitialPreloadServingMetrics(
       std::unique_ptr<PreloadServingMetrics>
           prerender_initial_preload_serving_metrics);
+  void SetIsPrerenderAbortedByPrerenderURLLoaderThrottle(bool value);
   // Take metrics for recording UMAs/UKMs.
   //
   // Precondition: It is allowed to call this once per navigation. Otherwise, it

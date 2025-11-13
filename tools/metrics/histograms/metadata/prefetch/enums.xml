@@ -47,6 +47,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="kNotServedIneligibleRedirect"/>
   <int value="12" label="kNotServedLoadFailed"/>
   <int value="13" label="kNotServedOnDeterminedHeadWithNotServableUnknown"/>
+  <int value="14" label="kNotServedNoCandidates"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/preloading/prefetch/prefetch_match_resolver.h:PrefetchPotentialCandidateServingResult) -->
