@@ -241,6 +241,9 @@
       <message name="IDS_TAB_SELECTION_EDITOR_TOOLBAR_SELECT_ITEMS" desc="Label shown on Tab Selection Editor Toolbar asking user to select tabs and tab groups denoted as items from the list.">
         Select items
       </message>
+      <message name="IDS_TAB_SELECTION_EDITOR_TOOLBAR_ADD_TABS" desc="Label shown on Tab Selection Editor Toolbar asking user to add tabs as context for the ChromeItemPickerActivity.">
+        Add tabs
+      </message>
       <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_BACK_BUTTON" desc="Accessibility string for the back button in the Tab Selection Editor Toolbar. Tap this button to exit out of the multi-select mode">
         Hide multi-select mode
       </message>

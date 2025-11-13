@@ -12,6 +12,7 @@ import android.content.res.ColorStateList;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ValueChangedCallback;
@@ -291,9 +292,13 @@ class TabListEditorMediator
                 tabs, tabGroupSyncIds, recyclerViewPosition, /* quickMode= */ false);
 
         mModel.set(TabListEditorProperties.IS_VISIBLE, true);
-        mModel.set(
-                TabListEditorProperties.TOOLBAR_TITLE,
-                mContext.getString(R.string.tab_selection_editor_toolbar_select_items));
+
+        @StringRes
+        int titleId =
+                (mCreationMode == CreationMode.ITEM_PICKER)
+                        ? R.string.tab_selection_editor_toolbar_add_tabs
+                        : R.string.tab_selection_editor_toolbar_select_items;
+        mModel.set(TabListEditorProperties.TOOLBAR_TITLE, mContext.getString(titleId));
 
         updateDoneButtonVisibility();
 
