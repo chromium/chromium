@@ -162,7 +162,10 @@ class GlicPolicyTest : public PolicyTest {
     instance_tracker_.SetProfile(profile_1_);
 
     // "policy_for_profile_1_" is provider_, setup in PolicyTest.
-
+    // Creating multi-profiles in a single user session is prohibited.
+    // TODO(crbug.com/460348211): Re-design some of the tests that need multi
+    // profiles to make it work for ChromeOS, too.
+#if !BUILDFLAG(IS_CHROMEOS)
     {
       // The policy configuration here causes signin::WaitForRefreshTokensLoaded
       // to hang when run from GlicTestEnvironmentFactory, so disable it here
@@ -182,6 +185,7 @@ class GlicPolicyTest : public PolicyTest {
           &profiles::testing::CreateProfileSync(profile_manager, new_path);
       ForceSigninAndModelExecutionCapability(profile_2_);
     }
+#endif
   }
 
   void TearDownOnMainThread() override {
@@ -319,7 +323,16 @@ class GlicPolicyTest : public PolicyTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PrefDefaultsToEnabled) {
+// Currently, the test uses multi-profile, which is disallowed in ChromeOS.
+// TODO(crbug.com/460348211): Re-design some of the tests that need multi
+// profiles to make it work for ChromeOS, too.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE(test_name) DISABLED_##test_name
+#else
+#define MAYBE(test_name) test_name
+#endif
+
+IN_PROC_BROWSER_TEST_F(GlicPolicyTest, MAYBE(PrefDefaultsToEnabled)) {
   // The pref defaults to enabled.
   EXPECT_EQ(kEnabledValue, profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
   EXPECT_EQ(kEnabledValue, profile_2_->GetPrefs()->GetInteger(kGeminiSettings));
@@ -343,7 +356,8 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PrefDisabledByPolicy) {
 
 // Ensure that when policy disables Glic, a browser window doesn't show the Glic
 // button.
-IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyAffectsGlicButtonInNewWindows) {
+IN_PROC_BROWSER_TEST_F(GlicPolicyTest,
+                       MAYBE(PolicyAffectsGlicButtonInNewWindows)) {
   ASSERT_EQ(browser()->profile(), profile_1_);
   ASSERT_NE(profile_1_, profile_2_);
 
@@ -377,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyAffectsGlicButtonInNewWindows) {
 
 // Ensure that when policy disables Glic, a browser window doesn't show the Glic
 // button.
-IN_PROC_BROWSER_TEST_F(GlicPolicyTest, GlicButtonInExistingWindows) {
+IN_PROC_BROWSER_TEST_F(GlicPolicyTest, MAYBE(GlicButtonInExistingWindows)) {
   ASSERT_EQ(browser()->profile(), profile_1_);
   ASSERT_NE(profile_1_, profile_2_);
 
@@ -425,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, GlicButtonInExistingWindows) {
 
 // Ensure that background mode is entered if and only if a profile with the
 // policy enabled is loaded.
-IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesBackgroundMode) {
+IN_PROC_BROWSER_TEST_F(GlicPolicyTest, MAYBE(PolicyDisablesBackgroundMode)) {
   ASSERT_EQ(browser()->profile(), profile_1_);
   ASSERT_NE(profile_1_, profile_2_);
 
