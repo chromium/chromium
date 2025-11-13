@@ -543,7 +543,7 @@ vars = {
   'libcxx_revision':       'ddfdbbc1ab109b4fc6171f3d8c38faf4586701d2',
 
   # GN CIPD package version.
-  'gn_version': 'git_revision:8c77cb940e3f73443dac9e1a1a55c22a9891d67d',
+  'gn_version': 'git_revision:748c9571f3d18820a7989a880d5ddf220e54af1b',
 
   # ninja CIPD package.
   'ninja_package': 'infra/3pp/tools/ninja/',
