@@ -1059,6 +1059,11 @@ public class StripLayoutHelperManager
     }
 
     @Override
+    public boolean isHiddenByFadeTransition() {
+        return (getStripVisibilityStateSupplier().get() & StripVisibilityState.HIDDEN_BY_FADE) != 0;
+    }
+
+    @Override
     public int getFadeTransitionThresholdDp() {
         if (mTabModelSelector == null) return 0;
         TabModel incognitoTabModel = mTabModelSelector.getModel(/* incognito= */ true);
@@ -1684,7 +1689,6 @@ public class StripLayoutHelperManager
         return mIsIncognito ? mNormalHelper : mIncognitoHelper;
     }
 
-    @Override
     public ObservableSupplier<@StripVisibilityState Integer> getStripVisibilityStateSupplier() {
         // TODO(crbug.com/417238089): get() returns a stale value during height transitions.
         return mStripVisibilityStateSupplier;
