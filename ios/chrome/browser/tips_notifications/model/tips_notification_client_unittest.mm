@@ -9,6 +9,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/scoped_mock_clock_override.h"
+#import "base/test/simple_test_clock.h"
 #import "base/threading/thread_restrictions.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/scoped_user_pref_update.h"
@@ -90,9 +91,11 @@ class TipsNotificationClientTest : public PlatformTest {
                                 prefs::kAppLevelPushNotificationPermissions);
     update->Set(kTipsNotificationKey, true);
 
-    // Wait for the tracker to initialize.
+    // Create the feature engagement tracker and wait to initialize.
     tracker_ =
         feature_engagement::TrackerFactory::GetForProfile(profile_.get());
+    test_clock_.SetNow(base::Time::Now());
+    tracker_->SetClockForTesting(test_clock_, test_clock_.Now());
     base::RunLoop run_loop;
     tracker_->AddOnInitializedCallback(
         base::IgnoreArgs<bool>(run_loop.QuitClosure()));
@@ -298,6 +301,7 @@ class TipsNotificationClientTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<feature_engagement::Tracker> tracker_;
+  base::SimpleTestClock test_clock_;
   id mock_scene_state_;
   UNNotificationResponse* mock_notification_response_;
   std::unique_ptr<TestBrowser> browser_;
@@ -812,6 +816,44 @@ TEST_F(TipsNotificationClientTest,
 
   SimulateForegroundingApp();
 
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+// Tests that the client will not request a one-time default browser
+// notification within 7 days of FRE.
+TEST_F(TipsNotificationClientTest,
+       OneTimeDefaultBrowserNotificationWithinFRECooldown) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kIOSOneTimeDefaultBrowserNotification);
+  SetFalseChromeLikelyDefaultBrowser();
+  tracker_->NotifyEvent("default_browser_fre_shown");
+  RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kCancel);
+
+  StubGetPendingRequests(nil);
+
+  // Default browser notification should be skippd and next in line should be
+  // scheduled.
+  ExpectNotificationRequest(TipsNotificationType::kEnhancedSafeBrowsing);
+  SimulateForegroundingApp();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+// Tests that the client will request a one-time default browser notification 7
+// days after the FRE.
+TEST_F(TipsNotificationClientTest,
+       OneTimeDefaultBrowserNotificationAfterFRECooldown) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kIOSOneTimeDefaultBrowserNotification);
+  SetFalseChromeLikelyDefaultBrowser();
+  tracker_->NotifyEvent("default_browser_fre_shown");
+  test_clock_.Advance(base::Days(8));
+  RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kCancel);
+
+  StubGetPendingRequests(nil);
+
+  // Default browser notification should be scheduled.
+  ExpectNotificationRequest(TipsNotificationType::kDefaultBrowser);
+  SimulateForegroundingApp();
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 }
 
