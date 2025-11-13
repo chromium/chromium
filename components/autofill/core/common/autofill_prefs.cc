@@ -39,6 +39,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       kAutofillAiIdentityEntitiesEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      kAutofillAiSyncedOptInStatus, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
       kAutofillAiLastVersionDeduped, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -245,6 +248,14 @@ void SetAutofillProfileEnabled(PrefService* prefs, bool enabled) {
   using enum AutofillAddressOptInChange;
   base::UmaHistogramEnumeration("Autofill.Address.IsEnabled.Change",
                                 enabled ? kOptIn : kOptOut);
+}
+
+bool IsAutofillAiSyncedOptInStatusEnabled(const PrefService* prefs) {
+  return prefs->GetBoolean(kAutofillAiSyncedOptInStatus);
+}
+
+void SetAutofillAiSyncedOptInStatus(PrefService* prefs, bool enabled) {
+  prefs->SetBoolean(kAutofillAiSyncedOptInStatus, enabled);
 }
 
 bool IsPaymentMethodsMandatoryReauthEnabled(const PrefService* prefs) {
