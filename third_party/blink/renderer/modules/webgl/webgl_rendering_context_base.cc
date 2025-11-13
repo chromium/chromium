@@ -1866,7 +1866,8 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     return nullptr;
   }
 
-  if (GetDrawingBuffer()->SupportsNoCopyExportForLowLatency()) {
+  if (Host()->LowLatencyEnabled() &&
+      GetDrawingBuffer()->SupportsNoCopyExportForLowLatency()) {
     auto resource = ExportLowLatencyCanvasResource(source_buffer);
     return resource ? resource->Bitmap() : nullptr;
   }
@@ -1955,7 +1956,8 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
     return nullptr;
   }
 
-  if (GetDrawingBuffer()->SupportsNoCopyExportForLowLatency()) {
+  if (Host()->LowLatencyEnabled() &&
+      GetDrawingBuffer()->SupportsNoCopyExportForLowLatency()) {
     return ExportLowLatencyCanvasResource(source_buffer);
   }
 
