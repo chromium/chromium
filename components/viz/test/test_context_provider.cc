@@ -206,6 +206,10 @@ TestContextProvider::TestContextProvider(
   context_thread_checker_.DetachFromThread();
   raster_context_->set_test_support(support_.get());
 
+  // Some tests exercise production codepaths that require this cap; enable it
+  // by default for convenience.
+  raster_context_->set_texture_rg(true);
+
   // Just pass nullptr to the ContextCacheController for its task runner.
   // Idle handling is tested directly in ContextCacheController's
   // unittests, and isn't needed here.

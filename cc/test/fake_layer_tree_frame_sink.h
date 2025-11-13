@@ -65,7 +65,7 @@ class FakeLayerTreeFrameSink : public LayerTreeFrameSink {
 
   static std::unique_ptr<FakeLayerTreeFrameSink> Create3d() {
     return base::WrapUnique(
-        new FakeLayerTreeFrameSink(viz::TestContextProvider::Create(),
+        new FakeLayerTreeFrameSink(viz::TestContextProvider::CreateRaster(),
                                    viz::TestContextProvider::CreateWorker()));
   }
 
