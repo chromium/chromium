@@ -66,6 +66,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/login/session",
+    "//components/account_id:test_support",
     "//components/prefs",
     "//components/reporting/metrics/fakes:test_support",
     "//components/reporting/proto:metric_data_proto",

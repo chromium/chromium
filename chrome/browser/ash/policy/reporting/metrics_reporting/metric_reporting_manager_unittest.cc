@@ -26,6 +26,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -1058,6 +1059,7 @@ class EventDrivenTelemetryCollectorPoolTest
   ::ash::SessionTerminationManager session_termination_manager_;
   std::unique_ptr<::testing::NiceMock<test::MockDelegate>> mock_delegate_;
 
+  ::ash::ScopedStubInstallAttributes install_attributes_;
   ::ash::ScopedTestingCrosSettings cros_settings_;
 
   // Placeholder test profile needed for initializing downstream components.
