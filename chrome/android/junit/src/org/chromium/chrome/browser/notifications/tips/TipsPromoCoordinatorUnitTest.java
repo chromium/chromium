@@ -27,6 +27,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeatureType;
@@ -55,6 +56,7 @@ public class TipsPromoCoordinatorUnitTest {
     private PropertyModel mPropertyModel;
     private View mView;
     private BottomSheetContent mBottomSheetContent;
+    private UserActionTester mActionTester;
 
     @Before
     public void setUp() {
@@ -70,6 +72,7 @@ public class TipsPromoCoordinatorUnitTest {
         mPropertyModel = mTipsPromoCoordinator.getModelForTesting();
         mView = mTipsPromoCoordinator.getViewForTesting();
         mBottomSheetContent = mTipsPromoCoordinator.getBottomSheetContentForTesting();
+        mActionTester = new UserActionTester();
 
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
     }
@@ -148,6 +151,7 @@ public class TipsPromoCoordinatorUnitTest {
     public void testShowBottomSheet_GoogleLens() {
         mTipsPromoCoordinator.setLensControllerForTesting(mLensController);
         mTipsPromoCoordinator.showBottomSheet(TipsNotificationsFeatureType.GOOGLE_LENS);
+        assertEquals(1, mActionTester.getActionCount("Notifications.Tips.LensShown"));
 
         assertEquals(
                 ScreenType.MAIN_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
@@ -172,6 +176,7 @@ public class TipsPromoCoordinatorUnitTest {
         mView.findViewById(R.id.tips_promo_settings_button).performClick();
         verify(mBottomSheetController).hideContent(any(), eq(true));
         verify(mLensController).startLens(eq(mWindowAndroid), any());
+        assertEquals(1, mActionTester.getActionCount("Notifications.Tips.Lens"));
     }
 
     @SmallTest

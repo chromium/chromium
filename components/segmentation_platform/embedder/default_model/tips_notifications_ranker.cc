@@ -60,6 +60,8 @@ constexpr FeaturePair<TipsNotificationsRanker::Feature>
          features::UserAction("MobileOmniboxLens", 28)},
         {TipsNotificationsRanker::kGoogleLensTasksSurfaceUseCountIdx,
          features::UserAction("TasksSurface.FakeBox.Lens", 28)},
+        {TipsNotificationsRanker::kGoogleLensTipsNotificationsUseCountIdx,
+         features::UserAction("Notifications.Tips.Lens", 28)},
         {TipsNotificationsRanker::kEnhancedSafeBrowsingIsEnabledIdx,
          features::InputContext(kEnhancedSafeBrowsingStatus)},
         {TipsNotificationsRanker::kQuickDeleteWasEverUsedIdx,
@@ -123,9 +125,11 @@ bool IsQuickDeleteTipEligible(float was_ever_used,
 bool IsGoogleLensTipEligible(float ntp_use_count,
                              float omnibox_use_count,
                              float tasks_surface_use_count,
+                             float tips_notifications_use_count,
                              float tip_shown) {
   return ntp_use_count == 0 && omnibox_use_count == 0 &&
-         tasks_surface_use_count == 0 && tip_shown == 0;
+         tasks_surface_use_count == 0 && tips_notifications_use_count == 0 &&
+         tip_shown == 0;
 }
 
 bool IsBottomOmniboxTipEligible(float is_enabled,
@@ -193,6 +197,8 @@ void TipsNotificationsRanker::ExecuteModelWithInput(
   float lens_omnibox_use_count = inputs[kGoogleLensMobileOmniboxUseCountIdx];
   float lens_tasks_surface_use_count =
       inputs[kGoogleLensTasksSurfaceUseCountIdx];
+  float lens_tips_notifications_use_count =
+      inputs[kGoogleLensTipsNotificationsUseCountIdx];
   float bottom_omnibox_is_enabled = inputs[kBottomOmniboxIsEnabledIdx];
   float bottom_omnibox_was_ever_used = inputs[kBottomOmniboxWasEverUsedIdx];
   float all_feature_tips_shown_count = inputs[kAllFeatureTipsShownCountIdx];
@@ -229,7 +235,8 @@ void TipsNotificationsRanker::ExecuteModelWithInput(
           case kGoogleLensTipIdx:
             if (IsGoogleLensTipEligible(
                     lens_ntp_use_count, lens_omnibox_use_count,
-                    lens_tasks_surface_use_count, lens_tip_shown)) {
+                    lens_tasks_surface_use_count,
+                    lens_tips_notifications_use_count, lens_tip_shown)) {
               response[kGoogleLensTipIdx] = 1;
               has_eligible_tip = true;
             }

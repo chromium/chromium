@@ -22,6 +22,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
+import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeatureType;
 import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.FeatureTipPromoData;
 import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.ScreenType;
@@ -116,6 +117,7 @@ public class TipsPromoCoordinator {
         mPropertyModel.set(TipsPromoProperties.CURRENT_SCREEN, ScreenType.MAIN_SCREEN);
         setupButtonClickHandlers(featureType);
         setupDetailPageSteps(data.detailPageSteps);
+        onShowPromoForFeatureType(featureType);
         mBottomSheetController.requestShowContent(mSheetContent, /* animate= */ true);
     }
 
@@ -185,6 +187,7 @@ public class TipsPromoCoordinator {
                 mQuickDeleteController.showDialog();
                 break;
             case TipsNotificationsFeatureType.GOOGLE_LENS:
+                LensMetrics.recordClicked(LensEntryPoint.TIPS_NOTIFICATIONS);
                 mLensController.startLens(
                         mWindowAndroid,
                         new LensIntentParams.Builder(
@@ -194,6 +197,22 @@ public class TipsPromoCoordinator {
             case TipsNotificationsFeatureType.BOTTOM_OMNIBOX:
                 SettingsNavigationFactory.createSettingsNavigation()
                         .startSettings(mContext, AddressBarSettingsFragment.class);
+                break;
+            default:
+                assert false : "Invalid feature type: " + featureType;
+        }
+    }
+
+    private void onShowPromoForFeatureType(@TipsNotificationsFeatureType int featureType) {
+        switch (featureType) {
+            case TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING:
+                break;
+            case TipsNotificationsFeatureType.QUICK_DELETE:
+                break;
+            case TipsNotificationsFeatureType.GOOGLE_LENS:
+                LensMetrics.recordShown(LensEntryPoint.TIPS_NOTIFICATIONS, /* isShown= */ true);
+                break;
+            case TipsNotificationsFeatureType.BOTTOM_OMNIBOX:
                 break;
             default:
                 assert false : "Invalid feature type: " + featureType;

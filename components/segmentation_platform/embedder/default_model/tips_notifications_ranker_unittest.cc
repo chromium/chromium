@@ -119,6 +119,7 @@ TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputForEssentials) {
   input4[TipsFeature::kGoogleLensNewTabPageUseCountIdx] = 0;
   input4[TipsFeature::kGoogleLensMobileOmniboxUseCountIdx] = 0;
   input4[TipsFeature::kGoogleLensTasksSurfaceUseCountIdx] = 0;
+  input4[TipsFeature::kGoogleLensTipsNotificationsUseCountIdx] = 0;
   input4[TipsFeature::kGoogleLensTipShownIdx] = 0;
   ExpectClassifierResults(input4, {kGoogleLens});
 
@@ -152,6 +153,7 @@ TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputForNewFeatures) {
   input2[TipsFeature::kGoogleLensNewTabPageUseCountIdx] = 1;
   input2[TipsFeature::kGoogleLensMobileOmniboxUseCountIdx] = 1;
   input2[TipsFeature::kGoogleLensTasksSurfaceUseCountIdx] = 1;
+  input2[TipsFeature::kGoogleLensTipsNotificationsUseCountIdx] = 1;
   ExpectClassifierResults(input2, {kBottomOmnibox});
 
   // Test QuickDelete with GoogleLens and BottomOmnibox being used.
@@ -161,6 +163,7 @@ TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputForNewFeatures) {
   input3[TipsFeature::kGoogleLensNewTabPageUseCountIdx] = 1;
   input3[TipsFeature::kGoogleLensMobileOmniboxUseCountIdx] = 1;
   input3[TipsFeature::kGoogleLensTasksSurfaceUseCountIdx] = 1;
+  input3[TipsFeature::kGoogleLensTipsNotificationsUseCountIdx] = 1;
   ExpectClassifierResults(input3, {kQuickDelete});
 
   // Test ESB with GoogleLens, BottomOmnibox and QuickDelete being used.

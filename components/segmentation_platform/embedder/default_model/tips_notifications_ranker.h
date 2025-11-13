@@ -32,6 +32,7 @@ class TipsNotificationsRanker : public DefaultModelProvider {
     kGoogleLensNewTabPageUseCountIdx,
     kGoogleLensMobileOmniboxUseCountIdx,
     kGoogleLensTasksSurfaceUseCountIdx,
+    kGoogleLensTipsNotificationsUseCountIdx,
     kEnhancedSafeBrowsingIsEnabledIdx,
     kQuickDeleteWasEverUsedIdx,
     kBottomOmniboxIsEnabledIdx,
