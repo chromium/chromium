@@ -376,11 +376,11 @@ bool X509Certificate::GetSubjectAltName(
 
   if (dns_names) {
     for (const auto& dns_name : subject_alt_names->dns_names)
-      dns_names->push_back(std::string(dns_name));
+      dns_names->emplace_back(dns_name);
   }
   if (ip_addrs) {
     for (const auto& addr : subject_alt_names->ip_addresses) {
-      ip_addrs->push_back(std::string(addr.AsStringView()));
+      ip_addrs->emplace_back(base::as_string_view(addr));
     }
   }
 
