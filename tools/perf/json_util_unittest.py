@@ -53,6 +53,7 @@ MOCK_JSON_CONSTANTS = {
     'SUMMARY_OPTIONS': 'summaryOptions',
     'TEST': 'test',
     'TRACE_URLS': 'traceUrls',
+    'TRACING_URI': 'Tracing uri',
     'TYPE': 'type',
     'UNIT': 'unit',
     'V8_GIT_HASH': 'V8',
@@ -333,6 +334,16 @@ class JsonUtilTest(unittest.TestCase):
             'min': 1736637289209.919,
         },
         {
+            'type':
+            'GenericSet',
+            'guid':
+            '8563ece0-740a-44c0-ae72-418721ee56d8',
+            'values': [('https://storage.cloud.google.com/'
+                        'chrome-telemetry-output/20251112T181417_63858/'
+                        'rendering.desktop/balls_css_transition_all_properties/'
+                        'retry_0/trace.pb')]
+        },
+        {
             'name':
             'Editor-TipTap',
             'unit':
@@ -354,6 +365,7 @@ class JsonUtilTest(unittest.TestCase):
                 'storysetRepeats': 'a7f54f55-870b-4b76-bb87-d64df4bf3e7b',
                 'storyTags': 'f0bb92d7-5ab2-42ed-ad7f-d79018aa3b60',
                 'traceStart': 'cf09d1a1-8b3b-4d3c-bee6-b8d341d5e31e',
+                'traceUrls': '8563ece0-740a-44c0-ae72-418721ee56d8',
             },
             'sampleValues': [
                 172.90000000130385,
@@ -433,6 +445,10 @@ class JsonUtilTest(unittest.TestCase):
                '60e67b93909a1c858305b27111d9988f94fff0f8'),
         'WebRTC': ('https://webrtc.googlesource.com/src/+/'
                    '1e19045eaa63d00a3b4017fd43c5b502c6ed73a2'),
+        'Tracing uri': ('https://storage.cloud.google.com/'
+                        'chrome-telemetry-output/20251112T181417_63858/'
+                        'rendering.desktop/balls_css_transition_all_properties/'
+                        'retry_0/trace.pb'),
     }
     expected = {
         'version': 1,
@@ -1124,7 +1140,7 @@ class JsonUtilTest(unittest.TestCase):
         builder_details=builder_details,
         bot_ids={'win-222-e504', 'win-223-e504', 'win-224-e504'},
         os_versions={'10.0.19045'},
-    )
+        trace_urls=[])
     expected = {
         'Build Page':
         ('https://ci.chromium.org/ui/p/chrome/builders/ci/win-10-perf/39376'),

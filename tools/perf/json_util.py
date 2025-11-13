@@ -246,6 +246,7 @@ def links_from_builder_details(
     builder_details: PerfBuilderDetails,
     bot_ids: Set[str],
     os_versions: Set[str],
+    trace_urls: Set[str],
 ) -> Dict[str, str]:
   """Returns a dictionary of links from builder details."""
   links = collections.defaultdict(str)
@@ -263,6 +264,8 @@ def links_from_builder_details(
       str(bot_id) for bot_id in sorted(bot_ids))
   links[json_constants.OS_VERSION] = ", ".join(
       str(os_version) for os_version in sorted(os_versions))
+  if len(trace_urls) > 0:
+    links[json_constants.TRACING_URI] = sorted(trace_urls)[0]
   return links
 
 
@@ -313,6 +316,8 @@ class JsonUtil:
     benchmark_key = None
     bot_ids = set()
     os_versions = set()
+    trace_urls = set()
+
     merged_results = collections.defaultdict(list)
     guid_to_values = collections.defaultdict(str)
     for item in self._result2_jsons:
@@ -356,6 +361,8 @@ class JsonUtil:
             stories.extend(guid_to_values[guid])
           elif diagnostic_type == json_constants.STORY_TAGS:
             story_tags.extend(guid_to_values[guid])
+          elif diagnostic_type == json_constants.TRACE_URLS:
+            trace_urls.update(guid_to_values[guid])
 
         try:
           if json_constants.SAMPLE_VALUES in item:
@@ -395,7 +402,8 @@ class JsonUtil:
               "The sampleValues should be in the item, but it is not there. %s"
               % item) from exc
 
-    links = links_from_builder_details(builder_details, bot_ids, os_versions)
+    links = links_from_builder_details(builder_details, bot_ids, os_versions,
+                                       trace_urls)
     key = key_from_builder_details(builder_details, benchmark_key)
     return merged_results, links, key
 
