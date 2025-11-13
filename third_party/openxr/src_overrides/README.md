@@ -12,3 +12,9 @@ upstreamed version of the change. After a roll, the new version of the files can
 be copied into `src_overrides` and the patches can be applied via `git am`. If
 there are merge conflicts, patches should be re-exported, with care taken to
 *try* to maintain only one upstreamable change per patch.
+
+`//third_party/openxr/fork_overrides.py` can help with "resetting" the state of
+the override files to give a clean attempt to try to run
+`git am src_overrides/patches/*` before either making new changes for the
+patches, or simply for a roll. Note that descriptions of changes going into
+src_overrides should be made in `//third_party/openxr/README.chromium`.
