@@ -482,6 +482,22 @@ export default [
     }
   },
   {
+    files: ['chrome/test/data/webui/settings/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error', {
+          paths: [
+            {
+              name: 'chrome://resources/js/load_time_data.js',
+              importNames: ['loadTimeData'],
+              message: 'Import from chrome://settings/settings.js instead.',
+            },
+          ],
+        }
+      ],
+    }
+  },
+  {
     // See b/266455078. Don't add new files to this list.
     files: [
       'chrome/browser/resources/ash/settings/internet_page/internet_subpage.ts',
