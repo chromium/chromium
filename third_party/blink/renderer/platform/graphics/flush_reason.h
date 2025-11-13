@@ -59,14 +59,10 @@ enum class FlushReason {
   // This inhibits vector printing.
   kToBlob = 10,
 
-  // A `VideoFrame` object was created with the canvas as an image source
-  // This inhibits vector printing.
-  kCreateVideoFrame = 11,
-
   // The canvas is being printed.
-  kPrinting = 12,
+  kPrinting = 11,
 
-  kOther = 13,
+  kOther = 12,
 
   kMaxValue = kOther,
 };
