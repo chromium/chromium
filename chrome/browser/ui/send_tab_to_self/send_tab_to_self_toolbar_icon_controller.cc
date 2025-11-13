@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_view.h"
@@ -80,7 +81,8 @@ void SendTabToSelfToolbarIconController::StorePendingEntry(
   // window is inactive and this method is called more than once (i.e. the
   // server sends multiple entry batches).
   if (!had_entry_pending_notification) {
-    BrowserList::AddObserver(this);
+    browser_collection_observer_.Observe(
+        ProfileBrowserCollection::GetForProfile(profile_));
   }
 }
 
@@ -93,13 +95,9 @@ void SendTabToSelfToolbarIconController::DismissEntries(
   }
 }
 
-void SendTabToSelfToolbarIconController::OnBrowserSetLastActive(
-    Browser* browser) {
-  if (browser->profile() != profile_.get()) {
-    return;
-  }
-
-  BrowserList::RemoveObserver(this);
+void SendTabToSelfToolbarIconController::OnBrowserActivated(
+    BrowserWindowInterface* browser) {
+  browser_collection_observer_.Reset();
 
   // Reset |pending_entry_| because it's used to determine if the
   // BrowserListObserver is added in `DisplayNewEntries()`.
@@ -117,7 +115,7 @@ void SendTabToSelfToolbarIconController::OnBrowserSetLastActive(
 
 void SendTabToSelfToolbarIconController::ShowToolbarButton(
     const SendTabToSelfEntry& entry,
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   CHECK(browser);
   PinnedToolbarActionsController* controller =
       browser->GetFeatures().pinned_toolbar_actions_controller();
@@ -126,8 +124,8 @@ void SendTabToSelfToolbarIconController::ShowToolbarButton(
   controller->ShowActionEphemerallyInToolbar(kActionSendTabToSelf, true);
   auto* button = controller->GetButtonFor(kActionSendTabToSelf);
   CHECK(button);
-  browser->browser_window_features()
-      ->send_tab_to_self_toolbar_bubble_controller()
+  browser->GetFeatures()
+      .send_tab_to_self_toolbar_bubble_controller()
       ->ShowBubble(entry, button);
 
   send_tab_to_self::RecordNotificationShown();
