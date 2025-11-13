@@ -97,6 +97,11 @@ class SingleClientArcPackageSyncTest : public SyncTest {
  public:
   SingleClientArcPackageSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientArcPackageSyncTest() override = default;
+
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientArcPackageSyncTest, ArcPackageEmpty) {
