@@ -713,6 +713,7 @@
 
 :host([ntp-realbox-next-enabled][realbox-layout-mode="Compact"]) {
   --expanded-border-radius: 30px;
+  --input-bottom-spacing: 10px;
 }
 
 :host([ntp-realbox-next-enabled][realbox-layout-mode="Compact"]) #iconContainer {
