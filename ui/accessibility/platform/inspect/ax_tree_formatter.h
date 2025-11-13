@@ -134,6 +134,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatter {
   virtual void SetNodeFilters(
       const std::vector<AXNodeFilter>& node_filters) = 0;
 
+  // Set a pattern to match for dumping only a subtree. When set, only the
+  // subtree starting from the first node matching this pattern will be dumped.
+  virtual void SetSubtreePattern(const std::string& pattern) = 0;
+
   // If true, the internal accessibility id of each node will be included
   // in its output.
   virtual void set_show_ids(bool show_ids) = 0;

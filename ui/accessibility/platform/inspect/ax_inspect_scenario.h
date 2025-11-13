@@ -104,6 +104,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXInspectScenario {
   // events tests only show events).
   bool events_tree_dump_enabled = false;
 
+  // A pattern to match for dumping only a subtree. When set, only the subtree
+  // starting from the first node matching this pattern will be dumped.
+  std::string subtree_pattern;
+
  private:
   enum Directive {
     // No directive.
