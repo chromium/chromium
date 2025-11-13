@@ -101,7 +101,7 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
         .WillByDefault(ReturnRef(mock_login_service_));
 
     // Returns the first credential by default.
-    ON_CALL(mock_execution_engine(), PromptToSelectCredential(_, _, _))
+    ON_CALL(mock_execution_engine(), PromptToSelectCredential)
         .WillByDefault(
             [this](const std::vector<actor_login::Credential>& credentials,
                    const MockExecutionEngine::IconMap&,
@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
                        MultipleCredentialsSelectSecond) {
-  ON_CALL(mock_execution_engine(), PromptToSelectCredential(_, _, _))
+  ON_CALL(mock_execution_engine(), PromptToSelectCredential)
       .WillByDefault(
           [this](const std::vector<actor_login::Credential>& credentials,
                  const MockExecutionEngine::IconMap&,
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, CredentialSaved) {
       actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
 
   // The user selects the first credential, which is cached.
-  EXPECT_CALL(mock_execution_engine(), PromptToSelectCredential(_, _, _))
+  EXPECT_CALL(mock_execution_engine(), PromptToSelectCredential)
       .WillOnce([this](const std::vector<actor_login::Credential>& credentials,
                        const MockExecutionEngine::IconMap&,
                        ToolDelegate::CredentialSelectedCallback callback) {
@@ -428,8 +428,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, UsePersistedCredential) {
 
   // Since we'll use a credential that we already have permission for, we should
   // skip the confirmation prompt and use the credential automatically.
-  EXPECT_CALL(mock_execution_engine(), PromptToSelectCredential(_, _, _))
-      .Times(0);
+  EXPECT_CALL(mock_execution_engine(), PromptToSelectCredential).Times(0);
 
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
   ActResultFuture result;
@@ -455,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, SavedCredentialNotUsed) {
       actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
 
   // The user selects the first credential, which is cached.
-  EXPECT_CALL(mock_execution_engine(), PromptToSelectCredential(_, _, _))
+  EXPECT_CALL(mock_execution_engine(), PromptToSelectCredential)
       .WillOnce([this](const std::vector<actor_login::Credential>& credentials,
                        const MockExecutionEngine::IconMap&,
                        ToolDelegate::CredentialSelectedCallback callback) {
@@ -482,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, SavedCredentialNotUsed) {
   // The second time, the user is prompted again because the page's origin is
   // subdomain.example.com. The previously cached (and selected) credential is
   // for example.com.
-  EXPECT_CALL(mock_execution_engine(), PromptToSelectCredential(_, _, _))
+  EXPECT_CALL(mock_execution_engine(), PromptToSelectCredential)
       .WillOnce([this](const std::vector<actor_login::Credential>& credentials,
                        const MockExecutionEngine::IconMap&,
                        ToolDelegate::CredentialSelectedCallback callback) {
@@ -518,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
       actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
 
   base::test::TestFuture<base::OnceClosure> select_creds;
-  EXPECT_CALL(mock_execution_engine(), PromptToSelectCredential(_, _, _))
+  EXPECT_CALL(mock_execution_engine(), PromptToSelectCredential)
       .WillOnce([this, &select_creds](
                     const std::vector<actor_login::Credential>& credentials,
                     const MockExecutionEngine::IconMap&,
@@ -553,7 +552,7 @@ class ActorAttemptLoginToolTestWithFaviconService
         .WillByDefault(Return(&mock_favicon_service_));
 
     // Empty favicon by default.
-    ON_CALL(mock_favicon_service_, GetFaviconImageForPageURL(_, _, _))
+    ON_CALL(mock_favicon_service_, GetFaviconImageForPageURL)
         .WillByDefault([](const GURL& page_url,
                           favicon_base::FaviconImageCallback callback,
                           base::CancelableTaskTracker* tracker) {
@@ -575,8 +574,7 @@ class ActorAttemptLoginToolTestWithFaviconService
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService, NoService) {
   ON_CALL(mock_execution_engine(), GetFaviconService())
       .WillByDefault(Return(nullptr));
-  EXPECT_CALL(mock_favicon_service(), GetFaviconImageForPageURL(_, _, _))
-      .Times(0);
+  EXPECT_CALL(mock_favicon_service(), GetFaviconImageForPageURL).Times(0);
 
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
@@ -640,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService,
                        OneFavicon) {
   const SkBitmap bitmap = GenerateSquareBitmap(/*size=*/10, SK_ColorRED);
   auto image = gfx::Image::CreateFrom1xBitmap(bitmap);
-  ON_CALL(mock_favicon_service(), GetFaviconImageForPageURL(_, _, _))
+  ON_CALL(mock_favicon_service(), GetFaviconImageForPageURL)
       .WillByDefault([&](const GURL& page_url,
                          favicon_base::FaviconImageCallback callback,
                          base::CancelableTaskTracker* tracker) {
@@ -694,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService,
   const GURL link_url =
       embedded_https_test_server().GetURL("foo.com", "/actor/link.html");
 
-  ON_CALL(mock_favicon_service(), GetFaviconImageForPageURL(_, _, _))
+  ON_CALL(mock_favicon_service(), GetFaviconImageForPageURL)
       .WillByDefault([&](const GURL& page_url,
                          favicon_base::FaviconImageCallback callback,
                          base::CancelableTaskTracker* tracker) {

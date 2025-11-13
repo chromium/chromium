@@ -166,7 +166,7 @@ class AttemptFormFillingToolTest : public ActorToolsTest {
     ON_CALL(mock_execution_engine(), GetActorFormFillingService())
         .WillByDefault(ReturnRef(mock_form_filling_service_));
 
-    ON_CALL(mock_execution_engine(), RequestToShowAutofillSuggestions(_, _))
+    ON_CALL(mock_execution_engine(), RequestToShowAutofillSuggestions)
         .WillByDefault(MakeSelections({}));
   }
 
@@ -242,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, GetSuggestionsAndFill) {
   request.suggestions.push_back(suggestion);
   std::vector<autofill::ActorFormFillingRequest> requests = {request};
 
-  EXPECT_CALL(mock_form_filling_service(), GetSuggestions(_, _, _))
+  EXPECT_CALL(mock_form_filling_service(), GetSuggestions)
       .WillOnce(RunOnceCallback<2>(requests));
 
   autofill::ActorFormFillingSelection response;
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, NoSuggestions) {
       GetDomNodeOnPage(*main_frame(), "#ADDRESS_HOME_LINE1");
   ASSERT_TRUE(address_home_line1);
 
-  EXPECT_CALL(mock_form_filling_service(), GetSuggestions(_, _, _))
+  EXPECT_CALL(mock_form_filling_service(), GetSuggestions)
       .WillOnce(RunOnceCallback<2>(
           base::unexpected(autofill::ActorFormFillingError::kNoSuggestions)));
 
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogNotShown) {
   request.suggestions.push_back(suggestion);
   std::vector<autofill::ActorFormFillingRequest> requests = {request};
 
-  EXPECT_CALL(mock_form_filling_service(), GetSuggestions(_, _, _))
+  EXPECT_CALL(mock_form_filling_service(), GetSuggestions)
       .WillOnce(RunOnceCallback<2>(requests));
 
   auto dialog_error_response =
@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogNotShown) {
           webui::mojom::SelectAutofillSuggestionsDialogResult::NewErrorReason(
               webui::mojom::SelectAutofillSuggestionsDialogErrorReason::
                   kDialogPromiseNoSubscriber));
-  EXPECT_CALL(mock_execution_engine(), RequestToShowAutofillSuggestions(_, _))
+  EXPECT_CALL(mock_execution_engine(), RequestToShowAutofillSuggestions)
       .WillOnce(RunOnceCallback<1>(std::move(dialog_error_response)));
 
   std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
   request.suggestions.push_back(suggestion);
   std::vector<autofill::ActorFormFillingRequest> requests = {request};
 
-  EXPECT_CALL(mock_form_filling_service(), GetSuggestions(_, _, _))
+  EXPECT_CALL(mock_form_filling_service(), GetSuggestions)
       .WillOnce(RunOnceCallback<2>(requests));
 
   auto dialog_with_empty_selected_suggestions =
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
           actor_task().id().value(),
           webui::mojom::SelectAutofillSuggestionsDialogResult::
               NewSelectedSuggestions({}));
-  EXPECT_CALL(mock_execution_engine(), RequestToShowAutofillSuggestions(_, _))
+  EXPECT_CALL(mock_execution_engine(), RequestToShowAutofillSuggestions)
       .WillOnce(RunOnceCallback<1>(
           std::move(dialog_with_empty_selected_suggestions)));
 
@@ -374,10 +374,10 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, FillFails) {
   request.suggestions.push_back(suggestion);
   std::vector<autofill::ActorFormFillingRequest> requests = {request};
 
-  EXPECT_CALL(mock_form_filling_service(), GetSuggestions(_, _, _))
+  EXPECT_CALL(mock_form_filling_service(), GetSuggestions)
       .WillOnce(RunOnceCallback<2>(requests));
 
-  EXPECT_CALL(mock_form_filling_service(), FillSuggestions(_, _, _))
+  EXPECT_CALL(mock_form_filling_service(), FillSuggestions)
       .WillOnce(RunOnceCallback<2>(
           base::unexpected(autofill::ActorFormFillingError::kOther)));
 
@@ -411,10 +411,10 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, MultipleSuggestions) {
   request.suggestions.push_back(suggestion2);
   std::vector<autofill::ActorFormFillingRequest> requests = {request};
 
-  EXPECT_CALL(mock_form_filling_service(), GetSuggestions(_, _, _))
+  EXPECT_CALL(mock_form_filling_service(), GetSuggestions)
       .WillOnce(RunOnceCallback<2>(requests));
 
-  EXPECT_CALL(mock_execution_engine(), RequestToShowAutofillSuggestions(_, _))
+  EXPECT_CALL(mock_execution_engine(), RequestToShowAutofillSuggestions)
       .WillOnce(MakeSelections({1}));
 
   autofill::ActorFormFillingSelection response;
@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
   request.suggestions.push_back(suggestion);
   std::vector<autofill::ActorFormFillingRequest> requests = {request};
 
-  EXPECT_CALL(mock_form_filling_service(), GetSuggestions(_, _, _))
+  EXPECT_CALL(mock_form_filling_service(), GetSuggestions)
       .WillOnce(RunOnceCallback<2>(requests));
 
   EXPECT_CALL(mock_execution_engine(),
@@ -572,12 +572,12 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, TestSkippingSelection) {
   request.suggestions.push_back(suggestion2);
   std::vector<autofill::ActorFormFillingRequest> requests = {request};
 
-  EXPECT_CALL(mock_form_filling_service(), GetSuggestions(_, _, _))
+  EXPECT_CALL(mock_form_filling_service(), GetSuggestions)
       .WillOnce(RunOnceCallback<2>(requests));
 
   // RequestToShowAutofillSuggestions should not be shown but instead the
   // first address is automatically selected.
-  EXPECT_CALL(mock_execution_engine(), RequestToShowAutofillSuggestions(_, _))
+  EXPECT_CALL(mock_execution_engine(), RequestToShowAutofillSuggestions)
       .Times(0);
 
   autofill::ActorFormFillingSelection response;

@@ -133,7 +133,7 @@ class ActorUiTabControllerTest : public content::RenderViewHostTestHarness {
 
     ON_CALL(mock_tab_, GetContents).WillByDefault(Return(mock_web_contents_));
     ON_CALL(mock_tab_, IsSelected).WillByDefault(Return(true));
-    ON_CALL(*mock_web_contents_, IncrementCapturerCount(_, _, _, _))
+    ON_CALL(*mock_web_contents_, IncrementCapturerCount)
         .WillByDefault(ReturnNewScopedClosureRunner());
 
     actor_ui_tab_controller_ = std::make_unique<ActorUiTabController>(
@@ -207,8 +207,7 @@ class ActorUiTabControllerTest : public content::RenderViewHostTestHarness {
   // This ensures that any test calling UpdateState will automatically run the
   // barrier closure, preventing timeouts.
   void SetUpDefaultHandoffButtonExpectations() {
-    ON_CALL(*tab_controller_factory()->handoff_button_controller(),
-            UpdateState(_, _, _))
+    ON_CALL(*tab_controller_factory()->handoff_button_controller(), UpdateState)
         .WillByDefault(
             [](const HandoffButtonState&, bool, base::OnceClosure callback) {
               std::move(callback).Run();
@@ -231,7 +230,7 @@ class ActorUiTabControllerTest : public content::RenderViewHostTestHarness {
             },
             weak_factory_.GetWeakPtr()));
 
-    ON_CALL(mock_overlay_callback_, Call(_, _, _))
+    ON_CALL(mock_overlay_callback_, Call)
         .WillByDefault([](bool, ActorOverlayState, base::OnceClosure callback) {
           std::move(callback).Run();
         });

@@ -225,15 +225,15 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
 
     for (auto& mock :
          {mock_ui_event_dispatcher_, task_mock_ui_event_dispatcher_}) {
-      ON_CALL(*mock, OnPreTool(_, _))
+      ON_CALL(*mock, OnPreTool)
           .WillByDefault(
               UiEventDispatcherCallback<ToolRequest>(base::BindRepeating(
                   MakeOkResult, /*requires_page_stabilization=*/true)));
-      ON_CALL(*mock, OnPostTool(_, _))
+      ON_CALL(*mock, OnPostTool)
           .WillByDefault(
               UiEventDispatcherCallback<ToolRequest>(base::BindRepeating(
                   MakeOkResult, /*requires_page_stabilization=*/true)));
-      ON_CALL(*mock, OnActorTaskAsyncChange(_, _))
+      ON_CALL(*mock, OnActorTaskAsyncChange)
           .WillByDefault(UiEventDispatcherCallback<
                          ui::UiEventDispatcher::ActorTaskAsyncChange>(
               base::BindRepeating(MakeOkResult,
@@ -368,17 +368,17 @@ TEST_F(ExecutionEngineTest, ActSucceedsOnSupportedUrl) {
 }
 
 TEST_F(ExecutionEngineTest, ActFailsOnUnsupportedUrl) {
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(_, _)).Times(0);
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(_, _)).Times(0);
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool).Times(0);
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool).Times(0);
   EXPECT_FALSE(Act(GURL(chrome::kChromeUIVersionURL),
                    MakeClickCallback(kFakeContentNodeId)));
 }
 
 TEST_F(ExecutionEngineTest, UiOnPreToolFails) {
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(_, _))
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool)
       .WillOnce(UiEventDispatcherCallback<ToolRequest>(
           base::BindRepeating(MakeErrorResult)));
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(_, _)).Times(0);
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool).Times(0);
   EXPECT_FALSE(
       Act(GURL("http://localhost/"), MakeClickCallback(kFakeContentNodeId)));
   histograms_.ExpectUniqueSample(kActionResultHistogram,
@@ -386,8 +386,8 @@ TEST_F(ExecutionEngineTest, UiOnPreToolFails) {
 }
 
 TEST_F(ExecutionEngineTest, UiOnPostToolFails) {
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(_, _)).Times(1);
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(_, _))
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool).Times(1);
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool)
       .WillOnce(UiEventDispatcherCallback<ToolRequest>(
           base::BindRepeating(MakeErrorResult)));
   EXPECT_FALSE(

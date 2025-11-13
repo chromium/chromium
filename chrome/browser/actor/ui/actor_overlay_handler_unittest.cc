@@ -97,8 +97,7 @@ class ActorOverlayHandlerTest : public testing::Test {
 };
 
 TEST_F(ActorOverlayHandlerTest, OnHoverStatusChanged) {
-  EXPECT_CALL(*mock_actor_ui_tab_controller(),
-              OnOverlayHoverStatusChanged(testing::_))
+  EXPECT_CALL(*mock_actor_ui_tab_controller(), OnOverlayHoverStatusChanged)
       .Times(2);
   handler_->OnHoverStatusChanged(true);
   handler_->OnHoverStatusChanged(false);
@@ -156,7 +155,7 @@ TEST_F(ActorOverlayHandlerTest, HandlesNullTab) {
   // Verify that when the tab controller is null, we don't send the hover status
   // change.
   webui::SetTabInterface(web_contents_.get(), nullptr);
-  EXPECT_CALL(*mock_actor_ui_tab_controller(), OnOverlayHoverStatusChanged(_))
+  EXPECT_CALL(*mock_actor_ui_tab_controller(), OnOverlayHoverStatusChanged)
       .Times(0);
   handler_->OnHoverStatusChanged(true);
 

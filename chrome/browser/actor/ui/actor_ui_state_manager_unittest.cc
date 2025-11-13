@@ -92,7 +92,7 @@ class ActorUiStateManagerTest : public testing::Test {
   }
 
   void ExpectUiTabStateChange(const UiTabState& expected_state) {
-    ON_CALL(*mock_actor_ui_tab_controller(), OnUiTabStateChange(_, _))
+    ON_CALL(*mock_actor_ui_tab_controller(), OnUiTabStateChange)
         .WillByDefault(
             [&](UiTabState state, base::OnceCallback<void(bool)> callback) {
               EXPECT_EQ(state, expected_state);

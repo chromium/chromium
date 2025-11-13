@@ -115,7 +115,7 @@ class AttemptLoginToolInteractiveUiTest
     ON_CALL(mock_execution_engine(), GetFaviconService())
         .WillByDefault(Return(&mock_favicon_service_));
 
-    ON_CALL(mock_favicon_service_, GetFaviconImageForPageURL(_, _, _))
+    ON_CALL(mock_favicon_service_, GetFaviconImageForPageURL)
         .WillByDefault([this](const GURL& page_url,
                               favicon_base::FaviconImageCallback callback,
                               base::CancelableTaskTracker* tracker) {
