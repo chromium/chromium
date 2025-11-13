@@ -6,9 +6,6 @@
 
 namespace regional_capabilities {
 
-const char kChromeUIRegionalCapabilitiesInternalsHost[] =
-    "regional-capabilities-internals";
-
 // Internals data keys expected in the `resources/app.ts` file.
 const char kActiveProgramNameKey[] = "activeProgramName";
 const char kActiveCountryCodeKey[] = "activeCountryCode";

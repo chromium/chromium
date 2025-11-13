@@ -10,6 +10,7 @@
 
 #include "components/commerce/core/commerce_constants.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
+#include "components/webui/regional_capabilities_internals/constants.h"
 #include "ios/components/webui/web_ui_url_constants.h"
 
 // Contains constants for known URLs and portions thereof.
@@ -212,7 +213,7 @@ inline constexpr char kBWGPageContentSharingURL[] =
 inline constexpr char kBWGExtensionsURL[] = "https://gemini.google.com/apps";
 
 // Gets the hosts/domains that are shown in chrome://chrome-urls.
-inline constexpr std::array<std::string_view, 20> kChromeHostURLs = {
+inline constexpr std::array<std::string_view, 21> kChromeHostURLs = {
     commerce::kChromeUICommerceInternalsHost,
     kChromeUIChromeURLsHost,
     kChromeUICreditsHost,
@@ -233,6 +234,7 @@ inline constexpr std::array<std::string_view, 20> kChromeHostURLs = {
     kChromeUIUserActionsHost,
     kChromeUIVersionHost,
     optimization_guide_internals::kChromeUIOptimizationGuideInternalsHost,
+    regional_capabilities::kChromeUIRegionalCapabilitiesInternalsHost,
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_URL_CHROME_URL_CONSTANTS_H_

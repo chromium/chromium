@@ -18,6 +18,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/version_info/channel.h"
 #import "components/webui/chrome_urls/pref_names.h"
+#import "components/webui/regional_capabilities_internals/constants.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -45,6 +46,7 @@
 #import "ios/chrome/browser/webui/ui_bundled/policy/policy_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/prefs_internals_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/profile_internals/profile_internals_ui.h"
+#import "ios/chrome/browser/webui/ui_bundled/regional_capabilities_internals/regional_capabilities_internals_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/signin_internals_ui_ios.h"
 #import "ios/chrome/browser/webui/ui_bundled/terms_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/translate_internals/translate_internals_ui.h"
@@ -204,6 +206,12 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
       optimization_guide_internals::kChromeUIOptimizationGuideInternalsHost) {
     return InternalDebugPagesEnabled()
                ? &NewWebUIIOS<OptimizationGuideInternalsUI>
+               : &NewWebUIIOS<InternalDebugPagesDisabledUI>;
+  }
+  if (url_host ==
+      regional_capabilities::kChromeUIRegionalCapabilitiesInternalsHost) {
+    return InternalDebugPagesEnabled()
+               ? &NewWebUIIOS<RegionalCapabilitiesInternalsUI>
                : &NewWebUIIOS<InternalDebugPagesDisabledUI>;
   }
   // keep-sorted end

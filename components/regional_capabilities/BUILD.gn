@@ -55,6 +55,7 @@ source_set("country_access_reason") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/regional_capabilities_internals",
     "//components/search_engines",
+    "//ios/chrome/browser/webui/ui_bundled/regional_capabilities_internals",
   ]
 
   sources = [ "access/country_access_reason.h" ]
