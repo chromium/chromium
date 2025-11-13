@@ -16,7 +16,7 @@
   --text-input-inline-end-spacing: 80px;
   --text-input-inline-start-spacing: 16px;
   --text-input-max-height: 190px;
-  --expanded-border-radius: 26px;
+  --expanded-border-radius: var(--cr-composebox-expanded-border-radius, 26px);
   --standard-curve: cubic-bezier(0.4, 0, 0.2, 1);
   --emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
   --emphasized-curve: linear(
@@ -135,6 +135,7 @@
 
 search-animated-glow {
   pointer-events: none;
+  inset: -2px;
   z-index: 1;
 }
 
@@ -496,11 +497,11 @@ search-animated-glow {
 }
 
 :host([ntp-realbox-next-enabled][searchbox-layout-mode^="Tall"][show-dropdown_]) {
-  --expanded-border-radius: 24px;
+  --expanded-border-radius: var(--cr-composebox-expanded-border-radius, 24px);
 }
 
 :host([ntp-realbox-next-enabled][searchbox-layout-mode="Compact"]) {
-  --expanded-border-radius: 30px;
+  --expanded-border-radius: var(--cr-composebox-expanded-border-radius, 30px);
   --input-bottom-spacing: 10px;
 }
 

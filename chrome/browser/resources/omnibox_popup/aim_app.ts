@@ -93,6 +93,7 @@ export class OmniboxAimAppElement extends CrLitElement implements Page {
   private onShow_(context: SearchContextStub|null) {
     const composebox = this.shadowRoot.querySelector('cr-composebox');
     assert(composebox);
+    composebox.playGlowAnimation();
     composebox.setSearchContext(context);
   }
 

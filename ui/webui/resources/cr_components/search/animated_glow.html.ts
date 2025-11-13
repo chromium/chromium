@@ -19,6 +19,10 @@ export function getHtml(this: SearchAnimatedGlowElement) {
    * - DoubleGradient is a copy of Gradient for more intense, saturated glow
    * to appear through the frosted glass for background for drag and
    * drop animation.
+   * - DoubleGradientMask is a stencil that sits on top of DoubleGradient.
+   * It has a solid background but is inset from the edge, creating a
+   * transparent border that reveals the gradient animation of DoubleGradient,
+   * creating an opaque snake effect.
    * - Gradient is the gradient border and inner glow, depending
    * on the Background styling.
    * - Background is to apply a frosted glass effect in drag and drop mode,
@@ -27,11 +31,10 @@ export function getHtml(this: SearchAnimatedGlowElement) {
 
   // clang-format off
   return html`<!--_html_template_start_-->
-    <div id="dragDropPlaceholder">
-        ${this.dragDropPlaceholder}
-    </div>
+    <div id="dragDropPlaceholder">${this.dragDropPlaceholder}</div>
     <div class="gradient gradient-outer-glow"></div>
-    <div class="double-gradient"> </div>
+    <div class="double-gradient"></div>
+    <div class="double-gradient-mask"></div>
     <div class="gradient"></div>
     <div class="background"></div>
   <!--_html_template_end_-->`;

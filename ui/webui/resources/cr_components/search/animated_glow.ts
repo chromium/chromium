@@ -28,6 +28,7 @@ export class SearchAnimatedGlowElement extends CrLitElement {
         type: String,
         reflect: true,
       },
+      entrypointName: {type: String},
     };
   }
 

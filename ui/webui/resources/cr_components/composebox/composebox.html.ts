@@ -28,7 +28,8 @@ export function getHtml(this: ComposeboxElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
   <search-animated-glow
-      animation-state="${this.animationState}">
+      animation-state="${this.animationState}"
+      entrypoint-name="${this.entrypointName}">
   </search-animated-glow>
   <ntp-error-scrim id="errorScrim"
     ?compact-mode="${this.searchboxLayoutMode === 'Compact' &&
