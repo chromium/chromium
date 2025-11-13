@@ -64,8 +64,6 @@ class PasskeyTabHelper : public web::WebStateObserver,
   web::WebFrame* GetWebFrame(const std::string& frame_id) const;
 
   // WebStateObserver:
-  void DidFinishNavigation(web::WebState* web_state,
-                           web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
   // Provides access to stored WebAuthn credentials.

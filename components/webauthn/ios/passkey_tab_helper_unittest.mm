@@ -27,8 +27,6 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
   FakeIOSPasskeyClient() = default;
   ~FakeIOSPasskeyClient() override = default;
 
-  bool IsModalLoginWithShimAllowed() const override { return false; }
-  bool IsConditionalLoginWithShimAllowed() const override { return false; }
   bool PerformUserVerification() override { return false; }
   void FetchKeys(webauthn::ReauthenticatePurpose purpose,
                  webauthn::KeysFetchedCallback callback) override {

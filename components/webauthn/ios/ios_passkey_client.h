@@ -15,13 +15,6 @@ class IOSPasskeyClient {
  public:
   virtual ~IOSPasskeyClient() = default;
 
-  // Returns whether modal passkey login is allowed with the shim.
-  virtual bool IsModalLoginWithShimAllowed() const = 0;
-
-  // Returns whether conditional passkey login is allowed with the shim.
-  // Ignored if IsModalLoginWithShimAllowed() returns false.
-  virtual bool IsConditionalLoginWithShimAllowed() const = 0;
-
   // Performs user verification and returns whether it was successful.
   virtual bool PerformUserVerification() = 0;
 

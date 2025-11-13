@@ -5,6 +5,8 @@
 #import "components/webauthn/ios/passkey_java_script_feature.h"
 
 #import "base/no_destructor.h"
+#import "base/strings/strcat.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/passkey_tab_helper.h"
@@ -17,6 +19,10 @@ namespace {
 
 constexpr char kScriptName[] = "passkey_controller";
 constexpr char kHandlerName[] = "PasskeyInteractionHandler";
+
+// Placeholder logic.
+constexpr char kHandleModalPasskeyRequestsPlaceholder[] =
+    "/*! {{PLACEHOLDER_HANDLE_MODAL_PASSKEY_REQUESTS}} */";
 
 // Message event.
 constexpr char kEvent[] = "event";
@@ -37,6 +43,22 @@ constexpr char kFrameId[] = "frameId";
 constexpr char kCredentialId[] = "credential_id";
 constexpr char kRpId[] = "rp_id";
 
+// Returns the placeholder replacements for the JavaScript feature script.
+web::JavaScriptFeature::FeatureScript::PlaceholderReplacements
+GetPlaceholderReplacements() {
+  // Overrides the placeholder for whether modal passkey requests can be handled
+  // by the browser.
+  bool handle_modal_passkey_requests =
+      base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim);
+  std::u16string full_script_block = base::StrCat(
+      {u"const shouldHandleModalPasskeyRequests = () => { return ",
+       handle_modal_passkey_requests ? u"true;" : u"false;", u" };"});
+  return @{
+    base::SysUTF8ToNSString(kHandleModalPasskeyRequestsPlaceholder) :
+        base::SysUTF16ToNSString(full_script_block),
+  };
+}
+
 }  // namespace
 
 // static
@@ -56,29 +78,11 @@ PasskeyJavaScriptFeature::PasskeyJavaScriptFeature()
               // though it requires appropriate permissions policy to be set
               // (https://w3c.github.io/webauthn/#sctn-permissions-policy).
               FeatureScript::TargetFrames::kAllFrames,
-              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)},
+              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow,
+              base::BindRepeating(&GetPlaceholderReplacements))},
           {web::java_script_features::GetCommonJavaScriptFeature()}) {}
 
 PasskeyJavaScriptFeature::~PasskeyJavaScriptFeature() = default;
-
-void PasskeyJavaScriptFeature::SetAllowModalLogin(web::WebState* web_state,
-                                                  bool allow_modal_login) {
-  if (!web_state) {
-    return;
-  }
-
-  web::WebFramesManager* web_frames_manager = GetWebFramesManager(web_state);
-  if (!web_frames_manager) {
-    return;
-  }
-
-  std::set<web::WebFrame*> web_frames = web_frames_manager->GetAllWebFrames();
-  base::Value::List parameters = base::Value::List().Append(allow_modal_login);
-  for (auto web_frame : web_frames) {
-    CallJavaScriptFunction(
-        web_frame, "passkey.setCanHandleModalPasskeyRequests", parameters);
-  }
-}
 
 void PasskeyJavaScriptFeature::DeferToRenderer(web::WebFrame* web_frame) {
   CallJavaScriptFunction(web_frame, "passkey.deferToRenderer", {});

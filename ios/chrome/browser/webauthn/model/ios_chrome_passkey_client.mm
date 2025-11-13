@@ -23,14 +23,6 @@ IOSChromePasskeyClient::IOSChromePasskeyClient(web::WebState* web_state) {
 
 IOSChromePasskeyClient::~IOSChromePasskeyClient() {}
 
-bool IOSChromePasskeyClient::IsModalLoginWithShimAllowed() const {
-  return base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim);
-}
-
-bool IOSChromePasskeyClient::IsConditionalLoginWithShimAllowed() const {
-  return false;
-}
-
 bool IOSChromePasskeyClient::PerformUserVerification() {
   // TODO(crbug.com/385174410): Perform user verification.
   // See PasskeyKeychainProvider::Reauthenticate and ReauthenticationModule.

@@ -19,8 +19,6 @@ class IOSChromePasskeyClient : public IOSPasskeyClient {
   ~IOSChromePasskeyClient() override;
 
   // IOSPasskeyClient overrides.
-  bool IsModalLoginWithShimAllowed() const override;
-  bool IsConditionalLoginWithShimAllowed() const override;
   bool PerformUserVerification() override;
   void FetchKeys(webauthn::ReauthenticatePurpose purpose,
                  webauthn::KeysFetchedCallback callback) override;

@@ -12,8 +12,8 @@
 // Keep as a kill switch after enabling by default.
 BASE_DECLARE_FEATURE(kIOSPasskeyShim);
 
-// Allow modal passkey logins to happen directly in Chrome, without using the
-// Credential Provider Extension.
+// Allow modal passkey logins to happen directly in the browser, without using
+// the Credential Provider Extension.
 // This is a no-op if kIOSPasskeyShim is disabled.
 BASE_DECLARE_FEATURE(kIOSPasskeyModalLoginWithShim);
 

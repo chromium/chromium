@@ -116,9 +116,6 @@ PasskeyTabHelper::PasskeyTabHelper(web::WebState* web_state,
       client_(std::move(client)) {
   CHECK(client_);
   web_state->AddObserver(this);
-
-  PasskeyJavaScriptFeature::GetInstance()->SetAllowModalLogin(
-      web_state, client_->IsModalLoginWithShimAllowed());
 }
 
 web::WebFrame* PasskeyTabHelper::GetWebFrame(
@@ -143,13 +140,6 @@ void PasskeyTabHelper::AddNewPasskey(
 }
 
 // WebStateObserver
-
-void PasskeyTabHelper::DidFinishNavigation(
-    web::WebState* web_state,
-    web::NavigationContext* navigation_context) {
-  PasskeyJavaScriptFeature::GetInstance()->SetAllowModalLogin(
-      web_state, client_->IsModalLoginWithShimAllowed());
-}
 
 void PasskeyTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);

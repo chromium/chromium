@@ -70,6 +70,8 @@ source_set("js_tests") {
   testonly = true
   sources = [ "passkey_controller_javascript_test.mm" ]
   deps = [
+    ":features",
+    ":ios",
     ":passkey_controller_js",
     "//ios/web/public/test:javascript_test",
     "//ios/web/public/test:util",

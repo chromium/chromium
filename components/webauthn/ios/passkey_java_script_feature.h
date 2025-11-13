@@ -22,9 +22,6 @@ class PasskeyJavaScriptFeature : public web::JavaScriptFeature {
   // needed.
   static PasskeyJavaScriptFeature* GetInstance();
 
-  // Sets whether modal login is allowed.
-  void SetAllowModalLogin(web::WebState* web_state, bool allow_modal_login);
-
   // Yields the current attestation or registration request back to the OS.
   void DeferToRenderer(web::WebFrame* web_frame);
 

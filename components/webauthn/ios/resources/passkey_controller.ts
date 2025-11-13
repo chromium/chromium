@@ -40,8 +40,12 @@ function isGpmAaguid(aaguid: Uint8Array): boolean {
  */
 const cachedNavigatorCredentials: CredentialsContainer = navigator.credentials;
 
-// Whether to attempt to handle modal passkeys requests directly in Chrome.
-let mayHandleModalPasskeyRequests: boolean = false;
+// A function will be defined here by the placeholder replacement.
+// It will be called to determine whether to attempt to handle modal
+// passkeys requests directly in the browser.
+declare const shouldHandleModalPasskeyRequests: () => boolean;
+
+/*! {{PLACEHOLDER_HANDLE_MODAL_PASSKEY_REQUESTS}} */
 
 // Returns whether a passkey request uses conditional mediation.
 function isConditionalMediation(
@@ -319,7 +323,8 @@ const credentialsContainer: CredentialsContainer = {
       return cachedNavigatorCredentials.get(options);
     }
 
-    if (mayHandleModalPasskeyRequests && !isConditionalMediation(options)) {
+    if (shouldHandleModalPasskeyRequests() &&
+        !isConditionalMediation(options) && options.publicKey.challenge) {
       return createAttestationRequest(options.publicKey).then(_ => {
         return createPassthroughAttestationRequest(options);
       });
@@ -334,7 +339,9 @@ const credentialsContainer: CredentialsContainer = {
       return cachedNavigatorCredentials.create(options);
     }
 
-    if (mayHandleModalPasskeyRequests && !isConditionalMediation(options)) {
+    if (shouldHandleModalPasskeyRequests() &&
+        !isConditionalMediation(options) && options.publicKey.challenge &&
+        options.publicKey.user && options.publicKey.user.id) {
       return createRegistrationRequest(options.publicKey).then(_ => {
         return createPassthroughRegistrationRequest(options);
       });
@@ -355,11 +362,6 @@ const credentialsContainer: CredentialsContainer = {
 // a workaround for the fact that `navigator.credentials` is readonly.
 Object.defineProperty(navigator, 'credentials', {value: credentialsContainer});
 
-// Sets whether Chrome is allowed to handle passkey requests directly.
-function setCanHandleModalPasskeyRequests(enabled: boolean) {
-  mayHandleModalPasskeyRequests = enabled;
-}
-
 // Function called from C++ to yield the passkey request back to the OS.
 function deferToRenderer(): void {
   const nullArray = new ArrayBuffer(0);
@@ -371,8 +373,6 @@ function deferToRenderer(): void {
 
 const passkey = new CrWebApi();
 
-passkey.addFunction(
-    'setCanHandleModalPasskeyRequests', setCanHandleModalPasskeyRequests);
 passkey.addFunction('deferToRenderer', deferToRenderer);
 
 gCrWeb.registerApi('passkey', passkey);
