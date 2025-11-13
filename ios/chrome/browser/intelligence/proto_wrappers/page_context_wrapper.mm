@@ -14,6 +14,7 @@
 #import "base/barrier_closure.h"
 #import "base/check.h"
 #import "base/check_op.h"
+#import "base/feature_list.h"
 #import "base/logging.h"
 #import "base/memory/weak_ptr.h"
 #import "base/strings/string_util.h"
@@ -33,6 +34,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
+#import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
@@ -306,6 +308,17 @@ result.links = linksArray;
 
 #pragma mark - Private
 
+// Returns the WebFramesManager to use for executing Page Context script on
+// frames.
+- (web::WebFramesManager*)webFramesManager {
+  web::ContentWorld world =
+      base::FeatureList::IsEnabled(kPageContextExtractorRefactored)
+          ? PageContextExtractorJavaScriptFeature::GetInstance()
+                ->GetSupportedContentWorld()
+          : web::ContentWorld::kPageContentWorld;
+  return _webState->GetWebFramesManager(world);
+}
+
 // Populates the fields of the PageContext proto which necessitate async calls.
 - (void)populateAsyncFields:(base::TimeDelta)timeout {
   CHECK_GE(_asyncTasksToComplete, 0);
@@ -395,10 +408,13 @@ result.links = linksArray;
 
     // If there is text to highlight, do it before capturing the screenshot.
     if (_textToHighlight != nil) {
-      web::WebFrame* mainFrame =
-          _webState->GetPageWorldWebFramesManager()->GetMainWebFrame();
       web::FindInPageJavaScriptFeature* findInPageFeature =
           web::FindInPageJavaScriptFeature::GetInstance();
+      web::WebFrame* mainFrame =
+          _webState
+              ->GetWebFramesManager(
+                  findInPageFeature->GetSupportedContentWorld())
+              ->GetMainWebFrame();
 
       findInPageFeature->Search(mainFrame,
                                 base::SysNSStringToUTF8(_textToHighlight),
@@ -424,10 +440,9 @@ result.links = linksArray;
     [_pageContextMetrics executionStartedForTask:PageContextTask::kInnerText];
   }
 
-  std::set<web::WebFrame*> webFrames =
-      _webState->GetPageWorldWebFramesManager()->GetAllWebFrames();
-  web::WebFrame* mainFrame =
-      _webState->GetPageWorldWebFramesManager()->GetMainWebFrame();
+  web::WebFramesManager* manager = [self webFramesManager];
+  std::set<web::WebFrame*> webFrames = manager->GetAllWebFrames();
+  web::WebFrame* mainFrame = manager->GetMainWebFrame();
 
   if (webFrames.empty() || !mainFrame) {
     if (_shouldGetAnnotatedPageContent) {
@@ -1014,15 +1029,18 @@ result.links = linksArray;
     return;
   }
 
+  web::FindInPageJavaScriptFeature* find_in_page_feature =
+      web::FindInPageJavaScriptFeature::GetInstance();
+
   web::WebFrame* mainFrame =
-      _webState->GetPageWorldWebFramesManager()->GetMainWebFrame();
+      _webState
+          ->GetWebFramesManager(
+              find_in_page_feature->GetSupportedContentWorld())
+          ->GetMainWebFrame();
 
   if (!mainFrame) {
     return;
   }
-
-  web::FindInPageJavaScriptFeature* find_in_page_feature =
-      web::FindInPageJavaScriptFeature::GetInstance();
 
   find_in_page_feature->Stop(mainFrame);
 }

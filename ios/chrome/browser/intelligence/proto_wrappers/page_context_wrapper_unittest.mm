@@ -30,6 +30,7 @@
 #import "ios/testing/embedded_test_server_handlers.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #import "ios/web/public/browser_state.h"
+#import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
@@ -174,12 +175,15 @@ class PageContextWrapperTest : public PlatformTest,
         {web::FindInPageJavaScriptFeature::GetInstance()});
     fake_web_state_ = std::make_unique<FakeWebStateForFailureTest>();
 
-    auto fake_frames_manager = std::make_unique<web::FakeWebFramesManager>();
-    fake_frames_manager_ = fake_frames_manager.get();
-    // No frames are added to the manager, simulating a state where
-    // APC/InnerText cannot be retrieved.
-    static_cast<web::FakeWebState*>(fake_web_state_.get())
-        ->SetWebFramesManager(std::move(fake_frames_manager));
+    // Set fake web frames managers for scenarios to simulate a state where
+    // no frames are available from the manager which can be used for testing
+    // scenarios where APC/InnerText cannot be retrieved.
+    for (web::ContentWorld world : {web::ContentWorld::kIsolatedWorld,
+                                    web::ContentWorld::kPageContentWorld}) {
+      auto fake_frames_manager = std::make_unique<web::FakeWebFramesManager>();
+      static_cast<web::FakeWebState*>(fake_web_state_.get())
+          ->SetWebFramesManager(world, std::move(fake_frames_manager));
+    }
   }
 
   // Calls a script on the webview of the web_state() in the right ContentWorld.
@@ -207,9 +211,6 @@ class PageContextWrapperTest : public PlatformTest,
     return fake_browser_state_.get();
   }
   web::FakeWebState* fake_web_state() { return fake_web_state_.get(); }
-  web::FakeWebFramesManager* fake_frames_manager() {
-    return fake_frames_manager_;
-  }
 
   web::WebTaskEnvironment task_environment_;
   ScopedKeyWindow scoped_window_;
@@ -226,7 +227,6 @@ class PageContextWrapperTest : public PlatformTest,
 
   std::unique_ptr<web::FakeBrowserState> fake_browser_state_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
-  raw_ptr<web::FakeWebFramesManager> fake_frames_manager_;
 };
 
 // TODO(crbug.com/452009061): Extend test coverage to x-origin frames,
