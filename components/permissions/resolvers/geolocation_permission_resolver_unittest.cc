@@ -49,7 +49,7 @@ TEST_F(GeolocationPermissionResolverTest,
   EXPECT_EQ(approximate_request_resolver()->DeterminePermissionStatus(setting),
             blink::mojom::PermissionStatus::GRANTED);
   EXPECT_EQ(precise_request_resolver()->DeterminePermissionStatus(setting),
-            blink::mojom::PermissionStatus::GRANTED);
+            blink::mojom::PermissionStatus::ASK);
 }
 
 TEST_F(GeolocationPermissionResolverTest,

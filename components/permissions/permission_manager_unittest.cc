@@ -836,7 +836,7 @@ TEST_F(PermissionManagerWithGeolocationTest, GetGeolocationPermissionStatus) {
   GetHostContentSettingsMap()->SetPermissionSettingDefaultScope(
       url(), url(), content_settings_type,
       GeolocationSetting{PermissionOption::kAllowed, PermissionOption::kAsk});
-  CheckPermissionStatus(permission_type, PermissionStatus::GRANTED);
+  CheckPermissionStatus(permission_type, PermissionStatus::ASK);
 
   GetHostContentSettingsMap()->SetPermissionSettingDefaultScope(
       url(), url(), content_settings_type,

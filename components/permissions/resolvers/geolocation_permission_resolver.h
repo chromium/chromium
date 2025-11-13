@@ -6,6 +6,7 @@
 #define COMPONENTS_PERMISSIONS_RESOLVERS_GEOLOCATION_PERMISSION_RESOLVER_H_
 
 #include "components/permissions/resolvers/permission_resolver.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-forward.h"
 
 namespace permissions {
 
