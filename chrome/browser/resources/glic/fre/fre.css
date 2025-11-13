@@ -232,3 +232,7 @@ body {
 #fre-app-container .side-panel .notice p {
   width: 300px;
 }
+
+.hidden {
+ display: none;
+}
