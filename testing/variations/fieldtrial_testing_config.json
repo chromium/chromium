@@ -621,9 +621,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20250903",
+                    "name": "Enabled_WithVisualUpdate",
                     "enable_features": [
-                        "AndroidAnimatedProgressBarInBrowser"
+                        "AndroidAnimatedProgressBarInBrowser",
+                        "AndroidProgressBarVisualUpdate"
                     ]
                 }
             ]
@@ -934,21 +935,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AndroidPinnedTabsTabletTabStrip"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AndroidProgressBarVisualUpdate": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidProgressBarVisualUpdate"
                     ]
                 }
             ]
