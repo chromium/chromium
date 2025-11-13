@@ -145,6 +145,10 @@ export class ComposeboxElement extends I18nMixinLit
       carouselOnTop_: {
         type: Boolean,
       },
+      delayTabUpload: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -184,6 +188,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor errorScrimVisible_: boolean = false;
   protected accessor contextFilesSize_: number = 0;
+  protected accessor delayTabUpload: boolean = false;
   protected lastQueriedInput_: string = '';
   protected showVoiceSearchInSteadyComposebox_: boolean =
       loadTimeData.getBoolean('steadyComposeboxShowVoiceSearch');
@@ -512,11 +517,8 @@ export class ComposeboxElement extends I18nMixinLit
       id: number, title: string, url: Url,
       onContextAdded: (file: ComposeboxFile) => void,
   }>) {
-    // TODO(crbug.com/455652084) make `delay_upload` have dynamic value
-    // depending on where the adding the tab context originated from (composebox
-    // or action chips).
     const {token} = await this.searchboxHandler_.addTabContext(
-        e.detail.id, /*delay_upload=*/ false);
+        e.detail.id, /*delay_upload=*/ this.delayTabUpload);
     if (!token) {
       return;
     }
@@ -535,6 +537,9 @@ export class ComposeboxElement extends I18nMixinLit
     };
     e.detail.onContextAdded(attachment);
     this.focusInput();
+    // Reset to ensure future tab context uploads will not be delayed, unless
+    // triggered by an action chip.
+    this.delayTabUpload = false;
   }
 
   protected onPaste_(event: ClipboardEvent) {

@@ -86,6 +86,18 @@ suite('NewTabPageActionChipsTest', () => {
         metrics.count(
             'NewTabPage.ActionChips.Click', ActionChipsType.DEEP_SEARCH));
   });
+  test('recent tab chip triggers chip click event', async () => {
+    // Setup.
+    const recentTabChip =
+        chips.shadowRoot.querySelector<HTMLButtonElement>('#tab-context');
+    assertTrue(!!recentTabChip);
+    const whenActionChipClicked =
+        eventToPromise('action-chip-click', document.body);
+    recentTabChip.click();
+
+    // Assert.
+    await whenActionChipClicked;
+  });
 });
 
 // Suite for "Most Recent Tab" functionality
