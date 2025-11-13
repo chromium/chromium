@@ -1036,6 +1036,8 @@ TEST_F(AutocompleteMatchTest, RearrangeActionsInSuggest) {
       omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS;
   constexpr auto REVS =
       omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS;
+  constexpr auto TSW =
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH;
 
   struct FilterOmniboxActionsTestData {
     std::string test_name;
@@ -1052,9 +1054,9 @@ TEST_F(AutocompleteMatchTest, RearrangeActionsInSuggest) {
       {"retain all - have reviews",
        {CALL, CALL, REVS}, {CALL, CALL, REVS}},
       {"retain all - have all types",
-       {CALL, NAV, REVS}, {CALL, NAV, REVS}},
+       {CALL, NAV, REVS, TSW}, {CALL, NAV, REVS, TSW}},
       {"retain all - have all types, sort",
-       {REVS, CALL, NAV}, {CALL, NAV, REVS}},
+       {REVS, CALL, TSW, NAV}, {CALL, NAV, REVS, TSW}},
       {"retain all - have multiple reviews, sort",
        {REVS, NAV, REVS}, {NAV, REVS, REVS}},
 
