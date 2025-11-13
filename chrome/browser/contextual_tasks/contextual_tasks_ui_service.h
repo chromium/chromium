@@ -90,12 +90,12 @@ class ContextualTasksUiService : public KeyedService {
   // Returns whether the provided URL is to an AI page.
   bool IsAiUrl(const GURL& url);
 
- private:
   // Associates a WebContents with a task, assuming the URL of the WebContents'
   // main frame or side panel is a contextual task URL.
   void AssociateWebContentsToTask(content::WebContents* web_contents,
                                   const base::Uuid& task_id);
 
+ private:
   const raw_ptr<Profile> profile_;
 
   raw_ptr<contextual_tasks::ContextualTasksContextController>

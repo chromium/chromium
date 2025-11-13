@@ -140,7 +140,14 @@ void ContextualTasksSidePanelCoordinator::CreateAndRegisterEntry(
 
 void ContextualTasksSidePanelCoordinator::Show() {
   if (!GetCurrentTask()) {
-    return;
+    // If no task is found, create a new task and associate it with the active
+    // tab.
+    ContextualTask task = context_controller_->CreateTask();
+    tabs::TabInterface* active_tab_interface =
+        browser_window_->GetActiveTabInterface();
+    CHECK(active_tab_interface);
+    ui_service_->AssociateWebContentsToTask(active_tab_interface->GetContents(),
+                                            task.GetTaskId());
   }
 
   Unhide();

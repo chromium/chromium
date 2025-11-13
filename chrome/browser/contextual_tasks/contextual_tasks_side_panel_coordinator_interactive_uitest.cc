@@ -151,4 +151,22 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
       }));
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+                       SidePanelOpenWithTabWithoutTask) {
+  SetUpTasks();
+  // Add a new foreground tab not associated with a task.
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, true);
+  ContextualTasksSidePanelCoordinator* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser());
+  RunTestSequence(
+      Do([&]() {
+        // Open side panel.
+        coordinator->Show();
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        // Verify the side panel can still open.
+        ASSERT_NE(nullptr, coordinator->GetActiveWebContentsForTesting());
+      }));
+}
+
 }  // namespace contextual_tasks
