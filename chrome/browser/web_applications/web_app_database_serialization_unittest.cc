@@ -893,7 +893,7 @@ TEST_F(WebAppDatabaseSerializationTest,
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
-       ParseWebAppProto_InvalidPendingUpdateInfo_MissingManifestIconSizeInPx) {
+       ParseWebAppProto_ValidPendingUpdateInfo_MissingManifestIconSizeInPx) {
   GURL start_url("https://example.com/");
   proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
@@ -909,13 +909,20 @@ TEST_F(WebAppDatabaseSerializationTest,
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
   icon2->set_size_in_px(256);
 
+  proto::DownloadedIconSizeInfo* manifest_icon_info =
+      fix->add_downloaded_manifest_icons();
+  manifest_icon_info->set_purpose(
+      sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
+  manifest_icon_info->add_icon_sizes(256);
+
   proto::DownloadedIconSizeInfo* trusted_icon_info =
       fix->add_downloaded_trusted_icons();
   trusted_icon_info->set_purpose(
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
   trusted_icon_info->add_icon_sizes(256);
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  fix->set_was_ignored(false);
+  EXPECT_THAT(ParseWebAppProto(proto), NotNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
@@ -976,7 +983,7 @@ TEST_F(WebAppDatabaseSerializationTest,
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
-       ParseWebAppProto_InvalidPendingUpdateInfo_MissingTrustedIconSizeInPx) {
+       ParseWebAppProto_ValidPendingUpdateInfo_MissingTrustedIconSizeInPx) {
   GURL start_url("https://example.com/");
   proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
@@ -998,7 +1005,14 @@ TEST_F(WebAppDatabaseSerializationTest,
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
   manifest_icon_info->add_icon_sizes(256);
 
-  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  proto::DownloadedIconSizeInfo* trusted_icon_info =
+      fix->add_downloaded_trusted_icons();
+  trusted_icon_info->set_purpose(
+      sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
+  trusted_icon_info->add_icon_sizes(256);
+
+  fix->set_was_ignored(true);
+  EXPECT_THAT(ParseWebAppProto(proto), NotNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,

@@ -129,6 +129,22 @@ class WebAppDatabase {
       ProtobufState& state,
       std::set<webapps::AppId>& changed_apps);
 
+  // Ensures that if the icon metadata for a pending update is corrupted for the
+  // web app, then the icon metadata is cleared. A pending update containing
+  // icons is considered to be corrupt if either of the following conditions are
+  // true:
+  // 1. If manifest_icons exist, but the downloaded_manifest_icons is empty (and
+  // vice-versa).
+  // 2. If trusted_icons exist, but the downloaded_trusted_icons is empty (and
+  // vice-versa).
+  // 3. If the data in the icons are corrupt, like they have missing urls or
+  // purposes.
+  // 4. If the data in the downloaded_<X> fields are corrupt, like missing sizes
+  // or purposes.
+  void MigratePendingUpdateInfoClearIconMetadataIfCorrupted(
+      ProtobufState& state,
+      std::set<webapps::AppId>& changed_apps);
+
   void OnDatabaseOpened(RegistryOpenedCallback callback,
                         const std::optional<syncer::ModelError>& error,
                         std::unique_ptr<syncer::DataTypeStore> store);

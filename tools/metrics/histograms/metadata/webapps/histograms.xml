@@ -1939,6 +1939,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Migrations.PendingUpdateInfoIconDataCorrupted"
+    units="count" expires_after="2026-11-11">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the number of web apps whose icon states for stored pending updates
+    were found to be corrupted during database migration v4 to v5. Migration
+    occurs once per user profile that existed before database version 5 was
+    introduced. It occurs on database open, which happens on profile startup.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Migrations.RelativeManifestIdFragmentRemoved"
     units="count" expires_after="2026-04-18">
   <owner>dmurph@chromium.org</owner>

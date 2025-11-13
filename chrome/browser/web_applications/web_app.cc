@@ -224,10 +224,10 @@ void CheckValidPendingUpdateInfo(
     if (!pending_update_info->trusted_icons().empty() &&
         !pending_update_info->manifest_icons().empty()) {
       for (const auto& icon : pending_update_info->trusted_icons()) {
-        CHECK(icon.has_url() && icon.has_size_in_px() && icon.has_purpose());
+        CHECK(icon.has_url() && icon.has_purpose());
       }
       for (const auto& icon : pending_update_info->manifest_icons()) {
-        CHECK(icon.has_url() && icon.has_size_in_px() && icon.has_purpose());
+        CHECK(icon.has_url() && icon.has_purpose());
       }
       CHECK(!pending_update_info->downloaded_manifest_icons().empty() &&
             !pending_update_info->downloaded_trusted_icons().empty());

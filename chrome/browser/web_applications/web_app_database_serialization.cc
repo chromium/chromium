@@ -1444,14 +1444,14 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
     if (!proto.pending_update_info().manifest_icons().empty() &&
         !proto.pending_update_info().trusted_icons().empty()) {
       for (const auto& icon : proto.pending_update_info().manifest_icons()) {
-        if (!icon.has_url() || !icon.has_size_in_px() || !icon.has_purpose()) {
+        if (!icon.has_url() || !icon.has_purpose()) {
           RecordProtoParseResult(
               ProtoParseResult::kInvalidPendingUpdateManifestIcons);
           return nullptr;
         }
       }
       for (const auto& icon : proto.pending_update_info().trusted_icons()) {
-        if (!icon.has_url() || !icon.has_size_in_px() || !icon.has_purpose()) {
+        if (!icon.has_url() || !icon.has_purpose()) {
           RecordProtoParseResult(
               ProtoParseResult::kInvalidPendingUpdateTrustedIcons);
           return nullptr;
@@ -1469,7 +1469,9 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
 
       for (const auto& icon :
            proto.pending_update_info().downloaded_manifest_icons()) {
-        if (icon.icon_sizes().empty() || !icon.has_purpose()) {
+        // It's fine if there are no sizes specified for a purpose, but the
+        // purpose has to exist.
+        if (!icon.has_purpose()) {
           RecordProtoParseResult(
               ProtoParseResult::kInvalidDownloadedManifestIconForPendingUpdate);
           return nullptr;
@@ -1477,7 +1479,9 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
       }
       for (const auto& icon :
            proto.pending_update_info().downloaded_trusted_icons()) {
-        if (icon.icon_sizes().empty() || !icon.has_purpose()) {
+        // It's fine if there are no sizes specified for a purpose, but the
+        // purpose has to exist.
+        if (!icon.has_purpose()) {
           RecordProtoParseResult(
               ProtoParseResult::kInvalidDownloadedTrustedIconForPendingUpdate);
           return nullptr;
@@ -2066,11 +2070,14 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
     if (!web_app.pending_update_info()->manifest_icons().empty() &&
         !web_app.pending_update_info()->trusted_icons().empty()) {
       for (const auto& icon : web_app.pending_update_info()->manifest_icons()) {
-        CHECK(icon.has_url() && icon.has_size_in_px() && icon.has_purpose());
+        CHECK(icon.has_url() && icon.has_purpose());
       }
       for (const auto& icon : web_app.pending_update_info()->trusted_icons()) {
-        CHECK(icon.has_url() && icon.has_size_in_px() && icon.has_purpose());
+        CHECK(icon.has_url() && icon.has_purpose());
       }
+      CHECK(
+          !web_app.pending_update_info()->downloaded_manifest_icons().empty() &&
+          !web_app.pending_update_info()->downloaded_trusted_icons().empty());
     }
     CHECK(web_app.pending_update_info()->has_was_ignored());
     *local_data->mutable_pending_update_info() = *web_app.pending_update_info();
