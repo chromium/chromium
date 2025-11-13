@@ -17,6 +17,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.omnibox.fusebox.NavigationAttachmentsMediator;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorItemSelectionId;
@@ -72,9 +73,19 @@ public class ChromeItemPickerActivity extends SnackbarActivity {
         super.onDestroy();
     }
 
-    // TODO(crbug.com/457560523): Read the tabIds into the result intent
+    // TODO(bbetini): Make method private when it is set to be the callback of
+    // TabItemPickerCoordinator.showTabItemPicker().
     public void finishWithSelectedItems(Set<TabListEditorItemSelectionId> selectedItems) {
+        long[] tabIds = new long[selectedItems.size()];
+        int i = 0;
+
+        for (TabListEditorItemSelectionId selectionId : selectedItems) {
+            tabIds[i++] = selectionId.getTabId();
+        }
+
         final Intent resultIntent = new Intent();
+
+        resultIntent.putExtra(NavigationAttachmentsMediator.EXTRA_ATTACHMENT_TAB_IDS, tabIds);
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
     }

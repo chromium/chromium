@@ -53,10 +53,11 @@ import java.util.List;
 
 /** Mediator for the Navigation Attachments component. */
 @NullMarked
-class NavigationAttachmentsMediator {
-    // TODO(crbug.com/457825183): Supply this class name externally.
+public class NavigationAttachmentsMediator {
+    // TODO(crbug.com/457825183): Supply this class name and extra string externally.
     private static final String CHROME_ITEM_PICKER_ACTIVITY_CLASS =
             "org.chromium.chrome.browser.chrome_item_picker.ChromeItemPickerActivity";
+    public static final String EXTRA_ATTACHMENT_TAB_IDS = "TAB_IDS";
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final AndroidPermissionDelegate mPermissionDelegate;
@@ -308,8 +309,7 @@ class NavigationAttachmentsMediator {
     void onTabPickerResult(int resultCode, @Nullable Intent data) {
         if (resultCode != Activity.RESULT_OK || data == null || data.getExtras() == null) return;
         // Retrieve list of tab ids.
-        // TODO(haileywang): Fill with the real intent extra string when available.
-        long[] tabIds = data.getLongArrayExtra("TAB_IDS");
+        long[] tabIds = data.getLongArrayExtra(EXTRA_ATTACHMENT_TAB_IDS);
         if (tabIds == null) return;
         for (long tabId : tabIds) {
             TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
