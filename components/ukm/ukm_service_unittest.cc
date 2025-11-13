@@ -19,7 +19,6 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -49,6 +48,7 @@
 #include "components/ukm/ukm_recorder_observer.h"
 #include "components/ukm/unsent_log_store_metrics_impl.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "services/metrics/public/cpp/test_recording_helper.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_entry_builder.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -81,39 +81,6 @@ const size_t kWebDXFeatureNumberOfFeaturesForTesting = 5;
 SourceId ConvertSourceIdToAllowlistedType(SourceId id, SourceIdType type) {
   return ukm::SourceIdObj::FromOtherId(id, type).ToInt64();
 }
-
-// A small shim exposing UkmRecorder methods to tests.
-class TestRecordingHelper {
- public:
-  explicit TestRecordingHelper(UkmRecorder* recorder) : recorder_(recorder) {
-    recorder_->SetSamplingForTesting(1);
-  }
-
-  TestRecordingHelper(const TestRecordingHelper&) = delete;
-  TestRecordingHelper& operator=(const TestRecordingHelper&) = delete;
-
-  void UpdateSourceURL(SourceId source_id, const GURL& url) {
-    recorder_->UpdateSourceURL(source_id, url);
-  }
-
-  void RecordNavigation(SourceId source_id,
-                        const UkmSource::NavigationData& navigation_data) {
-    recorder_->RecordNavigation(source_id, navigation_data);
-  }
-
-  void MarkSourceForDeletion(SourceId source_id) {
-    recorder_->MarkSourceForDeletion(source_id);
-  }
-
-  void RecordWebDXFeatures(SourceId source_id,
-                           const std::set<int32_t>& features,
-                           const size_t max_feature_value) {
-    recorder_->RecordWebDXFeatures(source_id, features, max_feature_value);
-  }
-
- private:
-  raw_ptr<UkmRecorder> recorder_;
-};
 
 class TestMetricsServiceClientWithClonedInstallDetector
     : public metrics::TestMetricsServiceClient {

@@ -100,9 +100,17 @@ class HistogramTester {
                         HistogramBase::Count32 expected_count,
                         const Location& location = FROM_HERE) const;
 
-  // Returns the sum of all samples recorded since the HistogramTester was
-  // created.
+  // Returns the sum of all samples recorded for a given histogram `name` since
+  // the HistogramTester was created.
   int64_t GetTotalSum(std::string_view name) const;
+
+  // Returns the sum of all samples recorded for all histograms since the
+  // HistogramTester was created.
+  int64_t GetTotalSum() const;
+
+  // Returns the sum of all samples recorded for all histograms whose names
+  // start with `prefix` since the HistogramTester was created.
+  int64_t GetTotalSumForPrefix(std::string_view prefix) const;
 
   // Returns a list of all of the buckets recorded since creation of this
   // object, as vector<Bucket>, where the Bucket represents the min boundary of

@@ -206,6 +206,28 @@ TEST(HistogramTesterTest, TestGetTotalSum) {
   EXPECT_EQ(7, tester.GetTotalSum(kHistogram4));
 }
 
+TEST(HistogramTesterTest, TestGetTotalSumWithoutName) {
+  UMA_HISTOGRAM_COUNTS_100(kHistogram4, 2);
+
+  HistogramTester tester;
+  UMA_HISTOGRAM_COUNTS_100(kHistogram3, 4);
+  UMA_HISTOGRAM_COUNTS_100(kHistogram4, 3);
+  UMA_HISTOGRAM_COUNTS_100(kHistogram4, 4);
+
+  EXPECT_EQ(11, tester.GetTotalSum());
+}
+
+TEST(HistogramTesterTest, TestGetTotalSumForPrefix) {
+  HistogramTester tester;
+  UMA_HISTOGRAM_COUNTS_100("Prefix1.foo", 4);
+  UMA_HISTOGRAM_COUNTS_100("Prefix1.foo", 4);
+  UMA_HISTOGRAM_COUNTS_100("Prefix2.foo", 4);
+
+  EXPECT_EQ(8, tester.GetTotalSumForPrefix("Prefix1"));
+  EXPECT_EQ(4, tester.GetTotalSumForPrefix("Prefix2"));
+  EXPECT_EQ(0, tester.GetTotalSumForPrefix("SomePrefix"));
+}
+
 TEST(HistogramTesterTest, TestGetTotalCountsForPrefix) {
   HistogramTester tester;
   UMA_HISTOGRAM_ENUMERATION("Test1.Test2.Test3", 2, 5);

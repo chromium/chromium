@@ -178,6 +178,11 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterUKMProviders) {
   expected_providers++;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+  // ChromeAndroidMetricsProvider
+  expected_providers++;
+#endif  // BUILDFLAG(IS_ANDROID)
+
   std::unique_ptr<ChromeMetricsServiceClient> chrome_metrics_service_client =
       TestChromeMetricsServiceClient::Create(metrics_state_manager_.get(),
                                              synthetic_trial_registry_.get());

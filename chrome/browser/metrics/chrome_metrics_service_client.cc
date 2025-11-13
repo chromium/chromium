@@ -1071,6 +1071,12 @@ void ChromeMetricsServiceClient::RegisterUKMProviders() {
 
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<metrics::EntropyStateProvider>(local_state));
+
+#if BUILDFLAG(IS_ANDROID)
+  ukm_service_->RegisterMetricsProvider(
+      std::make_unique<ChromeAndroidMetricsProvider>(local_state));
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // LINT.ThenChange(/ios/chrome/browser/metrics/model/ios_chrome_metrics_service_client.mm:UkmProviders)
 }
 
@@ -1275,7 +1281,8 @@ void ChromeMetricsServiceClient::OnUkmAllowedStateChanged(
     // Manages purging of events and sources.
     if (total_purge) {
       ukm_service_->Purge();
-      ukm_service_->ResetClientState(ukm::ResetReason::kOnUkmAllowedStateChanged);
+      ukm_service_->ResetClientState(
+          ukm::ResetReason::kOnUkmAllowedStateChanged);
     } else {
       // Purge recording if required consent has been revoked.
       if (!consent_state.Has(ukm::MSBB)) {
@@ -1295,11 +1302,12 @@ void ChromeMetricsServiceClient::OnUkmAllowedStateChanged(
       // On non-ChromeOS platforms, client reset is handled above because
       // |total_purge| will be true. MSBB is used to determine if UKM is enabled
       // or disabled. When the consent is revoked UkmService will be disabled,
-      // triggering |total_purge| to be true. At which point the client state will
-      // be reset.
+      // triggering |total_purge| to be true. At which point the client state
+      // will be reset.
       //
       // On ChromeOS, disabling MSBB or App-Sync will not trigger a total purge.
-      // Resetting the client state has to be handled specifically for this case.
+      // Resetting the client state has to be handled specifically for this
+      // case.
       ResetClientStateWhenMsbbOrAppConsentIsRevoked(previous_consent_state);
     }
 
@@ -1317,7 +1325,7 @@ void ChromeMetricsServiceClient::OnUkmAllowedStateChanged(
   if (dwa_service_ &&
       (total_purge ||
        !consent_state.HasAll({ukm::MSBB, ukm::APPS, ukm::EXTENSIONS}))) {
-      dwa_service_->Purge();
+    dwa_service_->Purge();
   }
 
   // Signal service manager to enable/disable UKM/DWA based on new states.

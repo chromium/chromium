@@ -7398,6 +7398,7 @@ test("unit_tests") {
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//services/metrics/public/cpp:test_support",
     "//services/preferences/public/cpp/tracked",
     "//services/preferences/public/cpp/tracked:test_support",
     "//services/preferences/public/mojom",

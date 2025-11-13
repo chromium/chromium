@@ -141,6 +141,32 @@ int64_t HistogramTester::GetTotalSum(std::string_view name) const {
   return samples->sum() - original_sum;
 }
 
+int64_t HistogramTester::GetTotalSum() const {
+  return GetTotalSumForPrefix("");
+}
+
+int64_t HistogramTester::GetTotalSumForPrefix(std::string_view prefix) const {
+  int result = 0;
+  for (const auto* const histogram : StatisticsRecorder::GetHistograms()) {
+    if (!StartsWith(histogram->histogram_name(), prefix,
+                    CompareCase::SENSITIVE)) {
+      continue;
+    }
+
+    int64_t original_sum = 0;
+    auto original_samples_it =
+        histograms_snapshot_.find(histogram->histogram_name());
+    if (original_samples_it != histograms_snapshot_.end()) {
+      original_sum = original_samples_it->second->sum();
+    }
+
+    std::unique_ptr<HistogramSamples> samples = histogram->SnapshotSamples();
+    // Calculating the difference of the current number of samples and the snapshotted one.
+    result += samples->sum() - original_sum;
+  }
+  return result;
+}
+
 std::vector<Bucket> HistogramTester::GetAllSamples(
     std::string_view name) const {
   std::vector<Bucket> samples;
