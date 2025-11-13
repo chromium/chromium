@@ -10,7 +10,6 @@ import static org.hamcrest.Matchers.is;
 
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.hamcrest.Matcher;
@@ -56,11 +55,21 @@ public class SigninTestRule implements TestRule {
     private final SigninTestUtil.CustomDeviceLockActivityLauncher mDeviceLockActivityLauncher =
             new SigninTestUtil.CustomDeviceLockActivityLauncher();
 
-    private final @NonNull FakeAccountManagerFacade mFakeAccountManagerFacade =
-            new FakeAccountManagerFacade();
+    private final FakeAccountManagerFacade mFakeAccountManagerFacade;
     // TODO(crbug.com/341948846): Remove AccountInfoService.
     private final @Nullable FakeAccountInfoService mFakeAccountInfoService =
             new FakeAccountInfoService();
+
+    private final boolean mSerializeToPrefs;
+
+    public SigninTestRule() {
+        this(false);
+    }
+
+    public SigninTestRule(boolean serializeToPrefs) {
+        mSerializeToPrefs = serializeToPrefs;
+        mFakeAccountManagerFacade = new FakeAccountManagerFacade(mSerializeToPrefs);
+    }
 
     @Override
     public Statement apply(Statement statement, Description description) {
@@ -89,19 +98,6 @@ public class SigninTestRule implements TestRule {
     }
 
     public void tearDownRule() {
-        // Signs out if user is signed in.
-        if (mIsSignedIn && getPrimaryAccount(ConsentLevel.SIGNIN) != null) {
-            // For android_browsertests that sign out during the test body, like
-            // UkmBrowserTest.SingleSyncSignoutCheck, we should sign out during tear-down test stage
-            // only if an account is signed in. Otherwise, tearDownRule() ultimately results a crash
-            // in SignoutManager::signOut(). This is because sign out is attempted when a sign-out
-            // operation is already in progress. See crbug/1102746 for more details.
-            //
-            // We call the force sign out version to make it easier for test writers to write tests
-            // which cleanly tear down (eg. for supervised users who otherwise are not allowed to
-            // sign out).
-            forceSignOut();
-        }
         DeviceLockActivityLauncherImpl.setInstanceForTesting(null);
         if (mFakeAccountInfoService != null) AccountInfoServiceProvider.resetForTests();
     }

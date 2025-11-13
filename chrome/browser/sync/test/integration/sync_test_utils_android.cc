@@ -92,7 +92,7 @@ void SignOutForTesting() {
 
 void SetUpFakeAuthForTesting() {
   Java_SyncTestSigninUtils_setUpFakeAuthForTesting(
-      base::android::AttachCurrentThread());
+      base::android::AttachCurrentThread(), /*isNativeTest=*/true);
 }
 
 void TearDownFakeAuthForTesting() {
