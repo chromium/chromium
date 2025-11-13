@@ -20,14 +20,13 @@ class SourceBufferTrackBaseSupplement
   static SourceBuffer* sourceBuffer(TrackBase&);
   static void SetSourceBuffer(TrackBase&, SourceBuffer*);
 
-  SourceBufferTrackBaseSupplement(TrackBase& track);
+  SourceBufferTrackBaseSupplement() = default;
   void Trace(Visitor*) const override;
 
  private:
   static SourceBufferTrackBaseSupplement& From(TrackBase&);
   static SourceBufferTrackBaseSupplement* FromIfExists(TrackBase&);
 
-  Member<TrackBase> track_base_;
   Member<SourceBuffer> source_buffer_;
 };
 
