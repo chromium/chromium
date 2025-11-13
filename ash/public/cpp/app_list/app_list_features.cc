@@ -10,7 +10,6 @@
 
 namespace app_list_features {
 
-BASE_FEATURE(kEnableAppReinstallZeroState, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableAppListLaunchRecording, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableExactMatchForNonLatinLocale,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -19,10 +18,6 @@ BASE_FEATURE(kForceShowContinueSection, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDynamicSearchUpdateAnimation, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLauncherPlayStoreSearch, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAppsCollections, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsAppReinstallZeroStateEnabled() {
-  return base::FeatureList::IsEnabled(kEnableAppReinstallZeroState);
-}
 
 bool IsExactMatchForNonLatinLocaleEnabled() {
   return base::FeatureList::IsEnabled(kEnableExactMatchForNonLatinLocale);
