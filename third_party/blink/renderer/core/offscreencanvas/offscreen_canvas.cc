@@ -338,7 +338,7 @@ ScriptPromise<Blob> OffscreenCanvas::convertToBlob(
   // Finalize frame will be called in GetImage, but if there's no
   // resourceProvider yet then the IsPaintable check will fail
   if (context_) {
-    context_->FinalizeFrame(FlushReason::kToBlob);
+    context_->FinalizeFrame(FlushReason::kOther);
   }
 
   if (!IsPaintable() || Size().IsEmpty()) {
@@ -357,7 +357,7 @@ ScriptPromise<Blob> OffscreenCanvas::convertToBlob(
 
   base::TimeTicks start_time = base::TimeTicks::Now();
   scoped_refptr<StaticBitmapImage> image_bitmap =
-      context_->GetImage(FlushReason::kToBlob);
+      context_->GetImage(FlushReason::kOther);
   if (image_bitmap) {
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<Blob>>(
         script_state, exception_state.GetContext());

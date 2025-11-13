@@ -55,14 +55,10 @@ enum class FlushReason {
   // clear.
   kCanvasPushFrameWhilePrinting = 9,
 
-  // To blob was called on the canvas.
-  // This inhibits vector printing.
-  kToBlob = 10,
-
   // The canvas is being printed.
-  kPrinting = 11,
+  kPrinting = 10,
 
-  kOther = 12,
+  kOther = 11,
 
   kMaxValue = kOther,
 };
