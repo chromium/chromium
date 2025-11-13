@@ -75,10 +75,40 @@ suite('ReshowOverlay', function() {
   });
 
   test(
+      'verify screenshotDataReceived with side panel open disables context menu and text highlights',
+      async () => {
+        assertTrue(
+            selectionOverlayElement.hasAttribute('enable-region-context-menu'));
+        assertTrue(selectionOverlayElement.$.textLayer.hasAttribute(
+            'enable-highlights'));
+
+        // ScreenshotBitmapBrowserProxy assumes only one screenshot will be
+        // sent. We need to reset it to allow a new screenshot to be fetched.
+        ScreenshotBitmapBrowserProxyImpl.setInstance(
+            new ScreenshotBitmapBrowserProxyImpl());
+        selectionOverlayElement.fetchNewScreenshotForTesting();
+
+        // Send a fake screenshot of size 100x100 with side panel open.
+        testBrowserProxy.page.screenshotDataReceived(
+            fakeScreenshotBitmap(100, 100), /*isSidePanelOpen=*/ true);
+        await waitForScreenshotRendered(selectionOverlayElement);
+        await waitForScreenshotResize();
+
+        assertFalse(
+            selectionOverlayElement.hasAttribute('enable-region-context-menu'));
+        assertFalse(selectionOverlayElement.$.textLayer.hasAttribute(
+            'enable-highlights'));
+      });
+
+  test(
       'verify onOverlayReshown hides and reshows the background image canvas',
       async () => {
         assertFalse(selectionOverlayElement.hasAttribute('is-closing'));
         assertFalse(selectionOverlayElement.hasAttribute('side-panel-opened'));
+        assertTrue(
+            selectionOverlayElement.hasAttribute('enable-region-context-menu'));
+        assertTrue(selectionOverlayElement.$.textLayer.hasAttribute(
+            'enable-highlights'));
 
         const finishReshowEvent =
             eventToPromise('on-finish-reshow-overlay', selectionOverlayElement);
@@ -89,6 +119,10 @@ suite('ReshowOverlay', function() {
         assertTrue(selectionOverlayElement.hasAttribute('side-panel-opened'));
         assertTrue(
             selectionOverlayElement.getHideBackgroundImageCanvasForTesting());
+        assertFalse(
+            selectionOverlayElement.hasAttribute('enable-region-context-menu'));
+        assertFalse(selectionOverlayElement.$.textLayer.hasAttribute(
+            'enable-highlights'));
         await finishReshowEvent;
 
         // after onFinishReshowOverlay, hideBackgroundImageCanvas should be
