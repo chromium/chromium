@@ -87,6 +87,7 @@ class ExtendedUpdatesNotificationTest : public testing::Test {
         /*silent=*/false);
   }
 
+  ash::ScopedStubInstallAttributes stub_install_attributes_;
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingCrosSettings cros_settings_;
   TestingProfile profile_;
