@@ -52,77 +52,6 @@ constexpr char enabled_all_mobile_countries_us_desktop_only[] =
     "us";
 #endif
 
-// Returns whether |locale| is a supported locale for |feature|.
-//
-// This matches |locale| with the "supported_locales" feature param value in
-// |feature|, which is expected to be a comma-separated list of locales. A
-// feature param containing "en,es-ES,zh-TW" restricts the feature to English
-// language users from any locale and Spanish language users from the Spain
-// es-ES locale. A feature param containing "" is unrestricted by locale and any
-// user may load it.
-bool IsSupportedLocaleForFeature(
-    const std::string locale,
-    const base::Feature& feature,
-    const std::string& default_value = "de,en,es,fr,it,nl,pt,tr") {
-  if (!base::FeatureList::IsEnabled(feature)) {
-    return false;
-  }
-
-  std::string value =
-      base::GetFieldTrialParamValueByFeature(feature, "supported_locales");
-  if (value.empty()) {
-    // The default list of supported locales for optimization guide features.
-    value = default_value;
-  } else if (value == "*") {
-    // Still provide a way to enable all locales remotely via the '*' character.
-    return true;
-  }
-
-  std::vector<std::string> supported_locales = base::SplitString(
-      value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  // An empty allowlist admits any locale.
-  if (supported_locales.empty()) {
-    return true;
-  }
-
-  // Otherwise, the locale or the primary language subtag must match an element
-  // of the allowlist.
-  return base::Contains(supported_locales, locale) ||
-         base::Contains(supported_locales, l10n_util::GetLanguage(locale));
-}
-
-bool IsSupportedCountryForFeature(const std::string& country_code,
-                                  const base::Feature& feature,
-                                  const std::string& default_value) {
-  if (!base::FeatureList::IsEnabled(feature)) {
-    return false;
-  }
-
-  std::string value =
-      base::GetFieldTrialParamValueByFeature(feature, "supported_countries");
-  if (value.empty()) {
-    // The default list of supported countries for optimization guide features.
-    value = default_value;
-  } else if (value == "*") {
-    // Still provide a way to enable all countries remotely via the '*'
-    // character.
-    return true;
-  }
-
-  std::vector<std::string> supported_countries = base::SplitString(
-      value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  // An empty allowlist admits any country.
-  if (supported_countries.empty()) {
-    return true;
-  }
-
-  return std::ranges::any_of(
-      supported_countries, [&country_code](const auto& supported_country_code) {
-        return base::EqualsCaseInsensitiveASCII(supported_country_code,
-                                                country_code);
-      });
-}
-
 const base::FeatureParam<base::TimeDelta> kAnnotatedPageContentCaptureDelay{
     &kAnnotatedPageContentExtraction, "capture_delay", base::Seconds(5)};
 
@@ -321,6 +250,70 @@ PageContentExtractionTriggeringMode GetPageContentExtractionTriggeringMode() {
     return PageContentExtractionTriggeringMode::kOnLoadAndHidden;
   }
   return PageContentExtractionTriggeringMode::kOnLoad;
+}
+
+bool IsSupportedLocaleForFeature(const std::string locale,
+                                 const base::Feature& feature,
+                                 const std::string& default_value) {
+  if (!base::FeatureList::IsEnabled(feature)) {
+    return false;
+  }
+
+  std::string value =
+      base::GetFieldTrialParamValueByFeature(feature, "supported_locales");
+  if (value.empty()) {
+    // The default list of supported locales for optimization guide features.
+    value = default_value;
+  }
+  if (value == "*") {
+    // Still provide a way to enable all locales remotely via the '*' character.
+    return true;
+  }
+
+  std::vector<std::string> supported_locales = base::SplitString(
+      value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  // An empty allowlist admits any locale.
+  if (supported_locales.empty()) {
+    return true;
+  }
+
+  // Otherwise, the locale or the primary language subtag must match an element
+  // of the allowlist.
+  return base::Contains(supported_locales, locale) ||
+         base::Contains(supported_locales, l10n_util::GetLanguage(locale));
+}
+
+bool IsSupportedCountryForFeature(const std::string& country_code,
+                                  const base::Feature& feature,
+                                  const std::string& default_value) {
+  if (!base::FeatureList::IsEnabled(feature)) {
+    return false;
+  }
+
+  std::string value =
+      base::GetFieldTrialParamValueByFeature(feature, "supported_countries");
+  if (value.empty()) {
+    // The default list of supported countries for optimization guide features.
+    value = default_value;
+  }
+  if (value == "*") {
+    // Still provide a way to enable all countries remotely via the '*'
+    // character.
+    return true;
+  }
+
+  std::vector<std::string> supported_countries = base::SplitString(
+      value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  // An empty allowlist admits any country.
+  if (supported_countries.empty()) {
+    return true;
+  }
+
+  return std::ranges::any_of(
+      supported_countries, [&country_code](const auto& supported_country_code) {
+        return base::EqualsCaseInsensitiveASCII(supported_country_code,
+                                                country_code);
+      });
 }
 
 }  // namespace page_content_annotations::features
