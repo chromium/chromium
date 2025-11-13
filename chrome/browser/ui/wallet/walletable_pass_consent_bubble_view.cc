@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_view.h"
 
-#include "build/branding_buildflags.h"
+#include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_controller.h"
 #include "chrome/common/url_constants.h"
@@ -27,20 +27,7 @@ namespace wallet {
 namespace {
 
 constexpr int kBubbleWidth = 320;
-constexpr int kWalletIconSize = 20;
 constexpr int kSubTitleBottomMargin = 16;
-
-ui::ImageModel GetIcon() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return ui::ImageModel::FromVectorIcon(vector_icons::kGoogleWalletIcon,
-                                        ui::kColorIcon, kWalletIconSize);
-
-#else
-  // This is a placeholder icon on non-branded builds.
-  return ui::ImageModel::FromVectorIcon(vector_icons::kGlobeIcon,
-                                        ui::kColorIcon, kWalletIconSize);
-#endif
-}
 
 std::unique_ptr<views::BoxLayoutView> GetSubtitleDescriptionContainer() {
   return views::Builder<views::BoxLayoutView>()
@@ -135,25 +122,9 @@ void WalletablePassConsentBubbleView::AddedToWidget() {
   GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 
   // Set title view
-  auto title_view =
-      views::Builder<views::BoxLayoutView>()
-          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
-          .Build();
-
-  auto* label = title_view->AddChildView(
-      views::Builder<views::Label>()
-          .SetText(l10n_util::GetStringUTF16(
-              IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_TITLE))
-          .SetTextStyle(views::style::STYLE_HEADLINE_4)
-          .SetMultiLine(true)
-          .SetAccessibleRole(ax::mojom::Role::kTitleBar)
-          .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-          .Build());
-
-  title_view->AddChildView(std::make_unique<views::ImageView>(GetIcon()));
-  title_view->SetFlexForView(label, 1);
-  GetBubbleFrameView()->SetTitleView(std::move(title_view));
+  GetBubbleFrameView()->SetTitleView(
+      autofill::CreateWalletBubbleTitleView(l10n_util::GetStringUTF16(
+          IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_TITLE)));
 }
 
 void WalletablePassConsentBubbleView::OnLearnMoreClicked() {

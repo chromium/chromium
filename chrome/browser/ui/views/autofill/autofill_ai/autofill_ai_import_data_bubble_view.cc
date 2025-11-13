@@ -10,9 +10,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
+#include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -48,7 +48,6 @@ namespace autofill {
 namespace {
 
 constexpr int kBubbleWidth = 320;
-constexpr int kWalletIconSize = 20;
 constexpr int kSubTitleBottomMargin = 16;
 constexpr std::u16string_view kNewValueDot = u"•";
 
@@ -108,18 +107,6 @@ GetAutofillAiBubbleClosedReasonFromWidget(const views::Widget* widget) {
     case views::Widget::ClosedReason::kCancelButtonClicked:
       return AutofillClient::AutofillAiBubbleClosedReason::kCancelled;
   }
-}
-
-ui::ImageModel GetIcon() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return ui::ImageModel::FromVectorIcon(vector_icons::kGoogleWalletIcon,
-                                        ui::kColorIcon, kWalletIconSize);
-
-#else
-  // This is a placeholder icon on non-branded builds.
-  return ui::ImageModel::FromVectorIcon(vector_icons::kGlobeIcon,
-                                        ui::kColorIcon, kWalletIconSize);
-#endif
 }
 
 }  // namespace
@@ -388,24 +375,8 @@ void AutofillAiImportDataBubbleView::AddedToWidget() {
     GetBubbleFrameView()->SetHeaderView(std::move(image_view));
   }
   if (controller_->IsWalletableEntity()) {
-    auto title_view =
-        views::Builder<views::BoxLayoutView>()
-            .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-            .SetCrossAxisAlignment(
-                views::BoxLayout::CrossAxisAlignment::kCenter)
-            .Build();
-
-    auto* label = title_view->AddChildView(
-        views::Builder<views::Label>()
-            .SetText(controller_->GetDialogTitle())
-            .SetTextStyle(views::style::STYLE_HEADLINE_4)
-            .SetAccessibleRole(ax::mojom::Role::kTitleBar)
-            .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-            .Build());
-
-    title_view->AddChildView(std::make_unique<views::ImageView>(GetIcon()));
-    title_view->SetFlexForView(label, 1);
-    GetBubbleFrameView()->SetTitleView(std::move(title_view));
+    GetBubbleFrameView()->SetTitleView(
+        CreateWalletBubbleTitleView(controller_->GetDialogTitle()));
   }
 }
 
