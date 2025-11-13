@@ -24954,8 +24954,6 @@
     "SuppressMemoryListeners": [
         {
             "platforms": [
-                "android",
-                "chromeos",
                 "linux",
                 "mac",
                 "windows"
@@ -24966,6 +24964,46 @@
                     "params": {
                         "suppress_memory_listeners_mask": "0000200200220200020020000002020000000000000000020",
                         "suppress_memory_monitor_mask": "00020000020000"
+                    },
+                    "enable_features": [
+                        "SuppressMemoryListeners",
+                        "SuppressMemoryMonitor"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SuppressMemoryListeners_Android": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "suppress_memory_listeners_mask": "0000000200000200020000000000000000000000000020000",
+                        "suppress_memory_monitor_mask": "00200000020000"
+                    },
+                    "enable_features": [
+                        "SuppressMemoryListeners",
+                        "SuppressMemoryMonitor"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SuppressMemoryListeners_ChromeOS": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "suppress_memory_listeners_mask": "0000000200000200000000000000000000000000000000000",
+                        "suppress_memory_monitor_mask": "00000000020200"
                     },
                     "enable_features": [
                         "SuppressMemoryListeners",
