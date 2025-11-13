@@ -150,7 +150,8 @@ public class MenuButtonCoordinatorTest {
                         () -> null,
                         () -> {},
                         R.id.menu_button_wrapper,
-                        visibilityDelegate);
+                        visibilityDelegate,
+                        /* isWebApp= */ false);
         // clang-format on
     }
 }

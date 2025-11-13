@@ -997,7 +997,8 @@ public class ToolbarManager
                         menuButtonStateSupplier,
                         onMenuButtonClicked,
                         R.id.menu_button_wrapper,
-                        menuButtonVisibilityDelegate);
+                        menuButtonVisibilityDelegate,
+                        /* isWebApp= */ false);
         if (canShowUpdateBadge) mMenuStateObserver = mMenuButtonCoordinator.getStateObserver();
 
         // TODO(crbug.com/351005760): Investigate the feasibility of replacing
@@ -1017,7 +1018,8 @@ public class ToolbarManager
                         menuButtonStateSupplier,
                         onMenuButtonClicked,
                         R.id.none,
-                        menuButtonVisibilityDelegate);
+                        menuButtonVisibilityDelegate,
+                        /* isWebApp= */ false);
 
         ToggleTabStackButton tabSwitcherButton =
                 mControlContainer.findViewById(R.id.tab_switcher_button);

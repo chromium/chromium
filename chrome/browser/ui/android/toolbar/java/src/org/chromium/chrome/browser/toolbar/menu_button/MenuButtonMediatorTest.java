@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.menu_button;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -15,6 +16,8 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.view.View;
+
+import androidx.core.graphics.Insets;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,6 +33,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.ShowBadgeProperty;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.ThemeProperty;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
@@ -63,6 +67,7 @@ public class MenuButtonMediatorTest {
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
     @Mock private View mUtilityView;
     @Mock private MenuButtonCoordinator.VisibilityDelegate mVisibilityDelegate;
+    @Mock private ThemeColorProvider mThemeColorProvider;
 
     private MenuUiState mMenuUiState;
     private OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
@@ -175,7 +180,9 @@ public class MenuButtonMediatorTest {
                         mWindowAndroid,
                         () -> mMenuUiState.buttonState,
                         mOnMenuButtonClicked,
-                        null);
+                        null,
+                        mThemeColorProvider,
+                        false);
 
         doReturn(true).when(mActivity).isDestroyed();
         newMediator.updateStateChanged();
@@ -299,6 +306,16 @@ public class MenuButtonMediatorTest {
         verify(mVisibilityDelegate).setMenuButtonVisible(true);
     }
 
+    @Test
+    public void testSetBackgroundInsets() {
+        final var insets = Insets.of(1, 2, 3, 4);
+        mMenuButtonMediator.setBackgroundInsets(insets);
+        assertEquals(
+                "Insets should be correctly set.",
+                insets,
+                mPropertyModel.get(MenuButtonProperties.BACKGROUND_INSETS));
+    }
+
     private void initMenuButtonMediator(
             MenuButtonCoordinator.VisibilityDelegate visibilityDelegate) {
         mMenuButtonMediator =
@@ -314,6 +331,8 @@ public class MenuButtonMediatorTest {
                         mWindowAndroid,
                         () -> mMenuUiState.buttonState,
                         mOnMenuButtonClicked,
-                        visibilityDelegate);
+                        visibilityDelegate,
+                        mThemeColorProvider,
+                        /* isWebApp= */ false);
     }
 }

@@ -236,7 +236,8 @@ public class ToolbarPhoneTest {
                                     () -> null,
                                     CallbackUtils.emptyRunnable(),
                                     R.id.menu_button_wrapper,
-                                    null);
+                                    null,
+                                    /* isWebApp= */ false);
                     mToolbar.setMenuButtonCoordinatorForTesting(realMenuButtonCoordinator);
                     mToolbar.updateOptionalButton(
                             new ButtonDataImpl(

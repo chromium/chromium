@@ -345,7 +345,8 @@ public class WebAppHeaderLayoutCoordinator
                             (Supplier<@Nullable MenuButtonState>) mMenuButtonStateSupplier,
                             /* onMenuButtonClicked= */ () -> {},
                             R.id.menu_button_wrapper,
-                            /* visibilityDelegate= */ null);
+                            /* visibilityDelegate= */ null,
+                            /* isWebApp= */ true);
         }
         mMediator.setOnButtonBottomInsetChanged(this::onButtonBottomInsetChanged);
     }
@@ -492,6 +493,10 @@ public class WebAppHeaderLayoutCoordinator
 
         if (mBackButtonCoordinator != null) {
             mBackButtonCoordinator.setBackgroundInsets(Insets.of(0, 0, 0, bottomInset));
+        }
+
+        if (mMenuButtonCoordinator != null) {
+            mMenuButtonCoordinator.setBackgroundInsets(Insets.of(0, 0, 0, bottomInset));
         }
     }
 

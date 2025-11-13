@@ -89,6 +89,7 @@ public class MenuButtonCoordinator extends ToolbarChildButton {
      * @param onMenuButtonClicked Runnable to run on menu button click.
      * @param menuButtonId Resource id that should be used to locate the underlying view.
      * @param visibilityDelegate Delegate for handling the visibility of the menu button.
+     * @param isWebApp Whether the app is a webApp.
      */
     public MenuButtonCoordinator(
             Activity activity,
@@ -104,7 +105,8 @@ public class MenuButtonCoordinator extends ToolbarChildButton {
             Supplier<@Nullable MenuButtonState> menuButtonStateSupplier,
             Runnable onMenuButtonClicked,
             @IdRes int menuButtonId,
-            @Nullable VisibilityDelegate visibilityDelegate) {
+            @Nullable VisibilityDelegate visibilityDelegate,
+            boolean isWebApp) {
         super(activity, themeColorProvider, incognitoStateProvider);
         mActivity = activity;
         mMenuButton = mActivity.findViewById(menuButtonId);
@@ -143,7 +145,9 @@ public class MenuButtonCoordinator extends ToolbarChildButton {
                         windowAndroid,
                         menuButtonStateSupplier,
                         onMenuButtonClicked,
-                        visibilityDelegate);
+                        visibilityDelegate,
+                        themeColorProvider,
+                        isWebApp);
         mMediator
                 .getMenuButtonHelperSupplier()
                 .addObserver((helper) -> mAppMenuButtonHelper = helper);
@@ -239,6 +243,14 @@ public class MenuButtonCoordinator extends ToolbarChildButton {
     public void setClickable(boolean isClickable) {
         if (mMediator == null) return;
         mMediator.setClickable(isClickable);
+    }
+
+    /**
+     * @param insets The insets to apply to the background.
+     */
+    public void setBackgroundInsets(androidx.core.graphics.Insets insets) {
+        if (mMediator == null) return;
+        mMediator.setBackgroundInsets(insets);
     }
 
     @SuppressWarnings("NullAway")
