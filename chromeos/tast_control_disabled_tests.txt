@@ -109,4 +109,7 @@ tast.apps.LaunchHelpAppFromShortcut.stable_guest
 # https://crbug.com/460054243
 tast.inputs.VirtualKeyboardTypingUserMode.guest
 
+# https://crbug.com/368606672
+tast.inputs.InputMethodManagement.guest
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
