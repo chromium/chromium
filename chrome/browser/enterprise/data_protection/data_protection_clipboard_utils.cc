@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/common/files_scan_data.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/content/clipboard_restriction_service.h"
 #include "components/enterprise/data_controls/content/browser/last_replaced_clipboard_data.h"
 #include "components/enterprise/data_controls/core/browser/prefs.h"
@@ -134,10 +135,16 @@ void HandleStringData(
             bool text_blocked =
                 !result.text_results.empty() && !result.text_results[0];
 
-            // Image scan results are ignore for non local scans.
-            bool image_blocked =
-                data.settings.cloud_or_local_settings.is_local_analysis() &&
-                !clipboard_paste_data.png.empty() && !result.image_result;
+            // Image scan results are ignore for non local scans, unless the
+            // kDlpScanPastedImages feature is enabled.
+            bool image_blocked = false;
+            if (data.settings.cloud_or_local_settings.is_local_analysis() ||
+                base::FeatureList::IsEnabled(
+                    enterprise_connectors::kDlpScanPastedImages)) {
+              image_blocked =
+                  !clipboard_paste_data.png.empty() && !result.image_result;
+            }
+
             if (text_blocked || image_blocked) {
               std::move(callback).Run(std::nullopt);
               return;
