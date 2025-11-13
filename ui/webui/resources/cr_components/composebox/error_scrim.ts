@@ -69,6 +69,10 @@ export class ErrorScrimElement extends I18nMixinLit
     this.showErrorScrim_ = true;
   }
 
+  isErrorScrimShowing(): boolean {
+    return this.showErrorScrim_;
+  }
+
   protected onDismissErrorButtonClick_() {
     this.errorMessage_ = '';
     this.showErrorScrim_ = false;
