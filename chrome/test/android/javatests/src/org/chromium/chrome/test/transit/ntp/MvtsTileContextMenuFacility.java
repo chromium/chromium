@@ -95,4 +95,17 @@ public class MvtsTileContextMenuFacility extends ListMenuFacility<RegularNewTabP
                                 .withExpectedUrlSubstring(url)
                                 .build());
     }
+
+    /** Select "Open in incognito window" to open the tile in a new incognito window. */
+    public WebPageStation selectOpenInIncognitoWindow() {
+        String url = mMvtsTileFacility.getSiteSuggestion().url.getSpec();
+        return invokeMenuItemTo("Open in Incognito window")
+                .inNewTask()
+                .arriveAt(
+                        WebPageStation.newBuilder()
+                                .withEntryPoint()
+                                .withIncognito(true)
+                                .withExpectedUrlSubstring(url)
+                                .build());
+    }
 }
