@@ -16,6 +16,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/third_party/icu/icu_utf.h"
@@ -204,24 +205,23 @@ void AppendStringOfType(std::u16string_view source,
 // the corresponding numerical value.
 //
 // See HexDigitToValue for the lookup.
-extern const char kCharToHexLookup[8];
+extern const std::array<char, 8> kCharToHexLookup;
 
 // Assumes the input is a valid hex digit! Call IsHexChar before using this.
 inline int HexCharToValue(unsigned char c) {
   return c - UNSAFE_TODO(kCharToHexLookup[c / 0x20]);
 }
 
-// Indicates if the given character is a dot or dot equivalent, returning the
+// Indicates if the start of `spec` is a dot or dot equivalent, returning the
 // number of characters taken by it. This will be one for a literal dot, 3 for
 // an escaped dot. If the character is not a dot, this will return 0.
 template <typename CHAR>
-inline size_t IsDot(const CHAR* spec, size_t offset, size_t end) {
-  if (UNSAFE_TODO(spec[offset]) == '.') {
+inline size_t IsDot(std::basic_string_view<CHAR> spec) {
+  if (spec[0] == '.') {
     return 1;
-  } else if (UNSAFE_TODO(spec[offset]) == '%' && offset + 3 <= end &&
-             UNSAFE_TODO(spec[offset + 1]) == '2' &&
-             (UNSAFE_TODO(spec[offset + 2]) == 'e' ||
-              UNSAFE_TODO(spec[offset + 2]) == 'E')) {
+  }
+  if (spec.size() >= 3 && spec[0] == '%' && spec[1] == '2' &&
+      (spec[2] == 'e' || spec[2] == 'E')) {
     // Found "%2e"
     return 3;
   }

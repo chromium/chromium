@@ -173,7 +173,7 @@ bool PrepareUTF16OverrideComponent(
 
 }  // namespace
 
-const char kCharToHexLookup[8] = {
+const std::array<char, 8> kCharToHexLookup = {{
     0,         // 0x00 - 0x1f
     '0',       // 0x20 - 0x3f: digits 0 - 9 are 0x30 - 0x39
     'A' - 10,  // 0x40 - 0x5f: letters A - F are 0x41 - 0x46
@@ -182,7 +182,7 @@ const char kCharToHexLookup[8] = {
     0,         // 0xA0 - 0xBF
     0,         // 0xC0 - 0xDF
     0,         // 0xE0 - 0xFF
-};
+}};
 
 const base_icu::UChar32 kUnicodeReplacementCharacter = 0xfffd;
 

@@ -98,34 +98,32 @@ enum DotDisposition {
 // |*consumed_len| will contain the number of characters in the input that
 // express what we found.
 //
-// If the input is "../foo", |after_dot| = 1, |end| = 6, and
-// at the end, |*consumed_len| = 2 for the "./" this function consumed. The
-// original dot length should be handled by the caller.
+// If the original input is "../foo", this function will be called with `spec`
+// equal to "./foo", and at the end, |*consumed_len| = 2 for the "./" this
+// function consumed. The original dot length should be handled by the caller.
 template <typename CHAR>
-DotDisposition ClassifyAfterDot(const CHAR* spec,
-                                size_t after_dot,
-                                size_t end,
+DotDisposition ClassifyAfterDot(std::basic_string_view<CHAR> spec,
                                 size_t* consumed_len) {
-  if (after_dot == end) {
+  if (spec.empty()) {
     // Single dot at the end.
     *consumed_len = 0;
     return DIRECTORY_CUR;
   }
-  if (IsSlashOrBackslash(UNSAFE_TODO(spec[after_dot]))) {
+  if (IsSlashOrBackslash(spec[0])) {
     // Single dot followed by a slash.
     *consumed_len = 1;  // Consume the slash
     return DIRECTORY_CUR;
   }
 
-  size_t second_dot_len = IsDot(spec, after_dot, end);
+  size_t second_dot_len = IsDot(spec);
   if (second_dot_len) {
-    size_t after_second_dot = after_dot + second_dot_len;
-    if (after_second_dot == end) {
+    std::basic_string_view<CHAR> after_second_dot = spec.substr(second_dot_len);
+    if (after_second_dot.empty()) {
       // Double dot at the end.
       *consumed_len = second_dot_len;
       return DIRECTORY_UP;
     }
-    if (IsSlashOrBackslash(UNSAFE_TODO(spec[after_second_dot]))) {
+    if (IsSlashOrBackslash(after_second_dot[0])) {
       // Double dot followed by a slash.
       *consumed_len = second_dot_len + 1;
       return DIRECTORY_UP;
@@ -207,7 +205,7 @@ bool DoPartialPathInternal(std::optional<std::basic_string_view<CHAR>> path,
       if (flags & SPECIAL) {
         // Needs special handling of some sort.
         size_t dotlen;
-        if ((dotlen = IsDot(path_value.data(), i, path_value.size())) > 0) {
+        if ((dotlen = IsDot(path_value.substr(i))) > 0) {
           // See if this dot was preceded by a slash in the output.
           //
           // Note that we check this in the case of dots so we don't have to
@@ -218,8 +216,8 @@ bool DoPartialPathInternal(std::optional<std::basic_string_view<CHAR>> path,
               output->at(output->length() - 1) == '/') {
             // Slash followed by a dot, check to see if this is means relative
             size_t consumed_len;
-            switch (ClassifyAfterDot<CHAR>(path_value.data(), i + dotlen,
-                                           path_value.size(), &consumed_len)) {
+            switch (ClassifyAfterDot(path_value.substr(i + dotlen),
+                                     &consumed_len)) {
               case NOT_A_DIRECTORY:
                 // Copy the dot to the output, it means nothing special.
                 output->push_back('.');
