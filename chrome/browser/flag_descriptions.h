@@ -8346,17 +8346,6 @@ inline constexpr char kOpenXrSpatialEntitiesDescription[] =
     "Allows the OpenXR runtime to use the spatial entities set of extensions "
     "to understand the environment.";
 
-inline constexpr char kWebUITabStripFlagId[] = "webui-tab-strip";
-inline constexpr char kWebUITabStripName[] = "WebUI tab strip";
-inline constexpr char kWebUITabStripDescription[] =
-    "When enabled makes use of a WebUI-based tab strip.";
-
-inline constexpr char kWebUITabStripContextMenuAfterTapName[] =
-    "WebUI tab strip context menu after tap";
-inline constexpr char kWebUITabStripContextMenuAfterTapDescription[] =
-    "Enables the context menu to appear after a tap gesture rather than "
-    "following a press gesture.";
-
 inline constexpr char kAutofillCreditCardUploadName[] =
     "Enable offering upload of Autofilled credit cards";
 inline constexpr char kAutofillCreditCardUploadDescription[] =

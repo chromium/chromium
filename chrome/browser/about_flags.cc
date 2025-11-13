@@ -5367,18 +5367,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"top-chrome-touch-ui", flag_descriptions::kTopChromeTouchUiName,
      flag_descriptions::kTopChromeTouchUiDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kTopChromeTouchUiChoices)},
-
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-    {flag_descriptions::kWebUITabStripFlagId,
-     flag_descriptions::kWebUITabStripName,
-     flag_descriptions::kWebUITabStripDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kWebUITabStrip)},
-    {"webui-tab-strip-context-menu-after-tap",
-     flag_descriptions::kWebUITabStripContextMenuAfterTapName,
-     flag_descriptions::kWebUITabStripContextMenuAfterTapDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kWebUITabStripContextMenuAfterTap)},
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #if BUILDFLAG(IS_CHROMEOS)
     {"allow-apn-modification-policy",
      flag_descriptions::kAllowApnModificationPolicyName,
