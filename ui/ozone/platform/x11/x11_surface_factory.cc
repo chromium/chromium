@@ -249,8 +249,7 @@ X11SurfaceFactory::CreateNativePixmapFromHandle(
   scoped_refptr<gfx::NativePixmapDmaBuf> pixmap;
   auto buffer =
       ui::GpuMemoryBufferSupportX11::GetInstance()->CreateBufferFromHandle(
-          size, viz::SharedImageFormatToBufferFormat(format),
-          std::move(handle));
+          size, format, std::move(handle));
   if (buffer) {
     gfx::NativePixmapHandle buffer_handle = buffer->ExportHandle();
     if (buffer_handle.planes.empty()) {

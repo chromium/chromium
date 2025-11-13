@@ -159,7 +159,7 @@ bool GpuMemoryBufferSupportX11::CanCreateNativePixmapForFormat(
 
 std::unique_ptr<GbmBuffer> GpuMemoryBufferSupportX11::CreateBufferFromHandle(
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::NativePixmapHandle handle) {
   if (!device_) {
     LOG(ERROR) << "Can't create buffer from handle -- gbm  device is missing.";
@@ -169,12 +169,11 @@ std::unique_ptr<GbmBuffer> GpuMemoryBufferSupportX11::CreateBufferFromHandle(
   static base::debug::CrashKeyString* crash_key_string =
       base::debug::AllocateCrashKeyString("buffer_from_handle_format",
                                           base::debug::CrashKeySize::Size64);
-  std::string buffer_from_handle_format = gfx::BufferFormatToString(format);
   base::debug::ScopedCrashKeyString scoped_crash_key(crash_key_string,
-                                                     buffer_from_handle_format);
+                                                     format.ToString());
 
   return device_->CreateBufferFromHandle(
-      GetFourCCFormatFromBufferFormat(format), size, std::move(handle));
+      GetFourCCFormatFromSharedImageFormat(format), size, std::move(handle));
 }
 
 }  // namespace ui

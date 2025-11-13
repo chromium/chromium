@@ -36,7 +36,7 @@ class COMPONENT_EXPORT(GBM_SUPPORT_X11) GpuMemoryBufferSupportX11 {
   bool CanCreateNativePixmapForFormat(viz::SharedImageFormat format);
   std::unique_ptr<GbmBuffer> CreateBufferFromHandle(
       const gfx::Size& size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::NativePixmapHandle handle);
 
   ~GpuMemoryBufferSupportX11();
