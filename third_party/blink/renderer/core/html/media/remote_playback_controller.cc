@@ -12,12 +12,7 @@ RemotePlaybackController* RemotePlaybackController::From(
   return element.GetRemotePlaybackController();
 }
 
-void RemotePlaybackController::Trace(Visitor* visitor) const {
-  visitor->Trace(html_media_element_);
-}
-
-RemotePlaybackController::RemotePlaybackController(HTMLMediaElement& element)
-    : html_media_element_(element) {}
+void RemotePlaybackController::Trace(Visitor* visitor) const {}
 
 // static
 void RemotePlaybackController::ProvideTo(HTMLMediaElement& element,

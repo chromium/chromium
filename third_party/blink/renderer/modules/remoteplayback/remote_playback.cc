@@ -121,7 +121,6 @@ RemotePlayback& RemotePlayback::From(HTMLMediaElement& element) {
 RemotePlayback::RemotePlayback(HTMLMediaElement& element)
     : ExecutionContextLifecycleObserver(element.GetExecutionContext()),
       ActiveScriptWrappable<RemotePlayback>({}),
-      RemotePlaybackController(element),
       state_(mojom::blink::PresentationConnectionState::CLOSED),
       availability_(mojom::ScreenAvailability::UNKNOWN),
       media_element_(&element),
