@@ -2505,7 +2505,8 @@ _KNOWN_ROBOTS = set() | set('%s@appspot.gserviceaccount.com' % s for s in (
                 ('chromium-internal-autoroll', )
             ) | set(
                 '%s@system.gserviceaccount.com' % s for s in
-                ('chrome-screen-ai-releaser', 'crash-eng', 'crash')
+                ('chrome-screen-ai-releaser', 'crash-eng', 'crash',
+                 'meet-tools-roll-into-chromium')
             ) | set(
                 '%s@owners-cleanup-prod.google.com.iam.gserviceaccount.com' % s
                 for s in ('swarming-tasks', )) | set(
