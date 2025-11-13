@@ -21,7 +21,8 @@ enum class RTCVideoDecoderFallbackReason {
   kConsecutivePendingBufferOverflowDuringInit = 5,
   kParseErrorOnResolutionCheck = 6,
   kTooManyInstancesAndSmallResolution = 7,
-  kMaxValue = kTooManyInstancesAndSmallResolution,
+  kUnsupportedResolution = 8,
+  kMaxValue = kUnsupportedResolution,
 };
 
 void RecordRTCVideoDecoderFallbackReason(

@@ -234,6 +234,8 @@ class RTCVideoDecoderAdapter::Impl {
              CrossThreadOnceClosure flush_fail_cb);
   void RegisterDecodeCompleteCallback(webrtc::DecodedImageCallback* callback);
 
+  bool IsDecoderConfigSupported(const media::VideoDecoderConfig& config) const;
+
  private:
   std::optional<RTCVideoDecoderFallbackReason> NeedSoftwareFallback(
       media::VideoCodec codec,
@@ -447,6 +449,15 @@ void RTCVideoDecoderAdapter::Impl::RegisterDecodeCompleteCallback(
   // decode_complete_callback_ should be called once with a valid pointer.
   DCHECK_EQ(decode_complete_callback_, nullptr);
   decode_complete_callback_ = callback;
+}
+
+bool RTCVideoDecoderAdapter::Impl::IsDecoderConfigSupported(
+    const media::VideoDecoderConfig& config) const {
+  // This function is invoked by any thread. |gpu_factories_|'s lifetime is
+  // guaranteed by RTCVideoDecoder's client and the thread safety of
+  // IsDecoderConfigSupported() is guaranteed by the GpuVideoAcceleratorFactories.
+  return gpu_factories_->IsDecoderConfigSupported(config) !=
+         media::GpuVideoAcceleratorFactories::Supported::kFalse;
 }
 
 void RTCVideoDecoderAdapter::Impl::OnDecodeDone(media::DecoderStatus status) {
@@ -769,6 +780,17 @@ bool RTCVideoDecoderAdapter::CheckResolutionAndNumInstances(
         config_.codec(),
         RTCVideoDecoderFallbackReason::kParseErrorOnResolutionCheck);
     return false;
+  }
+
+  if (config_.coded_size() != *resolution) {
+    config_.set_coded_size(*resolution);
+    if (!impl_->IsDecoderConfigSupported(config_)) {
+      DVLOG(1) << "Unsupported resolution";
+      RecordRTCVideoDecoderFallbackReason(
+          config_.codec(),
+          RTCVideoDecoderFallbackReason::kUnsupportedResolution);
+      return false;
+    }
   }
 
   if (resolution->GetArea() >= kMinResolution.GetArea()) {
