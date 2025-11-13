@@ -214,6 +214,9 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 }
 
 - (void)reloadConfiguration {
+  if (!self.isViewLoaded) {
+    return;
+  }
   [self reconfigureButtons];
   [self updateButtonState];
 }
