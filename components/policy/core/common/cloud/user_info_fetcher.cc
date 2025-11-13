@@ -4,6 +4,9 @@
 
 #include "components/policy/core/common/cloud/user_info_fetcher.h"
 
+#include <optional>
+#include <string>
+
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
@@ -111,7 +114,7 @@ void UserInfoFetcher::Start(const std::string& access_token) {
 }
 
 void UserInfoFetcher::OnFetchComplete(
-    std::unique_ptr<std::string> unparsed_data) {
+    std::optional<std::string> unparsed_data) {
   std::unique_ptr<network::SimpleURLLoader> url_loader = std::move(url_loader_);
 
   GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();

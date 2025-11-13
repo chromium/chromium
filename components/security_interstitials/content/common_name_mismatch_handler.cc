@@ -4,6 +4,8 @@
 
 #include "components/security_interstitials/content/common_name_mismatch_handler.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -161,7 +163,7 @@ void CommonNameMismatchHandler::OnSimpleLoaderResponseStarted(
 }
 
 void CommonNameMismatchHandler::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   OnSimpleLoaderHandler(simple_url_loader_->GetFinalURL(),
                         simple_url_loader_->ResponseInfo());
 }

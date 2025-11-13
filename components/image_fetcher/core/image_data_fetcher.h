@@ -88,7 +88,7 @@ class ImageDataFetcher {
 
   void OnURLLoaderComplete(const network::SimpleURLLoader* source,
                            ImageFetcherParams params,
-                           std::unique_ptr<std::string> response_body);
+                           std::optional<std::string> response_body);
 
   void FinishRequest(const network::SimpleURLLoader* source,
                      const RequestMetadata& metadata,

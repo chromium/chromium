@@ -4,7 +4,9 @@
 
 #include "components/policy/core/browser/signin/user_cloud_signin_restriction_policy_fetcher.h"
 
+#include <optional>
 #include <set>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
@@ -78,7 +80,7 @@ void UserCloudSigninRestrictionPolicyFetcher::
   if (!response_for_testing.empty()) {
     OnManagedAccountsSigninRestrictionResult(
         std::move(callback),
-        std::make_unique<std::string>(response_for_testing));
+        std::make_optional<std::string>(response_for_testing));
     return;
   }
   // base::Unretained is safe here because the callback is called in the
@@ -174,7 +176,7 @@ void UserCloudSigninRestrictionPolicyFetcher::
 void UserCloudSigninRestrictionPolicyFetcher::
     OnManagedAccountsSigninRestrictionResult(
         base::OnceCallback<void(ProfileSeparationPolicies)> callback,
-        std::unique_ptr<std::string> response_body) {
+        std::optional<std::string> response_body) {
   std::string restriction;
   GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
   std::unique_ptr<network::SimpleURLLoader> url_loader = std::move(url_loader_);

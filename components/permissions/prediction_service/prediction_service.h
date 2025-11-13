@@ -6,9 +6,11 @@
 #define COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PREDICTION_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/types/optional_ref.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/prediction_service/prediction_service_base.h"
@@ -61,10 +63,10 @@ class PredictionService : public PredictionServiceBase {
   void OnURLLoaderComplete(const PredictionRequestFeatures& entity,
                            network::SimpleURLLoader* loader,
                            base::TimeTicks request_start_time,
-                           std::unique_ptr<std::string> response_body);
+                           std::optional<std::string> response_body);
   std::unique_ptr<GeneratePredictionsResponse> CreatePredictionsResponse(
       network::SimpleURLLoader* loader,
-      const std::string* response_body);
+      base::optional_ref<std::string> response_body);
 
   PendingRequestsMap pending_requests_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

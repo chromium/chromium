@@ -6,6 +6,7 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -213,7 +214,7 @@ void LeakDetectionRequest::LookupSingleLeak(
 
 void LeakDetectionRequest::OnLookupSingleLeakResponse(
     LookupSingleLeakCallback callback,
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   if (!response) {
     RecordLookupResponseResult(LeakLookupResponseResult::kFetchError);
     DLOG(ERROR) << "Empty Lookup Single Leak Response";

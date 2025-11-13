@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/sharing/password_sharing_recipients_downloader.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
@@ -122,7 +124,7 @@ void PasswordSharingRecipientsDownloader::AccessTokenFetched(
 }
 
 void PasswordSharingRecipientsDownloader::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(on_request_complete_callback_);
   CHECK(!ongoing_access_token_fetch_);

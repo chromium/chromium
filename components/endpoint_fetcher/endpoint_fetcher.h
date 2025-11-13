@@ -333,7 +333,7 @@ class EndpointFetcher {
                           EndpointFetcherCallback endpoint_fetcher_callback);
 
   void OnResponseFetched(EndpointFetcherCallback callback,
-                         std::unique_ptr<std::string> response_body);
+                         std::optional<std::string> response_body);
 
   network::mojom::CredentialsMode GetCredentialsMode() const;
   int GetMaxRetries() const;

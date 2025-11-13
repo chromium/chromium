@@ -19,6 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "components/plus_addresses/core/browser/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/core/browser/plus_address_parsing_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
@@ -379,7 +380,7 @@ PlusAddressHttpClientImpl::ProcessNetworkResponse(
     UrlLoaderList::iterator it,
     PlusAddressNetworkRequestType type,
     base::TimeTicks request_start,
-    base::optional_ref<const std::string> response) {
+    base::optional_ref<std::string> response) {
   std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
   loaders_.erase(it);
 
@@ -415,9 +416,9 @@ void PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete(
     PlusAddressNetworkRequestType type,
     base::TimeTicks request_start,
     PlusAddressRequestCallback on_completed,
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   if (base::expected<void, PlusAddressRequestError> result =
-          ProcessNetworkResponse(it, type, request_start, response.get());
+          ProcessNetworkResponse(it, type, request_start, response);
       !result.has_value()) {
     std::move(on_completed).Run(base::unexpected(result.error()));
     return;
@@ -445,11 +446,11 @@ void PlusAddressHttpClientImpl::OnPreallocationComplete(
     UrlLoaderList::iterator it,
     base::TimeTicks request_start,
     PreallocatePlusAddressesCallback on_completed,
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   if (base::expected<void, PlusAddressRequestError> result =
           ProcessNetworkResponse(it,
                                  PlusAddressNetworkRequestType::kPreallocate,
-                                 request_start, response.get());
+                                 request_start, response);
       !result.has_value()) {
     std::move(on_completed).Run(base::unexpected(result.error()));
     return;

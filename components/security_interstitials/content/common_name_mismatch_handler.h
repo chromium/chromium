@@ -6,6 +6,7 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_COMMON_NAME_MISMATCH_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -91,7 +92,7 @@ class CommonNameMismatchHandler {
   void OnSimpleLoaderResponseStarted(
       const GURL& final_url,
       const network::mojom::URLResponseHead& response_head);
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
   // Returns true if the check is currently running.
   bool IsCheckingSuggestedUrl() const;

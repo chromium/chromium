@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_LEAK_DETECTION_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_factory.h"
@@ -73,7 +74,7 @@ class LeakDetectionRequest : public LeakDetectionRequestInterface {
 
  private:
   void OnLookupSingleLeakResponse(LookupSingleLeakCallback callback,
-                                  std::unique_ptr<std::string> response);
+                                  std::optional<std::string> response);
 
   // Simple URL loader required for the network request to the identity
   // endpoint.

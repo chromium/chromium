@@ -5,6 +5,8 @@
 #include "components/search/start_suggest_service.h"
 
 #include <algorithm>
+#include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -179,7 +181,7 @@ SearchProviderObserver* StartSuggestService::search_provider_observer() {
 void StartSuggestService::SuggestResponseLoaded(
     network::SimpleURLLoader* loader,
     SuggestResultCallback callback,
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   // Ensure the request succeeded and that the provider used is still available.
   // A verbatim match cannot be generated without this provider, causing errors.
   const bool request_succeeded = response && loader->NetError() == net::OK;

@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_CORE_COMMON_CLOUD_USER_INFO_FETCHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -60,7 +61,7 @@ class POLICY_EXPORT UserInfoFetcher {
   void Start(const std::string& access_token);
 
   // Called by |url_loader_| on completion.
-  void OnFetchComplete(std::unique_ptr<std::string> body);
+  void OnFetchComplete(std::optional<std::string> body);
 
  private:
   raw_ptr<Delegate> delegate_;

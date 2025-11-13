@@ -5,6 +5,8 @@
 #include "components/search_engines/template_url_fetcher.h"
 
 #include <algorithm>
+#include <optional>
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -78,7 +80,7 @@ class TemplateURLFetcher::RequestDelegate {
 
   // If data contains a valid OSDD, a TemplateURL is created and added to
   // the TemplateURLService.
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
   // URL of the OSDD.
   GURL url() const { return osdd_url_; }
@@ -180,7 +182,7 @@ void TemplateURLFetcher::RequestDelegate::OnLoaded() {
 }
 
 void TemplateURLFetcher::RequestDelegate::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   // Validation checks.
   // Make sure we can still replace the keyword, i.e. the fetch was successful.
   if (!response_body) {
@@ -190,8 +192,8 @@ void TemplateURLFetcher::RequestDelegate::OnSimpleLoaderComplete(
   }
 
   TemplateURLParser::Parse(
-      &fetcher_->template_url_service_->search_terms_data(),
-      *response_body.get(), TemplateURLParser::ParameterFilter(),
+      &fetcher_->template_url_service_->search_terms_data(), *response_body,
+      TemplateURLParser::ParameterFilter(),
       base::BindOnce(&RequestDelegate::OnTemplateURLParsed,
                      weak_factory_.GetWeakPtr()));
 }

@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_CORE_BROWSER_SIGNIN_USER_CLOUD_SIGNIN_RESTRICTION_POLICY_FETCHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -82,7 +83,7 @@ class POLICY_EXPORT UserCloudSigninRestrictionPolicyFetcher {
   // that value.
   void OnManagedAccountsSigninRestrictionResult(
       base::OnceCallback<void(ProfileSeparationPolicies)> callback,
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
 
   GURL GetSecureConnectApiGetAccountSigninRestrictionUrl() const;
 

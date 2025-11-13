@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/types/optional_ref.h"
 #include "components/plus_addresses/core/browser/plus_address_http_client.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/signin/public/identity_manager/scope_set.h"
@@ -102,7 +103,7 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
       UrlLoaderList::iterator it,
       PlusAddressNetworkRequestType type,
       base::TimeTicks request_start,
-      base::optional_ref<const std::string> response);
+      base::optional_ref<std::string> response);
 
   // This is shared by the `ReservePlusAddress` and `ConfirmPlusAddress` methods
   // since they both use `loaders_for_creation_` and have the same return type.
@@ -111,12 +112,12 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
       PlusAddressNetworkRequestType type,
       base::TimeTicks request_start,
       PlusAddressRequestCallback on_completed,
-      std::unique_ptr<std::string> response);
+      std::optional<std::string> response);
 
   void OnPreallocationComplete(UrlLoaderList::iterator it,
                                base::TimeTicks request_start,
                                PreallocatePlusAddressesCallback on_completed,
-                               std::unique_ptr<std::string> response);
+                               std::optional<std::string> response);
 
   // Runs callback and any pending_callbacks_ blocked on the token.
   void OnTokenFetched(TokenReadyCallback callback,

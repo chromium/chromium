@@ -6,12 +6,15 @@
 
 #include <cmath>
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/types/optional_ref.h"
 #include "components/permissions/features.h"
 #include "components/permissions/prediction_service/prediction_common.h"
 #include "components/permissions/prediction_service/prediction_request_features.h"
@@ -152,11 +155,11 @@ void PredictionService::OnURLLoaderComplete(
     const PredictionRequestFeatures& entity,
     network::SimpleURLLoader* loader,
     base::TimeTicks request_start_time,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   for (auto& request : pending_requests_) {
     if (request.first.get() == loader) {
       auto prediction_response =
-          CreatePredictionsResponse(loader, response_body.get());
+          CreatePredictionsResponse(loader, response_body);
 
       if (request.second) {
         std::optional<GeneratePredictionsResponse> response;
@@ -179,8 +182,9 @@ void PredictionService::OnURLLoaderComplete(
 }
 
 std::unique_ptr<GeneratePredictionsResponse>
-PredictionService::CreatePredictionsResponse(network::SimpleURLLoader* loader,
-                                             const std::string* response_body) {
+PredictionService::CreatePredictionsResponse(
+    network::SimpleURLLoader* loader,
+    base::optional_ref<std::string> response_body) {
   if (!response_body || loader->NetError() != net::OK ||
       loader->ResponseInfo()->headers->response_code() != net::HTTP_OK) {
     return nullptr;
