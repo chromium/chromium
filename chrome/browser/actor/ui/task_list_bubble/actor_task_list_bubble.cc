@@ -25,7 +25,7 @@ const int kVerticalMargin = 8;
 }  // namespace
 
 // static
-views::BubbleDialogModelHost* ActorTaskListBubble::ShowBubble(
+views::Widget* ActorTaskListBubble::ShowBubble(
     views::View* anchor_view,
     std::vector<ActorTaskListBubbleRowButtonParams> param_list) {
   auto contents_view = CreateContentsView(std::move(param_list));
@@ -46,12 +46,10 @@ views::BubbleDialogModelHost* ActorTaskListBubble::ShowBubble(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   bubble->set_margins(gfx::Insets::VH(kVerticalMargin, 0));
 
-  // Capture pointer to BubbleDialogModelHost before ownership is transferred.
-  auto* bubble_ptr = bubble.get();
+  auto* widget = views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
+  widget->Show();
 
-  views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->Show();
-
-  return bubble_ptr;
+  return widget;
 }
 
 std::unique_ptr<views::View> ActorTaskListBubble::CreateContentsView(

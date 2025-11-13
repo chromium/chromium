@@ -11,7 +11,6 @@
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 
 namespace views {
-class BubbleDialogModelHost;
 class View;
 }  // namespace views
 
@@ -20,7 +19,7 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kActorTaskListBubbleView);
 // Bubble that displays notifications about the user's ongoing tasks.
 class ActorTaskListBubble {
  public:
-  static views::BubbleDialogModelHost* ShowBubble(
+  static views::Widget* ShowBubble(
       views::View* anchor_view,
       std::vector<ActorTaskListBubbleRowButtonParams> params);
 

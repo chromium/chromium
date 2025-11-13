@@ -18,7 +18,7 @@ const int kIconSize = 20;
 
 ActorTaskListBubbleRowButton::ActorTaskListBubbleRowButton(
     ActorTaskListBubbleRowButtonParams params)
-    : RichHoverButton(std::move(params.last_actuated_tab_callback),
+    : RichHoverButton(std::move(params.on_click_callback),
                       /*icon=*/
                       ui::ImageModel::FromVectorIcon(kScreensaverAutoIcon,
                                                      ui::kColorMenuIcon,

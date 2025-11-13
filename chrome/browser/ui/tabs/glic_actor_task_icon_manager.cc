@@ -9,6 +9,13 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/profiles/profile.h"
 
+namespace {
+bool ShouldDisplayInTaskListBubble(actor::ActorTask::State state) {
+  return state == actor::ActorTask::State::kPausedByActor ||
+         state == actor::ActorTask::State::kWaitingOnUser;
+}
+}  // namespace
+
 namespace tabs {
 
 using actor::ActorKeyedService;
@@ -78,6 +85,7 @@ void GlicActorTaskIconManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
   }
   glic::GlicInstance* instance = instances.front();
   if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
+    UpdateTaskListBubble(task_id);
     UpdateTaskNudge();
   } else {
     UpdateTaskIcon(instance->IsShowing(),
@@ -191,6 +199,19 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
   }
 }
 
+void GlicActorTaskIconManager::UpdateTaskListBubble(actor::TaskId task_id) {
+  if (actor::ActorTask* task = actor_service_->GetTask(task_id)) {
+    if (ShouldDisplayInTaskListBubble(task->GetState())) {
+      ActorTaskListBubbleRowState task_state = {.task_id = task_id,
+                                                .title = task->title()};
+      actor_task_list_bubble_rows_.insert({task_state.task_id, task_state});
+      return;
+    }
+  }
+  // Stopped ActorTasks will be cleared immediately so can safely remove.
+  actor_task_list_bubble_rows_.erase(task_id);
+}
+
 base::CallbackListSubscription
 GlicActorTaskIconManager::RegisterTaskIconStateChange(
     TaskIconStateChangeCallback callback) {
@@ -213,6 +234,7 @@ ActorTaskNudgeState GlicActorTaskIconManager::GetCurrentActorTaskNudgeState()
   return current_actor_task_nudge_state_;
 }
 
+// TODO(crbug.com/431015299): Clean up after redesign is launched.
 raw_ptr<tabs::TabInterface> GlicActorTaskIconManager::GetLastUpdatedTab() {
   if (!current_task_id_ || !actor_service_->GetTask(current_task_id_)) {
     return nullptr;
@@ -223,6 +245,17 @@ raw_ptr<tabs::TabInterface> GlicActorTaskIconManager::GetLastUpdatedTab() {
 
   // TODO(crbug.com/441064175): Will need to be updated for multi-tab actuation.
   return tabs.empty() ? nullptr : tabs.begin()->Get();
+}
+
+raw_ptr<tabs::TabInterface>
+GlicActorTaskIconManager::GetLastUpdatedTabForTaskId(actor::TaskId task_id) {
+  if (ActorTask* task = actor_service_->GetTask(task_id)) {
+    actor::ActorTask::TabHandleSet tabs = task->GetLastActedTabs();
+    // TODO(crbug.com/441064175): Will need to be updated for multi-tab
+    // actuation.
+    return tabs.empty() ? nullptr : tabs.begin()->Get();
+  }
+  return nullptr;
 }
 
 }  // namespace tabs
