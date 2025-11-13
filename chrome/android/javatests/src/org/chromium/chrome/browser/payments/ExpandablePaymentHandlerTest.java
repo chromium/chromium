@@ -144,16 +144,21 @@ public class ExpandablePaymentHandlerTest {
         mClock = new FakeClock();
     }
 
-    private PaymentHandlerCoordinator createPaymentHandlerAndShow() throws Throwable {
+    private PaymentHandlerCoordinator createPaymentHandlerAndShow(ChromeTabbedActivity cta)
+            throws Throwable {
         PaymentHandlerCoordinator paymentHandler = new PaymentHandlerCoordinator();
         paymentHandler.setInputProtectorForTest(new InputProtector(mClock));
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         paymentHandler.show(
-                                mDefaultActivity.getCurrentWebContents(),
+                                cta.getCurrentWebContents(),
                                 defaultPaymentAppUrl(),
                                 defaultUiObserver()));
         return paymentHandler;
+    }
+
+    private PaymentHandlerCoordinator createPaymentHandlerAndShow() throws Throwable {
+        return createPaymentHandlerAndShow(mDefaultActivity);
     }
 
     private String getOrigin(EmbeddedTestServer server) {
@@ -321,8 +326,12 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testIncognitoTrue() throws Throwable {
         startDefaultServer();
-        mRule.loadUrlInNewTab(UrlConstants.ABOUT_URL, true);
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
+        WebPageStation webPage =
+                mStartingPage
+                        .openNewIncognitoTabOrWindowFast()
+                        .loadWebPageProgrammatically(UrlConstants.ABOUT_URL);
+        PaymentHandlerCoordinator paymentHandler =
+                createPaymentHandlerAndShow(webPage.getActivity());
         waitForUiShown();
 
         Assert.assertTrue(paymentHandler.getWebContentsForTest().isIncognito());
