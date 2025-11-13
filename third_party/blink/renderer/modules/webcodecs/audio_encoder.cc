@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/to_string.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -61,10 +62,15 @@ bool VerifyParameterValues(const T& value,
     return true;
   }
 
+  Vector<String> supported_values_str;
+  for (const T& val : supported_values) {
+    supported_values_str.push_back(base::ToString(val));
+  }
+
   StringBuilder error_builder;
   error_builder.Append(error_message_base_base);
   error_builder.Append(" Supported values: ");
-  error_builder.AppendRange(supported_values, ", ");
+  error_builder.AppendRange(std::move(supported_values_str), ", ");
   *js_error_message = error_builder.ReleaseString();
   return false;
 }
