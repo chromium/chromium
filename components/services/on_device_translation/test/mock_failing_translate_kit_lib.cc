@@ -78,4 +78,13 @@ DISABLE_CFI_DLSYM TRANSLATE_KIT_EXPORT bool TranslatorTranslate(
   NOTREACHED();
 }
 
+typedef void (*SentenceSplitCallbackFn)(TranslateKitOutputText, std::uintptr_t);
+DISABLE_CFI_DLSYM TRANSLATE_KIT_EXPORT bool TranslateKitSplitSentences(
+    TranslateKitInputText input,
+    TranslateKitLanguage source_lang,
+    SentenceSplitCallbackFn callback,
+    std::uintptr_t user_data) {
+  NOTREACHED();
+}
+
 }  // extern C

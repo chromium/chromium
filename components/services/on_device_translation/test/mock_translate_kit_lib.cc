@@ -314,6 +314,7 @@ DISABLE_CFI_DLSYM TRANSLATE_KIT_EXPORT bool TranslatorTranslate(
   return true;
 }
 
+#ifdef TRANSLATE_KIT_SPLIT_SENTENCES
 typedef void (*SentenceSplitCallbackFn)(TranslateKitOutputText, std::uintptr_t);
 DISABLE_CFI_DLSYM TRANSLATE_KIT_EXPORT bool TranslateKitSplitSentences(
     TranslateKitInputText input,
@@ -333,5 +334,6 @@ DISABLE_CFI_DLSYM TRANSLATE_KIT_EXPORT bool TranslateKitSplitSentences(
   }
   return true;
 }
+#endif
 
 }  // extern C

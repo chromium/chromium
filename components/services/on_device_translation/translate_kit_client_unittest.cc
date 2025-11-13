@@ -35,7 +35,7 @@ class TranslateKitClientTest : public testing::Test {
       const base::FilePath& library_path,
       const std::vector<std::pair<std::string, std::string>>& packages,
       const std::vector<TestFile>& files) {
-    auto client = TranslateKitClient::CreateForTest(GetMockLibraryPath());
+    auto client = TranslateKitClient::CreateForTest(library_path);
     SetConfig(*client, packages, files);
     return client;
   }
@@ -211,6 +211,21 @@ TEST_F(TranslateKitClientTest, TranslateFailure) {
   EXPECT_EQ(translator->Translate("SIMULATE_ERROR"), std::nullopt);
 }
 
+// Tests that SplitSentences will return the original content (non-empty string)
+// if the library returns an error.
+TEST_F(TranslateKitClientTest, SplitSentencesFailure) {
+  auto client = CreateClient(GetMockLibraryPath(), {{"en", "ja"}},
+                             {
+                                 {"0/dict.dat", "En to Ja - "},
+                             });
+  ASSERT_OK_AND_ASSIGN(auto* translator, client->GetTranslator("en", "ja"));
+  ASSERT_TRUE(translator);
+  std::vector<std::string> sentences =
+      translator->SplitSentences("SIMULATE_ERROR");
+  EXPECT_FALSE(sentences.empty());
+  ASSERT_EQ(sentences[0], "SIMULATE_ERROR");
+}
+
 // Tests that the SplitSentences method returns sentence chunks.
 TEST_F(TranslateKitClientTest, SplitSentences) {
   auto client = CreateClient(GetMockLibraryPath(), {{"en", "ja"}},
@@ -234,6 +249,22 @@ TEST_F(TranslateKitClientTest, SplitSentencesEmptyInput) {
   ASSERT_TRUE(translator);
   std::vector<std::string> sentences = translator->SplitSentences("");
   ASSERT_EQ(sentences.size(), 0u);
+}
+
+// Tests that the SplitSentences method returns the original content if the
+// library does not support sentence splitting.
+TEST_F(TranslateKitClientTest, SplitSentencesNotSupported) {
+  auto client =
+      CreateClient(GetMockLibraryWithoutSplitSentencesPath(), {{"en", "ja"}},
+                   {
+                       {"0/dict.dat", "En to Ja - "},
+                   });
+  ASSERT_OK_AND_ASSIGN(auto* translator, client->GetTranslator("en", "ja"));
+  ASSERT_TRUE(translator);
+  std::vector<std::string> sentences =
+      translator->SplitSentences("This is a sentence. This is another one.");
+  ASSERT_EQ(sentences.size(), 1u);
+  ASSERT_EQ(sentences[0], "This is a sentence. This is another one.");
 }
 
 // Tests that the library is loaded successfully.

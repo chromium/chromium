@@ -26,6 +26,14 @@ namespace on_device_translation {
 base::FilePath GetMockLibraryPath();
 
 // Returns the path to a mock library that can be used for testing.
+// The library is a valid library, but it will not do anything useful.
+// This is similar to GetMockLibraryPath(), except SplitSentences is not defined
+// in this library. Loading it and calling SplitSentences will cause the
+// original text to be returned. Based on the shared library
+// mock_translate_kit_without_split_sentences_lib.
+base::FilePath GetMockLibraryWithoutSplitSentencesPath();
+
+// Returns the path to a mock library that can be used for testing.
 // This library does not contain any of the methods in the TranslateKit API.
 // So loading it will cause the library load failure with InvalidFunctionPointer
 // error.

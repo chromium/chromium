@@ -16,6 +16,8 @@ namespace on_device_translation {
 namespace {
 
 const char kMockLibraryName[] = "mock_translate_kit_lib";
+const char kMockLibraryWithoutSplitSentences[] =
+    "mock_translate_kit_without_split_sentences_lib";
 const char kMockInvalidFunctionPointerLibraryName[] =
     "mock_invalid_function_pointer_lib";
 const char kMockFailingLibraryName[] = "mock_failing_translate_kit_lib";
@@ -26,6 +28,13 @@ base::FilePath GetMockLibraryPath() {
   base::FilePath exe_path;
   CHECK(base::PathService::Get(base::DIR_EXE, &exe_path));
   return exe_path.AppendASCII(base::GetNativeLibraryName(kMockLibraryName));
+}
+
+base::FilePath GetMockLibraryWithoutSplitSentencesPath() {
+  base::FilePath exe_path;
+  CHECK(base::PathService::Get(base::DIR_EXE, &exe_path));
+  return exe_path.AppendASCII(
+      base::GetNativeLibraryName(kMockLibraryWithoutSplitSentences));
 }
 
 base::FilePath GetMockInvalidFunctionPointerLibraryPath() {
