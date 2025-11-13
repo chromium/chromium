@@ -463,8 +463,8 @@ struct EnhancedSafeBrowsingActivePromoData
   [self loadModel];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
+- (void)viewIsAppearing:(BOOL)animated {
+  [super viewIsAppearing:animated];
   // Update the `_safetyCheckItem` icon when returning to this view controller.
   [self updateSafetyCheckItemTrailingIcon];
   if (IsBottomOmniboxAvailable()) {
@@ -477,6 +477,10 @@ struct EnhancedSafeBrowsingActivePromoData
   // shown.
   if (IsPageActionMenuEnabled() && _geminiUserConsented) {
     [self updateBWGNewIPHBadge];
+  }
+
+  if ([self shouldShowNotificationsSettings]) {
+    [self updateNotificationsDetailText];
   }
 }
 
@@ -531,7 +535,6 @@ struct EnhancedSafeBrowsingActivePromoData
   }
   if ([self shouldShowNotificationsSettings]) {
     _notificationsItem = [self notificationsItem];
-    [self updateNotificationsDetailText];
     [model addItem:_notificationsItem
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   }
@@ -1936,7 +1939,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
 // Updates the string indicating the push notification state.
 - (void)updateNotificationsDetailText {
-  if (!_notificationsItem) {
+  if (!_notificationsItem || !self.tableView.window) {
     return;
   }
 
