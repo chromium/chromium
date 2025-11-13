@@ -16,7 +16,7 @@ class Screen;
 
 class ScreenScreenOrientation final
     : public GarbageCollected<ScreenScreenOrientation>,
-      public Supplement<Screen> {
+      public GarbageCollectedMixin {
  public:
   static const unsigned kSupplementIndex;
 
@@ -29,6 +29,7 @@ class ScreenScreenOrientation final
   void Trace(Visitor*) const override;
 
  private:
+  Member<Screen> screen_;
   Member<ScreenOrientation> orientation_;
 };
 

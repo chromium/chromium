@@ -13,11 +13,10 @@ namespace blink {
 
 // static
 ScreenScreenOrientation& ScreenScreenOrientation::From(Screen& screen) {
-  ScreenScreenOrientation* supplement =
-      Supplement<Screen>::From<ScreenScreenOrientation>(screen);
+  ScreenScreenOrientation* supplement = screen.GetScreenScreenOrientation();
   if (!supplement) {
     supplement = MakeGarbageCollected<ScreenScreenOrientation>(screen);
-    ProvideTo(screen, supplement);
+    screen.SetScreenScreenOrientation(supplement);
   }
   return *supplement;
 }
@@ -35,15 +34,12 @@ ScreenOrientation* ScreenScreenOrientation::orientation(Screen& screen) {
   return self.orientation_.Get();
 }
 
-const unsigned ScreenScreenOrientation::kSupplementIndex =
-    static_cast<unsigned>(Screen::Supplements::kScreenScreenOrientation);
-
 ScreenScreenOrientation::ScreenScreenOrientation(Screen& screen)
-    : Supplement(screen) {}
+    : screen_(screen) {}
 
 void ScreenScreenOrientation::Trace(Visitor* visitor) const {
   visitor->Trace(orientation_);
-  Supplement<Screen>::Trace(visitor);
+  visitor->Trace(screen_);
 }
 
 }  // namespace blink
