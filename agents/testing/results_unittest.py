@@ -49,19 +49,27 @@ class TestResultTest(unittest.TestCase):
             config=eval_config.TestConfig(test_file=pathlib.Path('a')),
             success=True,
             iteration_results=[
-                results.IterationResult(success=True,
-                                        duration=1,
-                                        test_log='log',
-                                        metrics={})
+                results.IterationResult(
+                    success=True,
+                    duration=1,
+                    test_log='log',
+                    metrics={},
+                    prompt=None,
+                    response=None,
+                )
             ])
         result2 = results.TestResult(
             config=eval_config.TestConfig(test_file=pathlib.Path('a')),
             success=False,
             iteration_results=[
-                results.IterationResult(success=False,
-                                        duration=2,
-                                        test_log='log2',
-                                        metrics={})
+                results.IterationResult(
+                    success=False,
+                    duration=2,
+                    test_log='log2',
+                    metrics={},
+                    prompt=None,
+                    response=None,
+                )
             ])
         self.assertFalse(result1 < result2)
         self.assertFalse(result2 < result1)
@@ -87,14 +95,22 @@ class TestResultTest(unittest.TestCase):
             config=eval_config.TestConfig(test_file=pathlib.Path('a')),
             success=True,
             iteration_results=[
-                results.IterationResult(success=True,
-                                        duration=1,
-                                        test_log='log1',
-                                        metrics={}),
-                results.IterationResult(success=True,
-                                        duration=1,
-                                        test_log='log2',
-                                        metrics={})
+                results.IterationResult(
+                    success=True,
+                    duration=1,
+                    test_log='log1',
+                    metrics={},
+                    prompt=None,
+                    response=None,
+                ),
+                results.IterationResult(
+                    success=True,
+                    duration=1,
+                    test_log='log2',
+                    metrics={},
+                    prompt=None,
+                    response=None,
+                )
             ])
         self.assertEqual(result.combined_logs,
                          'Iteration #0:\nlog1\nIteration #1:\nlog2')
@@ -104,14 +120,22 @@ class TestResultTest(unittest.TestCase):
             config=eval_config.TestConfig(test_file=pathlib.Path('a')),
             success=True,
             iteration_results=[
-                results.IterationResult(success=True,
-                                        duration=1.2,
-                                        test_log='',
-                                        metrics={}),
-                results.IterationResult(success=True,
-                                        duration=3.4,
-                                        test_log='',
-                                        metrics={})
+                results.IterationResult(
+                    success=True,
+                    duration=1.2,
+                    test_log='',
+                    metrics={},
+                    prompt=None,
+                    response=None,
+                ),
+                results.IterationResult(
+                    success=True,
+                    duration=3.4,
+                    test_log='',
+                    metrics={},
+                    prompt=None,
+                    response=None,
+                )
             ])
         self.assertAlmostEqual(result.total_duration, 4.6)
 
@@ -120,14 +144,22 @@ class TestResultTest(unittest.TestCase):
             config=eval_config.TestConfig(test_file=pathlib.Path('a')),
             success=True,
             iteration_results=[
-                results.IterationResult(success=True,
-                                        duration=1.0,
-                                        test_log='',
-                                        metrics={}),
-                results.IterationResult(success=True,
-                                        duration=3.0,
-                                        test_log='',
-                                        metrics={})
+                results.IterationResult(
+                    success=True,
+                    duration=1.0,
+                    test_log='',
+                    metrics={},
+                    prompt=None,
+                    response=None,
+                ),
+                results.IterationResult(
+                    success=True,
+                    duration=3.0,
+                    test_log='',
+                    metrics={},
+                    prompt=None,
+                    response=None,
+                )
             ])
         self.assertAlmostEqual(result.average_duration, 2.0)
 
@@ -136,18 +168,30 @@ class TestResultTest(unittest.TestCase):
             config=eval_config.TestConfig(test_file=pathlib.Path('a')),
             success=True,
             iteration_results=[
-                results.IterationResult(success=True,
-                                        duration=1,
-                                        test_log='',
-                                        metrics={}),
-                results.IterationResult(success=False,
-                                        duration=1,
-                                        test_log='',
-                                        metrics={}),
-                results.IterationResult(success=True,
-                                        duration=1,
-                                        test_log='',
-                                        metrics={})
+                results.IterationResult(
+                    success=True,
+                    duration=1,
+                    test_log='',
+                    metrics={},
+                    prompt=None,
+                    response=None,
+                ),
+                results.IterationResult(
+                    success=False,
+                    duration=1,
+                    test_log='',
+                    metrics={},
+                    prompt=None,
+                    response=None,
+                ),
+                results.IterationResult(
+                    success=True,
+                    duration=1,
+                    test_log='',
+                    metrics={},
+                    prompt=None,
+                    response=None,
+                )
             ])
         self.assertEqual(result.successful_runs, 2)
 
@@ -240,10 +284,14 @@ class ResultThreadTest(unittest.TestCase):
             config=eval_config.TestConfig(test_file=pathlib.Path('test.yaml')),
             success=True,
             iteration_results=[
-                results.IterationResult(success=True,
-                                        duration=1.0,
-                                        test_log='log',
-                                        metrics={})
+                results.IterationResult(
+                    success=True,
+                    duration=1.0,
+                    test_log='log',
+                    metrics={},
+                    prompt=None,
+                    response=None,
+                )
             ])
         _ = self._run_test_with_results([test_result])
 
@@ -255,10 +303,14 @@ class ResultThreadTest(unittest.TestCase):
             config=eval_config.TestConfig(test_file=pathlib.Path('test.yaml')),
             success=True,
             iteration_results=[
-                results.IterationResult(success=True,
-                                        duration=1.0,
-                                        test_log='log',
-                                        metrics={})
+                results.IterationResult(
+                    success=True,
+                    duration=1.0,
+                    test_log='log',
+                    metrics={},
+                    prompt=None,
+                    response=None,
+                )
             ])
         thread = self._run_test_with_results([test_result])
 
@@ -270,10 +322,14 @@ class ResultThreadTest(unittest.TestCase):
             config=eval_config.TestConfig(test_file=pathlib.Path('test.yaml')),
             success=False,
             iteration_results=[
-                results.IterationResult(success=False,
-                                        duration=1.0,
-                                        test_log='log',
-                                        metrics={})
+                results.IterationResult(
+                    success=False,
+                    duration=1.0,
+                    test_log='log',
+                    metrics={},
+                    prompt=None,
+                    response=None,
+                )
             ])
         thread = self._run_test_with_results([test_result])
 
@@ -287,28 +343,40 @@ class ResultThreadTest(unittest.TestCase):
                 test_file=pathlib.Path('test1.yaml')),
                                success=True,
                                iteration_results=[
-                                   results.IterationResult(success=True,
-                                                           duration=1.0,
-                                                           test_log='log1',
-                                                           metrics={})
+                                   results.IterationResult(
+                                       success=True,
+                                       duration=1.0,
+                                       test_log='log1',
+                                       metrics={},
+                                       prompt=None,
+                                       response=None,
+                                   )
                                ]),
             results.TestResult(config=eval_config.TestConfig(
                 test_file=pathlib.Path('test2.yaml')),
                                success=False,
                                iteration_results=[
-                                   results.IterationResult(success=False,
-                                                           duration=2.0,
-                                                           test_log='log2',
-                                                           metrics={})
+                                   results.IterationResult(
+                                       success=False,
+                                       duration=2.0,
+                                       test_log='log2',
+                                       metrics={},
+                                       prompt=None,
+                                       response=None,
+                                   )
                                ]),
             results.TestResult(config=eval_config.TestConfig(
                 test_file=pathlib.Path('test3.yaml')),
                                success=True,
                                iteration_results=[
-                                   results.IterationResult(success=True,
-                                                           duration=3.0,
-                                                           test_log='log3',
-                                                           metrics={})
+                                   results.IterationResult(
+                                       success=True,
+                                       duration=3.0,
+                                       test_log='log3',
+                                       metrics={},
+                                       prompt=None,
+                                       response=None,
+                                   )
                                ]),
         ]
         thread = self._run_test_with_results(results_to_send)
@@ -351,10 +419,14 @@ class ResultThreadTest(unittest.TestCase):
             config=eval_config.TestConfig(test_file=pathlib.Path('test.yaml')),
             success=True,
             iteration_results=[
-                results.IterationResult(success=True,
-                                        duration=1.0,
-                                        test_log='log',
-                                        metrics={})
+                results.IterationResult(
+                    success=True,
+                    duration=1.0,
+                    test_log='log',
+                    metrics={},
+                    prompt=None,
+                    response=None,
+                )
             ])
         self._run_test_with_results([test_result])
 
@@ -366,10 +438,14 @@ class ResultThreadTest(unittest.TestCase):
             config=eval_config.TestConfig(test_file=pathlib.Path('test.yaml')),
             success=True,
             iteration_results=[
-                results.IterationResult(success=True,
-                                        duration=1.0,
-                                        test_log='log',
-                                        metrics={})
+                results.IterationResult(
+                    success=True,
+                    duration=1.0,
+                    test_log='log',
+                    metrics={},
+                    prompt=None,
+                    response=None,
+                )
             ])
         self._run_test_with_results([test_result])
 
@@ -381,10 +457,14 @@ class ResultThreadTest(unittest.TestCase):
             config=eval_config.TestConfig(test_file=pathlib.Path('test.yaml')),
             success=False,
             iteration_results=[
-                results.IterationResult(success=False,
-                                        duration=1.0,
-                                        test_log='log',
-                                        metrics={})
+                results.IterationResult(
+                    success=False,
+                    duration=1.0,
+                    test_log='log',
+                    metrics={},
+                    prompt=None,
+                    response=None,
+                )
             ])
         self._run_test_with_results([test_result])
 

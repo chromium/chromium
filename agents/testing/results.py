@@ -27,6 +27,10 @@ class IterationResult:
     test_log: str
     # Metrics collected from the iteration.
     metrics: metrics.MetricsMapping
+    # The input prompt
+    prompt: str | None
+    # The raw response from the provider
+    response: str | None
 
 
 @dataclasses.dataclass

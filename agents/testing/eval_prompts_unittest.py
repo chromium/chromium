@@ -726,6 +726,8 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
                                                  duration=1,
                                                  test_log='',
                                                  metrics={},
+                                                 prompt=None,
+                                                 response=None,
                                              ),
                                          ])
         self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
@@ -771,6 +773,8 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
                                                  duration=1,
                                                  test_log='',
                                                  metrics={},
+                                                 prompt=None,
+                                                 response=None,
                                              ),
                                          ])
         self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
@@ -841,6 +845,8 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
                                                  duration=1,
                                                  test_log='',
                                                  metrics={},
+                                                 prompt=None,
+                                                 response=None,
                                              ),
                                          ])
         self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
@@ -869,6 +875,8 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
                                                  duration=1,
                                                  test_log='',
                                                  metrics={},
+                                                 prompt=None,
+                                                 response=None,
                                              ),
                                          ])
         self.mock_worker_pool.return_value.wait_for_all_queued_tests.\

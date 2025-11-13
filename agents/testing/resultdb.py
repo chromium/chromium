@@ -5,6 +5,7 @@
 
 import sys
 
+import base64
 import constants
 import metrics
 import results
@@ -39,9 +40,31 @@ class ResultDBReporter:
                     for name, value in metrics.iterate_over_nested_metrics(
                         iteration_result.metrics)]
             tags.extend([('tag', tag) for tag in test_result.config.tags])
+
             owner = test_result.config.owner
             if owner:
                 tags.append(('owner', owner))
+
+            artifacts = {}
+            prompt = iteration_result.prompt
+            if prompt:
+                b64_prompt = base64.b64encode(prompt.encode()).decode()
+                artifacts.update({
+                    'Prompt': {
+                        'contents': b64_prompt,
+                        'content_type': 'text/plain',
+                    }
+                })
+
+            response = iteration_result.response
+            if response:
+                b64_response = base64.b64encode(response.encode()).decode()
+                artifacts.update({
+                    'Response': {
+                        'contents': b64_response,
+                        'content_type': 'text/plain',
+                    }
+                })
 
             self._result_sink_client.Post(
                 test_id=str(posix_path),
@@ -55,4 +78,6 @@ class ResultDBReporter:
                     'caseNameComponents': [str(posix_path)],
                 },
                 test_file=f'//{str(posix_path)}',
-                tags=tags)
+                tags=tags,
+                artifacts=artifacts,
+            )

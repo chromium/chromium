@@ -42,6 +42,8 @@ class QueueResultForUploadUnittest(unittest.TestCase):
                                                  metrics={
                                                      'a': 1.0,
                                                  },
+                                                 prompt=None,
+                                                 response=None,
                                              ),
                                          ])
         self.reporter.queue_result_for_upload(test_result)
