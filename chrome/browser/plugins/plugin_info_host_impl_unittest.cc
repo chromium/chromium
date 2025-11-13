@@ -14,7 +14,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -42,11 +41,6 @@ using content::PluginService;
 using testing::Eq;
 
 namespace {
-
-void PluginsLoaded(base::OnceClosure callback,
-                   const std::vector<content::WebPluginInfo>& plugins) {
-  std::move(callback).Run();
-}
 
 class FakePluginServiceFilter : public content::PluginServiceFilter {
  public:
@@ -134,10 +128,7 @@ class PluginInfoHostImplTest : public ::testing::Test {
     // Can't go out of process in unit tests.
     content::RenderProcessHost::SetRunRendererInProcess(true);
 #endif
-    base::RunLoop run_loop;
-    PluginService::GetInstance()->GetPluginsAsync(
-        base::BindOnce(&PluginsLoaded, run_loop.QuitClosure()));
-    run_loop.Run();
+    PluginService::GetInstance()->GetPlugins();
 #if !BUILDFLAG(IS_WIN)
     content::RenderProcessHost::SetRunRendererInProcess(false);
 #endif

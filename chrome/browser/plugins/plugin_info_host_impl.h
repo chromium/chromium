@@ -38,8 +38,6 @@ class Origin;
 // Implements PluginInfoHost interface.
 class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
  public:
-  struct GetPluginInfo_Params;
-
   // Contains all the information needed by the PluginInfoHostImpl.
   class Context {
    public:
@@ -92,17 +90,6 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
 
  private:
   void ShutdownOnUIThread();
-
-  // |params| wraps the parameters passed to |OnGetPluginInfo|, because
-  // |base::Bind| doesn't support the required arity <http://crbug.com/98542>.
-  void PluginsLoaded(const GetPluginInfo_Params& params,
-                     GetPluginInfoCallback callback,
-                     const std::vector<content::WebPluginInfo>& plugins);
-
-  void GetPluginInfoFinish(const GetPluginInfo_Params& params,
-                           chrome::mojom::PluginInfoPtr output,
-                           GetPluginInfoCallback callback,
-                           std::unique_ptr<PluginMetadata> plugin_metadata);
 
   Context context_;
   base::CallbackListSubscription shutdown_subscription_;
