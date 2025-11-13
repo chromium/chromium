@@ -123,6 +123,10 @@ class ContextualTasksUI : public TaskInfoDelegate,
 
   static constexpr std::string_view GetWebUIName() { return "ContextualTasks"; }
 
+  // Notify the UI that the WebContents has moved to or from the side panel or
+  // tab.
+  void OnSidePanelStateChanged();
+
  private:
   // A an observer specifically to watch for the creation of the hosted remote
   // page. This is attached to the WebContents for the WebUI and notifies the
@@ -162,7 +166,7 @@ class ContextualTasksUI : public TaskInfoDelegate,
   mojo::Receiver<contextual_tasks::mojom::PageHandlerFactory>
       contextual_tasks_page_handler_factory_receiver_{this};
 
-  std::unique_ptr<contextual_tasks::mojom::PageHandler> page_handler_;
+  std::unique_ptr<ContextualTasksPageHandler> page_handler_;
 
   std::unique_ptr<InnerFrameCreationObvserver>
       inner_web_contents_creation_observer_;

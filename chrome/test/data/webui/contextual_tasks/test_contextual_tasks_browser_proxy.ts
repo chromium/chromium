@@ -4,7 +4,7 @@
 
 import type {Uuid} from '//resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import {PageCallbackRouter} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
-import type {PageHandlerInterface} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
+import type {PageHandlerInterface, PageRemote} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -16,6 +16,7 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 class TestContextualTasksPageHandler extends TestBrowserProxy implements
     PageHandlerInterface {
   private url_: Url;
+  private isInTab_: boolean = true;
 
   constructor(url: string) {
     super([
@@ -25,6 +26,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'setThreadTitle',
       'closeSidePanel',
       'showThreadHistory',
+      'isShownInTab',
     ]);
 
     this.url_ = {url};
@@ -56,6 +58,15 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
     this.methodCalled('showThreadHistory');
     return Promise.resolve({threads: []});
   }
+
+  setIsShownInTab(isInTab: boolean) {
+    this.isInTab_ = isInTab;
+  }
+
+  isShownInTab() {
+    this.methodCalled('isShownInTab');
+    return Promise.resolve({isInTab: this.isInTab_});
+  }
 }
 
 /**
@@ -65,6 +76,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
 export class TestContextualTasksBrowserProxy extends TestBrowserProxy implements
     BrowserProxy {
   callbackRouter: PageCallbackRouter;
+  callbackRouterRemote: PageRemote;
   handler: TestContextualTasksPageHandler;
 
   /**
@@ -73,6 +85,8 @@ export class TestContextualTasksBrowserProxy extends TestBrowserProxy implements
   constructor(url: string) {
     super([]);
     this.callbackRouter = new PageCallbackRouter();
+    this.callbackRouterRemote =
+        this.callbackRouter.$.bindNewPipeAndPassRemote();
     this.handler = new TestContextualTasksPageHandler(url);
   }
 }

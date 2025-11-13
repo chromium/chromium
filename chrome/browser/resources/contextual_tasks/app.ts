@@ -24,6 +24,7 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   static override get properties() {
     return {
+      isShownInTab_: {type: Boolean},
       threadUrl_: {type: String},
       threadTitle_: {type: String},
       historyThreads_: {type: Array},
@@ -31,9 +32,11 @@ export class ContextualTasksAppElement extends CrLitElement {
   }
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  protected accessor isShownInTab_: boolean = true;  // Most start in a tab.
   protected accessor threadUrl_: string = '';
   protected accessor threadTitle_: string = '';
   protected accessor historyThreads_: Thread[] = [];
+  private listenerIds_: number[] = [];
 
   // TODO(crbug.com/454388385): Remove this once the authentication flow is
   // implemented. Removing the gsc param renders the OGB header, which allows
@@ -58,10 +61,15 @@ export class ContextualTasksAppElement extends CrLitElement {
   override async connectedCallback() {
     super.connectedCallback();
 
-    this.browserProxy_.callbackRouter.setThreadTitle.addListener(
-        (title: string) => {
-          this.threadTitle_ = title;
-        });
+    this.listenerIds_.push(
+        this.browserProxy_.callbackRouter.onSidePanelStateChanged.addListener(
+            () => this.updateToolbarVisibility()),
+        this.browserProxy_.callbackRouter.setThreadTitle.addListener(
+            (title: string) => {
+              this.threadTitle_ = title;
+            }));
+
+    this.updateToolbarVisibility();
 
     // Check if the URL that loaded this page has a task attached to it. If it
     // does, we'll use the tasks URL to load the embedded page.
@@ -81,8 +89,18 @@ export class ContextualTasksAppElement extends CrLitElement {
     }
   }
 
+  override disconnectedCallback() {
+    this.listenerIds_.forEach(
+        id => this.browserProxy_.callbackRouter.removeListener(id));
+  }
+
   override render() {
     return getHtml.bind(this)();
+  }
+
+  private async updateToolbarVisibility() {
+    const {isInTab} = await this.browserProxy_.handler.isShownInTab();
+    this.isShownInTab_ = isInTab;
   }
 }
 

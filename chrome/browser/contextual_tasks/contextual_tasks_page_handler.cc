@@ -9,6 +9,7 @@
 #include "base/uuid.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
 
@@ -55,4 +56,9 @@ void ContextualTasksPageHandler::ShowThreadHistory(
   // TODO(crbug.com/445469925): Query backend asynchronously to get thread
   // history.
   std::move(callback).Run(std::move(threads));
+}
+
+void ContextualTasksPageHandler::IsShownInTab(IsShownInTabCallback callback) {
+  std::move(callback).Run(
+      tabs::TabInterface::MaybeGetFromContents(web_ui_->GetWebContents()));
 }

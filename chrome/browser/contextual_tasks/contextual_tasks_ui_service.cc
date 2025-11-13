@@ -162,6 +162,16 @@ void ContextualTasksUiService::OnThreadLinkClicked(
     return;
   }
 
+  if (tab->GetContents() &&
+      IsContextualTasksHost(tab->GetContents()->GetLastCommittedURL())) {
+    content::WebUI* webui = tab->GetContents()->GetWebUI();
+    if (webui && webui->GetController()) {
+      webui->GetController()
+          ->GetAs<ContextualTasksUI>()
+          ->OnSidePanelStateChanged();
+    }
+  }
+
   // Get the index of the web contents.
   const int current_index = tab_strip_model->GetIndexOfTab(tab.get());
 

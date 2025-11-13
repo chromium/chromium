@@ -224,6 +224,10 @@ void ContextualTasksUI::OnInnerWebContentsCreated(
   inner_web_contents_creation_observer_.reset();
 }
 
+void ContextualTasksUI::OnSidePanelStateChanged() {
+  page_->OnSidePanelStateChanged();
+}
+
 ContextualTasksUI::FrameNavObserver::FrameNavObserver(
     content::WebContents* web_contents,
     contextual_tasks::ContextualTasksUiService* ui_service,

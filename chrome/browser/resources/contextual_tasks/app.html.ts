@@ -11,10 +11,13 @@ import type {ContextualTasksAppElement} from './app.js';
 // clang-format off
 export function getHtml(this: ContextualTasksAppElement) {
   return html`<!--_html_template_start_-->
-  <top-toolbar .title="${this.threadTitle_}" @signin-click="${this.removeGsc_}"
-    @new-thread-click="${this.onNewThreadClick_}"
-    @thread-history-click="${this.onThreadHistoryClick_}">
-  </top-toolbar>
+  ${this.isShownInTab_ ? '' : html`
+      <top-toolbar .title="${this.threadTitle_}"
+        @signin-click="${this.removeGsc_}"
+        @new-thread-click="${this.onNewThreadClick_}"
+        @thread-history-click="${this.onThreadHistoryClick_}">
+      </top-toolbar>
+  `}
   <webview id="threadFrame" src="${this.threadUrl_}"></webview>
   <div id="composeboxContainer">
     <cr-composebox id="composebox">
