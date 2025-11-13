@@ -12,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_child_navigation_throttle.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_page_activation_throttle.h"
@@ -38,9 +37,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/base/net_errors.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/metrics/public/cpp/ukm_source.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "url/gurl.h"
 
@@ -188,8 +184,7 @@ void ThrottleManager::MaybeCreateAndAddNavigationThrottles(
       }
       registry.AddThrottle(
           std::make_unique<FingerprintingProtectionChildNavigationThrottle>(
-              registry, parent_filter, is_incognito_,
-              base::BindRepeating([](const GURL& url) {
+              registry, parent_filter, base::BindRepeating([](const GURL& url) {
                 return base::StringPrintf(
                     kDisallowChildFrameConsoleMessageFormat,
                     url.possibly_invalid_spec().c_str());
@@ -278,11 +273,6 @@ void ThrottleManager::DidFinishInFrameNavigation(
           filter->activation_state(),
           kFingerprintingProtectionRulesetConfig.uma_tag);
     }
-    RecordUmaHistogramsForRootNavigation(
-        navigation_handle,
-        filter ? filter->activation_state().activation_level
-               : subresource_filter::mojom::ActivationLevel::kDisabled,
-        did_inherit_opener_activation);
   }
 }
 
@@ -374,26 +364,6 @@ ThrottleManager::GetFrameActivationState(content::RenderFrameHost* frame_host) {
   return std::nullopt;
 }
 
-void ThrottleManager::LogActivationDecisionUkm(
-    content::NavigationHandle* navigation_handle) {
-  ukm::SourceId source_id = navigation_handle->GetNextPageUkmSourceId();
-  ukm::builders::FingerprintingProtection builder(source_id);
-
-  FilterHandle* filter_handle =
-      FilterHandle::GetForCurrentDocument(&page_->GetMainDocument());
-  if (!filter_handle) {
-    // Without any active filtering, no need to emit ukm.
-    return;
-  }
-  if (filter_handle->filter()->activation_state().activation_level ==
-      subresource_filter::mojom::ActivationLevel::kDryRun) {
-    builder.SetDryRun(true);
-  }
-  builder.SetActivationDecision(
-      static_cast<int64_t>(page_activation_decision_));
-  builder.Record(ukm::UkmRecorder::Get());
-}
-
 void ThrottleManager::MaybeNotifyOnBlockedResource(
     content::RenderFrameHost* frame_host) {
   if (current_committed_load_has_notified_disallowed_load_) {
@@ -418,11 +388,6 @@ void ThrottleManager::MaybeNotifyOnBlockedResource(
     web_contents_helper_->NotifyOnBlockedSubresource(
         page_activation_state_.activation_level);
   }
-}
-
-void ThrottleManager::NotifyDisallowLoadPolicy(
-    content::NavigationHandle* navigation_handle) {
-  LogActivationDecisionUkm(navigation_handle);
 }
 
 subresource_filter::mojom::ActivationState
@@ -537,21 +502,6 @@ AsyncDocumentSubresourceFilter* ThrottleManager::FilterForFinishedNavigation(
   FilterHandle::CreateForCurrentDocument(frame_host, std::move(filter));
 
   return filter_ptr;
-}
-
-void ThrottleManager::RecordUmaHistogramsForRootNavigation(
-    content::NavigationHandle* navigation_handle,
-    const subresource_filter::mojom::ActivationLevel& activation_level,
-    bool did_inherit_opener_activation) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "FingerprintingProtection.PageLoad.RootNavigation.ActivationState",
-      activation_level);
-  if (did_inherit_opener_activation) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "FingerprintingProtection.PageLoad.RootNavigation.ActivationState."
-        "DidInherit",
-        activation_level);
-  }
 }
 
 }  // namespace fingerprinting_protection_filter

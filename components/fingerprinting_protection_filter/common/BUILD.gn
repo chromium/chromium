@@ -6,7 +6,6 @@ source_set("common") {
   sources = [
     "fingerprinting_protection_filter_constants.cc",
     "fingerprinting_protection_filter_constants.h",
-    "throttle_creation_result.h",
   ]
   public_deps = [
     "//base",
@@ -55,10 +54,7 @@ source_set("exceptions") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "fingerprinting_protection_breakage_exception_unittest.cc",
-    "fingerprinting_protection_filter_features_unittest.cc",
-  ]
+  sources = [ "fingerprinting_protection_breakage_exception_unittest.cc" ]
   deps = [
     ":exceptions",
     ":features",

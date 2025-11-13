@@ -7,8 +7,6 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_observer.h"
 #include "components/fingerprinting_protection_filter/browser/throttle_manager.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_breakage_exception.h"
@@ -21,8 +19,6 @@
 #include "components/subresource_filter/content/shared/browser/utils.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/load_policy.h"
-#include "components/subresource_filter/core/common/scoped_timers.h"
-#include "components/subresource_filter/core/common/time_measurements.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom-shared.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
@@ -50,7 +46,6 @@ namespace {
 
 using ::subresource_filter::GetSubresourceFilterRootPage;
 using ::subresource_filter::IsInSubresourceFilterRoot;
-using ::subresource_filter::ScopedTimers;
 using ::subresource_filter::VerifiedRulesetDealer;
 using ::subresource_filter::mojom::ActivationLevel;
 
@@ -118,23 +113,6 @@ int RefreshMetricsManager::IncrementAndGetRefreshCount(
   return -1;
 }
 
-void RefreshMetricsManager::LogMetrics() const {
-  // Log metrics for each eTLD+1.
-  for (const auto& [unused_etld_plus_one, refresh_count_and_source] :
-       refresh_count_by_etld_plus_one_) {
-    // Log refresh count to UMA.
-    base::UmaHistogramCounts100(RefreshCountHistogramName,
-                                refresh_count_and_source.refresh_count);
-
-    // Log refresh count to UKM, keyed to the most recently visited URL for this
-    // eTLD+1.
-    ukm::builders::FingerprintingProtectionUsage(
-        refresh_count_and_source.last_visited_source_id)
-        .SetRefreshCount(refresh_count_and_source.refresh_count)
-        .Record(ukm::UkmRecorder::Get());
-  }
-}
-
 // FingerprintingProtectionWebContentsHelper
 // static
 void FingerprintingProtectionWebContentsHelper::CreateForWebContents(
@@ -144,7 +122,8 @@ void FingerprintingProtectionWebContentsHelper::CreateForWebContents(
     privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
     VerifiedRulesetDealer::Handle* dealer_handle,
     bool is_incognito) {
-  if (!features::IsFingerprintingProtectionEnabledForIncognitoState(is_incognito)) {
+  if (!features::IsFingerprintingProtectionEnabledForIncognitoState(
+          is_incognito)) {
     return;
   }
 
@@ -242,15 +221,6 @@ void FingerprintingProtectionWebContentsHelper::
     NotifyChildFrameNavigationEvaluated(
         content::NavigationHandle* navigation_handle,
         subresource_filter::LoadPolicy load_policy) {
-  if (load_policy == subresource_filter::LoadPolicy::WOULD_DISALLOW ||
-      load_policy == subresource_filter::LoadPolicy::DISALLOW) {
-    // Notify the `ThrottleManager` to log UKM.
-    if (ThrottleManager* throttle_manager =
-            GetThrottleManager(*navigation_handle)) {
-      throttle_manager->NotifyDisallowLoadPolicy(navigation_handle);
-    }
-  }
-
   if (load_policy == subresource_filter::LoadPolicy::DISALLOW) {
     // Report a DevTools Inspector issue for disallowed navigations.
     if (navigation_handle &&
@@ -323,18 +293,8 @@ void FingerprintingProtectionWebContentsHelper::TryAddRefreshBreakageException(
     // times on the same site within this WebContents, we suspect there's been
     // breakage on this site and add an exception.
     CHECK(pref_service_ != nullptr);
-    UMA_HISTOGRAM_BOOLEAN(AddRefreshCountExceptionHistogramName, true);
-    {
-      auto add_exception_timer = ScopedTimers::StartIf(
-          features::SampleEnablePerformanceMeasurements(is_incognito_),
-          [](base::TimeDelta latency_sample) {
-            UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(
-                AddRefreshCountExceptionWallDurationHistogramName,
-                latency_sample, base::Microseconds(1), base::Seconds(10), 50);
-          });
-      if (AddBreakageException(url, *pref_service_)) {
-        exception_already_added_for_etld_plus_one_.insert(etld_plus_one);
-      }
+    if (AddBreakageException(url, *pref_service_)) {
+      exception_already_added_for_etld_plus_one_.insert(etld_plus_one);
     }
   }
 }
@@ -485,11 +445,7 @@ void FingerprintingProtectionWebContentsHelper::NotifyOnBlockedSubresource(
   }
 }
 
-void FingerprintingProtectionWebContentsHelper::WebContentsDestroyed() {
-  // The user has closed the tab or otherwise destroyed the web contents. Flush
-  // metrics.
-  GetRefreshMetricsManager().LogMetrics();
-}
+void FingerprintingProtectionWebContentsHelper::WebContentsDestroyed() {}
 
 void FingerprintingProtectionWebContentsHelper::AddObserver(
     FingerprintingProtectionObserver* observer) {

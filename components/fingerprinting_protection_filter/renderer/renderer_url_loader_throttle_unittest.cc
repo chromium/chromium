@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "components/fingerprinting_protection_filter/renderer/mock_renderer_agent.h"
@@ -112,22 +111,17 @@ class RendererURLLoaderThrottleTest : public ::testing::Test {
 };
 
 TEST_F(RendererURLLoaderThrottleTest, DoesNotDeferSafeRequest) {
-  base::HistogramTester histogram_tester;
   GURL url("https://example.com/image.jpg");
   bool defer = false;
   network::ResourceRequest request =
       GetResourceRequest(url, network::mojom::RequestDestination::kImage);
 
   throttle_->WillStartRequest(&request, &defer);
-  EXPECT_FALSE(defer);
 
-  EXPECT_THAT(histogram_tester.GetAllSamplesForPrefix(
-                  "FingerprintingProtection.SubresourceLoad.TotalDeferTime"),
-              IsEmpty());
+  EXPECT_FALSE(defer);
 }
 
 TEST_F(RendererURLLoaderThrottleTest, DoesNotDeferChromeUrl) {
-  base::HistogramTester histogram_tester;
   GURL url("chrome://settings/");
   bool defer = false;
   network::ResourceRequest request =
@@ -135,14 +129,9 @@ TEST_F(RendererURLLoaderThrottleTest, DoesNotDeferChromeUrl) {
 
   throttle_->WillStartRequest(&request, &defer);
   EXPECT_FALSE(defer);
-
-  EXPECT_THAT(histogram_tester.GetAllSamplesForPrefix(
-                  "FingerprintingProtection.SubresourceLoad.TotalDeferTime"),
-              IsEmpty());
 }
 
 TEST_F(RendererURLLoaderThrottleTest, DoesNotDeferIframeUrl) {
-  base::HistogramTester histogram_tester;
   GURL url("https://example.com/");
   bool defer = false;
   network::ResourceRequest request =
@@ -150,10 +139,6 @@ TEST_F(RendererURLLoaderThrottleTest, DoesNotDeferIframeUrl) {
 
   throttle_->WillStartRequest(&request, &defer);
   EXPECT_FALSE(defer);
-
-  EXPECT_THAT(histogram_tester.GetAllSamplesForPrefix(
-                  "FingerprintingProtection.SubresourceLoad.TotalDeferTime"),
-              IsEmpty());
 }
 
 TEST_F(RendererURLLoaderThrottleTest,
@@ -226,7 +211,6 @@ TEST_F(RendererURLLoaderThrottleTest,
 }
 
 TEST_F(RendererURLLoaderThrottleTest, ResumesSafeUrlLoad) {
-  base::HistogramTester histogram_tester;
   GURL url("https://example.com/script.js");
   bool defer = false;
   network::ResourceRequest request =
@@ -237,13 +221,9 @@ TEST_F(RendererURLLoaderThrottleTest, ResumesSafeUrlLoad) {
   EXPECT_CALL(*throttle_delegate_, Resume());
   SetActivationLevel(ActivationLevel::kEnabled);
   RunUntilActivationReceived(ActivationLevel::kEnabled);
-
-  histogram_tester.ExpectTotalCount(
-      "FingerprintingProtection.SubresourceLoad.TotalDeferTime.Allowed", 1);
 }
 
 TEST_F(RendererURLLoaderThrottleTest, BlocksMatchingUrlLoad) {
-  base::HistogramTester histogram_tester;
   GURL url("https://blocked.com/tracker.js");
 
   bool defer = false;
@@ -258,14 +238,10 @@ TEST_F(RendererURLLoaderThrottleTest, BlocksMatchingUrlLoad) {
                               "FingerprintingProtection"));
   SetActivationLevel(ActivationLevel::kEnabled);
   RunUntilActivationReceived(ActivationLevel::kEnabled);
-
-  histogram_tester.ExpectTotalCount(
-      "FingerprintingProtection.SubresourceLoad.TotalDeferTime.Disallowed", 1);
 }
 
 TEST_F(RendererURLLoaderThrottleTest,
        BlocksMatchingUrlLoadThatStartsAfterActivationReceived) {
-  base::HistogramTester histogram_tester;
   GURL url("https://blocked.com/tracker.js");
 
   SetActivationLevel(ActivationLevel::kEnabled);
@@ -279,16 +255,10 @@ TEST_F(RendererURLLoaderThrottleTest,
                               "FingerprintingProtection"));
   throttle_->WillStartRequest(&request, &defer);
   EXPECT_FALSE(defer);
-
-  // Expect no histogram despite the blocked resource since the request was
-  // never deferred.
-  histogram_tester.ExpectTotalCount(
-      "FingerprintingProtection.SubresourceLoad.TotalDeferTime.Disallowed", 0);
 }
 
 TEST_F(RendererURLLoaderThrottleTest,
        ResumesMatchingUrlLoadWithDisabledActivation) {
-  base::HistogramTester histogram_tester;
   GURL url("https://blocked.com/tracker.js");
   bool defer = false;
   network::ResourceRequest request =
@@ -299,16 +269,10 @@ TEST_F(RendererURLLoaderThrottleTest,
   EXPECT_CALL(*throttle_delegate_, Resume());
   SetActivationLevel(ActivationLevel::kDisabled);
   RunUntilActivationReceived(ActivationLevel::kDisabled);
-
-  histogram_tester.ExpectTotalCount(
-      "FingerprintingProtection.SubresourceLoad.TotalDeferTime."
-      "ActivationDisabled",
-      1);
 }
 
 TEST_F(RendererURLLoaderThrottleTest,
        ResumesMatchingUrlLoadWithDryRunActivation) {
-  base::HistogramTester histogram_tester;
   GURL url("https://blocked.com/tracker.js");
   bool defer = false;
   network::ResourceRequest request =
@@ -319,10 +283,6 @@ TEST_F(RendererURLLoaderThrottleTest,
   EXPECT_CALL(*throttle_delegate_, Resume());
   SetActivationLevel(ActivationLevel::kDryRun);
   RunUntilActivationReceived(ActivationLevel::kDryRun);
-
-  histogram_tester.ExpectTotalCount(
-      "FingerprintingProtection.SubresourceLoad.TotalDeferTime.WouldDisallow",
-      1);
 }
 
 TEST_F(RendererURLLoaderThrottleTest, Localhost_DefersOnlyWhenBenchmarking) {

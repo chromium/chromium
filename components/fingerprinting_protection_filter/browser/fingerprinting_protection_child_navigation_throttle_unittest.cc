@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/fingerprinting_protection_filter/browser/test_support.h"
@@ -35,43 +34,6 @@ using ::subresource_filter::SimulateRedirectAndGetResult;
 using ::subresource_filter::SimulateStartAndGetResult;
 
 const char kDisallowedConsoleMessageFormat[] = "Placeholder: %s";
-
-const char kFilterDelayDisallowed[] =
-    "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.Disallowed";
-const char kFilterDelayWouldDisallow[] =
-    "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
-    "WouldDisallow";
-const char kFilterDelayAllowed[] =
-    "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.Allowed";
-const char kFilterDelayAliasDisallowed[] =
-    "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.NameAlias."
-    "Disallowed";
-const char kFilterDelayAliasWouldDisallow[] =
-    "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.NameAlias."
-    "WouldDisallow";
-const char kFilterDelayAliasChecked[] =
-    "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.NameAlias."
-    "Checked";
-
-// Incognito versions of above histogram names
-const char kFilterDelayDisallowedIncognito[] =
-    "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.Disallowed."
-    "Incognito";
-const char kFilterDelayWouldDisallowIncognito[] =
-    "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
-    "WouldDisallow.Incognito";
-const char kFilterDelayAllowedIncognito[] =
-    "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.Allowed."
-    "Incognito";
-const char kFilterDelayAliasDisallowedIncognito[] =
-    "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.NameAlias."
-    "Disallowed.Incognito";
-const char kFilterDelayAliasWouldDisallowIncognito[] =
-    "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.NameAlias."
-    "WouldDisallow.Incognito";
-const char kFilterDelayAliasCheckedIncognito[] =
-    "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.NameAlias."
-    "Checked.Incognito";
 
 class FingerprintingProtectionChildNavigationThrottleTest
     : public ChildFrameNavigationFilteringThrottleTestHarness,
@@ -108,7 +70,6 @@ class FingerprintingProtectionChildNavigationThrottleTest
                     auto throttle = std::make_unique<
                         FingerprintingProtectionChildNavigationThrottle>(
                         registry, parent_filter_.get(),
-                        /*is_incognito=*/GetParam(),
                         base::BindRepeating([](const GURL& filtered_url) {
                           return base::StringPrintf(
                               kDisallowedConsoleMessageFormat,
@@ -148,70 +109,6 @@ INSTANTIATE_TEST_SUITE_P(
     FingerprintingProtectionChildNavigationThrottleTest,
     testing::Bool());
 
-TEST_P(FingerprintingProtectionChildNavigationThrottleTest, DelayMetrics) {
-  base::HistogramTester histogram_tester;
-  ChildFrameNavigationFilteringThrottleTestHarness::
-      InitializeDocumentSubresourceFilter(GURL("https://example.test"));
-
-  auto* test_web_contents_helper = GetTestWebContentsHelper();
-  ASSERT_NE(test_web_contents_helper, nullptr);
-
-  ChildFrameNavigationFilteringThrottleTestHarness::
-      CreateTestSubframeAndInitNavigation(
-          GURL("https://example.test/allowed.html"), main_rfh());
-
-  navigation_simulator()->SetTransition(ui::PAGE_TRANSITION_AUTO_SUBFRAME);
-  EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            SimulateStartAndGetResult(navigation_simulator()));
-  EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
-            SimulateRedirectAndGetResult(
-                navigation_simulator(),
-                GURL("https://example.test/disallowed.html")));
-
-  EXPECT_EQ(test_web_contents_helper->most_recent_child_frame_load_policy(),
-            subresource_filter::LoadPolicy::DISALLOW);
-
-  navigation_simulator()->CommitErrorPage();
-
-  if (/*is_incognito*/ GetParam()) {
-    histogram_tester.ExpectTotalCount(kFilterDelayDisallowedIncognito, 1);
-    histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallowIncognito, 0);
-    histogram_tester.ExpectTotalCount(kFilterDelayAllowedIncognito, 0);
-  }
-  histogram_tester.ExpectTotalCount(kFilterDelayDisallowed, 1);
-  histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallow, 0);
-  histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 0);
-
-  ChildFrameNavigationFilteringThrottleTestHarness::
-      CreateTestSubframeAndInitNavigation(
-          GURL("https://example.test/allowed.html"), main_rfh());
-  EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            SimulateStartAndGetResult(navigation_simulator()));
-  EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            SimulateCommitAndGetResult(navigation_simulator()));
-
-  EXPECT_EQ(test_web_contents_helper->most_recent_child_frame_load_policy(),
-            subresource_filter::LoadPolicy::ALLOW);
-
-  if (/*is_incognito*/ GetParam()) {
-    histogram_tester.ExpectTotalCount(kFilterDelayDisallowedIncognito, 1);
-    histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallowIncognito, 0);
-    histogram_tester.ExpectTotalCount(kFilterDelayAllowedIncognito, 1);
-
-    histogram_tester.ExpectTotalCount(kFilterDelayAliasCheckedIncognito, 0);
-    histogram_tester.ExpectTotalCount(kFilterDelayAliasWouldDisallowIncognito,
-                                      0);
-    histogram_tester.ExpectTotalCount(kFilterDelayAliasDisallowedIncognito, 0);
-  }
-  histogram_tester.ExpectTotalCount(kFilterDelayDisallowed, 1);
-  histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallow, 0);
-  histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 1);
-
-  histogram_tester.ExpectTotalCount(kFilterDelayAliasChecked, 0);
-  histogram_tester.ExpectTotalCount(kFilterDelayAliasWouldDisallow, 0);
-  histogram_tester.ExpectTotalCount(kFilterDelayAliasDisallowed, 0);
-}
-
 // There should be no activation on localhosts, except for when
 // --enable-benchmarking switch is active.
 TEST_P(FingerprintingProtectionChildNavigationThrottleTest,
@@ -250,67 +147,6 @@ TEST_P(FingerprintingProtectionChildNavigationThrottleTest,
                 GURL("https://127.0.0.1/example.test/disallowed.html")));
 }
 
-TEST_P(FingerprintingProtectionChildNavigationThrottleTest,
-       DelayMetricsDryRun) {
-  base::HistogramTester histogram_tester;
-  ChildFrameNavigationFilteringThrottleTestHarness::
-      InitializeDocumentSubresourceFilter(
-          GURL("https://example.test"),
-          subresource_filter::mojom::ActivationLevel::kDryRun);
-  auto* test_web_contents_helper = GetTestWebContentsHelper();
-  ASSERT_NE(test_web_contents_helper, nullptr);
-  ChildFrameNavigationFilteringThrottleTestHarness::
-      CreateTestSubframeAndInitNavigation(
-          GURL("https://example.test/allowed.html"), main_rfh());
-  navigation_simulator()->SetTransition(ui::PAGE_TRANSITION_AUTO_SUBFRAME);
-  EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            SimulateStartAndGetResult(navigation_simulator()));
-  EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            SimulateRedirectAndGetResult(
-                navigation_simulator(),
-                GURL("https://example.test/disallowed.html")));
-  navigation_simulator()->Commit();
-  EXPECT_EQ(test_web_contents_helper->most_recent_child_frame_load_policy(),
-            subresource_filter::LoadPolicy::WOULD_DISALLOW);
-
-  if (/*is_incognito*/ GetParam()) {
-    histogram_tester.ExpectTotalCount(kFilterDelayDisallowedIncognito, 0);
-    histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallowIncognito, 1);
-    histogram_tester.ExpectTotalCount(kFilterDelayAllowedIncognito, 0);
-  }
-  histogram_tester.ExpectTotalCount(kFilterDelayDisallowed, 0);
-  histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallow, 1);
-  histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 0);
-
-  ChildFrameNavigationFilteringThrottleTestHarness::
-      CreateTestSubframeAndInitNavigation(
-          GURL("https://example.test/allowed.html"), main_rfh());
-  EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            SimulateStartAndGetResult(navigation_simulator()));
-  EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            SimulateCommitAndGetResult(navigation_simulator()));
-  EXPECT_EQ(test_web_contents_helper->most_recent_child_frame_load_policy(),
-            subresource_filter::LoadPolicy::ALLOW);
-
-  if (/*is_incognito*/ GetParam()) {
-    histogram_tester.ExpectTotalCount(kFilterDelayDisallowedIncognito, 0);
-    histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallowIncognito, 1);
-    histogram_tester.ExpectTotalCount(kFilterDelayAllowedIncognito, 1);
-
-    histogram_tester.ExpectTotalCount(kFilterDelayAliasCheckedIncognito, 0);
-    histogram_tester.ExpectTotalCount(kFilterDelayAliasWouldDisallowIncognito,
-                                      0);
-    histogram_tester.ExpectTotalCount(kFilterDelayAliasDisallowedIncognito, 0);
-  }
-  histogram_tester.ExpectTotalCount(kFilterDelayDisallowed, 0);
-  histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallow, 1);
-  histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 1);
-
-  histogram_tester.ExpectTotalCount(kFilterDelayAliasChecked, 0);
-  histogram_tester.ExpectTotalCount(kFilterDelayAliasWouldDisallow, 0);
-  histogram_tester.ExpectTotalCount(kFilterDelayAliasDisallowed, 0);
-}
-
 class FingerprintingProtectionChildNavigationThrottleAliasTest
     : public FingerprintingProtectionChildNavigationThrottleTest {
  public:
@@ -331,7 +167,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(FingerprintingProtectionChildNavigationThrottleAliasTest,
        FilterOnWillProcessResponse) {
-  base::HistogramTester histogram_tester;
   InitializeDocumentSubresourceFilterWithSubstringRules(
       GURL("https://example.test"), {"disallowedcname.com"},
       subresource_filter::mojom::ActivationLevel::kEnabled);
@@ -352,29 +187,10 @@ TEST_P(FingerprintingProtectionChildNavigationThrottleAliasTest,
             SimulateCommitAndGetResult(navigation_simulator()));
   EXPECT_EQ(test_web_contents_helper->most_recent_child_frame_load_policy(),
             subresource_filter::LoadPolicy::DISALLOW);
-
-  if (/*is_incognito*/ GetParam()) {
-    histogram_tester.ExpectTotalCount(kFilterDelayDisallowedIncognito, 1);
-    histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallowIncognito, 0);
-    histogram_tester.ExpectTotalCount(kFilterDelayAllowedIncognito, 0);
-
-    histogram_tester.ExpectTotalCount(kFilterDelayAliasCheckedIncognito, 1);
-    histogram_tester.ExpectTotalCount(kFilterDelayAliasWouldDisallowIncognito,
-                                      0);
-    histogram_tester.ExpectTotalCount(kFilterDelayAliasDisallowedIncognito, 1);
-  }
-  histogram_tester.ExpectTotalCount(kFilterDelayDisallowed, 1);
-  histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallow, 0);
-  histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 0);
-
-  histogram_tester.ExpectTotalCount(kFilterDelayAliasChecked, 1);
-  histogram_tester.ExpectTotalCount(kFilterDelayAliasWouldDisallow, 0);
-  histogram_tester.ExpectTotalCount(kFilterDelayAliasDisallowed, 1);
 }
 
 TEST_P(FingerprintingProtectionChildNavigationThrottleAliasTest,
        DryRunOnWillProcessResponse) {
-  base::HistogramTester histogram_tester;
   InitializeDocumentSubresourceFilterWithSubstringRules(
       GURL("https://example.test"),
       {"cnamed.com", "alias-me.com", "i.am.alias"},
@@ -398,16 +214,6 @@ TEST_P(FingerprintingProtectionChildNavigationThrottleAliasTest,
   EXPECT_EQ(test_web_contents_helper->most_recent_child_frame_load_policy(),
             subresource_filter::LoadPolicy::WOULD_DISALLOW);
 
-  if (/*is_incognito*/ GetParam()) {
-    histogram_tester.ExpectTotalCount(kFilterDelayAliasCheckedIncognito, 1);
-    histogram_tester.ExpectTotalCount(kFilterDelayAliasWouldDisallowIncognito,
-                                      1);
-    histogram_tester.ExpectTotalCount(kFilterDelayAliasDisallowedIncognito, 0);
-  }
-  histogram_tester.ExpectTotalCount(kFilterDelayAliasChecked, 1);
-  histogram_tester.ExpectTotalCount(kFilterDelayAliasWouldDisallow, 1);
-  histogram_tester.ExpectTotalCount(kFilterDelayAliasDisallowed, 0);
-
   ChildFrameNavigationFilteringThrottleTestHarness::
       CreateTestSubframeAndInitNavigation(
           GURL("https://example.test/allowed.html"), main_rfh());
@@ -420,29 +226,10 @@ TEST_P(FingerprintingProtectionChildNavigationThrottleAliasTest,
             SimulateCommitAndGetResult(navigation_simulator()));
   EXPECT_EQ(test_web_contents_helper->most_recent_child_frame_load_policy(),
             subresource_filter::LoadPolicy::ALLOW);
-
-  if (/*is_incognito*/ GetParam()) {
-    histogram_tester.ExpectTotalCount(kFilterDelayAllowedIncognito, 1);
-    histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallowIncognito, 1);
-    histogram_tester.ExpectTotalCount(kFilterDelayDisallowedIncognito, 0);
-
-    histogram_tester.ExpectTotalCount(kFilterDelayAliasCheckedIncognito, 2);
-    histogram_tester.ExpectTotalCount(kFilterDelayAliasWouldDisallowIncognito,
-                                      1);
-    histogram_tester.ExpectTotalCount(kFilterDelayAliasDisallowedIncognito, 0);
-  }
-  histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 1);
-  histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallow, 1);
-  histogram_tester.ExpectTotalCount(kFilterDelayDisallowed, 0);
-
-  histogram_tester.ExpectTotalCount(kFilterDelayAliasChecked, 2);
-  histogram_tester.ExpectTotalCount(kFilterDelayAliasWouldDisallow, 1);
-  histogram_tester.ExpectTotalCount(kFilterDelayAliasDisallowed, 0);
 }
 
 TEST_P(FingerprintingProtectionChildNavigationThrottleAliasTest,
        AllowedDnsAliasesShouldNotFilter) {
-  base::HistogramTester histogram_tester;
   InitializeDocumentSubresourceFilterWithSubstringRules(
       GURL("https://example.test"),
       {"cnamed.com", "alias-me.com", "i.am.alias"},
@@ -465,24 +252,6 @@ TEST_P(FingerprintingProtectionChildNavigationThrottleAliasTest,
             SimulateCommitAndGetResult(navigation_simulator()));
   EXPECT_EQ(test_web_contents_helper->most_recent_child_frame_load_policy(),
             subresource_filter::LoadPolicy::ALLOW);
-
-  if (/*is_incognito*/ GetParam()) {
-    histogram_tester.ExpectTotalCount(kFilterDelayDisallowedIncognito, 0);
-    histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallowIncognito, 0);
-    histogram_tester.ExpectTotalCount(kFilterDelayAllowedIncognito, 1);
-
-    histogram_tester.ExpectTotalCount(kFilterDelayAliasCheckedIncognito, 1);
-    histogram_tester.ExpectTotalCount(kFilterDelayAliasWouldDisallowIncognito,
-                                      0);
-    histogram_tester.ExpectTotalCount(kFilterDelayAliasDisallowedIncognito, 0);
-  }
-  histogram_tester.ExpectTotalCount(kFilterDelayDisallowed, 0);
-  histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallow, 0);
-  histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 1);
-
-  histogram_tester.ExpectTotalCount(kFilterDelayAliasChecked, 1);
-  histogram_tester.ExpectTotalCount(kFilterDelayAliasWouldDisallow, 0);
-  histogram_tester.ExpectTotalCount(kFilterDelayAliasDisallowed, 0);
 }
 }  // namespace
 }  // namespace fingerprinting_protection_filter

@@ -81,23 +81,6 @@ int GetFingerprintingProtectionRefreshHeuristicThreshold(bool is_incognito) {
   return kRefreshHeuristicExceptionThresholdNonIncognito.Get();
 }
 
-bool SampleEnablePerformanceMeasurements(bool is_incognito) {
-  if (!base::ThreadTicks::IsSupported()) {
-    // Can't do accurate performance measurements if ThreadTicks not supported.
-    return false;
-  }
-
-  // Get sampling rate based on whether we're in incognito.
-  const base::Feature& feature =
-      is_incognito ? features::kEnableFingerprintingProtectionFilterInIncognito
-                   : features::kEnableFingerprintingProtectionFilter;
-  const double sampling_rate = GetFieldTrialParamByFeatureAsDouble(
-      feature, features::kPerformanceMeasurementRateParam, 0.0);
-
-  // Randomly sample.
-  return base::RandDouble() < sampling_rate;
-}
-
 constexpr base::FeatureParam<subresource_filter::mojom::ActivationLevel>::Option
     kActivationLevelOptions[] = {
         {subresource_filter::mojom::ActivationLevel::kDisabled, "disabled"},
@@ -134,14 +117,6 @@ const base::FeatureParam<int> kRefreshHeuristicExceptionThresholdNonIncognito{
 const base::FeatureParam<int> kRefreshHeuristicExceptionThresholdIncognito{
     &kEnableFingerprintingProtectionFilterInIncognito,
     kRefreshHeuristicExceptionThresholdParam, 0};
-
-const base::FeatureParam<double> kPerformanceMeasurementRateNonIncognito{
-    &kEnableFingerprintingProtectionFilter, kPerformanceMeasurementRateParam,
-    0.0};
-
-const base::FeatureParam<double> kPerformanceMeasurementRateIncognito{
-    &kEnableFingerprintingProtectionFilterInIncognito,
-    kPerformanceMeasurementRateParam, 0.0};
 
 BASE_FEATURE(kUseCnameAliasesForFingerprintingProtectionFilter,
              base::FEATURE_DISABLED_BY_DEFAULT);

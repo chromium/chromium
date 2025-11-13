@@ -16,19 +16,6 @@
 
 namespace fingerprinting_protection_filter {
 
-const char kIndexRulesetVerifyHistogram[] =
-    "FingerprintingProtection.IndexRuleset.Verify.Status";
-const char kIndexRulesetNumUnsupportedRulesHistogram[] =
-    "FingerprintingProtection.IndexRuleset.NumUnsupportedRules";
-const char kIndexRulesetVerifyWallDurationHistogram[] =
-    "FingerprintingProtection.IndexRuleset.Verify2.WallDuration";
-const char kIndexRulesetCPUDurationHistogram[] =
-    "FingerprintingProtection.IndexRuleset.CPUDuration";
-const char kIndexRulesetWallDurationHistogram[] =
-    "FingerprintingProtection.IndexRuleset.WallDuration";
-const char kIndexRulesetWriteRulesetResultHistogram[] =
-    "FingerprintingProtection.WriteRuleset.Result";
-
 IN_PROC_BROWSER_TEST_F(
     FingerprintingProtectionFilterDisabledBrowserTest,
     RulesetServiceNotCreated_DisabledFingerprintingProtectionFlag) {
@@ -74,19 +61,6 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   expected_state.activation_level =
       subresource_filter::mojom::ActivationLevel::kEnabled;
   receiver.ExpectReceivedOnce(expected_state);
-  histogram_tester.ExpectUniqueSample(
-      kIndexRulesetVerifyHistogram,
-      subresource_filter::VerifyStatus::kPassValidChecksum, 1);
-  histogram_tester.ExpectTotalCount(kIndexRulesetNumUnsupportedRulesHistogram,
-                                    1);
-  histogram_tester.ExpectTotalCount(kIndexRulesetVerifyWallDurationHistogram,
-                                    1);
-  histogram_tester.ExpectTotalCount(kIndexRulesetCPUDurationHistogram, 1);
-  histogram_tester.ExpectTotalCount(kIndexRulesetWallDurationHistogram, 1);
-  histogram_tester.ExpectUniqueSample(
-      kIndexRulesetWriteRulesetResultHistogram,
-      subresource_filter::RulesetService::IndexAndWriteRulesetResult::kSuccess,
-      1);
 }
 
 IN_PROC_BROWSER_TEST_F(

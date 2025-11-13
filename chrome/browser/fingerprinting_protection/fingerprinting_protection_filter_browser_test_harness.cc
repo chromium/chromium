@@ -16,12 +16,10 @@
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
-#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -135,53 +133,6 @@ bool FingerprintingProtectionFilterBrowserTest::NavigateToDestination(
   return content::NavigateToURL(chrome_test_utils::GetActiveWebContents(this),
                                 url);
 #endif  // !BUILDFLAG(IS_ANDROID)
-}
-
-void FingerprintingProtectionFilterBrowserTest::ExpectFpfActivatedUkms(
-    const ukm::TestAutoSetUkmRecorder& recorder,
-    const unsigned long& expected_count,
-    bool is_dry_run) {
-  const auto& entries = recorder.GetEntriesByName(
-      ukm::builders::FingerprintingProtection::kEntryName);
-  // Expect the size of the existing entries list matches the expected
-  // `expected_count`.
-  EXPECT_EQ(expected_count, entries.size());
-  for (const ukm::mojom::UkmEntry* entry : entries) {
-    // Expect the value of the ActivationDecision metric is `ACTIVATED`.
-    EXPECT_EQ(
-        *recorder.GetEntryMetric(
-            entry,
-            ukm::builders::FingerprintingProtection::kActivationDecisionName),
-        static_cast<int64_t>(
-            subresource_filter::ActivationDecision::ACTIVATED));
-    // Expect the DryRun metric logged matches the expected `is_dry_run` value.
-    EXPECT_EQ(recorder.EntryHasMetric(
-                  entry, ukm::builders::FingerprintingProtection::kDryRunName),
-              is_dry_run);
-  }
-}
-
-void FingerprintingProtectionFilterBrowserTest::ExpectNoFpfExceptionUkms(
-    const ukm::TestAutoSetUkmRecorder& recorder) {
-  EXPECT_TRUE(
-      recorder
-          .GetEntriesByName(
-              ukm::builders::FingerprintingProtectionException::kEntryName)
-          .size() == 0u);
-}
-
-void FingerprintingProtectionFilterBrowserTest::ExpectFpfExceptionUkms(
-    const ukm::TestAutoSetUkmRecorder& recorder,
-    const unsigned long& expected_count,
-    const int64_t& expected_source) {
-  const auto& entries = recorder.GetEntriesByName(
-      ukm::builders::FingerprintingProtectionException::kEntryName);
-  EXPECT_EQ(expected_count, entries.size());
-  for (const ukm::mojom::UkmEntry* entry : entries) {
-    recorder.ExpectEntryMetric(
-        entry, ukm::builders::FingerprintingProtectionException::kSourceName,
-        expected_source);
-  }
 }
 
 void FingerprintingProtectionFilterBrowserTest::

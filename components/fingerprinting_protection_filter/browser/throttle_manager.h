@@ -145,11 +145,6 @@ class ThrottleManager : public base::SupportsUserData::Data,
   void MaybeCreateAndAddNavigationThrottles(
       content::NavigationThrottleRegistry& registry);
 
-  // On a DISALLOW or WOULD_DISALLOW load policy decision, notify the throttle
-  // manager to log the associated ukm metrics, i.e. `ActivationDecision`,
-  // `DryRun`.
-  void NotifyDisallowLoadPolicy(content::NavigationHandle* navigation_handle);
-
   subresource_filter::VerifiedRuleset::Handle* ruleset_handle_for_testing() {
     return ruleset_handle_.get();
   }
@@ -190,7 +185,6 @@ class ThrottleManager : public base::SupportsUserData::Data,
   // by the page that is associated with the throttle manager (e.g. a fenced
   // frame Page doesn't own a throttle manager)
   void OnPageCreated(content::Page& page);
-
 
  private:
   friend FingerprintingProtectionWebContentsHelper;

@@ -29,7 +29,6 @@
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
-#include "components/ukm/test_ukm_recorder.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -45,7 +44,6 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "url/gurl.h"
@@ -540,9 +538,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(ThrottleManagerEnabledTest,
        DISABLED_ActivateMainFrameAndFilterSubframeNavigation) {
-  // Set up test ukm recorder.
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-
   // Commit a navigation that triggers page level activation.
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
   CreateAgentForHost(main_rfh());
@@ -556,28 +551,9 @@ TEST_P(ThrottleManagerEnabledTest,
       GURL("https://www.example.com/disallowed.html"), main_rfh());
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
             SimulateStartAndGetResult(navigation_simulator()).action());
-
-  // Check test ukm recorder contains event with expected metrics.
-  const auto& entries = test_ukm_recorder.GetEntriesByName(
-      ukm::builders::FingerprintingProtection::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  for (const ukm::mojom::UkmEntry* entry : entries) {
-    test_ukm_recorder.ExpectEntryMetric(
-        entry, ukm::builders::FingerprintingProtection::kActivationDecisionName,
-        static_cast<int64_t>(
-            subresource_filter::ActivationDecision::ACTIVATED));
-    // DryRun metric is a boolean recorded iff the filter was activated in
-    // dry_run mode. With the filter activated in enabled mode, this metric is
-    // not expected to be recorded here.
-    EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(
-        entry, ukm::builders::FingerprintingProtection::kDryRunName));
-  }
 }
 
 TEST_P(ThrottleManagerEnabledTest, NoPageActivation) {
-  // Set up test ukm recorder.
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-
   // Commit a navigation that does not trigger page level activation.
   NavigateAndCommitMainFrame(GURL(kTestURLWithNoActivation));
   CreateAgentForHost(main_rfh());
@@ -589,16 +565,8 @@ TEST_P(ThrottleManagerEnabledTest, NoPageActivation) {
       GURL("https://www.example.com/disallowed.html"), main_rfh());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateCommitAndGetResult(navigation_simulator()).action());
-
-  EXPECT_EQ(0u, test_ukm_recorder
-                    .GetEntriesByName(
-                        ukm::builders::FingerprintingProtection::kEntryName)
-                    .size());
 }
 TEST_P(ThrottleManagerEnabledTest, ActivateMainFrameAndDoNotFilterDryRun) {
-  // Set up test ukm recorder.
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-
   // Commit a navigation that triggers page level activation.
   NavigateAndCommitMainFrame(GURL(kTestURLWithDryRun));
   CreateAgentForHost(main_rfh());
@@ -620,21 +588,6 @@ TEST_P(ThrottleManagerEnabledTest, ActivateMainFrameAndDoNotFilterDryRun) {
   EXPECT_TRUE(content::RenderFrameHostTester::For(main_rfh())
                   ->GetConsoleMessages()
                   .empty());
-
-  // Check test ukm recorder contains event with expected metrics.
-  const auto& entries = test_ukm_recorder.GetEntriesByName(
-      ukm::builders::FingerprintingProtection::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  for (const ukm::mojom::UkmEntry* entry : entries) {
-    test_ukm_recorder.ExpectEntryMetric(
-        entry, ukm::builders::FingerprintingProtection::kActivationDecisionName,
-        static_cast<int64_t>(
-            subresource_filter::ActivationDecision::ACTIVATED));
-    // DryRun metric is a boolean recorded iff the filter was activated in
-    // dry_run mode, so expect it to be recorded in this case.
-    EXPECT_TRUE(test_ukm_recorder.EntryHasMetric(
-        entry, ukm::builders::FingerprintingProtection::kDryRunName));
-  }
 }
 
 TEST_P(ThrottleManagerEnabledTest,

@@ -56,49 +56,6 @@ class FingerprintingProtectionFilterBrowserTest
   static constexpr const char kMultiPlatformTestFrameSetPath[] =
       "/frame_set.html";
 
-  // PageLoad histogram names.
-  static constexpr const char kSubresourceLoadsTotalForPage[] =
-      "FingerprintingProtection.PageLoad.NumSubresourceLoads.Total";
-  static constexpr const char kSubresourceLoadsEvaluatedForPage[] =
-      "FingerprintingProtection.PageLoad.NumSubresourceLoads.Evaluated";
-  static constexpr const char kSubresourceLoadsMatchedRulesForPage[] =
-      "FingerprintingProtection.PageLoad.NumSubresourceLoads.MatchedRules";
-  static constexpr const char kSubresourceLoadsDisallowedForPage[] =
-      "FingerprintingProtection.PageLoad.NumSubresourceLoads.Disallowed";
-
-  // Incognito PageLoad histogram names.
-  static constexpr const char kSubresourceLoadsTotalForIncognitoPage[] =
-      "FingerprintingProtection.PageLoad.NumSubresourceLoads.Total.Incognito";
-  static constexpr const char kSubresourceLoadsEvaluatedForIncognitoPage[] =
-      "FingerprintingProtection.PageLoad.NumSubresourceLoads."
-      "Evaluated.Incognito";
-  static constexpr const char kSubresourceLoadsMatchedRulesForIncognitoPage[] =
-      "FingerprintingProtection.PageLoad.NumSubresourceLoads."
-      "MatchedRules.Incognito";
-  static constexpr const char kSubresourceLoadsDisallowedForIncognitoPage[] =
-      "FingerprintingProtection.PageLoad.NumSubresourceLoads."
-      "Disallowed.Incognito";
-
-  // Names of the performance measurement histograms.
-  static constexpr const char kEvaluationTotalWallDurationForPage[] =
-      "FingerprintingProtection.PageLoad.SubresourceEvaluation."
-      "TotalWallDuration";
-  static constexpr const char kEvaluationTotalCPUDurationForPage[] =
-      "FingerprintingProtection.PageLoad.SubresourceEvaluation."
-      "TotalCPUDuration";
-  static constexpr const char kSubresourceLoadEvaluationWallDuration[] =
-      "FingerprintingProtection.SubresourceLoad.Evaluation.WallDuration";
-  static constexpr const char kSubresourceLoadEvaluationCpuDuration[] =
-      "FingerprintingProtection.SubresourceLoad.Evaluation.CPUDuration";
-
-  // Names of the performance measurement histograms for Incognito.
-  static constexpr const char kEvaluationTotalWallDurationForIncognitoPage[] =
-      "FingerprintingProtection.PageLoad.SubresourceEvaluation."
-      "TotalWallDuration.Incognito";
-  static constexpr const char kEvaluationTotalCPUDurationForIncognitoPage[] =
-      "FingerprintingProtection.PageLoad.SubresourceEvaluation."
-      "TotalCPUDuration.Incognito";
-
  protected:
   // Override to use a custom `embedder_base` url.
   GURL GetTestUrl(const std::string& relative_url) const override;

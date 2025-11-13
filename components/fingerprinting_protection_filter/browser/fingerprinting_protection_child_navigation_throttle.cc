@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
@@ -30,7 +29,6 @@ FingerprintingProtectionChildNavigationThrottle::
     FingerprintingProtectionChildNavigationThrottle(
         content::NavigationThrottleRegistry& registry,
         subresource_filter::AsyncDocumentSubresourceFilter* parent_frame_filter,
-        bool is_incognito,
         base::RepeatingCallback<std::string(const GURL& url)>
             disallow_message_callback)
     : subresource_filter::ChildFrameNavigationFilteringThrottle(
@@ -39,51 +37,10 @@ FingerprintingProtectionChildNavigationThrottle::
           /*alias_check_enabled=*/
           base::FeatureList::IsEnabled(
               features::kUseCnameAliasesForFingerprintingProtectionFilter),
-          std::move(disallow_message_callback)),
-      is_incognito_(is_incognito) {}
+          std::move(disallow_message_callback)) {}
 
 FingerprintingProtectionChildNavigationThrottle::
-    ~FingerprintingProtectionChildNavigationThrottle() {
-  // Note: Changing the UMA_HISTOGRAM_CUSTOM_MICRO_TIMES params requires
-  // renaming the emitted metrics.
-#define SUBFRAME_FILTERING_DELAY_HISTOGRAM(metric_suffix)                   \
-  do {                                                                      \
-    if (is_incognito_) {                                                    \
-      UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(                                     \
-          "FingerprintingProtection.DocumentLoad."                          \
-          "SubframeFilteringDelay." metric_suffix ".Incognito",             \
-          total_defer_time_, base::Microseconds(1), base::Seconds(10), 50); \
-    }                                                                       \
-    UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(                                       \
-        "FingerprintingProtection.DocumentLoad."                            \
-        "SubframeFilteringDelay." metric_suffix,                            \
-        total_defer_time_, base::Microseconds(1), base::Seconds(10), 50);   \
-  } while (false)
-
-  if (did_alias_check_) {
-    SUBFRAME_FILTERING_DELAY_HISTOGRAM("NameAlias.Checked");
-  }
-
-  switch (load_policy_) {
-    case subresource_filter::LoadPolicy::EXPLICITLY_ALLOW:
-    case subresource_filter::LoadPolicy::ALLOW:
-      SUBFRAME_FILTERING_DELAY_HISTOGRAM("Allowed");
-      break;
-    case subresource_filter::LoadPolicy::WOULD_DISALLOW:
-      if (did_alias_check_determine_load_policy_) {
-        SUBFRAME_FILTERING_DELAY_HISTOGRAM("NameAlias.WouldDisallow");
-      }
-      SUBFRAME_FILTERING_DELAY_HISTOGRAM("WouldDisallow");
-      break;
-    case subresource_filter::LoadPolicy::DISALLOW:
-      if (did_alias_check_determine_load_policy_) {
-        SUBFRAME_FILTERING_DELAY_HISTOGRAM("NameAlias.Disallowed");
-      }
-      SUBFRAME_FILTERING_DELAY_HISTOGRAM("Disallowed");
-      break;
-  }
-#undef SUBFRAME_FILTERING_DELAY_HISTOGRAM
-}
+    ~FingerprintingProtectionChildNavigationThrottle() {}
 
 const char*
 FingerprintingProtectionChildNavigationThrottle::GetNameForLogging() {

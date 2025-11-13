@@ -97,12 +97,6 @@ void AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
   }
 }
 
-void WriteMetrics(InstallationResult result) {
-  base::UmaHistogramEnumeration(
-      "FingerprintingProtection.BlockedDomainListComponent.InstallationResult",
-      result);
-}
-
 // Called during startup and installation before ComponentReady().
 bool AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
     VerifyInstallation(const base::Value::Dict& manifest,
@@ -110,17 +104,15 @@ bool AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
   std::optional<int> ruleset_format =
       manifest.FindInt(kManifestRulesetFormatKey);
   if (!ruleset_format.has_value() || *ruleset_format != kCurrentRulesetFormat) {
-    WriteMetrics(InstallationResult::kRulesetFormatError);
     DVLOG(1) << "Ruleset formats don't match.";
     DVLOG_IF(1, ruleset_format)
         << "Future ruleset version: " << *ruleset_format;
     return false;
   }
   if (!base::PathExists(install_dir)) {
-    WriteMetrics(InstallationResult::kMissingBlocklistFileError);
     return false;
   }
-  WriteMetrics(InstallationResult::kSuccess);
+
   return true;
 }
 

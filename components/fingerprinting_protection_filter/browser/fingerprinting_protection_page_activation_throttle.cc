@@ -7,8 +7,6 @@
 #include <optional>
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -22,8 +20,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/subresource_filter/content/shared/browser/utils.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
-#include "components/subresource_filter/core/common/scoped_timers.h"
-#include "components/subresource_filter/core/common/time_measurements.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom-shared.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/navigation_handle.h"
@@ -35,7 +31,6 @@
 namespace fingerprinting_protection_filter {
 
 using ::subresource_filter::ActivationDecision;
-using ::subresource_filter::ScopedTimers;
 using ::subresource_filter::mojom::ActivationLevel;
 using ::subresource_filter::mojom::ActivationState;
 
@@ -165,45 +160,19 @@ bool FingerprintingProtectionPageActivationThrottle::
   bool has_breakage_exception = false;
   if (features::IsFingerprintingProtectionRefreshHeuristicExceptionEnabled(
           is_incognito_)) {
-    auto has_exception_timer = ScopedTimers::StartIf(
-        features::SampleEnablePerformanceMeasurements(is_incognito_),
-        [](base::TimeDelta latency_sample) {
-          UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(
-              HasRefreshCountExceptionWallDurationHistogramName, latency_sample,
-              base::Microseconds(1), base::Seconds(10), 50);
-        });
     has_breakage_exception =
         HasBreakageException(navigation_handle()->GetURL(), *prefs_);
   }
-  if (has_breakage_exception) {
-    UMA_HISTOGRAM_BOOLEAN(HasRefreshCountExceptionHistogramName, true);
-    ukm::SourceId source_id =
-        ukm::ConvertToSourceId(navigation_handle()->GetNavigationId(),
-                               ukm::SourceIdType::NAVIGATION_ID);
-    ukm::builders::FingerprintingProtectionException(source_id)
-        .SetSource(static_cast<int64_t>(ExceptionSource::REFRESH_HEURISTIC))
-        .Record(ukm::UkmRecorder::Get());
-  }
+
   return has_breakage_exception;
 }
 
 bool FingerprintingProtectionPageActivationThrottle::
     DoesUrlHaveTrackingProtectionException() const {
-  // Check for a tracking protection exception. When UB is not available, also
-  // check for a COOKIES exception for the top-level site.
   if ((!base::FeatureList::IsEnabled(
            privacy_sandbox::kFingerprintingProtectionUx) &&
        HasContentSettingsCookieException()) ||
       HasTrackingProtectionException()) {
-    ukm::SourceId source_id =
-        ukm::ConvertToSourceId(navigation_handle()->GetNavigationId(),
-                               ukm::SourceIdType::NAVIGATION_ID);
-    ExceptionSource exception_source = HasTrackingProtectionException()
-                                           ? ExceptionSource::USER_BYPASS
-                                           : ExceptionSource::COOKIES;
-    ukm::builders::FingerprintingProtectionException(source_id)
-        .SetSource(static_cast<int64_t>(exception_source))
-        .Record(ukm::UkmRecorder::Get());
     return true;
   }
   return false;
@@ -261,22 +230,11 @@ void FingerprintingProtectionPageActivationThrottle::NotifyResult(
   // Populate ActivationState.
   ActivationState activation_state;
   activation_state.activation_level = activation_result.level;
-  activation_state.measure_performance =
-      features::SampleEnablePerformanceMeasurements(is_incognito_);
+
   activation_state.enable_logging =
       features::IsFingerprintingProtectionConsoleLoggingEnabled();
 
   NotifyPageActivationComputed(activation_state, activation_result.decision);
-  LogMetricsOnChecksComplete(activation_result.decision,
-                             activation_result.level);
-}
-
-void FingerprintingProtectionPageActivationThrottle::LogMetricsOnChecksComplete(
-    ActivationDecision decision,
-    ActivationLevel level) const {
-  UMA_HISTOGRAM_ENUMERATION(ActivationLevelHistogramName, level);
-  UMA_HISTOGRAM_ENUMERATION(ActivationDecisionHistogramName, decision,
-                            ActivationDecision::ACTIVATION_DECISION_MAX);
 }
 
 bool FingerprintingProtectionPageActivationThrottle::

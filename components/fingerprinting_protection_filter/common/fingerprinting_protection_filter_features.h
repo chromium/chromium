@@ -17,7 +17,6 @@ namespace fingerprinting_protection_filter::features {
 
 const char kEnableConsoleLoggingParam[] = "enable_console_logging";
 const char kExperimentVersionParam[] = "experimental_version";
-const char kPerformanceMeasurementRateParam[] = "performance_measurement_rate";
 const char kRefreshHeuristicExceptionThresholdParam[] =
     "refresh_heuristic_exception_threshold";
 
@@ -65,12 +64,6 @@ bool IsFingerprintingProtectionRefreshHeuristicExceptionEnabled(
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 int GetFingerprintingProtectionRefreshHeuristicThreshold(bool is_incognito);
 
-// Randomly determines whether performance measurements will be enabled,
-// using the rate specified by the regular or incognito feature flag parameter,
-// depending on the value of `is_incognito`.
-COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
-bool SampleEnablePerformanceMeasurements(bool is_incognito);
-
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 extern const base::FeatureParam<subresource_filter::mojom::ActivationLevel>
     kActivationLevel;
@@ -110,18 +103,6 @@ extern const base::FeatureParam<int>
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 extern const base::FeatureParam<int>
     kRefreshHeuristicExceptionThresholdIncognito;
-
-// A number in the range [0, 1], indicating the fraction of page loads that
-// should have extended performance measurements enabled for timing-based
-// histograms in non-incognito mode.
-COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
-extern const base::FeatureParam<double> kPerformanceMeasurementRateNonIncognito;
-
-// A number in the range [0, 1], indicating the fraction of page loads that
-// should have extended performance measurements enabled for timing-based
-// histograms in incognito mode.
-COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
-extern const base::FeatureParam<double> kPerformanceMeasurementRateIncognito;
 
 // Toggle to enable CNAME alias checks. Enabling this feature will block URL
 // aliases matching fingerprinting protection filtering rules.

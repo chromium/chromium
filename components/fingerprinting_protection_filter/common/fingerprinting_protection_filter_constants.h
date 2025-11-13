@@ -23,31 +23,6 @@ extern const base::FilePath::CharType kUnindexedRulesetDataFileName[];
 const char kPageActivationThrottleNameForLogging[] =
     "FingerprintingProtectionPageActivationThrottle";
 
-// Histogram names
-const char ActivationDecisionHistogramName[] =
-    "FingerprintingProtection.PageLoad.ActivationDecision";
-
-const char ActivationLevelHistogramName[] =
-    "FingerprintingProtection.PageLoad.ActivationLevel";
-
-const char RefreshCountHistogramName[] =
-    "FingerprintingProtection.WebContentsObserver.RefreshCount";
-
-const char HasRefreshCountExceptionHistogramName[] =
-    "FingerprintingProtection.PageLoad.RefreshCount.SiteHasBreakageException";
-
-const char AddRefreshCountExceptionHistogramName[] =
-    "FingerprintingProtection.WebContentsObserver.RefreshCount."
-    "AddBreakageException";
-
-const char HasRefreshCountExceptionWallDurationHistogramName[] =
-    "FingerprintingProtection.PageLoad.RefreshCount."
-    "SiteHasBreakageExceptionWallDuration";
-
-const char AddRefreshCountExceptionWallDurationHistogramName[] =
-    "FingerprintingProtection.WebContentsObserver.RefreshCount."
-    "AddBreakageExceptionWallDuration";
-
 // Console messages
 // ----------------
 

@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -26,7 +25,6 @@
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
-#include "components/subresource_filter/core/common/time_measurements.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/common/url_constants.h"
@@ -49,30 +47,6 @@ namespace {
 using ::subresource_filter::LoadPolicy;
 using ::subresource_filter::mojom::ActivationLevel;
 using ::subresource_filter::mojom::ActivationState;
-
-void RecordDeferTimeHistogram(ActivationLevel activation_level,
-                              LoadPolicy load_policy,
-                              base::TimeTicks defer_time) {
-  auto total_defer_time = base::TimeTicks::Now() - defer_time;
-  if (activation_level == ActivationLevel::kDisabled) {
-    UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(
-        "FingerprintingProtection.SubresourceLoad.TotalDeferTime."
-        "ActivationDisabled",
-        total_defer_time, base::Microseconds(1), base::Seconds(10), 50);
-  } else if (load_policy == LoadPolicy::ALLOW) {
-    UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(
-        "FingerprintingProtection.SubresourceLoad.TotalDeferTime.Allowed",
-        total_defer_time, base::Microseconds(1), base::Seconds(10), 50);
-  } else if (load_policy == LoadPolicy::WOULD_DISALLOW) {
-    UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(
-        "FingerprintingProtection.SubresourceLoad.TotalDeferTime.WouldDisallow",
-        total_defer_time, base::Microseconds(1), base::Seconds(10), 50);
-  } else {
-    UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(
-        "FingerprintingProtection.SubresourceLoad.TotalDeferTime.Disallowed",
-        total_defer_time, base::Microseconds(1), base::Seconds(10), 50);
-  }
-}
 
 // Should be called on the main thread.
 RendererAgent* GetRendererAgent(
@@ -151,28 +125,6 @@ RendererURLLoaderThrottle::CreateForTesting(
                                     std::move(renderer_agent_getter)));
 }
 
-// static
-std::optional<RendererThrottleCreationResult>
-RendererURLLoaderThrottle::WillIgnoreRequest(
-    const GURL& url,
-    network::mojom::RequestDestination request_destination) {
-  if (!url.SchemeIsHTTPOrHTTPS()) {
-    return RendererThrottleCreationResult::kSkipNonHttp;
-  }
-  bool should_exclude_localhost =
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          variations::switches::kEnableBenchmarking) &&
-      net::IsLocalhost(url);
-  if (should_exclude_localhost) {
-    return RendererThrottleCreationResult::kSkipLocalHost;
-  }
-  if (request_destination != network::mojom::RequestDestination::kWebBundle &&
-      request_destination != network::mojom::RequestDestination::kScript) {
-    return RendererThrottleCreationResult::kSkipSubresourceType;
-  }
-  return std::nullopt;
-}
-
 bool RendererURLLoaderThrottle::ShouldAllowRequest() {
   if (!load_policy_.has_value()) {
     return true;
@@ -187,12 +139,18 @@ void RendererURLLoaderThrottle::ProcessRequestStep(const GURL& latest_url,
                                                    bool* defer) {
   current_url_ = latest_url;
 
-  if (WillIgnoreRequest(current_url_,
-                        request_destination_.value_or(
-                            network::mojom::RequestDestination::kEmpty))
-          .has_value()) {
-    // Short-circuit on URLs we do not want to filter or if there is no
-    // filtering ruleset to use.
+  if (!current_url_.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+  bool should_exclude_localhost =
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          variations::switches::kEnableBenchmarking) &&
+      net::IsLocalhost(current_url_);
+  if (should_exclude_localhost) {
+    return;
+  }
+  if (request_destination_ != network::mojom::RequestDestination::kWebBundle &&
+      request_destination_ != network::mojom::RequestDestination::kScript) {
     return;
   }
 
@@ -276,10 +234,7 @@ void RendererURLLoaderThrottle::OnActivationComputed(
     delegate_->CancelWithError(net::ERR_BLOCKED_BY_FINGERPRINTING_PROTECTION,
                                "FingerprintingProtection");
   }
-  if (deferred_) {
-    RecordDeferTimeHistogram(activation_state_->activation_level,
-                             load_policy_.value(), defer_timestamp_);
-  }
+
   deferred_ = false;
 
   if (filter_) {
