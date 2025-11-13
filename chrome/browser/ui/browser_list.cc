@@ -28,6 +28,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
 
 using base::UserMetricsAction;
 using content::WebContents;
@@ -118,7 +120,8 @@ void BrowserList::RemoveBrowser(Browser* browser) {
 
   // If we're exiting, send out the APP_TERMINATING notification to allow other
   // modules to shut themselves down.
-  if (chrome::GetTotalBrowserCount() == 0 &&
+  if (!KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+          KeepAliveOrigin::BROWSER) &&
       (browser_shutdown::IsTryingToQuit() ||
        g_browser_process->IsShuttingDown())) {
     // Last browser has just closed, and this is a user-initiated quit or there

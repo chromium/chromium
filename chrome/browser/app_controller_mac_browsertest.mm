@@ -219,18 +219,13 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, CommandDuringShutdown) {
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(ExpectedWindowCountForBrowserCount(1), CountVisibleWindows());
 
-  chrome::AttemptExit();  // Set chrome::IsTryingToQuit and close all windows.
-
-  // Opening a new window here is fine (unload handlers can also interrupt
-  // exit). But closing the window posts an autorelease on
-  // BrowserWindowController, which calls ~Browser() and, if that was the last
+  // Set chrome::IsTryingToQuit and close all windows. Closing the window here
+  // closes the Browser and marks it for deletion and, if that was the last
   // Browser, it invokes applicationWillTerminate: (because IsTryingToQuit is
   // set). So, verify assumptions then process that autorelease.
-
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(ExpectedWindowCountForBrowserCount(0), CountVisibleWindows());
-
-  base::RunLoop().RunUntilIdle();
+  ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer;
+  chrome::AttemptExit();
+  browser_destroyed_observer.Wait();
 
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(ExpectedWindowCountForBrowserCount(0), CountVisibleWindows());

@@ -857,8 +857,10 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DestroyOnOTRProfileAmongMany) {
 class ProfileBrowserTestWithDestroyProfile : public ProfileBrowserTest {
  public:
   ProfileBrowserTestWithDestroyProfile() {
+    // Pin the browser process to ensure it remains alive after all Browsers are
+    // destroyed for testing.
     keep_alive_ = std::make_unique<ScopedKeepAlive>(
-        KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
+        KeepAliveOrigin::PROFILE_MANAGER, KeepAliveRestartOption::DISABLED);
 
     scoped_feature_list_.InitAndEnableFeature(
         features::kDestroyProfileOnBrowserClose);

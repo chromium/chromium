@@ -110,6 +110,7 @@
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/gcm_driver/gcm_driver.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
@@ -1736,8 +1737,9 @@ void BrowserProcessImpl::Unpin() {
 
 bool BrowserProcessImpl::IsRunningInBackground() const {
   // Check if browser is in the background.
-  return chrome::GetTotalBrowserCount() == 0 &&
-         KeepAliveRegistry::GetInstance()->IsKeepingAlive();
+  const auto* const keep_alive_registry = KeepAliveRegistry::GetInstance();
+  return !keep_alive_registry->IsOriginRegistered(KeepAliveOrigin::BROWSER) &&
+         keep_alive_registry->IsKeepingAlive();
 }
 
 void BrowserProcessImpl::RestartBackgroundInstance() {

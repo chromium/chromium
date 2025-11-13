@@ -360,7 +360,13 @@ Browser* FindLastActive() {
 }
 
 size_t GetTotalBrowserCount() {
-  return BrowserList::GetInstance()->size();
+  size_t browser_count = 0;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        browser_count++;
+        return true;
+      });
+  return browser_count;
 }
 
 size_t GetBrowserCount(Profile* profile) {
