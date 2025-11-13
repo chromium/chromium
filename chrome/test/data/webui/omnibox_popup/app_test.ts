@@ -4,17 +4,131 @@
 
 import 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {createAutocompleteMatch, SearchboxBrowserProxy} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import type {OmniboxPopupAppElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, PageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+function createAutocompleteResult(modifiers: Partial<AutocompleteResult> = {}):
+    AutocompleteResult {
+  const base: AutocompleteResult = {
+    input: '',
+    matches: [],
+    suggestionGroupsMap: {},
+    smartComposeInlineHint: null,
+  };
+
+  return Object.assign(base, modifiers);
+}
+
+function createSearchMatch(modifiers: Partial<AutocompleteMatch> = {}):
+    AutocompleteMatch {
+  return Object.assign(
+      createAutocompleteMatch(), {
+        isSearchType: true,
+        contents: 'hello world',
+        destinationUrl: {url: 'https://www.google.com/search?q=hello+world'},
+        fillIntoEdit: 'hello world',
+        type: 'search-suggest',
+      },
+      modifiers);
+}
+
+type Constructor<T> = new (...args: any[]) => T;
+type Installer<T> = (instance: T) => void;
+export function installMock<T extends object>(
+    clazz: Constructor<T>, installer?: Installer<T>): TestMock<T> {
+  installer = installer ||
+      (clazz as unknown as {setInstance: Installer<T>}).setInstance;
+  const mock = TestMock.fromClass(clazz);
+  installer(mock);
+  return mock;
+}
+
+// TODO(b/453041451): Create separate file for TestSearchboxBrowserProxy
+//  or reuse the one `cr-searchbox` tests use.
+class TestSearchboxBrowserProxy extends TestBrowserProxy {
+  callbackRouter: PageCallbackRouter;
+  handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
+  page: PageRemote;
+
+  constructor() {
+    super();
+    this.callbackRouter = new PageCallbackRouter();
+    this.handler = TestMock.fromClass(PageHandlerRemote);
+    this.page = this.callbackRouter.$.bindNewPipeAndPassRemote();
+  }
+
+  getCallbackRouter() {
+    return this.callbackRouter;
+  }
+}
 
 suite('AppTest', function() {
-  test('ContextMenuPrevented', async function() {
-    const app = document.createElement('omnibox-popup-app');
+  let app: OmniboxPopupAppElement;
+  let testProxy: TestSearchboxBrowserProxy;
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    testProxy = new TestSearchboxBrowserProxy();
+    SearchboxBrowserProxy.setInstance(testProxy);
+
+    app = document.createElement('omnibox-popup-app');
     document.body.appendChild(app);
+  });
+
+  test('ContextMenuPrevented', async function() {
     const whenFired = eventToPromise('contextmenu', document.documentElement);
     document.documentElement.dispatchEvent(
         new Event('contextmenu', {cancelable: true}));
     const e = await whenFired;
     assertTrue(e.defaultPrevented);
+  });
+
+  test('OnlyShowsDropdownIfVisibleMatches', async () => {
+    // Set autocomplete result with one visible match.
+    const shownResult: AutocompleteResult = createAutocompleteResult({
+      matches: [
+        createSearchMatch({isHidden: false}),
+        createSearchMatch({isHidden: true}),
+      ],
+    });
+    testProxy.page.autocompleteResultChanged(shownResult);
+    await microtasksFinished();
+
+    // Ensure dropdown shows.
+    assertTrue(isVisible(app.$.matches));
+
+    // Set autocomplete result with no visible matches.
+    const hiddenResult: AutocompleteResult = createAutocompleteResult({
+      matches: [
+        createSearchMatch({isHidden: true}),
+        createSearchMatch({isHidden: true}),
+      ],
+    });
+    testProxy.page.autocompleteResultChanged(hiddenResult);
+    await microtasksFinished();
+
+    // Ensure dropdown hides.
+    assertFalse(isVisible(app.$.matches));
+
+    // Force dropdown to show again.
+    testProxy.page.autocompleteResultChanged(shownResult);
+    await microtasksFinished();
+    assertTrue(isVisible(app.$.matches));
+
+    // Set autocomplete result with no matches.
+    const noResult: AutocompleteResult =
+        createAutocompleteResult({matches: []});
+    testProxy.page.autocompleteResultChanged(noResult);
+    await microtasksFinished();
+
+    // Ensure dropdown hides.
+    assertFalse(isVisible(app.$.matches));
   });
 });

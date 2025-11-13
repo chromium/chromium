@@ -33,9 +33,15 @@ void OmniboxPopupPresenterBase::Show() {
 
   if (widget_created) {
     widget_->ShowInactive();
+  }
 
-    if (auto* content = GetWebUIContent()) {
-      content->GetWebContents()->WasShown();
+  if (auto* content = GetWebUIContent()) {
+    // Notify the web contents about the show attempt, even if the widget
+    // wasn't created (e.g., due to no visible content). This ensures the web
+    // contents' internal state is accurate for subsequent visibility changes.
+    content->GetWebContents()->WasShown();
+
+    if (widget_created) {
       if (ShouldReceiveFocus()) {
         widget_->Activate();
         content->RequestFocus();

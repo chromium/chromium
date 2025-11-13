@@ -16,6 +16,7 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteResult, OmniboxPopupSelection, PageCallbackRouter, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {getCss} from './app.css.js';
@@ -73,6 +74,15 @@ export class OmniboxPopupAppElement extends I18nMixinLit
         reflect: true,
       },
 
+      /**
+       * Whether matches are visible, as some may be hidden by filtering rules
+       * (e.g., Gemini suggestions).
+       */
+      hasVisibleMatches_: {
+        type: Boolean,
+        reflect: true,
+      },
+
       result_: {type: Object},
       searchboxLayoutMode_: {type: String},
       showContextEntrypoint_: {type: Boolean},
@@ -83,6 +93,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       canShowSecondarySideMediaQueryList.matches;
   accessor hasSecondarySide: boolean = false;
   accessor isDebug: boolean = false;
+  protected accessor hasVisibleMatches_: boolean = false;
   protected accessor result_: AutocompleteResult|null = null;
   protected accessor searchboxLayoutMode_: string =
       loadTimeData.getString('searchboxLayoutMode');
@@ -132,6 +143,18 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     this.callbackRouter_.removeListener(this.selectionChangedListenerId_);
     canShowSecondarySideMediaQueryList.removeEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('result_')) {
+      this.hasVisibleMatches_ =
+          this.result_?.matches.some(match => !match.isHidden) ?? false;
+    }
   }
 
   private onCanShowSecondarySideChanged_(e: MediaQueryListEvent) {
