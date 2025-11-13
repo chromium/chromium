@@ -36,8 +36,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/components/scalable_iph/scalable_iph.h"
-#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "chromeos/printing/printing_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -202,14 +200,6 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
           << "Printer was removed while job was in progress.  It cannot "
              "be tracked";
       return false;
-    }
-
-    // Record print job with scalable IPH framework.
-    scalable_iph::ScalableIph* scalable_iph =
-        ScalableIphFactory::GetForBrowserContext(profile);
-    if (scalable_iph) {
-      scalable_iph->RecordEvent(
-          scalable_iph::ScalableIph::Event::kPrintJobCreated);
     }
 
     // Create a new print job.

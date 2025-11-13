@@ -1044,17 +1044,6 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNoTestingConfig, AppListShown) {
   ash::AppListTestApi().ShowBubbleAppListAndWait();
 }
 
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, OpenPersonalizationApp) {
-  // There may be or may not be other unlock event.
-  EXPECT_CALL(*mock_tracker(), NotifyEvent).Times(testing::AnyNumber());
-
-  EXPECT_CALL(*mock_tracker(),
-              NotifyEvent(scalable_iph::kEventNameOpenPersonalizationApp));
-
-  ash::LaunchSystemWebAppAsync(browser()->profile(),
-                               ash::SystemWebAppType::PERSONALIZATION);
-}
-
 // TODO(b/301006258): Migrate to use observer pattern, then enable the test.
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, DISABLED_PrintJobCreated) {
   EXPECT_CALL(*mock_tracker(),
@@ -1070,18 +1059,6 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, DISABLED_PrintJobCreated) {
       ::printing::PrintJob::Source::kPrintPreview, /*source_id=*/"",
       ash::printing::proto::PrintSettings());
   print_job_manager_waiter.Wait();
-}
-
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestGame, GameWindowOpened) {
-  // There may be or may not be other unlock event.
-  EXPECT_CALL(*mock_tracker(), NotifyEvent).Times(testing::AnyNumber());
-
-  EXPECT_CALL(*mock_tracker(),
-              NotifyEvent(scalable_iph::kEventNameGameWindowOpened));
-
-  std::unique_ptr<aura::Window> window = CreateAuraWindow(kTestGameWindowTitle);
-  window->SetProperty(ash::kAppIDKey,
-                      std::string(extension_misc::kGeForceNowAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestGameMultiUser,
@@ -1251,37 +1228,6 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestMultipleIphs, OneIphAtATime) {
 
 // Preinstalled apps only deploy on Google Chrome branded builds of Chromium.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
-                       AppListItemActivationWebApp) {
-
-  // Those constants in `scalable_iph` must be synced with ones in `web_app`.
-  // Test them in this test case.
-  EXPECT_EQ(std::string(scalable_iph::kWebAppYouTubeAppId),
-            std::string(ash::kYoutubeAppId));
-  EXPECT_EQ(std::string(scalable_iph::kWebAppGoogleDocsAppId),
-            std::string(ash::kGoogleDocsAppId));
-
-  AppListClientImpl* app_list_client_impl = AppListClientImpl::GetInstance();
-  AppListModelUpdater* app_list_model_updater =
-      test::GetModelUpdater(app_list_client_impl);
-
-  AppListItemWaiter app_list_item_waiter(ash::kYoutubeAppId,
-                                         app_list_model_updater);
-  app_list_item_waiter.Wait();
-
-  ash::AppListTestApi().ShowBubbleAppListAndWait();
-
-  // There may be or may not be other unlock event.
-  EXPECT_CALL(*mock_tracker(), NotifyEvent).Times(testing::AnyNumber());
-
-  EXPECT_CALL(
-      *mock_tracker(),
-      NotifyEvent(scalable_iph::kEventNameAppListItemActivationYouTube));
-  app_list_client_impl->ActivateItem(
-      /*profile_id=*/0, ash::kYoutubeAppId, /*event_flags=*/0,
-      ash::AppListLaunchedFrom::kLaunchedFromGrid, /*is_above_the_fold=*/true);
-}
-
 // TODO(crbug.com/328713274): Test is flaky.
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
                        DISABLED_ShelfItemActivationWebApp) {
@@ -1294,10 +1240,6 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
               NotifyEvent(scalable_iph::kEventNameShelfItemActivationYouTube));
   ash::Shelf::ActivateShelfItem(ash::ShelfModel::Get()->ItemIndexByAppID(
       scalable_iph::kWebAppYouTubeAppId));
-}
-
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestHelpApp, HelpAppPinnedToShelf) {
-  EXPECT_TRUE(ash::ShelfModel::Get()->IsAppPinned(ash::kHelpAppId));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

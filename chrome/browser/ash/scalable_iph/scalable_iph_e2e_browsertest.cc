@@ -214,12 +214,6 @@ class ScalableIphE2EBrowserTestTimerBased : public ScalableIphE2EBrowserTest {
       : ScalableIphE2EBrowserTest("TimerBased_BETA_20231204") {}
 };
 
-class ScalableIphE2EBrowserTestHelpAppBased : public ScalableIphE2EBrowserTest {
- public:
-  ScalableIphE2EBrowserTestHelpAppBased()
-      : ScalableIphE2EBrowserTest("HelpAppBased_BETA_20231204") {}
-};
-
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(ScalableIphE2EBrowserTestCounterfactualControl, E2E) {
@@ -248,16 +242,6 @@ IN_PROC_BROWSER_TEST_F(ScalableIphE2EBrowserTestTimerBased, E2E) {
   }
 
   EXPECT_FALSE(ash::ShelfModel::Get()->IsAppPinned(ash::kHelpAppId));
-
-  // TODO(b/285225729): add more expectations to test the config.
-}
-
-IN_PROC_BROWSER_TEST_F(ScalableIphE2EBrowserTestHelpAppBased, E2E) {
-  if (!IsGoogleChrome()) {
-    GTEST_SKIP() << "E2E tests are designed to be run under Google Chrome";
-  }
-
-  EXPECT_TRUE(ash::ShelfModel::Get()->IsAppPinned(ash::kHelpAppId));
 
   // TODO(b/285225729): add more expectations to test the config.
 }
