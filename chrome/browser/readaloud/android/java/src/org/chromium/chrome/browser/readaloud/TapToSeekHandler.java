@@ -83,6 +83,9 @@ public class TapToSeekHandler {
                 // Last needle not matched, try with the word and +15 characters.
                 substringStartIndex = beginOffset;
                 substringEndIndex = Math.min(content.length() - 1, endOffset + 15);
+                if (substringStartIndex > substringEndIndex) {
+                  return;
+                }
                 needle =
                         content.substring(substringStartIndex, substringEndIndex)
                                 .trim()
