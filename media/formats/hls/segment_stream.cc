@@ -60,6 +60,18 @@ SegmentStream::SegmentStream(scoped_refptr<MediaPlaylist> playlist,
     segments_.push(segment);
     highest_segment_index_ = highest_segment_index_.MaxOf(*segment);
   }
+
+  if (!seekable_) {
+    SkipEarlySegmentsForLiveStream();
+  }
+}
+
+void SegmentStream::SkipEarlySegmentsForLiveStream() {
+  // This method can only be called on non-seekable (live) segment streams.
+  CHECK(!seekable_);
+  while (segments_.size() > 3) {
+    segments_.pop();
+  }
 }
 
 SegmentInfo SegmentStream::GetNextSegment() {
@@ -121,6 +133,8 @@ void SegmentStream::SetNewPlaylist(scoped_refptr<MediaPlaylist> playlist) {
     return;
   }
 
+  bool should_flush_live_segment_queue = !seekable_ && Exhausted();
+
   bool must_keep_encrypted_ = false;
   if (!Exhausted()) {
     // If the head is a non-fresh encrypted segment, keep it.
@@ -160,6 +174,10 @@ void SegmentStream::SetNewPlaylist(scoped_refptr<MediaPlaylist> playlist) {
   }
 
   segments_ = std::move(new_queue);
+
+  if (should_flush_live_segment_queue) {
+    SkipEarlySegmentsForLiveStream();
+  }
 }
 
 base::TimeDelta SegmentStream::GetMaxDuration() const {

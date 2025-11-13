@@ -499,12 +499,12 @@ TEST_F(HlsManifestDemuxerEngineTest, TestLivePlaybackManifestUpdates) {
   EXPECT_CALL(*mock_mdeh_, AppendAndParseData("primary", _, _, _))
       .WillRepeatedly(Return(true));
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-      "http://media.example.com/a.ts", "Cheese in a cstring is string cheese.");
+      "http://media.example.com/b.ts", "Cheese in a cstring is string cheese.");
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-      "http://media.example.com/b.ts",
+      "http://media.example.com/c.ts",
       "Tomatoes are a fruit. Ketchup is a jam.");
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
-      "http://media.example.com/c.ts", "You've never been in an empty room.");
+      "http://media.example.com/d.ts", "You've never been in an empty room.");
 
   Ranges<base::TimeDelta> after_seg_a;
   after_seg_a.Add(base::Seconds(0), base::Seconds(9));

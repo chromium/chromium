@@ -77,6 +77,64 @@ const std::string kSecondFetchLivePlaylist =
     "#EXTINF:2.00000,\n"
     "playlist_4500Kb_14551358.ts\n";
 
+constexpr char kInitialFetchLongPlaylist[] =
+    "#EXTM3U\n"
+    "#EXT-X-VERSION:3\n"
+    "#EXT-X-TARGETDURATION:10\n"
+    "#EXT-X-MEDIA-SEQUENCE:14551245\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551245.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551246.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551247.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551248.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551249.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551250.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551251.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551252.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551253.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551254.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551255.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551256.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551257.ts\n";
+
+const std::string kSecondFetchLiveLongPlaylist =
+    "#EXTM3U\n"
+    "#EXT-X-VERSION:3\n"
+    "#EXT-X-TARGETDURATION:10\n"
+    "#EXT-X-MEDIA-SEQUENCE:14551349\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551349.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551350.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551351.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551352.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551353.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551354.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551355.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551356.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551357.ts\n"
+    "#EXTINF:10.00000,\n"
+    "playlist_4500Kb_14551358.ts\n";
+
 const std::string kAESContent =
     "#EXTM3U\n"
     "#EXT-X-VERSION:3\n"
@@ -426,13 +484,13 @@ TEST_F(HlsRenditionImplUnittest, TestCreateRenditionPaused) {
   ASSERT_NE(rendition, nullptr);
   ASSERT_EQ(rendition->GetDuration(), std::nullopt);
 
-  // CheckState causes the rentidion to:
+  // CheckState causes the rendition to:
   // Check buffered ranges first
   RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
                         base::Seconds(5));
   // The first segment will be queried
   std::string tscontent = "tscontent";
-  RespondToUrl("http://example.com/playlist_4500Kb_14551245.ts", tscontent);
+  RespondToUrl("http://example.com/playlist_4500Kb_14551255.ts", tscontent);
   // Then appended.
   EXPECT_CALL(*mock_mdeh_,
               AppendAndParseData(_, _, _, base::as_byte_span(tscontent)))
@@ -457,7 +515,7 @@ TEST_F(HlsRenditionImplUnittest, TestPausedRenditionHasSomeData) {
 
   // The next unqueried segment will be queried
   std::string tscontent = "tscontent";
-  RespondToUrl("http://example.com/playlist_4500Kb_14551245.ts", tscontent);
+  RespondToUrl("http://example.com/playlist_4500Kb_14551255.ts", tscontent);
   // Then appended.
   EXPECT_CALL(*mock_mdeh_,
               AppendAndParseData(_, _, _, base::as_byte_span(tscontent)))
@@ -540,6 +598,18 @@ TEST_F(HlsRenditionImplUnittest, TestRenditionHasEnoughDataDeleteOldContent) {
   EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), base::Seconds(15)));
   task_environment_.FastForwardBy(base::Seconds(25));
 
+  // There are only three segments (6 seconds) left in the buffer, so we'll
+  // pull for manifest updates.
+  EXPECT_CALL(*mock_hrh_, UpdateRenditionManifestUri("test", _, _))
+      .WillOnce([&rendition](std::string role, GURL uri,
+                             HlsDemuxerStatusCallback cb) {
+        auto parsed = hls::MediaPlaylist::Parse(
+            kSecondFetchLivePlaylist, GURL("http://example.com"), 3, nullptr);
+        CHECK(parsed.has_value());
+        rendition->UpdatePlaylist(std::move(parsed).value());
+        std::move(cb).Run(OkStatus());
+      });
+
   // CheckState should in this case respond with a delay of 17 - 10 / 2 seconds.
   rendition->CheckState(base::Seconds(25), 0.0,
                         BindCheckState(base::Seconds(12)));
@@ -560,7 +630,7 @@ TEST_F(HlsRenditionImplUnittest, TestStopLive) {
 
 TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   auto rendition =
-      MakeLiveRendition(GURL("http://example.com"), kInitialFetchPlaylist);
+      MakeLiveRendition(GURL("http://example.com"), kInitialFetchLongPlaylist);
   ASSERT_NE(rendition, nullptr);
   ASSERT_EQ(rendition->GetDuration(), std::nullopt);
 
@@ -575,7 +645,7 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   // the media time (0.0), and so a response to check state again in 0 seconds
   // will happen.
   std::string tscontent = "tscontent";
-  RespondToUrl("http://example.com/playlist_4500Kb_14551245.ts", tscontent);
+  RespondToUrl("http://example.com/playlist_4500Kb_14551255.ts", tscontent);
   RequireAppend(base::as_byte_span(tscontent));
   RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
                         base::Seconds(2));
@@ -616,23 +686,24 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
 
   // Now the user waits for 190 seconds. Media time hasn't moved, so a seek
   // will be required. The segment queue will be reset, and old data will be
-  // cleared (190 + media time (10) + segment_duration (2)). Then a new manifest
+  // cleared (190 + mediatime (10) + segment_duration (10)). Then a new manifest
   // will be fetched, and the first segment will be loaded. The segment data
   // handler will check ranges to see if the time is found, and then the seek
   // handler will check ranges to get the new seek point. Then a seek will be
   // requested to the start of the range.
   std::string newcontent = "newcontent";
-  EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), base::Seconds(202)));
+  EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), base::Seconds(210)));
   EXPECT_CALL(*mock_hrh_, UpdateRenditionManifestUri("test", _, _))
       .WillOnce([&rendition](std::string role, GURL uri,
                              HlsDemuxerStatusCallback cb) {
-        auto parsed = hls::MediaPlaylist::Parse(
-            kSecondFetchLivePlaylist, GURL("http://example.com"), 3, nullptr);
+        auto parsed =
+            hls::MediaPlaylist::Parse(kSecondFetchLiveLongPlaylist,
+                                      GURL("http://example.com"), 3, nullptr);
         CHECK(parsed.has_value());
         rendition->UpdatePlaylist(std::move(parsed).value());
         std::move(cb).Run(OkStatus());
       });
-  RespondToUrl("http://example.com/playlist_4500Kb_14551349.ts", newcontent);
+  RespondToUrl("http://example.com/playlist_4500Kb_14551356.ts", newcontent);
   RequireAppend(base::as_byte_span(newcontent));
   RespondWithRangeTwice(base::Seconds(190), base::Seconds(202),
                         base::Seconds(190), base::Seconds(202));
@@ -648,7 +719,7 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   RespondWithRangeTwice(base::Seconds(0), base::Seconds(202), base::Seconds(0),
                         base::Seconds(222));
   newcontent = "blah";
-  RespondToUrl("http://example.com/playlist_4500Kb_14551350.ts", "blah");
+  RespondToUrl("http://example.com/playlist_4500Kb_14551357.ts", "blah");
   RequireAppend(base::as_byte_span(newcontent));
   rendition->CheckState(base::Seconds(200), 1.0,
                         BindCheckState(base::Seconds(0)));
@@ -656,10 +727,10 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
 
   // Now, finally, we've satisfied the buffer, so we can clear old segments,
   // and the loop can pause for (22 - 10/2) or 17 seconds.
-  // Old data is 200 - (10 + 2*segment_duration), or 200 - max(10 + 2*2) = 190.
+  // Old data is 200 - max(10, 2*segment_duration), or 200 - max(10, 2*10) = 180
 
   RespondWithRange(base::Seconds(0), base::Seconds(222));
-  EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), base::Seconds(190)));
+  EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), base::Seconds(180)));
   rendition->CheckState(base::Seconds(200), 1.0,
                         BindCheckState(base::Seconds(17)));
   task_environment_.RunUntilIdle();
@@ -992,7 +1063,7 @@ TEST_F(HlsRenditionImplUnittest, TestRemoveOldDataForSkipRemovesAllBuffers) {
 
 TEST_F(HlsRenditionImplUnittest, SeekWithBadContentCausesError) {
   auto rendition =
-      MakeLiveRendition(GURL("http://example.com"), kInitialFetchPlaylist);
+      MakeLiveRendition(GURL("http://example.com"), kInitialFetchLongPlaylist);
   ASSERT_NE(rendition, nullptr);
   ASSERT_EQ(rendition->GetDuration(), std::nullopt);
 
@@ -1007,7 +1078,7 @@ TEST_F(HlsRenditionImplUnittest, SeekWithBadContentCausesError) {
   // the media time (0.0), and so a response to check state again in 0 seconds
   // will happen.
   std::string tscontent = "tscontent";
-  RespondToUrl("http://example.com/playlist_4500Kb_14551245.ts", tscontent);
+  RespondToUrl("http://example.com/playlist_4500Kb_14551255.ts", tscontent);
   RequireAppend(base::as_byte_span(tscontent));
   RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
                         base::Seconds(2));
@@ -1018,7 +1089,7 @@ TEST_F(HlsRenditionImplUnittest, SeekWithBadContentCausesError) {
   // After the init process finishes, lets pretend there are 32 seconds of data
   // in the buffer. A user presses play after 9 second of the video being
   // paused. Rate goes to 1, and the delta between now and the pause timestamp
-  // is 9 seconds, which is well within the duration of the manifest. The
+  // is 9 seconds, which is well within the duration of the manifest (20s). The
   // rendition impl will request a seek to 9 seconds, and return no timestamp.
   EXPECT_CALL(*mock_mdeh_, RequestSeek(base::Seconds(9)));
   task_environment_.FastForwardBy(base::Seconds(9));
@@ -1046,7 +1117,7 @@ TEST_F(HlsRenditionImplUnittest, SeekWithBadContentCausesError) {
   rendition->CheckState(base::Seconds(10), 0.0, BindCheckState(kNoTimestamp));
   task_environment_.RunUntilIdle();
 
-  EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), base::Seconds(202)));
+  EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), base::Seconds(210)));
   EXPECT_CALL(*mock_hrh_, UpdateRenditionManifestUri("test", _, _))
       .WillOnce([&rendition](std::string role, GURL uri,
                              HlsDemuxerStatusCallback cb) {
