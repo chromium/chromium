@@ -30,6 +30,8 @@ class HttpRequestHeaders;
 
 namespace safe_browsing {
 
+struct V4ProtocolConfig;
+
 // The size of the hash prefix, in bytes. It should be between 4 to 32 (full
 // hash).
 using PrefixSize = size_t;
@@ -51,36 +53,6 @@ using ListUpdateRequest = FetchThreatListUpdatesRequest::ListUpdateRequest;
 using ListUpdateResponse = FetchThreatListUpdatesResponse::ListUpdateResponse;
 
 void SetSbV4UrlPrefixForTesting(const char* url_prefix);
-
-// Config passed to the constructor of a V4 protocol manager.
-struct V4ProtocolConfig {
-  // The safe browsing client name sent in each request.
-  std::string client_name;
-
-  // Disable auto-updates using a command line switch.
-  bool disable_auto_update;
-
-  // The Google API key.
-  std::string key_param;
-
-  // Current product version sent in each request.
-  std::string version;
-
-  V4ProtocolConfig(const std::string& client_name,
-                   bool disable_auto_update,
-                   const std::string& key_param,
-                   const std::string& version);
-  V4ProtocolConfig(const V4ProtocolConfig& other);
-  ~V4ProtocolConfig();
-
- private:
-  V4ProtocolConfig() = delete;
-};
-
-// Get the v4 protocol config struct with a given client name, and ability to
-// enable/disable database auto update.
-V4ProtocolConfig GetV4ProtocolConfig(const std::string& client_name,
-                                     bool disable_auto_update);
 
 // Returns the URL to use for sending threat reports and other Safe Browsing
 // hits back to Safe Browsing service.

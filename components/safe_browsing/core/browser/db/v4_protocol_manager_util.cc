@@ -18,7 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/version_info/version_info.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_config.h"
 #include "crypto/sha2.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/ip_address.h"
@@ -77,13 +77,6 @@ std::string Escape(const std::string& url) {
 }
 
 }  // namespace
-
-V4ProtocolConfig GetV4ProtocolConfig(const std::string& client_name,
-                                     bool disable_auto_update) {
-  return V4ProtocolConfig(client_name, disable_auto_update,
-                          google_apis::GetAPIKey(),
-                          std::string(version_info::GetVersionNumber()));
-}
 
 void SetSbV4UrlPrefixForTesting(const char* url_prefix) {
   g_sbv4_url_prefix_for_testing = url_prefix;
@@ -239,19 +232,6 @@ ListIdentifier::ListIdentifier(const ListUpdateResponse& response)
     : ListIdentifier(response.platform_type(),
                      response.threat_entry_type(),
                      response.threat_type()) {}
-
-V4ProtocolConfig::V4ProtocolConfig(const std::string& client_name,
-                                   bool disable_auto_update,
-                                   const std::string& key_param,
-                                   const std::string& version)
-    : client_name(client_name),
-      disable_auto_update(disable_auto_update),
-      key_param(key_param),
-      version(version) {}
-
-V4ProtocolConfig::V4ProtocolConfig(const V4ProtocolConfig& other) = default;
-
-V4ProtocolConfig::~V4ProtocolConfig() = default;
 
 // static
 base::TimeDelta V4ProtocolManagerUtil::GetNextBackOffInterval(

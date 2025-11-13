@@ -266,8 +266,6 @@ source_set("browser") {
     "//components/content_capture/android",
     "//components/content_capture/browser",
     "//components/content_relationship_verification",
-    "//components/embedder_support/android:context_menu",
-    "//components/metrics:net",
 
     # Called via JNI in CrashpadMain
     "//components/crash/android:crashpad_main",
@@ -275,6 +273,7 @@ source_set("browser") {
     "//components/crash/core/app",
     "//components/embedder_support",
     "//components/embedder_support:user_agent",
+    "//components/embedder_support/android:context_menu",
     "//components/embedder_support/android:util",
     "//components/embedder_support/android:web_contents_delegate",
     "//components/embedder_support/origin_trials",
@@ -288,6 +287,7 @@ source_set("browser") {
     "//components/metrics",
     "//components/metrics:component_metrics",
     "//components/metrics:content",
+    "//components/metrics:net",
     "//components/minidump_uploader",
     "//components/navigation_interception",
     "//components/network_hints/browser",
@@ -316,6 +316,7 @@ source_set("browser") {
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:safebrowsing_proto",
+    "//components/safe_browsing/core/browser/db:v4_protocol_config",
     "//components/safe_browsing/core/browser/web_ui:local_state_delegate",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",

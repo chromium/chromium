@@ -27,7 +27,10 @@ source_set("browser") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [ "//google_apis" ]
+  public_deps = [
+    "//components/safe_browsing/core/browser/db:v4_protocol_config",
+    "//google_apis",
+  ]
 
   deps = [
     "//base",

@@ -652,6 +652,7 @@ source_set("browser_sources") {
 
   public_deps = [
     "//base",
+    "//components/safe_browsing/core/browser/db:v4_protocol_config",
     "//components/url_matcher",
     "//components/url_pattern_index",
     "//components/value_store",
