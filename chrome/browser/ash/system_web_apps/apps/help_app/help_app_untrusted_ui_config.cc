@@ -12,7 +12,9 @@
 #include "ash/shell.h"
 #include "ash/webui/help_app_ui/help_app_untrusted_ui.h"
 #include "ash/webui/help_app_ui/url_constants.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -52,6 +54,38 @@
 namespace ash {
 
 namespace {
+
+// Refer https://crbug.com/458812793 for the source of this set.
+constexpr auto kCrosSwitcherCountriesSet =
+    base::MakeFixedFlatSet<std::string_view>(
+        {"us", "ae", "ar", "at", "au", "be", "bg", "br", "ca", "ch", "cl",
+         "co", "cz", "de", "ee", "es", "fi", "fr", "gb", "gr", "hk", "hr",
+         "id", "ie", "il", "in", "is", "it", "jp", "kr", "kw", "kz", "mx",
+         "my", "ng", "nl", "no", "nz", "pe", "ph", "pl", "pt", "ro", "ru",
+         "sa", "se", "sg", "sk", "th", "tr", "tw", "ua", "uy", "vn", "za"});
+
+bool IsCrosSwitcherEnabled(base::FeatureList* feature_list,
+                           variations::VariationsService* variations_service) {
+  if (!feature_list) {
+    // Disables Switcher as a fail-safe behavior.
+    return false;
+  }
+
+  // If feature flag is overridden, respect the value regardless of other
+  // conditions.
+  if (feature_list->IsFeatureOverridden(features::kCrosSwitcher.name)) {
+    return ash::features::IsCrosSwitcherEnabled();
+  }
+
+  if (!variations_service) {
+    // Disables Switcher as a fail-safe behavior.
+    return false;
+  }
+
+  return ash::features::IsCrosSwitcherEnabled() &&
+         kCrosSwitcherCountriesSet.contains(
+             variations_service->GetStoredPermanentCountry());
+}
 
 void PopulateLoadTimeData(content::WebUI* web_ui,
                           content::WebUIDataSource* source) {
@@ -118,8 +152,10 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
         "isVcBackgroundReplaceAllowed",
         ash::features::IsVcBackgroundReplaceEnabled() &&
             ash::personalization_app::IsEligibleForSeaPen(profile));
-    source->AddBoolean("isCrosSwitcherEnabled",
-                       ash::features::IsCrosSwitcherEnabled());
+    source->AddBoolean(
+        "isCrosSwitcherEnabled",
+        IsCrosSwitcherEnabled(base::FeatureList::GetInstance(),
+                              g_browser_process->variations_service()));
     source->AddBoolean(
         "featureManagementShowoff",
         base::FeatureList::IsEnabled(ash::features::kFeatureManagementShowoff));
@@ -227,6 +263,14 @@ bool HelpAppUntrustedUIConfig::IsWebUIEnabled(
   // TODO(b/300226633): Maybe use `IsUserBrowserContext` to filter all ash
   // profiles.
   return !IsShimlessRmaAppBrowserContext(browser_context);
+}
+
+// static
+bool HelpAppUntrustedUIConfig::IsCrosSwitcherEnabledForTesting(
+    base::FeatureList* feature_list,
+    variations::VariationsService* variations_service) {
+  CHECK_IS_TEST();
+  return IsCrosSwitcherEnabled(feature_list, variations_service);
 }
 
 std::unique_ptr<content::WebUIController>

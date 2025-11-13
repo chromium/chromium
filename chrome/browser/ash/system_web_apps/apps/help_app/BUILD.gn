@@ -25,6 +25,7 @@ static_library("help_app") {
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/experiences/system_web_apps/types",
+    "//components/variations/service",
     "//content/public/browser",
     "//ui/gfx/geometry",
   ]
@@ -147,6 +148,7 @@ source_set("unit_tests") {
   sources = [
     "help_app_notification_controller_unittest.cc",
     "help_app_ui_delegate_unittest.cc",
+    "help_app_untrusted_ui_config_unittest.cc",
   ]
 
   deps = [
@@ -166,6 +168,7 @@ source_set("unit_tests") {
     "//components/language/core/browser",
     "//components/pref_registry",
     "//components/prefs:test_support",
+    "//components/variations/service",
     "//components/version_info",
     "//content/test:test_support",
     "//testing/gtest",
