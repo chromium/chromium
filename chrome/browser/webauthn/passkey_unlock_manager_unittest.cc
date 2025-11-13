@@ -109,7 +109,7 @@ class PasskeyUnlockManagerTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_{device::kPasskeyUnlockErrorUi};
+  base::test::ScopedFeatureList feature_list_{device::kPasskeyUnlockManager};
   raw_ptr<PasskeyUnlockManager> passkey_unlock_manager_;
   raw_ptr<syncer::TestSyncService> test_sync_service_;
   std::unique_ptr<TestingProfile> profile_;

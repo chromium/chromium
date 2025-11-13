@@ -10418,6 +10418,7 @@ from previous Chrome versions.
   <int value="-1320724945" label="WebNNCoreML:disabled"/>
   <int value="-1319688939" label="ignore-gpu-blacklist"/>
   <int value="-1318914924" label="OverflowIconsForMediaControls:enabled"/>
+  <int value="-1318498703" label="PasskeyUnlockManager:enabled"/>
   <int value="-1317782739" label="OmniboxAsyncViewInflation:enabled"/>
   <int value="-1317768255" label="PermissionStorageAccessAPI:enabled"/>
   <int value="-1316769004" label="CrossOriginOpenerPolicyReporting:disabled"/>
@@ -11680,6 +11681,7 @@ from previous Chrome versions.
   <int value="-870118210" label="AutofillEnableCardBenefitsSync:enabled"/>
   <int value="-869690461" label="ShoppingListTrackByDefault:enabled"/>
   <int value="-869149210" label="ProjectorUseDVSPlaybackEndpoint:enabled"/>
+  <int value="-869023958" label="PasskeyUnlockManager:disabled"/>
   <int value="-868138290" label="CrostiniPortForwarding:disabled"/>
   <int value="-868041476" label="OmniboxFocusTriggersSRPZeroSuggest:enabled"/>
   <int value="-867571486" label="PrivateStateTokens:disabled"/>

@@ -88,7 +88,7 @@ class PasskeyUnlockManagerBrowserTest : public EnclaveAuthenticatorTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{device::kPasskeyUnlockErrorUi};
+  base::test::ScopedFeatureList feature_list_{device::kPasskeyUnlockManager};
 };
 
 IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest, IsCreated) {

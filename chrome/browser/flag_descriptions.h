@@ -3400,7 +3400,13 @@ inline constexpr char kPasskeyUnlockErrorUiName[] = "Passkey Unlock Error UI";
 inline constexpr char kPasskeyUnlockErrorUiDescription[] =
     "Enables showing the passkey unlock error UI to passkey users in case when "
     "their access to passkeys is “locked” and when they have an available user "
-    "verification mechanism (either a system UV or a GPM PIN).";
+    "verification mechanism (either a system UV or a GPM PIN). This flag "
+    "requires the flag `PasskeyUnlockManager` to be active.";
+
+inline constexpr char kPasskeyUnlockManagerName[] = "Passkey Unlock Manager";
+inline constexpr char kPasskeyUnlockManagerDescription[] =
+    "Enables the Passkey Unlock Manager, which tracks the state of passkeys "
+    "and publishes the corresponding metrics.";
 
 inline constexpr char kPasswordFormClientsideClassifierName[] =
     "Clientside password form classifier.";
