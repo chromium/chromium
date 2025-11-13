@@ -37,8 +37,7 @@ void DoCanonicalizePathComponent(
     for (size_t i = 0; i < source_value.size(); i++) {
       UCHAR uch = static_cast<UCHAR>(source_value[i]);
       if (IsInC0ControlPercentEncodeSet(uch)) {
-        AppendUTF8EscapedChar(source_value.data(), &i, source_value.size(),
-                              output);
+        AppendUtf8EscapedChar(source_value, &i, output);
       } else {
         output->push_back(static_cast<char>(uch));
       }

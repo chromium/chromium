@@ -58,11 +58,11 @@ bool DoCanonicalizeMailtoUrl(const URLComponentSource<CHAR>& source,
     // Copy the path using path URL's more lax escaping rules.
     // We convert to UTF-8 and escape non-ASCII, but leave most
     // ASCII characters alone.
-    size_t end = static_cast<size_t>(parsed.path.end());
-    for (size_t i = static_cast<size_t>(parsed.path.begin); i < end; ++i) {
-      UCHAR uch = static_cast<UCHAR>(UNSAFE_TODO(source.path[i]));
+    auto path_view = parsed.path.as_string_view_on(source.path);
+    for (size_t i = 0; i < path_view.length(); ++i) {
+      UCHAR uch = static_cast<UCHAR>(path_view[i]);
       if (ShouldEncodeMailboxCharacter<UCHAR>(uch))
-        success &= AppendUTF8EscapedChar(source.path, &i, end, output);
+        success &= AppendUtf8EscapedChar(path_view, &i, output);
       else
         output->push_back(static_cast<char>(uch));
     }

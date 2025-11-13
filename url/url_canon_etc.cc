@@ -161,8 +161,7 @@ bool DoScheme(std::optional<std::basic_string_view<CHAR>> input,
 
       // This will escape the output and also handle encoding issues.
       // Ignore the return value since we already failed.
-      AppendUTF8EscapedChar(input_value.data(), &i, input_value.length(),
-                            output);
+      AppendUtf8EscapedChar(input_value, &i, output);
     }
   }
 
@@ -322,8 +321,7 @@ void DoCanonicalizeRef(std::optional<std::basic_string_view<CHAR>> input,
       else
         output->push_back(static_cast<char>(input_value[i]));
     } else {
-      AppendUTF8EscapedChar(input_value.data(), &i, input_value.length(),
-                            output);
+      AppendUtf8EscapedChar(input_value, &i, output);
     }
   }
   out_ref->len = output->length() - out_ref->begin;

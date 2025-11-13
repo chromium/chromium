@@ -256,8 +256,7 @@ TEST_F(URLCanonTest, UTF) {
       size_t input_len = strlen(utf_case.input8);
       bool success = true;
       for (size_t ch = 0; ch < input_len; ch++) {
-        success &=
-            AppendUTF8EscapedChar(utf_case.input8, &ch, input_len, &output);
+        success &= AppendUtf8EscapedChar(utf_case.input8, &ch, &output);
       }
       output.Complete();
       EXPECT_EQ(utf_case.expected_success, success);
@@ -272,8 +271,7 @@ TEST_F(URLCanonTest, UTF) {
       size_t input_len = input_str.length();
       bool success = true;
       for (size_t ch = 0; ch < input_len; ch++) {
-        success &= AppendUTF8EscapedChar(input_str.c_str(), &ch, input_len,
-                                         &output);
+        success &= AppendUtf8EscapedChar(input_str, &ch, &output);
       }
       output.Complete();
       EXPECT_EQ(utf_case.expected_success, success);

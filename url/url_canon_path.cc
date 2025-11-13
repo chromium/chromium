@@ -199,8 +199,7 @@ bool DoPartialPathInternal(std::optional<std::basic_string_view<CHAR>> path,
       // do anything tricky with decoding/validating UTF-8. This function will
       // read one or two UTF-16 characters and append the output as UTF-8. This
       // call will be removed in 8-bit mode.
-      success &= AppendUTF8EscapedChar(path_value.data(), &i, path_value.size(),
-                                       output);
+      success &= AppendUtf8EscapedChar(path_value, &i, output);
     } else {
       // Normal ASCII character or 8-bit input, use the lookup table.
       unsigned char out_ch = static_cast<unsigned char>(uch);

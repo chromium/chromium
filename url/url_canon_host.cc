@@ -493,7 +493,7 @@ bool DoOpaqueHost(const std::basic_string_view<CharT> host,
     // > 4. Return the result of running UTF-8 percent-encode on input using
     // > the C0 control percent-encode set.
     if (IsInC0ControlPercentEncodeSet(ch)) {
-      AppendUTF8EscapedChar(host.data(), &i, host_len, &output);
+      AppendUtf8EscapedChar(host, &i, &output);
     } else {
       output.push_back(ch);
     }

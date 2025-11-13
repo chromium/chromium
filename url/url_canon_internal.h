@@ -262,9 +262,8 @@ extern const base_icu::UChar32 kUnicodeReplacementCharacter;
 // can be incremented in a loop and will be ready for the next character.
 // (for a single-byte ASCII character, it will not be changed).
 COMPONENT_EXPORT(URL)
-bool ReadUTFCharLossy(const char* str,
+bool ReadUtfCharLossy(std::string_view str,
                       size_t* begin,
-                      size_t length,
                       base_icu::UChar32* code_point_out);
 
 // Generic To-UTF-8 converter. This will call the given append method for each
@@ -334,9 +333,8 @@ inline void AppendUTF8EscapedValue(base_icu::UChar32 char_value,
 // can be incremented in a loop and will be ready for the next character.
 // (for a single-16-bit-word character, it will not be changed).
 COMPONENT_EXPORT(URL)
-bool ReadUTFCharLossy(const char16_t* str,
+bool ReadUtfCharLossy(std::u16string_view str,
                       size_t* begin,
-                      size_t length,
                       base_icu::UChar32* code_point_out);
 
 // Equivalent to U16_APPEND_UNSAFE in ICU but uses our output method.
@@ -371,29 +369,27 @@ inline void AppendUTF16Value(base_icu::UChar32 code_point,
 //
 // Assumes that ch[begin] is within range in the array, but does not assume
 // that any following characters are.
-inline bool AppendUTF8EscapedChar(const char16_t* str,
+inline bool AppendUtf8EscapedChar(std::u16string_view str,
                                   size_t* begin,
-                                  size_t length,
                                   CanonOutput* output) {
   // UTF-16 input. ReadUTFCharLossy will handle invalid characters for us and
   // give us the kUnicodeReplacementCharacter, so we don't have to do special
   // checking after failure, just pass through the failure to the caller.
   base_icu::UChar32 char_value;
-  bool success = ReadUTFCharLossy(str, begin, length, &char_value);
+  bool success = ReadUtfCharLossy(str, begin, &char_value);
   AppendUTF8EscapedValue(char_value, output);
   return success;
 }
 
 // Handles UTF-8 input. See the wide version above for usage.
-inline bool AppendUTF8EscapedChar(const char* str,
+inline bool AppendUtf8EscapedChar(std::string_view str,
                                   size_t* begin,
-                                  size_t length,
                                   CanonOutput* output) {
   // ReadUTFCharLossy will handle invalid characters for us and give us the
   // kUnicodeReplacementCharacter, so we don't have to do special checking
   // after failure, just pass through the failure to the caller.
   base_icu::UChar32 ch;
-  bool success = ReadUTFCharLossy(str, begin, length, &ch);
+  bool success = ReadUtfCharLossy(str, begin, &ch);
   AppendUTF8EscapedValue(ch, output);
   return success;
 }
