@@ -70,6 +70,8 @@ class TabStateStorageDatabase {
   // Saves a node to the database.
   bool SaveNode(OpenTransaction* transaction,
                 int id,
+                std::string window_tag,
+                bool is_off_the_record,
                 TabStorageType type,
                 std::string payload,
                 std::string children);

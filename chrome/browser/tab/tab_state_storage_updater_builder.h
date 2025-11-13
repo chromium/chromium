@@ -24,6 +24,8 @@ class TabStateStorageUpdaterBuilder {
   ~TabStateStorageUpdaterBuilder();
 
   void SaveNode(int id,
+                std::string window_tag,
+                bool is_off_the_record,
                 TabStorageType type,
                 std::unique_ptr<StoragePackage> package);
   void SaveNodePayload(int id, std::unique_ptr<Payload> payload);

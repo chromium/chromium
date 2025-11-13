@@ -105,9 +105,15 @@ void TabStateStorageService::Save(const TabInterface* tab) {
   std::unique_ptr<StoragePackage> package = packager_->Package(tab);
   DCHECK(package) << "Packager should return a package";
 
+  const TabCollection* parent = tab->GetParentCollection();
+  DCHECK(tab->GetParentCollection()) << "Tab must have a parent collection";
+  std::string window_tag = packager_->GetWindowTag(parent);
+  bool is_off_the_record = packager_->IsOffTheRecord(parent);
+
   int storage_id = GetStorageId(tab);
   TabStateStorageUpdaterBuilder builder;
-  builder.SaveNode(storage_id, TabStorageType::kTab, std::move(package));
+  builder.SaveNode(storage_id, std::move(window_tag), is_off_the_record,
+                   TabStorageType::kTab, std::move(package));
   tab_backend_->Update(builder.Build());
 }
 
@@ -118,10 +124,14 @@ void TabStateStorageService::Save(const TabCollection* collection) {
       packager_->Package(collection, *this);
   DCHECK(package) << "Packager should return a package";
 
+  std::string window_tag = packager_->GetWindowTag(collection);
+  bool is_off_the_record = packager_->IsOffTheRecord(collection);
+
   int storage_id = GetStorageId(collection);
   TabStorageType type = TabCollectionTypeToTabStorageType(collection->type());
   TabStateStorageUpdaterBuilder builder;
-  builder.SaveNode(storage_id, type, std::move(package));
+  builder.SaveNode(storage_id, std::move(window_tag), is_off_the_record, type,
+                   std::move(package));
   tab_backend_->Update(builder.Build());
 }
 

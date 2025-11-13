@@ -23,7 +23,9 @@ using OpenTransaction = TabStateStorageDatabase::OpenTransaction;
 
 // Update log:
 // ??-08-2025, Version 1 (pre-launch): Initial version of the database schema.
-const int kCurrentVersionNumber = 1;
+// 11-11-2025, Version 2 (pre-launch): Add window_tag and is_off_the_record
+// columns to the nodes table.
+const int kCurrentVersionNumber = 2;
 
 // The last version of the database schema that is compatible with the current
 // version. Any changes made to the database schema that would break
@@ -35,7 +37,7 @@ const int kCurrentVersionNumber = 1;
 // significant enough time (O(years)) have passed that there is no longer a
 // reasonable expectation that out-of-date users would be able to restore their
 // session.
-const int kCompatibleVersionNumber = 1;
+const int kCompatibleVersionNumber = 2;
 
 static_assert(
     kCurrentVersionNumber >= kCompatibleVersionNumber,
@@ -43,9 +45,9 @@ static_assert(
 
 constexpr char kTabsTableName[] = "nodes";
 
-bool CreateTable(sql::Database* db, base::cstring_view table_creation_script) {
-  DCHECK(db->IsSQLValid(table_creation_script));
-  return db->Execute(table_creation_script);
+bool ExecuteSql(sql::Database* db, base::cstring_view sql_command) {
+  DCHECK(db->IsSQLValid(sql_command)) << sql_command << " is not valid SQL.";
+  return db->Execute(sql_command);
 }
 
 bool CreateSchema(sql::Database* db, sql::MetaTable* meta_table) {
@@ -54,11 +56,26 @@ bool CreateSchema(sql::Database* db, sql::MetaTable* meta_table) {
   static constexpr char kCreateTabSchemaSql[] =
       "CREATE TABLE IF NOT EXISTS nodes("
       "id INTEGER PRIMARY KEY NOT NULL,"
+      "window_tag TEXT NOT NULL,"
+      "is_off_the_record INTEGER NOT NULL,"
       "type INTEGER NOT NULL,"
       "children BLOB,"
       "payload BLOB)";
 
-  return CreateTable(db, kCreateTabSchemaSql);
+  static constexpr char kCreateIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS nodes_window_index "
+      "ON nodes(window_tag, is_off_the_record)";
+
+  if (!ExecuteSql(db, kCreateTabSchemaSql)) {
+    DLOG(ERROR) << "Failed to create tab schema.";
+    return false;
+  }
+
+  if (!ExecuteSql(db, kCreateIndexSql)) {
+    DLOG(ERROR) << "Failed to create index.";
+    return false;
+  }
+  return true;
 }
 
 // TODO(crbug.com/459435876): Add histograms and enums to track database
@@ -177,6 +194,8 @@ bool TabStateStorageDatabase::Initialize() {
 
 bool TabStateStorageDatabase::SaveNode(OpenTransaction* transaction,
                                        int id,
+                                       std::string window_tag,
+                                       bool is_off_the_record,
                                        TabStorageType type,
                                        std::string payload,
                                        std::string children) {
@@ -185,8 +204,8 @@ bool TabStateStorageDatabase::SaveNode(OpenTransaction* transaction,
 
   static constexpr char kInsertNodeSql[] =
       "INSERT OR REPLACE INTO nodes"
-      "(id, type, payload, children)"
-      "VALUES (?,?,?,?)";
+      "(id, window_tag, is_off_the_record, type, payload, children)"
+      "VALUES (?,?,?,?,?,?)";
 
   DCHECK(db_->IsSQLValid(kInsertNodeSql));
 
@@ -194,9 +213,11 @@ bool TabStateStorageDatabase::SaveNode(OpenTransaction* transaction,
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertNodeSql));
 
   write_statement.BindInt(0, id);
-  write_statement.BindInt(1, static_cast<int>(type));
-  write_statement.BindBlob(2, std::move(payload));
-  write_statement.BindBlob(3, std::move(children));
+  write_statement.BindString(1, window_tag);
+  write_statement.BindInt(2, static_cast<int>(is_off_the_record));
+  write_statement.BindInt(3, static_cast<int>(type));
+  write_statement.BindBlob(4, std::move(payload));
+  write_statement.BindBlob(5, std::move(children));
 
   return write_statement.Run();
 }
