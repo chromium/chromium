@@ -24,8 +24,7 @@
 #include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
-#include "ip_protection_data_types.h"
-#include "net/base/features.h"
+  #include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -120,11 +119,6 @@ class MockIpProtectionCore : public IpProtectionCore {
   }
   void SetTrackingProtectionContentSetting(
       const ContentSettingsForOneType& settings) override {}
-  IpProxyStatus GetIpProxyStatus() override {
-    return IpProxyStatus::kUnavailable;
-  }
-  bool IsProxyBypassed() override { return false; }
-  void SetBypassProxy(bool bypass_proxy) override {}
 };
 
 class IpProtectionProxyConfigManagerImplTest : public testing::Test {

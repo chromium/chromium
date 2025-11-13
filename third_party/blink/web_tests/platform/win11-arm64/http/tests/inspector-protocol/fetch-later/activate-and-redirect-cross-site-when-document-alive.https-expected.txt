@@ -59,7 +59,6 @@ Network.requestWillBeSent{
             Server : Apache
             X-Powered-By : <string>
         }
-        isIpProtectionUsed : false
         mimeType : text/html
         protocol : http/1.1
         remoteIPAddress : <string>

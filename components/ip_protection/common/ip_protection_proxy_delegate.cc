@@ -141,12 +141,6 @@ ProxyResolutionResult IpProtectionProxyDelegate::ClassifyRequest(
     return ProxyResolutionResult::kHasSiteException;
   }
 
-  // Require kIpPrivacyEnableIppPanelInDevTools to enable the bypass.
-  if (net::features::kIpPrivacyEnableIppPanelInDevTools.Get() &&
-      ip_protection_core_->IsProxyBypassed()) {
-    return ProxyResolutionResult::kBypassedByDevTools;
-  }
-
   return ProxyResolutionResult::kAttemptProxy;
 }
 

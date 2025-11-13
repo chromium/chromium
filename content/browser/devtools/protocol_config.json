@@ -128,9 +128,7 @@
                   "setAcceptedEncodings",
                   "clearAcceptedEncodingsOverride",
                   "enableReportingApi",
-                  "setCookieControls",
-                  "getIPProtectionProxyStatus",
-                  "setIPProtectionProxyBypassEnabled"
+                  "setCookieControls"
                 ],
                 "include_events": ["requestWillBeSent", "responseReceived", "loadingFinished", "loadingFailed", "requestIntercepted", "signedExchangeReceived", "requestWillBeSentExtraInfo", "responseReceivedExtraInfo", "responseReceivedEarlyHints", "trustTokenOperationDone", "policyUpdated", "reportingApiReportAdded", "reportingApiReportUpdated", "reportingApiEndpointsChangedForOrigin"],
                 "async": [
@@ -145,8 +143,7 @@
                   "getResponseBody",
                   "getResponseBodyForInterception",
                   "takeResponseBodyForInterceptionAsStream",
-                  "loadNetworkResource",
-                  "getIPProtectionProxyStatus"
+                  "loadNetworkResource"
                 ]
             },
             {

@@ -198,9 +198,6 @@ class MockIpProtectionCore : public IpProtectionCore {
   }
   void SetTrackingProtectionContentSetting(
       const ContentSettingsForOneType& settings) override {}
-  IpProxyStatus GetIpProxyStatus() override { return IpProxyStatus::kOk; }
-  bool IsProxyBypassed() override { return false; }
-  void SetBypassProxy(bool bypass_proxy) override {}
   bool RequestShouldBeProxied(
       const GURL& request_url,
       const net::NetworkAnonymizationKey& network_anonymization_key) override {

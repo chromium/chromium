@@ -142,16 +142,6 @@ enum class MdlType {
 // unexpected and will be logged as such.
 std::vector<MdlType> FromMdlResourceProto(
     const masked_domain_list::Resource& resource);
-
-enum class IpProxyStatus {
-  kOk,
-  kFeatureNotEnabled,
-  kMaskedDomainListNotEnabled,
-  kMaskedDomainListNotPopulated,
-  kAuthTokensUnavailable,
-  kUnavailable,
-  kBypassedByDevTools
-};
 }  // namespace ip_protection
 
 #endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_DATA_TYPES_H_

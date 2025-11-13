@@ -18,7 +18,6 @@
 #include "components/content_settings/core/common/content_settings_rules.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
-#include "components/ip_protection/common/ip_protection_core_impl.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
@@ -292,50 +291,6 @@ void IpProtectionCoreImpl::SetTrackingProtectionContentSetting(
     const ContentSettingsForOneType& settings) {
   tp_content_settings_ =
       content_settings::HostIndexedContentSettings::Create(settings);
-}
-
-// Gets the IP Proxy Status to be exposed in DevTools. Any new statuses should
-// also be added to ProxyResolutionResult and ClassifyRequest in
-// ip_protection_proxy_delegate.
-IpProxyStatus IpProtectionCoreImpl::GetIpProxyStatus() {
-  if (!net::features::kIpPrivacyEnableIppPanelInDevTools.Get()) {
-    return IpProxyStatus::kUnavailable;
-  }
-
-  // TODO(crbug.com/440167934): once unit and browser tests include a case where
-  // the MaskedDomainList is populated, move this check down
-  if (bypassed_by_devtools_) {
-    return IpProxyStatus::kBypassedByDevTools;
-  }
-  // Checking conditions that may cause IP protection to not work when it is
-  // eligible to be run
-  if (!net::features::kIpPrivacyEnableIppInDevTools.Get() ||
-      !base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy)) {
-    return IpProxyStatus::kFeatureNotEnabled;
-  }
-  if (!masked_domain_list_manager_->IsEnabled()) {
-    return IpProxyStatus::kMaskedDomainListNotEnabled;
-  }
-  if (!IpProtectionCoreImpl::IsMdlPopulated()) {
-    return IpProxyStatus::kMaskedDomainListNotPopulated;
-  }
-  if (!AreAuthTokensAvailable()) {
-    return IpProxyStatus::kAuthTokensUnavailable;
-  }
-  return IsIpProtectionEnabled() ? IpProxyStatus::kOk
-                                 : IpProxyStatus::kUnavailable;
-}
-
-bool IpProtectionCoreImpl::IsProxyBypassed() {
-  return bypassed_by_devtools_;
-}
-
-void IpProtectionCoreImpl::SetBypassProxy(bool bypass_proxy) {
-  // Only allow enabling IP Protection bypass from Devtools if
-  // kIpPrivacyEnableIppPanelInDevTools flag is enabled
-  if (net::features::kIpPrivacyEnableIppPanelInDevTools.Get()) {
-    bypassed_by_devtools_ = bypass_proxy;
-  }
 }
 
 void IpProtectionCoreImpl::RecordTokenDemand(size_t chain_index) {

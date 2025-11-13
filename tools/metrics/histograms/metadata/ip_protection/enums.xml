@@ -80,7 +80,8 @@ chromium-metrics-reviews@google.com.
   <int value="8"
       label="A site exception created by User Bypass disables protections"/>
   <int value="9"
-      label="The request bypassed the IP Protection proxies through DevTools"/>
+      label="DEPRECATED: The request bypassed the IP Protection proxies
+             through DevTools"/>
 </enum>
 
 <enum name="IpProtectionTokenBatchRequestError">

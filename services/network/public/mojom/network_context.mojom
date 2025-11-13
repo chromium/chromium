@@ -1081,20 +1081,6 @@ interface NetworkContext {
       => (map<url.mojom.Origin, array<ToplevelRedemptionRecord>>
               issuer_redemption_record_map);
 
-  // Gets the current IP Proxy status from IpProtectionCore.
-  //
-  // Requires kIpPrivacyEnableIppPanelInDevTools to be enabled,
-  // otherwise return status of kUnavailable.
-  // Only returns a kOk status if IP Protection is available and active.
-  GetIpProxyStatus() => (ip_protection.mojom.IpProxyStatus status);
-
-  // Sets whether the network context should bypass IP Protection proxies.
-  // Requires kIpPrivacyEnableIppPanelInDevTools to be enabled to set the
-  // bypass boolean.
-  // `bypass_proxy`: If true, the network context will attempt to bypass
-  //                 IP Protection proxies for all requests.
-  SetBypassIpProtectionProxy(bool bypass_proxy);
-
   // Deletes all Trust Tokens issued by |issuer|.
   //
   // This method is narrower as ClearTrustTokenData. ClearTrustTokenData

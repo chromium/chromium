@@ -345,14 +345,6 @@ class NetworkHandler : public DevToolsDomainHandler,
       bool disable_third_party_cookie_metadata,
       bool disable_third_party_cookie_heuristics) override;
 
-  // Returns the current status of the IP Protection proxy.
-  void GetIPProtectionProxyStatus(
-      std::unique_ptr<GetIPProtectionProxyStatusCallback> callback) override;
-
-  // Enables or disables the IP Protection proxy bypass.
-  DispatchResponse SetIPProtectionProxyBypassEnabled(
-      bool bypass_proxy) override;
-
   // Protocol builders.
   static String BuildPrivateNetworkRequestPolicy(
       network::mojom::PrivateNetworkRequestPolicy policy);

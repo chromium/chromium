@@ -74,7 +74,6 @@
 #include "content/public/common/content_features.h"
 #include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -1490,7 +1489,6 @@ Response NetworkHandler::Disable() {
   enable_third_party_cookie_restriction_ = false;
   disable_third_party_cookie_metadata_ = false;
   disable_third_party_cookie_heuristics_ = false;
-  SetIPProtectionProxyBypassEnabled(false);
   return Response::FallThrough();
 }
 
@@ -2293,13 +2291,6 @@ std::unique_ptr<Network::Response> BuildResponse(
   if (info.ssl_info.has_value())
     response->SetSecurityDetails(BuildSecurityDetails(*info.ssl_info));
 
-  // Sets `is_ip_protection_used` within the response. This is currently set
-  // only if kIpPrivacyEnableIppInDevTools is enabled.
-  // TODO(crbug.com/432716000): Remove this guard once IPP is fully launched.
-  if (net::features::kIpPrivacyEnableIppInDevTools.Get()) {
-    response->SetIsIpProtectionUsed(info.is_for_ip_protection && !was_cached);
-  }
-
   return response;
 }
 
@@ -2437,25 +2428,6 @@ String GetTrustTokenRefreshPolicy(
       return protocol::Network::TrustTokenParams::RefreshPolicyEnum::UseCached;
     case network::mojom::TrustTokenRefreshPolicy::kRefresh:
       return protocol::Network::TrustTokenParams::RefreshPolicyEnum::Refresh;
-  }
-}
-
-String BuildIpProxyStatus(ip_protection::IpProxyStatus status) {
-  switch (status) {
-    case ip_protection::IpProxyStatus::kOk:
-      return protocol::Network::IpProxyStatusEnum::Available;
-    case ip_protection::IpProxyStatus::kFeatureNotEnabled:
-      return protocol::Network::IpProxyStatusEnum::FeatureNotEnabled;
-    case ip_protection::IpProxyStatus::kMaskedDomainListNotEnabled:
-      return protocol::Network::IpProxyStatusEnum::MaskedDomainListNotEnabled;
-    case ip_protection::IpProxyStatus::kMaskedDomainListNotPopulated:
-      return protocol::Network::IpProxyStatusEnum::MaskedDomainListNotPopulated;
-    case ip_protection::IpProxyStatus::kAuthTokensUnavailable:
-      return protocol::Network::IpProxyStatusEnum::AuthTokensUnavailable;
-    case ip_protection::IpProxyStatus::kUnavailable:
-      return protocol::Network::IpProxyStatusEnum::Unavailable;
-    case ip_protection::IpProxyStatus::kBypassedByDevTools:
-      return protocol::Network::IpProxyStatusEnum::BypassedByDevTools;
   }
 }
 
@@ -3885,46 +3857,6 @@ DispatchResponse NetworkHandler::SetCookieControls(
   return Response::Success();
 }
 
-void NetworkHandler::GetIPProtectionProxyStatus(
-    std::unique_ptr<GetIPProtectionProxyStatusCallback> callback) {
-  if (!storage_partition_) {
-    callback->sendFailure(DispatchResponse::InternalError());
-    return;
-  }
-
-  network::mojom::NetworkContext* context =
-      storage_partition_->GetNetworkContext();
-
-  base::OnceCallback<void(ip_protection::IpProxyStatus)> internal_callback =
-      base::BindOnce(
-          [](std::unique_ptr<GetIPProtectionProxyStatusCallback>
-                 devtools_callback,
-             ip_protection::IpProxyStatus status) {
-            devtools_callback->sendSuccess(BuildIpProxyStatus(status));
-          },
-          std::move(callback));
-
-  context->GetIpProxyStatus(std::move(internal_callback));
-}
-
-DispatchResponse NetworkHandler::SetIPProtectionProxyBypassEnabled(
-    bool bypass_proxy) {
-  if (!net::features::kIpPrivacyEnableIppPanelInDevTools.Get()) {
-    return DispatchResponse::InvalidRequest(
-        "Missing required flag to bypass IP Proxy.");
-  }
-  if (!client_->IsTrusted()) {
-    return DispatchResponse::InternalError();
-  }
-  if (!storage_partition_) {
-    return DispatchResponse::InternalError();
-  }
-
-  storage_partition_->GetNetworkContext()->SetBypassIpProtectionProxy(
-      bypass_proxy);
-
-  return Response::Success();
-}
 namespace {
 
 String GetTrustTokenOperationStatus(

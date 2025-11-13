@@ -177,14 +177,6 @@ class MockIpProtectionCore : public IpProtectionCore {
         content_settings::HostIndexedContentSettings::Create(settings);
   }
 
-  IpProxyStatus GetIpProxyStatus() override {
-    return IpProxyStatus::kUnavailable;
-  }
-
-  bool IsProxyBypassed() override { return proxy_is_bypassed_; }
-  void SetBypassProxy(bool bypass_proxy) override {
-    proxy_is_bypassed_ = bypass_proxy;
-  }
   void RecordTokenDemand(size_t chain_index) override {
     tokens_demanded_per_chain_index_[chain_index]++;
   }
@@ -222,7 +214,6 @@ class MockIpProtectionCore : public IpProtectionCore {
   raw_ptr<MaskedDomainListManager> masked_domain_list_manager_;
   std::vector<content_settings::HostIndexedContentSettings>
       tp_content_settings_;
-  bool proxy_is_bypassed_ = false;
   std::map<size_t, int> tokens_demanded_per_chain_index_;
 };
 
@@ -1438,41 +1429,6 @@ TEST_F(
                                                 /*chain_index=*/0, *headers,
                                                 base::DoNothing()),
               IsOk());
-}
-
-TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyBypassesWhenSet) {
-  // Enable the feature flag required for the bypass logic.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{net::features::kEnableIpProtectionProxy,
-        {{"IpPrivacyEnableUserBypass", "true"},
-         {"IpPrivacyEnableIppPanelInDevTools", "true"}}}},
-      {});
-
-  std::map<std::string, std::set<std::string>> first_party_map;
-  first_party_map["example.com"] = {};
-  auto masked_domain_list_manager = CreateMdlManager(first_party_map);
-  auto ipp_core =
-      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
-
-  // Set up a valid environment for a proxied request to test the bypass.
-  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
-  auto delegate = CreateDelegate(ipp_core.get());
-
-  ipp_core->SetBypassProxy(true);
-
-  net::ProxyInfo result;
-  result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpsUrl),
-                           net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("https://top.com"))),
-                           "GET", /*proxy_retry_info=*/{}, &result);
-
-  EXPECT_TRUE(result.is_direct());
-  EXPECT_FALSE(result.is_for_ip_protection());
-  histogram_tester_.ExpectUniqueSample(
-      kProxyResolutionHistogram, ProxyResolutionResult::kBypassedByDevTools, 1);
 }
 
 }  // namespace ip_protection

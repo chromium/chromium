@@ -298,31 +298,6 @@ domain Network
       corp-not-same-site
       sri-message-signature-mismatch
 
-  # Sets Controls for IP Proxy of requests.
-  # Page reload is required before the new behavior will be observed.
-  experimental type IpProxyStatus extends string
-    enum
-      Available
-      FeatureNotEnabled
-      MaskedDomainListNotEnabled
-      MaskedDomainListNotPopulated
-      AuthTokensUnavailable
-      Unavailable
-      BypassedByDevTools
-
-  # Returns enum representing if IP Proxy of requests is available
-  # or reason it is not active.
-  experimental command getIPProtectionProxyStatus
-    returns
-      # Whether IP proxy is available
-      IpProxyStatus status
-
-  # Sets bypass IP Protection Proxy boolean.
-  experimental command setIPProtectionProxyBypassEnabled
-    parameters
-      # Whether IP Proxy is being bypassed by devtools; false by default.
-      boolean enabled
-
   # The reason why request was blocked.
   type CorsError extends string
     enum
@@ -527,9 +502,6 @@ domain Network
       Security.SecurityState securityState
       # Security details for the request.
       optional SecurityDetails securityDetails
-      # Indicates whether the request was sent through IP Protection proxies. If
-      # set to true, the request used the IP Protection privacy feature.
-      experimental optional boolean isIpProtectionUsed
 
   # WebSocket request data.
   type WebSocketRequest extends object

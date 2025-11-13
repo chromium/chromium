@@ -271,8 +271,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void GetTrustTokenQueryAnswerer(
       mojo::PendingReceiver<mojom::TrustTokenQueryAnswerer> receiver,
       const url::Origin& top_frame_origin) override;
-  void GetIpProxyStatus(GetIpProxyStatusCallback callback) override;
-  void SetBypassIpProtectionProxy(bool bypass_proxy) override;
   void ClearTrustTokenData(mojom::ClearDataFilterPtr filter,
                            base::OnceClosure done) override;
   void ClearTrustTokenSessionOnlyData(

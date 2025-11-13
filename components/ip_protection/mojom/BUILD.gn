@@ -33,10 +33,6 @@ mojom("mojom") {
           mojom = "ip_protection.mojom.GeoHint"
           cpp = "::ip_protection::GeoHint"
         },
-        {
-          mojom = "ip_protection.mojom.IpProxyStatus"
-          cpp = "::ip_protection::IpProxyStatus"
-        },
       ]
       traits_headers =
           [ "//components/ip_protection/mojom/data_types_mojom_traits.h" ]

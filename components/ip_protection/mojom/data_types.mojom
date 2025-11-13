@@ -53,13 +53,3 @@ struct BlindSignedAuthToken {
   // The GeoHint which specifies the coarse geolocation of the token.
   GeoHint geo_hint;
 };
-
-enum IpProxyStatus {
-  kOk,
-  kFeatureNotEnabled,
-  kMaskedDomainListNotEnabled,
-  kMaskedDomainListNotPopulated,
-  kAuthTokensUnavailable,
-  kUnavailable,
-  kBypassedByDevTools
-};

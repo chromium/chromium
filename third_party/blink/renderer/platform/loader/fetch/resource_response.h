@@ -483,13 +483,6 @@ class PLATFORM_EXPORT ResourceResponse final {
     return device_bound_session_usage_;
   }
 
-  // Returns true if the request was routed through an IP Protection proxy.
-  bool IsIpProtectionUsed() const { return is_ip_protection_used_; }
-  // Sets the flag indicating IP Protection usage.
-  void SetIsIpProtectionUsed(bool is_ip_protection_used) {
-    is_ip_protection_used_ = is_ip_protection_used;
-  }
-
   const Vector<network::IntegrityMetadata>& GetUnencodedDigests() const;
   void SetUnencodedDigests(Vector<network::IntegrityMetadata> digests);
 

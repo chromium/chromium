@@ -60,8 +60,8 @@ enum class ProxyResolutionResult {
   // A site exception created by User Bypass disables protections.
   kHasSiteException = 8,
   // The request bypassed the IP Protection proxies through DevTools.
-  kBypassedByDevTools = 9,
-  kMaxValue = kBypassedByDevTools,
+  kDeprecatedBypassedByDevTools = 9,
+  kMaxValue = kDeprecatedBypassedByDevTools,
 };
 
 // An enumeration of the result of an attempt to fetch a proxy list. These
