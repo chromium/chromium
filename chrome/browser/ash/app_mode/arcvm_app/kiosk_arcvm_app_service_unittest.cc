@@ -21,6 +21,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_stop_reason.h"
@@ -190,6 +191,7 @@ class KioskArcvmAppServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment;
   ArcAppTest arc_app_test_;
 
+  ScopedStubInstallAttributes scoped_stub_install_attributes_;
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
