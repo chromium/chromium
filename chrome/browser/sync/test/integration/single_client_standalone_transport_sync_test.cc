@@ -48,13 +48,11 @@ constexpr syncer::DataTypeSet kTypesGatedBehindHistoryOptIn{
     syncer::SESSIONS,
     syncer::USER_EVENTS};
 
-#if !BUILDFLAG(IS_ANDROID)
 base::FilePath GetTestFilePathForCacheGuid() {
   base::FilePath user_data_path;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_path);
   return user_data_path.AppendASCII("SyncTestTmpCacheGuid");
 }
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 class SyncDisabledViaDashboardChecker : public SingleClientStatusChangeChecker {
@@ -250,8 +248,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientStandaloneTransportSyncTest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-// TODO(crbug.com/40200835): Android currently doesn't support PRE_ tests.
-#if !BUILDFLAG(IS_ANDROID)
 // Regression test for crbug.com/955989 that verifies the cache GUID is not
 // reset upon restart of the browser, in standalone transport mode.
 IN_PROC_BROWSER_TEST_P(SingleClientStandaloneTransportSyncTest,
@@ -318,7 +314,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientStandaloneTransportSyncTest,
 
   EXPECT_EQ(old_cache_guid, transport_data_prefs.GetCacheGuid());
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_P(SingleClientStandaloneTransportSyncTest,
                        DataTypesEnabledInTransportModeWithoutAdditionalOptIns) {
@@ -430,8 +425,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientStandaloneTransportSyncTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
-// TODO(crbug.com/40200835): Android currently doesn't support PRE_ tests.
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(
     SingleClientStandaloneTransportSyncTest,
     PRE_DataTypesEnabledInTransportModeWithCustomPassphrase) {
@@ -542,7 +535,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientStandaloneTransportSyncTest,
   EXPECT_EQ(GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO),
             GetParam());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 INSTANTIATE_TEST_SUITE_P(,
                          SingleClientStandaloneTransportSyncTest,
@@ -566,9 +558,7 @@ INSTANTIATE_TEST_SUITE_P(,
 
 // ReplaceSyncWithSigninMigrationSyncTest is
 // disabled on CrOS as the signed in, non-syncing state does not exist.
-// TODO(crbug.com/40145099): Android currently doesn't support PRE_ tests and
-// all of these are.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 // A test fixture to cover migration behavior: In PRE_ tests, the
 // kReplaceSyncPromosWithSignInPromos is *dis*abled, in non-PRE_ tests it is
 // *en*abled.
@@ -580,14 +570,17 @@ class ReplaceSyncWithSigninMigrationSyncTest : public SyncTest {
   ReplaceSyncWithSigninMigrationSyncTest() : SyncTest(SINGLE_CLIENT) {
     // Various features that are required for types to be supported in transport
     // mode are unconditionally enabled.
-    default_features_.InitWithFeatures(
-        /*enabled_features=*/
-        {syncer::kReadingListEnableSyncTransportModeUponSignIn,
-         // This feature would not be needed on mobile, but on desktop it is a
-         // prerequisite to account storage for preferences.
-         syncer::kSeparateLocalAndAccountSearchEngines,
-         switches::kSyncEnableBookmarksInTransportMode},
-        /*disabled_features=*/{});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        // This feature would not be needed on mobile, but on desktop it is a
+        // prerequisite to account storage for preferences.
+        syncer::kSeparateLocalAndAccountSearchEngines,
+        switches::kSyncEnableBookmarksInTransportMode};
+#if !BUILDFLAG(IS_ANDROID)
+    enabled_features.push_back(
+        syncer::kReadingListEnableSyncTransportModeUponSignIn);
+#endif
+    default_features_.InitWithFeatures(enabled_features,
+                                       /*disabled_features=*/{});
 
     // The Sync-to-Signin feature is only enabled in non-PRE_ tests.
     sync_to_signin_feature_.InitWithFeatureStates(
@@ -718,6 +711,7 @@ IN_PROC_BROWSER_TEST_F(ReplaceSyncWithSigninMigrationSyncTest,
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPayments));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)  && !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 
 }  // namespace
