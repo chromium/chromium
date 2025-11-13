@@ -120,11 +120,13 @@ ActorLoginGetCredentialsHelper::ActorLoginGetCredentialsHelper(
     const url::Origin& origin,
     password_manager::PasswordManagerClient* client,
     password_manager::PasswordManagerInterface* password_manager,
+    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
     CredentialsOrErrorReply callback)
     : request_origin_(origin),
       callback_(std::move(callback)),
       password_manager_(password_manager),
       client_(client),
+      mqls_logger_(mqls_logger),
       login_form_finder_(std::make_unique<ActorLoginFormFinder>(client)) {
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger =
       GetLogger(client_);

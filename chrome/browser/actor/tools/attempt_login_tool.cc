@@ -140,14 +140,16 @@ void AttemptLoginTool::Invoke(ToolCallback callback) {
         tab, user_selected_credential_and_pemission->credential,
         user_selected_credential_and_pemission->permission_duration ==
             webui::mojom::UserGrantedPermissionDuration::kAlwaysAllow,
+        quality_logger_.AsWeakPtr(),
         base::BindOnce(&AttemptLoginTool::OnAttemptLogin,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
   GetActorLoginService().GetCredentials(
-      tab, base::BindOnce(&AttemptLoginTool::OnGetCredentials,
-                          weak_ptr_factory_.GetWeakPtr()));
+      tab, quality_logger_.AsWeakPtr(),
+      base::BindOnce(&AttemptLoginTool::OnGetCredentials,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AttemptLoginTool::OnGetCredentials(
@@ -331,6 +333,7 @@ void AttemptLoginTool::OnCredentialSelected(
       tab, *selected_credential,
       response->permission_duration ==
           webui::mojom::UserGrantedPermissionDuration::kAlwaysAllow,
+      quality_logger_.AsWeakPtr(),
       base::BindOnce(&AttemptLoginTool::OnAttemptLogin,
                      weak_ptr_factory_.GetWeakPtr()));
 }

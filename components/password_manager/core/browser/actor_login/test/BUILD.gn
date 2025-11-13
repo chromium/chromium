@@ -12,6 +12,8 @@ source_set("test_support") {
     "actor_login_test_util.h",
     "mock_actor_login_delegate.cc",
     "mock_actor_login_delegate.h",
+    "mock_actor_login_quality_logger.cc",
+    "mock_actor_login_quality_logger.h",
   ]
 
   visibility = [
@@ -24,6 +26,7 @@ source_set("test_support") {
     "//base",
     "//components/autofill/core/common",
     "//components/autofill/core/common:test_support",
+    "//components/optimization_guide/core:model_execution",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/browser/actor_login:common",

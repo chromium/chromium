@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ACTOR_LOGIN_ACTOR_LOGIN_SERVICE_IMPL_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate.h"
 #include "content/public/browser/web_contents.h"
@@ -22,11 +24,14 @@ class ActorLoginServiceImpl : public ActorLoginService {
   ActorLoginServiceImpl& operator=(const ActorLoginServiceImpl&) = delete;
 
   // `ActorLoginService` implementation:
-  void GetCredentials(tabs::TabInterface* tab,
-                      CredentialsOrErrorReply callback) override;
+  void GetCredentials(
+      tabs::TabInterface* tab,
+      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      CredentialsOrErrorReply callback) override;
   void AttemptLogin(tabs::TabInterface* tab,
                     const Credential& credential,
                     bool should_store_permission,
+                    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
                     LoginStatusResultOrErrorReply callback) override;
 
   void SetActorLoginDelegateFactoryForTesting(

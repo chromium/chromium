@@ -10,12 +10,14 @@
 
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "content/public/browser/render_frame_host.h"
 
 namespace content {
@@ -42,12 +44,15 @@ class MockActorLoginService : public actor_login::ActorLoginService {
   ~MockActorLoginService() override;
 
   // `actor_login::ActorLoginService`:
-  void GetCredentials(tabs::TabInterface* tab,
-                      actor_login::CredentialsOrErrorReply callback) override;
+  void GetCredentials(
+      tabs::TabInterface* tab,
+      base::WeakPtr<actor_login::ActorLoginQualityLoggerInterface> mqls_logger,
+      actor_login::CredentialsOrErrorReply callback) override;
   void AttemptLogin(
       tabs::TabInterface* tab,
       const actor_login::Credential& credential,
       bool should_store_permission,
+      base::WeakPtr<actor_login::ActorLoginQualityLoggerInterface> mqls_logger,
       actor_login::LoginStatusResultOrErrorReply callback) override;
 
   void SetCredentials(const actor_login::CredentialsOrError& credentials);

@@ -1,0 +1,31 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_ACTOR_LOGIN_QUALITY_LOGGER_INTERFACE_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_ACTOR_LOGIN_QUALITY_LOGGER_INTERFACE_H_
+
+namespace optimization_guide {
+class ModelQualityLogsUploaderService;
+}  // namespace optimization_guide
+
+namespace actor_login {
+
+// Manages Model Logging Quality and uploads logs to the server.
+// Each log corresponds to a single filling, which means there would be
+// at most one GetCredentials request, and at most two AttemptLogin requests.
+// The second AttemptLogin request can happen if the first one failed with
+// kErrorDeviceReauthRequired.
+class ActorLoginQualityLoggerInterface {
+ public:
+  virtual ~ActorLoginQualityLoggerInterface() = default;
+
+  // To be called when the trajectory is finished and the final log should
+  // be uploaded to the server.
+  virtual void UploadFinalLog(
+      optimization_guide::ModelQualityLogsUploaderService* mqls_uploader)
+      const = 0;
+};
+}  // namespace actor_login
+
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_ACTOR_LOGIN_QUALITY_LOGGER_INTERFACE_H_

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 
@@ -13,7 +14,7 @@ ActorLoginQualityLogger::ActorLoginQualityLogger() = default;
 ActorLoginQualityLogger::~ActorLoginQualityLogger() = default;
 
 void ActorLoginQualityLogger::UploadFinalLog(
-    optimization_guide::ModelQualityLogsUploaderService* mqls_uploader) {
+    optimization_guide::ModelQualityLogsUploaderService* mqls_uploader) const {
   if (!mqls_uploader) {
     return;
   }
@@ -27,4 +28,8 @@ void ActorLoginQualityLogger::UploadFinalLog(
   new_log_entry->log_ai_data_request()->MergeFrom(log_data_);
 
   optimization_guide::ModelQualityLogEntry::Upload(std::move(new_log_entry));
+}
+
+base::WeakPtr<ActorLoginQualityLogger> ActorLoginQualityLogger::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
