@@ -69,7 +69,7 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
   gpu_preferences.disable_software_rasterizer =
       command_line->HasSwitch(switches::kDisableSoftwareRasterizer) ||
       (!features::IsSwiftShaderAllowed(command_line) &&
-       !features::IsWARPAllowedByFeature());
+       !features::IsWARPAllowed(command_line));
   gpu_preferences.log_gpu_control_list_decisions =
       command_line->HasSwitch(switches::kLogGpuControlListDecisions);
   gpu_preferences.gpu_startup_dialog =

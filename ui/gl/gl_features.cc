@@ -235,6 +235,12 @@ void GetANGLEFeaturesFromCommandLineAndFinch(
 }
 
 #if BUILDFLAG(ENABLE_SWIFTSHADER)
+#if BUILDFLAG(IS_FUCHSIA)
+// SwiftShader is always used on Fuchsia, sometimes at the system level.
+bool IsSwiftShaderAllowedByCommandLine(const base::CommandLine* command_line) {
+  return true;
+}
+#else
 bool IsSwiftShaderAllowedByCommandLine(const base::CommandLine* command_line) {
   // If the switch to opt-into unsafe SwiftShader is present, always allow
   // SwiftShader.
@@ -252,10 +258,11 @@ bool IsSwiftShaderAllowedByCommandLine(const base::CommandLine* command_line) {
 
   return false;
 }
+#endif
 
 // Allow fallback to SwfitShader without command line flags during the
 // deprecation period.
-BASE_FEATURE(kAllowSwiftShaderFallback, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAllowSwiftShaderFallback, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsSwiftShaderAllowedByFeature() {
   return base::FeatureList::IsEnabled(kAllowSwiftShaderFallback);
@@ -276,29 +283,26 @@ bool IsSwiftShaderAllowed(const base::CommandLine* command_line) {
 }
 
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kAllowD3D11WarpFallback, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAllowD3D11WarpFallback, base::FEATURE_ENABLED_BY_DEFAULT);
 
-bool IsWARPAllowedByFeature() {
+bool IsWARPAllowed(const base::CommandLine* command_line) {
+  if (command_line->HasSwitch(switches::kDisableD3D11Warp)) {
+    return false;
+  }
   return base::FeatureList::IsEnabled(kAllowD3D11WarpFallback);
 }
 #else
-bool IsWARPAllowedByFeature() {
+bool IsWARPAllowed(const base::CommandLine*) {
   return false;
 }
 #endif
 
 bool IsAnySoftwareGLAllowed(const base::CommandLine* command_line) {
-#if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(kAllowD3D11WarpFallback)) {
-    return true;
-  }
-#endif
-
-  return IsSwiftShaderAllowed(command_line);
+  return IsWARPAllowed(command_line) || IsSwiftShaderAllowed(command_line);
 }
 
 BASE_FEATURE(kAllowSoftwareGLFallbackDueToCrashes,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsSoftwareGLFallbackDueToCrashesAllowed(
     const base::CommandLine* command_line) {

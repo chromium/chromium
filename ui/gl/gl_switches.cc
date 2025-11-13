@@ -156,6 +156,10 @@ const char kUseAdapterLuid[] = "use-adapter-luid";
 // Allow usage of SwiftShader for WebGL
 const char kEnableUnsafeSwiftShader[] = "enable-unsafe-swiftshader";
 
+// Explicitly disable D3D11 WARP fallback. Some test suites prefer falling back
+// to swiftshader.
+const char kDisableD3D11Warp[] = "disable-d3d11-warp";
+
 // Used for overriding the swap chain format for direct composition SDR video
 // overlays.
 const char kDirectCompositionVideoSwapChainFormat[] =
@@ -191,6 +195,7 @@ const auto kGLSwitchesCopiedFromGpuProcessHostArray = std::to_array({
     kDirectCompositionVideoSwapChainFormat,
     kTintDcLayer,
     kEnableUnsafeSwiftShader,
+    kDisableD3D11Warp,
 });
 // An external span to the array above, so that it can be exposed from the
 // header file without specifying the size of the array manually.

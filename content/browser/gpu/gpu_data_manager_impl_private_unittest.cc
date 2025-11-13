@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -496,8 +497,14 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphite) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 #if !BUILDFLAG(IS_FUCHSIA)
 TEST_F(GpuDataManagerImplPrivateTest, NoDefaultFallbackToSwiftShaderForGanesh) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kDisableSkiaGraphite);
+  // Ensure --enable-unsafe-swiftshader is not in the command line. It is used
+  // by some other tests in this suite.
+  command_line.GetProcessCommandLine()->RemoveSwitch(
+      switches::kEnableUnsafeSwiftShader);
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({}, {
                                         features::kAllowSwiftShaderFallback,
@@ -657,7 +664,7 @@ TEST_F(GpuDataManagerImplPrivateTest,
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
-#if !defined(CAST_AUDIO_ONLY)
+#if !defined(CAST_AUDIO_ONLY) && !BUILDFLAG(IS_FUCHSIA)
 TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGpuDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({}, {
@@ -667,11 +674,17 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGpuDisabled) {
 #endif  // BUILDFLAG(IS_WIN)
                                     });
 
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kDisableGpu);
+  // Ensure --enable-unsafe-swiftshader is not in the command line. It is used
+  // by some other tests in this suite.
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(switches::kDisableGpu);
+  command_line.GetProcessCommandLine()->RemoveSwitch(
+      switches::kEnableUnsafeSwiftShader);
+
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
 }
-#endif  // !defined(CAST_AUDIO_ONLY)
+#endif  // !defined(CAST_AUDIO_ONLY) && !BUILDFLAG(IS_FUCHSIA)
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) &&
         // !BUILDFLAG(IS_IOS)
 
@@ -706,6 +719,12 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanToGL) {
 }
 
 TEST_F(GpuDataManagerImplPrivateTest, VulkanInitializationFails) {
+  // Ensure --enable-unsafe-swiftshader is not in the command line. It is used
+  // by some other tests in this suite.
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->RemoveSwitch(
+      switches::kEnableUnsafeSwiftShader);
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({features::kVulkan},
                                 {
@@ -739,6 +758,12 @@ TEST_F(GpuDataManagerImplPrivateTest, VulkanInitializationFails) {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanWithGLDisabled) {
+  // Ensure --enable-unsafe-swiftshader is not in the command line. It is used
+  // by some other tests in this suite.
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->RemoveSwitch(
+      switches::kEnableUnsafeSwiftShader);
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({features::kVulkan},
                                 {
