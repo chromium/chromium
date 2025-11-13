@@ -977,16 +977,20 @@ class AutocompleteMediator
             // For Hub Search, default behavior kicks off search by pressing enter, do not return.
         }
 
-        if (mNavigationAttachmentsCoordinator
-                .getAutocompleteRequestTypeSupplier()
-                .get()
-                .equals(AutocompleteRequestType.AI_MODE)) {
+        @AutocompleteRequestType
+        int type = mNavigationAttachmentsCoordinator.getAutocompleteRequestTypeSupplier().get();
+        if (type == AutocompleteRequestType.AI_MODE
+                || type == AutocompleteRequestType.IMAGE_GENERATION) {
             AutocompleteMatch suggestionMatch = getSuggestionMatchForUrlText(urlText);
             if (suggestionMatch == null) return;
+            GURL url =
+                    type == AutocompleteRequestType.AI_MODE
+                            ? mNavigationAttachmentsCoordinator.getAimUrl(urlText)
+                            : mNavigationAttachmentsCoordinator.getImageGenerationUrl(urlText);
             loadUrlForOmniboxMatch(
                     0,
                     suggestionMatch,
-                    mNavigationAttachmentsCoordinator.getAimUrl(urlText),
+                    url,
                     eventTime,
                     /* openInNewTab= */ false,
                     openInNewWindow,

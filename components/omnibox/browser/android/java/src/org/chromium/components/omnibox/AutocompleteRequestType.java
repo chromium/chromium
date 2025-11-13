@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
     AutocompleteRequestType.SEARCH,
     AutocompleteRequestType.SEARCH_PREFETCH,
     AutocompleteRequestType.AI_MODE,
-    AutocompleteRequestType.CREATE_IMAGE
+    AutocompleteRequestType.IMAGE_GENERATION
 })
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.TYPE_USE})
@@ -33,7 +33,7 @@ public @interface AutocompleteRequestType {
     /** AI-powered fulfillment. */
     int AI_MODE = 2;
 
-    /** Creating image. */
-    int CREATE_IMAGE = 3;
+    /** Image generation. */
+    int IMAGE_GENERATION = 3;
     /* Note: account for new types in {@link NavigationAttachmentsCoordinator#doesRequestTypeOverrideUrlFulfillment}. */
 }

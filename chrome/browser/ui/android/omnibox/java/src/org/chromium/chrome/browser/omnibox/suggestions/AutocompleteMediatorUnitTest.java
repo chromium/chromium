@@ -1651,4 +1651,35 @@ public class AutocompleteMediatorUnitTest {
         verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
         assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url.getSpec());
     }
+
+    @Test
+    @SmallTest
+    public void loadTypedOmniboxText_imageGenerationUrl() {
+        mMediator.setAutocompleteProfile(mProfile);
+        mMediator.onNativeInitialized();
+        mMediator.onOmniboxSessionStateChange(true);
+        when(mTextStateProvider.getTextWithoutAutocomplete()).thenReturn("test");
+        when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("test");
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.IMAGE_GENERATION);
+        GURL url1 = JUnitTestGURLs.BLUE_1;
+        when(mNavigationAttachmentsCoordinator.getAimUrl("test")).thenReturn(url1);
+        GURL url2 = JUnitTestGURLs.BLUE_2;
+        when(mNavigationAttachmentsCoordinator.getImageGenerationUrl("test")).thenReturn(url2);
+
+        AutocompleteMatch defaultMatch =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .setDisplayText("test suggestion")
+                        .setInlineAutocompletion("")
+                        .setAllowedToBeDefaultMatch(true)
+                        .setUrl(JUnitTestGURLs.GOOGLE_URL)
+                        .build();
+        mSuggestionsList.add(0, defaultMatch);
+        mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
+
+        mMediator.loadTypedOmniboxText(
+                123L, /* openInNewTab= */ false, /* openInNewWindow= */ false);
+
+        verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url2.getSpec());
+    }
 }

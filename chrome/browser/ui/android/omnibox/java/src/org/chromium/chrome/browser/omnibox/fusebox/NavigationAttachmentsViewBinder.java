@@ -126,10 +126,10 @@ class NavigationAttachmentsViewBinder {
         boolean isAiModeUsed =
                 model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE)
                         == AutocompleteRequestType.AI_MODE;
-        boolean isCreateImageUsed =
+        boolean isImageGenerationUsed =
                 model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE)
-                        == AutocompleteRequestType.CREATE_IMAGE;
-        boolean isCustomModeUsed = isAiModeUsed || isCreateImageUsed;
+                        == AutocompleteRequestType.IMAGE_GENERATION;
+        boolean isCustomModeUsed = isAiModeUsed || isImageGenerationUsed;
         Resources res = views.parentView.getResources();
 
         views.addButton.setVisibility(showFuseboxToolbar ? View.VISIBLE : View.GONE);
@@ -142,7 +142,7 @@ class NavigationAttachmentsViewBinder {
                 views.requestType.setText(hint);
                 views.requestType.setContentDescription(
                         res.getString(R.string.accessibility_omnibox_reset_mode, hint));
-            } else if (isCreateImageUsed) {
+            } else if (isImageGenerationUsed) {
                 String hint = res.getString(R.string.omnibox_create_image);
                 views.requestType.setText(hint);
                 views.requestType.setContentDescription(
@@ -170,7 +170,7 @@ class NavigationAttachmentsViewBinder {
                             : RippleBackgroundHelper.BorderType.DASHED);
 
             views.requestType.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    isCreateImageUsed
+                    isImageGenerationUsed
                             ? res.getDrawable(R.drawable.create_image_24dp)
                             : res.getDrawable(R.drawable.search_spark_black_24dp),
                     null,

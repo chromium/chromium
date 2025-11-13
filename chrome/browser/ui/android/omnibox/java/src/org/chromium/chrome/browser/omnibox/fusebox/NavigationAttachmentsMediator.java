@@ -114,7 +114,7 @@ class NavigationAttachmentsMediator {
         mModel.set(NavigationAttachmentsProperties.POPUP_AI_MODE_CLICKED, this::activateAiMode);
         mModel.set(
                 NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_CLICKED,
-                this::activateImageCreation);
+                this::activateImageGeneration);
         mModel.set(
                 NavigationAttachmentsProperties.POPUP_TAB_PICKER_CLICKED, this::onTabPickerClicked);
 
@@ -146,7 +146,7 @@ class NavigationAttachmentsMediator {
     private void onRequestTypeButtonClicked() {
         switch (mAutocompleteRequestTypeSupplier.get()) {
             case AutocompleteRequestType.AI_MODE:
-            case AutocompleteRequestType.CREATE_IMAGE:
+            case AutocompleteRequestType.IMAGE_GENERATION:
                 activateSearchMode();
                 break;
 
@@ -175,11 +175,13 @@ class NavigationAttachmentsMediator {
         mComposeBoxQueryControllerBridge.notifySessionStarted();
     }
 
-    /** Activate Create Image as the Next Request fulfillment type. */
-    void activateImageCreation() {
+    /** Activate image generation as the Next Request fulfillment type. */
+    void activateImageGeneration() {
         mPopup.dismiss();
-        if (mAutocompleteRequestTypeSupplier.get() == AutocompleteRequestType.CREATE_IMAGE) return;
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.CREATE_IMAGE);
+        if (mAutocompleteRequestTypeSupplier.get() == AutocompleteRequestType.IMAGE_GENERATION) {
+            return;
+        }
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.IMAGE_GENERATION);
 
         mComposeBoxQueryControllerBridge.notifySessionStarted();
     }
@@ -214,6 +216,14 @@ class NavigationAttachmentsMediator {
      */
     GURL getAimUrl(String queryText) {
         return mComposeBoxQueryControllerBridge.getAimUrl(queryText);
+    }
+
+    /**
+     * @param queryText The query text to be used for the image generation URL.
+     * @return The URL for the image generation service.
+     */
+    GURL getImageGenerationUrl(String queryText) {
+        return mComposeBoxQueryControllerBridge.getImageGenerationUrl(queryText);
     }
 
     @VisibleForTesting

@@ -88,6 +88,11 @@ public class ComposeBoxQueryControllerBridge {
         return ComposeBoxQueryControllerBridgeJni.get().getAimUrl(mNativeInstance, queryText);
     }
 
+    GURL getImageGenerationUrl(String queryText) {
+        return ComposeBoxQueryControllerBridgeJni.get()
+                .getImageGenerationUrl(mNativeInstance, queryText);
+    }
+
     /** Remove the given file from the current session. */
     void removeAttachment(String token) {
         ComposeBoxQueryControllerBridgeJni.get().removeAttachment(mNativeInstance, token);
@@ -133,6 +138,10 @@ public class ComposeBoxQueryControllerBridge {
         @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
         @JniType("GURL")
         GURL getAimUrl(long nativeInstance, @JniType("std::string") String queryText);
+
+        @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
+        @JniType("GURL")
+        GURL getImageGenerationUrl(long nativeInstance, @JniType("std::string") String queryText);
 
         @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
         void removeAttachment(long nativeInstance, @JniType("std::string") String token);

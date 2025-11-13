@@ -289,11 +289,11 @@ public class NavigationAttachmentsMediatorUnitTest {
     }
 
     @Test
-    public void activateImageCreation_startsSession() {
-        mMediator.activateImageCreation();
+    public void activateImageGeneration_startsSession() {
+        mMediator.activateImageGeneration();
         verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
         assertEquals(
-                AutocompleteRequestType.CREATE_IMAGE,
+                AutocompleteRequestType.IMAGE_GENERATION,
                 (int) mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE));
     }
 

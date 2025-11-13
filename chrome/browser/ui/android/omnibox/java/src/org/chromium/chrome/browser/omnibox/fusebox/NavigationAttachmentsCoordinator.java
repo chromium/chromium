@@ -208,6 +208,12 @@ public class NavigationAttachmentsCoordinator
         return mMediator.getAimUrl(queryText);
     }
 
+    /** Returns the URL associated with the current image generation session. */
+    public GURL getImageGenerationUrl(String queryText) {
+        if (mMediator == null) return GURL.emptyGURL();
+        return mMediator.getImageGenerationUrl(queryText);
+    }
+
     public PropertyModel getModelForTesting() {
         return mModel;
     }

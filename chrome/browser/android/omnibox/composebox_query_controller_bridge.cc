@@ -189,6 +189,20 @@ GURL ComposeboxQueryControllerBridge::GetAimUrl(JNIEnv* env,
   return query_controller_->CreateSearchUrl(std::move(search_url_request_info));
 }
 
+GURL ComposeboxQueryControllerBridge::GetImageGenerationUrl(
+    JNIEnv* env,
+    std::string& query_text) {
+  // TODO(crbug.com/448149357): Update the bridge interface to take in
+  // additional params for the create search url request info.
+  std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
+      search_url_request_info = std::make_unique<
+          ComposeboxQueryController::CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = query_text;
+  search_url_request_info->query_start_time = base::Time::Now();
+  search_url_request_info->additional_params["imgn"] = "1";
+  return query_controller_->CreateSearchUrl(std::move(search_url_request_info));
+}
+
 void ComposeboxQueryControllerBridge::RemoveAttachment(
     JNIEnv* env,
     const std::string& token) {
