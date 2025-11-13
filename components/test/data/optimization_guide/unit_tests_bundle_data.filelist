@@ -20,6 +20,7 @@
 //components/test/data/optimization_guide/fenced_frame/simple.html
 //components/test/data/optimization_guide/fenced_frame/simple.html.mock-http-headers
 //components/test/data/optimization_guide/for_label.html
+//components/test/data/optimization_guide/fragment_boxes.html
 //components/test/data/optimization_guide/i18n_visibility_test_model.tflite
 //components/test/data/optimization_guide/iframe.html
 //components/test/data/optimization_guide/iframe_ad.html
