@@ -194,7 +194,7 @@ const std::string& GetProcessToken() {
   return *process_token;
 }
 
-void WriteHistoryEvent(const base::Value::Dict& event) {
+void WriteHistoryEvent(base::Value::Dict event) {
   base::AutoLock lock(GetLoggingLock());
   if (!GetLogFile().IsValid()) {
     VLOG(1) << "Failed to write history event: logging not initialized";
@@ -237,6 +237,8 @@ base::Value::Dict HistoryEventError::ToDict() const {
 }
 
 InstallStartEvent::InstallStartEvent() = default;
+InstallStartEvent::InstallStartEvent(InstallStartEvent&&) = default;
+InstallStartEvent& InstallStartEvent::operator=(InstallStartEvent&&) = default;
 InstallStartEvent::~InstallStartEvent() = default;
 
 InstallStartEvent& InstallStartEvent::SetAppId(const std::string& app_id) {
@@ -257,6 +259,8 @@ std::optional<base::Value::Dict> InstallStartEvent::BuildInternal(
 }
 
 InstallEndEvent::InstallEndEvent() = default;
+InstallEndEvent::InstallEndEvent(InstallEndEvent&&) = default;
+InstallEndEvent& InstallEndEvent::operator=(InstallEndEvent&&) = default;
 InstallEndEvent::~InstallEndEvent() = default;
 
 InstallEndEvent& InstallEndEvent::SetVersion(const std::string& version) {
@@ -275,6 +279,9 @@ std::optional<base::Value::Dict> InstallEndEvent::BuildInternal(
 }
 
 UninstallStartEvent::UninstallStartEvent() = default;
+UninstallStartEvent::UninstallStartEvent(UninstallStartEvent&&) = default;
+UninstallStartEvent& UninstallStartEvent::operator=(UninstallStartEvent&&) =
+    default;
 UninstallStartEvent::~UninstallStartEvent() = default;
 
 UninstallStartEvent& UninstallStartEvent::SetAppId(const std::string& app_id) {
@@ -317,6 +324,8 @@ std::optional<base::Value::Dict> UninstallStartEvent::BuildInternal(
 }
 
 UninstallEndEvent::UninstallEndEvent() = default;
+UninstallEndEvent::UninstallEndEvent(UninstallEndEvent&&) = default;
+UninstallEndEvent& UninstallEndEvent::operator=(UninstallEndEvent&&) = default;
 UninstallEndEvent::~UninstallEndEvent() = default;
 
 std::optional<base::Value::Dict> UninstallEndEvent::BuildInternal(
@@ -327,6 +336,8 @@ std::optional<base::Value::Dict> UninstallEndEvent::BuildInternal(
 }
 
 QualifyStartEvent::QualifyStartEvent() = default;
+QualifyStartEvent::QualifyStartEvent(QualifyStartEvent&&) = default;
+QualifyStartEvent& QualifyStartEvent::operator=(QualifyStartEvent&&) = default;
 QualifyStartEvent::~QualifyStartEvent() = default;
 
 std::optional<base::Value::Dict> QualifyStartEvent::BuildInternal(
@@ -337,6 +348,8 @@ std::optional<base::Value::Dict> QualifyStartEvent::BuildInternal(
 }
 
 QualifyEndEvent::QualifyEndEvent() = default;
+QualifyEndEvent::QualifyEndEvent(QualifyEndEvent&&) = default;
+QualifyEndEvent& QualifyEndEvent::operator=(QualifyEndEvent&&) = default;
 QualifyEndEvent::~QualifyEndEvent() = default;
 
 QualifyEndEvent& QualifyEndEvent::SetQualified(bool qualified) {
@@ -353,6 +366,9 @@ std::optional<base::Value::Dict> QualifyEndEvent::BuildInternal(
 }
 
 ActivateStartEvent::ActivateStartEvent() = default;
+ActivateStartEvent::ActivateStartEvent(ActivateStartEvent&&) = default;
+ActivateStartEvent& ActivateStartEvent::operator=(ActivateStartEvent&&) =
+    default;
 ActivateStartEvent::~ActivateStartEvent() = default;
 
 std::optional<base::Value::Dict> ActivateStartEvent::BuildInternal(
@@ -363,6 +379,8 @@ std::optional<base::Value::Dict> ActivateStartEvent::BuildInternal(
 }
 
 ActivateEndEvent::ActivateEndEvent() = default;
+ActivateEndEvent::ActivateEndEvent(ActivateEndEvent&&) = default;
+ActivateEndEvent& ActivateEndEvent::operator=(ActivateEndEvent&&) = default;
 ActivateEndEvent::~ActivateEndEvent() = default;
 
 ActivateEndEvent& ActivateEndEvent::SetActivated(bool activated) {
@@ -386,6 +404,9 @@ PersistedDataEvent::RegisteredApp& PersistedDataEvent::RegisteredApp::operator=(
 PersistedDataEvent::RegisteredApp::~RegisteredApp() = default;
 
 PersistedDataEvent::PersistedDataEvent() = default;
+PersistedDataEvent::PersistedDataEvent(PersistedDataEvent&&) = default;
+PersistedDataEvent& PersistedDataEvent::operator=(PersistedDataEvent&&) =
+    default;
 PersistedDataEvent::~PersistedDataEvent() = default;
 
 PersistedDataEvent& PersistedDataEvent::SetEulaRequired(bool eula_required) {
@@ -442,6 +463,10 @@ std::optional<base::Value::Dict> PersistedDataEvent::BuildInternal(
 }
 
 OmahaRequestStartEvent::OmahaRequestStartEvent() = default;
+OmahaRequestStartEvent::OmahaRequestStartEvent(OmahaRequestStartEvent&&) =
+    default;
+OmahaRequestStartEvent& OmahaRequestStartEvent::operator=(
+    OmahaRequestStartEvent&&) = default;
 OmahaRequestStartEvent::~OmahaRequestStartEvent() = default;
 
 OmahaRequestStartEvent& OmahaRequestStartEvent::SetRequest(
@@ -463,6 +488,9 @@ std::optional<base::Value::Dict> OmahaRequestStartEvent::BuildInternal(
 }
 
 OmahaRequestEndEvent::OmahaRequestEndEvent() = default;
+OmahaRequestEndEvent::OmahaRequestEndEvent(OmahaRequestEndEvent&&) = default;
+OmahaRequestEndEvent& OmahaRequestEndEvent::operator=(OmahaRequestEndEvent&&) =
+    default;
 OmahaRequestEndEvent::~OmahaRequestEndEvent() = default;
 
 OmahaRequestEndEvent& OmahaRequestEndEvent::SetResponse(
@@ -484,6 +512,9 @@ std::optional<base::Value::Dict> OmahaRequestEndEvent::BuildInternal(
 }
 
 LoadPolicyStartEvent::LoadPolicyStartEvent() = default;
+LoadPolicyStartEvent::LoadPolicyStartEvent(LoadPolicyStartEvent&&) = default;
+LoadPolicyStartEvent& LoadPolicyStartEvent::operator=(LoadPolicyStartEvent&&) =
+    default;
 LoadPolicyStartEvent::~LoadPolicyStartEvent() = default;
 
 std::optional<base::Value::Dict> LoadPolicyStartEvent::BuildInternal(
@@ -494,6 +525,9 @@ std::optional<base::Value::Dict> LoadPolicyStartEvent::BuildInternal(
 }
 
 LoadPolicyEndEvent::LoadPolicyEndEvent() = default;
+LoadPolicyEndEvent::LoadPolicyEndEvent(LoadPolicyEndEvent&&) = default;
+LoadPolicyEndEvent& LoadPolicyEndEvent::operator=(LoadPolicyEndEvent&&) =
+    default;
 LoadPolicyEndEvent::~LoadPolicyEndEvent() = default;
 
 LoadPolicyEndEvent& LoadPolicyEndEvent::SetPolicySet(
@@ -515,6 +549,8 @@ std::optional<base::Value::Dict> LoadPolicyEndEvent::BuildInternal(
 }
 
 UpdateStartEvent::UpdateStartEvent() = default;
+UpdateStartEvent::UpdateStartEvent(UpdateStartEvent&&) = default;
+UpdateStartEvent& UpdateStartEvent::operator=(UpdateStartEvent&&) = default;
 UpdateStartEvent::~UpdateStartEvent() = default;
 
 UpdateStartEvent& UpdateStartEvent::SetAppId(const std::string& app_id) {
@@ -560,6 +596,8 @@ std::optional<base::Value::Dict> UpdateStartEvent::BuildInternal(
 }
 
 UpdateEndEvent::UpdateEndEvent() = default;
+UpdateEndEvent::UpdateEndEvent(UpdateEndEvent&&) = default;
+UpdateEndEvent& UpdateEndEvent::operator=(UpdateEndEvent&&) = default;
 UpdateEndEvent::~UpdateEndEvent() = default;
 
 UpdateEndEvent& UpdateEndEvent::SetOutcome(
@@ -587,6 +625,10 @@ std::optional<base::Value::Dict> UpdateEndEvent::BuildInternal(
 }
 
 UpdaterProcessStartEvent::UpdaterProcessStartEvent() = default;
+UpdaterProcessStartEvent::UpdaterProcessStartEvent(UpdaterProcessStartEvent&&) =
+    default;
+UpdaterProcessStartEvent& UpdaterProcessStartEvent::operator=(
+    UpdaterProcessStartEvent&&) = default;
 UpdaterProcessStartEvent::~UpdaterProcessStartEvent() = default;
 
 UpdaterProcessStartEvent& UpdaterProcessStartEvent::SetCommandLine(
@@ -678,6 +720,10 @@ std::optional<base::Value::Dict> UpdaterProcessStartEvent::BuildInternal(
 }
 
 UpdaterProcessEndEvent::UpdaterProcessEndEvent() = default;
+UpdaterProcessEndEvent::UpdaterProcessEndEvent(UpdaterProcessEndEvent&&) =
+    default;
+UpdaterProcessEndEvent& UpdaterProcessEndEvent::operator=(
+    UpdaterProcessEndEvent&&) = default;
 UpdaterProcessEndEvent::~UpdaterProcessEndEvent() = default;
 
 UpdaterProcessEndEvent& UpdaterProcessEndEvent::SetExitCode(int exit_code) {
@@ -696,6 +742,9 @@ std::optional<base::Value::Dict> UpdaterProcessEndEvent::BuildInternal(
 }
 
 AppCommandStartEvent::AppCommandStartEvent() = default;
+AppCommandStartEvent::AppCommandStartEvent(AppCommandStartEvent&&) = default;
+AppCommandStartEvent& AppCommandStartEvent::operator=(AppCommandStartEvent&&) =
+    default;
 AppCommandStartEvent::~AppCommandStartEvent() = default;
 
 AppCommandStartEvent& AppCommandStartEvent::SetAppId(
@@ -726,6 +775,9 @@ std::optional<base::Value::Dict> AppCommandStartEvent::BuildInternal(
 }
 
 AppCommandEndEvent::AppCommandEndEvent() = default;
+AppCommandEndEvent::AppCommandEndEvent(AppCommandEndEvent&&) = default;
+AppCommandEndEvent& AppCommandEndEvent::operator=(AppCommandEndEvent&&) =
+    default;
 AppCommandEndEvent::~AppCommandEndEvent() = default;
 
 AppCommandEndEvent& AppCommandEndEvent::SetExitCode(int exit_code) {

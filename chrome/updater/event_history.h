@@ -5,16 +5,20 @@
 #ifndef CHROME_UPDATER_EVENT_HISTORY_H_
 #define CHROME_UPDATER_EVENT_HISTORY_H_
 
+#include <concepts>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/process/process.h"
 #include "base/system/sys_info.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/update_service.h"
@@ -73,7 +77,7 @@ const std::string& GetProcessToken();
 
 // Implementation detail which must be exposed for `HistoryEventBuilder`.
 // Users of the API should use the `Write` method on the event class.
-void WriteHistoryEvent(const base::Value::Dict& event);
+void WriteHistoryEvent(base::Value::Dict event);
 
 struct HistoryEventError {
   int category = 0;
@@ -89,6 +93,8 @@ struct HistoryEventError {
 template <typename T>
 class HistoryEventBuilder {
  public:
+  // Events are assigned a process-unique identifier on construction (see
+  // `GenerateEventId`), though this may be overridden via this setter.
   T& SetEventId(const std::string& event_id) {
     event_id_ = event_id;
     return static_cast<T&>(*this);
@@ -102,10 +108,6 @@ class HistoryEventBuilder {
   // Builds the base::Value::Dict representation of an event. Returns
   // `std::nullopt` if a required common field is missing.
   std::optional<base::Value::Dict> Build() const {
-    if (event_id_.empty()) {
-      VLOG(1) << "Failed to build common fields: event_id is empty";
-      return std::nullopt;
-    }
     base::Value::Dict dict =
         base::Value::Dict()
             .Set("eventId", event_id_)
@@ -125,14 +127,45 @@ class HistoryEventBuilder {
 
   // Builds, serializes, and writes the event to storage. Errors are VLOGed. A
   // failure to build the event indicates a programming error; a dump is created
-  // without crashing.
+  // without crashing. If calling from a sequence that disallows blocking, use
+  // `WriteAsync`.
   void Write() {
     std::optional<base::Value::Dict> event = Build();
     if (!event) {
       base::debug::DumpWithoutCrashing();
       return;
     }
-    WriteHistoryEvent(*event);
+    WriteHistoryEvent(*std::move(event));
+  }
+
+  // Same as `Write` except that blocking IO is posted to the thread pool. This
+  // is suitable from calling from sequences which may not block (e.g. the main
+  // sequence).
+  void WriteAsync() {
+    std::optional<base::Value::Dict> event = Build();
+    if (!event) {
+      base::debug::DumpWithoutCrashing();
+      return;
+    }
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&WriteHistoryEvent, *std::move(event)));
+  }
+
+  // Performs `WriteAsync` and returns the corresponding END event builder for
+  // this START event with the same event id.
+  auto WriteAsyncAndReturnEndEvent()
+    requires requires {
+      typename T::EndEventType;
+      std::default_initializable<typename T::EndEventType>;
+      std::derived_from<typename T::EndEventType,
+                        HistoryEventBuilder<typename T::EndEventType>>;
+    }
+  {
+    WriteAsync();
+    typename T::EndEventType end_event;
+    end_event.SetEventId(event_id_);
+    return end_event;
   }
 
  protected:
@@ -144,27 +177,17 @@ class HistoryEventBuilder {
   virtual std::optional<base::Value::Dict> BuildInternal(
       base::Value::Dict event) const = 0;
 
-  std::string event_id_;
+  std::string event_id_ = GenerateEventId();
   std::vector<HistoryEventError> errors_;
-};
-
-class InstallStartEvent : public HistoryEventBuilder<InstallStartEvent> {
- public:
-  InstallStartEvent();
-  ~InstallStartEvent() override;
-
-  InstallStartEvent& SetAppId(const std::string& app_id);
-
- private:
-  std::optional<base::Value::Dict> BuildInternal(
-      base::Value::Dict event) const override;
-
-  std::string app_id_;
 };
 
 class InstallEndEvent : public HistoryEventBuilder<InstallEndEvent> {
  public:
   InstallEndEvent();
+  InstallEndEvent(InstallEndEvent&&);
+  InstallEndEvent& operator=(InstallEndEvent&&);
+  InstallEndEvent(const InstallEndEvent&) = delete;
+  InstallEndEvent& operator=(const InstallEndEvent&) = delete;
   ~InstallEndEvent() override;
 
   InstallEndEvent& SetVersion(const std::string& version);
@@ -176,9 +199,49 @@ class InstallEndEvent : public HistoryEventBuilder<InstallEndEvent> {
   std::optional<std::string> version_;
 };
 
+class InstallStartEvent : public HistoryEventBuilder<InstallStartEvent> {
+ public:
+  using EndEventType = InstallEndEvent;
+
+  InstallStartEvent();
+  InstallStartEvent(InstallStartEvent&&);
+  InstallStartEvent& operator=(InstallStartEvent&&);
+  InstallStartEvent(const InstallStartEvent&) = delete;
+  InstallStartEvent& operator=(const InstallStartEvent&) = delete;
+  ~InstallStartEvent() override;
+
+  InstallStartEvent& SetAppId(const std::string& app_id);
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
+
+  std::string app_id_;
+};
+
+class UninstallEndEvent : public HistoryEventBuilder<UninstallEndEvent> {
+ public:
+  UninstallEndEvent();
+  UninstallEndEvent(UninstallEndEvent&&);
+  UninstallEndEvent& operator=(UninstallEndEvent&&);
+  UninstallEndEvent(const UninstallEndEvent&) = delete;
+  UninstallEndEvent& operator=(const UninstallEndEvent&) = delete;
+  ~UninstallEndEvent() override;
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
+};
+
 class UninstallStartEvent : public HistoryEventBuilder<UninstallStartEvent> {
  public:
+  using EndEventType = UninstallEndEvent;
+
   UninstallStartEvent();
+  UninstallStartEvent(UninstallStartEvent&&);
+  UninstallStartEvent& operator=(UninstallStartEvent&&);
+  UninstallStartEvent(const UninstallStartEvent&) = delete;
+  UninstallStartEvent& operator=(const UninstallStartEvent&) = delete;
   ~UninstallStartEvent() override;
 
   UninstallStartEvent& SetAppId(const std::string& app_id);
@@ -194,29 +257,13 @@ class UninstallStartEvent : public HistoryEventBuilder<UninstallStartEvent> {
   std::optional<UninstallPingReason> reason_;
 };
 
-class UninstallEndEvent : public HistoryEventBuilder<UninstallEndEvent> {
- public:
-  UninstallEndEvent();
-  ~UninstallEndEvent() override;
-
- private:
-  std::optional<base::Value::Dict> BuildInternal(
-      base::Value::Dict event) const override;
-};
-
-class QualifyStartEvent : public HistoryEventBuilder<QualifyStartEvent> {
- public:
-  QualifyStartEvent();
-  ~QualifyStartEvent() override;
-
- private:
-  std::optional<base::Value::Dict> BuildInternal(
-      base::Value::Dict event) const override;
-};
-
 class QualifyEndEvent : public HistoryEventBuilder<QualifyEndEvent> {
  public:
   QualifyEndEvent();
+  QualifyEndEvent(QualifyEndEvent&&);
+  QualifyEndEvent& operator=(QualifyEndEvent&&);
+  QualifyEndEvent(const QualifyEndEvent&) = delete;
+  QualifyEndEvent& operator=(const QualifyEndEvent&) = delete;
   ~QualifyEndEvent() override;
 
   QualifyEndEvent& SetQualified(bool qualified);
@@ -228,10 +275,16 @@ class QualifyEndEvent : public HistoryEventBuilder<QualifyEndEvent> {
   bool qualified_ = false;
 };
 
-class ActivateStartEvent : public HistoryEventBuilder<ActivateStartEvent> {
+class QualifyStartEvent : public HistoryEventBuilder<QualifyStartEvent> {
  public:
-  ActivateStartEvent();
-  ~ActivateStartEvent() override;
+  using EndEventType = QualifyEndEvent;
+
+  QualifyStartEvent();
+  QualifyStartEvent(QualifyStartEvent&&);
+  QualifyStartEvent& operator=(QualifyStartEvent&&);
+  QualifyStartEvent(const QualifyStartEvent&) = delete;
+  QualifyStartEvent& operator=(const QualifyStartEvent&) = delete;
+  ~QualifyStartEvent() override;
 
  private:
   std::optional<base::Value::Dict> BuildInternal(
@@ -241,6 +294,10 @@ class ActivateStartEvent : public HistoryEventBuilder<ActivateStartEvent> {
 class ActivateEndEvent : public HistoryEventBuilder<ActivateEndEvent> {
  public:
   ActivateEndEvent();
+  ActivateEndEvent(ActivateEndEvent&&);
+  ActivateEndEvent& operator=(ActivateEndEvent&&);
+  ActivateEndEvent(const ActivateEndEvent&) = delete;
+  ActivateEndEvent& operator=(const ActivateEndEvent&) = delete;
   ~ActivateEndEvent() override;
 
   ActivateEndEvent& SetActivated(bool activated);
@@ -250,6 +307,22 @@ class ActivateEndEvent : public HistoryEventBuilder<ActivateEndEvent> {
       base::Value::Dict event) const override;
 
   bool activated_ = false;
+};
+
+class ActivateStartEvent : public HistoryEventBuilder<ActivateStartEvent> {
+ public:
+  using EndEventType = ActivateEndEvent;
+
+  ActivateStartEvent();
+  ActivateStartEvent(ActivateStartEvent&&);
+  ActivateStartEvent& operator=(ActivateStartEvent&&);
+  ActivateStartEvent(const ActivateStartEvent&) = delete;
+  ActivateStartEvent& operator=(const ActivateStartEvent&) = delete;
+  ~ActivateStartEvent() override;
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
 };
 
 class PersistedDataEvent : public HistoryEventBuilder<PersistedDataEvent> {
@@ -266,6 +339,10 @@ class PersistedDataEvent : public HistoryEventBuilder<PersistedDataEvent> {
   };
 
   PersistedDataEvent();
+  PersistedDataEvent(PersistedDataEvent&&);
+  PersistedDataEvent& operator=(PersistedDataEvent&&);
+  PersistedDataEvent(const PersistedDataEvent&) = delete;
+  PersistedDataEvent& operator=(const PersistedDataEvent&) = delete;
   ~PersistedDataEvent() override;
 
   PersistedDataEvent& SetEulaRequired(bool eula_required);
@@ -283,24 +360,13 @@ class PersistedDataEvent : public HistoryEventBuilder<PersistedDataEvent> {
   std::vector<RegisteredApp> registered_apps_;
 };
 
-class OmahaRequestStartEvent
-    : public HistoryEventBuilder<OmahaRequestStartEvent> {
- public:
-  OmahaRequestStartEvent();
-  ~OmahaRequestStartEvent() override;
-
-  OmahaRequestStartEvent& SetRequest(const std::string& request);
-
- private:
-  std::optional<base::Value::Dict> BuildInternal(
-      base::Value::Dict event) const override;
-
-  std::string request_;
-};
-
 class OmahaRequestEndEvent : public HistoryEventBuilder<OmahaRequestEndEvent> {
  public:
   OmahaRequestEndEvent();
+  OmahaRequestEndEvent(OmahaRequestEndEvent&&);
+  OmahaRequestEndEvent& operator=(OmahaRequestEndEvent&&);
+  OmahaRequestEndEvent(const OmahaRequestEndEvent&) = delete;
+  OmahaRequestEndEvent& operator=(const OmahaRequestEndEvent&) = delete;
   ~OmahaRequestEndEvent() override;
 
   OmahaRequestEndEvent& SetResponse(const std::string& response);
@@ -312,19 +378,34 @@ class OmahaRequestEndEvent : public HistoryEventBuilder<OmahaRequestEndEvent> {
   std::string response_;
 };
 
-class LoadPolicyStartEvent : public HistoryEventBuilder<LoadPolicyStartEvent> {
+class OmahaRequestStartEvent
+    : public HistoryEventBuilder<OmahaRequestStartEvent> {
  public:
-  LoadPolicyStartEvent();
-  ~LoadPolicyStartEvent() override;
+  using EndEventType = OmahaRequestEndEvent;
+
+  OmahaRequestStartEvent();
+  OmahaRequestStartEvent(OmahaRequestStartEvent&&);
+  OmahaRequestStartEvent& operator=(OmahaRequestStartEvent&&);
+  OmahaRequestStartEvent(const OmahaRequestStartEvent&) = delete;
+  OmahaRequestStartEvent& operator=(const OmahaRequestStartEvent&) = delete;
+  ~OmahaRequestStartEvent() override;
+
+  OmahaRequestStartEvent& SetRequest(const std::string& request);
 
  private:
   std::optional<base::Value::Dict> BuildInternal(
       base::Value::Dict event) const override;
+
+  std::string request_;
 };
 
 class LoadPolicyEndEvent : public HistoryEventBuilder<LoadPolicyEndEvent> {
  public:
   LoadPolicyEndEvent();
+  LoadPolicyEndEvent(LoadPolicyEndEvent&&);
+  LoadPolicyEndEvent& operator=(LoadPolicyEndEvent&&);
+  LoadPolicyEndEvent(const LoadPolicyEndEvent&) = delete;
+  LoadPolicyEndEvent& operator=(const LoadPolicyEndEvent&) = delete;
   ~LoadPolicyEndEvent() override;
 
   // Sets the pre-built policy set dictionary as generated by
@@ -338,9 +419,51 @@ class LoadPolicyEndEvent : public HistoryEventBuilder<LoadPolicyEndEvent> {
   base::Value::Dict policy_set_;
 };
 
+class LoadPolicyStartEvent : public HistoryEventBuilder<LoadPolicyStartEvent> {
+ public:
+  using EndEventType = LoadPolicyEndEvent;
+
+  LoadPolicyStartEvent();
+  LoadPolicyStartEvent(LoadPolicyStartEvent&&);
+  LoadPolicyStartEvent& operator=(LoadPolicyStartEvent&&);
+  LoadPolicyStartEvent(const LoadPolicyStartEvent&) = delete;
+  LoadPolicyStartEvent& operator=(const LoadPolicyStartEvent&) = delete;
+  ~LoadPolicyStartEvent() override;
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
+};
+
+class UpdateEndEvent : public HistoryEventBuilder<UpdateEndEvent> {
+ public:
+  UpdateEndEvent();
+  UpdateEndEvent(UpdateEndEvent&&);
+  UpdateEndEvent& operator=(UpdateEndEvent&&);
+  UpdateEndEvent(const UpdateEndEvent&) = delete;
+  UpdateEndEvent& operator=(const UpdateEndEvent&) = delete;
+  ~UpdateEndEvent() override;
+
+  UpdateEndEvent& SetOutcome(UpdateService::UpdateState::State outcome);
+  UpdateEndEvent& SetVersion(const std::string& version);
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
+
+  std::optional<UpdateService::UpdateState::State> outcome_;
+  std::optional<std::string> version_;
+};
+
 class UpdateStartEvent : public HistoryEventBuilder<UpdateStartEvent> {
  public:
+  using EndEventType = UpdateStartEvent;
+
   UpdateStartEvent();
+  UpdateStartEvent(UpdateStartEvent&&);
+  UpdateStartEvent& operator=(UpdateStartEvent&&);
+  UpdateStartEvent(const UpdateStartEvent&) = delete;
+  UpdateStartEvent& operator=(const UpdateStartEvent&) = delete;
   ~UpdateStartEvent() override;
 
   UpdateStartEvent& SetAppId(const std::string& app_id);
@@ -358,26 +481,35 @@ class UpdateStartEvent : public HistoryEventBuilder<UpdateStartEvent> {
   std::optional<std::string> install_source_;
 };
 
-class UpdateEndEvent : public HistoryEventBuilder<UpdateEndEvent> {
+class UpdaterProcessEndEvent
+    : public HistoryEventBuilder<UpdaterProcessEndEvent> {
  public:
-  UpdateEndEvent();
-  ~UpdateEndEvent() override;
+  UpdaterProcessEndEvent();
+  UpdaterProcessEndEvent(UpdaterProcessEndEvent&&);
+  UpdaterProcessEndEvent& operator=(UpdaterProcessEndEvent&&);
+  UpdaterProcessEndEvent(const UpdaterProcessEndEvent&) = delete;
+  UpdaterProcessEndEvent& operator=(const UpdaterProcessEndEvent&) = delete;
+  ~UpdaterProcessEndEvent() override;
 
-  UpdateEndEvent& SetOutcome(UpdateService::UpdateState::State outcome);
-  UpdateEndEvent& SetVersion(const std::string& version);
+  UpdaterProcessEndEvent& SetExitCode(int exit_code);
 
  private:
   std::optional<base::Value::Dict> BuildInternal(
       base::Value::Dict event) const override;
 
-  std::optional<UpdateService::UpdateState::State> outcome_;
-  std::optional<std::string> version_;
+  std::optional<int> exit_code_;
 };
 
 class UpdaterProcessStartEvent
     : public HistoryEventBuilder<UpdaterProcessStartEvent> {
  public:
+  using EndEventType = UpdaterProcessEndEvent;
+
   UpdaterProcessStartEvent();
+  UpdaterProcessStartEvent(UpdaterProcessStartEvent&&);
+  UpdaterProcessStartEvent& operator=(UpdaterProcessStartEvent&&);
+  UpdaterProcessStartEvent(const UpdaterProcessStartEvent&) = delete;
+  UpdaterProcessStartEvent& operator=(const UpdaterProcessStartEvent&) = delete;
   ~UpdaterProcessStartEvent() override;
 
   UpdaterProcessStartEvent& SetCommandLine(const std::string& command_line);
@@ -408,40 +540,13 @@ class UpdaterProcessStartEvent
   std::optional<int> parent_pid_;
 };
 
-class UpdaterProcessEndEvent
-    : public HistoryEventBuilder<UpdaterProcessEndEvent> {
- public:
-  UpdaterProcessEndEvent();
-  ~UpdaterProcessEndEvent() override;
-
-  UpdaterProcessEndEvent& SetExitCode(int exit_code);
-
- private:
-  std::optional<base::Value::Dict> BuildInternal(
-      base::Value::Dict event) const override;
-
-  std::optional<int> exit_code_;
-};
-
-class AppCommandStartEvent : public HistoryEventBuilder<AppCommandStartEvent> {
- public:
-  AppCommandStartEvent();
-  ~AppCommandStartEvent() override;
-
-  AppCommandStartEvent& SetAppId(const std::string& app_id);
-  AppCommandStartEvent& SetCommandLine(const std::string& command_line);
-
- private:
-  std::optional<base::Value::Dict> BuildInternal(
-      base::Value::Dict event) const override;
-
-  std::string app_id_;
-  std::optional<std::string> command_line_;
-};
-
 class AppCommandEndEvent : public HistoryEventBuilder<AppCommandEndEvent> {
  public:
   AppCommandEndEvent();
+  AppCommandEndEvent(AppCommandEndEvent&&);
+  AppCommandEndEvent& operator=(AppCommandEndEvent&&);
+  AppCommandEndEvent(const AppCommandEndEvent&) = delete;
+  AppCommandEndEvent& operator=(const AppCommandEndEvent&) = delete;
   ~AppCommandEndEvent() override;
 
   AppCommandEndEvent& SetExitCode(int exit_code);
@@ -453,6 +558,28 @@ class AppCommandEndEvent : public HistoryEventBuilder<AppCommandEndEvent> {
 
   std::optional<int> exit_code_;
   std::optional<std::string> output_;
+};
+
+class AppCommandStartEvent : public HistoryEventBuilder<AppCommandStartEvent> {
+ public:
+  using EndEventType = AppCommandEndEvent;
+
+  AppCommandStartEvent();
+  AppCommandStartEvent(AppCommandStartEvent&&);
+  AppCommandStartEvent& operator=(AppCommandStartEvent&&);
+  AppCommandStartEvent(const AppCommandStartEvent&) = delete;
+  AppCommandStartEvent& operator=(const AppCommandStartEvent&) = delete;
+  ~AppCommandStartEvent() override;
+
+  AppCommandStartEvent& SetAppId(const std::string& app_id);
+  AppCommandStartEvent& SetCommandLine(const std::string& command_line);
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
+
+  std::string app_id_;
+  std::optional<std::string> command_line_;
 };
 
 }  // namespace updater
