@@ -21,6 +21,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/branded_constants.h"
+#include "chrome/updater/event_history.h"
 #include "chrome/updater/registration_data.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -82,6 +83,20 @@ PersistedData::PersistedData(
               pref_service),
           std::move(activity_service))) {
   CHECK(pref_service_);
+
+  PersistedDataEvent event;
+  for (const std::string& app_id : GetAppIds()) {
+    PersistedDataEvent::RegisteredApp app;
+    app.app_id = app_id;
+    app.brand_code = GetBrandCode(app_id);
+    app.cohort = GetCohort(app_id);
+    app.version = GetProductVersion(app_id).GetString();
+    event.AddRegisteredApp(app);
+  }
+  event.SetEulaRequired(GetEulaRequired())
+      .SetLastChecked(GetLastChecked())
+      .SetLastStarted(GetLastStarted())
+      .WriteAsync();
 }
 
 PersistedData::~PersistedData() {
