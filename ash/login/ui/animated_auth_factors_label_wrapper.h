@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/login/ui/auth_factor_model.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"

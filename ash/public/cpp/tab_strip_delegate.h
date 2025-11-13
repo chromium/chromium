@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "ui/base/models/image_model.h"
 #include "url/gurl.h"

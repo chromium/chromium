@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/data_migration/device.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"

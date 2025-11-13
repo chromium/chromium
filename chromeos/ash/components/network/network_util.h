@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/values.h"
 

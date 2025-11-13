@@ -11,7 +11,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
-#include "base/functional/callback.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/language_packs/diff.h"
 #include "ui/base/ime/ash/input_method_manager.h"

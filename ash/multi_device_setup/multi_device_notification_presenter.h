@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/auto_reset.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"

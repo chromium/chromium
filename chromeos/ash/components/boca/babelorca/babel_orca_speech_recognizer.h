@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 
