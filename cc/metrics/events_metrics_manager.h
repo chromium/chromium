@@ -29,13 +29,11 @@ class CC_EXPORT EventsMetricsManager {
   class ScopedMonitor {
    public:
     // Type of the callback function that is called after a scoped monitor goes
-    // out of scope. `handled` specifies whether the corresponding event was
-    // handled in which case the function should return its corresponding
-    // `EventMetrics` object for reporting purposes. Since calling this callback
-    // denotes the end of event processing, clients can use this to set relevant
-    // timestamps to the metrics object, before potentially returning it.
-    using DoneCallback =
-        base::OnceCallback<std::unique_ptr<EventMetrics>(bool handled)>;
+    // out of scope. The function should return its corresponding `EventMetrics`
+    // object for reporting purposes. Since calling this callback denotes the
+    // end of event processing, clients can use this to set relevant timestamps
+    // to the metrics object, before potentially returning it.
+    using DoneCallback = base::OnceCallback<std::unique_ptr<EventMetrics>()>;
 
     ScopedMonitor();
     virtual ~ScopedMonitor();

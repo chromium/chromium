@@ -831,15 +831,9 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
   if (event_with_callback->metrics()) {
     event_with_callback->WillStartProcessingForMetrics();
     done_callback = base::BindOnce(
-        [](EventWithCallback* event, bool handled) {
+        [](EventWithCallback* event) {
           event->DidCompleteProcessingForMetrics();
-          bool keep_metrics =
-              handled ||
-              cc::EventMetrics::ShouldKeepEvenWithoutCausingFrameUpdate(
-                  event->metrics()->type());
-          std::unique_ptr<cc::EventMetrics> result =
-              keep_metrics ? event->TakeMetrics() : nullptr;
-          return result;
+          return event->TakeMetrics();
         },
         event_with_callback);
   }
