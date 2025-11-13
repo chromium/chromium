@@ -542,8 +542,8 @@
   top: 50%;
   translate: -50% -50%;
   opacity: 0;
-  /* The gradient is 120% wide to ensure it fills passed the entire container. */
-  width: 120%;
+  /* The gradient is 135% wide to ensure it fills passed the entire container. */
+  width: 135%;
 }
 
 :host([expanded_]) .gradient:before {
