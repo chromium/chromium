@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
 
+import androidx.annotation.LayoutRes;
+
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -26,6 +28,7 @@ public abstract class TabGroupOverflowMenuCoordinator extends TabOverflowMenuCoo
 
     /**
      * @param menuLayout The menu layout to use.
+     * @param flyoutMenuLayout The menu layout for flyout popups to use.
      * @param onItemClickedCallback A callback for listening to clicks.
      * @param tabModelSupplier The supplier of the tab model.
      * @param multiInstanceManager The {@link MultiInstanceManager}.
@@ -34,7 +37,8 @@ public abstract class TabGroupOverflowMenuCoordinator extends TabOverflowMenuCoo
      * @param activity The {@link Activity} that the coordinator resides in.
      */
     protected TabGroupOverflowMenuCoordinator(
-            int menuLayout,
+            @LayoutRes int menuLayout,
+            @LayoutRes int flyoutMenuLayout,
             OnItemClickedCallback<Token> onItemClickedCallback,
             Supplier<TabModel> tabModelSupplier,
             @Nullable MultiInstanceManager multiInstanceManager,
@@ -43,6 +47,7 @@ public abstract class TabGroupOverflowMenuCoordinator extends TabOverflowMenuCoo
             Activity activity) {
         super(
                 menuLayout,
+                flyoutMenuLayout,
                 onItemClickedCallback,
                 tabModelSupplier,
                 multiInstanceManager,

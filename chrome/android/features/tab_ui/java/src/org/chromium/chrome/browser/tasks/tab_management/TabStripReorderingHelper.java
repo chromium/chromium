@@ -40,6 +40,7 @@ public abstract class TabStripReorderingHelper<T> extends TabOverflowMenuCoordin
 
     /**
      * @param menuLayout The menu layout to use.
+     * @param flyoutMenuLayout The menu layout for flyout popupps to use.
      * @param onItemClickedCallback A callback for listening to clicks.
      * @param tabModelSupplier The supplier of the tab model.
      * @param multiInstanceManager The {@link MultiInstanceManager}.
@@ -51,6 +52,7 @@ public abstract class TabStripReorderingHelper<T> extends TabOverflowMenuCoordin
      */
     protected TabStripReorderingHelper(
             @LayoutRes int menuLayout,
+            @LayoutRes int flyoutMenuLayout,
             OnItemClickedCallback<T> onItemClickedCallback,
             Supplier<TabModel> tabModelSupplier,
             @Nullable MultiInstanceManager multiInstanceManager,
@@ -60,6 +62,7 @@ public abstract class TabStripReorderingHelper<T> extends TabOverflowMenuCoordin
             BiConsumer<T, Boolean> reorderFunction) {
         super(
                 menuLayout,
+                flyoutMenuLayout,
                 onItemClickedCallback,
                 tabModelSupplier,
                 multiInstanceManager,

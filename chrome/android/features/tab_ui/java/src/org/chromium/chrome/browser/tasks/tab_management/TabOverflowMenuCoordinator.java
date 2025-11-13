@@ -21,6 +21,7 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
@@ -47,6 +48,8 @@ import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.hierarchicalmenu.FlyoutController;
+import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.AccessibilityListObserver;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -73,7 +76,8 @@ import java.util.function.Supplier;
  *     ID. For tab groups, it's the tab group ID.
  */
 @NullMarked
-public abstract class TabOverflowMenuCoordinator<T> {
+public abstract class TabOverflowMenuCoordinator<T>
+        implements FlyoutHandler<TabOverflowMenuHolder<T>> {
 
     /**
      * Helper interface for handling menu item clicks.
@@ -95,14 +99,19 @@ public abstract class TabOverflowMenuCoordinator<T> {
     protected final @Nullable MultiInstanceManager mMultiInstanceManager;
     protected @Nullable TabGroupSyncService mTabGroupSyncService;
 
-    private final @LayoutRes int mMenuLayout;
     private final Activity mActivity;
+    private final @LayoutRes int mMenuLayout;
+    private final @LayoutRes int mFlyoutMenuLayout;
     private final OnItemClickedCallback<T> mOnItemClickedCallback;
-    private @Nullable TabOverflowMenuHolder<T> mMenuHolder;
     private final HierarchicalMenuController mHierarchicalMenuController;
+
+    private boolean mIsIncognito;
+    private @Nullable String mCollaborationId;
+    private @Nullable T mId;
 
     /**
      * @param menuLayout The menu layout to use.
+     * @param flyoutMenuLayout The menu layout for flyout popups to use.
      * @param onItemClickedCallback A callback for listening to clicks.
      * @param tabModelSupplier The supplier of the tab model.
      * @param multiInstanceManager The {@link MultiInstanceManager}.
@@ -112,6 +121,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
      */
     protected TabOverflowMenuCoordinator(
             @LayoutRes int menuLayout,
+            @LayoutRes int flyoutMenuLayout,
             OnItemClickedCallback<T> onItemClickedCallback,
             Supplier<TabModel> tabModelSupplier,
             @Nullable MultiInstanceManager multiInstanceManager,
@@ -119,6 +129,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
             CollaborationService collaborationService,
             Activity activity) {
         mMenuLayout = menuLayout;
+        mFlyoutMenuLayout = flyoutMenuLayout;
         mOnItemClickedCallback = onItemClickedCallback;
         mTabModelSupplier = tabModelSupplier;
         mMultiInstanceManager = multiInstanceManager;
@@ -126,8 +137,6 @@ public abstract class TabOverflowMenuCoordinator<T> {
         assert collaborationService != null;
         mCollaborationService = collaborationService;
         mActivity = activity;
-
-        // TODO(crbug.com/433410990): Implement flyoutHandler.
         mHierarchicalMenuController = ListMenuUtils.createHierarchicalMenuController(activity);
     }
 
@@ -264,10 +273,10 @@ public abstract class TabOverflowMenuCoordinator<T> {
             @HorizontalOrientation int horizontalOrientation,
             Activity activity,
             boolean isIncognito) {
+        mCollaborationId = getCollaborationIdOrNull(id);
+        mIsIncognito = isIncognito;
+        mId = id;
 
-        assert mMenuHolder == null;
-        @Nullable String collaborationId = getCollaborationIdOrNull(id);
-        Drawable menuBackground = getMenuBackground(activity, isIncognito);
         // Initialize the model before creating the adapter so that
         // ListMenuItemAdapter#areAllItemsEnabled returns the correct result instead of receiving an
         // empty model list.
@@ -280,7 +289,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
         if (mActivity != null) {
             offsetPopupRect(mActivity, isIncognito, anchorViewRectProvider.getRect());
         }
-        mMenuHolder =
+        TabOverflowMenuHolder<T> menuHolder =
                 new TabOverflowMenuHolder<>(
                         anchorViewRectProvider,
                         horizontalOverlapAnchor,
@@ -288,27 +297,31 @@ public abstract class TabOverflowMenuCoordinator<T> {
                         animStyle,
                         horizontalOrientation,
                         mMenuLayout,
-                        menuBackground,
+                        getMenuBackground(activity, mIsIncognito),
                         modelList,
                         mOnItemClickedCallback,
                         id,
-                        collaborationId,
+                        mCollaborationId,
                         getMenuWidth(anchorViewRectProvider.getRect().width()),
                         this::onDismiss,
-                        activity);
-        buildCustomView(mMenuHolder.getContentView(), isIncognito);
+                        activity,
+                        /* isFlyout= */ false);
+        buildCustomView(menuHolder.getContentView(), isIncognito);
         afterCreate();
 
         modelList.addObserver(
                 mHierarchicalMenuController
                 .new AccessibilityListObserver(
-                        mMenuHolder.getContentView(),
+                        menuHolder.getContentView(),
                         /* headerView= */ null,
-                        mMenuHolder.getContentView().findViewById(R.id.tab_group_action_menu_list),
+                        menuHolder.getContentView().findViewById(R.id.tab_group_action_menu_list),
                         /* headerModelList= */ null,
                         modelList));
 
-        mMenuHolder.show();
+        menuHolder.show();
+
+        mHierarchicalMenuController.setupFlyoutController(
+                /* flyoutHandler= */ this, menuHolder, /* drillDownOverrideValue= */ null);
     }
 
     /**
@@ -316,8 +329,10 @@ public abstract class TabOverflowMenuCoordinator<T> {
      * adding collaboration items for {@link TabGroupContextMenuCoordinator}.
      */
     protected void resizeMenu() {
-        if (mMenuHolder != null) {
-            mMenuHolder.resize();
+        FlyoutController<TabOverflowMenuHolder> controller =
+                mHierarchicalMenuController.getFlyoutController();
+        if (controller != null) {
+            controller.getMainPopup().resize();
         }
     }
 
@@ -326,15 +341,20 @@ public abstract class TabOverflowMenuCoordinator<T> {
      * already showing.
      */
     public void dismiss() {
-        if (mMenuHolder != null) {
-            mMenuHolder.dismiss();
+        if (mHierarchicalMenuController.getFlyoutController() != null) {
+            mHierarchicalMenuController.destroyFlyoutController();
         }
     }
 
     /** Returns true if the menu is currently showing. */
     public boolean isMenuShowing() {
-        if (mMenuHolder == null) return false;
-        return mMenuHolder.getMenuWindow().isShowing();
+        FlyoutController<TabOverflowMenuHolder> controller =
+                mHierarchicalMenuController.getFlyoutController();
+        if (controller == null) {
+            return false;
+        }
+
+        return controller.getMainPopup().getMenuWindow().isShowing();
     }
 
     protected void onMenuDismissed() {}
@@ -352,8 +372,10 @@ public abstract class TabOverflowMenuCoordinator<T> {
     }
 
     private void onDismiss(TabOverflowMenuHolder<T> menuHolder) {
-        assert mMenuHolder == menuHolder;
-        mMenuHolder = null;
+        if (mHierarchicalMenuController.getFlyoutController() != null) {
+            mHierarchicalMenuController.destroyFlyoutController();
+        }
+
         onMenuDismissed();
     }
 
@@ -372,9 +394,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
                 /* headerModelList= */ null,
                 modelList,
                 () -> {
-                    if (mMenuHolder != null) {
-                        mMenuHolder.dismiss();
-                    }
+                    dismiss();
                 });
     }
 
@@ -386,7 +406,14 @@ public abstract class TabOverflowMenuCoordinator<T> {
         // This is needed because mMenuHolder#destroy is usually called as an onDismissListener.
         // However, in Robolectric tests, the onDismissListener may not be called, so the menu won't
         // be destroyed, and the test will report a lifecycle error.
-        if (mMenuHolder != null) mMenuHolder.destroy();
+        FlyoutController<TabOverflowMenuHolder<T>> controller =
+                mHierarchicalMenuController.getFlyoutController();
+        if (controller == null) {
+            return;
+        }
+
+        controller.destroy();
+        controller = null;
     }
 
     /**
@@ -395,19 +422,31 @@ public abstract class TabOverflowMenuCoordinator<T> {
      * @param focusable True if the menu is focusable, false otherwise.
      */
     public void setMenuFocusable(boolean focusable) {
-        if (mMenuHolder != null) {
-            mMenuHolder.getMenuWindow().setFocusable(focusable);
+        FlyoutController<TabOverflowMenuHolder> controller =
+                mHierarchicalMenuController.getFlyoutController();
+        if (controller != null) {
+            controller.getMainPopup().getMenuWindow().setFocusable(focusable);
         }
     }
 
     public @Nullable ModelList getModelListForTesting() {
-        if (mMenuHolder == null) return null;
-        return mMenuHolder.getModelList();
+        FlyoutController<TabOverflowMenuHolder> controller =
+                mHierarchicalMenuController.getFlyoutController();
+        if (controller == null) {
+            return null;
+        }
+
+        return controller.getMainPopup().getModelList();
     }
 
     public @Nullable View getContentViewForTesting() {
-        if (mMenuHolder == null) return null;
-        return mMenuHolder.getContentView();
+        FlyoutController<TabOverflowMenuHolder> controller =
+                mHierarchicalMenuController.getFlyoutController();
+        if (controller == null) {
+            return null;
+        }
+
+        return controller.getMainPopup().getContentView();
     }
 
     /**
@@ -489,4 +528,81 @@ public abstract class TabOverflowMenuCoordinator<T> {
     /** Moves item with ID {@param id} to window with instance info {@param instanceInfo}. */
     @RequiresNonNull("mMultiInstanceManager")
     protected void moveToWindow(InstanceInfo instanceInfo, T id) {}
+
+    @Override
+    public Rect getPopupRect(TabOverflowMenuHolder<T> popupWindow) {
+        View contentView = popupWindow.getContentView();
+
+        if (contentView == null) {
+            return new Rect();
+        }
+
+        return ListMenuUtils.getViewRectRelativeToItsRootView(contentView);
+    }
+
+    @Override
+    public void dismissPopup(TabOverflowMenuHolder<T> popupWindow) {
+        popupWindow.dismiss();
+    }
+
+    @Override
+    public void setWindowFocus(TabOverflowMenuHolder<T> popupWindow, boolean hasFocus) {
+        ViewGroup contentView = (ViewGroup) popupWindow.getMenuWindow().getContentView();
+        if (contentView == null) {
+            return;
+        }
+        contentView.setFocusable(true);
+
+        HierarchicalMenuController.setWindowFocusForFlyoutMenus(contentView, hasFocus);
+    }
+
+    @Override
+    public TabOverflowMenuHolder<T> createAndShowFlyoutPopup(
+            ListItem item, View view, Runnable dismissRunnable) {
+        ModelList modelList = getModelListSubtree(item);
+
+        Rect anchorRect =
+                FlyoutController.calculateFlyoutAnchorRect(
+                        view, mActivity.getWindow().getDecorView());
+
+        if (!mIsIncognito) {
+            anchorRect.offset(
+                    0,
+                    -mActivity
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.popup_menu_shadow_length));
+        }
+
+        RectProvider rectProvider = new RectProvider(anchorRect);
+
+        assert mId != null;
+        TabOverflowMenuHolder<T> menuHolder =
+                new TabOverflowMenuHolder<>(
+                        rectProvider,
+                        /* horizontalOverlapAnchor= */ false,
+                        /* verticalOverlapAnchor= */ true,
+                        Resources.ID_NULL,
+                        HorizontalOrientation.MAX_AVAILABLE_SPACE,
+                        mFlyoutMenuLayout,
+                        getMenuBackground(mActivity, mIsIncognito),
+                        modelList,
+                        mOnItemClickedCallback,
+                        mId,
+                        mCollaborationId,
+                        getMenuWidth(rectProvider.getRect().width()),
+                        (holder) -> dismissRunnable.run(),
+                        mActivity,
+                        /* isFlyout= */ true);
+
+        menuHolder.show();
+        return menuHolder;
+    }
+
+    private static ModelList getModelListSubtree(ListItem item) {
+        ModelList modelList = new ModelList();
+        for (ListItem listItem : item.model.get(ListMenuSubmenuItemProperties.SUBMENU_ITEMS)) {
+            modelList.add(listItem);
+        }
+        return modelList;
+    }
 }

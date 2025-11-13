@@ -179,13 +179,14 @@ public class FlyoutController<T> implements Destroyable {
     }
 
     private void removeFlyoutWindows(int clearFromIndex) {
+        // To dismiss all popups, use {@link #destroy()}.
         assert clearFromIndex > 0;
 
         if (clearFromIndex >= mPopups.size()) {
             return;
         }
 
-        for (int i = clearFromIndex; i < mPopups.size(); i++) {
+        for (int i = mPopups.size() - 1; i >= clearFromIndex; i--) {
             mFlyoutHandler.dismissPopup(mPopups.get(i).popupWindow);
         }
 
@@ -319,7 +320,7 @@ public class FlyoutController<T> implements Destroyable {
 
     @Override
     public void destroy() {
-        for (int i = 0; i < mPopups.size(); i++) {
+        for (int i = mPopups.size() - 1; i >= 0; i--) {
             mFlyoutHandler.dismissPopup(mPopups.get(i).popupWindow);
         }
     }

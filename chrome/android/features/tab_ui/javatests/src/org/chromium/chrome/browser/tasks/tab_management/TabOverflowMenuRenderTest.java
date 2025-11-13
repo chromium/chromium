@@ -103,7 +103,10 @@ public class TabOverflowMenuRenderTest {
     @After
     public void tearDown() {
         NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
-        mCoordinator.destroyMenuForTesting();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.destroyMenuForTesting();
+                });
     }
 
     @Test
@@ -120,6 +123,7 @@ public class TabOverflowMenuRenderTest {
                 () -> {
                     mCoordinator =
                             new TabOverflowMenuCoordinator<>(
+                                    R.layout.tab_switcher_action_menu_layout,
                                     R.layout.tab_switcher_action_menu_layout,
                                     mOnItemClickedCallback,
                                     mTabModelSupplier,

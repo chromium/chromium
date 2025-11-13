@@ -58,6 +58,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
             Activity activity) {
         super(
                 R.layout.tab_switcher_action_menu_layout,
+                R.layout.tab_switcher_action_menu_layout,
                 onItemClicked,
                 tabModelSupplier,
                 /* multiInstanceManager= */ null,

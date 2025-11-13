@@ -141,6 +141,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
             BiConsumer<Token, Boolean> reorderFunction) {
         super(
                 R.layout.tab_strip_group_menu_layout,
+                R.layout.tab_switcher_action_menu_layout,
                 getMenuItemClickedCallback(
                         assumeNonNull(windowAndroid.getActivity().get()),
                         tabModelSupplier,

@@ -80,6 +80,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
             ShowTabListEditor showTabListEditor) {
         super(
                 R.layout.tab_switcher_action_menu_layout,
+                R.layout.tab_switcher_action_menu_layout,
                 getMenuItemClickedCallback(
                         tabBookmarkerSupplier,
                         tabGroupModelFilter,

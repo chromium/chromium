@@ -162,6 +162,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             BiConsumer<AnchorInfo, Boolean> reorderFunction) {
         super(
                 R.layout.tab_switcher_action_menu_layout,
+                R.layout.tab_switcher_action_menu_layout,
                 getMenuItemClickedCallback(
                         tabModelSupplier,
                         tabGroupModelFilter,

@@ -30,11 +30,13 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator.OnItemClickedCallback;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.listmenu.ListMenuItemAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.util.AttrUtils;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
+import org.chromium.ui.widget.FlyoutPopupSpecCalculator;
 import org.chromium.ui.widget.RectProvider;
 
 import java.util.Set;
@@ -68,9 +70,10 @@ public class TabOverflowMenuHolder<T> {
             OnItemClickedCallback<T> onItemClickedCallback,
             T id,
             @Nullable String collaborationId,
-            int popupWidthPx,
+            int popupMaxWidthPx,
             @Nullable Callback<TabOverflowMenuHolder<T>> onDismiss,
-            Activity activity) {
+            Activity activity,
+            boolean isFlyout) {
         mModelList = modelList;
         mContext = new ContextThemeWrapper(activity, R.style.OverflowMenuThemeOverlay);
         mComponentCallbacks =
@@ -115,22 +118,40 @@ public class TabOverflowMenuHolder<T> {
 
         View decorView = activity.getWindow().getDecorView();
 
-        mMenuWindow =
-                new AnchoredPopupWindow(
-                        mContext, decorView, menuBackground, mContentView, anchorViewRectProvider);
-        mMenuWindow.setFocusable(true);
-        mMenuWindow.setHorizontalOverlapAnchor(horizontalOverlapAnchor);
-        mMenuWindow.setVerticalOverlapAnchor(verticalOverlapAnchor);
-        mMenuWindow.setPreferredHorizontalOrientation(horizontalOrientation);
-        mMenuWindow.setElevation(
-                mContentView.getResources().getDimension(R.dimen.tab_overflow_menu_elevation));
-        // Override animation style or animate from anchor as default.
-        if (animStyle == Resources.ID_NULL) {
-            mMenuWindow.setAnimateFromAnchor(true);
+        AnchoredPopupWindow.Builder builder =
+                new AnchoredPopupWindow.Builder(
+                                mContext,
+                                decorView,
+                                menuBackground,
+                                () -> mContentView,
+                                anchorViewRectProvider)
+                        .setFocusable(true)
+                        .setOutsideTouchable(true)
+                        .setHorizontalOverlapAnchor(horizontalOverlapAnchor)
+                        .setVerticalOverlapAnchor(verticalOverlapAnchor)
+                        .setPreferredHorizontalOrientation(horizontalOrientation)
+                        .setMaxWidth(popupMaxWidthPx)
+                        .setAllowNonTouchableSize(true)
+                        .setElevation(
+                                mContentView
+                                        .getResources()
+                                        .getDimension(R.dimen.tab_overflow_menu_elevation));
+
+        if (isFlyout) {
+            builder.setAnimationStyle(R.style.PopupWindowAnimFade);
+            builder.setSpecCalculator(new FlyoutPopupSpecCalculator());
+            builder.setDesiredContentWidth(
+                    UiUtils.computeListAdapterContentDimensions(adapter, touchTrackingListView)[0]);
         } else {
-            mMenuWindow.setAnimationStyle(animStyle);
+            // Override animation style or animate from anchor as default.
+            if (animStyle == Resources.ID_NULL) {
+                builder.setAnimateFromAnchor(true);
+            } else {
+                builder.setAnimationStyle(animStyle);
+            }
         }
-        mMenuWindow.setMaxWidth(popupWidthPx);
+
+        mMenuWindow = builder.build();
 
         // Resize if any new elements are added.
         adapter.registerDataSetObserver(
