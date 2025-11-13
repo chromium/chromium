@@ -1856,7 +1856,7 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
     }
   }
   // Without this, focus indicators may appear stale (see crbug.com/1369229).
-  popup_view_->UpdatePopupAppearance();
+  observers_.Notify(&Observer::OnContentsChanged);
 }
 
 bool OmniboxEditModel::IsPopupSelectionOnInitialLine() const {
@@ -2143,7 +2143,7 @@ void OmniboxEditModel::OnPopupResultChanged() {
       popup_selection_.state != OmniboxPopupSelection::FOCUSED_BUTTON_AIM) {
     view_->ApplyFocusRingToAimButton(false);
   }
-  popup_view_->UpdatePopupAppearance();
+  observers_.Notify(&Observer::OnContentsChanged);
 }
 
 const SkBitmap* OmniboxEditModel::GetPopupRichSuggestionBitmap(
@@ -2185,14 +2185,14 @@ void OmniboxEditModel::SetPopupRichSuggestionBitmap(int result_index,
                                                     const SkBitmap& bitmap) {
   DCHECK(popup_view_);
   rich_suggestion_bitmaps_[result_index] = bitmap;
-  popup_view_->UpdatePopupAppearance();
+  observers_.Notify(&Observer::OnContentsChanged);
 }
 
 void OmniboxEditModel::SetIconBitmap(const GURL& icon_url,
                                      const SkBitmap& bitmap) {
   DCHECK(popup_view_ && !icon_url.is_empty());
   icon_bitmaps_[icon_url] = bitmap;
-  popup_view_->UpdatePopupAppearance();
+  observers_.Notify(&Observer::OnContentsChanged);
 }
 
 void OmniboxEditModel::SetAutocompleteInput(AutocompleteInput input) {
@@ -2713,7 +2713,7 @@ void OmniboxEditModel::UpdateFeedbackOnMatch(size_t match_index,
                             ? FeedbackType::kNone
                             : feedback_type;
   // Update the suggestion appearance.
-  popup_view_->UpdatePopupAppearance();
+  observers_.Notify(&Observer::OnContentsChanged);
   // Show the feedback form on negative feedback.
   if (match.feedback_type == FeedbackType::kThumbsDown) {
     controller_->client()->ShowFeedbackPage(

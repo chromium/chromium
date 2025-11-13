@@ -90,6 +90,7 @@ class OmniboxPopupViewViews : public views::View,
   void OnSelectionChanged(OmniboxPopupSelection old_selection,
                           OmniboxPopupSelection new_selection) override;
   void OnMatchIconUpdated(size_t match_index) override;
+  void OnContentsChanged() override;
 
   void FireAXEventsForNewActiveDescendant(View* descendant_view);
 

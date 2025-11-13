@@ -95,6 +95,10 @@ bool OmniboxPopupViewWebUI::IsAiModeOpen() const {
   return content_index.has_value() && (content_index.value() > 0);
 }
 
+void OmniboxPopupViewWebUI::OnContentsChanged() {
+  UpdatePopupAppearanceInternal(/*ai_mode=*/false);
+}
+
 void OmniboxPopupViewWebUI::UpdatePopupAppearanceInternal(bool ai_mode) {
   if (!ai_mode && (controller()->autocomplete_controller()->result().empty() ||
                    omnibox_view_->IsImeShowingPopup())) {
