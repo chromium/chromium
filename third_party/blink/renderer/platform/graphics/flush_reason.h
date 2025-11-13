@@ -63,15 +63,10 @@ enum class FlushReason {
   // This inhibits vector printing.
   kCreateVideoFrame = 11,
 
-  // The canvas was used as a source image in a call to
-  // `CanvasRenderingContext2D.drawImage`.
-  // This inhibits vector printing.
-  kDrawImage = 12,
-
   // The canvas is being printed.
-  kPrinting = 13,
+  kPrinting = 12,
 
-  kOther = 14,
+  kOther = 13,
 
   kMaxValue = kOther,
 };

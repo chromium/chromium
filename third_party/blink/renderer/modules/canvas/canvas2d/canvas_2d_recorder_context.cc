@@ -2409,7 +2409,7 @@ void Canvas2DRecorderContext::drawImage(CanvasImageSource* image_source,
     }
   } else {
     image = image_source->GetSourceImageForCanvas(
-        FlushReason::kDrawImage, &source_image_status, default_object_size);
+        FlushReason::kOther, &source_image_status, default_object_size);
     if (source_image_status == kUndecodableSourceImageStatus) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidStateError,
