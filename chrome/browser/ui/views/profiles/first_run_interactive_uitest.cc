@@ -808,11 +808,11 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
     RunTestSequenceInContext(
         views::ElementTrackerViews::GetContextForView(view()),
         // Web Contents already instrumented in the previous sequence.
-        WaitForWebContentsNavigation(kWebContentsId, history_page_url),
-
-        // TODO(crbug.com/457397867): Verify Signin.HistorySyncOptIn.Started
-        // once it is implemented.
-
+        WaitForWebContentsNavigation(kWebContentsId, history_page_url), Do([&] {
+          histogram_tester().ExpectUniqueSample(
+              "Signin.HistorySyncOptIn.Started",
+              signin_metrics::AccessPoint::kForYouFre, 1);
+        }),
         // Button is visible once capabilities are loaded or defaulted.
         WaitForButtonVisible(kWebContentsId, kOptInSyncHistoryButton),
 
@@ -860,10 +860,12 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
     EXPECT_TRUE(privacy_sandbox_service->IsPromptOpenForBrowser(browser()));
   }
 
-  if (!base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
-    // TODO(crbug.com/457397867): Verify Signin.HistorySyncOptIn.Completed
-    // once it is implemented.
+    histogram_tester().ExpectUniqueSample(
+        "Signin.HistorySyncOptIn.Completed",
+        signin_metrics::AccessPoint::kForYouFre, 1);
+  } else {
     histogram_tester().ExpectUniqueSample(
         "Signin.SyncOptIn.Completed", signin_metrics::AccessPoint::kForYouFre,
         1);
@@ -892,19 +894,24 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
       "Signin.SignIn.Started", signin_metrics::AccessPoint::kForYouFre, 1);
   histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Completed", signin_metrics::AccessPoint::kForYouFre, 1);
-  if (!base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
-    // TODO(crbug.com/457397867): Adapt these histograms for history optin.
+    histogram_tester().ExpectUniqueSample(
+        "Signin.HistorySyncOptIn.Started",
+        signin_metrics::AccessPoint::kForYouFre, 1);
+    histogram_tester().ExpectUniqueSample(
+        "Signin.HistorySyncOptIn.Completed",
+        signin_metrics::AccessPoint::kForYouFre, 1);
+  } else {
     histogram_tester().ExpectUniqueSample(
         "Signin.SyncOptIn.Started", signin_metrics::AccessPoint::kForYouFre, 1);
     histogram_tester().ExpectUniqueSample(
         "Signin.SyncOptIn.Completed", signin_metrics::AccessPoint::kForYouFre,
         1);
-    // TODO(crbug.com/457397867): Support equal weight buttons in history optin.
-    histogram_tester().ExpectUniqueSample(
-        "Signin.SyncButtons.Shown",
-        *ExpectedButtonShownMetric(SyncButtonsFeatureConfig()), 1);
   }
+  histogram_tester().ExpectUniqueSample(
+      "Signin.SyncButtons.Shown",
+      *ExpectedButtonShownMetric(SyncButtonsFeatureConfig()), 1);
   histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
@@ -1011,17 +1018,20 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
       "Signin.SignIn.Started", signin_metrics::AccessPoint::kForYouFre, 1);
   histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Completed", signin_metrics::AccessPoint::kForYouFre, 1);
-  if (!base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
-    // TODO(crbug.com/457397867): Adapt these histograms for history optin.
+    histogram_tester().ExpectUniqueSample(
+        "Signin.HistorySyncOptIn.Started",
+        signin_metrics::AccessPoint::kForYouFre, 1);
+    histogram_tester().ExpectTotalCount("Signin.HistorySyncOptIn.Completed", 0);
+  } else {
     histogram_tester().ExpectUniqueSample(
         "Signin.SyncOptIn.Started", signin_metrics::AccessPoint::kForYouFre, 1);
     histogram_tester().ExpectTotalCount("Signin.SyncOptIn.Completed", 0);
-    // TODO(crbug.com/457397867): Support equal weight buttons in history optin.
-    histogram_tester().ExpectUniqueSample(
-        "Signin.SyncButtons.Shown",
-        *ExpectedButtonShownMetric(SyncButtonsFeatureConfig()), 1);
   }
+  histogram_tester().ExpectUniqueSample(
+      "Signin.SyncButtons.Shown",
+      *ExpectedButtonShownMetric(SyncButtonsFeatureConfig()), 1);
   histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
@@ -1286,9 +1296,13 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
       "Signin.SignIn.Started", signin_metrics::AccessPoint::kForYouFre, 1);
   histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Completed", signin_metrics::AccessPoint::kForYouFre, 1);
-  if (!base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
-    // TODO(crbug.com/457397867): Adapt these histograms for history optin.
+    histogram_tester().ExpectUniqueSample(
+        "Signin.HistorySyncOptIn.Started",
+        signin_metrics::AccessPoint::kForYouFre, 0);
+    histogram_tester().ExpectTotalCount("Signin.HistorySyncOptIn.Completed", 0);
+  } else {
     histogram_tester().ExpectUniqueSample(
         "Signin.SyncOptIn.Started", signin_metrics::AccessPoint::kForYouFre, 1);
     histogram_tester().ExpectTotalCount("Signin.SyncOptIn.Completed", 0);
