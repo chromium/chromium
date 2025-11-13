@@ -13,12 +13,9 @@ import {getCss} from './action_chips.css.js';
 import {getHtml} from './action_chips.html.js';
 import {ActionChipsApiProxyImpl} from './action_chips_proxy.js';
 
-/**
- * TODO: Move the enum to the Mojo model once it's created.
- * Elements on the Action Chips. This enum must match the numbering for
- * ActionChipsType in enums.xml. These values are persisted to logs. Entries
- * should not be renumbered, removed or reused.
- */
+namespace ActionChipsConstants {
+  export const EMPTY_QUERY_STRING = '';
+}  // namespace
 
 // Records a click metric for the given action chip type.
 function recordClick(chipType: ChipType) {
@@ -95,13 +92,15 @@ export class ActionChipsElement extends CrLitElement {
   protected onCreateImageClick_() {
     recordClick(ChipType.kImage);
     this.onActionChipClick_(
-        'Create an image ', [], ComposeboxMode.CREATE_IMAGE);
+        ActionChipsConstants.EMPTY_QUERY_STRING, [],
+        ComposeboxMode.CREATE_IMAGE);
   }
 
   protected onDeepSearchClick_() {
     recordClick(ChipType.kDeepSearch);
     this.onActionChipClick_(
-        'Help me research ', [], ComposeboxMode.DEEP_SEARCH);
+        ActionChipsConstants.EMPTY_QUERY_STRING, [],
+        ComposeboxMode.DEEP_SEARCH);
   }
 
   protected onTabContextClick_(tab: TabInfo) {
@@ -112,7 +111,9 @@ export class ActionChipsElement extends CrLitElement {
       title: tab.title,
       delayUpload: this.delayTabUploads_,
     };
-    this.onActionChipClick_('', [recentTabInfo], ComposeboxMode.DEFAULT);
+    this.onActionChipClick_(
+        ActionChipsConstants.EMPTY_QUERY_STRING, [recentTabInfo],
+        ComposeboxMode.DEFAULT);
   }
 
   protected handleClick_(chip: ActionChip): void {
