@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -57,4 +58,41 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerBrowserTest,
     return side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));
   }));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerBrowserTest,
+                       ShowSidePanelFromAppMenu) {
+  base::HistogramTester histogram_tester;
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
+
+  read_anything::ReadAnythingEntryPointController::ShowUI(
+      browser(), ReadAnythingOpenTrigger::kAppMenu);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+  histogram_tester.ExpectUniqueSample("SidePanel.ReadAnything.ShowTriggered",
+                                      SidePanelOpenTrigger::kAppMenu, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerBrowserTest,
+                       ShowSidePanelFromContextMenu) {
+  base::HistogramTester histogram_tester;
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
+
+  read_anything::ReadAnythingEntryPointController::ShowUI(
+      browser(), ReadAnythingOpenTrigger::kReadAnythingContextMenu);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+  histogram_tester.ExpectUniqueSample(
+      "SidePanel.ReadAnything.ShowTriggered",
+      SidePanelOpenTrigger::kReadAnythingContextMenu, 1);
 }

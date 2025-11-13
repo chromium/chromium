@@ -6,11 +6,12 @@
 #define CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_ENTRY_POINT_CONTROLLER_H_
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "ui/actions/actions.h"
 
 namespace read_anything {
 
-// Maintains and handles entrypoints for the ReadAnythingController.
+// Maintains and handles entry points for the ReadAnythingController.
 class ReadAnythingEntryPointController {
  public:
   ReadAnythingEntryPointController(const ReadAnythingEntryPointController&) =
@@ -19,9 +20,13 @@ class ReadAnythingEntryPointController {
       const ReadAnythingEntryPointController&) = delete;
   ~ReadAnythingEntryPointController();
 
-  // Triggered when the omnibox chip or pinned side panel entrypoint is clicked.
+  // Toggles Reading Mode on or off.
   static void InvokePageAction(BrowserWindowInterface* bwi,
                                const actions::ActionInvocationContext& context);
+
+  // Shows Reading Mode.
+  static void ShowUI(BrowserWindowInterface* bwi,
+                     ReadAnythingOpenTrigger open_trigger);
 
   // Shows or hides the omnibox entry point.
   static void UpdatePageActionVisibility(bool should_show_page_action,

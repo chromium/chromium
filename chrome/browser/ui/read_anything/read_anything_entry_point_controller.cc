@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
+#include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -51,6 +52,41 @@ void ReadAnythingEntryPointController::InvokePageAction(
     }
   } else {
     bwi->GetFeatures().side_panel_ui()->Toggle(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything),
+        side_panel_open_trigger);
+  }
+}
+
+// static
+void ReadAnythingEntryPointController::ShowUI(
+    BrowserWindowInterface* bwi,
+    ReadAnythingOpenTrigger open_trigger) {
+  if (!bwi) {
+    return;
+  }
+
+  SidePanelOpenTrigger side_panel_open_trigger;
+  switch (open_trigger) {
+    case ReadAnythingOpenTrigger::kAppMenu:
+      side_panel_open_trigger = SidePanelOpenTrigger::kAppMenu;
+      break;
+    case ReadAnythingOpenTrigger::kReadAnythingContextMenu:
+      side_panel_open_trigger = SidePanelOpenTrigger::kReadAnythingContextMenu;
+      break;
+    case ReadAnythingOpenTrigger::kReadAnythingNavigationThrottle:
+      side_panel_open_trigger =
+          SidePanelOpenTrigger::kReadAnythingNavigationThrottle;
+      break;
+  }
+
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
+      auto* controller = ReadAnythingController::From(tab);
+      CHECK(controller);
+      controller->ShowUI(side_panel_open_trigger);
+    }
+  } else {
+    bwi->GetFeatures().side_panel_ui()->Show(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything),
         side_panel_open_trigger);
   }

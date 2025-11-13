@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
+#include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
@@ -1254,17 +1255,8 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
 
     case IDC_SHOW_READING_MODE_SIDE_PANEL: {
       // Yes. This is a separate feature from the reading list.
-      if (features::IsImmersiveReadAnythingEnabled()) {
-        if (tabs::TabInterface* tab =
-                browser_->tab_strip_model()->GetActiveTab()) {
-          auto* controller = ReadAnythingController::From(tab);
-          CHECK(controller);
-          controller->ShowUI(SidePanelOpenTrigger::kAppMenu);
-        }
-      } else {
-        browser_->GetFeatures().side_panel_ui()->Show(
-            SidePanelEntryId::kReadAnything, SidePanelOpenTrigger::kAppMenu);
-      }
+      read_anything::ReadAnythingEntryPointController::ShowUI(
+          browser_, ReadAnythingOpenTrigger::kAppMenu);
       break;
     }
 

@@ -23729,6 +23729,12 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="Model Loading Abandoned"/>
 </enum>
 
+<enum name="ReadAnythingOpenTrigger">
+  <int value="0" label="Opened from App Menu"/>
+  <int value="1" label="Opened from Read Anything context menu"/>
+  <int value="2" label="Opened from navigation throttle"/>
+</enum>
+
 <enum name="ReadingListContextMenuActions">
   <int value="0" label="New Tab"/>
   <int value="1" label="New Incognito Tab"/>
