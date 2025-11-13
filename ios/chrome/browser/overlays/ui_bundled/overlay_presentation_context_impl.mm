@@ -82,17 +82,29 @@ OverlayPresentationContextImpl::OverlayPresentationContextImpl(
     OverlayModality modality,
     OverlayRequestCoordinatorFactory* factory)
     : presenter_(OverlayPresenter::FromBrowser(browser, modality)),
-      shutdown_helper_(browser, presenter_, this),
       coordinator_delegate_(this),
       fullscreen_disabler_(browser, modality),
       coordinator_factory_(factory),
       weak_factory_(this) {
   DCHECK(presenter_);
   DCHECK(coordinator_factory_);
+  presenter_->AddObserver(this);
   presenter_->SetPresentationContext(this);
 }
 
-OverlayPresentationContextImpl::~OverlayPresentationContextImpl() = default;
+OverlayPresentationContextImpl::~OverlayPresentationContextImpl() {
+  if (presenter_) {
+    // Destruction order between the OverlayPresentationContextImpl and the
+    // OverlayPresenter is unspecified, so reset the PresentationContext if
+    // the OverlayPresentationContextImpl is destroyed first.
+    OverlayPresenterDestroyed(presenter_);
+    DCHECK(!presenter_);
+  }
+
+  for (auto& [_, ui_state] : states_) {
+    ui_state->coordinator().delegate = nil;
+  }
+}
 
 #pragma mark Public
 
@@ -161,6 +173,16 @@ void OverlayPresentationContextImpl::SetUIDisabled(bool disabled) {
 
 bool OverlayPresentationContextImpl::IsUIDisabled() {
   return ui_disabled_;
+}
+
+#pragma mark OverlayPresenterObserver
+
+void OverlayPresentationContextImpl::OverlayPresenterDestroyed(
+    OverlayPresenter* presenter) {
+  DCHECK_EQ(presenter_, presenter);
+  presenter_->SetPresentationContext(nullptr);
+  presenter_->RemoveObserver(this);
+  presenter_ = nullptr;
 }
 
 #pragma mark OverlayPresentationContext
@@ -427,33 +449,6 @@ void OverlayPresentationContextImpl::OverlayUIWasDismissed() {
   if (request_id_ == previously_presented_request_id) {
     SetRequest(nullptr);
   }
-}
-
-void OverlayPresentationContextImpl::BrowserDestroyed() {
-  for (const auto& [_, ui_state] : states_) {
-    ui_state->coordinator().delegate = nil;
-  }
-}
-
-#pragma mark BrowserShutdownHelper
-
-OverlayPresentationContextImpl::BrowserShutdownHelper::BrowserShutdownHelper(
-    Browser* browser,
-    OverlayPresenter* presenter,
-    OverlayPresentationContextImpl* presentation_context)
-    : presenter_(presenter), presentation_context_(presentation_context) {
-  DCHECK(presenter_);
-  browser_observation_.Observe(browser);
-}
-
-OverlayPresentationContextImpl::BrowserShutdownHelper::
-    ~BrowserShutdownHelper() = default;
-
-void OverlayPresentationContextImpl::BrowserShutdownHelper::BrowserDestroyed(
-    Browser* browser) {
-  presenter_->SetPresentationContext(nullptr);
-  presentation_context_->BrowserDestroyed();
-  browser_observation_.Reset();
 }
 
 #pragma mark OverlayDismissalHelper

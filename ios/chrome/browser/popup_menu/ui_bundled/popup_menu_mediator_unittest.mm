@@ -169,15 +169,17 @@ class PopupMenuMediatorTest : public PlatformTest {
     }
 
     // Set up the OverlayPresenter.
-    OverlayPresenter::FromBrowser(browser_.get(),
-                                  OverlayModality::kWebContentArea)
-        ->SetPresentationContext(&presentation_context_);
+    overlay_presenter_ = OverlayPresenter::FromBrowser(
+        browser_.get(), OverlayModality::kWebContentArea);
+    overlay_presenter_->SetPresentationContext(&presentation_context_);
   }
 
   void TearDown() override {
     // Explicitly disconnect the mediator so there won't be any WebStateList
     // observers when browser_ gets destroyed.
     [mediator_ disconnect];
+    overlay_presenter_->SetPresentationContext(nullptr);
+    overlay_presenter_ = nullptr;
     browser_.reset();
     EXPECT_OCMOCK_VERIFY((id)popup_menu_);
     EXPECT_OCMOCK_VERIFY((id)popup_menu_strict_);
@@ -305,6 +307,7 @@ class PopupMenuMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_env_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
+  raw_ptr<OverlayPresenter> overlay_presenter_ = nullptr;
 
   FakeOverlayPresentationContext presentation_context_;
   PopupMenuMediator* mediator_;

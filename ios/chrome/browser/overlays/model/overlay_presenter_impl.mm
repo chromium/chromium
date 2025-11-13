@@ -49,20 +49,27 @@ OverlayPresenterImpl::OverlayPresenterImpl(Browser* browser,
                                            OverlayModality modality)
     : modality_(modality), web_state_list_(browser->GetWebStateList()) {
   StartObserving(browser, Policy::kAccordingToFeature);
-  browser_observation_.Observe(browser);
   DCHECK(web_state_list_);
   SetActiveWebState(web_state_list_->GetActiveWebState());
 }
 
 OverlayPresenterImpl::~OverlayPresenterImpl() {
-  // The presenter should be disconnected from WebStateList changes before
-  // destruction.
-  DCHECK(!presentation_context_);
-  DCHECK(!web_state_list_);
-
+  // Notify all observers that the current OverlayPresenter will be destroyed.
   for (auto& observer : observers_) {
     observer.OverlayPresenterDestroyed(this);
   }
+
+  // The presentation context must be reset after notifying all the observers.
+  DCHECK(!presentation_context_);
+
+  SetActiveWebState(nullptr);
+  StopObserving();
+
+  // All Webstates are detached before the Browser is destroyed so all request
+  // must be cancelled at this point.
+  DCHECK(!detached_presenting_request_queue_);
+  removed_request_awaiting_dismissal_ = nullptr;
+  web_state_list_ = nullptr;
 }
 
 #pragma mark - Public
@@ -390,22 +397,6 @@ void OverlayPresenterImpl::WebStateRemovedFromBrowser(
     // immediately.
     CancelOverlayUIForRequest(GetFrontRequestForWebState(web_state));
   }
-}
-
-#pragma mark -
-#pragma mark BrowserObserver
-
-void OverlayPresenterImpl::BrowserDestroyed(Browser* browser) {
-  SetPresentationContext(nullptr);
-  SetActiveWebState(nullptr);
-  StopObserving();
-
-  // All Webstates are detached before the Browser is destroyed so all request
-  // must be cancelled at this point.
-  DCHECK(!detached_presenting_request_queue_);
-  removed_request_awaiting_dismissal_ = nullptr;
-  browser_observation_.Reset();
-  web_state_list_ = nullptr;
 }
 
 #pragma mark -

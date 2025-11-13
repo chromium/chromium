@@ -35,6 +35,7 @@ class MockOverlayPresenterObserver : public OverlayPresenterObserver {
   void OverlayPresenterDestroyed(OverlayPresenter* presenter) override {
     presenter_destroyed_ = true;
     presenter->RemoveObserver(this);
+    presenter->SetPresentationContext(nullptr);
   }
   bool presenter_destroyed() const { return presenter_destroyed_; }
 
@@ -56,6 +57,7 @@ class OverlayPresenterImplTest : public PlatformTest {
   ~OverlayPresenterImplTest() override {
     if (browser_) {
       presenter().RemoveObserver(&observer_);
+      presenter().SetPresentationContext(nullptr);
     }
   }
   WebStateList* web_state_list() { return browser_->GetWebStateList(); }
@@ -109,10 +111,10 @@ class OverlayPresenterImplTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
-  FakeOverlayPresentationContext presentation_context_;
   MockOverlayPresenterObserver observer_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
+  FakeOverlayPresentationContext presentation_context_;
 };
 
 // Tests that setting the presentation context will present overlays requested

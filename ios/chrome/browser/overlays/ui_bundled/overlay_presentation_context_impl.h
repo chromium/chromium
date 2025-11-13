@@ -13,6 +13,7 @@
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presentation_context.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_user_data.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_presentation_context_fullscreen_disabler.h"
@@ -20,7 +21,6 @@
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator_delegate.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_ui_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 
 @class OverlayRequestCoordinatorFactory;
 @class OverlayPresentationContextCoordinator;
@@ -34,7 +34,8 @@
 // container or presentation context UIViewController, its presentation
 // capabilities are updated and supported overlay UI can begin being shown in
 // the context.
-class OverlayPresentationContextImpl : public OverlayPresentationContext {
+class OverlayPresentationContextImpl : public OverlayPresentationContext,
+                                       public OverlayPresenterObserver {
  public:
   // Returns the OverlayPresentationContextImpl for `browser` at `modality`.
   static OverlayPresentationContextImpl* FromBrowser(Browser* browser,
@@ -97,6 +98,9 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
   void SetUIDisabled(bool disabled) override;
   bool IsUIDisabled() override;
 
+  // OverlayPresenterObserver:
+  void OverlayPresenterDestroyed(OverlayPresenter* presenter) override;
+
  protected:
   // Constructor called by the Container to instantiate a presentation context
   // for `browser` at `modality`, using `factory` to create
@@ -147,30 +151,6 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
   // Called when the UI for `request_` has finished being dismissed.
   void OverlayUIWasDismissed();
 
-  // Called when the Browser is being destroyed.
-  void BrowserDestroyed();
-
-  // Helper object that detaches the UI delegate for Browser shudown.
-  class BrowserShutdownHelper : public BrowserObserver {
-   public:
-    BrowserShutdownHelper(Browser* browser,
-                          OverlayPresenter* presenter,
-                          OverlayPresentationContextImpl* presentation_context);
-    ~BrowserShutdownHelper() override;
-
-    // BrowserObserver:
-    void BrowserDestroyed(Browser* browser) override;
-
-   private:
-    // The presenter whose delegate needs to be reset.
-    raw_ptr<OverlayPresenter, DanglingUntriaged> presenter_ = nullptr;
-    // OverlayPresentationContextImpl reference.
-    raw_ptr<OverlayPresentationContextImpl> presentation_context_ = nullptr;
-    // Scoped observation.
-    base::ScopedObservation<Browser, BrowserObserver> browser_observation_{
-        this};
-  };
-
   // Helper object that listens for UI dismissal events.
   class OverlayRequestCoordinatorDelegateImpl
       : public OverlayRequestCoordinatorDelegate {
@@ -188,9 +168,7 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
   };
 
   // The presenter whose UI is being handled by this delegate.
-  raw_ptr<OverlayPresenter, DanglingUntriaged> presenter_ = nullptr;
-  // The cleanup helper.
-  BrowserShutdownHelper shutdown_helper_;
+  raw_ptr<OverlayPresenter> presenter_ = nullptr;
   // The delegate used to intercept presentation/dismissal events from
   // OverlayRequestCoordinators.
   OverlayRequestCoordinatorDelegateImpl coordinator_delegate_;

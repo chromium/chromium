@@ -225,9 +225,9 @@ class OverflowMenuMediatorTest : public PlatformTest {
     }
 
     // Set up the OverlayPresenter.
-    OverlayPresenter::FromBrowser(browser_.get(),
-                                  OverlayModality::kWebContentArea)
-        ->SetPresentationContext(&presentation_context_);
+    overlay_presenter_ = OverlayPresenter::FromBrowser(
+        browser_.get(), OverlayModality::kWebContentArea);
+    overlay_presenter_->SetPresentationContext(&presentation_context_);
 
     baseViewController_ = [[UIViewController alloc] init];
 
@@ -242,6 +242,8 @@ class OverflowMenuMediatorTest : public PlatformTest {
     // Explicitly disconnect the mediator so there won't be any WebStateList
     // observers when browser_ gets destroyed.
     [mediator_ disconnect];
+    overlay_presenter_->SetPresentationContext(nullptr);
+    overlay_presenter_ = nullptr;
     browser_.reset();
 
     CleanupNSUserDefaults();
@@ -464,6 +466,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
+  raw_ptr<OverlayPresenter> overlay_presenter_ = nullptr;
 
   FakeOverlayPresentationContext presentation_context_;
   OverflowMenuModel* model_;
