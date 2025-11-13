@@ -214,7 +214,7 @@ const base::FeatureParam<bool>
     kUseSeparateRequestIdsForMultiContextViewportImages(
         &kNtpComposebox,
         "UseSeparateRequestIdsForMultiContextViewportImages",
-        true);
+        false);
 
 const base::FeatureParam<bool> kShowComposeboxZps(&kNtpComposebox,
                                                   "ShowComposeboxZps",
