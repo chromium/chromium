@@ -2122,7 +2122,7 @@ TEST_F(AIPageContentAgentTest, FormWithTextInput) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
       "<body>"
-      "  <form name='myform'>"
+      "  <form name='myform' action='https://example.com/submit'>"
       "    <label for='input1'>Lorem Ipsum</label>"
       "    <input type='text' id='input1' name='LI' value='Lorem'>"
       "    <label for='input2'>Ipsum Dolor</label>"
@@ -2144,6 +2144,10 @@ TEST_F(AIPageContentAgentTest, FormWithTextInput) {
   EXPECT_EQ(form.content_attributes->attribute_type,
             mojom::blink::AIPageContentAttributeType::kForm);
   EXPECT_EQ(form.content_attributes->form_data->form_name, "myform");
+  // The form metadata must expose the normalized action URL so callers can
+  // surface the submit destination.
+  EXPECT_EQ(form.content_attributes->form_data->action_url,
+            url_test_helpers::ToKURL("https://example.com/submit"));
   EXPECT_EQ(form.children_nodes.size(), 4u);
 
   CheckTextNode(*form.children_nodes[0], "Lorem Ipsum");

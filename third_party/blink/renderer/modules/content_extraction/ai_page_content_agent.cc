@@ -655,6 +655,8 @@ void ProcessFormNode(const HTMLFormElement& form_element,
   if (const auto& name = form_element.GetName()) {
     form_data->form_name = name;
   }
+  form_data->action_url = KURL(form_element.action());
+
   attributes.form_data = std::move(form_data);
 }
 

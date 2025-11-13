@@ -400,6 +400,9 @@ struct AIPageContentTableRowData {
 
 struct AIPageContentFormData {
   string? form_name;
+
+  // The action URL of the form, if present.
+  url.mojom.Url? action_url;
 };
 
 // Represents an option in a select field. See below for example.
