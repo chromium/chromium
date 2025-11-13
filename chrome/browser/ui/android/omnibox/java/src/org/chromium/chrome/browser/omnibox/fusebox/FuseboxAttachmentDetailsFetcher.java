@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -32,7 +34,7 @@ import java.io.InputStream;
  * Handle cases where we cannot access the content.
  */
 @NullMarked
-class FuseboxAttachmentDetailsFetcher extends AsyncTask<@Nullable FuseboxAttachment> {
+class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
 
     private static final int THUMBNAIL_BITMAP_EDGE_SIZE = 256;
     private final Context mContext;
@@ -40,6 +42,10 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<@Nullable FuseboxAttachm
     private final Uri mUri;
     private final @FuseboxAttachmentType int mType;
     private final Callback<FuseboxAttachment> mCallback;
+    private @Nullable Drawable mThumbnail;
+    private @Nullable String mTitle;
+    private @Nullable String mMimeType;
+    private byte @Nullable [] mData;
 
     FuseboxAttachmentDetailsFetcher(
             Context context,
@@ -55,7 +61,7 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<@Nullable FuseboxAttachm
     }
 
     @Override
-    protected @Nullable FuseboxAttachment doInBackground() {
+    protected Boolean doInBackground() {
         Drawable thumbnail = null;
         try {
             thumbnail =
@@ -96,27 +102,45 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<@Nullable FuseboxAttachm
         // Bail: don't add the item if we miss metadata.
         assert !TextUtils.isEmpty(title);
         assert !TextUtils.isEmpty(mimeType);
-        if (title == null || mimeType == null) return null;
+        if (title == null || mimeType == null) return false;
 
         byte[] data;
 
         try (InputStream inputStream = mContentResolver.openInputStream(mUri)) {
-            if (inputStream == null) return null;
+            if (inputStream == null) return false;
             data = FileUtils.readStream(inputStream);
         } catch (IOException e) {
-            return null;
+            return false;
         }
 
-        if (mType == FuseboxAttachmentType.ATTACHMENT_IMAGE) {
-            return FuseboxAttachment.forCameraImage(thumbnail, title, mimeType, data);
-        } else {
-            return FuseboxAttachment.forFile(thumbnail, title, mimeType, data);
-        }
+        mThumbnail = thumbnail;
+        mTitle = title;
+        mMimeType = mimeType;
+        mData = data;
+
+        return true;
     }
 
     @Override
-    protected void onPostExecute(@Nullable FuseboxAttachment result) {
-        if (result == null) return;
-        mCallback.onResult(result);
+    protected void onPostExecute(Boolean result) {
+        if (result == null || !result) return;
+
+        FuseboxAttachment attachment;
+        if (mType == FuseboxAttachmentType.ATTACHMENT_IMAGE) {
+            attachment =
+                    FuseboxAttachment.forCameraImage(
+                            assumeNonNull(mThumbnail),
+                            assumeNonNull(mTitle),
+                            assumeNonNull(mMimeType),
+                            assumeNonNull(mData));
+        } else {
+            attachment =
+                    FuseboxAttachment.forFile(
+                            assumeNonNull(mThumbnail),
+                            assumeNonNull(mTitle),
+                            assumeNonNull(mMimeType),
+                            assumeNonNull(mData));
+        }
+        mCallback.onResult(attachment);
     }
 }
