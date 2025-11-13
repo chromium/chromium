@@ -286,7 +286,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="223356358902285214">Aktivnost na webu i u aplikacijama</translation>
 <translation id="2233735624724508540">Odaberite vremenski okvir, a zatim dodirnite Izbriši podatke</translation>
 <translation id="2234827758954819389">Vodič za privatnost</translation>
-<translation id="2238038374973843156">Premještanje grupe u drugi prozor</translation>
+<translation id="2238038374973843156">Premjesti grupu u drugi prozor</translation>
 <translation id="2239812875700136898">Člancima možete upravljati pomoću gumba Opcije za Discover</translation>
 <translation id="2247789808226901522">Kartica je istekla</translation>
 <translation id="2249635629516220541">Prilagodite podatke koje web-lokacije koriste da bi vam prikazivale oglase</translation>
@@ -944,6 +944,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> kartica – <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> kartica – <ph name="URL_LIST" />}few{<ph name="TAB_COUNT_MANY" /> kartice – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> kartica – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Privatnost</translation>
 <translation id="504456571576643789">Važne napomene</translation>
+<translation id="5056587122125565772">Izradi sliku</translation>
 <translation id="506254248375231072">Nema kartica</translation>
 <translation id="5075939510584558547">Spremite bez šifriranja</translation>
 <translation id="5085038751173179818">Prijavite se na ovu web-lokaciju i Chrome kako biste imali pristup svojim oznakama i drugim značajkama na svim svojim uređajima</translation>

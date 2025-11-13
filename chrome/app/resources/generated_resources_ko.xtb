@@ -1055,7 +1055,6 @@
 <translation id="1700517974991662022">방문함</translation>
 <translation id="1703331064825191675">비밀번호 안심 관리</translation>
 <translation id="1703666494654169921">사이트에서 가상 현실 기기 또는 데이터를 사용하도록 허용하지 않음</translation>
-<translation id="1703849276368677471">도구</translation>
 <translation id="1704097193565924901">Capitalize(첫 글자 대문자로 표시)</translation>
 <translation id="1704230497453185209">사이트에서 소리를 재생하도록 허용하지 않음</translation>
 <translation id="1706586824377653884">관리자가 추가함</translation>
@@ -2994,6 +2993,7 @@
 <translation id="3019023222666709803">화살표 도구</translation>
 <translation id="3019285239893817657">하위 페이지 버튼</translation>
 <translation id="3019595674945299805">VPN 서비스</translation>
+<translation id="3020101754533552167">로그인 확인 중...</translation>
 <translation id="3020183492814296499">바로가기</translation>
 <translation id="3020990233660977256">일련번호: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">배터리 사용 시</translation>
@@ -9560,7 +9560,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7629858978065675960">알 수 없는 검색 결과입니다.</translation>
 <translation id="7630426712700473382">이 기기는 <ph name="MANAGER" />에서 관리하며, 사용할 때마다 로그인해야 합니다.</translation>
 <translation id="7631014249255418691">Linux 앱 및 파일이 성공적으로 백업되었습니다.</translation>
-<translation id="7631722872321401342">기기에 <ph name="LANGUAGE" /> 음성이 없습니다. 설정에서 음성을 설치할 수 있습니다.</translation>
 <translation id="7631887513477658702">해당 유형의 파일 항상 열기(&amp;A)</translation>
 <translation id="7632437836497571618">보안 연결을 사용하여 사이트 조회하기</translation>
 <translation id="7632948528260659758">다음 키오스크 앱을 업데이트하지 못했습니다.</translation>
@@ -11261,7 +11260,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="876161309768861172">로그인할 수 없습니다. 다시 시도해 주세요.</translation>
 <translation id="8761945298804995673">이미 존재하는 사용자입니다.</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> 업데이트 필요</translation>
-<translation id="8763170551806710928">칩 표시</translation>
 <translation id="8763927697961133303">USB 기기</translation>
 <translation id="8766156860774051068">내가 선별함</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

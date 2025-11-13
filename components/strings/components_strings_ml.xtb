@@ -4005,6 +4005,7 @@
 <translation id="7525804896095537619">പേര് ശൂന്യമായിടാനാകില്ല</translation>
 <translation id="7526934274050461096">ഈ സൈറ്റിലേക്കുള്ള നിങ്ങളുടെ കണക്ഷൻ സ്വകാര്യമല്ല</translation>
 <translation id="7529884293139707752">ഹോംസ്‌കൂളിംഗ്</translation>
+<translation id="7530215951451994972">ചിത്രം സൃഷ്ടിക്കുക</translation>
 <translation id="7531464389616946220">കാർഡ് സ്കാൻ ചെയ്യുക</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ബുക്ക്‌മാർക്കുകൾ തിരയാൻ Enter അമർത്തുക</translation>
 <translation id="7534987659046836932">Envelope C7</translation>
@@ -4291,6 +4292,7 @@
 <translation id="7987087088851949178">തവണകളായി പണമടയ്ക്കാനുള്ള 'ഇപ്പോൾ വാങ്ങി പിന്നീട് പണമടയ്ക്കുക' ഇഷ്യൂവർമാരുടെ ലിസ്റ്റ്, പൂർണ്ണ ഉയരത്തിൽ തുറന്നു.</translation>
 <translation id="799149739215780103">ബൈൻഡ് ചെയ്യുക</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> എന്നതുമായി സ്ക്രീൻ പങ്കിടൽ പുനരാരംഭിച്ചു</translation>
+<translation id="799384093520583425">ഈ പേജിൽ DevTools ഉപയോഗിക്കുന്നത് നിങ്ങളുടെ സ്ഥാപനം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="7995512525968007366">വ്യക്തമാക്കിയിട്ടില്ല</translation>
 <translation id="7997855386298213183">പങ്കിട്ട ടാബുകൾ</translation>
 <translation id="8001912761979890298">വെബ് ട്രാഫിക് എൻക്രിപ്ഷന് വേണ്ടി Chromium-ന് വിശ്വാസമില്ലാത്ത ഒരു സുരക്ഷാ സർട്ടിഫിക്കറ്റ് അല്ലെങ്കിൽ നിങ്ങളുടെ സിസ്റ്റം കോൺഫിഗറേഷൻ ഉപയോഗിക്കുന്നതിനാലാണ് ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാൻ കഴിയാത്തത്. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അറ്റാക്കർ നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />സർട്ടിഫിക്കറ്റ് കാണുക<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4835,6 +4837,7 @@
 <translation id="8922013791253848639">ഈ സൈറ്റിൽ എല്ലായ്‌പ്പോഴും പരസ്യങ്ങൾ അനുവദിക്കുക</translation>
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />ലെഗസി ടെക്‌നോളജി ഇവന്റുകൾ<ph name="END_LINK" /> നടക്കുന്ന, നിങ്ങൾ സന്ദർശിക്കുന്ന പേജുകളുടെ URL-കളുടെ പരിമിതമായ ലിസ്‌റ്റ്</translation>
 <translation id="892588693504540538">മുകളിൽ വലതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>
+<translation id="8926082624786998759">ഈ പേജിൽ DevTools അനുവദനീയമല്ല</translation>
 <translation id="8926389886865778422">എന്നോട് വീണ്ടും ചോദിക്കരുത്</translation>
 <translation id="8926400492587758246">കുറഞ്ഞ പ്രതിമാസ തവണകളായി പേ ചെയ്യൂ</translation>
 <translation id="8932102934695377596">നിങ്ങളുടെ ക്ലോക്ക് വളരെ പിന്നിലാണ്</translation>

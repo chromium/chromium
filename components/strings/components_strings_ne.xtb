@@ -4005,6 +4005,7 @@
 <translation id="7525804896095537619">नाम खाली छाड्न मिल्दैन</translation>
 <translation id="7526934274050461096">यो साइटमा तपाईंको जडान निजी होइन</translation>
 <translation id="7529884293139707752">होमस्कुलिङ</translation>
+<translation id="7530215951451994972">फोटो बनाउनुहोस्</translation>
 <translation id="7531464389616946220">कार्ड स्क्यान गर्नुहोस्</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, बुकमार्कहरू खोज्न इन्टर की थिच्नुहोस्</translation>
 <translation id="7534987659046836932">Envelope C7</translation>
@@ -4291,6 +4292,7 @@
 <translation id="7987087088851949178">"अहिले किन्नुहोस् पछि तिर्नुहोस्" सुविधा उपलब्ध गराउने संस्थाहरूको सूची पूर्ण स्क्रिनमा खोलिएको छ।</translation>
 <translation id="799149739215780103">बाइन्ड</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> सँग स्क्रिन सेयर गर्ने कार्य सुचारु भएको छ</translation>
+<translation id="799384093520583425">तपाईंको सङ्गठनले यो पेजमा DevTools प्रयोग गर्न रोक लगाएको छ</translation>
 <translation id="7995512525968007366">तोकिएको छैन</translation>
 <translation id="7997855386298213183">सेयर गरिएका ट्याबहरू</translation>
 <translation id="8001912761979890298">यसले वेब ट्राफिक इन्क्रिप्सनका लागि तपाईंको सिस्टम कन्फिगुरेसन वा Chromium ले विश्वास नगर्ने सुरक्षासम्बन्धी सर्टिफिकेट प्रयोग गरिरहेकाले यो सर्भरले यो <ph name="DOMAIN" /> नै हो भन्ने कुरा पुष्टि गर्न सकेन। गलत कन्फिगुरेसन वा ह्याकरले तपाईंको कनेक्सनमा अवरोध गरिरहेका कारण यसो भएको हुन सक्छ। <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />प्रमाणपत्र हेर्नुहोस्<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4835,6 +4837,7 @@
 <translation id="8922013791253848639">यो साइटमा सधैँ विज्ञापनहरू राख्ने अनुमति दिनुहोस्</translation>
 <translation id="8922734931659847428">तपाईंले खोलेका <ph name="BEGIN_LINK" />लिगेसी प्रविधिसम्बन्धी कार्यक्रमहरू<ph name="END_LINK" /> देखाइएका पेजका URL हरूको सीमित सूची</translation>
 <translation id="892588693504540538">सिरानको दायाँपट्टि प्वाल</translation>
+<translation id="8926082624786998759">यो पेजमा DevTools प्रयोग गर्न मिल्दैन</translation>
 <translation id="8926389886865778422">फेरि नसोध्नुहोस्</translation>
 <translation id="8926400492587758246">मासिक रूपमा थोरै रकमको किस्तामा भुक्तानी गर्नुहोस्</translation>
 <translation id="8932102934695377596">तपाईंको घडी ढिला छ</translation>

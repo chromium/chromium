@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">Kërko me "Modalitetin e IA-së"</translation>
 <translation id="3557336313807607643">Shto te kontaktet</translation>
 <translation id="355765753469272474">Zhbëj</translation>
+<translation id="3565012355885596568">Imazhet nuk mund të ngarkoheshin</translation>
 <translation id="3565930036634619844">Skeda. <ph name="TAB_INDEX" /> nga <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3572607909481582402">Në "Llogarinë tënde të Google"</translation>
 <translation id="3575234738189584619">Kërko me "Lenten"</translation>
@@ -2000,6 +2001,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8551311254462607218">Në shiritin e adresave, trokit tek ikona e kamerës së "Lentes së Google"</translation>
 <translation id="8556590991644167667">{count,plural, =1{Hoqe {count} paralajmërim}other{Hoqe {count} paralajmërime}}</translation>
 <translation id="8558046478684552694">Mbyll grupin.</translation>
+<translation id="8559858985063901027">Çelësat e kalimit</translation>
 <translation id="8560253818350321773">Shfaq në fillim artikujt e përdorur shpesh.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} opsion për fjalëkalimin është i disponueshëm mbi tastierën tënde.}other{{count} opsione për fjalëkalimin janë të disponueshme mbi tastierën tënde.}}</translation>
 <translation id="8564894539416715395">Faqja e skedës së re</translation>

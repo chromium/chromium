@@ -1053,7 +1053,6 @@
 <translation id="1700517974991662022">アクセス済み</translation>
 <translation id="1703331064825191675">パスワードを気にする必要はありません</translation>
 <translation id="1703666494654169921">サイトにバーチャル リアリティ デバイスとデータの使用を許可しない</translation>
-<translation id="1703849276368677471">ツール</translation>
 <translation id="1704097193565924901">大文字にする</translation>
 <translation id="1704230497453185209">サイトに音声の再生を許可しない</translation>
 <translation id="1706586824377653884">管理者により追加</translation>
@@ -2974,6 +2973,7 @@
 <translation id="3019023222666709803">矢印ツール</translation>
 <translation id="3019285239893817657">サブページのボタン</translation>
 <translation id="3019595674945299805">VPN サービス</translation>
+<translation id="3020101754533552167">ログインを確認しています...</translation>
 <translation id="3020183492814296499">ショートカット</translation>
 <translation id="3020990233660977256">シリアル番号: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">バッテリー駆動時</translation>
@@ -9530,7 +9530,6 @@
 <translation id="7629858978065675960">不明な結果。</translation>
 <translation id="7630426712700473382">このデバイスは <ph name="MANAGER" /> によって管理されています。使用するには毎回ログインする必要があります。</translation>
 <translation id="7631014249255418691">Linux のアプリとファイルが正常にバックアップされました</translation>
-<translation id="7631722872321401342">デバイスに <ph name="LANGUAGE" /> の音声がありません。設定で音声をインストールできます。</translation>
 <translation id="7631887513477658702">この種類のファイルは常に開く(&amp;A)</translation>
 <translation id="7632437836497571618">サイトのルックアップに安全な接続を使用する</translation>
 <translation id="7632948528260659758">次のキオスクアプリを更新できませんでした:</translation>
@@ -11229,7 +11228,6 @@
 <translation id="876161309768861172">ログインできませんでした。もう一度お試しください</translation>
 <translation id="8761945298804995673">このユーザーはすでに存在しています</translation>
 <translation id="8762886931014513155">ご利用の <ph name="DEVICE_TYPE" /> は更新が必要です</translation>
-<translation id="8763170551806710928">チップを表示する</translation>
 <translation id="8763927697961133303">USB デバイス</translation>
 <translation id="8766156860774051068">自分で選択</translation>
 <translation id="8766796754185931010">ことえり</translation>

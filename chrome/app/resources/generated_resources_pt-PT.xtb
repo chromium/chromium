@@ -1054,7 +1054,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1700517974991662022">Visitado</translation>
 <translation id="1703331064825191675">Nunca mais se preocupe com as suas palavras-passe</translation>
 <translation id="1703666494654169921">Não permitir que os sites utilizem dados ou dispositivos de realidade virtual</translation>
-<translation id="1703849276368677471">Ferramentas</translation>
 <translation id="1704097193565924901">Letra maiúscula</translation>
 <translation id="1704230497453185209">Não permitir que os sites reproduzam som</translation>
 <translation id="1706586824377653884">Adicionado pelo gestor</translation>
@@ -8114,6 +8113,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6619990499523117484">Confirme o PIN</translation>
 <translation id="6620000730890558421">Mantenha os separadores organizados com IA</translation>
 <translation id="6620254580880484313">Nome do contentor</translation>
+<translation id="6621282332208609777">Pergunte ao Google ou escreva um URL</translation>
 <translation id="6621391692573306628">Para enviar este separador para outro dispositivo, inicie sessão no Chrome em ambos os dispositivos</translation>
 <translation id="6622980291894852883">Continuar a bloquear imagens</translation>
 <translation id="6624036901798307345">No modo tablet, toque no botão da barra de ferramentas do contador de separadores para abrir a nova Faixa de separadores que apresenta as miniaturas de cada separador.</translation>
@@ -9537,6 +9537,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7620616707541471029">Escolha uma conta para continuar</translation>
 <translation id="7621382409404463535">O sistema não conseguiu guardar a configuração do dispositivo.</translation>
 <translation id="7621595347123595643">Caso se esqueça da palavra-passe ou do PIN, não pode recuperar os dados locais.</translation>
+<translation id="7621863462266622331">Quando os separadores são partilhados, os respetivos conteúdos das páginas, os elementos multimédia e os URLs são enviados para a Google</translation>
 <translation id="7622114377921274169">A carregar…</translation>
 <translation id="7622768823216805500">Normalmente, os sites instalam controladores de pagamentos para funcionalidades de compras como o pagamento mais fácil.</translation>
 <translation id="7622966771025050155">Mudar para o separador capturado</translation>
@@ -9550,7 +9551,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7629858978065675960">Resultado desconhecido.</translation>
 <translation id="7630426712700473382">Este dispositivo é gerido por <ph name="MANAGER" /> e requer que inicie sessão sempre.</translation>
 <translation id="7631014249255418691">Cópia de segurança das aplicações e dos ficheiros do Linux efetuada com êxito</translation>
-<translation id="7631722872321401342">Não existem vozes em <ph name="LANGUAGE" /> no dispositivo. Pode instalar vozes nas definições.</translation>
 <translation id="7631887513477658702">&amp;Abrir Sempre Ficheiros Deste Tipo</translation>
 <translation id="7632437836497571618">Use ligações seguras para procurar sites</translation>
 <translation id="7632948528260659758">A atualização das seguintes aplicações quiosque falhou:</translation>
@@ -11250,7 +11250,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="876161309768861172">Não foi possível iniciar sessão. Tente novamente</translation>
 <translation id="8761945298804995673">Este utilizador já existe.</translation>
 <translation id="8762886931014513155">O seu <ph name="DEVICE_TYPE" /> precisa de ser atualizado</translation>
-<translation id="8763170551806710928">Mostrar chips</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8766156860774051068">Organizados por si</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
@@ -11753,6 +11752,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="909554839118732438">Fechar janelas de navegação anónima</translation>
 <translation id="9095819602391364796">Não permitir que os sites controlem e reprogramem os seus dispositivos MIDI</translation>
 <translation id="9096053102600371572">Deslocamento controlado <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Compare as opções</translation>
 <translation id="9096776523567481218">não instalada localmente</translation>
 <translation id="9098860402274800697">Remover Google Play e apps Android</translation>
 <translation id="9099220545925418560">Com base no seu histórico de navegação. Esta definição está desativada.</translation>

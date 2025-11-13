@@ -1053,7 +1053,6 @@
 <translation id="1700517974991662022">আপুনি যোৱা ঠাইসমূহ</translation>
 <translation id="1703331064825191675">আপোনাৰ পাছৱৰ্ডসমূহক লৈ কেতিয়াও চিন্তিত নহ’ব</translation>
 <translation id="1703666494654169921">ছাইটক ভাৰ্চুৱেল ৰিয়েলিটি ডিভাইচ অথবা ডেটা ব্যৱহাৰ কৰাৰ অনুমতি নিদিব</translation>
-<translation id="1703849276368677471">সঁজুলি</translation>
 <translation id="1704097193565924901">বৰফলাৰ কৰক</translation>
 <translation id="1704230497453185209">ছাইটক ধ্বনি প্লে’ অনুমতি নিদিব</translation>
 <translation id="1706586824377653884">আপোনাৰ প্ৰশাসকৰ দ্বাৰা যোগ কৰা হৈছে</translation>
@@ -2990,6 +2989,7 @@
 <translation id="3019023222666709803">কাঁড়চিহ্নৰ সঁজুলি</translation>
 <translation id="3019285239893817657">উপ-পৃষ্ঠাৰ বুটাম</translation>
 <translation id="3019595674945299805">ভিপিএন সেৱা</translation>
+<translation id="3020101754533552167">ছাইন ইন পৰীক্ষা কৰি থকা হৈছে…</translation>
 <translation id="3020183492814296499">শ্বৰ্টকাট</translation>
 <translation id="3020990233660977256">ক্ৰমিক নম্বৰ: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">বেটাৰীত থকাৰ সময়ত</translation>
@@ -9558,7 +9558,6 @@
 <translation id="7629858978065675960">অজ্ঞাত ফলাফল।</translation>
 <translation id="7630426712700473382">এই ডিভাইচটো <ph name="MANAGER" />এ পৰিচালনা কৰে আৰু আপুনি প্ৰতিবাৰতে ছাইন ইন কৰাৰ প্ৰয়োজন হয়।</translation>
 <translation id="7631014249255418691">Linux এপ্‌ আৰু ফাইলসমূহ সফলভাৱে বেক আপ কৰা হ'ল</translation>
-<translation id="7631722872321401342">আপোনাৰ ডিভাইচত কোনো <ph name="LANGUAGE" /> কণ্ঠধ্বনি নাই। আপুনি ছেটিঙত কণ্ঠধ্বনি ইনষ্টল কৰিব পাৰে।</translation>
 <translation id="7631887513477658702">&amp;সদায় এই প্ৰকাৰৰ ফাইল খোলক</translation>
 <translation id="7632437836497571618">ছাইটসমূহ চাবলৈ সুৰক্ষিত সংযোগ ব্যৱহাৰ কৰক</translation>
 <translation id="7632948528260659758">নিম্নোক্ত কিঅ'স্ক এপ্‌সমূহ আপডে'ট কৰিব পৰা নগ'ল:</translation>
@@ -11257,7 +11256,6 @@
 <translation id="876161309768861172">আপোনাক ছাইন ইন কৰাব পৰা নগ’ল, অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক</translation>
 <translation id="8761945298804995673">এই ব্যৱহাৰকাৰীজন ইতিমধ্যে উপলব্ধ</translation>
 <translation id="8762886931014513155">আপোনাৰ <ph name="DEVICE_TYPE" />ক আপডে'ট কৰাৰ আৱশ্যক হৈছে।</translation>
-<translation id="8763170551806710928">চিপসমূহ দেখুৱাওক</translation>
 <translation id="8763927697961133303">ইউএছবি ডিভাইচ</translation>
 <translation id="8766156860774051068">আপুনি প্ৰস্তুত কৰা</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

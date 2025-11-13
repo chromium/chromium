@@ -4008,6 +4008,7 @@
 <translation id="7525804896095537619">नाव रिकामे असू शकत नाही</translation>
 <translation id="7526934274050461096">या साइटवर तुमचे कनेक्शन खाजगी नाही</translation>
 <translation id="7529884293139707752">घरी दिलेले शिक्षण</translation>
+<translation id="7530215951451994972">इमेज तयार करा</translation>
 <translation id="7531464389616946220">कार्ड स्कॅन करा</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, बुकमार्क शोधण्यासाठी एंटर प्रेस करा</translation>
 <translation id="7534987659046836932">एन्व्हलप सी७</translation>
@@ -4294,6 +4295,7 @@
 <translation id="7987087088851949178">कालांतराने पेमेंट करण्यासाठी उपलब्ध असलेल्या, आता विकत घेऊन, नंतर पैसे देण्याची सुविधा देणाऱ्या जारीकर्त्यांची सूची पूर्ण उंचीवर उघडली आहे.</translation>
 <translation id="799149739215780103">बाइंड</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> सोबत स्क्रीन शेअर करणे पुन्हा सुरू केले</translation>
+<translation id="799384093520583425">तुमच्या संस्थेने या पेजवर DevTools चा वापर ब्लॉक केला आहे</translation>
 <translation id="7995512525968007366">नमूद केलेले नाही</translation>
 <translation id="7997855386298213183">शेअर केलेले टॅब</translation>
 <translation id="8001912761979890298">या सर्व्हरला तो <ph name="DOMAIN" /> असल्याचे सिद्ध करता आले नाही, कारण तो Chromium द्वारे किंवा वेब ट्रॅफिक एन्क्रिप्शनसाठी तुमच्या सिस्टीम कॉन्फिगरेशनद्वारे विश्वसनीय नसलेले सुरक्षा प्रमाणपत्र वापरत आहे. हे चुकीच्या कॉन्फिगरेशनमुळे किंवा हल्लेखोरांनी तुमच्या कनेक्शनमध्ये आणलेल्या अडथळ्यांमुळे झालेले असू शकते. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />प्रमाणपत्र पहा<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4838,6 +4840,7 @@
 <translation id="8922013791253848639">या साइटवर कायम जाहिरातींना परवानगी द्या</translation>
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />लेगसी तंत्रज्ञानासंबंधित इव्‍हेंट<ph name="END_LINK" /> होत आहेत अशा तुम्ही भेट देता त्या पेजच्या URLs ची मर्यादित सूची</translation>
 <translation id="892588693504540538">पंच टॉप राइट</translation>
+<translation id="8926082624786998759">या पेजवर DevTools ला अनुमती नाही</translation>
 <translation id="8926389886865778422">पुन्हा विचारू नका</translation>
 <translation id="8926400492587758246">कमी मासिक हप्त्यांमध्ये पेमेंट करा</translation>
 <translation id="8932102934695377596">तुमचे घड्याळ मागे आहे</translation>

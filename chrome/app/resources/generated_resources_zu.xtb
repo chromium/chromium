@@ -1054,7 +1054,6 @@ Izimvume ozinikezile ama-app kakade zingase zisebenze kule akhawunti. Ungakwazi 
 <translation id="1700517974991662022">Uvakashe</translation>
 <translation id="1703331064825191675">Ungakhathazeki ngamaphasiwedi akho</translation>
 <translation id="1703666494654169921">Ungavumeli amasayithi asebenzise amadivayisi wento engekho ngokoqobo noma idatha</translation>
-<translation id="1703849276368677471">Amathuluzi</translation>
 <translation id="1704097193565924901">Khulisa</translation>
 <translation id="1704230497453185209">Ungavumeli amasayithi adlale umsindo</translation>
 <translation id="1706586824377653884">Kungezwe umlawuli wakho</translation>
@@ -2993,6 +2992,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3019023222666709803">Ithuluzi Lomcibisholo</translation>
 <translation id="3019285239893817657">Inkinobho yekhasi elingezansi</translation>
 <translation id="3019595674945299805">Isevisi ye-VPN</translation>
+<translation id="3020101754533552167">Ihlola ukungena ngemvume...</translation>
 <translation id="3020183492814296499">Izinqamuleli</translation>
 <translation id="3020990233660977256">Inombolo yomkhiqizo: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Ngenkathi ikwibhethri</translation>
@@ -9562,7 +9562,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7629858978065675960">Umphumela ongaziwa.</translation>
 <translation id="7630426712700473382">Le divayisi iphethwe yi-<ph name="MANAGER" /> futhi kudingeka ukuba ungene ngemvume ngaso sonke isikhathi.</translation>
 <translation id="7631014249255418691">Izinhlelo zokusebenza namafayela e-Linux kwenziwe isipele ngempumelelo</translation>
-<translation id="7631722872321401342">Awekho amaphimbo e-<ph name="LANGUAGE" /> edivayisini yakho. Ungakwazi ukufaka amaphimbo emasethingini.</translation>
 <translation id="7631887513477658702">Hlala uvula amafayela walolu hlobo</translation>
 <translation id="7632437836497571618">Sebenzisa ukuxhuma okuvikelekile ukuze ubheke amasayithi</translation>
 <translation id="7632948528260659758">Izinhlelo zokusebenza ezilandelayo zekhiyoski zihlulekisiwe ngokubuyekeza:</translation>
@@ -11261,7 +11260,6 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="876161309768861172">Ayikwazanga ukukungenisa ngemvume, sicela uzame futhi</translation>
 <translation id="8761945298804995673">Lo msebenzisi usevele ukhona</translation>
 <translation id="8762886931014513155">I-<ph name="DEVICE_TYPE" /> yakho idinga isibuyekezo</translation>
-<translation id="8763170551806710928">Bonisa Ama-chip</translation>
 <translation id="8763927697961133303">Idivayisi ye-USB</translation>
 <translation id="8766156860774051068">Kukhethwe nguwe</translation>
 <translation id="8766796754185931010">Isi-Kotoeri</translation>

@@ -303,7 +303,7 @@
 <translation id="21133533946938348">Pin tab</translation>
 <translation id="2117650889962717098">Keep your browsing private by switching to Incognito mode</translation>
 <translation id="2119636449201577317">Open in…</translation>
-<translation id="2120553909046681540">Your organisation turned off private browsing.</translation>
+<translation id="2120553909046681540">Your organisation has turned off private browsing.</translation>
 <translation id="2122754583996902531">Your browser is managed. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Your organisation's chats aren't used to improve our models. Gemini may display inaccurate info, including about people, so double-check it. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Search for text that you copied</translation>
@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">Search with AI Mode</translation>
 <translation id="3557336313807607643">Add to contacts</translation>
 <translation id="355765753469272474">Undo</translation>
+<translation id="3565012355885596568">Couldn't load images</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> of <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3572607909481582402">In your Google Account</translation>
 <translation id="3575234738189584619">Search with Lens</translation>
@@ -2000,6 +2001,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8551311254462607218">In the address bar, tap on the Google Lens camera icon</translation>
 <translation id="8556590991644167667">{count,plural, =1{You dismissed {count} warning}other{You dismissed {count} warnings}}</translation>
 <translation id="8558046478684552694">Close group.</translation>
+<translation id="8559858985063901027">Passkeys</translation>
 <translation id="8560253818350321773">Show frequently used items first.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} option for password available above your keyboard.}other{{count} options for password available above your keyboard.}}</translation>
 <translation id="8564894539416715395">New tab page</translation>

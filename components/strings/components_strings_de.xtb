@@ -4006,6 +4006,7 @@ Weitere Details:
 <translation id="7525804896095537619">Name darf nicht leer sein</translation>
 <translation id="7526934274050461096">Die Verbindung zu dieser Website ist nicht sicher</translation>
 <translation id="7529884293139707752">Heimunterricht</translation>
+<translation id="7530215951451994972">Bild erstellen</translation>
 <translation id="7531464389616946220">Karte scannen</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Eingabetaste, um in den Lesezeichen zu suchen</translation>
 <translation id="7534987659046836932">Umschlag C7</translation>
@@ -4292,6 +4293,7 @@ Weitere Details:
 <translation id="7987087088851949178">Die Liste der Anbieter von „Jetzt kaufen, später bezahlen“, die für Ratenzahlung verfügbar sind, ist vollständig geöffnet.</translation>
 <translation id="799149739215780103">Binden</translation>
 <translation id="7992044431894087211">Die Bildschirmfreigabe mit <ph name="APPLICATION_TITLE" /> wurde fortgesetzt</translation>
+<translation id="799384093520583425">Deine Organisation hat die Verwendung der Entwicklertools auf dieser Seite blockiert</translation>
 <translation id="7995512525968007366">Nicht angegeben</translation>
 <translation id="7997855386298213183">geteilte Tabs</translation>
 <translation id="8001912761979890298">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist, da er ein Sicherheitszertifikat verwendet, das von Chromium oder deiner Systemkonfiguration für die Verschlüsselung von Web-Traffic nicht als vertrauenswürdig eingestuft wird. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Zertifikat ansehen<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4837,6 +4839,7 @@ Weitere Details:
 <translation id="8922013791253848639">Werbung auf dieser Website immer zulassen</translation>
 <translation id="8922734931659847428">Eine begrenzte Liste mit URLs der von dir besuchten Seiten, auf denen <ph name="BEGIN_LINK" />Probleme aufgrund von veralteter Technologie<ph name="END_LINK" /> auftreten</translation>
 <translation id="892588693504540538">Lochung oben rechts</translation>
+<translation id="8926082624786998759">Entwicklertools sind auf dieser Seite nicht erlaubt</translation>
 <translation id="8926389886865778422">Nicht mehr fragen</translation>
 <translation id="8926400492587758246">In niedrigen monatlichen Raten zahlen</translation>
 <translation id="8932102934695377596">Deine Uhr geht nach</translation>

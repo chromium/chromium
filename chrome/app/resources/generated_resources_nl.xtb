@@ -1054,7 +1054,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1700517974991662022">Bezocht</translation>
 <translation id="1703331064825191675">Maak je nooit meer zorgen over je wachtwoorden</translation>
 <translation id="1703666494654169921">Niet toestaan dat sites virtualreality-apparaten of -gegevens gebruiken</translation>
-<translation id="1703849276368677471">Tools</translation>
 <translation id="1704097193565924901">Beginhoofdletters van maken</translation>
 <translation id="1704230497453185209">Niet toestaan dat sites geluid afspelen</translation>
 <translation id="1706586824377653884">Toegevoegd door je beheerder</translation>
@@ -2979,6 +2978,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3019023222666709803">Tool Pijl</translation>
 <translation id="3019285239893817657">Knop voor subpagina</translation>
 <translation id="3019595674945299805">VPN-service</translation>
+<translation id="3020101754533552167">Inloggen controleren...</translation>
 <translation id="3020183492814296499">Snelkoppelingen</translation>
 <translation id="3020990233660977256">Serienummer: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Op batterij</translation>
@@ -9538,7 +9538,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7629858978065675960">Onbekend resultaat.</translation>
 <translation id="7630426712700473382">Dit apparaat wordt beheerd door <ph name="MANAGER" /> en vereist dat je elke keer opnieuw inlogt.</translation>
 <translation id="7631014249255418691">Back-up maken van Linux-apps en -bestanden is geslaagd</translation>
-<translation id="7631722872321401342">Er staan geen stemmen voor het <ph name="LANGUAGE" /> op je apparaat. Je kunt stemmen installeren via de instellingen.</translation>
 <translation id="7631887513477658702">&amp;Altijd bestanden van dit type openen</translation>
 <translation id="7632437836497571618">Beveiligde verbindingen gebruiken om sites op te zoeken</translation>
 <translation id="7632948528260659758">Bijwerken van de volgende kiosk-apps is mislukt:</translation>
@@ -11239,7 +11238,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="876161309768861172">Inloggen mislukt. Probeer het opnieuw.</translation>
 <translation id="8761945298804995673">Deze gebruiker bestaat al</translation>
 <translation id="8762886931014513155">Je <ph name="DEVICE_TYPE" /> moet worden geüpdatet</translation>
-<translation id="8763170551806710928">Chips tonen</translation>
 <translation id="8763927697961133303">USB-apparaat</translation>
 <translation id="8766156860774051068">Beheerd door jou</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

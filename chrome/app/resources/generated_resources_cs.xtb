@@ -1056,7 +1056,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1700517974991662022">Navštíveno</translation>
 <translation id="1703331064825191675">Nedělejte si starosti s hesly</translation>
 <translation id="1703666494654169921">Nepovolovat webům používání zařízení nebo dat pro virtuální realitu</translation>
-<translation id="1703849276368677471">Nástroje</translation>
 <translation id="1704097193565924901">Velikost písmen</translation>
 <translation id="1704230497453185209">Nepovolovat webům přehrávat zvuk</translation>
 <translation id="1706586824377653884">Přidáno administrátorem</translation>
@@ -2981,6 +2980,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3019023222666709803">Nástroj Šipka</translation>
 <translation id="3019285239893817657">Tlačítko podstránky</translation>
 <translation id="3019595674945299805">Služba VPN</translation>
+<translation id="3020101754533552167">Kontrola přihlášení…</translation>
 <translation id="3020183492814296499">Zkratky</translation>
 <translation id="3020990233660977256">Sériové číslo: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Při provozu na baterii</translation>
@@ -9544,7 +9544,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7629858978065675960">Neznámý výsledek.</translation>
 <translation id="7630426712700473382">Toto zařízení spravuje doména <ph name="MANAGER" />, která vyžaduje, abyste se pokaždé přihlásili.</translation>
 <translation id="7631014249255418691">Aplikace a soubory systému Linux byly úspěšně zálohovány</translation>
-<translation id="7631722872321401342">Na zařízení nejsou žádné hlasy pro jazyk <ph name="LANGUAGE" />. Můžete je nainstalovat v nastavení.</translation>
 <translation id="7631887513477658702">Vždy otevír&amp;at soubory tohoto typu</translation>
 <translation id="7632437836497571618">Vyhledávání webů prostřednictvím zabezpečeného připojení</translation>
 <translation id="7632948528260659758">Následující aplikace veřejného terminálu se nepodařilo aktualizovat:</translation>
@@ -11243,7 +11242,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="876161309768861172">Přihlášení se nezdařilo, zkuste to znovu</translation>
 <translation id="8761945298804995673">Tento uživatel již existuje</translation>
 <translation id="8762886931014513155">Vaše zařízení <ph name="DEVICE_TYPE" /> vyžaduje aktualizaci</translation>
-<translation id="8763170551806710928">Zobrazit štítky</translation>
 <translation id="8763927697961133303">Zařízení USB</translation>
 <translation id="8766156860774051068">Vybráno vámi</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

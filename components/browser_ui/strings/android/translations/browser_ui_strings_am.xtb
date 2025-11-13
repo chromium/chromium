@@ -243,6 +243,7 @@
 <translation id="3611658447322220736">በቅርቡ የተዘጉ ጣቢያዎች ውሂብን መላክ እና መቀበል መጨረስ ይችላሉ</translation>
 <translation id="3619294456800709762">ጣቢያዎች በራስ-ሰር ስዕል-ላይ-ስዕል መግባት ይችላሉ</translation>
 <translation id="3628308229821498208">የተጠቆሙ ፍለጋዎች</translation>
+<translation id="363748948745453283">ግምታዊ አካባቢን በመጠቀም ላይ</translation>
 <translation id="3641456520301071208">ጣቢያዎች አካባቢዎን ሊጠይቁ ይችላሉ</translation>
 <translation id="3658847490588580244">የነባሪ አሳሽ የግርጌ ሉህ</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{በ<ph name="RWS_OWNER" /> ጣቢያ ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከት <ph name="RWS_MEMBERS_COUNT" /> ጣቢያ}one{በ<ph name="RWS_OWNER" /> ጣቢያ ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከት <ph name="RWS_MEMBERS_COUNT" /> ጣቢያ}other{በ<ph name="RWS_OWNER" /> ጣቢያዎች ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከቱ <ph name="RWS_MEMBERS_COUNT" /> ጣቢያዎች}}</translation>
@@ -436,6 +437,7 @@
 <translation id="5792627621688759634">የመዳሰሻ ሰሌዳ በመጠቀም በገፆች መካከል ያንሸራትቱ</translation>
 <translation id="5801457289562671820">በድርጅትዎ የሚመከር</translation>
 <translation id="5804241973901381774">ፍቃዶች</translation>
+<translation id="5817042798620209981">የጣቢያ መረጃ፣ መገናኛ</translation>
 <translation id="5822675474983796325">የእርስዎ አዲስ የትር ገፅ የግርጌ ሉህ በሙሉ ቁመት እንደተከፈተ ያብጁ</translation>
 <translation id="5833899990800318936">ጣቢያዎች ጃቫስክሪፕትን እንዲጠቀሙ አይፍቀዱ</translation>
 <translation id="583673505367439042">ጣቢያዎች በመሣሪያዎ ላይ ያሉ ፋይሎችን እና አቃፊዎችን ለማርትዕ መጠየቅ ይችላሉ</translation>

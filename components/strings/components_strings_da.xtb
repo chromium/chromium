@@ -4008,6 +4008,7 @@ Yderligere oplysninger:
 <translation id="7525804896095537619">Navn skal udfyldes</translation>
 <translation id="7526934274050461096">Din forbindelse til dette website er ikke privat</translation>
 <translation id="7529884293139707752">Hjemmeundervisning</translation>
+<translation id="7530215951451994972">Opret billede</translation>
 <translation id="7531464389616946220">Scan kort</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Enter for at søge i bogmærker</translation>
 <translation id="7534987659046836932">Konvolut C7</translation>
@@ -4294,6 +4295,7 @@ Yderligere oplysninger:
 <translation id="7987087088851949178">Listen over udstedere, der tilbyder betalingsmetoden Køb nu, betal senere med afbetaling, er åbnet i fuld højde.</translation>
 <translation id="799149739215780103">Bind</translation>
 <translation id="7992044431894087211">Skærmdelingen med <ph name="APPLICATION_TITLE" /> blev genoptaget</translation>
+<translation id="799384093520583425">Din organisation har blokeret brugen af Udviklerværktøjer på denne side</translation>
 <translation id="7995512525968007366">Ikke angivet</translation>
 <translation id="7997855386298213183">delte faner</translation>
 <translation id="8001912761979890298">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, fordi den bruger et sikkerhedscertifikat, som Chromium eller din systemkonfiguration til kryptering af webtrafik ikke har tillid til. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Se certifikat<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4839,6 +4841,7 @@ Yderligere oplysninger:
 <translation id="8922013791253848639">Tillad altid annoncer på dette website</translation>
 <translation id="8922734931659847428">En begrænset liste over webadresser for sider, du besøger, hvor der forekommer <ph name="BEGIN_LINK" />hændelser relateret til forældet teknologi<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Hul øverst til højre</translation>
+<translation id="8926082624786998759">Udviklerværktøjer er ikke tilladt på denne side</translation>
 <translation id="8926389886865778422">Spørg ikke igen</translation>
 <translation id="8926400492587758246">Betal i lave månedlige rater</translation>
 <translation id="8932102934695377596">Dit ur er bagud</translation>

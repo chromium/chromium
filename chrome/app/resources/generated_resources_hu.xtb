@@ -1055,7 +1055,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1700517974991662022">Felkeresett</translation>
 <translation id="1703331064825191675">Sosem kell aggódnia jelszavai miatt</translation>
 <translation id="1703666494654169921">A webhelyek nem használhatnak virtuálisvalóság-eszközöket és -adatokat</translation>
-<translation id="1703849276368677471">Eszközök</translation>
 <translation id="1704097193565924901">Átalakítás nagy kezdőbetűssé</translation>
 <translation id="1704230497453185209">A webhelyek nem játszhatnak le hangokat</translation>
 <translation id="1706586824377653884">A rendszergazda által hozzáadva</translation>
@@ -2991,6 +2990,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3019023222666709803">Nyíl eszköz</translation>
 <translation id="3019285239893817657">Aloldal gombja</translation>
 <translation id="3019595674945299805">VPN-szolgáltatás</translation>
+<translation id="3020101754533552167">Bejelentkezés ellenőrzése…</translation>
 <translation id="3020183492814296499">Parancsikonok</translation>
 <translation id="3020990233660977256">Sorozatszám: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Amíg akkumulátorról működik</translation>
@@ -9558,7 +9558,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7629858978065675960">Ismeretlen eredmény.</translation>
 <translation id="7630426712700473382">Ezt az eszközt a(z) <ph name="MANAGER" /> kezeli, és minden alkalommal bejelentkezést ír elő.</translation>
 <translation id="7631014249255418691">A Linux-alkalmazásokról és -fájlokról a rendszer sikeresen biztonsági másolatot készített.</translation>
-<translation id="7631722872321401342">Nincs <ph name="LANGUAGE" /> nyelvű hang az eszközön. Hangot a beállításokban telepíthet.</translation>
 <translation id="7631887513477658702">&amp;Az ilyen típusú fájlokat mindig nyissa meg</translation>
 <translation id="7632437836497571618">Biztonságos kapcsolatok használata webhelyek kereséséhez</translation>
 <translation id="7632948528260659758">A következő kioszkalkalmazások frissítése nem sikerült:</translation>
@@ -11258,7 +11257,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="876161309768861172">Sikertelen bejelentkezés. Próbálja újra.</translation>
 <translation id="8761945298804995673">Már van ilyen felhasználó</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> eszközét frissíteni kell</translation>
-<translation id="8763170551806710928">Szelvények megjelenítése</translation>
 <translation id="8763927697961133303">USB-eszköz</translation>
 <translation id="8766156860774051068">Az Ön saját válogatása</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

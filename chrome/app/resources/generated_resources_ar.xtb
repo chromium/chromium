@@ -1057,7 +1057,6 @@
 <translation id="1700517974991662022">تم الانتقال إليه</translation>
 <translation id="1703331064825191675">لا داعي للقلق مطلقًا بشأن كلمات المرور</translation>
 <translation id="1703666494654169921">عدم السماح للمواقع الإلكترونية باستخدام أجهزة الواقع الافتراضي أو بياناته</translation>
-<translation id="1703849276368677471">الأدوات</translation>
 <translation id="1704097193565924901">تحويل الأحرف الأولى إلى أحرف كبيرة</translation>
 <translation id="1704230497453185209">عدم السماح للمواقع الإلكترونية بتشغيل الصوت</translation>
 <translation id="1706586824377653884">تمت الإضافة من قبل المشرف</translation>
@@ -9559,7 +9558,6 @@
 <translation id="7629858978065675960">نتيجة غير معروفة.</translation>
 <translation id="7630426712700473382">يتولى <ph name="MANAGER" /> إدارة هذا الجهاز ويتطلّب منك تسجيل الدخول في كل مرة.</translation>
 <translation id="7631014249255418691">‏تم الاحتفاظ بنسخة احتياطية من تطبيقات وملفات Linux بنجاح</translation>
-<translation id="7631722872321401342">ما مِن أصوات باللغة <ph name="LANGUAGE" /> على جهازك. يمكنك تثبيت الأصوات من خلال الإعدادات.</translation>
 <translation id="7631887513477658702">فت&amp;ح هذا النوع من الملفات دومًا</translation>
 <translation id="7632437836497571618">استخدام الاتصالات الآمنة للبحث عن المواقع الإلكترونية</translation>
 <translation id="7632948528260659758">‏فشل تحديث تطبيقات kiosk التالية:</translation>
@@ -11260,7 +11258,6 @@
 <translation id="876161309768861172">تعذّر تسجيل دخولك إلى الملف الشخصي. يُرجى إعادة المحاولة.</translation>
 <translation id="8761945298804995673">هذا المستخدم موجود من قبل.</translation>
 <translation id="8762886931014513155">يحتاج <ph name="DEVICE_TYPE" /> إلى تحديث</translation>
-<translation id="8763170551806710928">عرض الشرائح</translation>
 <translation id="8763927697961133303">‏جهاز USB</translation>
 <translation id="8766156860774051068">اختصارات من إعدادك</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

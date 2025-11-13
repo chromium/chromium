@@ -4008,6 +4008,7 @@ Mer information.
 <translation id="7525804896095537619">Namn måste anges</translation>
 <translation id="7526934274050461096">Din anslutning till webbplatsen är inte privat</translation>
 <translation id="7529884293139707752">Hemundervisning</translation>
+<translation id="7530215951451994972">Skapa bild</translation>
 <translation id="7531464389616946220">Skanna kortet</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryck på Retur för att söka bland bokmärken</translation>
 <translation id="7534987659046836932">C7-kuvert</translation>
@@ -4294,6 +4295,7 @@ Mer information.
 <translation id="7987087088851949178">Köp nu, betala senare-utfärdare som är tillgängliga för att betala över tid har öppnats över hela skärmen.</translation>
 <translation id="799149739215780103">Bind</translation>
 <translation id="7992044431894087211">Skärmdelningen med <ph name="APPLICATION_TITLE" /> återupptogs</translation>
+<translation id="799384093520583425">Organisationen har blockerat användningen av Verktyg för programmerare på den här sidan</translation>
 <translation id="7995512525968007366">Inte specificerad</translation>
 <translation id="7997855386298213183">delade flikar</translation>
 <translation id="8001912761979890298">Serverns identitet som <ph name="DOMAIN" /> gick inte att styrka eftersom den använder ett säkerhetscertifikat som inte är betrott av Chromium eller din systemkonfiguration för kryptering av webbtrafik. Det kan bero på att servern är felkonfigurerad eller att anslutningen har blivit kapad. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Visa certifikat<ph name="END_VIEW_CERTIFICATE_LINK" />.</translation>
@@ -4839,6 +4841,7 @@ Mer information:
 <translation id="8922013791253848639">Tillåt alltid annonser på den här webbplatsen</translation>
 <translation id="8922734931659847428">En begränsad lista över webbadresser till sidor som du besöker där <ph name="BEGIN_LINK" />äldre teknikhändelser<ph name="END_LINK" /> inträffar</translation>
 <translation id="892588693504540538">Hål uppe till höger</translation>
+<translation id="8926082624786998759">Verktyg för programmerare tillåts inte på den här sidan</translation>
 <translation id="8926389886865778422">Fråga inte igen.</translation>
 <translation id="8926400492587758246">Låga månadsvisa avbetalningar</translation>
 <translation id="8932102934695377596">Klockan går efter</translation>

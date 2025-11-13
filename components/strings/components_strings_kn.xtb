@@ -4004,6 +4004,7 @@
 <translation id="7525804896095537619">ಹೆಸರು ಖಾಲಿ ಇರುವಂತಿಲ್ಲ</translation>
 <translation id="7526934274050461096">ಈ ಸೈಟ್‌ಗೆ ನಿಮ್ಮ ಸಂಪರ್ಕವು ಖಾಸಗಿಯಾಗಿಲ್ಲ.</translation>
 <translation id="7529884293139707752">ಹೋಮ್‌ಸ್ಕೂಲಿಂಗ್</translation>
+<translation id="7530215951451994972">ಚಿತ್ರವನ್ನು ರಚಿಸಿ</translation>
 <translation id="7531464389616946220">ಕಾರ್ಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಹುಡುಕಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="7534987659046836932">ಎನ್ವಲಪ್ C7</translation>
@@ -4290,6 +4291,7 @@
 <translation id="7987087088851949178">ಕಾಲಾನಂತರದಲ್ಲಿ ಪಾವತಿಸಲು 'ಈಗ ಖರೀದಿಸಿ, ನಂತರ ಪಾವತಿಸಿ' ವಿತರಕರ ಲಭ್ಯವಿರುವ ಪಟ್ಟಿಯನ್ನು ಸಂಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="799149739215780103">ಬೈಂಡ್ ಮಾಡಿ</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> ಜೊತೆ ಸ್ಕ್ರೀನ್‌‌ ಹಂಚಿಕೊಳ್ಳುವುದನ್ನು ಪುನರಾರಂಭಿಸಲಾಗಿದೆ</translation>
+<translation id="799384093520583425">ಈ ಪುಟದಲ್ಲಿ DevTools ಬಳಕೆಯನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿರ್ಬಂಧಿಸಿದೆ</translation>
 <translation id="7995512525968007366">ನಿರ್ದಿಷ್ಟಪಡಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="7997855386298213183">ಹಂಚಿಕೊಳ್ಳಲಾಗಿರುವ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="8001912761979890298">ಈ ಸರ್ವರ್ Chromium ನಿಂದ ಅಥವಾ ವೆಬ್ ಟ್ರಾಫಿಕ್ ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ಗಾಗಿ ನಿಮ್ಮ ಸಿಸ್ಟಮ್ ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ವಿಶ್ವಾಸಾರ್ಹವಲ್ಲದ ಭದ್ರತಾ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಬಳಸುತ್ತಿರುವುದರಿಂದ ಅದು <ph name="DOMAIN" /> ಎಂದು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಇದು ತಪ್ಪಾದ ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ದಾಳಿಕೋರರು ನಿಮ್ಮ ಕನೆಕ್ಷನ್‌ಗೆ ಅಡ್ಡಿಪಡಿಸಿರುವುದರಿಂದ ಉಂಟಾಗಿರಬಹುದು. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />ಪ್ರಮಾಣಪತ್ರವನ್ನು ವೀಕ್ಷಿಸಿ<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4835,6 +4837,7 @@
 <translation id="8922013791253848639">ಈ ಸೈಟ್‌ನಲ್ಲಿ ಯಾವಾಗಲೂ ಜಾಹೀರಾತುಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />ಲೆಗಸಿ ತಂತ್ರಜ್ಞಾನದ ಈವೆಂಟ್‌ಗಳು<ph name="END_LINK" /> ಸಂಭವಿಸುತ್ತಿರುವ ಸ್ಥಳದಲ್ಲಿ ನೀವು ಭೇಟಿ ನೀಡುವ ಪುಟಗಳ URL ಗಳ ಸೀಮಿತ ಪಟ್ಟಿ</translation>
 <translation id="892588693504540538">ಮೇಲಿನ ಬಲಭಾಗದಲ್ಲಿ ತೂತು ಮಾಡಿ</translation>
+<translation id="8926082624786998759">ಈ ಪುಟದಲ್ಲಿ DevTools ಅನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="8926389886865778422">ಮತ್ತೆ ಕೇಳಬೇಡಿ</translation>
 <translation id="8926400492587758246">ಕಡಿಮೆ ಮೊತ್ತದ ಮಾಸಿಕ ಕಂತುಗಳಲ್ಲಿ ಪಾವತಿಸಿ</translation>
 <translation id="8932102934695377596">ನಿಮ್ಮ ಗಡಿಯಾರ ಹಿಂದೆ ಇದೆ</translation>

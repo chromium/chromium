@@ -944,6 +944,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> skirtukas – <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> skirtukas – <ph name="URL_LIST" />}few{<ph name="TAB_COUNT_MANY" /> skirtukai – <ph name="URL_LIST" />}many{<ph name="TAB_COUNT_MANY" /> skirtuko – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> skirtukų – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Privatumas</translation>
 <translation id="504456571576643789">Į ką reikėtų atsižvelgti</translation>
+<translation id="5056587122125565772">Sukurti vaizdą</translation>
 <translation id="506254248375231072">Nėra skirtukų</translation>
 <translation id="5075939510584558547">Išsaugoti be šifruotės</translation>
 <translation id="5085038751173179818">Prisijunkite prie šios svetainės ir „Chrome“, kad gautumėte žymes ir kt. visuose savo įrenginiuose</translation>

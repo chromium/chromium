@@ -4008,6 +4008,7 @@ Ek ayrıntılar:
 <translation id="7525804896095537619">Ad alanı boş bırakılamaz</translation>
 <translation id="7526934274050461096">Bu siteye bağlantınız gizli değil</translation>
 <translation id="7529884293139707752">Evde eğitim</translation>
+<translation id="7530215951451994972">Resim oluşturma</translation>
 <translation id="7531464389616946220">Kartı tara</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, yer işaretlerinde arama yapmak için Enter tuşuna basın</translation>
 <translation id="7534987659046836932">Zarf C7</translation>
@@ -4294,6 +4295,7 @@ Ek ayrıntılar:
 <translation id="7987087088851949178">Taksitle ödeme yapmanıza olanak tanıyan "Şimdi al sonra öde" sağlayıcıları tam ekranda açıldı.</translation>
 <translation id="799149739215780103">Bağlama</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> ile ekran paylaşımı devam ettirildi</translation>
+<translation id="799384093520583425">Kuruluşunuz bu sayfada Geliştirici Araçları'nın kullanılmasını engelledi</translation>
 <translation id="7995512525968007366">Belirtilmedi</translation>
 <translation id="7997855386298213183">paylaşılan sekmeler</translation>
 <translation id="8001912761979890298">Bu sunucu, web trafiği şifrelemesi için Chromium veya sistem yapılandırmanız tarafından güvenilmeyen bir güvenlik sertifikası kullandığından <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Bu durum, yanlış yapılandırmadan veya bağlantınıza müdahale eden bir saldırgandan kaynaklanıyor olabilir. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Sertifikayı Göster<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4839,6 +4841,7 @@ Ek ayrıntılar:
 <translation id="8922013791253848639">Bu sitede her zaman reklamlara izin ver</translation>
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />Eski teknoloji etkinliklerinin<ph name="END_LINK" /> gerçekleştiği, ziyaret ettiğiniz sayfaların URL'lerinin sınırlı bir listesi</translation>
 <translation id="892588693504540538">Sağ üstte delik</translation>
+<translation id="8926082624786998759">Geliştirici Araçları'nın bu sayfada kullanılmasına izin verilmiyor</translation>
 <translation id="8926389886865778422">Bir daha sorma</translation>
 <translation id="8926400492587758246">Düşük tutarlı aylık taksitlerle ödeyin</translation>
 <translation id="8932102934695377596">Saatiniz geri</translation>

@@ -4008,6 +4008,7 @@ Dodatni detalji:
 <translation id="7525804896095537619">Naziv ne može biti prazan</translation>
 <translation id="7526934274050461096">Vaša veza s ovom web lokacijom nije privatna</translation>
 <translation id="7529884293139707752">Školovanje kod kuće</translation>
+<translation id="7530215951451994972">Kreirajte sliku</translation>
 <translation id="7531464389616946220">Skeniraj karticu</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pretraživanje oznaka pritiskom na Enter</translation>
 <translation id="7534987659046836932">Koverta C7</translation>
@@ -4294,7 +4295,7 @@ Dodatni detalji:
 <translation id="7987087088851949178">Donja tabela izdavača koji podržavaju naknadno plaćanje i koji su dostupni za plaćanje u ratama otvorena je u punoj visini.</translation>
 <translation id="799149739215780103">Povezivanje</translation>
 <translation id="7992044431894087211">Dijeljenje ekrana s aplikacijom <ph name="APPLICATION_TITLE" /> je nastavljeno</translation>
-<translation id="799384093520583425">Vaša je organizacija blokirala upotrebu razvojnih alata na ovoj stranici</translation>
+<translation id="799384093520583425">Vaša organizacija je blokirala korištenje alata za programere na ovoj stranici</translation>
 <translation id="7995512525968007366">Nije navedeno</translation>
 <translation id="7997855386298213183">dijeljene kartice</translation>
 <translation id="8001912761979890298">Server nije mogao dokazati da je <ph name="DOMAIN" /> jer koristi sigurnosni certifikat koji Chromium ili konfiguracija sistema za šifriranje web saobraćaja ne smatraju pouzdanim. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Pregledajte certifikat<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4839,7 +4840,7 @@ Dodatni detalji:
 <translation id="8922013791253848639">Uvijek omogući oglase na ovoj web lokaciji</translation>
 <translation id="8922734931659847428">Ograničena lista URL-ova stranica koje posjećujete na kojima se odvijaju <ph name="BEGIN_LINK" />događaji starije tehnologije<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Bušenje u gornjem desnom uglu</translation>
-<translation id="8926082624786998759">Razvojni alati nisu dopušteni na ovoj stranici</translation>
+<translation id="8926082624786998759">Alati za programere nisu dozvoljeni na ovoj stranici</translation>
 <translation id="8926389886865778422">Ne pitaj ponovo</translation>
 <translation id="8926400492587758246">Plaćajte u malim mjesečnim ratama</translation>
 <translation id="8932102934695377596">Vaš sat kasni</translation>

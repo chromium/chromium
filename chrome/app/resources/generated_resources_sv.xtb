@@ -1055,7 +1055,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1700517974991662022">Har besökts</translation>
 <translation id="1703331064825191675">Tänk inte mer på dina lösenord</translation>
 <translation id="1703666494654169921">Tillåt inte att webbplatser använder VR-enheter eller VR-data</translation>
-<translation id="1703849276368677471">Verktyg</translation>
 <translation id="1704097193565924901">Använd versaler</translation>
 <translation id="1704230497453185209">Tillåt inte att webbplatser spelar upp ljud</translation>
 <translation id="1706586824377653884">Lades till av administratören</translation>
@@ -1829,7 +1828,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2234876718134438132">Synk och Googles tjänster</translation>
 <translation id="2235344399760031203">Cookies från tredje part har blockerats</translation>
 <translation id="2236949375853147973">Min aktivitet</translation>
-<translation id="2236963250883149540">Vill du ta bort din jobbadress från Autofyll i Chrome?</translation>
+<translation id="2236963250883149540">Vill du ta bort din jobbadress från autofyll i Chrome?</translation>
 <translation id="2238379619048995541">Data för frekvenstillstånd</translation>
 <translation id="2240582393605484605">Data som sparas enbart på den här enheten finns kvar i den befintliga profilen</translation>
 <translation id="2241053333139545397">Läsa och ändra dina uppgifter på ett antal webbplatser</translation>
@@ -2407,7 +2406,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2624142942574147739">Din kamera och mikrofon används på sidan.</translation>
 <translation id="2626799779920242286">Försök igen senare.</translation>
 <translation id="2627424346328942291">Det går inte att dela</translation>
-<translation id="2628258844236035475">Vill du ta bort din hemadress från Autofyll i Chrome?</translation>
+<translation id="2628258844236035475">Vill du ta bort din hemadress från autofyll i Chrome?</translation>
 <translation id="2628770867680720336">Du måste återställa denna Chromebook till standardinställningarna om du vill aktivera felsökning med ADB. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Utveckla Android-appar</translation>
 <translation id="2629437048544561682">Rensa målarduk</translation>
@@ -2992,6 +2991,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3019023222666709803">Pilverktyg</translation>
 <translation id="3019285239893817657">Knapp till undersida</translation>
 <translation id="3019595674945299805">VPN-tjänst</translation>
+<translation id="3020101754533552167">Kontrollerar inloggning …</translation>
 <translation id="3020183492814296499">Genvägar</translation>
 <translation id="3020990233660977256">Serienummer: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Vid batteridrift</translation>
@@ -9560,7 +9560,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7629858978065675960">Okänt resultat.</translation>
 <translation id="7630426712700473382">Den här enheten hanteras av <ph name="MANAGER" /> och du måste logga in varje gång.</translation>
 <translation id="7631014249255418691">Säkerhetskopieringen av Linux-appar och Linux-filer är klar</translation>
-<translation id="7631722872321401342">Det finns inga <ph name="LANGUAGE" /> röster på enheten. Du kan installera röster i inställningarna.</translation>
 <translation id="7631887513477658702">Öppna &amp;alltid filer av denna typ</translation>
 <translation id="7632437836497571618">Använd säkra anslutningar för att identifiera webbplatser</translation>
 <translation id="7632948528260659758">Det gick inte att uppdatera följande kioskappar:</translation>
@@ -11260,7 +11259,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="876161309768861172">Inloggningen misslyckades. Försök igen.</translation>
 <translation id="8761945298804995673">Användaren finns redan</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> behöver uppdateras</translation>
-<translation id="8763170551806710928">Visa brickor</translation>
 <translation id="8763927697961133303">USB-enhet</translation>
 <translation id="8766156860774051068">Utvalt av dig</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

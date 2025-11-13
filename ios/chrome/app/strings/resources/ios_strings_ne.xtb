@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">AI मोड प्रयोग गरेर खोज्नुहोस्</translation>
 <translation id="3557336313807607643">कन्ट्याक्टमा हाल्नुहोस्</translation>
 <translation id="355765753469272474">अन्डू गर्नुहोस्</translation>
+<translation id="3565012355885596568">फोटोहरू लोड गर्न सकिएन</translation>
 <translation id="3565930036634619844">ट्याब। <ph name="NUMBER_OF_TABS" /> मध्ये <ph name="TAB_INDEX" /> औँ।</translation>
 <translation id="3572607909481582402">तपाईंको Google खातामा</translation>
 <translation id="3575234738189584619">Google लेन्समार्फत खोज्नुहोस्</translation>
@@ -2000,6 +2001,7 @@
 <translation id="8551311254462607218">एड्रेस बारमा रहेको Google लेन्सको क्यामेरा आइकनमा ट्याप गर्नुहोस्</translation>
 <translation id="8556590991644167667">{count,plural, =1{तपाईंले {count} वटा चेतावनी खारेज गर्नुभएको छ}other{तपाईंले {count} वटा चेतावनी खारेज गर्नुभएको छ}}</translation>
 <translation id="8558046478684552694">ट्याब समूह बन्द गर्नुहोस्।</translation>
+<translation id="8559858985063901027">पासकीहरू</translation>
 <translation id="8560253818350321773">बारम्बार प्रयोग गरिएका वस्तुहरू सुरुमा देखाउनुहोस्।</translation>
 <translation id="8561999115126307258">{count,plural, =1{तपाईंको किबोर्डको माथिल्लो भागमा पासवर्डसम्बन्धी {count} विकल्प उपलब्ध छ।}other{तपाईंको किबोर्डको माथिल्लो भागमा पासवर्डसम्बन्धी {count} वटा विकल्प उपलब्ध छन्।}}</translation>
 <translation id="8564894539416715395">नयाँ ट्याब पेज</translation>

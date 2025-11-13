@@ -4007,6 +4007,7 @@
 <translation id="7525804896095537619">이름은 비워둘 수 없습니다.</translation>
 <translation id="7526934274050461096">이 사이트로의 연결은 비공개가 아닙니다.</translation>
 <translation id="7529884293139707752">홈스쿨링</translation>
+<translation id="7530215951451994972">이미지 만들기</translation>
 <translation id="7531464389616946220">카드 스캔</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, 북마크를 검색하려면 Enter 키를 누르세요</translation>
 <translation id="7534987659046836932">봉투 C7</translation>
@@ -4293,6 +4294,7 @@
 <translation id="7987087088851949178">할부 결제를 지원하는 선구매 후지불 발급기관 목록이 전체 높이로 열렸습니다.</translation>
 <translation id="799149739215780103">바인드</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" />과(와)의 화면 공유가 재개되었습니다.</translation>
+<translation id="799384093520583425">조직에서 이 페이지의 DevTools 사용을 차단했습니다.</translation>
 <translation id="7995512525968007366">지정되지 않음</translation>
 <translation id="7997855386298213183">공유된 탭</translation>
 <translation id="8001912761979890298">이 서버가 Chromium이나 웹 트래픽 암호화를 위한 시스템 구성에서 신뢰하지 않는 보안 인증서를 사용하고 있기 때문에 <ph name="DOMAIN" />임을 입증할 수 없습니다. 설정이 잘못되었거나 공격자가 연결을 가로채고 있기 때문일 수 있습니다. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />인증서 보기<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4837,6 +4839,7 @@
 <translation id="8922013791253848639">이 사이트의 광고 항상 허용</translation>
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />기존 기술 이벤트<ph name="END_LINK" />가 발생하는 페이지의 제한된 URL 목록</translation>
 <translation id="892588693504540538">오른쪽 상단 펀칭</translation>
+<translation id="8926082624786998759">이 페이지에서 DevTools가 허용되지 않습니다.</translation>
 <translation id="8926389886865778422">이 메시지 그만 보기</translation>
 <translation id="8926400492587758246">소액 월 할부 결제</translation>
 <translation id="8932102934695377596">시간이 너무 먼 과거로 설정되어 있습니다.</translation>

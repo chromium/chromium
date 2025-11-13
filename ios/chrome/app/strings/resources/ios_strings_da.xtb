@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">Søg med AI-tilstand</translation>
 <translation id="3557336313807607643">Føj til kontakter</translation>
 <translation id="355765753469272474">Fortryd</translation>
+<translation id="3565012355885596568">Billederne kunne ikke indlæses</translation>
 <translation id="3565930036634619844">Fane. <ph name="TAB_INDEX" /> af <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3572607909481582402">På din Google-konto</translation>
 <translation id="3575234738189584619">Søg med Lens</translation>
@@ -2000,6 +2001,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8551311254462607218">Tryk på Google Lens-kameraikonet i adresselinjen</translation>
 <translation id="8556590991644167667">{count,plural, =1{Du har afvist {count} advarsel}one{Du har afvist {count} advarsel}other{Du har afvist {count} advarsler}}</translation>
 <translation id="8558046478684552694">Luk gruppe.</translation>
+<translation id="8559858985063901027">Adgangskoder</translation>
 <translation id="8560253818350321773">Vis ofte benyttede elementer først.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} mulig adgangskode er tilgængelig over dit tastatur.}one{{count} mulig adgangskode er tilgængelig over dit tastatur.}other{{count} mulige adgangskoder er tilgængelige over dit tastatur.}}</translation>
 <translation id="8564894539416715395">Siden Ny fane</translation>

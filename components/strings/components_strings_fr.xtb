@@ -4009,6 +4009,7 @@ Informations supplémentaires :
 <translation id="7525804896095537619">Un nom doit être saisi</translation>
 <translation id="7526934274050461096">Votre connexion à ce site n'est pas privée</translation>
 <translation id="7529884293139707752">Enseignement à domicile</translation>
+<translation id="7530215951451994972">Créer une image</translation>
 <translation id="7531464389616946220">Scanner la carte</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyer sur Entrée pour rechercher dans les favoris</translation>
 <translation id="7534987659046836932">Enveloppe C7</translation>
@@ -4295,6 +4296,7 @@ Informations supplémentaires :
 <translation id="7987087088851949178">Liste des émetteurs Acheter maintenant, payer plus tard disponibles pour le paiement échelonné, ouverte à pleine hauteur.</translation>
 <translation id="799149739215780103">Reliure</translation>
 <translation id="7992044431894087211">Le partage d'écran avec <ph name="APPLICATION_TITLE" /> a repris</translation>
+<translation id="799384093520583425">Votre organisation a bloqué l'utilisation des Outils de développement sur cette page</translation>
 <translation id="7995512525968007366">Non spécifié</translation>
 <translation id="7997855386298213183">onglets partagés</translation>
 <translation id="8001912761979890298">Impossible de vérifier que ce serveur est bien <ph name="DOMAIN" />, car il utilise un certificat de sécurité qui n'est pas approuvé par Chromium ni par la configuration de votre système pour le chiffrement du trafic Web. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Afficher le certificat<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4839,6 +4841,7 @@ Informations supplémentaires :
 <translation id="8922013791253848639">Toujours autoriser les annonces sur ce site</translation>
 <translation id="8922734931659847428">Liste limitée des URL des pages que vous consultez sur lesquelles ont lieu des <ph name="BEGIN_LINK" />événements technologiques anciens<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Perforation en haut à droite</translation>
+<translation id="8926082624786998759">Outils de développement non autorisés sur cette page</translation>
 <translation id="8926389886865778422">Ne plus afficher ce message</translation>
 <translation id="8926400492587758246">Payez par petites mensualités</translation>
 <translation id="8932102934695377596">Votre horloge est en retard</translation>

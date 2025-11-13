@@ -519,6 +519,7 @@
 <translation id="1823768272150895732">ቅርጸ ቁምፊ</translation>
 <translation id="1824402189105105503">ስምንተኛ ጥቅልል</translation>
 <translation id="1826516787628120939">በመፈተሸ ላይ</translation>
+<translation id="1829026591231985685">በቅንብሮች ውስጥ መረጃን ወደ Google Wallet በማስቀመጥ ላይ</translation>
 <translation id="1832730227369924598">የዴስክ ሥምረት</translation>
 <translation id="1834452765064623979">ግንባታ እና ጥገና</translation>
 <translation id="1838374766361614909">ፍለጋን ያፅዱ</translation>
@@ -1884,6 +1885,7 @@
 <translation id="4073797364926776829">ካርድ ይመልከቱ</translation>
 <translation id="4075732493274867456">ደንበኛው እና አገልጋዩ የተለመደ የኤስኤስኤል ፕሮቶኮል ስሪት ወይም የስነ መሰውር ጥቅል አይደግፉም።</translation>
 <translation id="4079302484614802869">የተኪ ውቅር ቋሚ አገልጋዮችን ሳይሆን የ.pac ስክሪፕት ዩአርኤል ለመጠቀም ነው የተዋቀረው።</translation>
+<translation id="4080668349181235831">ጥቆማዎችን ለማቅረብ እና ይህን ባህሪ ለማሻሻል የሚጎበኙት ጣቢያ ዩአርኤል እና ሙሉ የገጽ ይዘት ከGoogle ጋር ይጋራሉ። ስለ <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> የበለጠ ይወቁ።</translation>
 <translation id="4080855220442581440">የተጋሩ ትሮችን መሸብለል እና ማጉላት</translation>
 <translation id="4082333119419111506">ወረቀት (ቀድሞ የታተመ)</translation>
 <translation id="4082393374666368382">ቅንብሮች - አስተዳደር</translation>
@@ -3844,6 +3846,7 @@
 <translation id="7286908876112207905">ይህንን ይዘት ወደዚህ ጣቢያ መለጠፍ አይፈቀድም</translation>
 <translation id="7291578327729322058">የመንጃ ፈቃድ ያክሉ</translation>
 <translation id="7292031607255951991">የተቀባይ ስም</translation>
+<translation id="7297228218361240128">ከሚመለከቷቸው ገጾች መረጃን ወደ Google Wallet ያስቀምጡ</translation>
 <translation id="7298195798382681320">የተመከሩ</translation>
 <translation id="7299471494012161875">የማሳያ ተቀጥላዎች ተያይዘዋል</translation>
 <translation id="7299721129597238157">ዕልባት ሰርዝ</translation>
@@ -4004,6 +4007,7 @@
 <translation id="7525804896095537619">ስም ባዶ መሆን አይችልም</translation>
 <translation id="7526934274050461096">ከዚሃ ጣቢያ ጋር ያለዎት ግንኙነት የግል አይደለም</translation>
 <translation id="7529884293139707752">በቤት ውስጥ ማስተማር</translation>
+<translation id="7530215951451994972">ምስል ይፍጠሩ</translation>
 <translation id="7531464389616946220">ካርድ ይቃኙ</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ዕልባቶችችን ለመፈልግ አስገባን ይጫኑ</translation>
 <translation id="7534987659046836932">ሲ7 ፖስታ</translation>
@@ -4241,6 +4245,7 @@
 <translation id="7916162853251942238">ፍሌክሶ ቤዝ</translation>
 <translation id="791698251820376781">ድርጅትዎ በመለያ እንዲገቡ አይፈቅድልዎትም</translation>
 <translation id="7926503317156566022">የአየር በረራ ኢንዱስትሪ</translation>
+<translation id="7927046851848613453">የሚሞሏቸውን ቅጾች ብቻ ሳይሆን ከሚመለከቷቸው ገጾች ላይ ትኬቶችን፣ ክስተቶችን እና ሌሎች መረጃዎችን ያስቀምጡ። ከዚያ እንደ የክስተት ትኬቶች እና የታማኝነት ካርዶች ያሉ ይለፎችዎን በፍጥነት ይድረሱ። የእርስዎ የተቀመጠ መረጃ በመሣሪያዎችዎ ላይ እና በመላው የGoogle ምርቶች ላይ ሊታይ ይችላል።</translation>
 <translation id="7930282586031445870">የአሁን ይግዙ፣ በኋላ ይክፈሉ የአገልግሎት ውል ማያ ገጽ ተዘግቷል።</translation>
 <translation id="7932035970207573919">የሥራ አድራሻ፣ <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">አድራሻ ይዘምን?</translation>

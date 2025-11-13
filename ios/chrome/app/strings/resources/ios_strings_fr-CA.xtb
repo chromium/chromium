@@ -2001,6 +2001,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8551311254462607218">Dans la barre d'adresse, touchez l'icône de l'appareil photo Lentille Google</translation>
 <translation id="8556590991644167667">{count,plural, =1{Vous avez ignoré {count} avertissement}one{Vous avez ignoré {count} avertissement}other{Vous avez ignoré {count} avertissements}}</translation>
 <translation id="8558046478684552694">Fermer le groupe.</translation>
+<translation id="8559858985063901027">Clés d'accès</translation>
 <translation id="8560253818350321773">Affichez les éléments fréquemment utilisés en premier.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} option de mot de passe accessible au-dessus de votre clavier.}one{{count} option de mot de passe accessible au-dessus de votre clavier.}other{{count} options de mot de passe accessibles au-dessus de votre clavier.}}</translation>
 <translation id="8564894539416715395">Page Nouvel onglet</translation>

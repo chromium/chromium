@@ -945,6 +945,7 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />): <ph name="URL_LIST" />}zero{‫<ph name="TAB_COUNT_MANY" /> علامة تبويب: <ph name="URL_LIST" />}two{علامتا تبويب (<ph name="TAB_COUNT_MANY" />): <ph name="URL_LIST" />}few{‫<ph name="TAB_COUNT_MANY" /> علامات تبويب: <ph name="URL_LIST" />}many{‫<ph name="TAB_COUNT_MANY" /> علامة تبويب: <ph name="URL_LIST" />}other{‫<ph name="TAB_COUNT_MANY" /> علامة تبويب: <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">الخصوصية</translation>
 <translation id="504456571576643789">ملاحظات مهمّة</translation>
+<translation id="5056587122125565772">إنشاء صورة</translation>
 <translation id="506254248375231072">ما مِن علامات تبويب</translation>
 <translation id="5075939510584558547">الحفظ بدون تشفير</translation>
 <translation id="5085038751173179818">‏يمكنك تسجيل الدخول إلى هذا الموقع الإلكتروني وإلى Chrome للوصول إلى إشاراتك المرجعية وغيرها على جميع أجهزتك</translation>

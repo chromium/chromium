@@ -4007,6 +4007,7 @@ Manylion ychwanegol:
 <translation id="7525804896095537619">Ni all yr enw fod yn wag</translation>
 <translation id="7526934274050461096">Nid yw eich cysylltiad â'r wefan hon yn breifat</translation>
 <translation id="7529884293139707752">Dysgu o gartref</translation>
+<translation id="7530215951451994972">Creu Llun</translation>
 <translation id="7531464389616946220">Sganio cerdyn</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Enter i chwilio nodau tudalen</translation>
 <translation id="7534987659046836932">Amlen C7</translation>
@@ -4293,6 +4294,7 @@ Manylion ychwanegol:
 <translation id="7987087088851949178">Cyhoeddwyr Prynu-Nawr-Talu-Yn-Ddiweddarach ar gael i dalu dros amser wedi'i hagor ar uchder llawn.</translation>
 <translation id="799149739215780103">Rhwymo</translation>
 <translation id="7992044431894087211">Wedi parhau i rannu sgrîn â <ph name="APPLICATION_TITLE" /></translation>
+<translation id="799384093520583425">Mae eich sefydliad wedi rhwystro defnyddio DevTools ar y dudalen hon</translation>
 <translation id="7995512525968007366">Heb ei Nodi</translation>
 <translation id="7997855386298213183">tabiau a rennir</translation>
 <translation id="8001912761979890298">Ni allai'r gweinydd hwn brofi ei fod yn <ph name="DOMAIN" /> oherwydd ei fod yn defnyddio tystysgrif diogelwch nad yw Chromium na ffurfweddiad eich system yn ymddiried ynddi ar gyfer amgryptio traffig gwe. Gall hyn gael ei achosi gan gamffurfweddiad neu ymosodwr yn rhyng-gipio'ch cysylltiad. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Gweld y Dystysgrif<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4837,6 +4839,7 @@ Manylion ychwanegol:
 <translation id="8922013791253848639">Caniatáu hysbysebion ar y wefan hon bob amser</translation>
 <translation id="8922734931659847428">Rhestr gyfyngedig o gyfeiriadau URL tudalennau rydych yn ymweld â nhw lle mae <ph name="BEGIN_LINK" />digwyddiadau technoleg etifeddol<ph name="END_LINK" /> yn digwydd</translation>
 <translation id="892588693504540538">Twll ar y dde uchaf</translation>
+<translation id="8926082624786998759">Ni chaniateir DevTools ar y dudalen hon</translation>
 <translation id="8926389886865778422">Peidiwch â gofyn eto</translation>
 <translation id="8926400492587758246">Talu mewn rhandaliadau misol isel</translation>
 <translation id="8932102934695377596">Mae eich cloc yn araf</translation>

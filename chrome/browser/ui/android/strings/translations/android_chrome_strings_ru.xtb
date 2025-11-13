@@ -49,7 +49,7 @@
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1183189057400844278">Чтобы всегда иметь доступ к паролям, сохраненным в аккаунте Google, подтвердите свою личность.</translation>
 <translation id="1187810343066461819">Удалить закладки, историю и другие данные с автомобиля</translation>
-<translation id="1193589902336218259">Включить советы</translation>
+<translation id="1193589902336218259">Включить уведомления</translation>
 <translation id="1193729455103054076">Использовать надежный пароль?</translation>
 <translation id="11947597112837849">адрес электронной почты</translation>
 <translation id="1197267115302279827">Переместить закладки</translation>
@@ -237,7 +237,7 @@
 <translation id="200114059308480249">Учитывать контекст в поиске Google?</translation>
 <translation id="2004096469149679223">Закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />" с отключенным звуком</translation>
 <translation id="2021896219286479412">Настройки полноэкранного режима</translation>
-<translation id="2029669011553795746">Нижний экран с предложением включить советы открыт наполовину</translation>
+<translation id="2029669011553795746">Нижний экран с предложением включить уведомления открыт наполовину</translation>
 <translation id="2038563949887743358">Включить полную версию сайта</translation>
 <translation id="204321170514947529">Приложение "<ph name="APP_NAME" />" также хранит свои данные в Chrome</translation>
 <translation id="2047378580182589770">Чтобы выйти из режима инкогнито, нажмите и удерживайте</translation>
@@ -644,7 +644,7 @@
 <translation id="3824259034819781947">Прикрепить файлы</translation>
 <translation id="38243391581572867">Объектив недоступен в этом аккаунте.</translation>
 <translation id="38258275871320156">Доступно только для маленьких окон.</translation>
-<translation id="3826529618131025925">Нижний экран, на котором рассказывается о полезных советах и предлагается их включить</translation>
+<translation id="3826529618131025925">Нижний экран, на котором рассказывается о полезных советах и предлагается включить уведомления</translation>
 <translation id="3845098929839618392">Открыть в режиме инкогнито</translation>
 <translation id="3847319713229060696">Помочь сделать интернет безопасным для всех</translation>
 <translation id="385051799172605136">Назад</translation>
@@ -807,7 +807,7 @@
 <translation id="452750746583162491">Проверить синхронизированные данные</translation>
 <translation id="4532845899244822526">Выбор папки</translation>
 <translation id="4535755320005483982">Общая группа вкладок "<ph name="GROUP_TITLE" />"</translation>
-<translation id="4537137366307982887">Нижний экран с предложением включить советы открыт полностью</translation>
+<translation id="4537137366307982887">Нижний экран с предложением включить уведомления открыт полностью</translation>
 <translation id="4543131175509360848">Пустой список ключей доступа</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка}one{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладка инкогнито}few{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладки инкогнито}many{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладок инкогнито}other{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладки инкогнито}}</translation>
 <translation id="4558311620361989323">Работа с веб-страницами</translation>
@@ -944,6 +944,7 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка: <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> вкладка: <ph name="URL_LIST" />}few{<ph name="TAB_COUNT_MANY" /> вкладки: <ph name="URL_LIST" />}many{<ph name="TAB_COUNT_MANY" /> вкладок: <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> вкладки: <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Конфиденциальность</translation>
 <translation id="504456571576643789">Важная информация</translation>
+<translation id="5056587122125565772">Создать изображение</translation>
 <translation id="506254248375231072">Нет вкладок</translation>
 <translation id="5075939510584558547">Сохранение без шифрования</translation>
 <translation id="5085038751173179818">Войдите на этот сайт и в Chrome, чтобы синхронизировать закладки и другую информацию на своих устройствах.</translation>
@@ -1886,7 +1887,7 @@
 <translation id="8942627711005830162">Открыть в новом окне</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – не удалось скачать этот языковой пакет. Повторите попытку позже.</translation>
 <translation id="8946759102391960088">Сохраняйте доступ к своим паролям</translation>
-<translation id="895442993047180128">Нижний экран с предложением включить советы закрыт</translation>
+<translation id="895442993047180128">Нижний экран с предложением включить уведомления закрыт</translation>
 <translation id="8957528460562961174">Вы можете экспортировать пароли и импортировать их в предпочитаемый менеджер паролей. Google Менеджер паролей больше не работает, потому что сервисы Google Play недоступны.</translation>
 <translation id="8963117664422609631">Открыть настройки сайтов</translation>
 <translation id="8965591936373831584">ожидание</translation>

@@ -1056,7 +1056,6 @@ Povolenia, ktoré ste už udelili aplikáciám, sa môžu vzťahovať na tento �
 <translation id="1700517974991662022">Navštívené</translation>
 <translation id="1703331064825191675">Už si nemusíte robiť starosti o heslá</translation>
 <translation id="1703666494654169921">Nepovoliť webom používať zariadenia alebo údaje virtuálnej reality</translation>
-<translation id="1703849276368677471">Nástroje</translation>
 <translation id="1704097193565924901">Veľkosť písmen</translation>
 <translation id="1704230497453185209">Nepovoliť webom prehrávať zvuk</translation>
 <translation id="1706586824377653884">Pridané správcom</translation>
@@ -2981,6 +2980,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3019023222666709803">Nástroj Šípka</translation>
 <translation id="3019285239893817657">Tlačidlo podstránky</translation>
 <translation id="3019595674945299805">Služba VPN</translation>
+<translation id="3020101754533552167">Kontroluje sa prihlásenie…</translation>
 <translation id="3020183492814296499">Skratky</translation>
 <translation id="3020990233660977256">Sériové číslo: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Počas napájania z batérie</translation>
@@ -9550,7 +9550,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7629858978065675960">Neznámy výsledok.</translation>
 <translation id="7630426712700473382">Toto zariadenie spravuje doména <ph name="MANAGER" /> a vyžaduje, aby ste sa vždy prihlásili.</translation>
 <translation id="7631014249255418691">Aplikácie a súbory pre Linux boli úspešne zálohované</translation>
-<translation id="7631722872321401342">V zariadení nie sú žiadne hlasy v jazyku <ph name="LANGUAGE" />. Hlasy si môžete nainštalovať v nastaveniach.</translation>
 <translation id="7631887513477658702">Súbory tohto typu &amp;vždy otvoriť</translation>
 <translation id="7632437836497571618">Vyhľadávanie webov pomocou zabezpečeného pripojenia</translation>
 <translation id="7632948528260659758">Nepodarilo sa aktualizovať nasledujúce aplikácie Kiosku:</translation>
@@ -11250,7 +11249,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="876161309768861172">Nepodarilo sa vás prihlásiť, skúste to znova</translation>
 <translation id="8761945298804995673">Tento používateľ už existuje</translation>
 <translation id="8762886931014513155">Zariadenie <ph name="DEVICE_TYPE" /> potrebuje aktualizáciu</translation>
-<translation id="8763170551806710928">Zobraziť žetóny</translation>
 <translation id="8763927697961133303">Zariadenie USB</translation>
 <translation id="8766156860774051068">Prispôsobené vám</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

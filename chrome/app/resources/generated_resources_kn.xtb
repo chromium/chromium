@@ -1057,7 +1057,6 @@
 <translation id="1700517974991662022">ಭೇಟಿ ನೀಡಲಾಗಿದೆ</translation>
 <translation id="1703331064825191675">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳ ಬಗ್ಗೆ ಎಂದಿಗೂ ಚಿಂತಿಸಬೇಡಿ</translation>
 <translation id="1703666494654169921">ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನಗಳು ಅಥವಾ ಡೇಟಾವನ್ನು ಬಳಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
-<translation id="1703849276368677471">ಟೂಲ್‌ಗಳು</translation>
 <translation id="1704097193565924901">ದೊಡ್ಡಕ್ಷರ</translation>
 <translation id="1704230497453185209">ಧ್ವನಿಯನ್ನು ಪ್ಲೇ ಮಾಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="1706586824377653884">ನಿಮ್ಮ ನಿರ್ವಾಹಕರ ಮೂಲಕ ಸೇರಿಸಲಾಗಿದೆ</translation>
@@ -2985,6 +2984,7 @@
 <translation id="3019023222666709803">ಆ್ಯರೋ ಟೂಲ್</translation>
 <translation id="3019285239893817657">ಉಪಪುಟ ಬಟನ್</translation>
 <translation id="3019595674945299805">VPN ಸೇವೆ</translation>
+<translation id="3020101754533552167">ಸೈನ್ ಇನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="3020183492814296499">ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="3020990233660977256">ಕ್ರಮ ಸಂಖ್ಯೆ: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">ಬ್ಯಾಟರಿ ಆನ್ ಇರುವಾಗ</translation>
@@ -9554,7 +9554,6 @@
 <translation id="7629858978065675960">ಅಪರಿಚಿತ ಫಲಿತಾಂಶ.</translation>
 <translation id="7630426712700473382">ಈ ಸಾಧನವನ್ನು <ph name="MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ ಮತ್ತು ನೀವು ಪ್ರತಿ ಬಾರಿಯೂ ಸೈನ್ ಇನ್ ಮಾಡುವ ಅಗತ್ಯವಿರುತ್ತದೆ.</translation>
 <translation id="7631014249255418691">Linux ಆ್ಯಪ್‌ಗಳು &amp; ಫೈಲ್‌ಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಬ್ಯಾಕಪ್ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="7631722872321401342">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಯಾವುದೇ <ph name="LANGUAGE" /> ಭಾಷೆಯ ಧ್ವನಿಗಳಿಲ್ಲ. ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಧ್ವನಿಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬಹುದು.</translation>
 <translation id="7631887513477658702">&amp;ಯಾವಾಗಲೂ ಈ ಪ್ರಕಾರದ ಫೈಲ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7632437836497571618">ಸೈಟ್‌ಗಳನ್ನು ಹುಡುಕಲು ಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್‌ಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="7632948528260659758">ಕೆಳಗಿನ ಕಿಯೋಸ್ಕ್ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು ನವೀಕರಿಸುವುದಕ್ಕೆ ವಿಫಲವಾಗಿದೆ:</translation>
@@ -11251,7 +11250,6 @@
 <translation id="876161309768861172">ನಿಮ್ಮನ್ನು ಸೈನ್ ಇನ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ, ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="8761945298804995673">ಈ ಬಳಕೆದಾರರು ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದ್ದಾರೆ</translation>
 <translation id="8762886931014513155">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗೆ ಅಪ್‌ಡೇಟ್‌ ಒಂದರ ಅಗತ್ಯವಿದೆ</translation>
-<translation id="8763170551806710928">ಚಿಪ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="8763927697961133303">USB ಸಾಧನ</translation>
 <translation id="8766156860774051068">ನೀವು ಕ್ಯುರೇಟ್ ಮಾಡಿರುವುದು</translation>
 <translation id="8766796754185931010">ಕೊಟೇರಿ</translation>

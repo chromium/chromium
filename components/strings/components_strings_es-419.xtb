@@ -4009,6 +4009,7 @@ Detalles adicionales:
 <translation id="7525804896095537619">El campo del nombre no puede estar vacío</translation>
 <translation id="7526934274050461096">Tu conexión con este sitio no es privada</translation>
 <translation id="7529884293139707752">Educación en casa</translation>
+<translation id="7530215951451994972">Crear imagen</translation>
 <translation id="7531464389616946220">Escanear tarjeta</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Intro para buscar favoritos</translation>
 <translation id="7534987659046836932">Sobre C7</translation>
@@ -4295,6 +4296,7 @@ Detalles adicionales:
 <translation id="7987087088851949178">La lista de emisores de Compra ahora y paga después disponibles para pagar a lo largo del tiempo está totalmente abierta.</translation>
 <translation id="799149739215780103">Encuadernado</translation>
 <translation id="7992044431894087211">Se reanudó el uso compartido de la pantalla con <ph name="APPLICATION_TITLE" /></translation>
+<translation id="799384093520583425">Tu organización bloqueó el uso de Herramientas para desarrolladores en esta página</translation>
 <translation id="7995512525968007366">Sin especificar</translation>
 <translation id="7997855386298213183">pestañas compartidas</translation>
 <translation id="8001912761979890298">Este servidor no pudo probar que su dominio sea <ph name="DOMAIN" /> porque usa un certificado de seguridad que no es de confianza para Chromium o la configuración del sistema para la encriptación del tráfico web. Es posible que se deba a una configuración incorrecta o a que un atacante haya interceptado tu conexión. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Ver certificado<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4840,6 +4842,7 @@ Detalles adicionales:
 <translation id="8922013791253848639">Permite mostrar anuncios en este sitio</translation>
 <translation id="8922734931659847428">Una lista limitada de las URLs de las páginas que visitas, en las que se producen <ph name="BEGIN_LINK" />eventos tecnológicos heredados<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Perforación en la esquina superior derecha</translation>
+<translation id="8926082624786998759">No se permiten las Herramientas para desarrolladores en esta página</translation>
 <translation id="8926389886865778422">No volver a preguntar</translation>
 <translation id="8926400492587758246">Paga en cuotas mensuales bajas</translation>
 <translation id="8932102934695377596">El reloj está atrasado</translation>

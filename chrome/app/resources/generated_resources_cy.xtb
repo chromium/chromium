@@ -617,6 +617,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1414648216875402825">Rydych yn diweddaru i fersiwn ansefydlog o <ph name="PRODUCT_NAME" /> sy'n cynnwys nodweddion sydd ar y gweill. Bydd toriadau a bygiau annisgwyl yn digwydd. Parhewch yn ofalus.</translation>
 <translation id="1415708812149920388">Gwrthodwyd mynediad darllen y clipfwrdd</translation>
 <translation id="1415990189994829608">Ni chaniateir <ph name="EXTENSION_NAME" /> (rhif adnabod yr estyniad "<ph name="EXTENSION_ID" />") yn y math hwn o sesiwn.</translation>
+<translation id="141720836055413739">Methu ag uwchlwytho.  Rhowch gynnig ar fformat ffeil gwahanol.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Tynnu ap}zero{Tynnu apiau}two{Tynnu apiau}few{Tynnu apiau}many{Tynnu apiau}other{Tynnu apiau}}</translation>
 <translation id="1417497355604638350">Anfon data diagnosteg a data defnydd.</translation>
 <translation id="1418552618736477642">Hysbysiadau ac apiau</translation>
@@ -1057,7 +1058,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1700517974991662022">Ymwelwyd</translation>
 <translation id="1703331064825191675">Peidio byth â phoeni am eich cyfrineiriau</translation>
 <translation id="1703666494654169921">Peidio â chaniatáu i wefannau ddefnyddio dyfeisiau neu ddata rhithwirionedd</translation>
-<translation id="1703849276368677471">Offer</translation>
 <translation id="1704097193565924901">Priflythrennu</translation>
 <translation id="1704230497453185209">Peidio â chaniatáu i wefannau chwarae sain</translation>
 <translation id="1706586824377653884">Ychwanegwyd gan eich gweinyddwr</translation>
@@ -2884,6 +2884,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="2946640296642327832">Galluogi Bluetooth</translation>
 <translation id="2947281105969315778">I rannu neu ymuno â grwpiau tabiau, rhaid i chi allu mewngofnodi i Chrome</translation>
 <translation id="2947605845283690091">Dylai pori'r we fod yn gyflym. Cymerwch eiliad i <ph name="BEGIN_LINK" />edrych ar eich estyniadau<ph name="END_LINK" /> nawr.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Gollyngwch ffeil yma}zero{Gollwng ffeiliau yma}two{Gollwng ffeiliau yma}few{Gollwng ffeiliau yma}many{Gollwng ffeiliau yma}other{Gollwng ffeiliau yma}}</translation>
 <translation id="2948300991547862301">Mynd i <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Porwr gwe cyflym, syml a diogel, wedi'i ddatblygu ar gyfer y we fodern.</translation>
 <translation id="2950666755714083615">Cofrestru fi</translation>
@@ -2993,6 +2994,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3019023222666709803">Offeryn Saeth</translation>
 <translation id="3019285239893817657">Botwm is-dudalen</translation>
 <translation id="3019595674945299805">Gwasanaeth VPN</translation>
+<translation id="3020101754533552167">Wrthi'n gwirio mewngofnodi...</translation>
 <translation id="3020183492814296499">Llwybrau byr</translation>
 <translation id="3020990233660977256">Rhif Cyfresol: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Wrth ddefnyddio'r batri</translation>
@@ -5273,6 +5275,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4606551464649945562">Peidiwch â chaniatáu i wefannau greu map 3D o'ch amgylchoedd neu olrhain safle'r camera</translation>
 <translation id="4606933160360542263">Cyfuniad allwedd personol: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Dileu'r grŵp tabiau?}zero{Dileu'r grwpiau tabiau?}two{Dileu'r grwpiau tabiau?}few{Dileu'r grwpiau tabiau?}many{Dileu'r grwpiau tabiau?}other{Dileu'r grwpiau tabiau?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Uwchlwythwch 1 ffeil i'w defnyddio gyda'ch cwestiwn}zero{Uwchlwythwch hyd at # ffeiliau i'w defnyddio gyda'ch cwestiwn}two{Uwchlwythwch hyd at # ffeil i'w defnyddio gyda'ch cwestiwn}few{Uwchlwythwch hyd at # ffeil i'w defnyddio gyda'ch cwestiwn}many{Uwchlwythwch hyd at # ffeil i'w defnyddio gyda'ch cwestiwn}other{Uwchlwythwch hyd at # ffeil i'w defnyddio gyda'ch cwestiwn}}</translation>
 <translation id="4608500690299898628">&amp;Chwilio...</translation>
 <translation id="4609164937357979319">Dewis cyfrif</translation>
 <translation id="4610493438923139095">Annibynadwy</translation>
@@ -9567,7 +9570,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7629858978065675960">Canlyniad anhysbys.</translation>
 <translation id="7630426712700473382">Rheolir y ddyfais hon gan <ph name="MANAGER" /> ac mae'n gofyn i chi fewngofnodi bob tro.</translation>
 <translation id="7631014249255418691">Wedi creu copïau wrth gefn o apiau a ffeiliau Linux yn llwyddiannus</translation>
-<translation id="7631722872321401342">Does dim lleisiau <ph name="LANGUAGE" /> ar eich dyfais. Gallwch chi osod lleisiau mewn gosodiadau.</translation>
 <translation id="7631887513477658702">&amp;Agor Ffeiliau o'r Math Hwn Bob Amser</translation>
 <translation id="7632437836497571618">Defnyddiwch gysylltiadau diogel i chwilio am wefannau</translation>
 <translation id="7632948528260659758">Methwyd â'r apiau Kiosk canlynol i'w diweddaru:</translation>
@@ -11266,7 +11268,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="876161309768861172">Methu â'ch mewngofnodi, rhowch gynnig arall arni</translation>
 <translation id="8761945298804995673">Mae'r defnyddiwr hwn eisoes yn bodoli</translation>
 <translation id="8762886931014513155">Mae angen diweddariad ar eich <ph name="DEVICE_TYPE" /></translation>
-<translation id="8763170551806710928">Dangos Sglodion</translation>
 <translation id="8763927697961133303">Dyfais USB</translation>
 <translation id="8766156860774051068">Wedi'i churadu gennych chi</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

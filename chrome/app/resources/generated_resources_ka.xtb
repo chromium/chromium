@@ -1054,7 +1054,6 @@
 <translation id="1700517974991662022">მონახულებული</translation>
 <translation id="1703331064825191675">ნუღარ ინერვიულებთ თქვენს პაროლებზე</translation>
 <translation id="1703666494654169921">საიტებისთვის ვირტუალური რეალობის მოწყობილობებისა თუ მონაცემების გამოყენების აკრძალვა</translation>
-<translation id="1703849276368677471">ხელსაწყოები</translation>
 <translation id="1704097193565924901">გამთავრულება</translation>
 <translation id="1704230497453185209">საიტებისთვის ხმის დაკვრის აკრძალვა</translation>
 <translation id="1706586824377653884">დამატებულია თქვენი ადმინისტრატორის მიერ</translation>
@@ -2979,6 +2978,7 @@
 <translation id="3019023222666709803">ისრის ხელსაწყო</translation>
 <translation id="3019285239893817657">ქვეგვერდის ღილაკი</translation>
 <translation id="3019595674945299805">VPN სერვისი</translation>
+<translation id="3020101754533552167">ავტორიზაციის შემოწმება...</translation>
 <translation id="3020183492814296499">მალსახმობები</translation>
 <translation id="3020990233660977256">სერიული ნომერი: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">ბატარეით მუშაობისას</translation>
@@ -9545,7 +9545,6 @@
 <translation id="7629858978065675960">უცნობი შედეგი.</translation>
 <translation id="7630426712700473382">ამ მოწყობილობას მართავს <ph name="MANAGER" />, რომელიც ყოველ ჯერზე მოითხოვს თქვენგან სისტემაში შესვლას.</translation>
 <translation id="7631014249255418691">Linux აპებისა და ფაილების სარეზერვო კოპირება წარმატებით დასრულდა</translation>
-<translation id="7631722872321401342">თქვენს მოწყობილობაში არ არის <ph name="LANGUAGE" /> ხმები. ხმების ინსტალაცია პარამეტრებიდან შეგიძლიათ.</translation>
 <translation id="7631887513477658702">&amp;ყოველთვის გახსენით ამ ტიპის ფაილები</translation>
 <translation id="7632437836497571618">უსაფრთხო კავშირების გამოყენება საიტების მოსაძიებლად</translation>
 <translation id="7632948528260659758">ქვემოთ მოცემული კიოსკის პროგრამები ვერ განახლდა:</translation>
@@ -11244,7 +11243,6 @@
 <translation id="876161309768861172">სისტემაში თქვენი შეყვანა ვერ მოხერხდა. სცადეთ ხელახლა.</translation>
 <translation id="8761945298804995673">ეს მომხმარებელი უკვე არსებობს</translation>
 <translation id="8762886931014513155">თქვენი <ph name="DEVICE_TYPE" /> საჭიროებს განახლებას</translation>
-<translation id="8763170551806710928">ჩიპების ჩვენება</translation>
 <translation id="8763927697961133303">USB მოწყობილობა</translation>
 <translation id="8766156860774051068">თქვენ მიერ შერჩეული</translation>
 <translation id="8766796754185931010">კოტოერი</translation>

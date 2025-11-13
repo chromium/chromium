@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">Buscar con el Modo IA</translation>
 <translation id="3557336313807607643">Agregar a contactos</translation>
 <translation id="355765753469272474">Deshacer</translation>
+<translation id="3565012355885596568">No se pudieron cargar las imágenes</translation>
 <translation id="3565930036634619844">Pestaña. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3572607909481582402">En tu Cuenta de Google</translation>
 <translation id="3575234738189584619">Buscar con Lens</translation>
@@ -2000,6 +2001,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8551311254462607218">En la barra de direcciones, presiona el ícono de la cámara de Google Lens</translation>
 <translation id="8556590991644167667">{count,plural, =1{Descartaste {count} advertencia}other{Descartaste {count} advertencias}}</translation>
 <translation id="8558046478684552694">Cerrar grupo.</translation>
+<translation id="8559858985063901027">Claves de acceso</translation>
 <translation id="8560253818350321773">Muestra primero los elementos que se usan con frecuencia.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Hay {count} opción de contraseña disponible arriba del teclado.}other{Hay {count} opciones de contraseña disponibles arriba del teclado.}}</translation>
 <translation id="8564894539416715395">Página Nueva pestaña</translation>

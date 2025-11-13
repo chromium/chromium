@@ -1056,7 +1056,6 @@
 <translation id="1700517974991662022">Посетено</translation>
 <translation id="1703331064825191675">Не грижете се за своите лозинки</translation>
 <translation id="1703666494654169921">Не им дозволувај на сајтовите да ги користат уредите за виртуелна реалност или мобилниот интернет</translation>
-<translation id="1703849276368677471">Алатки</translation>
 <translation id="1704097193565924901">Почетна голема буква</translation>
 <translation id="1704230497453185209">Не им дозволувај на сајтовите да пуштаат звук</translation>
 <translation id="1706586824377653884">Додадено од вашиот администратор</translation>
@@ -2993,6 +2992,7 @@
 <translation id="3019023222666709803">Алатка за стрелка</translation>
 <translation id="3019285239893817657">Копче за подредена страница</translation>
 <translation id="3019595674945299805">Услуга за VPN</translation>
+<translation id="3020101754533552167">Се проверува најавувањето…</translation>
 <translation id="3020183492814296499">Кратенки</translation>
 <translation id="3020990233660977256">Сериски број: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Додека се користи батерија</translation>
@@ -9562,7 +9562,6 @@
 <translation id="7629858978065675960">Непознат резултат.</translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> управува со уредов и бара да се најавувате секој пат.</translation>
 <translation id="7631014249255418691">Успешно е направен бекап на апликациите и датотеките на Linux</translation>
-<translation id="7631722872321401342">Нема гласови на <ph name="LANGUAGE" /> на уредот. Гласови може да инсталирате во поставките.</translation>
 <translation id="7631887513477658702">&amp;Секогаш отворај датотеки од овој тип</translation>
 <translation id="7632437836497571618">Користи безбедни врски за барање сајтови</translation>
 <translation id="7632948528260659758">Следниве апликации на киоск не успеаа да се ажурираат:</translation>
@@ -11264,7 +11263,6 @@
 <translation id="876161309768861172">Не можеше да се најави. Обидете се повторно.</translation>
 <translation id="8761945298804995673">Корисников веќе постои</translation>
 <translation id="8762886931014513155">На вашиот <ph name="DEVICE_TYPE" /> му е потребно ажурирање</translation>
-<translation id="8763170551806710928">Прикажи ги чиповите</translation>
 <translation id="8763927697961133303">USB-уред</translation>
 <translation id="8766156860774051068">Избрано од вас</translation>
 <translation id="8766796754185931010">Котоери</translation>

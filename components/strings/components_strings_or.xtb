@@ -4003,6 +4003,7 @@
 <translation id="7525804896095537619">ନାମ ଖାଲି ରହିପାରିବ ନାହିଁ</translation>
 <translation id="7526934274050461096">ଏହି ସାଇଟ୍‌କୁ ଆପଣଙ୍କର ସଂଯୋଗ ବ୍ୟକ୍ତିଗତ ନୁହେଁ</translation>
 <translation id="7529884293139707752">ହୋମସ୍କୁଲିଂ</translation>
+<translation id="7530215951451994972">ଇମେଜ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="7531464389616946220">କାର୍ଡ ସ୍କାନ କରନ୍ତୁ</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ବୁକମାର୍କ ସର୍ଚ୍ଚ କରିବାକୁ ଏଣ୍ଟର ଦବାନ୍ତୁ</translation>
 <translation id="7534987659046836932">ଏନଭେଲପ C7</translation>
@@ -4289,6 +4290,7 @@
 <translation id="7987087088851949178">ସମୟ ଅନୁସାରେ ପେମେଣ୍ଟ କରିବା ପାଇଁ ଉପଲବ୍ଧ 'ବର୍ତ୍ତମାନ କିଣନ୍ତୁ, ପରେ ପେମେଣ୍ଟ କରନ୍ତୁ' ଇସ୍ୟୁଅର ସମ୍ପୂର୍ଣ୍ଣ ଖୋଲାଯାଇଛି।</translation>
 <translation id="799149739215780103">ବାଇଣ୍ଡ</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> ସହ ସ୍କ୍ରିନ୍ ସେୟାରିଂକୁ ପୁଣି ଆରମ୍ଭ କରାଯାଇଛି</translation>
+<translation id="799384093520583425">ଆପଣଙ୍କ ସଂସ୍ଥା ଏହି ପୃଷ୍ଠାରେ DevToolsର ବ୍ୟବହାରକୁ ବ୍ଲକ କରିଛି</translation>
 <translation id="7995512525968007366">ନିର୍ଦ୍ଦିଷ୍ଟ ହୋଇନାହିଁ</translation>
 <translation id="7997855386298213183">ସେୟାର କରାଯାଇଥିବା ଟାବ</translation>
 <translation id="8001912761979890298">ଏହି ସର୍ଭର ଏହା <ph name="DOMAIN" /> ଅଟେ ବୋଲି ପ୍ରମାଣିତ କରିପାରିଲା ନାହିଁ କାରଣ ଏହା ଏକ ସିକ୍ୟୁରିଟି ସାର୍ଟିଫିକେଟ ବ୍ୟବହାର କରୁଛି ଯାହା Chromium କିମ୍ବା ୱେବ ଟ୍ରାଫିକ ଏନକ୍ରିପସନ ପାଇଁ ଆପଣଙ୍କର ସିଷ୍ଟମ କନଫିଗରେସନ ଦ୍ୱାରା ବିଶ୍ୱସନୀୟ ନୁହେଁ। ଏହା ଏକ ଭୁଲ କନଫିଗରେସନ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କ କନେକ୍ସନକୁ ବାଧା ଦେଉଥିବା ଯୋଗୁଁ ହୋଇଥାଇପାରେ। <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />ସାର୍ଟିଫିକେଟ ଭ୍ୟୁ କରନ୍ତୁ<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4833,6 +4835,7 @@
 <translation id="8922013791253848639">ଏହି ସାଇଟ୍‌ରେ ସର୍ବଦା ବିଜ୍ଞାପନକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />ଲିଗାସି ଟେକ୍ନୋଲୋଜି ଇଭେଣ୍ଟଗୁଡ଼ିକ<ph name="END_LINK" /> ହେଉଥିବା ଆପଣ ଭିଜିଟ କରୁଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକର URLର ଏକ ସୀମିତ ତାଲିକା</translation>
 <translation id="892588693504540538">ଉପର ଡାହାଣ ପଟରେ ପଞ୍ଚ୍</translation>
+<translation id="8926082624786998759">ଏହି ପୃଷ୍ଠାରେ DevToolsକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="8926389886865778422">ପୁର୍ନବାର ପଚାରନ୍ତୁ ନାହିଁ</translation>
 <translation id="8926400492587758246">କମ ମାସିକ ଇନଷ୍ଟଲମେଣ୍ଟରେ ପେମେଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="8932102934695377596">ଆପଣଙ୍କର ଘଣ୍ଟାର ସମୟ ପଛରେ ଅଛି</translation>

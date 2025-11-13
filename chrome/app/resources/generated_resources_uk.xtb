@@ -1058,7 +1058,6 @@
 <translation id="1700517974991662022">Натиснуто</translation>
 <translation id="1703331064825191675">Не хвилюйтеся про свої паролі</translation>
 <translation id="1703666494654169921">Заборонити сайтам використовувати пристрої або дані віртуальної реальності</translation>
-<translation id="1703849276368677471">Інструменти</translation>
 <translation id="1704097193565924901">Почати з великої літери</translation>
 <translation id="1704230497453185209">Заборонити сайтам відтворювати звук</translation>
 <translation id="1706586824377653884">Додано адміністратором</translation>
@@ -2995,6 +2994,7 @@
 <translation id="3019023222666709803">Інструмент "Стрілка"</translation>
 <translation id="3019285239893817657">Кнопка підсторінки</translation>
 <translation id="3019595674945299805">Сервіс VPN</translation>
+<translation id="3020101754533552167">Перевіряємо, чи виконано вхід…</translation>
 <translation id="3020183492814296499">Ярлики</translation>
 <translation id="3020990233660977256">Серійний номер: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Якщо пристрій не заряджається</translation>
@@ -9563,7 +9563,6 @@
 <translation id="7629858978065675960">Невідомий результат.</translation>
 <translation id="7630426712700473382">Цим пристроєм керує <ph name="MANAGER" />. На ньому потрібно щоразу входити в обліковий запис.</translation>
 <translation id="7631014249255418691">Створено резервну копію додатків і файлів Linux</translation>
-<translation id="7631722872321401342">На вашому пристрої немає голосових файлів такою мовою: <ph name="LANGUAGE" />. Їх можна встановити в налаштуваннях.</translation>
 <translation id="7631887513477658702">&amp;Завжди відкривати файли цього типу</translation>
 <translation id="7632437836497571618">Використовувати захищені підключення для пошуку сайтів</translation>
 <translation id="7632948528260659758">Не вдалось оновити такі додатки-термінали:</translation>
@@ -11263,7 +11262,6 @@
 <translation id="876161309768861172">Не вдалося ввійти. Повторіть спробу.</translation>
 <translation id="8761945298804995673">Такий користувач уже існує</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> потребує оновлення</translation>
-<translation id="8763170551806710928">Показувати чипи</translation>
 <translation id="8763927697961133303">Пристрій USB</translation>
 <translation id="8766156860774051068">Вибрані вами</translation>
 <translation id="8766796754185931010">Котоері</translation>

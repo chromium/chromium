@@ -4009,6 +4009,7 @@
 <translation id="7525804896095537619">名前を空白にすることはできません</translation>
 <translation id="7526934274050461096">このサイトへの接続ではプライバシーが保護されません</translation>
 <translation id="7529884293139707752">ホームスクーリング</translation>
+<translation id="7530215951451994972">画像を作成</translation>
 <translation id="7531464389616946220">カードをスキャン</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Enter キーを押すとブックマークを検索します</translation>
 <translation id="7534987659046836932">C7 封筒</translation>
@@ -4295,6 +4296,7 @@
 <translation id="7987087088851949178">分割払いを利用できる後払い決済のカード発行会社が画面全体に表示されています。</translation>
 <translation id="799149739215780103">製本</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> との画面共有が再開されました</translation>
+<translation id="799384093520583425">このページでの DevTools の使用は組織によってブロックされています</translation>
 <translation id="7995512525968007366">指定なし</translation>
 <translation id="7997855386298213183">共有タブ</translation>
 <translation id="8001912761979890298">このサーバーは、Chromium またはウェブ トラフィック暗号化のシステム構成で信頼されていないセキュリティ証明書を使用しているため、<ph name="DOMAIN" /> であることを証明できませんでした。原因として、設定が不適切であるか、悪意のあるユーザーが接続を妨害していることが考えられます。<ph name="BEGIN_VIEW_CERTIFICATE_LINK" />証明書を表示<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4840,6 +4842,7 @@
 <translation id="8922013791253848639">このサイトで常に広告を許可します</translation>
 <translation id="8922734931659847428">アクセスしたページのうち、<ph name="BEGIN_LINK" />以前のテクノロジー イベント<ph name="END_LINK" />が発生しているページの URL リストのみ</translation>
 <translation id="892588693504540538">パンチ（右上）</translation>
+<translation id="8926082624786998759">このページでは DevTools は許可されていません</translation>
 <translation id="8926389886865778422">再表示させない</translation>
 <translation id="8926400492587758246">低額の月々分割払い</translation>
 <translation id="8932102934695377596">時計が遅れています</translation>

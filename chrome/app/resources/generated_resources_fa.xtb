@@ -614,7 +614,7 @@
 <translation id="1414648216875402825">شما نسخه ناپایداری از <ph name="PRODUCT_NAME" /> را به‌روزرسانی می‌کنید که حاوی قابلیت‌های در حال توسعه است. خرابی‌ها و اشکال‌های غیرمنتظره‌ای رخ خواهد داد. لطفاُ با احتیاط ادامه دهید.</translation>
 <translation id="1415708812149920388">دسترسی برای خواندن محتوای بریده‌دان امکان‌پذیر نیست</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (شناسه برنامه افزودنی «<ph name="EXTENSION_ID" />») در این نوع جلسه مجاز نیست.</translation>
-<translation id="141720836055413739">بارگذاری نشد.  قالب فایل دیگری را امتحان کنید.</translation>
+<translation id="141720836055413739">بارگذاری ممکن نیست.  قالب فایل دیگری را امتحان کنید.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{برداشتن برنامه}one{برداشتن برنامه}other{برداشتن برنامه‌ها}}</translation>
 <translation id="1417497355604638350">ارسال عیب‌یابی و داده‌های استفاده.</translation>
 <translation id="1418552618736477642">اعلان‌ها و برنامه‌ها</translation>
@@ -1053,7 +1053,6 @@
 <translation id="1700517974991662022">بازدیدشده</translation>
 <translation id="1703331064825191675">هرگز نگران گذرواژه‌هایتان نباشید</translation>
 <translation id="1703666494654169921">به سایت‌ها اجازه داده نشود از داده‌ها یا دستگاه‌های واقعیت مجازی استفاده کنند</translation>
-<translation id="1703849276368677471">ابزارها</translation>
 <translation id="1704097193565924901">بزرگ‌نویسی</translation>
 <translation id="1704230497453185209">به سایت‌ها اجازه داده نشود صدا پخش کنند</translation>
 <translation id="1706586824377653884">افزوده‌شده توسط سرپرست سیستم</translation>
@@ -2989,6 +2988,7 @@
 <translation id="3019023222666709803">ابزار پیکان</translation>
 <translation id="3019285239893817657">دکمه صفحه فرعی</translation>
 <translation id="3019595674945299805">‏سرویس VPN</translation>
+<translation id="3020101754533552167">درحال بررسی ورود به سیستم…</translation>
 <translation id="3020183492814296499">میان‌برها</translation>
 <translation id="3020990233660977256">شمارهٔ سریال: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">هنگام استفاده از باتری</translation>
@@ -9559,7 +9559,6 @@
 <translation id="7629858978065675960">نتیجه نامشخص است.</translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> این دستگاه را مدیریت می‌کند و لازم می‌داند هربار به سیستم وارد شوید.</translation>
 <translation id="7631014249255418691">‏از برنامه‌ها و فایل‌های Linux پشتیبان‌گیری شد</translation>
-<translation id="7631722872321401342">هیچ صدای <ph name="LANGUAGE" /> در دستگاهتان وجود ندارد. می‌توانید صداها را در تنظیمات نصب کنید.</translation>
 <translation id="7631887513477658702">&amp;همیشه این نوع فایل‌ها باز شوند</translation>
 <translation id="7632437836497571618">استفاده از اتصال ایمن برای جستجوی سایت‌ها</translation>
 <translation id="7632948528260659758">به‌روزرسانی برنامه‌های کیوسک زیر انجام نشد:</translation>
@@ -11259,7 +11258,6 @@
 <translation id="876161309768861172">به سیستم وارد نشدید، لطفاً دوباره امتحان کنید</translation>
 <translation id="8761945298804995673">این کاربر از قبل وجود دارد</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> شما باید به‌روزرسانی شود</translation>
-<translation id="8763170551806710928">نشان دادن تراشه‌ها</translation>
 <translation id="8763927697961133303">‏دستگاه USB</translation>
 <translation id="8766156860774051068">دست‌چین‌شده توسط شما</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

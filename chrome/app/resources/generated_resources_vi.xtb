@@ -613,7 +613,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1414648216875402825">Bạn đang cập nhật lên phiên bản không chính thức <ph name="PRODUCT_NAME" /> chứa các tính năng hiện trong quá trình thử nghiệm. Các sự cố và lỗi không mong muốn sẽ xảy ra. Hãy thận trọng khi tiếp tục.</translation>
 <translation id="1415708812149920388">Đã từ chối quyền truy cập đọc bảng nhớ tạm</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID tiện ích "<ph name="EXTENSION_ID" />") không được cho phép trong loại phiên này.</translation>
-<translation id="141720836055413739">Không tải lên được.  Hãy thử định dạng tệp khác.</translation>
+<translation id="141720836055413739">Không tải lên được.  Hãy thử một định dạng tệp khác.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Xóa Ứng dụng}other{Xóa các Ứng dụng}}</translation>
 <translation id="1417497355604638350">Gửi dữ liệu chẩn đoán và dữ liệu sử dụng.</translation>
 <translation id="1418552618736477642">Thông báo và ứng dụng</translation>
@@ -1055,7 +1055,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1700517974991662022">Đã truy cập</translation>
 <translation id="1703331064825191675">Không bao giờ phải lo lắng về mật khẩu của bạn</translation>
 <translation id="1703666494654169921">Không cho phép các trang web sử dụng dữ liệu hoặc thiết bị thực tế ảo</translation>
-<translation id="1703849276368677471">Công cụ</translation>
 <translation id="1704097193565924901">Viết hoa chữ cái đầu tiên</translation>
 <translation id="1704230497453185209">Không cho phép các trang web phát âm thanh</translation>
 <translation id="1706586824377653884">Do quản trị viên thêm</translation>
@@ -2882,6 +2881,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2946640296642327832">Bật bluetooth</translation>
 <translation id="2947281105969315778">Để chia sẻ hoặc tham gia nhóm thẻ, bạn phải được phép đăng nhập vào Chrome</translation>
 <translation id="2947605845283690091">Đã duyệt web thì tốc độ phải nhanh. Hãy dành chút thời gian để <ph name="BEGIN_LINK" />kiểm tra các tiện ích của bạn<ph name="END_LINK" /> ngay bây giờ.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Thả tệp ở đây}other{Thả tệp ở đây}}</translation>
 <translation id="2948300991547862301">Truy cập <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Trình duyệt web nhanh, đơn giản và an toàn dành cho web hiện đại.</translation>
 <translation id="2950666755714083615">Đăng ký cho tôi</translation>
@@ -2991,6 +2991,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3019023222666709803">Công cụ mũi tên</translation>
 <translation id="3019285239893817657">Nút trang con</translation>
 <translation id="3019595674945299805">Dịch vụ VPN</translation>
+<translation id="3020101754533552167">Đang kiểm tra hoạt động đăng nhập...</translation>
 <translation id="3020183492814296499">Lối tắt</translation>
 <translation id="3020990233660977256">Số Sê-ri: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Trong khi chạy bằng pin</translation>
@@ -5271,6 +5272,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4606551464649945562">Không cho các phép trang web tạo bản đồ 3D khu vực xung quanh bạn hoặc theo dõi thông tin vị trí của camera</translation>
 <translation id="4606933160360542263">Tổ hợp phím tuỳ chỉnh: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Bạn muốn xoá nhóm thẻ?}other{Bạn muốn xoá các nhóm thẻ?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Tải 1 tệp lên để dùng cho câu hỏi của bạn}other{Tải tối đa # tệp lên để dùng cho câu hỏi của bạn}}</translation>
 <translation id="4608500690299898628">&amp;Tìm...</translation>
 <translation id="4609164937357979319">Lựa chọn tài khoản</translation>
 <translation id="4610493438923139095">Không đáng tin cậy</translation>
@@ -8122,6 +8124,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6619990499523117484">Xác nhận mã PIN của bạn</translation>
 <translation id="6620000730890558421">Sắp xếp các thẻ gọn gàng nhờ AI</translation>
 <translation id="6620254580880484313">Tên vùng chứa</translation>
+<translation id="6621282332208609777">Hỏi Google hoặc nhập một URL</translation>
 <translation id="6621391692573306628">Để gửi thẻ này cho một thiết bị khác, hãy đăng nhập vào Chrome trên cả hai thiết bị</translation>
 <translation id="6622980291894852883">Tiếp tục chặn hình ảnh</translation>
 <translation id="6624036901798307345">Ở chế độ máy tính bảng, hãy nhấn vào nút trên thanh công cụ của bộ đếm thẻ để mở dải thẻ mới cho thấy hình thu nhỏ của mỗi thẻ.</translation>
@@ -9547,6 +9550,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7620616707541471029">Chọn một tài khoản để tiếp tục</translation>
 <translation id="7621382409404463535">Hệ thống không lưu được cấu hình thiết bị.</translation>
 <translation id="7621595347123595643">Bạn sẽ không thể khôi phục dữ liệu cục bộ nếu quên mật khẩu hoặc mã PIN.</translation>
+<translation id="7621863462266622331">Khi các thẻ được chia sẻ, nội dung trang, nội dung nghe nhìn và URL của các thẻ đó sẽ được gửi đến Google</translation>
 <translation id="7622114377921274169">Đang sạc.</translation>
 <translation id="7622768823216805500">Các trang web thường cài đặt trình xử lý thanh toán cho các tính năng mua sắm như quy trình thanh toán dễ dàng hơn</translation>
 <translation id="7622966771025050155">Chuyển sang thẻ được ghi hình</translation>
@@ -9560,7 +9564,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7629858978065675960">Kết quả không xác định.</translation>
 <translation id="7630426712700473382">Thiết bị này do <ph name="MANAGER" /> quản lý và yêu cầu bạn phải đăng nhập mỗi lần sử dụng.</translation>
 <translation id="7631014249255418691">Đã sao lưu thành công các ứng dụng và tệp Linux</translation>
-<translation id="7631722872321401342">Không có giọng nói <ph name="LANGUAGE" /> nào trên thiết bị của bạn. Bạn có thể cài đặt giọng nói trong phần cài đặt.</translation>
 <translation id="7631887513477658702">&amp;Luôn Mở Loại Tệp Này</translation>
 <translation id="7632437836497571618">Sử dụng kết nối bảo mật để tra cứu các trang web</translation>
 <translation id="7632948528260659758">Không cập nhật được các ứng dụng kiosk sau:</translation>
@@ -11260,7 +11263,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="876161309768861172">Không đăng nhập được, vui lòng thử lại</translation>
 <translation id="8761945298804995673">Người dùng này đã tồn tại</translation>
 <translation id="8762886931014513155">Bạn cần cập nhật <ph name="DEVICE_TYPE" /></translation>
-<translation id="8763170551806710928">Hiện các khối</translation>
 <translation id="8763927697961133303">Thiết bị USB</translation>
 <translation id="8766156860774051068">Do bạn tuyển chọn</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
@@ -11763,6 +11765,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="909554839118732438">Đóng cửa sổ ẩn danh</translation>
 <translation id="9095819602391364796">Không cho phép các trang web điều khiển và lập trình lại thiết bị MIDI của bạn</translation>
 <translation id="9096053102600371572">Tính năng cuộn có kiểm soát <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">So sánh các lựa chọn</translation>
 <translation id="9096776523567481218">chưa cài đặt trên máy</translation>
 <translation id="9098860402274800697">Xoá Google Play và các ứng dụng Android</translation>
 <translation id="9099220545925418560">Dựa trên nhật ký duyệt web của bạn. Chế độ cài đặt này đang tắt.</translation>

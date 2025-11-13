@@ -4003,6 +4003,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7525804896095537619">Názov nemôže byť prázdny</translation>
 <translation id="7526934274050461096">Spojenie s týmto webom nie je súkromné</translation>
 <translation id="7529884293139707752">Domáce vzdelávanie</translation>
+<translation id="7530215951451994972">Vytvoriť obrázok</translation>
 <translation id="7531464389616946220">Naskenovať kartu</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ak chcete vyhľadať záložky, stlačte Enter</translation>
 <translation id="7534987659046836932">Obálka C7</translation>
@@ -4289,6 +4290,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7987087088851949178">Vydavatelia spôsobov platby Kúpte hneď, plaťte neskôr umožňujúci platiť priebežne sú otvorení na celú výšku.</translation>
 <translation id="799149739215780103">Zviazať</translation>
 <translation id="7992044431894087211">Zdieľanie obrazovky pomocou aplikácie <ph name="APPLICATION_TITLE" /> bolo obnovené</translation>
+<translation id="799384093520583425">Vaša organizácia zablokovala používanie nástrojov pre vývojárov na tejto stránke</translation>
 <translation id="7995512525968007366">Nie je upresnené</translation>
 <translation id="7997855386298213183">zdieľané karty</translation>
 <translation id="8001912761979890298">Tento server nedokázal potvrdiť, či ide o doménu <ph name="DOMAIN" />, pretože používa bezpečnostný certifikát, ktorý nie je pre Chromium alebo vašu systémovú konfiguráciu šifrovania internetovej návštevnosti dôveryhodný. Môže to byť spôsobené nesprávnou konfiguráciou alebo napadnutím vášho pripojenia útočníkom. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Zobraziť certifikát<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4834,6 +4836,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8922013791253848639">Vždy povoliť reklamy na tomto webe</translation>
 <translation id="8922734931659847428">Obmedzený zoznam webových adries stránok, ktoré navštívite a na ktorých sa vyskytujú <ph name="BEGIN_LINK" />udalosti využívajúce starú technológiu<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Prederaviť vpravo hore</translation>
+<translation id="8926082624786998759">Nástroje pre vývojárov nie sú na tejto stránke povolené</translation>
 <translation id="8926389886865778422">Túto otázku už nezobrazovať</translation>
 <translation id="8926400492587758246">Platiť v nízkych mesačných splátkach</translation>
 <translation id="8932102934695377596">Vaše hodiny idú pozadu</translation>

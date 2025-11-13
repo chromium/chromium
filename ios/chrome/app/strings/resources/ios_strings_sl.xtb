@@ -2001,6 +2001,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8551311254462607218">V naslovni vrstici se dotaknite ikone fotoaparata za Google Lens</translation>
 <translation id="8556590991644167667">{count,plural, =1{Opustili ste {count} opozorilo}one{Opustili ste {count} opozorilo}two{Opustili ste {count} opozorili}few{Opustili ste {count} opozorila}other{Opustili ste {count} opozoril}}</translation>
 <translation id="8558046478684552694">Zapiranje skupine.</translation>
+<translation id="8559858985063901027">Gesla</translation>
 <translation id="8560253818350321773">Najprej prikaz pogosto uporabljenih elementov.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Nad tipkovnico je na voljo {count} možnost za geslo.}one{Nad tipkovnico je na voljo {count} možnost za geslo.}two{Nad tipkovnico sta na voljo {count} možnosti za geslo.}few{Nad tipkovnico so na voljo {count} možnosti za geslo.}other{Nad tipkovnico je na voljo {count} možnosti za geslo.}}</translation>
 <translation id="8564894539416715395">Nov zavihek s povezavami</translation>

@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">AI मोड वापरून शोधा</translation>
 <translation id="3557336313807607643">संपर्कांमध्ये जोडा</translation>
 <translation id="355765753469272474">पहिल्यासारखे करा</translation>
+<translation id="3565012355885596568">इमेज लोड करता आल्या नाहीत</translation>
 <translation id="3565930036634619844">टॅब. <ph name="NUMBER_OF_TABS" /> पैकी <ph name="TAB_INDEX" /> क्रमांकाचा टॅब.</translation>
 <translation id="3572607909481582402">तुमच्या Google खाते मध्ये</translation>
 <translation id="3575234738189584619">Lens वापरून शोधा</translation>
@@ -2001,6 +2002,7 @@
 <translation id="8551311254462607218">अ‍ॅड्रेस बारमध्ये, Google Lens कॅमेरा आयकनवर टॅप करा</translation>
 <translation id="8556590991644167667">{count,plural, =1{तुम्ही {count} चेतावणी डिसमिस केली आहे}other{तुम्ही {count} चेतावण्या डिसमिस केल्या आहेत}}</translation>
 <translation id="8558046478684552694">गट बंद करा.</translation>
+<translation id="8559858985063901027">पासकी</translation>
 <translation id="8560253818350321773">वारंवार वापरले जाणारे आयटम सर्वप्रथम दाखवा.</translation>
 <translation id="8561999115126307258">{count,plural, =1{तुमच्या कीबोर्डच्या वरती पासवर्डचा {count} पर्याय उपलब्ध आहे.}other{तुमच्या कीबोर्डच्या वरती पासवर्डचे {count} पर्याय उपलब्ध आहेत.}}</translation>
 <translation id="8564894539416715395">नवीन टॅब पेज</translation>

@@ -944,6 +944,7 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ներդիր – <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> ներդիր – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> ներդիր – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Գաղտնիություն</translation>
 <translation id="504456571576643789">Կարևոր տեղեկություններ</translation>
+<translation id="5056587122125565772">Ստեղծել պատկեր</translation>
 <translation id="506254248375231072">Ներդիրներ չկան</translation>
 <translation id="5075939510584558547">Պահում առանց գաղտնագրման</translation>
 <translation id="5085038751173179818">Մուտք գործեք հաշիվ այս կայքում և Chrome-ում՝ ձեր էջանիշները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար</translation>

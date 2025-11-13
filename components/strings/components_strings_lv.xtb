@@ -4006,6 +4006,7 @@ Papildu informācija:
 <translation id="7525804896095537619">Nosaukuma lauks nedrīkst būt tukšs.</translation>
 <translation id="7526934274050461096">Jūsu savienojums ar šo vietni nav privāts.</translation>
 <translation id="7529884293139707752">Mājmācība</translation>
+<translation id="7530215951451994972">Izveidot attēlu</translation>
 <translation id="7531464389616946220">Skenēt karti</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />; nospiediet taustiņu Enter, lai meklētu grāmatzīmēs</translation>
 <translation id="7534987659046836932">Aploksne C7</translation>
@@ -4292,6 +4293,7 @@ Papildu informācija:
 <translation id="7987087088851949178">Maksājumu veida “Pērciet tūlīt, maksājiet vēlāk” pakalpojumu sniedzēju (kuri ļauj maksāt pa daļām) saraksts ir atvērts pilnā ekrāna augstumā.</translation>
 <translation id="799149739215780103">Iesējums</translation>
 <translation id="7992044431894087211">Ekrāna kopīgošana ar lietojumprogrammu <ph name="APPLICATION_TITLE" /> ir atsākta.</translation>
+<translation id="799384093520583425">Jūsu organizācija ir bloķējusi izstrādātāja rīku izmantošanu šajā lapā.</translation>
 <translation id="7995512525968007366">Nav norādīts</translation>
 <translation id="7997855386298213183">kopīgoto ciļņu</translation>
 <translation id="8001912761979890298">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />, jo tajā tiek izmantots drošības sertifikāts, kas netiek uzskatīts par uzticamu pārlūkā Chromium vai jūsu sistēmas konfigurācijā, lai šifrētu tīmekļa datplūsmu. Šī problēma var rasties nepareizas konfigurācijas dēļ vai tādēļ, ka kāds uzbrucējs ir pārtvēris jūsu savienojumu. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Skatīt sertifikātu<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4837,6 +4839,7 @@ Papildu informācija:
 <translation id="8922013791253848639">Vienmēr atļaut reklāmu rādīšanu šajā vietnē</translation>
 <translation id="8922734931659847428">Ierobežots to jūsu apmeklēto lapu vietrāžu URL saraksts, kuros rodas <ph name="BEGIN_LINK" />mantotās tehnoloģijas notikumi<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Caurums augšējā labajā malā</translation>
+<translation id="8926082624786998759">Izstrādātāja rīki nav atļauti šajā lapā.</translation>
 <translation id="8926389886865778422">Nejautāt atkārtoti</translation>
 <translation id="8926400492587758246">Nelieli ikmēneša nomaksas maksājumi</translation>
 <translation id="8932102934695377596">Norādītais laiks ir pārāk tālu pagātnē</translation>

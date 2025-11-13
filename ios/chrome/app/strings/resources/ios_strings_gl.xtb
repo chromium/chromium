@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">Buscar co modo IA</translation>
 <translation id="3557336313807607643">Engadir a contactos</translation>
 <translation id="355765753469272474">Desfacer</translation>
+<translation id="3565012355885596568">Non se puideron cargar as imaxes</translation>
 <translation id="3565930036634619844">Pestana. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3572607909481582402">Na túa Conta de Google</translation>
 <translation id="3575234738189584619">Buscar con Lens</translation>
@@ -2000,6 +2001,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8551311254462607218">Na barra de enderezos, toca a icona da cámara de Google Lens</translation>
 <translation id="8556590991644167667">{count,plural, =1{Ignoraches {count} aviso}other{Ignoraches {count} avisos}}</translation>
 <translation id="8558046478684552694">Pechar o grupo.</translation>
+<translation id="8559858985063901027">Claves de acceso</translation>
 <translation id="8560253818350321773">Móstranse primeiro os elementos usados con máis frecuencia.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} opción de contrasinal dispoñible sobre o teclado.}other{{count} opcións de contrasinal dispoñibles sobre o teclado.}}</translation>
 <translation id="8564894539416715395">Páxina Nova pestana</translation>

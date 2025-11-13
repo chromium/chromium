@@ -1055,7 +1055,6 @@
 <translation id="1700517974991662022">भ्रमण गरियो</translation>
 <translation id="1703331064825191675">आफ्ना पासवर्डका बारेमा कहिल्यै चिन्ता नगर्नुहोस्</translation>
 <translation id="1703666494654169921">साइटहरूलाई भर्चुअल रियालिटी चल्ने यन्त्र वा डेटा प्रयोग गर्ने अनुमति नदिनुहोस्</translation>
-<translation id="1703849276368677471">टुलहरू</translation>
 <translation id="1704097193565924901">पहिलो अक्षरलाई ठुलो अक्षरमा बदल्नुहोस्</translation>
 <translation id="1704230497453185209">साइटहरूलाई साउन्ड बजाउने अनुमति नदिनुहोस्</translation>
 <translation id="1706586824377653884">तपाईंको प्रशासकद्वारा थपिएको</translation>
@@ -2981,6 +2980,7 @@
 <translation id="3019023222666709803">एरो टुल</translation>
 <translation id="3019285239893817657">उपपृष्ठको बटन</translation>
 <translation id="3019595674945299805">VPN सेवा</translation>
+<translation id="3020101754533552167">साइन इन गरिएको छ कि छैन जाँच गरिँदै छ...</translation>
 <translation id="3020183492814296499">सर्टकटहरू</translation>
 <translation id="3020990233660977256">सिरियल नम्बर: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">ब्याट्री प्रयोग भइरहेका बेला</translation>
@@ -9544,7 +9544,6 @@
 <translation id="7629858978065675960">अज्ञात परिणाम।</translation>
 <translation id="7630426712700473382">यो डिभाइस <ph name="MANAGER" /> ले व्यवस्थापन गर्छ र यो डिभाइस प्रयोग गर्न तपाईंले हरेक पटक साइन इन गर्नु पर्ने हुन्छ।</translation>
 <translation id="7631014249255418691">Linux एप र फाइलहरू सफलतापूर्वक ब्याकअप गरिएका छन्</translation>
-<translation id="7631722872321401342">तपाईंको डिभाइसमा कुनै पनि <ph name="LANGUAGE" /> भ्वाइस उपलब्ध छैन। तपाईं सेटिङमा गई भ्वाइस इन्स्टल गर्न सक्नुहुन्छ।</translation>
 <translation id="7631887513477658702">&amp;जहिले पनि यस प्रकारको</translation>
 <translation id="7632437836497571618">साइटहरू खोज्न सुरक्षित कनेक्सनहरू प्रयोग गरिऊन्</translation>
 <translation id="7632948528260659758">निम्न किअस्क एपहरू अद्यावधिकको लागि असफल भएको छ:</translation>
@@ -11243,7 +11242,6 @@
 <translation id="876161309768861172">तपाईंलाई साइन इन गराउन सकिएन, कृपया फेरि प्रयास गर्नुहोस्</translation>
 <translation id="8761945298804995673">यी प्रयोगकर्ता पहिले नै विद्यमान छन्</translation>
 <translation id="8762886931014513155">तपाईंको <ph name="DEVICE_TYPE" /> अद्यावधिक गर्नु आवश्यक छ</translation>
-<translation id="8763170551806710928">चिपहरू देखाउनुहोस्</translation>
 <translation id="8763927697961133303">USB यन्त्र</translation>
 <translation id="8766156860774051068">तपाईंले छनौट गर्नुभएका</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

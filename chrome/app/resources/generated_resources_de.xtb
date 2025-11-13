@@ -1051,7 +1051,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1700517974991662022">Besucht</translation>
 <translation id="1703331064825191675">Du musst dir keine Sorgen mehr um deine Passwörter machen</translation>
 <translation id="1703666494654169921">Websites dürfen keine Virtual-Reality-Geräte oder ‑Daten verwenden</translation>
-<translation id="1703849276368677471">Tools</translation>
 <translation id="1704097193565924901">Großschreibung</translation>
 <translation id="1704230497453185209">Websites dürfen keinen Ton wiedergeben</translation>
 <translation id="1706586824377653884">Von deinem Administrator hinzugefügt</translation>
@@ -2976,6 +2975,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3019023222666709803">Pfeiltool</translation>
 <translation id="3019285239893817657">Taste zur Unterseite</translation>
 <translation id="3019595674945299805">VPN-Dienst</translation>
+<translation id="3020101754533552167">Anmeldung wird geprüft…</translation>
 <translation id="3020183492814296499">Verknüpfungen</translation>
 <translation id="3020990233660977256">Seriennummer: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Im Akkubetrieb</translation>
@@ -9537,7 +9537,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7629858978065675960">Unbekanntes Ergebnis.</translation>
 <translation id="7630426712700473382">Dieses Gerät wird von <ph name="MANAGER" /> verwaltet und erfordert immer eine Anmeldung.</translation>
 <translation id="7631014249255418691">Linux-Apps und -Dateien wurden erfolgreich gesichert</translation>
-<translation id="7631722872321401342">Auf deinem Gerät sind keine Stimmen für <ph name="LANGUAGE" /> vorhanden. Du kannst Stimmen in den Einstellungen installieren.</translation>
 <translation id="7631887513477658702">Dateien dieses Typs &amp;immer öffnen</translation>
 <translation id="7632437836497571618">Websites über eine verschlüsselte Verbindung suchen</translation>
 <translation id="7632948528260659758">Die folgenden Kiosk-Apps konnten nicht aktualisiert werden:</translation>
@@ -11237,7 +11236,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="876161309768861172">Anmeldung nicht möglich, bitte versuch es noch einmal</translation>
 <translation id="8761945298804995673">Dieser Nutzer ist bereits vorhanden</translation>
 <translation id="8762886931014513155">Dein <ph name="DEVICE_TYPE" /> muss aktualisiert werden</translation>
-<translation id="8763170551806710928">Chips anzeigen</translation>
 <translation id="8763927697961133303">USB-Gerät</translation>
 <translation id="8766156860774051068">Von dir ausgewählt</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

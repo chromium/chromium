@@ -944,6 +944,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestanya: <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> pestanyes: <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Privadesa</translation>
 <translation id="504456571576643789">Aspectes que cal tenir en compte</translation>
+<translation id="5056587122125565772">Crea una imatge</translation>
 <translation id="506254248375231072">No hi ha cap pestanya</translation>
 <translation id="5075939510584558547">Desa sense encriptació</translation>
 <translation id="5085038751173179818">Inicia la sessió en aquest lloc web i a Chrome per accedir a les teves adreces d'interès i més contingut en tots els teus dispositius</translation>

@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">ЖИ режиминын жардамы менен издөө</translation>
 <translation id="3557336313807607643">Байланыштарга кошуу</translation>
 <translation id="355765753469272474">Кайтаруу</translation>
+<translation id="3565012355885596568">Сүрөттөр жүктөлбөй калды</translation>
 <translation id="3565930036634619844">Өтмөк. <ph name="NUMBER_OF_TABS" /> ичинен <ph name="TAB_INDEX" />.</translation>
 <translation id="3572607909481582402">Google аккаунтуңузда</translation>
 <translation id="3575234738189584619">Lens менен издөө</translation>
@@ -2000,6 +2001,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8551311254462607218">Дарек тилкесиндеги Google Lens камерасынын сүрөтчөсүн таптап коюңуз</translation>
 <translation id="8556590991644167667">{count,plural, =1{{count} эскертүүнү жаптыңыз}other{{count} эскертүүнү жаптыңыз}}</translation>
 <translation id="8558046478684552694">Топту жабуу.</translation>
+<translation id="8559858985063901027">Киргизүүчү ачкычтар</translation>
 <translation id="8560253818350321773">Алгач көп колдонулган нерселерди көрсөтүү.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Сырсөздүн {count} варианты баскычтоптун өйдө жагында жеткиликтүү.}other{Сырсөздүн {count} варианты баскычтоптун өйдө жагында жеткиликтүү.}}</translation>
 <translation id="8564894539416715395">Жаңы өтмөк бети</translation>

@@ -778,7 +778,7 @@
 <translation id="4405636711880428279">আপনার ভার্চুয়াল কার্ড সরাতে চান?</translation>
 <translation id="4408965460206576430">এই ফাইলে ম্যালওয়্যার আছে বা এটি কোনও সন্দেহজনক সাইট থেকে এসেছে</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> এবং অন্য <ph name="TAB_COUNT" />টি ট্যাব</translation>
-<translation id="441100617989818073">ব্যবহার হয়নি বা ডুপ্লিকেট ট্যাব ও গ্রুপ</translation>
+<translation id="441100617989818073">অব্যবহৃত বা ডুপ্লিকেট ট্যাব ও গ্রুপ</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> মোছা হয়েছে</translation>
 <translation id="4415276339145661267">আপনার Google অ্যাকাউন্ট ম্যানেজ করুন</translation>
 <translation id="4425140285732600465">দাম ট্র্যাক করা হচ্ছে। কোনও সাইটে দাম কমলে সেই বিষয়ে বিজ্ঞপ্তি পান।</translation>
@@ -944,6 +944,7 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />টি ট্যাব - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" />টি ট্যাব - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" />টি ট্যাব - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">গোপনীয়তা</translation>
 <translation id="504456571576643789">যা যা দেখে নেওয়া প্রয়োজন</translation>
+<translation id="5056587122125565772">ছবি তৈরি করুন</translation>
 <translation id="506254248375231072">কোনও ট্যাব নেই</translation>
 <translation id="5075939510584558547">এনক্রিপশন না করে সেভ করুন</translation>
 <translation id="5085038751173179818">আপনার ডিভাইসে আপনার বুকমার্ক ও আরও অনেক কিছু পেতে এই সাইট ও Chrome-এ সাইন-ইন করুন</translation>

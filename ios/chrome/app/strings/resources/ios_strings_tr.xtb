@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">AI Modu ile arama yap</translation>
 <translation id="3557336313807607643">Kişilere ekle</translation>
 <translation id="355765753469272474">Geri al</translation>
+<translation id="3565012355885596568">Resimler yüklenemedi</translation>
 <translation id="3565930036634619844">Sekme. <ph name="TAB_INDEX" />/<ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3572607909481582402">Google Hesabınızda</translation>
 <translation id="3575234738189584619">Lens ile ara</translation>
@@ -2000,6 +2001,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="8551311254462607218">Adres çubuğunda Google Lens kamera simgesine dokunun</translation>
 <translation id="8556590991644167667">{count,plural, =1{{count} uyarıyı kapattınız}other{{count} uyarıyı kapattınız}}</translation>
 <translation id="8558046478684552694">Grubu kapat.</translation>
+<translation id="8559858985063901027">Geçiş anahtarları</translation>
 <translation id="8560253818350321773">Sık kullanılan öğeleri üstte gösterir.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Klavyenizin üzerinde {count} tane şifre seçeneği mevcut.}other{Klavyenizin üzerinde {count} tane şifre seçeneği mevcut.}}</translation>
 <translation id="8564894539416715395">Yeni sekme sayfası</translation>

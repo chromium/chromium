@@ -4007,6 +4007,7 @@
 <translation id="7525804896095537619">නම හිස් විය නොහැක</translation>
 <translation id="7526934274050461096">මෙම අඩවිය වෙත ඔබේ සබැඳුම පුද්ගලික නොවේ</translation>
 <translation id="7529884293139707752">නිවෙස් අධ්‍යාපනය ලැබීම</translation>
+<translation id="7530215951451994972">රූපය තනන්න</translation>
 <translation id="7531464389616946220">කාඩ්පත ස්කෑන් කරන්න</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, පිටුසන් සෙවීමට Enter ඔබන්න</translation>
 <translation id="7534987659046836932">ලියුම් කවරය C7</translation>
@@ -4293,6 +4294,7 @@
 <translation id="7987087088851949178">"දැන් මිල දී ගන්න-ගෙවන්න-පසුව" කාලයත් සමග ගෙවීම් සඳහා නිකුත් කරන්නන් සම්පූර්ණ උසින් විවෘත වේ.</translation>
 <translation id="799149739215780103">බඳින්න</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> සමග තිරය බෙදා ගැනීම නැවත පටන් ගන්නා ලදි</translation>
+<translation id="799384093520583425">ඔබේ සංවිධානය මෙම පිටුවේ DevTools භාවිතය අවහිර කර ඇත</translation>
 <translation id="7995512525968007366">නියම නොකළ</translation>
 <translation id="7997855386298213183">බෙදා ගත් පටිති</translation>
 <translation id="8001912761979890298">මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව ඔප්පු කිරීමට නොහැකි වූයේ එය Chromium හෝ වෙබ් ගමනාගමන සංකේතනය සඳහා ඔබේ පද්ධති වින්‍යාසය මගින් විශ්වාස නොකරන ආරක්ෂක සහතිකයක් භාවිතා කරන බැවිනි. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයෙකු ඔබේ සබැඳුමට බාධා කිරීමක් නිසා විය හැක. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />සහතිකය බලන්න<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4837,6 +4839,7 @@
 <translation id="8922013791253848639">මෙම අඩවිය මත වෙළඳ දැන්වීම්වලට සැම විටම ඉඩ දෙන්න</translation>
 <translation id="8922734931659847428">ඔබ පිවිසෙන පිටුවල URL ලිපිනවල සීමිත ලැයිස්තුවක් <ph name="BEGIN_LINK" />ලෙගසි තාක්ෂණ සිදුවීම්<ph name="END_LINK" /> සිදු වේ</translation>
 <translation id="892588693504540538">ඉහළ දකුණ අනින්න</translation>
+<translation id="8926082624786998759">මෙම පිටුවෙහි DevTools වලට ඉඩ නැත</translation>
 <translation id="8926389886865778422">නැවත නොඅසන්න</translation>
 <translation id="8926400492587758246">අඩු මාසික වාරික වලින් ගෙවන්න</translation>
 <translation id="8932102934695377596">ඔබගේ ඔරලෝසුව ඇත්තේ පිටුපසින් ය</translation>

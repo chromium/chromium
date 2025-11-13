@@ -944,6 +944,7 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> укладка - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> укладка - <ph name="URL_LIST" />}few{<ph name="TAB_COUNT_MANY" /> укладкі - <ph name="URL_LIST" />}many{<ph name="TAB_COUNT_MANY" /> укладак - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> укладкі - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Прыватнасць</translation>
 <translation id="504456571576643789">Інфармацыя для разгляду</translation>
+<translation id="5056587122125565772">Стварыць відарыс</translation>
 <translation id="506254248375231072">Няма ўкладак</translation>
 <translation id="5075939510584558547">Захоўванне без шыфравання</translation>
 <translation id="5085038751173179818">Увайдзіце на сайт і ў Chrome, каб карыстацца ўкладкамі і іншым змесцівам на ўсіх сваіх прыладах</translation>

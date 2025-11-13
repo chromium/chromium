@@ -1054,7 +1054,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1700517974991662022">Ziyarət edilən</translation>
 <translation id="1703331064825191675">Parollarınız barədə narahat olmağınıza ehtiyac qalmayacaq</translation>
 <translation id="1703666494654169921">Saytlara virtual reallıq cihazlarından və ya datasından istifadə etmək icazəsi verməyin</translation>
-<translation id="1703849276368677471">Alətlər</translation>
 <translation id="1704097193565924901">Baş hərfi böyük yazın</translation>
 <translation id="1704230497453185209">Saytlara səs oxutmaq icazəsi verməyin</translation>
 <translation id="1706586824377653884">Administrator tərəfindən əlavə edildi</translation>
@@ -2982,6 +2981,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3019023222666709803">Ox Aləti</translation>
 <translation id="3019285239893817657">Alt səhifə düyməsi</translation>
 <translation id="3019595674945299805">VPN xidməti</translation>
+<translation id="3020101754533552167">Giriş yoxlanılır...</translation>
 <translation id="3020183492814296499">Qısayollar</translation>
 <translation id="3020990233660977256">Seriya Nömrəsi: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Batareyadan istifadə edilən zaman</translation>
@@ -9545,7 +9545,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7629858978065675960">Naməlum nəticə.</translation>
 <translation id="7630426712700473382">Bu cihaz <ph name="MANAGER" /> tərəfindən idarə edilir və hər dəfə sizdən daxil olmağınızı tələb edir.</translation>
 <translation id="7631014249255418691">Linux tətbiq və faylları yedəklənib</translation>
-<translation id="7631722872321401342">Cihazda <ph name="LANGUAGE" /> dilində səs yoxdur. Ayarlarda səsləri quraşdıra bilərsiniz.</translation>
 <translation id="7631887513477658702">Bu növ faylları həmişə açın</translation>
 <translation id="7632437836497571618">Sayt axtarmaq üçün güvənli bağlantı istifadə edin</translation>
 <translation id="7632948528260659758">Bu köşk tətbiqləri güncəlləşə bilmədi:</translation>
@@ -11242,7 +11241,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="876161309768861172">Giriş edilmədi, yenidən cəhd edin</translation>
 <translation id="8761945298804995673">Bu istifadəçi artıq mövcuddur</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> cihazınız güncəllənməlidir</translation>
-<translation id="8763170551806710928">Çipləri göstərin</translation>
 <translation id="8763927697961133303">USB cihazı</translation>
 <translation id="8766156860774051068">Sizin tərəfinizdən seçilənlər</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

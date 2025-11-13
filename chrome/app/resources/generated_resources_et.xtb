@@ -1055,7 +1055,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1700517974991662022">Külastatud</translation>
 <translation id="1703331064825191675">Te ei pea kunagi oma paroolide pärast muretsema</translation>
 <translation id="1703666494654169921">Ära luba saitidel kasutada VR-seadmeid ega -andmeid</translation>
-<translation id="1703849276368677471">Tööriistad</translation>
 <translation id="1704097193565924901">Suurtäht alguses</translation>
 <translation id="1704230497453185209">Ära luba saitidel esitada heli</translation>
 <translation id="1706586824377653884">Lisas teie administraator</translation>
@@ -2983,6 +2982,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3019023222666709803">Nooletööriist</translation>
 <translation id="3019285239893817657">Alamlehe nupp</translation>
 <translation id="3019595674945299805">VPN-teenus</translation>
+<translation id="3020101754533552167">Sisselogimise kontrollimine...</translation>
 <translation id="3020183492814296499">Otseteed</translation>
 <translation id="3020990233660977256">Seerianumber: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Aku kasutamisel</translation>
@@ -9551,7 +9551,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7629858978065675960">Teadmata tulemus.</translation>
 <translation id="7630426712700473382">Seda seadet haldab <ph name="MANAGER" /> ja teil tuleb iga kord sisse logida.</translation>
 <translation id="7631014249255418691">Linuxi rakenduste ja failide varundamine õnnestus</translation>
-<translation id="7631722872321401342">Teie seadmes pole hääli <ph name="LANGUAGE" /> keeles. Hääli saate installida seadetes.</translation>
 <translation id="7631887513477658702">Ava alati &amp;seda tüüpi failid</translation>
 <translation id="7632437836497571618">Kasutage saitide otsimiseks turvalisi ühendusi</translation>
 <translation id="7632948528260659758">Järgmiste kioskirakenduste värskendamine nurjus:</translation>
@@ -11251,7 +11250,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="876161309768861172">Teid ei õnnestunud sisse logida, proovige uuesti</translation>
 <translation id="8761945298804995673">See kasutaja on juba olemas</translation>
 <translation id="8762886931014513155">Teie <ph name="DEVICE_TYPE" /> vajab värskendamist</translation>
-<translation id="8763170551806710928">Kuva laastud</translation>
 <translation id="8763927697961133303">USB-seade</translation>
 <translation id="8766156860774051068">Teie kureeritud</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

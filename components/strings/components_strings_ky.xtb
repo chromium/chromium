@@ -4006,6 +4006,7 @@
 <translation id="7525804896095537619">Аталышы бош болбошу керек</translation>
 <translation id="7526934274050461096">Бул сайтка туташуу кооптуу</translation>
 <translation id="7529884293139707752">Үйдө окуу</translation>
+<translation id="7530215951451994972">Сүрөт түзүү</translation>
 <translation id="7531464389616946220">Картаны скандоо</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, кыстармаларды издөө үчүн Enter баскычын басыңыз</translation>
 <translation id="7534987659046836932">Конверт C7</translation>
@@ -4292,6 +4293,7 @@
 <translation id="7987087088851949178">Бөлүп төлөөнү сунуштаган "Азыр сатып ал, кийин төлө" камсыздоочулар толук экранда ачылды.</translation>
 <translation id="799149739215780103">Байлоо</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> колдонмосу менен экранды бөлүшүү улантылды</translation>
+<translation id="799384093520583425">Уюмуңуз бул бетте Иштеп чыгуучунун куралдарын колдонууга тыюу салды</translation>
 <translation id="7995512525968007366">Белгиленген эмес</translation>
 <translation id="7997855386298213183">жалпы өтмөктөр</translation>
 <translation id="8001912761979890298">Бул сервер <ph name="DOMAIN" /> экенин далилдей алган жок, анткени ал Интернеттеги трафикти шифрлөө үчүн Chromium же тутумуңуздун конфигурациясы ишеним көрсөтпөгөн коопсуздук тастыктамасын колдонуп жатат. Мындай көйгөй сервердин туура эмес конфигурацияланышы менен шартталышы мүмкүн же кимдир бирөө ортодон маалыматыңызды кармап калганга аракет кылып жатат. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Тастыктаманы көрүү<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4836,6 +4838,7 @@
 <translation id="8922013791253848639">Бул сайттагы жарнамалар дайыма көрүнсүн</translation>
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />Эски технологиялар менен байланышкан иш-чаралар<ph name="END_LINK" /> орун алган барактардын (сиз баш баккан) чектелген тизмеси</translation>
 <translation id="892588693504540538">Жогорку оң жагын тешүү</translation>
+<translation id="8926082624786998759">Бул бетте Иштеп чыгуучунун куралдарын колдонууга болбойт</translation>
 <translation id="8926389886865778422">Экинчи суралбасын</translation>
 <translation id="8926400492587758246">Азыраак сумманы ай сайын бөлүп төлөңүз</translation>
 <translation id="8932102934695377596">Саатыңыз артта</translation>

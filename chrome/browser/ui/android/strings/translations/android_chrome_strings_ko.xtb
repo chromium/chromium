@@ -944,6 +944,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개 - <ph name="URL_LIST" />}other{탭 <ph name="TAB_COUNT_MANY" />개 - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">개인정보 보호</translation>
 <translation id="504456571576643789">고려사항</translation>
+<translation id="5056587122125565772">이미지 만들기</translation>
 <translation id="506254248375231072">탭 없음</translation>
 <translation id="5075939510584558547">암호화 없이 저장</translation>
 <translation id="5085038751173179818">이 사이트 및 Chrome에 로그인하여 모든 기기에서 북마크 등을 사용하세요</translation>

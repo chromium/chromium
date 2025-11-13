@@ -1054,7 +1054,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1700517974991662022">Visitat</translation>
 <translation id="1703331064825191675">No et preocupis mai per les teves contrasenyes</translation>
 <translation id="1703666494654169921">No permetis que els llocs web utilitzin dades o dispositius de realitat virtual</translation>
-<translation id="1703849276368677471">Eines</translation>
 <translation id="1704097193565924901">Posa en majúscula</translation>
 <translation id="1704230497453185209">No permetis que els llocs web reprodueixin so</translation>
 <translation id="1706586824377653884">Afegida per l'administrador</translation>
@@ -2979,6 +2978,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3019023222666709803">Eina de fletxa</translation>
 <translation id="3019285239893817657">Botó de subpàgina</translation>
 <translation id="3019595674945299805">Servei de VPN</translation>
+<translation id="3020101754533552167">S'està comprovant l'inici de sessió...</translation>
 <translation id="3020183492814296499">Dreceres</translation>
 <translation id="3020990233660977256">Número de sèrie: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Mentre utilitza la bateria</translation>
@@ -9541,7 +9541,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7629858978065675960">Resultat desconegut.</translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> gestiona aquest dispositiu i requereix que hi iniciïs la sessió cada vegada.</translation>
 <translation id="7631014249255418691">S'ha creat la còpia de seguretat dels fitxers i de les aplicacions de Linux</translation>
-<translation id="7631722872321401342">No hi ha cap veu en <ph name="LANGUAGE" /> al teu dispositiu. Pots instal·lar veus des de la configuració.</translation>
 <translation id="7631887513477658702">Obre &amp;sempre els fitxers d'aquest tipus</translation>
 <translation id="7632437836497571618">Utilitza connexions segures per cercar llocs web</translation>
 <translation id="7632948528260659758">No s'han pogut actualitzar les aplicacions següents del quiosc:</translation>
@@ -11242,7 +11241,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="876161309768861172">No se t'ha pogut iniciar la sessió. Torna-ho a provar.</translation>
 <translation id="8761945298804995673">Aquest usuari ja existeix</translation>
 <translation id="8762886931014513155">S'ha d'actualitzar <ph name="DEVICE_TYPE" /></translation>
-<translation id="8763170551806710928">Mostra les etiquetes</translation>
 <translation id="8763927697961133303">Dispositiu USB</translation>
 <translation id="8766156860774051068">Seleccionats per tu</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

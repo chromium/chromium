@@ -667,35 +667,6 @@ Se attivi o non configuri questa policy, viene attivato lo scorrimento della pag
 Se disattivi questa policy, lo scorrimento della pagina web ai frammenti di testo specifici tramite URL viene disattivato.</translation>
 <translation id="1468702975912409463">Consente agli utenti che accedono da remoto di aprire gli URL lato host nel browser client locale</translation>
 <translation id="1474273443907024088">Disattiva TLS False Start</translation>
-<translation id="1475494149102693892">Puoi attivare questa policy per creare un dizionario di estensioni di tipi di file con un elenco di domini corrispondente che verrà esentato dagli avvisi relativi al download basati sulle estensioni dei tipi di file. Questa policy consente agli amministratori aziendali di bloccare gli avvisi relativi al download basati sulle estensioni dei tipi di file per i file associati a un dominio presente nell'elenco. Ad esempio, se l'estensione "jnlp" viene associata a "sitoweb1.com", gli utenti non vedrebbero un avviso se scaricassero file "jnlp" da "sitoweb1.com", ma vedrebbero un avviso relativo al download se scaricassero file "jnlp" da "sitoweb2.com".
-
-I file con estensioni dei tipi di file specificate per i domini identificati da questa policy saranno comunque soggetti ad avvisi relativi alla sicurezza non basati sulle estensioni dei tipi di file, ad esempio gli avvisi relativi al download di contenuto misto e gli avvisi di Navigazione sicura.
-
-Se disattivi questa policy o non la configuri, all'utente verranno mostrati avvisi per i tipi di file che attivano gli avvisi relativi al download basati sulle estensioni.
-
-Se attivi questa policy:
-
-* Il pattern URL deve essere nel formato indicato all'indirizzo https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-
-* L'estensione del tipo di file inserita deve essere in formato ASCII minuscolo. Il separatore iniziale non deve essere incluso nel nome dell'estensione del tipo di file, quindi usa "jnlp" anziché ".jnlp".
-
-Esempio:
-
-Il valore di esempio che segue impedirebbe gli avvisi relativi al download basati sulle estensioni dei tipi di file "exe" e "jnlp" per i domini *.example.com e sulle estensioni "swf" per tutti i domini. All'utente verrà mostrato un avviso relativo al download basato sulle estensioni dei tipi di file su qualsiasi altro dominio per i file exe e jnlp, ma non per i file swf.
-
-[
-  { "file_extension": "jnlp", "domains": ["example.com"] },
-  { "file_extension": "exe", "domains": ["example.com"] },
-  { "file_extension": "swf", "domains": ["*"] }
-]
-
-Tieni presente che, anche se nell'esempio precedente viene mostrata l'esclusione degli avvisi relativi al download basati sulle estensioni dei tipi di file per i file "swf" per tutti i domini, per motivi di sicurezza è sconsigliato applicare l'esclusione di tali avvisi per tutti i domini per le estensioni di tipi di file pericolosi. L'esclusione viene mostrata nell'esempio solamente per mostrare che è possibile farlo.
-
-Se la policy viene attivata insieme a <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />, le esclusioni dagli avvisi basati sulle estensioni dei tipi di file specificate da questa policy hanno la precedenza su un'impostazione <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> che bloccherebbe i tipi di file pericolosi. Le esclusioni specificate da questa policy si applicano solo al comportamento "Blocca i tipi di file pericolosi" specificato dai valori 1 e 2 di <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />.
-
-Ad esempio, se questa policy specifica un'esclusione per i download di file "exe" da "website1.com" e la policy <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> viene impostata in modo da bloccare i download dannosi e i tipi di file pericolosi (valore 1), i download di file "exe" da "website1.com" saranno esenti dal blocco basato sull'estensione del tipo di file, ma verranno comunque bloccati se sono dannosi.
-
-Ulteriori informazioni su <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> sono disponibili alla pagina https://chromeenterprise.google/policies/?policy=DownloadRestrictions.</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">L'impostazione della policy consente di definire l'elenco di dispositivi USB che gli utenti possono scollegare dal proprio driver del kernel per essere utilizzati tramite l'API chrome.usb direttamente all'interno di un'app web. Le voci sono coppie costituite dall'ID fornitore USB e dall'ID prodotto per identificare un hardware specifico.
 
@@ -707,10 +678,6 @@ Ulteriori informazioni su <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> sono d
       Nota: questa policy si applica inoltre a estensioni di componenti come l'estensione Hangout Services.</translation>
 <translation id="148194404518916594">Consenti agli utenti di usare la funzionalità Tocca per cercare</translation>
 <translation id="1484190167468437592">Disattiva l'audio in formato mono</translation>
-<translation id="1484580923123963615">Lista consentita che controlla i report sulla telemetria dei siti web per gli utenti affiliati. I tipi di dati di telemetria segnalati sono controllati dalla policy <ph name="REPORT_WEBSITE_TELEMETRY_POLICY_NAME" />.
-
-La configurazione della policy consente di controllare i report sulla telemetria dei siti web per gli URL nella lista consentita. Se la policy non viene configurata, la telemetria dei siti web non verrà segnalata.
-Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Per questa policy sono consentiti solo gli schemi di URL HTTP e HTTPS.</translation>
 <translation id="1486021504508098388">Segnala informazioni sulla retroilluminazione</translation>
 <translation id="1487722536912664411">Consenti agli utenti di utilizzare <ph name="PRODUCT_NAME" /></translation>
 <translation id="1487916040416013623">La configurazione della policy consente di specificare i server consentiti per l'autenticazione integrata. L'autenticazione integrata viene attivata soltanto quando <ph name="PRODUCT_NAME" /> riceve una richiesta di autenticazione da un proxy o da un server presente nell'elenco dei server consentiti.
@@ -1558,6 +1525,21 @@ Questa policy del dispositivo è equivalente alla policy per gli utenti esistent
           Se questa policy viene attivata, l'elenco degli account definiti dalla policy viene aggiunto alle impostazioni dell'account Kerberos.
 
           Se questa policy viene disattivata o non è configurata, nessun account viene aggiunto alle impostazioni dell'account Kerberos e tutti gli account aggiunti in precedenza con questa policy vengono rimossi. Gli utenti possono comunque aggiungere manualmente gli account se la policy "Gli utenti possono aggiungere account Kerberos" viene attivata.</translation>
+<translation id="2103906574050962342">Se configuri questa policy, vengono impostate regole che selezionano il proxy utilizzato dal browser in base all'URL di destinazione e ad altre condizioni. Questa policy avrà la precedenza sulle impostazioni del proxy configurate dalla policy<ph name="PROXY_SETTINGS_POLICY_NAME" />, dall'API dell'estensione <ph name="PROXY_SETTINGS_EXTENSION_API" /> o dalle impostazioni manuali dell'utente, se presenti.
+
+Se la policy non viene configurata, non influisce su altre policy del proxy o impostazioni utente.
+
+Quando il browser deve decidere quale proxy utilizzare, le voci della policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> vengono valutate in sequenza finché una voce non corrisponde ad almeno uno degli host URL in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> e se tutte le voci in <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> sono soddisfatte. Il valore in <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> verrà utilizzato come proxy per questa corrispondenza. Se non viene trovata alcuna corrispondenza, le impostazioni del proxy verranno ripristinate in base a quanto impostato nella policy <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+Le voci del campo <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> corrispondono a valori stringa dei file PAC, ad esempio:
+  * DIRECT
+  * PROXY host:port
+  * HTTPS host:port
+La prima voce raggiungibile verrà utilizzata come proxy.
+
+Il campo <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> contiene un elenco di condizioni, le quali devono essere tutte soddisfatte affinché la regola di override venga utilizzata per decidere il proxy da utilizzare. Se non viene impostato, la voce verrà utilizzata finché almeno un host in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> corrisponde.
+
+La condizione <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> verifica se il DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> fornito riesce a trovare un indirizzo IP corrispondente. Se il valore di <ph name="PROXY_OVERRIDE_RULES_RESULT" /> è "<ph name="PROXY_OVERRIDE_RULES_RESOLVES" />", la condizione viene considerata soddisfatta. Se il valore è invece impostato su <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, la condizione viene considerata soddisfatta se la risoluzione non è riuscita.</translation>
 <translation id="2104418465060359056">Segnala i dati delle estensioni e dei plug-in</translation>
 <translation id="210652463860415362">Accetta i contenuti web che usano la funzionalità di trasporto dei dizionari di compressione</translation>
 <translation id="2106627642643925514">Consente di sostituire la modalità di stampa PIN predefinita. Se la modalità non è disponibile, questa norma viene ignorata.</translation>
@@ -1790,6 +1772,7 @@ Se la policy viene impostata su Disattivata o se non viene impostata, <ph name="
 Questa policy non influisce sugli scenari di accesso remoto.
 
 Se questa policy non viene configurata o se viene disattivata, il trasferimento di file non è consentito.</translation>
+<translation id="2240592964497980392">Consenti ai siti di rilevare lo stato di inattività senza chiedere all'utente</translation>
 <translation id="2241498944622759244">Questa funzionalità non è mai stata lanciata, pertanto la policy è obsoleta. Se è impostata su true o non è impostata, <ph name="PRODUCT_NAME" /> suggerisce pagine correlate alla pagina corrente.
       Questi suggerimenti vengono recuperati da remoto dai server di Google.
 
@@ -1808,6 +1791,7 @@ Se questa policy non viene configurata o se viene disattivata, il trasferimento 
 Questa policy influisce solo sulla modalità Incognito. Per bloccare gli URL per tutti i profili utente, utilizza la policy <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="2246565294817797392">Blocca cookie troncati</translation>
 <translation id="2246621891161157804">Consenti a Chrome di bloccare le navigazioni verso protocolli esterni all'interno di iframe con sandbox</translation>
+<translation id="2246709168653295240">Consenti il rilevamento dell'inattività su questi siti</translation>
 <translation id="224750967938323855">Non mostrare il consenso alla sincronizzazione durante l'accesso</translation>
 <translation id="2251507373069657590">Attiva le estensioni con installazione forzata con violazioni non relative a malware.</translation>
 <translation id="2252400912879027343">WebSQL in contesti non sicuri rimarrà disponibile fino alla versione M109, dopodiché non sarà disponibile a partire dalla versione M110.</translation>
@@ -2784,22 +2768,10 @@ Se il valore viene impostato su false, non potranno accedere alla funzionalità.
 <translation id="2968177167006045252">Consenti ai siti di utilizzare la policy SharedArrayBuffers</translation>
 <translation id="2969489219271682844">Non mostrare notifiche quando vengono rilevati dispositivi USB</translation>
 <translation id="2969568582351417848">Disattiva gli avvisi relativi al download basati sulle estensioni dei tipi di file per tipi di file specifici sui domini</translation>
-<translation id="2969797921412053304">Questa policy consente di configurare gli URL a cui verrà concesso l'accesso per usare l'attestazione remota dell'identità del dispositivo durante il flusso SAML nella schermata di accesso.
-
-      Nello specifico, se un URL corrisponde a uno dei pattern specificati tramite questa policy, l'URL potrà ricevere un'intestazione HTTP contenente una risposta a una richiesta di attestazione remota, che attesta l'identità e lo stato del dispositivo.
-
-      Se questa policy non viene impostata o se l'elenco viene lasciato vuoto, nessun URL potrà usare l'attestazione remota nella schermata di accesso.
-
-      Gli URL devono avere uno schema HTTPS, ad esempio "https://example.com".
-
-      Per informazioni dettagliate sui pattern URL validi, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="2971096666394658693">Il menu contestuale includerà una voce di menu per condividere le immagini con <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="2973972555495515337">Se la policy viene impostata su Attivata, le applicazioni web di terze parti possono usare <ph name="DESK_API_NAME" /> per salvare e condividere <ph name="PRODUCT_OS_NAME" /> scrivanie. Se la policy viene impostata su Disattivata, l'utente non potrà salvare e condividere i dati delle scrivanie tramite l'<ph name="DESK_API_NAME" />. Se la policy non viene configurata, viene applicato lo stesso comportamento della policy disattivata. La policy verrà applicata soltanto sui dispositivi registrati.</translation>
 <translation id="2976033779241323433">Attiva la tastiera virtuale touch in base all'euristica di sistema predefinita</translation>
 <translation id="2976429807269247880">Impostazioni del comportamento per i cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedenti</translation>
-<translation id="2977576137210520963">Se la policy viene configurata, verrà specificato l'elenco di URL i cui pattern vengono confrontati con l'origine di sicurezza dell'URL richiedente. Una corrispondenza assicura l'accesso ai dispositivi di acquisizione audio senza richieste
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Tieni presente, tuttavia, che il pattern "*", che corrisponde a qualsiasi URL, non è supportato da questa policy.</translation>
 <translation id="2979696534869541158">Forza implementazione precedente</translation>
 <translation id="2985927503455169394">Usa la modalità predefinita dell'esperienza di onboarding dell'assistente</translation>
 <translation id="2987155890997901449">Attiva ARC</translation>
@@ -3019,15 +2991,6 @@ Questa policy è stata pensata per essere temporanea e verrà rimossa in futuro.
 <translation id="3110248563985502478">Questa policy è deprecata in M88 e Flash non è più supportato da Chrome. Se la policy viene impostata su Attivata, i plug-in obsoleti vengono utilizzati come normali plug-in. Se viene impostata su Disattivata, i plug-in obsoleti non vengono utilizzati.
 
       Se non viene configurata, agli utenti viene richiesta l'autorizzazione per eseguire i plug-in obsoleti.</translation>
-<translation id="3110373701407677290">Se la policy viene configurata, puoi impostare un elenco di pattern URL che acquisiscono schede aventi la stessa origine.
-
-      Se non viene configurata, i siti non verranno presi in considerazione per l'override in questo livello dell'acquisizione.
-
-      Tieni presente che le app di Chrome con finestre aventi la stessa origine di questo sito potranno ancora essere acquisite.
-
-      Se un sito corrisponde a un pattern URL in questa policy, le seguenti policy non saranno prese in considerazione: <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Questa policy ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.</translation>
 <translation id="3112501357749061018">Un elenco di certificati TLS che <ph name="PRODUCT_NAME" /> deve considerare attendibili per l'autenticazione del server, con vincoli aggiunti al di fuori del certificato. Se non è presente alcun vincolo di un determinato tipo, è consentito qualsiasi nome di quel tipo.
 I certificati devono essere codificati in base64. È necessario specificare almeno un vincolo per ogni certificato.</translation>
 <translation id="3113283011165145080">Consenti a <ph name="PRODUCT_NAME" /> di decidere</translation>
@@ -3110,10 +3073,6 @@ fino alla versione 142 di
 <translation id="3181114468897395940">Le impostazioni di Pagina su/Pagina giù usano la scorciatoia che contiene il tasto di modifica Alt</translation>
 <translation id="3182503302060513467">Nella pagina Nuova scheda verrà mostrata la comunicazione dell'area centrale, se è disponibile</translation>
 <translation id="3184161739683646075">Controlla la modalità di DNS over HTTPS</translation>
-<translation id="3184309751910415763">Lista consentita che controlla i report sull'attività dei siti web per gli utenti affiliati.
-
-La configurazione della policy consente di controllare i report sugli eventi degli URL dei siti web aperti e chiusi per gli URL nella lista consentita. Se la policy non viene configurata, non verranno segnalati gli eventi relativi ai siti web.
-Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Per questa policy sono consentiti solo gli schemi di URL HTTP e HTTPS.</translation>
 <translation id="3184638144755436350">Chrome bloccherà le navigazioni verso protocolli esterni all'interno di iframe con sandbox. Visita la pagina https://chromestatus.com/features/5680742077038592.
 
       Quando il valore è True, Chrome può bloccare queste navigazioni.
@@ -3442,6 +3401,11 @@ Se la policy non viene impostata, non è possibile navigare nel browser se è at
       Se disattivi questa impostazione o non la imposti, viene utilizzato per impostazione predefinita il nuovo flusso di accesso incorporato. Gli utenti possono comunque attivare il flusso di accesso precedente basato sul Web tramite il flag della riga di comando --enable-web-based-signin.
 
       In futuro, quando l'accesso incorporato supporterà completamente tutti i flussi di accesso SSO, questa impostazione sperimentale verrà rimossa.</translation>
+<translation id="3435229811562571593">Consente di impostare un elenco di pattern URL per i siti che specifica i siti a cui viene negata automaticamente l'autorizzazione per i caratteri locali. Ciò limiterà la capacità dei siti di vedere le informazioni sui caratteri locali.
+
+      Per informazioni dettagliate sui pattern URL di siti validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti. Questa policy ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.
+
+      Se la policy non viene configurata per un sito, la policy di <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> viene applicata al sito, se configurata, altrimenti l'autorizzazione seguirà le impostazioni predefinite del browser e consentirà agli utenti di scegliere se concedere o meno l'autorizzazione per ciascun sito.</translation>
 <translation id="3435796032110614169">Consenti l'eliminazione della cronologia dei processi di stampa</translation>
 <translation id="3436217793443508863">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale lo schermo viene bloccato quando viene usata la batteria.</translation>
 <translation id="3437391374720747482">Preferisci metodi di scambio di chiavi che soddisfino i requisiti di CNSA 2.0</translation>
@@ -3551,6 +3515,7 @@ Se questa policy viene configurata, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLIC
 <translation id="351654132746710200">Dopo la disattivazione di <ph name="LACROS_NAME" />, la migrazione dei dati non viene eseguita. La cartella <ph name="LACROS_NAME" /> viene rimossa e gli utenti continuano a utilizzare i dati rimanenti.</translation>
 <translation id="3518293344797498431">Carica la batteria fino a circa l'80% per massimizzarne l'autonomia.</translation>
 <translation id="3518512927469906365">Disattiva il partizionamento dello spazio di archiviazione di terze parti per origini di primo livello specifiche</translation>
+<translation id="3519035925054387801">Siti con rilevamento dell'inattività consentito</translation>
 <translation id="3522257170445891912">Se questa policy viene impostata, il flusso di autenticazione dell'accesso avrà uno dei seguenti metodi a seconda del valore dell'impostazione:
 
       Se è impostata su GAIA, l'accesso verrà effettuato tramite il normale flusso di autenticazione GAIA.
@@ -3595,9 +3560,6 @@ Se questa policy viene configurata, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLIC
 <translation id="3532827558833318911">Cancella l'accesso con password</translation>
 <translation id="353611922042274900">Mostra sempre le informazioni di sistema nella schermata di accesso</translation>
 <translation id="3536263244905016305">Disattiva l'ottimizzazione WPAD (Web Proxy Auto-Discovery)</translation>
-<translation id="3539103206548425861">Se la policy viene configurata, la riproduzione video automatica (senza il consenso dell'utente) con contenuti audio è consentita in <ph name="PRODUCT_NAME" />. Se la policy <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> viene impostata su true, tale policy non ha effetto. Se la policy <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> viene impostata su false, l'insieme di pattern URL in tale policy possono comunque essere riprodotti. Se la policy viene modificata mentre <ph name="PRODUCT_NAME" /> è in esecuzione, viene applicata solo alle nuove schede aperte.
-
-      Per informazioni dettagliate sui pattern URL validi, vai all'indirizzo https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540496580121878254">ServiceWorker non controllerà gli iframe srcdoc</translation>
 <translation id="3540846231645422635">Disattiva i report sull'interfaccia di rete del dispositivo</translation>
 <translation id="3540935459049973317">Limiti di utilizzo per app</translation>
@@ -3786,6 +3748,11 @@ Le connessioni che non superano il controllo non andranno a buon fine e restitui
 <translation id="3665437376055221832">Richiedi la selezione da parte dell'utente quando nessun certificato corrisponde alla selezione automatica.</translation>
 <translation id="3671773704245936868">Disattiva l'evidenziazione dell'elemento attivo tramite tastiera</translation>
 <translation id="3674010627788940405">Le intestazioni delle richieste CORS senza caratteri jolly non sono supportate.</translation>
+<translation id="3675248815331229366">La configurazione della policy consente di impostare un elenco di pattern URL che specificano i siti che non possono accedere alla localizzazione dell'utente e non possono nemmeno richiedere l'autorizzazione dell'utente per questo scopo.
+
+      Se la policy non viene configurata, viene applicata <ph name="DEFAULT_GEOLOCATION_SETTING" /> per tutti i siti, se impostata. In caso contrario, viene applicata l'impostazione personale dell'utente.
+
+      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
 <translation id="3675303748198647471">setTimeout(…, 0) viene comunemente utilizzato per suddividere le attività JavaScript di lunga durata.
           Se la policy viene impostata su Enabled, i valori di setTimeouts e setIntervals con un intervallo inferiore a 4 ms non vengono limitati in modo aggressivo.
           Ciò migliora le prestazioni a breve termine, ma in definitiva i valori di setTimeouts dei siti web che abusano dell'API verranno fatti rientrare nei limiti.
@@ -3811,6 +3778,7 @@ Le connessioni che non superano il controllo non andranno a buon fine e restitui
 
       Se la policy non viene configurata, viene usata l'opzione <ph name="PRINTERS_ALLOW_ALL" />.</translation>
 <translation id="3686607051786495544">Disattiva sandbox LPAC per i servizi di stampa</translation>
+<translation id="3692508593275296335">Blocca il rilevamento dell'inattività su questi siti</translation>
 <translation id="3695204334462456702">Destinazioni protocolli (mDNS e DNS-SD) basate su configurazione automatica (opzione deprecata)</translation>
 <translation id="3695706037816556327">Azione alla rimozione del token di sicurezza (ad esempio smart card) per <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3696134803170884851">Disattiva i suoni di ricarica</translation>
@@ -4362,13 +4330,6 @@ Se la policy viene impostata su <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), 
 
 
 La disponibilità delle estensioni è comunque controllata da altre policy.</translation>
-<translation id="4110126170080699437">Per motivi di sicurezza, l'API web <ph name="GET_DISPLAY_MEDIA_API_NAME" /> richiede che venga chiamato un gesto dell'utente precedente ("attivazione temporanea") o la chiamata non andrà a buon fine.
-
-Con questa policy, gli amministratori possono specificare le origini da cui è possibile chiamare l'API senza gesto dell'utente precedente.
-
-Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. * non è un valore accettato per questa policy.
-
-Se questa policy non viene configurata, tutte le origini richiederanno un gesto dell'utente precedente per chiamare questa API.</translation>
 <translation id="4115501011761259824">Attiva First-Party Sets per tutti gli utenti interessati</translation>
 <translation id="4120401094617902941">La velocità di campionamento e raccolta dei contatori del tempo di esecuzione. Il minimo consentito è 1 giorno.
 
@@ -4505,6 +4466,17 @@ Deprecato: la funzionalità di tracciamento delle spedizioni è disattivata dall
       Questa policy richiede una configurazione aggiuntiva per essere applicata. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting per maggiori informazioni.</translation>
 <translation id="4189872355465413041">Applicazioni di sistema</translation>
 <translation id="4190316993598857632">Abilita la modifica dei preferiti</translation>
+<translation id="4190920373466996241">L'API Direct Sockets consente la comunicazione con endpoint arbitrari che utilizzano TCP e UDP.
+Visita la pagina https://github.com/WICG/direct-sockets per informazioni dettagliate.
+
+La configurazione della policy consente di elencare i pattern URL che specificano i siti per i quali non è consentito comunicare tramite l'API Direct Sockets.
+I pattern validi sono limitati alle app web isolate.
+
+Se la policy non viene configurata, <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostata.
+
+I pattern URL non devono essere in conflitto con <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />. Nessuna policy ha la precedenza se un URL presenta corrispondenze con entrambi.
+
+Per informazioni dettagliate sui pattern URL validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy.</translation>
 <translation id="4192388905594723944">URL per la convalida del token di autenticazione del client di accesso remoto</translation>
 <translation id="4195119404667420672">Il precaricamento di SpeculationRules può essere inviato agli URL controllati da ServiceWorkers.</translation>
 <translation id="4195698007674066525">Imposta una tastiera numerica come predefinita per l'inserimento delle password</translation>
@@ -4681,6 +4653,7 @@ Nota: questa policy comporta il ritiro della policy <ph name="ARC_GLS_POLICY_NAM
 
           Se la norma è impostata su false o non è impostata, il provider di contenuti non restituisce informazioni.</translation>
 <translation id="4349863629157433459">Abilita l'integrazione del Google Developer Program in <ph name="CHROME_DEVTOOLS_NAME" />, ma senza condividere l'utilizzo dello strumento (per l'assegnazione dei badge).</translation>
+<translation id="4350684952441364039">Siti con rilevamento dell'inattività bloccato</translation>
 <translation id="435395045087992163">Non bloccare il dispositivo quando viene sospeso o il coperchio viene chiuso</translation>
 <translation id="4354792057099570728">Disattiva l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa alla misurazione degli annunci per i tuoi utenti.</translation>
 <translation id="4357587374229381015">Specifica il nome di un parametro URL che verrà utilizzato nella pagina di accesso dell'IdP SAML per compilare automaticamente il campo del nome utente.
@@ -5021,20 +4994,6 @@ Un dispositivo è considerato gestito utilizza una versione aziendale del sistem
       Se non viene configurata, <ph name="PRODUCT_NAME" /> usa la dimensione predefinita. Gli utenti possono modificare l'impostazione usando il flag --disk-cache-size.
 
       Nota: il valore specificato in questa policy viene usato come hint per diversi sottosistemi della cache nel browser. Pertanto il consumo totale corrente del disco di tutte le cache sarà superiore, ma all'interno dello stesso ordine di grandezza specificato dal valore.</translation>
-<translation id="458285976189239891">Per motivi di sicurezza, le API web
-<ph name="SHOW_OPEN_FILE_PICKER_API_NAME" />,
-<ph name="SHOW_SAVE_FILE_PICKER_API_NAME" /> e
-<ph name="SHOW_DIRECTORY_PICKER_API_NAME" />
-richiedono che l'utente abbia eseguito un gesto precedentemente ("attivazione temporanea"), in caso contrario la chiamata all'API
-non andrà a buon fine.
-
-Con questa policy, gli amministratori possono specificare le origini da cui è possibile
-chiamare le API senza un gesto precedente dell'utente.
-
-Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. * non è
-un valore accettato per questa policy.
-
-Se questa policy non viene configurata, tutte le origini richiederanno un gesto precedente dell'utente per chiamare questa API.</translation>
 <translation id="4584427961967778141">La configurazione della policy permette di controllare le impostazioni di gestione delle estensioni per <ph name="PRODUCT_NAME" />, incluse quelle controllate da policy relative alle estensioni esistenti. La policy prevale su tutte le policy precedenti che potrebbero essere state impostate.
 
 Questa policy consente di mappare un ID estensione o un URL di aggiornamento soltanto alla relativa impostazione specifica. È possibile impostare una configurazione predefinita per l'ID speciale <ph name="DEFAULT_SCOPE" />, che verrà applicata a tutte le estensioni senza una configurazione personalizzata in questa policy. Con un URL di aggiornamento, la configurazione verrà applicata alle estensioni con l'esatto URL di aggiornamento indicato nel file manifest dell'estensione (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Se il flag "override_update_url" viene impostato su true, l'estensione verrà installata e aggiornata usando l'URL di aggiornamento ("update") specificato nella policy <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o nel campo "update_url" di questa policy. Il flag "override_update_url" viene ignorato se il valore "update_url" è un URL del Chrome Web Store.
@@ -5583,6 +5542,7 @@ La configurazione della policy consente di controllare la presentazione dei cont
 <translation id="494613465159630803">Cast Receiver</translation>
 <translation id="494924690085329212">Riavvia all'uscita dell'utente se Android è stato avviato.</translation>
 <translation id="4950447493143157880">Non utilizzare mai il client DNS integrato</translation>
+<translation id="4953541641325278286">Non consentire ad alcun sito di rilevare lo stato di inattività dell'utente</translation>
 <translation id="4954185885991137927">Se la policy viene impostata su Attivata, i rapporti estesi su Navigazione sicura di <ph name="PRODUCT_NAME" /> vengono attivati, il che comporta l'invio di alcune informazioni di sistema e di contenuti di pagina ai server Google per contribuire a rilevare app e siti pericolosi.
 
       Se la policy viene impostata su Disattivata, i rapporti non vengono mai inviati.
@@ -6085,23 +6045,6 @@ Se non viene configurata, il valore predefinito è 0 e gli utenti sono liberi di
 
       Se la norma non viene impostata oppure è impostata sulla stringa vuota o su un intervallo di porte non valido, WebRTC è autorizzato a utilizzare qualsiasi porta UDP locale disponibile.</translation>
 <translation id="5288776487100096897">Consenti alle policy relative al cloud degli utenti di eseguire l'override delle policy <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
-<translation id="5289330879750533981">Questa policy permette di applicare restrizioni agli indirizzi IP e alle interfacce che WebRTC utilizza quando prova a trovare la migliore connessione disponibile ogni pattern URL specifico.
-
-Accetta un elenco di pattern URL e coppie di tipi di gestione. I pattern URL vengono controllati in ordine e la prima corrispondenza configurerà il tipo di gestione utilizzato da WebRTC per il dominio. Quando l'URL del documento corrente non corrisponde a nessuna voce, viene usata la configurazione impostata dalla policy <ph name="WEB_RTC_IP_HANDLING_POLICY_NAME" />.
-
-Per informazioni dettagliate sui pattern di input validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti. Questa policy ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.
-
-Valori di gestione validi:
-
-* valore predefinito: WebRTC utilizza tutte le interfacce di rete.
-
-* default_public_and_private_interfaces: WebRTC utilizza tutte le interfacce pubbliche e private.
-
-* default_public_interface_only: WebRTC utilizza tutte le interfacce pubbliche, ma non quelle private.
-
-* disable_non_proxied_udp: WebRTC utilizza il proxy UDP SOCKS o passa al proxy TCP.
-
-Per una descrizione dettagliata di tutti i valori di gestione, consulta la sezione 5.2 del documento RFC 8828 (https://tools.ietf.org/html/rfc8828.html#section-5.2).</translation>
 <translation id="5290940294294002042">Specifica un elenco di plug-in che l'utente può attivare o disattivare</translation>
 <translation id="5292069729218406524">Consenti l'acquisizione testo senza migliorare i modelli di AI</translation>
 <translation id="5293285950307241933">Cancella tutti i dati utente locali</translation>
@@ -6129,15 +6072,6 @@ Nota: questa policy non viene applicata agli upgrade a HSTS.</translation>
 <translation id="5311275381462687162">Impostazione del comportamento precedente predefinito <ph name="ATTRIBUTE_SAMESITE_NAME" /> per i cookie</translation>
 <translation id="5312253627576569499">La percentuale di regolazione del ritardo di oscuramento dello schermo quando viene osservata l'attività dell'utente mentre lo schermo è oscurato o subito dopo la disattivazione dello schermo.</translation>
 <translation id="5316856058059940708">Disabilita cursore grande</translation>
-<translation id="5317852436044398288">Se la policy viene configurata, puoi impostare un elenco di pattern URL che possono usare la funzionalità di acquisizione di finestre e schede.
-
-      Se non viene configurata, i siti non verranno presi in considerazione per l'override in questo livello dell'acquisizione.
-
-      La policy non viene presa in considerazione se un sito corrisponde a un pattern URL in una qualsiasi delle seguenti policy: <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
-
-      Se un sito corrisponde a un pattern URL in questa policy, le seguenti policy non saranno prese in considerazione: <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Questa policy ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.</translation>
 <translation id="5318185076587284965">Attiva l'utilizzo dei server relay per l'host di accesso remoto</translation>
 <translation id="5321624917465764266">Se la policy viene impostata su Attivata o se non viene configurata, la cronologia di navigazione e quella dei download possono essere eliminate in Chrome e gli utenti non possono modificare questa impostazione.
 
@@ -6344,6 +6278,7 @@ Questa policy sarà disponibile per 3 versioni.</translation>
 
       Se la policy non viene impostata, l'utente può controllare la visibilità delle schede. Nell'impostazione predefinita, le schede sono visibili.
       </translation>
+<translation id="5446826778796489105">Blocca la localizzazione su questi siti</translation>
 <translation id="5448022937220253000">Scegli cosa fare con i dati utente dopo la disattivazione di <ph name="LACROS_NAME" /></translation>
 <translation id="5449690328792750354">L'API Event.path sarà disponibile.</translation>
 <translation id="5452024130413254050">Consente di stabilire se le VM che utilizzano questa configurazione hanno accesso a un vTPM; il valore predefinito è false e, se la policy non viene configurata, viene usato il valore <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" />.</translation>
@@ -6872,6 +6807,13 @@ Sulle piattaforme desktop, il download del modello può essere disattivato anche
 <translation id="5776485039795852974">Chiedi ogni volta che un sito desidera mostrare le notifiche desktop</translation>
 <translation id="5776508475264864949">Non consentire all'app Gemini di eseguire azioni sulle pagine web.</translation>
 <translation id="5783009211970309878">Stampa intestazioni e piè di pagina</translation>
+<translation id="5789288985554424301">Consente di stabilire se i siti web possono utilizzare l'API Idle Detection.
+
+Se questa policy viene impostata su 1 - <ph name="ALLOW_IDLE_DETECTION_VALUE_NAME" />, i siti web possono utilizzare l'API senza chiedere l'autorizzazione all'utente.
+
+Se questa policy viene impostata su 2 - <ph name="BLOCK_IDLE_DETECTION_VALUE_NAME" />, i siti web non possono utilizzare l'API, indipendentemente dall'autorizzazione dell'utente.
+
+Se questa policy viene impostata su 3 - <ph name="ASK_IDLE_DETECTION_VALUE_NAME" /> o se non viene configurata, i siti web non possono utilizzare l'API senza l'autorizzazione dell'utente.</translation>
 <translation id="5790763087505467169">Riduci notifiche sull'avvio automatico della sessione Ospite gestita</translation>
 <translation id="5794205610250307906">Questa policy consente di stabilire se il browser utilizza il buffering adattivo per Web Audio, che può ridurre i problemi audio, ma anche aumentare la latenza in modo variabile.
 
@@ -7142,9 +7084,6 @@ Se viene impostata su <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> (va
 <translation id="5951418260805607969">Mostra una notifica quando lo spazio sul disco è in esaurimento</translation>
 <translation id="5958746038080720143">Attiva le ottimizzazioni WPAD (Web Proxy Auto-Discovery)</translation>
 <translation id="5961137303188584693">Indirizzo MAC NIC integrato del dispositivo</translation>
-<translation id="5961565154633996542">Se la policy viene impostata, le origini aggiuntive elencate possono accedere alle autorizzazioni del browser (ad esempio posizione, fotocamera, microfono) già disponibili per l'origine di installazione delle applicazioni kiosk web.
-
-Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy.</translation>
 <translation id="5962271004971310788">Estensioni di cui l'utente deve consentire l'esecuzione in incognito per poter navigare in questa modalità</translation>
 <translation id="5962401339101255719">Se la policy viene impostata su 0 (valore predefinito), puoi accedere agli strumenti per sviluppatori e alla console JavaScript, ma non se ci sono estensioni installate in base alle policy aziendali o, dalla versione 114 e se si tratta di un utente gestito, estensioni integrate nel browser. Se la policy viene impostata su 1, è possibile accedere agli strumenti per sviluppatori e alla console JavaScript in ogni caso, anche se ci sono estensioni installate in base alle policy aziendali. Se la policy viene impostata su 2, non è possibile accedere agli strumenti per sviluppatori, né esaminare gli elementi dei siti web.
 
@@ -7993,23 +7932,6 @@ Il salvaschermo dell'utente mostra le immagini a cui fa riferimento la policy <p
 <translation id="6515357889978918016">Immagine <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6518102411616460786">Attendi che il canale di destinazione controlli il downgrade del canale</translation>
 <translation id="6518286606938091609">Disattiva il supporto per l'elemento di riserva SwiftShader per WebGL non sicuro</translation>
-<translation id="6518894783486860562">Per motivi di sicurezza, le API web
-<ph name="SHOW_SUBAPPS_APP_API_NAME" />,
-<ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> e
-<ph name="SHOW_SUBAPPS_LIST_API_NAME" />
-richiedono che l'utente abbia eseguito un gesto precedentemente ("attivazione temporanea"), in caso contrario la chiamata all'API
-non andrà a buon fine. Inoltre, all'utente verrà chiesto di confermare
-l'operazione tramite una finestra di dialogo.
-
-Con questa policy, gli amministratori possono specificare le origini da cui è possibile
-chiamare le API senza un gesto precedente dell'utente né la richiesta di conferma.
-
-Per informazioni dettagliate sui pattern URL validi, visita la pagina
-https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. * non è
-un valore accettato per questa policy.
-
-Se questa policy non viene impostata, tutte le origini richiederanno un gesto precedente dell'utente per chiamare
-queste API e all'utente verrà mostrata una finestra di dialogo di conferma.</translation>
 <translation id="6520053715392444458">Se questa policy viene attivata o non viene configurata, <ph name="PRODUCT_NAME" /> potrà inviare a Google download sospetti da utenti che hanno attivato Navigazione sicura per verificare la presenza di malware o chiedere agli utenti di fornire una password per gli archivi criptati.
 Se questa policy viene disattivata, l'analisi non verrà eseguita.
 Questa policy non influisce sull'analisi dei contenuti dei download configurata da Chrome Enterprise Connectors.</translation>
@@ -8088,15 +8010,6 @@ Se la policy non viene configurata, viene applicata la frequenza predefinita di 
 <translation id="6561396069801924653">Mostra le opzioni di accessibilità nel menu della barra delle applicazioni di sistema</translation>
 <translation id="6562889469672829421">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale lo schermo viene oscurato.</translation>
 <translation id="6563458316362153786">Attiva 802.11r Fast Transition</translation>
-<translation id="6563462845077594854">Se la policy viene configurata, puoi impostare un elenco di pattern URL che possono usare la funzionalità di acquisizione di schermate desktop, finestre e schede.
-
-      Se non viene configurata, i siti non verranno presi in considerazione per l'override in questo livello dell'acquisizione.
-
-      La policy non viene presa in considerazione se un sito corrisponde a un pattern URL in una qualsiasi delle seguenti policy: <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
-
-      Se un sito corrisponde a un pattern URL in questa policy, la policy<ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" /> non sarà presa in considerazione.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Questa policy ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.</translation>
 <translation id="6568977718979857253">Questa policy è obsoleta. Usa <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> per controllare la disponibilità del plug-in Flash e <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> per controllare se si deve utilizzare il visualizzatore PDF integrato per aprire i file PDF.
 
       Specifica un elenco di plug-in disattivati in <ph name="PRODUCT_NAME" /> e impedisce agli utenti di modificare questa impostazione.
@@ -8131,9 +8044,6 @@ Nota: se il dispositivo viene riavviato o se l'utente esce, la cache viene svuot
 
           Questa policy non ha effetto se viene attivata, lasciata vuota o se non viene configurata.</translation>
 <translation id="6583249367505445969">Disattiva barra dei Preferiti</translation>
-<translation id="6583473893541367102">Se la policy viene configurata, verrà specificato l'elenco di URL i cui pattern vengono confrontati con l'origine di sicurezza dell'URL richiedente. Una corrispondenza assicura l'accesso ai dispositivi per l'acquisizione video senza richieste
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Tieni presente, tuttavia, che il pattern "*", che corrisponde a qualsiasi URL, non è supportato da questa policy.</translation>
 <translation id="6583517553738784213">Disattiva i controlli con il volto</translation>
 <translation id="6584122839583172231">Le impostazioni di F12 usano la scorciatoia che contiene i tasti di modifica Ctrl e Maiusc</translation>
 <translation id="6584541828182430328">Disattiva avviso schermo intero</translation>
@@ -9026,6 +8936,7 @@ Se la policy viene impostata su Disattivata, gli utenti non possono eludere l'ac
       </translation>
 <translation id="7167436895080860385">Consenti agli utenti di mostrare le password in Gestione password (ritirata)</translation>
 <translation id="7172046613126456732">Consenti l'avvio di Chrome se non hai eseguito la registrazione a Chrome Browser Cloud Management</translation>
+<translation id="7172260913614760447">Rilevamento dell'inattività</translation>
 <translation id="7173856672248996428">Profilo temporaneo</translation>
 <translation id="7174158612490351828">Un elenco di chiavi pubbliche dei certificati che <ph name="PRODUCT_NAME" /> dovrebbe considerare non attendibile per l'autenticazione
 del server.
@@ -9263,6 +9174,7 @@ Se questa policy viene disattivata o se non viene configurata, le impostazioni r
 <translation id="7357148531287978404">Disattiva l'input audio</translation>
 <translation id="7358299261566939984">Abilita ServiceWorkerAutoPreload</translation>
 <translation id="7358359585412734876">Attiva <ph name="LACROS_NAME" /></translation>
+<translation id="7361553161955926036">Rilevamento dell'inattività consentito per impostazione predefinita</translation>
 <translation id="7362566456990049303">Solo utente</translation>
 <translation id="736486789939370545">Consenti l'installazione di estensioni esterne</translation>
 <translation id="7364975417585163622">Questa policy consente di disattivare temporaneamente le modifiche al modo in cui Chrome gestisce gli spazi vuoti negli URL <ph name="DATA_URL_SCHEME" />.
@@ -9738,17 +9650,6 @@ Se la policy non viene configurata, il browser determina quali origini isolare e
 <translation id="7763655314629932385">Specifica la versione che vuoi dell'IWA. Se viene fornita, il sistema tenterà di installare questa versione specifica e successivamente bloccherà eventuali ulteriori aggiornamenti. Per staccare l'app e abilitare nuovamente gli aggiornamenti, rimuovi questo campo. **Importante:** se la versione fornita non esiste, l'IWA rimane bloccata sulla versione installata al momento. Questo perché dopo aver tentato (e in questo caso senza successo) di eseguire l'aggiornamento alla versione staccata, la limitazione degli aggiornamenti disabilita ulteriori aggiornamenti automatici.</translation>
 <translation id="776465643636059256">Disattiva insiemi di siti web correlati</translation>
 <translation id="7765879851993224640">Consenti l'uso dell'accesso tramite Smart Lock.</translation>
-<translation id="7767066506143083523">Se la policy viene configurata, puoi impostare un elenco di pattern URL che possono usare la funzionalità di acquisizione schede.
-
-      Se non viene configurata, i siti non verranno presi in considerazione per l'override in questo livello dell'acquisizione.
-
-      Tieni presente che le app di Chrome con finestre potranno ancora essere acquisite.
-
-      La policy non viene presa in considerazione se un sito corrisponde a un pattern URL nella policy <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
-
-      Se un sito corrisponde a un pattern URL in questa policy, le seguenti policy non saranno prese in considerazione: <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Questa policy ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.</translation>
 <translation id="77675082813227181">La pagina di test delle policy è bloccata</translation>
 <translation id="7769289607378631288">Attivato: riattiva temporaneamente gli eventi Mutazione.</translation>
 <translation id="7771298620150437359">Configura i contenuti e l'ordine delle lingue preferite</translation>
@@ -9870,6 +9771,22 @@ Se configurata, la policy <ph name="CUSTOM_PROFILE_LABEL_POLICY_NAME" /> sostitu
 
 Se la policy viene impostata su Disattivata o se non viene configurata, il Kerberos SPN generato non include una porta.</translation>
 <translation id="7877924399554599110">Attiva l'unione delle policy relative al cloud a livello di utente alle policy a livello di macchina</translation>
+<translation id="7879142313118107127">Per motivi di sicurezza,
+l'API web <ph name="REQUEST_FULLSCREEN_API_NAME" />
+richiede la precedente attivazione dall'utente ("attivazione temporanea") o la chiamata all'API
+non andrà a buon fine. Le impostazioni personali degli utenti potrebbero consentire a determinate origini di chiamare
+questa API senza una precedente attivazione dall'utente, come descritto nella sezione
+<ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
+
+Questa policy sostituisce le impostazioni personali degli utenti e consente alle origini corrispondenti di
+chiamare l'API senza una precedente attivazione dall'utente.
+
+Per informazioni dettagliate sui pattern URL validi, visita la pagina
+https://chromeenterprise.google/policies/url-patterns.
+I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.
+
+Le origini che corrispondono a pattern di policy sia bloccati sia consentiti verranno bloccate.
+Le origini non specificate dalla policy o dalle impostazioni utente richiederanno la precedente attivazione dall'utente per chiamare questa API.</translation>
 <translation id="7881421274383404138">L'impostazione di questa policy consente di configurare le stampanti aziendali. Il formato corrisponde a quello del dizionario <ph name="PRINTERS_POLICY_NAME" />, con un campo <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> aggiuntivo obbligatorio per ogni stampante ai fini dell'inserimento in una lista consentita o in una lista bloccata. Le dimensioni del file non possono superare i 5 MB e il formato deve essere JSON. Un file con circa 21.000 stampanti viene codificato come file di 5 MB. L'hash di crittografia consente di verificare l'integrità del download. Il file viene scaricato, memorizzato nella cache e riscaricato ogni volta che l'URL o l'hash cambiano. <ph name="PRODUCT_OS_NAME" /> scarica il file per le configurazioni delle stampanti e rende disponibili le stampanti in base alle policy <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> e <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" />.
 
       Questa policy non influisce sulla possibilità per gli utenti di configurare le stampanti su singoli dispositivi. È intesa come integrativa alla configurazione delle stampanti da parte dei singoli utenti.
@@ -9896,13 +9813,6 @@ Se la policy viene impostata su Disattivata o se non viene configurata, il Kerbe
 <translation id="7899952578398457262">Chiedi il consenso agli utenti gestiti per condividere gli indicatori dei dispositivi su dispositivi non gestiti per ottenere l'accesso</translation>
 <translation id="7900469325540540107">Mantieni i dati di navigazione per impostazione predefinita durante la creazione di un profilo aziendale</translation>
 <translation id="7902040092815978832">Mostra la tastiera numerica per la password</translation>
-<translation id="7904434413881624417">Elenco di pattern URL. Le richieste avviate da siti web pubblicati da origini corrispondenti non sono soggette ai controlli di <ph name="PRIVATE_NETWORK_ACCESS" />.
-
-          Se non viene configurata, questa policy considera l'elenco come vuoto.
-
-          Per le origini non coperte dai pattern specificati qui, il valore predefinito globale viene utilizzato dalla policy <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" />, se configurata, o altrimenti dalla configurazione personale dell'utente.
-
-          Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="7904584382309857420">Questa policy è stata rimossa da M121. Consente di attivare e disattivare l'attestazione remota per il dispositivo, ma questa è attivata per impostazione predefinita.
 
 Se la policy viene impostata su Attivata, l'attestazione remota è consentita per il dispositivo. Un certificato viene generato e caricato automaticamente sul server di gestione del dispositivo.
@@ -10005,6 +9915,15 @@ Questa policy è stata pensata per essere temporanea e verrà rimossa in futuro.
 
           Il valore della policy deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di disattivazione dello schermo (se impostato) e al ritardo di inattività.</translation>
 <translation id="7974114691960514888">Questa norma non è più supportata. Consente di attivare l'utilizzo di server relay e STUN durante la connessione a un client remoto. Se questa impostazione viene attivata, questo computer potrà rilevare i computer host remoti e collegarsi a essi anche se sono separati da un firewall. Se questa impostazione viene disattivata e le connessioni UDP in uscita vengono filtrate dal firewall, questo computer potrà collegarsi ai computer host soltanto all'interno della rete locale.</translation>
+<translation id="7975777377454336782">Questa policy consente di impostare un elenco di pattern URL che specificano le origini di primo livello per le quali il partizionamento dello spazio di archiviazione di terze parti (partizionamento dello spazio di archiviazione di iframe multiorigine) deve essere disattivato.
+
+Se la policy non viene configurata o se un'origine di primo livello non corrisponde a uno dei pattern URL, viene applicata <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />.
+
+Per informazioni dettagliate sui pattern validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. Tieni presente che i pattern elencati qui vengono considerati come origini, non URL, quindi non dovresti specificare un percorso.
+
+Visita la pagina https://developers.google.com/privacy-sandbox/cookies/storage-partitioning per informazioni dettagliate sul partizionamento dello spazio di archiviazione di terze parti.
+
+Questa opzione verrà rimossa in Chrome 145 e al suo posto si consiglia di utilizzare il metodo requestStorageAccess: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Puoi lasciare un feedback all'indirizzo https://crbug.com/425248669.</translation>
 <translation id="7976103461034266553">Se la policy viene impostata su Enabled, la funzione JavaScript setTimeout() con un timeout di 0 ms non verrà clampata su 1 ms.
           Se la policy viene impostata su Disabled, la funzione JavaScript setTimeout() con un timeout di 0 ms verrà clampata su 1 ms.
           Se la policy non viene configurata, viene usato il comportamento predefinito del browser per clampare la funzione setTimeout().
@@ -10596,6 +10515,13 @@ Se la policy non viene impostata o viene impostata su 0 e si passa a un URL defi
 <translation id="8400225642589806131">Se questa policy viene impostata su <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_ENABLED" /> (valore 1), <ph name="PRODUCT_NAME" /> richiederà al server di gestione dispositivi un certificato client per una sessione del browser gestita. Questo certificato verrà reso disponibile, ad esempio, per le connessioni mTLS.
 
 Se questa policy viene impostata su <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_DISABLED" /> (valore 0) o se non viene configurata, <ph name="PRODUCT_NAME" /> non potrà richiedere il certificato client. Se è già stato eseguito il provisioning del certificato client gestito di un browser, poiché questa policy è stata attivata in precedenza non verrà eliminato, ma non sarà disponibile per le connessioni mTLS e non verrà rinnovato alla scadenza.</translation>
+<translation id="8401567123761348600">Se la policy viene configurata, puoi impostare un elenco di pattern URL che specificano i siti che possono accedere ai sensori, come i sensori di movimento e di luce.
+
+      Se la policy non viene configurata, <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostata. In caso contrario, viene applicata l'impostazione personale dell'utente.
+
+      Se lo stesso pattern URL esiste sia in questa policy sia nella policy <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" />, quest'ultima ha la priorità e l'accesso ai sensori di movimento o di luce verrà bloccato.
+
+      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
 <translation id="8402079500086185021">Apri sempre file PDF esternamente</translation>
 <translation id="8402357110539568621">Consente di attivare la funzione di accessibilità della tastiera virtuale.
 
@@ -11039,6 +10965,7 @@ Questa policy è una mappatura degli ID di configurazione alle configurazioni de
 Se la policy viene attivata, alla prima esecuzione vengono importate le password salvate dal browser predefinito precedente ed è possibile anche l'importazione manuale dalla pagina Impostazioni.
 Se la policy viene disattivata, alla prima esecuzione non vengono importate le password salvate e l'importazione manuale dalla pagina Impostazioni viene bloccata.
 Se la policy non viene configurata, alla prima esecuzione non vengono importate le password salvate, ma l'utente può scegliere di farlo dalla pagina Impostazioni.</translation>
+<translation id="8696285803245652227">Chiedi ogni volta che un sito vuole rilevare lo stato di inattività dell'utente</translation>
 <translation id="8697738827698599333">La configurazione della policy consente di specificare gli ID RP WebAuthn per i quali non viene visualizzata alcuna richiesta quando vengono richiesti certificati di attestazione dei token di sicurezza. Viene inoltre inviato un segnale al token di sicurezza per indicare che potrebbe essere utilizzata l'attestazione aziendale. Senza questo segnale, gli utenti di <ph name="PRODUCT_NAME" /> 65 e versioni successive ricevono un messaggio quando i siti richiedono l'attestazione dei token di sicurezza.</translation>
 <translation id="8698286761337647563">Numero di giorni di anticipo con cui avvisare gli utenti SAML quando la loro password sta per scadere</translation>
 <translation id="8699392919012430269">Segnala informazioni sul Bluetooth di un dispositivo.
@@ -11475,15 +11402,15 @@ Nota: al momento verrà presa in considerazione solo la prima voce. Le estension
        Se la policy viene impostata su false, vengono disattivati gli upgrade automatici di audio e video e non viene mostrato un avviso per le immagini.
        Questa policy non influisce su tipi di contenuti misti diversi da audio, video e immagini.
        Questa policy non avrà più effetto dalla versione 84 di <ph name="PRODUCT_NAME" />.</translation>
-<translation id="9009505213521705952">Se la policy <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME" /> è impostata su Disattivata, la configurazione di questa policy ti consente di impostare un elenco di pattern di origini che specificano i siti in cui gli utenti possono fare clic nelle pagine di avviso mostrate in <ph name="PRODUCT_NAME" /> quando visitano siti che presentano errori SSL. Gli utenti non potranno fare clic nelle pagine di avviso SSL su origini non presenti in questo elenco.
-
-      Se la policy <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME" /> è impostata su Attivata o se non è configurata, questa policy non ha effetto.
-
-      Se la policy non viene configurata, <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME" /> si applica per tutti i siti.
-
-      Per informazioni dettagliate sui pattern di input validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy. Questa policy ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.</translation>
 <translation id="9010080992450148617">Attiva invio download a Google per scansione approfondita per utenti iscritti al programma di protezione avanzata</translation>
 <translation id="9012101302849557459">Estendi il supporto delle app di Chrome su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph name="LINUX_OS_NAME" /></translation>
+<translation id="9012332684658600011">Se questa policy viene impostata su Attivata, ogni volta che dovrebbe essere visualizzato un avviso in <ph name="CHROME_DEVTOOLS_NAME" /> a causa di controlli <ph name="LOCAL_NETWORK_ACCESS" /> non riusciti, la richiesta principale verrà bloccata.
+
+Se questa policy viene impostata su Disattivata o se non viene configurata, le richieste di <ph name="LOCAL_NETWORK_ACCESS" /> useranno la gestione predefinita di queste richieste.
+
+Visita la pagina https://wicg.github.io/local-network-access/ per conoscere le limitazioni relative a <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Questa policy è stata ritirata perché <ph name="LOCAL_NETWORK_ACCESS" /> è stato lanciato per impostazione predefinita. Questa policy verrà rimossa in una release futura.</translation>
 <translation id="9013875414788074110">Durante l'accesso, <ph name="PRODUCT_OS_NAME" /> può eseguire l'autenticazione con un server (online) o utilizzando una password memorizzata nella cache (offline).
 
       Quando la norma è impostata sul valore -1, l'utente può eseguire per sempre l'autenticazione offline. Quando la norma è impostata su qualsiasi altro valore, questo specifica il periodo di tempo trascorso dall'ultima autenticazione online, dopo il quale l'utente dovrà eseguire nuovamente l'autenticazione.
@@ -11536,27 +11463,6 @@ Se la policy non viene configurata, per impostazione predefinita <ph name="PRODU
 <translation id="9051019223077908578">Configura l'elenco di app ed estensioni installate nella schermata di accesso</translation>
 <translation id="9053841574218808519">Esegui sempre i plug-in non obsoleti</translation>
 <translation id="9055866143096316150">Retrocedi le richieste di wakelock dello schermo a richieste di wakelock del sistema</translation>
-<translation id="9057444687284972605">Consente di specificare un elenco di pattern URL relativi ai siti per i quali viene selezionato automaticamente un certificato client nella schermata di accesso all'interno del frame che ospita il flusso SAML, se il sito richiede un certificato. Un esempio di utilizzo è la configurazione di un certificato a livello di dispositivo da presentare all'IdP SAML.
-
-      Il valore è un array di dizionari JSON sotto forma di stringa, ognuno nel formato <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, dove <ph name="URL_PATTERN_PLACEHOLDER" /> rappresenta un pattern di impostazioni contenuti. <ph name="FILTER_PLACEHOLDER" /> consente di limitare i certificati client che il browser può selezionare automaticamente. Indipendentemente dal filtro, vengono selezionati solo certificati che soddisfano la richiesta di certificato del server.
-
-      Esempi di utilizzo della sezione <ph name="FILTER_PLACEHOLDER" />:
-
-      * Quando <ph name="FILTER_PLACEHOLDER" /> è impostato su <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_FILTER_EXAMPLE" />, vengono selezionati solo i certificati client emessi da un certificato con valore CommonName uguale a <ph name="ISSUER_CN_PLACEHOLDER" />.
-
-      * Quando <ph name="FILTER_PLACEHOLDER" /> contiene entrambe le sezioni <ph name="ISSUER_STRING_VALUE" /> e <ph name="SUBJECT_STRING_VALUE" />, vengono selezionati solo i certificati client che soddisfano entrambe le condizioni.
-
-      * Quando <ph name="FILTER_PLACEHOLDER" /> contiene una sezione <ph name="SUBJECT_STRING_VALUE" /> con valore <ph name="FILTER_STRING_ORGANIZATION" />, un certificato richiede almeno un'organizzazione corrispondente al valore specificato per essere selezionato.
-
-      * Quando <ph name="FILTER_PLACEHOLDER" /> contiene una sezione <ph name="SUBJECT_STRING_VALUE" /> con un valore <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, un certificato richiede almeno un'unità organizzativa corrispondente al valore specificato per essere selezionato.
-
-      * Quando <ph name="FILTER_PLACEHOLDER" /> è impostato su <ph name="EMPTY_DICTIONARY" />, la selezione dei certificati client non viene limitata ulteriormente. Nota: si applicano ancora i filtri forniti dal server web.
-
-
-
-      Se questa policy non è impostata, la selezione automatica non avviene per nessun sito.
-
-      Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="9061455386353325110">Specifica se gli utenti possono consentire a <ph name="PRODUCT_NAME" /> di utilizzare l'AI generativa per comprendere meglio i moduli e offrire aiuto nella compilazione di più campi.
 
 0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, materiali originali e feedback scritto. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
@@ -11580,6 +11486,7 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 
       I modelli con formato errato verranno ignorati.</translation>
 <translation id="9068629430243705879">porta 6566 (può essere sbloccata fino al 15/10/2021)</translation>
+<translation id="9069432851455606924">Impostazioni di localizzazione</translation>
 <translation id="9069503402414011061">La configurazione della policy consente di specificare la durata in ore dei dati di autenticazione nella cache. La cache include dati relativi alle aree di autenticazione ritenute attendibili dall'area di autenticazione della macchina (aree di autenticazione affiliate). Pertanto, la memorizzazione nella cache dei dati di autenticazione consente di velocizzare l'accesso. I dati specifici degli utenti e quelli per le aree di autenticazione non affiliate non vengono memorizzati nella cache.
 
 Se la policy viene impostata su 0, la memorizzazione nella cache dei dati di autenticazione viene disattivata. I dati specifici dell'area di autenticazione vengono recuperati a ogni accesso, quindi la relativa memorizzazione nella cache può rallentare in modo significativo l'accesso degli utenti.

@@ -1053,7 +1053,6 @@
 <translation id="1700517974991662022">ເຂົ້າເບິ່ງແລ້ວ</translation>
 <translation id="1703331064825191675">ບໍ່ກັງວົນກ່ຽວກັບລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="1703666494654169921">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ອຸປະກອນເວີຊົວ ຣິອາລິຕີ ຫຼື ຂໍ້ມູນ</translation>
-<translation id="1703849276368677471">ເຄື່ອງມື</translation>
 <translation id="1704097193565924901">ໃຊ້ຕົວພິມໃຫຍ່</translation>
 <translation id="1704230497453185209">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊຫຼິ້ນສຽງ</translation>
 <translation id="1706586824377653884">ເພີ່ມໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
@@ -9557,7 +9556,6 @@
 <translation id="7629858978065675960">ຜົນການຊອກຫາທີ່ບໍ່ຮູ້ຈັກ.</translation>
 <translation id="7630426712700473382">ອຸປະກອນນີ້ຈັດການໂດຍ <ph name="MANAGER" /> ແລະ ກຳນົດໃຫ້ທ່ານຕ້ອງເຂົ້າສູ່ລະບົບທຸກເທື່ອ.</translation>
 <translation id="7631014249255418691">ສຳຮອງແອັບ ແລະ ໄຟລ໌ Linux ສຳເລັດແລ້ວ</translation>
-<translation id="7631722872321401342">ບໍ່ມີສຽງພາສາ <ph name="LANGUAGE" /> ໃນອຸປະກອນຂອງທ່ານ. ທ່ານສາມາດຕິດຕັ້ງສຽງໄດ້ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="7631887513477658702">ເປີດໄຟລ໌ປະເພດນີ້ທຸກຄັ້ງ</translation>
 <translation id="7632437836497571618">ໃຊ້ການເຊື່ອມຕໍ່ທີ່ປອດໄພເພື່ອຊອກຫາເວັບໄຊ</translation>
 <translation id="7632948528260659758">ແອັບ kiosk ຕໍ່ໄປນີ້ຫຼົ້ມເຫຼວສໍາລັບການອັບເດດ:</translation>
@@ -11256,7 +11254,6 @@
 <translation id="876161309768861172">ບໍ່ສາມາດເຂົ້າສູ່ລະບົບໃຫ້ທ່ານໄດ້, ກະລຸນາລອງໃໝ່</translation>
 <translation id="8761945298804995673">ມີຜູ້ໃຊ້ນີ້ຢູ່ແລ້ວ</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> ຂອງທ່ານຈຳເປັນຕ້ອງມີການອັບເດດ</translation>
-<translation id="8763170551806710928">ສະແດງຊິບ</translation>
 <translation id="8763927697961133303">ອຸປະກອນ USB</translation>
 <translation id="8766156860774051068">ຄັດສັນໂດຍທ່ານ</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

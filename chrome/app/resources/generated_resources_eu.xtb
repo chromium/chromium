@@ -613,6 +613,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1414648216875402825">Garatzen ari diren eginbideak dituen <ph name="PRODUCT_NAME" /> sistemaren bertsio ezegonkor batera eguneratzen ari zara. Hutsegiteak eta ustekabeko erroreak gertatuko dira. Ibil zaitez kontuz.</translation>
 <translation id="1415708812149920388">Arbeleko edukia irakurtzeko sarbidea ukatu da</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (luzapenaren identifikatzailea: "<ph name="EXTENSION_ID" />") luzapena ez dago onartuta mota honetako saioetan.</translation>
+<translation id="141720836055413739">Ezin da kargatu.  Erabili beste fitxategi-formatu bat.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Kendu aplikazioa}other{Kendu aplikazioak}}</translation>
 <translation id="1417497355604638350">Bidali diagnostiko- eta erabilera-datuak.</translation>
 <translation id="1418552618736477642">Jakinarazpenak eta aplikazioak</translation>
@@ -1053,7 +1054,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1700517974991662022">Bisitatuta</translation>
 <translation id="1703331064825191675">Ez arduratu pasahitzak gogoratu beharraz</translation>
 <translation id="1703666494654169921">Ez eman errealitate birtualeko gailuak edo datuak erabiltzeko baimena webguneei</translation>
-<translation id="1703849276368677471">Tresnak</translation>
 <translation id="1704097193565924901">Ezarri maiuskulaz</translation>
 <translation id="1704230497453185209">Ez eman soinua erreproduzitzeko baimena webguneei</translation>
 <translation id="1706586824377653884">Administratzaileak gehitu du</translation>
@@ -2868,6 +2868,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="2946640296642327832">Gaitu Bluetootha</translation>
 <translation id="2947281105969315778">Fitxa taldeak partekatzeko edo haietan sartzeko, Chrome-n saioa hasteko gai izan behar duzu</translation>
 <translation id="2947605845283690091">Webguneak bizkor arakatu nahi izaten dituzte erabiltzaileek. Hartu unetxo bat eta <ph name="BEGIN_LINK" />begiratu zer luzapen dituzun<ph name="END_LINK" />.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Jaregin fitxategia hemen}other{Jaregin fitxategiak hemen}}</translation>
 <translation id="2948300991547862301">Joan <ph name="PAGE_TITLE" /> orrira</translation>
 <translation id="29488703364906173">Sare modernorako egindako web-arakatzaile azkarra, sinplea eta segurua.</translation>
 <translation id="2950666755714083615">Eman izena</translation>
@@ -2977,6 +2978,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3019023222666709803">Geziaren tresna</translation>
 <translation id="3019285239893817657">Azpiorrira joateko botoia</translation>
 <translation id="3019595674945299805">VPNaren zerbitzua</translation>
+<translation id="3020101754533552167">Saio-hasiera egiaztatzen…</translation>
 <translation id="3020183492814296499">Lasterbideak</translation>
 <translation id="3020990233660977256">Serie-zenbakia: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Kargatzen ari ez denean</translation>
@@ -5255,6 +5257,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4606551464649945562">Ez utzi inongo webguneri inguruaren 3D-ko mapa bat sortzen edo kameraren posizioaren jarraipena egiten</translation>
 <translation id="4606933160360542263">Gako-konbinazio pertsonalizatua: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Fitxa taldea ezabatu nahi duzu?}other{Fitxa taldeak ezabatu nahi dituzu?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Kargatu fitxategi bat galderarekin erabiltzeko}other{Kargatu # fitxategi gehienez galderarekin erabiltzeko}}</translation>
 <translation id="4608500690299898628">&amp;Bilatu…</translation>
 <translation id="4609164937357979319">Hautatu kontua</translation>
 <translation id="4610493438923139095">Ez-fidagarria</translation>
@@ -9535,7 +9538,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7629858978065675960">Emaitza ezezaguna.</translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> domeinuak kudeatzen du gailu hau, eta saioa hasteko eskatzen du hura erabiltzen duzun bakoitzean.</translation>
 <translation id="7631014249255418691">Egin dira Linux aplikazioen eta fitxategien babeskopiak</translation>
-<translation id="7631722872321401342">Ez dago <ph name="LANGUAGE" /> darabilen ahotsik gailuan. Ahotsak instalatzeko, joan ezarpenetara.</translation>
 <translation id="7631887513477658702">Ireki beti &amp;mota honetako fitxategiak</translation>
 <translation id="7632437836497571618">Erabili konexio seguruak webguneak bilatzeko</translation>
 <translation id="7632948528260659758">Kiosko-aplikazio hauek ezin izan dira eguneratu:</translation>
@@ -11234,7 +11236,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="876161309768861172">Ezin izan da hasi saioa. Saiatu berriro.</translation>
 <translation id="8761945298804995673">Erabiltzaile hau badago jada</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> gailua eguneratu egin behar da</translation>
-<translation id="8763170551806710928">Erakutsi pilulak</translation>
 <translation id="8763927697961133303">USB bidezko gailua</translation>
 <translation id="8766156860774051068">Zuk aukeratutakoak</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

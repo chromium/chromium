@@ -1055,7 +1055,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1700517974991662022">Consulté</translation>
 <translation id="1703331064825191675">Ne vous souciez plus jamais de vos mots de passe</translation>
 <translation id="1703666494654169921">Ne pas autoriser les sites à utiliser des données ni des appareils de réalité virtuelle</translation>
-<translation id="1703849276368677471">Outils</translation>
 <translation id="1704097193565924901">Mettre une majuscule</translation>
 <translation id="1704230497453185209">Ne pas autoriser les sites à lire des sons</translation>
 <translation id="1706586824377653884">Ajouté par votre administrateur</translation>
@@ -2980,6 +2979,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3019023222666709803">Outil Flèche</translation>
 <translation id="3019285239893817657">Bouton pour accéder à la sous-page</translation>
 <translation id="3019595674945299805">Service VPN</translation>
+<translation id="3020101754533552167">Vérification de la connexion...</translation>
 <translation id="3020183492814296499">Raccourcis</translation>
 <translation id="3020990233660977256">Numéro de série : <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Lorsque l'appareil est sur batterie</translation>
@@ -9547,7 +9547,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7629858978065675960">Résultat inconnu.</translation>
 <translation id="7630426712700473382">Cet appareil étant géré par <ph name="MANAGER" />, vous devez vous connecter à chaque fois.</translation>
 <translation id="7631014249255418691">Les applications et fichiers Linux ont bien été sauvegardés</translation>
-<translation id="7631722872321401342">Aucune voix en <ph name="LANGUAGE" /> n'est disponible sur votre appareil. Vous pouvez installer des voix dans les paramètres.</translation>
 <translation id="7631887513477658702">&amp;Toujours ouvrir les fichiers de ce type</translation>
 <translation id="7632437836497571618">Utiliser une connexion sécurisée pour consulter des sites</translation>
 <translation id="7632948528260659758">Échec de la mise à jour des applications kiosque suivantes :</translation>
@@ -11247,7 +11246,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="876161309768861172">Impossible de vous connecter. Veuillez réessayer.</translation>
 <translation id="8761945298804995673">Cet utilisateur existe déjà</translation>
 <translation id="8762886931014513155">Votre <ph name="DEVICE_TYPE" /> doit être mis à jour</translation>
-<translation id="8763170551806710928">Afficher les chips</translation>
 <translation id="8763927697961133303">Périphérique USB</translation>
 <translation id="8766156860774051068">Votre sélection</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

@@ -4008,6 +4008,7 @@
 <translation id="7525804896095537619">نام نمی‌تواند خالی باشد</translation>
 <translation id="7526934274050461096">اتصال شما به این سایت خصوصی نیست</translation>
 <translation id="7529884293139707752">آموزش در خانه</translation>
+<translation id="7530215951451994972">ساختن تصویر</translation>
 <translation id="7531464389616946220">اسکن کردن کارت</translation>
 <translation id="7534473948927234329">‏‫<ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای جستجوی نشانک‌ها، کلید Enter را فشار دهید</translation>
 <translation id="7534987659046836932">پاکت سی۷</translation>
@@ -4294,6 +4295,7 @@
 <translation id="7987087088851949178">فهرست صادرکنندگان «حالا خرید کنید، بعداً بپردازید» موجود برای پرداخت قسطی به‌صورت کامل باز شده است.</translation>
 <translation id="799149739215780103">به‌هم چسباندن</translation>
 <translation id="7992044431894087211">هم‌رسانی صفحه‌نمایش با <ph name="APPLICATION_TITLE" /> ازسر گرفته شد</translation>
+<translation id="799384093520583425">‏سازمانتان استفاده از DevTools را در این صفحه مسدود کرده است</translation>
 <translation id="7995512525968007366">تعیین نشده</translation>
 <translation id="7997855386298213183">برگه‌های هم‌رسانی‌شده</translation>
 <translation id="8001912761979890298">‏این سرور نتوانست اثبات کند <ph name="DOMAIN" /> است زیرا از گواهینامه امنیتی‌ای استفاده می‌کند که مورداعتماد Chromium یا پیکربندی سیستم برای رمزگذاری ترافیک وب نیست. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی درحال رهگیری اتصالتان باشد. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />مشاهده گواهینامه<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4838,6 +4840,7 @@
 <translation id="8922013791253848639">آگهی‌ها همیشه در این سایت مجاز باشند</translation>
 <translation id="8922734931659847428">فهرست محدودی از نشانی وب صفحه‌هایی که بازدید می‌کنید و <ph name="BEGIN_LINK" />رویدادهای فناوری قدیمی<ph name="END_LINK" /> در آن‌ها روی می‌دهد</translation>
 <translation id="892588693504540538">سوراخ در بالا سمت راست</translation>
+<translation id="8926082624786998759">‏‫DevTools در این صفحه مجاز نیست</translation>
 <translation id="8926389886865778422">دوباره سؤال نشود</translation>
 <translation id="8926400492587758246">پرداخت در اقساط ماهانه با مبالغ کم</translation>
 <translation id="8932102934695377596">ساعت شما عقب است</translation>

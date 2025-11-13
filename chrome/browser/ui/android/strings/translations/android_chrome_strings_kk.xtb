@@ -944,6 +944,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> қойынды – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> қойынды – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Құпиялық</translation>
 <translation id="504456571576643789">Ескеретін жайттар</translation>
+<translation id="5056587122125565772">Сурет жасау</translation>
 <translation id="506254248375231072">Қойындылар жоқ.</translation>
 <translation id="5075939510584558547">Шифрламай сақтау</translation>
 <translation id="5085038751173179818">Барлық құрылғыда бетбелгілер мен т.б. алу үшін осы сайт пен Chrome-ға кіріңіз.</translation>
@@ -1124,7 +1125,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5864419784173784555">Басқа контент жүктеп алынуда...</translation>
 <translation id="5865733239029070421">Қолданыс статистикасын және жаңылыс туралы есептерді Google жүйесіне автоматты түрде жібереді</translation>
 <translation id="5869522115854928033">Сақталған құпия сөздер</translation>
-<translation id="5870416898561279542">Қайталанатын немесе <ph name="DAYS_INACTIVE" /> күн бойы қолданылмаған қойындылар мен топтар осы жерге жіберіледі <ph name="AUTODELETE_SECTION" />. Мұны <ph name="DECLUTTER_SETTINGS_TITLE" /> бөлімінде кез келген уақытта өзгерте аласыз.</translation>
+<translation id="5870416898561279542">Қайталанатын немесе <ph name="DAYS_INACTIVE" /> күн бойы қолданылмаған қойындылар мен топтар осы жерге көшіріледі <ph name="AUTODELETE_SECTION" />. Мұны <ph name="DECLUTTER_SETTINGS_TITLE" /> бөлімінде кез келген уақытта өзгерте аласыз.</translation>
 <translation id="587735546353481577">Сайтқа жазылу үшін оған өтіңіз де, Chrome мәзірін ашып, "Жазылу" түймесін түртіңіз.</translation>
 <translation id="5883855034004058011">Биометрияны алу талпынысы тым көп рет сәтсіз аяқталды. Қайталап көру үшін құрылғыны құлыптаңыз да, қайта ашыңыз.</translation>
 <translation id="5885378508678660271">Хабарландырулар <ph name="SEPARATOR" /> Chrome бұл рұқсаттарды өшірді, себебі бұл сайт қауіпті.</translation>

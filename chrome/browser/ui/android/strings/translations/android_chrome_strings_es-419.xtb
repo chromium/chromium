@@ -944,6 +944,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestaña: <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> pestañas: <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Privacidad</translation>
 <translation id="504456571576643789">Aspectos para tener en cuenta</translation>
+<translation id="5056587122125565772">Crear imagen</translation>
 <translation id="506254248375231072">No hay pestañas</translation>
 <translation id="5075939510584558547">Guardar sin encriptación</translation>
 <translation id="5085038751173179818">Accede a este sitio y a Chrome para obtener tus favoritos y mucho más en todos tus dispositivos</translation>

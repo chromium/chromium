@@ -1056,7 +1056,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1700517974991662022">Apmeklēta</translation>
 <translation id="1703331064825191675">Nekad neraizējieties par parolēm</translation>
 <translation id="1703666494654169921">Neļaut vietnēm izmantot jūsu virtuālās realitātes ierīces vai datus</translation>
-<translation id="1703849276368677471">Rīki</translation>
 <translation id="1704097193565924901">Sākt katru vārdu ar lielo burtu</translation>
 <translation id="1704230497453185209">Neļaut vietnēm atskaņot skaņu</translation>
 <translation id="1706586824377653884">Pievienoja administrators</translation>
@@ -2981,6 +2980,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3019023222666709803">Bultiņas rīks</translation>
 <translation id="3019285239893817657">Apakšlapas poga</translation>
 <translation id="3019595674945299805">VPN pakalpojums</translation>
+<translation id="3020101754533552167">Notiek pierakstīšanās pārbaude…</translation>
 <translation id="3020183492814296499">Saīsnes</translation>
 <translation id="3020990233660977256">Sērijas numurs: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Izmantojot akumulatoru</translation>
@@ -9547,7 +9547,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7629858978065675960">Nezināms rezultāts.</translation>
 <translation id="7630426712700473382">Šo ierīci pārvalda <ph name="MANAGER" />, un, to izmantojot, jums ir jāpierakstās katru reizi.</translation>
 <translation id="7631014249255418691">Linux lietotnes un faili ir sekmīgi dublēti</translation>
-<translation id="7631722872321401342">Jūsu ierīcē nav balss <ph name="LANGUAGE" /> valodā. Balsis varat instalēt iestatījumos.</translation>
 <translation id="7631887513477658702">Vienmēr atvērt šī veida f&amp;ailus</translation>
 <translation id="7632437836497571618">Izmantot drošus savienojumus vietņu uzmeklēšanai</translation>
 <translation id="7632948528260659758">Neizdevās atjaunināt šādas kioska lietotnes:</translation>
@@ -11247,7 +11246,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="876161309768861172">Pierakstīšanās neizdevās. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="8761945298804995673">Šis lietotājs jau pastāv.</translation>
 <translation id="8762886931014513155">Ierīcei <ph name="DEVICE_TYPE" /> nepieciešams atjauninājums</translation>
-<translation id="8763170551806710928">Rādīt žetonus</translation>
 <translation id="8763927697961133303">USB ierīce</translation>
 <translation id="8766156860774051068">Jūsu atlasītais saturs</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

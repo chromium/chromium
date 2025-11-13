@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">Cerca con AI Mode</translation>
 <translation id="3557336313807607643">Aggiungi ai contatti</translation>
 <translation id="355765753469272474">Annulla</translation>
+<translation id="3565012355885596568">Impossibile caricare le immagini</translation>
 <translation id="3565930036634619844">Scheda. <ph name="TAB_INDEX" /> di <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3572607909481582402">Nel tuo Account Google</translation>
 <translation id="3575234738189584619">Cerca con Lens</translation>
@@ -2000,6 +2001,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8551311254462607218">Nella barra degli indirizzi, tocca l'icona della fotocamera di Google Lens</translation>
 <translation id="8556590991644167667">{count,plural, =1{Hai ignorato {count} avviso}other{Hai ignorato {count} avvisi}}</translation>
 <translation id="8558046478684552694">Chiudi gruppo.</translation>
+<translation id="8559858985063901027">Passkey</translation>
 <translation id="8560253818350321773">Mostra prima le voci usate di frequente.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} opzione per la password disponibile sopra la tastiera.}other{{count} opzioni per la password disponibili sopra la tastiera.}}</translation>
 <translation id="8564894539416715395">Pagina Nuova scheda</translation>

@@ -1056,7 +1056,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1700517974991662022">Besøgt</translation>
 <translation id="1703331064825191675">Glem aldrig dine adgangskoder igen</translation>
 <translation id="1703666494654169921">Tillad ikke, at websites bruger virtual reality-enheder eller -data</translation>
-<translation id="1703849276368677471">Værktøjer</translation>
 <translation id="1704097193565924901">Anvend stort begyndelsesbogstav</translation>
 <translation id="1704230497453185209">Tillad ikke, at websites afspiller lyd</translation>
 <translation id="1706586824377653884">Tilføjet af din administrator</translation>
@@ -2994,6 +2993,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3019023222666709803">Pileværktøj</translation>
 <translation id="3019285239893817657">Knap til underside</translation>
 <translation id="3019595674945299805">VPN-tjeneste</translation>
+<translation id="3020101754533552167">Tjekker login…</translation>
 <translation id="3020183492814296499">Genveje</translation>
 <translation id="3020990233660977256">Serienummer: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Når batteriet bruges</translation>
@@ -9564,7 +9564,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7629858978065675960">Ukendt resultat.</translation>
 <translation id="7630426712700473382">Denne enhed administreres af <ph name="MANAGER" /> og kræver, at du logger ind hver gang.</translation>
 <translation id="7631014249255418691">Linux-applikationerne og -filerne blev sikkerhedskopieret</translation>
-<translation id="7631722872321401342">Der er ingen <ph name="LANGUAGE" /> stemmer på din enhed. Du kan installere stemmer i indstillingerne.</translation>
 <translation id="7631887513477658702">&amp;Åbn altid filer af denne type</translation>
 <translation id="7632437836497571618">Brug sikre forbindelser til at slå websites op</translation>
 <translation id="7632948528260659758">Følgende kioskapps kan ikke opdateres:</translation>
@@ -11265,7 +11264,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="876161309768861172">Login mislykkedes. Prøv igen.</translation>
 <translation id="8761945298804995673">Denne bruger eksisterer allerede</translation>
 <translation id="8762886931014513155">Din <ph name="DEVICE_TYPE" /> skal opdateres</translation>
-<translation id="8763170551806710928">Vis chips</translation>
 <translation id="8763927697961133303">USB-enhed</translation>
 <translation id="8766156860774051068">Udvalgt af dig</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

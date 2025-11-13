@@ -4008,6 +4008,7 @@ Detalii suplimentare:
 <translation id="7525804896095537619">Numele trebuie completat</translation>
 <translation id="7526934274050461096">Conexiunea la acest site nu este privată</translation>
 <translation id="7529884293139707752">Învățământ la domiciliu</translation>
+<translation id="7530215951451994972">Creează o imagine</translation>
 <translation id="7531464389616946220">Scanează cardul</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Enter pentru a căuta în marcaje</translation>
 <translation id="7534987659046836932">Plic C7</translation>
@@ -4294,6 +4295,7 @@ Detalii suplimentare:
 <translation id="7987087088851949178">Emitentele cu opțiunea Cumpără acum, plătește mai târziu, disponibile pentru plata în timp, s-au deschis la înălțimea completă.</translation>
 <translation id="799149739215780103">Legare</translation>
 <translation id="7992044431894087211">Permiterea accesului la eran pentru <ph name="APPLICATION_TITLE" /> a fost reluată</translation>
+<translation id="799384093520583425">Organizația ta a blocat folosirea DevTools în această pagină</translation>
 <translation id="7995512525968007366">Nespecificată</translation>
 <translation id="7997855386298213183">file comune</translation>
 <translation id="8001912761979890298">Acest server nu a putut dovedi că este <ph name="DOMAIN" />, deoarece folosește un certificat de securitate în care Chromium sau configurația sistemului pentru criptarea traficului web nu are încredere. Cauza poate fi o eroare de configurare sau interceptarea conexiunii de către un atacator. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Vezi certificatul<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4839,6 +4841,7 @@ Detalii suplimentare:
 <translation id="8922013791253848639">Permite întotdeauna anunțurile pe acest site</translation>
 <translation id="8922734931659847428">O listă limitată de adrese URL ale paginilor pe care le accesezi și unde au loc <ph name="BEGIN_LINK" />evenimente privind tehnologia veche<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Perforare în dreapta sus</translation>
+<translation id="8926082624786998759">DevTools nu este permis în această pagină</translation>
 <translation id="8926389886865778422">Nu mai întreba</translation>
 <translation id="8926400492587758246">Plătește în rate lunare mici</translation>
 <translation id="8932102934695377596">Ora este setată în trecut</translation>

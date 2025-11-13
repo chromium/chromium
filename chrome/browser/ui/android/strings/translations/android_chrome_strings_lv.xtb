@@ -944,6 +944,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> cilne — <ph name="URL_LIST" />}zero{<ph name="TAB_COUNT_MANY" /> ciļņu — <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> cilne — <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> cilnes — <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Konfidencialitāte</translation>
 <translation id="504456571576643789">Svarīgi apsvērumi</translation>
+<translation id="5056587122125565772">Izveidot attēlu</translation>
 <translation id="506254248375231072">Nav ciļņu</translation>
 <translation id="5075939510584558547">Saglabāšana bez šifrēšanas</translation>
 <translation id="5085038751173179818">Pierakstieties šajā vietnē un pārlūkā Chrome, lai visās savās ierīcēs iegūtu savas grāmatzīmes un citu saturu.</translation>

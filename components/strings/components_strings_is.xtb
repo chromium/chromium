@@ -4007,6 +4007,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7525804896095537619">Heiti má ekki vera autt</translation>
 <translation id="7526934274050461096">Tenging þín við þessa síðu er ekki traust</translation>
 <translation id="7529884293139707752">Heimakennsla</translation>
+<translation id="7530215951451994972">Búa til mynd</translation>
 <translation id="7531464389616946220">Skanna kort</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Enter til að leita í bókamerkjum</translation>
 <translation id="7534987659046836932">Umslag: C7</translation>
@@ -4293,6 +4294,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7987087088851949178">Útgefendur „kauptu núna, borgaðu síðar“ fyrir raðgreiðslur, opnir til fulls.</translation>
 <translation id="799149739215780103">Binda</translation>
 <translation id="7992044431894087211">Skjádeilingu með <ph name="APPLICATION_TITLE" /> var haldið áfram</translation>
+<translation id="799384093520583425">Fyrirtækið þitt lokaði á notkun DevTools á þessari síðu</translation>
 <translation id="7995512525968007366">Ekki tilgreint</translation>
 <translation id="7997855386298213183">samnýttir flipar</translation>
 <translation id="8001912761979890298">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" /> vegna þess að hann notar öryggisvottorð sem Chromium eða kerfisstillingin þín treystir ekki fyrir dulkóðun vefumferðar. Þetta kann að orsakast af rangri stillingu eða tölvuþrjóti sem hefur komist inn í tenginguna. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Skoða vottorð<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4837,6 +4839,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8922013791253848639">Leyfa alltaf auglýsingar á þessu vefsvæði</translation>
 <translation id="8922734931659847428">Takmarkaður listi vefslóða síðna sem þú opnar þar sem <ph name="BEGIN_LINK" />tilvik vegna eldri tækni<ph name="END_LINK" /> koma upp</translation>
 <translation id="892588693504540538">Gatað efst til hægri</translation>
+<translation id="8926082624786998759">Lokað á DevTools á þessari síðu</translation>
 <translation id="8926389886865778422">Ekki spyrja aftur</translation>
 <translation id="8926400492587758246">Borgaðu í lágum mánaðarlegum afborgunum</translation>
 <translation id="8932102934695377596">Klukkan er á eftir</translation>

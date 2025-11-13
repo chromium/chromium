@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">AI ಮೋಡ್ ಮೂಲಕ ಹುಡುಕಿ</translation>
 <translation id="3557336313807607643">ಸಂಪರ್ಕಗಳಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="355765753469272474">ರದ್ದುಗೊಳಿಸಿ</translation>
+<translation id="3565012355885596568">ಚಿತ್ರಗಳನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="3565930036634619844">ಟ್ಯಾಬ್. <ph name="NUMBER_OF_TABS" /> ರಲ್ಲಿ <ph name="TAB_INDEX" />.</translation>
 <translation id="3572607909481582402">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ</translation>
 <translation id="3575234738189584619">Lens ಮೂಲಕ ಹುಡುಕಿ</translation>
@@ -2000,6 +2001,7 @@
 <translation id="8551311254462607218">ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ, Google Lens ಕ್ಯಾಮರಾ ಐಕಾನ್ ಮೇಲೆ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="8556590991644167667">{count,plural, =1{ನೀವು {count} ಎಚ್ಚರಿಕೆಯನ್ನು ವಜಾಗೊಳಿಸಿದ್ದೀರಿ}one{ನೀವು {count} ಎಚ್ಚರಿಕೆಗಳನ್ನು ವಜಾಗೊಳಿಸಿದ್ದೀರಿ}other{ನೀವು {count} ಎಚ್ಚರಿಕೆಗಳನ್ನು ವಜಾಗೊಳಿಸಿದ್ದೀರಿ}}</translation>
 <translation id="8558046478684552694">ಗುಂಪನ್ನು ಮುಚ್ಚಿರಿ.</translation>
+<translation id="8559858985063901027">ಪಾಸ್‌ಕೀಗಳು</translation>
 <translation id="8560253818350321773">ಪದೇ ಪದೇ ಬಳಸುವ ಐಟಂಗಳನ್ನು ಮೊದಲು ತೋರಿಸಿ.</translation>
 <translation id="8561999115126307258">{count,plural, =1{ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಮೇಲ್ಭಾಗದಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಾಗಿ {count} ಆಯ್ಕೆ ಲಭ್ಯವಿದೆ.}one{ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಮೇಲ್ಭಾಗದಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಾಗಿ {count} ಆಯ್ಕೆಗಳು ಲಭ್ಯವಿವೆ.}other{ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಮೇಲ್ಭಾಗದಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಾಗಿ {count} ಆಯ್ಕೆಗಳು ಲಭ್ಯವಿವೆ.}}</translation>
 <translation id="8564894539416715395">ಹೊಸ ಟ್ಯಾಬ್‌ ಪುಟ</translation>

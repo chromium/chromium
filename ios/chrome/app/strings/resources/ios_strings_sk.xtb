@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">Vyhľadávajte v režime umelej inteligencie</translation>
 <translation id="3557336313807607643">Pridať do kontaktov</translation>
 <translation id="355765753469272474">Späť</translation>
+<translation id="3565012355885596568">Obrázky sa nepodarilo načítať</translation>
 <translation id="3565930036634619844">Karta. <ph name="TAB_INDEX" /> z <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3572607909481582402">Vo vašom účte Google</translation>
 <translation id="3575234738189584619">Vyhľadávať pomocou funkcie Lens</translation>
@@ -2000,6 +2001,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="8551311254462607218">Na paneli s adresou klepnite na ikonu kamery funkcie Google Lens</translation>
 <translation id="8556590991644167667">{count,plural, =1{Zavreli ste {count} upozornenie}few{Zavreli ste {count} upozornenia}many{You dismissed {count} warnings}other{Zavreli ste {count} upozornení}}</translation>
 <translation id="8558046478684552694">Zavrieť skupinu.</translation>
+<translation id="8559858985063901027">Prístupové kľúče</translation>
 <translation id="8560253818350321773">Zobrazujte si často používané položky ako prvé.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Nad klávesnicou je k dispozícii {count} možnosť hesla.}few{Nad klávesnicou sú k dispozícii {count} možnosti hesla.}many{{count} options for password available above your keyboard.}other{Nad klávesnicou je k dispozícii {count} možností hesla.}}</translation>
 <translation id="8564894539416715395">Stránka na novej karte</translation>

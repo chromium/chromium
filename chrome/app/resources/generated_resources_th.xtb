@@ -1054,7 +1054,6 @@
 <translation id="1700517974991662022">เคยเข้าชม</translation>
 <translation id="1703331064825191675">ไม่ต้องกังวลเกี่ยวกับรหัสผ่านอีกต่อไป</translation>
 <translation id="1703666494654169921">ไม่อนุญาตให้เว็บไซต์ใช้อุปกรณ์หรือข้อมูลเทคโนโลยีความจริงเสมือน (VR)</translation>
-<translation id="1703849276368677471">เครื่องมือ</translation>
 <translation id="1704097193565924901">Capitalize</translation>
 <translation id="1704230497453185209">ไม่อนุญาตให้เว็บไซต์เล่นเสียง</translation>
 <translation id="1706586824377653884">เพิ่มโดยผู้ดูแลระบบ</translation>
@@ -2979,6 +2978,7 @@
 <translation id="3019023222666709803">เครื่องมือลูกศร</translation>
 <translation id="3019285239893817657">ปุ่มหน้าย่อย</translation>
 <translation id="3019595674945299805">บริการ VPN</translation>
+<translation id="3020101754533552167">กำลังตรวจสอบการลงชื่อเข้าใช้…</translation>
 <translation id="3020183492814296499">ทางลัด</translation>
 <translation id="3020990233660977256">หมายเลขซีเรียล: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">ขณะใช้แบตเตอรี่</translation>
@@ -8104,6 +8104,7 @@
 <translation id="6619990499523117484">ยืนยัน PIN</translation>
 <translation id="6620000730890558421">จัดแท็บให้เป็นระเบียบอยู่เสมอด้วย AI</translation>
 <translation id="6620254580880484313">ชื่อคอนเทนเนอร์</translation>
+<translation id="6621282332208609777">ถาม Google หรือพิมพ์ URL</translation>
 <translation id="6621391692573306628">หากต้องการส่งแท็บนี้ไปยังอุปกรณ์อื่น ให้ลงชื่อเข้าใช้ Chrome ในอุปกรณ์ทั้ง 2 เครื่อง</translation>
 <translation id="6622980291894852883">บล็อกการแสดงภาพ</translation>
 <translation id="6624036901798307345">ในโหมดแท็บเล็ต ให้แตะปุ่มแถบเครื่องมือตัวนับแท็บเพื่อเปิดแนวแท็บใหม่ซึ่งแสดงภาพขนาดย่อของแต่ละแท็บ</translation>
@@ -9526,6 +9527,7 @@
 <translation id="7620616707541471029">เลือกบัญชีเพื่อดำเนินการต่อ</translation>
 <translation id="7621382409404463535">ระบบบันทึกการกำหนดค่าอุปกรณ์ไม่สำเร็จ</translation>
 <translation id="7621595347123595643">คุณจะกู้คืนข้อมูลในเครื่องไม่ได้หากลืมรหัสผ่านหรือ PIN</translation>
+<translation id="7621863462266622331">เมื่อแชร์แท็บ ระบบจะส่งเนื้อหา สื่อ และ URL ของหน้าเว็บไปยัง Google</translation>
 <translation id="7622114377921274169">กำลังชาร์จ</translation>
 <translation id="7622768823216805500">โดยปกติแล้วเว็บไซต์จะติดตั้งเครื่องจัดการการชำระเงินเพื่อดำเนินการตามฟีเจอร์สำหรับช็อปปิ้ง เช่น การชำระเงินสะดวกขึ้น</translation>
 <translation id="7622966771025050155">เปลี่ยนเป็นแท็บที่ถูกจับภาพ</translation>
@@ -9539,7 +9541,6 @@
 <translation id="7629858978065675960">ผลการค้นหาที่ไม่รู้จัก</translation>
 <translation id="7630426712700473382">อุปกรณ์นี้จัดการโดย <ph name="MANAGER" /> และกำหนดให้คุณลงชื่อเข้าใช้ทุกครั้ง</translation>
 <translation id="7631014249255418691">สำรองข้อมูลแอปและไฟล์ Linux เรียบร้อยแล้ว</translation>
-<translation id="7631722872321401342">ไม่มีเสียงภาษา<ph name="LANGUAGE" />บนอุปกรณ์ของคุณ คุณติดตั้งเสียงได้ในการตั้งค่า</translation>
 <translation id="7631887513477658702">&amp;เปิดไฟล์ประเภทนี้เสมอ</translation>
 <translation id="7632437836497571618">ใช้การเชื่อมต่อที่ปลอดภัยเพื่อค้นหาเว็บไซต์</translation>
 <translation id="7632948528260659758">แอปคีออสก์ต่อไปนี้ไม่สามารถอัปเดตได้:</translation>
@@ -11239,7 +11240,6 @@
 <translation id="876161309768861172">ลงชื่อเข้าใช้ไม่ได้ โปรดลองอีกครั้ง</translation>
 <translation id="8761945298804995673">มีผู้ใช้รายนี้แล้ว</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> ต้องการการอัปเดต</translation>
-<translation id="8763170551806710928">แสดงชิป</translation>
 <translation id="8763927697961133303">อุปกรณ์ USB</translation>
 <translation id="8766156860774051068">คุณเป็นผู้ดูแลจัดการ</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
@@ -11742,6 +11742,7 @@
 <translation id="909554839118732438">ปิดหน้าต่างที่ไม่ระบุตัวตน</translation>
 <translation id="9095819602391364796">ไม่อนุญาตให้เว็บไซต์ควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่</translation>
 <translation id="9096053102600371572">การเลื่อนที่มีการควบคุม <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">เปรียบเทียบตัวเลือก</translation>
 <translation id="9096776523567481218">ไม่ได้ติดตั้งไว้ในเครื่อง</translation>
 <translation id="9098860402274800697">นําแอป Google Play และ Android ออก</translation>
 <translation id="9099220545925418560">อิงจากประวัติการท่องเว็บของคุณ การตั้งค่านี้ปิดอยู่</translation>

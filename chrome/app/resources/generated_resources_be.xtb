@@ -1057,7 +1057,6 @@
 <translation id="1700517974991662022">Наведанае</translation>
 <translation id="1703331064825191675">Паролі больш не наробяць клопату</translation>
 <translation id="1703666494654169921">Не дазваляць сайтам выкарыстоўваць даныя або прылады віртуальнай рэальнасці</translation>
-<translation id="1703849276368677471">Інструменты</translation>
 <translation id="1704097193565924901">Зрабіць першыя літары слоў вялікімі</translation>
 <translation id="1704230497453185209">Не дазваляць сайтам прайграваць гук</translation>
 <translation id="1706586824377653884">Дададзена адміністратарам</translation>
@@ -2980,6 +2979,7 @@
 <translation id="3019023222666709803">Інструмент "Стрэлка"</translation>
 <translation id="3019285239893817657">Кнопка пераходу на ўкладзеную старонку</translation>
 <translation id="3019595674945299805">Сэрвіс VPN</translation>
+<translation id="3020101754533552167">Ідзе праверка ўваходу…</translation>
 <translation id="3020183492814296499">Спалучэнні клавіш</translation>
 <translation id="3020990233660977256">Серыйны нумар: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Пры працы ад акумулятара</translation>
@@ -9550,7 +9550,6 @@
 <translation id="7629858978065675960">Невядомы вынік.</translation>
 <translation id="7630426712700473382">Прыладай кіруе <ph name="MANAGER" />. Вам трэба кожны раз уваходзіць ва ўліковы запіс.</translation>
 <translation id="7631014249255418691">Рэзервовая копія файлаў і праграм Linux створана</translation>
-<translation id="7631722872321401342">На прыладзе адсутнічаюць галасы для чытання ўслых на мове <ph name="LANGUAGE" />. Галасы можна ўсталяваць у наладах.</translation>
 <translation id="7631887513477658702">&amp;Заўсёды адкрываць файлы гэтага тыпу</translation>
 <translation id="7632437836497571618">Выкарыстоўваць бяспечнае падключэнне для пошуку адрасоў сайтаў</translation>
 <translation id="7632948528260659758">Наступныя праграмы-кіёскі абнавіць не ўдалося:</translation>
@@ -11249,7 +11248,6 @@
 <translation id="876161309768861172">Не ўдалося ўвайсці ў сістэму. Паўтарыце спробу.</translation>
 <translation id="8761945298804995673">Гэты карыстальнік ужо існуе</translation>
 <translation id="8762886931014513155">Неабходна абнавіць <ph name="DEVICE_TYPE" /></translation>
-<translation id="8763170551806710928">Паказаць чыпы</translation>
 <translation id="8763927697961133303">Прылада USB</translation>
 <translation id="8766156860774051068">Ваша падборка</translation>
 <translation id="8766796754185931010">Катаэры</translation>

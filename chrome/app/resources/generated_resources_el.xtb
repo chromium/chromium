@@ -1055,7 +1055,6 @@
 <translation id="1700517974991662022">Σύνδεσμος που έχετε επισκεφτεί</translation>
 <translation id="1703331064825191675">Δεν χρειάζεται να ανησυχείτε πλέον για τους κωδικούς πρόσβασής σας</translation>
 <translation id="1703666494654169921">Να μην επιτρέπεται στους ιστοτόπους να χρησιμοποιούν συσκευές ή δεδομένα εικονικής πραγματικότητας</translation>
-<translation id="1703849276368677471">Εργαλεία</translation>
 <translation id="1704097193565924901">Χρήση κεφαλαίων</translation>
 <translation id="1704230497453185209">Να μην επιτρέπεται στους ιστοτόπους να αναπαράγουν ήχο</translation>
 <translation id="1706586824377653884">Προστέθηκε από τον διαχειριστή σας</translation>
@@ -2992,6 +2991,7 @@
 <translation id="3019023222666709803">Εργαλείο βέλους</translation>
 <translation id="3019285239893817657">Κουμπί δευτερεύουσας σελίδας</translation>
 <translation id="3019595674945299805">Υπηρεσία VPN</translation>
+<translation id="3020101754533552167">Έλεγχος σύνδεσης…</translation>
 <translation id="3020183492814296499">Συντομεύσεις</translation>
 <translation id="3020990233660977256">Σειριακός αριθμός: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Κατά τη χρήση μπαταρίας</translation>
@@ -9561,7 +9561,6 @@
 <translation id="7629858978065675960">Άγνωστο αποτέλεσμα.</translation>
 <translation id="7630426712700473382">Η διαχείριση της συσκευής γίνεται από <ph name="MANAGER" /> και απαιτεί να συνδέεστε κάθε φορά.</translation>
 <translation id="7631014249255418691">Δημιουργήθηκαν επιτυχώς αντίγραφα ασφαλείας για τις εφαρμογές και τα αρχεία Linux</translation>
-<translation id="7631722872321401342">Δεν υπάρχουν φωνές στα <ph name="LANGUAGE" /> στη συσκευή σας. Μπορείτε να εγκαταστήσετε φωνές στις ρυθμίσεις.</translation>
 <translation id="7631887513477658702">&amp;Πάντα Άνοιγμα Αρχείων Αυτού του Τύπου</translation>
 <translation id="7632437836497571618">Χρήση ασφαλών συνδέσεων για την αναζήτηση ιστοτόπων</translation>
 <translation id="7632948528260659758">Απέτυχε η ενημέρωση για τις παρακάτω εφαρμοφές kiosk:</translation>
@@ -11259,7 +11258,6 @@
 <translation id="876161309768861172">Δεν ήταν δυνατή η σύνδεσή σας, δοκιμάστε ξανά</translation>
 <translation id="8761945298804995673">Αυτός ο χρήστης υπάρχει ήδη</translation>
 <translation id="8762886931014513155">Η συσκευή <ph name="DEVICE_TYPE" /> χρειάζεται ενημέρωση</translation>
-<translation id="8763170551806710928">Εμφάνιση τσιπ</translation>
 <translation id="8763927697961133303">Συσκευή USB</translation>
 <translation id="8766156860774051068">Επιλεγμένα από εσάς</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

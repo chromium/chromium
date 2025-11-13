@@ -1055,7 +1055,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1700517974991662022">Accesat</translation>
 <translation id="1703331064825191675">Nu-ți face griji în privința parolelor</translation>
 <translation id="1703666494654169921">Nu permite site-urilor să folosească dispozitive de realitate virtuală sau date conexe</translation>
-<translation id="1703849276368677471">Instrumente</translation>
 <translation id="1704097193565924901">Scrie cu majusculă</translation>
 <translation id="1704230497453185209">Nu permite site-urilor să redea sunet</translation>
 <translation id="1706586824377653884">Adăugat de administrator</translation>
@@ -2980,6 +2979,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3019023222666709803">Instrument săgeată</translation>
 <translation id="3019285239893817657">Butonul Pagină secundară</translation>
 <translation id="3019595674945299805">Servicii VPN</translation>
+<translation id="3020101754533552167">Conectarea se verifică...</translation>
 <translation id="3020183492814296499">Comenzi rapide</translation>
 <translation id="3020990233660977256">Numărul de serie: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">În timpul funcționării pe baterie</translation>
@@ -9547,7 +9547,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7629858978065675960">Rezultat necunoscut.</translation>
 <translation id="7630426712700473382">Dispozitivul este gestionat de <ph name="MANAGER" /> și solicită de fiecare dată conectarea.</translation>
 <translation id="7631014249255418691">S-a făcut backup pentru aplicațiile și fișierele Linux.</translation>
-<translation id="7631722872321401342">Nu există voci în <ph name="LANGUAGE" /> pe dispozitiv. Poți instala voci în setări.</translation>
 <translation id="7631887513477658702">&amp;Deschide întotdeauna fișierele de acest tip</translation>
 <translation id="7632437836497571618">Folosește conexiuni securizate pentru a accesa site-uri</translation>
 <translation id="7632948528260659758">Următoarele aplicații de tip chioșc nu au fost actualizate:</translation>
@@ -11247,7 +11246,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="876161309768861172">Conectare nereușită. Încearcă din nou.</translation>
 <translation id="8761945298804995673">Acest utilizator există deja</translation>
 <translation id="8762886931014513155">Dispozitivul <ph name="DEVICE_TYPE" /> are nevoie de actualizare</translation>
-<translation id="8763170551806710928">Afișează cipurile</translation>
 <translation id="8763927697961133303">Dispozitiv USB</translation>
 <translation id="8766156860774051068">Selectate de tine</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

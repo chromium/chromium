@@ -1051,7 +1051,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1700517974991662022">Visitado</translation>
 <translation id="1703331064825191675">Ya no tendrás que preocuparte por tus contraseñas</translation>
 <translation id="1703666494654169921">No permitir que los sitios usen datos ni dispositivos de realidad virtual</translation>
-<translation id="1703849276368677471">Herramientas</translation>
 <translation id="1704097193565924901">Usar mayúsculas</translation>
 <translation id="1704230497453185209">No permitir que los sitios reproduzcan sonido</translation>
 <translation id="1706586824377653884">Agregado por el administrador</translation>
@@ -2976,6 +2975,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3019023222666709803">Herramienta de flecha</translation>
 <translation id="3019285239893817657">Botón de la subpágina</translation>
 <translation id="3019595674945299805">Servicio VPN</translation>
+<translation id="3020101754533552167">Verificando el acceso…</translation>
 <translation id="3020183492814296499">Accesos directos</translation>
 <translation id="3020990233660977256">Número de serie: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Mientras se usa la batería</translation>
@@ -9544,7 +9544,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7629858978065675960">Resultado desconocido.</translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> administra este dispositivo y requiere que accedas a tu cuenta en todas las instancias.</translation>
 <translation id="7631014249255418691">Se realizó la copia de seguridad de los archivos y apps de Linux.</translation>
-<translation id="7631722872321401342">No hay voces en <ph name="LANGUAGE" /> en tu dispositivo. Puedes instalar voces en la configuración.</translation>
 <translation id="7631887513477658702">&amp;Abrir siempre archivos de este tipo</translation>
 <translation id="7632437836497571618">Usar conexiones seguras para buscar sitios</translation>
 <translation id="7632948528260659758">No se pudieron actualizar las siguientes aplicaciones de kiosco:</translation>
@@ -11244,7 +11243,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="876161309768861172">No pudiste acceder a tu cuenta; vuelve a intentarlo</translation>
 <translation id="8761945298804995673">Ya existe este usuario</translation>
 <translation id="8762886931014513155">Tu <ph name="DEVICE_TYPE" /> necesita una actualización</translation>
-<translation id="8763170551806710928">Mostrar chips</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8766156860774051068">Seleccionados por ti</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

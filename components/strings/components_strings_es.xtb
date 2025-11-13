@@ -4008,6 +4008,7 @@ Más información:
 <translation id="7525804896095537619">El nombre no puede estar vacío</translation>
 <translation id="7526934274050461096">Tu conexión con este sitio web no es privada</translation>
 <translation id="7529884293139707752">Educación en casa</translation>
+<translation id="7530215951451994972">Crear imagen</translation>
 <translation id="7531464389616946220">Escanear tarjeta</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Intro para buscar marcadores</translation>
 <translation id="7534987659046836932">Sobre C7</translation>
@@ -4294,6 +4295,7 @@ Más información:
 <translation id="7987087088851949178">Los emisores de pago aplazado disponibles para pagar a plazos están abiertos a altura completa.</translation>
 <translation id="799149739215780103">Encuadernar</translation>
 <translation id="7992044431894087211">Se ha reanudado la pantalla compartida con <ph name="APPLICATION_TITLE" /></translation>
+<translation id="799384093520583425">Tu organización ha bloqueado el uso de DevTools en esta página</translation>
 <translation id="7995512525968007366">Sin especificar</translation>
 <translation id="7997855386298213183">pestañas compartidas</translation>
 <translation id="8001912761979890298">Este servidor no ha podido demostrar que es <ph name="DOMAIN" /> porque está usando un certificado de seguridad en el que Chromium o la configuración de tu sistema no confían para el cifrado del tráfico web. Este problema puede deberse a una configuración incorrecta o a que un atacante ha interceptado la conexión. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Ver certificado<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4838,6 +4840,7 @@ Más información:
 <translation id="8922013791253848639">Permite los anuncios siempre en este sitio web</translation>
 <translation id="8922734931659847428">Una lista limitada de URLs de las páginas que visitas donde se producen <ph name="BEGIN_LINK" />eventos tecnológicos antiguos<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Perforado en la parte superior derecha</translation>
+<translation id="8926082624786998759">DevTools no está permitido en esta página</translation>
 <translation id="8926389886865778422">No preguntar de nuevo</translation>
 <translation id="8926400492587758246">Paga en módicas cuotas mensuales</translation>
 <translation id="8932102934695377596">Tu reloj está atrasado</translation>

@@ -1049,7 +1049,6 @@
 <translation id="1700517974991662022">访问过</translation>
 <translation id="1703331064825191675">再也不必费心记住您的密码</translation>
 <translation id="1703666494654169921">不允许网站使用虚拟现实设备或数据</translation>
-<translation id="1703849276368677471">工具</translation>
 <translation id="1704097193565924901">大写</translation>
 <translation id="1704230497453185209">不允许网站播放声音</translation>
 <translation id="1706586824377653884">此图标是由管理员添加的</translation>
@@ -2971,6 +2970,7 @@
 <translation id="3019023222666709803">箭头工具</translation>
 <translation id="3019285239893817657">子页面按钮</translation>
 <translation id="3019595674945299805">VPN 服务</translation>
+<translation id="3020101754533552167">正在检查登录状态…</translation>
 <translation id="3020183492814296499">快捷方式</translation>
 <translation id="3020990233660977256">序列号：<ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">使用电池时</translation>
@@ -9531,7 +9531,6 @@
 <translation id="7629858978065675960">未知结果。</translation>
 <translation id="7630426712700473382">此设备由 <ph name="MANAGER" /> 管理，要求您每次使用前必须先登录。</translation>
 <translation id="7631014249255418691">已成功备份 Linux 应用和文件</translation>
-<translation id="7631722872321401342">您的设备上没有<ph name="LANGUAGE" />语音包。您可以在设置中安装语音包。</translation>
 <translation id="7631887513477658702">总是打开此类文件(&amp;A)</translation>
 <translation id="7632437836497571618">使用安全连接查找网站</translation>
 <translation id="7632948528260659758">以下自助服务终端应用未能成功更新：</translation>
@@ -11231,7 +11230,6 @@
 <translation id="876161309768861172">无法登录，请重试</translation>
 <translation id="8761945298804995673">该用户已存在</translation>
 <translation id="8762886931014513155">您的 <ph name="DEVICE_TYPE" /> 需要更新</translation>
-<translation id="8763170551806710928">显示条状标签</translation>
 <translation id="8763927697961133303">USB 设备</translation>
 <translation id="8766156860774051068">由您挑选</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

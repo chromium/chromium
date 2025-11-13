@@ -1054,7 +1054,6 @@
 <translation id="1700517974991662022">ملاحظہ کردہ</translation>
 <translation id="1703331064825191675">اپنے پاس ورڈز کے تعلق سے کبھی فکرمند نہ ہوں</translation>
 <translation id="1703666494654169921">سائٹس کو ورچوئل رئیلٹی آلات یا ڈیٹا کا استعمال کرنے کی اجازت نہ دیں</translation>
-<translation id="1703849276368677471">ٹولز</translation>
 <translation id="1704097193565924901">بڑے حرف میں لکھیں</translation>
 <translation id="1704230497453185209">سائٹس کو آواز چلانے کی اجازت نہ دیں</translation>
 <translation id="1706586824377653884">آپ کے منتظم کے ذریعے شامل کردہ</translation>
@@ -2981,6 +2980,7 @@
 <translation id="3019023222666709803">تیر کے نشان کا ٹول</translation>
 <translation id="3019285239893817657">ذیلی صفحے کا بٹن</translation>
 <translation id="3019595674945299805">‏VPN سروس</translation>
+<translation id="3020101754533552167">سائن ان چیک ہو رہی ہے…</translation>
 <translation id="3020183492814296499">شارٹ کٹس</translation>
 <translation id="3020990233660977256">نمبر شمار: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">بیٹری کا استعمال کرتے وقت</translation>
@@ -9543,7 +9543,6 @@
 <translation id="7629858978065675960">نامعلوم نتیجہ۔</translation>
 <translation id="7630426712700473382">یہ آلہ <ph name="MANAGER" /> کے زیر انتظام ہے اور آپ کو ہر بار سائن ان کرنے کی ضرورت ہے۔</translation>
 <translation id="7631014249255418691">‏Linux کی ایپس اور فائلز کا کامیابی کے ساتھ بیک اپ لے لیا گیا ہے</translation>
-<translation id="7631722872321401342">آپ کے آلے پر کوئی <ph name="LANGUAGE" /> کی آوازیں نہیں ہیں۔ آپ ترتیبات میں آوازیں انسٹال کر سکتے ہیں۔</translation>
 <translation id="7631887513477658702">اس قسم کی فائلیں &amp;ہمیشہ کھولیں</translation>
 <translation id="7632437836497571618">سائٹس تلاش کرنے کے لیے محفوظ کنکشن کا استعمال کریں</translation>
 <translation id="7632948528260659758">درج ذیل کیوسک ایپس اپ ڈیٹنگ کیلئے ناکام ہو گئی ہیں:</translation>
@@ -11242,7 +11241,6 @@
 <translation id="876161309768861172">آپ کو سائن ان نہیں کیا جا سکا، براہ کرم دوبارہ کوشش کریں</translation>
 <translation id="8761945298804995673">یہ صارف پہلے سے موجود ہے</translation>
 <translation id="8762886931014513155">آپ کے <ph name="DEVICE_TYPE" /> کو اپ ڈیٹ کی ضرورت ہے</translation>
-<translation id="8763170551806710928">چِپس دکھائیں</translation>
 <translation id="8763927697961133303">‏USB آلہ</translation>
 <translation id="8766156860774051068">آپ کے ذریعے کیوریٹ کردہ</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

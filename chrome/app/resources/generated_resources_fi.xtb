@@ -1055,7 +1055,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1700517974991662022">Käyty</translation>
 <translation id="1703331064825191675">Enää ei tarvitse huolehtia salasanoista</translation>
 <translation id="1703666494654169921">Älä salli sivustojen käyttää virtuaalitodellisuuslaitteita tai ‑dataa</translation>
-<translation id="1703849276368677471">Työkalut</translation>
 <translation id="1704097193565924901">Muuta alkukirjain isoksi</translation>
 <translation id="1704230497453185209">Älä salli sivustojen toistaa ääntä</translation>
 <translation id="1706586824377653884">Järjestelmänvalvojan lisäämä</translation>
@@ -9557,7 +9556,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7629858978065675960">Tuntematon hakutulos.</translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> hallinnoi tätä laitetta ja edellyttää sinua kirjautumaan sisään joka kerta.</translation>
 <translation id="7631014249255418691">Linux-sovellukset ja ‑tiedostot varmuuskopioitu</translation>
-<translation id="7631722872321401342">Laitteella ei ole ääniä (<ph name="LANGUAGE" />). Voit asentaa ääniä asetuksista.</translation>
 <translation id="7631887513477658702">&amp;Avaa aina tämäntyyppiset tiedostot</translation>
 <translation id="7632437836497571618">Sivustojen hakeminen turvallisella yhteydellä</translation>
 <translation id="7632948528260659758">Seuraavien kioskisovellusten päivitys epäonnistui:</translation>
@@ -11257,7 +11255,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="876161309768861172">Kirjautuminen ei onnistunut, yritä uudelleen</translation>
 <translation id="8761945298804995673">Tämä käyttäjä on jo olemassa</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> on päivitettävä</translation>
-<translation id="8763170551806710928">Näytä palat</translation>
 <translation id="8763927697961133303">USB-laite</translation>
 <translation id="8766156860774051068">Sinun valitsemasi</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

@@ -1055,7 +1055,6 @@
 <translation id="1700517974991662022">己經去過</translation>
 <translation id="1703331064825191675">不用再擔心密碼問題</translation>
 <translation id="1703666494654169921">不允許網站使用虛擬實境﻿裝置或資料</translation>
-<translation id="1703849276368677471">工具</translation>
 <translation id="1704097193565924901">大寫</translation>
 <translation id="1704230497453185209">不允許網站播放音效</translation>
 <translation id="1706586824377653884">由管理員新增</translation>
@@ -2469,7 +2468,7 @@
 <translation id="2667463864537187133">管理拼字檢查</translation>
 <translation id="2668604389652548400">請移除擴充程式，或前往「<ph name="BEGIN_LINK" />Chrome 網上應用程式商店<ph name="END_LINK" />」尋找可取代的類似擴充程式。</translation>
 <translation id="2669241540496514785">無法開啟 <ph name="APP_NAME" />。</translation>
-<translation id="2669250147452250961">開啟後即可取得其他裝置的瀏覽記錄和分頁</translation>
+<translation id="2669250147452250961">開啟以取得其他裝置的瀏覽記錄和分頁</translation>
 <translation id="2669454659051515572">此裝置的所有使用者都能看到已下載的檔案</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> 正在共用 Chrome 分頁。</translation>
 <translation id="2670168377011445813">如果 Chrome 發現你的密碼在公開資料外洩事件中外洩，「Google 密碼管理工具」可能會在你登入時提議為你更改密碼。<ph name="BEGIN_LINK" />進一步瞭解自動密碼變更<ph name="END_LINK" /></translation>
@@ -2991,6 +2990,7 @@
 <translation id="3019023222666709803">箭咀工具</translation>
 <translation id="3019285239893817657">子頁面按鈕</translation>
 <translation id="3019595674945299805">VPN 服務</translation>
+<translation id="3020101754533552167">正在檢查登入狀態…</translation>
 <translation id="3020183492814296499">快速鍵</translation>
 <translation id="3020990233660977256">序號：<ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">使用電池時</translation>
@@ -9548,7 +9548,6 @@
 <translation id="7629858978065675960">結果不明。</translation>
 <translation id="7630426712700473382">此裝置由 <ph name="MANAGER" /> 管理，每次使用均需要登入。</translation>
 <translation id="7631014249255418691">已成功備份 Linux 應用程式和檔案</translation>
-<translation id="7631722872321401342">裝置上沒有<ph name="LANGUAGE" />語音，你可前往設定安裝。</translation>
 <translation id="7631887513477658702">保持開啟這類檔案(&amp;A)</translation>
 <translation id="7632437836497571618">使用安全連線查詢網站</translation>
 <translation id="7632948528260659758">下列 Kiosk 應用程式更新失敗：</translation>
@@ -11246,7 +11245,6 @@
 <translation id="876161309768861172">無法登入，請再試一次</translation>
 <translation id="8761945298804995673">這位使用者已存在。</translation>
 <translation id="8762886931014513155">您的 <ph name="DEVICE_TYPE" /> 需要更新</translation>
-<translation id="8763170551806710928">顯示方塊</translation>
 <translation id="8763927697961133303">USB 裝置</translation>
 <translation id="8766156860774051068">由你精選</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

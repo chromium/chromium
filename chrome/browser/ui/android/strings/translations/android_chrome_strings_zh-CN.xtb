@@ -944,6 +944,7 @@
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 个标签页 - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> 个标签页 - <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">隐私权</translation>
 <translation id="504456571576643789">注意事项</translation>
+<translation id="5056587122125565772">创建图片</translation>
 <translation id="506254248375231072">没有任何标签页</translation>
 <translation id="5075939510584558547">直接保存，不加密</translation>
 <translation id="5085038751173179818">登录此网站和 Chrome，即可在所有设备上获取保存的书签及其他信息</translation>

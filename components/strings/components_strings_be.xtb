@@ -4007,6 +4007,7 @@
 <translation id="7525804896095537619">Укажыце назву</translation>
 <translation id="7526934274050461096">Ваша падключэнне да гэтага сайта не прыватнае.</translation>
 <translation id="7529884293139707752">Дамашняе навучанне</translation>
+<translation id="7530215951451994972">Стварэнне відарыса</translation>
 <translation id="7531464389616946220">Сканіраваць картку</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб выканаць пошук закладак, націсніце Увод.</translation>
 <translation id="7534987659046836932">Канверт C7</translation>
@@ -4293,6 +4294,7 @@
 <translation id="7987087088851949178">Спіс эмітэнтаў, якія прапануюць куплю ў растэрміноўку, адкрыты на ўсю вышыню.</translation>
 <translation id="799149739215780103">Пераплёт</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> зноў абагульвае экран</translation>
+<translation id="799384093520583425">Ваша арганізацыя заблакіравала выкарыстанне інструментаў распрацоўшчыка на гэтай старонцы</translation>
 <translation id="7995512525968007366">Не вызначана</translation>
 <translation id="7997855386298213183">абагуленыя ўкладкі</translation>
 <translation id="8001912761979890298">Серверу не ўдалося даказаць, што гэта дамен <ph name="DOMAIN" />, бо ён выкарыстоўвае сертыфікат бяспекі, якому не давярае Chromium ці канфігурацыя вашай сістэмы для шыфравання інтэрнэт-трафіка. Прычынай могуць быць няправільныя налады або спроба зламысніка перахапіць падключэнне. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Праглядзець сертыфікат<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4837,6 +4839,7 @@
 <translation id="8922013791253848639">Заўсёды паказваць рэкламу на гэтым сайце</translation>
 <translation id="8922734931659847428">Абмежаваны спіс URL-адрасоў наведаных вамі старонак, дзе адбываюцца <ph name="BEGIN_LINK" />падзеі ўстарэлых тэхналогій<ph name="END_LINK" />.</translation>
 <translation id="892588693504540538">Дзірка зверху справа</translation>
+<translation id="8926082624786998759">Інструменты распрацоўшчыка не дазволены на гэтай старонцы</translation>
 <translation id="8926389886865778422">Больш не пытацца</translation>
 <translation id="8926400492587758246">Аплата невялікімі штомесячнымі плацяжамі</translation>
 <translation id="8932102934695377596">Ваш гадзіннік спазняецца</translation>

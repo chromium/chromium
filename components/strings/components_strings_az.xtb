@@ -4003,6 +4003,7 @@
 <translation id="7525804896095537619">Ad boş ola bilməz</translation>
 <translation id="7526934274050461096">Bu saytla olan bağlantınız şəxsi deyil</translation>
 <translation id="7529884293139707752">Evdə təhsil</translation>
+<translation id="7530215951451994972">Şəkil yaradın</translation>
 <translation id="7531464389616946220">Kartı skan edin</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, əlfəcinləri axtarmaq üçün Enter düyməsinə basın</translation>
 <translation id="7534987659046836932">Zərf C7</translation>
@@ -4289,6 +4290,7 @@
 <translation id="7987087088851949178">Hissə-hissə ödəmə üçün əlçatan olan "İndi al, sonra ödə" emitentləri vərəqi tam hündürlükdə açıldı.</translation>
 <translation id="799149739215780103">Uclarını qovuşdurun</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> ilə ekran paylaşımı davam etdirilib</translation>
+<translation id="799384093520583425">Təşkilatınız bu səhifədə DevTools-dan istifadəni bloklayıb</translation>
 <translation id="7995512525968007366">Göstərilməəyib</translation>
 <translation id="7997855386298213183">paylaşılan tablar</translation>
 <translation id="8001912761979890298">Bu server onun <ph name="DOMAIN" /> domeni olduğunu sübut edə bilmədi, çünki o, Chromium və ya veb-trafikin şifrələnməsi üçün sistem konfiqurasiyanız tərəfindən etibar edilməyən təhlükəsizlik sertifikatından istifadə edir. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Sertifikata baxın<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4833,6 +4835,7 @@
 <translation id="8922013791253848639">Həmişə bu saytdakı reklamlara icazə verin</translation>
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />Köhnə texnologiya hadisələri<ph name="END_LINK" /> olan səhifələrin məhdud URL siyahısı</translation>
 <translation id="892588693504540538">Yuxarı sağdan deşik açın</translation>
+<translation id="8926082624786998759">Bu səhifədə DevTools-a icazə verilmir</translation>
 <translation id="8926389886865778422">Daha soruşmayın</translation>
 <translation id="8926400492587758246">Aylıq aşağı taksitlərlə ödəyin</translation>
 <translation id="8932102934695377596">Saatınız geridədir</translation>

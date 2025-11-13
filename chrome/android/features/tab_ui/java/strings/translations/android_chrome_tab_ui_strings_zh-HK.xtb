@@ -128,7 +128,7 @@
 <translation id="5556417849629758491">商店資料同可用選項喺螢幕最頂嘅附近</translation>
 <translation id="5627941783489838464">沒有分頁更新</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個來自 Chrome 的連結}other{<ph name="TABS_COUNT_MANY" /> 個來自 Chrome 的連結}}</translation>
-<translation id="5740354908255726955">{TAB_COUNT,plural, =1{將一個分頁向左移}other{將多個分頁向左移}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{將分頁向左移}other{將多個分頁向左移}}</translation>
 <translation id="5746204836956568669">要將 <ph name="NUMBER_OF_TABS" /> 個分頁分組，提高工作效率嗎？</translation>
 <translation id="5773295109010386583">自動關閉閒置項目</translation>
 <translation id="58326064309361797">拖曳分頁來分組</translation>
@@ -139,7 +139,7 @@
 <translation id="6109251075362363230">所有重複的分頁現在亦會封存 (最近使用的重複分頁除外)。</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{關閉 <ph name="TABS_COUNT_ONE" /> 個所選項目}other{關閉 <ph name="TABS_COUNT_MANY" /> 個所選項目}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{將群組移至新視窗}other{將群組移至另一個視窗}}</translation>
-<translation id="6212374449852603982">{TAB_COUNT,plural, =1{將一個分頁向右移}other{將多個分頁向右移}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{將分頁向右移}other{將多個分頁向右移}}</translation>
 <translation id="6228793724645064692">(商店評分)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{從群組移除單一分頁}other{從群組移除多個分頁}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{將分頁加入新群組}other{將分頁加入新群組}}</translation>

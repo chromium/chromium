@@ -4008,6 +4008,7 @@
 <translation id="7525804896095537619">Трябва да въведете име</translation>
 <translation id="7526934274050461096">Връзката ви с този сайт не е частна</translation>
 <translation id="7529884293139707752">Домашно образование</translation>
+<translation id="7530215951451994972">Създаване на изображение</translation>
 <translation id="7531464389616946220">Сканиране на картата</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Enter, за да търсите в отметките</translation>
 <translation id="7534987659046836932">Плик C7</translation>
@@ -4294,6 +4295,7 @@
 <translation id="7987087088851949178">Списъкът с доставчици на услуги от типа „Купете сега, платете по-късно“, които предлагат разсрочено плащане, е отворен на пълната височина.</translation>
 <translation id="799149739215780103">Подвързване</translation>
 <translation id="7992044431894087211">Споделянето на екрана с(ъс) <ph name="APPLICATION_TITLE" /> бе възобновено</translation>
+<translation id="799384093520583425">Организацията ви е блокирала използването на DevTools на тази страница</translation>
 <translation id="7995512525968007366">Не е посочено</translation>
 <translation id="7997855386298213183">споделените раздели</translation>
 <translation id="8001912761979890298">Сървърът не успя да докаже, че е <ph name="DOMAIN" />, защото използва сертификат за сигурност, който не се смята за надежден от Chromium или системната ви конфигурация за шифроване на трафика в мрежата. Това може да се дължи на неправилно конфигуриране или на прехващане на връзката ви от хакер. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Преглед на сертификата<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4838,6 +4840,7 @@
 <translation id="8922013791253848639">Рекламите на този сайт да са разрешени винаги</translation>
 <translation id="8922734931659847428">Ограничен списък с URL адреси на посещаваните от вас страници, където има <ph name="BEGIN_LINK" />предишни технологични събития<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Перфориране горе вдясно</translation>
+<translation id="8926082624786998759">Инструментите DevTools не са разрешени на тази страница</translation>
 <translation id="8926389886865778422">Без повторно питане</translation>
 <translation id="8926400492587758246">Плащане на ниски месечни вноски</translation>
 <translation id="8932102934695377596">Часовникът ви е назад</translation>

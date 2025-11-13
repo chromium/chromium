@@ -1058,7 +1058,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1700517974991662022">Obiskano</translation>
 <translation id="1703331064825191675">Naj vas nikoli ne skrbi glede gesel</translation>
 <translation id="1703666494654169921">Spletnim mestom ni dovoljena uporaba naprav ali podatkov za navidezno resničnost.</translation>
-<translation id="1703849276368677471">Orodja</translation>
 <translation id="1704097193565924901">Začni z veliko začetnico</translation>
 <translation id="1704230497453185209">Spletnim mestom ni dovoljeno predvajanje zvoka.</translation>
 <translation id="1706586824377653884">Dodal skrbnik</translation>
@@ -2995,6 +2994,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3019023222666709803">Orodje za puščice</translation>
 <translation id="3019285239893817657">Gumb za podstran</translation>
 <translation id="3019595674945299805">Storitev VPN</translation>
+<translation id="3020101754533552167">Preverjanje prijave …</translation>
 <translation id="3020183492814296499">Bližnjice</translation>
 <translation id="3020990233660977256">Serijska številka: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Med napajanjem iz baterije</translation>
@@ -9571,7 +9571,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7629858978065675960">Neznan rezultat.</translation>
 <translation id="7630426712700473382">To napravo upravlja <ph name="MANAGER" />, ki zahteva, da se vsakič prijavite.</translation>
 <translation id="7631014249255418691">Aplikacije in datoteke za Linux so uspešno varnostno kopirane</translation>
-<translation id="7631722872321401342">V napravi ni glasov v tem jeziku: <ph name="LANGUAGE" />. Glasove lahko namestite v nastavitvah.</translation>
 <translation id="7631887513477658702">&amp;Vedno odpri to vrsto datotek</translation>
 <translation id="7632437836497571618">Uporaba varnih povezav za iskanje spletnih mest</translation>
 <translation id="7632948528260659758">Teh aplikacij kioska ni bilo mogoče posodobiti:</translation>
@@ -11271,7 +11270,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="876161309768861172">Prijava ni bila mogoča. Poskusite znova.</translation>
 <translation id="8761945298804995673">Ta uporabnik že obstaja</translation>
 <translation id="8762886931014513155">Naprava <ph name="DEVICE_TYPE" /> potrebuje posodobitev</translation>
-<translation id="8763170551806710928">Pokaži drobce</translation>
 <translation id="8763927697961133303">Naprava USB</translation>
 <translation id="8766156860774051068">Izbrano za vas</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

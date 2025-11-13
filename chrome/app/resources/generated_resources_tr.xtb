@@ -1054,7 +1054,6 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1700517974991662022">Ziyaret edildi</translation>
 <translation id="1703331064825191675">Şifreleriniz için hiç kaygılanmayın</translation>
 <translation id="1703666494654169921">Sitelerin sanal gerçeklik cihazlarını veya verileri kullanmasına izin verme</translation>
-<translation id="1703849276368677471">Araçlar</translation>
 <translation id="1704097193565924901">Büyük Harf Kullan</translation>
 <translation id="1704230497453185209">Sitelerin ses çalmasına izin verme</translation>
 <translation id="1706586824377653884">Yöneticiniz tarafından eklendi</translation>
@@ -2977,6 +2976,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3019023222666709803">Ok Aracı</translation>
 <translation id="3019285239893817657">Alt sayfa düğmesi</translation>
 <translation id="3019595674945299805">VPN hizmeti</translation>
+<translation id="3020101754533552167">Oturum kontrol ediliyor...</translation>
 <translation id="3020183492814296499">Kısayollar</translation>
 <translation id="3020990233660977256">Seri Numarası: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Pil kullanılırken</translation>
@@ -9542,7 +9542,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7629858978065675960">Bilinmeyen sonuç.</translation>
 <translation id="7630426712700473382">Bu cihaz, <ph name="MANAGER" /> tarafından yönetilmekte olup her defasında oturum açmanızı gerektirmektedir.</translation>
 <translation id="7631014249255418691">Linux uygulamaları ve dosyaları başarıyla yedeklendi</translation>
-<translation id="7631722872321401342">Cihazınızda <ph name="LANGUAGE" /> ses yok. Sesleri ayarlardan yükleyebilirsiniz.</translation>
 <translation id="7631887513477658702">Bu Tür Dosyaları &amp;Her Zaman Aç</translation>
 <translation id="7632437836497571618">Siteleri aramak için güvenli bağlantılar kullan</translation>
 <translation id="7632948528260659758">Aşağıdaki kiosk uygulamaları güncellenemedi:</translation>
@@ -11242,7 +11241,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="876161309768861172">Oturumunuz açılamadı, lütfen tekrar deneyin</translation>
 <translation id="8761945298804995673">Bu kullanıcı zaten var</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> cihazınızın güncellenmesi gerekiyor</translation>
-<translation id="8763170551806710928">Çipleri Göster</translation>
 <translation id="8763927697961133303">USB cihaz</translation>
 <translation id="8766156860774051068">Sizin seçimleriniz</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

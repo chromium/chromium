@@ -1055,7 +1055,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1700517974991662022">Visited</translation>
 <translation id="1703331064825191675">Never worry about your passwords</translation>
 <translation id="1703666494654169921">Don't allow sites to use virtual reality devices or data</translation>
-<translation id="1703849276368677471">Tools</translation>
 <translation id="1704097193565924901">Capitalise</translation>
 <translation id="1704230497453185209">Don't allow sites to play sound</translation>
 <translation id="1706586824377653884">Added by your administrator</translation>
@@ -2992,6 +2991,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3019023222666709803">Arrow tool</translation>
 <translation id="3019285239893817657">Subpage button</translation>
 <translation id="3019595674945299805">VPN service</translation>
+<translation id="3020101754533552167">Checking sign-in…</translation>
 <translation id="3020183492814296499">Shortcuts</translation>
 <translation id="3020990233660977256">Serial Number: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">While on battery</translation>
@@ -9560,7 +9560,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7629858978065675960">Unknown result.</translation>
 <translation id="7630426712700473382">This device is managed by <ph name="MANAGER" /> and requires you to sign in every time.</translation>
 <translation id="7631014249255418691">Linux apps &amp; files have been successfully backed up</translation>
-<translation id="7631722872321401342">There are no <ph name="LANGUAGE" /> voices on your device. You can install voices in settings.</translation>
 <translation id="7631887513477658702">&amp;Always Open Files of This Type</translation>
 <translation id="7632437836497571618">Use secure connections to look up sites</translation>
 <translation id="7632948528260659758">The following kiosk apps have been failed for updating:</translation>
@@ -11260,7 +11259,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="876161309768861172">Couldn't sign you in, please try again</translation>
 <translation id="8761945298804995673">This user already exists</translation>
 <translation id="8762886931014513155">Your <ph name="DEVICE_TYPE" /> needs an update</translation>
-<translation id="8763170551806710928">Show chips</translation>
 <translation id="8763927697961133303">USB device</translation>
 <translation id="8766156860774051068">Curated by you</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

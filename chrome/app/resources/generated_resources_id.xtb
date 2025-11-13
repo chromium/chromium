@@ -1055,7 +1055,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1700517974991662022">Dikunjungi</translation>
 <translation id="1703331064825191675">Tidak perlu mengkhawatirkan sandi Anda</translation>
 <translation id="1703666494654169921">Jangan izinkan situs menggunakan perangkat atau data virtual reality</translation>
-<translation id="1703849276368677471">Alat</translation>
 <translation id="1704097193565924901">Huruf Besar di Awal Kata</translation>
 <translation id="1704230497453185209">Jangan izinkan situs memutar suara</translation>
 <translation id="1706586824377653884">Ditambahkan oleh administrator Anda</translation>
@@ -2992,6 +2991,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3019023222666709803">Alat Panah</translation>
 <translation id="3019285239893817657">Tombol subhalaman</translation>
 <translation id="3019595674945299805">Layanan VPN</translation>
+<translation id="3020101754533552167">Memeriksa login...</translation>
 <translation id="3020183492814296499">Pintasan</translation>
 <translation id="3020990233660977256">Nomor Seri: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Saat menggunakan baterai</translation>
@@ -9559,7 +9559,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7629858978065675960">Hasil tidak diketahui.</translation>
 <translation id="7630426712700473382">Perangkat ini dikelola oleh <ph name="MANAGER" /> dan Anda perlu login setiap kali menggunakannya.</translation>
 <translation id="7631014249255418691">File &amp; aplikasi Linux berhasil dicadangkan</translation>
-<translation id="7631722872321401342">Tidak ada suara bahasa <ph name="LANGUAGE" /> di perangkat Anda. Anda dapat menginstal suara di setelan.</translation>
 <translation id="7631887513477658702">Sel&amp;alu Buka File Jenis Ini</translation>
 <translation id="7632437836497571618">Gunakan koneksi aman untuk mencari situs</translation>
 <translation id="7632948528260659758">Aplikasi kios berikut gagal memperbarui:</translation>
@@ -11259,7 +11258,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="876161309768861172">Tidak dapat memproses login Anda, coba lagi</translation>
 <translation id="8761945298804995673">Pengguna ini sudah ada</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> Anda perlu diupdate</translation>
-<translation id="8763170551806710928">Tampilkan Chip</translation>
 <translation id="8763927697961133303">Perangkat USB</translation>
 <translation id="8766156860774051068">Dipilih oleh Anda</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

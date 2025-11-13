@@ -1055,7 +1055,6 @@
 <translation id="1700517974991662022">సందర్శించబడింది</translation>
 <translation id="1703331064825191675">మీ పాస్‌వర్డ్‌ల గురించి ఎప్పుడూ చింతించకండి</translation>
 <translation id="1703666494654169921">వర్చువల్ రియాలిటీ పరికరాలు లేదా డేటాను ఉపయోగించడానికి సైట్‌లను అనుమతించకండి</translation>
-<translation id="1703849276368677471">టూల్స్</translation>
 <translation id="1704097193565924901">క్యాపిటలైజ్ చేయడానికి ఎంచుకోండి</translation>
 <translation id="1704230497453185209">సౌండ్‌ను ప్లే చేయడానికి సైట్‌లను అనుమతించకండి</translation>
 <translation id="1706586824377653884">మీ నిర్వాహకులు జోడించారు</translation>
@@ -2990,6 +2989,7 @@
 <translation id="3019023222666709803">బాణం టూల్</translation>
 <translation id="3019285239893817657">ఉప పేజీ బటన్</translation>
 <translation id="3019595674945299805">VPN సర్వీస్</translation>
+<translation id="3020101754533552167">సైన్ ఇన్‌ను చెక్ చేస్తోంది...</translation>
 <translation id="3020183492814296499">షార్ట్‌కట్‌లు</translation>
 <translation id="3020990233660977256">క్రమ సంఖ్య: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">బ్యాటరీలో ఉన్నప్పుడు</translation>
@@ -9557,7 +9557,6 @@
 <translation id="7629858978065675960">తెలియని ఫలితం.</translation>
 <translation id="7630426712700473382">ఈ పరికరం <ph name="MANAGER" /> ద్వారా మేనేజ్ చేయబడుతోంది, మీరు ప్రతిసారి సైన్ ఇన్ చేయాల్సి ఉంటుంది.</translation>
 <translation id="7631014249255418691">Linux యాప్‌లు, ఫైళ్లు విజయవంతంగా బ్యాకప్ చేయబడ్డాయి</translation>
-<translation id="7631722872321401342">మీ పరికరంలో <ph name="LANGUAGE" /> భాష వాయిస్‌లు లేవు. మీరు సెట్టింగ్‌లలో వాయిస్‌లను ఇన్‌స్టాల్ చేయవచ్చు.</translation>
 <translation id="7631887513477658702">&amp;ఎల్లప్పుడూ ఈ రకం ఫైళ్ళను తెరువు</translation>
 <translation id="7632437836497571618">సైట్‌లను వెతకడానికి సురక్షితమైన కనెక్షన్‌లను ఉపయోగించండి</translation>
 <translation id="7632948528260659758">కింది కియోస్క్ యాప్‌ల అప్‌డేట్‌ విఫలమైంది:</translation>
@@ -11254,7 +11253,6 @@
 <translation id="876161309768861172">మీరు సైన్ ఇన్ చేయలేరు, దయచేసి మళ్లీ ట్రై చేయండి</translation>
 <translation id="8761945298804995673">ఈ వినియోగదారు ఇప్పటికే ఉన్నారు.</translation>
 <translation id="8762886931014513155">మీ <ph name="DEVICE_TYPE" />ని అప్‌డేట్ చేయాలి</translation>
-<translation id="8763170551806710928">చిప్స్‌ను చూడండి</translation>
 <translation id="8763927697961133303">USB పరికరం</translation>
 <translation id="8766156860774051068">మీరు సేకరించినవి</translation>
 <translation id="8766796754185931010">కోటోరి</translation>

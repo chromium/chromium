@@ -1052,7 +1052,6 @@
 <translation id="1700517974991662022">મુલાકાત લીધેલ</translation>
 <translation id="1703331064825191675">તમારા પાસવર્ડ વિશે ક્યારેય ચિંતા કરશો નહીં</translation>
 <translation id="1703666494654169921">સાઇટને વર્ચ્યુઅલ રિયાલિટી ડિવાઇસ કે ડેટાનો ઉપયોગ કરવાની મંજૂરી આપશો નહીં</translation>
-<translation id="1703849276368677471">ટૂલ</translation>
 <translation id="1704097193565924901">કૅપિટલ કરો</translation>
 <translation id="1704230497453185209">સાઇટને સાઉન્ડ વગાડવાની મંજૂરી આપશો નહીં</translation>
 <translation id="1706586824377653884">તમારા વ્યવસ્થાપક દ્વારા ઉમેરાયેલ</translation>
@@ -2978,6 +2977,7 @@
 <translation id="3019023222666709803">ઍરો ટૂલ</translation>
 <translation id="3019285239893817657">સબપેજનું બટન</translation>
 <translation id="3019595674945299805">VPN સેવા</translation>
+<translation id="3020101754533552167">સાઇન ઇન ચેક કરી રહ્યાં છીએ...</translation>
 <translation id="3020183492814296499">શૉર્ટકટ</translation>
 <translation id="3020990233660977256">સીરિયલ નંબર: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">બૅટરી પર હોય, ત્યારે</translation>
@@ -9550,7 +9550,6 @@ USB ડિવાઇસ</translation>
 <translation id="7629858978065675960">અજ્ઞાત પરિણામ.</translation>
 <translation id="7630426712700473382">આ ડિવાઇસ <ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે અને તમારે દર વખતે સાઇન ઇન કરવું જરૂરી છે.</translation>
 <translation id="7631014249255418691">Linux ઍપ અને ફાઇલોનો સફળતાપૂર્વક બૅકઅપ લીધો</translation>
-<translation id="7631722872321401342">તમારા ડિવાઇસમાં <ph name="LANGUAGE" />ના કોઈ વૉઇસ નથી. તમે સેટિંગમાંથી વૉઇસ ઇન્સ્ટૉલ કરી શકો છો.</translation>
 <translation id="7631887513477658702">આ પ્રકારની ફાઇલો &amp;હંમેશાં ખોલો</translation>
 <translation id="7632437836497571618">સાઇટ જોવા માટે સુરક્ષિત કનેક્શનનો ઉપયોગ કરો</translation>
 <translation id="7632948528260659758">નીચેની કિઓસ્ક ઍપ્લિકેશનો અપડેટ માટે નિષ્ફળ થઈ છે:</translation>
@@ -11245,7 +11244,6 @@ USB ડિવાઇસ</translation>
 <translation id="876161309768861172">સાઇન ઇન કરી શકાયું નથી, કૃપા કરીને ફરી પ્રયાસ કરો</translation>
 <translation id="8761945298804995673">આ વપરાશકર્તા પહેલેથી જ અસ્તિત્વમાં છે</translation>
 <translation id="8762886931014513155">તમારા <ph name="DEVICE_TYPE" />ને અપડેટની જરૂર છે</translation>
-<translation id="8763170551806710928">નાનકડા લેબલ બતાવો</translation>
 <translation id="8763927697961133303">USB ઉપકરણ</translation>
 <translation id="8766156860774051068">તમે પસંદ કરેલો</translation>
 <translation id="8766796754185931010">કોતોએરી</translation>

@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">Pesquisar com o Modo IA</translation>
 <translation id="3557336313807607643">Adicionar aos contatos</translation>
 <translation id="355765753469272474">Desfazer</translation>
+<translation id="3565012355885596568">Não foi possível carregar as imagens</translation>
 <translation id="3565930036634619844">Guia. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3572607909481582402">Na Conta do Google</translation>
 <translation id="3575234738189584619">Pesquisar com o Lens</translation>
@@ -2000,6 +2001,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8551311254462607218">Na barra de endereço, toque no ícone de câmera do Google Lens</translation>
 <translation id="8556590991644167667">{count,plural, =1{Você dispensou {count} aviso}one{Você dispensou {count} aviso}other{Você dispensou {count} avisos}}</translation>
 <translation id="8558046478684552694">Fechar grupo.</translation>
+<translation id="8559858985063901027">Senhas de acesso</translation>
 <translation id="8560253818350321773">Mostrar primeiro os itens usados com frequência.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} opção de senha disponível acima do teclado.}one{{count} opção de senha disponível acima do teclado.}other{{count} opções de senha disponíveis acima do teclado.}}</translation>
 <translation id="8564894539416715395">Página Nova guia</translation>
@@ -2188,7 +2190,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="926455622548529175">Trocar e excluir</translation>
 <translation id="929748059769569925">Texto em destaque</translation>
 <translation id="932305336591073205">{count,plural, =1{Fechar guia}one{Fechar guia}other{Fechar guias}}</translation>
-<translation id="932327136139879170">Início</translation>
+<translation id="932327136139879170">Casa</translation>
 <translation id="939472100615258482">Site atual</translation>
 <translation id="939598580284253335">Inserir senha</translation>
 <translation id="939736085109172342">Nova pasta</translation>

@@ -1055,7 +1055,6 @@
 <translation id="1700517974991662022">ተጎብኝቷል</translation>
 <translation id="1703331064825191675">ስለ የእርስዎ የይለፍ ቃላት አይጨነቁ</translation>
 <translation id="1703666494654169921">ጣቢያዎች ምናባዊ የእውነተኛ መሣሪያዎችን ወይም መረጃዎችን እንዲጠቀሙ አይፍቀዱ</translation>
-<translation id="1703849276368677471">መሣሪያዎች</translation>
 <translation id="1704097193565924901">ዐብይ ፊደል አድርግ</translation>
 <translation id="1704230497453185209">ጣቢያዎች ድምፅ እንዲጫወቱ አይፍቀዱ</translation>
 <translation id="1706586824377653884">በእርስዎ አስተዳዳሪ ታክሏል</translation>
@@ -2988,6 +2987,7 @@
 <translation id="3019023222666709803">የቀስት መሣሪያ</translation>
 <translation id="3019285239893817657">የንዑስ ገፅ አዝራር</translation>
 <translation id="3019595674945299805">የVPN አገልግሎት</translation>
+<translation id="3020101754533552167">መግባትን በመፈተሽ ላይ...</translation>
 <translation id="3020183492814296499">አቋራጮች</translation>
 <translation id="3020990233660977256">መለያ ቁጥር፦ <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">ባትሪ ላይ ሳለ</translation>
@@ -9556,7 +9556,6 @@
 <translation id="7629858978065675960">ያልታወቀ ውጤት።</translation>
 <translation id="7630426712700473382">ይህ መሣሪያ በ<ph name="MANAGER" /> የሚተዳደር ሲሆን በየጊዜው በመለያ እንዲገቡ ይጠይቀዎታል።</translation>
 <translation id="7631014249255418691">Linux መተግበሪያዎች እና ፋይሎች በተሳካ ሁኔታ በምትኬ ተቀምጠዋል</translation>
-<translation id="7631722872321401342">በመሣሪያዎ ላይ ምንም የ<ph name="LANGUAGE" /> ድምፆች የሉም። በቅንብሮች ውስጥ ድምጾችን መጫን ይችላሉ።</translation>
 <translation id="7631887513477658702">&amp;ሁልጊዜ እንዲህ ዓይነት ፋይሎችን ክፈት</translation>
 <translation id="7632437836497571618">ጣቢያዎችን ለመፈለግ የተመሰጠረ ግንኙነቶችን ይጠቀሙ</translation>
 <translation id="7632948528260659758">የሚከተሉትን የኪዮስክ መተግበሪያዎች ማዘመን አልተሳካም፦</translation>
@@ -11261,7 +11260,6 @@ nil</translation>
 <translation id="876161309768861172">እርስዎን ማስገባት አልተቻለም፣ እባክዎ እንደገና ይሞክሩ</translation>
 <translation id="8761945298804995673">ይህ ተጠቃሚ አስቀድሞ አለ</translation>
 <translation id="8762886931014513155">የእርስዎ <ph name="DEVICE_TYPE" /> ዝማኔ ያስፈልገዋል</translation>
-<translation id="8763170551806710928">ቺፖችን አሳይ</translation>
 <translation id="8763927697961133303">የዩኤስቢ መሣሪያ</translation>
 <translation id="8766156860774051068">በእርስዎ ተመርጦ የተሰበሰበ</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

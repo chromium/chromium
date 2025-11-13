@@ -1056,7 +1056,6 @@
 <translation id="1700517974991662022">Այցելած</translation>
 <translation id="1703331064825191675">Երբեք մի՛ անհանգստացեք ձեր գաղտնաբառերի համար</translation>
 <translation id="1703666494654169921">Թույլ չտալ կայքերին օգտագործել վիրտուալ իրականության սարքեր և տվյալներ</translation>
-<translation id="1703849276368677471">Գործիքներ</translation>
 <translation id="1704097193565924901">Դարձնել մեծատառ</translation>
 <translation id="1704230497453185209">Թույլ չտալ կայքերին նվագարկել ձայնային ազդանշան</translation>
 <translation id="1706586824377653884">Ավելացվել է ձեր ադմինիստրատորի կողմից</translation>
@@ -2979,6 +2978,7 @@
 <translation id="3019023222666709803">«Սլաք» գործիք</translation>
 <translation id="3019285239893817657">Ենթաէջի կոճակ</translation>
 <translation id="3019595674945299805">VPN ծառայություն</translation>
+<translation id="3020101754533552167">Մուտքի ստուգում…</translation>
 <translation id="3020183492814296499">Դյուրանցումներ</translation>
 <translation id="3020990233660977256">Սերիական համարը` <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Մարտկոցից սնուցման ընթացքում</translation>
@@ -9542,7 +9542,6 @@
 <translation id="7629858978065675960">Անհայտ արդյունք։</translation>
 <translation id="7630426712700473382">Այս սարքը կառավարվում է <ph name="MANAGER" /> տիրույթի/հաշվի կողմից։ Անհրաժեշտ է ամեն անգամ հաշիվ մտնել։</translation>
 <translation id="7631014249255418691">Լինուքսի հավելվածներն ու ֆայլերը պահուստավորվեցին</translation>
-<translation id="7631722872321401342">Ձեր սարքում <ph name="LANGUAGE" /> լեզվով ձայներ չկան։ Դուք կարող եք ձայներ տեղադրել կարգավորումներում։</translation>
 <translation id="7631887513477658702">&amp;Միշտ բացել այս տեսակի ֆայլերը</translation>
 <translation id="7632437836497571618">Ապահով միացումներ օգտագործեք՝ կայքեր որոնելու համար</translation>
 <translation id="7632948528260659758">Չհաջողվեց թարմացնել հետևյալ kiosk հավելվածները՝</translation>
@@ -11241,7 +11240,6 @@
 <translation id="876161309768861172">Չհաջողվեց մուտք գործել, նորից փորձեք</translation>
 <translation id="8761945298804995673">Այդպիսի օգտատեր արդեն գոյություն ունի</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> սարքն անհրաժեշտ է թարմացնել</translation>
-<translation id="8763170551806710928">Ցույց տալ չիպերը</translation>
 <translation id="8763927697961133303">USB սարք</translation>
 <translation id="8766156860774051068">Ընտրված է ձեր կողմից</translation>
 <translation id="8766796754185931010">Կոտոերի</translation>

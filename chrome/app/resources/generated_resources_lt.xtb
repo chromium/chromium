@@ -1058,7 +1058,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1700517974991662022">Apsilankyta</translation>
 <translation id="1703331064825191675">Niekada nesijaudinkite dėl slaptažodžių</translation>
 <translation id="1703666494654169921">Neleisti svetainėms naudoti virtualiosios realybės įrenginių ar duomenų</translation>
-<translation id="1703849276368677471">Įrankiai</translation>
 <translation id="1704097193565924901">Rašyti didžiosiomis raidėmis</translation>
 <translation id="1704230497453185209">Neleisti svetainėms leisti garso</translation>
 <translation id="1706586824377653884">Pridėjo jūsų administratorius</translation>
@@ -8135,6 +8134,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6619990499523117484">Patvirtinkite PIN kodą</translation>
 <translation id="6620000730890558421">Tvarkykite skirtukus naudodami DI</translation>
 <translation id="6620254580880484313">Sudėtinio failo pavadinimas</translation>
+<translation id="6621282332208609777">Paklauskite „Google“ arba įveskite URL</translation>
 <translation id="6621391692573306628">Jei norite siųsti šį skirtuką į kitą įrenginį, prisijunkite prie „Chrome“ abiejuose įrenginiuose</translation>
 <translation id="6622980291894852883">Tęsti vaizdų blokavimą</translation>
 <translation id="6624036901798307345">Dirbdami planšetinio kompiuterio režimu atidarykite naują skirtuko juostelę, kurioje rodomos kiekvieno skirtuko miniatiūros, palietę įrankių juostos skirtukų skaitiklio mygtuką.</translation>
@@ -9558,6 +9558,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7620616707541471029">Pasirinkite paskyrą, kad galėtumėte tęsti</translation>
 <translation id="7621382409404463535">Sistemai nepavyko išsaugoti įrenginio konfigūracijos.</translation>
 <translation id="7621595347123595643">Negalėsite atkurti vietinių duomenų, jei pamiršite slaptažodį ar PIN kodą.</translation>
+<translation id="7621863462266622331">Kai skirtukai bendrinami, jų puslapių turinys, medija ir URL siunčiami „Google“</translation>
 <translation id="7622114377921274169">Įkraunama.</translation>
 <translation id="7622768823216805500">Paprastai svetainėse įdiegiamos mokėjimų doroklės, naudojamos vykdant apsipirkimo funkcijas, pvz., norint supaprastinti atsiskaitymo procesą</translation>
 <translation id="7622966771025050155">Perjungti į užfiksuotą skirtuką</translation>
@@ -9571,7 +9572,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7629858978065675960">Nežinomas rezultatas.</translation>
 <translation id="7630426712700473382">Šį įrenginį tvarko: <ph name="MANAGER" />. Prisijungti reikia kiekvieną kartą.</translation>
 <translation id="7631014249255418691">Sėkmingai sukurta „Linux“ programų ir failų atsarginė kopija</translation>
-<translation id="7631722872321401342">Jūsų įrenginyje nėra balsų <ph name="LANGUAGE" />. Balsus galite įdiegti nustatymuose.</translation>
 <translation id="7631887513477658702">&amp;Visada atidaryti tokio tipo failus</translation>
 <translation id="7632437836497571618">Ieškoti svetainių naudojant saugius ryšius</translation>
 <translation id="7632948528260659758">Atnaujinant šias viešojo terminalo programas įvyko klaida:</translation>
@@ -11271,7 +11271,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="876161309768861172">Nepavyko jūsų prijungti. Bandykite dar kartą.</translation>
 <translation id="8761945298804995673">Toks naudotojas jau yra</translation>
 <translation id="8762886931014513155">Reikia atnaujinti „<ph name="DEVICE_TYPE" />“</translation>
-<translation id="8763170551806710928">Rodyti fragmentus</translation>
 <translation id="8763927697961133303">USB įrenginys</translation>
 <translation id="8766156860774051068">Kuruojate jūs</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
@@ -11777,6 +11776,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="909554839118732438">Uždaryti inkognito langus</translation>
 <translation id="9095819602391364796">Neleisti svetainėms valdyti ir iš naujo programuoti MIDI įrenginių</translation>
 <translation id="9096053102600371572">Kontroliuojamas slinkimas <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Palyginkite parinktis</translation>
 <translation id="9096776523567481218">neįdiegta vietoje</translation>
 <translation id="9098860402274800697">„Google Play“ ir „Android“ programų pašalinimas</translation>
 <translation id="9099220545925418560">Pagrįsta jūsų naršymo istorija. Šis nustatymas išjungtas.</translation>

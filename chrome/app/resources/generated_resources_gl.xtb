@@ -1053,7 +1053,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1700517974991662022">Visitado</translation>
 <translation id="1703331064825191675">Non te preocupes nunca polos teus contrasinais</translation>
 <translation id="1703666494654169921">Non permitir que os sitios utilicen datos nin dispositivos de realidade virtual</translation>
-<translation id="1703849276368677471">Ferramentas</translation>
 <translation id="1704097193565924901">Usar maiúsculas</translation>
 <translation id="1704230497453185209">Non permitir que os sitios reproduzan son</translation>
 <translation id="1706586824377653884">Engadido polo administrador</translation>
@@ -2978,6 +2977,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3019023222666709803">Ferramenta de frechas</translation>
 <translation id="3019285239893817657">Botón de subpáxina</translation>
 <translation id="3019595674945299805">Servizo de VPN</translation>
+<translation id="3020101754533552167">Comprobando inicio de sesión...</translation>
 <translation id="3020183492814296499">Atallos</translation>
 <translation id="3020990233660977256">Número de serie: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Durante o uso da batería</translation>
@@ -9545,7 +9545,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7629858978065675960">Resultado descoñecido.</translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> xestiona este dispositivo e require que inicies sesión cada vez.</translation>
 <translation id="7631014249255418691">Creouse correctamente unha copia de seguranza das aplicacións e dos ficheiros de Linux</translation>
-<translation id="7631722872321401342">Non hai ningunha voz en <ph name="LANGUAGE" /> no dispositivo. Podes instalar voces na configuración.</translation>
 <translation id="7631887513477658702">&amp;Abrir sempre ficheiros deste tipo</translation>
 <translation id="7632437836497571618">Usar conexións seguras para buscar sitios</translation>
 <translation id="7632948528260659758">As seguintes aplicacións de quiosco non lograron actualizarse:</translation>
@@ -11244,7 +11243,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="876161309768861172">Non se puido iniciar sesión. Téntao de novo</translation>
 <translation id="8761945298804995673">Este usuario xa existe</translation>
 <translation id="8762886931014513155">O dispositivo <ph name="DEVICE_TYPE" /> necesita unha actualización</translation>
-<translation id="8763170551806710928">Mostrar etiquetas</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8766156860774051068">Seleccionados por ti</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

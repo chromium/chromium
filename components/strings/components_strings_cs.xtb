@@ -4002,6 +4002,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7525804896095537619">Název nesmí být prázdný.</translation>
 <translation id="7526934274050461096">Připojení k tomuto webu není soukromé</translation>
 <translation id="7529884293139707752">Domácí studium</translation>
+<translation id="7530215951451994972">Vytvořit obrázek</translation>
 <translation id="7531464389616946220">Naskenovat kartu</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Enter vyhledáte záložky</translation>
 <translation id="7534987659046836932">Obálka C7</translation>
@@ -4288,6 +4289,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7987087088851949178">Dostupní poskytovatelé financování na splátky, otevřeno na celou výšku.</translation>
 <translation id="799149739215780103">Vazba</translation>
 <translation id="7992044431894087211">Sdílení obrazovky s aplikací <ph name="APPLICATION_TITLE" /> bylo obnoveno</translation>
+<translation id="799384093520583425">Vaše organizace používání nástrojů pro vývojáře na této stránce zablokovala</translation>
 <translation id="7995512525968007366">Není zadáno</translation>
 <translation id="7997855386298213183">sdílené karty</translation>
 <translation id="8001912761979890298">Tento server nemohl prokázat, že patří do domény <ph name="DOMAIN" />, protože používá bezpečnostní certifikát, kterému Chromium ani konfigurace vašeho systému pro šifrování webového provozu nedůvěřují. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Zobrazit certifikát<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4833,6 +4835,7 @@ Další podrobnosti:
 <translation id="8922013791253848639">Na tomto webu reklamy vždy povolovat</translation>
 <translation id="8922734931659847428">Omezený seznam navštívených adres URL stránek, na kterých dochází k <ph name="BEGIN_LINK" />událostem starších technologií<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Děrování vpravo nahoře</translation>
+<translation id="8926082624786998759">Na této stránce nejsou nástroje pro vývojáře povoleny</translation>
 <translation id="8926389886865778422">Dotaz již nezobrazovat</translation>
 <translation id="8926400492587758246">Zaplatit nízkými měsíčními splátkami</translation>
 <translation id="8932102934695377596">Vaše hodiny se zpožďují</translation>

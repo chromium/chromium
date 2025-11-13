@@ -1054,7 +1054,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1700517974991662022">Visitado</translation>
 <translation id="1703331064825191675">No vuelvas a preocuparte por tus contraseñas</translation>
 <translation id="1703666494654169921">No permitir que los sitios usen datos ni dispositivos de realidad virtual</translation>
-<translation id="1703849276368677471">Herramientas</translation>
 <translation id="1704097193565924901">Mayúsculas</translation>
 <translation id="1704230497453185209">No permitir que los sitios reproduzcan sonido</translation>
 <translation id="1706586824377653884">Añadido por tu administrador</translation>
@@ -2980,6 +2979,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3019023222666709803">Herramienta de flecha</translation>
 <translation id="3019285239893817657">Botón de página secundaria</translation>
 <translation id="3019595674945299805">Servicio VPN</translation>
+<translation id="3020101754533552167">Comprobando inicio de sesión...</translation>
 <translation id="3020183492814296499">Accesos directos</translation>
 <translation id="3020990233660977256">Número de serie: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Con batería</translation>
@@ -9545,7 +9545,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7629858978065675960">Resultado desconocido.</translation>
 <translation id="7630426712700473382">Este dispositivo lo gestiona <ph name="MANAGER" /> y requiere que inicies sesión siempre.</translation>
 <translation id="7631014249255418691">La copia de seguridad de las aplicaciones y archivos de Linux se ha completado correctamente</translation>
-<translation id="7631722872321401342">No hay voces en <ph name="LANGUAGE" /> en tu dispositivo. Puedes instalar voces en la configuración.</translation>
 <translation id="7631887513477658702">&amp;Abrir siempre archivos de este tipo</translation>
 <translation id="7632437836497571618">Usar conexiones seguras para buscar sitios</translation>
 <translation id="7632948528260659758">No se han podido actualizar las siguientes aplicaciones de kiosco:</translation>
@@ -11245,7 +11244,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="876161309768861172">No se ha podido iniciar sesión; inténtalo de nuevo</translation>
 <translation id="8761945298804995673">El usuario indicado ya existe</translation>
 <translation id="8762886931014513155">Es necesario actualizar tu <ph name="DEVICE_TYPE" /></translation>
-<translation id="8763170551806710928">Mostrar chips</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8766156860774051068">Seleccionado por ti</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

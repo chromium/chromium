@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">Пошук у режимі ШІ</translation>
 <translation id="3557336313807607643">Додати до контактів</translation>
 <translation id="355765753469272474">Відмінити</translation>
+<translation id="3565012355885596568">Не вдалося завантажити зображення</translation>
 <translation id="3565930036634619844">Вкладка. <ph name="TAB_INDEX" /> з <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3572607909481582402">В обліковому записі Google</translation>
 <translation id="3575234738189584619">Шукати через Об’єктив</translation>
@@ -2000,6 +2001,7 @@
 <translation id="8551311254462607218">В адресному рядку натисніть значок камери Google Об’єктива</translation>
 <translation id="8556590991644167667">{count,plural, =1{Ви відхилили {count} попередження}one{Ви відхилили {count} попередження}few{Ви відхилили {count} попередження}many{Ви відхилили {count} попереджень}other{Ви відхилили {count} попередження}}</translation>
 <translation id="8558046478684552694">Закрити групу.</translation>
+<translation id="8559858985063901027">Ключі доступу</translation>
 <translation id="8560253818350321773">Спочатку показувати продукти, які часто використовуються.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Над клавіатурою показується {count} варіант пароля.}one{Над клавіатурою показується {count} варіант пароля.}few{Над клавіатурою показуються {count} варіанти пароля.}many{Над клавіатурою показуються {count} варіантів пароля.}other{Над клавіатурою показуються {count} варіанта пароля.}}</translation>
 <translation id="8564894539416715395">Сторінка нової вкладки</translation>

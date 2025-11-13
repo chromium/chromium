@@ -1052,7 +1052,6 @@
 <translation id="1700517974991662022">Зочилсон</translation>
 <translation id="1703331064825191675">Нууц үгэндээ хэзээ ч бүү санаа зов</translation>
 <translation id="1703666494654169921">Сайтуудад виртуал бодит байдлын төхөөрөмжүүд эсвэл өгөгдөл ашиглахыг бүү зөвшөөр</translation>
-<translation id="1703849276368677471">Хэрэгсэл</translation>
 <translation id="1704097193565924901">Үсгийг томоор бичих</translation>
 <translation id="1704230497453185209">Сайтуудад дуу чимээ тоглуулахыг бүү зөвшөөр</translation>
 <translation id="1706586824377653884">Таны админ нэмсэн</translation>
@@ -2989,6 +2988,7 @@
 <translation id="3019023222666709803">Сумны хэрэгсэл</translation>
 <translation id="3019285239893817657">Дэд хуудасны товчлуур</translation>
 <translation id="3019595674945299805">VPN-н үйлчилгээ</translation>
+<translation id="3020101754533552167">Нэвтрэлтийг шалгаж байна...</translation>
 <translation id="3020183492814296499">Товчлол</translation>
 <translation id="3020990233660977256">Сери дугаар: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Батарейгаар ажиллах үед</translation>
@@ -9555,7 +9555,6 @@
 <translation id="7629858978065675960">Тодорхойгүй илэрц.</translation>
 <translation id="7630426712700473382">Энэ төхөөрөмжийг <ph name="MANAGER" /> удирддаг бөгөөд танаас тухай бүрд нэвтрэхийг шаардаж байна.</translation>
 <translation id="7631014249255418691">Linux аппууд болон файлуудыг амжилттай нөөцөллөө</translation>
-<translation id="7631722872321401342">Таны төхөөрөмж дээр ямар ч <ph name="LANGUAGE" /> дээрх дуу хоолой байхгүй. Та тохиргоонд дуу хоолой суулгах боломжтой.</translation>
 <translation id="7631887513477658702">Энэ төрлийн файлуудыг байнга нээдэг байх</translation>
 <translation id="7632437836497571618">Сайтуудыг хайхын тулд аюулгүй холболтыг ашиглах</translation>
 <translation id="7632948528260659758">Дараах киоск апликейшнүүдийг шинэчлэж чадсангүй:</translation>
@@ -11251,7 +11250,6 @@
 <translation id="876161309768861172">Таныг нэвтрүүлж чадсангүй. Дахин оролдоно уу</translation>
 <translation id="8761945298804995673">Ийм хэрэглэгч аль хэдийн байна</translation>
 <translation id="8762886931014513155">Таны <ph name="DEVICE_TYPE" />-г шинэчлэх шаардлагатай байна</translation>
-<translation id="8763170551806710928">Чипүүдийг харуулах</translation>
 <translation id="8763927697961133303">USB төхөөрөмж</translation>
 <translation id="8766156860774051068">Таны сонгосон</translation>
 <translation id="8766796754185931010">Японы оролтын аргачлал</translation>

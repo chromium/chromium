@@ -1052,7 +1052,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1700517974991662022">Besøkt.</translation>
 <translation id="1703331064825191675">Slutt å bekymre deg for passordene dine</translation>
 <translation id="1703666494654169921">Ikke la nettsteder bruke virtuell virkelighet-enheter eller -data</translation>
-<translation id="1703849276368677471">Verktøy</translation>
 <translation id="1704097193565924901">Gjør forbokstavene store</translation>
 <translation id="1704230497453185209">Ikke la nettsteder spille av lyd</translation>
 <translation id="1706586824377653884">Lagt til av administratoren din</translation>
@@ -2986,6 +2985,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3019023222666709803">Pilverktøy</translation>
 <translation id="3019285239893817657">knapp til underordnet side</translation>
 <translation id="3019595674945299805">VPN-tjeneste</translation>
+<translation id="3020101754533552167">Sjekker påloggingen …</translation>
 <translation id="3020183492814296499">Snarveier</translation>
 <translation id="3020990233660977256">Serienummer: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Ved batteridrift</translation>
@@ -9549,7 +9549,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7629858978065675960">Ukjent resultat.</translation>
 <translation id="7630426712700473382">Denne enheten administreres av <ph name="MANAGER" /> og krever at du logger deg på hver gang.</translation>
 <translation id="7631014249255418691">Linux-apper og -filer er sikkerhetskopiert</translation>
-<translation id="7631722872321401342">Det finnes ingen stemmer på <ph name="LANGUAGE" /> på enheten din. Du kan installere stemmer i innstillingene.</translation>
 <translation id="7631887513477658702">Åpne &amp;alltid filer av denne typen</translation>
 <translation id="7632437836497571618">Bruk sikre tilkoblinger for å slå opp nettsteder</translation>
 <translation id="7632948528260659758">Kunne ikke oppdatere de følgende kioskappene:</translation>
@@ -11249,7 +11248,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="876161309768861172">Kunne ikke logge deg på. Prøv på nytt</translation>
 <translation id="8761945298804995673">Denne brukeren finnes allerede</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> trenger en oppdatering</translation>
-<translation id="8763170551806710928">Vis brikker</translation>
 <translation id="8763927697961133303">USB-enhet</translation>
 <translation id="8766156860774051068">Utvalgt av deg</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

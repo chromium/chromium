@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">Sök med AI-läge</translation>
 <translation id="3557336313807607643">Lägg till i kontakter</translation>
 <translation id="355765753469272474">Ångra</translation>
+<translation id="3565012355885596568">Det gick inte att läsa in bilder</translation>
 <translation id="3565930036634619844">Flik. <ph name="TAB_INDEX" /> av <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3572607909481582402">I Google-kontot</translation>
 <translation id="3575234738189584619">Sök med Lens</translation>
@@ -2000,6 +2001,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8551311254462607218">Tryck på kameraikonen för Google Lens i adressfältet</translation>
 <translation id="8556590991644167667">{count,plural, =1{Du har ignorerat {count} varning}other{Du har ignorerat {count} varningar}}</translation>
 <translation id="8558046478684552694">Stäng grupp.</translation>
+<translation id="8559858985063901027">Nycklar</translation>
 <translation id="8560253818350321773">Visa ofta använda objekt först.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} alternativ för lösenord visas ovanför tangentbordet.}other{{count} alternativ för lösenord visas ovanför tangentbordet.}}</translation>
 <translation id="8564894539416715395">Sidan Ny flik</translation>

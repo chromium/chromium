@@ -1055,7 +1055,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1700517974991662022">Dilawati</translation>
 <translation id="1703331064825191675">Jangan bimbang tentang kata laluan anda</translation>
 <translation id="1703666494654169921">Jangan benarkan laman menggunakan peranti atau data realiti maya</translation>
-<translation id="1703849276368677471">Alatan</translation>
 <translation id="1704097193565924901">Menggunakan huruf besar</translation>
 <translation id="1704230497453185209">Jangan benarkan laman memainkan bunyi</translation>
 <translation id="1706586824377653884">Ditambahkan oleh pentadbir anda</translation>
@@ -8125,6 +8124,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6619990499523117484">Sahkan PIN anda</translation>
 <translation id="6620000730890558421">Pastikan tab anda kemas dengan AI</translation>
 <translation id="6620254580880484313">Nama bekas</translation>
+<translation id="6621282332208609777">Tanya Google atau taip URL</translation>
 <translation id="6621391692573306628">Untuk menghantar tab ini ke peranti lain, log masuk ke Chrome pada kedua-dua peranti</translation>
 <translation id="6622980291894852883">Terus menyekat imej</translation>
 <translation id="6624036901798307345">Dalam mod tablet, ketik butang bar alat pengira tab untuk membuka jalur tab baharu yang memaparkan lakaran kecil setiap tab.</translation>
@@ -9548,6 +9548,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7620616707541471029">Pilih akaun untuk meneruskan proses</translation>
 <translation id="7621382409404463535">Sistem gagal menyimpan konfigurasi peranti.</translation>
 <translation id="7621595347123595643">Anda tidak akan dapat memulihkan data setempat jika anda terlupa kata laluan atau PIN anda.</translation>
+<translation id="7621863462266622331">Apabila tab dikongsi, kandungan halaman, media dan URL tab tersebut akan dihantar kepada Google</translation>
 <translation id="7622114377921274169">Mengecas.</translation>
 <translation id="7622768823216805500">Tapak biasanya memasang pengendali pembayaran untuk ciri beli-belah seperti daftar keluar yang lebih mudah</translation>
 <translation id="7622966771025050155">Beralih kepada tab yang ditangkap</translation>
@@ -9561,7 +9562,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7629858978065675960">Hasil tidak diketahui.</translation>
 <translation id="7630426712700473382">Peranti ini diurus oleh <ph name="MANAGER" /> dan menghendaki anda log masuk setiap kali.</translation>
 <translation id="7631014249255418691">Apl &amp; fail Linux telah berjaya disandarkan</translation>
-<translation id="7631722872321401342">Tiada suara <ph name="LANGUAGE" /> pada peranti anda. Anda boleh memasang suara dalam tetapan.</translation>
 <translation id="7631887513477658702">&amp;Sentiasa Buka Fail Jenis Ini</translation>
 <translation id="7632437836497571618">Gunakan sambungan selamat untuk mencari laman</translation>
 <translation id="7632948528260659758">Apl kiosk berikut telah gagal untuk mengemas kini:</translation>
@@ -11262,7 +11262,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="876161309768861172">Tidak dapat log masuk, sila cuba lagi</translation>
 <translation id="8761945298804995673">Pengguna ini sudah wujud</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> anda memerlukan kemas kini</translation>
-<translation id="8763170551806710928">Tunjukkan Cip</translation>
 <translation id="8763927697961133303">Peranti USB</translation>
 <translation id="8766156860774051068">Dipilih susun oleh anda</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
@@ -11765,6 +11764,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="909554839118732438">Tutup Inkognito</translation>
 <translation id="9095819602391364796">Jangan benarkan laman untuk mengawal dan mengatur cara semula peranti MIDI anda</translation>
 <translation id="9096053102600371572">Penatalan terkawal <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Bandingkan pilihan</translation>
 <translation id="9096776523567481218">tidak dipasang secara setempat</translation>
 <translation id="9098860402274800697">Alih keluar Google Play dan apl Android</translation>
 <translation id="9099220545925418560">Berdasarkan sejarah penyemakan imbas anda. Tetapan ini dimatikan.</translation>

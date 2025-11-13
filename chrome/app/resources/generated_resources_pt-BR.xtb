@@ -614,6 +614,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1414648216875402825">Você está atualizando para uma versão instável do <ph name="PRODUCT_NAME" /> que contém recursos que estão em fase de teste. Falhas e erros inesperados ocorrerão. Continue com cautela.</translation>
 <translation id="1415708812149920388">Acesso de leitura para a área de transferência negado</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID de extensão "<ph name="EXTENSION_ID" />") não é permitido neste tipo de sessão.</translation>
+<translation id="141720836055413739">Não foi possível fazer upload.  Tente usar outro formato de arquivo.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Remover app}one{Remover app}other{Remover apps}}</translation>
 <translation id="1417497355604638350">Enviar dados de uso e diagnóstico.</translation>
 <translation id="1418552618736477642">Notificações e apps</translation>
@@ -1055,7 +1056,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1700517974991662022">Visitado</translation>
 <translation id="1703331064825191675">Nunca se preocupe com suas senhas</translation>
 <translation id="1703666494654169921">Não permitir que os sites usem dispositivos ou dados de realidade virtual</translation>
-<translation id="1703849276368677471">Ferramentas</translation>
 <translation id="1704097193565924901">Iniciais em maiúscula</translation>
 <translation id="1704230497453185209">Não permitir que os sites toquem sons</translation>
 <translation id="1706586824377653884">Adicionado pelo seu administrador</translation>
@@ -2881,6 +2881,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2946640296642327832">Ativar Bluetooth</translation>
 <translation id="2947281105969315778">Para compartilhar ou participar de grupos de guias, é necessário fazer login no Chrome</translation>
 <translation id="2947605845283690091">A navegação da Web deverá ser rápida. Aproveite para <ph name="BEGIN_LINK" />verificar suas extensões<ph name="END_LINK" /> agora.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Solte o arquivo aqui}one{Solte o arquivo aqui}other{Solte os arquivos aqui}}</translation>
 <translation id="2948300991547862301">Ir para a página <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Um navegador da Web rápido, simples e seguro, desenvolvido para a Web moderna.</translation>
 <translation id="2950666755714083615">Fazer inscrição</translation>
@@ -2990,6 +2991,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3019023222666709803">Ferramenta de seta</translation>
 <translation id="3019285239893817657">Botão de subpágina</translation>
 <translation id="3019595674945299805">Serviço VPN</translation>
+<translation id="3020101754533552167">Verificando login…</translation>
 <translation id="3020183492814296499">Atalhos</translation>
 <translation id="3020990233660977256">Número de série: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Enquanto estiver na bateria</translation>
@@ -5271,6 +5273,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4606551464649945562">Não permitir que os sites criem um mapa 3D do ambiente a sua volta ou acompanhem a posição da câmera</translation>
 <translation id="4606933160360542263">Combinação de teclas personalizada: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Excluir grupo de guias?}one{Excluir grupo de guias?}other{Excluir grupos de guias?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Faça upload de 1 arquivo para usar com sua pergunta}one{Faça upload de até # arquivo para usar com sua pergunta}other{Faça upload de até # arquivos para usar com sua pergunta}}</translation>
 <translation id="4608500690299898628">&amp;Localizar...</translation>
 <translation id="4609164937357979319">Seleção de conta</translation>
 <translation id="4610493438923139095">Não confiável</translation>
@@ -9561,7 +9564,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7629858978065675960">Resultado desconhecido.</translation>
 <translation id="7630426712700473382">Este dispositivo é gerenciado por <ph name="MANAGER" /> e requer que o login seja feito todas as vezes.</translation>
 <translation id="7631014249255418691">O backup dos apps e arquivos do Linux foi concluído</translation>
-<translation id="7631722872321401342">Não há vozes em <ph name="LANGUAGE" /> no seu dispositivo. Você pode instalar vozes nas configurações.</translation>
 <translation id="7631887513477658702">&amp;Sempre abrir arquivos deste tipo</translation>
 <translation id="7632437836497571618">Usar conexões seguras para procurar sites</translation>
 <translation id="7632948528260659758">Os seguintes aplicativos de quiosque tiveram falha na atualização:</translation>
@@ -11261,7 +11263,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="876161309768861172">Não foi possível fazer login. Tente de novo.</translation>
 <translation id="8761945298804995673">Esse usuário já existe</translation>
 <translation id="8762886931014513155">O <ph name="DEVICE_TYPE" /> precisa de uma atualização</translation>
-<translation id="8763170551806710928">Mostrar ícones</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8766156860774051068">Selecionados por você</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
@@ -11948,7 +11949,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="930991362911221750">Permitir que o app <ph name="APP_NAME" /> tenha acesso a essa guia?</translation>
 <translation id="931273044114601262">Permitido neste site</translation>
 <translation id="93140074055951850">Os apps Android foram interrompidos</translation>
-<translation id="932327136139879170">Início</translation>
+<translation id="932327136139879170">Casa</translation>
 <translation id="932508678520956232">Não foi possível iniciar a impressão.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Esse arquivo é grande demais para uma verificação de segurança. É possível fazer upload de arquivos de até 50 MB.}one{O arquivo é grande demais para uma verificação de segurança. É possível fazer upload de arquivos de até 50 MB.}other{Alguns dos arquivos são grandes demais para uma verificação de segurança. É possível fazer upload de arquivos de até 50 MB.}}</translation>
 <translation id="93343527085570547">Acesse a <ph name="BEGIN_LINK1" />página de Ajuda Jurídica<ph name="END_LINK1" /> para solicitar alterações de conteúdo por motivos legais. Algumas informações podem ser enviadas ao Google, e elas serão usadas para resolver problemas técnicos e melhorar nossos serviços, de acordo com nossa <ph name="BEGIN_LINK2" />Política de Privacidade<ph name="END_LINK2" /> e nossos <ph name="BEGIN_LINK3" />Termos de Serviço<ph name="END_LINK3" />.</translation>

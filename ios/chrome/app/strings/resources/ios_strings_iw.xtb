@@ -678,7 +678,7 @@
 <translation id="3642060527569456384">קבוצות הכרטיסיות נשמרות באופן אוטומטי ומתעדכנות בכל המכשירים.</translation>
 <translation id="3643338347976071250">{count,plural, =1{‏סיסמה אחת ({count}) שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, צריך לשמור אותה בחשבון Google עם הכתובת {email}.}one{‏{count} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת {email}.}two{‏{count} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת {email}.}other{‏{count} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת {email}.}}</translation>
 <translation id="3659297405161482746">לא נמצאו אמצעי תשלום</translation>
-<translation id="3662966164093827811">{count,plural, =1{נבחרה מדינה אחת}one{# נבחרו}two{# נבחרו}other{# נבחרו}}</translation>
+<translation id="3662966164093827811">{count,plural, =1{נבחר פריט אחד}one{# נבחרו}two{# נבחרו}other{# נבחרו}}</translation>
 <translation id="3668816008081204991">רשימת הקריאה מוסתרת</translation>
 <translation id="3670030362669914947">מספר</translation>
 <translation id="3679163990085797665">מחיקת פריטים שנקראו</translation>
@@ -1128,7 +1128,7 @@
 <translation id="537853552771686272">ניהול הנושאים והאתרים שמעניינים אותך</translation>
 <translation id="5390458669633674385">{count,plural, =1{מספר הכרטיסיות שנסגרו: {count}}one{{count} closed}two{מספר הכרטיסיות שנסגרו: {count}}other{מספר הכרטיסיות שנסגרו: {count}}}</translation>
 <translation id="5394975111793637642">הסתרת הכרטיס "ביקורות על מוצרים"</translation>
-<translation id="5407806496954700135">רוצה להחיל את ההתאמות האישיות של דף הכרטיסייה החדשה ממכשיר אחר?</translation>
+<translation id="5407806496954700135">רוצה שההתאמות האישיות שהגדרת לדף הכרטיסייה החדשה במכשיר אחר יופעלו גם כאן?</translation>
 <translation id="5414763847370083940">תתקבל התראה על הנחות באתר כלשהו.</translation>
 <translation id="5415289094036440596">אי אפשר לשתף מפתחות גישה</translation>
 <translation id="5416455648658732408">העברה לקבוצת כרטיסיות</translation>
@@ -2001,6 +2001,7 @@
 <translation id="8551311254462607218">‏בסרגל הכתובות, לוחצים על סמל המצלמה של Google Lens</translation>
 <translation id="8556590991644167667">{count,plural, =1{סגרת אזהרה אחת ({count})}one{סגרת {count} אזהרות}two{סגרת {count} אזהרות}other{סגרת {count} אזהרות}}</translation>
 <translation id="8558046478684552694">סגירת הקבוצה.</translation>
+<translation id="8559858985063901027">מפתחות הגישה</translation>
 <translation id="8560253818350321773">הפריטים שמשתמשים בהם לעתים קרובות יופיעו ראשונים.</translation>
 <translation id="8561999115126307258">{count,plural, =1{אפשרות אחת ({count}) לסיסמה זמינה מעל המקלדת.}one{‫{count} אפשרויות לסיסמה זמינות מעל המקלדת.}two{‫{count} אפשרויות לסיסמה זמינות מעל המקלדת.}other{‫{count} אפשרויות לסיסמה זמינות מעל המקלדת.}}</translation>
 <translation id="8564894539416715395">דף כרטיסייה חדשה</translation>

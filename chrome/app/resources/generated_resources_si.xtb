@@ -614,6 +614,7 @@
 <translation id="1414648216875402825">ඔබ <ph name="PRODUCT_NAME" /> හි අස්ථාවර අනුවාදයක් යාවත් කරමින් සිටින අතර එහි ඉටු කෙරමින් පවතින විශේෂාංග අඩංගු වේ. පිපිරුම් සහ අනපේක්ෂ බග් හට ගනු ඇත. කරුණාකර අවවාදය පිළිපදින්න.</translation>
 <translation id="1415708812149920388">පසුරු පුවරුව කියවීමේ ප්‍රවේශය ප්‍රතික්ෂේපයි</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (දිගු ID "<ph name="EXTENSION_ID" />") සඳහා මෙම සැසි වර්ගය ඉඩ නොදෙයි.</translation>
+<translation id="141720836055413739">උඩුගත කළ නොහැක.  වෙනස් ගොනු ආකෘතියක් උත්සාහ කරන්න.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{යෙදුම ඉවත් කරන්න}one{යෙදුම් ඉවත් කරන්න}other{යෙදුම් ඉවත් කරන්න}}</translation>
 <translation id="1417497355604638350">නිර්ණය කිරීම් සහ භාවිත දත්ත යවන්න.</translation>
 <translation id="1418552618736477642">දැනුම්දීම් සහ යෙදුම්</translation>
@@ -1051,7 +1052,6 @@
 <translation id="1700517974991662022">පිවිසුණු</translation>
 <translation id="1703331064825191675">ඔබේ මුරපද ගැන කිසි විටෙක කනගාටු නොවන්න</translation>
 <translation id="1703666494654169921">අතථ්‍ය යථාර්ථ උපාංග හෝ දත්ත භාවිත කිරීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
-<translation id="1703849276368677471">මෙවලම්</translation>
 <translation id="1704097193565924901">කැපිටල් අකුරු බවට පත් කරන්න</translation>
 <translation id="1704230497453185209">ශබ්දය වාදනය කිරීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
 <translation id="1706586824377653884">ඔබගේ පරිපාලක විසින් එක් කළ</translation>
@@ -2870,6 +2870,7 @@
 <translation id="2946640296642327832">බ්ලූටූත් සබල කරන්න</translation>
 <translation id="2947281105969315778">පටිති සමූහ බෙදා ගැනීමට හෝ සම්බන්ධ වීමට, ඔබට Chrome වෙත පුරනය වීමට හැකි විය යුතු ය</translation>
 <translation id="2947605845283690091">වෙබ් බ්‍රවුස් කිරීම වේගවත් විය යුතු ය. දැන් <ph name="BEGIN_LINK" />ඔබේ දිගු පරීක්‍ෂා කිරීමට<ph name="END_LINK" /> මොහොතක් ගන්න.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{ගොනුව මෙතැනට දමන්න}one{ගොනු මෙතැනට දමන්න}other{ගොනු මෙතැනට දමන්න}}</translation>
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" /> වෙත යන්න</translation>
 <translation id="29488703364906173">නූතන වෙබ සඳහා තැනූ, වේගවත්, සරල, සහ ආරක්සිත වෙබ් බ්‍රවුසරය.</translation>
 <translation id="2950666755714083615">මා ලියාපදිංචි කරන්න</translation>
@@ -2979,6 +2980,7 @@
 <translation id="3019023222666709803">ඊතල මෙවලම</translation>
 <translation id="3019285239893817657">උප පිටු බොත්තම</translation>
 <translation id="3019595674945299805">VPN සේවාව</translation>
+<translation id="3020101754533552167">පුරනය වීම පරීක්ෂා කරමින්...</translation>
 <translation id="3020183492814296499">කෙටි මං</translation>
 <translation id="3020990233660977256">කාණ්ඩ අංකය: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">බැටරිය මත සිටින විට</translation>
@@ -5258,6 +5260,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4606551464649945562">වෙබ් අඩවිවලට ඔබේ වටපිටාවේ ත්‍රිමාන සිතියමක් සෑදීමට හෝ කැමරා ස්ථානය හඹා යෑමට ඉඩ නොදෙන්න</translation>
 <translation id="4606933160360542263">අභිරුචි යතුරු සංයෝජනය: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{පටිති සමූහය මකන්න ද?}one{පටිති සමූහ මකන්න ද?}other{පටිති සමූහ මකන්න ද?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{ඔබේ ප්‍රශ්නය සමග භාවිත කිරීමට 1 ගොනුවක් උඩුගත කරන්න}one{ඔබේ ප්‍රශ්නය සමග භාවිත කිරීමට ගොනු #ක් දක්වා උඩුගත කරන්න}other{ඔබේ ප්‍රශ්නය සමග භාවිත කිරීමට ගොනු #ක් දක්වා උඩුගත කරන්න}}</translation>
 <translation id="4608500690299898628">සොයන්න... (&amp;F)</translation>
 <translation id="4609164937357979319">ගිණුම තේරීම</translation>
 <translation id="4610493438923139095">අවිශ්වාසයි</translation>
@@ -9544,7 +9547,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7629858978065675960">නොදන්නා ප්‍රතිඵලය.</translation>
 <translation id="7630426712700473382">මෙම උපාංගය <ph name="MANAGER" /> විසින් කළමනාකරණය කරන අතර සෑම අවස්ථාවකදීම ඔබ පිරීම අවශ්‍ය වේ.</translation>
 <translation id="7631014249255418691">ලිනක්ස් යෙදුම් සහ ගොනු සාර්ථකව උපස්ථ කරන ලදි</translation>
-<translation id="7631722872321401342">ඔබේ උපාංගය මත <ph name="LANGUAGE" /> හඬ කිසිවක් නැත. ඔබට සැකසීම් තුළ හඬ ස්ථාපන කළ හැක.</translation>
 <translation id="7631887513477658702">&amp;සැමවිට මෙම වර්ගයේ ගොනු විවෘත කරන්න.</translation>
 <translation id="7632437836497571618">අඩවි සෙවීමට ආරක්ෂිත සම්බන්ධතා භාවිතා කරන්න</translation>
 <translation id="7632948528260659758">පහත කියෝස්ක් යෙදුම් යාවත් කිරීම අසාර්ථකයි:</translation>
@@ -11243,7 +11245,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="876161309768861172">ඔබව පුරනය වීමට නොහැකි විය, නැවත උත්සාහ කරන්න</translation>
 <translation id="8761945298804995673">මෙම පරිශීලකයා දැනටමත් සිටී</translation>
 <translation id="8762886931014513155">ඔබේ <ph name="DEVICE_TYPE" />ට යාවත්කාලීනයක් අවශ්‍යයි</translation>
-<translation id="8763170551806710928">චිප පෙන්වන්න</translation>
 <translation id="8763927697961133303">USB උපාංගය</translation>
 <translation id="8766156860774051068">ඔබ විසින් තෝරා ඇත</translation>
 <translation id="8766796754185931010">කොටෝරි</translation>

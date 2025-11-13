@@ -4007,6 +4007,7 @@
 <translation id="7525804896095537619">Името не може да биде празно</translation>
 <translation id="7526934274050461096">Врската со сајтов не е приватна</translation>
 <translation id="7529884293139707752">Домашно образование</translation>
+<translation id="7530215951451994972">Создајте слика</translation>
 <translation id="7531464389616946220">Скенирајте картичка</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Enter за да ги пребарате обележувачите</translation>
 <translation id="7534987659046836932">Плик C7</translation>
@@ -4293,6 +4294,7 @@
 <translation id="7987087088851949178">Долниот лист со „Достапни се издавачи на „Купете сега, платете подоцна“ за плаќање на рати“ е отворен на целосна висина.</translation>
 <translation id="799149739215780103">Врзување</translation>
 <translation id="7992044431894087211">Споделувањето екран со <ph name="APPLICATION_TITLE" /> продолжи</translation>
+<translation id="799384093520583425">Вашата организација го блокира користењето на DevTools на страницава</translation>
 <translation id="7995512525968007366">Не е наведено</translation>
 <translation id="7997855386298213183">споделени картички</translation>
 <translation id="8001912761979890298">Серверов не можеше да докаже дека е <ph name="DOMAIN" /> бидејќи користи сертификат за безбедност во којшто нема доверба Chromium или конфигурацијата на системот за шифрирање сообраќај на интернет. Тоа може да се должи на погрешна конфигурација или на напаѓач што ја пресретнува врската. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Прегледајте го сертификатот<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4837,6 +4839,7 @@
 <translation id="8922013791253848639">Секогаш дозволувај реклами на сајтов</translation>
 <translation id="8922734931659847428">Ограничен список со URL-адреси на страниците што ги отворате на кои се случуваат <ph name="BEGIN_LINK" />настани со застарена технологија<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Дупка горе десно</translation>
+<translation id="8926082624786998759">DevTools не е дозволен на страницава</translation>
 <translation id="8926389886865778422">Не прашувај повторно</translation>
 <translation id="8926400492587758246">Плаќање на ниски месечни рати</translation>
 <translation id="8932102934695377596">Вашиот часовник доцни</translation>

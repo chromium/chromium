@@ -1056,7 +1056,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1700517974991662022">Posjećeno</translation>
 <translation id="1703331064825191675">Ne morate se brinuti za svoje zaporke</translation>
 <translation id="1703666494654169921">Ne dopuštaj web-lokacijama korištenje uređaja ili podataka virtualne stvarnosti</translation>
-<translation id="1703849276368677471">Alati</translation>
 <translation id="1704097193565924901">Promijeni prvo slovo u veliko</translation>
 <translation id="1704230497453185209">Ne dopuštaj web-lokacijama reprodukciju zvuka</translation>
 <translation id="1706586824377653884">Dodao vaš administrator</translation>
@@ -2982,6 +2981,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3019023222666709803">Alat za strelice</translation>
 <translation id="3019285239893817657">Gumb podstranice</translation>
 <translation id="3019595674945299805">Usluga VPN-a</translation>
+<translation id="3020101754533552167">U tijeku je provjera prijave...</translation>
 <translation id="3020183492814296499">Prečaci</translation>
 <translation id="3020990233660977256">Serijski broj: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Tijekom baterijskog napajanja</translation>
@@ -9548,7 +9548,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7629858978065675960">Nepoznati rezultat.</translation>
 <translation id="7630426712700473382">Uređajem upravlja <ph name="MANAGER" /> i zahtijeva da se svaki put prijavite.</translation>
 <translation id="7631014249255418691">Uspješno su stvorene sigurnosne kopije Linux aplikacija i datoteka</translation>
-<translation id="7631722872321401342">Na uređaju nema glasova za <ph name="LANGUAGE" />. Glasove možete instalirati u postavkama.</translation>
 <translation id="7631887513477658702">&amp;Uvijek otvori ovu vrstu datoteka</translation>
 <translation id="7632437836497571618">Traži web-lokacije pomoću sigurnih veza</translation>
 <translation id="7632948528260659758">Ažuriranje sljedećih kiosk aplikacija nije uspjelo:</translation>
@@ -11248,7 +11247,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="876161309768861172">Prijava nije uspjela, pokušajte ponovo</translation>
 <translation id="8761945298804995673">Taj korisnik već postoji</translation>
 <translation id="8762886931014513155">Potrebno je ažurirati <ph name="DEVICE_TYPE" /></translation>
-<translation id="8763170551806710928">Prikaži elemente</translation>
 <translation id="8763927697961133303">USB uređaj</translation>
 <translation id="8766156860774051068">Vi ste odabrali</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

@@ -612,6 +612,7 @@
 <translation id="1414648216875402825">ଆପଣ <ph name="PRODUCT_NAME" />ର ଏକ ଅସ୍ଥାୟୀ ସଂସ୍କରଣ ଅପ୍‍‍ଡେଟ୍ କରୁଛନ୍ତି ଯେଉଁଥିରେ ଏପରି ବୈଶିଷ୍ଟ୍ୟ ରହିଛି ଯାହା ପ୍ରଗତିିିିରେ ଅଛି। କ୍ରାସ୍ ଓ ଅପ୍ରତ୍ୟାଶିତ ବଗ୍ ଉତ୍ପନ୍ନ ହେବ। ଦୟାକରି ସତର୍କତାର ସହିତ ଆଗକୁ ବଢ଼ନ୍ତୁ।</translation>
 <translation id="1415708812149920388">କ୍ଲିପ୍‌ବୋର୍ଡ ପଢ଼ିବାର ଆକ୍ସେସ୍ ଅଗ୍ରାହ୍ୟ କରାଯାଇଛି</translation>
 <translation id="1415990189994829608">ଏହି ପ୍ରକାରର ଅବଧିରେ <ph name="EXTENSION_NAME" /> (ଏକ୍ସଟେନ୍‍ସନ୍‌ ID "<ph name="EXTENSION_ID" />")କୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ।</translation>
+<translation id="141720836055413739">ଅପଲୋଡ କରାଯାଇପାରିବ ନାହିଁ।  ଏକ ଭିନ୍ନ ଫାଇଲ ଫର୍ମାଟ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{ଆପକୁ କାଢ଼ି ଦିଅନ୍ତୁ}other{ଆପ୍ସ କାଢ଼ି ଦିଅନ୍ତୁ}}</translation>
 <translation id="1417497355604638350">ଡାଏଗ୍ନୋଷ୍ଟିକ ଏବଂ ବ୍ୟବହାର ଡାଟା ପଠାନ୍ତୁ।</translation>
 <translation id="1418552618736477642">ବିଜ୍ଞପ୍ତି ଏବଂ ଆପ୍ସ</translation>
@@ -1050,7 +1051,6 @@
 <translation id="1700517974991662022">ଯାଇଥିବା ସ୍ଥାନ</translation>
 <translation id="1703331064825191675">ଆପଣଙ୍କର ପାସ୍‍ୱାର୍ଡଗୁଡ଼ିକ ବିଷୟରେ କେବେ ବି ଚିନ୍ତା କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="1703666494654169921">ଭର୍ଚୁଆଲ୍ ରିଆଲିଟୀ ଡିଭାଇସ୍ କିମ୍ବା ଡାଟା ବ୍ୟବହାର କରିବାକୁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
-<translation id="1703849276368677471">ଟୁଲ</translation>
 <translation id="1704097193565924901">କ୍ୟାପିଟାଲାଇଜ କରନ୍ତୁ</translation>
 <translation id="1704230497453185209">ସାଉଣ୍ଡ ଚଲାଇବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="1706586824377653884">ଆପଣଙ୍କର ଆଡମିନିଷ୍ଟ୍ରେଟର୍‌ଙ୍କ ଦ୍ୱାରା ଯୋଗ କରାଯାଇଛି</translation>
@@ -2866,6 +2866,7 @@
 <translation id="2946640296642327832">ବ୍ଲୁଟୁଥ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="2947281105969315778">ଟାବ ଗ୍ରୁପକୁ ସେୟାର କରିବା କିମ୍ବା ଏଥିରେ ଯୋଗ ଦେବାକୁ ଆପଣଙ୍କୁ Chromeରେ ସାଇନ ଇନ କରିବାକୁ ସକ୍ଷମ ହେବା ଆବଶ୍ୟକ</translation>
 <translation id="2947605845283690091">ୱେବ୍ ବ୍ରାଉଜିଂ ଦ୍ରୁତ ହେବା ଦରକାର। ବର୍ତ୍ତମାନ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଏକ୍ସଟେନ୍‍ସନ୍‍ଗୁଡ଼ିକର ଯାଞ୍ଚ<ph name="END_LINK" /> କରିବା ପାଇଁ କିଛି ସମୟ ନିଅନ୍ତୁ।</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{ଏଠାରେ ଫାଇଲକୁ ଡ୍ରପ କରନ୍ତୁ}other{ଏଠାରେ ଫାଇଲଗୁଡ଼ିକୁ ଡ୍ରପ କରନ୍ତୁ}}</translation>
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="29488703364906173">ଆଧୁନିକ ୱେବ୍ ପାଇଁ ତିଆରି କରାଯାଇଥିବା ଏକ ଦ୍ରୁତ, ସରଳ ଏବଂ ସୁରକ୍ଷିତ ୱେବ୍ ବ୍ରାଉଜର୍।</translation>
 <translation id="2950666755714083615">ମୋତେ ସାଇନ୍ ଅପ୍ କରନ୍ତୁ</translation>
@@ -2975,6 +2976,7 @@
 <translation id="3019023222666709803">ଆରୋ ଟୁଲ</translation>
 <translation id="3019285239893817657">ସବ୍‌ପେଜ୍ ବଟନ୍</translation>
 <translation id="3019595674945299805">VPN ସେବା</translation>
+<translation id="3020101754533552167">ସାଇନ-ଇନ କରିବା ଯାଞ୍ଚ କରାଯାଉଛି...</translation>
 <translation id="3020183492814296499">ସର୍ଟକଟ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="3020990233660977256">କ୍ରମିକ ସଂଖ୍ୟା: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">ବ୍ୟାଟେରୀରେ ଚାଲୁଥିବା ସମୟରେ</translation>
@@ -5254,6 +5256,7 @@
 <translation id="4606551464649945562">ଆପଣଙ୍କ ପରିପାର୍ଶ୍ୱର ଏକ 3D ମ୍ୟାପ୍ ତିଆରି କରିବା ଏବଂ କ୍ୟାମେରା ସ୍ଥିତି ଟ୍ରାକ୍ କରିବାକୁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="4606933160360542263">କଷ୍ଟମ କୀ କମ୍ବିନେସନ: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ଟାବ ଗ୍ରୁପକୁ ଡିଲିଟ କରିବେ?}other{ଟାବ ଗ୍ରୁପକୁ ଡିଲିଟ କରିବେ?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{ଆପଣଙ୍କ ପ୍ରଶ୍ନ ସହ ବ୍ୟବହାର କରିବାକୁ 1 ଫାଇଲ ଅପଲୋଡ କରନ୍ତୁ}other{ଆପଣଙ୍କ ପ୍ରଶ୍ନ ସହ ବ୍ୟବହାର କରିବାକୁ # ପର୍ଯ୍ୟନ୍ତ ଫାଇଲ ଅପଲୋଡ କରନ୍ତୁ}}</translation>
 <translation id="4608500690299898628">&amp;ଖୋଜନ୍ତୁ...</translation>
 <translation id="4609164937357979319">ଆକାଉଣ୍ଟ ଚୟନ</translation>
 <translation id="4610493438923139095">ଅବିଶ୍ୱସ୍ତ</translation>
@@ -9538,7 +9541,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7629858978065675960">ଅଜଣା ଫଳାଫଳ।</translation>
 <translation id="7630426712700473382">ଏହି ଡିଭାଇସ <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି ଏବଂ ଆପଣଙ୍କୁ ପ୍ରତ୍ୟେକ ଥର ଆପଣ ସାଇନ ଇନ କରିବାର ଆବଶ୍ୟକତା ଅଛି।</translation>
 <translation id="7631014249255418691">Linux ଆପ୍ସ ଏବଂ ଫାଇଲ୍ସର ସଫଳତାପୂର୍ବକ ବ୍ୟାକ୍ ଅପ୍ ନିଆଯାଇଛି</translation>
-<translation id="7631722872321401342">ଆପଣଙ୍କ ଡିଭାଇସରେ କୌଣସି <ph name="LANGUAGE" /> ଭଏସ ନାହିଁ। ଆପଣ ସେଟିଂସରେ ଭଏସ ଇନଷ୍ଟଲ କରିପାରିବେ।</translation>
 <translation id="7631887513477658702">&amp;ସର୍ବଦା ଏହି ପ୍ରକାରର ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="7632437836497571618">ସାଇଟଗୁଡ଼ିକୁ ଖୋଜିବା ପାଇଁ ସୁରକ୍ଷିତ କନେକ୍ସନ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="7632948528260659758">ନିମ୍ନୋକ୍ତ କିଓସ୍କ ଆପ୍ ଅପ୍‍‍ଡେଟ୍ କରିବାରେ ବିଫଳ ହୋଇଛି:</translation>
@@ -11236,7 +11238,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="876161309768861172">ଆପଣଙ୍କୁ ସାଇନ ଇନ କରାଯାଇପାରିଲା ନାହିଁ, ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="8761945298804995673">ଏହି ୟୁଜର ପୂର୍ବରୁ ଅଛନ୍ତି</translation>
 <translation id="8762886931014513155">ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ଏକ ଅପ୍‌ଡେଟ୍ ଆବଶ୍ୟକ କରୁଛି</translation>
-<translation id="8763170551806710928">ଚିପ ଦେଖାନ୍ତୁ</translation>
 <translation id="8763927697961133303">USB ଡିଭାଇସ୍</translation>
 <translation id="8766156860774051068">ଆପଣଙ୍କ ଦ୍ୱାରା କ୍ୟୁରେଟ କରାଯାଇଛି</translation>
 <translation id="8766796754185931010">କୋଟୋଏରି</translation>

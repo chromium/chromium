@@ -118,7 +118,7 @@
 <translation id="107022587824771715">Al momento i suggerimenti relativi ai gruppi di schede non sono disponibili. Puoi <ph name="BEGIN_LINK" />aggiornare ora<ph name="END_LINK" /> o riprovare più tardi.</translation>
 <translation id="1070357312245925724">Scorciatoia di navigazione</translation>
 <translation id="1070705170564860382">Apertura in browser alternativo tra <ph name="COUNTDOWN_SECONDS" /> secondi</translation>
-<translation id="1071661533099313342">Visualizzazioni separate</translation>
+<translation id="1071661533099313342">Separa visualizzazioni</translation>
 <translation id="1071917609930274619">Crittografia dati</translation>
 <translation id="1072700771426194907">È stato rilevato un dispositivo USB</translation>
 <translation id="107278043869924952">Usa il PIN oltre alla password</translation>
@@ -613,6 +613,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1414648216875402825">Stai per passare a una versione non stabile di <ph name="PRODUCT_NAME" /> che contiene funzioni ancora in fase di sviluppo. Si verificheranno arresti anomali e bug imprevisti. Procedi con cautela.</translation>
 <translation id="1415708812149920388">Accesso alla lettura degli appunti negato</translation>
 <translation id="1415990189994829608">L'estensione <ph name="EXTENSION_NAME" /> (ID estensione "<ph name="EXTENSION_ID" />") non è consentita in questo tipo di sessione.</translation>
+<translation id="141720836055413739">Caricamento non riuscito.  Prova con un formato file diverso.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Rimuovi app}other{Rimuovi app}}</translation>
 <translation id="1417497355604638350">Invia dati diagnostici e sull'utilizzo.</translation>
 <translation id="1418552618736477642">Notifiche e app</translation>
@@ -1053,7 +1054,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1700517974991662022">Visitato</translation>
 <translation id="1703331064825191675">Non preoccuparti delle tue password</translation>
 <translation id="1703666494654169921">Non consentire ai siti di usare dati o dispositivi per realtà virtuale</translation>
-<translation id="1703849276368677471">Strumenti</translation>
 <translation id="1704097193565924901">Scrivi in maiuscolo</translation>
 <translation id="1704230497453185209">Non consentire ai siti di riprodurre audio</translation>
 <translation id="1706586824377653884">Aggiunta dall'amministratore</translation>
@@ -1308,7 +1308,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1878477879455105085">Aperto</translation>
 <translation id="1878885068166344708">L'elemento viene evidenziato quando sposti lo stato attivo. Premi Tab o seleziona un elemento per cambiare lo stato attivo.</translation>
 <translation id="1879000426787380528">Accesso eseguito come</translation>
-<translation id="1880214489933905933">Visualizzazioni invertite</translation>
+<translation id="1880214489933905933">Inverti visualizzazioni</translation>
 <translation id="1880618477732738742">Modifica e concedi l'accesso a funzionalità come geolocalizzazione, microfono, videocamera, cookie e così via per tutti i tuoi siti web e le tue estensioni, inclusa questa estensione.</translation>
 <translation id="1881445033931614352">Layout tastiera</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Elemento}other{# elementi}}</translation>
@@ -1701,7 +1701,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2147402320887035428">Questo file potrebbe essere un malware.<ph name="LINE_BREAK" />Google Navigazione sicura sta controllando se il file non è sicuro. In genere l'analisi richiede alcuni secondi.</translation>
 <translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2148219725039824548">Errore durante il montaggio della condivisione. Impossibile trovare la condivisione specificata sulla rete.</translation>
-<translation id="2148248734299717598">Chiudi visualizzazione da sinistra</translation>
+<translation id="2148248734299717598">Chiudi visualizzazione sinistra</translation>
 <translation id="2148756636027685713">Formattazione terminata</translation>
 <translation id="2148892889047469596">Trasmetti scheda</translation>
 <translation id="2149973817440762519">Modifica Preferito</translation>
@@ -2789,7 +2789,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2891922230654533301">Vuoi usare il tuo dispositivo per accedere al sito <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Browser predefinito</translation>
 <translation id="2893180576842394309">Google può utilizzare la tua cronologia per personalizzare la Ricerca e altri servizi Google</translation>
-<translation id="2893318819023133318">Visualizzazioni invertite</translation>
+<translation id="2893318819023133318">Inverti visualizzazioni</translation>
 <translation id="2893701697603065178">Ambiente di sviluppo gestito</translation>
 <translation id="2894757982205307093">Nuova scheda nel gruppo</translation>
 <translation id="289695669188700754">ID chiave: <ph name="KEY_ID" /></translation>
@@ -2868,6 +2868,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2946640296642327832">Attiva Bluetooth</translation>
 <translation id="2947281105969315778">Per partecipare a gruppi di schede o condividerli, devi poter accedere a Chrome</translation>
 <translation id="2947605845283690091">La navigazione sul Web deve essere veloce. Prenditi un attimo per <ph name="BEGIN_LINK" />controllare ora le tue estensioni<ph name="END_LINK" />.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Rilascia il file qui}other{Rilascia i file qui}}</translation>
 <translation id="2948300991547862301">Vai a <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Un browser web veloce, semplice e sicuro, ideato per il Web moderno.</translation>
 <translation id="2950666755714083615">Registrami</translation>
@@ -4511,7 +4512,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="406213378265872299">Comportamenti personalizzati</translation>
 <translation id="4062561150282203854">Sincronizza le app, le impostazioni e altri dati del tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="4065876735068446555">La rete in uso (<ph name="NETWORK_ID" />) potrebbe richiedere la visita della relativa pagina di accesso.</translation>
-<translation id="4065910654823040256">Chiudi visualizzazione da destra</translation>
+<translation id="4065910654823040256">Chiudi visualizzazione destra</translation>
 <translation id="4065931125325392744">A breve questa estensione potrebbe non essere più supportata</translation>
 <translation id="4066207411788646768">Controlla la connessione per rilevare le stampanti disponibili nella tua rete</translation>
 <translation id="4067839975993712852">Contrassegna la scheda corrente come già letta</translation>
@@ -5257,6 +5258,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4606551464649945562">Non consentire ai siti di creare una mappa 3D dell'ambiente circostante o di monitorare la posizione della fotocamera</translation>
 <translation id="4606933160360542263">Combinazione di tasti personalizzata: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Vuoi eliminare il gruppo di schede?}other{Vuoi eliminare i gruppi di schede?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Carica 1 file da utilizzare con la tua domanda}other{Carica fino a # file da utilizzare con la tua domanda}}</translation>
 <translation id="4608500690299898628">&amp;Trova...</translation>
 <translation id="4609164937357979319">Selezione account</translation>
 <translation id="4610493438923139095">Non attendibile</translation>
@@ -7316,7 +7318,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6066649679804058181">Converti gruppo in cartella di preferiti</translation>
 <translation id="6066794465984119824">L'hash dell'immagine non è impostato</translation>
 <translation id="6069464830445383022">Accedi al Chromebook con il tuo Account Google</translation>
-<translation id="6069799426896362048">Visualizzazioni separate</translation>
+<translation id="6069799426896362048">Separa visualizzazioni</translation>
 <translation id="6071181508177083058">conferma password</translation>
 <translation id="6071576563962215370">Il sistema non è riuscito a stabilire il blocco degli attributi installation-time del dispositivo.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> di memoria salvata</translation>
@@ -8104,10 +8106,11 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6619990499523117484">Conferma il codice PIN</translation>
 <translation id="6620000730890558421">Mantieni in ordine le schede con l'AI</translation>
 <translation id="6620254580880484313">Nome container</translation>
+<translation id="6621282332208609777">Chiedi a Google o digita un URL</translation>
 <translation id="6621391692573306628">Per inviare questa scheda a un altro dispositivo, accedi a Chrome su entrambi i dispositivi</translation>
 <translation id="6622980291894852883">Continua a bloccare le immagini</translation>
 <translation id="6624036901798307345">In modalità tablet, tocca il pulsante della barra degli strumenti del contatore di schede per aprire una nuova tabstrip che mostra le miniature di ogni scheda.</translation>
-<translation id="6624538059730609162">Chiudi visualizzazione da destra</translation>
+<translation id="6624538059730609162">Chiudi visualizzazione destra</translation>
 <translation id="6624687053722465643">Dolcezza</translation>
 <translation id="6626581113916585374">Modalità effetto</translation>
 <translation id="6627743754845412571">Non autorizzati a monitorare le tue mani</translation>
@@ -9238,7 +9241,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7412226954991670867">Memoria GPU</translation>
 <translation id="741370456693729525">Usa il linguaggio di tutti i giorni per cercare nella cronologia di navigazione e trovare i siti che hai visitato</translation>
 <translation id="7414464185801331860">18x</translation>
-<translation id="7414622565840501288">Chiudi visualizzazione da sinistra</translation>
+<translation id="7414622565840501288">Chiudi visualizzazione sinistra</translation>
 <translation id="7415454883318062233">Configurazione completata</translation>
 <translation id="7415884723030194001">Dessert</translation>
 <translation id="7415997299997664304">Riconosci la semantica del layout visivo</translation>
@@ -9527,6 +9530,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7620616707541471029">Scegli un account per continuare</translation>
 <translation id="7621382409404463535">Il sistema non è riuscito a salvare la configurazione del dispositivo.</translation>
 <translation id="7621595347123595643">Non potrai recuperare i dati locali se non ricordi la password o il PIN.</translation>
+<translation id="7621863462266622331">Quando le schede vengono condivise, i contenuti, i file multimediali e gli URL delle pagine vengono inviati a Google</translation>
 <translation id="7622114377921274169">In carica.</translation>
 <translation id="7622768823216805500">In genere, i siti installano gestori dei pagamenti per funzionalità di acquisto come il pagamento semplificato</translation>
 <translation id="7622966771025050155">Passa alla scheda acquisita</translation>
@@ -9540,7 +9544,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7629858978065675960">Risultato sconosciuto.</translation>
 <translation id="7630426712700473382">Questo dispositivo è gestito da <ph name="MANAGER" /> e richiede l'accesso a ogni utilizzo.</translation>
 <translation id="7631014249255418691">Backup app e file Linux riuscito</translation>
-<translation id="7631722872321401342">Non sono presenti voci in <ph name="LANGUAGE" /> sul tuo dispositivo. Puoi installare le voci nelle impostazioni.</translation>
 <translation id="7631887513477658702">&amp;Apri sempre file di questo tipo</translation>
 <translation id="7632437836497571618">Usa connessioni sicure per cercare siti</translation>
 <translation id="7632948528260659758">Le seguenti app kiosk non sono state aggiornate:</translation>
@@ -11240,7 +11243,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="876161309768861172">Impossibile accedere, riprova</translation>
 <translation id="8761945298804995673">Questo utente esiste già</translation>
 <translation id="8762886931014513155">Il dispositivo <ph name="DEVICE_TYPE" /> richiede un aggiornamento</translation>
-<translation id="8763170551806710928">Mostra chip</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8766156860774051068">Selezionati da te</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
@@ -11743,6 +11745,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="909554839118732438">Chiudi finestre in incognito</translation>
 <translation id="9095819602391364796">Non consentire ai siti di controllare e riprogrammare i tuoi dispositivi MIDI</translation>
 <translation id="9096053102600371572">Scorrimento controllato <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Confronta opzioni</translation>
 <translation id="9096776523567481218">non installata localmente</translation>
 <translation id="9098860402274800697">Rimuovi le app per Google Play e Android</translation>
 <translation id="9099220545925418560">In base alla tua cronologia di navigazione. Questa impostazione non è attiva.</translation>

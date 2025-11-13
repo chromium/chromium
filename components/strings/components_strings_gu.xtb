@@ -4008,6 +4008,7 @@
 <translation id="7525804896095537619">નામ ખાલી હોઈ શકે નહીં</translation>
 <translation id="7526934274050461096">આ સાઇટ પરનું તમારું કનેક્શન ખાનગી નથી</translation>
 <translation id="7529884293139707752">ઘરે બેઠા ભણતર</translation>
+<translation id="7530215951451994972">છબી બનાવો</translation>
 <translation id="7531464389616946220">કાર્ડ સ્કૅન કરો</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, બુકમાર્ક શોધવા માટે Enter કી દબાવો</translation>
 <translation id="7534987659046836932">એન્વલપ C7</translation>
@@ -4294,6 +4295,7 @@
 <translation id="7987087088851949178">સમય જતાં ચુકવણી કરવા માટે ઉપલબ્ધ હમણાં ખરીદો, પછીથી ચુકવો વિકલ્પના જારીકર્તાઓની શીટ પૂર્ણ ઊંચાઈએ ખોલી.</translation>
 <translation id="799149739215780103">જોડો</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> સાથે સ્ક્રીન શેરિંગની સુવિધા ફરી શરૂ કરવામાં આવી</translation>
+<translation id="799384093520583425">તમારી સંસ્થાએ આ પેજ પર DevToolsનો ઉપયોગ બ્લૉક કર્યો છે</translation>
 <translation id="7995512525968007366">નિર્દિષ્ટ કરાયેલ નથી</translation>
 <translation id="7997855386298213183">શેર કરેલા ટૅબ</translation>
 <translation id="8001912761979890298">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે કારણ કે તે એવા સુરક્ષા સર્ટિફિકેટનો ઉપયોગ કરી રહ્યું છે જેનો Chromium અથવા વેબ ટ્રાફિક એન્ક્રિપ્શન માટેની તમારી સિસ્ટમની ગોઠવણી દ્વારા વિશ્વાસ કરવામાં આવતો નથી. આવું કદાચ કોઈ ખોટી ગોઠવણી અથવા કોઈ અટૅક કરનારાએ તમારા કનેક્શનમાં અવરોધ ઊભો કર્યો હોવાને કારણે થયું હોઈ શકે છે. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />સર્ટિફિકેટ જુઓ<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4838,6 +4840,7 @@
 <translation id="8922013791253848639">આ સાઇટ પર જાહેરાતો માટે હંમેશાં પરવાનગી આપે છે</translation>
 <translation id="8922734931659847428">જ્યાં <ph name="BEGIN_LINK" />જૂની ટેક્નોલોજીની ઇવેન્ટ<ph name="END_LINK" /> જોવા મળી રહી છે, તેવા તમે મુલાકાત લો છો તે પેજના URLsની મર્યાદિત સૂચિ</translation>
 <translation id="892588693504540538">ઉપર જમણી બાજુએ કાણું પાડો</translation>
+<translation id="8926082624786998759">આ પેજ પર DevToolsને મંજૂરી નથી</translation>
 <translation id="8926389886865778422">ફરિથી પુછશો નહીં</translation>
 <translation id="8926400492587758246">ઓછી રકમવાળા માસિક હપ્તાઓમાં ચુકવણી કરો</translation>
 <translation id="8932102934695377596">તમારી ઘડિયાળ પાછળ છે</translation>

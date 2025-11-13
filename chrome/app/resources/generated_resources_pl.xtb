@@ -1056,7 +1056,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1700517974991662022">Kliknięty</translation>
 <translation id="1703331064825191675">Nie musisz się już martwić o bezpieczeństwo swoich haseł</translation>
 <translation id="1703666494654169921">Nie zezwalaj witrynom na używanie urządzeń ani danych rzeczywistości wirtualnej</translation>
-<translation id="1703849276368677471">Narzędzia</translation>
 <translation id="1704097193565924901">Od wielkiej litery</translation>
 <translation id="1704230497453185209">Nie zezwalaj witrynom na odtwarzanie dźwięków</translation>
 <translation id="1706586824377653884">Dodane przez administratora</translation>
@@ -2965,6 +2964,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3019023222666709803">Narzędzie Strzałka</translation>
 <translation id="3019285239893817657">Przycisk podstrony</translation>
 <translation id="3019595674945299805">Usługa VPN</translation>
+<translation id="3020101754533552167">Sprawdzam logowanie…</translation>
 <translation id="3020183492814296499">Skróty</translation>
 <translation id="3020990233660977256">Numer seryjny: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Na baterii</translation>
@@ -8092,6 +8092,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6619990499523117484">Potwierdź kod PIN</translation>
 <translation id="6620000730890558421">Porządkuj karty za pomocą AI</translation>
 <translation id="6620254580880484313">Nazwa kontenera</translation>
+<translation id="6621282332208609777">Zapytaj Google lub wpisz adres URL</translation>
 <translation id="6621391692573306628">Aby wysłać tę kartę na inne urządzenie, na obu urządzeniach zaloguj się w Chrome</translation>
 <translation id="6622980291894852883">Nadal blokuj pokazywanie grafik</translation>
 <translation id="6624036901798307345">W trybie tabletu kliknij przycisk licznika kart na pasku narzędzi, aby otworzyć nowy pasek kart z miniaturą każdej karty.</translation>
@@ -9512,6 +9513,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7620616707541471029">Wybierz konto, aby kontynuować</translation>
 <translation id="7621382409404463535">Systemowi nie udało się zapisać konfiguracji urządzenia.</translation>
 <translation id="7621595347123595643">Jeśli zapomnisz hasło lub kod PIN, nie będzie można odzyskać danych lokalnych.</translation>
+<translation id="7621863462266622331">Gdy karty są udostępniane, ich zawartość, multimedia i adresy URL są wysyłane do Google</translation>
 <translation id="7622114377921274169">Ładuję.</translation>
 <translation id="7622768823216805500">Strony zwykle instalują moduły obsługi płatności na przykład w celu ułatwienia płatności za zakupy</translation>
 <translation id="7622966771025050155">Przełącz na przechwyconą kartę</translation>
@@ -9525,7 +9527,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7629858978065675960">Nieznany wynik.</translation>
 <translation id="7630426712700473382">Administrator tego urządzenia (<ph name="MANAGER" />) wymaga logowania się za każdym razem.</translation>
 <translation id="7631014249255418691">Pomyślnie utworzono kopię zapasową aplikacji i plików Linuksa</translation>
-<translation id="7631722872321401342">Na urządzeniu nie ma głosów w języku: <ph name="LANGUAGE" />. Głosy możesz zainstalować w ustawieniach.</translation>
 <translation id="7631887513477658702">&amp;Zawsze otwieraj pliki tego typu</translation>
 <translation id="7632437836497571618">Używaj bezpiecznych połączeń do wyszukiwania witryn</translation>
 <translation id="7632948528260659758">Nie udało się zaktualizować tych aplikacji kiosku:</translation>
@@ -11221,7 +11222,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="876161309768861172">Nie udało się zalogować. Spróbuj ponownie.</translation>
 <translation id="8761945298804995673">Ten użytkownik już istnieje</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> wymaga aktualizacji</translation>
-<translation id="8763170551806710928">Pokaż elementy</translation>
 <translation id="8763927697961133303">Urządzenie USB</translation>
 <translation id="8766156860774051068">Wybrane przez Ciebie</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
@@ -11723,6 +11723,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="909554839118732438">Zamknij tryb incognito</translation>
 <translation id="9095819602391364796">Nie zezwalaj witrynom na sterowanie urządzeniami MIDI ani na ich przeprogramowywanie</translation>
 <translation id="9096053102600371572">Kontrolowane przewijanie <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Porównaj opcje</translation>
 <translation id="9096776523567481218">nie zainstalowano lokalnie</translation>
 <translation id="9098860402274800697">Usuwanie aplikacji z Google Play i aplikacji na Androida</translation>
 <translation id="9099220545925418560">Na podstawie Twojej historii przeglądania. To ustawienie jest wyłączone.</translation>

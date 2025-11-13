@@ -1053,7 +1053,6 @@
 <translation id="1700517974991662022">Посећено</translation>
 <translation id="1703331064825191675">Никада не брините о лозинкама</translation>
 <translation id="1703666494654169921">Не дозвољавај сајтовима да користе уређаје и податке виртуелне реалности</translation>
-<translation id="1703849276368677471">Алатке</translation>
 <translation id="1704097193565924901">Велика слова</translation>
 <translation id="1704230497453185209">Не дозвољавај сајтовима да пуштају звук</translation>
 <translation id="1706586824377653884">Додао администратор</translation>
@@ -9549,7 +9548,6 @@
 <translation id="7629858978065675960">Непознат резултат.</translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> управља овим уређајем и захтева да се пријавите сваки пут.</translation>
 <translation id="7631014249255418691">Направљена је резервна копија Linux апликација и датотека</translation>
-<translation id="7631722872321401342">Нема гласова (<ph name="LANGUAGE" />) на уређају. Гласове можете да инсталирате у подешавањима.</translation>
 <translation id="7631887513477658702">&amp;Увек отвори датотеке овог типа</translation>
 <translation id="7632437836497571618">Користите безбедне везе да бисте тражили сајтове</translation>
 <translation id="7632948528260659758">Ажурирање следећих киоск апликација није успело:</translation>
@@ -11249,7 +11247,6 @@
 <translation id="876161309768861172">Пријава није успела, пробајте поново</translation>
 <translation id="8761945298804995673">Овај корисник већ постоји</translation>
 <translation id="8762886931014513155">Треба да ажурирате <ph name="DEVICE_TYPE" /></translation>
-<translation id="8763170551806710928">Прикажи елементе</translation>
 <translation id="8763927697961133303">USB уређај</translation>
 <translation id="8766156860774051068">Припремили сте ви</translation>
 <translation id="8766796754185931010">Котоери</translation>

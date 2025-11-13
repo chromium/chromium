@@ -1053,7 +1053,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1700517974991662022">Posećeno</translation>
 <translation id="1703331064825191675">Nikada ne brinite o lozinkama</translation>
 <translation id="1703666494654169921">Ne dozvoljavaj sajtovima da koriste uređaje i podatke virtuelne realnosti</translation>
-<translation id="1703849276368677471">Alatke</translation>
 <translation id="1704097193565924901">Velika slova</translation>
 <translation id="1704230497453185209">Ne dozvoljavaj sajtovima da puštaju zvuk</translation>
 <translation id="1706586824377653884">Dodao administrator</translation>
@@ -9549,7 +9548,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7629858978065675960">Nepoznat rezultat.</translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> upravlja ovim uređajem i zahteva da se prijavite svaki put.</translation>
 <translation id="7631014249255418691">Napravljena je rezervna kopija Linux aplikacija i datoteka</translation>
-<translation id="7631722872321401342">Nema glasova (<ph name="LANGUAGE" />) na uređaju. Glasove možete da instalirate u podešavanjima.</translation>
 <translation id="7631887513477658702">&amp;Uvek otvori datoteke ovog tipa</translation>
 <translation id="7632437836497571618">Koristite bezbedne veze da biste tražili sajtove</translation>
 <translation id="7632948528260659758">Ažuriranje sledećih kiosk aplikacija nije uspelo:</translation>
@@ -11249,7 +11247,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="876161309768861172">Prijava nije uspela, probajte ponovo</translation>
 <translation id="8761945298804995673">Ovaj korisnik već postoji</translation>
 <translation id="8762886931014513155">Treba da ažurirate <ph name="DEVICE_TYPE" /></translation>
-<translation id="8763170551806710928">Prikaži elemente</translation>
 <translation id="8763927697961133303">USB uređaj</translation>
 <translation id="8766156860774051068">Pripremili ste vi</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

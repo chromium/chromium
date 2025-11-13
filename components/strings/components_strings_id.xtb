@@ -4006,6 +4006,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7525804896095537619">Nama harus diisi</translation>
 <translation id="7526934274050461096">Koneksi Anda ke situs ini tidak bersifat pribadi</translation>
 <translation id="7529884293139707752">Homeschooling</translation>
+<translation id="7530215951451994972">Buat Gambar</translation>
 <translation id="7531464389616946220">Pindai kartu</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Enter untuk menelusuri bookmark</translation>
 <translation id="7534987659046836932">Envelope C7</translation>
@@ -4292,6 +4293,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7987087088851949178">Penerbit Beli Sekarang Bayar Nanti tersedia untuk opsi pembayaran dengan cicilan terbuka sepenuhnya.</translation>
 <translation id="799149739215780103">Jilid</translation>
 <translation id="7992044431894087211">Berbagi layar dengan <ph name="APPLICATION_TITLE" /> dilanjutkan</translation>
+<translation id="799384093520583425">Organisasi Anda telah memblokir penggunaan DevTools di halaman ini</translation>
 <translation id="7995512525968007366">Tidak Ditentukan</translation>
 <translation id="7997855386298213183">tab bersama</translation>
 <translation id="8001912761979890298">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" /> karena menggunakan sertifikat keamanan yang tidak dipercaya oleh Chromium atau konfigurasi sistem Anda untuk enkripsi traffic web. Hal ini mungkin disebabkan oleh kesalahan konfigurasi, atau ada penyerang yang menyadap koneksi Anda. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Lihat Sertifikat<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4834,6 +4836,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8922013791253848639">Selalu izinkan iklan di situs ini</translation>
 <translation id="8922734931659847428">Daftar terbatas URL halaman yang Anda buka tempat <ph name="BEGIN_LINK" />peristiwa teknologi lama<ph name="END_LINK" /> terjadi</translation>
 <translation id="892588693504540538">Lubang di kanan atas</translation>
+<translation id="8926082624786998759">DevTools tidak diizinkan di halaman ini</translation>
 <translation id="8926389886865778422">Jangan tanya lagi</translation>
 <translation id="8926400492587758246">Bayar dengan cicilan bulanan rendah</translation>
 <translation id="8932102934695377596">Setelan waktu Anda terlalu lambat</translation>

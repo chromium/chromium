@@ -1051,7 +1051,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1700517974991662022">E vizituar</translation>
 <translation id="1703331064825191675">Mos u shqetëso asnjëherë për fjalëkalime e tua</translation>
 <translation id="1703666494654169921">Mos lejo që sajtet të përdorin të dhënat ose pajisjet e realitetit virtual</translation>
-<translation id="1703849276368677471">Veglat</translation>
 <translation id="1704097193565924901">Kapitalizo</translation>
 <translation id="1704230497453185209">Mos lejo që sajtet të luajnë tinguj</translation>
 <translation id="1706586824377653884">Shtuar nga administratori yt</translation>
@@ -2977,6 +2976,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3019023222666709803">Vegla e shigjetës</translation>
 <translation id="3019285239893817657">Butoni i nënfaqes</translation>
 <translation id="3019595674945299805">Shërbimi VPN</translation>
+<translation id="3020101754533552167">Po kontrollohen të dhënat e identifikimit...</translation>
 <translation id="3020183492814296499">Shkurtoret</translation>
 <translation id="3020990233660977256">Numri i serisë: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Gjatë kohës me bateri</translation>
@@ -9540,7 +9540,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7629858978065675960">Rezultat i panjohur.</translation>
 <translation id="7630426712700473382">Kjo pajisje menaxhohet nga <ph name="MANAGER" /> dhe të kërkon të identifikohesh çdo herë.</translation>
 <translation id="7631014249255418691">Aplikacionet dhe skedarët e Linux janë rezervuar me sukses</translation>
-<translation id="7631722872321401342">Nuk ka zëra në <ph name="LANGUAGE" /> për pajisjen tënde. Mund të instalosh zëra te cilësimet.</translation>
 <translation id="7631887513477658702">&amp;Hapi gjithmonë skedarët e këtij lloji</translation>
 <translation id="7632437836497571618">Përdor lidhjet e sigurta për të kërkuar për sajtet</translation>
 <translation id="7632948528260659758">Aplikacionet e mëposhtme të kioskës kanë dështuar me përditësimin:</translation>
@@ -11239,7 +11238,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="876161309768861172">Nuk mund të të identifikonim. Provo përsëri</translation>
 <translation id="8761945298804995673">Ky përdorues ekziston tashmë</translation>
 <translation id="8762886931014513155">Pajisja jote <ph name="DEVICE_TYPE" /> ka nevojë për një përditësim</translation>
-<translation id="8763170551806710928">Shfaq çipat</translation>
 <translation id="8763927697961133303">Pajisja USB</translation>
 <translation id="8766156860774051068">Seleksionuar nga ti</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

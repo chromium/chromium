@@ -1051,7 +1051,6 @@
 <translation id="1700517974991662022">സന്ദർശിച്ചു</translation>
 <translation id="1703331064825191675">നിങ്ങളുടെ പാസ്‌വേഡുകളെക്കുറിച്ച് ഇനി ആശങ്ക വേണ്ട</translation>
 <translation id="1703666494654169921">വെർച്വൽ റിയാലിറ്റി ഉപകരണങ്ങളോ ഡാറ്റയോ ഉപയോഗിക്കാൻ സൈറ്റുകളെ അനുവദിക്കരുത്</translation>
-<translation id="1703849276368677471">ടൂളുകൾ</translation>
 <translation id="1704097193565924901">ക്യാപിറ്റലൈസ് ചെയ്യുക</translation>
 <translation id="1704230497453185209">ശബ്‌ദം പ്ലേ ചെയ്യാൻ സൈറ്റുകളെ അനുവദിക്കരുത്</translation>
 <translation id="1706586824377653884">നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്റർ ചേർത്തത്</translation>
@@ -2976,6 +2975,7 @@
 <translation id="3019023222666709803">അമ്പടയാള ടൂൾ</translation>
 <translation id="3019285239893817657">ഉപപേജ് ബട്ടൺ</translation>
 <translation id="3019595674945299805">VPN സേവനം</translation>
+<translation id="3020101754533552167">സൈൻ ഇൻ ചെയ്യൽ പരിശോധിക്കുന്നു...</translation>
 <translation id="3020183492814296499">കുറുക്കുവഴികൾ</translation>
 <translation id="3020990233660977256">സീരിയല്‍‌ നമ്പര്‍‌: ‍‌<ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">ബാറ്ററി ഉപയോഗിക്കുമ്പോൾ</translation>
@@ -9542,7 +9542,6 @@
 <translation id="7629858978065675960">ഫലം അജ്ഞാതമാണ്.</translation>
 <translation id="7630426712700473382">ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്, ഓരോ തവണയും നിങ്ങൾ സൈൻ ഇൻ ചെയ്യേണ്ടതുണ്ട്.</translation>
 <translation id="7631014249255418691">Linux ആപ്പുകളും ഫയലുകളും വിജയകരമായി ബാക്കപ്പെടുത്തു</translation>
-<translation id="7631722872321401342">നിങ്ങളുടെ ഉപകരണത്തിൽ <ph name="LANGUAGE" /> വോയ്‌സുകളൊന്നുമില്ല. ക്രമീകരണത്തിൽ വോയ്‌സുകൾ ഇൻസ്റ്റാൾ ചെയ്യാം.</translation>
 <translation id="7631887513477658702">&amp;എല്ലായ്‌പ്പോഴും ഈ തരം ഫയലുകള്‍ തുറക്കുക</translation>
 <translation id="7632437836497571618">സൈറ്റുകൾ തിരയാൻ, സുരക്ഷിത കണക്ഷനുകൾ ഉപയോഗിക്കുക</translation>
 <translation id="7632948528260659758">ഇനിപ്പറയുന്ന കിയോസ്‌ക് ആപ്പുകൾ അപ്ഡേറ്റ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു:</translation>
@@ -11241,7 +11240,6 @@
 <translation id="876161309768861172">നിങ്ങൾക്ക് സൈൻ ഇൻ ചെയ്യാനായില്ല, വീണ്ടും ശ്രമിക്കൂ</translation>
 <translation id="8761945298804995673">ഇത് നിലവിലുള്ള ഉപയോക്താവാണ്</translation>
 <translation id="8762886931014513155">നിങ്ങളുടെ <ph name="DEVICE_TYPE" />-ന് അപ്‌ഡേറ്റ് ആവശ്യമാണ്</translation>
-<translation id="8763170551806710928">ചിപ്പുകൾ കാണിക്കുക</translation>
 <translation id="8763927697961133303">USB ഉപകരണം</translation>
 <translation id="8766156860774051068">നിങ്ങൾ ക്യുറേറ്റ് ചെയ്തത്</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

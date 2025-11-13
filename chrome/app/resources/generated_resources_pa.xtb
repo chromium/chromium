@@ -1056,7 +1056,6 @@
 <translation id="1700517974991662022">ਵਿਜਿਟ ਕੀਤਾ</translation>
 <translation id="1703331064825191675">ਕਦੇ ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਦਾ ਫ਼ਿਕਰ ਨਾ ਕਰੋ</translation>
 <translation id="1703666494654169921">ਸਾਈਟਾਂ ਨੂੰ ਆਭਾਸੀ ਵਾਸਤਵਿਕਤਾ ਵਾਲੇ ਡੀਵਾਈਸ ਜਾਂ ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
-<translation id="1703849276368677471">ਟੂਲ</translation>
 <translation id="1704097193565924901">ਵੱਡੇ ਅੱਖਰਾਂ ਵਿੱਚ ਲਿਖੋ</translation>
 <translation id="1704230497453185209">ਸਾਈਟਾਂ ਨੂੰ ਧੁਨੀ ਚਲਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
 <translation id="1706586824377653884">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਦੁਆਰਾ ਸ਼ਾਮਲ ਕੀਤਾ</translation>
@@ -2994,6 +2993,7 @@
 <translation id="3019023222666709803">ਤੀਰ ਟੂਲ</translation>
 <translation id="3019285239893817657">ਉਪ-ਪੰਨਾ ਬਟਨ</translation>
 <translation id="3019595674945299805">VPN ਸੇਵਾ</translation>
+<translation id="3020101754533552167">ਸਾਈਨ-ਇਨ ਸੰਬੰਧੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="3020183492814296499">ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="3020990233660977256">ਲੜੀ ਨੰਬਰ: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">ਜਦੋਂ ਚਾਰਜ ਨਾ ਹੋ ਰਿਹਾ ਹੋਵੇ</translation>
@@ -8127,6 +8127,7 @@
 <translation id="6619990499523117484">ਆਪਣੇ PIN ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="6620000730890558421">AI ਨਾਲ ਆਪਣੀਆਂ ਟੈਬਾਂ ਨੂੰ ਵਿਵਸਥਿਤ ਰੱਖੋ</translation>
 <translation id="6620254580880484313">ਕੰਟੇਨਰ ਦਾ ਨਾਮ</translation>
+<translation id="6621282332208609777">Google ਨੂੰ ਪੁੱਛੋ ਜਾਂ URL ਟਾਈਪ ਕਰੋ</translation>
 <translation id="6621391692573306628">ਇਸ ਟੈਬ ਨੂੰ ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ 'ਤੇ ਭੇਜਣ ਲਈ ਦੋਵਾਂ ਡੀਵਾਈਸਾਂ 'ਤੇ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="6622980291894852883">ਚਿੱਤਰ ਬਲੌਕ ਕਰਨਾ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="6624036901798307345">ਟੈਬਲੈੱਟ ਮੋਡ ਵਿੱਚ, ਹਰੇਕ ਟੈਬ ਦਾ ਲਘੂ-ਚਿੱਤਰ ਦਿਖਾਉਣ ਵਾਲੀ ਨਵੀਂ ਟੈਬ ਪੱਟੀ ਖੋਲ੍ਹਣ ਲਈ ਟੈਬ ਕਾਊਂਟਰ ਟੂਲਬਾਰ ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ।</translation>
@@ -9549,6 +9550,7 @@
 <translation id="7620616707541471029">ਜਾਰੀ ਰੱਖਣ ਲਈ ਕੋਈ ਖਾਤਾ ਚੁਣੋ</translation>
 <translation id="7621382409404463535">ਸਿਸਟਮ ਡੀਵਾਈਸ ਸੰਰੂਪਣ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ ਰਿਹਾ।</translation>
 <translation id="7621595347123595643">ਜੇ ਤੁਸੀਂ ਆਪਣਾ ਪਾਸਵਰਡ ਜਾਂ ਪਿੰਨ ਭੁੱਲ ਜਾਂਦੇ ਹੋ, ਤਾਂ ਤੁਸੀਂ ਸਥਾਨਕ ਡਾਟੇ ਨੂੰ ਮੁੜ-ਹਾਸਲ ਨਹੀਂ ਕਰ ਸਕੋਗੇ।</translation>
+<translation id="7621863462266622331">ਜਦੋਂ ਟੈਬਾਂ ਨੂੰ ਸਾਂਝਾ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਤਾਂ ਉਨ੍ਹਾਂ ਦੀ ਪੰਨਾ ਸਮੱਗਰੀ, ਮੀਡੀਆ ਅਤੇ URL Google ਨੂੰ ਭੇਜੇ ਜਾਂਦੇ ਹਨ</translation>
 <translation id="7622114377921274169">ਚਾਰਜ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="7622768823216805500">ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਆਸਾਨ ਚੈੱਕਆਊਟ ਜਿਹੀਆਂ ਖਰੀਦਦਾਰੀ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਲਈ ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਸਥਾਪਤ ਕਰਦੀਆਂ ਹਨ</translation>
 <translation id="7622966771025050155">ਕੈਪਚਰ ਕੀਤੀ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
@@ -9562,7 +9564,6 @@
 <translation id="7629858978065675960">ਨਤੀਜੇ ਦੀ ਕੋਈ ਜਾਣਕਾਰੀ ਨਹੀਂ ਹੈ।</translation>
 <translation id="7630426712700473382">ਇਸ ਡੀਵਾਈਸ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="MANAGER" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ ਤੁਹਾਨੂੰ ਹਰ ਵਾਰ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੀ ਲੋੜ ਪੈਂਦੀ ਹੈ।</translation>
 <translation id="7631014249255418691">Linux ਐਪਾਂ ਅਤੇ ਫ਼ਾਈਲਾਂ ਦਾ ਸਫਲਤਾਪੂਰਵਕ ਬੈਕਅੱਪ ਲੈ ਲਿਆ ਗਿਆ ਹੈ</translation>
-<translation id="7631722872321401342">ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਕੋਈ <ph name="LANGUAGE" /> ਅਵਾਜ਼ ਨਹੀਂ ਹੈ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਅਵਾਜ਼ਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="7631887513477658702">&amp;ਹਮੇਸ਼ਾਂ ਇਸ ਪ੍ਰਕਾਰ ਦੀਆਂ ਫਾਈਲਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="7632437836497571618">ਸਾਈਟਾਂ ਦੇਖਣ ਲਈ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="7632948528260659758">ਹੇਠਾਂ ਦਿੱਤੇ kiosk ਐਪਸ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਅਸਫਲ ਹੋ ਗਏ ਹਨ:</translation>
@@ -11261,7 +11262,6 @@
 <translation id="876161309768861172">ਤੁਹਾਨੂੰ ਸਾਈਨ-ਇਨ ਨਹੀਂ ਕਰ ਸਕੇ, ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="8761945298804995673">ਇਹ ਵਰਤੋਂਕਾਰ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
 <translation id="8762886931014513155">ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਨੂੰ ਇੱਕ ਅੱਪਡੇਟ ਦੀ ਲੋੜ ਹੈ</translation>
-<translation id="8763170551806710928">ਚਿੱਪਾਂ ਦਿਖਾਓ</translation>
 <translation id="8763927697961133303">USB ਡੀਵਾਈਸ</translation>
 <translation id="8766156860774051068">ਤੁਹਾਡੇ ਵੱਲੋਂ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="8766796754185931010">ਕੋਟੋਇਰੀ</translation>
@@ -11765,6 +11765,7 @@
 <translation id="909554839118732438">ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਬੰਦ ਕਰੋ</translation>
 <translation id="9095819602391364796">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ MIDI ਡੀਵਾਈਸਾਂ ਨੂੰ ਕੰਟਰੋਲ ਅਤੇ ਰੀ-ਪ੍ਰੋਗਰਾਮ ਕਰਨ ਦੀ ਆਗਿਆ ਨਾ ਦਿਓ</translation>
 <translation id="9096053102600371572">ਨਿਯੰਤਰਿਤ ਸਕ੍ਰੋਲਿੰਗ <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">ਵਿਕਲਪਾਂ ਦੀ ਤੁਲਨਾ ਕਰੋ</translation>
 <translation id="9096776523567481218">ਸਥਾਨਕ ਤੌਰ 'ਤੇ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="9098860402274800697">Google Play ਅਤੇ Android ਐਪਾਂ ਹਟਾਓ</translation>
 <translation id="9099220545925418560">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੇ ਆਧਾਰ 'ਤੇ। ਇਹ ਸੈਟਿੰਗ ਬੰਦ ਹੈ।</translation>

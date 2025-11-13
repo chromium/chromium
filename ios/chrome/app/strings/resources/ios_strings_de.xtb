@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">Mit KI-Modus suchen</translation>
 <translation id="3557336313807607643">Zu Kontakten hinzufügen</translation>
 <translation id="355765753469272474">Rückgängig</translation>
+<translation id="3565012355885596568">Bilder konnten nicht geladen werden</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> von <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3572607909481582402">Im Google-Konto</translation>
 <translation id="3575234738189584619">Mit Lens suchen</translation>
@@ -2000,6 +2001,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8551311254462607218">Tippe in der Adressleiste auf das Google Lens-Kamerasymbol</translation>
 <translation id="8556590991644167667">{count,plural, =1{Du hast {count} Warnung geschlossen}other{Du hast {count} Warnungen geschlossen}}</translation>
 <translation id="8558046478684552694">Gruppe schließen.</translation>
+<translation id="8559858985063901027">Passkeys</translation>
 <translation id="8560253818350321773">Häufig verwendete Elemente zuerst anzeigen</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} Passwort oben auf der Tastatur verfügbar.}other{{count} verschiedene Passwörter oben auf der Tastatur verfügbar.}}</translation>
 <translation id="8564894539416715395">Seite „Neuer Tab“</translation>

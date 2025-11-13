@@ -1056,7 +1056,6 @@
 <translation id="1700517974991662022">देखा गया</translation>
 <translation id="1703331064825191675">अपने पासवर्ड की फ़िक्र छोड़ दें</translation>
 <translation id="1703666494654169921">साइटों को वर्चुअल रियलिटी वाले डिवाइसों या डेटा इस्तेमाल करने की अनुमति न दें</translation>
-<translation id="1703849276368677471">टूल</translation>
 <translation id="1704097193565924901">पहले अक्षर को बड़े अक्षर में बदलें</translation>
 <translation id="1704230497453185209">साइटों को ऑडियो चलाने की अनुमति न दें</translation>
 <translation id="1706586824377653884">आपके व्यवस्थापक ने जोड़ा</translation>
@@ -2993,6 +2992,7 @@
 <translation id="3019023222666709803">ऐरो टूल</translation>
 <translation id="3019285239893817657">सबपेज बटन</translation>
 <translation id="3019595674945299805">वीपीएन सेवा</translation>
+<translation id="3020101754533552167">साइन-इन से जुड़ी जांच की जा रही है...</translation>
 <translation id="3020183492814296499">शॉर्टकट</translation>
 <translation id="3020990233660977256">क्रम संख्या: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">बैटरी का इस्तेमाल करते समय</translation>
@@ -9559,7 +9559,6 @@
 <translation id="7629858978065675960">नतीजे की जानकारी नहीं है</translation>
 <translation id="7630426712700473382">इस डिवाइस को <ph name="MANAGER" /> मैनेज करता है. आपको हर बार साइन इन करना होगा.</translation>
 <translation id="7631014249255418691">Linux ऐप्लिकेशन और फ़ाइलों का बैकअप ले लिया गया है</translation>
-<translation id="7631722872321401342">आपके डिवाइस पर <ph name="LANGUAGE" /> में आवाज़ें इंस्टॉल नहीं है. सेटिंग में जाकर, आवाज़ें इंस्टॉल की जा सकती हैं.</translation>
 <translation id="7631887513477658702">इस प्रकार की फ़ाइलें &amp;हमेशा खोलें</translation>
 <translation id="7632437836497571618">साइटें खोजने के लिए सुरक्षित कनेक्शन का इस्तेमाल करें</translation>
 <translation id="7632948528260659758">निम्‍न किऑस्क&amp;#0; ऐप्‍स अपडेट होने में विफल रहे:</translation>
@@ -11259,7 +11258,6 @@
 <translation id="876161309768861172">आपको साइन इन नहीं किया जा सका. कृपया फिर से कोशिश करें</translation>
 <translation id="8761945298804995673">यह उपयोगकर्ता पहले से मौजूद है</translation>
 <translation id="8762886931014513155">आपके <ph name="DEVICE_TYPE" /> को अपडेट की ज़रूरत है</translation>
-<translation id="8763170551806710928">चिप दिखाएं</translation>
 <translation id="8763927697961133303">USB डिवाइस</translation>
 <translation id="8766156860774051068">आपके बनाए गए शॉर्टकट</translation>
 <translation id="8766796754185931010">कोटोएरी</translation>

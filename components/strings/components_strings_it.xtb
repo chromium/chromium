@@ -4004,6 +4004,7 @@ Ulteriori dettagli:
 <translation id="7525804896095537619">Il nome non può essere vuoto</translation>
 <translation id="7526934274050461096">La connessione a questo sito non è privata</translation>
 <translation id="7529884293139707752">Istruzione domiciliare</translation>
+<translation id="7530215951451994972">Crea immagine</translation>
 <translation id="7531464389616946220">Scansiona la carta</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Invio per cercare nei preferiti</translation>
 <translation id="7534987659046836932">Busta C7</translation>
@@ -4290,6 +4291,7 @@ Ulteriori dettagli:
 <translation id="7987087088851949178">Emittenti di Buy now, pay later disponibili per il pagamento dilazionato nel tempo aperti a schermo intero.</translation>
 <translation id="799149739215780103">Rilegatura</translation>
 <translation id="7992044431894087211">La condivisione dello schermo con <ph name="APPLICATION_TITLE" /> è stata ripristinata</translation>
+<translation id="799384093520583425">La tua organizzazione ha bloccato l'utilizzo di DevTools in questa pagina</translation>
 <translation id="7995512525968007366">Non specificato</translation>
 <translation id="7997855386298213183">schede condivise</translation>
 <translation id="8001912761979890298">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" /> perché utilizza un certificato di sicurezza non considerato attendibile da Chromium o dalla configurazione di sistema per la crittografia del traffico web. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Visualizza certificato<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4834,6 +4836,7 @@ Ulteriori dettagli:
 <translation id="8922013791253848639">Consenti sempre gli annunci su questo sito</translation>
 <translation id="8922734931659847428">Un elenco limitato di URL di pagine visitate in cui si verificano <ph name="BEGIN_LINK" />eventi tecnologici legacy<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Perforatura in alto a destra</translation>
+<translation id="8926082624786998759">DevTools non consentito in questa pagina</translation>
 <translation id="8926389886865778422">Non visualizzare più questo avviso</translation>
 <translation id="8926400492587758246">Paga in basse rate mensili</translation>
 <translation id="8932102934695377596">L'orologio è indietro</translation>

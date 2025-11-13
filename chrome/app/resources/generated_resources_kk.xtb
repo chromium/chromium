@@ -1051,7 +1051,6 @@
 <translation id="1700517974991662022">Кірілген</translation>
 <translation id="1703331064825191675">Құпия сөздеріңіз жайлы уайымдамаңыз</translation>
 <translation id="1703666494654169921">Сайттардың виртуалдық шындық құрылғыларын немесе деректерді пайдалануына рұқсат бермеу</translation>
-<translation id="1703849276368677471">Құралдар</translation>
 <translation id="1704097193565924901">Бас әріпке өзгерту</translation>
 <translation id="1704230497453185209">Сайттардың дыбысты шығаруына рұқсат бермеу</translation>
 <translation id="1706586824377653884">Әкімші енгізген</translation>
@@ -2866,6 +2865,7 @@
 <translation id="2946640296642327832">Bluetooth қосу</translation>
 <translation id="2947281105969315778">Қойындылар топтарын бөлісу немесе оларға қосылу үшін Chrome-ға кіруге рұқсатыңыз болуы керек.</translation>
 <translation id="2947605845283690091">Веб-беттер жылдам ашылуы керек. Сәл уақытыңызды бөліп, <ph name="BEGIN_LINK" />кеңейтімдерді тексеріңіз<ph name="END_LINK" />.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Файлды осы жерге әкеліңіз}other{Файлдарды осы жерге әкеліңіз}}</translation>
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" /> бетіне өту</translation>
 <translation id="29488703364906173">Жылдам, қарапайым және заманауи ғаламтор үшін жасалған қауіпсіз веб-браузер.</translation>
 <translation id="2950666755714083615">Тіркелу</translation>
@@ -2975,6 +2975,7 @@
 <translation id="3019023222666709803">Көрсеткі құралы</translation>
 <translation id="3019285239893817657">"Қосымша бет" түймесі</translation>
 <translation id="3019595674945299805">VPN қызметі</translation>
+<translation id="3020101754533552167">Аккаунтқа кіру деректері тексеріліп жатыр...</translation>
 <translation id="3020183492814296499">Перне тіркесімдері</translation>
 <translation id="3020990233660977256">Сериялық нөмір: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Батареямен істегенде</translation>
@@ -5253,6 +5254,7 @@
 <translation id="4606551464649945562">Сайттарға айналаңыздың 3D картасын жасауға немесе камераңыздың орнын бақылауға рұқсат бермеу</translation>
 <translation id="4606933160360542263">Арнаулы пернелер тіркесімі: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Қойындылар тобын жою қажет пе?}other{Қойындылар топтарын жою қажет пе?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Сұрағыңызға қосу үшін 1 файл жүктеп салыңыз.}other{Сұрағыңызға қосу үшін көп дегенде # файл жүктеп салыңыз.}}</translation>
 <translation id="4608500690299898628">&amp;Табу…</translation>
 <translation id="4609164937357979319">Аккаунт таңдау</translation>
 <translation id="4610493438923139095">Сенімсіз</translation>
@@ -9533,7 +9535,6 @@
 <translation id="7629858978065675960">Нәтиже белгісіз.</translation>
 <translation id="7630426712700473382">Бұл құрылғыны <ph name="MANAGER" /> басқарады және сізден әрдайым аккаунтқа кіру талап етіледі.</translation>
 <translation id="7631014249255418691">Linux қолданбалары мен файлдарының сақтық көшірмесі жасалды.</translation>
-<translation id="7631722872321401342">Құрылғыңызда <ph name="LANGUAGE" /> тіліндегі дауыстар жоқ. Дауыстарды параметрлерден орната аласыз.</translation>
 <translation id="7631887513477658702">&amp;Осы түрге жататын файлдарды әрқашан ашу</translation>
 <translation id="7632437836497571618">Сайттарды іздеу үшін қауіпсіз байланыстарды пайдалану</translation>
 <translation id="7632948528260659758">Келесі киоск қолданбаларын жаңарту сәтсіз болды:</translation>
@@ -11232,7 +11233,6 @@
 <translation id="876161309768861172">Аккаунтқа кіре алмадыңыз. Әрекетті қайталаңыз.</translation>
 <translation id="8761945298804995673">Бұл пайдаланушы бұрыннан бар.</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> құрылғысын жаңарту қажет</translation>
-<translation id="8763170551806710928">Чиптерді көрсету</translation>
 <translation id="8763927697961133303">USB құрылғысы</translation>
 <translation id="8766156860774051068">Сіз сұрыптаған</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

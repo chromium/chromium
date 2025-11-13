@@ -4008,6 +4008,7 @@
 <translation id="7525804896095537619">Потрібно вказати назву</translation>
 <translation id="7526934274050461096">Ваше з’єднання з цим сайтом не конфіденційне</translation>
 <translation id="7529884293139707752">Домашнє навчання</translation>
+<translation id="7530215951451994972">Створити зображення</translation>
 <translation id="7531464389616946220">Сканувати картку</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натисніть клавішу Enter, щоб шукати закладки.</translation>
 <translation id="7534987659046836932">Конверт C7</translation>
@@ -4294,6 +4295,7 @@
 <translation id="7987087088851949178">Список емітентів, які пропонують придбання з оплатою пізніше, відкрито на всю висоту.</translation>
 <translation id="799149739215780103">Зшити</translation>
 <translation id="7992044431894087211">Показ екрана за допомогою додатка <ph name="APPLICATION_TITLE" /> відновлено</translation>
+<translation id="799384093520583425">Адміністратор вашої організації заблокував використання Інструментів розробника на цій сторінці</translation>
 <translation id="7995512525968007366">Не вказано</translation>
 <translation id="7997855386298213183">Спільні вкладки</translation>
 <translation id="8001912761979890298">Серверу не вдалося підтвердити, що це домен <ph name="DOMAIN" />, оскільки він використовує сертифікат безпеки, який Chromium або ваша системна конфігурація для шифрування вебтрафіку не вважає надійним. Можливо, сервер налаштовано неправильно або хтось намагається перехопити ваше з’єднання. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Переглянути сертифікат<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4839,6 +4841,7 @@
 <translation id="8922013791253848639">Завжди дозволяти показ реклами на цьому сайті</translation>
 <translation id="8922734931659847428">Обмежений список URL-адрес відвіданих сторінок, на яких виявлено <ph name="BEGIN_LINK" />події застарілих технологій<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Пробити отвір угорі праворуч</translation>
+<translation id="8926082624786998759">Інструменти розробника заборонено використовувати на цій сторінці</translation>
 <translation id="8926389886865778422">Не запитувати знову</translation>
 <translation id="8926400492587758246">Сплачуйте щомісяця невеликими частинами</translation>
 <translation id="8932102934695377596">Ваш годинник відстає</translation>

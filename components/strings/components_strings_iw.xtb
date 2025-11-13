@@ -1849,7 +1849,7 @@
 <translation id="4014895360827978999">שירותי מסחר ומערכות תשלום</translation>
 <translation id="4018819349042761761">מפתח ציבורי</translation>
 <translation id="4023431997072828269">שליחת הטופס הזה מתבצעת דרך חיבור שאינו מאובטח, לכן המידע שלך יהיה גלוי לאחרים.</translation>
-<translation id="4024673763872230929">אפשר לשמור פרטים ולמלא טפסים מהר יותר. התמונה תישמר במכשיר שלך.</translation>
+<translation id="4024673763872230929">אפשר לשמור את הפרטים ולמלא טפסים מהר יותר. הם יישמרו במכשיר שלך.</translation>
 <translation id="4025325634010721551">כללי המדיניות נטענו מחדש</translation>
 <translation id="4025338605225449265">מטבעות והמרת מטבע זר</translation>
 <translation id="4025777154208238692">היפוך הסדר</translation>
@@ -4013,6 +4013,7 @@ Del</translation>
 <translation id="7525804896095537619">השדה 'שם' לא יכול להיות ריק.</translation>
 <translation id="7526934274050461096">החיבור שלך לאתר זה אינו פרטי</translation>
 <translation id="7529884293139707752">חינוך ביתי</translation>
+<translation id="7530215951451994972">יצירת תמונה</translation>
 <translation id="7531464389616946220">סריקת כרטיס</translation>
 <translation id="7534473948927234329">‏‫<ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, אפשר להקיש על Enter כדי לחפש בסימניות</translation>
 <translation id="7534987659046836932">‏מעטפה – C7</translation>

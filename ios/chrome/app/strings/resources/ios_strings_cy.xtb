@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">Chwilio gyda'r Dull AI</translation>
 <translation id="3557336313807607643">Ychwanegu at gysylltiadau</translation>
 <translation id="355765753469272474">Dadwneud</translation>
+<translation id="3565012355885596568">Methu â llwytho lluniau</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> o <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3572607909481582402">Yn eich Cyfrif Google</translation>
 <translation id="3575234738189584619">Chwilio gyda Lens</translation>
@@ -2000,6 +2001,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="8551311254462607218">Yn y bar cyfeiriad, tapiwch yr eicon camera Google Lens</translation>
 <translation id="8556590991644167667">{count,plural, =1{Rydych wedi diystyru {count} rhybudd}zero{Rydych wedi diystyru {count} rhybudd}two{Rydych wedi diystyru {count} rybudd}few{Rydych wedi diystyru {count} rhybudd}many{Rydych wedi diystyru {count} rhybudd}other{Rydych wedi diystyru {count} rhybudd}}</translation>
 <translation id="8558046478684552694">Cau grŵp.</translation>
+<translation id="8559858985063901027">Codau pas</translation>
 <translation id="8560253818350321773">Dangos eitemau a ddefnyddir yn aml yn gyntaf.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Mae {count} opsiwn ar gyfer cyfrinair ar gael uwchben eich bysellfwrdd.}zero{Mae {count} opsiwn ar gyfer cyfrinair ar gael uwchben eich bysellfwrdd.}two{Mae {count} opsiwn ar gyfer cyfrinair ar gael uwchben eich bysellfwrdd.}few{Mae {count} opsiwn ar gyfer cyfrinair ar gael uwchben eich bysellfwrdd.}many{Mae {count} opsiwn ar gyfer cyfrinair ar gael uwchben eich bysellfwrdd.}other{Mae {count} opsiwn ar gyfer cyfrinair ar gael uwchben eich bysellfwrdd.}}</translation>
 <translation id="8564894539416715395">Tudalen tab newydd</translation>

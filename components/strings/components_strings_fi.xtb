@@ -4009,6 +4009,7 @@ Lisätietoja:
 <translation id="7525804896095537619">Nimi ei voi olla tyhjä</translation>
 <translation id="7526934274050461096">Sivustoon muodostamasi yhteys ei ole yksityinen.</translation>
 <translation id="7529884293139707752">Kotiopetus</translation>
+<translation id="7530215951451994972">Luo kuva</translation>
 <translation id="7531464389616946220">Skannaa kortti</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, hae kirjanmerkeistä painamalla Enter</translation>
 <translation id="7534987659046836932">Kirjekuori C7</translation>
@@ -4295,6 +4296,7 @@ Lisätietoja:
 <translation id="7987087088851949178">"Osta nyt, maksa myöhemmin" ‐maksutavat kokonaan avattuna.</translation>
 <translation id="799149739215780103">Sidonta</translation>
 <translation id="7992044431894087211">Näytön jakamista (<ph name="APPLICATION_TITLE" />) jatkettu</translation>
+<translation id="799384093520583425">Organisaatio on estänyt DevToolsin käytön tällä sivulla</translation>
 <translation id="7995512525968007366">Ei määritetty</translation>
 <translation id="7997855386298213183">jaetut välilehdet</translation>
 <translation id="8001912761979890298">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />, koska se käyttää suojausvarmennetta, johon Chromium tai järjestelmän määritykset eivät luota verkkoliikenteen salauksessa. Tämä voi johtua määritysvirheestä tai yhteytesi siepanneesta hyökkääjästä. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Näytä varmenne<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4840,6 +4842,7 @@ Lisätietoja:
 <translation id="8922013791253848639">Salli aina mainokset tällä sivustolla.</translation>
 <translation id="8922734931659847428">Rajallinen lista sellaisten avaamiesi sivujen URL-osoitteista, joilla esiintyy <ph name="BEGIN_LINK" />vanhoja teknologiatapahtumia<ph name="END_LINK" />.</translation>
 <translation id="892588693504540538">Reikä oikeassa yläkulmassa</translation>
+<translation id="8926082624786998759">DevToolsit eivät ole sallittuja tällä sivulla</translation>
 <translation id="8926389886865778422">Älä kysy uudestaan</translation>
 <translation id="8926400492587758246">Maksa pienissä kuukausierissä</translation>
 <translation id="8932102934695377596">Kellosi jätättää</translation>

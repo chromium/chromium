@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">Որոնել ԱԲ ռեժիմի միջոցով</translation>
 <translation id="3557336313807607643">Ավելացնել կոնտակտներում</translation>
 <translation id="355765753469272474">Հետարկել</translation>
+<translation id="3565012355885596568">Չհաջողվեց բեռնել պատկերները</translation>
 <translation id="3565930036634619844">Ներդիր։ Էջ <ph name="TAB_INDEX" />՝ <ph name="NUMBER_OF_TABS" />-ից։</translation>
 <translation id="3572607909481582402">Ձեր Google հաշվում</translation>
 <translation id="3575234738189584619">Որոնել Տեսապակու միջոցով</translation>
@@ -2000,6 +2001,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8551311254462607218">Հասցեագոտում հպեք Google Տեսապակու տեսախցիկի պատկերակին</translation>
 <translation id="8556590991644167667">{count,plural, =1{Դուք փակել եք {count} նախազգուշացում}one{Դուք փակել եք {count} նախազգուշացում}other{Դուք փակել եք {count} նախազգուշացում}}</translation>
 <translation id="8558046478684552694">Փակել խումբը։</translation>
+<translation id="8559858985063901027">Մուտքի բանալիներ</translation>
 <translation id="8560253818350321773">Սկզբում ցուցադրել հաճախակի օգտագործվող տարրերը</translation>
 <translation id="8561999115126307258">{count,plural, =1{Գաղտնաբառի {count} տարբերակ ցուցադրվում է ստեղնաշարի վերևում։}one{Գաղտնաբառի {count} տարբերակ ցուցադրվում է ստեղնաշարի վերևում։}other{Գաղտնաբառի {count} տարբերակ ցուցադրվում է ստեղնաշարի վերևում։}}</translation>
 <translation id="8564894539416715395">Նոր ներդիրի էջ</translation>

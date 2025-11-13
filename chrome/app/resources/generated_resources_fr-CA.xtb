@@ -1055,7 +1055,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1700517974991662022">Visité</translation>
 <translation id="1703331064825191675">Ne vous inquiétez jamais au sujet de vos mots de passe</translation>
 <translation id="1703666494654169921">Ne pas autoriser les sites à utiliser des données ni des appareils de réalité virtuelle</translation>
-<translation id="1703849276368677471">Outils</translation>
 <translation id="1704097193565924901">En majuscule</translation>
 <translation id="1704230497453185209">Ne pas autoriser les sites à faire jouer des sons</translation>
 <translation id="1706586824377653884">Ajouté par votre administrateur</translation>
@@ -9550,7 +9549,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7629858978065675960">Résultat inconnu.</translation>
 <translation id="7630426712700473382">Cet appareil est géré par <ph name="MANAGER" /> et exige que vous vous connectiez chaque fois.</translation>
 <translation id="7631014249255418691">Les applications et les fichiers Linux ont été sauvegardées</translation>
-<translation id="7631722872321401342">Il n'y a aucune voix en <ph name="LANGUAGE" /> sur votre appareil. Vous pouvez installer des voix dans les paramètres.</translation>
 <translation id="7631887513477658702">&amp;Toujours ouvrir les fichiers de ce type</translation>
 <translation id="7632437836497571618">Utiliser des connexions sécurisées pour rechercher des sites</translation>
 <translation id="7632948528260659758">Échec de la mise à jour des applications de kiosque suivantes :</translation>
@@ -11248,7 +11246,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="876161309768861172">Impossible de vous connecter, veuillez réessayer</translation>
 <translation id="8761945298804995673">Cet utilisateur existe déjà</translation>
 <translation id="8762886931014513155">Votre <ph name="DEVICE_TYPE" /> a besoin d'une mise à jour</translation>
-<translation id="8763170551806710928">Afficher les jetons</translation>
 <translation id="8763927697961133303">Appareil USB</translation>
 <translation id="8766156860774051068">Sélectionnés par vous</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

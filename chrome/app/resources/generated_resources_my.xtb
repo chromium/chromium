@@ -1054,7 +1054,6 @@
 <translation id="1700517974991662022">ဝင်ကြည့်ခဲ့သည်</translation>
 <translation id="1703331064825191675">သင့်စကားဝှက်များနှင့် ပတ်သက်ပြီး မည်သည့်အခါမှ စိတ်ပူစရာမလိုခြင်း</translation>
 <translation id="1703666494654169921">ပကတိအသွင်ကိရိယာများ (သို့) ဒေတာများသုံးရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
-<translation id="1703849276368677471">တူးလ်များ</translation>
 <translation id="1704097193565924901">ထိပ်စာလုံး အကြီးပြောင်းခြင်း</translation>
 <translation id="1704230497453185209">အသံဖွင့်ရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
 <translation id="1706586824377653884">သင့်စီမံခန့်ခွဲသူက ထည့်သွင်းထားခြင်းဖြစ်သည်</translation>
@@ -2991,6 +2990,7 @@
 <translation id="3019023222666709803">မြား တူးလ်</translation>
 <translation id="3019285239893817657">အတွင်းပိုင်းစာမျက်နှာ ခလုတ်</translation>
 <translation id="3019595674945299805">VPN ဝန်ဆောင်မှု</translation>
+<translation id="3020101754533552167">လက်မှတ်ထိုးဝင်မှုကို စစ်နေသည်…</translation>
 <translation id="3020183492814296499">ဖြတ်လမ်းလင့်ခ်များ</translation>
 <translation id="3020990233660977256">နံပါတ်စဉ်: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">ဘက်ထရီဖြင့်ဖွင့်ထားစဉ်</translation>
@@ -9555,7 +9555,6 @@
 <translation id="7629858978065675960">အမျိုးအမည်မသိ ရလဒ်။</translation>
 <translation id="7630426712700473382">ဤစက်ကို <ph name="MANAGER" /> က စီမံခန့်ခွဲထားပြီး အကြိမ်တိုင်း လက်မှတ်ထိုးဝင်ရန် လိုအပ်သည်။</translation>
 <translation id="7631014249255418691">Linux အက်ပ်နှင့် ဖိုင်များကို အောင်မြင်စွာ အရန်သိမ်းပြီးပါပြီ</translation>
-<translation id="7631722872321401342">သင့်စက်တွင် <ph name="LANGUAGE" /> စကားသံများ မရှိပါ။ ဆက်တင်များတွင် စကားသံများ ထည့်သွင်းနိုင်သည်။</translation>
 <translation id="7631887513477658702">ဤအမျိုးစား ဖိုင်များကို အမြဲဖွင့်မည်</translation>
 <translation id="7632437836497571618">ဝဘ်ဆိုက်များရှာဖွေရန်အတွက် လုံခြုံသော ချိတ်ဆက်မှုများသုံးရန်</translation>
 <translation id="7632948528260659758">အောက်ပါ kiosk apps များအား အဆင့်မမြှင့်နိုင်ပါ-</translation>
@@ -11254,7 +11253,6 @@
 <translation id="876161309768861172">လက်မှတ်ထိုးဝင်၍ မရပါ။ ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="8761945298804995673">ဤအသုံးပြုသူသည် ရှိပြီးသားဖြစ်သည်</translation>
 <translation id="8762886931014513155">သင့် <ph name="DEVICE_TYPE" /> အတွက် အပ်ဒိတ်လိုပါသည်</translation>
-<translation id="8763170551806710928">ချစ်ပ်များ ပြပါ</translation>
 <translation id="8763927697961133303">USB ကိရိယာ</translation>
 <translation id="8766156860774051068">သင်က ရွေးချယ်စီစဉ်ထားသည်</translation>
 <translation id="8766796754185931010">ကိုတိုရီ</translation>

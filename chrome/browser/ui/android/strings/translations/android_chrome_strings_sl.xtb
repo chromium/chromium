@@ -944,6 +944,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> zavihek – <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> zavihek – <ph name="URL_LIST" />}two{<ph name="TAB_COUNT_MANY" /> zavihka – <ph name="URL_LIST" />}few{<ph name="TAB_COUNT_MANY" /> zavihki – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> zavihkov – <ph name="URL_LIST" />}}</translation>
 <translation id="5040262127954254034">Zasebnost</translation>
 <translation id="504456571576643789">Kaj morate upoštevati</translation>
+<translation id="5056587122125565772">Ustvari sliko</translation>
 <translation id="506254248375231072">Ni zavihkov</translation>
 <translation id="5075939510584558547">Shrani brez šifriranja</translation>
 <translation id="5085038751173179818">Prijavite se na tem spletnem mestu in v Chromu, če želite dostopati do zaznamkov in drugega v vseh napravah</translation>

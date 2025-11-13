@@ -4007,6 +4007,7 @@ Detalles adicionais:
 <translation id="7525804896095537619">O nome non pode estar baleiro</translation>
 <translation id="7526934274050461096">A túa conexión a este sitio non é privada</translation>
 <translation id="7529884293139707752">Educación na casa</translation>
+<translation id="7530215951451994972">Crear imaxe</translation>
 <translation id="7531464389616946220">Escanear tarxeta</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, preme Introducir para facer buscas nos marcadores</translation>
 <translation id="7534987659046836932">Sobre C7</translation>
@@ -4293,6 +4294,7 @@ Detalles adicionais:
 <translation id="7987087088851949178">A lista de emisores de pago aprazado dispoñibles para pagar a prazos está aberta a altura media.</translation>
 <translation id="799149739215780103">Encadernación</translation>
 <translation id="7992044431894087211">Retomouse a pantalla compartida con <ph name="APPLICATION_TITLE" /></translation>
+<translation id="799384093520583425">A túa organización bloqueou o uso de DevTools nesta páxina</translation>
 <translation id="7995512525968007366">Non especificado</translation>
 <translation id="7997855386298213183">pestanas compartidas</translation>
 <translation id="8001912761979890298">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque utiliza un certificado de seguranza no que Chromium ou a configuración do sistema para a encriptación de tráfico web non confían. Isto pode deberse a un erro de configuración ou a que un atacante interceptase a túa conexión. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Ver o certificado<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4837,6 +4839,7 @@ Detalles adicionais:
 <translation id="8922013791253848639">Permitir sempre os anuncios neste sitio</translation>
 <translation id="8922734931659847428">Unha lista limitada dos URL das páxinas que visites nas que se produzan <ph name="BEGIN_LINK" />eventos de tecnoloxía antiga<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Perforación na parte superior dereita</translation>
+<translation id="8926082624786998759">O uso de DevTools non se permite nesta páxina</translation>
 <translation id="8926389886865778422">Non preguntar de novo</translation>
 <translation id="8926400492587758246">Paga en pequenas cotas mensuais</translation>
 <translation id="8932102934695377596">O reloxo está atrasado</translation>

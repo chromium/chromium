@@ -1057,7 +1057,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1700517974991662022">Posjećeno</translation>
 <translation id="1703331064825191675">Nemojte nikada brinuti zbog svojih lozinki</translation>
 <translation id="1703666494654169921">Nemoj dozvoliti web lokacijama korištenje uređaja ili podataka virtuelne realnosti</translation>
-<translation id="1703849276368677471">Alati</translation>
 <translation id="1704097193565924901">Veliko početno slovo</translation>
 <translation id="1704230497453185209">Nemoj dozvoliti web lokacijama reproduciranje zvuka</translation>
 <translation id="1706586824377653884">Dodao je vaš administrator</translation>
@@ -2991,6 +2990,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3019023222666709803">Alat za crtanje strelice</translation>
 <translation id="3019285239893817657">Dugme za podstranicu</translation>
 <translation id="3019595674945299805">VPN usluga</translation>
+<translation id="3020101754533552167">Provjera prijave…</translation>
 <translation id="3020183492814296499">Prečice</translation>
 <translation id="3020990233660977256">Serijski broj: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Tokom rada na bateriji</translation>
@@ -9563,7 +9563,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7629858978065675960">Nepoznat rezultat.</translation>
 <translation id="7630426712700473382">Ovim uređajem upravlja <ph name="MANAGER" /> i morate se prijaviti svaki put.</translation>
 <translation id="7631014249255418691">Sigurnosna kopija za Linux aplikacije i fajlove je uspješno kreirana</translation>
-<translation id="7631722872321401342">Na uređaju nema glasova koji koriste <ph name="LANGUAGE" />. Glasove možete instalirati u postavkama.</translation>
 <translation id="7631887513477658702">&amp;Uvijek otvori fajlove ove vrste</translation>
 <translation id="7632437836497571618">Koristi sigurne veze za traženje web lokacija</translation>
 <translation id="7632948528260659758">Ažuriranje sljedećih aplikacija za kiosk nije uspjelo:</translation>
@@ -11263,7 +11262,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="876161309768861172">Prijava nije uspjela. Pokušajte ponovo</translation>
 <translation id="8761945298804995673">Ovaj korisnik već postoji</translation>
 <translation id="8762886931014513155">Uređaj <ph name="DEVICE_TYPE" /> je potrebno ažurirati</translation>
-<translation id="8763170551806710928">Prikaži čipove</translation>
 <translation id="8763927697961133303">USB uređaj</translation>
 <translation id="8766156860774051068">Vi ste odabrali sadržaj</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

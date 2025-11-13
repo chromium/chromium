@@ -1473,7 +1473,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7425832472614771259">S'ha baixat un <ph name="PROGRESS_PERCENTAGE" /> % del model de transcripció per a <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">No es pot desactivar ni suprimir aquest APN. Assegura't de desactivar o suprimir els APN <ph name="ATTACH" /> que estiguin activats.</translation>
-<translation id="7458359366992324037">Pantalla remota</translation>
 <translation id="7458970041932198923">Connecta't a una xarxa i torna a carregar la pàgina per veure i definir avatars.</translation>
 <translation id="7469648432129124067">S'ha detectat un portal</translation>
 <translation id="7481312909269577407">Endavant</translation>

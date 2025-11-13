@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">Telusuri dengan Mode AI</translation>
 <translation id="3557336313807607643">Tambahkan ke kontak</translation>
 <translation id="355765753469272474">Urungkan</translation>
+<translation id="3565012355885596568">Tidak dapat memuat gambar</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> dari <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3572607909481582402">Di Akun Google Anda</translation>
 <translation id="3575234738189584619">Telusuri dengan Lens</translation>
@@ -2000,6 +2001,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8551311254462607218">Di kolom URL, ketuk ikon kamera Google Lens</translation>
 <translation id="8556590991644167667">{count,plural, =1{Anda menolak {count} peringatan}other{Anda menolak {count} peringatan}}</translation>
 <translation id="8558046478684552694">Tutup grup.</translation>
+<translation id="8559858985063901027">Kunci sandi</translation>
 <translation id="8560253818350321773">Tampilkan item yang sering digunakan terlebih dahulu.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} opsi sandi tersedia di atas keyboard Anda.}other{{count} opsi sandi tersedia di atas keyboard Anda.}}</translation>
 <translation id="8564894539416715395">Halaman tab baru</translation>

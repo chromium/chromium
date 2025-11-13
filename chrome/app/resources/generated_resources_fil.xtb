@@ -1056,7 +1056,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1700517974991662022">Nabisita na</translation>
 <translation id="1703331064825191675">Huwag nang mag-alala sa iyong mga password</translation>
 <translation id="1703666494654169921">Huwag payagan ang mga site na gumamit ng mga virtual reality device o data</translation>
-<translation id="1703849276368677471">Mga Tool</translation>
 <translation id="1704097193565924901">I-capitalize</translation>
 <translation id="1704230497453185209">Huwag payagan ang mga site na mag-play ng tunog</translation>
 <translation id="1706586824377653884">Idinagdag ng iyong administrator</translation>
@@ -2993,6 +2992,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3019023222666709803">Arrow Tool</translation>
 <translation id="3019285239893817657">Button ng subpage</translation>
 <translation id="3019595674945299805">Serbisyo ng VPN</translation>
+<translation id="3020101754533552167">Sinusuri ang pag-sign in...</translation>
 <translation id="3020183492814296499">Mga Shortcut</translation>
 <translation id="3020990233660977256">Serial Number: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Habang ginagamit ang baterya</translation>
@@ -9563,7 +9563,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7629858978065675960">Hindi kilalang resulta.</translation>
 <translation id="7630426712700473382">Pinapamahalaan ng <ph name="MANAGER" /> ang device na ito at hinihiling nito sa iyong mag-sign in sa bawat pagkakataon.</translation>
 <translation id="7631014249255418691">Matagumpay na na-back up ang mga app at file ng Linux</translation>
-<translation id="7631722872321401342">Walang <ph name="LANGUAGE" /> na boses sa iyong device. Puwede kang mag-install ng mga boses sa mga setting.</translation>
 <translation id="7631887513477658702">&amp;Palaging Magbukas ng Mga File na Ganitong Uri</translation>
 <translation id="7632437836497571618">Gumamit ng mga secure na koneksyon para maghanap ng mga site</translation>
 <translation id="7632948528260659758">Hindi na-update ang mga sumusunod na kiosk app:</translation>
@@ -11264,7 +11263,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="876161309768861172">Hindi ka ma-sign in, pakisubukan ulit</translation>
 <translation id="8761945298804995673">May ganito nang user</translation>
 <translation id="8762886931014513155">Kailangang i-update ang iyong <ph name="DEVICE_TYPE" /></translation>
-<translation id="8763170551806710928">Ipakita ang Mga Chip</translation>
 <translation id="8763927697961133303">USB device</translation>
 <translation id="8766156860774051068">Na-curate mo</translation>
 <translation id="8766796754185931010">Kotoeri</translation>

@@ -4016,6 +4016,7 @@
 <translation id="7525804896095537619">Անվանման դաշտը չի կարող դատարկ լինել</translation>
 <translation id="7526934274050461096">Կայքին կապակցումը պաշտպանված չէ</translation>
 <translation id="7529884293139707752">Կրթություն տանը</translation>
+<translation id="7530215951451994972">Ստեղծել պատկեր</translation>
 <translation id="7531464389616946220">Սկանավորել քարտը</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, սեղմեք Enter՝ էջանիշներում որոնելու համար</translation>
 <translation id="7534987659046836932">Envelope C7</translation>
@@ -4302,6 +4303,7 @@
 <translation id="7987087088851949178">Հասանելի են ապառիկ գնման ծառայություններ էկրանը բացված է ամբողջությամբ։</translation>
 <translation id="799149739215780103">Ամրակար</translation>
 <translation id="7992044431894087211">Էկրանի ցուցադրումը <ph name="APPLICATION_TITLE" /> հավելվածին վերականգնվել է</translation>
+<translation id="799384093520583425">Ձեր կազմակերպությունը արգելափակել է ծրագրավորողի գործիքների օգտագործումն այս էջում</translation>
 <translation id="7995512525968007366">Նշված չէ</translation>
 <translation id="7997855386298213183">ընդհանուր ներդիրներ</translation>
 <translation id="8001912761979890298">Մենք չկարողացանք ստուգել <ph name="DOMAIN" /> սերվերի իսկությունը, քանի որ Chromium դիտարկիչը կամ վեբ թրաֆիկի գաղտնագրման համակարգը անվտանգության տրամադրված վկայականն անվստահելի է համարում։ Հնարավոր է՝ սերվերը սխալ է կարգավորված, կամ ինչ-որ մեկը փորձում է հափշտակել ձեր տվյալները։ <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Դիտել վկայականը<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4846,6 +4848,7 @@
 <translation id="8922013791253848639">Միշտ թույլատրել գովազդն այս կայքում</translation>
 <translation id="8922734931659847428">Ձեր այցելած այն էջերի URL-ների սահմանափակ ցանկը, որտեղ տեղի են ունենում <ph name="BEGIN_LINK" />հնացած տեխնոլոգիաների հետ կապված իրադարձություններ<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Անցք վերևի աջ կողմում</translation>
+<translation id="8926082624786998759">Ծրագրավորողի գործիքները թույլատրված չեն այս էջում</translation>
 <translation id="8926389886865778422">Այլևս չհարցնել</translation>
 <translation id="8926400492587758246">Փոքր ամենամսյա վճարումներ</translation>
 <translation id="8932102934695377596">Ձեր ժամացույցը հետ է ընկել</translation>
