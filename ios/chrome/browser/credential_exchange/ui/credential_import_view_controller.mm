@@ -54,6 +54,12 @@ constexpr int kExpectedItemCount = 2;
                               base::UTF8ToUTF16(userEmail));
 }
 
+- (void)importStarted {
+  self.navigationItem.rightBarButtonItem = nil;
+  self.primaryButtonEnabled = NO;
+  [_tableView notifyImportStart];
+}
+
 #pragma mark - Actions
 
 // Invoked when the user taps the "Cancel" button.

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_mediator.h"
 
+#import "components/password_manager/core/browser/import/import_results.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_importer.h"
@@ -63,6 +64,7 @@
 
 - (void)startImportingCredentialsWithSecurityDomainSecrets:
     (NSArray<NSData*>*)securityDomainSecrets {
+  [_consumer importStarted];
   [_credentialImporter
       startImportingCredentialsWithSecurityDomainSecrets:securityDomainSecrets];
 }
@@ -83,6 +85,15 @@
                                    count:passkeyCount]];
 
   [_delegate showImportScreen];
+}
+
+- (void)onPasswordsImported:(const password_manager::ImportResults&)results {
+  // TODO(crbug.com/450982128): Handle displaying errors.
+  [_consumer
+      setImportDataItem:[[ImportDataItem alloc]
+                            initWithType:ImportDataItemType::kPasswords
+                                  status:ImportDataItemImportStatus::kImported
+                                   count:results.number_imported]];
 }
 
 @end

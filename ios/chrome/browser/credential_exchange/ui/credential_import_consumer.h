@@ -20,6 +20,10 @@
 // Sets the email of the signed-in user's account.
 - (void)setUserEmail:(const std::string&)userEmail;
 
+// Notifies the consumer that the importing process started and the view should
+// be updated by removing any buttons and updating table view status.
+- (void)importStarted;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CREDENTIAL_EXCHANGE_UI_CREDENTIAL_IMPORT_CONSUMER_H_

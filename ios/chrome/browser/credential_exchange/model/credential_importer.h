@@ -12,6 +12,7 @@ class PasskeyModel;
 }  // namespace webauthn
 
 namespace password_manager {
+struct ImportResults;
 class SavedPasswordsPresenter;
 }  // namespace password_manager
 
@@ -22,10 +23,14 @@ class SavedPasswordsPresenter;
 - (void)showImportScreenWithPasswordCount:(NSInteger)passwordCount
                              passkeyCount:(NSInteger)passkeyCount;
 
+// Updates the status of the password import in the UI.
+- (void)onPasswordsImported:(const password_manager::ImportResults&)results;
+
 @end
 
 // Handles importing credentials using the Credential Exchange Format
 // (https://fidoalliance.org/specifications-credential-exchange-specifications).
+// TODO(crbug.com/458733320): Add tests for this class.
 @interface CredentialImporter : NSObject
 
 - (instancetype)initWithDelegate:(id<CredentialImporterDelegate>)delegate
@@ -41,10 +46,18 @@ class SavedPasswordsPresenter;
 - (void)prepareImport:(NSUUID*)UUID;
 
 // Called when the user confirms the import. `securityDomainSecrets` is needed
-// to encrypt passkeys if there are any to be imported.
-// TODO(crbug.com/449701042): Document this method better.
+// to encrypt passkeys if there are any to be imported. Triggers initial
+// processing of the data for all supported credential types. Processing each
+// credential type is handled in a separate async task. Results are analyzed
+// once all tasks complete.
 - (void)startImportingCredentialsWithSecurityDomainSecrets:
     (NSArray<NSData*>*)securityDomainSecrets;
+
+// Triggers storing data for all supported credential types in the user's
+// account. This should be called after conflicts with existing credential data
+// stored in the user's account were resolved for all credential types or
+// immediately after identifying no conflicts.
+- (void)finishImport;
 
 @end
 

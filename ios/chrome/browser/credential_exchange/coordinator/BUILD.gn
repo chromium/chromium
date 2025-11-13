@@ -13,6 +13,7 @@ source_set("import_coordinator") {
   deps = [
     "//base",
     "//components/metrics:metrics_pref_names",
+    "//components/password_manager/core/browser/import:importer",
     "//components/password_manager/core/browser/ui",
     "//components/prefs",
     "//components/signin/public/identity_manager",

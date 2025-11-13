@@ -7,8 +7,11 @@
 #import <vector>
 
 #import "base/apple/foundation_util.h"
+#import "base/barrier_closure.h"
+#import "base/functional/callback_forward.h"
 #import "base/rand_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/thread_pool.h"
 #import "components/password_manager/core/browser/import/csv_password.h"
 #import "components/password_manager/core/browser/import/import_results.h"
 #import "components/password_manager/core/browser/import/password_importer.h"
@@ -25,6 +28,9 @@
 #import "url/gurl.h"
 
 namespace {
+
+// Count of credential types that are currently supported by the importer.
+constexpr int kSupportedCredentialTypesCount = 2;
 
 std::string DataToString(NSData* data) {
   return std::string(static_cast<const char*>(data.bytes), data.length);
@@ -54,6 +60,16 @@ std::string DataToString(NSData* data) {
 
   // Used to import passkeys and handle conflicts with existing passkeys.
   std::unique_ptr<webauthn::PasskeyImporter> _passkeyImporter;
+
+  // Caches the results of initial processing of passwords.
+  password_manager::ImportResults _passwordImportResult;
+
+  // Caches the results of initial processing of passkeys.
+  webauthn::ImportProcessingResult _passkeyImportResult;
+
+  // Barrier closure that should run after initial processing finishes for all
+  // supported credential types.
+  base::RepeatingClosure _allCredentialTypesProcessedClosure;
 }
 
 - (instancetype)initWithDelegate:(id<CredentialImporterDelegate>)delegate
@@ -84,8 +100,39 @@ std::string DataToString(NSData* data) {
 
 - (void)startImportingCredentialsWithSecurityDomainSecrets:
     (NSArray<NSData*>*)securityDomainSecrets {
-  [self startImportingPasswords];
-  [self startImportingPasskeys:securityDomainSecrets];
+  __weak __typeof(self) weakSelf = self;
+  _allCredentialTypesProcessedClosure =
+      base::BarrierClosure(kSupportedCredentialTypesCount, base::BindOnce(^{
+                             [weakSelf onAllCredentialTypesProcessed];
+                           }));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE}, base::BindOnce(^{
+        return [weakSelf
+            translateCredentialExchangePasskeys:securityDomainSecrets];
+      }),
+      base::BindOnce(
+          ^(std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys) {
+            [weakSelf startImportingPasskeys:std::move(passkeys)];
+          }));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE}, base::BindOnce(^{
+        return [weakSelf translateCredentialExchangePasswords];
+      }),
+      base::BindOnce(
+          ^(std::vector<password_manager::CSVPassword> csvPasswords) {
+            [weakSelf startImportingPasswords:std::move(csvPasswords)];
+          }));
+}
+
+- (void)finishImport {
+  __weak __typeof(_delegate) weakDelegate = _delegate;
+  // TODO(crbug.com/457354574): Handle passing selected_ids.
+  _passwordImporter->ContinueImport(
+      /*selected_ids=*/{},
+      base::BindOnce(^(const password_manager::ImportResults& results) {
+        [weakDelegate onPasswordsImported:results];
+      }));
+  // TODO(crbug.com/458337350): Implement resume in passkey importer.
 }
 
 #pragma mark - CredentialImportManagerDelegate
@@ -103,9 +150,9 @@ std::string DataToString(NSData* data) {
 
 #pragma mark - Private
 
-// Converts `_passwords` into structures used by `_passwordImporter` and starts
-// the importing process.
-- (void)startImportingPasswords {
+// Converts `_passwords` into structures used by `_passwordImporter`.
+- (std::vector<password_manager::CSVPassword>)
+    translateCredentialExchangePasswords {
   std::vector<password_manager::CSVPassword> csvPasswords;
   csvPasswords.reserve(_passwords.count);
   for (CredentialExchangePassword* password : _passwords) {
@@ -116,28 +163,37 @@ std::string DataToString(NSData* data) {
         base::SysNSStringToUTF8(password.note),
         password_manager::CSVPassword::Status::kOK));
   }
-
-  __weak __typeof(self) weakSelf = self;
-  _passwordImporter->Import(
-      csvPasswords, password_manager::PasswordForm::Store::kAccountStore,
-      base::BindOnce(^(const password_manager::ImportResults& results) {
-        [weakSelf onPasswordImporterParsingFinishedWithResults:results];
-      }));
+  return csvPasswords;
 }
 
-// Called when `_passwordImporter` finishes processing passwords.
-// TODO(crbug.com/449701042): Handle next stages of import.
-- (void)onPasswordImporterParsingFinishedWithResults:
-    (const password_manager::ImportResults&)results {
-}
-
-// Converts `_passkeys` into protos used by `_passkeyImporter` and starts the
-// importing process.
-- (void)startImportingPasskeys:(NSArray<NSData*>*)securityDomainSecrets {
-  if (_passkeys.count == 0) {
+// Triggers initial processing of `passwords` handled by `_passwordImporter`.
+- (void)startImportingPasswords:
+    (std::vector<password_manager::CSVPassword>)passwords {
+  if (passwords.empty()) {
+    _allCredentialTypesProcessedClosure.Run();
     return;
   }
 
+  __weak __typeof(self) weakSelf = self;
+  _passwordImporter->Import(
+      passwords, password_manager::PasswordForm::Store::kAccountStore,
+      base::BindOnce(^(const password_manager::ImportResults& results) {
+        [weakSelf onPasswordParsingFinished:results];
+      }));
+}
+
+// Called when `_passwordImporter` finishes processing passwords. Caches the
+// `results` and runs the barrier closure.
+- (void)onPasswordParsingFinished:
+    (const password_manager::ImportResults&)results {
+  _passwordImportResult = results;
+  _allCredentialTypesProcessedClosure.Run();
+}
+
+// Converts `_passkeys` into structures used by `_passkeyImporter`.
+- (std::vector<sync_pb::WebauthnCredentialSpecifics>)
+    translateCredentialExchangePasskeys:
+        (NSArray<NSData*>*)securityDomainSecrets {
   // `hw_protected` security domain currently supports a single secret.
   CHECK(securityDomainSecrets.count == 1);
   base::span<const uint8_t> securityDomainSecret =
@@ -171,18 +227,47 @@ std::string DataToString(NSData* data) {
     passkeys.push_back(specifics);
   }
 
+  return passkeys;
+}
+
+// Triggers initial processing of `passkeys` handled by `_passkeyImporter`.
+- (void)startImportingPasskeys:
+    (std::vector<sync_pb::WebauthnCredentialSpecifics>)passkeys {
+  if (passkeys.empty()) {
+    _allCredentialTypesProcessedClosure.Run();
+    return;
+  }
+
   __weak __typeof(self) weakSelf = self;
   _passkeyImporter->StartImport(
       std::move(passkeys),
       base::BindOnce(^(const webauthn::ImportProcessingResult& result) {
-        [weakSelf onPasskeyImporterParsingFinishedWithResult:result];
+        [weakSelf onPasskeyParsingFinished:result];
       }));
 }
 
-// Called when `_passkeyImporter` finishes processing passkeys.
-// TODO(crbug.com/450982128): Handle next stages of import.
-- (void)onPasskeyImporterParsingFinishedWithResult:
+// Called when `_passkeyImporter` finishes processing passkeys. Caches the
+// `result` and runs the barrier closure.
+- (void)onPasskeyParsingFinished:
     (const webauthn::ImportProcessingResult&)result {
+  _passkeyImportResult = result;
+  _allCredentialTypesProcessedClosure.Run();
+}
+
+// Called when initial processing of all supported credentials types finishes.
+// If there are no conflicts to be resolved by the user across all credential
+// types, triggers actual import of the data. Otherwise, notifies the delegate
+// to display conflict resolution UI first.
+- (void)onAllCredentialTypesProcessed {
+  // TODO(crbug.com/450982128): Parse `displayed_entries` to check for
+  // conflcts only and not other types of errors.
+  if (_passkeyImportResult.conflicts.empty() &&
+      _passwordImportResult.displayed_entries.empty()) {
+    [self finishImport];
+    return;
+  }
+
+  // TODO(crbug.com/450982128): Display conflicts resolution screen.
 }
 
 @end
