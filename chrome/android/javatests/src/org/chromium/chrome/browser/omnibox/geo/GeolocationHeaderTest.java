@@ -26,6 +26,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -47,11 +48,10 @@ import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class GeolocationHeaderTest {
-    public @Rule AutoResetCtaTransitTestRule mActivityTestRule =
+    public @Rule AutoResetCtaTransitTestRule mAutoResetCtaTestRule =
             ChromeTransitTestRules.autoResetCtaActivityRule();
 
-    private WebPageStation mStartingPage;
-    private OmniboxTestUtils mOmniboxTestUtils;
+    private WebPageStation mCurrentWebPageStation;
 
     private static final String SEARCH_URL_1 = "https://www.google.com/search?q=potatoes";
     private static final String SEARCH_URL_2 = "https://www.google.co.jp/webhp?#q=dinosaurs";
@@ -61,10 +61,13 @@ public class GeolocationHeaderTest {
     private static final float LOCATION_ACCURACY = 20f;
 
     @Before
-    public void setUp() throws InterruptedException {
-        mStartingPage = mActivityTestRule.startOnBlankPage();
+    public void setUp() {
+        mCurrentWebPageStation = mAutoResetCtaTestRule.startOnBlankPage();
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
-        mOmniboxTestUtils = new OmniboxTestUtils(mStartingPage.getActivity());
+
+        // With incognito windows, this test will create many windows so we need to increase the
+        // ChromeTabbedActivity instance limit.
+        MultiWindowUtils.setMaxInstancesForTesting(1000);
     }
 
     @Test
@@ -239,7 +242,7 @@ public class GeolocationHeaderTest {
         setPermission(httpsPermission);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    var profile = mActivityTestRule.getActivity().getActivityTab().getProfile();
+                    var profile = mCurrentWebPageStation.getTab().getProfile();
                     var service = TemplateUrlServiceFactory.getForProfile(profile);
                     String header = GeolocationHeader.getGeoHeader(SEARCH_URL_1, profile, service);
                     assertHeaderState(header, locationTime, shouldBeNull);
@@ -247,10 +250,12 @@ public class GeolocationHeaderTest {
     }
 
     private void checkHeaderPriming(boolean shouldPrimeHeader) {
-        mActivityTestRule.loadUrlInNewTab("about:blank", false);
-        mOmniboxTestUtils.requestFocus();
-        mOmniboxTestUtils.typeText("aaaaaaaaaa", false);
-        mOmniboxTestUtils.waitAnimationsComplete();
+        openBlankPage(/* isIncognito= */ false);
+
+        var omniboxTestUtils = new OmniboxTestUtils(mCurrentWebPageStation.getActivity());
+        omniboxTestUtils.requestFocus();
+        omniboxTestUtils.typeText("aaaaaaaaaa", false);
+        omniboxTestUtils.waitAnimationsComplete();
         Assert.assertEquals(shouldPrimeHeader, GeolocationHeader.isGeolocationPrimedForTesting());
     }
 
@@ -285,10 +290,10 @@ public class GeolocationHeaderTest {
     }
 
     private void assertNullHeader(final String url, final boolean isIncognito) {
-        mActivityTestRule.loadUrlInNewTab("about:blank", isIncognito);
+        openBlankPage(isIncognito);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    var profile = mActivityTestRule.getActivity().getActivityTab().getProfile();
+                    var profile = mCurrentWebPageStation.getTab().getProfile();
                     var service = TemplateUrlServiceFactory.getForProfile(profile);
                     Assert.assertNull(GeolocationHeader.getGeoHeader(url, profile, service));
                 });
@@ -296,10 +301,10 @@ public class GeolocationHeaderTest {
 
     private void assertNonNullHeader(
             final String url, final boolean isIncognito, final long locationTime) {
-        mActivityTestRule.loadUrlInNewTab("about:blank", isIncognito);
+        openBlankPage(isIncognito);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    var profile = mActivityTestRule.getActivity().getActivityTab().getProfile();
+                    var profile = mCurrentWebPageStation.getTab().getProfile();
                     var service = TemplateUrlServiceFactory.getForProfile(profile);
                     assertHeaderEquals(
                             locationTime, GeolocationHeader.getGeoHeader(url, profile, service));
@@ -390,5 +395,15 @@ public class GeolocationHeaderTest {
                         return contentSetting == expectedSetting;
                     }
                 });
+    }
+
+    private void openBlankPage(boolean isIncognito) {
+        if (isIncognito) {
+            mCurrentWebPageStation =
+                    mCurrentWebPageStation.openNewIncognitoTabOrWindowFast().loadAboutBlank();
+        } else {
+            mCurrentWebPageStation =
+                    mCurrentWebPageStation.openNewTabOrWindowFast().loadAboutBlank();
+        }
     }
 }
