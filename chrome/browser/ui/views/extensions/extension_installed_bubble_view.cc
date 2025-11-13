@@ -154,7 +154,7 @@ void ExtensionInstalledBubbleView::Show(
         ui::DialogModelLabel::CreateWithReplacement(
             IDS_EXTENSION_INSTALLED_MANAGE_SHORTCUTS,
             ui::DialogModelLabel::CreateLink(
-                IDS_EXTENSION_INSTALLED_MANAGE_SHORTCUTS,
+                IDS_EXTENSION_INSTALLED_MANAGE_SHORTCUTS_LINK_TEXT,
                 base::BindRepeating(&ExtensionInstalledBubbleView::LinkClicked,
                                     base::Unretained(weak_delegate)))));
   }

@@ -1092,7 +1092,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
       SetOnIncompatibleAction(
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
-      Screenshot(kExtensionBubbleFrameViewId, std::string(), "7068232"),
+      Screenshot(kExtensionBubbleFrameViewId, std::string(), "7148104"),
       NameChildViewByType<views::MdTextButton>(
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),
@@ -1177,7 +1177,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
       SetOnIncompatibleAction(
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
-      Screenshot(kExtensionBubbleFrameViewId, std::string(), "7068232"),
+      Screenshot(kExtensionBubbleFrameViewId, std::string(), "7148104"),
       NameChildViewByType<views::MdTextButton>(
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),
