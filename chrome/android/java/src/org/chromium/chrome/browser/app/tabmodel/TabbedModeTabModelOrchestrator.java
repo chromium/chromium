@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.Toast;
 
@@ -89,6 +90,8 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     private final boolean mTabMergingEnabled;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final CipherFactory mCipherFactory;
+    // Effectively final after createTabModels().
+    private String mWindowTag;
 
     private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
@@ -189,10 +192,13 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                             activity.getString(R.string.unsupported_number_of_windows),
                             Toast.LENGTH_LONG)
                     .show();
+            mWindowTag = "";
             return false;
         }
 
         int assignedIndex = assumeNonNull(selectorAssignment).first;
+        assert assignedIndex != TabWindowManager.INVALID_WINDOW_ID;
+        mWindowTag = Integer.toString(assignedIndex);
 
         // Instantiate TabPersistentStore
         mTabPersistencePolicy =
@@ -281,10 +287,12 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
 
             TabCreatorManager shadowTabCreatorManager =
                     incognito -> incognito ? mIncognitoShadowTabCreator : mRegularShadowTabCreator;
+            assert mWindowTag != null && !mWindowTag.isEmpty();
             mShadowTabPersistentStore =
                     new TabStateStore(
                             TabStateStorageServiceFactory.getForProfile(profile),
                             mTabModelSelector,
+                            mWindowTag,
                             shadowTabCreatorManager);
 
             SupplierUtils.waitForAll(

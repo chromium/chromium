@@ -172,8 +172,11 @@ void TabStateStorageService::Move(const TabCollection* collection,
                    packager_.get(), tab_backend_.get());
 }
 
-void TabStateStorageService::LoadAllNodes(LoadDataCallback callback) {
+void TabStateStorageService::LoadAllNodes(std::string window_tag,
+                                          bool is_off_the_record,
+                                          LoadDataCallback callback) {
   tab_backend_->LoadAllNodes(
+      std::move(window_tag), is_off_the_record,
       base::BindOnce(&TabStateStorageService::OnAllNodesLoaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

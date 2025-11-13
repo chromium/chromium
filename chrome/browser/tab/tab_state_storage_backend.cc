@@ -59,11 +59,14 @@ void TabStateStorageBackend::Update(
 }
 
 void TabStateStorageBackend::LoadAllNodes(
+    std::string window_tag,
+    bool is_off_the_record,
     base::OnceCallback<void(std::vector<NodeState>)> callback) {
   db_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TabStateStorageDatabase::LoadAllNodes,
-                     base::Unretained(database_.get())),
+                     base::Unretained(database_.get()), std::move(window_tag),
+                     is_off_the_record),
       base::BindOnce(&TabStateStorageBackend::OnAllTabsRead,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

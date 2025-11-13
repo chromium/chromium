@@ -42,12 +42,15 @@ public class TabStateStorageService {
      *
      * <p>TODO(https://crbug.com/427254267): Add tab id/sort order to this.
      *
-     * <p>TODO(https://crbug.com/430996004): Scope to a given window.
-     *
+     * @param windowTag The window tag to load data for.
+     * @param isOffTheRecord Whether to load incognito data.
      * @param callback Run with loaded data.
      */
-    public void loadAllData(Callback<StorageLoadedData> callback) {
-        TabStateStorageServiceJni.get().loadAllData(mNativeTabStateStorageService, callback);
+    public void loadAllData(
+            String windowTag, boolean isOffTheRecord, Callback<StorageLoadedData> callback) {
+        assert !windowTag.isEmpty();
+        TabStateStorageServiceJni.get()
+                .loadAllData(mNativeTabStateStorageService, windowTag, isOffTheRecord, callback);
     }
 
     /** Clears all the tabs from persistent storage. */
@@ -61,6 +64,8 @@ public class TabStateStorageService {
 
         void loadAllData(
                 long nativeTabStateStorageServiceAndroid,
+                @JniType("std::string") String windowTag,
+                boolean isOffTheRecord,
                 Callback<StorageLoadedData> loadedDataCallback);
 
         void clearState(long nativeTabStateStorageServiceAndroid);

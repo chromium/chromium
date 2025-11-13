@@ -71,7 +71,9 @@ class TabStateStorageService : public KeyedService,
   void Remove(const TabCollection* collection,
               const TabCollection* prev_parent);
 
-  void LoadAllNodes(LoadDataCallback callback);
+  void LoadAllNodes(std::string window_tag,
+                    bool is_off_the_record,
+                    LoadDataCallback callback);
 
   void ClearState();
 

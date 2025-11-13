@@ -323,12 +323,17 @@ bool TabStateStorageDatabase::CloseTransaction(
   return success;
 }
 
-std::vector<NodeState> TabStateStorageDatabase::LoadAllNodes() {
+std::vector<NodeState> TabStateStorageDatabase::LoadAllNodes(
+    std::string window_tag,
+    bool is_off_the_record) {
   std::vector<NodeState> entries;
   static constexpr char kSelectAllNodesSql[] =
-      "SELECT id, type, payload, children FROM nodes";
+      "SELECT id, type, payload, children FROM nodes "
+      "WHERE window_tag = ? AND is_off_the_record = ?";
   sql::Statement select_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kSelectAllNodesSql));
+  select_statement.BindString(0, window_tag);
+  select_statement.BindInt(1, static_cast<int>(is_off_the_record));
   while (select_statement.Step()) {
     NodeState entry = {
         .id = select_statement.ColumnInt(0),

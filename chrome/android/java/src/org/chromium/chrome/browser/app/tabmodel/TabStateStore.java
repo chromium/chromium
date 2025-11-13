@@ -52,6 +52,7 @@ public class TabStateStore implements TabPersistentStore {
     private final TabStateStorageService mTabStateStorageService;
     private final TabCreatorManager mTabCreatorManager;
     private final TabModelSelector mTabModelSelector;
+    private final String mWindowTag;
     private final TabStateAttributes.Observer mAttributesObserver =
             this::onTabStateDirtinessChanged;
     private final ObserverList<TabPersistentStoreObserver> mObservers = new ObserverList<>();
@@ -140,15 +141,18 @@ public class TabStateStore implements TabPersistentStore {
      * @param tabModelSelector The {@link TabModelSelector} to observe changes in. Regardless of the
      *     mode this store is in, this will be the real selector with real models. This should be
      *     treated as a read only object, no modifications should go through it.
+     * @param windowTag The window tag to use for the window.
      * @param tabCreatorManager Used to create new tabs on initial load. This may return real
      *     creators, or faked out creators if in non-authoritative mode.
      */
     public TabStateStore(
             TabStateStorageService tabStateStorageService,
             TabModelSelector tabModelSelector,
+            String windowTag,
             TabCreatorManager tabCreatorManager) {
         mTabStateStorageService = tabStateStorageService;
         mTabModelSelector = tabModelSelector;
+        mWindowTag = windowTag;
         mTabCreatorManager = tabCreatorManager;
     }
 
@@ -345,7 +349,9 @@ public class TabStateStore implements TabPersistentStore {
 
     private void loadAllTabsFromService() {
         long loadStartTime = SystemClock.elapsedRealtime();
-        mTabStateStorageService.loadAllData(data -> onDataLoaded(data, loadStartTime));
+        // TODO(crbug.com/458335579): Figure out incognito.
+        mTabStateStorageService.loadAllData(
+                mWindowTag, /* isOffTheRecord= */ false, data -> onDataLoaded(data, loadStartTime));
     }
 
     private void onDataLoaded(StorageLoadedData data, long loadStartTime) {
