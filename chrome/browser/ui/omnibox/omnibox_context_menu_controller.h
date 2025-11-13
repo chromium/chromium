@@ -5,14 +5,17 @@
 #ifndef CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_CONTEXT_MENU_CONTROLLER_H_
 #define CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_CONTEXT_MENU_CONTROLLER_H_
 
+#include <string>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/time/time.h"
 #include "ui/menus/simple_menu_model.h"
+#include "url/gurl.h"
 
 class BrowserWindowInterface;
-class GURL;
 class FaviconService;
 
 namespace favicon_base {
