@@ -1875,8 +1875,6 @@ public class ToolbarPhone extends ToolbarLayout
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
             @BrandedColorScheme int brandedColorScheme) {
-        mHomeButtonDisplay.setForegroundColor(tint);
-
         if (mOptionalButtonCoordinator != null) {
             mOptionalButtonCoordinator.setIconForegroundColor(tint);
         }

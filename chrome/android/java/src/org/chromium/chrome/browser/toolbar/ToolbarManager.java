@@ -163,6 +163,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonState;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController.ActionBarDelegate;
+import org.chromium.chrome.browser.toolbar.top.HomeButtonDisplay;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
 import org.chromium.chrome.browser.toolbar.top.OptionalBrowsingModeButtonController;
 import org.chromium.chrome.browser.toolbar.top.TabSwitcherActionMenuCoordinator;
@@ -1152,6 +1153,14 @@ public class ToolbarManager
         progressBar.setAnimatingView(
                 mProgressBarContainer.findViewById(R.id.progress_bar_animating_view));
         mBrowserControlsSizer.addObserver(progressBar);
+
+        HomeButtonDisplay homeButtonDisplay =
+                mIsNewTabPageCustomizationToolbarButtonEnabled
+                        ? mHomePageButtonsCoordinator
+                        : mHomeButtonCoordinator;
+        if (homeButtonDisplay != null) {
+            browsingModeThemeColorProvider.addTintObserver(homeButtonDisplay);
+        }
         mToolbar =
                 createTopToolbarCoordinator(
                         controlContainer,
@@ -1163,7 +1172,8 @@ public class ToolbarManager
                         onLongClickListener,
                         progressBar,
                         historyDelegate,
-                        topControlsStacker);
+                        topControlsStacker,
+                        homeButtonDisplay);
         mTabStripTopControlLayer = new TabStripTopControlLayer(mToolbar.getTabStripHeight());
         if (ChromeFeatureList.sTopControlsRefactor.isEnabled()) {
             mTopControlsStacker.addControl(mTabStripTopControlLayer);
@@ -1928,7 +1938,8 @@ public class ToolbarManager
             @Nullable OnLongClickListener onLongClickListener,
             ToolbarProgressBar progressBar,
             NavigationPopup.HistoryDelegate historyDelegate,
-            TopControlsStacker topControlsStacker) {
+            TopControlsStacker topControlsStacker,
+            @Nullable HomeButtonDisplay homeButtonDisplay) {
         TopToolbarCoordinator toolbar =
                 new TopToolbarCoordinator(
                         controlContainer,
@@ -1962,9 +1973,7 @@ public class ToolbarManager
                         mToolbarNavControlsEnabledSupplier,
                         mBackButtonCoordinator,
                         mForwardButtonCoordinator,
-                        mIsNewTabPageCustomizationToolbarButtonEnabled
-                                ? mHomePageButtonsCoordinator
-                                : mHomeButtonCoordinator,
+                        homeButtonDisplay,
                         mExtensionToolbarCoordinator,
                         topControlsStacker,
                         mBrowserControlsSizer,

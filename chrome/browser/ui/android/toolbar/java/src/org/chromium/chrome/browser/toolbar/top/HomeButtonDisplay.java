@@ -12,10 +12,11 @@ import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 
 /** Interface for managing the display and behavior of home button(s) in the toolbar. */
 @NullMarked
-public interface HomeButtonDisplay {
+public interface HomeButtonDisplay extends TintObserver {
 
     /** Returns the main view representing the home button or its container. */
     View getView();
@@ -25,13 +26,6 @@ public interface HomeButtonDisplay {
 
     /** Returns the current visibility of the home button(s) view. */
     int getVisibility();
-
-    /**
-     * Sets the foreground color for the home button(s).
-     *
-     * @param colorStateList The {@link ColorStateList} to apply.
-     */
-    void setForegroundColor(@Nullable ColorStateList colorStateList);
 
     /** Returns The current foreground color of the home button(s). */
     @Nullable

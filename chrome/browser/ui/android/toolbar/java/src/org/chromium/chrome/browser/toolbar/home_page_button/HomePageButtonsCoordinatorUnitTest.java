@@ -40,6 +40,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsCoordinator.HomePageButtonsState;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -121,8 +122,9 @@ public class HomePageButtonsCoordinatorUnitTest {
     }
 
     @Test
-    public void testSetForegroundColor() {
-        mHomePageButtonsCoordinator.setForegroundColor(mColorStateList);
+    public void testOnTintChanged() {
+        mHomePageButtonsCoordinator.onTintChanged(
+                mColorStateList, mColorStateList, BrandedColorScheme.APP_DEFAULT);
         verify(mModel).set(eq(BUTTON_TINT_LIST), eq(mColorStateList));
     }
 

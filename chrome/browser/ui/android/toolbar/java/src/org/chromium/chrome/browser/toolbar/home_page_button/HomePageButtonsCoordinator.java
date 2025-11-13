@@ -113,8 +113,11 @@ public class HomePageButtonsCoordinator implements HomeButtonDisplay {
     }
 
     @Override
-    public void setForegroundColor(@Nullable ColorStateList colorStateList) {
-        mModel.set(BUTTON_TINT_LIST, colorStateList);
+    public void onTintChanged(
+            @Nullable ColorStateList tint,
+            @Nullable ColorStateList activityFocusTint,
+            int brandedColorScheme) {
+        mModel.set(BUTTON_TINT_LIST, tint);
     }
 
     @Nullable

@@ -140,8 +140,11 @@ public class HomeButtonCoordinator extends ToolbarChildButton implements HomeBut
     }
 
     @Override
-    public void setForegroundColor(@Nullable ColorStateList colorStateList) {
-        ImageViewCompat.setImageTintList(mHomeButton, colorStateList);
+    public void onTintChanged(
+            @Nullable ColorStateList tint,
+            @Nullable ColorStateList activityFocusTint,
+            int brandedColorScheme) {
+        ImageViewCompat.setImageTintList(mHomeButton, tint);
     }
 
     @Nullable
