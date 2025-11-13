@@ -29,6 +29,7 @@
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/download/download_test_file_activity_observer.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
@@ -48,6 +49,7 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -64,6 +66,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/download_test_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -977,6 +980,59 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Bool(),   // IsActorActive
                      testing::Bool()),  // IsSkipFeatureEnabled
     SkipBeforeUnloadTestNameGenerator());
+
+class ExecutionEngineDownloadBrowserTest : public ExecutionEngineBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    browser()->profile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
+                                                 true);
+    file_activity_observer_ =
+        std::make_unique<DownloadTestFileActivityObserver>(
+            browser()->profile());
+    file_activity_observer_->EnableFileChooser(false);
+    ExecutionEngineBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    ExecutionEngineBrowserTest::TearDownOnMainThread();
+    // Needs to be torn down on the main thread. file_activity_observer_ holds a
+    // reference to the ChromeDownloadManagerDelegate which should be destroyed
+    // on the UI thread.
+    file_activity_observer_.reset();
+  }
+
+ protected:
+  base::HistogramTester histogram_tester_;
+
+ private:
+  std::unique_ptr<DownloadTestFileActivityObserver> file_activity_observer_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineDownloadBrowserTest,
+                       OnlyActorDownloadsAreRecorded) {
+  const GURL start_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/download.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "document.getElementById('download').click()"));
+
+  content::DownloadTestObserverTerminal download_observer(
+      browser()->profile()->GetDownloadManager(), 2,
+      content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  ClickTarget("#download", mojom::ActionResultCode::kFilePickerTriggered);
+
+  // Execution Engine normal holds onto file picker callback until next resume,
+  // resetting forces the callback to get triggered.
+  actor_keyed_service()->ResetForTesting();
+  download_observer.WaitForFinished();
+
+  histogram_tester_.ExpectUniqueSample("Actor.Download.DirectDownloadTriggered",
+                                       true, 1);
+  histogram_tester_.ExpectUniqueSample("Actor.Download.SaveAsDialogTriggered",
+                                       true, 1);
+}
 
 }  // namespace
 

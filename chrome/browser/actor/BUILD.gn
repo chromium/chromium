@@ -64,6 +64,7 @@ source_set("actor") {
     "//chrome/common",
     "//chrome/common:actor_webui_mojom",
     "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
+    "//components/download/content/public",
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/password_manager/core/browser/actor_login:common",

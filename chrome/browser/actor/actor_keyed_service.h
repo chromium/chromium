@@ -13,13 +13,16 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/buildflags.h"
+#include "components/download/content/public/all_download_item_notifier.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -45,7 +48,9 @@ class ToolRequest;
 
 // This class owns all ActorTasks for a given profile. ActorTasks are kept in
 // memory until the process is destroyed.
-class ActorKeyedService : public KeyedService {
+class ActorKeyedService : public KeyedService,
+                          public ProfileObserver,
+                          public download::AllDownloadItemNotifier::Observer {
  public:
   explicit ActorKeyedService(Profile* profile);
   ActorKeyedService(const ActorKeyedService&) = delete;
@@ -154,6 +159,14 @@ class ActorKeyedService : public KeyedService {
                       SessionID initiator_window_id,
                       CreateActorTabCallback callback);
 
+  // download::AllDownloadItemNotifier::Observer
+  void OnDownloadCreated(content::DownloadManager* manager,
+                         download::DownloadItem* item) override;
+
+  // Once the profile is initialized, we can get the DownloadManager for the
+  // download::AllDownloadItemNotifier::Observer
+  void OnProfileInitializationComplete(Profile* profile) override;
+
   base::WeakPtr<ActorKeyedService> GetWeakPtr();
 
  private:
@@ -170,6 +183,11 @@ class ActorKeyedService : public KeyedService {
   // The jounrnal should be last in destruction order since other things like
   // ActorTask might be using a SafeRef to this object.
   AggregatedJournal journal_;
+
+  // download notifier for metrics and the profile observer to help set up the
+  // download notifier.
+  std::unique_ptr<download::AllDownloadItemNotifier> download_notifier_;
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   // Needs to be declared before the tasks, as they will indirectly have a
   // reference to it. This ensures the correct destruction order.

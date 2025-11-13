@@ -26,6 +26,7 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -37,6 +38,7 @@
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -71,6 +73,15 @@ using ui::ActorUiStateManagerInterface;
 ActorKeyedService::ActorKeyedService(Profile* profile) : profile_(profile) {
   actor_ui_state_manager_ = std::make_unique<ui::ActorUiStateManager>(*this);
   policy_checker_ = std::make_unique<ActorPolicyChecker>(*this);
+  profile_observation_.Observe(profile_);
+}
+
+void ActorKeyedService::OnProfileInitializationComplete(Profile* profile) {
+  // `download_notifier_` is set up after profile initialization because
+  // `GetDownloadManager()` relies on other download services to be fully
+  // initialized which may not be true until the profile is initialized.
+  download_notifier_ = std::make_unique<download::AllDownloadItemNotifier>(
+      profile_->GetDownloadManager(), this);
 }
 
 ActorKeyedService::~ActorKeyedService() = default;
@@ -518,6 +529,16 @@ std::vector<TaskId> ActorKeyedService::FindTaskIdsInInactive(
     }
   }
   return result;
+}
+
+void ActorKeyedService::OnDownloadCreated(content::DownloadManager* manager,
+                                          download::DownloadItem* item) {
+  if (content::WebContents* web_contents =
+          content::DownloadItemUtils::GetWebContents(item)) {
+    if (GetActingActorTaskForWebContents(web_contents)) {
+      base::UmaHistogramBoolean("Actor.Download.DirectDownloadTriggered", true);
+    }
+  }
 }
 
 }  // namespace actor
