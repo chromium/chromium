@@ -128,6 +128,10 @@ void SecureEmbedWebPlugin::Paint(cc::PaintCanvas* canvas,
   NOTREACHED();
 }
 
+viz::FrameSinkId SecureEmbedWebPlugin::GetFrameSinkId() {
+  return frame_sink_id_;
+}
+
 void SecureEmbedWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
                                           const gfx::Rect& clip_rect,
                                           const gfx::Rect& unobscured_rect,
