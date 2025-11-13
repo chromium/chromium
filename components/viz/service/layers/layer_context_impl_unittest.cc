@@ -2096,8 +2096,8 @@ TEST_F(LayerContextImplUpdateDisplayTreeTilingTest, TilingAndTileLifecycle) {
   tile_invalid_resource->column_index = kTileIndex1.i;  // Use existing index
   tile_invalid_resource->row_index = kTileIndex1.j;
   auto invalid_resource_contents = mojom::TileResource::New();
+  invalid_resource_contents->resource = MakeFakeResource(kTileSize1);
   invalid_resource_contents->resource.id = kInvalidResourceId;  // Invalid ID
-  invalid_resource_contents->resource.size = kTileSize1;
   tile_invalid_resource->contents =
       mojom::TileContents::NewResource(std::move(invalid_resource_contents));
   tiling1_invalid_resource_update->tiles.push_back(
