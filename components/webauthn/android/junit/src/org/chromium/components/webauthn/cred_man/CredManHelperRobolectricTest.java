@@ -45,6 +45,7 @@ import org.robolectric.shadow.api.Shadow;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.GetCredentialOptions;
 import org.chromium.blink.mojom.Mediation;
@@ -57,6 +58,7 @@ import org.chromium.components.webauthn.Fido2ApiTestHelper;
 import org.chromium.components.webauthn.GetAssertionOutcome;
 import org.chromium.components.webauthn.MakeCredentialOutcome;
 import org.chromium.components.webauthn.WebauthnBrowserBridge;
+import org.chromium.components.webauthn.WebauthnFeatures;
 import org.chromium.components.webauthn.WebauthnModeProvider;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManCreateRequestEnum;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManGetRequestEnum;
@@ -83,6 +85,7 @@ import org.chromium.mojo_base.mojom.String16;
             ShadowGetCredentialResponse.class,
             ShadowPrepareGetCredentialResponse.class
         })
+@DisableFeatures({WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV})
 public class CredManHelperRobolectricTest {
     private CredManHelper mCredManHelper;
     private Fido2ApiTestHelper.AuthenticatorCallback mCallback;

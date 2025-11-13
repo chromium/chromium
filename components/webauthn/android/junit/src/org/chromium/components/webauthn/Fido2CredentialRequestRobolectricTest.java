@@ -49,8 +49,8 @@ import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowApplication;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.GetCredentialOptions;
 import org.chromium.blink.mojom.Mediation;
@@ -82,6 +82,10 @@ import java.util.List;
         shadows = {
             ShadowCredentialManager.class,
         })
+@DisableFeatures({
+    WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV,
+    BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_BROWSER_BOUND_KEYS
+})
 public class Fido2CredentialRequestRobolectricTest {
     private static final String TEST_CHANNEL_EXTRA = "stable";
     private static final Boolean TEST_INCOGNITO_EXTRA = true;
@@ -107,10 +111,6 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Before
     public void setUp() throws Exception {
-        FeatureOverrides.newBuilder()
-                .disable(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_BROWSER_BOUND_KEYS)
-                .apply();
-
         MockitoAnnotations.initMocks(this);
 
         ((ShadowApplication) shadowOf((Application) ApplicationProvider.getApplicationContext()))

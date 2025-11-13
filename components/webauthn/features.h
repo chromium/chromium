@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
 namespace webauthn::features {
@@ -15,10 +16,16 @@ namespace webauthn::features {
 
 // Use the passkey cache service parallel to the FIDO2 module to retrieve
 // passkeys from GMSCore. This is for migration.
-// The feature is still exposed to Java via DeviceFeatureMap, so it needs to be
-// exported.
 COMPONENT_EXPORT(WEBAUTHN)
 BASE_DECLARE_FEATURE(kWebAuthnAndroidPasskeyCacheMigration);
+
+// A development feature flag to control the CredMan mode.
+COMPONENT_EXPORT(WEBAUTHN)
+BASE_DECLARE_FEATURE(kWebAuthnAndroidCredManForDev);
+// Parameter for `kWebAuthnAndroidCredManForDev` to specify the mode.
+// Can be "disabled", "full" or "parallel".
+COMPONENT_EXPORT(WEBAUTHN)
+extern const base::FeatureParam<std::string> kWebAuthnAndroidCredManForDevMode;
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

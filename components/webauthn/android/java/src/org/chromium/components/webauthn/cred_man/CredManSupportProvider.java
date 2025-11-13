@@ -20,6 +20,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webauthn.CredManSupport;
 import org.chromium.components.webauthn.GmsCoreUtils;
+import org.chromium.components.webauthn.WebauthnFeatureMap;
+import org.chromium.components.webauthn.WebauthnFeatures;
 import org.chromium.components.webauthn.WebauthnMode;
 import org.chromium.components.webauthn.WebauthnModeProvider;
 
@@ -55,6 +57,26 @@ public class CredManSupportProvider {
         if (sCredManSupport != CredManSupport.NOT_EVALUATED) {
             return sCredManSupport;
         }
+        if (WebauthnFeatureMap.getInstance()
+                .isEnabled(WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV)) {
+            String mode =
+                    WebauthnFeatureMap.getInstance()
+                            .getFieldTrialParamByFeature(
+                                    WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV, "mode");
+            if (mode.equals("full")) {
+                sCredManSupport = CredManSupport.FULL_UNLESS_INAPPLICABLE;
+                log(TAG, "Support is %d due to dev flag", sCredManSupport);
+                return sCredManSupport;
+            } else if (mode.equals("parallel")) {
+                sCredManSupport = CredManSupport.PARALLEL_WITH_FIDO_2;
+                log(TAG, "Support is %d due to dev flag", sCredManSupport);
+                return sCredManSupport;
+            } else if (mode.equals("disabled")) {
+                sCredManSupport = CredManSupport.DISABLED;
+                log(TAG, "Support is %d due to dev flag", sCredManSupport);
+                return sCredManSupport;
+            }
+        }
         if (getAndroidVersion() < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             sCredManSupport = CredManSupport.DISABLED;
             log(TAG, "Disabled because of Android version.");
@@ -69,11 +91,11 @@ public class CredManSupportProvider {
                 && ContextUtils.getApplicationContext().getSystemService(Context.CREDENTIAL_SERVICE)
                         == null) {
             sCredManSupport = CredManSupport.DISABLED;
-            recordCredManAvailability(/*available*/ false);
+            recordCredManAvailability(/* available= */ false);
             log(TAG, "Disabled because CredentialManager is not available.");
             return sCredManSupport;
         }
-        recordCredManAvailability(/*available*/ true);
+        recordCredManAvailability(/* available= */ true);
 
         final CredManUiRecommender recommender =
                 ServiceLoaderUtil.maybeCreate(CredManUiRecommender.class);
