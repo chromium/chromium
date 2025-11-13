@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -61,6 +62,11 @@ namespace glic {
 namespace {
 constexpr base::TimeDelta kSidePanelMaxRecency = base::Minutes(20);
 constexpr base::TimeDelta kFloatyMaxRecency = base::Hours(3);
+
+BASE_FEATURE(kGlicMaxRecency, base::FEATURE_ENABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<base::TimeDelta> kGlicMaxRecencyValue{
+    &kGlicMaxRecency, "duration", base::Minutes(30)};
 
 base::TimeDelta GetTimeSinceLastActive(GlicInstanceImpl* instance) {
   return base::TimeTicks::Now() - instance->GetLastActiveTime();
@@ -484,9 +490,14 @@ GlicInstanceCoordinatorImpl::GetRecentlyActiveConversations() {
   // tabs, it will not be included in the list.
   std::vector<GlicInstanceImpl*> sorted_instances;
   for (auto& [id, instance] : instances_) {
-    if (instance->conversation_id().has_value()) {
-      sorted_instances.push_back(instance.get());
+    if (!instance->conversation_id()) {
+      continue;
     }
+    if (base::FeatureList::IsEnabled(kGlicMaxRecency) &&
+        GetTimeSinceLastActive(instance.get()) > kGlicMaxRecencyValue.Get()) {
+      continue;
+    }
+    sorted_instances.push_back(instance.get());
   }
 
   std::sort(sorted_instances.begin(), sorted_instances.end(),
