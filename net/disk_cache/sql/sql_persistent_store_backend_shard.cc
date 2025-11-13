@@ -43,6 +43,11 @@ void SqlPersistentStore::BackendShard::Initialize(
             if (weak_ptr) {
               if (result.has_value()) {
                 weak_ptr->store_status_ = result->store_status;
+                if (result->in_memory_data) {
+                  weak_ptr->index_ = std::move(result->in_memory_data->index);
+                  weak_ptr->to_be_deleted_res_ids_ =
+                      std::move(result->in_memory_data->doomed_entry_res_ids);
+                }
               }
               std::move(callback).Run(std::move(result));
             }
@@ -285,8 +290,7 @@ void SqlPersistentStore::BackendShard::LoadInMemoryIndex(
   backend_.AsyncCall(&SqlPersistentStore::Backend::LoadInMemoryIndex)
       .Then(base::BindOnce(
           [](base::WeakPtr<BackendShard> weak_ptr, ErrorCallback callback,
-             SqlPersistentStore::Backend::InMemoryIndexAndDoomedResIdsOrError
-                 result) {
+             SqlPersistentStore::InMemoryIndexAndDoomedResIdsOrError result) {
             if (weak_ptr) {
               if (result.has_value()) {
                 weak_ptr->index_ = std::move(result->index);

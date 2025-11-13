@@ -26,6 +26,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "net/base/cache_type.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
 #include "net/disk_cache/sql/eviction_candidate_aggregator.h"
@@ -390,10 +391,13 @@ int64_t SqlPersistentStore::GetSizeOfAllEntries() const {
 }
 
 bool SqlPersistentStore::MaybeLoadInMemoryIndex(ErrorCallback callback) {
-  if (in_memory_load_trigered_) {
+  if (in_memory_load_triggered_) {
     return false;
   }
-  in_memory_load_trigered_ = true;
+  if (net::features::kSqlDiskCacheLoadIndexOnInit.Get()) {
+    return false;
+  }
+  in_memory_load_triggered_ = true;
   auto barrier_callback = CreateBarrierErrorCallback(std::move(callback));
   for (const auto& backend_shard : backend_shards_) {
     backend_shard->LoadInMemoryIndex(barrier_callback);
@@ -583,5 +587,32 @@ int64_t SqlPersistentStore::StoreStatus::GetEstimatedDiskUsage() const {
   result += total_size;
   return result;
 }
+
+SqlPersistentStore::InMemoryIndexAndDoomedResIds::InMemoryIndexAndDoomedResIds(
+    SqlPersistentStoreInMemoryIndex&& index,
+    std::vector<SqlPersistentStore::ResId> doomed_entry_res_ids)
+    : index(std::move(index)),
+      doomed_entry_res_ids(std::move(doomed_entry_res_ids)) {}
+SqlPersistentStore::InMemoryIndexAndDoomedResIds::
+    ~InMemoryIndexAndDoomedResIds() = default;
+SqlPersistentStore::InMemoryIndexAndDoomedResIds::InMemoryIndexAndDoomedResIds(
+    InMemoryIndexAndDoomedResIds&& other) = default;
+SqlPersistentStore::InMemoryIndexAndDoomedResIds&
+SqlPersistentStore::InMemoryIndexAndDoomedResIds::operator=(
+    InMemoryIndexAndDoomedResIds&& other) = default;
+
+SqlPersistentStore::InitResult::InitResult(
+    std::optional<int64_t> max_bytes,
+    const StoreStatus& store_status,
+    int64_t database_size,
+    std::optional<InMemoryIndexAndDoomedResIds> in_memory_data)
+    : max_bytes(max_bytes),
+      store_status(store_status),
+      database_size(database_size),
+      in_memory_data(std::move(in_memory_data)) {}
+SqlPersistentStore::InitResult::~InitResult() = default;
+SqlPersistentStore::InitResult::InitResult(InitResult&& other) = default;
+SqlPersistentStore::InitResult& SqlPersistentStore::InitResult::operator=(
+    InitResult&& other) = default;
 
 }  // namespace disk_cache

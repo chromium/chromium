@@ -722,6 +722,8 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kSqlDiskCacheSynchronousOff);
 // The number of shards for the SQL disk cache.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kSqlDiskCacheShardCount);
+// Loads the in-memory index on initialization.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kSqlDiskCacheLoadIndexOnInit);
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 // If enabled, ignore Strict-Transport-Security for [*.]localhost hosts.

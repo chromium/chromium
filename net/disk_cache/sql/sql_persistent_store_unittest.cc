@@ -602,6 +602,8 @@ class SqlPersistentStoreTest : public testing::Test {
         expected_result ? 1 : 0);
   }
 
+  void RunCleanupDoomedEntriesTest(base::OnceClosure trigger_cleanup);
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
@@ -1363,7 +1365,8 @@ TEST_F(SqlPersistentStoreTest, DeleteAllEntriesEmpty) {
   EXPECT_EQ(GetSizeOfAllEntries(), 0);
 }
 
-TEST_F(SqlPersistentStoreTest, MaybeRunCleanupDoomedEntries) {
+void SqlPersistentStoreTest::RunCleanupDoomedEntriesTest(
+    base::OnceClosure trigger_cleanup) {
   CreateAndInitStore();
   const CacheEntryKey kKeyToDoom1("key-to-doom1");
   const CacheEntryKey kKeyToDoom2("key-to-doom2");
@@ -1416,14 +1419,8 @@ TEST_F(SqlPersistentStoreTest, MaybeRunCleanupDoomedEntries) {
   ClearStore();
   CreateAndInitStore();
 
-  // Load the in-memory index to get the list of doomed entry.
-  EXPECT_TRUE(LoadInMemoryIndex());
-
   base::HistogramTester histogram_tester;
-  base::test::TestFuture<SqlPersistentStore::Error> future;
-  EXPECT_TRUE(store_->MaybeRunCleanupDoomedEntries(future.GetCallback()));
-  EXPECT_EQ(future.Get(), SqlPersistentStore::Error::kOk);
-
+  std::move(trigger_cleanup).Run();
   // Verify that `DeleteDoomedEntriesCount` UMA was recorded in the histogram.
   histogram_tester.ExpectUniqueSample(
       "Net.SqlDiskCache.DeleteDoomedEntriesCount", 2, 1);
@@ -1440,6 +1437,36 @@ TEST_F(SqlPersistentStoreTest, MaybeRunCleanupDoomedEntries) {
   ASSERT_TRUE(open_result1.has_value());
   ASSERT_TRUE(open_result1->has_value());
   EXPECT_EQ(open_result1.value()->res_id, res_id_to_keep);
+}
+
+TEST_F(SqlPersistentStoreTest,
+       MaybeRunCleanupDoomedEntriesAfterLoadInMemoryIndex) {
+  RunCleanupDoomedEntriesTest(base::BindLambdaForTesting([&]() {
+    // Load the in-memory index to get the list of doomed entry.
+    EXPECT_TRUE(this->LoadInMemoryIndex());
+
+    base::test::TestFuture<SqlPersistentStore::Error> future;
+    EXPECT_TRUE(
+        this->store_->MaybeRunCleanupDoomedEntries(future.GetCallback()));
+    EXPECT_EQ(future.Get(), SqlPersistentStore::Error::kOk);
+  }));
+}
+
+TEST_F(SqlPersistentStoreTest,
+       MaybeRunCleanupDoomedEntriesWithLoadIndexOnInitFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{net::features::kDiskCacheBackendExperiment,
+        {{net::features::kDiskCacheBackendParam.name, "sql"},
+         {net::features::kSqlDiskCacheLoadIndexOnInit.name, "true"}}}},
+      {});
+
+  RunCleanupDoomedEntriesTest(base::BindLambdaForTesting([&]() {
+    base::test::TestFuture<SqlPersistentStore::Error> future;
+    EXPECT_TRUE(
+        this->store_->MaybeRunCleanupDoomedEntries(future.GetCallback()));
+    EXPECT_EQ(future.Get(), SqlPersistentStore::Error::kOk);
+  }));
 }
 
 TEST_F(SqlPersistentStoreTest, MaybeRunCleanupDoomedEntriesMultipleShards) {
@@ -4197,6 +4224,39 @@ TEST_F(SqlPersistentStoreTest, IndexReloads) {
             SqlPersistentStore::IndexState::kHashFound);
   EXPECT_EQ(store_->GetIndexStateForHash(CacheEntryKey("other").hash()),
             SqlPersistentStore::IndexState::kHashNotFound);
+}
+
+TEST_F(SqlPersistentStoreTest, LoadIndexOnInitFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{net::features::kDiskCacheBackendExperiment,
+        {{net::features::kDiskCacheBackendParam.name, "sql"},
+         {net::features::kSqlDiskCacheLoadIndexOnInit.name, "true"}}}},
+      {});
+
+  const CacheEntryKey kKey1("key1");
+  const CacheEntryKey kKey2("key2");
+
+  CreateAndInitStore();
+  // Create two entries.
+  ASSERT_TRUE(this->CreateEntry(kKey1).has_value());
+  ASSERT_TRUE(this->CreateEntry(kKey2).has_value());
+
+  // Close and reopen the store.
+  ClearStore();
+  CreateStore();
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  // The index should be loaded on init.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey2.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(CacheEntryKey("other").hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+
+  // MaybeLoadInMemoryIndex() should do nothing.
+  EXPECT_FALSE(LoadInMemoryIndex());
 }
 
 TEST_F(SqlPersistentStoreTest, IndexLoadNotInitializedFailure) {

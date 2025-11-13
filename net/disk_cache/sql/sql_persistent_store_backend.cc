@@ -72,7 +72,7 @@ using OptionalEntryInfoWithKeyAndIterator =
     SqlPersistentStore::OptionalEntryInfoWithKeyAndIterator;
 
 using InMemoryIndexAndDoomedResIds =
-    SqlPersistentStore::Backend::InMemoryIndexAndDoomedResIds;
+    SqlPersistentStore::InMemoryIndexAndDoomedResIds;
 
 namespace {
 
@@ -302,6 +302,13 @@ SqlPersistentStore::InitResultOrError SqlPersistentStore::Backend::Initialize(
                   base::SysInfo::AmountOfFreeDiskSpace(path_).value_or(-1),
                   type_);
   }
+  std::optional<InMemoryIndexAndDoomedResIds> in_memory_data;
+  if (net::features::kSqlDiskCacheLoadIndexOnInit.Get()) {
+    if (auto in_memory_index_result = LoadInMemoryIndexInternal();
+        in_memory_index_result.has_value()) {
+      in_memory_data = std::move(in_memory_index_result.value());
+    }
+  }
   RecordTimeAndErrorResultHistogram("Initialize", posting_delay,
                                     timer.Elapsed(), *db_init_status_,
                                     corruption_detected);
@@ -315,7 +322,8 @@ SqlPersistentStore::InitResultOrError SqlPersistentStore::Backend::Initialize(
   return *db_init_status_ == Error::kOk
              ? InitResultOrError(InitResult(
                    result_max_bytes, store_status_,
-                   base::GetFileSize(GetDatabaseFilePath()).value_or(0)))
+                   base::GetFileSize(GetDatabaseFilePath()).value_or(0),
+                   std::move(in_memory_data)))
              : base::unexpected(*db_init_status_);
 }
 
@@ -2227,7 +2235,7 @@ int64_t SqlPersistentStore::Backend::CalculateTotalSize() {
   return result;
 }
 
-SqlPersistentStore::Backend::InMemoryIndexAndDoomedResIdsOrError
+SqlPersistentStore::InMemoryIndexAndDoomedResIdsOrError
 SqlPersistentStore::Backend::LoadInMemoryIndex() {
   TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.LoadInMemoryIndex");
   auto result = LoadInMemoryIndexInternal();
@@ -2239,7 +2247,7 @@ SqlPersistentStore::Backend::LoadInMemoryIndex() {
   return result;
 }
 
-SqlPersistentStore::Backend::InMemoryIndexAndDoomedResIdsOrError
+SqlPersistentStore::InMemoryIndexAndDoomedResIdsOrError
 SqlPersistentStore::Backend::LoadInMemoryIndexInternal() {
   if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
     return base::unexpected(db_error);
@@ -2334,21 +2342,6 @@ base::FilePath SqlPersistentStore::Backend::GetDatabaseFilePath() const {
       base::StrCat({kSqlBackendDatabaseFileNamePrefix,
                     base::NumberToString(shard_id_.value())}));
 }
-
-SqlPersistentStore::Backend::InMemoryIndexAndDoomedResIds::
-    InMemoryIndexAndDoomedResIds(
-        SqlPersistentStoreInMemoryIndex&& index,
-        std::vector<SqlPersistentStore::ResId> doomed_entry_res_ids)
-    : index(std::move(index)),
-      doomed_entry_res_ids(std::move(doomed_entry_res_ids)) {}
-SqlPersistentStore::Backend::InMemoryIndexAndDoomedResIds::
-    ~InMemoryIndexAndDoomedResIds() = default;
-SqlPersistentStore::Backend::InMemoryIndexAndDoomedResIds::
-    InMemoryIndexAndDoomedResIds(InMemoryIndexAndDoomedResIds&& other) =
-        default;
-SqlPersistentStore::Backend::InMemoryIndexAndDoomedResIds&
-SqlPersistentStore::Backend::InMemoryIndexAndDoomedResIds::operator=(
-    InMemoryIndexAndDoomedResIds&& other) = default;
 
 SqlPersistentStore::Backend::BufferWithStart::BufferWithStart(
     scoped_refptr<net::IOBuffer> buffer,

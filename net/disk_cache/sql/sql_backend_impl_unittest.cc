@@ -181,6 +181,8 @@ class SqlBackendImplTest : public testing::Test {
     return s.ColumnInt64(0);
   }
 
+  void RunDelayedPostInitializationTasksTest();
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -1988,7 +1990,7 @@ TEST_F(SqlBackendImplTest, IdleTimeEviction) {
   EXPECT_LE(GetSizeOfAllEntries(*backend), kLowWatermark);
 }
 
-TEST_F(SqlBackendImplTest, DelayedPostInitializationTasks) {
+void SqlBackendImplTest::RunDelayedPostInitializationTasksTest() {
   auto backend = CreateBackendAndInit();
   auto* sql_store = backend->GetSqlStoreForTest();
   auto task_runners = backend->GetBackgroundTaskRunnersForTest();
@@ -2050,19 +2052,30 @@ TEST_F(SqlBackendImplTest, DelayedPostInitializationTasks) {
   backend->Init(future.GetCallback());
   ASSERT_EQ(future.Get(), net::OK);
 
-  // At this point, the in-memory index should not be loaded yet.
-  EXPECT_EQ(sql_store->GetIndexStateForHash(kKey1.hash()),
-            SqlPersistentStore::IndexState::kNotReady);
-  EXPECT_EQ(sql_store->GetIndexStateForHash(kKey2.hash()),
-            SqlPersistentStore::IndexState::kNotReady);
+  if (net::features::kSqlDiskCacheLoadIndexOnInit.Get()) {
+    // When the SqlDiskCacheLoadIndexOnInit is enabled, the index should have
+    // been loaded. The doomed entry should be gone, and the other entry should
+    // be present.
+    EXPECT_EQ(sql_store->GetIndexStateForHash(kKey1.hash()),
+              SqlPersistentStore::IndexState::kHashNotFound);
+    EXPECT_EQ(sql_store->GetIndexStateForHash(kKey2.hash()),
+              SqlPersistentStore::IndexState::kHashFound);
+  } else {
+    // At this point, the in-memory index should not be loaded yet.
+    EXPECT_EQ(sql_store->GetIndexStateForHash(kKey1.hash()),
+              SqlPersistentStore::IndexState::kNotReady);
+    EXPECT_EQ(sql_store->GetIndexStateForHash(kKey2.hash()),
+              SqlPersistentStore::IndexState::kNotReady);
+  }
 
   // Fast forward time to trigger the delayed post-initialization tasks.
   task_environment_.FastForwardBy(kSqlBackendPostInitializationTasksDelay);
 
   FlushQueue(*backend);
 
-  // Now, the index should be loaded. The doomed entry should be gone, and the
-  // other entry should be present.
+  // Now, the index should be loaded even if SqlDiskCacheLoadIndexOnInit is
+  // disabled. The doomed entry should be gone, and the other entry should be
+  // present.
   EXPECT_EQ(sql_store->GetIndexStateForHash(kKey1.hash()),
             SqlPersistentStore::IndexState::kHashNotFound);
   EXPECT_EQ(sql_store->GetIndexStateForHash(kKey2.hash()),
@@ -2077,6 +2090,21 @@ TEST_F(SqlBackendImplTest, DelayedPostInitializationTasks) {
   // deleted, while the other one still exists.
   EXPECT_EQ(OpenDatabaseAndGetBlobsCount(shard_id1, res_id1), 0);
   EXPECT_EQ(OpenDatabaseAndGetBlobsCount(shard_id2, res_id2), 1);
+}
+
+TEST_F(SqlBackendImplTest, DelayedPostInitializationTasks) {
+  RunDelayedPostInitializationTasksTest();
+}
+
+TEST_F(SqlBackendImplTest,
+       DelayedPostInitializationTasksWithLoadIndexOnInitFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{net::features::kDiskCacheBackendExperiment,
+        {{net::features::kDiskCacheBackendParam.name, "sql"},
+         {net::features::kSqlDiskCacheLoadIndexOnInit.name, "true"}}}},
+      {});
+  RunDelayedPostInitializationTasksTest();
 }
 
 // Regression test for https://crbug.com/456384561

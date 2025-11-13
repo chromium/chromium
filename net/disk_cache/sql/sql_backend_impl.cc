@@ -438,13 +438,18 @@ void SqlBackendImpl::OnInitialized(CompletionOnceCallback callback,
 }
 
 void SqlBackendImpl::RunDelayedPostInitializationTasks() {
-  store_->MaybeLoadInMemoryIndex(base::BindOnce(
-      [](base::WeakPtr<SqlBackendImpl> self, SqlPersistentStore::Error result) {
-        if (self && result == SqlPersistentStore::Error::kOk) {
-          self->store_->MaybeRunCleanupDoomedEntries(base::DoNothing());
-        }
-      },
-      weak_factory_.GetWeakPtr()));
+  if (store_->MaybeLoadInMemoryIndex(base::BindOnce(
+          [](base::WeakPtr<SqlBackendImpl> self,
+             SqlPersistentStore::Error result) {
+            if (self && result == SqlPersistentStore::Error::kOk) {
+              self->store_->MaybeRunCleanupDoomedEntries(base::DoNothing());
+            }
+          },
+          weak_factory_.GetWeakPtr()))) {
+    return;
+  }
+  // The in-memory index has been already read. So trigger clean up task.
+  store_->MaybeRunCleanupDoomedEntries(base::DoNothing());
 }
 
 int64_t SqlBackendImpl::MaxFileSize() const {

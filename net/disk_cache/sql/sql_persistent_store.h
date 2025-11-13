@@ -20,6 +20,7 @@
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
 #include "net/disk_cache/sql/sql_backend_ids.h"
+#include "net/disk_cache/sql/sql_persistent_store_in_memory_index.h"
 
 // This backend is experimental and only available when the build flag is set.
 static_assert(BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND));
@@ -160,22 +161,19 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     int64_t total_size = 0;
   };
 
-  // The result of a successful initialization.
-  struct InitResult {
-    InitResult(std::optional<int64_t> max_bytes,
-               const StoreStatus& store_status,
-               int64_t database_size)
-        : max_bytes(max_bytes),
-          store_status(store_status),
-          database_size(database_size) {}
-    ~InitResult() = default;
-    InitResult(InitResult&& other) = default;
-    InitResult& operator=(InitResult&& other) = default;
+  // A struct to hold the in-memory index and the list of doomed resource IDs.
+  // This is used to return both from the backend task that loads them.
+  struct InMemoryIndexAndDoomedResIds {
+    InMemoryIndexAndDoomedResIds(
+        SqlPersistentStoreInMemoryIndex&& index,
+        std::vector<SqlPersistentStore::ResId> doomed_entry_res_ids);
+    ~InMemoryIndexAndDoomedResIds();
+    InMemoryIndexAndDoomedResIds(InMemoryIndexAndDoomedResIds&& other);
+    InMemoryIndexAndDoomedResIds& operator=(
+        InMemoryIndexAndDoomedResIds&& other);
 
-    // max_bytes is set only on the first shard.
-    std::optional<int64_t> max_bytes;
-    StoreStatus store_status;
-    int64_t database_size;
+    SqlPersistentStoreInMemoryIndex index;
+    std::vector<SqlPersistentStore::ResId> doomed_entry_res_ids;
   };
 
   // A helper struct to bundle an operation's result with a flag indicating
@@ -215,8 +213,6 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   using Int64OrError = base::expected<int64_t, Error>;
   using Int64OrErrorCallback = base::OnceCallback<void(Int64OrError)>;
 
-  using InitResultOrError = base::expected<InitResult, Error>;
-  using InitResultOrErrorCallback = base::OnceCallback<void(InitResultOrError)>;
   using ResIdList = std::vector<ResId>;
   using ResIdListOrError = base::expected<ResIdList, Error>;
   using ResIdListOrErrorCallback = base::OnceCallback<void(ResIdListOrError)>;
@@ -227,6 +223,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   using ResIdListOrErrorAndStoreStatus = ResultAndStoreStatus<ResIdListOrError>;
   using ResIdListOrErrorAndStoreStatusCallback =
       base::OnceCallback<void(ResIdListOrErrorAndStoreStatus)>;
+  using InMemoryIndexAndDoomedResIdsOrError =
+      base::expected<InMemoryIndexAndDoomedResIds, Error>;
 
   // Creates a new instance of the persistent store. The returned object must be
   // initialized by calling `Initialize()`.
@@ -471,6 +469,27 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   void RazeAndPoisonForTesting();
 
  private:
+  // The result of a successful initialization.
+  struct InitResult {
+    InitResult(std::optional<int64_t> max_bytes,
+               const StoreStatus& store_status,
+               int64_t database_size,
+               std::optional<InMemoryIndexAndDoomedResIds> in_memory_data);
+    ~InitResult();
+    InitResult(InitResult&& other);
+    InitResult& operator=(InitResult&& other);
+
+    // max_bytes is set only on the first shard.
+    std::optional<int64_t> max_bytes;
+    StoreStatus store_status;
+    int64_t database_size;
+    // Used only when features::kSqlDiskCacheLoadIndexOnInit is true.
+    std::optional<InMemoryIndexAndDoomedResIds> in_memory_data;
+  };
+
+  using InitResultOrError = base::expected<InitResult, Error>;
+  using InitResultOrErrorCallback = base::OnceCallback<void(InitResultOrError)>;
+
   void SetMaxSize(int64_t max_bytes);
   base::RepeatingCallback<void(Error)> CreateBarrierErrorCallback(
       ErrorCallback callback);
@@ -506,7 +525,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   ErrorCallback eviction_result_callback_;
 
   // Whether loading of the in-memory index has been triggered.
-  bool in_memory_load_trigered_ = false;
+  bool in_memory_load_triggered_ = false;
 
   base::WeakPtrFactory<SqlPersistentStore> weak_factory_{this};
 };
