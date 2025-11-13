@@ -509,10 +509,6 @@
     },
     {
       "namespace": "http://www.w3.org/2000/svg",
-      "name": "use"
-    },
-    {
-      "namespace": "http://www.w3.org/2000/svg",
       "name": "view"
     }
   ],
@@ -721,7 +717,6 @@
     "formnovalidate",
     "formtarget",
     "fr",
-    "frame",
     "frameborder",
     "from",
     "fx",
@@ -827,7 +822,6 @@
     "novalidate",
     "nowrap",
     "numOctaves",
-    "object",
     "offset",
     "opacity",
     "open",
