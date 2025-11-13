@@ -13,6 +13,9 @@
 :host {
   --chip-background-color: var(--color-new-tab-page-action-chip-background);
   --ntp-chips-container-width: 449px;
+  --chip-slide-duration: 1000ms;
+  --chip-fade-duration: 850ms;
+  --chip-animation-curve: cubic-bezier(0.38, 0.72, 0.00, 1.00);
 }
 
 @keyframes chips-slide {
@@ -38,7 +41,6 @@
   flex-wrap: wrap;
   gap: 14px;
   justify-content: center;
-  overflow: hidden;
   width: 100%;
 }
 
@@ -72,20 +74,26 @@
 
 .action-chips-container .action-chip:nth-child(1) {
   animation:
-    chips-slide 250ms 250ms cubic-bezier(0.075, 0.82, 0.165, 1) forwards,
-    chips-fade-in 200ms 250ms ease-in forwards;
+    chips-slide var(--chip-slide-duration) 250ms
+      var(--chip-animation-curve) forwards,
+    chips-fade-in var(--chip-fade-duration) 400ms
+      var(--chip-animation-curve) forwards;
 }
 
 .action-chips-container .action-chip:nth-child(2) {
   animation:
-    chips-slide 250ms 300ms cubic-bezier(0.075, 0.82, 0.165, 1) forwards,
-    chips-fade-in 200ms 300ms ease-in forwards;
+    chips-slide var(--chip-slide-duration) 280ms
+      var(--chip-animation-curve) forwards,
+    chips-fade-in var(--chip-fade-duration) 430ms
+      var(--chip-animation-curve) forwards;
 }
 
 .action-chips-container .action-chip:nth-child(3) {
   animation:
-    chips-slide 250ms 350ms cubic-bezier(0.075, 0.82, 0.165, 1) forwards,
-    chips-fade-in 200ms 350ms ease-in forwards;
+    chips-slide var(--chip-slide-duration) 310ms
+      var(--chip-animation-curve) forwards,
+    chips-fade-in var(--chip-fade-duration) 460ms
+      var(--chip-animation-curve) forwards;
 }
 
 .action-chip::before {
