@@ -656,8 +656,7 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
-    # TODO (crbug.com/460133386): Add back to CQ when XCode install is resolved.
-    # tryjob = try_.job(),
+    tryjob = try_.job(),
     use_clang_coverage = True,
     xcode = xcode.xcode_default,
 )
