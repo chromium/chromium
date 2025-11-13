@@ -27,8 +27,6 @@ class EmojiSuggester {
   EmojiSuggester();
   ~EmojiSuggester();
 
-  void OnFocus(int context_id);
-  void OnBlur();
   bool ShouldShowSuggestion(const std::u16string& text);
 
   // TODO(crbug/1223666): Remove when we no longer need to prod private vars

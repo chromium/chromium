@@ -303,7 +303,6 @@ void AssistiveSuggester::OnFocus(int context_id,
   context_ = context;
   DCHECK(context_id > 0);
   focused_context_id_ = context_id;
-  emoji_suggester_.OnFocus(context_id);
   multi_word_suggester_.OnFocus(context_id);
   longpress_diacritics_suggester_.OnFocus(context_id);
   longpress_control_v_suggester_.OnFocus(context_id);
@@ -323,7 +322,6 @@ void AssistiveSuggester::HandleEnabledSuggestionsOnFocus(
 void AssistiveSuggester::OnBlur() {
   focused_context_id_ = std::nullopt;
   enabled_suggestions_from_last_onfocus_ = std::nullopt;
-  emoji_suggester_.OnBlur();
   multi_word_suggester_.OnBlur();
   longpress_diacritics_suggester_.OnBlur();
   longpress_control_v_suggester_.OnBlur();

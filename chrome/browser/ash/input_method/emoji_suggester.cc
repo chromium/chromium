@@ -127,16 +127,6 @@ void EmojiSuggester::OnEmojiDataLoaded(const std::string& emoji_data) {
   }
 }
 
-void EmojiSuggester::OnFocus(int context_id) {
-  // Some parts of the code reserve negative/zero context_id for unfocused
-  // context. As a result we should make sure it is not being erroneously set to
-  // a negative number, and cause unexpected behaviour.
-  DCHECK(context_id > 0);
-}
-
-void EmojiSuggester::OnBlur() {
-}
-
 bool EmojiSuggester::ShouldShowSuggestion(const std::u16string& text) {
   if (text[text.length() - 1] != kSpaceChar) {
     return false;
