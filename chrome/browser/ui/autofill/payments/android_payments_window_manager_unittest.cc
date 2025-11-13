@@ -332,6 +332,35 @@ TEST_F(AndroidPaymentsWindowManagerTest,
       GURL(std::string(kBnplUnknownUrl)));
 }
 
+// Test that if `OnDidFinishNavigationForBnpl` is called after the flow has
+// already finished (e.g., due to a late JS redirect happening after a success
+// URL), the manager returns early. It should not crash, trigger callbacks
+// twice, or log duplicate metrics.
+TEST_F(
+    AndroidPaymentsWindowManagerTest,
+    OnDidFinishNavigationForBnpl_WhenFlowFinished_IgnoresSubsequentNavigation) {
+  InitBnplFlowForTest();
+  const GURL success_url =
+      GURL(std::string(kBnplSuccessUrlPrefix) + "?status=success");
+
+  EXPECT_CALL(bnpl_tab_closed_callback_,
+              Run(PaymentsWindowManager::BnplFlowResult::kSuccess, success_url))
+      .Times(1);
+
+  // Simulate navigation to the success URL.
+  window_manager().OnDidFinishNavigationForBnpl(success_url);
+
+  // Verify metrics and state reset.
+  EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
+
+  // Simulate the "race condition": An extra navigation event triggers
+  // immediately after the first one (e.g., a late redirect).
+  const GURL late_redirect_url("https://www.example.com/late-redirect");
+  window_manager().OnDidFinishNavigationForBnpl(late_redirect_url);
+
+  EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
+}
+
 }  // namespace payments
 
 }  // namespace autofill

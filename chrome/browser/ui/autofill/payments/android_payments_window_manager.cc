@@ -87,7 +87,14 @@ void AndroidPaymentsWindowManager::WebContentsDestroyed() {
 
 void AndroidPaymentsWindowManager::OnDidFinishNavigationForBnpl(
     const GURL& url) {
-  CHECK(flow_state_.has_value());
+  // An extra navigation (e.g., a JS redirect) may trigger immediately after the
+  // completion URL is reached but before the ephemeral tab fully closes. If the
+  // flow state has already been reset, the tab is closing, and nothing needs to
+  // be done here.
+  if (!flow_state_.has_value()) {
+    return;
+  }
+
   CHECK_EQ(flow_state_->flow_type, FlowType::kBnpl);
 
   flow_state_->most_recent_url_navigation = url;
