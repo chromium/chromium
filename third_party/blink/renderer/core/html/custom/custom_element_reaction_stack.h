@@ -22,11 +22,8 @@ class Element;
 class CORE_EXPORT CustomElementReactionStack final
     : public GarbageCollected<CustomElementReactionStack>,
       public NameClient,
-      public Supplement<Agent> {
+      public GarbageCollectedMixin {
  public:
-  static constexpr auto kSupplementIndex =
-      Agent::Supplements::kCustomElementReactionStack;
-
   explicit CustomElementReactionStack(Agent& agent);
   CustomElementReactionStack(const CustomElementReactionStack&) = delete;
   CustomElementReactionStack& operator=(const CustomElementReactionStack&) =
@@ -48,6 +45,7 @@ class CORE_EXPORT CustomElementReactionStack final
   static CustomElementReactionStack& From(Agent& agent);
 
  private:
+  Member<Agent> agent_;
   friend class ResetCustomElementReactionStackForTest;
 
   using ElementReactionQueueMap =

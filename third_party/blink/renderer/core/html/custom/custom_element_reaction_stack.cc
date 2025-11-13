@@ -18,10 +18,10 @@ namespace blink {
 // finalizers, to make short-lived entries fast.
 
 CustomElementReactionStack::CustomElementReactionStack(Agent& agent)
-    : Supplement<Agent>(agent) {}
+    : agent_(agent) {}
 
 void CustomElementReactionStack::Trace(Visitor* visitor) const {
-  Supplement<Agent>::Trace(visitor);
+  visitor->Trace(agent_);
   visitor->Trace(map_);
   visitor->Trace(stack_);
   visitor->Trace(backup_queue_);
@@ -111,10 +111,10 @@ void CustomElementReactionStack::InvokeBackupQueue() {
 
 CustomElementReactionStack& CustomElementReactionStack::From(Agent& agent) {
   CustomElementReactionStack* supplement =
-      Supplement::From<CustomElementReactionStack>(agent);
+      agent.GetCustomElementReactionStack();
   if (!supplement) {
     supplement = MakeGarbageCollected<CustomElementReactionStack>(agent);
-    ProvideTo(agent, supplement);
+    agent.SetCustomElementReactionStack(supplement);
   }
   return *supplement;
 }
@@ -124,7 +124,7 @@ CustomElementReactionStack* CustomElementReactionStack::Swap(
     CustomElementReactionStack* new_stack) {
   CustomElementReactionStack* old_stack =
       &CustomElementReactionStack::From(agent);
-  CustomElementReactionStack::ProvideTo(agent, new_stack);
+  agent.SetCustomElementReactionStack(new_stack);
   return old_stack;
 }
 
