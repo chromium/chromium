@@ -78,6 +78,8 @@ export interface MostVisitedElement {
     dialog: CrDialogElement,
     toastManager: CrToastManagerElement,
     addShortcut: HTMLElement,
+    showMore: HTMLElement,
+    showLess: HTMLElement,
   };
 }
 
@@ -546,6 +548,8 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
       this.tileElements_.forEach(el => resetTilePosition(el));
       resetTilePosition(this.$.addShortcut);
+      resetTilePosition(this.$.showMore);
+      resetTilePosition(this.$.showLess);
     } else if (droppedElement) {
       droppedElement.classList.remove('dropped');
 
@@ -613,6 +617,8 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
       this.tileElements_.forEach(el => resetTilePosition(el));
       resetTilePosition(this.$.addShortcut);
+      resetTilePosition(this.$.showMore);
+      resetTilePosition(this.$.showLess);
     }
   }
 
@@ -681,15 +687,24 @@ export class MostVisitedElement extends MostVisitedElementBase {
       x: x - dragElementRect.x,
       y: y - dragElementRect.y,
     };
-    const tileElements = this.tileElements_;
-    // Get all the rects first before setting the absolute positions.
-    this.tileRects_ = tileElements.map(t => t.getBoundingClientRect());
+    const visibleElements = this.tileElements_;
+    const numTiles = visibleElements.length;
     if (this.showAdd_) {
-      const element = this.$.addShortcut;
-      setTilePosition(element, element.getBoundingClientRect());
+      visibleElements.push(this.$.addShortcut);
     }
-    tileElements.forEach((tile, i) => {
-      setTilePosition(tile, this.tileRects_[i]!);
+    if (this.showShowMore_) {
+      visibleElements.push(this.$.showMore);
+    }
+    if (this.showShowLess_) {
+      visibleElements.push(this.$.showLess);
+    }
+
+    // Get all the rects first before setting the absolute positions.
+    const allRects = visibleElements.map(t => t.getBoundingClientRect());
+    this.tileRects_ = allRects.slice(0, numTiles);
+
+    visibleElements.forEach((el, i) => {
+      setTilePosition(el, allRects[i]!);
     });
     this.reordering_ = true;
   }
