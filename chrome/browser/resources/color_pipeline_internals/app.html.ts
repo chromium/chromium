@@ -65,15 +65,16 @@ export function getHtml(this: ColorPipelineInternalsAppElement) {
   </div>
   <div id="right" ?hidden="${this.narrow_}">
     <h2>Color Info</h2>
-    <div id="colorInfo" ?hidden="${!this.currentColor_}"
-    <p>R: ${this.red_}</p>
-    <p>G: ${this.green_}</p>
-    <p>B: ${this.blue_}</p>
-    <p>A: ${this.alpha_}</p>
-    <p>In //resources/cr_elements/cr_shared_vars.css.js:</p>
-    <p class="varName">${this.cssName_}</p>
-    <p>In //ui/color/color_id.h:</p>
-    <p class="varName">${this.cppName_}</p>
+    <div id="colorInfo" ?hidden="${!this.currentColor_}">
+      <p>R: ${this.red_}</p>
+      <p>G: ${this.green_}</p>
+      <p>B: ${this.blue_}</p>
+      <p>A: ${this.alpha_}</p>
+      <p>In //resources/cr_elements/cr_shared_vars.css.js:</p>
+      <p class="varName">${this.cssName_}</p>
+      <p>In //ui/color/color_id.h:</p>
+      <p class="varName">${this.cppName_}</p>
+    </div>
   </div>
 </div>`;
   // clang-format on

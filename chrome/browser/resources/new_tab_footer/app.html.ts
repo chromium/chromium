@@ -46,7 +46,7 @@ separated from each other by a divider.
     ${this.showBackgroundAttribution_ ? html`
       ${this.backgroundAttributionLink_ && this.backgroundAttributionLink_.url ?  html`
         <div id="backgroundAttributionContainer" class="notice-item"
-          title="${this.backgroundAttributionText_}"">
+            title="${this.backgroundAttributionText_}">
           <button @click="${this.onBackgroundAttributionClick_}" role="link"
               aria-label="${this.backgroundAttributionText_}"
               aria-description="$i18n{backgroundAttributionDesc}">

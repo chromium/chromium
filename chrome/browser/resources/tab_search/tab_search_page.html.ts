@@ -86,7 +86,7 @@ export function getHtml(this: TabSearchPageElement) {
        default:
         return '';
       }
-    }}"
+    }}">
     </selectable-lazy-list>
   </div>
   <div id="no-results" ?hidden="${this.filteredItems_.length}">

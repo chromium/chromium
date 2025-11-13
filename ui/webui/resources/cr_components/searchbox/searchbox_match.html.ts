@@ -17,11 +17,11 @@ export function getHtml(this: SearchboxMatchElement) {
       <span id="prefix">${this.tailSuggestPrefix_}</span>
       <!-- This is equivalent to AutocompleteMatch::kEllipsis which is
            prepended to the match content in other surfaces-->
-      <span id="ellipsis">...&nbsp</span>
+      <span id="ellipsis">...&nbsp;</span>
     </span>
     <!-- When a thumbnail is in the searchbox all results should have an
          ellipsis prepended to the suggestion. -->
-    <span id="ellipsis" ?hidden="${!this.showEllipsis}">...&nbsp</span>
+    <span id="ellipsis" ?hidden="${!this.showEllipsis}">...&nbsp;</span>
     <span id="suggestion">
       <span id="contents" .innerHTML="${this.contentsHtml_}"></span>
       <span id="separator" class="dim">${this.separatorText_}</span>
