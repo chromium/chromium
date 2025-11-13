@@ -125,16 +125,18 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
 
   // Returns true if the given `count` of bookmarks exceeds the sync limit. An
   // `offset` can be provided for cases where the exact count is not known.
-  bool DoesCountExceedBookmarksSyncLimit(size_t count,
-                                         size_t offset = 0) const;
+  bool DoesCountExceedBookmarksSyncLimit(size_t count, size_t offset = 0) const;
 
   // Performs the required clean up when bookmark model is being deleted.
   void OnBookmarkModelBeingDeleted();
 
-  // Process specifically calls to OnUpdateReceived() that correspond to the
-  // initial merge of bookmarks (e.g. was just enabled).
+  // Handles the first update received from the server after being enabled.
   void OnInitialUpdateReceived(const sync_pb::DataTypeState& type_state,
                                syncer::UpdateResponseDataList updates);
+
+  // Handles any incremental updates received from the server.
+  void OnIncrementalUpdateReceived(const sync_pb::DataTypeState& type_state,
+                                   syncer::UpdateResponseDataList updates);
 
   // Instantiates the required objects to track metadata and starts observing
   // changes from the bookmark model. Note that this does not include tracking
@@ -232,9 +234,9 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
   std::unique_ptr<SyncedBookmarkTracker> bookmark_tracker_;
 
   // Stores the timestamp when the number of remote updates downloaded during
-  // the latest initial merge exceeded the configured limit. This can be populated
-  // from a proto for modern clients, or populated with a recent timestamp for
-  // legacy clients (who only stored a boolean). If this is set,
+  // the latest initial merge exceeded the configured limit. This can be
+  // populated from a proto for modern clients, or populated with a recent
+  // timestamp for legacy clients (who only stored a boolean). If this is set,
   // `bookmark_tracker_` is not initialized and an error is reported instead.
   std::optional<base::Time>
       initial_merge_remote_updates_exceeded_limit_timestamp_;

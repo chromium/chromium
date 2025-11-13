@@ -44,7 +44,6 @@
 #include "components/sync_bookmarks/parent_guid_preprocessing.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/models/tree_node_iterator.h"
 
 namespace sync_bookmarks {
@@ -57,9 +56,9 @@ namespace {
 constexpr base::TimeDelta kInitialMergeRemoteUpdatesExceededLimitErrorTtl =
     base::Days(30);
 
-// Jitter to be subtracted from `kInitialMergeRemoteUpdatesExceededLimitErrorTtl`
-// to add randomness and avoid that all clients attempt to redownload bookmarks
-// at the same time.
+// Jitter to be subtracted from
+// `kInitialMergeRemoteUpdatesExceededLimitErrorTtl` to add randomness and avoid
+// that all clients attempt to redownload bookmarks at the same time.
 constexpr base::TimeDelta
     kInitialMergeRemoteUpdatesExceededLimitErrorTtlJitter = base::Days(7);
 
@@ -69,8 +68,7 @@ class ScopedRemoteUpdateBookmarks {
   // object.
   ScopedRemoteUpdateBookmarks(BookmarkModelView* bookmark_model,
                               bookmarks::BookmarkModelObserver* observer)
-      : bookmark_model_(bookmark_model),
-        observer_(observer) {
+      : bookmark_model_(bookmark_model), observer_(observer) {
     // Notify UI intensive observers of BookmarkModel that we are about to make
     // potentially significant changes to it, so the updates may be batched. For
     // example, on Mac, the bookmarks bar displays animations when bookmark
@@ -232,38 +230,8 @@ void BookmarkDataTypeProcessor::OnUpdateReceived(
 
   if (!bookmark_tracker_) {
     OnInitialUpdateReceived(data_type_state, std::move(updates));
-    return;
-  }
-
-  // Incremental updates.
-  {
-    ScopedRemoteUpdateBookmarks update_bookmarks(
-        bookmark_model_, bookmark_model_observer_.get());
-    BookmarkRemoteUpdatesHandler updates_handler(
-        bookmark_model_, favicon_service_, bookmark_tracker_.get());
-    const bool got_new_encryption_requirements =
-        bookmark_tracker_->data_type_state().encryption_key_name() !=
-        data_type_state.encryption_key_name();
-    bookmark_tracker_->set_data_type_state(data_type_state);
-    updates_handler.Process(updates, got_new_encryption_requirements);
-  }
-
-  if (MaybeReportBookmarkCountLimitExceededError(
-          syncer::ModelError::Type::
-              kBookmarksLocalCountExceededLimitOnUpdateReceived)) {
-    return;
-  }
-
-  if (bookmark_tracker_->ReuploadBookmarksOnLoadIfNeeded()) {
-    NudgeForCommitIfNeeded();
-  }
-
-  // There are cases when we receive non-empty updates that don't result in
-  // model changes (e.g. reflections). In that case, issue a write to persit the
-  // progress marker in order to avoid downloading those updates again.
-  if (!updates.empty()) {
-    // Schedule save just in case one is needed.
-    schedule_save_closure_.Run();
+  } else {
+    OnIncrementalUpdateReceived(data_type_state, std::move(updates));
   }
 }
 
@@ -307,8 +275,9 @@ std::string BookmarkDataTypeProcessor::EncodeSyncMetadata() const {
     // Ensure that BuildBookmarkModelMetadata() never populates this field.
     DCHECK(
         !model_metadata.has_last_initial_merge_remote_updates_exceeded_limit());
-    DCHECK(!model_metadata
-                .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros());
+    DCHECK(
+        !model_metadata
+             .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros());
     model_metadata.SerializeToString(&metadata_str);
   } else if (initial_merge_remote_updates_exceeded_limit_timestamp_) {
     sync_pb::BookmarkModelMetadata model_metadata;
@@ -751,6 +720,41 @@ void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
 
   schedule_save_closure_.Run();
   NudgeForCommitIfNeeded();
+}
+
+void BookmarkDataTypeProcessor::OnIncrementalUpdateReceived(
+    const sync_pb::DataTypeState& type_state,
+    syncer::UpdateResponseDataList updates) {
+  {
+    ScopedRemoteUpdateBookmarks update_bookmarks(
+        bookmark_model_, bookmark_model_observer_.get());
+    BookmarkRemoteUpdatesHandler updates_handler(
+        bookmark_model_, favicon_service_, bookmark_tracker_.get());
+
+    const bool got_new_encryption_requirements =
+        bookmark_tracker_->data_type_state().encryption_key_name() !=
+        type_state.encryption_key_name();
+    bookmark_tracker_->set_data_type_state(type_state);
+    updates_handler.Process(updates, got_new_encryption_requirements);
+  }
+
+  if (MaybeReportBookmarkCountLimitExceededError(
+          syncer::ModelError::Type::
+              kBookmarksLocalCountExceededLimitOnUpdateReceived)) {
+    return;
+  }
+
+  if (bookmark_tracker_->ReuploadBookmarksOnLoadIfNeeded()) {
+    NudgeForCommitIfNeeded();
+  }
+
+  // There are cases when we receive non-empty updates that don't result in
+  // model changes (e.g. reflections). In that case, issue a write to persist
+  // the progress marker in order to avoid downloading those updates again.
+  if (!updates.empty()) {
+    // Schedule save just in case one is needed.
+    schedule_save_closure_.Run();
+  }
 }
 
 void BookmarkDataTypeProcessor::StartTrackingMetadata() {
