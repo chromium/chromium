@@ -94,7 +94,6 @@ static_library("session") {
     "//chromeos/ash/components/network/portal_detector",
     "//chromeos/ash/components/osauth/public",
     "//chromeos/ash/components/peripheral_notification",
-    "//chromeos/ash/components/scalable_iph",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/tpm",
     "//chromeos/ash/experiences/arc:arc_base_utils",

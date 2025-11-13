@@ -8813,7 +8813,6 @@ test("unit_tests") {
       "../browser/ui/webui/settings/settings_manage_profile_handler_unittest.cc",
     ]
     sources += [
-      "../browser/ash/scalable_iph/scalable_iph_factory_impl_unittest.cc",
       "../browser/component_updater/cros_component_installer_chromeos_unittest.cc",
       "../browser/component_updater/metadata_table_chromeos_unittest.cc",
       "../browser/device_reauth/chromeos/device_authenticator_chromeos_unittest.cc",

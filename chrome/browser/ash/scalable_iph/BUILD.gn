@@ -10,8 +10,6 @@ static_library("scalable_iph") {
   sources = [
     "scalable_iph_delegate_impl.cc",
     "scalable_iph_delegate_impl.h",
-    "scalable_iph_factory_impl.cc",
-    "scalable_iph_factory_impl.h",
   ]
 
   public_deps = [
@@ -82,8 +80,6 @@ static_library("test_support") {
     "customizable_test_env_browser_test_base.h",
     "mock_scalable_iph_delegate.cc",
     "mock_scalable_iph_delegate.h",
-    "scalable_iph_browser_test_base.cc",
-    "scalable_iph_browser_test_base.h",
   ]
 
   public_deps = [
@@ -126,65 +122,4 @@ static_library("test_support") {
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-}
-
-source_set("browser_tests") {
-  testonly = true
-
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-  sources = [
-    "scalable_iph_browsertest.cc",
-    "scalable_iph_e2e_browsertest.cc",
-  ]
-
-  deps = [
-    ":scalable_iph",
-    ":test_support",
-    "//ash",
-    "//ash:test_support",
-    "//ash/constants",
-    "//ash/public/cpp",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/browser:browser_process",
-    "//chrome/browser/apps/app_service:app_registry_cache_waiter",
-    "//chrome/browser/ash/app_list",
-    "//chrome/browser/ash/app_list/test:test_support",
-    "//chrome/browser/ash/login/lock:test_support",
-    "//chrome/browser/ash/printing",
-    "//chrome/browser/ash/scalable_iph",
-    "//chrome/browser/ash/system_web_apps",
-    "//chrome/browser/ui",
-    "//chrome/browser/ui/ash/login",
-    "//chrome/browser/ui/ash/multi_user",
-    "//chrome/browser/ui/ash/system_web_apps",
-    "//chrome/browser/web_applications",
-    "//chrome/common:constants",
-    "//chrome/common:non_code_constants",
-    "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
-    "//chromeos/ash/components/phonehub",
-    "//chromeos/ash/components/phonehub:debug",
-    "//chromeos/ash/components/scalable_iph",
-    "//chromeos/ash/components/scalable_iph:constants",
-    "//chromeos/dbus/power",
-    "//chromeos/printing",
-    "//components/account_id",
-    "//components/feature_engagement/test:test_support",
-    "//components/user_manager",
-    "//components/variations/field_trial_config",
-    "//components/variations/service",
-    "//content/public/browser",
-    "//content/test:test_support",
-    "//extensions/common:common_constants",
-    "//net",
-    "//services/network/public/mojom:url_loader_base",
-    "//testing/gmock",
-    "//ui/aura",
-    "//ui/aura:test_support",
-    "//ui/compositor",
-    "//ui/message_center",
-    "//ui/message_center/public/cpp",
-  ]
 }

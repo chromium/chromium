@@ -108,7 +108,6 @@
 #include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
-#include "chrome/browser/ash/scalable_iph/scalable_iph_factory_impl.h"
 #include "chrome/browser/ash/scanning/scan_service_factory.h"
 #include "chrome/browser/ash/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
@@ -238,7 +237,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   quick_unlock::QuickUnlockFactory::GetInstance();
   RecentModelFactory::GetInstance();
   RemoteAppsManagerFactory::GetInstance();
-  ScalableIphFactoryImpl::BuildInstance();
   ScanServiceFactory::GetInstance();
   ScreenTimeControllerFactory::GetInstance();
   secure_channel::NearbyConnectorFactory::GetInstance();
