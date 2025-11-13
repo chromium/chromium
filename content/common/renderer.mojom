@@ -107,9 +107,8 @@ interface Renderer {
   // Tells the renderer process the new system color info.
   UpdateSystemColorInfo(UpdateSystemColorInfoParams params);
 
-  // Tells the renderer to empty its plugin list cache, optional reloading
-  // pages containing plugins.
-  PurgePluginListCache(bool reload_pages);
+  // Tells the renderer to empty its plugin list cache.
+  PurgePluginListCache();
 
   // Tells the renderer to purge its in-memory resource cache.
   PurgeResourceCache() => ();

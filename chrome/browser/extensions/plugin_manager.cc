@@ -64,7 +64,7 @@ void PluginManager::OnExtensionLoaded(content::BrowserContext* browser_context,
 
     PluginService::GetInstance()->RefreshPlugins();
     PluginService::GetInstance()->RegisterInternalPlugin(info, true);
-    PluginService::GetInstance()->PurgePluginListCache(profile_, false);
+    PluginService::GetInstance()->PurgePluginListCache(profile_);
   }
 }
 
@@ -77,7 +77,7 @@ void PluginManager::OnExtensionUnloaded(
     base::FilePath path = handler->GetPluginPath();
     PluginService::GetInstance()->UnregisterInternalPlugin(path);
     PluginService::GetInstance()->RefreshPlugins();
-    PluginService::GetInstance()->PurgePluginListCache(profile_, false);
+    PluginService::GetInstance()->PurgePluginListCache(profile_);
   }
 }
 

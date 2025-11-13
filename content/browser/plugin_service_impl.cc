@@ -50,15 +50,14 @@ PluginService* PluginService::GetInstance() {
   return PluginServiceImpl::GetInstance();
 }
 
-void PluginService::PurgePluginListCache(BrowserContext* browser_context,
-                                         bool reload_pages) {
+void PluginService::PurgePluginListCache(BrowserContext* browser_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   for (RenderProcessHost::iterator it = RenderProcessHost::AllHostsIterator();
        !it.IsAtEnd(); it.Advance()) {
     RenderProcessHost* host = it.GetCurrentValue();
     if (!browser_context || host->GetBrowserContext() == browser_context)
-      host->GetRendererInterface()->PurgePluginListCache(reload_pages);
+      host->GetRendererInterface()->PurgePluginListCache();
   }
 }
 

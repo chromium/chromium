@@ -41,10 +41,9 @@ class CONTENT_EXPORT PluginService {
 
   // Tells all the renderer processes associated with the given browser context
   // to throw away their cache of the plugin list, and optionally also reload
-  // all the pages with plugins. If |browser_context| is nullptr, purges the
+  // all the pages with plugins. If `browser_context` is nullptr, purges the
   // cache in all renderers.
-  static void PurgePluginListCache(BrowserContext* browser_context,
-                                   bool reload_pages);
+  static void PurgePluginListCache(BrowserContext* browser_context);
 
   virtual ~PluginService() {}
 

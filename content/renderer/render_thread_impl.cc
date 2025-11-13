@@ -1534,9 +1534,9 @@ void RenderThreadImpl::UpdateSystemColorInfo(
   }
 }
 
-void RenderThreadImpl::PurgePluginListCache(bool reload_pages) {
+void RenderThreadImpl::PurgePluginListCache() {
 #if BUILDFLAG(ENABLE_PLUGINS)
-  blink::ResetPluginCache(reload_pages);
+  blink::ResetPluginCache();
 
   for (auto& observer : observers_)
     observer.PluginListChanged();

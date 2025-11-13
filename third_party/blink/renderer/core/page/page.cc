@@ -166,10 +166,7 @@ void SetSafeAreaMaxEnvVariables(
 }  // namespace
 
 // Function defined in third_party/blink/public/web/blink.h.
-void ResetPluginCache(bool reload_pages) {
-  // At this point we already know that the browser has refreshed its list, so
-  // it is not necessary to force it to be regenerated.
-  DCHECK(!reload_pages);
+void ResetPluginCache() {
   Page::ResetPluginData();
 }
 

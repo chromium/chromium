@@ -415,7 +415,7 @@ class CONTENT_EXPORT RenderThreadImpl
   void OnSystemColorsChanged(int32_t aqua_color_variant) override;
   void UpdateSystemColorInfo(
       mojom::UpdateSystemColorInfoParamsPtr params) override;
-  void PurgePluginListCache(bool reload_pages) override;
+  void PurgePluginListCache() override;
   void PurgeResourceCache(PurgeResourceCacheCallback callback) override;
   void SetProcessState(base::Process::Priority priority,
                        mojom::RenderProcessVisibleState visible_state) override;

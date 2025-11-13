@@ -96,9 +96,9 @@ BLINK_EXPORT void SetFontAntialiasingEnabledForTest(bool);
 BLINK_EXPORT bool FontAntialiasingEnabledForTest();
 
 // Purge the plugin list cache. This can cause a web-visible and out-of-spec
-// change to |navigator.plugins| if the plugin list has changed (see
-// https://crbug.com/735854). |reloadPages| is unsupported and must be false.
-BLINK_EXPORT void ResetPluginCache(bool reload_pages = false);
+// change to `navigator.plugins` if the plugin list has changed (see
+// https://crbug.com/735854).
+BLINK_EXPORT void ResetPluginCache();
 
 // Send memory pressure notification to isolates.
 // This should be use as last resort only to prevent an OOM. Avoid using this
