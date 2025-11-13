@@ -49,6 +49,10 @@ class GlicActorNudgeController {
   // window creation to maintain state across multiple windows.
   void UpdateCurrentActorNudgeState();
 
+  // Only update the nudge label if it's already showing, otherwise retrigger
+  // the nudge. Always shows the task list bubble after.
+  void UpdateNudgeLabelOrRetrigger(std::u16string nudge_label_text);
+
   const raw_ptr<Profile> profile_;
   raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<TabStripActionContainer> tab_strip_action_container_;
