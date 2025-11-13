@@ -1270,9 +1270,7 @@ bool IsLensOverlayOptimizationFilterEnabled() {
 }
 
 bool IsLensOverlayNonBlockingPrivacyNoticeEnabled() {
-  // Do not enable if CSB is not enabled.
-  return base::FeatureList::IsEnabled(kLensOverlayNonBlockingPrivacyNotice) &&
-         base::FeatureList::IsEnabled(kLensOverlayContextualSearchbox);
+  return base::FeatureList::IsEnabled(kLensOverlayNonBlockingPrivacyNotice);
 }
 
 }  // namespace lens::features
