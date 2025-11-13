@@ -46,7 +46,11 @@ AndroidInputCallback::AndroidInputCallback(
   CHECK(client_ != nullptr);
 }
 
-AndroidInputCallback::~AndroidInputCallback() = default;
+AndroidInputCallback::~AndroidInputCallback() {
+  for (auto& observer : observers_) {
+    observer.OnCallbackDestroyed();
+  }
+}
 
 // static
 bool AndroidInputCallback::OnMotionEventThunk(void* context,

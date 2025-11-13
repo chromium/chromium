@@ -27,6 +27,7 @@ class COMPONENT_EXPORT(INPUT) AndroidInputCallback {
    public:
     virtual void OnMotionEvent(
         const base::android::ScopedInputEvent& input_event) = 0;
+    virtual void OnCallbackDestroyed() = 0;
   };
 
   AndroidInputCallback(const viz::FrameSinkId& root_frame_sink_id,

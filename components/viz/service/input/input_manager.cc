@@ -694,6 +694,16 @@ void InputManager::SetBeginFrameSource(const FrameSinkId& frame_sink_id,
   itr->second->SetBeginFrameSourceForFlingScheduler(begin_frame_source);
 }
 
+base::ReadOnlySharedMemoryRegion InputManager::DuplicateVizTouchStateRegion()
+    const {
+#if BUILDFLAG(IS_ANDROID)
+  return viz_touch_state_handler_.DuplicateVizTouchStateRegion();
+#else
+  // Return invalid region if not available.
+  return base::ReadOnlySharedMemoryRegion();
+#endif
+}
+
 void InputManager::MaybeRecreateRootRenderInputRouterSupports(
     const FrameSinkId& root_frame_sink_id) {
   TRACE_EVENT_INSTANT(
@@ -851,6 +861,7 @@ void InputManager::CreateOrReuseAndroidInputReceiver(
   std::unique_ptr<input::AndroidInputCallback> android_input_callback =
       std::make_unique<input::AndroidInputCallback>(
           frame_sink_id, &android_state_transfer_handler_);
+  android_input_callback->AddObserver(&viz_touch_state_handler_);
   // Destructor of |ScopedInputReceiverCallbacks| will call
   // |AInputReceiverCallbacks_release|, so we don't have to explicitly unset the
   // motion event callback we set below using

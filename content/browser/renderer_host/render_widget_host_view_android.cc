@@ -3086,9 +3086,6 @@ void RenderWidgetHostViewAndroid::OnAttachedToWindow() {
 void RenderWidgetHostViewAndroid::OnDetachedFromWindow() {
   StopObservingRootWindow();
   OnDetachCompositor();
-  if (input_transfer_handler_) {
-    input_transfer_handler_->OnDetachedFromWindow();
-  }
 }
 
 void RenderWidgetHostViewAndroid::OnAttachCompositor() {

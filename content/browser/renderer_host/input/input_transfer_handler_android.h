@@ -73,8 +73,6 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
   }
   bool FilterRedundantDownEvent(const ui::MotionEvent& event);
 
-  void OnDetachedFromWindow();
-
   enum class RequestInputBackReason {
     kStartDragAndDropGesture = 0,
     kStartTouchSelectionDragGesture = 1,
@@ -82,9 +80,12 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
   };
   void RequestInputBack(RequestInputBackReason reason);
 
-  void OnTouchEnd(base::TimeTicks event_time);
-
   // Virtual for testing.
+  // This is "potentially" active due to a race: Viz might have ended its
+  // previous sequence but not yet updated shared memory. If the Browser then
+  // sees a new DOWN event, it cannot distinguish a stale "active" state from a
+  // genuine multi-touch. The caller must reconcile this ambiguity (e.g., via
+  // `browser_would_have_handled=true`).
   virtual bool IsTouchSequencePotentiallyActiveOnViz() const;
 
   RenderWidgetHost::InputEventObserver& GetInputObserver() {
@@ -138,10 +139,6 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
   // transferred to VizCompositor. See
   // (https://developer.android.com/reference/android/view/MotionEvent#getDownTime())
   base::TimeTicks cached_transferred_sequence_down_time_ms_;
-  // When set stores the event time corresponding to action of transferred touch
-  // sequence. The variable is reset when it's deemed there's no ongoing touch
-  // sequence on Viz.
-  std::optional<base::TimeTicks> cached_transferred_sequence_event_time_us_;
 
   int num_events_in_dropped_sequence_ = 0;
 

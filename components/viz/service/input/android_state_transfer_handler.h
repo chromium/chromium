@@ -33,7 +33,7 @@ class VIZ_SERVICE_EXPORT AndroidStateTransferHandler
  public:
   explicit AndroidStateTransferHandler(
       AndroidStateTransferHandlerClient& client);
-  ~AndroidStateTransferHandler();
+  virtual ~AndroidStateTransferHandler();
 
   // `root_frame_sink_id` could be invalid. In cases when root frame sink is
   // destroyed and there was an ongoing touch sequence, OS may send a few events

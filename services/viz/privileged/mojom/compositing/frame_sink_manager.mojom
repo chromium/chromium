@@ -5,6 +5,7 @@
 module viz.mojom;
 
 import "gpu/ipc/common/surface_handle.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/viz/privileged/mojom/compositing/display_private.mojom";
@@ -277,6 +278,10 @@ interface FrameSinkManagerClient {
   OnScreenshotCaptured(
       blink.mojom.SameDocNavigationScreenshotDestinationToken destination_token,
       CopyOutputResult copy_output_result);
+
+  // Called by Viz when the connection is established and the shared memory for
+  // touch state is available.
+  OnVizTouchStateAvailable(mojo_base.mojom.ReadOnlySharedMemoryRegion region);
 };
 
 // Implemented by the GPU process (VizCompositorThread) and called from the

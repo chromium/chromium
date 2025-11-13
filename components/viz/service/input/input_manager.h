@@ -28,6 +28,7 @@
 #include "components/input/android/input_receiver_data.h"
 #include "components/viz/service/input/android_state_transfer_handler.h"
 #include "components/viz/service/input/render_input_router_support_android.h"
+#include "components/viz/service/input/viz_touch_state_handler.h"
 #endif
 
 namespace input {
@@ -159,6 +160,8 @@ class VIZ_SERVICE_EXPORT InputManager
   void SetBeginFrameSource(const FrameSinkId& frame_sink_id,
                            BeginFrameSource* begin_frame_source);
 
+  base::ReadOnlySharedMemoryRegion DuplicateVizTouchStateRegion() const;
+
  private:
   // Recreates RenderInputRouterSupport in cases where Viz receives a
   // |CreateCompositorFrameSink| call before |CreateRootCompositorFrameSink|
@@ -197,6 +200,7 @@ class VIZ_SERVICE_EXPORT InputManager
       const gpu::SurfaceHandle& surface_handle);
 
   AndroidStateTransferHandler android_state_transfer_handler_;
+  VizTouchStateHandler viz_touch_state_handler_;
 
   // There's a platform bug on Android 16 which keeps the input surface control
   // lingering around unless the app explicitly does a `System.gc()` call to

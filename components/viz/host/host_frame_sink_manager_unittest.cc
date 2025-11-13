@@ -579,4 +579,25 @@ TEST_F(HostFrameSinkManagerTest, RegisterWithExistingClient) {
   FlushHostAndVerifyExpectations();
 }
 
+TEST_F(HostFrameSinkManagerTest, OnConnectionLostResetsVizTouchState) {
+  // Simulate Viz sending the shared memory region.
+  base::MappedReadOnlyRegion mapped_region =
+      base::ReadOnlySharedMemoryRegion::Create(sizeof(VizTouchState));
+  ASSERT_TRUE(mapped_region.IsValid());
+  GetFrameSinkManagerClient()->OnVizTouchStateAvailable(
+      std::move(mapped_region.region));
+
+  // Initially, the mapping should be valid.
+  EXPECT_TRUE(host().GetVizTouchStatePtr());
+
+  // Simulate GPU crash.
+  KillGpu();
+  base::RunLoop run_loop;
+  host().SetConnectionLostCallback(run_loop.QuitClosure());
+  run_loop.Run();
+
+  // The mapping should now be invalid.
+  EXPECT_FALSE(host().GetVizTouchStatePtr());
+}
+
 }  // namespace viz
