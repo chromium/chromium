@@ -71,7 +71,6 @@ static_library("scalable_iph") {
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/printing",
-    "//chrome/browser/ash/system_web_apps/apps/help_app",
   ]
 }
 

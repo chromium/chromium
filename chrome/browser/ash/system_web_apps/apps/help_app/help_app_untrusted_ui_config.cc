@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/input_method/editor_switch.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
-#include "chrome/browser/ash/scalable_iph/scalable_iph_factory_impl.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
@@ -153,16 +152,6 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
 
   PrefService* pref_service = profile->GetPrefs();
 
-  bool is_scalable_iph_available =
-      ScalableIphFactoryImpl::IsBrowserContextEligible(profile);
-  if (is_scalable_iph_available) {
-    source->AddBoolean("HelpAppWelcomeTips",
-                       ash::features::AreHelpAppWelcomeTipsEnabled());
-    // Day count starts from 0 with `InDaysFloored`.
-    bool first_week_of_profile =
-        ((base::Time::Now() - profile->GetCreationTime()).InDaysFloored() < 7);
-    source->AddBoolean("shouldShowWelcomeTipsAtLaunch", first_week_of_profile);
-  }
   // Add state from the OOBE flow.
   source->AddBoolean(
       "shouldShowGetStarted",
