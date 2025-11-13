@@ -118,7 +118,7 @@ class LensOverlayGen204Controller {
   // Handles the gen204 network response and removes the source from
   // gen204_loaders_.
   void OnGen204NetworkResponse(const network::SimpleURLLoader* source,
-                               std::unique_ptr<std::string> response_body);
+                               std::optional<std::string> response_body);
 
   // The invocation source that triggered the query flow.
   lens::LensOverlayInvocationSource invocation_source_;

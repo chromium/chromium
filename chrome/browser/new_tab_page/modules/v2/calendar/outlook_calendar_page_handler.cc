@@ -4,6 +4,7 @@
 
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -273,7 +274,7 @@ void OutlookCalendarPageHandler::MakeRequest(GetEventsCallback callback) {
 
 void OutlookCalendarPageHandler::OnJsonReceived(
     GetEventsCallback callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   const int net_error = url_loader_->NetError();
   OutlookCalendarRequestResult request_result =
       OutlookCalendarRequestResult::kNetworkError;

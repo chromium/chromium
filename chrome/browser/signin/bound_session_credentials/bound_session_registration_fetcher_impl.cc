@@ -4,6 +4,8 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_impl.h"
 
+#include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/base64.h"
@@ -76,7 +78,7 @@ void BoundSessionRegistrationFetcherImpl::Start(
 }
 
 void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   const network::mojom::URLResponseHead* head = url_loader_->ResponseInfo();
   net::Error net_error = static_cast<net::Error>(url_loader_->NetError());
   TRACE_EVENT("browser",
@@ -113,7 +115,7 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
   }
 
   RegistrationErrorOr<bound_session_credentials::BoundSessionParams> params =
-      ParseJsonResponse(std::move(response_body));
+      ParseJsonResponse(*response_body);
   if (params.has_value() &&
       !bound_session_credentials::AreParamsValid(*params)) {
     RunCallbackAndRecordMetrics(
@@ -245,10 +247,10 @@ void BoundSessionRegistrationFetcherImpl::RunCallbackAndRecordMetrics(
 BoundSessionRegistrationFetcherImpl::RegistrationErrorOr<
     bound_session_credentials::BoundSessionParams>
 BoundSessionRegistrationFetcherImpl::ParseJsonResponse(
-    std::unique_ptr<std::string> response_body) {
+    const std::string& response_body) {
   // JSON responses normally should start with XSSI-protection prefix which
   // should be removed prior to parsing.
-  std::string_view response_json = *response_body;
+  std::string_view response_json = response_body;
   auto remainder = base::RemovePrefix(response_json, kXSSIPrefix);
   if (remainder) {
     response_json = *remainder;

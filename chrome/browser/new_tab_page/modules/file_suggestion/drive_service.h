@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_FILE_SUGGESTION_DRIVE_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -78,7 +79,7 @@ class DriveService : public KeyedService {
   void OnTokenReceived(GoogleServiceAuthError error,
                        signin::AccessTokenInfo token_info);
   void OnJsonReceived(const std::string& token,
-                      std::unique_ptr<std::string> json_response);
+                      std::optional<std::string> json_response);
   void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
 
   // Used for fetching OAuth2 access tokens. Only non-null when a token
@@ -92,7 +93,7 @@ class DriveService : public KeyedService {
       segmentation_platform_service_;
   std::string application_locale_;
   raw_ptr<PrefService> pref_service_;
-  std::unique_ptr<std::string> cached_json_;
+  std::optional<std::string> cached_json_;
   base::Time cached_json_time_;
   std::string cached_json_token_;
   SEQUENCE_CHECKER(sequence_checker_);

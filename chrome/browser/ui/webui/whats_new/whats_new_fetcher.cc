@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/webui/whats_new/whats_new_fetcher.h"
 
+#include <optional>
+#include <string>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -229,7 +232,7 @@ class WhatsNewFetcher : public BrowserListObserver {
     delete this;
   }
 
-  void OnResponseLoaded(std::unique_ptr<std::string> body) {
+  void OnResponseLoaded(std::optional<std::string> body) {
     int error_or_response_code = simple_loader_->NetError();
     const auto& headers = simple_loader_->ResponseInfo()
                               ? simple_loader_->ResponseInfo()->headers

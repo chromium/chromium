@@ -5,6 +5,8 @@
 #include "chrome/browser/sharing/shared_clipboard/remote_copy_message_handler.h"
 
 #include <algorithm>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -182,7 +184,7 @@ bool RemoteCopyMessageHandler::IsImageSourceAllowed(const GURL& image_url) {
 }
 
 void RemoteCopyMessageHandler::OnURLLoadComplete(
-    std::unique_ptr<std::string> content) {
+    std::optional<std::string> content) {
   TRACE_EVENT0("sharing", "RemoteCopyMessageHandler::OnURLLoadComplete");
 
   url_loader_.reset();

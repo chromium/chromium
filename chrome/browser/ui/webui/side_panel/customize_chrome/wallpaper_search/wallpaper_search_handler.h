@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_WALLPAPER_SEARCH_WALLPAPER_SEARCH_HANDLER_H_
 
 #include <optional>
+#include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -117,19 +118,19 @@ class WallpaperSearchHandler
   void DecodeHistoryImage(image_fetcher::ImageDecodedCallback callback,
                           std::string image);
   void OnDescriptorsRetrieved(GetDescriptorsCallback callback,
-                              std::unique_ptr<std::string> response_body);
+                              std::optional<std::string> response_body);
   void OnDescriptorsJsonParsed(GetDescriptorsCallback callback,
                                data_decoder::DataDecoder::ValueOrError result);
   void OnHistoryDecoded(std::vector<HistoryEntry> history,
                         std::vector<std::pair<SkBitmap, base::Token>> results);
   void OnInspirationImageDownloaded(const base::Token& id,
                                     base::ElapsedTimer timer,
-                                    std::unique_ptr<std::string> response_body);
+                                    std::optional<std::string> response_body);
   void OnInspirationImageDecoded(const base::Token& id,
                                  base::ElapsedTimer timer,
                                  const gfx::Image& image);
   void OnInspirationsRetrieved(GetInspirationsCallback callback,
-                               std::unique_ptr<std::string> response_body);
+                               std::optional<std::string> response_body);
   void OnInspirationsJsonParsed(GetInspirationsCallback callback,
                                 data_decoder::DataDecoder::ValueOrError result);
   void OnWallpaperSearchResultsRetrieved(

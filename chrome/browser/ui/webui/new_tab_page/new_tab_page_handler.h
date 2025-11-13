@@ -197,15 +197,15 @@ class NewTabPageHandler
   void LogEvent(NTPLoggingEventType event);
 
   typedef base::OnceCallback<void(bool success,
-                                  std::unique_ptr<std::string> body)>
+                                  std::optional<std::string> body)>
       OnFetchResultCallback;
   void Fetch(const GURL& url, OnFetchResultCallback on_result);
   void OnFetchResult(const network::SimpleURLLoader* loader,
                      OnFetchResultCallback on_result,
-                     std::unique_ptr<std::string> body);
+                     std::optional<std::string> body);
   void OnLogFetchResult(OnDoodleImageRenderedCallback callback,
                         bool success,
-                        std::unique_ptr<std::string> body);
+                        std::optional<std::string> body);
 
   ntp_tiles::TileType GetTileType() const;
   bool IsActionChipsVisible() const;

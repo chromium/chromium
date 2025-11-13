@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 
+#include <optional>
+#include <string>
+
 #include "base/base64url.h"
 #include "base/containers/span.h"
 #include "base/format_macros.h"
@@ -318,7 +321,7 @@ void LensOverlayGen204Controller::
 
 void LensOverlayGen204Controller::OnGen204NetworkResponse(
     const network::SimpleURLLoader* source,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   std::erase_if(
       gen204_loaders_,
       [source](const std::unique_ptr<network::SimpleURLLoader>& loader) {

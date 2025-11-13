@@ -5,6 +5,7 @@
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_loader_impl.h"
 
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -156,7 +157,7 @@ class OneGoogleBarLoaderImpl::AuthenticatedURLLoader {
  public:
   using LoadDoneCallback =
       base::OnceCallback<void(const network::SimpleURLLoader* simple_loader,
-                              std::unique_ptr<std::string> response_body)>;
+                              std::optional<std::string> response_body)>;
 
   AuthenticatedURLLoader(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -170,7 +171,7 @@ class OneGoogleBarLoaderImpl::AuthenticatedURLLoader {
  private:
   void SetRequestHeaders(network::ResourceRequest* request) const;
 
-  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoaderComplete(std::optional<std::string> response_body);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const GURL api_url_;
@@ -280,7 +281,7 @@ void OneGoogleBarLoaderImpl::AuthenticatedURLLoader::Start() {
 }
 
 void OneGoogleBarLoaderImpl::AuthenticatedURLLoader::OnURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   std::move(callback_).Run(simple_loader_.get(), std::move(response_body));
 }
 
@@ -361,7 +362,7 @@ GURL OneGoogleBarLoaderImpl::GetApiUrl() const {
 
 void OneGoogleBarLoaderImpl::LoadDone(
     const network::SimpleURLLoader* simple_loader,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   // The loader will be deleted when the request is handled.
   std::unique_ptr<AuthenticatedURLLoader> deleter(std::move(pending_request_));
 
@@ -373,8 +374,7 @@ void OneGoogleBarLoaderImpl::LoadDone(
     return;
   }
 
-  std::string response;
-  response.swap(*response_body);
+  std::string response = std::move(response_body).value();
 
   // The response may start with )]}'. Ignore this.
   auto remainder = base::RemovePrefix(response, kResponsePreamble);

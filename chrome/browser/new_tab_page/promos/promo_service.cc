@@ -4,6 +4,8 @@
 
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -188,7 +190,7 @@ void PromoService::Refresh() {
   }
 
   if (!command_id.empty()) {
-    auto fake_promo_json = std::make_unique<std::string>(base::StringPrintf(
+    auto fake_promo_json = std::make_optional<std::string>(base::StringPrintf(
         kFakePromo, kWarningSymbol, command_id.c_str(), command_id.c_str(),
         command_id.c_str(), command_id.c_str()));
     OnLoadDone(std::move(fake_promo_json));
@@ -233,7 +235,7 @@ void PromoService::Refresh() {
       1024 * 1024);
 }
 
-void PromoService::OnLoadDone(std::unique_ptr<std::string> response_body) {
+void PromoService::OnLoadDone(std::optional<std::string> response_body) {
   if (!response_body) {
     // This represents network errors (i.e. the server did not provide a
     // response).
@@ -242,8 +244,7 @@ void PromoService::OnLoadDone(std::unique_ptr<std::string> response_body) {
     return;
   }
 
-  std::string response;
-  response.swap(*response_body);
+  std::string response = std::move(response_body).value();
 
   // The response may start with )]}'. Ignore this.
   auto remainder = base::RemovePrefix(response, kXSSIResponsePreamble);

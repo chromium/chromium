@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.h"
 
 #include <optional>
+#include <string>
 #include <tuple>
 #include <utility>
 #include <variant>
@@ -619,7 +620,7 @@ void WallpaperSearchHandler::DecodeHistoryImage(
 
 void WallpaperSearchHandler::OnDescriptorsRetrieved(
     GetDescriptorsCallback callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (!response_body) {
     // Network errors (i.e. the server did not provide a response).
     DVLOG(1) << "Request failed with error: "
@@ -628,8 +629,7 @@ void WallpaperSearchHandler::OnDescriptorsRetrieved(
     return;
   }
 
-  std::string response;
-  response.swap(*response_body);
+  std::string response = std::move(response_body).value();
 
   // The response may start with . Ignore this.
   constexpr char kXSSIResponsePreamble[] = ")]}'";
@@ -784,7 +784,7 @@ void WallpaperSearchHandler::OnHistoryDecoded(
 void WallpaperSearchHandler::OnInspirationImageDownloaded(
     const base::Token& id,
     base::ElapsedTimer timer,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (!response_body) {
     // Network errors (i.e. the server did not provide a response).
     DVLOG(1) << "Request failed with error: "
@@ -809,7 +809,7 @@ void WallpaperSearchHandler::OnInspirationImageDecoded(
 
 void WallpaperSearchHandler::OnInspirationsRetrieved(
     GetInspirationsCallback callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (!response_body) {
     // Network errors (i.e. the server did not provide a response).
     DVLOG(1) << "Request failed with error: "
@@ -818,8 +818,7 @@ void WallpaperSearchHandler::OnInspirationsRetrieved(
     return;
   }
 
-  std::string response;
-  response.swap(*response_body);
+  std::string response = std::move(response_body).value();
 
   // The response may start with . Ignore this.
   const char kXSSIResponsePreamble[] = ")]}'";

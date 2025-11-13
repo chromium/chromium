@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -914,7 +915,7 @@ void NewTabPageHandler::OnPromoRendered(double time,
                    base::Time::FromMillisecondsSinceUnixEpoch(time) -
                        ntp_navigation_start_time_);
   if (log_url.has_value() && log_url->is_valid()) {
-    Fetch(*log_url, base::BindOnce([](bool, std::unique_ptr<std::string>) {}));
+    Fetch(*log_url, base::NullCallback());
   }
 }
 
@@ -993,7 +994,7 @@ void NewTabPageHandler::OnDoodleImageClicked(
   if (type == new_tab_page::mojom::DoodleImageType::kCta &&
       log_url.has_value()) {
     // We just ping the server to indicate a CTA image has been clicked.
-    Fetch(*log_url, base::BindOnce([](bool, std::unique_ptr<std::string>) {}));
+    Fetch(*log_url, base::NullCallback());
   }
 }
 
@@ -1047,7 +1048,7 @@ void NewTabPageHandler::OnDoodleShared(
                       .GoogleBaseURLValue())
                  .Resolve(query);
   // We just ping the server to indicate a doodle has been shared.
-  Fetch(url, base::BindOnce([](bool s, std::unique_ptr<std::string>) {}));
+  Fetch(url, base::NullCallback());
 }
 
 void NewTabPageHandler::OnPromoLinkClicked() {
@@ -1252,19 +1253,22 @@ void NewTabPageHandler::Fetch(const GURL& url,
 
 void NewTabPageHandler::OnFetchResult(const network::SimpleURLLoader* loader,
                                       OnFetchResultCallback on_result,
-                                      std::unique_ptr<std::string> body) {
+                                      std::optional<std::string> body) {
   bool success = loader->NetError() == net::OK && loader->ResponseInfo() &&
                  loader->ResponseInfo()->headers &&
                  loader->ResponseInfo()->headers->response_code() >= 200 &&
                  loader->ResponseInfo()->headers->response_code() <= 299 &&
                  body;
-  std::move(on_result).Run(success, std::move(body));
+  if (on_result) {
+    std::move(on_result).Run(success, std::move(body));
+  }
   loader_map_.erase(loader);
 }
 
 void NewTabPageHandler::OnLogFetchResult(OnDoodleImageRenderedCallback callback,
                                          bool success,
-                                         std::unique_ptr<std::string> body) {
+                                         std::optional<std::string> body) {
+  CHECK(!success || body);
   if (!success || body->size() < 4 || body->substr(0, 4) != ")]}'") {
     std::move(callback).Run("", std::nullopt, "");
     return;

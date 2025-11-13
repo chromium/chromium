@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -410,7 +411,7 @@ void DriveService::OnTokenReceived(GoogleServiceAuthError error,
 }
 
 void DriveService::OnJsonReceived(const std::string& token,
-                                  std::unique_ptr<std::string> response_body) {
+                                  std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const int net_error = url_loader_->NetError();

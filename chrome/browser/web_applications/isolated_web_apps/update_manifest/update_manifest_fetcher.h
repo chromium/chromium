@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_UPDATE_MANIFEST_UPDATE_MANIFEST_FETCHER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_UPDATE_MANIFEST_UPDATE_MANIFEST_FETCHER_H_
 
+#include <optional>
+#include <string>
+
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -47,7 +50,7 @@ class UpdateManifestFetcher {
   void DownloadUpdateManifest();
 
   void OnUpdateManifestDownloaded(
-      std::unique_ptr<std::string> update_manifest_content);
+      std::optional<std::string> update_manifest_content);
 
   void ParseUpdateManifest(const std::string& update_manifest_content);
 

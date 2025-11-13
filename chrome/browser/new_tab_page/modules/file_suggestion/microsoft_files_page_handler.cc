@@ -4,6 +4,9 @@
 
 #include "chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files_page_handler.h"
 
+#include <optional>
+#include <string>
+
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -478,7 +481,7 @@ void MicrosoftFilesPageHandler::ParseFakeData(GetFilesCallback callback) {
 
 void MicrosoftFilesPageHandler::OnJsonReceived(
     GetFilesCallback callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   const int net_error = url_loader_->NetError();
   request_result_ = MicrosoftFilesRequestResult::kNetworkError;
 

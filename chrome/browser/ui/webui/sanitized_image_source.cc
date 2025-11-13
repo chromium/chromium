@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -283,7 +284,7 @@ void SanitizedImageSource::OnImageLoaded(
     std::unique_ptr<network::SimpleURLLoader> loader,
     RequestAttributes request_attributes,
     content::URLDataSource::GotDataCallback callback,
-    std::unique_ptr<std::string> body) {
+    std::optional<std::string> body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (loader->NetError() != net::OK || !body) {

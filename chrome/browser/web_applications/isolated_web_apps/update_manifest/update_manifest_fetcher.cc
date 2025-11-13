@@ -4,6 +4,9 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 
+#include <optional>
+#include <string>
+
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/types/expected.h"
@@ -86,7 +89,7 @@ void UpdateManifestFetcher::DownloadUpdateManifest() {
 }
 
 void UpdateManifestFetcher::OnUpdateManifestDownloaded(
-    std::unique_ptr<std::string> update_manifest_content) {
+    std::optional<std::string> update_manifest_content) {
   // We may extract some information from the loader about
   // downloading errors in the future.
   simple_url_loader_.reset();
