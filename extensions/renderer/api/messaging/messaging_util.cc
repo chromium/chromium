@@ -90,13 +90,11 @@ std::unique_ptr<Message> MessageFromV8UsingJSON(v8::Local<v8::Context> context,
     return nullptr;
   }
 
-  size_t message_length = message.length();
-
-  // IPC messages will fail at > 128 MB. Restrict extension messages to 64 MB.
-  // A 64 MB JSON-ifiable object is scary enough as is.
-  static constexpr size_t kMaxMessageLength = 1024 * 1024 * 64;
-  if (message_length > kMaxMessageLength) {
-    *error = "Message length exceeded maximum allowed length of 64MB.";
+  // IPC messages will fail at > 128 MiB. Restrict extension messages to 64 MiB.
+  // A 64 MiB JSON serialized object is scary enough as it is.
+  static constexpr size_t kMaxMessageBytes = 1024 * 1024 * 64;
+  if (message.length() > kMaxMessageBytes) {
+    *error = "Message exceeded maximum allowed size of 64MiB.";
     return nullptr;
   }
 
