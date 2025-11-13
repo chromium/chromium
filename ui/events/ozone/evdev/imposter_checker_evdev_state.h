@@ -6,7 +6,6 @@
 #define UI_EVENTS_OZONE_EVDEV_IMPOSTER_CHECKER_EVDEV_STATE_H_
 
 #include "base/component_export.h"
-#include "base/functional/callback.h"
 
 namespace ui {
 

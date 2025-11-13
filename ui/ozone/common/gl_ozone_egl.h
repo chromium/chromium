@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_COMMON_GL_OZONE_EGL_H_
 #define UI_OZONE_COMMON_GL_OZONE_EGL_H_
 
-#include "base/functional/callback.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/khronos/EGL/eglplatform.h"
 #include "ui/gl/gl_implementation.h"

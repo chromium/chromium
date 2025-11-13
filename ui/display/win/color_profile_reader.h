@@ -5,14 +5,13 @@
 #ifndef UI_DISPLAY_WIN_COLOR_PROFILE_READER_H_
 #define UI_DISPLAY_WIN_COLOR_PROFILE_READER_H_
 
-#include "base/functional/callback.h"
+#include <map>
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/display_export.h"
 #include "ui/gfx/icc_profile.h"
-
-#include <map>
-#include <string>
 
 namespace display {
 namespace win {

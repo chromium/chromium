@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_space.h"
