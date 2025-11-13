@@ -13032,6 +13032,41 @@
             ]
         }
     ],
+    "IOSBottomMultilineOmnibox": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithEditStateFollowSteadyState",
+                    "params": {
+                        "kBottomOmniboxEvolutionParam": "kBottomOmniboxEvolutionParamEditStateFollowSteadyState"
+                    },
+                    "enable_features": [
+                        "BottomOmniboxEvolution",
+                        "MultilineBrowserOmnibox"
+                    ]
+                },
+                {
+                    "name": "EnabledWithForceBottomOmniboxEditState",
+                    "params": {
+                        "kBottomOmniboxEvolutionParam": "kBottomOmniboxEvolutionParamForceBottomOmniboxEditState"
+                    },
+                    "enable_features": [
+                        "BottomOmniboxEvolution",
+                        "MultilineBrowserOmnibox"
+                    ]
+                },
+                {
+                    "name": "EnabledWithoutBottomOmniboxOnFocus",
+                    "enable_features": [
+                        "MultilineBrowserOmnibox"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSBrowserEditMenuMetrics": [
         {
             "platforms": [
