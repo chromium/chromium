@@ -74,6 +74,7 @@ class GlicMetricsSessionManager {
   void OnUserInputSubmitted(mojom::WebClientMode mode);
   void OnOwnerDestroyed();
   void OnEvent(GlicInstanceEvent event);
+  void SetPinnedTabCount(int tab_count);
   int GetEventCount(GlicInstanceEvent event);
 
  private:

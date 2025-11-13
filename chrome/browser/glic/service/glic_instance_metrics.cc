@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/glic_metrics.h"
+#include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/service/glic_metrics_session_manager.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -67,8 +68,21 @@ enum class GlicTurnSource {
 
 GlicInstanceMetrics::GlicInstanceMetrics() : session_manager_(this) {}
 
+GlicInstanceMetrics::GlicInstanceMetrics(GlicSharingManager* sharing_manager)
+    : session_manager_(this),
+      pinned_tabs_changed_subscription_(
+          sharing_manager->AddPinnedTabsChangedCallback(
+              base::BindRepeating(&GlicInstanceMetrics::OnPinnedTabsChanged,
+                                  base::Unretained(this)))) {}
+
 GlicInstanceMetrics::~GlicInstanceMetrics() {
   OnInstanceDestroyed();
+}
+
+void GlicInstanceMetrics::OnPinnedTabsChanged(
+    const std::vector<content::WebContents*>& pinned_contents) {
+  pinned_tab_count_ = pinned_contents.size();
+  session_manager_.SetPinnedTabCount(pinned_tab_count_);
 }
 
 void GlicInstanceMetrics::OnInstanceCreated() {
@@ -713,6 +727,10 @@ void GlicInstanceMetrics::OnSessionFinished() {
 void GlicInstanceMetrics::RecordAttachedContextTabCount(int tab_count) {
   base::UmaHistogramExactLinear("Glic.Response.AttachedContextCount", tab_count,
                                 51);
+}
+
+int GlicInstanceMetrics::GetPinnedTabCount() const {
+  return pinned_tab_count_;
 }
 
 }  // namespace glic

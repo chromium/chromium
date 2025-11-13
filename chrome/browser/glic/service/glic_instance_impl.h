@@ -330,7 +330,6 @@ class GlicInstanceImpl : public GlicInstance,
 
   base::WeakPtr<InstanceCoordinatorDelegate> coordinator_delegate_;
   InstanceId id_;
-  GlicInstanceMetrics instance_metrics_;
 
   // The single source of truth for all embedders.
   // A tabs::TabInterface* key is a tab-bound side panel.
@@ -364,6 +363,10 @@ class GlicInstanceImpl : public GlicInstance,
 
   // The source of truth sharing manager for the instance.
   GlicStablePinningDelegatingSharingManager sharing_manager_;
+
+  // GlicInstanceMetrics ctor requires the sharing_manager_ above, so it must be
+  // declared after it to prevent memory errors.
+  GlicInstanceMetrics instance_metrics_;
 
   // Tracks the last non-hidden panel state kind for the instance. This is
   // useful for responding to changes in attached/detached state.

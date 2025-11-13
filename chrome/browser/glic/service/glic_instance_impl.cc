@@ -184,6 +184,7 @@ GlicInstanceImpl::GlicInstanceImpl(
           profile,
           metrics),
       sharing_manager_(&attached_mode_sharing_manager_),
+      instance_metrics_(&sharing_manager_),
       zero_state_suggestions_manager_(
           std::make_unique<GlicZeroStateSuggestionsManager>(
               &sharing_manager_,

@@ -777,6 +777,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Instance.Session.MaxPinnedTabs" units="count"
+    expires_after="2026-06-01">
+  <owner>sanaakbani@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the maximum number of tabs that were pinned at any time during a
+    single session. This is recorded when the session finishes.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.Session.MultipleTabsPinnedInAnyTurn"
+    enum="Boolean" expires_after="2026-06-01">
+  <owner>sanaakbani@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Boolean histogram that logs whether multiple tabs were pinned for any input
+    submitted during a single session. This is recorded when the session
+    finishes.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Instance.Session.ToggleCount" units="count"
     expires_after="2026-10-27">
   <owner>birnie@google.com</owner>

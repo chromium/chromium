@@ -419,4 +419,49 @@ TEST_F(GlicMetricsSessionManagerTest, Events_NotRecordedBeforeSessionStarts) {
   histogram_tester_.ExpectTotalCount("Glic.Instance.Session.HadEvent", 0);
 }
 
+TEST_F(GlicMetricsSessionManagerTest,
+       MultipleTabsPinned_NoResponse_RecordsFalse) {
+  StartSession();
+  metrics_->session_manager().SetPinnedTabCount(3);
+
+  metrics_.reset();  // End session
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.Session.MultipleTabsPinnedInAnyTurn", false, 1);
+  histogram_tester_.ExpectUniqueSample("Glic.Instance.Session.MaxPinnedTabs", 3,
+                                       1);
+}
+
+TEST_F(GlicMetricsSessionManagerTest,
+       SingleTabPinned_WithResponse_RecordsFalse) {
+  StartSession();
+  metrics_->session_manager().SetPinnedTabCount(1);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+
+  metrics_.reset();  // End session
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.Session.MultipleTabsPinnedInAnyTurn", false, 1);
+  histogram_tester_.ExpectUniqueSample("Glic.Instance.Session.MaxPinnedTabs", 1,
+                                       1);
+}
+
+TEST_F(GlicMetricsSessionManagerTest,
+       MultipleResponses_OneWithMultipleTabs_RecordsTrue) {
+  StartSession();
+  metrics_->session_manager().SetPinnedTabCount(1);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_->session_manager().SetPinnedTabCount(3);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_->session_manager().SetPinnedTabCount(1);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+
+  metrics_.reset();  // End session
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.Session.MultipleTabsPinnedInAnyTurn", true, 1);
+  histogram_tester_.ExpectUniqueSample("Glic.Instance.Session.MaxPinnedTabs", 3,
+                                       1);
+}
+
 }  // namespace glic
