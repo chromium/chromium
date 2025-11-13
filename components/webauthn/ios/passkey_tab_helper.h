@@ -5,8 +5,13 @@
 #ifndef COMPONENTS_WEBAUTHN_IOS_PASSKEY_TAB_HELPER_H_
 #define COMPONENTS_WEBAUTHN_IOS_PASSKEY_TAB_HELPER_H_
 
+#import <vector>
+
 #import "base/memory/weak_ptr.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
+#import "device/fido/public_key_credential_descriptor.h"
+#import "device/fido/public_key_credential_rp_entity.h"
+#import "device/fido/public_key_credential_user_entity.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -27,6 +32,46 @@ class WebFrame;
 class PasskeyTabHelper : public web::WebStateObserver,
                          public web::WebStateUserData<PasskeyTabHelper> {
  public:
+  struct RequestParams {
+    RequestParams();
+    RequestParams(const std::string& frame_id,
+                  device::PublicKeyCredentialRpEntity rp_entity,
+                  std::vector<uint8_t> challenge,
+                  device::UserVerificationRequirement user_verification);
+    RequestParams(RequestParams&& other);
+    ~RequestParams();
+
+    const std::string frame_id_;
+    const device::PublicKeyCredentialRpEntity rp_entity_;
+    const std::vector<uint8_t> challenge_;
+    const device::UserVerificationRequirement user_verification_;
+  };
+
+  struct AssertionRequestParams {
+    AssertionRequestParams(
+        RequestParams request_params,
+        std::vector<device::PublicKeyCredentialDescriptor> allow_credentials);
+    AssertionRequestParams(AssertionRequestParams&& other);
+    ~AssertionRequestParams();
+
+    RequestParams request_params_;
+    const std::vector<device::PublicKeyCredentialDescriptor> allow_credentials_;
+  };
+
+  struct RegistrationRequestParams {
+    RegistrationRequestParams(
+        RequestParams request_params,
+        device::PublicKeyCredentialUserEntity user_entity,
+        std::vector<device::PublicKeyCredentialDescriptor> exclude_credentials);
+    RegistrationRequestParams(RegistrationRequestParams&& other);
+    ~RegistrationRequestParams();
+
+    RequestParams request_params_;
+    const device::PublicKeyCredentialUserEntity user_entity_;
+    const std::vector<device::PublicKeyCredentialDescriptor>
+        exclude_credentials_;
+  };
+
   PasskeyTabHelper(const PasskeyTabHelper&) = delete;
   PasskeyTabHelper& operator=(const PasskeyTabHelper&) = delete;
 
@@ -44,10 +89,10 @@ class PasskeyTabHelper : public web::WebStateObserver,
       const std::string& rp_id);
 
   // Handles passkey assertion requests. Yields if any parameter is missing.
-  void HandleGetRequestedEvent(const std::string& frame_id);
+  void HandleGetRequestedEvent(AssertionRequestParams params);
 
   // Handles passkey registration requests. Yields if any parameter is missing.
-  void HandleCreateRequestedEvent(const std::string& frame_id);
+  void HandleCreateRequestedEvent(RegistrationRequestParams params);
 
   // Adds a passkey to the passkey model while enabling the passkey creation
   // infobar to be displayed if possible.
@@ -61,7 +106,7 @@ class PasskeyTabHelper : public web::WebStateObserver,
                             std::unique_ptr<IOSPasskeyClient> client);
 
   // Returns a web frame from a web frame id. May return null.
-  web::WebFrame* GetWebFrame(const std::string& frame_id) const;
+  web::WebFrame* GetWebFrame(const RequestParams& request_params) const;
 
   // WebStateObserver:
   void WebStateDestroyed(web::WebState* web_state) override;

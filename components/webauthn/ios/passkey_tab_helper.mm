@@ -54,6 +54,48 @@ class [[maybe_unused, nodiscard]] ScopedAllowPasskeyCreationInfobar {
 
 }  // namespace
 
+PasskeyTabHelper::RequestParams::RequestParams()
+    : user_verification_(device::UserVerificationRequirement::kPreferred) {}
+
+PasskeyTabHelper::RequestParams::RequestParams(
+    const std::string& frame_id,
+    device::PublicKeyCredentialRpEntity rp_entity,
+    std::vector<uint8_t> challenge,
+    device::UserVerificationRequirement user_verification)
+    : frame_id_(frame_id),
+      rp_entity_(std::move(rp_entity)),
+      challenge_(std::move(challenge)),
+      user_verification_(user_verification) {}
+
+PasskeyTabHelper::RequestParams::RequestParams(
+    PasskeyTabHelper::RequestParams&& other) = default;
+
+PasskeyTabHelper::RequestParams::~RequestParams() {}
+
+PasskeyTabHelper::AssertionRequestParams::AssertionRequestParams(
+    RequestParams request_params,
+    std::vector<device::PublicKeyCredentialDescriptor> allow_credentials)
+    : request_params_(std::move(request_params)),
+      allow_credentials_(std::move(allow_credentials)) {}
+
+PasskeyTabHelper::AssertionRequestParams::AssertionRequestParams(
+    PasskeyTabHelper::AssertionRequestParams&& other) = default;
+
+PasskeyTabHelper::AssertionRequestParams::~AssertionRequestParams() {}
+
+PasskeyTabHelper::RegistrationRequestParams::RegistrationRequestParams(
+    RequestParams request_params,
+    device::PublicKeyCredentialUserEntity user_entity,
+    std::vector<device::PublicKeyCredentialDescriptor> exclude_credentials)
+    : request_params_(std::move(request_params)),
+      user_entity_(std::move(user_entity)),
+      exclude_credentials_(std::move(exclude_credentials)) {}
+
+PasskeyTabHelper::RegistrationRequestParams::RegistrationRequestParams(
+    PasskeyTabHelper::RegistrationRequestParams&& other) = default;
+
+PasskeyTabHelper::RegistrationRequestParams::~RegistrationRequestParams() {}
+
 PasskeyTabHelper::~PasskeyTabHelper() = default;
 
 void PasskeyTabHelper::LogEventFromString(const std::string& event) {
@@ -88,8 +130,8 @@ void PasskeyTabHelper::HandleGetResolvedEvent(
   }
 }
 
-void PasskeyTabHelper::HandleGetRequestedEvent(const std::string& frame_id) {
-  web::WebFrame* web_frame = GetWebFrame(frame_id);
+void PasskeyTabHelper::HandleGetRequestedEvent(AssertionRequestParams params) {
+  web::WebFrame* web_frame = GetWebFrame(params.request_params_);
   if (!web_frame) {
     return;
   }
@@ -98,8 +140,9 @@ void PasskeyTabHelper::HandleGetRequestedEvent(const std::string& frame_id) {
   PasskeyJavaScriptFeature::GetInstance()->DeferToRenderer(web_frame);
 }
 
-void PasskeyTabHelper::HandleCreateRequestedEvent(const std::string& frame_id) {
-  web::WebFrame* web_frame = GetWebFrame(frame_id);
+void PasskeyTabHelper::HandleCreateRequestedEvent(
+    RegistrationRequestParams params) {
+  web::WebFrame* web_frame = GetWebFrame(params.request_params_);
   if (!web_frame) {
     return;
   }
@@ -119,7 +162,7 @@ PasskeyTabHelper::PasskeyTabHelper(web::WebState* web_state,
 }
 
 web::WebFrame* PasskeyTabHelper::GetWebFrame(
-    const std::string& frame_id) const {
+    const RequestParams& request_params) const {
   web::WebState* web_state = web_state_.get();
   if (!web_state) {
     return nullptr;
@@ -128,8 +171,9 @@ web::WebFrame* PasskeyTabHelper::GetWebFrame(
   web::WebFramesManager* web_frames_manager =
       PasskeyJavaScriptFeature::GetInstance()->GetWebFramesManager(web_state);
 
-  return web_frames_manager ? web_frames_manager->GetFrameWithId(frame_id)
-                            : nullptr;
+  return web_frames_manager
+             ? web_frames_manager->GetFrameWithId(request_params.frame_id_)
+             : nullptr;
 }
 
 void PasskeyTabHelper::AddNewPasskey(

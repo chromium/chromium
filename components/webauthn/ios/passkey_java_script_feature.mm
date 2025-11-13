@@ -4,6 +4,9 @@
 
 #import "components/webauthn/ios/passkey_java_script_feature.h"
 
+#import <AuthenticationServices/AuthenticationServices.h>
+
+#import "base/base64.h"
 #import "base/no_destructor.h"
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
@@ -39,6 +42,28 @@ constexpr char kGetResolved[] = "getResolved";
 // Frame ID for handle* events.
 constexpr char kFrameId[] = "frameId";
 
+// Common parameters of "handleGetRequest" and "handleCreateRequest" events.
+constexpr char kRequest[] = "request";
+constexpr char kRpEntity[] = "rpEntity";
+
+// Parameters exclusive to the "handleCreateRequest" event.
+constexpr char kUserEntity[] = "userEntity";
+constexpr char kExcludeCredentials[] = "excludeCredentials";
+
+// Parameter exclusive to the "handleGetRequest" event.
+constexpr char kAllowCredentials[] = "allowCredentials";
+
+// Members of the "request" dictionary.
+constexpr char kChallenge[] = "challenge";
+constexpr char kUserVerification[] = "userVerification";
+
+// Common members of the "rpEntity" and "userEntity" dictionaries.
+constexpr char kId[] = "id";
+constexpr char kName[] = "name";
+
+// Member exclusive to the "userEntity" dictionary.
+constexpr char kDisplayName[] = "displayName";
+
 // Parameters of the "getResolved" event.
 constexpr char kCredentialId[] = "credential_id";
 constexpr char kRpId[] = "rp_id";
@@ -57,6 +82,157 @@ GetPlaceholderReplacements() {
     base::SysUTF8ToNSString(kHandleModalPasskeyRequestsPlaceholder) :
         base::SysUTF16ToNSString(full_script_block),
   };
+}
+
+// Decodes a base 64 encoded string into a data vector.
+// Returns an empty vector on failure.
+std::vector<uint8_t> Base64Decode(const std::string* base_64_string) {
+  std::vector<uint8_t> decoded_data;
+  if (!base_64_string || base_64_string->empty()) {
+    return decoded_data;
+  }
+
+  std::string decoded_string;
+  if (base::Base64Decode(*base_64_string, &decoded_string,
+                         base::Base64DecodePolicy::kStrict)) {
+    decoded_data.assign(decoded_string.begin(), decoded_string.end());
+  }
+
+  return decoded_data;
+}
+
+// Extracts all parameters required to build a PublicKeyCredentialUserEntity
+// object from the provided dictionary.
+device::PublicKeyCredentialUserEntity ExtractUserEntity(
+    const base::Value::Dict* dict) {
+  device::PublicKeyCredentialUserEntity user_entity;
+  if (!dict) {
+    return user_entity;
+  }
+
+  const std::string* id_base_64 = dict->FindString(kId);
+  std::vector<uint8_t> decoded_id = Base64Decode(id_base_64);
+  if (!decoded_id.empty()) {
+    user_entity.id = std::move(decoded_id);
+  }
+
+  const std::string* name = dict->FindString(kName);
+  if (name && !name->empty()) {
+    user_entity.name = *name;
+  }
+
+  const std::string* display_name = dict->FindString(kDisplayName);
+  if (display_name && !display_name->empty()) {
+    user_entity.display_name = *display_name;
+  }
+
+  return user_entity;
+}
+
+// Extracts all parameters required to build a PublicKeyCredentialRpEntity
+// object from the provided dictionary.
+device::PublicKeyCredentialRpEntity ExtractRpEntity(
+    const base::Value::Dict* dict) {
+  device::PublicKeyCredentialRpEntity rp_entity;
+  if (!dict) {
+    return rp_entity;
+  }
+
+  const std::string* id_str = dict->FindString(kId);
+  if (id_str && !id_str->empty()) {
+    rp_entity.id = *id_str;
+  }
+
+  const std::string* name = dict->FindString(kName);
+  if (name && !name->empty()) {
+    rp_entity.name = *name;
+  }
+
+  return rp_entity;
+}
+
+// Converts the provided string to a UserVerificationRequirement enum.
+device::UserVerificationRequirement ExtractUserVerification(
+    const std::string* user_verification) {
+  // TODO(crbug.com/385174410): Verifiy that this is the correct default value.
+  device::UserVerificationRequirement user_verification_requirement =
+      device::UserVerificationRequirement::kPreferred;
+
+  if (!user_verification || user_verification->empty()) {
+    return user_verification_requirement;
+  }
+
+  // TODO(crbug.com/385174410): Merge this code with
+  // UserVerificationPreferenceFromString().
+  NSString* user_verification_preference_string =
+      base::SysUTF8ToNSString(*user_verification);
+  if ([user_verification_preference_string
+          isEqualToString:
+              ASAuthorizationPublicKeyCredentialUserVerificationPreferenceRequired]) {
+    user_verification_requirement =
+        device::UserVerificationRequirement::kRequired;
+  } else if (
+      [user_verification_preference_string
+          isEqualToString:
+              ASAuthorizationPublicKeyCredentialUserVerificationPreferencePreferred]) {
+    user_verification_requirement =
+        device::UserVerificationRequirement::kPreferred;
+  } else if (
+      [user_verification_preference_string
+          isEqualToString:
+              ASAuthorizationPublicKeyCredentialUserVerificationPreferenceDiscouraged]) {
+    user_verification_requirement =
+        device::UserVerificationRequirement::kDiscouraged;
+  }
+
+  return user_verification_requirement;
+}
+
+// Reads a list of PublicKeyCredentialDescriptor from the provided dictionary.
+std::vector<device::PublicKeyCredentialDescriptor> ExtractCredentials(
+    const base::Value::Dict* dict) {
+  std::vector<device::PublicKeyCredentialDescriptor> credential_descriptors;
+  if (!dict) {
+    return credential_descriptors;
+  }
+
+  // TODO(crbug.com/385174410): Read credential descriptors.
+  return credential_descriptors;
+}
+
+// Extracts all parameters required to build a RequestParams object from the
+// provided dictionary.
+PasskeyTabHelper::RequestParams ExtractRequestParams(
+    const base::Value::Dict* dict) {
+  if (!dict) {
+    return PasskeyTabHelper::RequestParams();
+  }
+
+  const std::string* frame_id = dict->FindString(kFrameId);
+
+  return PasskeyTabHelper::RequestParams(
+      frame_id ? *frame_id : "", ExtractRpEntity(dict->FindDict(kRpEntity)),
+      Base64Decode(dict->FindString(kChallenge)),
+      ExtractUserVerification(dict->FindString(kUserVerification)));
+}
+
+// Extracts all parameters required to build an ExtractAssertionRequestParams
+// object from the provided dictionary.
+PasskeyTabHelper::AssertionRequestParams ExtractAssertionRequestParams(
+    const base::Value::Dict& dict) {
+  return PasskeyTabHelper::AssertionRequestParams(
+      ExtractRequestParams(dict.FindDict(kRequest)),
+      ExtractCredentials(dict.FindDict(kAllowCredentials)));
+}
+
+// Extracts all parameters required to build a RegistrationRequestParams object
+// from the provided dictionary.
+PasskeyTabHelper::RegistrationRequestParams ExtractRegistrationRequestParams(
+    const base::Value::Dict& dict) {
+  return PasskeyTabHelper::RegistrationRequestParams(
+      ExtractRequestParams(dict.FindDict(kRequest)),
+      ExtractUserEntity(dict.FindDict(kUserEntity)),
+      ExtractCredentials(dict.FindDict(kExcludeCredentials)));
 }
 
 }  // namespace
@@ -124,8 +300,6 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const std::string* frameId = dict.FindString(kFrameId);
-
   if (*event == kHandleGetRequest) {
     if (!base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim)) {
       // TODO(crbug.com/369629469): Log metrics for unexpected events.
@@ -133,9 +307,8 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     }
 
     passkey_tab_helper->LogEventFromString(kGetRequested);
-    if (frameId && !frameId->empty()) {
-      passkey_tab_helper->HandleGetRequestedEvent(*frameId);
-    }
+    passkey_tab_helper->HandleGetRequestedEvent(
+        ExtractAssertionRequestParams(dict));
     return;
   } else if (*event == kHandleCreateRequest) {
     if (!base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim)) {
@@ -144,9 +317,8 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     }
 
     passkey_tab_helper->LogEventFromString(kCreateRequested);
-    if (frameId && !frameId->empty()) {
-      passkey_tab_helper->HandleCreateRequestedEvent(*frameId);
-    }
+    passkey_tab_helper->HandleCreateRequestedEvent(
+        ExtractRegistrationRequestParams(dict));
     return;
   } else if (*event == kGetRequested || *event == kCreateRequested ||
              *event == kCreateResolvedGpm || *event == kCreateResolvedNonGpm) {
