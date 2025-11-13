@@ -1469,7 +1469,9 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
 
       for (const auto& icon :
            proto.pending_update_info().downloaded_manifest_icons()) {
-        if (icon.icon_sizes().empty() && !icon.has_purpose()) {
+        // It's fine if there are no sizes specified for a purpose, but the
+        // purpose has to exist.
+        if (!icon.has_purpose()) {
           RecordProtoParseResult(
               ProtoParseResult::kInvalidDownloadedManifestIconForPendingUpdate);
           return nullptr;
@@ -1477,7 +1479,9 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
       }
       for (const auto& icon :
            proto.pending_update_info().downloaded_trusted_icons()) {
-        if (icon.icon_sizes().empty() && !icon.has_purpose()) {
+        // It's fine if there are no sizes specified for a purpose, but the
+        // purpose has to exist.
+        if (!icon.has_purpose()) {
           RecordProtoParseResult(
               ProtoParseResult::kInvalidDownloadedTrustedIconForPendingUpdate);
           return nullptr;
