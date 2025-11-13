@@ -18,7 +18,7 @@
 
 namespace {
 
-// Returns an OwnedSpan of required methods defined in `protocol`.
+// Returns an base::HeapArray<...> of required methods defined in `protocol`.
 base::HeapArray<objc_method_description, base::FreeDeleter> GetRequiredMethods(
     Protocol* protocol) {
   unsigned int count = 0;
@@ -33,7 +33,7 @@ base::HeapArray<objc_method_description, base::FreeDeleter> GetRequiredMethods(
                       base::FreeDeleter>::FromOwningPointer(methods, count));
 }
 
-// Returns an OwnedSpan of protocols that `protocol` conforms to.
+// Returns an base::HeapArray<...> of protocols that `protocol` conforms to.
 base::HeapArray<Protocol * __unsafe_unretained _Nonnull, base::FreeDeleter>
 GetConformingProtocols(Protocol* protocol) {
   unsigned int count = 0;
