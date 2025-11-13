@@ -13,6 +13,7 @@
 #include "device/vr/openxr/openxr_spatial_utils.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/scoped_openxr_object.h"
+#include "device/vr/public/cpp/features.h"
 #include "third_party/openxr/dev/xr_android.h"
 
 namespace device {
@@ -43,6 +44,20 @@ bool SupportsPlaneBasedHitTest(
   return base::Contains(plane_tracking_components,
                         XR_SPATIAL_COMPONENT_TYPE_RAYCAST_RESULT_ANDROID);
 }
+
+bool SupportsDepthBasedHitTest(
+    const std::vector<XrSpatialCapabilityEXT>& capabilities) {
+  if (!base::FeatureList::IsEnabled(features::kSpatialEntitesDepthHitTest)) {
+    return false;
+  }
+
+  // The only component that we need to support depth-based hit tests is
+  // XR_SPATIAL_COMPONENT_TYPE_RAYCAST_RESULT_ANDROID, which is guaranteed to be
+  // supported if the XR_SPATIAL_CAPABILITY_DEPTH_RAYCAST_ANDROID is supported,
+  // so that's all we need to check for it.
+  return base::Contains(capabilities,
+                        XR_SPATIAL_CAPABILITY_DEPTH_RAYCAST_ANDROID);
+}
 }  // namespace
 
 // static
@@ -52,12 +67,7 @@ bool OpenXrSpatialHitTestManager::IsSupported(
     PFN_xrEnumerateSpatialCapabilityComponentTypesEXT
         xrEnumerateSpatialCapabilityComponentTypesEXT,
     const std::vector<XrSpatialCapabilityEXT>& capabilities) {
-  // The only component that we need to support depth-based hit tests is
-  // XR_SPATIAL_COMPONENT_TYPE_RAYCAST_RESULT_ANDROID, which is guaranteed to be
-  // supported if the XR_SPATIAL_CAPABILITY_DEPTH_RAYCAST_ANDROID is supported,
-  // so that's all we need to check for it.
-  const bool supports_depth_hit_test =
-      base::Contains(capabilities, XR_SPATIAL_CAPABILITY_DEPTH_RAYCAST_ANDROID);
+  const bool supports_depth_hit_test = SupportsDepthBasedHitTest(capabilities);
 
   const bool supports_plane_based_hit_test = SupportsPlaneBasedHitTest(
       instance, system, xrEnumerateSpatialCapabilityComponentTypesEXT,
@@ -91,8 +101,7 @@ void OpenXrSpatialHitTestManager::PopulateCapabilityConfiguration(
       instance_, system_);
 
   // If depth-based hit test is supported, we can enable it.
-  if (base::Contains(capabilities,
-                     XR_SPATIAL_CAPABILITY_DEPTH_RAYCAST_ANDROID)) {
+  if (SupportsDepthBasedHitTest(capabilities)) {
     DVLOG(1) << __func__ << " Enabling depth hit test";
     capability_components[XR_SPATIAL_CAPABILITY_DEPTH_RAYCAST_ANDROID].insert(
         XR_SPATIAL_COMPONENT_TYPE_RAYCAST_RESULT_ANDROID);

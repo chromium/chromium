@@ -6153,6 +6153,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"openxr-spatial-entities", flag_descriptions::kOpenXrSpatialEntitiesName,
      flag_descriptions::kOpenXrSpatialEntitiesDescription, kOsWin | kOsAndroid,
      FEATURE_VALUE_TYPE(device::features::kOpenXrSpatialEntities)},
+    {"spatial-entities-depth-hit-test",
+     flag_descriptions::kSpatialEntitesDepthHitTestName,
+     flag_descriptions::kSpatialEntitesDepthHitTestDescription,
+     kOsWin | kOsAndroid,
+     FEATURE_VALUE_TYPE(device::features::kSpatialEntitesDepthHitTest)},
 #endif  // BUILDFLAG(ENABLE_OPENXR)
     {"webxr-projection-layers", flag_descriptions::kWebXrProjectionLayersName,
      flag_descriptions::kWebXrProjectionLayersDescription, kOsWin | kOsAndroid,

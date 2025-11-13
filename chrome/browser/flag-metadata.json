@@ -9540,6 +9540,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "spatial-entities-depth-hit-test",
+    "owners": [ "alcooper@chromium.org", "bajones@chromium.org", "xr-dev@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "spectre-v2-mitigation",
     "owners": [
       "chromeos-security@google.com"

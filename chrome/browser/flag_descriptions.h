@@ -5724,6 +5724,12 @@ inline constexpr char kSiteIsolationForPasswordSitesDescription[] =
     "Security mode that enables site isolation for sites based on "
     "password-oriented heuristics, such as a user typing in a password.";
 
+inline constexpr char kSpatialEntitesDepthHitTestName[] =
+    "Spatial Entities Depth-based Hit Test";
+inline constexpr char kSpatialEntitesDepthHitTestDescription[] =
+    "Controls whether the spatial entities framework is allowed to use "
+    "depth-based hit tests or only plane-based ones.";
+
 inline constexpr char kSmartSuggestionForLargeDownloadsName[] =
     "Smart suggestion for large downloads";
 inline constexpr char kSmartSuggestionForLargeDownloadsDescription[] =

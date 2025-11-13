@@ -10296,6 +10296,7 @@ from previous Chrome versions.
   <int value="-1365859601" label="CCTPageInsightsHubBetterScroll:disabled"/>
   <int value="-1365795470"
       label="ServiceWorkerImportedScriptUpdateCheck:disabled"/>
+  <int value="-1365410355" label="SpatialEntitesDepthHitTest:disabled"/>
   <int value="-1364880645" label="OmniboxCr2023Umbrella:disabled"/>
   <int value="-1364703377" label="AppListDragAndDropRefactor:enabled"/>
   <int value="-1363709707" label="MaterialDesignHistory:disabled"/>
@@ -12417,6 +12418,7 @@ from previous Chrome versions.
   <int value="-610617312"
       label="AutofillEnableCvcStorageAndFillingStandaloneFormEnhancement:disabled"/>
   <int value="-610411643" label="enable-printer-app-search"/>
+  <int value="-610404384" label="SpatialEntitesDepthHitTest:enabled"/>
   <int value="-610319049"
       label="TrustedVaultFrequentDegradedRecoverabilityPolling:disabled"/>
   <int value="-609747087" label="CanvasOopRasterization:enabled"/>
