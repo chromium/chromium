@@ -389,7 +389,7 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestAddCardWithCvcRecordsUserAction) {
                              addCreditCardWithHolderName:@"John Doe"
                                               cardNumber:@"4111111111111111"
                                          expirationMonth:@"10"
-                                          expirationYear:@"2025"
+                                          expirationYear:@"2026"
                                             cardNickname:@"My Card"
                                                  cardCvc:@"123"];
 
