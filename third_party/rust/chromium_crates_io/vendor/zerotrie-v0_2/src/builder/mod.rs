@@ -27,13 +27,18 @@
 //! - `current_len` is the length in bytes of the current self-contained trie.
 //! - `lengths_stack` contains metadata for branch nodes.
 //!
-//! What follows is a verbal explanation of the build steps for a trie containing:
+//! Consider a trie containing the following strings and values:
 //!
 //! - "" → 11
 //! - "ad" → 22
 //! - "adef" → 33
 //! - "adghk" → 44
 //!
+//! Suppose `prefix_len = 2`, `i = 1`, and `j = 4`. This would indicate that we
+//! have are evaluating the strings with the "ad" prefix, which extend from
+//! index 1 (inclusive) to index 4 (exclusive).
+//!
+//! What follows is a verbal explanation of the build steps for the above trie.
 //! When a node is prepended, it is shown in **boldface**.
 //!
 //! 1. Initialize the builder by setting `i=3`, `j=4`, `prefix_len=5` (the last string),

@@ -46,9 +46,6 @@ where
     }
 }
 
-// TODO(MSRV 1.83): Make this more infallible by calculating the required length,
+// TODO(#7084): Make this more infallible by calculating the required length,
 // heap-allocating the required capacity, and pointing ConstAsciiTrieBuilderStore
 // to the heap buffer.
-// ```
-// const fn write_to_mut_buffer(buf: &mut [u8]) { buf[0] = 0; }
-// ```

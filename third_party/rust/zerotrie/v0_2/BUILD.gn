@@ -47,7 +47,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "A data structure that efficiently maps strings to integers"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "0.2.2"
+  cargo_pkg_version = "0.2.3"
 
   allow_unsafe = true
 

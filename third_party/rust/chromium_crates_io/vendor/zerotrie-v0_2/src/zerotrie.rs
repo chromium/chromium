@@ -107,7 +107,7 @@ pub(crate) enum ZeroTrieFlavor<Store> {
 /// // A trie with two values: "abc" and "abcdef"
 /// let trie = ZeroTrieSimpleAscii::from_bytes(b"abc\x80def\x81");
 ///
-/// assert!(matches!(trie.get(b"ab\xFF"), None));
+/// assert!(trie.get(b"ab\xFF").is_none());
 /// ```
 #[repr(transparent)]
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
@@ -317,8 +317,9 @@ macro_rules! impl_zerotrie_subtype {
         Store: AsRef<[u8]> + ?Sized,
         {
             /// Queries the trie for a string.
+            // Note: We do not need the Borrow trait's guarantees, so we use
+            // the more general AsRef trait.
             pub fn get<K>(&self, key: K) -> Option<usize> where K: AsRef<[u8]> {
-                // TODO: Should this be AsRef or Borrow?
                 reader::get_parameterized::<Self>(self.store.as_ref(), key.as_ref())
             }
             /// Returns `true` if the trie is empty.
@@ -412,7 +413,6 @@ macro_rules! impl_zerotrie_subtype {
             /// assert_eq!(it.next(), None);
             /// ```
             #[inline]
-            #[allow(clippy::type_complexity)]
             pub fn iter(&self) -> $iter_ty {
                  $iter_fn(self.as_bytes())
             }
@@ -685,14 +685,14 @@ impl_zerotrie_subtype!(
     ZeroTrieSimpleAscii,
     String,
     reader::get_iter_ascii_or_panic,
-    ZeroTrieStringIterator,
+    ZeroTrieStringIterator<'_>,
     string_to_box_u8
 );
 impl_zerotrie_subtype!(
     ZeroAsciiIgnoreCaseTrie,
     String,
     reader::get_iter_ascii_or_panic,
-    ZeroTrieStringIterator,
+    ZeroTrieStringIterator<'_>,
     string_to_box_u8
 );
 impl_zerotrie_subtype!(
@@ -806,6 +806,8 @@ where
     Store: AsRef<[u8]>,
 {
     /// Exports the data from this ZeroTrie into a BTreeMap.
+    ///
+    /// ✨ *Enabled with the `alloc` Cargo feature.*
     pub fn to_btreemap(&self) -> BTreeMap<Box<[u8]>, usize> {
         impl_dispatch!(&self, to_btreemap_bytes())
     }
@@ -847,7 +849,7 @@ where
         let mut items: Vec<(&[u8], usize)> = items.iter().map(|(k, v)| (k.as_ref(), *v)).collect();
         items.sort();
         let byte_str_slice = ByteStr::from_byte_slice_with_value(&items);
-        #[allow(clippy::unwrap_used)] // FromIterator is panicky
+        #[expect(clippy::unwrap_used)] // FromIterator is panicky
         Self::try_from_tuple_slice(byte_str_slice).unwrap()
     }
 }

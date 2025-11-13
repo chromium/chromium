@@ -69,7 +69,7 @@ where
     /// assert_eq!(longest_prefix, 3);
     /// ```
     #[inline]
-    pub fn cursor(&self) -> ZeroTrieSimpleAsciiCursor {
+    pub fn cursor(&self) -> ZeroTrieSimpleAsciiCursor<'_> {
         ZeroTrieSimpleAsciiCursor {
             trie: self.as_borrowed_slice(),
         }
@@ -106,7 +106,7 @@ where
     ///
     /// For more examples, see [`ZeroTrieSimpleAscii::cursor`].
     #[inline]
-    pub fn cursor(&self) -> ZeroAsciiIgnoreCaseTrieCursor {
+    pub fn cursor(&self) -> ZeroAsciiIgnoreCaseTrieCursor<'_> {
         ZeroAsciiIgnoreCaseTrieCursor {
             trie: self.as_borrowed_slice(),
         }

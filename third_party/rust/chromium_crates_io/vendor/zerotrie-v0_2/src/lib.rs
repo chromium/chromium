@@ -39,13 +39,13 @@
 #![cfg_attr(
     not(test),
     deny(
-        // TODO(#4034): Enable the rest of these lints.
-        // clippy::indexing_slicing,
-        // clippy::unwrap_used,
+        clippy::indexing_slicing,
+        clippy::unwrap_used,
         clippy::expect_used,
-        // clippy::panic,
+        clippy::panic,
         clippy::exhaustive_structs,
-        clippy::exhaustive_enums, clippy::trivially_copy_pass_by_ref,
+        clippy::exhaustive_enums,
+        clippy::trivially_copy_pass_by_ref,
         missing_debug_implementations,
     )
 )]
