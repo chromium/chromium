@@ -26,6 +26,7 @@ inline constexpr int kMinimumFaviconSize = 48;
 BASE_DECLARE_FEATURE(kWebApkInstallFailureNotification);
 BASE_DECLARE_FEATURE(kAndroidMinimalUiLargeScreen);
 BASE_DECLARE_FEATURE(kAndroidWebAppMenuButton);
+BASE_DECLARE_FEATURE(kAndroidWebAppHeaderForStandaloneMode);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // ML Installability promotion flags and all the feature params.

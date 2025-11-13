@@ -10669,6 +10669,8 @@ from previous Chrome versions.
   <int value="-1231507397" label="NtpZeroSuggest:enabled"/>
   <int value="-1230678816" label="PersonalizationHub:disabled"/>
   <int value="-1230610048" label="SyncWifiConfigurations:disabled"/>
+  <int value="-1230443048"
+      label="AndroidWebAppHeaderForStandaloneMode:enabled"/>
   <int value="-1229882308" label="DesktopPWAsTabStripCustomizations:disabled"/>
   <int value="-1229114522"
       label="ClearCrossSiteCrossBrowsingContextGroupWindowName:disabled"/>
@@ -10792,6 +10794,8 @@ from previous Chrome versions.
   <int value="-1182777927" label="ShareButtonInTopToolbar:enabled"/>
   <int value="-1182771360"
       label="AutofillVirtualCardsOnTouchToFillAndroid:disabled"/>
+  <int value="-1182768485"
+      label="AndroidWebAppHeaderForStandaloneMode:disabled"/>
   <int value="-1182667070" label="CampbellGlyph:disabled"/>
   <int value="-1182246276" label="EnableRFC8925:enabled"/>
   <int value="-1182087678"

@@ -227,6 +227,8 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_TIPS_NOTIFICATIONS = "AndroidTipsNotifications";
     public static final String ANDROID_USE_ADMINS_FOR_ENTERPRISE_INFO =
             "AndroidUseAdminsForEnterpriseInfo";
+    public static final String ANDROID_WEB_APP_HEADER_FOR_STANDALONE_MODE =
+            "AndroidWebAppHeaderForStandaloneMode";
     public static final String ANDROID_WEB_APP_LAUNCH_HANDLER = "AndroidWebAppLaunchHandler";
     public static final String ANDROID_WEB_APP_MENU_BUTTON = "AndroidWebAppMenuButton";
     public static final String ANDROID_WINDOW_CONTROLS_OVERLAY = "AndroidWindowControlsOverlay";
@@ -774,6 +776,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_THEME_RESOURCE_PROVIDER, false, /* defaultValueInTests= */ false);
     public static final CachedFlag sAndroidUseAdminsForEnterpriseInfo =
             newCachedFlag(ANDROID_USE_ADMINS_FOR_ENTERPRISE_INFO, true);
+    public static final CachedFlag sAndroidWebAppHeaderForStandaloneMode =
+            newCachedFlag(ANDROID_WEB_APP_HEADER_FOR_STANDALONE_MODE, false);
     public static final CachedFlag sAndroidWebAppLaunchHandler =
             newCachedFlag(ANDROID_WEB_APP_LAUNCH_HANDLER, false, true);
     public static final CachedFlag sAndroidWebAppMenuButton =
@@ -1136,6 +1140,7 @@ public abstract class ChromeFeatureList {
                     sAndroidThemeModule,
                     sAndroidThemeResourceProvider,
                     sAndroidUseAdminsForEnterpriseInfo,
+                    sAndroidWebAppHeaderForStandaloneMode,
                     sAndroidWebAppLaunchHandler,
                     sAndroidWebAppMenuButton,
                     sAndroidWindowControlsOverlay,

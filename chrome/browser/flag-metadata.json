@@ -10383,6 +10383,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "use-web-app-header-for-standalone-mode",
+    "owners": [ "aixba@google.com",  "capabilities-team@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "use-winrt-midi-api",
     "owners": [ "//third_party/blink/renderer/modules/webaudio/OWNERS", "toyoshim@chromium.org", "mjwilson@chromium.org" ],
     "expiry_milestone": 154
