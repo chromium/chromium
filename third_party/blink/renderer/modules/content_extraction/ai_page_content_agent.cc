@@ -208,7 +208,7 @@ void ComputeFragmentBoundingBoxes(
 // differences
 // 2. Floating-point to integer conversions can introduce small rounding errors
 // 3. CSS transforms can cause complex geometric relationships
-#if DCHECK_IS_ON()
+#if DCHECK_IS_ON() && !defined(OFFICIAL_BUILD)
 void ValidateBoundingBoxes(const gfx::Rect& outer_box_in_absolute_coords,
                            const gfx::Rect& visible_box_in_viewport_coords,
                            const LayoutObject& object) {
@@ -1626,7 +1626,7 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
 
   // Validate the relationship between outer and visible bounding boxes
   // TODO(aleventhal): restore for Canary builds.
-#if DCHECK_IS_ON()
+#if DCHECK_IS_ON() && !defined(OFFICIAL_BUILD)
   ValidateBoundingBoxes(geometry.outer_bounding_box,
                         geometry.visible_bounding_box, object);
 #endif
