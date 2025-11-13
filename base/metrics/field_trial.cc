@@ -733,7 +733,11 @@ void FieldTrialList::CreateTrialsInChildProcess(const CommandLine& cmd_line) {
     SharedMemoryError result = CreateTrialsFromSwitchValue(switch_value);
     SCOPED_CRASH_KEY_NUMBER("FieldTrialList", "SharedMemoryError",
                             static_cast<int>(result));
-    CHECK_EQ(result, SharedMemoryError::kNoError);
+    // Unfortunately, XP has an issue with shared memory allocations to unsandboxed processes.
+    // This means that the sandbox (or in-process-gpu/single-process) are needed to propagate all feature info.
+    if (base::win::GetVersion() >= base::win::Version::VISTA) {
+      CHECK_EQ(result, SharedMemoryError::kNoError);
+    }
   }
 #endif  // BUILDFLAG(USE_BLINK)
 }
