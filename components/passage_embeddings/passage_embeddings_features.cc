@@ -46,7 +46,7 @@ const base::FeatureParam<base::TimeDelta> kPassageExtractionDelay(
 const base::FeatureParam<int> kMaxWordsPerAggregatePassage(
     &kPassageEmbedder,
     "MaxWordsPerAggregatePassage",
-    200);
+    100);
 
 const base::FeatureParam<int> kMaxPassagesPerPage(&kPassageEmbedder,
                                                   "MaxPassagesPerPage",
