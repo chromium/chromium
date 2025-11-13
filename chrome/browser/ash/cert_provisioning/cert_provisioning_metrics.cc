@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_metrics.h"
 
-#include "base/compiler_specific.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
@@ -59,13 +63,11 @@ void RecordResult(ProtocolVersion protocol_version,
   DCHECK(!IsFinalState(prev_state));
   DCHECK(IsFinalState(final_state));
   base::UmaHistogramEnumeration(
-      UNSAFE_TODO(
-          kResult[ProtocolVersionToIdx(protocol_version)][ScopeToIdx(scope)]),
+      kResult[ProtocolVersionToIdx(protocol_version)][ScopeToIdx(scope)],
       final_state);
   if (final_state == CertProvisioningWorkerState::kFailed) {
     base::UmaHistogramEnumeration(
-        UNSAFE_TODO(
-            kResult[ProtocolVersionToIdx(protocol_version)][ScopeToIdx(scope)]),
+        kResult[ProtocolVersionToIdx(protocol_version)][ScopeToIdx(scope)],
         prev_state);
   }
 }
@@ -74,9 +76,7 @@ void RecordEvent(ProtocolVersion protocol_version,
                  CertScope scope,
                  CertProvisioningEvent event) {
   base::UmaHistogramEnumeration(
-      UNSAFE_TODO(
-          kEvent[ProtocolVersionToIdx(protocol_version)][ScopeToIdx(scope)]),
-      event);
+      kEvent[ProtocolVersionToIdx(protocol_version)][ScopeToIdx(scope)], event);
 }
 
 void RecordDmStatusForDynamic(policy::DeviceManagementStatus status) {

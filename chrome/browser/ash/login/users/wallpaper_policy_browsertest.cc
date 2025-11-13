@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stdint.h>
 
 #include <memory>
@@ -257,7 +262,7 @@ class WallpaperPolicyTest : public LoginManagerTest,
     const AccountId& account_id =
         login_manager_.users()[user_number].account_id;
     policy::UserPolicyBuilder* builder =
-        UNSAFE_TODO(user_policy_builders_[user_number]).get();
+        user_policy_builders_[user_number].get();
     if (!filename.empty()) {
       builder->payload().mutable_wallpaperimage()->set_value(
           ConstructPolicy(filename));

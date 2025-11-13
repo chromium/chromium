@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 
 #include <cstddef>
@@ -13,7 +18,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/values.h"
@@ -60,7 +64,7 @@ void ResetEphemeralKioskPreferences(PrefService* prefs) {
        pref_id++) {
     const std::string branch_path = test_prefs_to_reset
                                         ? (*test_prefs_to_reset)[pref_id]
-                                        : UNSAFE_TODO(kPrefsToReset[pref_id]);
+                                        : kPrefsToReset[pref_id];
     prefs->ClearPrefsWithPrefixSilently(branch_path);
   }
 }

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.h"
 
 #include <algorithm>
@@ -13,7 +18,6 @@
 #include <vector>
 
 #include "ash/public/cpp/image_util.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
@@ -114,9 +118,9 @@ bool IsStaticWebp(const base::FilePath& path) {
   // Checking for RIFF header and WebP identifier as in the
   // https://developers.google.com/speed/webp/docs/riff_container
   if (std::string(buffer, 4) == "RIFF" &&
-      std::string(UNSAFE_TODO(buffer + 8), 4) == "WEBP") {
+      std::string(buffer + 8, 4) == "WEBP") {
     // Checking the VP8X chunk for animation
-    if (std::string(UNSAFE_TODO(buffer + 12), 4) == "VP8X") {
+    if (std::string(buffer + 12, 4) == "VP8X") {
       // VP8X header is 8 bytes then the flags byte.
       const char flags = buffer[20];
       // The second bit indicates if it's animated.
@@ -160,7 +164,7 @@ bool IsPng(const base::FilePath& path) {
   const uint8_t pngSignature[8] = {0x89, 0x50, 0x4E, 0x47,
                                    0x0D, 0x0A, 0x1A, 0x0A};
   for (int i = 0; i < 8; ++i) {
-    if (UNSAFE_TODO(buffer[i]) != UNSAFE_TODO(pngSignature[i])) {
+    if (buffer[i] != pngSignature[i]) {
       return false;
     }
   }

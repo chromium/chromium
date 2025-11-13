@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 
 #include <stddef.h>
 
@@ -23,7 +27,6 @@
 #include "ash/system/session/logout_confirmation_controller.h"
 #include "ash/system/session/logout_confirmation_dialog.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -48,7 +51,6 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/extensions/external_cache.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
@@ -71,6 +73,7 @@
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_test_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_broker.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -584,7 +587,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     session_locales_proto->mutable_value()->Clear();
     for (size_t i = 0; i < array_size; ++i) {
       session_locales_proto->mutable_value()->add_entries(
-          UNSAFE_TODO(recommended_locales[i]));
+          recommended_locales[i]);
     }
   }
 
@@ -1065,8 +1068,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, StartSession) {
   em::StringListPolicyProto* startup_urls_proto =
       device_local_account_policy_.payload().mutable_restoreonstartupurls();
   for (size_t i = 0; i < std::size(kStartupURLs); ++i) {
-    startup_urls_proto->mutable_value()->add_entries(
-        UNSAFE_TODO(kStartupURLs[i]));
+    startup_urls_proto->mutable_value()->add_entries(kStartupURLs[i]);
   }
   UploadAndInstallDeviceLocalAccountPolicy();
   AddPublicSessionToDevicePolicy(kAccountId1);
@@ -1087,8 +1089,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, StartSession) {
   int expected_tab_count = static_cast<int>(std::size(kStartupURLs));
   EXPECT_EQ(expected_tab_count, tabs->count());
   for (int i = 0; i < expected_tab_count && i < tabs->count(); ++i) {
-    UNSAFE_TODO(EXPECT_EQ(GURL(kStartupURLs[i]),
-                          tabs->GetWebContentsAt(i)->GetVisibleURL()));
+    EXPECT_EQ(GURL(kStartupURLs[i]),
+              tabs->GetWebContentsAt(i)->GetVisibleURL());
   }
 
   // Verify that the session is not considered to be logged in with a GAIA
@@ -1874,14 +1876,14 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, MultipleRecommendedLocales) {
 
   // Verify that the list starts with the recommended locales, in correct order.
   for (size_t i = 0; i < std::size(kRecommendedLocales1); ++i) {
-    UNSAFE_TODO(EXPECT_EQ(kRecommendedLocales1[i], locales[i].language_code));
+    EXPECT_EQ(kRecommendedLocales1[i], locales[i].language_code);
   }
 
   // Verify that the recommended locales do not appear again in the remainder of
   // the list.
   std::set<std::string> recommended_locales;
   for (size_t i = 0; i < std::size(kRecommendedLocales1); ++i) {
-    recommended_locales.insert(UNSAFE_TODO(kRecommendedLocales1[i]));
+    recommended_locales.insert(kRecommendedLocales1[i]);
   }
   for (size_t i = std::size(kRecommendedLocales1); i < locales.size(); ++i) {
     const std::string& locale = locales[i].language_code;
@@ -1909,7 +1911,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, MultipleRecommendedLocales) {
   EXPECT_LT(std::size(kRecommendedLocales2), locales.size());
   for (size_t i = 0; i < std::size(kRecommendedLocales2); ++i) {
     const std::string& locale = locales[i].language_code;
-    UNSAFE_TODO(EXPECT_EQ(kRecommendedLocales2[i], locale));
+    EXPECT_EQ(kRecommendedLocales2[i], locale);
   }
 
   // Verify that the first new recommended locale is selected.

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log.h"
 
 #include <stddef.h>
@@ -10,7 +15,6 @@
 #include <memory>
 #include <sstream>
 
-#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -479,13 +483,12 @@ TEST_F(ArcAppInstallEventLogTest, LoadVersionMismatch) {
       file_name_,
       base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE);
   int64_t version;
-  UNSAFE_TODO(EXPECT_EQ(
-      static_cast<ssize_t>(sizeof(version)),
-      file->Read(0, reinterpret_cast<char*>(&version), sizeof(version))));
+  EXPECT_EQ(static_cast<ssize_t>(sizeof(version)),
+            file->Read(0, reinterpret_cast<char*>(&version), sizeof(version)));
   --version;
-  UNSAFE_TODO(EXPECT_EQ(static_cast<ssize_t>(sizeof(version)),
-                        file->Write(0, reinterpret_cast<const char*>(&version),
-                                    sizeof(version))));
+  EXPECT_EQ(
+      static_cast<ssize_t>(sizeof(version)),
+      file->Write(0, reinterpret_cast<const char*>(&version), sizeof(version)));
   file.reset();
 
   ArcAppInstallEventLog log(file_name_);

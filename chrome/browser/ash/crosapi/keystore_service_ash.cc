@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 
 #include <stdint.h>
@@ -11,7 +16,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -410,7 +414,7 @@ void KeystoreServiceAsh::DidSelectClientCertificates(
       CRYPTO_BUFFER* der_buffer = cert->cert_buffer();
       const uint8_t* data = CRYPTO_BUFFER_data(der_buffer);
       std::vector<uint8_t> der_x509_certificate(
-          data, UNSAFE_TODO(data + CRYPTO_BUFFER_len(der_buffer)));
+          data, data + CRYPTO_BUFFER_len(der_buffer));
       output.push_back(std::move(der_x509_certificate));
     }
     result_ptr = mojom::KeystoreSelectClientCertificatesResult::NewCertificates(
@@ -456,7 +460,7 @@ void KeystoreServiceAsh::DidGetCertificates(
       CRYPTO_BUFFER* der_buffer = cert->cert_buffer();
       const uint8_t* data = CRYPTO_BUFFER_data(der_buffer);
       std::vector<uint8_t> der_x509_certificate(
-          data, UNSAFE_TODO(data + CRYPTO_BUFFER_len(der_buffer)));
+          data, data + CRYPTO_BUFFER_len(der_buffer));
       output.push_back(std::move(der_x509_certificate));
     }
     result_ptr =

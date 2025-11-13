@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 
 #include <algorithm>
@@ -12,7 +17,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/default_user_image.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/rand_util.h"
@@ -234,11 +238,10 @@ constexpr bool ValidateCurrentImageIndexes() {
   }
 
   for (const int index : kCurrentImageIndexes) {
-    if (UNSAFE_TODO(kDefaultImageInfo[index]).eligibility !=
-        Eligibility::kEligible) {
+    if (kDefaultImageInfo[index].eligibility != Eligibility::kEligible) {
       return false;
     }
-    if (UNSAFE_TODO(kDefaultImageInfo[index]).description_message_id == 0) {
+    if (kDefaultImageInfo[index].description_message_id == 0) {
       // All current and new images must have a description.
       return false;
     }
@@ -370,11 +373,11 @@ GURL GetDefaultImageUrl(
   auto scale_factor_prefix = GetUrlPrefixForScaleFactor(adjusted_scale_factor);
 
   return GURL(base::StrCat({kGstaticImagePrefix, scale_factor_prefix,
-                            UNSAFE_TODO(kDefaultImageInfo[index]).path}));
+                            kDefaultImageInfo[index].path}));
 }
 
 int GetDefaultImageResourceId(int index) {
-  return UNSAFE_TODO(kDefaultImageInfo[index]).resource_id;
+  return kDefaultImageInfo[index].resource_id;
 }
 
 const gfx::ImageSkia& GetStubDefaultImage() {
@@ -383,7 +386,7 @@ const gfx::ImageSkia& GetStubDefaultImage() {
 }
 
 int GetRandomDefaultImageIndex() {
-  return UNSAFE_TODO(kCurrentImageIndexes)[base::RandInt(
+  return kCurrentImageIndexes[base::RandInt(
       0, std::size(kCurrentImageIndexes) - 1)];
 }
 
@@ -393,16 +396,14 @@ bool IsValidIndex(int index) {
 
 bool IsInCurrentImageSet(int index) {
   return IsValidIndex(index) &&
-         UNSAFE_TODO(kDefaultImageInfo[index]).eligibility ==
-             Eligibility::kEligible;
+         kDefaultImageInfo[index].eligibility == Eligibility::kEligible;
 }
 
 DefaultUserImage GetDefaultUserImage(
     int index,
     ui::ResourceScaleFactor scale_factor /*= ui::k200Percent*/) {
   DCHECK(IsValidIndex(index));
-  int description_message_id =
-      UNSAFE_TODO(kDefaultImageInfo[index]).description_message_id;
+  int description_message_id = kDefaultImageInfo[index].description_message_id;
   std::u16string title = description_message_id
                              ? l10n_util::GetStringUTF16(description_message_id)
                              : std::u16string();
@@ -438,7 +439,7 @@ std::optional<DeprecatedSourceInfo> GetDeprecatedDefaultImageSourceInfo(
     return std::nullopt;
   }
 
-  const auto& source_info_ids = UNSAFE_TODO(kDefaultImageSourceInfoIds[index]);
+  const auto& source_info_ids = kDefaultImageSourceInfoIds[index];
   return DeprecatedSourceInfo(
       l10n_util::GetStringUTF16(source_info_ids.author_id),
       GURL(l10n_util::GetStringUTF16(source_info_ids.website_id)));

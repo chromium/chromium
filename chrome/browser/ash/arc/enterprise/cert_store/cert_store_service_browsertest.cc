@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
 
 #include <stdint.h>
@@ -15,7 +20,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -323,7 +327,7 @@ void RegisterCorporateKeyWithService(
         service) {
   std::vector<uint8_t> client_cert_spki(
       cert->derPublicKey.data,
-      UNSAFE_TODO(cert->derPublicKey.data + cert)->derPublicKey.len);
+      cert->derPublicKey.data + cert->derPublicKey.len);
 
   // Mimics the behaviour of the ExtensionPlatformKeysService, which sets the
   // one-time signing permission when the key is registered for corporate usage.

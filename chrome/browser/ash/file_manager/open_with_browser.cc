@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 
 #include <stddef.h>
@@ -9,7 +14,6 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -67,8 +71,7 @@ constexpr const base::FilePath::CharType* kFileExtensionsViewableInBrowser[] = {
 // Returns true if |file_path| is viewable in the browser (ex. HTML file).
 bool IsViewableInBrowser(const base::FilePath& file_path) {
   for (size_t i = 0; i < std::size(kFileExtensionsViewableInBrowser); i++) {
-    if (file_path.MatchesExtension(
-            UNSAFE_TODO(kFileExtensionsViewableInBrowser[i]))) {
+    if (file_path.MatchesExtension(kFileExtensionsViewableInBrowser[i])) {
       return true;
     }
   }

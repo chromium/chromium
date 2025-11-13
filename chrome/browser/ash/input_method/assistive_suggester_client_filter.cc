@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 
 #include <algorithm>
@@ -10,7 +15,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
-#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/strings/string_util.h"
@@ -146,8 +150,8 @@ bool IsMatchedUrlWithPathPrefix(const char* (&expected_domains_and_paths)[N][2],
     return false;
   }
   for (size_t i = 0; i < N; i++) {
-    auto domain = UNSAFE_TODO(expected_domains_and_paths[i])[0];
-    auto path_prefix = UNSAFE_TODO(expected_domains_and_paths[i])[1];
+    auto domain = expected_domains_and_paths[i][0];
+    auto path_prefix = expected_domains_and_paths[i][1];
     if (AtDomainWithPathPrefix(url, domain, path_prefix)) {
       return true;
     }
@@ -162,7 +166,7 @@ bool IsMatchedExactUrl(const char* (&expected_urls)[N],
     return false;
   }
   for (size_t i = 0; i < N; i++) {
-    auto expected_url = UNSAFE_TODO(expected_urls[i]);
+    auto expected_url = expected_urls[i];
     if (base::CompareCaseInsensitiveASCII(url->spec(), expected_url) == 0) {
       return true;
     }
@@ -175,15 +179,14 @@ bool IsMatchedApp(const char* (&expected_app_ids_or_package_names)[N],
                   WindowProperties w) {
   if (!w.arc_package_name.empty() &&
       std::find(expected_app_ids_or_package_names,
-                UNSAFE_TODO(expected_app_ids_or_package_names + N),
-                w.arc_package_name) !=
-          UNSAFE_TODO(expected_app_ids_or_package_names + N)) {
+                expected_app_ids_or_package_names + N,
+                w.arc_package_name) != expected_app_ids_or_package_names + N) {
     return true;
   }
   if (!w.app_id.empty() &&
       std::find(expected_app_ids_or_package_names,
-                UNSAFE_TODO(expected_app_ids_or_package_names + N), w.app_id) !=
-          UNSAFE_TODO(expected_app_ids_or_package_names + N)) {
+                expected_app_ids_or_package_names + N,
+                w.app_id) != expected_app_ids_or_package_names + N) {
     return true;
   }
   return false;

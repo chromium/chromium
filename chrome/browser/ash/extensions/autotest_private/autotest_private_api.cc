@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/extensions/autotest_private/autotest_private_api.h"
 
 #include <algorithm>
@@ -276,7 +281,7 @@ constexpr char kCrostiniNotAvailableForCurrentUserError[] =
     "Crostini is not available for the current user";
 
 NOINLINE int AccessArray(const int arr[], const int* index) {
-  return UNSAFE_TODO(arr[*index]);
+  return arr[*index];
 }
 
 base::Value::List GetHostPermissions(const Extension* ext,
@@ -693,7 +698,7 @@ api::autotest_private::WindowStateType ToWindowStateType(
 std::string GetPngDataAsString(scoped_refptr<base::RefCountedMemory> png_data) {
   // Base64 encode the result so we can return it as a string.
   std::string base64_png(png_data->front(),
-                         UNSAFE_TODO(png_data->front() + png_data)->size());
+                        png_data->front() + png_data->size());
   return base::Base64Encode(base64_png);
 }
 
