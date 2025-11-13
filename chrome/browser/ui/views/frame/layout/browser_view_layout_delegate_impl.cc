@@ -8,6 +8,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
+#include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -25,6 +27,14 @@ BrowserViewLayoutDelegateImpl::~BrowserViewLayoutDelegateImpl() = default;
 
 bool BrowserViewLayoutDelegateImpl::ShouldDrawTabStrip() const {
   return browser_view_->ShouldDrawTabStrip();
+}
+
+bool BrowserViewLayoutDelegateImpl::ShouldDrawVerticalTabStrip() const {
+  return ShouldDrawTabStrip() && tabs::IsVerticalTabsFeatureEnabled() &&
+         browser_view_->browser()
+             ->browser_window_features()
+             ->vertical_tab_strip_state_controller()
+             ->ShouldDisplayVerticalTabs();
 }
 
 bool BrowserViewLayoutDelegateImpl::GetBorderlessModeEnabled() const {

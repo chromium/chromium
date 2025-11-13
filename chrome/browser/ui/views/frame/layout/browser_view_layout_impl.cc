@@ -328,6 +328,18 @@ gfx::Size BrowserViewLayoutImpl::GetMinimumMainAreaSize() const {
   return gfx::Size(width, height);
 }
 
+BrowserViewLayoutImpl::TabStripType BrowserViewLayoutImpl::GetTabStripType()
+    const {
+  if (views().webui_tab_strip && views().webui_tab_strip->GetVisible()) {
+    return TabStripType::kWebUi;
+  }
+  if (delegate().ShouldDrawVerticalTabStrip()) {
+    return TabStripType::kVertical;
+  }
+  return delegate().ShouldDrawTabStrip() ? TabStripType::kHorizontal
+                                         : TabStripType::kNone;
+}
+
 gfx::Size BrowserViewLayoutImpl::GetMinimumSize(const views::View* host) const {
   // This is a simplified version of the same method in
   // `BrowserViewLayoutImplOld` that assumes a standard browser.
@@ -382,16 +394,26 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
     layout.AddChild(views().window_scrim, browser_params.visual_client_area);
   }
 
-  // TODO(https://crbug.com/453717426): Handle vertical tabstrip here.
-
   BrowserLayoutParams params = browser_params;
-  bool used_exclusion = false;
+  bool needs_exclusion = true;
+  const TabStripType tab_strip_type = GetTabStripType();
 
-  // Lay out tab strip region.
+  // Lay out WebUI tabstrip if visible.
+  if (IsParentedTo(views().webui_tab_strip, views().browser_view)) {
+    const int width = params.visual_client_area.width();
+    const int height = tab_strip_type == TabStripType::kWebUi
+                           ? views().webui_tab_strip->GetHeightForWidth(width)
+                           : 0;
+    layout.AddChild(views().webui_tab_strip,
+                    gfx::Rect(params.visual_client_area.origin(),
+                              gfx::Size(width, height)));
+    params.Inset(gfx::Insets::TLBR(height, 0, 0, 0));
+  }
+
+  // Lay out horizontal tab strip region if present.
   if (IsParentedTo(views().tab_strip_region_view, views().browser_view)) {
     gfx::Rect tabstrip_bounds;
-    const bool tabstrip_visible = delegate().ShouldDrawTabStrip();
-    if (tabstrip_visible) {
+    if (tab_strip_type == TabStripType::kHorizontal) {
       // Inset the leading edge of the tabstrip by the size of the swoop of the
       // first tab; this is especially important for Mac, where the negative
       // space of the caption button margins and the edge of the tabstrip should
@@ -402,10 +424,28 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
                                  TabStyle::Get()->GetBottomCornerRadius());
       SetTop(params, tabstrip_bounds.bottom() -
                          GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
-      used_exclusion = true;
+      needs_exclusion = false;
     }
     layout.AddChild(views().tab_strip_region_view, tabstrip_bounds,
-                    tabstrip_visible);
+                    tab_strip_type == TabStripType::kHorizontal);
+  }
+
+  // Lay out vertical tab strip if visible.
+  if (IsParentedTo(views().vertical_tab_strip_container,
+                   views().browser_view)) {
+    gfx::Rect vertical_tab_strip_bounds;
+    if (tab_strip_type == TabStripType::kVertical) {
+      const int vertical_tab_strip_width = std::max(
+          kMinVerticalTabStripWidth,
+          views().vertical_tab_strip_container->GetPreferredSize().width());
+      vertical_tab_strip_bounds = gfx::Rect(
+          params.visual_client_area.x(), params.visual_client_area.y(),
+          vertical_tab_strip_width, params.visual_client_area.height());
+      params.Inset(gfx::Insets::TLBR(0, vertical_tab_strip_width, 0, 0));
+    }
+    layout.AddChild(views().vertical_tab_strip_container,
+                    vertical_tab_strip_bounds,
+                    tab_strip_type == TabStripType::kVertical);
   }
 
   // Figure out whether the toolbar-height side panel should show and by how
@@ -485,7 +525,7 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
     const BrowserLayoutParams top_container_params =
         params.InLocalCoordinates(params.visual_client_area);
     top_container_layout.bounds = CalculateTopContainerLayout(
-        top_container_layout, top_container_params, !used_exclusion);
+        top_container_layout, top_container_params, needs_exclusion);
     // Convert back to local coordinates.
     top_container_layout.bounds.Offset(
         params.visual_client_area.OffsetFromOrigin());
@@ -689,31 +729,40 @@ gfx::Rect BrowserViewLayoutImpl::CalculateTopContainerLayout(
   // Save this so the final bounds can be calculated.
   const int original_top = params.visual_client_area.y();
 
+  const TabStripType tab_strip_type = GetTabStripType();
+
+  // If the WebUI tabstrip is in the top container (which can happen in
+  // immersive mode), ensure it is laid out here.
+  if (IsParentedTo(views().webui_tab_strip, views().top_container)) {
+    const int width = params.visual_client_area.width();
+    const int height = tab_strip_type == TabStripType::kWebUi
+                           ? views().webui_tab_strip->GetHeightForWidth(width)
+                           : 0;
+    layout.AddChild(views().webui_tab_strip,
+                    gfx::Rect(params.visual_client_area.origin(),
+                              gfx::Size(width, height)));
+    params.Inset(gfx::Insets::TLBR(height, 0, 0, 0));
+  }
+
   // If the tabstrip is in the top container (which can happen in immersive
   // mode), ensure it is laid out here.
   if (IsParentedTo(views().tab_strip_region_view, views().top_container)) {
     gfx::Rect tabstrip_bounds;
-    const bool tabstrip_visible = delegate().ShouldDrawTabStrip();
-    if (tabstrip_visible) {
+    if (tab_strip_type == TabStripType::kHorizontal) {
       // When there is an exclusion, inset the leading edge of the tabstrip by
       // the size of the swoop of the first tab; this is especially important
       // for Mac, where the negative space of the caption button margins and the
       // edge of the tabstrip should overlap. The trailing edge receives the
       // usual treatment, as it is the new tab button and not a tab.
       tabstrip_bounds =
-          needs_exclusion
-              ? GetBoundsWithExclusion(params, views().tab_strip_region_view,
-                                       TabStyle::Get()->GetBottomCornerRadius())
-              : gfx::Rect(
-                    params.visual_client_area.x(),
-                    params.visual_client_area.y(),
-                    params.visual_client_area.width(),
-                    views().tab_strip_region_view->GetPreferredSize().height());
-      SetTop(params, tabstrip_bounds.bottom());
+          GetBoundsWithExclusion(params, views().tab_strip_region_view,
+                                 TabStyle::Get()->GetBottomCornerRadius());
+      SetTop(params, tabstrip_bounds.bottom() -
+                         GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
       needs_exclusion = false;
     }
     layout.AddChild(views().tab_strip_region_view, tabstrip_bounds,
-                    tabstrip_visible);
+                    tab_strip_type == TabStripType::kHorizontal);
   }
 
   // Lay out toolbar. If tabstrip is completely absent (or vertical), this can

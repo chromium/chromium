@@ -59,6 +59,10 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
   // height side panel.
   gfx::Size GetMinimumMainAreaSize() const;
 
+  // Returns the type of tabstrip present.
+  enum class TabStripType { kNone, kWebUi, kVertical, kHorizontal };
+  TabStripType GetTabStripType() const;
+
   // BrowserViewLayout overrides:
   gfx::Point GetDialogPosition(const gfx::Size& dialog_size) const override;
   gfx::Size GetMaximumDialogSize() const override;

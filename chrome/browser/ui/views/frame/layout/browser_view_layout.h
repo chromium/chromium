@@ -97,7 +97,10 @@ class BrowserViewLayout : public views::LayoutManager {
   static constexpr int kMainBrowserContentsMinimumWidth = 500;
 
   // The width of the vertical tab strip.
-  static constexpr int kVerticalTabStripWidth = 240;
+  //
+  // TODO(https://crbug.com/439961053): This shouldn't be hard-coded and should
+  // be reported by the vertical tabstrip itself.
+  static constexpr int kMinVerticalTabStripWidth = 240;
 
   BrowserViewLayout(const BrowserViewLayout&) = delete;
   BrowserViewLayout& operator=(const BrowserViewLayout&) = delete;

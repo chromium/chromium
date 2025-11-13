@@ -12,8 +12,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
@@ -102,7 +100,7 @@ void BrowserViewLayoutImplOld::Layout(views::View* browser_view) {
     views().window_scrim->SetBoundsRect(available_bounds);
   }
 
-  if (tabs::IsVerticalTabsFeatureEnabled() && ShouldDisplayVerticalTabs()) {
+  if (delegate().ShouldDrawVerticalTabStrip()) {
     LayoutVerticalTabStrip(available_bounds);
   }
 
@@ -203,8 +201,8 @@ BrowserViewLayoutImplOld::CalculateContentsContainerLayout(
     const gfx::Rect& available_bounds) const {
   gfx::Rect contents_container_bounds = available_bounds;
   int vertical_tab_offset = 0;
-  if (tabs::IsVerticalTabsFeatureEnabled() && ShouldDisplayVerticalTabs()) {
-    vertical_tab_offset = kVerticalTabStripWidth;
+  if (delegate().ShouldDrawVerticalTabStrip()) {
+    vertical_tab_offset = kMinVerticalTabStripWidth;
     contents_container_bounds.set_width(available_bounds.width() -
                                         vertical_tab_offset);
   }
@@ -332,13 +330,6 @@ void BrowserViewLayout::SetDelegateForTesting(
   views().browser_view->InvalidateLayout();
 }
 
-bool BrowserViewLayout::ShouldDisplayVerticalTabs() const {
-  return browser()
-      ->browser_window_features()
-      ->vertical_tab_strip_state_controller()
-      ->ShouldDisplayVerticalTabs();
-}
-
 void BrowserViewLayoutImplOld::LayoutTitleBarForWebApp(
     gfx::Rect& available_bounds) {
   TRACE_EVENT0("ui", "BrowserViewLayout::LayoutTitleBarForWebApp");
@@ -396,9 +387,9 @@ void BrowserViewLayoutImplOld::LayoutVerticalTabStrip(
   if (views().vertical_tab_strip_container &&
       views().vertical_tab_strip_container->GetVisible()) {
     views().vertical_tab_strip_container->SetBounds(
-        available_bounds.x(), available_bounds.y(), kVerticalTabStripWidth,
+        available_bounds.x(), available_bounds.y(), kMinVerticalTabStripWidth,
         available_bounds.height());
-    available_bounds.set_x(available_bounds.x() + kVerticalTabStripWidth);
+    available_bounds.set_x(available_bounds.x() + kMinVerticalTabStripWidth);
   }
 }
 
@@ -420,7 +411,7 @@ void BrowserViewLayoutImplOld::LayoutTabStripRegion(
         0, 0, 0, views().web_app_frame_toolbar->GetPreferredSize().width()));
   }
 
-  if (tabs::IsVerticalTabsFeatureEnabled() && ShouldDisplayVerticalTabs()) {
+  if (delegate().ShouldDrawVerticalTabStrip()) {
     SetViewVisibility(views().tab_strip_region_view, false);
   } else {
     SetViewVisibility(views().tab_strip_region_view, true);
@@ -451,11 +442,12 @@ void BrowserViewLayoutImplOld::LayoutToolbar(gfx::Rect& available_bounds) {
   bool toolbar_visible = delegate().IsToolbarVisible();
   SetViewVisibility(views().toolbar, toolbar_visible);
 
-  if (tabs::IsVerticalTabsFeatureEnabled() && ShouldDisplayVerticalTabs()) {
+  if (delegate().ShouldDrawVerticalTabStrip()) {
     gfx::Rect toolbar_bounds(
         delegate().GetBoundsForToolbarInVerticalTabBrowserView());
     toolbar_bounds.set_x(available_bounds.x());
-    toolbar_bounds.set_width(toolbar_bounds.width() - kVerticalTabStripWidth);
+    toolbar_bounds.set_width(toolbar_bounds.width() -
+                             kMinVerticalTabStripWidth);
     views().toolbar->SetBoundsRect(toolbar_bounds);
   } else {
     int height =

@@ -37,14 +37,14 @@ class VerticalTabStripTopContainerInteractiveUiTest
     InteractiveBrowserTest::SetUp();
   }
 
-  auto SendTabSearchKeyPress(ui::ElementIdentifier target) {
+  auto SendTabSearchAccelerator() {
 #if BUILDFLAG(IS_MAC)
-    return SendKeyPress(target, ui::VKEY_A,
-                        ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
+    constexpr int kModifiers = ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN;
 #else
-    return SendKeyPress(target, ui::VKEY_A,
-                        ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+    constexpr int kModifiers = ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN;
 #endif
+    return SendAccelerator(kBrowserViewElementId,
+                           ui::Accelerator(ui::VKEY_A, kModifiers));
   }
 
  private:
@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       WaitForShow(kVerticalTabStripTopContainerElementId),
       EnsurePresent(kTabSearchButtonElementId),
       // Send Press to Vertical Tabs Tab Search Button
-      SendTabSearchKeyPress(kTabSearchButtonElementId),
+      SendTabSearchAccelerator(),
       // Display Horizontal Tabs
       WaitForShow(kTabSearchBubbleElementId), Do([this]() {
         browser()
@@ -79,8 +79,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       WaitForShow(kTabStripFrameGrabHandleElementId),
       EnsurePresent(kTabStripFrameGrabHandleElementId),
       // Send Press to Horizontal Tabs Tab Search Button
-      SendTabSearchKeyPress(kTabStripFrameGrabHandleElementId),
-      WaitForShow(kTabSearchBubbleElementId));
+      SendTabSearchAccelerator(), WaitForShow(kTabSearchBubbleElementId));
 }
 
 // This test checks that we can click the tab search button starting from the
@@ -93,8 +92,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       WaitForShow(kTabStripFrameGrabHandleElementId),
       EnsurePresent(kTabStripFrameGrabHandleElementId),
       // Send Press to Horizontal Tabs Tab Search Button
-      SendTabSearchKeyPress(kTabStripFrameGrabHandleElementId),
-      WaitForShow(kTabSearchBubbleElementId),
+      SendTabSearchAccelerator(), WaitForShow(kTabSearchBubbleElementId),
       SendKeyPress(kTabSearchBubbleElementId, ui::VKEY_ESCAPE),
       WaitForHide(kTabSearchBubbleElementId),
       // Display Vertical Tabs
@@ -108,8 +106,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       WaitForShow(kVerticalTabStripTopContainerElementId),
       EnsurePresent(kTabSearchButtonElementId),
       // Send Press to Vertical Tabs Tab Search Button
-      SendTabSearchKeyPress(kTabSearchButtonElementId),
-      WaitForShow(kTabSearchBubbleElementId));
+      SendTabSearchAccelerator(), WaitForShow(kTabSearchBubbleElementId));
 }
 
 // This test checks that we can click the collapse button in the vertical tab
