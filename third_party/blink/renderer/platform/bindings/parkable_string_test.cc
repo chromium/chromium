@@ -32,7 +32,11 @@
 #include "third_party/blink/renderer/platform/disk_data_allocator_test_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/scheduler/public/rail_mode_observer.h"
+#include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 using ThreadPoolExecutionMode =
     base::test::TaskEnvironment::ThreadPoolExecutionMode;
@@ -557,12 +561,12 @@ TEST_P(ParkableStringTest, BackgroundUnparkFromMemory) {
   EXPECT_TRUE(manager.IsOnParkedMapForTesting(impl));
 
   // Post unparking task to a background thread.
-  base::ThreadPool::PostTask(FROM_HERE, base::BindOnce(
-                                            [](ParkableStringImpl* string) {
-                                              EXPECT_FALSE(IsMainThread());
-                                              string->ToString();
-                                            },
-                                            base::RetainedRef(impl)));
+  blink::worker_pool::PostTask(FROM_HERE, blink::CrossThreadBindOnce(
+                                              [](ParkableStringImpl* string) {
+                                                EXPECT_FALSE(IsMainThread());
+                                                string->ToString();
+                                              },
+                                              blink::RetainedRef(impl)));
 
   // Wait until the background unpark task is completed.
   while (true) {
@@ -597,12 +601,12 @@ TEST_P(ParkableStringTest, BackgroundUnparkFromDisk) {
   EXPECT_TRUE(manager.IsOnDiskMapForTesting(impl));
 
   // Post unparking task to a background thread.
-  base::ThreadPool::PostTask(FROM_HERE, base::BindOnce(
-                                            [](ParkableStringImpl* string) {
-                                              EXPECT_FALSE(IsMainThread());
-                                              string->ToString();
-                                            },
-                                            base::RetainedRef(impl)));
+  blink::worker_pool::PostTask(FROM_HERE, blink::CrossThreadBindOnce(
+                                              [](ParkableStringImpl* string) {
+                                                EXPECT_FALSE(IsMainThread());
+                                                string->ToString();
+                                              },
+                                              blink::RetainedRef(impl)));
 
   // Wait until the background unpark task is completed.
   while (true) {
@@ -634,8 +638,8 @@ TEST_P(ParkableStringTest, BackgroundDestruct) {
   auto parkable =
       std::make_unique<ParkableStringWrapper>(MakeLargeString().ReleaseImpl());
   EXPECT_TRUE(parkable->string.Impl()->HasOneRef());
-  base::ThreadPool::PostTask(
-      FROM_HERE, base::BindOnce(
+  blink::worker_pool::PostTask(
+      FROM_HERE, blink::CrossThreadBindOnce(
                      [](std::unique_ptr<ParkableStringWrapper> parkable) {
                        EXPECT_FALSE(IsMainThread());
                        EXPECT_TRUE(parkable->string.Impl()->HasOneRef());

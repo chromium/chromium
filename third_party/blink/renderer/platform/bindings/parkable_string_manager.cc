@@ -24,6 +24,10 @@
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -232,8 +236,8 @@ scoped_refptr<ParkableStringImpl> ParkableStringManager::Add(
   if (!has_posted_unparking_time_accounting_task_) {
     task_runner_->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&ParkableStringManager::RecordStatisticsAfter5Minutes,
-                       base::Unretained(this)),
+        blink::BindOnce(&ParkableStringManager::RecordStatisticsAfter5Minutes,
+                        blink::Unretained(this)),
         base::Minutes(5));
     has_posted_unparking_time_accounting_task_ = true;
   }
@@ -284,10 +288,11 @@ void ParkableStringManager::Remove(ParkableStringImpl* string) {
     RemoveOnMainThread(string);
     return;
   }
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ParkableStringManager::RemoveOnMainThread,
-                     base::Unretained(this), base::Unretained(string)));
+  blink::PostCrossThreadTask(
+      *task_runner_, FROM_HERE,
+      blink::CrossThreadBindOnce(&ParkableStringManager::RemoveOnMainThread,
+                                 blink::CrossThreadUnretained(this),
+                                 blink::CrossThreadUnretained(string)));
 }
 
 void ParkableStringManager::CompleteUnparkOnMainThread(
@@ -313,10 +318,12 @@ void ParkableStringManager::CompleteUnpark(ParkableStringImpl* string,
   }
   // Use a retained reference to prevent `string` from being deleted before
   // `CompleteUnpark()` is executed in the main thread.
-  task_runner_->PostTask(
-      FROM_HERE, BindOnce(&ParkableStringManager::CompleteUnparkOnMainThread,
-                          base::Unretained(this), base::RetainedRef(string),
-                          elapsed, disk_elapsed));
+  blink::PostCrossThreadTask(
+      *task_runner_, FROM_HERE,
+      blink::CrossThreadBindOnce(
+          &ParkableStringManager::CompleteUnparkOnMainThread,
+          blink::CrossThreadUnretained(this), blink::RetainedRef(string),
+          elapsed, disk_elapsed));
 }
 
 void ParkableStringManager::OnParked(ParkableStringImpl* newly_parked_string) {
@@ -457,8 +464,8 @@ void ParkableStringManager::ScheduleAgingTaskIfNeeded() {
 
   PostDelayedMemoryReductionTask(
       task_runner_, FROM_HERE,
-      base::BindOnce(&ParkableStringManager::AgeStringsAndPark,
-                     base::Unretained(this)),
+      blink::BindOnce(&ParkableStringManager::AgeStringsAndPark,
+                      blink::Unretained(this)),
       delay);
   has_pending_aging_task_ = true;
 }
