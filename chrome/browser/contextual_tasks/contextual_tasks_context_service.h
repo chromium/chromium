@@ -51,6 +51,11 @@ enum TabSelectionMode {
   kMultiSignalScoring,
 };
 
+// Options to regulate tab selection behavior.
+struct TabSelectionOptions {
+  TabSelectionMode tab_selection_mode = TabSelectionMode::kEmbeddingsMatch;
+};
+
 // A service used to determine the relevant context for a given task.
 class ContextualTasksContextService
     : public KeyedService,
@@ -69,8 +74,8 @@ class ContextualTasksContextService
 
   // Returns the relevant tabs for `query`. Will invoke `callback` when done.
   void GetRelevantTabsForQuery(
+      const TabSelectionOptions& options,
       const std::string& query,
-      TabSelectionMode tab_selection_mode,
       const std::vector<GURL>& explicit_urls,
       base::OnceCallback<void(std::vector<content::WebContents*>)> callback);
 

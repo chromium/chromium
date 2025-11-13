@@ -55,6 +55,13 @@ std::optional<lens::ImageEncodingOptions> CreateImageEncodingOptions() {
       .compression_quality = image_upload_config.image_compression_quality()};
 }
 
+contextual_tasks::TabSelectionOptions CreateTabSelectionOptions() {
+  // TODO(crbug.com/452036470): read from Finch FeatureConfig.
+  return contextual_tasks::TabSelectionOptions{
+      .tab_selection_mode = TabSelectionMode::kEmbeddingsMatch,
+  };
+}
+
 // Returns the ContextualSearchSessionHandle for the given WebContents, or
 // nullptr if there is none.
 contextual_search::ContextualSearchSessionHandle* GetSessionHandle(
@@ -488,7 +495,7 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
       }
     }
     contextual_tasks_context_service_->GetRelevantTabsForQuery(
-        query_text, TabSelectionMode::kEmbeddingsMatch, explicit_urls,
+        CreateTabSelectionOptions(), query_text, explicit_urls,
         base::DoNothing());
   }
 #endif

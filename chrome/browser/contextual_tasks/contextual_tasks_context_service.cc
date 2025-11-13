@@ -163,8 +163,8 @@ void ContextualTasksContextService::SetClockForTesting(
 }
 
 void ContextualTasksContextService::GetRelevantTabsForQuery(
+    const TabSelectionOptions& options,
     const std::string& query,
-    TabSelectionMode tab_selection_mode,
     const std::vector<GURL>& explicit_urls,
     base::OnceCallback<void(std::vector<content::WebContents*>)> callback) {
   base::TimeTicks now = tick_clock_->NowTicks();
@@ -191,7 +191,8 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
       passage_embeddings::PassagePriority::kUrgent, {query},
       base::BindOnce(&ContextualTasksContextService::OnQueryEmbeddingReady,
                      weak_ptr_factory_.GetWeakPtr(), query, now,
-                     tab_selection_mode, explicit_urls, std::move(callback)));
+                     options.tab_selection_mode, explicit_urls,
+                     std::move(callback)));
 }
 
 void ContextualTasksContextService::EmbedderMetadataUpdated(
