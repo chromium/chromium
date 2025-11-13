@@ -55,7 +55,6 @@ namespace ash::boca_receiver {
 namespace {
 
 using ::testing::_;
-using ::testing::ByMove;
 using ::testing::NiceMock;
 using ::testing::NotNull;
 using ::testing::Return;
@@ -150,10 +149,10 @@ class MockReceiverHandlerDelegate : public ReceiverHandlerDelegate {
               (std::string_view, const net::NetworkTrafficAnnotationTag&),
               (const, override));
 
-  MOCK_METHOD(std::unique_ptr<boca::SpotlightRemotingClientManager>,
-              CreateRemotingClientManager,
+  MOCK_METHOD(boca::SpotlightRemotingClientManager*,
+              GetRemotingClient,
               (),
-              (override));
+              (const, override));
 
   MOCK_METHOD(bool, IsAppEnabled, (std::string_view), (override));
 };
@@ -244,18 +243,16 @@ class BocaReceiverUntrustedPageHandlerTest : public testing::Test {
     });
     url_loader_factory_.AddResponse(register_url_.spec(),
                                     R"({"receiverId": "AB12"})");
-    auto mock_remoting_client =
+    remoting_client_ =
         std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
-    remoting_client_ = mock_remoting_client.get();
-    ON_CALL(handler_delegate_, CreateRemotingClientManager)
-        .WillByDefault(Return(ByMove(std::move(mock_remoting_client))));
+    ON_CALL(handler_delegate_, GetRemotingClient)
+        .WillByDefault(Return(remoting_client_.get()));
   }
 
   void TearDown() override {
     EXPECT_CALL(fcm_handler_, RemoveListener(handler_.get())).Times(1);
     EXPECT_CALL(fcm_handler_, RemoveTokenObserver(handler_.get())).Times(1);
     fcm_token_observer_ = nullptr;
-    remoting_client_ = nullptr;
     handler_.reset();
   }
 
@@ -301,12 +298,13 @@ class BocaReceiverUntrustedPageHandlerTest : public testing::Test {
   network_config::CrosNetworkConfigTestHelper cros_network_config_helper_;
   std::string wifi_service_path_;
   NiceMock<MockFCMHandler> fcm_handler_;
+  std::unique_ptr<NiceMock<MockSpotlightRemotingClientManager>>
+      remoting_client_;
   std::unique_ptr<BocaReceiverUntrustedPageHandler> handler_;
   raw_ptr<boca::FCMRegistrationTokenObserver> fcm_token_observer_;
   network::TestURLLoaderFactory url_loader_factory_;
   NiceMock<MockReceiverHandlerDelegate> handler_delegate_;
   NiceMock<MockUntrustedPage> page_;
-  raw_ptr<NiceMock<MockSpotlightRemotingClientManager>> remoting_client_;
   const GURL register_url_ =
       GURL(boca::GetSchoolToolsUrl()).Resolve(RegisterReceiverRequest::kUrl);
   const GURL get_connection_url_ =
@@ -404,7 +402,6 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, StartRequestedNoCodeThenWithCode) {
       CreateConnectionInfo(kConnectionId, kStartRequested, "");
 
   EXPECT_CALL(page_, OnConnecting).Times(0);
-  ASSERT_THAT(remoting_client_, NotNull());
   EXPECT_CALL(*remoting_client_, StartCrdClient).Times(0);
   url_loader_factory_.WaitForRequest(get_connection_url_);
   url_loader_factory_.SimulateResponseForPendingRequest(
@@ -513,17 +510,13 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, AudioPacketReceived) {
                                   CreateConnectionInfo(kConnectionId));
   base::RepeatingCallback<void(std::unique_ptr<remoting::AudioPacket> packet)>
       audio_packet_received_cb;
-  auto remoting_client =
-      std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
-  EXPECT_CALL(*remoting_client,
+  EXPECT_CALL(*remoting_client_,
               StartCrdClient(std::string(kConnectionCode), _, _, _, _))
       .WillOnce([&audio_packet_received_cb](auto, auto, auto,
                                             auto audio_packet_received_cb_param,
                                             auto) {
         audio_packet_received_cb = std::move(audio_packet_received_cb_param);
       });
-  EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
-      .WillOnce(Return(ByMove(std::move(remoting_client))));
   handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
       page_.BindAndGetRemote(), &handler_delegate_);
 
@@ -566,17 +559,13 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, InvalidAudioPacketNotSent) {
                                   CreateConnectionInfo(kConnectionId));
   base::RepeatingCallback<void(std::unique_ptr<remoting::AudioPacket> packet)>
       audio_packet_received_cb;
-  auto remoting_client =
-      std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
-  EXPECT_CALL(*remoting_client,
+  EXPECT_CALL(*remoting_client_,
               StartCrdClient(std::string(kConnectionCode), _, _, _, _))
       .WillOnce([&audio_packet_received_cb](auto, auto, auto,
                                             auto audio_packet_received_cb_param,
                                             auto) {
         audio_packet_received_cb = std::move(audio_packet_received_cb_param);
       });
-  EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
-      .WillOnce(Return(ByMove(std::move(remoting_client))));
   handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
       page_.BindAndGetRemote(), &handler_delegate_);
 

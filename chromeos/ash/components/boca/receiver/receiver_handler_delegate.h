@@ -36,8 +36,7 @@ class ReceiverHandlerDelegate {
       std::string_view requester_id,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) const = 0;
 
-  virtual std::unique_ptr<boca::SpotlightRemotingClientManager>
-  CreateRemotingClientManager() = 0;
+  virtual boca::SpotlightRemotingClientManager* GetRemotingClient() const = 0;
 
   virtual bool IsAppEnabled(std::string_view url) = 0;
 

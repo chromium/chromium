@@ -22,6 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "chromeos/ash/components/boca/boca_request.h"
 #include "chromeos/ash/components/boca/invalidations/fcm_handler.h"
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
@@ -79,10 +80,10 @@ std::unique_ptr<boca::BocaRequest::Delegate> CreateRegistrationRequestSender(
 BocaReceiverUntrustedPageHandler::BocaReceiverUntrustedPageHandler(
     mojo::PendingRemote<mojom::UntrustedPage> page,
     ReceiverHandlerDelegate* delegate)
-    : page_(std::move(page)),
-      delegate_(delegate),
-      remoting_client_(delegate->CreateRemotingClientManager()) {
-  if (!delegate_->IsAppEnabled(kChromeBocaReceiverURL)) {
+    : page_(std::move(page)), delegate_(delegate) {
+  if (!delegate_->IsAppEnabled(kChromeBocaReceiverURL) || !fcm_handler()) {
+    LOG_IF(ERROR, !fcm_handler())
+        << "[BocaReceiver] Fcm handler is unexpectedly null";
     page_->OnInitReceiverError();
     return;
   }
@@ -100,6 +101,10 @@ BocaReceiverUntrustedPageHandler::BocaReceiverUntrustedPageHandler(
 }
 
 BocaReceiverUntrustedPageHandler::~BocaReceiverUntrustedPageHandler() {
+  if (!fcm_handler()) {
+    LOG(ERROR) << "[BocaReceiver] Fcm handler is unexpectedly null";
+    return;
+  }
   fcm_handler()->RemoveListener(this);
   fcm_handler()->RemoveTokenObserver(this);
 }
@@ -133,6 +138,10 @@ void BocaReceiverUntrustedPageHandler::OnInvalidationReceived(
 }
 
 void BocaReceiverUntrustedPageHandler::Init() {
+  if (!fcm_handler()) {
+    LOG(ERROR) << "[BocaReceiver] Fcm handler is unexpectedly null";
+    return;
+  }
   if (fcm_handler()->IsListening()) {
     OnFCMRegistrationTokenChanged();
     return;
@@ -295,6 +304,12 @@ void BocaReceiverUntrustedPageHandler::MaybeStartConnection(
           .empty()) {
     return;
   }
+  if (!remoting_client()) {
+    LOG(ERROR) << "[BocaReceiver] Cannot start connection, remoting client is "
+                  "unexpectedly null.";
+    page_->OnInitReceiverError();
+    return;
+  }
   const ::boca::UserIdentity& initiator =
       connection_info_->connection_details().initiator().user_identity();
   const ::boca::UserIdentity& presenter =
@@ -310,7 +325,7 @@ void BocaReceiverUntrustedPageHandler::MaybeStartConnection(
   std::string connection_code = connection_info_->connection_details()
                                     .connection_code()
                                     .connection_code();
-  remoting_client_->StartCrdClient(
+  remoting_client()->StartCrdClient(
       std::move(connection_code),
       base::BindOnce(&BocaReceiverUntrustedPageHandler::OnCrdSessionEnded,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -332,7 +347,11 @@ void BocaReceiverUntrustedPageHandler::MaybeEndConnection(
   if (connection_info_->receiver_connection_state() == ::boca::CONNECTED ||
       connection_info_->receiver_connection_state() == ::boca::CONNECTING) {
     page_->OnConnectionClosed(reason);
-    remoting_client_->StopCrdClient(base::DoNothing());
+    LOG_IF(ERROR, !remoting_client())
+        << "[BocaReceiver] Remoting client is unexpectedly null.";
+    if (remoting_client()) {
+      remoting_client()->StopCrdClient(base::DoNothing());
+    }
   }
   auto connection_state = reason == mojom::ConnectionClosedReason::kError
                               ? ::boca::ReceiverConnectionState::ERROR
@@ -367,7 +386,8 @@ void BocaReceiverUntrustedPageHandler::OnCrdAudioPacketReceived(
   if (mojom_packet) {
     page_->OnAudioPacket(std::move(mojom_packet));
   } else {
-    LOG(ERROR) << "Dropping audio packet due to conversion failure.";
+    LOG(ERROR)
+        << "[BocaReceiver] Dropping audio packet due to conversion failure.";
   }
 }
 
@@ -419,6 +439,11 @@ void BocaReceiverUntrustedPageHandler::OnActiveNetworksChanged(
 
 boca::FCMHandler* BocaReceiverUntrustedPageHandler::fcm_handler() const {
   return delegate_->GetFcmHandler();
+}
+
+boca::SpotlightRemotingClientManager*
+BocaReceiverUntrustedPageHandler::remoting_client() const {
+  return delegate_->GetRemotingClient();
 }
 
 }  // namespace ash::boca_receiver

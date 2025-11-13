@@ -8,28 +8,21 @@
 #include <optional>
 #include <string_view>
 
-#include "base/check_deref.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
-#include "chrome/browser/ash/boca/spotlight/spotlight_oauth_token_fetcher_impl.h"
+#include "chrome/browser/ash/boca/receiver/boca_receiver_service.h"
+#include "chrome/browser/ash/boca/receiver/boca_receiver_service_factory.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
-#include "chrome/browser/gcm/gcm_profile_service_factory.h"
-#include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/boca/invalidations/fcm_handler.h"
 #include "chromeos/ash/components/boca/receiver/boca_device_auth_token_service.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_remoting_client_manager.h"
-#include "components/gcm_driver/gcm_driver.h"
-#include "components/gcm_driver/gcm_profile_service.h"
-#include "components/gcm_driver/instance_id/instance_id_driver.h"
-#include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/web_ui.h"
@@ -47,17 +40,8 @@ ReceiverHandlerDelegateImpl::ReceiverHandlerDelegateImpl(content::WebUI* web_ui)
 ReceiverHandlerDelegateImpl::~ReceiverHandlerDelegateImpl() = default;
 
 boca::FCMHandler* ReceiverHandlerDelegateImpl::GetFcmHandler() const {
-  static base::NoDestructor<boca::FCMHandlerImpl> fcm_handler;
-  if (!fcm_handler.get()->IsInitialized()) {
-    Profile* profile = Profile::FromWebUI(web_ui_);
-    gcm::GCMDriver* gcm_driver =
-        gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver();
-    instance_id::InstanceIDDriver* instance_id_driver =
-        instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
-            ->driver();
-    fcm_handler.get()->Init(gcm_driver, instance_id_driver);
-  }
-  return fcm_handler.get();
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  return BocaReceiverServiceFactory::GetForProfile(profile)->fcm_handler();
 }
 
 std::unique_ptr<google_apis::RequestSender>
@@ -79,14 +63,10 @@ ReceiverHandlerDelegateImpl::CreateRequestSender(
       /*custom_user_agent=*/"", traffic_annotation);
 }
 
-std::unique_ptr<boca::SpotlightRemotingClientManager>
-ReceiverHandlerDelegateImpl::CreateRemotingClientManager() {
-  // TODO(crbug.com/445415017): Replace `SpotlightOAuthTokenFetcher` by
-  // `BocaDeviceAuthTokenService`
-  return std::make_unique<boca::SpotlightRemotingClientManagerImpl>(
-      std::make_unique<boca::SpotlightOAuthTokenFetcherImpl>(
-          CHECK_DEREF(DeviceOAuth2TokenServiceFactory::Get())),
-      Profile::FromWebUI(web_ui_)->GetURLLoaderFactory());
+boca::SpotlightRemotingClientManager*
+ReceiverHandlerDelegateImpl::GetRemotingClient() const {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  return BocaReceiverServiceFactory::GetForProfile(profile)->remoting_client();
 }
 
 bool ReceiverHandlerDelegateImpl::IsAppEnabled(std::string_view url) {

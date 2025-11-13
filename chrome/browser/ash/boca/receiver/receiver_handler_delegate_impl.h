@@ -48,8 +48,7 @@ class ReceiverHandlerDelegateImpl : public ReceiverHandlerDelegate {
       const net::NetworkTrafficAnnotationTag& traffic_annotation)
       const override;
 
-  std::unique_ptr<boca::SpotlightRemotingClientManager>
-  CreateRemotingClientManager() override;
+  boca::SpotlightRemotingClientManager* GetRemotingClient() const override;
 
   bool IsAppEnabled(std::string_view url) override;
 
