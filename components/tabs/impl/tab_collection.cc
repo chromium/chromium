@@ -314,31 +314,34 @@ void TabCollection::OnTabRemovedFromTree() {
   }
 }
 
-void TabCollection::NotifyOnChildrenAdded(
-    base::PassKey<TabCollection> pass_key,
-    const TabCollectionNodes& handles,
-    const Position& insertion_position,
-    TabCollection* stop_notification_root) {
+void TabCollection::NotifyOnChildrenAdded(base::PassKey<TabCollection> pass_key,
+                                          const TabCollectionNodes& handles,
+                                          const Position& insertion_position,
+                                          TabCollection* stop_notification_root,
+                                          bool insert_from_detached) {
   if (stop_notification_root != nullptr && stop_notification_root == this) {
     return;
   }
 
   if (notify_immediately_) {
     observers_.Notify(&TabCollectionObserver::OnChildrenAdded,
-                      insertion_position, handles);
+                      insertion_position, handles, insert_from_detached);
   } else if (!observers_.empty()) {
     pending_notifications_.push_back(base::BindOnce(
         [](base::ObserverList<TabCollectionObserver>& observers,
-           const Position& position, const TabCollectionNodes& handles) {
+           const Position& position, const TabCollectionNodes& handles,
+           bool insert_from_detached) {
           observers.Notify(&TabCollectionObserver::OnChildrenAdded, position,
-                           handles);
+                           handles, insert_from_detached);
         },
-        std::ref(observers_), insertion_position, handles));
+        std::ref(observers_), insertion_position, handles,
+        insert_from_detached));
   }
 
   if (parent_) {
     parent_->NotifyOnChildrenAdded(pass_key, handles, insertion_position,
-                                   stop_notification_root);
+                                   stop_notification_root,
+                                   insert_from_detached);
   }
 }
 

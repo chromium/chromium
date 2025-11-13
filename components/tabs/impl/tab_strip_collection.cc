@@ -576,7 +576,7 @@ void TabStripCollection::AddTabImpl(std::unique_ptr<TabInterface> tab,
   handles_added.push_back(tab_ptr->GetHandle());
 
   tab_collection_ptr->NotifyOnChildrenAdded(GetPassKey(), handles_added,
-                                            position, nullptr);
+                                            position, nullptr, false);
 }
 
 void TabStripCollection::AddTabCollectionImpl(
@@ -586,15 +586,18 @@ void TabStripCollection::AddTabCollectionImpl(
   AddCollectionMapping(collection_ptr);
 
   auto [tab_collection_handle, insert_index] = position;
-  TabCollection* tab_collection_ptr = tab_collection_handle.Get();
+  TabCollection* parent_collection_ptr = tab_collection_handle.Get();
 
-  tab_collection_ptr->AddCollection(std::move(collection), insert_index);
+  parent_collection_ptr->AddCollection(std::move(collection), insert_index);
 
   TabCollectionNodes handles_added;
   handles_added.push_back(collection_ptr->GetHandle());
 
-  tab_collection_ptr->NotifyOnChildrenAdded(GetPassKey(), handles_added,
-                                            position, nullptr);
+  // Signal whether the collection is an empty collection or a detached
+  // collection.
+  parent_collection_ptr->NotifyOnChildrenAdded(
+      GetPassKey(), handles_added, position, nullptr,
+      collection_ptr->TabCountRecursive() > 0);
 }
 
 std::unique_ptr<TabInterface> TabStripCollection::RemoveTabImpl(
@@ -677,7 +680,7 @@ void TabStripCollection::MoveTabImpl(TabInterface* tab_ptr,
                                                  handles, common_ancestor);
 
   dst_parent_collection->NotifyOnChildrenAdded(GetPassKey(), handles, position,
-                                               common_ancestor);
+                                               common_ancestor, false);
 
   common_ancestor->NotifyOnChildMoved(GetPassKey(), handles[0], src_details,
                                       position, nullptr);
@@ -715,8 +718,9 @@ void TabStripCollection::MoveCollectionImpl(TabCollection* collection_ptr,
   src_parent_collection->NotifyOnChildrenRemoved(GetPassKey(), src_details,
                                                  handles, common_ancestor);
 
-  dst_parent_collection->NotifyOnChildrenAdded(GetPassKey(), handles, position,
-                                               common_ancestor);
+  dst_parent_collection->NotifyOnChildrenAdded(
+      GetPassKey(), handles, position, common_ancestor,
+      (collection_ptr->TabCountRecursive() > 0) ? true : false);
 
   common_ancestor->NotifyOnChildMoved(GetPassKey(), handles[0], src_details,
                                       position, nullptr);

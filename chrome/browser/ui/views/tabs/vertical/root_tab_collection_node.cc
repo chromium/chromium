@@ -31,18 +31,40 @@ void RootTabCollectionNode::OnTabsCreated(
   for (const auto& tab_created : tabs_created_event->tabs) {
     TabCollectionNode* parent =
         GetNodeForId(tab_created->position.parent_id().value());
-    parent->AddNewChild(
-        GetPassKey(),
-        tabs_api::mojom::Data::NewTab(std::move(tab_created->tab)),
-        tab_created->position.index());
+
+    tabs_api::mojom::ContainerPtr container = tabs_api::mojom::Container::New();
+    container->data =
+        tabs_api::mojom::Data::NewTab(std::move(tab_created->tab));
+
+    parent->AddNewChild(GetPassKey(), std::move(container),
+                        tab_created->position.index());
   }
 }
 
 void RootTabCollectionNode::OnTabsClosed(
-    const tabs_api::mojom::OnTabsClosedEventPtr& tabs_closed_event) {}
+    const tabs_api::mojom::OnTabsClosedEventPtr& tabs_closed_event) {
+  for (auto& node_id : tabs_closed_event->tabs) {
+    TabCollectionNode* parent_node = GetParentNodeForId(node_id);
+    auto removed_view_and_node =
+        parent_node->RemoveChild(GetPassKey(), node_id);
+  }
+}
 
 void RootTabCollectionNode::OnNodeMoved(
-    const tabs_api::mojom::OnNodeMovedEventPtr& node_moved_event) {}
+    const tabs_api::mojom::OnNodeMovedEventPtr& node_moved_event) {
+  auto node_id = node_moved_event->id;
+  auto from_position = node_moved_event->from;
+  auto to_position = node_moved_event->to;
+
+  TabCollectionNode* src_parent_node =
+      GetNodeForId(from_position.parent_id().value());
+  TabCollectionNode* dst_parent_node =
+      GetNodeForId(to_position.parent_id().value());
+
+  auto [view, node] = src_parent_node->RemoveChild(GetPassKey(), node_id);
+  dst_parent_node->AddChild(std::move(view), std::move(node),
+                            to_position.index());
+}
 
 void RootTabCollectionNode::OnDataChanged(
     const tabs_api::mojom::OnDataChangedEventPtr& data_changed_event) {
@@ -55,4 +77,12 @@ void RootTabCollectionNode::OnDataChanged(
 
 void RootTabCollectionNode::OnCollectionCreated(
     const tabs_api::mojom::OnCollectionCreatedEventPtr&
-        collection_created_event) {}
+        collection_created_event) {
+  tabs_api::mojom::ContainerPtr container =
+      std::move(collection_created_event->collection);
+  TabCollectionNode* parent =
+      GetNodeForId(collection_created_event->position.parent_id().value());
+
+  parent->AddNewChild(GetPassKey(), std::move(container),
+                      collection_created_event->position.index());
+}

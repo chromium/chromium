@@ -765,3 +765,295 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, DataChangedEvent) {
   // Title should be changed.
   EXPECT_EQ(new_title, tab->data()->get_tab()->title);
 }
+IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, CloseTabInteraction) {
+  // 1. Setup: Have three tabs unpinned.
+  AppendTab();
+  AppendTab();
+
+  auto parent_view = std::make_unique<views::View>();
+
+  // 2. Initialize the RootTabCollectionNode, which observes the
+  // TabStripService.
+  RootTabCollectionNode root_node(
+      browser()
+          ->GetFeatures()
+          .tab_strip_service_feature()
+          ->GetTabStripService(),
+      base::BindRepeating<TabCollectionNode::CustomAddChildView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
+
+  // Wait for the initial structure to be populated.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !root_node.children().empty(); }));
+
+  // Get the Unpinned Container Node.
+  const auto& unpinned_node = root_node.children()[1];
+  ASSERT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
+
+  // Initial structure: three tabs
+  ASSERT_EQ(unpinned_node->children().size(), 3u);
+  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
+            TabCollectionNode::Type::kTab);
+
+  // Close a tab.
+  browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(1);
+
+  // After detaching, the unpinned node should only have 2 tabs.
+  ASSERT_EQ(unpinned_node->children().size(), 2u);
+}
+
+IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, DetachAndReattachGroup) {
+  // 1. Setup: Create an initial tab and a tab group to be detached.
+  auto [contents_vector, group_id] = AppendTabsToNewGroup(2);
+
+  auto parent_view = std::make_unique<views::View>();
+
+  // 2. Initialize the RootTabCollectionNode, which observes the
+  // TabStripService.
+  RootTabCollectionNode root_node(
+      browser()
+          ->GetFeatures()
+          .tab_strip_service_feature()
+          ->GetTabStripService(),
+      base::BindRepeating<TabCollectionNode::CustomAddChildView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
+
+  // Wait for the initial structure to be populated.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !root_node.children().empty(); }));
+
+  // Get the Unpinned Container Node.
+  const auto& unpinned_node = root_node.children()[1];
+  ASSERT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
+
+  // Initial structure: [Tab, GroupA] -> children size 2
+  ASSERT_EQ(unpinned_node->children().size(), 2u);
+  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
+            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[1]->GetType(),
+            TabCollectionNode::Type::kTabGroup);
+
+  // Detached GroupA node to simulate moving to another window/position.
+  std::unique_ptr<DetachedTabCollection> detached_group =
+      browser()->tab_strip_model()->DetachTabGroupForInsertion(group_id);
+
+  // After detaching, the unpinned node should only have 1 child (the initial
+  // tab).
+  ASSERT_EQ(unpinned_node->children().size(), 1u);
+
+  // 3. Re-insert the detached group at index 0.
+  browser()->tab_strip_model()->InsertDetachedTabGroupAt(
+      std::move(detached_group), 0);
+
+  // 4. Verification: The hierarchy should now be updated: [GroupA, Tab].
+  // Since the detached group was inserted at index 0, it should be the first
+  // child.
+  ASSERT_EQ(unpinned_node->children().size(), 2u);
+
+  // The first child should now be the Tab Group.
+  const auto& reinserted_group_node = unpinned_node->children()[0];
+  EXPECT_EQ(reinserted_group_node->GetType(),
+            TabCollectionNode::Type::kTabGroup);
+
+  // The second child should be the original Tab.
+  EXPECT_EQ(unpinned_node->children()[1]->GetType(),
+            TabCollectionNode::Type::kTab);
+
+  // Verify the group itself contains the correct number of children (2 tabs).
+  ASSERT_EQ(reinserted_group_node->children().size(), 2u);
+  EXPECT_EQ(reinserted_group_node->children()[0]->GetType(),
+            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(reinserted_group_node->children()[1]->GetType(),
+            TabCollectionNode::Type::kTab);
+}
+
+IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, GroupContiguousTabs) {
+  // 1. Setup: Start with three unpinned tabs.
+  AppendTab();  // Tab 1 (index 1)
+  AppendTab();  // Tab 2 (index 2)
+
+  auto parent_view = std::make_unique<views::View>();
+
+  // 2. Initialize the RootTabCollectionNode, which observes the
+  // TabStripService.
+  RootTabCollectionNode root_node(
+      browser()
+          ->GetFeatures()
+          .tab_strip_service_feature()
+          ->GetTabStripService(),
+      base::BindRepeating<TabCollectionNode::CustomAddChildView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
+
+  // Wait for the initial structure to be populated.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !root_node.children().empty(); }));
+
+  // Get the Unpinned Container Node.
+  const auto& unpinned_node = root_node.children()[1];
+  ASSERT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
+
+  // Initial structure verification: All 3 tabs are direct children of the
+  // Unpinned Container. [Tab, Tab, Tab] -> children size 3
+  ASSERT_EQ(unpinned_node->children().size(), 3u);
+  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
+            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[1]->GetType(),
+            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[2]->GetType(),
+            TabCollectionNode::Type::kTab);
+
+  browser()->tab_strip_model()->AddToNewGroup({0, 1});
+
+  // 4. Verification: The hierarchy should now be updated to [Tab, Group].
+  // The two tabs are replaced by a single group node.
+  ASSERT_EQ(unpinned_node->children().size(), 2u);
+
+  // The first child is the group.
+  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
+            TabCollectionNode::Type::kTabGroup);
+  const auto& new_group_node = unpinned_node->children()[0];
+
+  // Verify the group itself contains the correct number of children (2 tabs).
+  ASSERT_EQ(new_group_node->children().size(), 2u);
+  EXPECT_EQ(new_group_node->children()[0]->GetType(),
+            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(new_group_node->children()[1]->GetType(),
+            TabCollectionNode::Type::kTab);
+}
+
+IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
+                       SingleMoveWithinCollection) {
+  // 1. Setup: Start with three unpinned tabs.
+  AppendTab();  // Tab 1 (index 1)
+  AppendTab();  // Tab 2 (index 2)
+
+  auto parent_view = std::make_unique<views::View>();
+
+  // 2. Initialize the RootTabCollectionNode, which observes the
+  // TabStripService.
+  RootTabCollectionNode root_node(
+      browser()
+          ->GetFeatures()
+          .tab_strip_service_feature()
+          ->GetTabStripService(),
+      base::BindRepeating<TabCollectionNode::CustomAddChildView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
+
+  // Wait for the initial structure to be populated.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !root_node.children().empty(); }));
+
+  // Get the Unpinned Container Node.
+  const auto& unpinned_node = root_node.children()[1];
+  ASSERT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
+
+  // Initial structure verification and saving pointers to nodes.
+  ASSERT_EQ(unpinned_node->children().size(), 3u);
+
+  // A = Initial Tab (index 0)
+  TabCollectionNode* tab_a_node = unpinned_node->children()[0].get();
+  // B = Tab 1 (index 1)
+  TabCollectionNode* tab_b_node = unpinned_node->children()[1].get();
+  // C = Tab 2 (index 2)
+  TabCollectionNode* tab_c_node = unpinned_node->children()[2].get();
+
+  // Initial Order: [A, B, C]
+  EXPECT_EQ(unpinned_node->children()[0].get(), tab_a_node);
+  EXPECT_EQ(unpinned_node->children()[1].get(), tab_b_node);
+  EXPECT_EQ(unpinned_node->children()[2].get(), tab_c_node);
+
+  ui::ListSelectionModel selection_model;
+  selection_model.AddIndexToSelection(0);
+  selection_model.set_anchor(std::nullopt);
+  selection_model.set_active(0);
+  browser()->tab_strip_model()->SetSelectionFromModel(selection_model);
+  browser()->tab_strip_model()->MoveSelectedTabsTo(2, std::nullopt);
+
+  // 4. Validation: Check the final node order.
+  ASSERT_EQ(unpinned_node->children().size(), 3u);
+
+  // Expected Final Order: [B, C, A]
+  // Node at index 0 is Tab B (originally index 1).
+  EXPECT_EQ(unpinned_node->children()[0].get(), tab_b_node);
+  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
+            TabCollectionNode::Type::kTab);
+
+  // Node at index 1 is Tab C (originally index 2).
+  EXPECT_EQ(unpinned_node->children()[1].get(), tab_c_node);
+  EXPECT_EQ(unpinned_node->children()[1]->GetType(),
+            TabCollectionNode::Type::kTab);
+
+  // Node at index 2 is Tab A (originally index 0).
+  EXPECT_EQ(unpinned_node->children()[2].get(), tab_a_node);
+  EXPECT_EQ(unpinned_node->children()[2]->GetType(),
+            TabCollectionNode::Type::kTab);
+}
+
+IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
+                       SingleMoveAcrossCollection) {
+  // 1. Setup: Start with three unpinned tabs.
+  // Tab 0: Initial tab
+  // Tab 1: AppendTab() -> This is the tab we will pin.
+  // Tab 2: AppendTab()
+  AppendTab();
+  AppendTab();
+
+  auto parent_view = std::make_unique<views::View>();
+
+  // 2. Initialize the RootTabCollectionNode, which observes the
+  // TabStripService.
+  RootTabCollectionNode root_node(
+      browser()
+          ->GetFeatures()
+          .tab_strip_service_feature()
+          ->GetTabStripService(),
+      base::BindRepeating<TabCollectionNode::CustomAddChildView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
+
+  // Wait for the initial structure to be populated.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !root_node.children().empty(); }));
+
+  // Get the Pinned and Unpinned Container Nodes.
+  const auto& pinned_node = root_node.children()[0];
+  const auto& unpinned_node = root_node.children()[1];
+
+  ASSERT_EQ(pinned_node->GetType(), TabCollectionNode::Type::kPinnedTabs);
+  ASSERT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
+
+  // Initial State Validation:
+  // Pinned: 0 children.
+  ASSERT_EQ(pinned_node->children().size(), 0u);
+  // Unpinned: 3 children.
+  ASSERT_EQ(unpinned_node->children().size(), 3u);
+
+  // Save a pointer to the tab we intend to pin (the second one, at index 1).
+  TabCollectionNode* tab_to_pin_node = unpinned_node->children()[1].get();
+
+  // 3. Perform the Move (Pin the tab).
+  // Pinning the tab at index 1 moves it from the Unpinned collection
+  // (where it was at index 1) to the Pinned collection (at index 0).
+  browser()->tab_strip_model()->SetTabPinned(1, true);
+
+  // 4. Verification: The RootTabCollectionNode should process the OnNodeMoved
+  // event. We check that the Pinned container now has the expected child.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return pinned_node->children().size() == 1u; }));
+
+  // Final State Validation:
+
+  // Pinned Node verification:
+  // Pinned: 1 child (the moved tab).
+  ASSERT_EQ(pinned_node->children().size(), 1u);
+  // The first child of the Pinned node must be the tab we moved.
+  EXPECT_EQ(pinned_node->children()[0].get(), tab_to_pin_node);
+  EXPECT_EQ(pinned_node->children()[0]->GetType(),
+            TabCollectionNode::Type::kTab);
+
+  // Unpinned Node verification:
+  // Unpinned: 2 children remaining.
+  ASSERT_EQ(unpinned_node->children().size(), 2u);
+  // Ensure the tab is no longer a child of the Unpinned node.
+  EXPECT_NE(unpinned_node->children()[0].get(), tab_to_pin_node);
+  EXPECT_NE(unpinned_node->children()[1].get(), tab_to_pin_node);
+}

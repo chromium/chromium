@@ -26,7 +26,8 @@ mojom::OnTabsCreatedEventPtr ToEvent(
 mojom::OnCollectionCreatedEventPtr ToEvent(
     const tabs::TabCollectionHandle& handle,
     const tabs::TabCollection::Position& position,
-    const tabs_api::TabStripModelAdapter* adapter);
+    const tabs_api::TabStripModelAdapter* adapter,
+    bool insert_from_detached);
 
 mojom::OnTabsClosedEventPtr ToEvent(
     const tabs::TabCollectionNodes& removed_handles);

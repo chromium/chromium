@@ -77,7 +77,8 @@ StorageRestoreOrchestrator::~StorageRestoreOrchestrator() = default;
 
 void StorageRestoreOrchestrator::OnChildrenAdded(
     const TabCollection::Position& position,
-    const TabCollectionNodes& handles) {
+    const TabCollectionNodes& handles,
+    bool insert_from_detached) {
   // Associating a tab also associates its ancestors.
   for (const auto& handle : handles) {
     OnAddChildTab(restored_nodes_, handle, service_, loaded_data_);

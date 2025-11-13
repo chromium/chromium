@@ -62,7 +62,8 @@ class TabStripEventRecorder : public TabStripModelObserver,
 
   // tabs::TabCollectionObserver
   void OnChildrenAdded(const tabs::TabCollection::Position& position,
-                       const tabs::TabCollectionNodes& handles) override;
+                       const tabs::TabCollectionNodes& handles,
+                       bool insert_from_detached) override;
 
   void OnChildrenRemoved(const tabs::TabCollection::Position& position,
                          const tabs::TabCollectionNodes& handles) override;

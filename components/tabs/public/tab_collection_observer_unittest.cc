@@ -34,7 +34,7 @@ class MockTabCollectionObserver : public TabCollectionObserver {
   // TabCollectionObserver:
   MOCK_METHOD(void,
               OnChildrenAdded,
-              (const TabCollection::Position&, const TabCollectionNodes&),
+              (const TabCollection::Position&, const TabCollectionNodes&, bool),
               (override));
   MOCK_METHOD(void,
               OnChildrenRemoved,
@@ -124,7 +124,7 @@ TEST_F(TabCollectionObserverTest, OnTabAdded) {
                                testing::Eq(expected_position.parent_handle)),
                 testing::Field(&TabCollection::Position::index,
                                testing::Eq(expected_position.index))),
-            testing::Eq(expected_handles)))
+            testing::Eq(expected_handles), testing::Eq(false)))
         .Times(1);
 
     collection->AddTabRecursive(std::move(tab), 0, std::nullopt, false);
@@ -151,7 +151,7 @@ TEST_F(TabCollectionObserverTest, OnTabAdded) {
                                testing::Eq(expected_position.parent_handle)),
                 testing::Field(&TabCollection::Position::index,
                                testing::Eq(expected_position.index))),
-            testing::Eq(expected_handles)))
+            testing::Eq(expected_handles), testing::Eq(false)))
         .Times(1);
 
     collection->AddTabRecursive(std::move(tab), 0, std::nullopt, true);
@@ -179,7 +179,7 @@ TEST_F(TabCollectionObserverTest, OnTabAdded) {
                                testing::Eq(expected_position.parent_handle)),
                 testing::Field(&TabCollection::Position::index,
                                testing::Eq(expected_position.index))),
-            testing::Eq(expected_handles)))
+            testing::Eq(expected_handles), testing::Eq(false)))
         .Times(1);
 
     collection->AddTabRecursive(std::move(tab), 3, group_id, false);
@@ -223,7 +223,7 @@ TEST_F(TabCollectionObserverTest, OnTabCollectionAttached) {
                              testing::Eq(expected_position.parent_handle)),
               testing::Field(&TabCollection::Position::index,
                              testing::Eq(expected_position.index))),
-          testing::Eq(expected_handles)))
+          testing::Eq(expected_handles), testing::Eq(true)))
       .Times(1);
 
   collection->InsertTabCollectionAt(std::move(grouped_collection), 0, false,
@@ -258,7 +258,7 @@ TEST_F(TabCollectionObserverTest, OnTabCollectionAttached) {
                   testing::Eq(expected_position_split.parent_handle)),
               testing::Field(&TabCollection::Position::index,
                              testing::Eq(expected_position_split.index))),
-          testing::Eq(expected_handles_split)))
+          testing::Eq(expected_handles_split), testing::Eq(true)))
       .Times(1);
 
   collection->InsertTabCollectionAt(std::move(split_collection_unique), 1,
@@ -509,9 +509,10 @@ TEST_F(TabCollectionObserverTest, OnSplitCreated) {
                   testing::Eq(expected_split_position.parent_handle)),
               testing::Field(&TabCollection::Position::index,
                              testing::Eq(expected_split_position.index))),
-          testing::SizeIs(1)))
+          testing::SizeIs(1), testing::Eq(false)))
       .WillOnce([&](const TabCollection::Position& position,
-                    const TabCollectionNodes& handles) {
+                    const TabCollectionNodes& handles,
+                    bool detached_collection) {
         // Save the handle of the newly added split collection for the next
         // expectation.
         new_split_handle = std::get<tabs::TabCollection::Handle>(handles[0]);
@@ -734,7 +735,8 @@ TEST_F(TabCollectionObserverTest, MoveTab) {
                     testing::Eq(expected_new_group_position.parent_handle)),
                 testing::Field(&TabCollection::Position::index,
                                testing::Eq(expected_new_group_position.index))),
-            testing::Eq(tabs::TabCollectionNodes{new_group_handle})));
+            testing::Eq(tabs::TabCollectionNodes{new_group_handle}),
+            testing::Eq(false)));
 
     // 2. The tab is moved from old group to new group
     const TabCollection::Position expected_to_position = {
@@ -1001,7 +1003,8 @@ TEST_F(TabCollectionObserverTest, MoveTabToPinnedOnlyNotifiesMoveInTabstrip) {
   collection->AddTabRecursive(std::move(unpinned_tab), 0, std::nullopt, false);
 
   // 2. Expectations: Check only OnChildMoved is called.
-  EXPECT_CALL(observer, OnChildrenAdded(testing::_, testing::_)).Times(0);
+  EXPECT_CALL(observer, OnChildrenAdded(testing::_, testing::_, testing::_))
+      .Times(0);
   EXPECT_CALL(observer, OnChildrenRemoved(testing::_, testing::_)).Times(0);
   EXPECT_CALL(observer, OnChildMoved(testing::_, testing::_)).Times(1);
 

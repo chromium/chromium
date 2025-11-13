@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/utilities/tab_strip_api_utilities.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_split_tab_view.h"
@@ -125,12 +126,58 @@ TabCollectionNode* TabCollectionNode::GetNodeForId(
   return nullptr;
 }
 
+TabCollectionNode* TabCollectionNode::GetParentNodeForId(
+    const tabs_api::NodeId& node_id) {
+  for (auto& child_node : children_) {
+    if (tabs_api::utils::GetNodeId(*child_node->data()) == node_id) {
+      return this;
+    }
+  }
+
+  for (auto& child_node : children_) {
+    TabCollectionNode* parent = child_node->GetParentNodeForId(node_id);
+    if (parent) {
+      return parent;
+    }
+  }
+
+  return nullptr;
+}
+
 void TabCollectionNode::AddNewChild(base::PassKey<TabCollectionNode> pass_key,
-                                    tabs_api::mojom::DataPtr data,
+                                    tabs_api::mojom::ContainerPtr container,
                                     size_t model_index) {
-  auto child_node = std::make_unique<TabCollectionNode>(std::move(data));
-  auto child_node_view = child_node->CreateAndSetView();
+  auto child_node =
+      std::make_unique<TabCollectionNode>(std::move(container->data));
+  auto child_node_view = child_node->Initialize(std::move(container->children));
   AddChild(std::move(child_node_view), std::move(child_node), model_index);
+}
+
+std::pair<std::unique_ptr<views::View>, std::unique_ptr<TabCollectionNode>>
+TabCollectionNode::RemoveChild(base::PassKey<TabCollectionNode> pass_key,
+                               const tabs_api::NodeId& node_id) {
+  std::pair<std::unique_ptr<views::View>, std::unique_ptr<TabCollectionNode>>
+      removed_view_and_node;
+
+  for (auto it = children_.begin(); it != children_.end(); ++it) {
+    TabCollectionNode* child_node = it->get();
+
+    if (tabs_api::utils::GetNodeId(*child_node->data()) == node_id) {
+      if (remove_child_from_node_) {
+        removed_view_and_node.first =
+            remove_child_from_node_.Run(child_node->node_view_);
+      } else {
+        removed_view_and_node.first =
+            node_view_->RemoveChildViewT(child_node->node_view_);
+      }
+      removed_view_and_node.second = std::move(*it);
+      children_.erase(it);
+      return removed_view_and_node;
+    }
+  }
+
+  // The node to remove should be a direct child of this.
+  NOTREACHED();
 }
 
 std::vector<views::View*> TabCollectionNode::GetDirectChildren() const {

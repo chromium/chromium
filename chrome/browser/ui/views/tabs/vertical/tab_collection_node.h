@@ -20,6 +20,7 @@ namespace views {
 class View;
 }
 
+// TODO(crbug.com/459824840): Animate views based on operation.
 class TabCollectionNode {
  public:
   // Helper type for creating CustomAddChildViewCallbacks with
@@ -29,6 +30,9 @@ class TabCollectionNode {
   typedef base::RepeatingCallback<views::View*(std::unique_ptr<views::View>)>
       CustomAddChildViewCallback;
   typedef tabs_api::mojom::Data::Tag Type;
+  typedef base::RepeatingCallback<std::unique_ptr<views::View>(
+      views::View* view_to_remove)>
+      CustomRemoveChildViewCallback;
   typedef std::vector<std::unique_ptr<TabCollectionNode>> Children;
 
   using ViewFactory =
@@ -50,11 +54,24 @@ class TabCollectionNode {
   // Gets the collection under this subtree that has the associated node_id.
   // Returns nullptr if no such node exists.
   TabCollectionNode* GetNodeForId(const tabs_api::NodeId& node_id);
+  TabCollectionNode* GetParentNodeForId(const tabs_api::NodeId& node_id);
 
-  // Creates a new child with data and adds it at model_index.
+  // Creates a new child and adds it at model_index.
   void AddNewChild(base::PassKey<TabCollectionNode> pass_key,
-                   tabs_api::mojom::DataPtr data,
+                   tabs_api::mojom::ContainerPtr container,
                    size_t model_index);
+
+  // Removes the node and the view associated with it. In the case of move, its
+  // ownership is transferred to the destination node. In the case of remove it
+  // is freed.
+  std::pair<std::unique_ptr<views::View>, std::unique_ptr<TabCollectionNode>>
+  RemoveChild(base::PassKey<TabCollectionNode> pass_key,
+              const tabs_api::NodeId& node_id);
+
+  // Adds child_node_view to node_view_ and child_node to children_.
+  void AddChild(std::unique_ptr<views::View> child_node_view,
+                std::unique_ptr<TabCollectionNode> child_node,
+                size_t model_index);
 
   const tabs_api::mojom::DataPtr& data() const { return data_; }
   const Children& children() const { return children_; }
@@ -64,6 +81,11 @@ class TabCollectionNode {
 
   void set_add_child_to_node(CustomAddChildViewCallback add_child_to_node) {
     add_child_to_node_ = std::move(add_child_to_node);
+  }
+
+  void set_remove_child_from_node(
+      CustomRemoveChildViewCallback remove_child_from_node) {
+    remove_child_from_node_ = std::move(remove_child_from_node);
   }
 
   base::CallbackListSubscription RegisterWillDestroyCallback(
@@ -88,11 +110,6 @@ class TabCollectionNode {
   // Creates node_view_, then returns the unique_ptr to the view.
   std::unique_ptr<views::View> CreateAndSetView();
 
-  // Adds child_node_view to node_view_ and child_node to children_.
-  void AddChild(std::unique_ptr<views::View> child_node_view,
-                std::unique_ptr<TabCollectionNode> child_node,
-                size_t model_index);
-
   base::OnceClosureList on_will_destroy_callback_list_;
   base::RepeatingClosureList on_data_changed_callback_list_;
 
@@ -114,6 +131,12 @@ class TabCollectionNode {
   // index, it can ignore this argument), and the return value is a raw pointer
   // to the child view that was added.
   CustomAddChildViewCallback add_child_to_node_;
+
+  // Custom callback to remove a child view, used when the default
+  // RemoveChildViewT behavior needs to be overridden if the view hierarchy does
+  // not match the view model hierarchy.
+  CustomRemoveChildViewCallback remove_child_from_node_;
+
   // The view created for this node. (for tab:tabview, for unpinned: the
   // unpinned_container_view).
   raw_ptr<views::View> node_view_ = nullptr;

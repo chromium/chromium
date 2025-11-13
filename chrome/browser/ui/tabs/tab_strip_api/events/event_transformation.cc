@@ -42,11 +42,19 @@ mojom::OnTabsCreatedEventPtr ToEvent(
 mojom::OnCollectionCreatedEventPtr ToEvent(
     const tabs::TabCollectionHandle& handle,
     const tabs::TabCollection::Position& position,
-    const tabs_api::TabStripModelAdapter* adapter) {
+    const tabs_api::TabStripModelAdapter* adapter,
+    bool insert_from_detached) {
   auto event = mojom::OnCollectionCreatedEvent::New();
   event->position = tabs_api::Position(
       position.index, NodeId::FromTabCollectionHandle(position.parent_handle));
-  event->collection = adapter->GetTabStripTopology(handle);
+
+  if (!insert_from_detached) {
+    event->collection = tabs_api::mojom::Container::New();
+    event->collection->data =
+        tabs_api::converters::BuildMojoTabCollectionData(handle);
+  } else {
+    event->collection = adapter->GetTabStripTopology(handle);
+  }
   return event;
 }
 

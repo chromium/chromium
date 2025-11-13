@@ -261,7 +261,8 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
   void NotifyOnChildrenAdded(base::PassKey<TabCollection> pass_key,
                              const NodeHandles& handles,
                              const Position& insertion_position,
-                             TabCollection* stop_notification_root);
+                             TabCollection* stop_notification_root,
+                             bool insert_from_detached);
 
   void NotifyOnChildrenRemoved(base::PassKey<TabCollection> pass_key,
                                const Position& position,

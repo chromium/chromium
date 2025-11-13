@@ -16,7 +16,8 @@ CollectionStorageObserver::~CollectionStorageObserver() = default;
 
 void CollectionStorageObserver::OnChildrenAdded(
     const TabCollection::Position& position,
-    const tabs::TabCollectionNodes& handles) {
+    const tabs::TabCollectionNodes& handles,
+    bool insert_from_detached) {
   for (const auto& handle : handles) {
     if (std::holds_alternative<TabCollection::Handle>(handle)) {
       const TabCollection* collection =

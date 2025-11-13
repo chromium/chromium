@@ -25,7 +25,8 @@ class CollectionStorageObserver : public TabCollectionObserver {
 
   // TabCollectionObserver Implementation:
   void OnChildrenAdded(const TabCollection::Position& position,
-                       const TabCollectionNodes& handles) override;
+                       const TabCollectionNodes& handles,
+                       bool insert_from_detached) override;
   void OnChildrenRemoved(const TabCollection::Position& position,
                          const TabCollectionNodes& handles) override;
   void OnChildMoved(const TabCollection::Position& to_position,
