@@ -146,6 +146,8 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
   UIButton* _aimButton;
   /// The glow effect around the input plate container.
   UIView<GlowEffect>* _glowEffectView;
+  /// The plus button.
+  UIButton* _plusButton;
   /// The mic button for voice search.
   UIButton* _micButton;
   /// The lens button.
@@ -397,8 +399,12 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
   [self.view.superview layoutIfNeeded];
 }
 
-- (void)setCanAttachTabAction:(BOOL)canAttachTabAction {
-  _canAttachCurrentTab = canAttachTabAction;
+- (void)setCanAttachCurrentTab:(BOOL)canAttachCurrentTab {
+  if (_canAttachCurrentTab == canAttachCurrentTab) {
+    return;
+  }
+  _canAttachCurrentTab = canAttachCurrentTab;
+  [self updatePlusButtonItems];
 }
 
 - (void)updateState:(ComposeboxInputItemState)state
@@ -740,70 +746,6 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
        forControlEvents:UIControlEventTouchDown];
   plusButton.showsMenuAsPrimaryAction = YES;
 
-  __weak __typeof__(self) weakSelf = self;
-  UIAction* galleryAction = [UIAction
-      // TODO(crbug.com/40280872): Localize this string.
-
-      actionWithTitle:@"Gallery"
-                image:DefaultSymbolWithPointSize(kPhotoSymbol,
-                                                 kSymbolActionPointSize)
-           identifier:nil
-              handler:^(UIAction* action) {
-                [weakSelf.delegate
-                    composeboxViewControllerDidTapGalleryButton:weakSelf];
-              }];
-  UIAction* cameraAction = [UIAction
-      // TODO(crbug.com/40280872): Localize this string.
-
-      actionWithTitle:@"Camera"
-                image:DefaultSymbolWithPointSize(kSystemCameraSymbol,
-                                                 kSymbolActionPointSize)
-           identifier:nil
-              handler:^(UIAction* action) {
-                [weakSelf.delegate
-                    composeboxViewControllerDidTapCameraButton:weakSelf];
-              }];
-
-  UIAction* fileAction = [UIAction
-      // TODO(crbug.com/40280872): Localize this string.
-      actionWithTitle:@"File"
-                image:DefaultSymbolWithPointSize(kDocSymbol,
-                                                 kSymbolActionPointSize)
-           identifier:nil
-              handler:^(UIAction* action) {
-                [weakSelf.delegate
-                    composeboxViewControllerDidTapFileButton:weakSelf];
-              }];
-
-  UIAction* attachCurrentTabAction = [UIAction
-      // TODO(crbug.com/40280872): Localize this string.
-      actionWithTitle:@"Attach current tab"
-                image:DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
-                                                 kSymbolActionPointSize)
-           identifier:nil
-              handler:^(UIAction* action) {
-                [weakSelf.mutator attachCurrentTabContent];
-              }];
-
-  NSMutableArray* menuItems = [NSMutableArray
-      arrayWithObjects:fileAction, galleryAction, cameraAction, nil];
-
-    UIAction* selectTabsAction = [UIAction
-        // TODO(crbug.com/40280872): Localize this string.
-        actionWithTitle:@"Attach tabs"
-                  image:DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
-                                                   kSymbolActionPointSize)
-             identifier:nil
-                handler:^(UIAction* action) {
-                  [weakSelf handleAttachTabs];
-                }];
-    [menuItems addObject:selectTabsAction];
-
-    if (_canAttachCurrentTab) {
-      [menuItems addObject:attachCurrentTabAction];
-    }
-
-  plusButton.menu = [UIMenu menuWithTitle:@"" children:menuItems];
   return plusButton;
 }
 
@@ -858,7 +800,8 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
 
 - (UIView*)createToolbarView {
   // Action buttons
-  UIButton* plusButton = [self createPlusButton];
+  _plusButton = [self createPlusButton];
+  [self updatePlusButtonItems];
   _sendButton = [self createSendButton];
 
   _aimButton = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -880,7 +823,8 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
                                 forAxis:UILayoutConstraintAxisHorizontal];
   UIStackView* buttonsStackView =
       [[UIStackView alloc] initWithArrangedSubviews:@[
-        plusButton, _aimButton, spacerView, _sendButton, _micButton, _lensButton
+        _plusButton, _aimButton, spacerView, _sendButton, _micButton,
+        _lensButton
       ]];
   buttonsStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [buttonsStackView setCustomSpacing:kShortcutsSpacing afterView:_micButton];
@@ -889,6 +833,77 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
   buttonsStackView.alignment = UIStackViewAlignmentBottom;
 
   return buttonsStackView;
+}
+
+- (void)updatePlusButtonItems {
+  if (!_plusButton) {
+    return;
+  }
+
+  __weak __typeof__(self) weakSelf = self;
+  UIAction* galleryAction = [UIAction
+      // TODO(crbug.com/40280872): Localize this string.
+
+      actionWithTitle:@"Gallery"
+                image:DefaultSymbolWithPointSize(kPhotoSymbol,
+                                                 kSymbolActionPointSize)
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf.delegate
+                    composeboxViewControllerDidTapGalleryButton:weakSelf];
+              }];
+  UIAction* cameraAction = [UIAction
+      // TODO(crbug.com/40280872): Localize this string.
+
+      actionWithTitle:@"Camera"
+                image:DefaultSymbolWithPointSize(kSystemCameraSymbol,
+                                                 kSymbolActionPointSize)
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf.delegate
+                    composeboxViewControllerDidTapCameraButton:weakSelf];
+              }];
+
+  UIAction* fileAction = [UIAction
+      // TODO(crbug.com/40280872): Localize this string.
+      actionWithTitle:@"File"
+                image:DefaultSymbolWithPointSize(kDocSymbol,
+                                                 kSymbolActionPointSize)
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf.delegate
+                    composeboxViewControllerDidTapFileButton:weakSelf];
+              }];
+
+  UIAction* attachCurrentTabAction = [UIAction
+      // TODO(crbug.com/40280872): Localize this string.
+      actionWithTitle:@"Attach current tab"
+                image:DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
+                                                 kSymbolActionPointSize)
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf.mutator attachCurrentTabContent];
+              }];
+
+  NSMutableArray* menuItems = [NSMutableArray
+      arrayWithObjects:fileAction, galleryAction, cameraAction, nil];
+
+  UIAction* selectTabsAction = [UIAction
+      // TODO(crbug.com/40280872): Localize this string.
+      actionWithTitle:@"Attach tabs"
+                image:DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
+                                                 kSymbolActionPointSize)
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf handleAttachTabs];
+              }];
+  [menuItems addObject:selectTabsAction];
+
+  if (_canAttachCurrentTab) {
+    [menuItems addObject:attachCurrentTabAction];
+  }
+
+  _plusButton.menu = [UIMenu menuWithTitle:@"" children:menuItems];
 }
 
 @end

@@ -241,10 +241,9 @@ CreateInputDataFromAnnotatedPageContent(
     return;
   }
 
-  web::WebState* webState = _webStateList->GetActiveWebState();
-  BOOL canAttachTab = webState && !IsUrlNtp(webState->GetVisibleURL());
-  [_consumer setCanAttachTabAction:canAttachTab];
-  if (base::FeatureList::IsEnabled(kComposeboxAutoattachTab) && canAttachTab) {
+  BOOL canAttachCurrentTab = [self updateOptionToAttachCurrentTab];
+  if (base::FeatureList::IsEnabled(kComposeboxAutoattachTab) &&
+      canAttachCurrentTab) {
     [self attachCurrentTabContent];
   }
 }
@@ -365,7 +364,6 @@ CreateInputDataFromAnnotatedPageContent(
 
     const base::UnguessableToken token =
         [self createInputItemForWebState:webState];
-    _latestTabSelectionMapping[token] = webState->GetUniqueIdentifier();
 
     if (IsComposeboxTabPickerCachedAPCEnabled()) {
       [self attachWebStateContent:webState includeSnapshot:NO token:token];
@@ -399,8 +397,10 @@ CreateInputDataFromAnnotatedPageContent(
                                           kComposeboxInputItemTypeTab];
   item.title = base::SysUTF16ToNSString(webState->GetTitle());
   [_items addObject:item];
-  [self updateConsumerItems];
   const base::UnguessableToken token = item.token;
+  _latestTabSelectionMapping[token] = webState->GetUniqueIdentifier();
+
+  [self updateConsumerItems];
 
   if (_faviconLoader) {
     __weak __typeof(self) weakSelf = self;
@@ -522,9 +522,10 @@ CreateInputDataFromAnnotatedPageContent(
   if (!webState) {
     return;
   }
-  const base::UnguessableToken token =
-      [self createInputItemForWebState:webState];
-  [self attachWebStateContent:webState includeSnapshot:YES token:token];
+
+  std::set<web::WebStateID> webStateIDs = [self webStateIDsForAttachedTabs];
+  webStateIDs.insert(webState->GetUniqueIdentifier());
+  [self attachSelectedTabsWithWebStateIDs:webStateIDs];
 }
 
 #pragma mark - ComposeboxFileUploadObserver
@@ -805,10 +806,29 @@ CreateInputDataFromAnnotatedPageContent(
 
 #pragma mark - Private helpers
 
+- (BOOL)updateOptionToAttachCurrentTab {
+  web::WebState* webState = _webStateList->GetActiveWebState();
+  if (!webState) {
+    [_consumer setCanAttachCurrentTab:NO];
+    return NO;
+  }
+
+  std::set<web::WebStateID> alreadyProcessedIDs =
+      [self webStateIDsForAttachedTabs];
+  BOOL isNTP = IsUrlNtp(webState->GetVisibleURL());
+  BOOL alreadyProcessed =
+      alreadyProcessedIDs.contains(webState->GetUniqueIdentifier());
+
+  BOOL canAttachTab = !isNTP && !alreadyProcessed;
+  [_consumer setCanAttachCurrentTab:canAttachTab];
+  return canAttachTab;
+}
+
 /// Updates the consumer items and maybe trigger AIM.
 - (void)updateConsumerItems {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self.consumer setItems:_items];
+  [self updateOptionToAttachCurrentTab];
   if (_items.count > 0) {
     [self.consumer setAIModeEnabled:YES];
   }
