@@ -793,8 +793,6 @@ BASE_FEATURE(kGlicClosedCaptioning, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicDefaultTabContextSetting, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicDefaultContextPinOnBind, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kGlicUnloadOnClose, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicApiActivationGating, base::FEATURE_ENABLED_BY_DEFAULT);

@@ -311,8 +311,6 @@ class GlicInstanceImpl : public GlicInstance,
       std::vector<std::string> returned_suggestions);
   void MaybeDeactivateEmbedder(EmbedderKey key);
 
-  bool ShouldPinOnBind() const;
-
   void MaybeActivateForegroundEmbedder();
   EmbedderEntry& BindTab(tabs::TabInterface* tab);
   // For any pinned tab not already bound to a conversation bind it to this one.
