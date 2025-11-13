@@ -24,9 +24,6 @@ class CppChecker(object):
       '.mm',
   ]
 
-  # The maximum number of non-include lines we can see before giving up.
-  _MAX_UNINTERESTING_LINES = 50
-
   # The maximum line length, this is to be efficient in the case of very long
   # lines (which can't be #includes).
   _MAX_LINE_LENGTH = 128
@@ -90,12 +87,16 @@ class CppChecker(object):
     dependee_status = results.DependeeStatus(filepath)
     ret_val = ''  # We'll collect the error messages in here
     last_include = 0
-    with codecs.open(filepath, encoding='utf-8') as f:
+    encoding = 'utf-8'
+
+    # TODO(crbug.com/458409084): This can be removed once unrar sources are UTF8
+    dir_path = os.path.relpath(os.path.dirname(filepath), self._root_dir)
+    if dir_path.startswith(os.path.join('third_party', 'unrar') + os.sep):
+        encoding = 'latin-1'
+
+    with codecs.open(filepath, encoding=encoding) as f:
       in_if0 = 0
       for line_num, line in enumerate(f):
-        if line_num - last_include > self._MAX_UNINTERESTING_LINES:
-          break
-
         line = line.strip()
 
         # Check to see if we're at / inside an #if 0 block

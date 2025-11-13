@@ -20,9 +20,6 @@ class ProtoChecker(object):
       '.proto',
   ]
 
-  # The maximum number of non-import lines we can see before giving up.
-  _MAX_UNINTERESTING_LINES = 50
-
   # The maximum line length, this is to be efficient in the case of very long
   # lines (which can't be import).
   _MAX_LINE_LENGTH = 128
@@ -98,9 +95,6 @@ class ProtoChecker(object):
     last_import = 0
     with codecs.open(filepath, encoding='utf-8') as f:
       for line_num, line in enumerate(f):
-        if line_num - last_import > self._MAX_UNINTERESTING_LINES:
-          break
-
         line = line.strip()
 
         is_import, violation = self.CheckLine(rules, line, filepath)
