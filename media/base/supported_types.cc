@@ -556,19 +556,17 @@ bool IsEncoderOptionalVideoType(const media::VideoType& type) {
     return false;
   }
   switch (type.codec) {
-    case media::VideoCodec::kH264:
-      // IsEncoderBuiltInVideoType() has already checked OpenH264 encoder
-      // availability. We can always return false here.
-      return false;
-    case media::VideoCodec::kAV1:
-      // Android won't bundle libaom.
-      return !BUILDFLAG(ENABLE_LIBAOM);
     case media::VideoCodec::kHEVC:
       // HEVC only has platform encoder support.
       return BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_ENCODE_SUPPORT);
+    case media::VideoCodec::kH264:
+    case media::VideoCodec::kAV1:
     case media::VideoCodec::kVP8:
     case media::VideoCodec::kVP9:
-      return !BUILDFLAG(ENABLE_LIBVPX);
+      // Check the optional video type when the requested encoding profile does
+      // not match the built‑in type, or when the built‑in encoder is not
+      // available.
+      return true;
     case media::VideoCodec::kTheora:
     case media::VideoCodec::kDolbyVision:
     case media::VideoCodec::kUnknown:

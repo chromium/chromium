@@ -425,8 +425,9 @@ TEST(SupportedTypesTest, IsEncoderBuiltInVideoType) {
 }
 
 TEST(SupportedTypesTest, IsEncoderOptionalVideoType) {
-  EXPECT_FALSE(
-      IsEncoderOptionalVideoType({VideoCodec::kH264, H264PROFILE_BASELINE}));
+  EXPECT_EQ(
+      IsEncoderOptionalVideoType({VideoCodec::kH264, H264PROFILE_BASELINE}),
+      !IsOpenH264SoftwareEncoderEnabled());
 
   EXPECT_EQ(
       IsEncoderOptionalVideoType({VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN}),
