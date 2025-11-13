@@ -77,11 +77,11 @@ class CONTENT_EXPORT PluginService {
 
   // Asynchronously loads plugins if necessary and then calls back to the
   // provided function on the calling sequence on completion.
-  virtual void GetPlugins(GetPluginsCallback callback) = 0;
+  virtual void GetPluginsAsync(GetPluginsCallback callback) = 0;
 
   // Synchronously loads plugins if necessary and returns the list of plugin
-  // infos.
-  virtual const std::vector<WebPluginInfo>& GetPluginsSynchronous() = 0;
+  // infos. This does not block and is safe to call on the UI thread.
+  virtual const std::vector<WebPluginInfo>& GetPlugins() = 0;
 
   virtual void SetFilter(PluginServiceFilter* filter) = 0;
   virtual PluginServiceFilter* GetFilter() = 0;

@@ -2762,7 +2762,7 @@ void ForceRefreshOfPlugins() {
   content::RenderProcessHost::SetRunRendererInProcess(true);
 #endif
   base::RunLoop run_loop;
-  content::PluginService::GetInstance()->GetPlugins(
+  content::PluginService::GetInstance()->GetPluginsAsync(
       base::BindOnce(&DummyGetPluginsCallback, run_loop.QuitClosure()));
   run_loop.Run();
 #if !BUILDFLAG(IS_WIN)

@@ -117,7 +117,7 @@ PDFIFrameNavigationThrottle::WillProcessResponse() {
 
   if (is_stale) {
     // On browser start, the plugin list may not be ready yet.
-    content::PluginService::GetInstance()->GetPlugins(
+    content::PluginService::GetInstance()->GetPluginsAsync(
         base::BindOnce(&PDFIFrameNavigationThrottle::OnPluginsLoaded,
                        weak_factory_.GetWeakPtr()));
     return content::NavigationThrottle::DEFER;

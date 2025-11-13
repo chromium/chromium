@@ -50,7 +50,8 @@ class PDFIFrameNavigationThrottleTest : public ChromeRenderViewHostTestHarness {
   void LoadPluginsSynchronously() {
 #if BUILDFLAG(ENABLE_PLUGINS)
     base::test::TestFuture<const std::vector<content::WebPluginInfo>&> signal;
-    content::PluginService::GetInstance()->GetPlugins(signal.GetCallback());
+    content::PluginService::GetInstance()->GetPluginsAsync(
+        signal.GetCallback());
     EXPECT_TRUE(signal.Wait());
 #endif
   }

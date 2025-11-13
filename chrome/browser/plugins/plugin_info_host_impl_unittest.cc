@@ -135,7 +135,7 @@ class PluginInfoHostImplTest : public ::testing::Test {
     content::RenderProcessHost::SetRunRendererInProcess(true);
 #endif
     base::RunLoop run_loop;
-    PluginService::GetInstance()->GetPlugins(
+    PluginService::GetInstance()->GetPluginsAsync(
         base::BindOnce(&PluginsLoaded, run_loop.QuitClosure()));
     run_loop.Run();
 #if !BUILDFLAG(IS_WIN)

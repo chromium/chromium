@@ -1539,7 +1539,7 @@ void NavigationURLLoaderImpl::CheckPluginAndContinueOnReceiveResponse(
 
   if (stale) {
     // Refresh the plugins asynchronously.
-    PluginService::GetInstance()->GetPlugins(base::BindOnce(
+    PluginService::GetInstance()->GetPluginsAsync(base::BindOnce(
         &NavigationURLLoaderImpl::CheckPluginAndContinueOnReceiveResponse,
         weak_factory_.GetWeakPtr(), std::move(head),
         std::move(url_loader_client_endpoints),

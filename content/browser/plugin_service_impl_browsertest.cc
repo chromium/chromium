@@ -43,7 +43,7 @@ class PluginServiceImplBrowserTest : public ContentBrowserTest {
 
     // Force plugins to load and wait for completion.
     base::RunLoop run_loop;
-    service->GetPlugins(base::BindOnce(
+    service->GetPluginsAsync(base::BindOnce(
         [](base::OnceClosure callback,
            const std::vector<WebPluginInfo>& ignore) {
           std::move(callback).Run();

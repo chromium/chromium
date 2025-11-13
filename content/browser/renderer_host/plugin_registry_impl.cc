@@ -47,7 +47,7 @@ void PluginRegistryImpl::GetPlugins(bool refresh, GetPluginsCallback callback) {
     }
   }
 
-  plugin_service->GetPlugins(
+  plugin_service->GetPluginsAsync(
       base::BindOnce(&PluginRegistryImpl::GetPluginsComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

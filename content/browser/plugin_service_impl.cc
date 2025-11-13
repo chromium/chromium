@@ -129,15 +129,15 @@ std::optional<WebPluginInfo> PluginServiceImpl::GetPluginInfoByPathForTesting(
   return std::nullopt;
 }
 
-void PluginServiceImpl::GetPlugins(GetPluginsCallback callback) {
+void PluginServiceImpl::GetPluginsAsync(GetPluginsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Run `callback` later, to stay compatible with prior behavior.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), GetPluginsSynchronous()));
+      FROM_HERE, base::BindOnce(std::move(callback), GetPlugins()));
 }
 
-const std::vector<WebPluginInfo>& PluginServiceImpl::GetPluginsSynchronous() {
+const std::vector<WebPluginInfo>& PluginServiceImpl::GetPlugins() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return PluginList::Singleton()->GetPlugins();
 }

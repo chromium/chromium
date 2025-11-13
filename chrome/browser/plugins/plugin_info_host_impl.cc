@@ -198,7 +198,7 @@ void PluginInfoHostImpl::GetPluginInfo(const GURL& url,
                                        GetPluginInfoCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   GetPluginInfo_Params params = {url, origin, mime_type};
-  PluginService::GetInstance()->GetPlugins(
+  PluginService::GetInstance()->GetPluginsAsync(
       base::BindOnce(&PluginInfoHostImpl::PluginsLoaded,
                      weak_factory_.GetWeakPtr(), params, std::move(callback)));
 }

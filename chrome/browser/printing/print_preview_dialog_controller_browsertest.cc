@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   // Make sure plugins are loaded.
   {
     base::RunLoop run_loop;
-    content::PluginService::GetInstance()->GetPlugins(
+    content::PluginService::GetInstance()->GetPluginsAsync(
         base::BindOnce(&PluginsLoadedCallback, run_loop.QuitClosure()));
     run_loop.Run();
   }

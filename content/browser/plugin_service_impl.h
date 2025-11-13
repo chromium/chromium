@@ -48,8 +48,8 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
                      std::string* actual_mime_type) override;
   std::optional<WebPluginInfo> GetPluginInfoByPathForTesting(
       const base::FilePath& plugin_path) override;
-  void GetPlugins(GetPluginsCallback callback) override;
-  const std::vector<WebPluginInfo>& GetPluginsSynchronous() override;
+  void GetPluginsAsync(GetPluginsCallback callback) override;
+  const std::vector<WebPluginInfo>& GetPlugins() override;
   void SetFilter(PluginServiceFilter* filter) override;
   PluginServiceFilter* GetFilter() override;
   void RefreshPlugins() override;

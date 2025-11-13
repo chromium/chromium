@@ -175,7 +175,7 @@ struct PDFExtensionIsolatedContentTestPassToString {
   }
 };
 
-// Calling PluginService::GetPlugins ensures that LoadPlugins is called
+// Calling PluginService::GetPluginsAsync ensures that LoadPlugins is called
 // internally. This is an asynchronous task and this method uses a run loop to
 // wait for the loading task to complete.
 void WaitForPluginServiceToLoad() {
@@ -184,7 +184,7 @@ void WaitForPluginServiceToLoad() {
       [](base::RepeatingClosure quit,
          const std::vector<content::WebPluginInfo>& unused) { quit.Run(); },
       run_loop.QuitClosure());
-  content::PluginService::GetInstance()->GetPlugins(std::move(callback));
+  content::PluginService::GetInstance()->GetPluginsAsync(std::move(callback));
   run_loop.Run();
 }
 
