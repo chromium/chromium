@@ -33,7 +33,8 @@ class AwPreconnector : public content::PreconnectManager::Delegate {
   AwPreconnector(const AwPreconnector&) = delete;
   AwPreconnector& operator=(const AwPreconnector&) = delete;
 
-  void Preconnect(JNIEnv* env, const GURL& url);
+  // Preconnects to the given URL. Returns false if the URL is invalid.
+  bool Preconnect(JNIEnv* env, const GURL& url);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaAwPreconnector();
 

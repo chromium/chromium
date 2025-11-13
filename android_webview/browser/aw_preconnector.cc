@@ -74,20 +74,20 @@ AwPreconnector::~AwPreconnector() {
   }
 }
 
-void AwPreconnector::Preconnect(JNIEnv* env, const GURL& url) {
+bool AwPreconnector::Preconnect(JNIEnv* env, const GURL& url) {
   // Network anonymization isn't implemented for WebView, so we can use an empty
   // key.
   net::NetworkAnonymizationKey key = net::NetworkAnonymizationKey();
 
   if (!url.is_valid()) {
-    return;
+    return false;
   }
 
   url::Origin origin = url::Origin::Create(url);
   if ((origin.scheme() != url::kHttpScheme) &&
       (origin.scheme() != url::kHttpsScheme)) {
     // Cannot preconnect to local or opaque origins.
-    return;
+    return false;
   }
 
   std::vector<content::PreconnectRequest> requests = {
@@ -95,6 +95,8 @@ void AwPreconnector::Preconnect(JNIEnv* env, const GURL& url) {
   GetPreconnectManager().Start(url, requests,
                                kWebViewPreconnectTrafficAnnotation);
   TRACE_EVENT1("android_webview", "Preconnect::Begin", "url", url);
+
+  return true;
 }
 
 void AwPreconnector::PreconnectInitiated(const GURL& url,

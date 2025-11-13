@@ -47,11 +47,15 @@ public class AwPreconnector {
         if (mNativeAwPreconnector == 0) {
             throw new IllegalArgumentException("Preconnect called after object destroyed.");
         }
-        AwPreconnectorJni.get().preconnect(mNativeAwPreconnector, url);
+        boolean validUrl = AwPreconnectorJni.get().preconnect(mNativeAwPreconnector, url);
+
+        if (!validUrl) {
+            throw new IllegalArgumentException("Invalid URL: " + url.getPossiblyInvalidSpec());
+        }
     }
 
     @NativeMethods
     interface Natives {
-        void preconnect(long nativeAwPreconnector, @JniType("GURL") GURL url);
+        boolean preconnect(long nativeAwPreconnector, @JniType("GURL") GURL url);
     }
 }

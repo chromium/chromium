@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static org.junit.Assert.assertThrows;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -88,6 +90,26 @@ public class AwPreconnectorTest extends AwParameterizedTest {
         } finally {
             serverThread2.shutdown();
         }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void connects_invalidUrl() throws Exception {
+        AwBrowserContext profile = mTestRule.getProfileSync("Default", /* createIfNeeded= */ true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertThrows(
+                            IllegalArgumentException.class,
+                            () -> profile.getPreconnector().preconnect(new GURL("invalid")));
+                    // Note: We require the scheme (so https://www.example.com).
+                    assertThrows(
+                            IllegalArgumentException.class,
+                            () ->
+                                    profile.getPreconnector()
+                                            .preconnect(new GURL("www.example.com")));
+                });
     }
 
     // A Server that waits for a single connection to be opened, then closes.
