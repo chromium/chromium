@@ -84,7 +84,7 @@ mod databake;
 #[cfg(feature = "zerovec")]
 mod ule;
 
-#[cfg(any(feature = "serde", feature = "alloc"))]
+#[cfg(feature = "alloc")]
 extern crate alloc;
 
 pub use ascii::TinyAsciiStr;

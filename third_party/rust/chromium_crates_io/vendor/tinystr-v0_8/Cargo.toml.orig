@@ -5,7 +5,7 @@
 [package]
 name = "tinystr"
 description = "A small ASCII-only bounded length string representation."
-version = "0.8.1"
+version = "0.8.2"
 keywords = ["string", "str", "small", "tiny", "no_std"]
 categories = ["data-structures"]
 
@@ -14,7 +14,7 @@ edition.workspace = true
 include.workspace = true
 license.workspace = true
 repository.workspace = true
-rust-version.workspace = true
+rust-version = "1.82"
 
 [package.metadata.workspaces]
 independent = true
@@ -25,7 +25,7 @@ all-features = true
 [dependencies]
 displaydoc = { workspace = true }
 
-serde = { workspace = true, features = ["alloc"], optional = true }
+serde_core = { workspace = true, optional = true }
 zerovec = { workspace = true, optional = true }
 databake = { workspace = true, optional = true }
 
@@ -40,10 +40,10 @@ criterion = { workspace = true }
 
 [features]
 default = ["alloc"]
-alloc = ["zerovec?/alloc"]
+alloc = ["serde_core?/alloc", "zerovec?/alloc"]
 zerovec = ["dep:zerovec"]
 databake = ["dep:databake"]
-serde = ["dep:serde"]
+serde = ["dep:serde_core"]
 # No longer does anything
 std = []
 

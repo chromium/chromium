@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.81"
+rust-version = "1.82"
 name = "tinystr"
-version = "0.8.1"
+version = "0.8.2"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -25,6 +25,7 @@ include = [
     "Cargo.toml",
     "LICENSE",
     "README.md",
+    "build.rs",
 ]
 autolib = false
 autobins = false
@@ -44,17 +45,20 @@ categories = ["data-structures"]
 license = "Unicode-3.0"
 repository = "https://github.com/unicode-org/icu4x"
 
-[package.metadata.docs.rs]
-all-features = true
-
 [package.metadata.workspaces]
 independent = true
 
+[package.metadata.docs.rs]
+all-features = true
+
 [features]
-alloc = ["zerovec?/alloc"]
+alloc = [
+    "serde_core?/alloc",
+    "zerovec?/alloc",
+]
 databake = ["dep:databake"]
 default = ["alloc"]
-serde = ["dep:serde"]
+serde = ["dep:serde_core"]
 std = []
 zerovec = ["dep:zerovec"]
 
@@ -98,14 +102,13 @@ default-features = false
 version = "0.2.3"
 default-features = false
 
-[dependencies.serde]
-version = "1.0.110"
-features = ["alloc"]
+[dependencies.serde_core]
+version = "1.0.220"
 optional = true
 default-features = false
 
 [dependencies.zerovec]
-version = "0.11.1"
+version = "0.11.3"
 optional = true
 default-features = false
 
@@ -118,7 +121,7 @@ features = ["use-std"]
 default-features = false
 
 [dev-dependencies.rand]
-version = "0.8"
+version = "0.9"
 features = ["small_rng"]
 
 [dev-dependencies.serde_json]

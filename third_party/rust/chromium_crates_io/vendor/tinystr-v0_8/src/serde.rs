@@ -3,14 +3,12 @@
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
 use crate::TinyAsciiStr;
-use alloc::borrow::Cow;
-use alloc::string::ToString;
 use core::fmt;
 use core::marker::PhantomData;
 use core::ops::Deref;
-use serde::de::{Error, SeqAccess, Visitor};
-use serde::ser::SerializeTuple;
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use serde_core::de::{Error, SeqAccess, Visitor};
+use serde_core::ser::SerializeTuple;
+use serde_core::{Deserialize, Deserializer, Serialize, Serializer};
 
 impl<const N: usize> Serialize for TinyAsciiStr<N> {
     #[inline]
@@ -82,8 +80,22 @@ impl<'de, const N: usize> Deserialize<'de> for TinyAsciiStr<N> {
         D: Deserializer<'de>,
     {
         if deserializer.is_human_readable() {
-            let x: Cow<'de, str> = Deserialize::deserialize(deserializer)?;
-            TinyAsciiStr::try_from_str(&x).map_err(|e| Error::custom(e.to_string()))
+            struct HumanVisitor<const N: usize>;
+            impl<'de, const M: usize> Visitor<'de> for HumanVisitor<M> {
+                type Value = TinyAsciiStr<M>;
+
+                fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                    write!(formatter, "a TinyAsciiStr<{M}>")
+                }
+
+                fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+                where
+                    E: Error,
+                {
+                    TinyAsciiStr::try_from_str(v).map_err(|_| Error::custom("invalid str"))
+                }
+            }
+            deserializer.deserialize_str(HumanVisitor::<N>)
         } else {
             deserializer.deserialize_tuple(N, TinyAsciiStrVisitor::<N>::new())
         }
