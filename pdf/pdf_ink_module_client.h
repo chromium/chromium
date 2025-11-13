@@ -35,6 +35,8 @@ class Cursor;
 
 namespace chrome_pdf {
 
+class PdfCaret;
+
 class PdfInkModuleClient {
  public:
   // Key: ID to identify a shape.
@@ -81,6 +83,10 @@ class PdfInkModuleClient {
   // Gets the page size in points for `page_index`.  Must be non-empty for any
   // non-negative page index returned from `VisiblePageIndexFromPoint()`.
   virtual gfx::SizeF GetPageSizeInPoints(int page_index) = 0;
+
+  // Returns the PDF caret instance, otherwise returns nullptr if it does not
+  // exist.
+  virtual PdfCaret* GetPdfCaret() = 0;
 
   // Returns all current text selection rects in PDF coordinates.
   virtual SelectionRectMap GetSelectionRectMap() = 0;

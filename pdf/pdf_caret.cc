@@ -22,7 +22,7 @@
 #include "pdf/region_data.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/events/keycodes/keyboard_codes_win.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -151,10 +151,17 @@ void PdfCaret::OnGeometryChanged() {
   }
 }
 
-bool PdfCaret::OnKeyDown(const blink::WebKeyboardEvent& event) {
+bool PdfCaret::WillHandleKeyDownEvent(const blink::WebKeyboardEvent& event) {
   // The caret is not visible during text selection, so key events should still
   // be handled when not visible.
-  if (!enabled_) {
+  return enabled_ && (event.windows_key_code == ui::KeyboardCode::VKEY_LEFT ||
+                      event.windows_key_code == ui::KeyboardCode::VKEY_RIGHT ||
+                      event.windows_key_code == ui::KeyboardCode::VKEY_UP ||
+                      event.windows_key_code == ui::KeyboardCode::VKEY_DOWN);
+}
+
+bool PdfCaret::OnKeyDown(const blink::WebKeyboardEvent& event) {
+  if (!WillHandleKeyDownEvent(event)) {
     return false;
   }
 
@@ -174,7 +181,7 @@ bool PdfCaret::OnKeyDown(const blink::WebKeyboardEvent& event) {
       MoveVerticallyToNextChar(/*move_down=*/true, should_select);
       return true;
     default:
-      return false;
+      NOTREACHED();
   }
 }
 

@@ -195,6 +195,8 @@ class PDFiumEngine : public DocumentLoader::Client,
   PDFiumEngine& operator=(const PDFiumEngine&) = delete;
   ~PDFiumEngine() override;
 
+  PdfCaret* caret() { return caret_.get(); }
+
   // Replaces the normal DocumentLoader for testing. Must be called before
   // HandleDocumentLoad().
   void SetDocumentLoaderForTesting(std::unique_ptr<DocumentLoader> loader);

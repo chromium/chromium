@@ -29,6 +29,7 @@
 #include "pdf/input_utils.h"
 #include "pdf/message_util.h"
 #include "pdf/page_orientation.h"
+#include "pdf/pdf_caret.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/pdf_ink_conversions.h"
@@ -37,6 +38,7 @@
 #include "pdf/pdf_ink_module_client.h"
 #include "pdf/pdf_ink_transform.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
@@ -57,6 +59,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -137,6 +140,13 @@ blink::WebMouseEvent GenerateLeftMouseUpEvent(const gfx::PointF& position,
       /*global_position=*/position, blink::WebPointerProperties::Button::kLeft,
       /*click_count_param=*/1, blink::WebInputEvent::Modifiers::kNoModifiers,
       timestamp);
+}
+
+bool IsPrintOrSaveKeyboardEvent(const blink::WebKeyboardEvent& event) {
+  const bool is_ctrl =
+      !!(event.GetModifiers() & blink::WebInputEvent::Modifiers::kControlKey);
+  return is_ctrl && (event.windows_key_code == ui::KeyboardCode::VKEY_P ||
+                     event.windows_key_code == ui::KeyboardCode::VKEY_S);
 }
 
 }  // namespace
@@ -299,9 +309,13 @@ bool PdfInkModule::HandleInputEvent(const blink::WebInputEvent& event) {
   }
 
   switch (event.GetType()) {
-    case blink::WebInputEvent::Type::kMouseDown: {
+    case blink::WebInputEvent::Type::kKeyDown:
+      // Blink mostly sends `kRawKeyDown`, but sometimes generates `kKeyDown`,
+      // such as when tabbing between frames.
+    case blink::WebInputEvent::Type::kRawKeyDown:
+      return OnKeyDown(static_cast<const blink::WebKeyboardEvent&>(event));
+    case blink::WebInputEvent::Type::kMouseDown:
       return OnMouseDown(static_cast<const blink::WebMouseEvent&>(event));
-    }
     case blink::WebInputEvent::Type::kMouseUp:
       return OnMouseUp(static_cast<const blink::WebMouseEvent&>(event));
     case blink::WebInputEvent::Type::kMouseMove:
@@ -358,6 +372,72 @@ void PdfInkModule::OnGeometryChanged() {
 
 const PdfInkBrush* PdfInkModule::GetPdfInkBrushForTesting() const {
   return is_drawing_stroke() ? &GetDrawingBrush() : nullptr;
+}
+
+bool PdfInkModule::OnKeyDown(const blink::WebKeyboardEvent& event) {
+  if (!features::kPdfInk2TextHighlighting.Get()) {
+    return false;
+  }
+
+  // Return false if not starting or continuing a text highlight.
+  if (is_erasing_stroke() ||
+      (is_drawing_stroke() &&
+       drawing_stroke_state().brush_type != PdfInkBrush::Type::kHighlighter)) {
+    return false;
+  }
+
+  PdfCaret* caret = client_->GetPdfCaret();
+  if (!caret || !caret->enabled()) {
+    return false;
+  }
+
+  if (!caret->WillHandleKeyDownEvent(event)) {
+    if (is_text_highlighting() && IsPrintOrSaveKeyboardEvent(event)) {
+      const EventDetails& event_details =
+          text_highlight_state().input_last_event;
+      FinishTextHighlight(event_details.position, /*is_multi_click=*/false,
+                          event_details.tool_type);
+      // Return false so that the event propagates to the handler that actually
+      // starts the print/save.
+    }
+    return false;
+  }
+
+  const bool shift_key =
+      !!(event.GetModifiers() & blink::WebInputEvent::Modifiers::kShiftKey);
+  if (!shift_key && is_text_highlighting()) {
+    // End the text highlight. `FinishTextHighlight()` must be called first,
+    // otherwise `PdfCaret::OnKeyDown()` could clear the text selection.
+    const EventDetails& event_details = text_highlight_state().input_last_event;
+    FinishTextHighlight(event_details.position, /*is_multi_click=*/false,
+                        event_details.tool_type);
+  }
+
+  CHECK(caret->OnKeyDown(event));
+
+  if (!shift_key) {
+    return true;
+  }
+
+  // Handle shift + arrow key events.
+  //
+  // Start a text selection if necessary.
+  if (!is_text_highlighting()) {
+    client_->StrokeStarted();
+    current_tool_state_.emplace<TextHighlightState>();
+    // TODO(crbug.com/454897819): The tool type is used for metrics reporting.
+    // Set to the unknown tool type for now, and find a different way to report
+    // text highlighting by caret.
+    text_highlight_state().input_last_event.tool_type =
+        ink::StrokeInput::ToolType::kUnknown;
+    std::optional<PdfInkUndoRedoModel::DiscardedDrawCommands> discards =
+        undo_redo_model_.StartDraw();
+    CHECK(discards.has_value());
+    ApplyUndoRedoDiscards(discards.value());
+  }
+
+  text_highlight_state().highlight_strokes = GetTextSelectionAsStrokes();
+  return true;
 }
 
 bool PdfInkModule::OnMouseDown(const blink::WebMouseEvent& event) {
@@ -1017,7 +1097,9 @@ bool PdfInkModule::FinishTextHighlight(const gfx::PointF& position,
 
     const bool modified = !highlight_strokes.empty();
     if (modified) {
-      if (!text_selection_click_timer_.IsRunning()) {
+      // TODO(crbug.com/454897819): Report keyboard input device types.
+      if (!text_selection_click_timer_.IsRunning() &&
+          tool_type != ink::StrokeInput::ToolType::kUnknown) {
         ReportTextHighlight(highlighter_brush_.ink_brush(), tool_type);
       }
 

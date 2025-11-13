@@ -26,6 +26,7 @@
 #include "base/types/zip.h"
 #include "base/values.h"
 #include "pdf/page_orientation.h"
+#include "pdf/pdf_caret.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/pdf_ink_conversions.h"
@@ -33,6 +34,7 @@
 #include "pdf/pdf_ink_module_client.h"
 #include "pdf/pdf_ink_transform.h"
 #include "pdf/pdfium/pdfium_ink_reader.h"
+#include "pdf/test/mock_pdf_caret_client.h"
 #include "pdf/test/mouse_event_builder.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
 #include "pdf/test/test_helpers.h"
@@ -40,6 +42,8 @@
 #include "printing/units.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/ink/src/ink/brush/brush.h"
@@ -52,6 +56,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -200,6 +205,21 @@ MATCHER_P(CursorBitmapImageSizeEq, dimensions, "") {
          arg.custom_bitmap().dimensions() == dimensions;
 }
 
+// Matcher for keyboard events against the expected key and modifiers.
+MATCHER_P2(WebKeyboardEventEq, key, modifiers, "") {
+  if (arg.windows_key_code != key) {
+    *result_listener << "Expected key: " << key
+                     << " actual: " << arg.windows_key_code;
+    return false;
+  }
+  if (arg.GetModifiers() != modifiers) {
+    *result_listener << "Expected modifiers: " << modifiers
+                     << " actual: " << arg.GetModifiers();
+    return false;
+  }
+  return true;
+}
+
 blink::WebMouseEvent CreateMouseMoveEventAtPoint(const gfx::PointF& point) {
   return MouseEventBuilder()
       .SetType(blink::WebInputEvent::Type::kMouseMove)
@@ -277,6 +297,8 @@ class FakeClient : public PdfInkModuleClient {
   MOCK_METHOD(ui::Cursor, GetCursor, (), (override));
 
   PageOrientation GetOrientation() const override { return orientation_; }
+
+  MOCK_METHOD(PdfCaret*, GetPdfCaret, (), (override));
 
   MOCK_METHOD(SelectionRectMap, GetSelectionRectMap, (), (override));
 
@@ -424,6 +446,20 @@ class FakeClient : public PdfInkModuleClient {
   gfx::Vector2dF viewport_origin_offset_;
   float zoom_ = 1.0f;
   std::vector<gfx::Rect> invalidations_;
+};
+
+class MockPdfCaret : public PdfCaret {
+ public:
+  explicit MockPdfCaret(PdfCaretClient* client) : PdfCaret(client) {}
+  MockPdfCaret(const MockPdfCaret&) = delete;
+  MockPdfCaret& operator=(const MockPdfCaret&) = delete;
+  ~MockPdfCaret() override = default;
+
+  // PdfCaret:
+  MOCK_METHOD(bool,
+              OnKeyDown,
+              (const blink::WebKeyboardEvent& event),
+              (override));
 };
 
 class PdfInkModuleMetricsTestBase {
@@ -3392,8 +3428,8 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleUndoRedoTest {
     // Do screen to PDF coordinate conversion. Set GetCanonicalToPdfTransform()
     // to return an identity transform to simplify testing. Now a screen to
     // canonical conversion is sufficient.
-    EXPECT_CALL(client(), GetCanonicalToPdfTransform(_))
-        .WillRepeatedly(Return(gfx::Transform()));
+    ON_CALL(client(), GetCanonicalToPdfTransform(_))
+        .WillByDefault(Return(gfx::Transform()));
 
     PdfInkModuleClient::SelectionRectMap pdf_selection_map;
     for (const auto& [page_index, selection_rects] : selection_map) {
@@ -3408,8 +3444,8 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleUndoRedoTest {
       }
     }
 
-    EXPECT_CALL(client(), GetSelectionRectMap())
-        .WillRepeatedly(Return(pdf_selection_map));
+    ON_CALL(client(), GetSelectionRectMap())
+        .WillByDefault(Return(pdf_selection_map));
   }
 
   // Wrapper for SetSelectionRectMap() that puts all the rects on page 0.
@@ -4333,6 +4369,257 @@ TEST_P(PdfInkModuleTextHighlightTest,
                      /*unmodified_finished=*/0);
 }
 
+class PdfInkModuleTextHighlightCaretTest
+    : public PdfInkModuleTextHighlightTest {
+ protected:
+  static constexpr gfx::Rect kTestSelectionRect{22, 15, 12, 12};
+  static constexpr PdfInkInputData kExpectedInkInputData{
+      .position = gfx::PointF(28.0f, 21.0f)};
+  static constexpr float kExpectedBrushSize = 12.0f;
+
+  PdfInkModuleTextHighlightCaretTest() : caret_(&caret_client_) {}
+
+  MockPdfCaret* caret() { return &caret_; }
+
+  // PdfInkModuleTextHighlightTest:
+  void SetUp() override {
+    PdfInkModuleTextHighlightTest::SetUp();
+    EnableDrawAnnotationMode();
+    InitializeSimpleSinglePageBasicLayout();
+  }
+
+  // Sets up and enables the caret.
+  void SetUpCaret() {
+    SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+    ON_CALL(client(), GetPdfCaret()).WillByDefault(Return(caret()));
+    caret()->SetEnabled(true);
+  }
+
+  // Returns whether `PdfInkModule` handled the keyboard event or not.
+  bool HandleKeyboardEvent(const blink::WebKeyboardEvent& event) {
+    return ink_module().HandleInputEvent(event);
+  }
+
+  // Returns a keydown event for `key` with `modifiers`.
+  blink::WebKeyboardEvent GenerateKeyDownEvent(ui::KeyboardCode key,
+                                               int modifiers) {
+    blink::WebKeyboardEvent event(
+        blink::WebInputEvent::Type::kKeyDown, modifiers,
+        blink::WebInputEvent::GetStaticTimeStampForTests());
+    event.windows_key_code = key;
+    return event;
+  }
+
+  // Runs a test that checks that the arrow key events are not handled when the
+  // highlighter brush is not selected or when the PDF caret does not exist or
+  // is disabled.
+  void RunUnhandledArrowKeyTest(ui::KeyboardCode key) {
+    blink::WebKeyboardEvent arrow_event = GenerateKeyDownEvent(
+        key, blink::WebInputEvent::Modifiers::kNoModifiers);
+    blink::WebKeyboardEvent shift_arrow_event =
+        GenerateKeyDownEvent(key, blink::WebInputEvent::Modifiers::kShiftKey);
+
+    // Highlighter not selected.
+    EXPECT_FALSE(HandleKeyboardEvent(arrow_event));
+    EXPECT_FALSE(HandleKeyboardEvent(shift_arrow_event));
+
+    SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+    ON_CALL(client(), GetPdfCaret()).WillByDefault(Return(nullptr));
+
+    // Caret does not exist yet.
+    EXPECT_FALSE(HandleKeyboardEvent(arrow_event));
+    EXPECT_FALSE(HandleKeyboardEvent(shift_arrow_event));
+
+    ON_CALL(client(), GetPdfCaret()).WillByDefault(Return(caret()));
+
+    // Caret not enabled yet.
+    EXPECT_FALSE(HandleKeyboardEvent(arrow_event));
+    EXPECT_FALSE(HandleKeyboardEvent(shift_arrow_event));
+  }
+
+  // Runs a test that checks that the arrow key events are handled and highlight
+  // text.
+  void RunHandledArrowKeyTest(ui::KeyboardCode key) {
+    SetUpCaret();
+
+    // When not yet text highlighting, arrow key events without modifiers are
+    // passed directly to `PdfCaret`.
+    InSequence seq;
+    SetSelectionRectMap({});
+    EXPECT_CALL(*caret(),
+                OnKeyDown(WebKeyboardEventEq(
+                    key, blink::WebInputEvent::Modifiers::kNoModifiers)))
+        .WillOnce(Return(true));
+
+    blink::WebKeyboardEvent arrow_event = GenerateKeyDownEvent(
+        key, blink::WebInputEvent::Modifiers::kNoModifiers);
+    EXPECT_TRUE(HandleKeyboardEvent(arrow_event));
+
+    EXPECT_EQ(0, client().stroke_started_count());
+
+    blink::WebKeyboardEvent shift_arrow_event =
+        GenerateKeyDownEvent(key, blink::WebInputEvent::Modifiers::kShiftKey);
+
+    // Start text highlight.
+    TestKeyEventTextHighlights(shift_arrow_event,
+                               /*test_selection_rect=*/{10, 15, 12, 12});
+    // Continue text highlight.
+    TestKeyEventTextHighlights(shift_arrow_event,
+                               /*test_selection_rect=*/kTestSelectionRect);
+    TestKeyEventEndsTextHighlight(arrow_event,
+                                  /*expected_event_handled=*/true,
+                                  base::span_from_ref(kExpectedInkInputData),
+                                  kExpectedBrushSize);
+  }
+
+  // Tests that `event` is passed to `PdfCaret` and starts or continues text
+  // highlighting. The selection rect after text highlighting will be set to
+  // `text_selection_rect`.
+  void TestKeyEventTextHighlights(const blink::WebKeyboardEvent& event,
+                                  const gfx::Rect& test_selection_rect) {
+    SetSelectionRectsOnFirstPage(base::span_from_ref(test_selection_rect));
+    EXPECT_CALL(*caret(), OnKeyDown(WebKeyboardEventEq(event.windows_key_code,
+                                                       event.GetModifiers())))
+        .WillOnce(Return(true));
+
+    EXPECT_TRUE(HandleKeyboardEvent(event));
+
+    ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/0,
+                       /*unmodified_finished=*/0);
+  }
+
+  // Tests that `event` ends an existing text highlight.
+  // `expected_event_handled` indicates whether `event` should be considered
+  // handled or not by `PdfInkModule`. `expected_inputs` is the expected brush
+  // inputs, and `expected_size` is the expected brush size.
+  void TestKeyEventEndsTextHighlight(
+      const blink::WebKeyboardEvent& event,
+      bool expected_event_handled,
+      base::span<const PdfInkInputData> expected_inputs,
+      float expected_size) {
+    if (expected_event_handled) {
+      EXPECT_CALL(*caret(), OnKeyDown(WebKeyboardEventEq(event.windows_key_code,
+                                                         event.GetModifiers())))
+          .WillOnce(Return(true));
+    }
+
+    EXPECT_EQ(expected_event_handled, HandleKeyboardEvent(event));
+
+    ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                       /*unmodified_finished=*/0);
+    EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
+
+    std::optional<ink::StrokeInputBatch> expected_batch =
+        CreateInkInputBatch(expected_inputs);
+    ASSERT_TRUE(expected_batch.has_value());
+
+    const PdfInkBrush expected_brush(PdfInkBrush::Type::kHighlighter,
+                                     kOrangeColor, /*size=*/expected_size);
+    EXPECT_THAT(
+        CollectVisibleStrokes(),
+        ElementsAre(Pair(0, Pointwise(InkStrokeEq(expected_brush.ink_brush()),
+                                      {expected_batch.value()}))));
+  }
+
+  // `caret_client_` must be declared before `caret_`.
+  MockPdfCaretClient caret_client_;
+  MockPdfCaret caret_;
+};
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, UnhandledArrowKeyLeft) {
+  RunUnhandledArrowKeyTest(ui::KeyboardCode::VKEY_LEFT);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, UnhandledArrowKeyRight) {
+  RunUnhandledArrowKeyTest(ui::KeyboardCode::VKEY_RIGHT);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, UnhandledArrowKeyUp) {
+  RunUnhandledArrowKeyTest(ui::KeyboardCode::VKEY_UP);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, UnhandledArrowKeyDown) {
+  RunUnhandledArrowKeyTest(ui::KeyboardCode::VKEY_DOWN);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, HandledArrowKeyLeft) {
+  RunHandledArrowKeyTest(ui::KeyboardCode::VKEY_LEFT);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, HandledArrowKeyRight) {
+  RunHandledArrowKeyTest(ui::KeyboardCode::VKEY_RIGHT);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, HandledArrowKeyUp) {
+  RunHandledArrowKeyTest(ui::KeyboardCode::VKEY_UP);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, HandledArrowKeyDown) {
+  RunHandledArrowKeyTest(ui::KeyboardCode::VKEY_DOWN);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, ControlPEndsTextHighlight) {
+  SetUpCaret();
+  TestKeyEventTextHighlights(
+      GenerateKeyDownEvent(ui::KeyboardCode::VKEY_LEFT,
+                           blink::WebInputEvent::Modifiers::kShiftKey),
+      kTestSelectionRect);
+  TestKeyEventEndsTextHighlight(
+      GenerateKeyDownEvent(ui::KeyboardCode::VKEY_P,
+                           blink::WebInputEvent::Modifiers::kControlKey),
+      /*expected_event_handled=*/false,
+      base::span_from_ref(kExpectedInkInputData), kExpectedBrushSize);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, ControlSEndsTextHighlight) {
+  SetUpCaret();
+  TestKeyEventTextHighlights(
+      GenerateKeyDownEvent(ui::KeyboardCode::VKEY_LEFT,
+                           blink::WebInputEvent::Modifiers::kShiftKey),
+      kTestSelectionRect);
+  TestKeyEventEndsTextHighlight(
+      GenerateKeyDownEvent(ui::KeyboardCode::VKEY_S,
+                           blink::WebInputEvent::Modifiers::kControlKey),
+      /*expected_event_handled=*/false,
+      base::span_from_ref(kExpectedInkInputData), kExpectedBrushSize);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretTest, UnhandledKeyEvents) {
+  blink::WebKeyboardEvent a_event = GenerateKeyDownEvent(
+      ui::KeyboardCode::VKEY_A, blink::WebInputEvent::Modifiers::kNoModifiers);
+  blink::WebKeyboardEvent control_p_event = GenerateKeyDownEvent(
+      ui::KeyboardCode::VKEY_P, blink::WebInputEvent::Modifiers::kControlKey);
+  blink::WebKeyboardEvent control_s_event = GenerateKeyDownEvent(
+      ui::KeyboardCode::VKEY_S, blink::WebInputEvent::Modifiers::kControlKey);
+
+  // Highlighter not selected.
+  EXPECT_FALSE(HandleKeyboardEvent(a_event));
+  EXPECT_FALSE(HandleKeyboardEvent(control_p_event));
+  EXPECT_FALSE(HandleKeyboardEvent(control_s_event));
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+  ON_CALL(client(), GetPdfCaret()).WillByDefault(Return(nullptr));
+
+  // Caret does not exist yet.
+  EXPECT_FALSE(HandleKeyboardEvent(a_event));
+  EXPECT_FALSE(HandleKeyboardEvent(control_p_event));
+  EXPECT_FALSE(HandleKeyboardEvent(control_s_event));
+
+  ON_CALL(client(), GetPdfCaret()).WillByDefault(Return(caret()));
+
+  // Caret not enabled yet.
+  EXPECT_FALSE(HandleKeyboardEvent(a_event));
+  EXPECT_FALSE(HandleKeyboardEvent(control_p_event));
+  EXPECT_FALSE(HandleKeyboardEvent(control_s_event));
+
+  caret()->SetEnabled(true);
+
+  // `PdfInkModule` ignores these key events.
+  EXPECT_FALSE(HandleKeyboardEvent(a_event));
+  EXPECT_FALSE(HandleKeyboardEvent(control_p_event));
+  EXPECT_FALSE(HandleKeyboardEvent(control_s_event));
+}
+
 class PdfInkModuleTextHighlightMetricsTest
     : public PdfInkModuleMetricsTestBase,
       public PdfInkModuleTextHighlightTest {
@@ -4702,6 +4989,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(
     All,
     PdfInkModuleTextHighlightTest,
+    testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PdfInkModuleTextHighlightCaretTest,
     testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
 INSTANTIATE_TEST_SUITE_P(
     All,

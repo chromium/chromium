@@ -41,6 +41,7 @@ static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 class SkCanvas;
 
 namespace blink {
+class WebKeyboardEvent;
 class WebInputEvent;
 class WebMouseEvent;
 class WebTouchEvent;
@@ -281,6 +282,7 @@ class PdfInkModule {
   };
 
   // Event handlers. Returns whether the event was handled or not.
+  bool OnKeyDown(const blink::WebKeyboardEvent& event);
   bool OnMouseDown(const blink::WebMouseEvent& event);
   bool OnMouseUp(const blink::WebMouseEvent& event);
   bool OnMouseMove(const blink::WebMouseEvent& event);

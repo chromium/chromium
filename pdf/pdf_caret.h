@@ -44,7 +44,9 @@ class PdfCaret {
   explicit PdfCaret(PdfCaretClient* client);
   PdfCaret(const PdfCaret&) = delete;
   PdfCaret& operator=(const PdfCaret&) = delete;
-  ~PdfCaret();
+  virtual ~PdfCaret();
+
+  bool enabled() const { return enabled_; }
 
   // Sets whether the caret is enabled. No-op if state does not change. Draws
   // the caret if it should be visible, hides it otherwise. See
@@ -84,9 +86,14 @@ class PdfCaret {
   // viewport geometry changes.
   void OnGeometryChanged();
 
-  // Handles key presses that move the caret. Returns true when the key press is
-  // handled, false otherwise.
-  bool OnKeyDown(const blink::WebKeyboardEvent& event);
+  // Returns whether `OnKeyDown()` will handle `event`. Only arrow key events
+  // are handled. Events are not handled if the caret is disabled.
+  bool WillHandleKeyDownEvent(const blink::WebKeyboardEvent& event);
+
+  // Handles key events that move the caret. See `WillHandleKeyDownEvent()` for
+  // what key events are handled. Returns true when the key event is handled,
+  // false otherwise. Virtual to support testing.
+  virtual bool OnKeyDown(const blink::WebKeyboardEvent& event);
 
  private:
   // Return result of `GetScreenRectForCaret()`.

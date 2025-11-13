@@ -345,6 +345,8 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     return plugin_->engine_->GetPageSizeInPoints(page_index).value();
   }
 
+  PdfCaret* GetPdfCaret() override { return plugin_->engine_->caret(); }
+
   PdfInkModuleClient::SelectionRectMap GetSelectionRectMap() override {
     return plugin_->engine_->GetSelectionRectMap();
   }
