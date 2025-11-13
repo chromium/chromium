@@ -247,6 +247,12 @@ void GPUBuffer::unmap(v8::Isolate* isolate) {
 
 void GPUBuffer::destroy(v8::Isolate* isolate) {
   ResetMappingState(isolate);
+
+  if (mailbox_buffer_) {
+    DissociateMailbox();
+    device_->UntrackBufferWithMailbox(this);
+  }
+
   GetHandle().Destroy();
   // Destroyed, so it can never be mapped again. Stop tracking.
   device_->adapter()->gpu()->UntrackMappableBuffer(this);
@@ -254,11 +260,6 @@ void GPUBuffer::destroy(v8::Isolate* isolate) {
   // Drop the reference to the mapped buffer handles. No longer
   // need to remove the wgpu::Buffer from this set in ~GPUBuffer.
   mappable_buffer_handles_ = nullptr;
-
-  if (mailbox_buffer_) {
-    DissociateMailbox();
-    device_->UntrackBufferWithMailbox(this);
-  }
 }
 
 uint64_t GPUBuffer::size() const {
