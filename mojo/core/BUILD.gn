@@ -40,6 +40,7 @@ source_set("impl_for_embedder") {
     "core_ipcz.h",
     "embedder/configuration.h",
     "embedder/process_error_callback.h",
+    "fuzzing_utils.h",
     "handle_signals_state.h",
     "ipcz_api.h",
     "ipcz_driver/base_shared_memory_service.h",
@@ -64,6 +65,7 @@ source_set("impl_for_embedder") {
     "configuration.cc",
     "connection_params.cc",
     "core_ipcz.cc",
+    "fuzzing_utils.cc",
     "ipcz_api.cc",
     "ipcz_driver/base_shared_memory_service.cc",
     "ipcz_driver/data_pipe.cc",
@@ -349,6 +351,15 @@ if (mojo_support_legacy_core) {
     deps = [
       ":core_impl_for_fuzzers",
       "//base",
+    ]
+  }
+
+  fuzzer_test("mojo_core_ipcz_channel_fuzzer") {
+    sources = [ "ipcz_channel_fuzzer.cc" ]
+    deps = [
+      ":core_impl_for_fuzzers",
+      "//base",
+      "//mojo/public/cpp/platform",
     ]
   }
 

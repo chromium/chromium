@@ -1196,7 +1196,10 @@ Channel::DispatchResult Channel::TryDispatchMessage(
     // Handle the message.
     if (Message::IsExperimentalControlMessage(header)) {
       // Note: IsExperimentalControlMessage() implies IsExperimentalV3().
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+      // Let fuzzers go further without crashing.
       CHECK(SupportsChannelUpgrade()) << "Cannot handle control messages";
+#endif
       if (!OnControlMessage(Message::ExtractType(header), data.data(),
                             data.size(), std::move(handles))) {
         return DispatchResult::kError;
