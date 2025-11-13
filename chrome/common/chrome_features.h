@@ -299,6 +299,10 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<GlicActorEnterprisePrefDefault>(
     kGlicActorEnterprisePrefDefault);
 
+// Exempts the user from ActorPolicyChecker.
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool> kGlicActorPolicyControlExemption;
+
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActorIncrementalTyping);
 COMPONENT_EXPORT(CHROME_FEATURES)

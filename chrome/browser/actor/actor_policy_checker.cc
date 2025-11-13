@@ -262,6 +262,7 @@ bool ActorPolicyChecker::ComputeActOnWebCapability() {
 #if !BUILDFLAG(ENABLE_GLIC)
   return true;
 #else
+  bool policy_exemption = features::kGlicActorPolicyControlExemption.Get();
   bool is_likely_dogfood_client = IsLikelyDogfoodClient();
   auto* profile = service_->GetProfile();
   CHECK(profile);
@@ -276,6 +277,7 @@ bool ActorPolicyChecker::ComputeActOnWebCapability() {
   journal_->Log(
       GURL(), TaskId(), "ActorPolicyChecker::ComputeActOnWebCapability",
       JournalDetailsBuilder()
+          .Add("policy_exemption", base::ToString(policy_exemption))
           .Add("is_likely_dogfood_client",
                base::ToString(is_likely_dogfood_client))
           .Add("is_browser_managed", base::ToString(is_browser_managed))
@@ -286,7 +288,7 @@ bool ActorPolicyChecker::ComputeActOnWebCapability() {
                base::ToString(actuation_enabled_for_managed_user))
           .Build());
 
-  if (is_likely_dogfood_client) {
+  if (is_likely_dogfood_client || policy_exemption) {
     return true;
   }
   if (account_eligible_for_actuation_for_testing_) [[unlikely]] {

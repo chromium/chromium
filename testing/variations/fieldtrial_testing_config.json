@@ -11371,7 +11371,8 @@
                 {
                     "name": "Enabled_Dogfood",
                     "params": {
-                        "glic_actor_enterprise_pref_default": "enabled_by_default"
+                        "glic_actor_enterprise_pref_default": "enabled_by_default",
+                        "glic_actor_policy_control_exemption": "false"
                     },
                     "enable_features": [
                         "GlicActor",
