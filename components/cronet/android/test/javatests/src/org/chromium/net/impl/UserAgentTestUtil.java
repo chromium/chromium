@@ -8,7 +8,6 @@ import android.net.http.HttpEngine;
 import android.os.Build;
 import android.os.Bundle;
 
-import org.chromium.build.BuildConfig;
 import org.chromium.net.ContextInterceptor;
 import org.chromium.net.CronetTestFramework.CronetImplementation;
 
@@ -30,17 +29,7 @@ public class UserAgentTestUtil {
 
     /** Use this when you don't plan to use the manifest to override the default user agent. */
     public static String getDefaultUserAgent(CronetImplementation implementationUnderTest) {
-        // Note we check for BuildConfig.CRONET_FOR_AOSP_BUILD because in AOSP we run tests against
-        // both STATICALLY_LINKED (Cronet embedded inside the test suite itself) and AOSP_PLATFORM
-        // (tests running against HttpEngine from the device bootclasspath). Cronet AOSP builds will
-        // always use the new user agent logic, even when running embedded inside the test suite,
-        // so we need to make sure we need to use the new logic when running an AOSP build, even if
-        // the test is running in STATICALLY_LINKED mode.
-        // TODO(https://crbug.com/460049393): make this less confusing - arguably a cleaner fix
-        // would be to make CronetSource return STATICALLY_LINKED instead of PLATFORM in this case,
-        // to make the code under test use the old logic.
-        return (BuildConfig.CRONET_FOR_AOSP_BUILD
-                        || implementationUnderTest == CronetImplementation.AOSP_PLATFORM)
+        return implementationUnderTest == CronetImplementation.AOSP_PLATFORM
                 ? getUserAgentWithAndroidHttpClient(implementationUnderTest)
                 : getUserAgentWithPackageName(implementationUnderTest);
     }
@@ -57,6 +46,11 @@ public class UserAgentTestUtil {
 
     public static String getUserAgentWithAndroidHttpClient(
             CronetImplementation implementationUnderTest) {
+        if (implementationUnderTest != CronetImplementation.AOSP_PLATFORM) {
+            throw new IllegalArgumentException(
+                    "getUserAgentWithAndroidHttpClient should only be called with AOSP_PLATFORM,"
+                            + " this test is likely misconfigured.");
+        }
         return String.format(
                 "AndroidHttpClient (Linux; U; Android %s; %s; %s; Build/%s; Cronet/%s)",
                 Build.VERSION.RELEASE,

@@ -21,11 +21,7 @@ public abstract class CronetLogger {
         CRONET_SOURCE_PLAY_SERVICES,
         // The application is using the fallback implementation.
         CRONET_SOURCE_FALLBACK,
-        // The library was built from the Android Platform repository.
-        // TODO(https://crbug.com/460049393): a more useful and less confusing definition would be
-        // "the library was loaded from the Android device bootclasspath through HttpEngine". In
-        // production the two definitions are equivalent, but that is not true test code running
-        // against STATICALLY_LINKED in AOSP.
+        // The library is loaded through the bootclasspath.
         CRONET_SOURCE_PLATFORM,
         // The application is using the fake implementation.
         CRONET_SOURCE_FAKE,
