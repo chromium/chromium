@@ -302,10 +302,16 @@ const CGFloat kFaviconBadgeSideLength = 24;
     height += self.customSpacingBeforeImageIfNoNavigationBar;
   }
 
-  // Add the custom bottom inset between the contentView and the button stack.
-  height += self.customContentBottomInset;
-
   return height;
+}
+
+- (void)viewIsAppearing:(BOOL)animated {
+  [super viewIsAppearing:animated];
+  if (self.navigationController.navigationBar) {
+    // On iOS 26, the navigation bar is positioned differently in viewDidLoad
+    // and after. Make sure that the right position is taken into account.
+    [self.sheetPresentationController invalidateDetents];
+  }
 }
 
 #pragma mark - ButtonStackActionDelegate

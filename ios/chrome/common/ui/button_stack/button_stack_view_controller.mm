@@ -217,12 +217,7 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 
 - (void)setActionStackBottomMargin:(CGFloat)actionStackBottomMargin {
   _actionStackBottomMargin = actionStackBottomMargin;
-  if (_actionStackSafeAreaBottomConstraint) {
-    _actionStackSafeAreaBottomConstraint.constant = -_actionStackBottomMargin;
-  }
-  if (_actionStackBottomConstraint) {
-    _actionStackBottomConstraint.constant = -_actionStackBottomMargin;
-  }
+  [self reconfigureBottomConstraint];
 }
 
 #pragma mark - Private
@@ -335,6 +330,19 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   self.actionStackBottomMargin = useLegacyBottomMargin
                                      ? kLegacyButtonStackBottomMargin
                                      : kButtonStackBottomMargin;
+
+  [self reconfigureBottomConstraint];
+}
+
+// Sets the constant to the two constraints at the bottom of the button stack.
+- (void)reconfigureBottomConstraint {
+  CGFloat contraintConstant = -self.actionStackBottomMargin;
+  if (_primaryActionButton.hidden && _secondaryActionButton.hidden &&
+      _tertiaryActionButton.hidden) {
+    contraintConstant = 0;
+  }
+  _actionStackSafeAreaBottomConstraint.constant = contraintConstant;
+  _actionStackBottomConstraint.constant = contraintConstant;
 }
 
 // Configures a button with the given properties.
@@ -419,14 +427,15 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   contentViewHeightConstraint.priority = UILayoutPriorityDefaultLow;
 
   _actionStackSafeAreaBottomConstraint = [_actionStackView.bottomAnchor
-      constraintEqualToAnchor:safeAreaLayoutGuide.bottomAnchor
-                     constant:-self.actionStackBottomMargin];
+      constraintEqualToAnchor:safeAreaLayoutGuide.bottomAnchor];
   // Lower priority to avoid conflicts when the safe area bottom inset is zero.
   _actionStackSafeAreaBottomConstraint.priority = UILayoutPriorityDefaultHigh;
 
   _actionStackBottomConstraint = [_actionStackView.bottomAnchor
-      constraintLessThanOrEqualToAnchor:view.bottomAnchor
-                               constant:-self.actionStackBottomMargin];
+      constraintLessThanOrEqualToAnchor:view.bottomAnchor];
+
+  // Make sure that both constraints have the right constant.
+  [self reconfigureBottomConstraint];
 
   // Action stack view constraints.
   [NSLayoutConstraint activateConstraints:@[

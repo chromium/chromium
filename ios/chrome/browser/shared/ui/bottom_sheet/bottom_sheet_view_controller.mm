@@ -71,10 +71,10 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 - (void)setUpBottomSheetDetents {
   UISheetPresentationController* presentationController =
       self.sheetPresentationController;
-  CGFloat bottomSheetHeight = [self preferredHeightForContent];
+  __weak __typeof(self) weakSelf = self;
   auto resolver = ^CGFloat(
       id<UISheetPresentationControllerDetentResolutionContext> context) {
-    return bottomSheetHeight;
+    return [weakSelf preferredHeightForContent];
   };
   UISheetPresentationControllerDetent* customDetent =
       [UISheetPresentationControllerDetent
