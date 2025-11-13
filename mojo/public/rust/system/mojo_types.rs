@@ -55,7 +55,6 @@ pub enum MojoResult {
     InvalidResult = 18,
 }
 
-//
 impl MojoResult {
     /// Convert a raw u32 code given by the C Mojo functions into a MojoResult.
     // FOR_RELEASE: (https://crbug.com/457917334): Stop hardcoding the numbers

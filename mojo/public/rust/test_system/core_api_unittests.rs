@@ -17,7 +17,7 @@ fn test_basic_message_write_and_send() {
     // Tests a basic creation of a pipe and tries to send a message over it.
     // FOR_RELEASE: Do we need to invoke this per-test or can it be invoked
     // once?
-    test_util::init_mojo();
+    test_util::init_mojo_if_needed();
 
     // In the C API, creation of a message pipe is done by first instantiating
     // two invalid MojoHandles, passing those to MojoCreateMessagePipe,
