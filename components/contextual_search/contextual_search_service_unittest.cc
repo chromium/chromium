@@ -72,12 +72,11 @@ TEST_F(ContextualSearchServiceTest, Session) {
   config_params1->suppress_lns_surface_param_if_no_image = true;
   config_params1->enable_multi_context_input_flow = false;
   config_params1->enable_viewport_images = false;
-  auto session1_handle1 = service_->CreateSession(std::move(config_params1));
+  auto session1_handle1 = service_->CreateSession(
+      std::move(config_params1), ContextualSearchSource::kUnknown);
   ASSERT_THAT(session1_handle1, NotNull());
   ASSERT_THAT(session1_handle1->GetController(), NotNull());
   ASSERT_THAT(session1_handle1->GetMetricsRecorder(), NotNull());
-  EXPECT_EQ(session1_handle1->GetMetricsRecorderName(),
-            ContextualSearchService::kDefaultRecorderName);
 
   // Create another new session.
   auto config_params2 =
@@ -86,13 +85,11 @@ TEST_F(ContextualSearchServiceTest, Session) {
   config_params2->suppress_lns_surface_param_if_no_image = true;
   config_params2->enable_multi_context_input_flow = false;
   config_params2->enable_viewport_images = false;
-  const std::string metric_recorder_name = "TestRecorder2";
-  auto session2_handle1 =
-      service_->CreateSession(std::move(config_params2), metric_recorder_name);
+  auto session2_handle1 = service_->CreateSession(
+      std::move(config_params2), ContextualSearchSource::kUnknown);
   ASSERT_THAT(session2_handle1, NotNull());
   ASSERT_THAT(session2_handle1->GetController(), NotNull());
   ASSERT_THAT(session2_handle1->GetMetricsRecorder(), NotNull());
-  EXPECT_EQ(session2_handle1->GetMetricsRecorderName(), metric_recorder_name);
 
   // Get a new handle to session two.
   auto session2_handle2 = service_->GetSession(session2_handle1->session_id());

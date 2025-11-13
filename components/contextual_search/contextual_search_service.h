@@ -34,9 +34,7 @@ class ContextualSearchSessionEntry;
 class ContextualSearchService : public KeyedService {
  public:
   using SessionId = base::UnguessableToken;
-
-  static inline constexpr char kDefaultRecorderName[] =
-      "UnnamedMetricsRecorder";
+  class SessionHandle;
 
   ContextualSearchService(
       signin::IdentityManager* identity_manager,
@@ -51,7 +49,7 @@ class ContextualSearchService : public KeyedService {
   std::unique_ptr<ContextualSearchSessionHandle> CreateSession(
       std::unique_ptr<ContextualSearchContextController::ConfigParams>
           query_controller_config_params,
-      const std::string& composebox_metric_name = kDefaultRecorderName);
+      ContextualSearchSource source);
   // Returns a new handle for an existing session. Returns nullptr if the
   // session does not exist (e.g. has been released).
   std::unique_ptr<ContextualSearchSessionHandle> GetSession(
@@ -71,9 +69,6 @@ class ContextualSearchService : public KeyedService {
   // Called by SessionHandle to retrieve a reference to the metrics recorder.
   ContextualSearchMetricsRecorder* GetSessionMetricsRecorder(
       const SessionId& session_id);
-
-  // Called by SessionHandle to retrieve name of metrics recorder.
-  std::string GetSessionMetricsRecorderName(const SessionId& session_id) const;
 
   // Called by SessionHandle to manage ref counts.
   void ReleaseSession(const SessionId& session_id);

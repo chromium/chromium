@@ -22,10 +22,15 @@ enum class MimeType;
 
 namespace contextual_search {
 
+enum class ContextualSearchSource {
+  kUnknown,
+  kNewTabPage,
+};
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Describes the query submission details.
-enum class NtpComposeboxMultimodalState {
+enum class MultimodalState {
   kTextOnly = 0,
   kFileOnly = 1,
   kTextAndFile = 2,
@@ -62,7 +67,7 @@ struct SessionMetrics {
 
 class ContextualSearchMetricsRecorder {
  public:
-  explicit ContextualSearchMetricsRecorder(std::string metric_component_name);
+  explicit ContextualSearchMetricsRecorder(ContextualSearchSource source);
   virtual ~ContextualSearchMetricsRecorder();
 
   // Should be called when there are session state changes to keep track of
@@ -78,6 +83,8 @@ class ContextualSearchMetricsRecorder {
   std::string FileErrorToString(FileUploadErrorType error);
   // Maps mime types to its string version for histogram naming.
   std::string MimeTypeToString(lens::MimeType mime_type);
+  // Maps contextual search sources to its string version for histogram naming.
+  std::string ContextualSearchSourceToString(ContextualSearchSource source);
 
   // Records several metrics about the query, such the number of characters
   // found in the query.
@@ -89,8 +96,6 @@ class ContextualSearchMetricsRecorder {
   void RecordFileDeletedMetrics(bool success,
                                 lens::MimeType file_type,
                                 FileUploadStatus file_status);
-
-  std::string GetMetricsRecorderName() const { return metric_category_name_; }
 
  private:
   // Called when the session starts to correctly track session
@@ -111,7 +116,7 @@ class ContextualSearchMetricsRecorder {
   void FinalizeSessionMetrics();
   // Resets all session metrics at the end of a session.
   void ResetSessionMetrics();
-  std::string metric_category_name_;
+  std::string metrics_suffix_;
   std::unique_ptr<SessionMetrics> session_metrics_;
   SessionState session_state_ = SessionState::kNone;
 };

@@ -337,12 +337,6 @@ chromium-metrics-reviews@google.com.
   <int value="1967788069" label="solidcolors_for_NTP">Colors for NTP</int>
 </enum>
 
-<enum name="NtpComposeboxMultimodalState">
-  <int value="0" label="Text Only"/>
-  <int value="1" label="File Only"/>
-  <int value="2" label="Text and File"/>
-</enum>
-
 <enum name="NtpCustomizationBottomSheetType">
   <summary/>
   <int value="0" label="Main Bottom Sheet"/>

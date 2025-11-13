@@ -38,7 +38,7 @@ constexpr char kClientUploadDurationQueryParameter[] = "cud";
 constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
 constexpr char kQueryText[] = "query";
 constexpr char kComposeboxFileDeleted[] =
-    "NewTabPage.Composebox.Session.File.DeletedCount";
+    "ContextualSearch.Session.File.DeletedCount";
 
 class MockPage : public composebox::mojom::Page {
  public:
@@ -280,7 +280,7 @@ TEST_F(ComposeboxHandlerTest, DeleteFileAndSubmitQuery) {
 
   EXPECT_EQ(delete_file_token, token_arg);
   histogram_tester().ExpectTotalCount(
-      kComposeboxFileDeleted + file_type + file_status, 1);
+      kComposeboxFileDeleted + file_type + file_status + ".NewTabPage", 1);
 }
 
 TEST_F(ComposeboxHandlerTest, SubmitQueryWithToolMetric) {
