@@ -8584,6 +8584,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_VALIDATION_FAILED" desc="The generic text to display when a file upload fails a validation step.">
         Can't upload. File upload failed validation checks.
       </message>
+      <message name="IDS_NTP_COMPOSE_DRAG_AND_DROP_HINT" desc="Hint text that displays when a user is dragging a file to the composebox.">
+        Drop your files here
+      </message>
+      <message name="IDS_NTP_COMPOSE_MAX_FILES_REACHED_ERROR" desc="Error text for the maximum number of files that can be uploaded.">
+        Upload up to <ph name="FILE_LIMIT">$1<ex>10</ex></ph> files to use with your question
+      </message>
+      <message name="IDS_NTP_COMPOSE_FILE_TYPE_NOT_ALLOWED_ERROR" desc="Error text displayed when user attempts to upload file in non-supported format.">
+        Can't upload.  Try a different file format.
+      </message>
       <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_FAILED">
         Unexpected error, file upload failed.
       </message>
