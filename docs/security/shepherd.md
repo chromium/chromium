@@ -59,6 +59,13 @@ were not completed from ClusterFuzz auto-triage or previous work on the bug.
 All this is hard, so please remember to [ask for help](#Ask-for-help).
 [Yell if you must](https://www.youtube.com/watch?v=5y_SbnPx_cE&t=37s)!
 
+### IMPORTANT! In the wild (0-day) bugs
+If you see a bug that you determine is under active exploitation in the
+wild (0-day), triage it **as soon as possible**. Often, such a bug is reported
+by Google's Threat Analysis Group (TAG) and is described as a 0-day. Even if you
+are not sure, reach out in the Shepherds chat to see if you need an Incident
+Responder (IR). See [Incident response](#Incident-response) for further details.
+
 ## TL;DR Checklist for Secondary Shepherding
 (“I’m Secondary Shepherd, what do I do???”)
 
