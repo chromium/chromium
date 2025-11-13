@@ -91,6 +91,20 @@ void PostTaskForActCallback(
                      index_of_failed_action, std::move(action_results)));
 }
 
+// Helper to determine if we should gate and thus send an IPC when navigtating
+// to a new origin. See note on `kGlicNavigationGatingUseSiteNotOrigin`.
+bool IsSameForNewOriginNavigationGating(const url::Origin& reference_origin,
+                                        const GURL& navigation_url) {
+  CHECK(base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating));
+
+  if (kGlicNavigationGatingUseSiteNotOrigin.Get()) {
+    return net::SchemefulSite::IsSameSite(reference_origin.GetURL(),
+                                          navigation_url);
+  }
+
+  return reference_origin.IsSameOriginWith(navigation_url);
+}
+
 }  // namespace
 
 ToolDelegate::CredentialWithPermission::CredentialWithPermission() = default;
@@ -350,8 +364,16 @@ void ExecutionEngine::OnNavigationBlocklistDecision(
   // previously interacted with or received instructions from the server to
   // interact with.
   if (not_on_blocklist) {
+    if (initiator_origin && IsSameForNewOriginNavigationGating(
+                                initiator_origin.value(), navigation_url)) {
+      LogNavigationGating(initiator_origin, navigation_url,
+                          /*applied_gate=*/false);
+      std::move(callback).Run(/*may_continue=*/true);
+      return;
+    }
+
     for (const auto& origin : allowed_navigation_origins_) {
-      if (origin.IsSameOriginWith(navigation_url)) {
+      if (IsSameForNewOriginNavigationGating(origin, navigation_url)) {
         LogNavigationGating(initiator_origin, navigation_url,
                             /*applied_gate=*/false);
         std::move(callback).Run(/*may_continue=*/true);
