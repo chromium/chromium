@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "url/third_party/mozilla/url_parse.h"
 
 #include <stddef.h>
@@ -126,7 +121,8 @@ AssertionResult ComponentMatches(const char* input,
   }
 
   // Now check the actual characters.
-  return strncmp(reference, &input[component.begin], component.len) == 0
+  return UNSAFE_TODO(
+             strncmp(reference, &input[component.begin], component.len)) == 0
              ? AssertionSuccess()
              : AssertionFailure() << "characters do not match";
 }
@@ -532,10 +528,13 @@ static bool NthParameterIs(const char* url,
       if (!expected_key)
         return false;
 
-      if (strncmp(&url[key.begin], expected_key, key.len) != 0)
+      if (UNSAFE_TODO(strncmp(&url[key.begin], expected_key, key.len)) != 0) {
         return false;
-      if (strncmp(&url[value.begin], expected_value, value.len) != 0)
+      }
+      if (UNSAFE_TODO(strncmp(&url[value.begin], expected_value, value.len)) !=
+          0) {
         return false;
+      }
       return true;
     }
   }
