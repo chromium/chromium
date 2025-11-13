@@ -584,6 +584,9 @@ std::string_view LensAimSuggestionModeToString(
 const base::FeatureParam<int> kAimSuggestionsCount{
     &kLensAimSuggestions, "number-of-aim-suggestions", 8};
 
+const base::FeatureParam<bool> kEnableAimTypeaheadSuggestions{
+    &kLensAimSuggestions, "enable-typeahead-suggestions", false};
+
 int GetLensAimSuggestionsCount() {
   if (!GetAimSuggestionsEnabled()) {
     return 0;
@@ -1088,6 +1091,10 @@ LensAimSuggestionsType GetLensAimSuggestionsType() {
     return LensAimSuggestionsType::kNone;
   }
   return kLensAimSuggestionsType.Get();
+}
+
+bool IsLensAimTypeAheadSuggestionsEnabled() {
+  return GetAimSuggestionsEnabled() && kEnableAimTypeaheadSuggestions.Get();
 }
 
 bool ShouldCloseOverlayOnAimTransition() {
