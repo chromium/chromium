@@ -219,7 +219,7 @@ scoped_refptr<gfx::NativePixmap> X11SurfaceFactory::CreateNativePixmap(
     std::optional<gfx::Size> framebuffer_size) {
   scoped_refptr<gfx::NativePixmapDmaBuf> pixmap;
   auto buffer = ui::GpuMemoryBufferSupportX11::GetInstance()->CreateBuffer(
-      viz::SharedImageFormatToBufferFormat(format), size, usage);
+      format, size, usage);
   if (buffer) {
     gfx::NativePixmapHandle handle = buffer->ExportHandle();
     if (handle.planes.empty()) {

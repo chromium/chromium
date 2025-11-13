@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(GBM_SUPPORT_X11) GpuMemoryBufferSupportX11 {
  public:
   static GpuMemoryBufferSupportX11* GetInstance();
 
-  std::unique_ptr<GbmBuffer> CreateBuffer(gfx::BufferFormat format,
+  std::unique_ptr<GbmBuffer> CreateBuffer(viz::SharedImageFormat format,
                                           const gfx::Size& size,
                                           gfx::BufferUsage usage);
 
