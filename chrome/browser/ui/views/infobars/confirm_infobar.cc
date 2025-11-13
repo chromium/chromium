@@ -57,6 +57,11 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
     label_->SetProperty(views::kMarginsKey,
                         std::make_unique<gfx::Insets>(gfx::Insets::TLBR(
                             0, 0, 0, kHorizontalDistanceLabel)));
+    label_->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kPreferred)
+            .WithWeight(1));
   }
 
   // Create both the ok and cancel buttons.

@@ -128,7 +128,11 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
     left_balancer_ = AddChildView(std::make_unique<views::View>());
     left_balancer_->SetProperty(views::kElementIdentifierKey,
                                 kLeftBalancerElementId);
-    left_balancer_->SetProperty(views::kFlexBehaviorKey, kRigidFlex);
+    left_balancer_->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kPreferred)
+            .WithWeight(1));
     left_balancer_->SetPreferredSize(gfx::Size(0, 1));
 
     // Add a spacer for centered layout.
@@ -167,7 +171,11 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
   content_container_ = AddChildView(std::make_unique<views::View>());
   if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
     content_container_->SetLayoutManager(std::make_unique<views::FlexLayout>());
-    content_container_->SetProperty(views::kFlexBehaviorKey, kRigidFlex);
+    content_container_->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kPreferred)
+            .WithWeight(0));
   }
 
   // Add the second spacer and the right-side container.

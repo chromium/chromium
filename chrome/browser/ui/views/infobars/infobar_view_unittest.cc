@@ -46,6 +46,10 @@ class TestInfoBarViewWithLabelAndIcon : public InfoBarView {
       std::unique_ptr<infobars::InfoBarDelegate> delegate)
       : InfoBarView(std::move(delegate)) {
     test_label_ = AddContentChildView(CreateLabel(u"Test Label"));
+    test_label_->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kPreferred));
   }
 
   views::Label* test_label() { return test_label_; }
@@ -56,9 +60,7 @@ class TestInfoBarViewWithLabelAndIcon : public InfoBarView {
   }
 
  protected:
-  int GetContentMinimumWidth() const override {
-    return test_label_->GetPreferredSize().width();
-  }
+  int GetContentMinimumWidth() const override { return 0; }
 
   int GetContentPreferredWidth() const override {
     return test_label_->GetPreferredSize().width();
@@ -122,9 +124,18 @@ TEST_F(InfoBarViewUnitTest, CenteredLayout) {
   ASSERT_NE(nullptr, layout);
   EXPECT_EQ(views::LayoutAlignment::kCenter, layout->cross_axis_alignment());
 
-  // Find the spacer views used for centering.
+  // Find the balancer and spacer views used for centering.
+  views::View* left_balancer = nullptr;
+  views::View* right_spacer = nullptr;
   std::vector<views::View*> spacers;
   for (views::View* child : infobar_view->children()) {
+    if (child->GetProperty(views::kElementIdentifierKey) ==
+        InfoBarView::kLeftBalancerElementId) {
+      left_balancer = child;
+    } else if (child->GetProperty(views::kElementIdentifierKey) ==
+               InfoBarView::kRightSpacerElementId) {
+      right_spacer = child;
+    }
     const views::FlexSpecification* flex_spec =
         child->GetProperty(views::kFlexBehaviorKey);
     if (flex_spec && flex_spec->weight() == 1) {
@@ -132,16 +143,18 @@ TEST_F(InfoBarViewUnitTest, CenteredLayout) {
     }
   }
 
-  // Verify there are two spacers with the correct flex properties.
-  ASSERT_EQ(2u, spacers.size());
-  const views::FlexSpecification* primary_spec =
-      spacers[0]->GetProperty(views::kFlexBehaviorKey);
-  const views::FlexSpecification* secondary_spec =
-      spacers[1]->GetProperty(views::kFlexBehaviorKey);
-  ASSERT_NE(nullptr, primary_spec);
-  ASSERT_NE(nullptr, secondary_spec);
-  EXPECT_EQ(1, primary_spec->weight());
-  EXPECT_EQ(1, secondary_spec->weight());
+  // Verify the balancer and spacer are present.
+  ASSERT_NE(nullptr, left_balancer);
+  ASSERT_NE(nullptr, right_spacer);
+
+  // Verify there are at least two spacers with the correct flex properties.
+  ASSERT_GE(spacers.size(), 2u);
+  for (views::View* spacer : spacers) {
+    const views::FlexSpecification* spec =
+        spacer->GetProperty(views::kFlexBehaviorKey);
+    ASSERT_NE(nullptr, spec);
+    EXPECT_EQ(1, spec->weight());
+  }
 
   widget->CloseNow();
 }
@@ -241,6 +254,37 @@ TEST_F(InfoBarViewUnitTest, InfobarContainerPadding) {
   widget->LayoutRootViewIfNecessary();
 
   EXPECT_EQ(infobar_view->GetTotalHeight(), infobar_view->target_height());
+
+  widget->CloseNow();
+}
+
+TEST_F(InfoBarViewUnitTest, InfobarEliding) {
+  auto delegate = std::make_unique<TestInfoBarDelegateWithIcon>();
+  auto infobar_view =
+      std::make_unique<TestInfoBarViewWithLabelAndIcon>(std::move(delegate));
+  views::Label* label = infobar_view->test_label();
+  label->SetText(
+      u"This is a long label that should be elided when the window is narrow.");
+
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params =
+      CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  widget->Init(std::move(params));
+
+  widget->SetContentsView(infobar_view.get());
+  widget->SetBounds(gfx::Rect(0, 0, 200, 50));
+  widget->Show();
+  widget->LayoutRootViewIfNecessary();
+
+  // Verify that the label is elided in a narrow window.
+  EXPECT_TRUE(label->IsDisplayTextTruncated());
+
+  // Resize the window to be wider and verify that the label is no longer
+  // elided.
+  widget->SetBounds(gfx::Rect(0, 0, 800, 50));
+  widget->LayoutRootViewIfNecessary();
+  EXPECT_FALSE(label->IsDisplayTextTruncated());
 
   widget->CloseNow();
 }
