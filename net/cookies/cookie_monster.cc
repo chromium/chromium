@@ -71,6 +71,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -1466,7 +1467,8 @@ void CookieMonster::FilterCookiesWithOptions(
   }
 }
 
-bool CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
+CookieMonster::CookieChangeObservability
+CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
     const std::string& key,
     const CanonicalCookie& cookie_being_set,
     bool allowed_to_set_secure_cookie,
@@ -1555,14 +1557,16 @@ bool CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
     }
   }
 
-  bool is_web_observable_change = true;
+  CookieChangeObservability observability =
+      CookieChangeObservability::kWebObservable;
   if (deletion_candidate_it != cookie_map->end()) {
     CanonicalCookie* deletion_candidate = deletion_candidate_it->second.get();
     if (deletion_candidate->Value() == cookie_being_set.Value()) {
       creation_date_to_inherit = deletion_candidate->CreationDate();
     }
-    is_web_observable_change =
-        !deletion_candidate->IsWebEquivalentTo(cookie_being_set);
+    if (deletion_candidate->IsWebEquivalentTo(cookie_being_set)) {
+      observability = CookieChangeObservability::kNotWebObservable;
+    }
     if (status.IsInclude()) {
       if (cookie_being_set.IsPartitioned()) {
         InternalDeletePartitionedCookie(
@@ -1592,7 +1596,20 @@ bool CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
           });
     }
   }
-  return is_web_observable_change;
+  return observability;
+}
+
+// static
+CookieChangeCause CookieMonster::ToCookieChangeCause(
+    CookieChangeObservability observability) {
+  switch (observability) {
+    case CookieChangeObservability::kWebObservable:
+      return CookieChangeCause::INSERTED;
+    case CookieChangeObservability::kNotWebObservable:
+      return CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE;
+  }
+  NOTREACHED() << "Invalid CookieChangeObservability value: "
+               << static_cast<int>(observability);
 }
 
 std::variant<CookieMonster::CookieMap::iterator,
@@ -1602,7 +1619,7 @@ CookieMonster::InternalInsertCookie(const std::string& key,
                                     bool sync_to_store,
                                     const CookieAccessResult& access_result,
                                     bool dispatch_change,
-                                    bool is_web_observable_change) {
+                                    CookieChangeObservability observability) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(cc);
   CanonicalCookie* cc_ptr = cc.get();
@@ -1675,10 +1692,8 @@ CookieMonster::InternalInsertCookie(const std::string& key,
   if (dispatch_change) {
     change_dispatcher_.DispatchChange(
         CookieChangeInfo(*cc_ptr, access_result,
-                         is_web_observable_change
-                             ? CookieChangeCause::INSERTED
-                             : CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE),
-        true);
+                         ToCookieChangeCause(observability)),
+        /*notify_global_hooks=*/true);
   }
 
   return inserted;
@@ -1746,13 +1761,14 @@ void CookieMonster::SetCanonicalCookie(
     }
   }
 
-  bool is_web_observable_change = true;
+  CookieChangeObservability observability =
+      CookieChangeObservability::kWebObservable;
 
   // Iterates through existing cookies for the same eTLD+1, and potentially
   // deletes an existing cookie, so any ExclusionReasons in |status| that would
   // prevent such deletion should be finalized beforehand.
   if (should_try_to_delete_duplicates) {
-    is_web_observable_change = MaybeDeleteEquivalentCookieAndUpdateStatus(
+    observability = MaybeDeleteEquivalentCookieAndUpdateStatus(
         key, *cc, access_result.is_allowed_to_access_secure_cookies,
         options.exclude_httponly(), already_expired, creation_date_to_inherit,
         access_result.status, cookie_partition_it);
@@ -1804,7 +1820,7 @@ void CookieMonster::SetCanonicalCookie(
       }
 
       InternalInsertCookie(key, std::move(cc), true, access_result,
-                           /*dispatch_change=*/true, is_web_observable_change);
+                           /*dispatch_change=*/true, observability);
     } else {
       DVLOG(net::cookie_util::kVlogSetCookies)
           << "SetCookie() not storing already expired cookie.";
