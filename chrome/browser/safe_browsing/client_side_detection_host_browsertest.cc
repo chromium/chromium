@@ -1410,10 +1410,6 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
   fake_csd_service.SendModelToRenderers();
 
   histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 0);
-  histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField", 0);
-  histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 0);
 
   // Navigation will trigger preclassification on credit card form detection.
@@ -1428,22 +1424,12 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
   run_loop.Run();
 
   histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 1);
-  histogram_tester.ExpectBucketCount(
-      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined",
-      credit_card_form::kNewSiteVisitNoReferringAppAutofillLocalHeuristic, 1);
-  histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 1);
 
   // Interaction with the form will trigger preclassification that exits early
   // because of URL deduplication.
   FocusOnCreditCardNumberField();
 
-  histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField", 1);
-  histogram_tester.ExpectBucketCount(
-      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField",
-      credit_card_form::kNewSiteVisitNoReferringAppAutofillServerHeuristic, 1);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 1);
 }

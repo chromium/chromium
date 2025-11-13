@@ -1029,6 +1029,13 @@ void ClientSideDetectionHost::OnCreditCardFormEvent(
     return;
   }
 
+  // Early exit if preclassification has already been done for
+  // CREDIT_CARD_FORM and this URL.
+  if (HasDonePreclassificationCheckOnSameURL(
+          ClientSideDetectionType::CREDIT_CARD_FORM)) {
+    return;
+  }
+
   // Site visit count is needed as part of determining whether to send
   // a CSD ping, so look that up via HistoryService and delegate
   // handling the result to OnCreditCardFormEvent.
@@ -1075,19 +1082,12 @@ void ClientSideDetectionHost::OnCreditCardFormVisitCount(
   }
   credit_card_form::LogEvent(event_name, site_visit, field_heuristic);
 
-  // Early exit if preclassification has already been done for
-  // CREDIT_CARD_FORM and this URL.
-  auto csd_type = ClientSideDetectionType::CREDIT_CARD_FORM;
-  if (HasDonePreclassificationCheckOnSameURL(csd_type)) {
-    return;
-  }
-
   // Early exit if it is known that the user has visited this site before.
   if (site_visit == credit_card_form::kRepeatSiteVisit) {
     return;
   }
 
-  MaybeStartPreClassification(csd_type);
+  MaybeStartPreClassification(ClientSideDetectionType::CREDIT_CARD_FORM);
 }
 
 void ClientSideDetectionHost::KeyboardLockRequested() {

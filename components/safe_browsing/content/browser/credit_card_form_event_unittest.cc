@@ -176,7 +176,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(GetLogEventTestCases()),
                          LogEventTestCase::GetTestName);
 
-TEST_P(LogEventTest, LogExpectedHistogram) {
+TEST_P(LogEventTest, LogEventLogsExpectedHistogram) {
   const LogEventTestCase& test_case = GetParam();
   SiteVisit site_visit = test_case.site_visit;
   FieldDetectionHeuristic field_heuristic = test_case.field_heuristic;
