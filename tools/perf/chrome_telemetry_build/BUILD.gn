@@ -108,7 +108,7 @@ if (is_android) {
   _webview_bitness_if_needed = ""
   if (defined(android_app_secondary_abi)) {
     _bitness_if_needed = "_64_32"
-    _webview_bitness_if_needed = "_32_64"
+    _webview_bitness_if_needed = "_64_32"
   } else if (android_64bit_target_cpu) {
     _bitness_if_needed = "_64"
     _webview_bitness_if_needed = "_64"

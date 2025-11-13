@@ -90,11 +90,13 @@ def GenerateOrderfile(options, device):
   try:
     if options.profile_webview:
       if options.arch == 'arm64':
-        webview_target = 'system_webview_32_64_apk'
+        webview_target = 'system_webview_64_32_apk'
+        apk_name = 'SystemWebView6432.apk'
       else:
         webview_target = 'system_webview_apk'
+        apk_name = 'SystemWebView.apk'
       webview_installer_path = str(options.out_dir / 'bin' / webview_target)
-      apk_or_browser = str(options.out_dir / 'apks' / 'SystemWebView.apk')
+      apk_or_browser = str(options.out_dir / 'apks' / apk_name)
     else:
       apk_or_browser = options.android_browser
       webview_installer_path = None

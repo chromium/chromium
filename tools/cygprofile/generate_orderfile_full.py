@@ -128,7 +128,8 @@ def _GetWebViewTargetAndApk(arch):
   target = 'system_webview_apk'
   apk = _GetApkFromTarget(target)
   if '64' in arch:
-    target = target.replace('_apk', '_32_64_apk')
+    target = target.replace('_apk', '_64_32_apk')
+    apk = apk.replace('.apk', '6432.apk')
   return target, apk
 
 
