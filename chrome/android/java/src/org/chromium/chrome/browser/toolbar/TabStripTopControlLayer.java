@@ -9,7 +9,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.TopControlLayer;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
-import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripHeightObserver;
+import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionHandler;
 
 /**
  * Top control layer representing tab strip. It can have different state than the current height
@@ -18,7 +18,7 @@ import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoord
  */
 @NullMarked
 class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
-        implements TopControlLayer, TabStripHeightObserver {
+        implements TopControlLayer, TabStripTransitionHandler {
 
     public TabStripTopControlLayer(int tabStripHeight) {
         super(tabStripHeight);

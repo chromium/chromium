@@ -2397,7 +2397,8 @@ public class ToolbarManager
                 mBottomToolbarControlsOffsetSupplier,
                 mSuppressToolbarSceneLayerSupplier,
                 onProgressInfoUpdate,
-                mCaptureResourceIdSupplier);
+                mCaptureResourceIdSupplier,
+                mTabStripTopControlLayer);
         mTabStripTopControlLayer.set(mToolbar.getTabStripHeight());
 
         mAttachStateChangeListener =
@@ -2427,7 +2428,6 @@ public class ToolbarManager
             stripLayoutHelperManager.setIsTabStripHiddenByHeightTransition(
                     mToolbar.getTabStripHeight() == 0);
         }
-        mToolbar.addTabStripHeightObserver(mTabStripTopControlLayer);
 
         mUpdateMenuItemHelper = UpdateMenuItemHelper.getInstance(profile);
         if (mMenuStateObserver != null) {
@@ -2605,7 +2605,6 @@ public class ToolbarManager
             mToolbar.removeOnAttachStateChangeListener(mAttachStateChangeListener);
             mAttachStateChangeListener = null;
         }
-        mToolbar.removeTabStripHeightObserver(mTabStripTopControlLayer);
         mTopControlsStacker.removeControl(mTabStripTopControlLayer);
         mToolbar.destroy();
         mToolbarLongPressMenuHandler.destroy();

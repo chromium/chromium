@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
-import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -29,8 +28,8 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarHairlineView;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
-import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
+import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionHandler;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceReadyOnceCallback;
 import org.chromium.ui.util.TokenHolder;
@@ -49,8 +48,7 @@ class HeightTransitionHandler {
     // Minimum width (in dp) of the screen for the tab strip to be shown.
     private static final int TRANSITION_THRESHOLD_DP = 412;
 
-    private final ObserverList<TabStripHeightObserver> mTabStripHeightObservers =
-            new ObserverList<>();
+    private final TabStripTransitionHandler mTabStripTransitionHandler;
     private final CallbackController mCallbackController;
     private final Handler mHandler;
     private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
@@ -118,6 +116,8 @@ class HeightTransitionHandler {
      * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param tabStripTransitionDelegateSupplier Supplier for the {@link
      *     TabStripTransitionDelegate}.
+     * @param tabStripTransitionHandler The {@link TabStripTransitionHandler} instance to facilitate
+     *     tab strip visibility transitions.
      */
     HeightTransitionHandler(
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
@@ -127,7 +127,8 @@ class HeightTransitionHandler {
             CallbackController callbackController,
             Handler handler,
             TabObscuringHandler tabObscuringHandler,
-            OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier) {
+            OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier,
+            TabStripTransitionHandler tabStripTransitionHandler) {
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
@@ -135,6 +136,7 @@ class HeightTransitionHandler {
         mCallbackController = callbackController;
         mHandler = handler;
         mTabStripTransitionDelegateSupplier = tabStripTransitionDelegateSupplier;
+        mTabStripTransitionHandler = tabStripTransitionHandler;
 
         mTabStripHeight = tabStripHeightFromResource;
         mTabStripVisible = mTabStripHeight > 0;
@@ -173,7 +175,6 @@ class HeightTransitionHandler {
             mBrowserControlsVisibilityManager.removeObserver(mTransitionFinishedObserver);
             mTransitionFinishedObserver = null;
         }
-        mTabStripHeightObservers.clear();
         if (mTabObscuringHandlerObserver != null) {
             mTabObscuringHandler.removeObserver(mTabObscuringHandlerObserver);
             mTabObscuringHandlerObserver = null;
@@ -205,16 +206,6 @@ class HeightTransitionHandler {
     /** Return the current tab strip height. */
     int getTabStripHeight() {
         return mTabStripHeight;
-    }
-
-    /** Add observer for tab strip height change. */
-    void addObserver(TabStripHeightObserver observer) {
-        mTabStripHeightObservers.addObserver(observer);
-    }
-
-    /** Remove observer for tab strip height change. */
-    void removeObserver(TabStripHeightObserver observer) {
-        mTabStripHeightObservers.removeObserver(observer);
     }
 
     /** Request the token to defer the tab strip transition to a later time. */
@@ -364,10 +355,7 @@ class HeightTransitionHandler {
             recordTabStripTransitionFinished(false);
         }
 
-        // TODO(crbug.com/41481630): Request directly instead of using observer interface.
-        for (var observer : mTabStripHeightObservers) {
-            observer.onTransitionRequested(newHeight);
-        }
+        mTabStripTransitionHandler.onTransitionRequested(newHeight);
 
         // If the browser control is performing an browser initiated animation, we should update the
         // view margins right away. This will make sure the toolbar stays in the same place with

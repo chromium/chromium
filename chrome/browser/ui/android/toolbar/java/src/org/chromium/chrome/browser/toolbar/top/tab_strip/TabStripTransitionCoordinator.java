@@ -36,9 +36,11 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
     // configuration changed.
     private static final int TRANSITION_DELAY_MS = 200;
 
-    /** Observes height of tab strip that could change during run time. */
-    // TODO(crbug.com/41481630): Rework the observer interface.
-    public interface TabStripHeightObserver {
+    /**
+     * Interface that exposes methods to handle tab strip height transitions that can impact strip
+     * visibility.
+     */
+    public interface TabStripTransitionHandler {
         /**
          * Called when the tab strip requests an update when control container changes its width.
          *
@@ -125,6 +127,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
      * @param desktopWindowStateManager The {@link DesktopWindowStateManager} instance.
      * @param tabStripTransitionDelegateSupplier Supplier for the {@link
      *     TabStripTransitionDelegate}.
+     * @param tabStripTransitionHandler The {@link TabStripTransitionHandler} instance to facilitate
+     *     tab strip visibility transitions.
      */
     public TabStripTransitionCoordinator(
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
@@ -133,7 +137,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
             int tabStripHeightFromResource,
             TabObscuringHandler tabObscuringHandler,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier) {
+            OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier,
+            TabStripTransitionHandler tabStripTransitionHandler) {
         mControlContainer = controlContainer;
         mTabStripHeightFromResource = tabStripHeightFromResource;
         mDesktopWindowStateManager = desktopWindowStateManager;
@@ -148,7 +153,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
                         mCallbackController,
                         mHandler,
                         tabObscuringHandler,
-                        tabStripTransitionDelegateSupplier);
+                        tabStripTransitionDelegateSupplier,
+                        tabStripTransitionHandler);
         mFadeTransitionHandler =
                 new FadeTransitionHandler(tabStripTransitionDelegateSupplier, mCallbackController);
 
@@ -241,18 +247,6 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
     /** Return the current tab strip height. */
     public int getTabStripHeight() {
         return mHeightTransitionHandler.getTabStripHeight();
-    }
-
-    /** Add observer for tab strip height change. */
-    public void addObserver(TabStripHeightObserver observer) {
-        mHeightTransitionHandler.addObserver(observer);
-    }
-
-    // Tab strip height transition implementation methods.
-
-    /** Remove observer for tab strip height change. */
-    public void removeObserver(TabStripHeightObserver observer) {
-        mHeightTransitionHandler.removeObserver(observer);
     }
 
     /** Request the token to defer the tab strip height transition to a later time. */
