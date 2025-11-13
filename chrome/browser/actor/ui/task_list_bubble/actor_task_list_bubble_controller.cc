@@ -97,13 +97,8 @@ void ActorTaskListBubbleController::GetOnTaskRowClickCallback(
       tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile);
   if (tabs::TabInterface* last_tab =
           icon_manager->GetLastUpdatedTabForTaskId(task_id)) {
-    int tab_index = last_tab->GetBrowserWindowInterface()
-                        ->GetTabStripModel()
-                        ->GetIndexOfTab(last_tab);
-    last_tab->GetBrowserWindowInterface()->GetTabStripModel()->ActivateTabAt(
-        tab_index);
-    // Activate the window that the tab is in as it may not be the current one.
-    last_tab->GetBrowserWindowInterface()->GetWindow()->Activate();
+    int tab_index = browser_->GetTabStripModel()->GetIndexOfTab(last_tab);
+    browser_->GetTabStripModel()->ActivateTabAt(tab_index);
     if (auto* glic_service =
             glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile)) {
       glic_service->ToggleUI(browser_, /*prevent_close=*/true,
