@@ -389,9 +389,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         this.onFileContextAdded(composeboxFile);
       } else if (attachment.tabAttachment) {
         const tabAttachment = attachment.tabAttachment;
-        // TODO(crbug.com/459920991): Figure out if we should delay upload.
         const {token} = await searchboxHandler.addTabContext(
-            tabAttachment.tabId, /*delay_upload=*/ true);
+            tabAttachment.tabId, /*delay_upload=*/ false);
         if (!token) {
           continue;
         }
