@@ -8,12 +8,9 @@
 #include "chrome/browser/enterprise/connectors/analysis/clipboard_analysis_request.h"
 #include "chrome/browser/enterprise/connectors/analysis/request_handler_base.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 
 class Profile;
-
-namespace safe_browsing {
-class BinaryUploadService;
-}  // namespace safe_browsing
 
 namespace enterprise_connectors {
 
@@ -49,9 +46,8 @@ class ClipboardRequestHandler : public RequestHandlerBase {
   ~ClipboardRequestHandler() override;
 
   // Called after obtaining a response from `BinaryUploadService`.
-  void OnContentAnalysisResponse(
-      safe_browsing::BinaryUploadService::Result result,
-      ContentAnalysisResponse response);
+  void OnContentAnalysisResponse(ScanRequestUploadResult result,
+                                 ContentAnalysisResponse response);
 
   // RequestHandlerBase:
   void ReportWarningBypass(

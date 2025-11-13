@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/device_signals/core/common/mojom/system_signals.mojom.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 
 namespace enterprise_connectors {
 
@@ -139,9 +140,10 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   void ResetClient(const content_analysis::sdk::Client::Config& config);
 
   // Starts a local content analysis for the analysis request given by `id`.
-  void DoLocalContentAnalysis(Request::Id id,
-                              Result result,
-                              Request::Data data);
+  void DoLocalContentAnalysis(
+      Request::Id id,
+      enterprise_connectors::ScanRequestUploadResult result,
+      Request::Data data);
 
   // Handles a response from the agent for a given request.
   // `data` is not used directly by this function, but is needed to keep a
@@ -193,7 +195,7 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // Finish the request given by `id` and inform caller of the the resulting
   // verdict.
   void FinishRequest(Request::Id id,
-                     Result result,
+                     enterprise_connectors::ScanRequestUploadResult result,
                      ContentAnalysisResponse response);
 
   // Send a cancel request to the agent if there are no more active requests
@@ -228,7 +230,7 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
 
   void RecordRequestMetrics(
       const RequestInfo& info,
-      Result result,
+      enterprise_connectors::ScanRequestUploadResult result,
       const enterprise_connectors::ContentAnalysisResponse& response);
 
   raw_ptr<Profile> profile_;

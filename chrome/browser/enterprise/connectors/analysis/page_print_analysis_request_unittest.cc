@@ -13,6 +13,7 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_connectors {
@@ -24,19 +25,15 @@ static base::ReadOnlySharedMemoryRegion CreateFakePage(size_t page_size) {
   return std::move(page.region);
 }
 
-constexpr std::pair<safe_browsing::BinaryUploadService::Result, size_t>
-    kTestValues[] = {
-        {safe_browsing::BinaryUploadService::Result::SUCCESS, 1024},
-        {safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE,
-         50 * 1024 * 1024}};
+constexpr std::pair<ScanRequestUploadResult, size_t> kTestValues[] = {
+    {ScanRequestUploadResult::SUCCESS, 1024},
+    {ScanRequestUploadResult::FILE_TOO_LARGE, 50 * 1024 * 1024}};
 
 class PagePrintAnalysisRequestTest
     : public testing::TestWithParam<
-          std::pair<safe_browsing::BinaryUploadService::Result, size_t>> {
+          std::pair<ScanRequestUploadResult, size_t>> {
  public:
-  safe_browsing::BinaryUploadService::Result expected_result() const {
-    return GetParam().first;
-  }
+  ScanRequestUploadResult expected_result() const { return GetParam().first; }
 
   size_t page_size() const { return GetParam().second; }
 
@@ -55,7 +52,7 @@ TEST_P(PagePrintAnalysisRequestTest, CloudSizes) {
   base::RunLoop run_loop;
   request.GetRequestData(base::BindLambdaForTesting(
       [&run_loop, this](
-          safe_browsing::BinaryUploadService::Result result,
+          ScanRequestUploadResult result,
           safe_browsing::BinaryUploadService::Request::Data data) {
         ASSERT_TRUE(data.contents.empty());
         ASSERT_TRUE(data.hash.empty());
@@ -84,14 +81,14 @@ TEST_P(PagePrintAnalysisRequestTest, LocalSizes) {
   base::RunLoop run_loop;
   request.GetRequestData(base::BindLambdaForTesting(
       [&run_loop, this](
-          safe_browsing::BinaryUploadService::Result result,
+          ScanRequestUploadResult result,
           safe_browsing::BinaryUploadService::Request::Data data) {
         ASSERT_TRUE(data.contents.empty());
         ASSERT_TRUE(data.hash.empty());
         ASSERT_TRUE(data.mime_type.empty());
         ASSERT_TRUE(data.path.empty());
 
-        ASSERT_EQ(result, safe_browsing::BinaryUploadService::Result::SUCCESS);
+        ASSERT_EQ(result, ScanRequestUploadResult::SUCCESS);
         ASSERT_EQ(data.size, page_size());
         ASSERT_EQ(data.page.GetSize(), page_size());
         ASSERT_TRUE(data.page.IsValid());
@@ -109,14 +106,14 @@ TEST(PagePrintAnalysisRequest, GetRequestData) {
 
   safe_browsing::BinaryUploadService::Request::Data data1;
   request.GetRequestData(base::BindLambdaForTesting(
-      [&data1](safe_browsing::BinaryUploadService::Result result,
+      [&data1](ScanRequestUploadResult result,
                safe_browsing::BinaryUploadService::Request::Data data) {
         data1 = std::move(data);
       }));
 
   safe_browsing::BinaryUploadService::Request::Data data2;
   request.GetRequestData(base::BindLambdaForTesting(
-      [&data2](safe_browsing::BinaryUploadService::Result result,
+      [&data2](ScanRequestUploadResult result,
                safe_browsing::BinaryUploadService::Request::Data data) {
         data2 = std::move(data);
       }));

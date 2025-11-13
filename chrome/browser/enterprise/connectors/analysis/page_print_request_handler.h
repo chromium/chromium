@@ -67,9 +67,8 @@ class PagePrintRequestHandler : public RequestHandlerBase {
                           CompletionCallback callback);
 
   // Called after obtaining a response from `BinaryUploadService`.
-  void OnContentAnalysisResponse(
-      safe_browsing::BinaryUploadService::Result result,
-      ContentAnalysisResponse response);
+  void OnContentAnalysisResponse(ScanRequestUploadResult result,
+                                 ContentAnalysisResponse response);
 
  private:
   // RequestHandlerBase:

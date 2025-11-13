@@ -13,6 +13,7 @@
 #include "base/types/optional_ref.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
 
@@ -27,53 +28,10 @@ class BinaryUploadService : public KeyedService {
   // The maximum size of data that can be uploaded via this service.
   constexpr static size_t kMaxUploadSizeBytes = 50 * 1024 * 1024;  // 50 MB
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class Result {
-    // Unknown result.
-    UNKNOWN = 0,
-
-    // The request succeeded.
-    SUCCESS = 1,
-
-    // The upload failed, for an unspecified reason.
-    UPLOAD_FAILURE = 2,
-
-    // The upload succeeded, but a response was not received before timing out.
-    TIMEOUT = 3,
-
-    // The file was too large to upload.
-    FILE_TOO_LARGE = 4,
-
-    // The BinaryUploadService failed to get an InstanceID token.
-    FAILED_TO_GET_TOKEN = 5,
-
-    // The user is unauthorized to make the request.
-    UNAUTHORIZED = 6,
-
-    // Some or all parts of the file are encrypted.
-    FILE_ENCRYPTED = 7,
-
-    // Deprecated: The file's type is not supported and the file was not
-    // uploaded.
-    // DLP_SCAN_UNSUPPORTED_FILE_TYPE = 8,
-
-    // The server returned a 429 HTTP status indicating too many requests are
-    // being sent.
-    TOO_MANY_REQUESTS = 9,
-
-    // The server did not return all the results for the synchronous requests
-    INCOMPLETE_RESPONSE = 10,
-
-    kMaxValue = INCOMPLETE_RESPONSE,
-  };
-
-  static std::string ResultToString(Result result);
-
   // Callbacks used to pass along the results of scanning. The response protos
   // will only be populated if the result is SUCCESS. Will run on UI thread.
   using ContentAnalysisCallback =
-      base::OnceCallback<void(Result,
+      base::OnceCallback<void(enterprise_connectors::ScanRequestUploadResult,
                               enterprise_connectors::ContentAnalysisResponse)>;
 
   // A class to encapsulate the a request for upload. This class will provide
@@ -139,7 +97,9 @@ class BinaryUploadService : public KeyedService {
     // Aynchronously returns the data required to make a MultipartUploadRequest.
     // `result` is set to SUCCESS if getting the request data succeeded or
     // some value describing the error.
-    using DataCallback = base::OnceCallback<void(Result, Data)>;
+    using DataCallback =
+        base::OnceCallback<void(enterprise_connectors::ScanRequestUploadResult,
+                                Data)>;
     virtual void GetRequestData(DataCallback callback) = 0;
 
     // Returns the URL to send the request to.
@@ -229,7 +189,7 @@ class BinaryUploadService : public KeyedService {
 
     // Finish the request, with the given `result` and `response` from the
     // server.
-    void FinishRequest(Result result,
+    void FinishRequest(enterprise_connectors::ScanRequestUploadResult result,
                        enterprise_connectors::ContentAnalysisResponse response);
 
     // Calls SerializeToString on the appropriate proto request.

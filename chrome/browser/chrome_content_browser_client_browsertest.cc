@@ -50,6 +50,7 @@
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager.h"
@@ -1096,7 +1097,7 @@ class ClipboardTestContentAnalysisDelegate
 
  protected:
   void FakeUploadFileForDeepScanning(
-      safe_browsing::BinaryUploadService::Result result,
+      enterprise_connectors::ScanRequestUploadResult result,
       const base::FilePath& path,
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
       enterprise_connectors::test::FakeFilesRequestHandler::

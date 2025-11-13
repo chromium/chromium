@@ -13,6 +13,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "url/gurl.h"
@@ -42,7 +43,7 @@ void MaybeReportDeepScanningVerdict(
     const std::string& source_email,
     const int64_t content_size,
     const safe_browsing::ReferrerChain& referrer_chain,
-    BinaryUploadService::Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     const enterprise_connectors::ContentAnalysisResponse& response,
     enterprise_connectors::EventResult event_result);
 
@@ -72,7 +73,7 @@ void RecordDeepScanMetrics(
     enterprise_connectors::DeepScanAccessPoint access_point,
     base::TimeDelta duration,
     int64_t total_bytes,
-    const BinaryUploadService::Result& result,
+    const enterprise_connectors::ScanRequestUploadResult& result,
     const enterprise_connectors::ContentAnalysisResponse& response);
 void RecordDeepScanMetrics(
     bool is_cloud,
@@ -88,10 +89,10 @@ SimpleContentAnalysisResponseForTesting(std::optional<bool> dlp_success,
                                         std::optional<bool> malware_success,
                                         bool has_custom_rule_message);
 
-// Helper function to convert a BinaryUploadService::Result to a CamelCase
-// string.
+// Helper function to convert a enterprise_connectors::ScanRequestUploadResult
+// to a CamelCase string.
 std::string BinaryUploadServiceResultToString(
-    const BinaryUploadService::Result& result,
+    const enterprise_connectors::ScanRequestUploadResult& result,
     bool success);
 
 // Helper enum and function to manipulate crash keys relevant to scanning.

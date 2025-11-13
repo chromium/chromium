@@ -18,6 +18,7 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/fake_download_item.h"
@@ -153,9 +154,8 @@ TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest, BlockLargeFile) {
                                  bool_setting());
   test::SetAnalysisConnector(profile()->GetPrefs(), FILE_ATTACHED, pref);
   EXPECT_EQ(allowed(),
-            ResultShouldAllowDataUse(
-                settings(),
-                safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE));
+            ResultShouldAllowDataUse(settings(),
+                                     ScanRequestUploadResult::FILE_TOO_LARGE));
 }
 
 TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest,
@@ -169,9 +169,8 @@ TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest,
                                  bool_setting());
   test::SetAnalysisConnector(profile()->GetPrefs(), FILE_ATTACHED, pref);
   EXPECT_EQ(allowed(),
-            ResultShouldAllowDataUse(
-                settings(),
-                safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED));
+            ResultShouldAllowDataUse(settings(),
+                                     ScanRequestUploadResult::FILE_ENCRYPTED));
 }
 
 TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest, BlockUploadFailure) {
@@ -185,9 +184,8 @@ TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest, BlockUploadFailure) {
 
   test::SetAnalysisConnector(profile()->GetPrefs(), FILE_ATTACHED, pref);
   EXPECT_EQ(allowed(),
-            ResultShouldAllowDataUse(
-                settings(),
-                safe_browsing::BinaryUploadService::Result::UPLOAD_FAILURE));
+            ResultShouldAllowDataUse(settings(),
+                                     ScanRequestUploadResult::UPLOAD_FAILURE));
 }
 
 class ContentAnalysisResponseCustomMessageTest
@@ -225,8 +223,7 @@ TEST_P(ContentAnalysisResponseCustomMessageTest, ValidUrlCustomMessage) {
   ContentAnalysisResponse response =
       CreateContentAnalysisResponse(triggered_rules(), kTestUrl);
   RequestHandlerResult result = CalculateRequestHandlerResult(
-      settings(), safe_browsing::BinaryUploadService::Result::SUCCESS,
-      response);
+      settings(), ScanRequestUploadResult::SUCCESS, response);
   std::u16string custom_message =
       GetCustomRuleString(result.custom_rule_message);
   std::vector<std::pair<gfx::Range, GURL>> custom_ranges =
@@ -254,8 +251,7 @@ TEST_P(ContentAnalysisResponseCustomMessageTest, InvalidUrlCustomMessage) {
   ContentAnalysisResponse response =
       CreateContentAnalysisResponse(triggered_rules(), kTestInvalidUrl);
   RequestHandlerResult result = CalculateRequestHandlerResult(
-      settings(), safe_browsing::BinaryUploadService::Result::SUCCESS,
-      response);
+      settings(), ScanRequestUploadResult::SUCCESS, response);
   std::u16string custom_message =
       GetCustomRuleString(result.custom_rule_message);
   std::vector<std::pair<gfx::Range, GURL>> custom_ranges =

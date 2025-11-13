@@ -195,12 +195,12 @@ google::protobuf::RepeatedPtrField<std::string> CollectFrameUrlsImpl(
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 bool ShouldAllowDeepScanOnLargeOrEncryptedFiles(
-    BinaryUploadService::Result result,
+    ScanRequestUploadResult result,
     bool block_large_files,
     bool block_password_protected_files) {
-  return (result == BinaryUploadService::Result::FILE_TOO_LARGE &&
+  return (result == ScanRequestUploadResult::FILE_TOO_LARGE &&
           !block_large_files) ||
-         (result == BinaryUploadService::Result::FILE_ENCRYPTED &&
+         (result == ScanRequestUploadResult::FILE_ENCRYPTED &&
           !block_password_protected_files);
 }
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -210,7 +210,7 @@ bool ShouldAllowDeepScanOnLargeOrEncryptedFiles(
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 RequestHandlerResult CalculateRequestHandlerResult(
     const AnalysisSettings& settings,
-    BinaryUploadService::Result upload_result,
+    ScanRequestUploadResult upload_result,
     const ContentAnalysisResponse& response) {
   std::string tag;
   auto action = GetHighestPrecedenceAction(response, &tag);
@@ -240,9 +240,9 @@ RequestHandlerResult CalculateRequestHandlerResult(
     result.final_result = FinalContentAnalysisResult::WARNING;
   } else if (action == TriggeredRule::BLOCK) {
     result.final_result = FinalContentAnalysisResult::FAILURE;
-  } else if (upload_result == BinaryUploadService::Result::FILE_TOO_LARGE) {
+  } else if (upload_result == ScanRequestUploadResult::FILE_TOO_LARGE) {
     result.final_result = FinalContentAnalysisResult::LARGE_FILES;
-  } else if (upload_result == BinaryUploadService::Result::FILE_ENCRYPTED) {
+  } else if (upload_result == ScanRequestUploadResult::FILE_ENCRYPTED) {
     result.final_result = FinalContentAnalysisResult::ENCRYPTED_FILES;
   } else {
     result.final_result = FinalContentAnalysisResult::FAILURE;
@@ -365,65 +365,65 @@ bool IsResumableUpload(
 }
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
-bool CloudMultipartResultIsFailure(BinaryUploadService::Result result) {
-  return result != BinaryUploadService::Result::SUCCESS;
+bool CloudMultipartResultIsFailure(ScanRequestUploadResult result) {
+  return result != ScanRequestUploadResult::SUCCESS;
 }
 
-bool CloudResumableResultIsFailure(BinaryUploadService::Result result,
+bool CloudResumableResultIsFailure(ScanRequestUploadResult result,
                                    bool block_large_files,
                                    bool block_password_protected_files) {
-  return result != BinaryUploadService::Result::SUCCESS &&
+  return result != ScanRequestUploadResult::SUCCESS &&
          !ShouldAllowDeepScanOnLargeOrEncryptedFiles(
              result, block_large_files, block_password_protected_files);
 }
 
-bool LocalResultIsFailure(BinaryUploadService::Result result) {
-  return result != BinaryUploadService::Result::SUCCESS &&
-         result != BinaryUploadService::Result::FILE_TOO_LARGE &&
-         result != BinaryUploadService::Result::FILE_ENCRYPTED;
+bool LocalResultIsFailure(ScanRequestUploadResult result) {
+  return result != ScanRequestUploadResult::SUCCESS &&
+         result != ScanRequestUploadResult::FILE_TOO_LARGE &&
+         result != ScanRequestUploadResult::FILE_ENCRYPTED;
 }
 
-bool ResultIsFailClosed(BinaryUploadService::Result result) {
-  return result == BinaryUploadService::Result::UPLOAD_FAILURE ||
-         result == BinaryUploadService::Result::TIMEOUT ||
-         result == BinaryUploadService::Result::FAILED_TO_GET_TOKEN ||
-         result == BinaryUploadService::Result::TOO_MANY_REQUESTS ||
-         result == BinaryUploadService::Result::UNKNOWN ||
-         result == BinaryUploadService::Result::INCOMPLETE_RESPONSE;
+bool ResultIsFailClosed(ScanRequestUploadResult result) {
+  return result == ScanRequestUploadResult::UPLOAD_FAILURE ||
+         result == ScanRequestUploadResult::TIMEOUT ||
+         result == ScanRequestUploadResult::FAILED_TO_GET_TOKEN ||
+         result == ScanRequestUploadResult::TOO_MANY_REQUESTS ||
+         result == ScanRequestUploadResult::UNKNOWN ||
+         result == ScanRequestUploadResult::INCOMPLETE_RESPONSE;
 }
 
 bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
-                              BinaryUploadService::Result upload_result) {
+                              ScanRequestUploadResult upload_result) {
   bool default_action_allow_data_use =
       settings.default_action == DefaultAction::kAllow;
 
   // Keep this implemented as a switch instead of a simpler if statement so that
-  // new values added to BinaryUploadService::Result cause a compiler error.
+  // new values added to ScanRequestUploadResult cause a compiler error.
   switch (upload_result) {
-    case BinaryUploadService::Result::SUCCESS:
+    case ScanRequestUploadResult::SUCCESS:
     // UNAUTHORIZED allows data usage since it's a result only obtained if the
     // browser is not authorized to perform deep scanning. It does not make
     // sense to block data in this situation since no actual scanning of the
     // data was performed, so it's allowed.
-    case BinaryUploadService::Result::UNAUTHORIZED:
+    case ScanRequestUploadResult::UNAUTHORIZED:
       return true;
 
-    case BinaryUploadService::Result::UPLOAD_FAILURE:
-    case BinaryUploadService::Result::TIMEOUT:
-    case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
-    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
-    case BinaryUploadService::Result::UNKNOWN:
-    case BinaryUploadService::Result::INCOMPLETE_RESPONSE:
+    case ScanRequestUploadResult::UPLOAD_FAILURE:
+    case ScanRequestUploadResult::TIMEOUT:
+    case ScanRequestUploadResult::FAILED_TO_GET_TOKEN:
+    case ScanRequestUploadResult::TOO_MANY_REQUESTS:
+    case ScanRequestUploadResult::UNKNOWN:
+    case ScanRequestUploadResult::INCOMPLETE_RESPONSE:
       DVLOG(1) << __func__
                << ": handled by fail-closed settings, "
                   "default_action_allow_data_use="
                << default_action_allow_data_use;
       return default_action_allow_data_use;
 
-    case BinaryUploadService::Result::FILE_TOO_LARGE:
+    case ScanRequestUploadResult::FILE_TOO_LARGE:
       return !settings.block_large_files;
 
-    case BinaryUploadService::Result::FILE_ENCRYPTED:
+    case ScanRequestUploadResult::FILE_ENCRYPTED:
       return !settings.block_password_protected_files;
   }
 }

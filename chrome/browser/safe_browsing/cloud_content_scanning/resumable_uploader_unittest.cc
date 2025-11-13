@@ -45,7 +45,7 @@ class MockResumableUploadRequest : public ResumableUploadRequest {
   MockResumableUploadRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const base::FilePath& path,
-      BinaryUploadService::Result get_data_result,
+      enterprise_connectors::ScanRequestUploadResult get_data_result,
       ResumableUploadRequest::VerdictReceivedCallback verdict_received_callback,
       ResumableUploadRequest::ContentUploadedCallback content_uploaded_callback,
       bool force_sync_upload)
@@ -65,7 +65,7 @@ class MockResumableUploadRequest : public ResumableUploadRequest {
   MockResumableUploadRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       base::ReadOnlySharedMemoryRegion page_region,
-      BinaryUploadService::Result get_data_result,
+      enterprise_connectors::ScanRequestUploadResult get_data_result,
       ResumableUploadRequest::VerdictReceivedCallback verdict_received_callback,
       ResumableUploadRequest::ContentUploadedCallback content_uploaded_callback,
       bool force_sync_upload)
@@ -110,7 +110,7 @@ class ResumableUploadRequestTest : public testing::Test {
   template <typename RequestT>
   std::unique_ptr<RequestT> CreateFileRequest(
       const std::string& content,
-      BinaryUploadService::Result get_data_result,
+      enterprise_connectors::ScanRequestUploadResult get_data_result,
       ResumableUploadRequest::VerdictReceivedCallback verdict_received_callback,
       ResumableUploadRequest::ContentUploadedCallback content_uploaded_callback,
       bool force_sync_upload) {
@@ -125,7 +125,7 @@ class ResumableUploadRequestTest : public testing::Test {
   template <typename RequestT>
   std::unique_ptr<RequestT> CreatePageRequest(
       const std::string& content,
-      BinaryUploadService::Result get_data_result,
+      enterprise_connectors::ScanRequestUploadResult get_data_result,
       ResumableUploadRequest::VerdictReceivedCallback verdict_received_callback,
       ResumableUploadRequest::ContentUploadedCallback content_uploaded_callback,
       bool force_sync_upload) {
@@ -139,7 +139,7 @@ class ResumableUploadRequestTest : public testing::Test {
 
   template <typename RequestT>
   std::unique_ptr<RequestT> CreateRequest(
-      BinaryUploadService::Result get_data_result,
+      enterprise_connectors::ScanRequestUploadResult get_data_result,
       ResumableUploadRequest::VerdictReceivedCallback verdict_received_callback,
       ResumableUploadRequest::ContentUploadedCallback content_uploaded_callback,
       bool force_sync_upload) {
@@ -190,7 +190,8 @@ TEST_F(ResumableUploadRequestTest,
        GeneratesCorrectMetadataHeaders_FileRequest) {
   network::ResourceRequest resource_request;
   auto connector_request = ResumableUploadRequest::CreateFileRequest(
-      nullptr, GURL(), "metadata", BinaryUploadService::Result::SUCCESS,
+      nullptr, GURL(), "metadata",
+      enterprise_connectors::ScanRequestUploadResult::SUCCESS,
       CreateFile("my_file_name.foo", "file_data"), 9, false, "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(),
       false);
@@ -204,7 +205,8 @@ TEST_F(ResumableUploadRequestTest,
        GeneratesCorrectMetadataHeaders_FileRequest_TooLarge) {
   network::ResourceRequest resource_request;
   auto connector_request = ResumableUploadRequest::CreateFileRequest(
-      nullptr, GURL(), "metadata", BinaryUploadService::Result::FILE_TOO_LARGE,
+      nullptr, GURL(), "metadata",
+      enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE,
       CreateFile("my_file_name.foo", "file_data"), 9, false, "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(),
       false);
@@ -218,7 +220,8 @@ TEST_F(ResumableUploadRequestTest,
        GeneratesCorrectMetadataHeaders_FileRequest_Encrypted) {
   network::ResourceRequest resource_request;
   auto connector_request = ResumableUploadRequest::CreateFileRequest(
-      nullptr, GURL(), "metadata", BinaryUploadService::Result::FILE_ENCRYPTED,
+      nullptr, GURL(), "metadata",
+      enterprise_connectors::ScanRequestUploadResult::FILE_ENCRYPTED,
       CreateFile("my_file_name.foo", "file_data"), 9, false, "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(),
       false);
@@ -232,7 +235,8 @@ TEST_F(ResumableUploadRequestTest,
        GeneratesCorrectMetadataHeaders_PageRequest) {
   network::ResourceRequest resource_request;
   auto connector_request = ResumableUploadRequest::CreatePageRequest(
-      nullptr, GURL(), "metadata", BinaryUploadService::Result::SUCCESS,
+      nullptr, GURL(), "metadata",
+      enterprise_connectors::ScanRequestUploadResult::SUCCESS,
       CreatePage("print_data"), "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(),
       false);
@@ -293,8 +297,8 @@ TEST_P(ResumableUploadSendMetadataRequestTest, SendsCorrectRequest) {
       [&run_loop](bool success, int http_status,
                   const std::string& response_data) { run_loop.Quit(); });
   auto mock_request = CreateRequest<MockResumableUploadRequest>(
-      BinaryUploadService::Result::SUCCESS, std::move(callback),
-      base::DoNothing(), false);
+      enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+      std::move(callback), base::DoNothing(), false);
   mock_request->Start();
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
@@ -319,8 +323,8 @@ TEST_P(ResumableUploadSendMetadataRequestTest, HandlesFailedMetadataScan) {
         run_loop.Quit();
       });
   auto mock_request = CreateRequest<MockResumableUploadRequest>(
-      BinaryUploadService::Result::SUCCESS, std::move(callback),
-      base::DoNothing(), false);
+      enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+      std::move(callback), base::DoNothing(), false);
   mock_request->Start();
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
@@ -355,8 +359,8 @@ TEST_P(ResumableUploadSendMetadataRequestTest,
       });
 
   auto mock_request = CreateRequest<MockResumableUploadRequest>(
-      BinaryUploadService::Result::SUCCESS, std::move(callback),
-      base::DoNothing(), false);
+      enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+      std::move(callback), base::DoNothing(), false);
   mock_request->Start();
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
@@ -393,7 +397,7 @@ class ResumableUploadSendContentRequestTest
   UploadRequestType GetRequestType() { return GetParam(); }
 
   std::unique_ptr<ConnectorUploadRequest> CreateTestRequest(
-      BinaryUploadService::Result get_data_result,
+      enterprise_connectors::ScanRequestUploadResult get_data_result,
       ResumableUploadRequest::VerdictReceivedCallback verdict_received_callback,
       ResumableUploadRequest::ContentUploadedCallback content_uploaded_callback,
       bool force_sync_upload) {
@@ -455,7 +459,7 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesSuccessfulContentScan) {
       });
 
   auto connector_request =
-      CreateTestRequest(BinaryUploadService::Result::SUCCESS,
+      CreateTestRequest(enterprise_connectors::ScanRequestUploadResult::SUCCESS,
                         std::move(callback), base::DoNothing(), false);
   auto* request = static_cast<ResumableUploadRequest*>(connector_request.get());
 
@@ -529,9 +533,9 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesFileTooLarge) {
         run_loop.Quit();
       });
 
-  auto mock_request =
-      CreateTestRequest(BinaryUploadService::Result::FILE_TOO_LARGE,
-                        std::move(callback), base::DoNothing(), false);
+  auto mock_request = CreateTestRequest(
+      enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE,
+      std::move(callback), base::DoNothing(), false);
 
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
@@ -574,9 +578,9 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesEncryptedFile) {
         run_loop.Quit();
       });
 
-  auto mock_request =
-      CreateTestRequest(BinaryUploadService::Result::FILE_ENCRYPTED,
-                        std::move(callback), base::DoNothing(), false);
+  auto mock_request = CreateTestRequest(
+      enterprise_connectors::ScanRequestUploadResult::FILE_ENCRYPTED,
+      std::move(callback), base::DoNothing(), false);
 
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
@@ -621,7 +625,7 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesFailedContentScan) {
         run_loop.Quit();
       });
   auto connector_request =
-      CreateTestRequest(BinaryUploadService::Result::SUCCESS,
+      CreateTestRequest(enterprise_connectors::ScanRequestUploadResult::SUCCESS,
                         std::move(callback), base::DoNothing(), false);
   auto* request = static_cast<ResumableUploadRequest*>(connector_request.get());
 
@@ -702,8 +706,8 @@ TEST_P(ResumableUploadSendContentRequestTest,
       });
 
   auto mock_request = CreateTestRequest(
-      BinaryUploadService::Result::FILE_ENCRYPTED, std::move(verdict_callback),
-      std::move(content_callback), false);
+      enterprise_connectors::ScanRequestUploadResult::FILE_ENCRYPTED,
+      std::move(verdict_callback), std::move(content_callback), false);
 
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
@@ -735,7 +739,7 @@ TEST_P(ResumableUploadSendContentRequestTest,
   async_content_upload_run_loop.Run();
 }
 
-struct AsyncUploadResult {
+struct AsyncScanRequestUploadResult {
   bool success;
   net::HttpStatusCode response_code;
   bool decode_result;
@@ -752,7 +756,7 @@ std::string GetEncodedContentAnalysisResponse() {
   return base::Base64Encode(response.SerializeAsString());
 }
 
-const AsyncUploadResult kTestCases[] = {
+const AsyncScanRequestUploadResult kTestCases[] = {
     {.success = true,
      .response_code = net::HTTP_OK,
      .decode_result = true,
@@ -774,7 +778,7 @@ class MockResumableUploadRequestForAsync : public MockResumableUploadRequest {
   MockResumableUploadRequestForAsync(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const base::FilePath& path,
-      BinaryUploadService::Result get_data_result,
+      enterprise_connectors::ScanRequestUploadResult get_data_result,
       ResumableUploadRequest::VerdictReceivedCallback verdict_received_callback,
       ResumableUploadRequest::ContentUploadedCallback content_uploaded_callback,
       bool force_sync_upload)
@@ -788,7 +792,7 @@ class MockResumableUploadRequestForAsync : public MockResumableUploadRequest {
   MockResumableUploadRequestForAsync(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       base::ReadOnlySharedMemoryRegion page_region,
-      BinaryUploadService::Result get_data_result,
+      enterprise_connectors::ScanRequestUploadResult get_data_result,
       ResumableUploadRequest::VerdictReceivedCallback verdict_received_callback,
       ResumableUploadRequest::ContentUploadedCallback content_uploaded_callback,
       bool force_sync_upload)
@@ -815,13 +819,14 @@ class MockResumableUploadRequestForAsync : public MockResumableUploadRequest {
 
 class ResumableUploadSendContentAsyncTest
     : public ResumableUploadRequestTest,
-      public testing::WithParamInterface<std::tuple<bool, AsyncUploadResult>> {
+      public testing::WithParamInterface<
+          std::tuple<bool, AsyncScanRequestUploadResult>> {
  public:
   ResumableUploadSendContentAsyncTest() = default;
 
   bool is_file_request() override { return std::get<0>(GetParam()); }
 
-  const AsyncUploadResult& get_upload_result() {
+  const AsyncScanRequestUploadResult& get_upload_result() {
     return std::get<1>(GetParam());
   }
 
@@ -834,7 +839,7 @@ TEST_P(ResumableUploadSendContentAsyncTest,
   base::RunLoop run_loop;
 
   auto mock_request = CreateRequest<MockResumableUploadRequestForAsync>(
-      BinaryUploadService::Result::SUCCESS,
+      enterprise_connectors::ScanRequestUploadResult::SUCCESS,
       base::BindLambdaForTesting(
           [&](bool success, int http_status, const std::string& response_data) {
             std::string decoded_response;

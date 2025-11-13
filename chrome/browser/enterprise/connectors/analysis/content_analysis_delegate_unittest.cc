@@ -40,6 +40,7 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
@@ -1525,7 +1526,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, EmptyWait) {
 class ContentAnalysisDelegateResultHandlingTest
     : public BaseTest,
       public testing::WithParamInterface<
-          std::tuple<safe_browsing::BinaryUploadService::Result, bool, bool>> {
+          std::tuple<ScanRequestUploadResult, bool, bool>> {
  public:
   ContentAnalysisDelegateResultHandlingTest() = default;
 
@@ -1553,9 +1554,7 @@ class ContentAnalysisDelegateResultHandlingTest
         ResetStaticDialogFlagsAndTotalRequestsCount();
   }
 
-  safe_browsing::BinaryUploadService::Result result() const {
-    return std::get<0>(GetParam());
-  }
+  ScanRequestUploadResult result() const { return std::get<0>(GetParam()); }
 
   bool is_cloud() const { return std::get<1>(GetParam()); }
 
@@ -1579,17 +1578,13 @@ class ContentAnalysisDelegateResultHandlingTest
   ScopedSetDMToken scoped_dm_token_{
       policy::DMToken::CreateValidToken(kDmToken)};
 
-  bool ResultIsFailClosed(safe_browsing::BinaryUploadService::Result result) {
-    return result ==
-               safe_browsing::BinaryUploadService::Result::UPLOAD_FAILURE ||
-           result == safe_browsing::BinaryUploadService::Result::TIMEOUT ||
-           result == safe_browsing::BinaryUploadService::Result::
-                         FAILED_TO_GET_TOKEN ||
-           result ==
-               safe_browsing::BinaryUploadService::Result::TOO_MANY_REQUESTS ||
-           result == safe_browsing::BinaryUploadService::Result::UNKNOWN ||
-           result ==
-               safe_browsing::BinaryUploadService::Result::INCOMPLETE_RESPONSE;
+  bool ResultIsFailClosed(ScanRequestUploadResult result) {
+    return result == ScanRequestUploadResult::UPLOAD_FAILURE ||
+           result == ScanRequestUploadResult::TIMEOUT ||
+           result == ScanRequestUploadResult::FAILED_TO_GET_TOKEN ||
+           result == ScanRequestUploadResult::TOO_MANY_REQUESTS ||
+           result == ScanRequestUploadResult::UNKNOWN ||
+           result == ScanRequestUploadResult::INCOMPLETE_RESPONSE;
   }
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -1651,15 +1646,14 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     ContentAnalysisDelegateResultHandlingTest,
     testing::Combine(
-        testing::Values(
-            safe_browsing::BinaryUploadService::Result::UNKNOWN,
-            safe_browsing::BinaryUploadService::Result::SUCCESS,
-            safe_browsing::BinaryUploadService::Result::UPLOAD_FAILURE,
-            safe_browsing::BinaryUploadService::Result::TIMEOUT,
-            safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE,
-            safe_browsing::BinaryUploadService::Result::FAILED_TO_GET_TOKEN,
-            safe_browsing::BinaryUploadService::Result::UNAUTHORIZED,
-            safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED),
+        testing::Values(ScanRequestUploadResult::UNKNOWN,
+                        ScanRequestUploadResult::SUCCESS,
+                        ScanRequestUploadResult::UPLOAD_FAILURE,
+                        ScanRequestUploadResult::TIMEOUT,
+                        ScanRequestUploadResult::FILE_TOO_LARGE,
+                        ScanRequestUploadResult::FAILED_TO_GET_TOKEN,
+                        ScanRequestUploadResult::UNAUTHORIZED,
+                        ScanRequestUploadResult::FILE_ENCRYPTED),
         testing::Bool(),
         testing::Bool()));
 

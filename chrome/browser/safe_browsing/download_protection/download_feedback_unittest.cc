@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_uploader.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -89,7 +90,7 @@ class FakeUploaderFactory : public ConnectorUploadRequestFactory {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
-      BinaryUploadService::Result get_data_result,
+      enterprise_connectors::ScanRequestUploadResult get_data_result,
       const base::FilePath& file_path,
       uint64_t file_size,
       bool is_obfuscated,
@@ -100,7 +101,7 @@ class FakeUploaderFactory : public ConnectorUploadRequestFactory {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
-      BinaryUploadService::Result get_data_result,
+      enterprise_connectors::ScanRequestUploadResult get_data_result,
       base::ReadOnlySharedMemoryRegion page_region,
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
@@ -125,7 +126,7 @@ std::unique_ptr<ConnectorUploadRequest> FakeUploaderFactory::CreateFileRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
-    BinaryUploadService::Result get_data_result,
+    enterprise_connectors::ScanRequestUploadResult get_data_result,
     const base::FilePath& file_path,
     uint64_t file_size,
     bool is_obfuscated,
@@ -144,7 +145,7 @@ std::unique_ptr<ConnectorUploadRequest> FakeUploaderFactory::CreatePageRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
-    BinaryUploadService::Result get_data_result,
+    enterprise_connectors::ScanRequestUploadResult get_data_result,
     base::ReadOnlySharedMemoryRegion page_region,
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,

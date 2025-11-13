@@ -18,13 +18,13 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_opening_job.h"
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_metadata.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
@@ -142,15 +142,15 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
 
   // Callbacks for when |binary_upload_service_| finishes uploading.
   void OnScanComplete(const base::FilePath& current_path,
-                      BinaryUploadService::Result result,
+                      enterprise_connectors::ScanRequestUploadResult result,
                       enterprise_connectors::ContentAnalysisResponse response);
   void OnConsumerScanComplete(
       const base::FilePath& current_path,
-      BinaryUploadService::Result result,
+      enterprise_connectors::ScanRequestUploadResult result,
       enterprise_connectors::ContentAnalysisResponse response);
   void OnEnterpriseScanComplete(
       const base::FilePath& current_path,
-      BinaryUploadService::Result result,
+      enterprise_connectors::ScanRequestUploadResult result,
       enterprise_connectors::ContentAnalysisResponse response);
 
   // Called when a single file scanning request has completed. Calls
@@ -163,7 +163,8 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
 
   // Called to verify if `result` is considered as a failure and the scan should
   // end early.
-  bool ShouldTerminateEarly(BinaryUploadService::Result result);
+  bool ShouldTerminateEarly(
+      enterprise_connectors::ScanRequestUploadResult result);
 
   // Called to open the download. This is triggered by the timeout modal dialog.
   void OpenDownload();
@@ -182,19 +183,21 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
 
   // Callback invoked in `StartSingleFileScan` to check if `data` has been
   // successfully fetched and ready for deep scanning if needed.
-  void OnGetFileRequestData(const base::FilePath& file_path,
-                            std::unique_ptr<FileAnalysisRequest> request,
-                            BinaryUploadService::Result result,
-                            BinaryUploadService::Request::Data data);
+  void OnGetFileRequestData(
+      const base::FilePath& file_path,
+      std::unique_ptr<FileAnalysisRequest> request,
+      enterprise_connectors::ScanRequestUploadResult result,
+      BinaryUploadService::Request::Data data);
 
   // Callback invoked in `StartSavePackageScan` to check if `data` of a file in
   // package has been successfully fetched and ready for deep scanning if
   // needed.
-  void OnGetPackageFileRequestData(const base::FilePath& final_path,
-                                   const base::FilePath& current_path,
-                                   std::unique_ptr<FileAnalysisRequest> request,
-                                   BinaryUploadService::Result result,
-                                   BinaryUploadService::Request::Data data);
+  void OnGetPackageFileRequestData(
+      const base::FilePath& final_path,
+      const base::FilePath& current_path,
+      std::unique_ptr<FileAnalysisRequest> request,
+      enterprise_connectors::ScanRequestUploadResult result,
+      BinaryUploadService::Request::Data data);
 
   // Helper function to simplify checking if the report-only feature is set in
   // conjunction with the corresponding policy value.

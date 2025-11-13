@@ -41,6 +41,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/testing_pref_service.h"
@@ -795,7 +796,7 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
   }
 
   void FakeFileUploadCallback(
-      safe_browsing::BinaryUploadService::Result result,
+      ScanRequestUploadResult result,
       const base::FilePath& path,
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
       test::FakeFilesRequestHandler::FakeFileRequestCallback callback) {
@@ -811,7 +812,7 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), path,
-                       safe_browsing::BinaryUploadService::Result::SUCCESS,
+                       ScanRequestUploadResult::SUCCESS,
                        ConnectorStatusCallback(path)),
         kResponseDelay);
   }

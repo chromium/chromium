@@ -67,6 +67,7 @@ source_set("test_support") {
       "//chrome/browser:browser_process",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
+      "//components/enterprise/connectors/core:cloud_content_scanning",
       "//components/policy/core/browser",
       "//components/policy/core/common",
       "//components/prefs",

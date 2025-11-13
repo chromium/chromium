@@ -79,30 +79,27 @@ bool IsResumableUpload(
 
 // Returns true if `result` as returned by BinaryUploadService is considered a
 // a failed result when attempting a cloud-based multipart content analysis.
-bool CloudMultipartResultIsFailure(
-    safe_browsing::BinaryUploadService::Result result);
+bool CloudMultipartResultIsFailure(ScanRequestUploadResult result);
 
 // Returns true if `result` as returned by BinaryUploadService is considered a
 // a failed result when attempting a cloud-based resumable content analysis.
-bool CloudResumableResultIsFailure(
-    safe_browsing::BinaryUploadService::Result result,
-    bool block_large_files,
-    bool block_password_protected_files);
+bool CloudResumableResultIsFailure(ScanRequestUploadResult result,
+                                   bool block_large_files,
+                                   bool block_password_protected_files);
 
 // Returns true if `result` as returned by BinaryUploadService is considered a
 // a failed result when attempting a local content analysis.
-bool LocalResultIsFailure(safe_browsing::BinaryUploadService::Result result);
+bool LocalResultIsFailure(ScanRequestUploadResult result);
 
 // Returns true if `result` as returned by BinaryUploadService is considered a
 // fail-closed result, regardless of attempting a cloud-based or a local-based
 // content analysis.
-bool ResultIsFailClosed(safe_browsing::BinaryUploadService::Result result);
+bool ResultIsFailClosed(ScanRequestUploadResult result);
 
 // Determines if a request result should be used to allow a data use or to
 // block it.
-bool ResultShouldAllowDataUse(
-    const AnalysisSettings& settings,
-    safe_browsing::BinaryUploadService::Result upload_result);
+bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
+                              ScanRequestUploadResult upload_result);
 
 // Calculates the event result that is experienced by the user.
 // If data is allowed to be accessed immediately, the result will indicate that
@@ -131,7 +128,7 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
 // the analysis response.
 RequestHandlerResult CalculateRequestHandlerResult(
     const AnalysisSettings& settings,
-    safe_browsing::BinaryUploadService::Result upload_result,
+    ScanRequestUploadResult upload_result,
     const ContentAnalysisResponse& response);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

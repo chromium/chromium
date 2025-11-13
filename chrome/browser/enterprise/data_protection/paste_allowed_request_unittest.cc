@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/content_analysis_delegate_base.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "content/public/browser/clipboard_types.h"
@@ -104,7 +105,7 @@ class TestClipboardRequestHandler
         base::BindOnce(
             &TestClipboardRequestHandler::OnContentAnalysisResponse,
             base::Unretained(this),
-            safe_browsing::BinaryUploadService::Result::SUCCESS,
+            enterprise_connectors::ScanRequestUploadResult::SUCCESS,
             CreateResponse(enterprise_connectors::ContentAnalysisResponse::
                                Result::TriggeredRule::BLOCK)));
   }

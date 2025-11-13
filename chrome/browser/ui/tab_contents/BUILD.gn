@@ -129,7 +129,10 @@ if (!is_android) {
 
     if (enterprise_cloud_content_analysis) {
       sources += [ "chrome_web_contents_view_handle_drop_unittest.cc" ]
-      deps += [ "//chrome/browser/enterprise/connectors/test:test_support" ]
+      deps += [
+        "//chrome/browser/enterprise/connectors/test:test_support",
+        "//components/enterprise/connectors/core:cloud_content_scanning",
+      ]
     }
   }
   source_set("browser_tests") {

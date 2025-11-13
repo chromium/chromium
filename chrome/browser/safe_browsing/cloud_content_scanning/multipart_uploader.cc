@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/connector_data_pipe_getter.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
@@ -389,10 +390,10 @@ MultipartUploadRequest::CreateFileRequest(
   // Note that multipart uploads only handle data that is less than
   // `kMaxUploadSizeBytes` and not encrypted.  Therefore `Result::SUCCESS` is
   // passed as the `get_data_result` argument.
-  return factory_->CreateFileRequest(url_loader_factory, base_url, metadata,
-                                     BinaryUploadService::Result::SUCCESS, path,
-                                     file_size, is_obfuscated, histogram_suffix,
-                                     traffic_annotation, std::move(callback));
+  return factory_->CreateFileRequest(
+      url_loader_factory, base_url, metadata,
+      enterprise_connectors::ScanRequestUploadResult::SUCCESS, path, file_size,
+      is_obfuscated, histogram_suffix, traffic_annotation, std::move(callback));
 }
 
 // static
@@ -411,9 +412,10 @@ MultipartUploadRequest::CreatePageRequest(
         histogram_suffix, traffic_annotation, std::move(callback));
   }
 
-  return factory_->CreatePageRequest(url_loader_factory, base_url, metadata,
-                                     BinaryUploadService::Result::SUCCESS,
-                                     std::move(page_region), histogram_suffix,
-                                     traffic_annotation, std::move(callback));
+  return factory_->CreatePageRequest(
+      url_loader_factory, base_url, metadata,
+      enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+      std::move(page_region), histogram_suffix, traffic_annotation,
+      std::move(callback));
 }
 }  // namespace safe_browsing

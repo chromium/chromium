@@ -24,25 +24,26 @@ namespace {
 constexpr int kMinBytesPerSecond = 1;
 constexpr int kMaxBytesPerSecond = 100 * 1024 * 1024;  // 100 MB/s
 
-std::string MaybeGetUnscannedReason(BinaryUploadService::Result result) {
+std::string MaybeGetUnscannedReason(
+    enterprise_connectors::ScanRequestUploadResult result) {
   switch (result) {
-    case BinaryUploadService::Result::SUCCESS:
-    case BinaryUploadService::Result::UNAUTHORIZED:
+    case enterprise_connectors::ScanRequestUploadResult::SUCCESS:
+    case enterprise_connectors::ScanRequestUploadResult::UNAUTHORIZED:
       // Don't report an unscanned file event on these results.
       return "";
 
-    case BinaryUploadService::Result::FILE_TOO_LARGE:
+    case enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE:
       return enterprise_connectors::kFileTooLargeUnscannedReason;
-    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
+    case enterprise_connectors::ScanRequestUploadResult::TOO_MANY_REQUESTS:
       return enterprise_connectors::kTooManyRequestsUnscannedReason;
-    case BinaryUploadService::Result::TIMEOUT:
+    case enterprise_connectors::ScanRequestUploadResult::TIMEOUT:
       return enterprise_connectors::kTimeoutUnscannedReason;
-    case BinaryUploadService::Result::UNKNOWN:
-    case BinaryUploadService::Result::UPLOAD_FAILURE:
-    case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
-    case BinaryUploadService::Result::INCOMPLETE_RESPONSE:
+    case enterprise_connectors::ScanRequestUploadResult::UNKNOWN:
+    case enterprise_connectors::ScanRequestUploadResult::UPLOAD_FAILURE:
+    case enterprise_connectors::ScanRequestUploadResult::FAILED_TO_GET_TOKEN:
+    case enterprise_connectors::ScanRequestUploadResult::INCOMPLETE_RESPONSE:
       return enterprise_connectors::kServiceUnavailableUnscannedReason;
-    case BinaryUploadService::Result::FILE_ENCRYPTED:
+    case enterprise_connectors::ScanRequestUploadResult::FILE_ENCRYPTED:
       return enterprise_connectors::kFilePasswordProtectedUnscannedReason;
   }
 }
@@ -158,7 +159,7 @@ void MaybeReportDeepScanningVerdict(
     const std::string& source_email,
     const int64_t content_size,
     const safe_browsing::ReferrerChain& referrer_chain,
-    BinaryUploadService::Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     const enterprise_connectors::ContentAnalysisResponse& response,
     enterprise_connectors::EventResult event_result) {
   DCHECK(std::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
@@ -180,8 +181,9 @@ void MaybeReportDeepScanningVerdict(
         event_result);
   }
 
-  if (result != BinaryUploadService::Result::SUCCESS)
+  if (result != enterprise_connectors::ScanRequestUploadResult::SUCCESS) {
     return;
+  }
 
   for (const auto& response_result : response.results()) {
     if (response_result.status() !=
@@ -252,11 +254,12 @@ void RecordDeepScanMetrics(
     enterprise_connectors::DeepScanAccessPoint access_point,
     base::TimeDelta duration,
     int64_t total_bytes,
-    const BinaryUploadService::Result& result,
+    const enterprise_connectors::ScanRequestUploadResult& result,
     const enterprise_connectors::ContentAnalysisResponse& response) {
   // Don't record UMA metrics for this result.
-  if (result == BinaryUploadService::Result::UNAUTHORIZED)
+  if (result == enterprise_connectors::ScanRequestUploadResult::UNAUTHORIZED) {
     return;
+  }
   bool dlp_verdict_success = true;
   bool malware_verdict_success = true;
   for (const auto& response_result : response.results()) {
@@ -276,7 +279,8 @@ void RecordDeepScanMetrics(
   std::string result_value = BinaryUploadServiceResultToString(result, success);
 
   // Update |success| so non-SUCCESS results don't log the bytes/sec metric.
-  success &= (result == BinaryUploadService::Result::SUCCESS);
+  success &=
+      (result == enterprise_connectors::ScanRequestUploadResult::SUCCESS);
 
   RecordDeepScanMetrics(is_cloud, access_point, duration, total_bytes,
                         result_value, success);
@@ -357,31 +361,31 @@ SimpleContentAnalysisResponseForTesting(std::optional<bool> dlp_success,
 }
 
 std::string BinaryUploadServiceResultToString(
-    const BinaryUploadService::Result& result,
+    const enterprise_connectors::ScanRequestUploadResult& result,
     bool success) {
   switch (result) {
-    case BinaryUploadService::Result::SUCCESS:
+    case enterprise_connectors::ScanRequestUploadResult::SUCCESS:
       if (success)
         return "Success";
       else
         return "FailedToGetVerdict";
-    case BinaryUploadService::Result::UPLOAD_FAILURE:
+    case enterprise_connectors::ScanRequestUploadResult::UPLOAD_FAILURE:
       return "UploadFailure";
-    case BinaryUploadService::Result::TIMEOUT:
+    case enterprise_connectors::ScanRequestUploadResult::TIMEOUT:
       return "Timeout";
-    case BinaryUploadService::Result::FILE_TOO_LARGE:
+    case enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE:
       return "FileTooLarge";
-    case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
+    case enterprise_connectors::ScanRequestUploadResult::FAILED_TO_GET_TOKEN:
       return "FailedToGetToken";
-    case BinaryUploadService::Result::UNKNOWN:
+    case enterprise_connectors::ScanRequestUploadResult::UNKNOWN:
       return "Unknown";
-    case BinaryUploadService::Result::UNAUTHORIZED:
+    case enterprise_connectors::ScanRequestUploadResult::UNAUTHORIZED:
       return "";
-    case BinaryUploadService::Result::FILE_ENCRYPTED:
+    case enterprise_connectors::ScanRequestUploadResult::FILE_ENCRYPTED:
       return "FileEncrypted";
-    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
+    case enterprise_connectors::ScanRequestUploadResult::TOO_MANY_REQUESTS:
       return "TooManyRequests";
-    case BinaryUploadService::Result::INCOMPLETE_RESPONSE:
+    case enterprise_connectors::ScanRequestUploadResult::INCOMPLETE_RESPONSE:
       return "IncompleteResponse";
   }
 }

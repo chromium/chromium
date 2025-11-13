@@ -186,11 +186,14 @@ bool CanUseAccessToken(const BinaryUploadService::Request& request,
   return request.per_profile_request();
 }
 
-bool IgnoreErrorResultForResumableUpload(BinaryUploadService::Request* request,
-                                         BinaryUploadService::Result result) {
+bool IgnoreErrorResultForResumableUpload(
+    BinaryUploadService::Request* request,
+    enterprise_connectors::ScanRequestUploadResult result) {
   return enterprise_connectors::IsResumableUpload(*request) &&
-         (result == BinaryUploadService::Result::FILE_TOO_LARGE ||
-          result == BinaryUploadService::Result::FILE_ENCRYPTED);
+         (result ==
+              enterprise_connectors::ScanRequestUploadResult ::FILE_TOO_LARGE ||
+          result ==
+              enterprise_connectors::ScanRequestUploadResult ::FILE_ENCRYPTED);
 }
 
 }  // namespace
@@ -240,9 +243,11 @@ void CloudBinaryUploadService::MaybeUploadForDeepScanning(
     const bool is_enhanced_protection =
         profile_ && IsEnhancedProtectionEnabled(*profile_->GetPrefs());
 
-    const Result is_deep_scan_authorized =
-        is_advanced_protection || is_enhanced_protection ? Result::SUCCESS
-                                                         : Result::UNAUTHORIZED;
+    const enterprise_connectors::ScanRequestUploadResult
+        is_deep_scan_authorized =
+            is_advanced_protection || is_enhanced_protection
+                ? enterprise_connectors::ScanRequestUploadResult ::SUCCESS
+                : enterprise_connectors::ScanRequestUploadResult ::UNAUTHORIZED;
     MaybeUploadForDeepScanningCallback(
         std::move(request),
         /*auth_check_result=*/is_deep_scan_authorized);
@@ -255,15 +260,18 @@ void CloudBinaryUploadService::MaybeUploadForDeepScanning(
   TokenAndConnector token_and_connector = {dm_token, connector};
 
   if (dm_token.empty()) {
-    MaybeUploadForDeepScanningCallback(std::move(request),
-                                       /*authorized*/ Result::UNAUTHORIZED);
+    MaybeUploadForDeepScanningCallback(
+        std::move(request),
+        /*authorized*/ enterprise_connectors::ScanRequestUploadResult::
+            UNAUTHORIZED);
     return;
   }
 
   // Validate if `token_and_connector` is authorized to upload data if this is
   // the first time or the previous check failed.
   if (!can_upload_enterprise_data_.contains(token_and_connector) ||
-      can_upload_enterprise_data_[token_and_connector] != Result::SUCCESS) {
+      can_upload_enterprise_data_[token_and_connector] !=
+          enterprise_connectors::ScanRequestUploadResult::SUCCESS) {
     // Get data from `request` before calling `IsAuthorized` since it is about
     // to move.
     GURL url = request->GetUrlWithParams();
@@ -298,9 +306,10 @@ base::WeakPtr<BinaryUploadService> CloudBinaryUploadService::AsWeakPtr() {
 
 void CloudBinaryUploadService::MaybeUploadForDeepScanningCallback(
     std::unique_ptr<CloudBinaryUploadService::Request> request,
-    Result auth_check_result) {
+    enterprise_connectors::ScanRequestUploadResult auth_check_result) {
   // Ignore the request if the browser cannot upload data.
-  if (auth_check_result != Result::SUCCESS) {
+  if (auth_check_result !=
+      enterprise_connectors::ScanRequestUploadResult::SUCCESS) {
     // TODO(crbug.com/40660637): Add extra logic to handle UX for non-authorized
     // users.
     request->FinishRequest(auth_check_result,
@@ -366,7 +375,8 @@ void CloudBinaryUploadService::PrepareRequestForUpload(Request::Id request_id) {
   active_timers_[request_id]->Start(
       FROM_HERE, request->IsAuthRequest() ? kAuthTimeout : kScanningTimeout,
       base::BindOnce(&CloudBinaryUploadService::FinishIfActive,
-                     weakptr_factory_.GetWeakPtr(), request_id, Result::TIMEOUT,
+                     weakptr_factory_.GetWeakPtr(), request_id,
+                     enterprise_connectors::ScanRequestUploadResult::TIMEOUT,
                      enterprise_connectors::ContentAnalysisResponse()));
 }
 
@@ -421,15 +431,16 @@ void CloudBinaryUploadService::OnIpAddressesFetched(
   MaybeGetAccessToken(request_id);
 }
 
-void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
-                                                Result result,
-                                                Request::Data data) {
+void CloudBinaryUploadService::OnGetRequestData(
+    Request::Id request_id,
+    enterprise_connectors::ScanRequestUploadResult result,
+    Request::Data data) {
   Request* request = GetRequest(request_id);
   if (!request) {
     return;
   }
 
-  if (result != Result::SUCCESS) {
+  if (result != enterprise_connectors::ScanRequestUploadResult::SUCCESS) {
     if (!IgnoreErrorResultForResumableUpload(request, result)) {
       FinishAndCleanupRequest(request, result,
                               enterprise_connectors::ContentAnalysisResponse());
@@ -442,10 +453,12 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
     request->set_require_metadata_verdict(true);
     // If the file is encrypted, let the service know that the file is
     // encrypted.
-    if (result == Result::FILE_ENCRYPTED) {
+    if (result ==
+        enterprise_connectors::ScanRequestUploadResult::FILE_ENCRYPTED) {
       request->set_is_content_encrypted(true);
     }
-    if (result == Result::FILE_TOO_LARGE) {
+    if (result ==
+        enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE) {
       request->set_is_content_too_large(true);
     }
   }
@@ -454,8 +467,9 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
     // A size of 0 implies an edge case like an empty file being uploaded. In
     // such a case, the file doesn't need to scan so the request can simply
     // finish early.
-    FinishAndCleanupRequest(request, Result::SUCCESS,
-                            enterprise_connectors::ContentAnalysisResponse());
+    FinishAndCleanupRequest(
+        request, enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+        enterprise_connectors::ContentAnalysisResponse());
     return;
   }
 
@@ -573,27 +587,32 @@ void CloudBinaryUploadService::OnGetContentAnalysisResponse(
   }
 
   if (http_status == net::HTTP_UNAUTHORIZED) {
-    FinishRequest(request, Result::UNAUTHORIZED,
+    FinishRequest(request,
+                  enterprise_connectors::ScanRequestUploadResult::UNAUTHORIZED,
                   enterprise_connectors::ContentAnalysisResponse());
     return;
   }
 
   if (http_status == net::HTTP_TOO_MANY_REQUESTS) {
-    FinishRequest(request, Result::TOO_MANY_REQUESTS,
-                  enterprise_connectors::ContentAnalysisResponse());
+    FinishRequest(
+        request,
+        enterprise_connectors::ScanRequestUploadResult::TOO_MANY_REQUESTS,
+        enterprise_connectors::ContentAnalysisResponse());
     return;
   }
 
   if (!success) {
-    FinishRequest(request, Result::UPLOAD_FAILURE,
-                  enterprise_connectors::ContentAnalysisResponse());
+    FinishRequest(
+        request, enterprise_connectors::ScanRequestUploadResult::UPLOAD_FAILURE,
+        enterprise_connectors::ContentAnalysisResponse());
     return;
   }
 
   enterprise_connectors::ContentAnalysisResponse response;
   if (!response.ParseFromString(response_data)) {
-    FinishRequest(request, Result::UPLOAD_FAILURE,
-                  enterprise_connectors::ContentAnalysisResponse());
+    FinishRequest(
+        request, enterprise_connectors::ScanRequestUploadResult::UPLOAD_FAILURE,
+        enterprise_connectors::ContentAnalysisResponse());
     return;
   }
 
@@ -636,13 +655,15 @@ void CloudBinaryUploadService::MaybeFinishRequest(Request::Id request_id) {
 
   // Set `result` to be INCOMPLETE_RESPONSE, if the request is terminated with incomplete
   // response.
-  Result result = Result::SUCCESS;
+  enterprise_connectors::ScanRequestUploadResult result =
+      enterprise_connectors::ScanRequestUploadResult::SUCCESS;
   if (!ResponseIsComplete(request_id)) {
-    result = Result::INCOMPLETE_RESPONSE;
+    result =
+        enterprise_connectors::ScanRequestUploadResult::INCOMPLETE_RESPONSE;
   } else if (request->is_content_too_large()) {
-    result = Result::FILE_TOO_LARGE;
+    result = enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE;
   } else if (request->is_content_encrypted()) {
-    result = Result::FILE_ENCRYPTED;
+    result = enterprise_connectors::ScanRequestUploadResult::FILE_ENCRYPTED;
   }
 
   FinishRequest(request, result, std::move(response));
@@ -650,7 +671,7 @@ void CloudBinaryUploadService::MaybeFinishRequest(Request::Id request_id) {
 
 void CloudBinaryUploadService::FinishIfActive(
     Request::Id request_id,
-    Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     enterprise_connectors::ContentAnalysisResponse response) {
   Request* request = GetRequest(request_id);
   if (request) {
@@ -660,7 +681,7 @@ void CloudBinaryUploadService::FinishIfActive(
 
 void CloudBinaryUploadService::FinishAndCleanupRequest(
     Request* request,
-    Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     enterprise_connectors::ContentAnalysisResponse response) {
   FinishRequest(request, result, response);
   CleanupRequest(request);
@@ -668,7 +689,7 @@ void CloudBinaryUploadService::FinishAndCleanupRequest(
 
 void CloudBinaryUploadService::FinishRequest(
     Request* request,
-    Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     enterprise_connectors::ContentAnalysisResponse response) {
   RecordRequestMetrics(request->id(), result, response);
   std::string upload_info = "None";
@@ -682,7 +703,8 @@ void CloudBinaryUploadService::FinishRequest(
       request->per_profile_request(), request->access_token(), upload_info,
       request->GetUrlWithParams().spec(), request->content_analysis_request());
   WebUIContentInfoSingleton::GetInstance()->AddToDeepScanResponses(
-      active_tokens_[request->id()], ResultToString(result), response);
+      active_tokens_[request->id()],
+      enterprise_connectors::ScanRequestUploadResultToString(result), response);
 
   request->FinishRequest(result, response);
 }
@@ -704,8 +726,9 @@ void CloudBinaryUploadService::CleanupRequest(Request* request) {
   PopRequestQueue();
 }
 
-void CloudBinaryUploadService::RecordRequestMetrics(Request::Id request_id,
-                                                    Result result) {
+void CloudBinaryUploadService::RecordRequestMetrics(
+    Request::Id request_id,
+    enterprise_connectors::ScanRequestUploadResult result) {
   base::UmaHistogramEnumeration("SafeBrowsingBinaryUploadRequest.Result",
                                 result);
 
@@ -757,7 +780,7 @@ void CloudBinaryUploadService::RecordRequestMetrics(Request::Id request_id,
 
 void CloudBinaryUploadService::RecordRequestMetrics(
     Request::Id request_id,
-    Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     const enterprise_connectors::ContentAnalysisResponse& response) {
   RecordRequestMetrics(request_id, result);
   for (const auto& response_result : response.results()) {
@@ -823,8 +846,9 @@ class ValidateDataUploadRequest : public CloudBinaryUploadService::Request {
 };
 
 inline void ValidateDataUploadRequest::GetRequestData(DataCallback callback) {
-  std::move(callback).Run(CloudBinaryUploadService::Result::SUCCESS,
-                          CloudBinaryUploadService::Request::Data());
+  std::move(callback).Run(
+      enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+      CloudBinaryUploadService::Request::Data());
 }
 
 bool ValidateDataUploadRequest::IsAuthRequest() const {
@@ -850,11 +874,13 @@ void CloudBinaryUploadService::IsAuthorized(
   // Validate if `token_and_connector` is authorized to upload data if this is
   // the first time or the previous check failed.
   if (!can_upload_enterprise_data_.contains(token_and_connector) ||
-      can_upload_enterprise_data_[token_and_connector] != Result::SUCCESS) {
+      can_upload_enterprise_data_[token_and_connector] !=
+          enterprise_connectors::ScanRequestUploadResult::SUCCESS) {
     // Send a request to check if the browser can upload data.
     auto [iter, inserted] = authorization_callbacks_.try_emplace(
         token_and_connector,
-        std::make_unique<base::OnceCallbackList<void(Result)>>());
+        std::make_unique<base::OnceCallbackList<void(
+            enterprise_connectors::ScanRequestUploadResult)>>());
     iter->second->AddUnsafe(std::move(callback));
 
     if (!pending_validate_data_upload_request_.contains(token_and_connector)) {
@@ -891,7 +917,7 @@ void CloudBinaryUploadService::IsAuthorized(
 void CloudBinaryUploadService::ValidateDataUploadRequestConnectorCallback(
     const std::string& dm_token,
     enterprise_connectors::AnalysisConnector connector,
-    CloudBinaryUploadService::Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     enterprise_connectors::ContentAnalysisResponse response) {
   TokenAndConnector token_and_connector = {dm_token, connector};
   pending_validate_data_upload_request_.erase(token_and_connector);
@@ -914,8 +940,9 @@ void CloudBinaryUploadService::MaybeRunAuthorizationCallbacks(
   }
   // To avoid race condition, save the callback and erase it from the map
   // before running it.
-  std::unique_ptr<base::OnceCallbackList<void(Result)>> callbacks =
-      std::move(it->second);
+  std::unique_ptr<base::OnceCallbackList<void(
+      enterprise_connectors::ScanRequestUploadResult)>>
+      callbacks = std::move(it->second);
   authorization_callbacks_.erase(it);
   callbacks->Notify(can_upload_enterprise_data_[token_and_connector]);
 }
@@ -933,8 +960,9 @@ void CloudBinaryUploadService::ResetAuthorizationData(const GURL& url) {
   }
 }
 
-void CloudBinaryUploadService::SetAuthForTesting(const std::string& dm_token,
-                                                 Result auth_check_result) {
+void CloudBinaryUploadService::SetAuthForTesting(
+    const std::string& dm_token,
+    enterprise_connectors::ScanRequestUploadResult auth_check_result) {
   for (enterprise_connectors::AnalysisConnector connector : {
            enterprise_connectors::AnalysisConnector::
                ANALYSIS_CONNECTOR_UNSPECIFIED,

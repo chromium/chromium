@@ -157,17 +157,17 @@ bool PagePrintRequestHandler::UploadDataImpl() {
 }
 
 void PagePrintRequestHandler::OnContentAnalysisResponse(
-    safe_browsing::BinaryUploadService::Result result,
+    ScanRequestUploadResult result,
     ContentAnalysisResponse response) {
   response_ = std::move(response);
   request_tokens_to_ack_final_actions_[response_.request_token()] =
       GetAckFinalAction(response_);
 
-  RecordDeepScanMetrics(content_analysis_info_->settings()
-                            .cloud_or_local_settings.is_cloud_analysis(),
-                        DeepScanAccessPoint::PRINT,
-                        base::TimeTicks::Now() - upload_start_time_,
-                        page_size_bytes_, result, response_);
+  safe_browsing::RecordDeepScanMetrics(
+      content_analysis_info_->settings()
+          .cloud_or_local_settings.is_cloud_analysis(),
+      DeepScanAccessPoint::PRINT, base::TimeTicks::Now() - upload_start_time_,
+      page_size_bytes_, result, response_);
 
   auto request_handler_result = CalculateRequestHandlerResult(
       content_analysis_info_->settings(), result, response_);
@@ -204,13 +204,12 @@ void PagePrintRequestHandler::FinishLargeDataRequestEarly(
   safe_browsing::WebUIContentInfoSingleton::GetInstance()
       ->AddToDeepScanResponses(
           /*token=*/"",
-          safe_browsing::BinaryUploadService::ResultToString(
-              safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE),
+          ScanRequestUploadResultToString(
+              ScanRequestUploadResult::FILE_TOO_LARGE),
           enterprise_connectors::ContentAnalysisResponse());
 
-  request->FinishRequest(
-      safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE,
-      enterprise_connectors::ContentAnalysisResponse());
+  request->FinishRequest(ScanRequestUploadResult::FILE_TOO_LARGE,
+                         enterprise_connectors::ContentAnalysisResponse());
 }
 
 }  // namespace enterprise_connectors

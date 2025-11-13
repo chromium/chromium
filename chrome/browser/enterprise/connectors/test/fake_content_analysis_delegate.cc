@@ -61,9 +61,8 @@ class FakePagePrintRequestHandler : public PagePrintRequestHandler {
 
 }  // namespace
 
-safe_browsing::BinaryUploadService::Result
-    FakeContentAnalysisDelegate::result_ =
-        safe_browsing::BinaryUploadService::Result::SUCCESS;
+ScanRequestUploadResult FakeContentAnalysisDelegate::result_ =
+    ScanRequestUploadResult::SUCCESS;
 bool FakeContentAnalysisDelegate::dialog_shown_ = false;
 bool FakeContentAnalysisDelegate::dialog_canceled_ = false;
 int64_t FakeContentAnalysisDelegate::total_analysis_requests_count_ = 0;
@@ -91,7 +90,7 @@ FakeContentAnalysisDelegate::~FakeContentAnalysisDelegate() {
 
 // static
 void FakeContentAnalysisDelegate::SetResponseResult(
-    safe_browsing::BinaryUploadService::Result result) {
+    ScanRequestUploadResult result) {
   result_ = result;
 }
 
@@ -232,11 +231,10 @@ void FakeContentAnalysisDelegate::Response(
     std::optional<FakeFilesRequestHandler::FakeFileRequestCallback>
         file_request_callback,
     bool is_image_request) {
-  auto response =
-      (status_callback_.is_null() ||
-       result_ != safe_browsing::BinaryUploadService::Result::SUCCESS)
-          ? ContentAnalysisResponse()
-          : status_callback_.Run(contents, path);
+  auto response = (status_callback_.is_null() ||
+                   result_ != ScanRequestUploadResult::SUCCESS)
+                      ? ContentAnalysisResponse()
+                      : status_callback_.Run(contents, path);
   if (request->IsAuthRequest()) {
     TextRequestCallback(CalculateRequestHandlerResult(
         GetDataForTesting().settings, result_, response));
@@ -269,7 +267,7 @@ void FakeContentAnalysisDelegate::Response(
 }
 
 void FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning(
-    safe_browsing::BinaryUploadService::Result result,
+    ScanRequestUploadResult result,
     const base::FilePath& path,
     std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
     FakeFilesRequestHandler::FakeFileRequestCallback callback) {
@@ -321,7 +319,7 @@ void FakeContentAnalysisDelegate::FakeUploadClipboardDataForDeepScanning(
   // For text/image requests, GetRequestData() is synchronous.
   safe_browsing::BinaryUploadService::Request::Data data;
   request->GetRequestData(base::BindLambdaForTesting(
-      [&data](safe_browsing::BinaryUploadService::Result,
+      [&data](ScanRequestUploadResult,
               safe_browsing::BinaryUploadService::Request::Data data_arg) {
         data = std::move(data_arg);
       }));

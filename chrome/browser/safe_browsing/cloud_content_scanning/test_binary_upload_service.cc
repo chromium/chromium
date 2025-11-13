@@ -27,7 +27,7 @@ void TestBinaryUploadService::MaybeUploadForDeepScanning(
 }
 
 void TestBinaryUploadService::SetResponse(
-    Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     enterprise_connectors::ContentAnalysisResponse response) {
   saved_result_ = result;
   saved_response_ = response;

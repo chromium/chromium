@@ -118,9 +118,8 @@ class PagePrintRequestHandlerTest : public testing::Test {
     ContentAnalysisResponse response;
     *response.add_results() =
         CreateResult(ContentAnalysisResponse::Result::TriggeredRule::BLOCK);
-    binary_upload_service_.SetResponse(
-        safe_browsing::CloudBinaryUploadService::Result::SUCCESS,
-        std::move(response));
+    binary_upload_service_.SetResponse(ScanRequestUploadResult::SUCCESS,
+                                       std::move(response));
 
     scoped_feature_list_.InitAndEnableFeature(
         safe_browsing::kEnhancedFieldsForSecOps);

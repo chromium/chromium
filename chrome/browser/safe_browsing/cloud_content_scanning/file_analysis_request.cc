@@ -68,7 +68,8 @@ std::string GetFileMimeType(const base::FilePath& path,
   return ext_mime_type;
 }
 
-std::pair<BinaryUploadService::Result, BinaryUploadService::Request::Data>
+std::pair<enterprise_connectors::ScanRequestUploadResult,
+          BinaryUploadService::Request::Data>
 GetFileDataBlocking(const base::FilePath& path,
                     bool detect_mime_type,
                     bool is_obfuscated) {
@@ -86,12 +87,14 @@ GetFileDataBlocking(const base::FilePath& path,
                             base::File::FLAG_WIN_SHARE_DELETE);
 
   if (!file.IsValid()) {
-    return std::make_pair(BinaryUploadService::Result::UNKNOWN, file_data);
+    return std::make_pair(
+        enterprise_connectors::ScanRequestUploadResult::UNKNOWN, file_data);
   }
 
   file_data.size = file.GetLength();
   if (file_data.size == 0) {
-    return std::make_pair(BinaryUploadService::Result::SUCCESS, file_data);
+    return std::make_pair(
+        enterprise_connectors::ScanRequestUploadResult::SUCCESS, file_data);
   }
 
   std::unique_ptr<crypto::SecureHash> secure_hash =
@@ -106,7 +109,8 @@ GetFileDataBlocking(const base::FilePath& path,
       // Reset the size to zero since some code assumes an UNKNOWN result is
       // matched with a zero size.
       file_data.size = 0;
-      return {BinaryUploadService::Result::UNKNOWN, file_data};
+      return {enterprise_connectors::ScanRequestUploadResult::UNKNOWN,
+              file_data};
     }
 
     // Use the first read chunk to get the mimetype as necessary.
@@ -150,8 +154,8 @@ GetFileDataBlocking(const base::FilePath& path,
         1024 * 1024 * enterprise_connectors::kMaxContentAnalysisFileSizeMB.Get();
   }
   return {file_data.size <= max_file_size_bytes
-              ? BinaryUploadService::Result::SUCCESS
-              : BinaryUploadService::Result::FILE_TOO_LARGE,
+              ? enterprise_connectors::ScanRequestUploadResult::SUCCESS
+              : enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE,
           std::move(file_data)};
 }
 
@@ -216,8 +220,9 @@ void FileAnalysisRequest::OpenFile() {
 
   // Opening the file synchronously here is OK since OpenFile should be called
   // on a base::MayBlock() thread.
-  std::pair<BinaryUploadService::Result, Data> file_data = GetFileDataBlocking(
-      path_, cached_data_.mime_type.empty(), is_obfuscated_);
+  std::pair<enterprise_connectors::ScanRequestUploadResult, Data> file_data =
+      GetFileDataBlocking(path_, cached_data_.mime_type.empty(),
+                          is_obfuscated_);
 
   // The result of opening the file is passed back to the UI thread since
   // |data_callback_| calls functions that must run there.
@@ -236,12 +241,14 @@ bool FileAnalysisRequest::HasMalwareRequest() const {
 }
 
 void FileAnalysisRequest::OnGotFileData(
-    std::pair<BinaryUploadService::Result, Data> result_and_data) {
+    std::pair<enterprise_connectors::ScanRequestUploadResult, Data>
+        result_and_data) {
   DCHECK(!result_and_data.second.path.empty());
   DCHECK_EQ(result_and_data.second.path, path_);
 
   scoped_file_access_.reset();
-  if (result_and_data.first != BinaryUploadService::Result::SUCCESS) {
+  if (result_and_data.first !=
+      enterprise_connectors::ScanRequestUploadResult::SUCCESS) {
     CacheResultAndData(result_and_data.first,
                        std::move(result_and_data.second));
     RunCallback();
@@ -272,7 +279,7 @@ void FileAnalysisRequest::OnGotFileData(
         LaunchFileUtilService());
     rar_analyzer_->Start();
   } else {
-    CacheResultAndData(BinaryUploadService::Result::SUCCESS,
+    CacheResultAndData(enterprise_connectors::ScanRequestUploadResult::SUCCESS,
                        std::move(result_and_data.second));
     RunCallback();
   }
@@ -285,15 +292,16 @@ void FileAnalysisRequest::OnCheckedForEncryption(
                    analyzer_result.encryption_info.password_status ==
                        EncryptionInfo::kKnownIncorrect;
 
-  BinaryUploadService::Result result =
-      encrypted ? BinaryUploadService::Result::FILE_ENCRYPTED
-                : BinaryUploadService::Result::SUCCESS;
+  enterprise_connectors::ScanRequestUploadResult result =
+      encrypted ? enterprise_connectors::ScanRequestUploadResult::FILE_ENCRYPTED
+                : enterprise_connectors::ScanRequestUploadResult::SUCCESS;
   CacheResultAndData(result, std::move(data));
   RunCallback();
 }
 
-void FileAnalysisRequest::CacheResultAndData(BinaryUploadService::Result result,
-                                             Data data) {
+void FileAnalysisRequest::CacheResultAndData(
+    enterprise_connectors::ScanRequestUploadResult result,
+    Data data) {
   has_cached_result_ = true;
   cached_result_ = result;
 

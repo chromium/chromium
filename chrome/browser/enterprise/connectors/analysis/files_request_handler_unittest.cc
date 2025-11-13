@@ -363,7 +363,7 @@ class FilesRequestHandlerTest : public BaseTest {
 
   void FakeFileUploadCallback(
       bool is_cloud_analysis,
-      safe_browsing::BinaryUploadService::Result result,
+      ScanRequestUploadResult result,
       const base::FilePath& path,
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
       test::FakeFilesRequestHandler::FakeFileRequestCallback callback) {

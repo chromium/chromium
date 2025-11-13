@@ -41,6 +41,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -789,7 +790,7 @@ class FileTransferConnectorFilesAppBrowserTestBase {
   void FakeFileUploadCallback(
       const std::string& expected_source,
       const std::string& expected_destination,
-      safe_browsing::BinaryUploadService::Result result,
+      enterprise_connectors::ScanRequestUploadResult result,
       const base::FilePath& path,
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
       enterprise_connectors::test::FakeFilesRequestHandler::
@@ -807,7 +808,7 @@ class FileTransferConnectorFilesAppBrowserTestBase {
     // Simulate a response.
     base::OnceClosure response =
         base::BindOnce(std::move(callback), path,
-                       safe_browsing::BinaryUploadService::Result::SUCCESS,
+                       enterprise_connectors::ScanRequestUploadResult::SUCCESS,
                        ConnectorStatusCallback(path));
     if (save_response_for_later_) {
       // We save the responses for later such that we can check the scanning

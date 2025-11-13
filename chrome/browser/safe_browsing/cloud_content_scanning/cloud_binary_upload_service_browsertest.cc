@@ -81,12 +81,12 @@ class TestCloudBinaryUploadService : public CloudBinaryUploadService {
   }
 
   void OnGetRequestData(Request::Id request_id,
-                        Result result,
+                        enterprise_connectors::ScanRequestUploadResult result,
                         Request::Data data) override {
     auto* request = GetRequest(request_id);
 
     ASSERT_TRUE(request);
-    ASSERT_EQ(result, Result::SUCCESS);
+    ASSERT_EQ(result, enterprise_connectors::ScanRequestUploadResult::SUCCESS);
 
     // The `data` obtained here should be identical to the one mocked in
     // `TestRequest`.
@@ -107,7 +107,8 @@ class TestCloudBinaryUploadService : public CloudBinaryUploadService {
       ASSERT_TRUE(request->access_token().empty());
     }
 
-    FinishRequest(GetRequest(request_id), BinaryUploadService::Result::SUCCESS,
+    FinishRequest(GetRequest(request_id),
+                  enterprise_connectors::ScanRequestUploadResult::SUCCESS,
                   enterprise_connectors::ContentAnalysisResponse());
   }
 
@@ -128,8 +129,9 @@ class TestRequest : public CloudBinaryUploadService::Request {
     data.contents = kData;
     data.size = data.contents.size();
 
-    std::move(callback).Run(BinaryUploadService::Result::SUCCESS,
-                            std::move(data));
+    std::move(callback).Run(
+        enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+        std::move(data));
   }
 };
 
@@ -206,7 +208,7 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
   cloud_settings.analysis_url = GURL(kTestUrl);
   cloud_settings.dm_token = dm_token();
 
-  base::test::TestFuture<BinaryUploadService::Result,
+  base::test::TestFuture<enterprise_connectors::ScanRequestUploadResult,
                          enterprise_connectors::ContentAnalysisResponse>
       future;
   std::unique_ptr<TestRequest> request = std::make_unique<TestRequest>(
@@ -217,11 +219,12 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
   request->set_device_token(dm_token());
   request->set_per_profile_request(profile_request());
 
-  service()->SetAuthForTesting(dm_token(),
-                               BinaryUploadService::Result::SUCCESS);
+  service()->SetAuthForTesting(
+      dm_token(), enterprise_connectors::ScanRequestUploadResult::SUCCESS);
   service()->MaybeUploadForDeepScanning(std::move(request));
 
-  ASSERT_EQ(future.Get<0>(), BinaryUploadService::Result::SUCCESS);
+  ASSERT_EQ(future.Get<0>(),
+            enterprise_connectors::ScanRequestUploadResult::SUCCESS);
 }
 
 IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
@@ -232,7 +235,7 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
   cloud_settings.analysis_url = GURL(kTestUrl);
   cloud_settings.dm_token = dm_token();
 
-  base::test::TestFuture<BinaryUploadService::Result,
+  base::test::TestFuture<enterprise_connectors::ScanRequestUploadResult,
                          enterprise_connectors::ContentAnalysisResponse>
       future;
   std::unique_ptr<TestRequest> request = std::make_unique<TestRequest>(
@@ -243,11 +246,12 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
   request->set_device_token(dm_token());
   request->set_per_profile_request(profile_request());
 
-  service()->SetAuthForTesting(dm_token(),
-                               BinaryUploadService::Result::SUCCESS);
+  service()->SetAuthForTesting(
+      dm_token(), enterprise_connectors::ScanRequestUploadResult::SUCCESS);
   service()->MaybeUploadForDeepScanning(std::move(request));
 
-  ASSERT_EQ(future.Get<0>(), BinaryUploadService::Result::SUCCESS);
+  ASSERT_EQ(future.Get<0>(),
+            enterprise_connectors::ScanRequestUploadResult::SUCCESS);
 }
 
 IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
@@ -258,7 +262,7 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
   cloud_settings.analysis_url = GURL(kTestUrl);
   cloud_settings.dm_token = dm_token();
 
-  base::test::TestFuture<BinaryUploadService::Result,
+  base::test::TestFuture<enterprise_connectors::ScanRequestUploadResult,
                          enterprise_connectors::ContentAnalysisResponse>
       future;
   std::unique_ptr<TestRequest> request = std::make_unique<TestRequest>(
@@ -269,11 +273,12 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
   request->set_device_token(dm_token());
   request->set_per_profile_request(profile_request());
 
-  service()->SetAuthForTesting(dm_token(),
-                               BinaryUploadService::Result::SUCCESS);
+  service()->SetAuthForTesting(
+      dm_token(), enterprise_connectors::ScanRequestUploadResult::SUCCESS);
   service()->MaybeUploadForDeepScanning(std::move(request));
 
-  ASSERT_EQ(future.Get<0>(), BinaryUploadService::Result::SUCCESS);
+  ASSERT_EQ(future.Get<0>(),
+            enterprise_connectors::ScanRequestUploadResult::SUCCESS);
 }
 
 IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
@@ -284,7 +289,7 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
   cloud_settings.analysis_url = GURL(kTestUrl);
   cloud_settings.dm_token = dm_token();
 
-  base::test::TestFuture<BinaryUploadService::Result,
+  base::test::TestFuture<enterprise_connectors::ScanRequestUploadResult,
                          enterprise_connectors::ContentAnalysisResponse>
       future;
   std::unique_ptr<TestRequest> request = std::make_unique<TestRequest>(
@@ -295,11 +300,12 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
   request->set_device_token(dm_token());
   request->set_per_profile_request(profile_request());
 
-  service()->SetAuthForTesting(dm_token(),
-                               BinaryUploadService::Result::SUCCESS);
+  service()->SetAuthForTesting(
+      dm_token(), enterprise_connectors::ScanRequestUploadResult::SUCCESS);
   service()->MaybeUploadForDeepScanning(std::move(request));
 
-  ASSERT_EQ(future.Get<0>(), BinaryUploadService::Result::SUCCESS);
+  ASSERT_EQ(future.Get<0>(),
+            enterprise_connectors::ScanRequestUploadResult::SUCCESS);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

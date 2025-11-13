@@ -51,31 +51,6 @@ std::optional<GURL> GetUrlOverride() {
 
 }  // namespace
 
-std::string BinaryUploadService::ResultToString(Result result) {
-  switch (result) {
-    case Result::UNKNOWN:
-      return "UNKNOWN";
-    case Result::SUCCESS:
-      return "SUCCESS";
-    case Result::UPLOAD_FAILURE:
-      return "UPLOAD_FAILURE";
-    case Result::TIMEOUT:
-      return "TIMEOUT";
-    case Result::FILE_TOO_LARGE:
-      return "FILE_TOO_LARGE";
-    case Result::FAILED_TO_GET_TOKEN:
-      return "FAILED_TO_GET_TOKEN";
-    case Result::UNAUTHORIZED:
-      return "UNAUTHORIZED";
-    case Result::FILE_ENCRYPTED:
-      return "FILE_ENCRYPTED";
-    case Result::TOO_MANY_REQUESTS:
-      return "TOO_MANY_REQUESTS";
-    case Result::INCOMPLETE_RESPONSE:
-      return "INCOMPLETE_RESPONSE";
-  }
-}
-
 BinaryUploadService::Request::Data::Data() = default;
 
 BinaryUploadService::Request::Data::Data(const Data& other) {
@@ -402,7 +377,7 @@ void BinaryUploadService::Request::StartRequest() {
 }
 
 void BinaryUploadService::Request::FinishRequest(
-    Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     enterprise_connectors::ContentAnalysisResponse response) {
   if (content_analysis_callback_) {
     std::move(content_analysis_callback_).Run(result, response);

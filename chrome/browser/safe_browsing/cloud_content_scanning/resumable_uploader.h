@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/connector_upload_request.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -45,7 +46,7 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
-      BinaryUploadService::Result get_data_result,
+      enterprise_connectors::ScanRequestUploadResult get_data_result,
       const base::FilePath& path,
       uint64_t file_size,
       bool is_obfuscated,
@@ -62,7 +63,7 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
-      BinaryUploadService::Result get_data_result,
+      enterprise_connectors::ScanRequestUploadResult get_data_result,
       base::ReadOnlySharedMemoryRegion page_region,
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
@@ -105,7 +106,7 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
-      BinaryUploadService::Result get_data_result,
+      enterprise_connectors::ScanRequestUploadResult get_data_result,
       const base::FilePath& file,
       uint64_t file_size,
       bool is_obfuscated,
@@ -119,7 +120,7 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
-      BinaryUploadService::Result get_data_result,
+      enterprise_connectors::ScanRequestUploadResult get_data_result,
       base::ReadOnlySharedMemoryRegion page_region,
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
@@ -192,7 +193,7 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
 
   // The result returned by BinaryUploadService::Request::GetRequestData() when
   // retrieving the data.
-  BinaryUploadService::Result get_data_result_;
+  enterprise_connectors::ScanRequestUploadResult get_data_result_;
 
   bool is_obfuscated_ = false;
 

@@ -1,0 +1,15 @@
+# For signficant changes to the code under this directory, please include
+# reviewers from both Safe Browsing and Chrome Enterprise Premium.
+
+# Reviewer from Safe Browsing
+drubery@chromium.org
+# Reviewer from Chrome Enterprise Premium
+domfc@chromium.org
+nancylanxiao@google.com
+
+# For trivial changes or additional +1, prefer cep-review@ to individual owners.
+# Sending code reviews to the alias allows the owners to distribute code review
+# loads.
+cep-review@google.com
+
+file://components/enterprise/CEP_OWNERS

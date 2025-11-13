@@ -107,6 +107,14 @@ source_set("core") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
+source_set("cloud_content_scanning") {
+  sources = [
+    "cloud_content_scanning/common.cc",
+    "cloud_content_scanning/common.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("constants") {
   sources = [
     "reporting_constants.cc",

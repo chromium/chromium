@@ -9,7 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/connector_data_pipe_getter.h"
 #include "components/file_access/scoped_file_access.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -155,7 +155,7 @@ class ConnectorUploadRequestFactory {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
-      BinaryUploadService::Result get_data_result,
+      enterprise_connectors::ScanRequestUploadResult get_data_result,
       const base::FilePath& path,
       uint64_t file_size,
       bool is_obfuscated,
@@ -166,7 +166,7 @@ class ConnectorUploadRequestFactory {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
-      BinaryUploadService::Result get_data_result,
+      enterprise_connectors::ScanRequestUploadResult get_data_result,
       base::ReadOnlySharedMemoryRegion page_region,
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,

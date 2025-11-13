@@ -18,14 +18,14 @@ TEST(ClipboardAnalysisRequest, GetRequestData) {
 
   safe_browsing::BinaryUploadService::Request::Data data1;
   request.GetRequestData(base::BindLambdaForTesting(
-      [&data1](safe_browsing::BinaryUploadService::Result result,
+      [&data1](ScanRequestUploadResult result,
                safe_browsing::BinaryUploadService::Request::Data data) {
         data1 = std::move(data);
       }));
 
   safe_browsing::BinaryUploadService::Request::Data data2;
   request.GetRequestData(base::BindLambdaForTesting(
-      [&data2](safe_browsing::BinaryUploadService::Result result,
+      [&data2](ScanRequestUploadResult result,
                safe_browsing::BinaryUploadService::Request::Data data) {
         data2 = std::move(data);
       }));

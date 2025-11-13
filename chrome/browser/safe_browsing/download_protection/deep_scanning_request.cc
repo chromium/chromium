@@ -210,17 +210,19 @@ bool HasDecryptionFailedResult(
   return false;
 }
 
-bool EnterpriseResultIsFailure(BinaryUploadService::Result result,
-                               bool block_large_files,
-                               bool block_password_protected_files) {
+bool EnterpriseResultIsFailure(
+    enterprise_connectors::ScanRequestUploadResult result,
+    bool block_large_files,
+    bool block_password_protected_files) {
   return enterprise_connectors::CloudResumableResultIsFailure(
       result, block_large_files, block_password_protected_files);
 }
 
-void RecordEnterpriseScan(std::unique_ptr<FileAnalysisRequest> request,
-                          BinaryUploadService::Result result) {
+void RecordEnterpriseScan(
+    std::unique_ptr<FileAnalysisRequest> request,
+    enterprise_connectors::ScanRequestUploadResult result) {
   const std::string result_info =
-      safe_browsing::BinaryUploadService::ResultToString(result);
+      enterprise_connectors::ScanRequestUploadResultToString(result);
   safe_browsing::WebUIContentInfoSingleton::GetInstance()
       ->AddToDeepScanRequests(
           request->per_profile_request(), /*access_token*/ "",
@@ -536,7 +538,7 @@ void DeepScanningRequest::OnGetPackageFileRequestData(
     const base::FilePath& final_path,
     const base::FilePath& current_path,
     std::unique_ptr<FileAnalysisRequest> request,
-    BinaryUploadService::Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     BinaryUploadService::Request::Data data) {
   file_metadata_.insert({current_path, enterprise_connectors::FileMetadata(
                                            final_path.AsUTF8Unsafe(), data.hash,
@@ -558,7 +560,7 @@ void DeepScanningRequest::OnGetPackageFileRequestData(
 void DeepScanningRequest::OnGetFileRequestData(
     const base::FilePath& file_path,
     std::unique_ptr<FileAnalysisRequest> request,
-    BinaryUploadService::Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     BinaryUploadService::Request::Data data) {
   if (ShouldTerminateEarly(result)) {
     // We record the scan here because the request is terminated early and won't
@@ -591,14 +593,15 @@ void DeepScanningRequest::OnDownloadRequestReady(
     binary_upload_service->MaybeUploadForDeepScanning(
         std::move(deep_scan_request));
   } else {
-    OnScanComplete(current_path, BinaryUploadService::Result::UNKNOWN,
+    OnScanComplete(current_path,
+                   enterprise_connectors::ScanRequestUploadResult::UNKNOWN,
                    enterprise_connectors::ContentAnalysisResponse());
   }
 }
 
 void DeepScanningRequest::OnScanComplete(
     const base::FilePath& current_path,
-    BinaryUploadService::Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     enterprise_connectors::ContentAnalysisResponse response) {
   RecordDeepScanMetrics(
       analysis_settings_.cloud_or_local_settings.is_cloud_analysis(),
@@ -618,15 +621,17 @@ void DeepScanningRequest::OnScanComplete(
 
 void DeepScanningRequest::OnConsumerScanComplete(
     const base::FilePath& current_path,
-    BinaryUploadService::Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     enterprise_connectors::ContentAnalysisResponse response) {
   bool is_invalid_password =
-      result == BinaryUploadService::Result::FILE_ENCRYPTED ||
-      (result == BinaryUploadService::Result::SUCCESS &&
+      result ==
+          enterprise_connectors::ScanRequestUploadResult::FILE_ENCRYPTED ||
+      (result == enterprise_connectors::ScanRequestUploadResult::SUCCESS &&
        metadata_->IsTopLevelEncryptedArchive() &&
        HasDecryptionFailedResult(response));
   bool is_success =
-      result == BinaryUploadService::Result::SUCCESS && !is_invalid_password;
+      result == enterprise_connectors::ScanRequestUploadResult::SUCCESS &&
+      !is_invalid_password;
   CHECK(IsConsumerTriggered());
   DownloadCheckResult download_result = DownloadCheckResult::UNKNOWN;
   if (is_success) {
@@ -656,17 +661,19 @@ void DeepScanningRequest::OnConsumerScanComplete(
 
 void DeepScanningRequest::OnEnterpriseScanComplete(
     const base::FilePath& current_path,
-    BinaryUploadService::Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     enterprise_connectors::ContentAnalysisResponse response) {
   CHECK(IsEnterpriseTriggered());
   DownloadCheckResult download_result = DownloadCheckResult::UNKNOWN;
-  if (result == BinaryUploadService::Result::SUCCESS) {
+  if (result == enterprise_connectors::ScanRequestUploadResult::SUCCESS) {
     request_tokens_.push_back(response.request_token());
     download_result = ResponseToDownloadCheckResult(response);
-  } else if (result == BinaryUploadService::Result::FILE_TOO_LARGE &&
+  } else if (result == enterprise_connectors::ScanRequestUploadResult::
+                           FILE_TOO_LARGE &&
              analysis_settings_.block_large_files) {
     download_result = DownloadCheckResult::BLOCKED_TOO_LARGE;
-  } else if (result == BinaryUploadService::Result::FILE_ENCRYPTED &&
+  } else if (result == enterprise_connectors::ScanRequestUploadResult::
+                           FILE_ENCRYPTED &&
              analysis_settings_.block_password_protected_files) {
     download_result = DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED;
   } else if (enterprise_connectors::ResultIsFailClosed(result) &&
@@ -957,14 +964,15 @@ bool DeepScanningRequest::IsEnterpriseTriggered() const {
 }
 
 bool DeepScanningRequest::ShouldTerminateEarly(
-    BinaryUploadService::Result result) {
+    enterprise_connectors::ScanRequestUploadResult result) {
   CHECK(analysis_settings_.cloud_or_local_settings.is_cloud_analysis());
 
   return IsEnterpriseTriggered()
              ? EnterpriseResultIsFailure(
                    result, analysis_settings_.block_large_files,
                    analysis_settings_.block_password_protected_files)
-             : result != BinaryUploadService::Result::SUCCESS;
+             : result !=
+                   enterprise_connectors::ScanRequestUploadResult::SUCCESS;
 }
 
 void DeepScanningRequest::OpenDownload() {

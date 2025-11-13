@@ -467,6 +467,7 @@ static_library("safe_browsing") {
         "//chrome/common",
         "//chrome/services/file_util/public/cpp",
         "//components/content_settings/core/browser",
+        "//components/enterprise/connectors/core:cloud_content_scanning",
         "//components/file_access",
         "//components/gcm_driver",
         "//components/gcm_driver/instance_id",
@@ -714,6 +715,7 @@ source_set("test_support") {
       "cloud_content_scanning/test_binary_upload_service.cc",
       "cloud_content_scanning/test_binary_upload_service.h",
     ]
+    deps += [ "//components/enterprise/connectors/core:cloud_content_scanning" ]
   }
 
   if (is_android) {

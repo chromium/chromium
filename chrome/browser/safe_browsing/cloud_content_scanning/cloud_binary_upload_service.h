@@ -43,7 +43,8 @@ class CloudBinaryUploadService : public BinaryUploadService {
 
   // Indicates whether the DM token/Connector combination is allowed to upload
   // data.
-  using AuthorizationCallback = base::OnceCallback<void(Result)>;
+  using AuthorizationCallback =
+      base::OnceCallback<void(enterprise_connectors::ScanRequestUploadResult)>;
   void IsAuthorized(const GURL& url,
                     bool per_profile_request,
                     AuthorizationCallback callback,
@@ -60,7 +61,9 @@ class CloudBinaryUploadService : public BinaryUploadService {
   void ResetAuthorizationData(const GURL& url);
 
   // Sets `can_upload_data_` for tests.
-  void SetAuthForTesting(const std::string& dm_token, Result auth_check_result);
+  void SetAuthForTesting(
+      const std::string& dm_token,
+      enterprise_connectors::ScanRequestUploadResult auth_check_result);
 
   // Sets `token_fetcher_` for tests.
   void SetTokenFetcherForTesting(
@@ -73,19 +76,20 @@ class CloudBinaryUploadService : public BinaryUploadService {
 
  protected:
   void FinishRequest(Request* request,
-                     Result result,
+                     enterprise_connectors::ScanRequestUploadResult result,
                      enterprise_connectors::ContentAnalysisResponse response);
 
   void FinishAndCleanupRequest(
       Request* request,
-      Result result,
+      enterprise_connectors::ScanRequestUploadResult result,
       enterprise_connectors::ContentAnalysisResponse response);
 
   // This may destroy `request`.
   // Virtual for testing.
-  virtual void OnGetRequestData(Request::Id request_id,
-                                Result result,
-                                Request::Data data);
+  virtual void OnGetRequestData(
+      Request::Id request_id,
+      enterprise_connectors::ScanRequestUploadResult result,
+      Request::Data data);
 
   Request* GetRequest(Request::Id request_id);
 
@@ -143,23 +147,26 @@ class CloudBinaryUploadService : public BinaryUploadService {
   void FinishRequestWithIncompleteResponse(Request::Id request_id);
 
   void FinishIfActive(Request::Id request_id,
-                      Result result,
+                      enterprise_connectors::ScanRequestUploadResult result,
                       enterprise_connectors::ContentAnalysisResponse response);
 
-  void MaybeUploadForDeepScanningCallback(std::unique_ptr<Request> request,
-                                          Result auth_check_result);
+  void MaybeUploadForDeepScanningCallback(
+      std::unique_ptr<Request> request,
+      enterprise_connectors::ScanRequestUploadResult auth_check_result);
 
   // Callback once the response from the backend is received.
   void ValidateDataUploadRequestConnectorCallback(
       const std::string& dm_token,
       enterprise_connectors::AnalysisConnector connector,
-      CloudBinaryUploadService::Result result,
+      enterprise_connectors::ScanRequestUploadResult result,
       enterprise_connectors::ContentAnalysisResponse response);
 
-  void RecordRequestMetrics(Request::Id request_id, Result result);
   void RecordRequestMetrics(
       Request::Id request_id,
-      Result result,
+      enterprise_connectors::ScanRequestUploadResult result);
+  void RecordRequestMetrics(
+      Request::Id request_id,
+      enterprise_connectors::ScanRequestUploadResult result,
       const enterprise_connectors::ContentAnalysisResponse& response);
 
   // Clears request and associated data from memory and starts the next queued
@@ -205,13 +212,15 @@ class CloudBinaryUploadService : public BinaryUploadService {
   // Indicates whether this DM token + Connector combination can be used to
   // upload data for enterprise requests. Advanced Protection scans are
   // validated using the user's Advanced Protection enrollment status.
-  base::flat_map<TokenAndConnector, BinaryUploadService::Result>
+  base::flat_map<TokenAndConnector,
+                 enterprise_connectors::ScanRequestUploadResult>
       can_upload_enterprise_data_;
 
   // Callbacks waiting on IsAuthorized request. These are organized by DM token
   // and Connector.
   base::flat_map<TokenAndConnector,
-                 std::unique_ptr<base::OnceCallbackList<void(Result)>>>
+                 std::unique_ptr<base::OnceCallbackList<void(
+                     enterprise_connectors::ScanRequestUploadResult)>>>
       authorization_callbacks_;
 
   // Indicates if this service is waiting on the backend to validate event

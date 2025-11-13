@@ -73,7 +73,7 @@ ResumableUploadRequest::ResumableUploadRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
-    BinaryUploadService::Result get_data_result,
+    enterprise_connectors::ScanRequestUploadResult get_data_result,
     const base::FilePath& path,
     uint64_t file_size,
     bool is_obfuscated,
@@ -103,7 +103,7 @@ ResumableUploadRequest::ResumableUploadRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
-    BinaryUploadService::Result get_data_result,
+    enterprise_connectors::ScanRequestUploadResult get_data_result,
     base::ReadOnlySharedMemoryRegion page_region,
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
@@ -142,7 +142,7 @@ ResumableUploadRequest::ResumableUploadRequest(
                              traffic_annotation,
                              base::DoNothing()),
       verdict_received_callback_(std::move(verdict_received_callback)),
-      get_data_result_(BinaryUploadService::Result::SUCCESS),
+      get_data_result_(enterprise_connectors::ScanRequestUploadResult::SUCCESS),
       content_uploaded_callback_(std::move(content_uploaded_callback)),
       force_sync_upload_(force_sync_upload) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -227,7 +227,7 @@ ResumableUploadRequest::CreateFileRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
-    BinaryUploadService::Result get_data_result,
+    enterprise_connectors::ScanRequestUploadResult get_data_result,
     const base::FilePath& path,
     uint64_t file_size,
     bool is_obfuscated,
@@ -256,7 +256,7 @@ ResumableUploadRequest::CreatePageRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
-    BinaryUploadService::Result get_data_result,
+    enterprise_connectors::ScanRequestUploadResult get_data_result,
     base::ReadOnlySharedMemoryRegion page_region,
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
@@ -341,8 +341,11 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
 
   // If chrome is being told to upload the content but the content is too large
   // or is encrypted and encrypted file upload is not enabled, fail now.
-  if (get_data_result_ == BinaryUploadService::Result::FILE_TOO_LARGE ||
-    (get_data_result_ == BinaryUploadService::Result::FILE_ENCRYPTED && !ShouldUploadEncryptedFile())) {
+  if (get_data_result_ ==
+          enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE ||
+      (get_data_result_ ==
+           enterprise_connectors::ScanRequestUploadResult::FILE_ENCRYPTED &&
+       !ShouldUploadEncryptedFile())) {
     Finish(net::ERR_FAILED, net::HTTP_BAD_REQUEST, std::move(response_body));
     return;
   }
