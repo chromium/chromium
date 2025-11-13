@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/tree_ordered_map.h"
 #include "third_party/blink/renderer/core/html/forms/radio_button_group_scope.h"
-#include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -46,6 +45,7 @@ class DOMSelection;
 class Document;
 class Element;
 class HTMLMapElement;
+class HitTestRequest;
 class HitTestResult;
 class IdTargetObserverRegistry;
 class Node;
@@ -262,12 +262,7 @@ inline bool TreeScope::ContainsMultipleElementsWithId(
 
 DEFINE_COMPARISON_OPERATORS_WITH_REFERENCES(TreeScope)
 
-HitTestResult HitTestInDocument(
-    Document*,
-    double x,
-    double y,
-    const HitTestRequest& = HitTestRequest::kReadOnly |
-                            HitTestRequest::kActive);
+HitTestResult HitTestInDocument(Document*, double x, double y);
 
 }  // namespace blink
 

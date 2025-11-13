@@ -64,6 +64,7 @@ class Rect;
 namespace blink {
 
 class ContainerNode;
+class DOMNodeIds;
 class Document;
 class Element;
 class Event;

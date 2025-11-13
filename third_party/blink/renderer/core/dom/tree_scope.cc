@@ -235,10 +235,10 @@ static bool PointInFrameContentIfVisible(Document& document,
   return true;
 }
 
-HitTestResult HitTestInDocument(Document* document,
-                                double x,
-                                double y,
-                                const HitTestRequest& request) {
+static HitTestResult HitTestInDocumentImpl(Document* document,
+                                           double x,
+                                           double y,
+                                           const HitTestRequest& request) {
   if (!document->IsActive())
     return HitTestResult();
 
@@ -252,6 +252,11 @@ HitTestResult HitTestInDocument(Document* document,
   return result;
 }
 
+HitTestResult HitTestInDocument(Document* document, double x, double y) {
+  return HitTestInDocumentImpl(
+      document, x, y, HitTestRequest::kReadOnly | HitTestRequest::kActive);
+}
+
 Element* TreeScope::ElementFromPoint(double x, double y) const {
   return HitTestPoint(x, y,
                       HitTestRequest::kReadOnly | HitTestRequest::kActive);
@@ -261,7 +266,7 @@ Element* TreeScope::HitTestPoint(double x,
                                  double y,
                                  const HitTestRequest& request) const {
   HitTestResult result =
-      HitTestInDocument(&RootNode().GetDocument(), x, y, request);
+      HitTestInDocumentImpl(&RootNode().GetDocument(), x, y, request);
   if (request.AllowsChildFrameContent()) {
     return ElementForHitTest(result.InnerNode(), HitTestPointType::kInternal);
   }
