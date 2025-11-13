@@ -2175,8 +2175,7 @@ void AutotestPrivateGetRegisteredSystemWebAppsFunction::
     system_web_app.internal_name = delegate->GetInternalName();
     system_web_app.url =
         delegate->GetInstallUrl().DeprecatedGetOriginAsURL().spec();
-    system_web_app.name =
-        base::UTF16ToUTF8(delegate->GetWebAppInfo()->title.value());
+    system_web_app.name = base::UTF16ToUTF8(delegate->GetWebAppInfo()->title);
 
     std::optional<webapps::AppId> app_id =
         swa_manager->GetAppIdForSystemApp(type_and_info.first);

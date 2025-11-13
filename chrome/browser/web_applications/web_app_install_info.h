@@ -20,7 +20,6 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/web_applications/model/localized_text.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
@@ -323,9 +322,8 @@ struct WebAppInstallInfo {
   // found.
   DialogImageInfo GetIconBitmapsForSecureSurfaces() const;
 
-  // Title of the application, stored in a localized format to allow
-  // translations and text direction information to be preserved.
-  LocalizedText title;
+  // Title of the application.
+  std::u16string title;
 
   // Description of the application.
   std::u16string description;

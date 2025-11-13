@@ -289,7 +289,7 @@ void InstallIsolatedWebAppCommand::FinalizeInstall(
 
   GetMutableDebugValue().Set(
       "actual_version", install_info.isolated_web_app_version().GetString());
-  GetMutableDebugValue().Set("app_title", install_info.title.AsDebugValue());
+  GetMutableDebugValue().Set("app_title", install_info.title);
 
   WebAppInstallFinalizer::FinalizeOptions options(install_surface_);
 

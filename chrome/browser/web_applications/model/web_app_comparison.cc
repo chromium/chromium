@@ -91,8 +91,7 @@ WebAppComparison WebAppComparison::CompareWebApps(
 
   diff.name_equality_ = [&]() {
     std::u16string new_title;
-    base::TrimWhitespace(new_install_info.title.value(), base::TRIM_ALL,
-                         &new_title);
+    base::TrimWhitespace(new_install_info.title, base::TRIM_ALL, &new_title);
     return new_title == base::UTF8ToUTF16(existing_web_app.untranslated_name());
   }();
   diff.pending_name_equality_ = [&]() {
@@ -101,8 +100,7 @@ WebAppComparison WebAppComparison::CompareWebApps(
       return PendingUpdateComparison::kNotPending;
     }
     std::u16string new_title;
-    base::TrimWhitespace(new_install_info.title.value(), base::TRIM_ALL,
-                         &new_title);
+    base::TrimWhitespace(new_install_info.title, base::TRIM_ALL, &new_title);
     return new_title == base::UTF8ToUTF16(
                             existing_web_app.pending_update_info()->name())
                ? PendingUpdateComparison::kHasPendingAndEquals

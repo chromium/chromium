@@ -207,7 +207,7 @@ void IsolatedWebAppApplyUpdateCommand::FinalizeUpdate(
 
   GetMutableDebugValue().Set(
       "actual_version", install_info.isolated_web_app_version().GetString());
-  GetMutableDebugValue().Set("app_title", install_info.title.AsDebugValue());
+  GetMutableDebugValue().Set("app_title", install_info.title);
 
   lock_->install_finalizer().FinalizeUpdate(
       install_info,

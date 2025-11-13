@@ -55,19 +55,6 @@ std::optional<blink::mojom::Manifest_TextDirection> TextDirectionFromString(
   return std::nullopt;
 }
 
-std::string TextDirectionToString(
-    blink::mojom::Manifest_TextDirection direction) {
-  switch (direction) {
-    case blink::mojom::Manifest_TextDirection::kAuto:
-      return "auto";
-    case blink::mojom::Manifest_TextDirection::kLTR:
-      return "ltr";
-    case blink::mojom::Manifest_TextDirection::kRTL:
-      return "rtl";
-  }
-  NOTREACHED();
-}
-
 std::string DisplayModeToString(blink::mojom::DisplayMode display) {
   switch (display) {
     case blink::mojom::DisplayMode::kUndefined:
@@ -89,7 +76,7 @@ std::string DisplayModeToString(blink::mojom::DisplayMode display) {
     case blink::mojom::DisplayMode::kPictureInPicture:
       return "picture-in-picture";
   }
-  NOTREACHED();
+  return "";
 }
 
 blink::mojom::DisplayMode DisplayModeFromString(const std::string& display) {

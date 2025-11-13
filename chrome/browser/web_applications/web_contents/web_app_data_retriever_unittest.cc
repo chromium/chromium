@@ -203,7 +203,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_AppUrlPresent) {
   run_loop.Run();
 
   EXPECT_EQ(other_app_url, web_app_info()->start_url());
-  EXPECT_EQ(other_app_title, web_app_info()->title.value());
+  EXPECT_EQ(other_app_title, web_app_info()->title);
 }
 
 TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_TitleAbsentFromRenderer) {
@@ -249,7 +249,7 @@ TEST_F(WebAppDataRetrieverTest,
   // If the WebAppInstallInfo has no title and the WebContents has no title, we
   // fallback to start_url.
   EXPECT_EQ(base::UTF8ToUTF16(web_app_info()->start_url().spec()),
-            web_app_info()->title.value());
+            web_app_info()->title);
 }
 
 TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_ConnectionError) {

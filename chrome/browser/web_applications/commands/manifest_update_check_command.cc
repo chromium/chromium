@@ -481,7 +481,7 @@ void ManifestUpdateCheckCommand::ConfirmAppIdentityUpdate(
       /*icon_change=*/
       manifest_data_changes_.app_icon_identity_change.has_value(),
       /*old_title=*/base::UTF8ToUTF16(GetWebApp().untranslated_name()),
-      /*new_title=*/new_install_info_->title.value(),
+      /*new_title=*/new_install_info_->title,
       /*old_icon=*/*before_icon,
       /*new_icon=*/*after_icon, web_contents_.get(),
       base::BindOnce(

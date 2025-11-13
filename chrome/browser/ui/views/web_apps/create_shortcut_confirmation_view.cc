@@ -137,7 +137,7 @@ CreateShortcutConfirmationView::CreateShortcutConfirmationView(
                            .SetText(web_app::NormalizeSuggestedAppTitle(
                                g_title_to_use_for_app != nullptr
                                    ? base::ASCIIToUTF16(g_title_to_use_for_app)
-                                   : web_app_info_->title.value()))
+                                   : web_app_info_->title))
                            .SetAccessibleName(l10n_util::GetStringUTF16(
                                IDS_BOOKMARK_APP_AX_BUBBLE_NAME_LABEL))
                            .SetController(this));

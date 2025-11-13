@@ -138,7 +138,7 @@ void SignedWebBundleMetadata::Create(
             [&url_info, &source](const WebAppInstallInfo& install_info)
                 -> SignedWebBundleMetadata {
               return SignedWebBundleMetadata(
-                  url_info, source, install_info.title.value(),
+                  url_info, source, install_info.title,
                   install_info.isolated_web_app_version(),
                   install_info.GetIconBitmapsForSecureSurfaces());
             }));

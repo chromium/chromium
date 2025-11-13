@@ -123,7 +123,7 @@ void LogInstallInfoForFallbackData(base::Value::Dict& dict,
                                    const WebAppInstallInfo& install_info) {
   dict.Set("manifest_id", install_info.manifest_id().spec());
   dict.Set("start_url", install_info.start_url().spec());
-  dict.Set("name", install_info.title.AsDebugValue());
+  dict.Set("name", install_info.title);
 }
 
 bool IsShortcutCreated(WebAppRegistrar& registrar,

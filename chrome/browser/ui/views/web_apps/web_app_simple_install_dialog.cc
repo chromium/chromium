@@ -129,7 +129,7 @@ void ShowSimpleInstallDialogForWebApps(
       .AddCustomField(
           std::make_unique<views::BubbleDialogModelHost::CustomView>(
               WebAppIconNameAndOriginView::Create(
-                  icon_image, app_name.value(), start_url,
+                  icon_image, app_name, start_url,
                   dialog_image_info.is_maskable),
               views::BubbleDialogModelHost::FieldType::kControl));
   // Only show the initiating origin subtitle label for background document

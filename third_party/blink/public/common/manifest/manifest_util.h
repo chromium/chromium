@@ -36,12 +36,6 @@ BLINK_COMMON_EXPORT bool IsDefaultManifest(const mojom::ManifestPtr& manifest,
 BLINK_COMMON_EXPORT std::optional<blink::mojom::Manifest_TextDirection>
 TextDirectionFromString(const std::string& dir);
 
-// Converts a blink::mojom::Manifest_TextDirection to a string. Returns one of
-// https://www.w3.org/TR/appmanifest/#dfn-text-directions. Return values are
-// lowercase.
-BLINK_COMMON_EXPORT std::string TextDirectionToString(
-    blink::mojom::Manifest_TextDirection direction);
-
 // Converts a blink::mojom::DisplayMode to a string. Returns one of
 // https://www.w3.org/TR/appmanifest/#dfn-display-modes-values. Return values
 // are lowercase. Returns an empty string for DisplayMode::kUndefined.
