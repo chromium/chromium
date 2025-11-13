@@ -27,6 +27,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -35,6 +36,7 @@
 #include "chrome/updater/app/app_utils.h"
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/event_history.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
@@ -46,6 +48,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/update_client/update_client_errors.h"
 
 namespace updater {
 namespace {
@@ -168,9 +171,11 @@ void PolicyService::PolicyManagers::SetManagersForTesting(
 PolicyService::PolicyService(
     scoped_refptr<ExternalConstants> external_constants,
     scoped_refptr<PersistedData> persisted_data)
-    : policy_managers_(external_constants),
-      external_constants_(external_constants),
-      persisted_data_(persisted_data) {
+    : external_constants_(external_constants), persisted_data_(persisted_data) {
+  LoadPolicyEndEvent event =
+      LoadPolicyStartEvent().WriteAsyncAndReturnEndEvent();
+  policy_managers_ = std::make_unique<PolicyManagers>(external_constants);
+  event.SetPolicySet(GetAllPolicies()).WriteAsync();
   VLOG(1) << "Current effective policies:" << std::endl
           << GetAllPoliciesAsString();
 }
@@ -210,7 +215,7 @@ void PolicyService::DoFetchPolicies(policy::PolicyFetchReason reason,
 
   if (!is_cbcm_managed) {
     VLOG(2) << "Device is not CBCM managed, skipped policy fetch.";
-    FetchPoliciesDone({}, kErrorOk, {});
+    std::move(fetch_policies_callback_).Run(kErrorOk);
     return;
   }
 
@@ -218,25 +223,31 @@ void PolicyService::DoFetchPolicies(policy::PolicyFetchReason reason,
       persisted_data_, external_constants_->IsMachineManaged(),
       external_constants_->CecaConnectionTimeout());
   fetcher->FetchPolicies(
-      reason, base::BindOnce(&PolicyService::FetchPoliciesDone, this, fetcher));
+      reason,
+      base::BindOnce(&PolicyService::FetchPoliciesDone, this, fetcher,
+                     LoadPolicyStartEvent().WriteAsyncAndReturnEndEvent()));
 }
 
 void PolicyService::FetchPoliciesDone(
     scoped_refptr<PolicyFetcher> fetcher,
+    LoadPolicyEndEvent event,
     int result,
     scoped_refptr<PolicyManagerInterface> dm_policy_manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__ << ": " << result;
 
   if (result == kErrorOk) {
-    policy_managers_.ResetDeviceManagementManager(dm_policy_manager);
-
+    policy_managers_->ResetDeviceManagementManager(dm_policy_manager);
     VLOG(1) << "Policies after refresh:" << std::endl
             << GetAllPoliciesAsString();
   } else {
+    event.AddError(
+        {.category = static_cast<int>(update_client::ErrorCategory::kService),
+         .code = result});
     VLOG(1) << "Failed to refresh policies: " << result;
   }
 
+  event.SetPolicySet(GetAllPolicies()).WriteAsync();
   std::move(fetch_policies_callback_).Run(result);
 }
 
@@ -247,7 +258,7 @@ std::string PolicyService::source() const {
   // separated by ';'. For example: "group_policy;device_management".
   std::vector<std::string> sources;
   for (const scoped_refptr<PolicyManagerInterface>& policy_manager :
-       policy_managers_.managers()) {
+       policy_managers_->managers()) {
     if (policy_manager->HasActiveDevicePolicies() &&
         !policy_manager->source().empty()) {
       sources.push_back(policy_manager->source());
@@ -391,7 +402,7 @@ std::set<std::string> PolicyService::GetAppsWithPolicy() const {
   std::set<std::string> apps_with_policy;
 
   std::ranges::for_each(
-      policy_managers_.managers(),
+      policy_managers_->managers(),
       [&apps_with_policy](
           const scoped_refptr<PolicyManagerInterface>& manager) {
         auto apps = manager->GetAppsWithPolicy();
@@ -643,7 +654,7 @@ PolicyStatus<U> PolicyService::QueryPolicy(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PolicyStatus<U> status;
   for (const scoped_refptr<PolicyManagerInterface>& policy_manager :
-       policy_managers_.managers()) {
+       policy_managers_->managers()) {
     const std::optional<U> transformed_result =
         [&transform](std::optional<T> query_result) {
           if constexpr (std::same_as<T, U>) {
@@ -674,7 +685,7 @@ PolicyStatus<T> PolicyService::QueryAppPolicy(
   }
   PolicyStatus<T> status;
   for (const scoped_refptr<PolicyManagerInterface>& policy_manager :
-       policy_managers_.managers()) {
+       policy_managers_->managers()) {
     std::optional<T> query_result =
         std::invoke(policy_query_function, policy_manager, app_id);
     if (query_result.has_value()) {

@@ -18,6 +18,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/updater/event_history.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/manager.h"
@@ -198,6 +199,7 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // provided DM policy manager.
   void FetchPoliciesDone(
       scoped_refptr<PolicyFetcher> fetcher,
+      LoadPolicyEndEvent event,
       int result,
       scoped_refptr<PolicyManagerInterface> dm_policy_manager);
 
@@ -225,7 +227,7 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // providers should be ahead of non-managed providers.
   // Also contains a named map indexed by `source()` for all the policy
   // managers.
-  PolicyManagers policy_managers_;
+  std::unique_ptr<PolicyManagers> policy_managers_;
   const scoped_refptr<ExternalConstants> external_constants_;
 
   base::OnceCallback<void(int)> fetch_policies_callback_;

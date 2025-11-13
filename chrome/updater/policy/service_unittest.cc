@@ -84,7 +84,7 @@ MATCHER_P2(PolicyEntry,
 using PolicyManagers = std::vector<scoped_refptr<PolicyManagerInterface>>;
 
 void PolicyService::SetManagersForTesting(updater::PolicyManagers managers) {
-  policy_managers_.SetManagersForTesting(std::move(managers));
+  policy_managers_->SetManagersForTesting(std::move(managers));
 }
 
 // The Policy Manager Interface is implemented by policy managers such as Group
@@ -306,6 +306,8 @@ class PolicyServiceTest : public ::testing::Test {
     policy_service->SetManagersForTesting(std::move(managers));
     return policy_service;
   }
+
+  base::test::TaskEnvironment environment_;
 };
 
 TEST_F(PolicyServiceTest, DefaultPolicyValue) {
