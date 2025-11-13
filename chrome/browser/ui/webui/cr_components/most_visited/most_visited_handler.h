@@ -84,6 +84,9 @@ class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
                                    bool ctrl_key,
                                    bool meta_key,
                                    bool shift_key) override;
+  void GetMostVisitedExpandedState(
+      GetMostVisitedExpandedStateCallback callback) override;
+  void SetMostVisitedExpandedState(bool is_expanded) override;
 
  private:
   // ntp_tiles::MostVisitedSites::Observer:

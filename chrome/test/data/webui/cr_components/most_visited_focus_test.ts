@@ -49,6 +49,8 @@ suite('CrComponentsMostVisitedFocusTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     const handler = TestMock.fromClass(MostVisitedPageHandlerRemote);
+    handler.setResultFor(
+        'getMostVisitedExpandedState', Promise.resolve({isExpanded: false}));
     const callbackRouter = new MostVisitedPageCallbackRouter();
     MostVisitedBrowserProxy.setInstance(
         new MostVisitedBrowserProxy(handler, callbackRouter));

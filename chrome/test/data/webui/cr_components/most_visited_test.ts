@@ -104,6 +104,8 @@ function createBrowserProxy() {
   handler.setResultFor('updateMostVisitedTile', Promise.resolve({
     success: true,
   }));
+  handler.setResultFor(
+      'getMostVisitedExpandedState', Promise.resolve({isExpanded: false}));
 }
 
 class FakeMediaQueryList extends EventTarget implements MediaQueryList {
@@ -293,6 +295,25 @@ suite('ExpandableTiles', () => {
     });
   });
 
+  test('initializes isExpanded to true from pref', async () => {
+    createBrowserProxy();
+    handler.setResultFor(
+        'getMostVisitedExpandedState', Promise.resolve({isExpanded: true}));
+    createWindowProxy();
+
+    mostVisited = new MostVisitedElement();
+    mostVisited.setAttribute('expandable-tiles-enabled', '');
+    document.body.appendChild(mostVisited);
+    await wide();
+
+    await handler.whenCalled('getMostVisitedExpandedState');
+    await microtasksFinished();
+    await addTiles(MAX_TILES_BEFORE_SHOW_MORE + 1);
+    assertTrue(mostVisited['showAll_']);
+    assertTrue(isVisible(getShowLessButton()));
+    assertFalse(isVisible(getShowMoreButton()));
+  });
+
   test('Show more button is shown with 6 or more tiles', async () => {
     await setUpTest({reflowOnOverflow: true, expandableTilesEnabled: true});
     await addTiles(MAX_TILES_BEFORE_SHOW_MORE + 1);
@@ -323,6 +344,10 @@ suite('ExpandableTiles', () => {
 
         // Click "Show more", expect "Show less" and "Add shortcut" to be shown.
         showMoreButton!.click();
+        const isExpanded =
+            await handler.whenCalled('setMostVisitedExpandedState');
+        assertTrue(isExpanded);
+        handler.resetResolver('setMostVisitedExpandedState');
         await microtasksFinished();
 
         assertFalse(isVisible(getShowMoreButton()));
@@ -333,6 +358,9 @@ suite('ExpandableTiles', () => {
         // Click "Show less", "Show more" shown and "Add shortcut" hidden
         const ShowLessButton = getShowLessButton();
         ShowLessButton!.click();
+        const isExpanded2 =
+            await handler.whenCalled('setMostVisitedExpandedState');
+        assertFalse(isExpanded2);
         await microtasksFinished();
 
         assertTrue(isVisible(getShowMoreButton()));

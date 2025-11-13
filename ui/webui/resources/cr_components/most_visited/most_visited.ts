@@ -270,6 +270,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
           performance.measure('most-visited-mojo', 'most-visited-mojo-start');
           this.info_ = info;
         });
+
+    this.pageHandler_.getMostVisitedExpandedState().then(({isExpanded}) => {
+      this.showAll_ = isExpanded;
+    });
     performance.mark('most-visited-mojo-start');
     this.eventTracker_.add(document, 'visibilitychange', () => {
       // This updates the most visited tiles every time the NTP tab gets
@@ -464,9 +468,11 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
   protected onShowMoreClick_() {
     this.showAll_ = true;
+    this.pageHandler_.setMostVisitedExpandedState(this.showAll_);
   }
   protected onShowLessClick_() {
     this.showAll_ = false;
+    this.pageHandler_.setMostVisitedExpandedState(this.showAll_);
   }
 
   private computeDialogSaveDisabled_(): boolean {
