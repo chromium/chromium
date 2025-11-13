@@ -1318,10 +1318,10 @@ IN_PROC_BROWSER_TEST_F(ScaledPageContentProtoProviderBrowserTest, ScaleSizes) {
             window_bounds.height());
 }
 
-// Popups may be rendered as native OS-level widgets on Android and MacOS.
+// Popups may be rendered as native OS-level widgets on Android and Apple OSs.
 //
 // TODO: b/450618828 - Enable on Fuchsia with proper geometry comparison.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)
 IN_PROC_BROWSER_TEST_F(ScaledPageContentProtoProviderBrowserTest,
                        SelectInMainFrame) {
   LoadPage(https_server()->GetURL("/open_popup.html"));
