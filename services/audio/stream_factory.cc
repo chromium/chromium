@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
@@ -62,9 +63,11 @@ constexpr base::TimeDelta kReatimeThreadPeriod = base::Milliseconds(10);
 
 StreamFactory::StreamFactory(
     media::AudioManager* audio_manager,
-    media::AecdumpRecordingManager* aecdump_recording_manager)
+    media::AecdumpRecordingManager* aecdump_recording_manager,
+    raw_ptr<MlModelManager> ml_model_manager)
     : audio_manager_(audio_manager),
       aecdump_recording_manager_(aecdump_recording_manager),
+      ml_model_manager_(ml_model_manager),
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
       output_device_mixer_manager_(
           MaybeCreateOutputDeviceMixerManager(audio_manager)),
@@ -130,6 +133,7 @@ void StreamFactory::CreateInputStream(
       std::move(created_callback), std::move(deleter_callback),
       std::move(stream_receiver), std::move(client), std::move(observer),
       std::move(shared_log), audio_manager_, aecdump_recording_manager_,
+      ml_model_manager_,
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
       std::move(reference_provider), std::move(processing_config),
 #else

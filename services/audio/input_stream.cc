@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
@@ -82,6 +83,7 @@ InputStream::InputStream(
     mojo::SharedRemote<media::mojom::AudioLog> log,
     media::AudioManager* audio_manager,
     media::AecdumpRecordingManager* aecdump_recording_manager,
+    raw_ptr<MlModelManager> ml_model_manager,
     std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
     media::mojom::AudioProcessingConfigPtr processing_config,
     LoopbackMixin::MaybeCreateCallback maybe_create_loopback_mixin_cb,
@@ -144,7 +146,7 @@ InputStream::InputStream(
 
   controller_ = InputController::Create(
       audio_manager, this, writer_.get(), std::move(reference_signal_provider),
-      aecdump_recording_manager, std::move(processing_config),
+      aecdump_recording_manager, ml_model_manager, std::move(processing_config),
       std::move(maybe_create_loopback_mixin_cb), params, device_id, enable_agc);
 }
 

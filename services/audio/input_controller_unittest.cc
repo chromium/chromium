@@ -230,6 +230,7 @@ class TimeSourceInputControllerTest : public ::testing::Test {
     controller_ = InputController::Create(
         audio_manager_.get(), &event_handler_, &sync_writer_,
         /*device_output_listener =*/nullptr, &aecdump_recording_manager_,
+        /*ml_model_manager=*/nullptr,
         /*processing_config =*/nullptr,
         // base::Unretained is safe: `mixin_verifier_` outlives `controller_`
         base::BindOnce(&LoopbackMixinVerifier::MaybeCreateMixin,
@@ -241,6 +242,7 @@ class TimeSourceInputControllerTest : public ::testing::Test {
     controller_ = InputController::Create(
         audio_manager_.get(), &event_handler_, &sync_writer_,
         /*device_output_listener =*/nullptr, &aecdump_recording_manager_,
+        /*ml_model_manager=*/nullptr,
         /*processing_config =*/nullptr,
         base::BindOnce(&DoNotCreateLoopbackMixin), params_,
         media::AudioDeviceDescription::kDefaultDeviceId, false);
@@ -497,7 +499,8 @@ class TimeSourceInputControllerTestWithReferenceSignalProvider
     this->controller_ = InputController::Create(
         this->audio_manager_.get(), &this->event_handler_, &this->sync_writer_,
         std::move(reference_signal_provider_unique_),
-        &this->aecdump_recording_manager_, std::move(processing_config_),
+        &this->aecdump_recording_manager_, /*ml_model_manager=*/nullptr,
+        std::move(processing_config_),
         base::BindOnce(&DoNotCreateLoopbackMixin), this->params_,
         media::AudioDeviceDescription::kDefaultDeviceId, false);
 

@@ -24,6 +24,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
@@ -39,6 +40,7 @@
 #include "media/webrtc/constants.h"
 #include "media/webrtc/helpers.h"
 #include "media/webrtc/webrtc_features.h"
+#include "third_party/tflite/src/tensorflow/lite/model_builder.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 #include "third_party/webrtc_overrides/task_queue_factory.h"
 
@@ -243,15 +245,16 @@ std::unique_ptr<AudioProcessor> AudioProcessor::Create(
     LogCallback log_callback,
     const AudioProcessingSettings& settings,
     const media::AudioParameters& input_format,
-    const media::AudioParameters& output_format) {
+    const media::AudioParameters& output_format,
+    raw_ptr<const tflite::FlatBufferModel>
+        neural_residual_echo_estimator_model) {
   log_callback.Run(base::StringPrintf(
       "AudioProcessor::Create({multi_channel_capture_processing=%s})",
       base::ToString(settings.multi_channel_capture_processing)));
 
-  // TODO: bugs.webrtc.org/442444736 - Supply a residual echo estimator model.
   auto [webrtc_audio_processing, added_aec_delay] =
       media::CreateWebRtcAudioProcessingModule(
-          settings, /*residual_echo_estimator_model=*/nullptr);
+          settings, neural_residual_echo_estimator_model);
 
   return std::make_unique<AudioProcessor>(
       std::move(deliver_processed_audio_callback), std::move(log_callback),

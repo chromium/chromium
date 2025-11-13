@@ -6,9 +6,11 @@
 
 #include <algorithm>
 
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
+#include "services/audio/ml_model_manager.h"
 
 namespace audio {
 
@@ -21,7 +23,8 @@ AudioProcessorHandler::AudioProcessorHandler(
     ReferenceStreamErrorCallback reference_stream_error_callback,
     mojo::PendingReceiver<media::mojom::AudioProcessorControls>
         controls_receiver,
-    media::AecdumpRecordingManager* aecdump_recording_manager)
+    media::AecdumpRecordingManager* aecdump_recording_manager,
+    raw_ptr<MlModelManager> ml_model_manager)
     : audio_processor_(media::AudioProcessor::Create(
           // Unretained is safe because this class owns audio_processor_, so it
           // will be destroyed first.
@@ -30,7 +33,9 @@ AudioProcessorHandler::AudioProcessorHandler(
           std::move(log_callback),
           settings,
           input_format,
-          output_format)),
+          output_format,
+          ml_model_manager ? ml_model_manager->GetResidualEchoEstimationModel()
+                           : nullptr)),
       deliver_processed_audio_callback_(
           std::move(deliver_processed_audio_callback)),
       reference_stream_error_callback_(

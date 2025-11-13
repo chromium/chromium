@@ -131,7 +131,9 @@ class TestEnvironment {
  public:
   TestEnvironment()
       : audio_manager_(std::make_unique<media::TestAudioThread>(false)),
-        stream_factory_(&audio_manager_, /*aecdump_recording_manager=*/nullptr),
+        stream_factory_(&audio_manager_,
+                        /*aecdump_recording_manager=*/nullptr,
+                        /*ml_model_manager=*/nullptr),
         stream_factory_receiver_(
             &stream_factory_,
             remote_stream_factory_.BindNewPipeAndPassReceiver()) {

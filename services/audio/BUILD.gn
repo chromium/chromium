@@ -202,6 +202,7 @@ source_set("tests") {
     "//services/audio/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/tflite",
   ]
 
   if (chrome_wide_echo_cancellation_supported) {
@@ -215,7 +216,6 @@ source_set("tests") {
       "processing_audio_fifo_unittest.cc",
     ]
     data = [ "test/data/noop.tflite" ]
-    deps += [ "//third_party/tflite" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

@@ -57,7 +57,8 @@ MediaStreamAudioProcessor::MediaStreamAudioProcessor(
           capture_data_source_params,
           media::AudioProcessor::GetDefaultOutputFormat(
               capture_data_source_params,
-              settings))),
+              settings),
+          /*neural_residual_echo_estimator_model=*/nullptr)),
       main_thread_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       aec_dump_agent_impl_(AecDumpAgentImpl::Create(this)),
       stopped_(false) {

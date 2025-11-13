@@ -41,6 +41,7 @@ struct AudioGlitchInfo;
 namespace audio {
 class AudioProcessorHandler;
 class AudioCallback;
+class MlModelManager;
 class OutputTapper;
 class ReferenceSignalProvider;
 
@@ -203,6 +204,7 @@ class InputController final {
       SyncWriter* sync_writer,
       std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
       media::AecdumpRecordingManager* aecdump_recording_manager,
+      raw_ptr<MlModelManager> ml_model_manager,
       media::mojom::AudioProcessingConfigPtr processing_config,
       LoopbackMixin::MaybeCreateCallback maybe_create_loopback_mixin_cb,
       const media::AudioParameters& params,
@@ -253,6 +255,7 @@ class InputController final {
       SyncWriter* sync_writer,
       std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
       media::AecdumpRecordingManager* aecdump_recording_manager,
+      raw_ptr<MlModelManager> ml_model_manager,
       media::mojom::AudioProcessingConfigPtr processing_config,
       const media::AudioParameters& output_params,
       const media::AudioParameters& device_params,
@@ -315,7 +318,8 @@ class InputController final {
       const media::AudioParameters& processing_output_params,
       const media::AudioParameters& device_params,
       std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
-      media::AecdumpRecordingManager* aecdump_recording_manager);
+      media::AecdumpRecordingManager* aecdump_recording_manager,
+      raw_ptr<MlModelManager> ml_model_manager);
 
   // Used as a callback for |audio_processor_handler_|.
   void DeliverProcessedAudio(const media::AudioBus& audio_bus,

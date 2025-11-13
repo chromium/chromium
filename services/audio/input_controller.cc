@@ -298,6 +298,7 @@ InputController::InputController(
     SyncWriter* sync_writer,
     std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
     media::AecdumpRecordingManager* aecdump_recording_manager,
+    raw_ptr<MlModelManager> ml_model_manager,
     media::mojom::AudioProcessingConfigPtr processing_config,
     const media::AudioParameters& output_params,
     const media::AudioParameters& device_params,
@@ -319,7 +320,7 @@ InputController::InputController(
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   MaybeSetUpAudioProcessing(std::move(processing_config), output_params,
                             device_params, std::move(reference_signal_provider),
-                            aecdump_recording_manager);
+                            aecdump_recording_manager, ml_model_manager);
 #endif
 }
 
@@ -329,7 +330,8 @@ void InputController::MaybeSetUpAudioProcessing(
     const media::AudioParameters& processing_output_params,
     const media::AudioParameters& device_params,
     std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
-    media::AecdumpRecordingManager* aecdump_recording_manager) {
+    media::AecdumpRecordingManager* aecdump_recording_manager,
+    raw_ptr<MlModelManager> ml_model_manager) {
   SendLogMessage(
       "%s({processing_config=[%s]}, {processing_output_params=[%s]}, "
       "{device_params=[%s]})",
@@ -381,7 +383,7 @@ void InputController::MaybeSetUpAudioProcessing(
       base::BindRepeating(&InputController::DoReportError, weak_this_,
                           REFERENCE_STREAM_ERROR),
       std::move(processing_config->controls_receiver),
-      aecdump_recording_manager);
+      aecdump_recording_manager, ml_model_manager);
 
   // If we are not running echo cancellation the processing is lightweight, so
   // there is no need to offload work to a new thread.
@@ -424,6 +426,7 @@ std::unique_ptr<InputController> InputController::Create(
     SyncWriter* sync_writer,
     std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
     media::AecdumpRecordingManager* aecdump_recording_manager,
+    raw_ptr<MlModelManager> ml_model_manager,
     media::mojom::AudioProcessingConfigPtr processing_config,
     LoopbackMixin::MaybeCreateCallback maybe_create_loopback_mixin_cb,
     const media::AudioParameters& params,
@@ -447,8 +450,9 @@ std::unique_ptr<InputController> InputController::Create(
   std::unique_ptr<InputController> controller =
       base::WrapUnique(new InputController(
           event_handler, sync_writer, std::move(reference_signal_provider),
-          aecdump_recording_manager, std::move(processing_config), params,
-          device_params, ParamsToStreamType(params)));
+          aecdump_recording_manager, ml_model_manager,
+          std::move(processing_config), params, device_params,
+          ParamsToStreamType(params)));
 
   controller->DoCreate(audio_manager, params, device_id, enable_agc,
                        std::move(maybe_create_loopback_mixin_cb));
