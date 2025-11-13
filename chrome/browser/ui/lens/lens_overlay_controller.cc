@@ -823,11 +823,14 @@ void LensOverlayController::FetchSupportedLanguages(
 }
 
 void LensOverlayController::FinishReshowOverlay() {
-  content::RenderWidgetHost* live_page_widget_host = tab_->GetContents()
-                                                         ->GetPrimaryMainFrame()
-                                                         ->GetRenderViewHost()
-                                                         ->GetWidget();
-  lens_overlay_blur_layer_delegate_->Show(live_page_widget_host);
+  if (lens_overlay_blur_layer_delegate_) {
+    content::RenderWidgetHost* live_page_widget_host =
+        tab_->GetContents()
+            ->GetPrimaryMainFrame()
+            ->GetRenderViewHost()
+            ->GetWidget();
+    lens_overlay_blur_layer_delegate_->Show(live_page_widget_host);
+  }
   SetOverlayWebViewOpacity(1.0f);
 }
 
@@ -2990,6 +2993,7 @@ void LensOverlayController::ReshowOverlayPart3(const SkBitmap& rgb_screenshot) {
   // setting opacity to 0.f.
   SetOverlayWebViewOpacity(std::nextafter(0.f, 1.f));
   ShowOverlay();
+  base::UmaHistogramBoolean("Lens.Overlay.Shown", true);
 }
 
 void LensOverlayController::SetOverlayWebViewOpacity(float opacity) {
