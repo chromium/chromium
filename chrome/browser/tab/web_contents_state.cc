@@ -17,6 +17,7 @@
 #include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -103,8 +104,9 @@ ScopedJavaLocalRef<jobject> WriteSerializedNavigationsAsByteBuffer(
   ScopedJavaLocalRef<jobject> buffer =
       CreateByteBufferDirect(env, static_cast<int>(pickle.size()));
   if (buffer) {
-    UNSAFE_TODO(memcpy(env->GetDirectBufferAddress(buffer.obj()), pickle.data(),
-                       pickle.size()));
+    base::span<uint8_t> buffer_span =
+        base::android::JavaByteBufferToMutableSpan(env, buffer);
+    buffer_span.copy_from(pickle);
   }
   return buffer;
 }
