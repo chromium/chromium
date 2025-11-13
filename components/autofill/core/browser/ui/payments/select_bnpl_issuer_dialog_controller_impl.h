@@ -12,8 +12,8 @@
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller.h"
 
 namespace autofill::payments {
-
 struct BnplIssuerContext;
+class PaymentsAutofillClient;
 class SelectBnplIssuerView;
 struct TextWithLink;
 
@@ -21,7 +21,7 @@ struct TextWithLink;
 class SelectBnplIssuerDialogControllerImpl
     : public SelectBnplIssuerDialogController {
  public:
-  SelectBnplIssuerDialogControllerImpl();
+  explicit SelectBnplIssuerDialogControllerImpl(PaymentsAutofillClient* client);
   SelectBnplIssuerDialogControllerImpl(
       const SelectBnplIssuerDialogControllerImpl&) = delete;
   SelectBnplIssuerDialogControllerImpl& operator=(
@@ -70,6 +70,8 @@ class SelectBnplIssuerDialogControllerImpl
 
   // Callback invoked when the user cancelled the dialog.
   base::OnceClosure cancel_callback_;
+
+  const raw_ref<PaymentsAutofillClient> client_;
 
   base::WeakPtrFactory<SelectBnplIssuerDialogControllerImpl> weak_ptr_factory_{
       this};

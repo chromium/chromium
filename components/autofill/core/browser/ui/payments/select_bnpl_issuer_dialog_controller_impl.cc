@@ -4,10 +4,12 @@
 
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller_impl.h"
 
+#include "base/check_deref.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_view.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -21,8 +23,9 @@ using ::autofill::autofill_metrics::SelectBnplIssuerDialogResult;
 using l10n_util::GetStringUTF16;
 using std::u16string;
 
-SelectBnplIssuerDialogControllerImpl::SelectBnplIssuerDialogControllerImpl() =
-    default;
+SelectBnplIssuerDialogControllerImpl::SelectBnplIssuerDialogControllerImpl(
+    PaymentsAutofillClient* client)
+    : client_(CHECK_DEREF(client)) {}
 
 SelectBnplIssuerDialogControllerImpl::~SelectBnplIssuerDialogControllerImpl() =
     default;
@@ -97,7 +100,12 @@ u16string SelectBnplIssuerDialogControllerImpl::GetSelectionOptionText(
 // have multiple lines when the text doesn't fit into one line.
 TextWithLink SelectBnplIssuerDialogControllerImpl::GetLinkText() const {
 #if !BUILDFLAG(IS_ANDROID)
-  return GetBnplUiFooterText();
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableAiBasedAmountExtraction)) {
+    return GetBnplUiFooterTextForAi(client_->GetPaymentsDataManager());
+  } else {
+    return GetBnplUiFooterText();
+  }
 #else
   // `GetBnplUiFooterText` on Android does not return a `TextWithLink`.
   NOTREACHED();

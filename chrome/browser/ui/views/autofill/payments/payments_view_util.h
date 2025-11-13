@@ -41,6 +41,7 @@ struct TextLinkInfo {
 
   ~TextLinkInfo();
 
+  gfx::Range bold_range;
   gfx::Range offset;
   base::RepeatingCallback<void()> callback;
 };

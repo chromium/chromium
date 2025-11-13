@@ -29,7 +29,8 @@ void DesktopBnplUiDelegate::ShowSelectBnplIssuerUi(
     base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
     base::OnceClosure cancel_callback) {
   select_bnpl_issuer_dialog_controller_ =
-      std::make_unique<SelectBnplIssuerDialogControllerImpl>();
+      std::make_unique<SelectBnplIssuerDialogControllerImpl>(
+          client_->GetPaymentsAutofillClient());
   select_bnpl_issuer_dialog_controller_->ShowDialog(
       base::BindOnce(&CreateAndShowBnplIssuerSelectionDialog,
                      select_bnpl_issuer_dialog_controller_->GetWeakPtr(),

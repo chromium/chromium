@@ -95,6 +95,7 @@ END_METADATA
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SelectBnplIssuerDialog, kThrobberId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SelectBnplIssuerDialog, kBnplIssuerView);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SelectBnplIssuerDialog, kFootnoteViewId);
 
 SelectBnplIssuerDialog::SelectBnplIssuerDialog(
     base::WeakPtr<SelectBnplIssuerDialogController> controller,
@@ -142,13 +143,15 @@ SelectBnplIssuerDialog::SelectBnplIssuerDialog(
 
   TextWithLink link_text = controller_.get()->GetLinkText();
   TextLinkInfo link_info;
+  link_info.bold_range = link_text.bold_range;
   link_info.offset = link_text.offset;
   link_info.callback =
       base::BindRepeating(&SelectBnplIssuerDialog::OnSettingsLinkClicked,
                           weak_ptr_factory_.GetWeakPtr());
-
   bnpl_footnote_view_ = SetFootnoteView(std::make_unique<BnplDialogFootnote>(
       link_text.text, std::move(link_info)));
+  bnpl_footnote_view_->SetProperty(views::kElementIdentifierKey,
+                                   SelectBnplIssuerDialog::kFootnoteViewId);
 }
 
 SelectBnplIssuerDialog::~SelectBnplIssuerDialog() = default;

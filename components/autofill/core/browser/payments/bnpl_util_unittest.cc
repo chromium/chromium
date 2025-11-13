@@ -14,6 +14,8 @@
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -91,6 +93,10 @@ class MockPaymentsDataManager : public TestPaymentsDataManager {
  public:
   using TestPaymentsDataManager::TestPaymentsDataManager;
   MOCK_METHOD(std::vector<BnplIssuer>, GetBnplIssuers, (), (const, override));
+  MOCK_METHOD(bool,
+              IsAutofillAmountExtractionAiTermsSeenPrefEnabled,
+              (),
+              (const, override));
 };
 
 class BnplUtilTest : public Test, public WithTestAutofillClientDriverManager<> {
@@ -109,6 +115,7 @@ class BnplUtilTest : public Test, public WithTestAutofillClientDriverManager<> {
  protected:
   void SetUp() override {
     InitAutofillClient();
+
     autofill_client().GetPersonalDataManager().set_payments_data_manager(
         std::make_unique<MockPaymentsDataManager>());
 
@@ -291,8 +298,55 @@ TEST_F(BnplUtilTest, GetBnplUiFooterText) {
   EXPECT_THAT(
       GetBnplUiFooterText(),
       testing::FieldsAre(
-          text, gfx::Range(offset, offset + kPaymentSettingsLinkText.length()),
-          testing::_));
+          text, gfx::Range(0, 0),
+          gfx::Range(offset, offset + kPaymentSettingsLinkText.length()), _));
+}
+
+TEST_F(BnplUtilTest, GetBnplUiFooterTextForAi_AiTermsBold) {
+  ON_CALL(
+      static_cast<MockPaymentsDataManager&>(
+          autofill_client().GetPersonalDataManager().payments_data_manager()),
+      IsAutofillAmountExtractionAiTermsSeenPrefEnabled)
+      .WillByDefault(Return(false));
+
+  const std::u16string kExpectedFullFooterText =
+      u"Google uses information from the checkout page and other relevant data "
+      u"to offer these options. To hide pay later options, go to payment "
+      u"settings";
+  const std::u16string kExpectedBoldAiText =
+      u"Google uses information from the checkout page and other relevant data "
+      u"to offer these options.";
+  const std::u16string kLinkText = u"payment settings";
+  const size_t kLinkOffset = kExpectedFullFooterText.find(kLinkText);
+
+  EXPECT_THAT(
+      GetBnplUiFooterTextForAi(
+          autofill_client().GetPersonalDataManager().payments_data_manager()),
+      testing::FieldsAre(
+          kExpectedFullFooterText, gfx::Range(0, kExpectedBoldAiText.length()),
+          gfx::Range(kLinkOffset, kLinkOffset + kLinkText.length()), _));
+}
+
+TEST_F(BnplUtilTest, GetBnplUiFooterTextForAi_AiTermsNotBold) {
+  ON_CALL(
+      static_cast<MockPaymentsDataManager&>(
+          autofill_client().GetPersonalDataManager().payments_data_manager()),
+      IsAutofillAmountExtractionAiTermsSeenPrefEnabled)
+      .WillByDefault(Return(true));
+
+  const std::u16string kExpectedFullFooterText =
+      u"Google uses information from the checkout page and other relevant data "
+      u"to offer these options. To hide pay later options, go to payment "
+      u"settings";
+  const std::u16string kLinkText = u"payment settings";
+  const size_t kLinkOffset = kExpectedFullFooterText.find(kLinkText);
+
+  EXPECT_THAT(
+      GetBnplUiFooterTextForAi(
+          autofill_client().GetPersonalDataManager().payments_data_manager()),
+      testing::FieldsAre(
+          kExpectedFullFooterText, gfx::Range(0, 0),
+          gfx::Range(kLinkOffset, kLinkOffset + kLinkText.length()), _));
 }
 
 // Verify that if the triggering field is CVC, the BNPL option should not be

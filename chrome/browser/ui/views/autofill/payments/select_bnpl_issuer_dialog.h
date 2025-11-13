@@ -33,6 +33,7 @@ class SelectBnplIssuerDialog : public views::DialogDelegateView {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kThrobberId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBnplIssuerView);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFootnoteViewId);
   explicit SelectBnplIssuerDialog(
       base::WeakPtr<SelectBnplIssuerDialogController> controller,
       content::WebContents* web_contents,

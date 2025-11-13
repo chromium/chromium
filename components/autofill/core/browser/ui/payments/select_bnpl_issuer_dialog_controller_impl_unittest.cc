@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -34,13 +36,17 @@ class MockSelectBnplIssuerView : public SelectBnplIssuerView {
   MOCK_METHOD(void, UpdateDialogWithIssuers, (), (override));
 };
 
-class SelectBnplIssuerDialogControllerImplTest : public testing::Test {
+class SelectBnplIssuerDialogControllerImplTest
+    : public testing::Test,
+      public WithTestAutofillClientDriverManager<> {
  public:
   SelectBnplIssuerDialogControllerImplTest() = default;
   ~SelectBnplIssuerDialogControllerImplTest() override = default;
 
   void InitController() {
-    controller_ = std::make_unique<SelectBnplIssuerDialogControllerImpl>();
+    InitAutofillClient();
+    controller_ = std::make_unique<SelectBnplIssuerDialogControllerImpl>(
+        autofill_client().GetPaymentsAutofillClient());
     controller_->ShowDialog(
         create_view_callback_.Get(), issuer_contexts_, /*app_locale=*/"en-US",
         selected_issuer_callback_.Get(), cancel_callback_.Get());
@@ -51,6 +57,7 @@ class SelectBnplIssuerDialogControllerImplTest : public testing::Test {
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<SelectBnplIssuerDialogControllerImpl> controller_;
   std::vector<BnplIssuerContext> issuer_contexts_;
   base::MockCallback<
@@ -132,7 +139,8 @@ TEST_F(SelectBnplIssuerDialogControllerImplTest,
 TEST_F(SelectBnplIssuerDialogControllerImplTest, GetLinkText) {
   InitController();
 
-  EXPECT_FALSE(controller_->GetLinkText().text.empty());
+  EXPECT_THAT(controller_->GetLinkText(),
+              Field(&TextWithLink::text, Not(testing::IsEmpty())));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

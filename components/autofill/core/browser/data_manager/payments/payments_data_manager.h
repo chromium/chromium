@@ -388,7 +388,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
   // Returns the value of the kAutofillAmountExtractionAiTermsSeen pref.
-  bool IsAutofillAmountExtractionAiTermsSeenPrefEnabled() const;
+  virtual bool IsAutofillAmountExtractionAiTermsSeenPrefEnabled() const;
 
   // Sets the value of the kAutofillAmountExtractionAiTermsSeen pref to true.
   void SetAutofillAmountExtractionAiTermsSeen();

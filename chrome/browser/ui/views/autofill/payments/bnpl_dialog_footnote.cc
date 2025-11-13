@@ -25,10 +25,15 @@ BnplDialogFootnote::BnplDialogFootnote(const std::u16string& footnote_text,
       views::StyledLabel::RangeStyleInfo::CreateForLink(
           text_link_info.callback);
 
-  AddChildView(views::Builder<views::StyledLabel>()
-                   .SetText(footnote_text)
-                   .AddStyleRange(text_link_info.offset, style_info)
-                   .Build());
+  views::StyledLabel* label =
+      AddChildView(std::make_unique<views::StyledLabel>());
+  label->SetText(footnote_text);
+  label->AddStyleRange(text_link_info.offset, style_info);
+  if (!text_link_info.bold_range.is_empty()) {
+    views::StyledLabel::RangeStyleInfo bold_style;
+    bold_style.text_style = views::style::STYLE_EMPHASIZED;
+    label->AddStyleRange(text_link_info.bold_range, bold_style);
+  }
 }
 
 BnplDialogFootnote::~BnplDialogFootnote() = default;
