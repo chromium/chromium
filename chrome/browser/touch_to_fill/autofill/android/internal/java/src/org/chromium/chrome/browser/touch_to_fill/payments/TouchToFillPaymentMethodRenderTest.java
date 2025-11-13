@@ -93,7 +93,7 @@ public class TouchToFillPaymentMethodRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(16)
+                    .setRevision(15)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
@@ -379,10 +379,9 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* shouldDisplayTermsAvailable= */ false,
                     /* guid= */ "",
                     /* isLocalPaymentsMethod= */ false);
-    // TODO(crbug.com/430575808): Use issuer icons instead of a generic icon.
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_AFFIRM_LINKED =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.bnpl_icon_generic,
+                    /* iconId= */ R.drawable.affirm_linked,
                     /* issuerId= */ "affirm",
                     /* displayName= */ "Affirm",
                     /* selectionText= */ "Monthly or 4 installments",
@@ -390,7 +389,7 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* isEligible= */ true);
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.bnpl_icon_generic,
+                    /* iconId= */ R.drawable.affirm_unlinked,
                     /* issuerId= */ "affirm",
                     /* displayName= */ "Affirm",
                     /* selectionText= */ "Monthly or 4 installments",
@@ -398,7 +397,7 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* isEligible= */ true);
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_KLARNA_LINKED =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.bnpl_icon_generic,
+                    /* iconId= */ R.drawable.klarna_linked,
                     /* issuerId= */ "klarna",
                     /* displayName= */ "Klarna",
                     /* selectionText= */ "Pay in low monthly installments",
@@ -406,7 +405,7 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* isEligible= */ true);
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_KLARNA_UNLINKED =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.bnpl_icon_generic,
+                    /* iconId= */ R.drawable.klarna_unlinked,
                     /* issuerId= */ "klarna",
                     /* displayName= */ "Klarna",
                     /* selectionText= */ "Pay in low monthly installments",
@@ -414,7 +413,7 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* isEligible= */ true);
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_ZIP_LINKED =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.bnpl_icon_generic,
+                    /* iconId= */ R.drawable.zip_linked,
                     /* issuerId= */ "zip",
                     /* displayName= */ "Zip",
                     /* selectionText= */ "Pay in easy installments",
@@ -422,7 +421,7 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* isEligible= */ true);
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_ZIP_UNLINKED =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.bnpl_icon_generic,
+                    /* iconId= */ R.drawable.zip_unlinked,
                     /* issuerId= */ "zip",
                     /* displayName= */ "Zip",
                     /* selectionText= */ "Pay in easy installments",
@@ -431,7 +430,7 @@ public class TouchToFillPaymentMethodRenderTest {
     private static final BnplIssuerContext
             BNPL_ISSUER_CONTEXT_INELIGIBLE_NOT_SUPPORTED_BY_MERCHANT =
                     new BnplIssuerContext(
-                            /* iconId= */ R.drawable.bnpl_icon_generic,
+                            /* iconId= */ R.drawable.affirm_linked,
                             /* issuerId= */ "affirm",
                             /* displayName= */ "Affirm",
                             /* selectionText= */ "Not supported by merchant",
@@ -439,7 +438,7 @@ public class TouchToFillPaymentMethodRenderTest {
                             /* isEligible= */ false);
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_LOW =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.bnpl_icon_generic,
+                    /* iconId= */ R.drawable.klarna_linked,
                     /* issuerId= */ "klarna",
                     /* displayName= */ "Klarna",
                     /* selectionText= */ "Purchase must be over $50.00",
@@ -447,7 +446,7 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* isEligible= */ false);
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_HIGH =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.bnpl_icon_generic,
+                    /* iconId= */ R.drawable.zip_unlinked,
                     /* issuerId= */ "zip",
                     /* displayName= */ "Zip",
                     /* selectionText= */ "Purchase must be under $10,000.00",

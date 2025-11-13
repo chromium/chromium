@@ -399,10 +399,9 @@ public class TouchToFillPaymentMethodViewTest {
                     /* programLogo= */ new GURL("https://site.com/icon.png"),
                     /* loyaltyCardNumber= */ "1234",
                     /* merchantDomains= */ Collections.emptyList());
-    // TODO(crbug.com/430575808): Use issuer icons instead of a generic icon.
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_AFFIRM_LINKED =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.bnpl_icon_generic,
+                    /* iconId= */ R.drawable.affirm_linked,
                     /* issuerId= */ "affirm",
                     /* displayName= */ "Affirm",
                     /* selectionText= */ "Monthly or 4 installments",
@@ -410,7 +409,7 @@ public class TouchToFillPaymentMethodViewTest {
                     /* isEligible= */ true);
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.bnpl_icon_generic,
+                    /* iconId= */ R.drawable.affirm_unlinked,
                     /* issuerId= */ "affirm",
                     /* displayName= */ "Affirm",
                     /* selectionText= */ "Monthly or 4 installments",
@@ -419,7 +418,7 @@ public class TouchToFillPaymentMethodViewTest {
     private static final BnplIssuerContext
             BNPL_ISSUER_CONTEXT_INELIGIBLE_NOT_SUPPORTED_BY_MERCHANT =
                     new BnplIssuerContext(
-                            /* iconId= */ R.drawable.bnpl_icon_generic,
+                            /* iconId= */ R.drawable.affirm_linked,
                             /* issuerId= */ "affirm",
                             /* displayName= */ "Affirm",
                             /* selectionText= */ "Not supported by merchant",
