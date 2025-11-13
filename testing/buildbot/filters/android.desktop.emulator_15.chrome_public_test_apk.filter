@@ -44,7 +44,6 @@
 -org.chromium.chrome.browser.incognito.IncognitoProfileDestroyerIntegrationTest.*
 -org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.*
 -org.chromium.chrome.browser.incognito.reauth.FullScreenIncognitoReauthViewTest.*
--org.chromium.chrome.browser.incognito.reauth.TabSwitcherIncognitoReauthViewTest.*
 -org.chromium.chrome.browser.ntp.IncognitoNtpOmniboxAutofocusManagerTest.*
 
 # crbug.com/376168546
