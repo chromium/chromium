@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
+import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestinations;
+
+import android.util.Pair;
 
 import androidx.test.filters.MediumTest;
 
@@ -23,6 +26,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.ImportantFormFactors;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -42,6 +47,8 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.io.IOException;
 
@@ -111,7 +118,9 @@ public class TabGroupDialogPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testIncognitoNewTabCreation() throws IOException {
+    @Restriction(DeviceFormFactor.PHONE)
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testIncognitoNewTabCreationPhone() throws IOException {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
                 Journeys.prepareTabsWithThumbnails(
@@ -129,6 +138,30 @@ public class TabGroupDialogPTTest {
 
         // Assert we have gone back to PageStation for InitialStateRule to reset
         assertFinalDestination(secondPage);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @ImportantFormFactors(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testIncognitoNewTabCreationTablet() throws IOException {
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        Pair<WebPageStation, WebPageStation> pageStations =
+                Journeys.prepareTabsWithThumbnailsSeparateWindows(
+                        firstPage, 1, 3, "about:blank", WebPageStation::newBuilder);
+
+        IncognitoTabSwitcherStation tabSwitcher = pageStations.second.openIncognitoTabSwitcher();
+        TabSwitcherGroupCardFacility groupCard = Journeys.mergeAllTabsToNewGroup(tabSwitcher);
+
+        TabGroupDialogFacility<TabSwitcherStation> tabGroupDialogFacility = groupCard.clickCard();
+        mRenderTestRule.render(
+                tabSwitcher.getActivity().findViewById(R.id.dialog_container_view),
+                "tab_grid_dialog-incognito_mode");
+
+        IncognitoNewTabPageStation secondPage = tabGroupDialogFacility.openNewIncognitoTab();
+        assertFinalDestinations(pageStations.first, secondPage);
     }
 
     @Test
