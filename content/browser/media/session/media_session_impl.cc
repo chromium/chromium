@@ -1830,20 +1830,17 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
         media_session::mojom::MediaSessionAction::kExitPictureInPicture);
   }
 
-  if (base::FeatureList::IsEnabled(
-          media::kGlobalMediaControlsPictureInPicture)) {
-    if (IsPictureInPictureAvailable()) {
-      actions.insert(
-          media_session::mojom::MediaSessionAction::kEnterPictureInPicture);
-      actions.insert(
-          media_session::mojom::MediaSessionAction::kExitPictureInPicture);
-    } else if (web_contents()->HasPictureInPictureVideo() ||
-               web_contents()->HasPictureInPictureDocument()) {
-      // If the media is already in the picture-in-picture state, we allow the
-      // player to exit it.
-      actions.insert(
-          media_session::mojom::MediaSessionAction::kExitPictureInPicture);
-    }
+  if (IsPictureInPictureAvailable()) {
+    actions.insert(
+        media_session::mojom::MediaSessionAction::kEnterPictureInPicture);
+    actions.insert(
+        media_session::mojom::MediaSessionAction::kExitPictureInPicture);
+  } else if (web_contents()->HasPictureInPictureVideo() ||
+             web_contents()->HasPictureInPictureDocument()) {
+    // If the media is already in the picture-in-picture state, we allow the
+    // player to exit it.
+    actions.insert(
+        media_session::mojom::MediaSessionAction::kExitPictureInPicture);
   }
 
   // If the website could enter browser initiated automatic picture in picture,

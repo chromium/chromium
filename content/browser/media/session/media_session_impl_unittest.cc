@@ -23,7 +23,6 @@
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_web_contents.h"
 #include "media/base/media_content_type.h"
-#include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/features.h"
 #include "services/media_session/public/cpp/test/audio_focus_test_util.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
@@ -147,7 +146,6 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
     scoped_feature_list_.InitWithFeatures(
         {media_session::features::kMediaSessionService,
          media_session::features::kAudioFocusEnforcement,
-         media::kGlobalMediaControlsPictureInPicture,
          blink::features::kBrowserInitiatedAutomaticPictureInPicture},
         {});
 

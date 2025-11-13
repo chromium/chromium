@@ -50,8 +50,6 @@ class MediaSessionControllersManagerTest
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    enabled_features.push_back(media::kGlobalMediaControlsPictureInPicture);
-
     // Based on the parameters, switch them on.
     if (IsInternalMediaSessionEnabled()) {
       enabled_features.push_back(media::kInternalMediaSession);

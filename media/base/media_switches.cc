@@ -675,16 +675,6 @@ BASE_FEATURE(kMediaRemotingWithoutFullscreen,
 );
 #endif
 
-// Show picture-in-picture button in Global Media Controls.
-BASE_FEATURE(kGlobalMediaControlsPictureInPicture,
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 // Enable selection of audio output device in Global Media Controls.
 BASE_FEATURE(kGlobalMediaControlsSeamlessTransfer,
              base::FEATURE_DISABLED_BY_DEFAULT);
