@@ -196,7 +196,6 @@ GlicInstanceImpl::GlicInstanceImpl(
           profile,
           actor::ActorKeyedServiceFactory::GetActorKeyedService(profile))),
       last_active_time_(base::TimeTicks::Now()) {
-  instance_metrics_.OnInstanceCreated();
   browser_list_observation_.Observe(BrowserList::GetInstance());
   // Start warming the contents.
   host_.SetDelegate(&empty_embedder_delegate_);

@@ -831,6 +831,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Instance.Session.TotalActiveDuration" units="ms"
+    expires_after="2026-10-27">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the total time a Glic multi-instance session was active. Recorded
+    when the session ends. A session is active when it is showing in an embedder
+    in the active browser window.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.Session.TotalHiddenDuration" units="ms"
+    expires_after="2026-10-27">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the total time a Glic multi-instance session was hidden. Recorded
+    when the session ends. A session is hidden when it is not shown in any
+    embedder. This does not account for occlusion.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.Session.TotalInactiveDuration" units="ms"
+    expires_after="2026-10-27">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the total time a Glic multi-instance session was inactive. Recorded
+    when the session ends. A session is inactive when it is not showing in any
+    embedder of an active browser window.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.Session.TotalVisibleDuration" units="ms"
+    expires_after="2026-10-27">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the total time a Glic multi-instance session was visible. Recorded
+    when the session ends. A session is visible when it is shown in any
+    embedder. This does not account for occlusion.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Instance.Session.TurnCount" units="count"
     expires_after="2026-10-27">
   <owner>birnie@google.com</owner>
@@ -838,6 +882,28 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of turns that occurred in a single Glic multi-instance session.
     Recorded when the session ends.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.Session.UninterruptedActiveDuration" units="ms"
+    expires_after="2026-10-27">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the duration of a single, uninterrupted period of time that a Glic
+    multi-instance session was active. Recorded each time the session becomes
+    inactive.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.Session.UninterruptedVisibleDuration" units="ms"
+    expires_after="2026-10-27">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the duration of a single, uninterrupted period of time that a Glic
+    multi-instance session was visible. Recorded each time the session becomes
+    hidden.
   </summary>
 </histogram>
 

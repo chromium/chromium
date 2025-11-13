@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_METRICS_H_
 #define CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_METRICS_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -12,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/service/glic_metrics_session_manager.h"
+#include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
 
 namespace content {
@@ -113,9 +115,6 @@ class GlicInstanceMetrics {
 
   GlicInstanceMetrics(const GlicInstanceMetrics&) = delete;
   GlicInstanceMetrics& operator=(const GlicInstanceMetrics&) = delete;
-
-  // Called when GlicInstanceImpl is created.
-  void OnInstanceCreated();
 
   // Called when GlicInstanceImpl is destroyed.
   void OnInstanceDestroyed();
@@ -230,7 +229,9 @@ class GlicInstanceMetrics {
 
   int GetPinnedTabCount() const;
 
-  bool is_active() const { return is_active_; }
+  bool is_active() const {
+    return activity_tracker_ ? activity_tracker_->state() : false;
+  }
 
   GlicMetricsSessionManager& session_manager() { return session_manager_; }
 
@@ -265,12 +266,6 @@ class GlicInstanceMetrics {
       const std::vector<content::WebContents*>& pinned_contents);
 
   base::flat_map<GlicInstanceEvent, int> event_counts_;
-  // An Instance is active when it is showing in an embedder of an active
-  // browser.
-  bool is_active_ = false;
-  // An Instance is visible when it is showing in an embedder. The embedder may
-  // be occluded (if side panel) or inactive and still considered visible.
-  bool is_visible_ = false;
   EmbedderType current_ui_mode_ = EmbedderType::kUnknown;
 
   // Keeps track of the current number of bound tabs to this instance.
@@ -298,10 +293,9 @@ class GlicInstanceMetrics {
   base::TimeTicks creation_time_;
   base::TimeTicks floaty_open_time_;
   std::map<tabs::TabHandle, base::TimeTicks> side_panel_open_times_;
-  base::TimeTicks last_activation_change_time_;
-  base::TimeTicks last_visibility_change_time_;
-  base::TimeDelta total_active_time_;
-  base::TimeDelta total_visible_time_;
+
+  std::unique_ptr<GlicStateTracker> activity_tracker_;
+  std::unique_ptr<GlicStateTracker> visibility_tracker_;
 
   GlicMetricsSessionManager session_manager_;
   base::TimeTicks last_session_end_time_;

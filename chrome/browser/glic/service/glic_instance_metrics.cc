@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/service/glic_metrics_session_manager.h"
+#include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace glic {
@@ -66,14 +67,29 @@ enum class GlicTurnSource {
 
 }  // namespace
 
-GlicInstanceMetrics::GlicInstanceMetrics() : session_manager_(this) {}
+GlicInstanceMetrics::GlicInstanceMetrics() : session_manager_(this) {
+  // Used in the unit tests.
+  base::RecordAction(base::UserMetricsAction("Glic.Instance.Created"));
+  activity_tracker_ = std::make_unique<GlicStateTracker>(
+      false, "Glic.Instance.UninterruptedActiveDuration");
+  visibility_tracker_ = std::make_unique<GlicStateTracker>(
+      false, "Glic.Instance.UninterruptedVisibleDuration");
+  LogEvent(GlicInstanceEvent::kInstanceCreated);
+}
 
 GlicInstanceMetrics::GlicInstanceMetrics(GlicSharingManager* sharing_manager)
     : session_manager_(this),
       pinned_tabs_changed_subscription_(
           sharing_manager->AddPinnedTabsChangedCallback(
               base::BindRepeating(&GlicInstanceMetrics::OnPinnedTabsChanged,
-                                  base::Unretained(this)))) {}
+                                  base::Unretained(this)))) {
+  base::RecordAction(base::UserMetricsAction("Glic.Instance.Created"));
+  activity_tracker_ = std::make_unique<GlicStateTracker>(
+      false, "Glic.Instance.UninterruptedActiveDuration");
+  visibility_tracker_ = std::make_unique<GlicStateTracker>(
+      false, "Glic.Instance.UninterruptedVisibleDuration");
+  LogEvent(GlicInstanceEvent::kInstanceCreated);
+}
 
 GlicInstanceMetrics::~GlicInstanceMetrics() {
   OnInstanceDestroyed();
@@ -85,39 +101,31 @@ void GlicInstanceMetrics::OnPinnedTabsChanged(
   session_manager_.SetPinnedTabCount(pinned_tab_count_);
 }
 
-void GlicInstanceMetrics::OnInstanceCreated() {
-  base::RecordAction(base::UserMetricsAction("Glic.Instance.Created"));
-  creation_time_ = base::TimeTicks::Now();
-  last_activation_change_time_ = creation_time_;
-  last_visibility_change_time_ = creation_time_;
-  LogEvent(GlicInstanceEvent::kInstanceCreated);
-}
-
 void GlicInstanceMetrics::OnInstanceDestroyed() {
   session_manager_.OnOwnerDestroyed();
 
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Destroyed"));
 
   // Add the time spent in the final state before destruction.
-  if (is_active_) {
-    OnActivationChanged(false);
-  }
-  if (is_visible_) {
-    OnVisibilityChanged(false);
-  }
+  activity_tracker_->Finalize();
+  visibility_tracker_->Finalize();
 
   const base::TimeDelta lifetime = base::TimeTicks::Now() - creation_time_;
-  const base::TimeDelta background_time = lifetime - total_active_time_;
-  const base::TimeDelta hidden_time = lifetime - total_visible_time_;
+  const base::TimeDelta total_active_time = activity_tracker_->total_duration();
+  const base::TimeDelta total_visible_time =
+      visibility_tracker_->total_duration();
+
+  const base::TimeDelta background_time = lifetime - total_active_time;
+  const base::TimeDelta hidden_time = lifetime - total_visible_time;
 
   base::UmaHistogramCustomTimes("Glic.Instance.TotalActiveDuration",
-                                total_active_time_, base::Milliseconds(1),
+                                total_active_time, base::Milliseconds(1),
                                 base::Hours(24), 50);
   base::UmaHistogramCustomTimes("Glic.Instance.TotalBackgroundDuration",
                                 background_time, base::Milliseconds(1),
                                 base::Hours(24), 50);
   base::UmaHistogramCustomTimes("Glic.Instance.TotalVisibleDuration",
-                                total_visible_time_, base::Milliseconds(1),
+                                total_visible_time, base::Milliseconds(1),
                                 base::Hours(24), 50);
   base::UmaHistogramCustomTimes("Glic.Instance.TotalHiddenDuration",
                                 hidden_time, base::Milliseconds(1),
@@ -150,46 +158,16 @@ void GlicInstanceMetrics::OnInstanceDestroyed() {
 }
 
 void GlicInstanceMetrics::OnActivationChanged(bool is_active) {
-  if (is_active == is_active_) {
-    return;
-  }
-
   session_manager_.OnActivationChanged(is_active);
-
-  base::TimeDelta time_in_state =
-      base::TimeTicks::Now() - last_activation_change_time_;
-  // if is_active_ then activation changed to false.
-  if (is_active_) {
-    total_active_time_ += time_in_state;
-    base::UmaHistogramCustomTimes("Glic.Instance.UninterruptedActiveDuration",
-                                  time_in_state, base::Milliseconds(1),
-                                  base::Hours(1), 50);
-  }
-
-  is_active_ = is_active;
-  last_activation_change_time_ = base::TimeTicks::Now();
+  activity_tracker_->OnStateChanged(is_active);
 }
 
 void GlicInstanceMetrics::OnVisibilityChanged(bool is_visible) {
-  if (is_visible == is_visible_) {
-    return;
-  }
-
   session_manager_.OnVisibilityChanged(is_visible);
-
-  base::TimeDelta time_in_state =
-      base::TimeTicks::Now() - last_visibility_change_time_;
-  // if is_visible_ then visibility changed to false.
-  if (is_visible_) {
+  if (visibility_tracker_->state() && !is_visible) {
     OnInstanceHidden();
-    total_visible_time_ += time_in_state;
-    base::UmaHistogramCustomTimes("Glic.Instance.UninterruptedVisibleDuration",
-                                  time_in_state, base::Milliseconds(1),
-                                  base::Hours(1), 50);
   }
-
-  is_visible_ = is_visible;
-  last_visibility_change_time_ = base::TimeTicks::Now();
+  visibility_tracker_->OnStateChanged(is_visible);
 }
 
 void GlicInstanceMetrics::OnBind() {
@@ -492,7 +470,9 @@ void GlicInstanceMetrics::OnWebUiStateChanged(mojom::WebUiState state) {
         base::TimeDelta load_time =
             base::TimeTicks::Now() - web_ui_load_start_time_;
         std::string_view visibility_suffix =
-            is_visible_ ? ".Visible" : ".Nonvisible";
+            (visibility_tracker_ && visibility_tracker_->state())
+                ? ".Visible"
+                : ".Nonvisible";
         base::UmaHistogramCustomTimes(
             base::StrCat({"Glic.Instance.WebUiLoadTime", visibility_suffix}),
             load_time, base::Milliseconds(1), base::Seconds(60), 50);
