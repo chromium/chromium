@@ -169,7 +169,8 @@ class EncryptionKeyApi
                   << static_cast<int>(security_domain);
       return;
     }
-    trusted_vault_client->StoreKeys(gaia_id, keys_as_bytes, last_key_version);
+    trusted_vault_client->StoreKeys(gaia_id, keys_as_bytes, last_key_version,
+                                    std::nullopt);
   }
 #endif
 

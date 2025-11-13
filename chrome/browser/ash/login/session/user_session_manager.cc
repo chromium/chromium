@@ -490,7 +490,8 @@ void SaveSyncTrustedVaultKeysToProfile(
     trusted_vault_service
         ->GetTrustedVaultClient(trusted_vault::SecurityDomainId::kChromeSync)
         ->StoreKeys(gaia_id, trusted_vault_keys.encryption_keys(),
-                    trusted_vault_keys.last_encryption_key_version());
+                    trusted_vault_keys.last_encryption_key_version(),
+                    std::nullopt);
   }
 
   for (const SyncTrustedVaultKeys::TrustedRecoveryMethod& method :

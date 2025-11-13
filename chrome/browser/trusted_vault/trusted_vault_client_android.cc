@@ -167,7 +167,8 @@ void TrustedVaultClientAndroid::FetchKeys(
 void TrustedVaultClientAndroid::StoreKeys(
     const GaiaId& gaia_id,
     const std::vector<std::vector<uint8_t>>& keys,
-    int last_key_version) {
+    int last_key_version,
+    std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger) {
   // Not supported on Android, where keys are fetched outside the browser.
   NOTREACHED();
 }

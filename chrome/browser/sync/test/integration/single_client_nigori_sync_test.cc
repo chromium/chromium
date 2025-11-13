@@ -1461,7 +1461,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(SetupClients());
   GetSyncTrustedVaultClient()->StoreKeys(
       kDefaultGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
-      /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
+      /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch(),
+      /*trigger=*/std::nullopt);
 
   NotificationDisplayServiceTester display_service(GetProfile(0));
 
@@ -1917,7 +1918,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   ASSERT_TRUE(SetupClients());
   GetSyncTrustedVaultClient()->StoreKeys(
       kDefaultGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
-      /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
+      /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch(),
+      /*trigger=*/std::nullopt);
   ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
@@ -2009,7 +2011,8 @@ IN_PROC_BROWSER_TEST_F(
       kTestRecoveryMethodPublicKey);
   GetSyncTrustedVaultClient()->StoreKeys(
       kDefaultGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
-      /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
+      /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch(),
+      /*trigger=*/std::nullopt);
 
   // Mimic a recovery method being added before or during sign-in, which should
   // be deferred until sign-in completes.
@@ -2052,7 +2055,8 @@ IN_PROC_BROWSER_TEST_F(
       kTestRecoveryMethodPublicKey);
   GetSyncTrustedVaultClient()->StoreKeys(
       kDefaultGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
-      /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
+      /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch(),
+      /*trigger=*/std::nullopt);
   ASSERT_TRUE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
 
   // Sign in now and wait until sync initializes.
@@ -2097,7 +2101,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(SetupClients());
   GetSyncTrustedVaultClient()->StoreKeys(
       kDefaultGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
-      /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
+      /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch(),
+      /*trigger=*/std::nullopt);
   ASSERT_TRUE(SetupSync());
   ASSERT_FALSE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
   ASSERT_FALSE(GetSyncService(0)
@@ -2389,7 +2394,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(SetupClients());
   GetSyncTrustedVaultClient()->StoreKeys(
       kDefaultGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
-      /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
+      /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch(),
+      /*trigger=*/std::nullopt);
 
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());

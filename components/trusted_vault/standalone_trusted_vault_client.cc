@@ -4,6 +4,7 @@
 
 #include "components/trusted_vault/standalone_trusted_vault_client.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -293,7 +294,7 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
       backend_task_runner_, backend_,
       base::BindRepeating(
           &StandaloneTrustedVaultClient::NotifyTrustedVaultKeysChanged,
-          base::Unretained(this)),
+          base::Unretained(this), std::nullopt),
       identity_manager);
 }
 
@@ -330,13 +331,14 @@ void StandaloneTrustedVaultClient::FetchKeys(
 void StandaloneTrustedVaultClient::StoreKeys(
     const GaiaId& gaia_id,
     const std::vector<std::vector<uint8_t>>& keys,
-    int last_key_version) {
+    int last_key_version,
+    std::optional<TrustedVaultUserActionTriggerForUMA> trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
   backend_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&StandaloneTrustedVaultBackend::StoreKeys,
                                 backend_, gaia_id, keys, last_key_version));
-  NotifyTrustedVaultKeysChanged();
+  NotifyTrustedVaultKeysChanged(trigger);
 }
 
 void StandaloneTrustedVaultClient::MarkLocalKeysAsStale(
@@ -446,10 +448,11 @@ void StandaloneTrustedVaultClient::GetLastKeyVersionForTesting(
       std::move(callback));
 }
 
-void StandaloneTrustedVaultClient::NotifyTrustedVaultKeysChanged() {
+void StandaloneTrustedVaultClient::NotifyTrustedVaultKeysChanged(
+    std::optional<TrustedVaultUserActionTriggerForUMA> trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (Observer& observer : observer_list_) {
-    observer.OnTrustedVaultKeysChanged(std::nullopt);
+    observer.OnTrustedVaultKeysChanged(trigger);
   }
 }
 

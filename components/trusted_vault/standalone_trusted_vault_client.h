@@ -63,9 +63,11 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
       const CoreAccountInfo& account_info,
       base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb)
       override;
-  void StoreKeys(const GaiaId& gaia_id,
-                 const std::vector<std::vector<uint8_t>>& keys,
-                 int last_key_version) override;
+  void StoreKeys(
+      const GaiaId& gaia_id,
+      const std::vector<std::vector<uint8_t>>& keys,
+      int last_key_version,
+      std::optional<TrustedVaultUserActionTriggerForUMA> trigger) override;
   void MarkLocalKeysAsStale(const CoreAccountInfo& account_info,
                             base::OnceCallback<void(bool)> cb) override;
   void GetIsRecoverabilityDegraded(const CoreAccountInfo& account_info,
@@ -93,7 +95,8 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
       base::OnceCallback<void(int last_key_version)> callback);
 
  private:
-  void NotifyTrustedVaultKeysChanged();
+  void NotifyTrustedVaultKeysChanged(
+      std::optional<TrustedVaultUserActionTriggerForUMA> trigger);
   void NotifyRecoverabilityDegradedChanged();
 
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;

@@ -110,9 +110,12 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
       const CoreAccountInfo& account_info,
       base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)>
           callback) override;
-  void StoreKeys(const GaiaId& gaia_id,
-                 const std::vector<std::vector<uint8_t>>& keys,
-                 int last_key_version) override;
+  void StoreKeys(
+      const GaiaId& gaia_id,
+      const std::vector<std::vector<uint8_t>>& keys,
+      int last_key_version,
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger)
+      override;
   void MarkLocalKeysAsStale(const CoreAccountInfo& account_info,
                             base::OnceCallback<void(bool)> callback) override;
   void GetIsRecoverabilityDegraded(
@@ -123,13 +126,6 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
                                 int method_type_hint,
                                 base::OnceClosure callback) override;
   void ClearLocalDataForAccount(const CoreAccountInfo& account_info) override;
-
-  void StoreKeys(
-      const GaiaId& gaia_id,
-      const std::vector<std::vector<uint8_t>>& keys,
-      int last_key_version,
-      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
-          trigger);
 
  private:
   struct CachedKeysPerUser {

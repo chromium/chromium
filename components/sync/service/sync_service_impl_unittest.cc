@@ -1341,7 +1341,8 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   // Store some trusted vault keys explicitly to verify that trusted vault local
   // state is cleared upon DISABLE_SYNC_ON_CLIENT.
   trusted_vault_client()->StoreKeys(
-      primary_account_gaia_id, /*keys=*/{{1, 2, 3}}, /*last_key_version=*/1);
+      primary_account_gaia_id, /*keys=*/{{1, 2, 3}}, /*last_key_version=*/1,
+      /*trigger=*/std::nullopt);
   ASSERT_THAT(trusted_vault_client()->GetStoredKeys(primary_account_gaia_id),
               Not(IsEmpty()));
 

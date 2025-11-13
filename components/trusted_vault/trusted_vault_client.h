@@ -107,9 +107,13 @@ class TrustedVaultClient {
   // as Web interactions. Implementations are free to completely ignore these
   // keys, so callers may not assume that later calls to FetchKeys() would
   // necessarily return the keys passed here.
-  virtual void StoreKeys(const GaiaId& gaia_id,
-                         const std::vector<std::vector<uint8_t>>& keys,
-                         int last_key_version) = 0;
+  // The `trigger` parameter, if set, indicates which explicit user interaction
+  // with trusted vault related UIs led to new keys being retrieved.
+  virtual void StoreKeys(
+      const GaiaId& gaia_id,
+      const std::vector<std::vector<uint8_t>>& keys,
+      int last_key_version,
+      std::optional<TrustedVaultUserActionTriggerForUMA> trigger) = 0;
 
   // Returns whether recoverability of the keys is degraded and user action is
   // required to add a new method. This may be called frequently and
