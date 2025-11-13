@@ -31,11 +31,9 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class TopUiThemeColorProvider extends ThemeColorProvider {
-    private final CurrentTabObserver mTabObserver;
-
+    protected final Context mContext;
     private final Supplier<Integer> mActivityThemeColorSupplier;
     private final boolean mIsTablet;
-    private final Context mContext;
 
     /** Whether the theme should apply while in dark mode. */
     private final boolean mAllowThemingInNightMode;
@@ -45,6 +43,8 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
 
     /** Whether tab theming is allowed on large screens */
     private final boolean mAllowThemingOnTablets;
+
+    protected CurrentTabObserver mTabObserver;
 
     /** Whether or not the default color is used. */
     private boolean mIsDefaultColorUsed;
@@ -96,7 +96,7 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
         return (tab == null || mIsDefaultColorUsed) ? fallbackColor : getThemeColor();
     }
 
-    private void updateColor(Tab tab, int themeColor, boolean shouldAnimate) {
+    protected void updateColor(Tab tab, int themeColor, boolean shouldAnimate) {
         updatePrimaryColor(calculateColor(tab, themeColor), shouldAnimate);
         mIsDefaultColorUsed = isUsingDefaultColor(tab, themeColor);
         final @BrandedColorScheme int brandedColorScheme =

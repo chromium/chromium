@@ -151,6 +151,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
+import org.chromium.chrome.browser.theme.AdjustedTopUiThemeColorProvider;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -298,6 +299,9 @@ public class RootUiCoordinator
 
     /** A means of providing the theme color to different features. */
     private TopUiThemeColorProvider mTopUiThemeColorProvider;
+
+    /** A subclass of TopUiThemeColorProvider to provide adjusted tint color. */
+    private AdjustedTopUiThemeColorProvider mAdjustedTopUiThemeColorProvider;
 
     @Nullable private final Callback<Boolean> mOnOmniboxFocusChangedListener;
     protected ToolbarManager mToolbarManager;
@@ -583,6 +587,17 @@ public class RootUiCoordinator
                         shouldAllowThemingInNightMode(),
                         shouldAllowBrightThemeColors(),
                         shouldAllowThemingOnTablets());
+        if (NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(mIsTablet)) {
+            mAdjustedTopUiThemeColorProvider =
+                    new AdjustedTopUiThemeColorProvider(
+                            mActivity,
+                            mActivityTabProvider,
+                            activityThemeColorSupplier,
+                            mIsTablet,
+                            shouldAllowThemingInNightMode(),
+                            shouldAllowBrightThemeColors(),
+                            shouldAllowThemingOnTablets());
+        }
 
         mDesktopWindowStateManager = desktopWindowStateManager;
         mStatusBarColorController =
@@ -812,6 +827,11 @@ public class RootUiCoordinator
         if (mTopUiThemeColorProvider != null) {
             mTopUiThemeColorProvider.destroy();
             mTopUiThemeColorProvider = null;
+        }
+
+        if (mAdjustedTopUiThemeColorProvider != null) {
+            mAdjustedTopUiThemeColorProvider.destroy();
+            mAdjustedTopUiThemeColorProvider = null;
         }
 
         if (mFindToolbarManager != null) mFindToolbarManager.removeObserver(mFindToolbarObserver);
@@ -1725,6 +1745,7 @@ public class RootUiCoordinator
                             mCompositorViewHolderSupplier.get(),
                             urlFocusChangedCallback,
                             mTopUiThemeColorProvider,
+                            mAdjustedTopUiThemeColorProvider,
                             mTabObscuringHandlerSupplier.get(),
                             mShareDelegateSupplier,
                             mAdaptiveToolbarUiCoordinator.getButtonDataProviders(),

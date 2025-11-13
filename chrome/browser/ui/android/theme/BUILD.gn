@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/theme/AdjustedTopUiThemeColorProvider.java",
     "java/src/org/chromium/chrome/browser/theme/BottomUiThemeColorProvider.java",
     "java/src/org/chromium/chrome/browser/theme/ThemeColorProvider.java",
     "java/src/org/chromium/chrome/browser/theme/ThemeModuleUtils.java",
