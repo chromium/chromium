@@ -48,6 +48,11 @@ class SingleClientAutofillProfileSyncTest : public SyncTest {
 
   ~SingleClientAutofillProfileSyncTest() override = default;
 
+  // AUTOFILL_PROFILE is only supported with Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
+
   bool SetupSyncAndHideAccountNameEmailProfile() {
     if (!SetupSync()) {
       return false;
