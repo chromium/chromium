@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
@@ -481,6 +482,7 @@ class GlicApiTestWithOneTabAndContextualCueing : public GlicApiTestWithOneTab {
   }
 
  private:
+  base::CallbackListSubscription active_instance_subscription_;
   raw_ptr<testing::NiceMock<contextual_cueing::MockContextualCueingService>>
       mock_cueing_service_;
   base::test::ScopedFeatureList contextual_cueing_features_;
