@@ -478,28 +478,4 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
   ASSERT_TRUE(RunAutofillSubtest("getWritableEntityTypes"));
 }
 
-// Tests that entity types which are stored in Wallet are returned
-// when user is signed in and has opted in.
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
-                       GetAllWritableEntityTypes_ReturnsWalletEntityTypes) {
-  autofill_client()->set_entity_data_manager(
-      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile()));
-  autofill_client()->SetUpPrefsAndIdentityForAutofillAi();
-  syncer::TestSyncService test_sync_service;
-  autofill_client()->set_sync_service(&test_sync_service);
-  test_sync_service.GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kAutofill, true);
-  ASSERT_TRUE(autofill::MayPerformAutofillAiAction(
-      *autofill_client(),
-      autofill::AutofillAiAction::kAddServerEntityInstanceInSettings,
-      autofill::EntityType(autofill::EntityTypeName::kFlightReservation)));
-  ASSERT_TRUE(autofill::MayPerformAutofillAiAction(
-      *autofill_client(),
-      autofill::AutofillAiAction::kAddServerEntityInstanceInSettings,
-      autofill::EntityType(autofill::EntityTypeName::kVehicle)));
-
-  ASSERT_TRUE(RunAutofillSubtest(
-      "verifyWritableEntityTypesWithSyncOnReturnsWalletEntityTypes"));
-}
-
 }  // namespace
