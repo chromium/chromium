@@ -6,6 +6,7 @@
 
 #include <map>
 #include <optional>
+#include <utility>
 
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
@@ -302,6 +303,25 @@ bool BrowserViewLayoutImpl::ContentsSeparatorInTopContainer() const {
   return false;
 }
 
+std::pair<gfx::Size, gfx::Size> BrowserViewLayoutImpl::GetMinimumTabStripSize()
+    const {
+  switch (GetTabStripType()) {
+    case TabStripType::kHorizontal:
+      return std::make_pair(gfx::Size(),
+                            views().tab_strip_region_view->GetMinimumSize());
+    case TabStripType::kVertical: {
+      auto result = views().vertical_tab_strip_container->GetMinimumSize();
+      result.set_width(std::max(result.width(), kMinVerticalTabStripWidth));
+      return std::make_pair(result, gfx::Size());
+    }
+    case TabStripType::kWebUi:
+      return std::make_pair(gfx::Size(),
+                            views().webui_tab_strip->GetMinimumSize());
+    case TabStripType::kNone:
+      return std::make_pair(gfx::Size(), gfx::Size());
+  }
+}
+
 gfx::Size BrowserViewLayoutImpl::GetMinimumMainAreaSize() const {
   const gfx::Size toolbar_size = views().toolbar->GetMinimumSize();
   const gfx::Size bookmark_bar_size =
@@ -343,8 +363,8 @@ BrowserViewLayoutImpl::TabStripType BrowserViewLayoutImpl::GetTabStripType()
 gfx::Size BrowserViewLayoutImpl::GetMinimumSize(const views::View* host) const {
   // This is a simplified version of the same method in
   // `BrowserViewLayoutImplOld` that assumes a standard browser.
-  const gfx::Size tabstrip_size =
-      views().tab_strip_region_view->GetMinimumSize();
+  const auto [vertical_tabstrip_size, horizontal_tabstrip_size] =
+      GetMinimumTabStripSize();
   const gfx::Size toolbar_height_side_panel_size =
       views().toolbar_height_side_panel &&
               views().toolbar_height_side_panel->GetVisible()
@@ -353,13 +373,15 @@ gfx::Size BrowserViewLayoutImpl::GetMinimumSize(const views::View* host) const {
   const gfx::Size main_area_size = GetMinimumMainAreaSize();
 
   int min_height =
-      tabstrip_size.height() + std::max(toolbar_height_side_panel_size.height(),
-                                        main_area_size.height());
+      horizontal_tabstrip_size.height() +
+      std::max({toolbar_height_side_panel_size.height(),
+                main_area_size.height(), vertical_tabstrip_size.height()});
 
   // This assumes a horizontal tabstrip. There is also a hard minimum on the
   // width of the browser defined by `kMainBrowserContentsMinimumWidth`.
   int min_width =
-      std::max({tabstrip_size.width(),
+      vertical_tabstrip_size.width() +
+      std::max({horizontal_tabstrip_size.width(),
                 toolbar_height_side_panel_size.width() + main_area_size.width(),
                 kMainBrowserContentsMinimumWidth});
 

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_
 
+#include <utility>
+
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
 #include "ui/gfx/geometry/size.h"
@@ -58,6 +60,9 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
   // Returns the minimum size of all toolbar-height content except the toolbar-
   // height side panel.
   gfx::Size GetMinimumMainAreaSize() const;
+
+  // Returns the size of the vertical and horizontal tabstrips, as a pair.
+  std::pair<gfx::Size, gfx::Size> GetMinimumTabStripSize() const;
 
   // Returns the type of tabstrip present.
   enum class TabStripType { kNone, kWebUi, kVertical, kHorizontal };
