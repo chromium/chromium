@@ -143,6 +143,10 @@ void BwgService::CheckGeminiEnterpriseEligibility() {
     return;
   }
 
+  if (IsGeminiEligibilityAblationEnabled()) {
+    return;
+  }
+
   // No way to know if the user is blocked by Gemini Enterprise policy if the
   // auth service is null.
   if (!auth_service_) {
