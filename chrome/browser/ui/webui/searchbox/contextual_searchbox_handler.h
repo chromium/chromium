@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_omnibox_client.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
@@ -124,8 +125,6 @@ class ContextualSearchboxHandler
 
   std::optional<lens::ImageEncodingOptions> CreateTabPreviewEncodingOptions(
       content::WebContents* web_contents);
-
-  contextual_search::ContextualSearchContextController* GetQueryController();
 
   contextual_search::ContextualSearchMetricsRecorder* GetMetricsRecorder();
 
