@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_FAKE_TAB_ID_GENERATOR_H_
 
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
+#include "components/tabs/public/tab_interface.h"
 
 class FakeTabIdGenerator : public TabIdGenerator {
  public:
-  SessionID GenerateTabId(content::WebContents* contents) const override;
+  int32_t GenerateTabHandleId(
+      const tabs::TabInterface* contents) const override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_FAKE_TAB_ID_GENERATOR_H_

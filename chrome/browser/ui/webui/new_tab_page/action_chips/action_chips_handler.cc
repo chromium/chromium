@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -30,6 +31,7 @@ using ::action_chips::mojom::ActionChipPtr;
 using ::action_chips::mojom::ChipType;
 using ::action_chips::mojom::TabInfo;
 using ::action_chips::mojom::TabInfoPtr;
+using ::tabs::TabInterface;
 
 ActionChipPtr CreateRecentTabChip(TabInfoPtr tab) {
   ActionChipPtr chip = ActionChip::New();
@@ -61,46 +63,48 @@ ActionChipPtr CreateImageCreationChip() {
 }
 
 TabInfoPtr CreateTabInfo(const TabIdGenerator& tab_id_generator,
-                         content::WebContents& contents) {
+                         const TabInterface& tab) {
   TabInfoPtr tab_info = action_chips::mojom::TabInfo::New();
-  tab_info->tab_id = tab_id_generator.GenerateTabId(&contents).id();
+  tab_info->tab_id = tab_id_generator.GenerateTabHandleId(&tab);
+  content::WebContents& contents = *tab.GetContents();
   tab_info->title = base::UTF16ToUTF8(contents.GetTitle());
   tab_info->url = contents.GetLastCommittedURL();
   tab_info->last_active_time = contents.GetLastActiveTime();
   return tab_info;
 }
 
-content::WebContents* FindMostRecentTab(content::WebUI& web_ui) {
-  content::WebContents* web_contents = web_ui.GetWebContents();
+TabInterface* FindMostRecentTab(content::WebUI& web_ui) {
   auto* browser_window_interface =
-      webui::GetBrowserWindowInterface(web_contents);
+      webui::GetBrowserWindowInterface(web_ui.GetWebContents());
   if (!browser_window_interface) {
     return nullptr;
   }
 
   auto* tab_strip_model = browser_window_interface->GetTabStripModel();
-  content::WebContents* most_recent_contents = nullptr;
+  TabInterface* most_recent_tab = nullptr;
   base::Time latest_active_time;
 
   for (int i = 0; i < tab_strip_model->count(); ++i) {
-    content::WebContents* contents = tab_strip_model->GetWebContentsAt(i);
-    if (contents == web_contents) {
+    TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
+    if (tab == most_recent_tab) {
       continue;
     }
-    if (contents->GetLastCommittedURL().SchemeIs(content::kChromeUIScheme)) {
+    // TabInterface::GetContents returns a non-nullptr according to its comment.
+    content::WebContents& contents = *tab->GetContents();
+    if (contents.GetLastCommittedURL().SchemeIs(content::kChromeUIScheme)) {
       continue;
     }
-    if (contents->GetLastCommittedURL().IsAboutBlank()) {
+    if (contents.GetLastCommittedURL().IsAboutBlank()) {
       continue;
     }
-    base::Time last_active = contents->GetLastActiveTime();
+    const base::Time last_active = contents.GetLastActiveTime();
     if (last_active > latest_active_time) {
       latest_active_time = last_active;
-      most_recent_contents = contents;
+      most_recent_tab = tab;
     }
   }
 
-  return most_recent_contents;
+  return most_recent_tab;
 }
 
 // Helper method to record impression metrics for the generated chips.
@@ -126,11 +130,11 @@ ActionChipsHandler::~ActionChipsHandler() = default;
 void ActionChipsHandler::GetActionChips(
     base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>
         callback) {
-  content::WebContents* contents = FindMostRecentTab(*web_ui_);
+  const TabInterface* tab = FindMostRecentTab(*web_ui_);
   std::vector<ActionChipPtr> chips;
-  if (contents != nullptr) {
-    chips.push_back(CreateRecentTabChip(
-        CreateTabInfo(*this->tab_id_generator_, *contents)));
+  if (tab != nullptr) {
+    chips.push_back(
+        CreateRecentTabChip(CreateTabInfo(*this->tab_id_generator_, *tab)));
   }
   chips.push_back(CreateDeepSearchChip());
   chips.push_back(CreateImageCreationChip());

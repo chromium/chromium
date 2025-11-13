@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_TAB_ID_GENERATOR_H_
 
 #include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
 // Interface of the tab ID generator.
@@ -14,12 +15,12 @@ class TabIdGenerator {
  public:
   virtual ~TabIdGenerator() = default;
 
-  virtual SessionID GenerateTabId(content::WebContents* contents) const = 0;
+  virtual int32_t GenerateTabHandleId(const tabs::TabInterface* tab) const = 0;
 };
 
 class TabIdGeneratorImpl : public TabIdGenerator {
  public:
-  SessionID GenerateTabId(content::WebContents* contents) const override;
+  int32_t GenerateTabHandleId(const tabs::TabInterface* tab) const override;
   static const TabIdGenerator* Get();
 };
 
