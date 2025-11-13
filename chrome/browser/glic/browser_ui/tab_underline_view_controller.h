@@ -32,13 +32,16 @@ class TabUnderlineView;
 
 class TabUnderlineViewController : public GlicWindowController::StateObserver {
  public:
-  TabUnderlineViewController(Browser* browser,
-                             TabUnderlineView* underline_view);
+  TabUnderlineViewController();
   TabUnderlineViewController(const TabUnderlineViewController&) = delete;
   TabUnderlineViewController& operator=(const TabUnderlineViewController&) =
       delete;
   ~TabUnderlineViewController() override;
 
+  // Initialization. Starts observing the state of the browser.
+  void Initialize(TabUnderlineView* underline_view, Browser* browser);
+
+ private:
   // Called when the focused tab changes with the focused tab data object.
   void OnFocusedTabChanged(const FocusedTabData& focused_tab_data);
 
@@ -56,7 +59,6 @@ class TabUnderlineViewController : public GlicWindowController::StateObserver {
 
   void OnUserInputSubmitted();
 
- private:
   // Types of updates to the tab underline UI effect given changes in relevant
   // triggering signals, including tab focus, glic sharing controls, pinned tabs
   // and the floaty panel.
@@ -122,10 +124,14 @@ class TabUnderlineViewController : public GlicWindowController::StateObserver {
   std::string UpdateReasonsToString() const;
 
   // Back pointer to the owner. Guaranteed to outlive `this`.
-  const raw_ptr<TabUnderlineView> underline_view_;
+  raw_ptr<TabUnderlineView> underline_view_;
 
-  // Owned by `BrowserView`. Outlives all the children of the `BrowserView`.
-  const raw_ptr<Browser> browser_;
+  // The pointer to the browser in which the underline view lives. Outlives the
+  // underline view.
+  raw_ptr<Browser> browser_;
+
+  // The Glic keyed service.
+  raw_ptr<GlicKeyedService> glic_service_;
 
   // Tracked states and their subscriptions.
   base::WeakPtr<content::WebContents> glic_current_focused_contents_;

@@ -18,16 +18,24 @@
 
 namespace glic {
 
-ContextSharingBorderViewController::ContextSharingBorderViewController(
+ContextSharingBorderViewController::ContextSharingBorderViewController() =
+    default;
+ContextSharingBorderViewController::~ContextSharingBorderViewController() =
+    default;
+
+void ContextSharingBorderViewController::Initialize(
     ContextSharingBorderView* border_view,
-    ContentsWebView* contents_web_view)
-    : border_view_(border_view), contents_web_view_(contents_web_view) {
-  auto* glic_service = border_view->GetGlicService();
+    ContentsWebView* contents_web_view,
+    Browser* browser) {
+  border_view_ = border_view;
+  contents_web_view_ = contents_web_view;
+  glic_service_ =
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser->GetProfile());
 
   // Subscribe to glow updates from the actor border controller.
   if (features::kGlicActorUiBorderGlow.Get()) {
     actor_border_view_controller_subscription_ =
-        ActorBorderViewController::From(border_view_->browser_)
+        ActorBorderViewController::From(browser)
             ->AddOnActorBorderGlowUpdatedCallback(base::BindRepeating(
                 &ContextSharingBorderViewController::OnActorBorderGlowUpdated,
                 base::Unretained(this)));
@@ -38,21 +46,28 @@ ContextSharingBorderViewController::ContextSharingBorderViewController(
 
   // Subscribe to changes in the focus tab.
   focus_change_subscription_ =
-      glic_service->sharing_manager().AddFocusedTabChangedCallback(
+      glic_service_->sharing_manager().AddFocusedTabChangedCallback(
           base::BindRepeating(
               &ContextSharingBorderViewController::OnFocusedTabChanged,
               base::Unretained(this)));
 
   // Subscribe to changes in the context access indicator status.
   indicator_change_subscription_ =
-      glic_service->AddContextAccessIndicatorStatusChangedCallback(
+      glic_service_->AddContextAccessIndicatorStatusChangedCallback(
           base::BindRepeating(
               &ContextSharingBorderViewController::OnIndicatorStatusChanged,
               base::Unretained(this)));
+
+  // Fetch the latest context access indicator status from service. We can't
+  // assume the WebApp always updates the status on the service (thus the
+  // new subscribers not getting the latest value).
+  OnIndicatorStatusChanged(
+      glic_service_->is_context_access_indicator_enabled());
 }
 
-ContextSharingBorderViewController::~ContextSharingBorderViewController() =
-    default;
+ContentsWebView* ContextSharingBorderViewController::contents_web_view() {
+  return contents_web_view_;
+}
 
 void ContextSharingBorderViewController::OnFocusedTabChanged(
     const FocusedTabData& focused_tab_data) {
@@ -179,13 +194,18 @@ void ContextSharingBorderViewController::UpdateBorderView(
       break;
     }
     case UpdateBorderReason::kContextAccessIndicatorOff: {
-      if (border_view_->compositor_) {
-        border_view_->StartRampingDown();
-      }
+      border_view_->StartRampingDown();
       break;
     }
     case UpdateBorderReason::kFocusedTabChanged_NoFocusChange: {
       if (ShouldShowBorderAnimation()) {
+        if (!border_view_->IsShowing()) {
+          // There is be a chance that the border view has already stopped
+          // showing. In that case, gracefully handle the crash case in
+          // crbug.com/398319435 by closing(minimizing) the glic window.
+          glic_service_->window_controller().Close();
+        }
+
         border_view_->ResetAnimationCycle();
       }
       break;
@@ -200,16 +220,14 @@ void ContextSharingBorderViewController::UpdateBorderView(
       break;
     }
     case UpdateBorderReason::kFocusedTabChanged_LostFocus: {
-      if (border_view_->compositor_) {
-        border_view_->StartRampingDown();
-      }
+      border_view_->StartRampingDown();
       break;
     }
   }
 }
 
 bool ContextSharingBorderViewController::IsGlicWindowShowing() const {
-  return border_view_->GetGlicService()->IsWindowShowing();
+  return glic_service_->IsWindowShowing();
 }
 
 bool ContextSharingBorderViewController::IsTabInCurrentView(

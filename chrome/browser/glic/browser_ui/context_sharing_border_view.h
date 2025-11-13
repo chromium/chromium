@@ -20,7 +20,6 @@ class Canvas;
 namespace glic {
 
 class ContextSharingBorderViewController;
-class GlicKeyedService;
 
 class ContextSharingBorderView : public AnimatedEffectView {
   METADATA_HEADER(ContextSharingBorderView, views::View)
@@ -56,7 +55,6 @@ class ContextSharingBorderView : public AnimatedEffectView {
 
  protected:
   friend class Factory;
-  friend class ContextSharingBorderViewController;
   explicit ContextSharingBorderView(Browser* browser,
                                     ContentsWebView* contents_web_view,
                                     std::unique_ptr<Tester> tester);
@@ -80,9 +78,8 @@ class ContextSharingBorderView : public AnimatedEffectView {
   // Returns the rounded corner radius to use for the border.
   gfx::RoundedCornersF GetContentBorderRadius() const;
 
-  // A utility class that subscribe to `GlicKeyedService` for various browser UI
-  // status change.
-  const std::unique_ptr<ContextSharingBorderViewController> updater_;
+  // The controller to notify the view about various browser UI status change.
+  const std::unique_ptr<ContextSharingBorderViewController> controller_;
 };
 
 BEGIN_VIEW_BUILDER(, ContextSharingBorderView, AnimatedEffectView)

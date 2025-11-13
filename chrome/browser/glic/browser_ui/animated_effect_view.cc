@@ -6,11 +6,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
-#include "chrome/browser/glic/host/context/glic_tab_data.h"
-#include "chrome/browser/glic/public/context/glic_sharing_manager.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -331,11 +327,8 @@ void AnimatedEffectView::ResetAnimationCycle() {
                             TimeTicksToMicroseconds(first_ramp_down_frame_));
     base::debug::DumpWithoutCrashing();
 
-    // Gracefully handling the crash case in crbug.com/398319435 by
-    // closing(minimizing) the glic window.
     // TODO(crbug.com/413442838): Add tests to reproduce the dump without crash
     // and validate the solution.
-    GetGlicService()->window_controller().Close();
     return;
   }
   CHECK(compositor_->HasObserver(this));
@@ -381,7 +374,9 @@ float AnimatedEffectView::GetOpacity(base::TimeTicks timestamp) {
 }
 
 void AnimatedEffectView::StartRampingDown() {
-  CHECK(compositor_);
+  if (!compositor_) {
+    return;
+  }
 
   // From now on the opacity will be decreased until it reaches 0.
   record_first_ramp_down_frame_ = true;
@@ -435,13 +430,6 @@ base::TimeTicks AnimatedEffectView::GetCreationTime() const {
 bool AnimatedEffectView::ForceSimplifiedShader() const {
   return base::FeatureList::IsEnabled(features::kGlicForceSimplifiedBorder) ||
          !has_hardware_acceleration_;
-}
-
-GlicKeyedService* AnimatedEffectView::GetGlicService() const {
-  auto* service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser_->GetProfile());
-  CHECK(service);
-  return service;
 }
 
 void AnimatedEffectView::UpdateShader() {
