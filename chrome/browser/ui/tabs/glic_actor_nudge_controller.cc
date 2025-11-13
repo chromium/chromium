@@ -55,9 +55,13 @@ void GlicActorNudgeController::OnStateUpdate(
       tab_strip_action_container_->TriggerGlicActorNudge(
           l10n_util::GetStringUTF16(IDR_ACTOR_CHECK_TASK_NUDGE_LABEL));
       break;
+      // TODO(crbug.com/458391262) revisit or cleanup implementation here for
+      // m144.
     case tabs::ActorTaskNudgeState::Text::kCompleteTasks:
-      tab_strip_action_container_->TriggerGlicActorNudge(
-          l10n_util::GetStringUTF16(IDR_ACTOR_TASK_COMPLETE_NUDGE_LABEL));
+      if (!base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
+        tab_strip_action_container_->TriggerGlicActorNudge(
+            l10n_util::GetStringUTF16(IDR_ACTOR_TASK_COMPLETE_NUDGE_LABEL));
+      }
       break;
   }
 }

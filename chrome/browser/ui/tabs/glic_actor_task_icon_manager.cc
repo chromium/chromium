@@ -46,6 +46,7 @@ void GlicActorTaskIconManager::RegisterSubscriptions() {
           ->RegisterActorTaskStateChange(base::BindRepeating(
               &GlicActorTaskIconManager::OnActorTaskStateUpdate,
               base::Unretained(this))));
+  // TODO(crbug.com/458391262) revisit or cleanup implementation here for m144.
   callback_subscriptions_.push_back(
       actor::ActorKeyedService::Get(profile_)
           ->GetActorUiStateManager()
@@ -152,7 +153,6 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
   // TODO(b/440770955): Replace has_unprocessed_completed_tasks_ with a
   // snapshot (task title, state and tab handle) of the completed or failed
   // tasks for the pop-over.
-  bool has_recently_completed_tasks = has_unprocessed_completed_tasks_;
   auto paused_or_yielded_actor_tasks =
       actor_service_->FindTaskIdsInActive([](const ActorTask& task) {
         return (task.GetState() == ActorTask::State::kPausedByActor ||
@@ -160,15 +160,29 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
       });
 
   ActorTaskNudgeState old_state = current_actor_task_nudge_state_;
-  if (!paused_or_yielded_actor_tasks.empty()) {
-    current_actor_task_nudge_state_.text =
-        ActorTaskNudgeState::Text::kNeedsAttention;
-  } else if (has_recently_completed_tasks) {
-    current_actor_task_nudge_state_.text =
-        ActorTaskNudgeState::Text::kCompleteTasks;
-  } else {
-    // If no tasks needing attention or completed, hide the nudge.
-    current_actor_task_nudge_state_.text = ActorTaskNudgeState::Text::kDefault;
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
+    if (!paused_or_yielded_actor_tasks.empty()) {
+      current_actor_task_nudge_state_.text =
+          ActorTaskNudgeState::Text::kNeedsAttention;
+    } else {
+      // If no tasks needing attention, hide the nudge.
+      current_actor_task_nudge_state_.text =
+          ActorTaskNudgeState::Text::kDefault;
+    }
+  }
+  // TODO(crbug.com/458391262) revisit or cleanup implementation here for m144.
+  else {
+    if (!paused_or_yielded_actor_tasks.empty()) {
+      current_actor_task_nudge_state_.text =
+          ActorTaskNudgeState::Text::kNeedsAttention;
+    } else if (has_unprocessed_completed_tasks_) {
+      current_actor_task_nudge_state_.text =
+          ActorTaskNudgeState::Text::kCompleteTasks;
+    } else {
+      // If no tasks needing attention or completed, hide the nudge.
+      current_actor_task_nudge_state_.text =
+          ActorTaskNudgeState::Text::kDefault;
+    }
   }
 
   if (old_state != current_actor_task_nudge_state_) {

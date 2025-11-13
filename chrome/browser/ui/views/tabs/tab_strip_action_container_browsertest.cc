@@ -639,6 +639,23 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
+                       GlicActorCompleteDoesNotShowTaskNudge) {
+  EXPECT_EQ(GlicActorTaskIcon()->GetText(), std::u16string());
+  ASSERT_FALSE(tab_strip_action_container()->animation_session_for_testing());
+  EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
+
+  auto* actor_nudge_controller =
+      tabs::GlicActorNudgeController::From(browser());
+  auto actor_task_nudge_state = tabs::ActorTaskNudgeState();
+  actor_task_nudge_state.text = tabs::ActorTaskNudgeState::Text::kCompleteTasks;
+  actor_nudge_controller->OnStateUpdate(actor_task_nudge_state);
+
+  EXPECT_EQ(GlicActorTaskIcon()->GetText(), std::u16string());
+  EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
+  EXPECT_FALSE(GlicActorTaskIcon()->GetIsShowingNudge());
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        ShowAndHideGlicActorCheckTasksNudge) {
   EXPECT_EQ(GlicActorTaskIcon()->GetText(), std::u16string());
   ASSERT_FALSE(tab_strip_action_container()->animation_session_for_testing());
