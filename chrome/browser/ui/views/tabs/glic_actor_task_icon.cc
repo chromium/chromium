@@ -124,6 +124,10 @@ void GlicActorTaskIcon::ShowNudgeLabel(const std::u16string nudge_label) {
   SetTooltipText(nudge_label);
 }
 
+void GlicActorTaskIcon::RefreshBackground() {
+  UpdateColors();
+}
+
 GlicActorTaskIcon::~GlicActorTaskIcon() = default;
 
 BEGIN_METADATA(GlicActorTaskIcon)

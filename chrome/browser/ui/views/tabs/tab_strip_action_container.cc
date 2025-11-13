@@ -489,6 +489,10 @@ void TabStripActionContainer::UpdateGlicActorButtonContainerBorders() {
     }
     glic_actor_task_icon_->SetBorder(
         views::CreateEmptyBorder(task_icon_border));
+    if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
+      // Force a background repaint to account for the new border insets.
+      glic_actor_task_icon_->RefreshBackground();
+    }
   } else {
     // Reset GlicButton border if Task Icon is hidden.
     glic_border = gfx::Insets().set_left_right(border_insets_.top(),
@@ -496,6 +500,10 @@ void TabStripActionContainer::UpdateGlicActorButtonContainerBorders() {
                   border_insets_;
   }
   glic_button_->SetBorder(views::CreateEmptyBorder(glic_border));
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
+    // Force a background repaint to account for the new border insets.
+    glic_button_->RefreshBackground();
+  }
 }
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
