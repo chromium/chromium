@@ -97,6 +97,8 @@ class ActorToolsTest : public InProcessBrowserTest {
   // of policy / opt-in status).
   virtual bool ShouldForceActOnWeb();
 
+  TaskId CreateNewTask();
+
   TaskId task_id_;
 
  private:

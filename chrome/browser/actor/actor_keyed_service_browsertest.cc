@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/browser_action_util.h"
@@ -81,6 +82,8 @@ class ActorKeyedServiceBrowserTest : public InProcessBrowserTest {
         ->MaybeUpdateHintsComponent(
             {base::Version("123"),
              temp_dir_.GetPath().Append(FILE_PATH_LITERAL("dont_care"))});
+
+    actor_keyed_service()->GetPolicyChecker().SetActOnWebForTesting(true);
   }
 
  protected:

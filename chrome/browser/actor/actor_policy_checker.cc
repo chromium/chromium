@@ -12,22 +12,29 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_user_status_code.h"
+#include "chrome/browser/glic/glic_user_status_fetcher.h"
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
 namespace actor {
 
-namespace {
-
 #if BUILDFLAG(ENABLE_GLIC)
-std::string GlicActorEnterprisePrefDefaultToString(
-    features::GlicActorEnterprisePrefDefault value) {
+// Traits for base::ToString(). They can't be nested in the anonymous namespace.
+std::string ToString(features::GlicActorEnterprisePrefDefault value) {
   switch (value) {
     case features::GlicActorEnterprisePrefDefault::kEnabledByDefault:
       return "enabled_by_default";
@@ -38,86 +45,168 @@ std::string GlicActorEnterprisePrefDefaultToString(
   }
 }
 
-std::string GlicActuationOnWebPrefToString(int value) {
-  if (value == base::to_underlying(
-                   glic::prefs::GlicActuationOnWebPolicyState::kEnabled)) {
-    return "kEnabled";
-  } else if (value ==
-             base::to_underlying(
-                 glic::prefs::GlicActuationOnWebPolicyState::kDisabled)) {
-    return "kDisabled";
+std::string ToString(glic::prefs::GlicActuationOnWebPolicyState value) {
+  switch (value) {
+    case glic::prefs::GlicActuationOnWebPolicyState::kEnabled:
+      return "kEnabled";
+    case glic::prefs::GlicActuationOnWebPolicyState::kDisabled:
+      return "kDisabled";
   }
-  NOTREACHED();
 }
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
+namespace {
+
+#if BUILDFLAG(ENABLE_GLIC)
 
 bool IsLikelyDogfoodClient() {
   variations::VariationsService* variations_service =
       g_browser_process->variations_service();
   return variations_service && variations_service->IsLikelyDogfoodClient();
 }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
-bool HasActuationCapability(Profile* profile) {
-  CHECK(profile);
-  CHECK(profile->GetPrefs());
-
-#if !BUILDFLAG(ENABLE_GLIC)
-  return true;
-#else
-
+bool IsBrowserManaged(Profile& profile) {
   auto* management_service_factory =
       policy::ManagementServiceFactory::GetInstance();
   auto* browser_management_service =
-      management_service_factory->GetForProfile(profile);
+      management_service_factory->GetForProfile(&profile);
+  return browser_management_service && browser_management_service->IsManaged();
+}
 
-  const bool is_managed =
-      browser_management_service && browser_management_service->IsManaged();
-  const features::GlicActorEnterprisePrefDefault default_pref =
+bool ActuationEnabledForManagedUser(Profile& profile,
+                                    AggregatedJournal& journal) {
+  features::GlicActorEnterprisePrefDefault default_pref =
       features::kGlicActorEnterprisePrefDefault.Get();
-  const int capability_pref =
-      profile->GetPrefs()->GetInteger(glic::prefs::kGlicActuationOnWeb);
-  bool is_likely_dogfood_client = IsLikelyDogfoodClient();
-
-  VLOG(1) << "Is browser managed: " << is_managed;
-  VLOG(1) << "kGlicActorEnterprisePrefDefault value: "
-          << GlicActorEnterprisePrefDefaultToString(default_pref);
-  VLOG(1) << "kGlicActuationOnWeb is_managed: "
-          << profile->GetPrefs()->IsManagedPreference(
-                 glic::prefs::kGlicActuationOnWeb)
-          << " value: " << GlicActuationOnWebPrefToString(capability_pref);
-  VLOG(1) << "is_likely_dogfood_client: " << is_likely_dogfood_client;
-
-  if (!is_managed || is_likely_dogfood_client) {
-    return true;
-  }
-
+  auto* pref_service = profile.GetPrefs();
+  CHECK(pref_service);
+  auto capability_pref =
+      static_cast<glic::prefs::GlicActuationOnWebPolicyState>(
+          pref_service->GetInteger(glic::prefs::kGlicActuationOnWeb));
+  journal.Log(GURL(), TaskId(), "ActuationEnabledForManagedUser",
+              JournalDetailsBuilder()
+                  .Add("default_pref", base::ToString(default_pref))
+                  .Add("capability_pref", base::ToString(capability_pref))
+                  .Build());
   if (default_pref ==
       features::GlicActorEnterprisePrefDefault::kForcedDisabled) {
     return false;
   }
-
   return capability_pref ==
-         base::to_underlying(
-             glic::prefs::GlicActuationOnWebPolicyState::kEnabled);
-#endif  // !BUILDFLAG(ENABLE_GLIC)
+         glic::prefs::GlicActuationOnWebPolicyState::kEnabled;
 }
 
+// Returns true if !is_enterprise_account_data_protected &&
+// !AccountInfo::IsManaged().
+bool IsAccountEligibleForActuation(Profile& profile,
+                                   AggregatedJournal& journal) {
+  // Note: both `is_enterprise_account_data_protected` and
+  // `AccountInfo::IsManaged()` check for Workspace accounts. They are backed
+  // by two different Google API endpoints. Both are checked for completeness.
+
+  bool is_enterprise_account_data_protected = false;
+  if (base::FeatureList::IsEnabled(features::kGlicUserStatusCheck)) {
+    std::optional<glic::CachedUserStatus> cached_user_status =
+        glic::GlicUserStatusFetcher::GetCachedUserStatus(&profile);
+    if (cached_user_status.has_value()) {
+      is_enterprise_account_data_protected =
+          cached_user_status->is_enterprise_account_data_protected;
+    } else {
+      // Fail-closed - if the user status is not cached, we assume the user
+      // is not signed-in, thus no capability.
+      return false;
+    }
+  }
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(&profile);
+  CHECK(identity_manager);
+  // `account_info` is empty if the user has not signed in.
+  const CoreAccountInfo account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  const AccountInfo extended_account_info =
+      identity_manager->FindExtendedAccountInfoByAccountId(
+          account_info.account_id);
+  auto is_managed = extended_account_info.IsManaged();
+
+  journal.Log(GURL(), TaskId(), "IsAccountEligibleForActuation",
+              JournalDetailsBuilder()
+                  .Add("is_enterprise_account_data_protected",
+                       base::ToString(is_enterprise_account_data_protected))
+                  .Add("is_managed", signin::TriboolToString(is_managed))
+                  .Build());
+
+  if (is_enterprise_account_data_protected) {
+    return false;
+  }
+  return is_managed == signin::Tribool::kFalse;
+}
+
+#endif  // BUILDFLAG(ENABLE_GLIC)
 }  // namespace
 
 ActorPolicyChecker::ActorPolicyChecker(ActorKeyedService& service)
-    : service_(service) {
+    : service_(service), journal_(service.GetJournal().GetSafeRef()) {
   InitActionBlocklist(service.GetProfile());
 
-  can_act_on_web_ = HasActuationCapability(service.GetProfile());
+#if BUILDFLAG(ENABLE_GLIC)
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(service.GetProfile());
+  if (identity_manager) {
+    identity_manager_observation_.Observe(identity_manager);
+  }
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
+  can_act_on_web_ = ComputeActOnWebCapability();
 
   pref_change_registrar_.Init(service.GetProfile()->GetPrefs());
+#if BUILDFLAG(ENABLE_GLIC)
+  // Listens to policy changes.
   pref_change_registrar_.Add(
       glic::prefs::kGlicActuationOnWeb,
-      base::BindRepeating(&ActorPolicyChecker::OnPrefChanged,
+      base::BindRepeating(&ActorPolicyChecker::OnPrefOrAccountChanged,
                           weak_ptr_factory_.GetWeakPtr()));
+  // Listens to user status changes.
+  pref_change_registrar_.Add(
+      glic::prefs::kGlicUserStatus,
+      base::BindRepeating(&ActorPolicyChecker::OnPrefOrAccountChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 ActorPolicyChecker::~ActorPolicyChecker() = default;
+
+void ActorPolicyChecker::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+    case signin::PrimaryAccountChangeEvent::Type::kCleared: {
+      OnPrefOrAccountChanged();
+      break;
+    }
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
+}
+
+void ActorPolicyChecker::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
+  auto* identity_manager =
+      IdentityManagerFactory::GetForProfile(service_->GetProfile());
+  if (identity_manager &&
+      info.account_id == identity_manager->GetPrimaryAccountId(
+                             signin::ConsentLevel::kSignin)) {
+    OnPrefOrAccountChanged();
+  }
+}
+
+void ActorPolicyChecker::OnExtendedAccountInfoRemoved(const AccountInfo& info) {
+  auto* identity_manager =
+      IdentityManagerFactory::GetForProfile(service_->GetProfile());
+  if (identity_manager &&
+      info.account_id == identity_manager->GetPrimaryAccountId(
+                             signin::ConsentLevel::kSignin)) {
+    OnPrefOrAccountChanged();
+  }
+}
 
 void ActorPolicyChecker::MayActOnTab(
     const tabs::TabInterface& tab,
@@ -161,9 +250,51 @@ void ActorPolicyChecker::MayActOnUrl(const GURL& url,
                        std::move(callback));
 }
 
-void ActorPolicyChecker::OnPrefChanged() {
-  can_act_on_web_ = HasActuationCapability(service_->GetProfile());
-  service_->OnActOnWebCapabilityChanged(can_act_on_web_);
+void ActorPolicyChecker::OnPrefOrAccountChanged() {
+  auto old_value = can_act_on_web_;
+  can_act_on_web_ = ComputeActOnWebCapability();
+  if (old_value != can_act_on_web_) {
+    service_->OnActOnWebCapabilityChanged(can_act_on_web_);
+  }
+}
+
+bool ActorPolicyChecker::ComputeActOnWebCapability() {
+#if !BUILDFLAG(ENABLE_GLIC)
+  return true;
+#else
+  bool is_likely_dogfood_client = IsLikelyDogfoodClient();
+  auto* profile = service_->GetProfile();
+  CHECK(profile);
+  bool is_browser_managed = IsBrowserManaged(*service_->GetProfile());
+  bool actuation_enabled_for_managed_user = false;
+  if (is_browser_managed) {
+    actuation_enabled_for_managed_user =
+        ActuationEnabledForManagedUser(*profile, *journal_);
+  }
+  bool account_eligible_for_actuation =
+      IsAccountEligibleForActuation(*profile, *journal_);
+  journal_->Log(
+      GURL(), TaskId(), "ActorPolicyChecker::ComputeActOnWebCapability",
+      JournalDetailsBuilder()
+          .Add("is_likely_dogfood_client",
+               base::ToString(is_likely_dogfood_client))
+          .Add("is_browser_managed", base::ToString(is_browser_managed))
+
+          .Add("account_eligible_for_actuation",
+               base::ToString(account_eligible_for_actuation))
+          .Add("actuation_enabled_for_managed_user",
+               base::ToString(actuation_enabled_for_managed_user))
+          .Build());
+
+  if (is_likely_dogfood_client) {
+    return true;
+  }
+  if (account_eligible_for_actuation_for_testing_) [[unlikely]] {
+    account_eligible_for_actuation = true;
+  }
+  return (!is_browser_managed || actuation_enabled_for_managed_user) &&
+         account_eligible_for_actuation;
+#endif  // !BUILDFLAG(ENABLE_GLIC)
 }
 
 }  // namespace actor

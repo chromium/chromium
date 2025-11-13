@@ -9,6 +9,7 @@
 #include "base/test/test_future.h"
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
@@ -961,6 +962,7 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewWithActorGlowUiTest,
   auto* actor_keyed_service =
       actor::ActorKeyedService::Get(browser()->profile());
   ASSERT_TRUE(actor_keyed_service);
+  actor_keyed_service->GetPolicyChecker().SetActOnWebForTesting(true);
 
   // Create a new task.
   const actor::TaskId task_id = actor_keyed_service->CreateTask();
@@ -1024,6 +1026,7 @@ IN_PROC_BROWSER_TEST_F(
   auto* actor_keyed_service =
       actor::ActorKeyedService::Get(browser()->profile());
   ASSERT_TRUE(actor_keyed_service);
+  actor_keyed_service->GetPolicyChecker().SetActOnWebForTesting(true);
 
   // Create a new task.
   const actor::TaskId task_id = actor_keyed_service->CreateTask();

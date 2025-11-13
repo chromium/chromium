@@ -5,6 +5,7 @@
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -83,6 +84,11 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
 #endif
         });
     InteractiveBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    GetActorKeyedService()->GetPolicyChecker().SetActOnWebForTesting(true);
   }
 
   ActorKeyedService* GetActorKeyedService() {

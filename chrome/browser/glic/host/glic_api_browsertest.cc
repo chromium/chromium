@@ -35,6 +35,7 @@
 #include "base/values.h"
 #include "base/version_info/version_info.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
@@ -536,6 +537,9 @@ class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTestWithOneTab {
     GlicApiTestWithOneTab::SetUpOnMainThread();
     policy_provider_.SetupPolicyServiceForPolicyUpdates(
         browser()->profile()->GetProfilePolicyConnector()->policy_service());
+    actor::ActorKeyedService::Get(browser()->profile())
+        ->GetPolicyChecker()
+        .set_account_eligible_for_actuation_for_testing(true);
   }
 
   void TearDownOnMainThread() override {

@@ -110,14 +110,7 @@ void ActorToolsTest::SetUpOnMainThread() {
   auto* actor_service = ActorKeyedService::Get(browser()->profile());
   actor_service->GetPolicyChecker().SetActOnWebForTesting(
       ShouldForceActOnWeb());
-
-  auto execution_engine = CreateExecutionEngine(browser()->profile());
-  auto event_dispatcher =
-      ui::NewUiEventDispatcher(actor_service->GetActorUiStateManager());
-  auto actor_task = std::make_unique<ActorTask>(browser()->profile(),
-                                                std::move(execution_engine),
-                                                std::move(event_dispatcher));
-  task_id_ = actor_service->AddActiveTask(std::move(actor_task));
+  task_id_ = CreateNewTask();
 
   // Optimization guide uses this histogram to signal initialization in tests.
   optimization_guide::RetryForHistogramUntilCountReached(
@@ -189,6 +182,17 @@ std::unique_ptr<ExecutionEngine> ActorToolsTest::CreateExecutionEngine(
 
 bool ActorToolsTest::ShouldForceActOnWeb() {
   return true;
+}
+
+TaskId ActorToolsTest::CreateNewTask() {
+  auto execution_engine = CreateExecutionEngine(browser()->profile());
+  auto event_dispatcher = ui::NewUiEventDispatcher(
+      ActorKeyedService::Get(browser()->profile())->GetActorUiStateManager());
+  auto actor_task = std::make_unique<ActorTask>(browser()->profile(),
+                                                std::move(execution_engine),
+                                                std::move(event_dispatcher));
+  return ActorKeyedService::Get(browser()->profile())
+      ->AddActiveTask(std::move(actor_task));
 }
 
 gfx::RectF GetBoundingClientRect(content::RenderFrameHost& rfh,

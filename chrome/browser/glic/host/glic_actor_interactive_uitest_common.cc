@@ -18,6 +18,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -95,6 +96,9 @@ void GlicActorUiTest::SetUpOnMainThread() {
   // Add rule for resolving cross origin host names.
   InteractiveGlicTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
+  actor::ActorKeyedService::Get(browser()->profile())
+      ->GetPolicyChecker()
+      .SetActOnWebForTesting(true);
 }
 
 const actor::ActorTask* GlicActorUiTest::GetActorTask() {
