@@ -13,19 +13,28 @@
 ActorLoginQualityLogger::ActorLoginQualityLogger() = default;
 ActorLoginQualityLogger::~ActorLoginQualityLogger() = default;
 
+void ActorLoginQualityLogger::SetGetCredentialsDetails(
+    optimization_guide::proto::ActorLoginQuality_GetCredentialsDetails
+        get_credentials_details) {
+  log_data_.mutable_get_credentials_details()->CopyFrom(
+      get_credentials_details);
+}
+
 void ActorLoginQualityLogger::UploadFinalLog(
     optimization_guide::ModelQualityLogsUploaderService* mqls_uploader) const {
   if (!mqls_uploader) {
     return;
   }
+
+  // TODO(crbug.com/434178974): Here, the log entry proto should be merged
+  // with `log_data_request`, which will record values throughout the entire
+  // login flow. To be updated when `actor_login` feature is synced in Chrome.
+  optimization_guide::proto::LogAiDataRequest log_data_request;
+
   auto new_log_entry =
       std::make_unique<optimization_guide::ModelQualityLogEntry>(
           mqls_uploader->GetWeakPtr());
-
-  // TODO(crbug.com/434178974): Here, the log entry proto should be merged
-  // with `log_data`, which will record values throughout the entire
-  // login flow. To be updated when `actor_login` feature is synced in Chrome.
-  new_log_entry->log_ai_data_request()->MergeFrom(log_data_);
+  new_log_entry->log_ai_data_request()->MergeFrom(log_data_request);
 
   optimization_guide::ModelQualityLogEntry::Upload(std::move(new_log_entry));
 }

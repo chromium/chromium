@@ -1,4 +1,5 @@
 include_rules = [
   "+components/tabs",
   "+components/optimization_guide/core/model_quality",
+  "+components/optimization_guide/proto",
 ]

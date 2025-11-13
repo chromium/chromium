@@ -14,8 +14,10 @@
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
 #include "components/password_manager/core/browser/actor_login/test/mock_actor_login_quality_logger.h"
@@ -39,11 +41,15 @@ namespace actor_login {
 using base::test::RunUntil;
 using password_manager::PasswordForm;
 using password_manager::PasswordFormManager;
+using testing::Eq;
 using testing::NiceMock;
 using testing::Return;
 using testing::ReturnRef;
 using testing::UnorderedElementsAre;
 using testing::WithArg;
+
+using GetCredentialsDetails =
+    optimization_guide::proto::ActorLoginQuality_GetCredentialsDetails;
 
 namespace {
 
@@ -51,6 +57,14 @@ template <bool success>
 void PostResponse(base::OnceCallback<void(bool)> callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), success));
+}
+
+// Expect two protos to be equal if they are serialized into the same strings.
+MATCHER_P(ProtoEquals, expected_message, "") {
+  std::string expected_serialized, actual_serialized;
+  expected_message.SerializeToString(&expected_serialized);
+  arg.SerializeToString(&actual_serialized);
+  return expected_serialized == actual_serialized;
 }
 
 class FakePasswordManagerClient
@@ -198,11 +212,16 @@ class ActorLoginGetCredentialsHelperTest : public ::testing::Test {
         .WillByDefault(Return(base::span(form_managers_)));
   }
 
+  void AdvanceClock(base::TimeDelta time) {
+    task_environment_.AdvanceClock(time);
+  }
+
   const GURL kUrl = GURL("https://foo.com");
   const url::Origin kOrigin = url::Origin::Create(kUrl);
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_{
       {.disable_server_communication = true}};
   FakePasswordManagerClient client_;
@@ -216,12 +235,23 @@ class ActorLoginGetCredentialsHelperTest : public ::testing::Test {
 
 TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsSuccess) {
   base::test::TestFuture<CredentialsOrError> future;
-  ActorLoginGetCredentialsHelper helper(
+  auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
       url::Origin::Create(GURL("https://example.com")), client(),
       password_manager(), mqls_logger(), future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_TRUE(future.Get().value().empty());
+
+  // Check the reported logs.
+  GetCredentialsDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_GetCredentialsOutcome_NO_CREDENTIALS);
+  expected_details.set_getting_credentials_time_ms(0);
+  EXPECT_CALL(*mqls_logger(),
+              SetGetCredentialsDetails(ProtoEquals(expected_details)));
+  // Destroy the helper, because it sends logs in the destructor.
+  helper.reset();
 }
 
 TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsFiltersByDomain) {
@@ -231,9 +261,12 @@ TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsFiltersByDomain) {
       CreatePasswordForm("https://bar.com", u"bar_username", u"bar_password"));
 
   base::test::TestFuture<CredentialsOrError> future;
-  ActorLoginGetCredentialsHelper helper(
+  auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
       url::Origin::Create(GURL("https://foo.com")), client(),
       password_manager(), mqls_logger(), future.GetCallback());
+
+  const int kRequestDurationMs = 3;
+  AdvanceClock(base::Milliseconds(kRequestDurationMs));
 
   ASSERT_TRUE(future.Get().has_value());
   const auto& credentials = future.Get().value();
@@ -245,6 +278,20 @@ TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsFiltersByDomain) {
             url::Origin::Create(GURL("https://foo.com")));
   EXPECT_FALSE(credentials[0].immediatelyAvailableToLogin);
   EXPECT_FALSE(credentials[0].has_persistent_permission);
+
+  // Check the reported logs.
+  GetCredentialsDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_GetCredentialsOutcome_NO_SIGN_IN_FORM);
+  expected_details.set_permission_details(
+      optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_PermissionDetails_NO_PERMANENT_PERMISSION);
+  expected_details.set_getting_credentials_time_ms(kRequestDurationMs);
+  EXPECT_CALL(*mqls_logger(),
+              SetGetCredentialsDetails(ProtoEquals(expected_details)));
+  // Destroy the helper, because it sends logs in the destructor.
+  helper.reset();
 }
 
 TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsFromAllStores) {
@@ -287,8 +334,9 @@ TEST_F(ActorLoginGetCredentialsHelperTest, UsernameAndPasswordFieldsVisible) {
       .WillRepeatedly(WithArg<1>(&PostResponse<true>));
 
   base::test::TestFuture<CredentialsOrError> future;
-  ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
-                                        mqls_logger(), future.GetCallback());
+  auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
+      kOrigin, client(), password_manager(), mqls_logger(),
+      future.GetCallback());
 
   // The helper only attaches itself as a consumer after all the
   // async checks for signin forms are done.
@@ -307,6 +355,20 @@ TEST_F(ActorLoginGetCredentialsHelperTest, UsernameAndPasswordFieldsVisible) {
   EXPECT_EQ(credentials[0].username, u"foo_username");
   EXPECT_TRUE(credentials[0].immediatelyAvailableToLogin);
   EXPECT_FALSE(credentials[0].has_persistent_permission);
+
+  // Check the reported logs.
+  GetCredentialsDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_GetCredentialsOutcome_SIGN_IN_FORM_EXISTS);
+  expected_details.set_permission_details(
+      optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_PermissionDetails_NO_PERMANENT_PERMISSION);
+  expected_details.set_getting_credentials_time_ms(0);
+  EXPECT_CALL(*mqls_logger(),
+              SetGetCredentialsDetails(ProtoEquals(expected_details)));
+  // Destroy the helper, because it sends logs in the destructor.
+  helper.reset();
 }
 
 TEST_F(ActorLoginGetCredentialsHelperTest, FieldsAreNotVisible) {
@@ -315,6 +377,8 @@ TEST_F(ActorLoginGetCredentialsHelperTest, FieldsAreNotVisible) {
       password_manager::features::kActorLoginFieldVisibilityCheck);
   PasswordForm saved_form =
       CreatePasswordForm(kUrl.spec(), u"foo_username", u"foo_password");
+  saved_form.actor_login_approved = true;
+
   // There won't be a signin form, so the credential will be fetched from
   // the store rather than the fake form fetcher.
   client()->profile_store()->AddLogin(saved_form);
@@ -329,8 +393,9 @@ TEST_F(ActorLoginGetCredentialsHelperTest, FieldsAreNotVisible) {
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(false));
 
   base::test::TestFuture<CredentialsOrError> future;
-  ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
-                                        mqls_logger(), future.GetCallback());
+  auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
+      kOrigin, client(), password_manager(), mqls_logger(),
+      future.GetCallback());
 
   // The helper only attaches itself as a consumer after all the
   // async checks for signin forms are done.
@@ -348,7 +413,21 @@ TEST_F(ActorLoginGetCredentialsHelperTest, FieldsAreNotVisible) {
   ASSERT_EQ(credentials.size(), 1u);
   EXPECT_EQ(credentials[0].username, u"foo_username");
   EXPECT_FALSE(credentials[0].immediatelyAvailableToLogin);
-  EXPECT_FALSE(credentials[0].has_persistent_permission);
+  EXPECT_TRUE(credentials[0].has_persistent_permission);
+
+  // Check the reported logs.
+  GetCredentialsDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_GetCredentialsOutcome_NO_SIGN_IN_FORM);
+  expected_details.set_permission_details(
+      optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_PermissionDetails_HAS_PERMANENT_PERMISSION);
+  expected_details.set_getting_credentials_time_ms(0);
+  EXPECT_CALL(*mqls_logger(),
+              SetGetCredentialsDetails(ProtoEquals(expected_details)));
+  // Destroy the helper, because it sends logs in the destructor.
+  helper.reset();
 }
 
 TEST_F(ActorLoginGetCredentialsHelperTest, IgnoresFormInFencedFrame) {
@@ -678,8 +757,9 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
   form_fetcher()->SetBestMatches({exact_match, affiliated_match, psl_match});
 
   base::test::TestFuture<CredentialsOrError> future;
-  ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
-                                        mqls_logger(), future.GetCallback());
+  auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
+      kOrigin, client(), password_manager(), mqls_logger(),
+      future.GetCallback());
 
   // The helper only attaches itself as a consumer after all the
   // async checks for signin forms are done.
@@ -692,12 +772,34 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
   ASSERT_EQ(credentials.size(), 1u);
   EXPECT_EQ(credentials[0].username, u"affiliated_username");
   EXPECT_TRUE(credentials[0].has_persistent_permission);
+
+  // Check the reported logs.
+  GetCredentialsDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_GetCredentialsOutcome_SIGN_IN_FORM_EXISTS);
+  expected_details.set_permission_details(
+      optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_PermissionDetails_HAS_PERMANENT_PERMISSION);
+  expected_details.set_getting_credentials_time_ms(0);
+  EXPECT_CALL(*mqls_logger(),
+              SetGetCredentialsDetails(ProtoEquals(expected_details)));
+  // Destroy the helper, because it sends logs in the destructor.
+  helper.reset();
 }
 
 TEST_F(ActorLoginGetCredentialsHelperTest, FillingNotAllowed) {
   EXPECT_CALL(*client(), IsFillingEnabled(kOrigin.GetURL()))
       .WillOnce(Return(false));
   base::test::TestFuture<CredentialsOrError> future;
+  GetCredentialsDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_GetCredentialsOutcome_FILLING_NOT_ALLOWED);
+
+  expected_details.set_getting_credentials_time_ms(0);
+  EXPECT_CALL(*mqls_logger(),
+              SetGetCredentialsDetails(ProtoEquals(expected_details)));
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
                                         mqls_logger(), future.GetCallback());
 

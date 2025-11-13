@@ -22,4 +22,43 @@ Credential& Credential::operator=(const Credential& credential) = default;
 Credential& Credential::operator=(Credential&& credential) = default;
 
 Credential::~Credential() = default;
+
+optimization_guide::proto::
+    ActorLoginQuality_GetCredentialsDetails_GetCredentialsOutcome
+    OutcomeEnumToProtoType(GetCredentialsOutcomeMqls outcome) {
+  switch (outcome) {
+    case GetCredentialsOutcomeMqls::kUnspecified:
+      return optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_GetCredentialsOutcome_UNSPECIFIED;
+    case GetCredentialsOutcomeMqls::kNoCredentials:
+      return optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_GetCredentialsOutcome_NO_CREDENTIALS;
+    case GetCredentialsOutcomeMqls::kSignInFormExists:
+      return optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_GetCredentialsOutcome_SIGN_IN_FORM_EXISTS;
+    case GetCredentialsOutcomeMqls::kNoSignInForm:
+      return optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_GetCredentialsOutcome_NO_SIGN_IN_FORM;
+    case GetCredentialsOutcomeMqls::kFillingNotAllowed:
+      return optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_GetCredentialsOutcome_FILLING_NOT_ALLOWED;
+  };
+}
+
+optimization_guide::proto::
+    ActorLoginQuality_GetCredentialsDetails_PermissionDetails
+    PermissionEnumToProtoType(PermissionDetailsMqls permission) {
+  switch (permission) {
+    case PermissionDetailsMqls::kUnknown:
+      return optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_PermissionDetails_UNKNOWN;
+    case PermissionDetailsMqls::kHasPermanentPermission:
+      return optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_PermissionDetails_HAS_PERMANENT_PERMISSION;
+    case PermissionDetailsMqls::kNoPermanentPermission:
+      return optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_PermissionDetails_NO_PERMANENT_PERMISSION;
+  }
+}
+
 }  // namespace actor_login
