@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_ACTION_CHIPS_HANDLER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom-forward.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
@@ -15,13 +17,16 @@
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
 
-class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler {
+class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler,
+                           public TabStripModelObserver {
  public:
   ActionChipsHandler(
       mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler> receiver,
+      mojo::PendingRemote<action_chips::mojom::Page> page,
       Profile* profile,
       content::WebUI* web_ui,
       const TabIdGenerator* tab_id_generator);
@@ -29,12 +34,16 @@ class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler {
   ActionChipsHandler& operator=(const ActionChipsHandler&) = delete;
   ~ActionChipsHandler() override;
 
-  void GetActionChips(
-      base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>
-          callback) override;
+  void StartActionChipsRetrieval() override;
+
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
 
  private:
   mojo::Receiver<action_chips::mojom::ActionChipsHandler> receiver_;
+  mojo::Remote<action_chips::mojom::Page> page_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebUI> web_ui_;
   raw_ptr<const TabIdGenerator> tab_id_generator_;

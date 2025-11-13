@@ -6,7 +6,7 @@ import {ComposeboxMode} from 'chrome://resources/cr_components/composebox/contex
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {ActionChip, ActionChipsHandlerInterface, TabInfo} from '../action_chips.mojom-webui.js';
+import type {ActionChip, ActionChipsHandlerInterface, PageCallbackRouter, TabInfo} from '../action_chips.mojom-webui.js';
 import {ChipType} from '../action_chips.mojom-webui.js';
 
 import {getCss} from './action_chips.css.js';
@@ -42,7 +42,9 @@ export class ActionChipsElement extends CrLitElement {
   }
 
   private handler: ActionChipsHandlerInterface;
+  private callbackRouter: PageCallbackRouter;
   protected accessor actionChips_: ActionChip[] = [];
+  private onActionChipChangedListenerId_: number|null = null;
 
   private delayTabUploads_: boolean =
       loadTimeData.getBoolean('addTabUploadDelayOnActionChipClick');
@@ -78,15 +80,24 @@ export class ActionChipsElement extends CrLitElement {
 
   constructor() {
     super();
-    this.handler = ActionChipsApiProxyImpl.getInstance().getHandler();
+    const proxy = ActionChipsApiProxyImpl.getInstance();
+    this.handler = proxy.getHandler();
+    this.callbackRouter = proxy.getCallbackRouter();
   }
 
   override connectedCallback() {
     super.connectedCallback();
-    this.handler.getActionChips().then(
-        (result: {actionChips: ActionChip[]}) => {
-          this.actionChips_ = result.actionChips;
-        });
+    this.onActionChipChangedListenerId_ =
+        this.callbackRouter.onActionChipsChanged.addListener(
+            (actionChips: ActionChip[]) => {
+              this.actionChips_ = actionChips;
+            });
+    this.handler.startActionChipsRetrieval();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.callbackRouter.removeListener(this.onActionChipChangedListenerId_!);
   }
 
   protected onCreateImageClick_() {
