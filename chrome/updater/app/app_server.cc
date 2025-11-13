@@ -24,6 +24,7 @@
 #include "chrome/updater/app/app_utils.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/event_history.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
@@ -112,7 +113,11 @@ base::OnceClosure AppServer::ModeCheck() {
   }
 
   if (this_version > active_version || global_prefs->GetSwapping()) {
-    if (!SwapVersions(global_prefs.get(), CreateLocalPrefs(updater_scope()))) {
+    ActivateEndEvent event = ActivateStartEvent().WriteAsyncAndReturnEndEvent();
+    bool activated =
+        SwapVersions(global_prefs.get(), CreateLocalPrefs(updater_scope()));
+    event.SetActivated(activated).WriteAsync();
+    if (!activated) {
       return base::BindOnce(&AppServer::Shutdown, this, kErrorFailedToSwap);
     }
   }

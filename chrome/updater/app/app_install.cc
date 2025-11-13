@@ -23,6 +23,7 @@
 #include "chrome/updater/activity.h"
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/event_history.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/lock.h"
 #include "chrome/updater/persisted_data.h"
@@ -260,6 +261,8 @@ void AppInstall::InstallCandidateDone(bool valid_version, int result) {
               [](UpdaterScope scope) {
                 scoped_refptr<GlobalPrefs> prefs = CreateGlobalPrefs(scope);
                 if (prefs) {
+                  ActivateEndEvent event =
+                      ActivateStartEvent().WriteAsyncAndReturnEndEvent();
                   prefs->SetActiveVersion(kUpdaterVersion);
                   prefs->SetSwapping(true);
                   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -269,6 +272,7 @@ void AppInstall::InstallCandidateDone(bool valid_version, int result) {
                         ->SetEulaRequired(true);
                   }
                   PrefsCommitPendingWrites(prefs->GetPrefService());
+                  event.SetActivated(true).WriteAsync();
                 }
               },
               updater_scope()),
