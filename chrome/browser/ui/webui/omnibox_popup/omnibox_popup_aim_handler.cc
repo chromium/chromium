@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
 
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_aim_popup_webui_content.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 
 OmniboxPopupAimHandler::OmniboxPopupAimHandler(
@@ -34,7 +36,19 @@ void OmniboxPopupAimHandler::OnShow(
 }
 
 void OmniboxPopupAimHandler::OnClose() {
-  page_->OnClose();
+  // Unretained() is safe because `page_` is a mojo remote owned by `this`.
+  page_->OnClose(base::BindOnce(&OmniboxPopupAimHandler::OnClosedCallback,
+                                base::Unretained(this)));
+}
+
+void OmniboxPopupAimHandler::OnClosedCallback(const std::string& input) {
+  WebUIContentsWrapper* wrapper =
+      static_cast<WebUIContentsWrapper*>(omnibox_popup_ui_->embedder().get());
+  OmniboxAimPopupWebUIContent* aim_popup_content =
+      static_cast<OmniboxAimPopupWebUIContent*>(wrapper->GetHost().get());
+  if (aim_popup_content) {
+    aim_popup_content->OnClosedWithInput(input);
+  }
 }
 
 void OmniboxPopupAimHandler::Close() {

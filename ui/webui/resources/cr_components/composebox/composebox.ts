@@ -1060,6 +1060,10 @@ export class ComposeboxElement extends I18nMixinLit
     this.searchboxHandler_.clearFiles();
     this.submitEnabled_ = false;
   }
+
+  getInputText(): string {
+    return this.input_;
+  }
 }
 
 declare global {

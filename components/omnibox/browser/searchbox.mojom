@@ -123,13 +123,15 @@ enum ToolMode {
 // this struct is being iterated on and usage must currently be flagged with
 // `MojomWorkInProgress`.
 struct FileAttachmentStub {
-  // The unique identifier of the file.
+  // A client-side unique identifier referring to a specific file upload. The
+  // UUID is assigned on the browser-side.
   mojo_base.mojom.UnguessableToken uuid;
   // The name of the file.
   string name;
   // The mime type of the file.
   string mime_type;
-  // The data URL of the file if it is an image.
+  // A data URL for an image preview of the file (may only be supplied for
+  // images but is independent of MIME type).
   string? image_data_url;
 };
 
