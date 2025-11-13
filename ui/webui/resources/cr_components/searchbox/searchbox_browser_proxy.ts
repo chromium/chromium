@@ -13,6 +13,7 @@ import {PageCallbackRouter, PageHandler} from '//resources/mojo/components/omnib
 
 export function createAutocompleteMatch(): AutocompleteMatch {
   return {
+    isHidden: false,
     a11yLabel: '',
     actions: [],
     allowedToBeDefaultMatch: false,

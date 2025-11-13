@@ -643,6 +643,7 @@ SearchboxHandler::CreateAutocompleteMatch(
 
   searchbox::mojom::AutocompleteMatchPtr mojom_match =
       searchbox::mojom::AutocompleteMatch::New();
+  mojom_match->is_hidden = match.ShouldHideBasedOnStarterPack(turl_service);
   mojom_match->allowed_to_be_default_match = match.allowed_to_be_default_match;
   mojom_match->contents = match.contents;
   for (const auto& contents_class : match.contents_class) {

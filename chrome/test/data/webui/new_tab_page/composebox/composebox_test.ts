@@ -111,6 +111,7 @@ suite('NewTabPageComposeboxTest', () => {
 
   function createAutocompleteMatch(): AutocompleteMatch {
     return {
+      isHidden: false,
       a11yLabel: '',
       actions: [],
       allowedToBeDefaultMatch: false,
