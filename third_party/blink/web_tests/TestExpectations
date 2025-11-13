@@ -9850,8 +9850,6 @@ crbug.com/456208218 external/wpt/css/css-view-transitions/scoped/rotation-on-sco
 # Gardener 2025-10-24
 crbug.com/447949347 [ Mac ] accessibility/scroll-window-horiz-sends-notification.html [ Pass Timeout ]
 
-crbug.com/455459540 http/tests/devtools/a11y-axe-core/quick-open-a11y-test.js [ Failure Pass ]
-
 # Gardener 2025-10-28
 crbug.com/364315665 media/controls/closed-captions-single-track.html [ Failure Pass ]
 crbug.com/455803699 [ Mac ] accessibility/scroll-window-sends-notification.html [ Failure Pass ]
