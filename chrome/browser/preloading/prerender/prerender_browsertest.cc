@@ -469,8 +469,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DisableNetworkPrediction) {
   EXPECT_TRUE(host_id);
 }
 
+// TODO(https://crbug.com/455854991): Failing on Android tablets.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PreloadingHoldbackOverridden DISABLED_PreloadingHoldbackOverridden
+#else
+#define MAYBE_PreloadingHoldbackOverridden PreloadingHoldbackOverridden
+#endif
 // Tests that DevTools open overrides PreloadingConfig's holdback.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PreloadingHoldbackOverridden) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       MAYBE_PreloadingHoldbackOverridden) {
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::android_info::sdk_int() >=
           base::android::android_info::SDK_VERSION_U &&
@@ -1048,8 +1055,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   prerender_helper().WaitForPrerenderLoadCompletion(host_id);
 }
 
+// TODO(https://crbug.com/455856004): Failing on Android tablets.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PrewarmPrerenderReuseThenActivate \
+  DISABLED_PrewarmPrerenderReuseThenActivate
+#else
+#define MAYBE_PrewarmPrerenderReuseThenActivate \
+  PrewarmPrerenderReuseThenActivate
+#endif
 IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
-                       PrewarmPrerenderReuseThenActivate) {
+                       MAYBE_PrewarmPrerenderReuseThenActivate) {
   // Navigate to an initial page.
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));

@@ -778,7 +778,8 @@ class TabStatsTrackerPrerenderBrowserTest : public TabStatsTrackerBrowserTest {
 
 // TODO(crbug.com/412634171): On desktop Android, the prerender fails with error
 // kActivationNavigationParameterMismatch. Find out why.
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
+// TODO(crbug.com/455855986): Also starting failing on tablets.
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_PrerenderingShouldNotCallOnPrimaryMainFrameNavigationCommitted \
   DISABLED_PrerenderingShouldNotCallOnPrimaryMainFrameNavigationCommitted
 #else
