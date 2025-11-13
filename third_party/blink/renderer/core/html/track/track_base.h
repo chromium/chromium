@@ -28,18 +28,17 @@
 
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/forward_declared_member.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
 class HTMLMediaElement;
+class SourceBufferTrackBaseSupplement;
 
-class CORE_EXPORT TrackBase : public Supplementable<TrackBase, 1> {
+class CORE_EXPORT TrackBase : public GarbageCollectedMixin {
  public:
-  enum class Supplements { kSourceBufferTrackBaseSupplement = 0 };
-
   // Subclasses of TrackBase including AudioTrack and VideoTrack allow changing
   // whether a track is enabled or selected. There are three sources where this
   // change can come from:
@@ -72,6 +71,16 @@ class CORE_EXPORT TrackBase : public Supplementable<TrackBase, 1> {
 
   void Trace(Visitor*) const override;
 
+  ForwardDeclaredMember<SourceBufferTrackBaseSupplement>
+  GetSourceBufferTrackBaseSupplement() const {
+    return source_buffer_track_base_supplement_;
+  }
+  void SetSourceBufferTrackBaseSupplement(
+      ForwardDeclaredMember<SourceBufferTrackBaseSupplement>
+          source_buffer_track_base_supplement) {
+    source_buffer_track_base_supplement_ = source_buffer_track_base_supplement;
+  }
+
  protected:
   TrackBase(WebMediaPlayer::TrackType,
             const AtomicString& label,
@@ -83,6 +92,8 @@ class CORE_EXPORT TrackBase : public Supplementable<TrackBase, 1> {
   AtomicString language_;
   String id_;
   Member<HTMLMediaElement> media_element_;
+  ForwardDeclaredMember<SourceBufferTrackBaseSupplement>
+      source_buffer_track_base_supplement_;
 };
 
 }  // namespace blink
