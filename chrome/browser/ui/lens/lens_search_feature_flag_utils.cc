@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
@@ -16,6 +17,34 @@
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/service/variations_service.h"
+
+namespace {
+constexpr char kUnitedStatesCountryCode[] = "us";
+constexpr char kEnglishUSLocale[] = "en-US";
+
+bool IsEnUs() {
+  // Safety check since this is a CP'd change.
+  if (!g_browser_process) {
+    DCHECK(g_browser_process) << "g_browser_process is null";
+    return false;
+  }
+
+  // VariationsService and Features should exist.
+  auto* variations_service = g_browser_process->variations_service();
+  auto* features = g_browser_process->GetFeatures();
+
+  // Safety check since this is a CP'd change.
+  if (!variations_service || !features) {
+    return false;
+  }
+
+  // Otherwise, enable it in the US to en-US locales via client-side code.
+  return variations_service->GetStoredPermanentCountry() ==
+             kUnitedStatesCountryCode &&
+         features->application_locale_storage() &&
+         features->application_locale_storage()->Get() == kEnglishUSLocale;
+}
+}  // namespace
 
 namespace lens {
 
@@ -34,31 +63,30 @@ bool IsLensOverlayContextualSearchboxEnabled() {
         lens::features::kLensOverlayContextualSearchbox);
   }
 
-  // Safety check since this is a CP'd change.
-  if (!g_browser_process) {
-    DCHECK(g_browser_process) << "g_browser_process is null";
-    return false;
-  }
-
-  // VariationsService and Features should exist.
-  auto* variations_service = g_browser_process->variations_service();
-  auto* features = g_browser_process->GetFeatures();
-
-  // Safety check since this is a CP'd change.
-  if (!variations_service || !features) {
-    return false;
-  }
-
-  // Otherwise, enable it in the US to en-US locales via client-side code.
-  return variations_service->GetStoredPermanentCountry() == "us" &&
-         features->application_locale_storage() &&
-         features->application_locale_storage()->Get() == "en-US";
+  // Otherwise, enable it to en-US users in US.
+  return IsEnUs();
 }
 
 bool IsAimM3Enabled(Profile* profile) {
-  return AimEligibilityService::GenericKillSwitchFeatureCheck(
-      AimEligibilityServiceFactory::GetForProfile(profile),
-      lens::features::kLensSearchAimM3, lens::features::kLensSearchAimM3EnUs);
+  // Set whether to use the AIM eligibility service based on the feature flag.
+  bool should_use_aim_eligibility_service = base::FeatureList::IsEnabled(
+      lens::features::kLensSearchAimM3UseAimEligibility);
+
+  // Since the AIM Eligibility Service is already launched in the US, force it
+  // to be used there for M3 US users.
+  if (base::FeatureList::IsEnabled(lens::features::kLensSearchAimM3EnUs) &&
+      IsEnUs()) {
+    should_use_aim_eligibility_service = true;
+  }
+
+  if (should_use_aim_eligibility_service) {
+    return AimEligibilityService::GenericKillSwitchFeatureCheck(
+        AimEligibilityServiceFactory::GetForProfile(profile),
+        lens::features::kLensSearchAimM3, lens::features::kLensSearchAimM3EnUs);
+  }
+  // If not using the AIM eligibility service, then just check the M3 feature
+  // flag.
+  return base::FeatureList::IsEnabled(lens::features::kLensSearchAimM3);
 }
 
 bool ShouldShowLensOverlayEduActionChip(Profile* profile) {
