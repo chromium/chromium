@@ -173,16 +173,7 @@ void OmniboxController::ClearPopupKeywordMode() const {
 
 bool OmniboxController::IsSuggestionHidden(
     const AutocompleteMatch& match) const {
-  if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
-      match.from_keyword) {
-    const TemplateURL* turl =
-        match.GetTemplateURL(client_->GetTemplateURLService());
-    if (turl &&
-        turl->starter_pack_id() == template_url_starter_pack_data::kGemini) {
-      return true;
-    }
-  }
-  return false;
+  return match.ShouldHideBasedOnStarterPack(client_->GetTemplateURLService());
 }
 
 void OmniboxController::SetRichSuggestionBitmap(int result_index,
