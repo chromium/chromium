@@ -1897,7 +1897,7 @@ void LocationBarView::OnLocationIconPressed(const ui::MouseEvent& event) {
       GetOmniboxController()->edit_model()->ShouldShowAddContextButton()) {
     omnibox_context_menu_ =
         std::make_unique<OmniboxContextMenu>(GetWidget(), browser_);
-    gfx::Point point = event.location();
+    gfx::Point point(0, location_icon_view_->height());
     views::View::ConvertPointToScreen(location_icon_view_, &point);
     run_omnibox_context_menu_callback_.Run(omnibox_context_menu_.get(), point);
     return;
