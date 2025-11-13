@@ -20,7 +20,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
-import android.text.TextUtils;
 
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
@@ -43,9 +42,6 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.ListObservable;
-import org.chromium.ui.modelutil.MVCListAdapter;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
@@ -66,7 +62,7 @@ class NavigationAttachmentsMediator {
     private final AndroidPermissionDelegate mPermissionDelegate;
     private final PropertyModel mModel;
     private final NavigationAttachmentsPopup mPopup;
-    private final ModelList mModelList;
+    private final FuseboxAttachmentModelList mModelList;
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
@@ -78,7 +74,7 @@ class NavigationAttachmentsMediator {
             WindowAndroid windowAndroid,
             PropertyModel model,
             NavigationAttachmentsViewHolder viewHolder,
-            ModelList modelList,
+            FuseboxAttachmentModelList modelList,
             ObservableSupplierImpl<@AutocompleteRequestType Integer>
                     autocompleteRequestTypeSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
@@ -162,7 +158,6 @@ class NavigationAttachmentsMediator {
         if (mAutocompleteRequestTypeSupplier.get() == AutocompleteRequestType.SEARCH) return;
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
 
-        mComposeBoxQueryControllerBridge.notifySessionAbandoned();
         mModelList.clear();
     }
 
@@ -171,8 +166,6 @@ class NavigationAttachmentsMediator {
         mPopup.dismiss();
         if (mAutocompleteRequestTypeSupplier.get() == AutocompleteRequestType.AI_MODE) return;
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
-
-        mComposeBoxQueryControllerBridge.notifySessionStarted();
     }
 
     /** Activate image generation as the Next Request fulfillment type. */
@@ -182,8 +175,6 @@ class NavigationAttachmentsMediator {
             return;
         }
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.IMAGE_GENERATION);
-
-        mComposeBoxQueryControllerBridge.notifySessionStarted();
     }
 
     /**
@@ -293,31 +284,11 @@ class NavigationAttachmentsMediator {
     private void onAddCurrentTab(Tab tab) {
         if (mComposeBoxQueryControllerBridge == null) return;
         activateAiMode();
-        @Nullable String token;
-        // Web contents can be null when a tab has not been reloaded during the current Chrome
-        // session. In this case, try to fetch cached web contents.
-        if (tab.getWebContents() != null) {
-            token = mComposeBoxQueryControllerBridge.addTabContext(tab);
-        } else {
-            token = mComposeBoxQueryControllerBridge.addTabContextFromCache(tab.getId());
-        }
 
-        addTabAttachment(tab, token);
-    }
+        var attachment = FuseboxAttachment.forTab(tab);
 
-    private void addTabAttachment(Tab tab, @Nullable String token) {
-        if (TextUtils.isEmpty(token)) return;
-        var attachment =
-                new FuseboxAttachment(
-                        FuseboxAttachmentType.ATTACHMENT_TAB,
-                        new BitmapDrawable(
-                                mContext.getResources(),
-                                OmniboxResourceProvider.getFaviconBitmapForTab(tab)),
-                        tab.getTitle(),
-                        /* mimeType= */ "",
-                        /* data= */ new byte[] {});
-        attachment.setToken(token);
-        addAttachment(attachment);
+        // Use FuseboxModelList's add method which handles upload automatically
+        mModelList.add(attachment);
     }
 
     @VisibleForTesting
@@ -388,8 +359,7 @@ class NavigationAttachmentsMediator {
                     bitmap.compress(CompressFormat.PNG, 100, byteArrayOutputStream);
                     byte[] dataBytes = byteArrayOutputStream.toByteArray();
                     var attachment =
-                            new FuseboxAttachment(
-                                    FuseboxAttachmentType.ATTACHMENT_IMAGE,
+                            FuseboxAttachment.forCameraImage(
                                     new BitmapDrawable(mContext.getResources(), bitmap),
                                     "",
                                     "image/png",
@@ -482,8 +452,7 @@ class NavigationAttachmentsMediator {
                 if (bitmap == null) return;
 
                 var attachment =
-                        new FuseboxAttachment(
-                                FuseboxAttachmentType.ATTACHMENT_IMAGE,
+                        FuseboxAttachment.forCameraImage(
                                 new BitmapDrawable(mContext.getResources(), bitmap),
                                 "",
                                 "image/png",
@@ -507,40 +476,10 @@ class NavigationAttachmentsMediator {
      * @param attachmentDetails The details of the attachment to add.
      */
     /* package */ void uploadAndAddAttachment(FuseboxAttachment attachment) {
-        String token = uploadAttachment(attachment);
-        if (TextUtils.isEmpty(token)) return;
-        attachment.setToken(token);
-        addAttachment(attachment);
-    }
-
-    private void addAttachment(FuseboxAttachment attachment) {
         activateAiMode();
 
-        PropertyModel model =
-                new PropertyModel.Builder(FuseboxAttachmentProperties.ALL_KEYS)
-                        .with(FuseboxAttachmentProperties.ATTACHMENT, attachment)
-                        .build();
-
-        var listItem = new MVCListAdapter.ListItem(attachment.itemType, model);
-        model.set(
-                FuseboxAttachmentProperties.ON_REMOVE,
-                () -> removeAttachment(listItem, attachment.getToken()));
-        mModelList.add(listItem);
-    }
-
-    /**
-     * Remove an attachment from the navigation attachments toolbar.
-     *
-     * @param token The token of the attachment to remove.
-     */
-    public void removeAttachment(ListItem item, String token) {
-        mModelList.remove(item);
-        mComposeBoxQueryControllerBridge.removeAttachment(token);
-    }
-
-    private @Nullable String uploadAttachment(FuseboxAttachment attachment) {
-        return mComposeBoxQueryControllerBridge.addFile(
-                attachment.title, attachment.mimeType, attachment.data);
+        // Use FuseboxModelList's unified add method
+        mModelList.add(attachment);
     }
 
     // Parse GET_CONTENT response, extracting single- or multiple image selections.

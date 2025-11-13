@@ -107,7 +107,11 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<@Nullable FuseboxAttachm
             return null;
         }
 
-        return new FuseboxAttachment(mType, thumbnail, title, mimeType, data);
+        if (mType == FuseboxAttachmentType.ATTACHMENT_IMAGE) {
+            return FuseboxAttachment.forCameraImage(thumbnail, title, mimeType, data);
+        } else {
+            return FuseboxAttachment.forFile(thumbnail, title, mimeType, data);
+        }
     }
 
     @Override

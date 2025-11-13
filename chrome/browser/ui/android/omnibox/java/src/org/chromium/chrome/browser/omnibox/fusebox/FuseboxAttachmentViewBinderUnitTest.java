@@ -29,7 +29,6 @@ import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -65,13 +64,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
     @Test
     public void testSetThumbnail() {
         FuseboxAttachment attachment =
-                new FuseboxAttachment(
-                        FuseboxAttachmentType.ATTACHMENT_FILE,
-                        mDrawable,
-                        "Test",
-                        "text/plain",
-                        new byte[0]);
-        attachment.setToken("test-token");
+                FuseboxAttachment.forFile(mDrawable, "Test", "text/plain", new byte[0]);
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         ImageView imageView = mView.findViewById(R.id.attachment_thumbnail);
         assertEquals(mDrawable, imageView.getDrawable());
@@ -80,13 +73,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
     @Test
     public void testSetTitle_emptyString() {
         FuseboxAttachment attachment =
-                new FuseboxAttachment(
-                        FuseboxAttachmentType.ATTACHMENT_FILE,
-                        mDrawable,
-                        "",
-                        "text/plain",
-                        new byte[0]);
-        attachment.setToken("test-token");
+                FuseboxAttachment.forFile(mDrawable, "", "text/plain", new byte[0]);
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         TextView textView = mView.findViewById(R.id.attachment_title);
         assertEquals(View.GONE, textView.getVisibility());
@@ -95,13 +82,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
     @Test
     public void testSetTitle() {
         FuseboxAttachment attachment =
-                new FuseboxAttachment(
-                        FuseboxAttachmentType.ATTACHMENT_FILE,
-                        mDrawable,
-                        "My Attachment",
-                        "text/plain",
-                        new byte[0]);
-        attachment.setToken("test-token");
+                FuseboxAttachment.forFile(mDrawable, "My Attachment", "text/plain", new byte[0]);
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         TextView textView = mView.findViewById(R.id.attachment_title);
         assertEquals("My Attachment", textView.getText());
@@ -110,13 +91,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
     @Test
     public void testSetDescription_withTitle() {
         FuseboxAttachment attachment =
-                new FuseboxAttachment(
-                        FuseboxAttachmentType.ATTACHMENT_FILE,
-                        mDrawable,
-                        "My Title",
-                        "text/plain",
-                        new byte[0]);
-        attachment.setToken("test-token");
+                FuseboxAttachment.forFile(mDrawable, "My Title", "text/plain", new byte[0]);
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
 
         TextView title = mView.findViewById(R.id.attachment_title);
@@ -126,13 +101,11 @@ public class FuseboxAttachmentViewBinderUnitTest {
     @Test
     public void testSetThumbnail_fallbackWhenNull() {
         FuseboxAttachment attachment =
-                new FuseboxAttachment(
-                        FuseboxAttachmentType.ATTACHMENT_FILE,
+                FuseboxAttachment.forFile(
                         null, // null thumbnail should trigger fallback
                         "Test",
                         "text/plain",
                         new byte[0]);
-        attachment.setToken("test-token");
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         ImageView imageView = mView.findViewById(R.id.attachment_thumbnail);
         // Should have fallback drawable, not null

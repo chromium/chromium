@@ -10,12 +10,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
@@ -43,7 +48,6 @@ import org.robolectric.android.controller.ActivityController;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -53,8 +57,6 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modelutil.MVCListAdapter;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -81,7 +83,7 @@ public class NavigationAttachmentsMediatorUnitTest {
     private Context mContext;
     private PropertyModel mModel;
     private NavigationAttachmentsMediator mMediator;
-    private ModelList mAttachments;
+    private FuseboxAttachmentModelList mAttachments;
     private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
     private ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
@@ -102,7 +104,8 @@ public class NavigationAttachmentsMediatorUnitTest {
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
 
         mViewHolder = new NavigationAttachmentsViewHolder(viewGroup, mPopup);
-        mAttachments = new ModelList();
+        mAttachments = new FuseboxAttachmentModelList();
+        mAttachments.setComposeBoxQueryControllerBridge(mComposeBoxQueryControllerBridge);
         mMediator =
                 spy(
                         new NavigationAttachmentsMediator(
@@ -116,6 +119,9 @@ public class NavigationAttachmentsMediatorUnitTest {
                                 mComposeBoxQueryControllerBridge));
         Clipboard.setInstanceForTesting(mClipboard);
         OmniboxResourceProvider.setTabFaviconFactory((any) -> mBitmap);
+
+        // Start with no init calls.
+        clearInvocations(mComposeBoxQueryControllerBridge);
     }
 
     @After
@@ -131,10 +137,25 @@ public class NavigationAttachmentsMediatorUnitTest {
                         mWindowAndroid,
                         mModel,
                         mViewHolder,
-                        new ModelList(),
+                        new FuseboxAttachmentModelList(),
                         mAutocompleteRequestTypeSupplier,
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge);
+    }
+
+    private void addAttachment(String title) {
+        addAttachment(title, "token-" + title);
+    }
+
+    private void addAttachment(String title, String token) {
+        Tab mockTab = mock(Tab.class);
+        when(mockTab.getTitle()).thenReturn(title);
+        when(mockTab.getId()).thenReturn(0);
+        when(mockTab.getWebContents())
+                .thenReturn(null); // This will trigger addTabContextFromCache path
+        when(mComposeBoxQueryControllerBridge.addTabContext(mockTab)).thenReturn(token);
+        when(mComposeBoxQueryControllerBridge.addTabContextFromCache(0)).thenReturn(token);
+        mAttachments.add(FuseboxAttachment.forTab(mockTab));
     }
 
     @Test
@@ -241,9 +262,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         // Success is captured with a valid unique token.
         doReturn("123").when(mComposeBoxQueryControllerBridge).addFile(any(), any(), any());
         byte[] byteArray = new byte[] {1, 2, 3};
-        FuseboxAttachment attachment =
-                new FuseboxAttachment(
-                        FuseboxAttachmentType.ATTACHMENT_FILE, null, "title", "image", byteArray);
+        FuseboxAttachment attachment = FuseboxAttachment.forFile(null, "title", "image", byteArray);
         mMediator.uploadAndAddAttachment(attachment);
         assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
         verify(mComposeBoxQueryControllerBridge).addFile("title", "image", byteArray);
@@ -254,17 +273,14 @@ public class NavigationAttachmentsMediatorUnitTest {
         // Failure: no token.
         doReturn(null).when(mComposeBoxQueryControllerBridge).addFile(any(), any(), any());
         byte[] byteArray = new byte[] {1, 2, 3};
-        FuseboxAttachment attachment =
-                new FuseboxAttachment(
-                        FuseboxAttachmentType.ATTACHMENT_FILE, null, "title", "image", byteArray);
+        FuseboxAttachment attachment = FuseboxAttachment.forFile(null, "title", "image", byteArray);
         mMediator.uploadAndAddAttachment(attachment);
         assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
     }
 
     @Test
     public void activateSearchMode_clearsAttachmentsAndAbandonsSession() {
-        mAttachments.add(new MVCListAdapter.ListItem(0, new PropertyModel()));
-        assertEquals(1, mAttachments.size());
+        addAttachment("title");
 
         mMediator.activateAiMode();
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
@@ -282,7 +298,7 @@ public class NavigationAttachmentsMediatorUnitTest {
     @Test
     public void activateAiMode_startsSession() {
         mMediator.activateAiMode();
-        verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
+        verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
         assertEquals(
                 AutocompleteRequestType.AI_MODE,
                 (int) mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE));
@@ -291,7 +307,7 @@ public class NavigationAttachmentsMediatorUnitTest {
     @Test
     public void activateImageGeneration_startsSession() {
         mMediator.activateImageGeneration();
-        verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
+        verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
         assertEquals(
                 AutocompleteRequestType.IMAGE_GENERATION,
                 (int) mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE));
@@ -306,7 +322,7 @@ public class NavigationAttachmentsMediatorUnitTest {
                         mWindowAndroid,
                         mModel,
                         mViewHolder,
-                        new ModelList(),
+                        new FuseboxAttachmentModelList(),
                         new ObservableSupplierImpl<>(),
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge);
@@ -323,34 +339,27 @@ public class NavigationAttachmentsMediatorUnitTest {
     public void setToolbarVisible_stateNotChanged_doesNothing() {
         // Initial state is false. Calling with false should do nothing.
         mMediator.setToolbarVisible(false);
-        verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
-        verify(mComposeBoxQueryControllerBridge, never()).notifySessionAbandoned();
+        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
 
         // Transition to true. Should NOT start a session.
         mMediator.setAutocompleteRequestTypeChangeable(true);
-        verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
-        verify(mComposeBoxQueryControllerBridge, never()).notifySessionAbandoned();
+        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
 
         // Manually start a session to test the hiding part.
         mMediator.activateAiMode();
-        verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
-        clearInvocations(mComposeBoxQueryControllerBridge);
+        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
 
         // Calling with true again. Should do nothing.
         mMediator.setAutocompleteRequestTypeChangeable(true);
-        verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
-        verify(mComposeBoxQueryControllerBridge, never()).notifySessionAbandoned();
+        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
 
         // Transition to false. Should abandon the session.
         mMediator.setAutocompleteRequestTypeChangeable(false);
-        verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
-        verify(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
-        clearInvocations(mComposeBoxQueryControllerBridge);
+        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
 
         // Calling with false again. Should do nothing.
         mMediator.setAutocompleteRequestTypeChangeable(false);
-        verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
-        verify(mComposeBoxQueryControllerBridge, never()).notifySessionAbandoned();
+        verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
     }
 
     @Test
@@ -461,23 +470,33 @@ public class NavigationAttachmentsMediatorUnitTest {
         assertEquals("token-tab2", tokens.get(1));
     }
 
-    private void addAttachment(String title) {
-        addAttachment(title, "token-" + title);
-    }
+    @Test
+    public void testUploadAndAddAttachment_integrationFlow_noCasting() {
+        // Setup: Mock successful file upload
+        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any(byte[].class)))
+                .thenReturn("integration-token");
 
-    private void addAttachment(String title, String token) {
-        var attachment =
-                new FuseboxAttachment(
-                        FuseboxAttachmentType.ATTACHMENT_TAB,
+        // Create attachment without token
+        FuseboxAttachment attachment =
+                FuseboxAttachment.forFile(
                         null,
-                        title,
+                        "integration-test.txt",
                         "text/plain",
-                        new byte[0]);
-        attachment.setToken(token);
-        var model =
-                new PropertyModel.Builder(FuseboxAttachmentProperties.ALL_KEYS)
-                        .with(FuseboxAttachmentProperties.ATTACHMENT, attachment)
-                        .build();
-        mAttachments.add(new MVCListAdapter.ListItem(FuseboxAttachmentType.ATTACHMENT_TAB, model));
+                        "integration content".getBytes());
+
+        // Action: Use mediator's uploadAndAddAttachment method
+        mMediator.uploadAndAddAttachment(attachment);
+
+        // Verification: Should work without any casting
+        assertEquals(1, mAttachments.size());
+        verify(mComposeBoxQueryControllerBridge)
+                .addFile(
+                        eq("integration-test.txt"),
+                        eq("text/plain"),
+                        eq("integration content".getBytes()));
+        assertEquals("integration-token", attachment.getToken());
+
+        // Verify AI mode is activated
+        assertEquals(AutocompleteRequestType.AI_MODE, (int) mAutocompleteRequestTypeSupplier.get());
     }
 }

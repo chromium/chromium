@@ -31,7 +31,6 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.AnchoredPopupWindow;
@@ -52,7 +51,7 @@ public class NavigationAttachmentsCoordinator
     private final PropertyModel mModel;
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
-    private final ModelList mModelList = new ModelList();
+    private final FuseboxAttachmentModelList mModelList = new FuseboxAttachmentModelList();
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private @Nullable NavigationAttachmentsMediator mMediator;
     private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
@@ -130,6 +129,9 @@ public class NavigationAttachmentsCoordinator
         mComposeBoxQueryControllerBridge = ComposeBoxQueryControllerBridge.getForProfile(profile);
         if (mComposeBoxQueryControllerBridge == null) return;
 
+        // Set the bridge for the model list to enable tight coupling
+        mModelList.setComposeBoxQueryControllerBridge(mComposeBoxQueryControllerBridge);
+
         mMediator =
                 new NavigationAttachmentsMediator(
                         mContext,
@@ -147,6 +149,8 @@ public class NavigationAttachmentsCoordinator
         if (mTemplateUrlService != null) {
             mTemplateUrlService.removeObserver(this);
         }
+        // Clear the model list bridge reference to prevent further operations
+        mModelList.setComposeBoxQueryControllerBridge(null);
         if (mComposeBoxQueryControllerBridge != null) {
             mComposeBoxQueryControllerBridge.destroy();
             mComposeBoxQueryControllerBridge = null;
