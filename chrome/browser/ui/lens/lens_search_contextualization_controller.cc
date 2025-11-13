@@ -27,6 +27,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "pdf/buildflags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "ui/gfx/skia_util.h"
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "components/pdf/browser/pdf_document_helper.h"
@@ -456,7 +457,7 @@ void LensSearchContextualizationController::UpdatePageContext(
   bool sending_bitmap = false;
   if (!bitmap.drawsNothing() &&
       (viewport_screenshot_.drawsNothing() ||
-       !lens::AreBitmapsEqual(viewport_screenshot_, bitmap))) {
+       !gfx::BitmapsAreEqual(viewport_screenshot_, bitmap))) {
     viewport_screenshot_ = bitmap;
     sending_bitmap = true;
 
@@ -829,9 +830,20 @@ void LensSearchContextualizationController::CaptureScreenshot(
       /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
       base::BindPostTask(
           base::SequencedTaskRunner::GetCurrentDefault(),
-          base::BindOnce([](const viz::CopyOutputBitmapWithMetadata& result) {
-            return result.bitmap;
-          }).Then(std::move(callback))));
+          base::BindOnce(&LensSearchContextualizationController::
+                             OnScreenshotCapturedForUpdate,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         ++screenshot_attempt_id_, std::move(callback))));
+}
+
+void LensSearchContextualizationController::OnScreenshotCapturedForUpdate(
+    int attempt_id,
+    base::OnceCallback<void(const SkBitmap&)> callback,
+    const viz::CopyOutputBitmapWithMetadata& result) {
+  if (attempt_id != screenshot_attempt_id_) {
+    return;
+  }
+  std::move(callback).Run(result.bitmap);
 }
 
 void LensSearchContextualizationController::DidCaptureScreenshot(
