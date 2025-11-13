@@ -96,17 +96,15 @@ export function getInputMethodSettings(context: SettingsContext): SettingsMap {
     // ZHUYIN_SETTINGS
     'zh-hant-t-i0-und': [SettingsType.ZHUYIN_SETTINGS],
 
-    // JAPANESE SETTINGS
+    // JAPANESE_SETTINGS
     'nacl_mozc_jp': [SettingsType.JAPANESE_SETTINGS],
     'nacl_mozc_us': [SettingsType.JAPANESE_SETTINGS],
 
     // KOREAN_SETTINGS
     'ko-t-i0-und': [SettingsType.KOREAN_SETTINGS],
 
-    // PINYIN_SETTINGS
+    // PINYIN_SETTINGS, PINYIN_FUZZY_SETTINGS
     'zh-hant-t-i0-pinyin': [SettingsType.PINYIN_SETTINGS],
-
-    // PINYIN_FUZZY_SETTINGS
     'zh-t-i0-pinyin':
         [SettingsType.PINYIN_SETTINGS, SettingsType.PINYIN_FUZZY_SETTINGS],
 
@@ -151,7 +149,6 @@ export function getInputMethodSettings(context: SettingsContext): SettingsMap {
     'xkb:in::eng': [SettingsType.ENGLISH_BASIC_WITH_AUTOSHIFT_SETTINGS],
     'xkb:pk::eng': [SettingsType.ENGLISH_BASIC_WITH_AUTOSHIFT_SETTINGS],
     'xkb:za:gb:eng': [SettingsType.ENGLISH_BASIC_WITH_AUTOSHIFT_SETTINGS],
-
   };
 
   // Vietnamese first party input
