@@ -17,6 +17,7 @@
 
 :not(:root)::view-transition {
   position: absolute;
+  position-anchor: auto;
   left: anchor(left);
   top: anchor(top);
   width: anchor-size(width);
