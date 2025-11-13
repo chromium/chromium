@@ -177,8 +177,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
   EXPECT_TRUE(
       tab_groups::SavedTabOrGroupExistsChecker(service, tab2.saved_tab_guid())
           .Wait());
-// On ChromeOS, Sync-the-feature gets started automatically once a primary
-// account is signed in and the transport mode is not a thing.
+// Signing out isn't supported on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
   if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
     // Sign out and verify that the tabs are gone.
