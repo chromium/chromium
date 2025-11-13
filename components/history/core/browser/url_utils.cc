@@ -12,40 +12,6 @@
 
 namespace history {
 
-namespace {
-
-// Comparator to enforce '\0' < '?' < '#' < '/' < other characters.
-int GetURLCharPriority(char ch) {
-  switch (ch) {
-    case '\0': return 0;
-    case '?': return 1;
-    case '#': return 2;
-    case '/': return 3;
-  }
-  return 4;
-}
-
-}  // namespace
-
-// Instead of splitting URLs and extract path components, we can implement
-// CanonicalURLStringCompare() using string operations only. The key idea is,
-// treating '/' to be less than any valid path characters would make it behave
-// as a separator, so e.g., "test" < "test-case" would be enforced by
-// "test/..." < "test-case/...". We also force "?" < "/", so "test?query" <
-// "test/stuff". Since the routine is merely lexicographical string comparison
-// with remapping of character ordering, so it is a valid strict-weak ordering.
-bool CanonicalURLStringCompare(const std::string& s1, const std::string& s2) {
-  const std::string::value_type* ch1 = s1.c_str();
-  const std::string::value_type* ch2 = s2.c_str();
-  while (*ch1 && *ch2 && *ch1 == *ch2) {
-    UNSAFE_TODO(++ch1);
-    UNSAFE_TODO(++ch2);
-  }
-  int pri_diff = GetURLCharPriority(*ch1) - GetURLCharPriority(*ch2);
-  // We want false to be returned if `pri_diff` > 0.
-  return (pri_diff != 0) ? pri_diff < 0 : *ch1 < *ch2;
-}
-
 bool HaveSameSchemeHostAndPort(const GURL&url1, const GURL& url2) {
   return url1.scheme() == url2.scheme() && url1.host() == url2.host() &&
          url1.GetPort() == url2.GetPort();

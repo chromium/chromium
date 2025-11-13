@@ -15,41 +15,6 @@ namespace history {
 
 namespace {
 
-TEST(HistoryUrlUtilsTest, CanonicalURLStringCompare) {
-  // Comprehensive test by comparing each pair in sorted list. O(n^2).
-  auto sorted_list = std::to_array<const char*>({
-      "http://www.gogle.com/redirects_to_google",
-      "http://www.google.com",
-      "http://www.google.com/",
-      "http://www.google.com/?q",
-      "http://www.google.com/A",
-      "http://www.google.com/index.html",
-      "http://www.google.com/test",
-      "http://www.google.com/test?query",
-      "http://www.google.com/test?r=3",
-      "http://www.google.com/test#hash",
-      "http://www.google.com/test/?query",
-      "http://www.google.com/test/#hash",
-      "http://www.google.com/test/zzzzz",
-      "http://www.google.com/test$dollar",
-      "http://www.google.com/test%E9%9B%80",
-      "http://www.google.com/test-case",
-      "http://www.google.com:80/",
-      "https://www.google.com",
-  });
-  for (size_t i = 0; i < std::size(sorted_list); ++i) {
-    EXPECT_FALSE(CanonicalURLStringCompare(sorted_list[i], sorted_list[i]))
-        << " for \"" << sorted_list[i] << "\" < \"" << sorted_list[i] << "\"";
-    // Every disjoint pair-wise comparison.
-    for (size_t j = i + 1; j < std::size(sorted_list); ++j) {
-      EXPECT_TRUE(CanonicalURLStringCompare(sorted_list[i], sorted_list[j]))
-          << " for \"" << sorted_list[i] << "\" < \"" << sorted_list[j] << "\"";
-      EXPECT_FALSE(CanonicalURLStringCompare(sorted_list[j], sorted_list[i]))
-          << " for \"" << sorted_list[j] << "\" < \"" << sorted_list[i] << "\"";
-    }
-  }
-}
-
 TEST(HistoryUrlUtilsTest, HaveSameSchemeHostAndPort) {
   struct TrueCases {
     const char* s1;
