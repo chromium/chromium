@@ -175,19 +175,6 @@ struct PDFExtensionIsolatedContentTestPassToString {
   }
 };
 
-// Calling PluginService::GetPluginsAsync ensures that LoadPlugins is called
-// internally. This is an asynchronous task and this method uses a run loop to
-// wait for the loading task to complete.
-void WaitForPluginServiceToLoad() {
-  base::RunLoop run_loop;
-  content::PluginService::GetPluginsCallback callback = base::BindOnce(
-      [](base::RepeatingClosure quit,
-         const std::vector<content::WebPluginInfo>& unused) { quit.Run(); },
-      run_loop.QuitClosure());
-  content::PluginService::GetInstance()->GetPluginsAsync(std::move(callback));
-  run_loop.Run();
-}
-
 }  // namespace
 
 class PDFExtensionTest : public base::test::WithFeatureOverride,
@@ -2878,7 +2865,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, BackgroundColor) {
   // is intercepted, at which point not all the plugins have loaded. This line
   // ensures that the PDF plugin has loaded and the right background color is
   // beign used.
-  WaitForPluginServiceToLoad();
+  content::PluginService::GetInstance()->GetPlugins();
   content::RenderFrameHost* extension_host =
       LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(extension_host);

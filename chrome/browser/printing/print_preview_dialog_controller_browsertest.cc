@@ -53,12 +53,6 @@ using content::WebContentsObserver;
 
 namespace {
 
-void PluginsLoadedCallback(
-    base::OnceClosure quit_closure,
-    const std::vector<content::WebPluginInfo>& /* info */) {
-  std::move(quit_closure).Run();
-}
-
 void CheckPdfPluginForRenderFrame(content::RenderFrameHost* frame) {
   static const base::FilePath kPdfInternalPluginPath(
       ChromeContentClient::kPDFInternalPluginPath);
@@ -248,12 +242,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
                        MAYBE_PdfPluginDisabled) {
   // Make sure plugins are loaded.
-  {
-    base::RunLoop run_loop;
-    content::PluginService::GetInstance()->GetPluginsAsync(
-        base::BindOnce(&PluginsLoadedCallback, run_loop.QuitClosure()));
-    run_loop.Run();
-  }
+  content::PluginService::GetInstance()->GetPlugins();
   // Get the PDF plugin info.
   std::optional<content::WebPluginInfo> pdf_external_plugin_info =
       content::PluginService::GetInstance()->GetPluginInfoByPathForTesting(

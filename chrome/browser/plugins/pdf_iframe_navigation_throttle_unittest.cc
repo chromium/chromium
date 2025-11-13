@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -20,7 +19,6 @@
 #include "net/http/http_util.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-#include "base/test/test_future.h"
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
 #include "content/public/browser/plugin_service.h"
@@ -47,12 +45,9 @@ class PDFIFrameNavigationThrottleTest : public ChromeRenderViewHostTestHarness {
 #endif
   }
 
-  void LoadPluginsSynchronously() {
+  void LoadPlugins() {
 #if BUILDFLAG(ENABLE_PLUGINS)
-    base::test::TestFuture<const std::vector<content::WebPluginInfo>&> signal;
-    content::PluginService::GetInstance()->GetPluginsAsync(
-        signal.GetCallback());
-    EXPECT_TRUE(signal.Wait());
+    content::PluginService::GetInstance()->GetPlugins();
 #endif
   }
 
@@ -120,7 +115,7 @@ TEST_F(PDFIFrameNavigationThrottleTest, OnlyCreateThrottleForSubframes) {
 TEST_F(PDFIFrameNavigationThrottleTest, InterceptPDFOnly) {
   // Setup.
   SetAlwaysOpenPdfExternallyForTests(true);
-  LoadPluginsSynchronously();
+  LoadPlugins();
 
   NiceMock<content::MockNavigationHandle> handle(GURL(kExampleURL), subframe());
   handle.set_response_headers(GetHeaderWithMimeType("application/pdf"));
@@ -187,19 +182,14 @@ TEST_F(PDFIFrameNavigationThrottleTest, ProceedIfPDFViewerIsEnabled) {
 
   SetAlwaysOpenPdfExternallyForTests(false);
 
-  // First time should asynchronously Resume the navigation.
+  // First time should synchronously let the navigation proceed.
   PDFIFrameNavigationThrottle::MaybeCreateAndAdd(registry);
   ASSERT_EQ(1u, registry.throttles().size());
-  auto* throttle = static_cast<PDFIFrameNavigationThrottle*>(
-      registry.throttles().back().get());
-  ASSERT_EQ(content::NavigationThrottle::DEFER,
-            throttle->WillProcessResponse().action());
-  base::RunLoop run_loop;
-  throttle->set_resume_callback_for_testing(run_loop.QuitClosure());
-  run_loop.Run();
+  ASSERT_EQ(content::NavigationThrottle::PROCEED,
+            registry.throttles().back()->WillProcessResponse().action());
   registry.throttles().clear();
 
-  // Subsequent times should synchronously PROCEED the navigation.
+  // Subsequent times should synchronously let the navigation proceed.
   PDFIFrameNavigationThrottle::MaybeCreateAndAdd(registry);
   ASSERT_EQ(1u, registry.throttles().size());
   ASSERT_EQ(content::NavigationThrottle::PROCEED,
@@ -215,26 +205,14 @@ TEST_F(PDFIFrameNavigationThrottleTest, CancelIfPDFViewerIsDisabled) {
 
   SetAlwaysOpenPdfExternallyForTests(true);
 
-  // First time should asynchronously Cancel the navigation.
+  // First time should synchronously cancel the navigation.
   PDFIFrameNavigationThrottle::MaybeCreateAndAdd(registry);
   ASSERT_EQ(1u, registry.throttles().size());
-  auto* throttle = static_cast<PDFIFrameNavigationThrottle*>(
-      registry.throttles().back().get());
-  ASSERT_EQ(content::NavigationThrottle::DEFER,
-            throttle->WillProcessResponse().action());
-  base::RunLoop run_loop;
-  throttle->set_cancel_deferred_navigation_callback_for_testing(
-      base::BindRepeating(
-          [](base::RunLoop* run_loop,
-             content::NavigationThrottle::ThrottleCheckResult result) {
-            ASSERT_EQ(content::NavigationThrottle::CANCEL_AND_IGNORE, result);
-            run_loop->Quit();
-          },
-          base::Unretained(&run_loop)));
-  run_loop.Run();
+  ASSERT_EQ(content::NavigationThrottle::CANCEL_AND_IGNORE,
+            registry.throttles().back()->WillProcessResponse().action());
   registry.throttles().clear();
 
-  // Subsequent times should synchronously CANCEL the navigation.
+  // Subsequent times should also synchronously cancel the navigation.
   PDFIFrameNavigationThrottle::MaybeCreateAndAdd(registry);
   ASSERT_EQ(1u, registry.throttles().size());
   ASSERT_EQ(content::NavigationThrottle::CANCEL_AND_IGNORE,
@@ -249,7 +227,7 @@ TEST_F(PDFIFrameNavigationThrottleTest, MetricsPDFLoadStatus) {
 
   // Setup.
   SetAlwaysOpenPdfExternallyForTests(true);
-  LoadPluginsSynchronously();
+  LoadPlugins();
 
   NiceMock<content::MockNavigationHandle> handle(GURL(kExampleURL), subframe());
   handle.set_response_headers(GetHeaderWithMimeType("application/pdf"));
