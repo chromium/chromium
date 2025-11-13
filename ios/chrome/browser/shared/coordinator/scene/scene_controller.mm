@@ -3348,7 +3348,7 @@ using UserFeedbackDataCallback =
   ProceduralBlock openQuickDeleteBlock = ^{
     id<QuickDeleteCommands> quickDeleteHandler =
         HandlerForProtocol(weakDispatcher, QuickDeleteCommands);
-    [quickDeleteHandler showQuickDeleteAndCanPerformTabsClosureAnimation:YES];
+    [quickDeleteHandler showQuickDeleteAndCanPerformRadialWipeAnimation:YES];
   };
 
   if (self.currentInterface.incognito) {

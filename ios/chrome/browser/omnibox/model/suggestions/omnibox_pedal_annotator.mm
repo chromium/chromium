@@ -96,8 +96,7 @@ const CGFloat kSymbolSize = 18;
                      action:^{
                        [omniboxHandler cancelOmniboxEdit];
                        [quickDeleteHandler
-                           showQuickDeleteAndCanPerformTabsClosureAnimation:
-                               YES];
+                           showQuickDeleteAndCanPerformRadialWipeAnimation:YES];
                      }];
     }
     case OmniboxPedalId::SET_CHROME_AS_DEFAULT_BROWSER: {

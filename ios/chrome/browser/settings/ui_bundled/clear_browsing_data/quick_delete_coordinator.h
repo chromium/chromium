@@ -12,7 +12,7 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-            canPerformTabsClosureAnimation:(BOOL)canPerformTabsClosureAnimation
+             canPerformRadialWipeAnimation:(BOOL)canPerformRadialWipeAnimation
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -301,7 +301,7 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
       performAction:grey_tap()];
   GREYAssert([ChromeCoordinatorAppInterface
                  selectorWasDispatched:
-                     @"showQuickDeleteAndCanPerformTabsClosureAnimation:"],
+                     @"showQuickDeleteAndCanPerformRadialWipeAnimation:"],
              @"Command was not dispatched");
   [ChromeCoordinatorAppInterface reset];
 }

@@ -59,18 +59,17 @@ using browsing_data::DeleteBrowsingDataDialogAction;
   std::unique_ptr<ScopedUIBlocker> _windowUIBlocker;
   UIWindow* _window;
 
-  // The tabs closure animation should only be performed if Quick Delete is
+  // The radial wipe animation should only be performed if Quick Delete is
   // opened on top of a tab or the tab grid.
-  BOOL _canPerformTabsClosureAnimation;
+  BOOL _canPerformRadialWipeAnimation;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-            canPerformTabsClosureAnimation:
-                (BOOL)canPerformTabsClosureAnimation {
+             canPerformRadialWipeAnimation:(BOOL)canPerformRadialWipeAnimation {
   if ((self = [super initWithBaseViewController:viewController
                                         browser:browser])) {
-    _canPerformTabsClosureAnimation = canPerformTabsClosureAnimation;
+    _canPerformRadialWipeAnimation = canPerformRadialWipeAnimation;
   }
   return self;
 }
@@ -99,7 +98,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
                                  identityManager:identityManager
                              browsingDataRemover:browsingDataRemover
                              discoverFeedService:discoverFeedService
-                  canPerformTabsClosureAnimation:_canPerformTabsClosureAnimation
+                   canPerformRadialWipeAnimation:_canPerformRadialWipeAnimation
                                  uiBlockerTarget:self.browser->GetSceneState()
                         featureEngagementTracker:tracker];
 
@@ -168,19 +167,19 @@ using browsing_data::DeleteBrowsingDataDialogAction;
   _browsingDataCoordinator.delegate = self;
 }
 
-- (void)triggerTabsClosureAnimationWithBeginTime:(base::Time)beginTime
-                                         endTime:(base::Time)endTime
-                                  cachedTabsInfo:
-                                      (tabs_closure_util::WebStateIDToTime)
-                                          cachedTabsInfo
-                            forceWebStatesReload:(BOOL)forceWebStatesReload {
-  CHECK(_canPerformTabsClosureAnimation);
+- (void)triggerRadialWipeAnimationWithBeginTime:(base::Time)beginTime
+                                        endTime:(base::Time)endTime
+                                 cachedTabsInfo:
+                                     (tabs_closure_util::WebStateIDToTime)
+                                         cachedTabsInfo
+                           forceWebStatesReload:(BOOL)forceWebStatesReload {
+  CHECK(_canPerformRadialWipeAnimation);
   CHECK_EQ(Browser::Type::kRegular, self.browser->type());
 
   WebStateList* webStateList = self.browser->GetWebStateList();
   // Get the active and inactive WebStates and the TabGroups of WebStates with a
   // last navigation timestamp between `beginTime` and `endTime`. This
-  // information will be used by the tabs closure animation.
+  // information will be used by the radial wipe animation.
   // TODO(crbug.com/335387869): Consider only returning tabs not in tab groups
   // for `activeTabsToClose`.
   std::set<web::WebStateID> activeTabsToClose =

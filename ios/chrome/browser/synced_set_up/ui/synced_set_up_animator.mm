@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/synced_set_up/ui/synced_set_up_animator.h"
 
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tabs_closure_animation.h"
+#import "ios/chrome/common/ui/animations/radial_wipe_animation.h"
 
 namespace {
 
@@ -19,7 +19,7 @@ const CGFloat kPresentAnimationDuration = 0.4;
   // Indicates the direction of the transition.
   BOOL _isPresenting;
   // The object responsible for animating the interstitial.
-  TabsClosureAnimation* _animation;
+  RadialWipeAnimation* _animation;
 }
 
 - (instancetype)initForPresenting:(BOOL)isPresenting {
@@ -102,9 +102,10 @@ const CGFloat kPresentAnimationDuration = 0.4;
       viewControllerForKey:UITransitionContextFromViewControllerKey];
   UIView* animatedView = fromVC.view;
 
-  _animation = [[TabsClosureAnimation alloc] initWithWindow:window
-                                                  gridCells:@[ animatedView ]];
+  _animation = [[RadialWipeAnimation alloc] initWithWindow:window
+                                               targetViews:@[ animatedView ]];
   _animation.startPoint = CGPointMake(0.5, 0.0);
+  _animation.type = RadialWipeAnimationType::kHideTarget;
 
   window.userInteractionEnabled = NO;
 

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tabs_closure_animation.h"
+#import "ios/chrome/common/ui/animations/radial_wipe_animation.h"
 
 #import "base/check.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
-// Tab closure full animation duration;
+// Full animation duration;
 constexpr CFTimeInterval kAnimationDuration = 1.0;
 
 // Duration for the opacity animation of the color gradient.
@@ -20,8 +20,8 @@ constexpr CFTimeInterval kColorGradientOpacityDuration =
 constexpr CFTimeInterval kWipeDisappearingOpacityDuration =
     (kAnimationDuration / 2.0);
 
-// Duration for the opacity disappearing animation of the grid cell animation.
-constexpr CFTimeInterval kGridCellDisappearingOpacityDuration =
+// Duration for the opacity disappearing animation of the target view animation.
+constexpr CFTimeInterval kTargetViewDisappearingOpacityDuration =
     (kAnimationDuration / 8.0);
 
 // Delay for the start of the disappearing animation of the wipe effect
@@ -29,11 +29,11 @@ constexpr CFTimeInterval kGridCellDisappearingOpacityDuration =
 constexpr CFTimeInterval kWipeDisappearingAnimationDelay =
     (kAnimationDuration / 7.0);
 
-// Delay for the start of the grid cell disappearing animation.
-constexpr CFTimeInterval kGridCellDisappearingAnimationDelay =
+// Delay for the start of the target view disappearing animation.
+constexpr CFTimeInterval kTargetViewDisappearingAnimationDelay =
     (kAnimationDuration / 10.0);
 
-// Tab closure animation start point.
+// Animation start point.
 constexpr CGFloat kDefaultAnimationStartPointX = 0.5;
 constexpr CGFloat kDefaultAnimationStartPointY = 1.0;
 
@@ -46,20 +46,20 @@ constexpr CGFloat kColorGradientAnimationEndRadius = 3.2;
 // Disapperating animation radius at the end of the wipe effect animation.
 constexpr CGFloat kWipeDisappearingAnimationEndRadius = 3.0;
 
-// Grid cell disapperating animation radius at the end of the animation.
-constexpr CGFloat kGridCellDisappearingAnimationEndRadius = 5.1;
+// Target view disapperating animation radius at the end of the animation.
+constexpr CGFloat kTargetViewDisappearingAnimationEndRadius = 5.1;
 
 // Returns a white CGColor with opacity `alpha` or `1 - alpha` if `invert`.
 UIColor* GetWhiteCGColorRefWithAlpha(CGFloat alpha, bool invert) {
   return [UIColor colorWithWhite:1.0 alpha:invert ? 1 - alpha : alpha];
 }
 
-// Returns an animated disappearing gradient the size of `frame` for a grid
-// cell. Callers are expected to add the gradient to the view hierarchy.
+// Returns an animated disappearing gradient the size of `frame` for a target
+// view. Callers are expected to add the gradient to the view hierarchy.
 // `start_time_in_superlayer` is the animation's start time in the time space of
 // the superlayer. Superlayer refers to the parent layer where gradient created
 // by this function will be added to.
-CAGradientLayer* GetAnimatedGridCellDisappearingGradient(
+CAGradientLayer* GetAnimatedTargetViewDisappearingGradient(
     CGRect frame,
     NSTimeInterval start_time_in_superlayer,
     bool invert_alpha,
@@ -93,17 +93,18 @@ CAGradientLayer* GetAnimatedGridCellDisappearingGradient(
   // the end.
   CABasicAnimation* expand_animation =
       [CABasicAnimation animationWithKeyPath:@"endPoint"];
-  expand_animation.beginTime = start_time + kGridCellDisappearingAnimationDelay;
+  expand_animation.beginTime =
+      start_time + kTargetViewDisappearingAnimationDelay;
   expand_animation.duration =
-      kAnimationDuration - kGridCellDisappearingAnimationDelay;
+      kAnimationDuration - kTargetViewDisappearingAnimationDelay;
   expand_animation.fromValue =
       [NSValue valueWithCGPoint:gradient_layer.endPoint];
   expand_animation.toValue = [NSValue
       valueWithCGPoint:CGPointMake(
                            start_point.x +
-                               kGridCellDisappearingAnimationEndRadius,
+                               kTargetViewDisappearingAnimationEndRadius,
                            start_point.y -
-                               kGridCellDisappearingAnimationEndRadius)];
+                               kTargetViewDisappearingAnimationEndRadius)];
 
   // Prolong the end state of the animation, so the view continues to be fully
   // transparent.
@@ -119,8 +120,8 @@ CAGradientLayer* GetAnimatedGridCellDisappearingGradient(
   // The opacity animation should be shorter than the main one since the circle
   // should be fully visible before it stops growing.
   opacity_animation.beginTime =
-      start_time + kGridCellDisappearingAnimationDelay;
-  opacity_animation.duration = kGridCellDisappearingOpacityDuration;
+      start_time + kTargetViewDisappearingAnimationDelay;
+  opacity_animation.duration = kTargetViewDisappearingOpacityDuration;
   opacity_animation.fromValue = gradient_layer.colors;
   opacity_animation.toValue = @[
     (id)GetWhiteCGColorRefWithAlpha(0.0, invert_alpha).CGColor,
@@ -290,7 +291,7 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame,
         .CGColor,
   ];
 
-  // Prolong the end state of the animation, so the window continues to be blue.
+  // Prolong the end state of the animation.
   // In reality, it will be transparent due to `inner_gradient_layer` being
   // applied to `gradient_layer`.
   colors_animation.fillMode = kCAFillModeForwards;
@@ -309,22 +310,23 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame,
 }
 }  // namespace
 
-@implementation TabsClosureAnimation {
+@implementation RadialWipeAnimation {
   UIView* _window;
-  NSArray<UIView*>* _gridCells;
+  NSArray<UIView*>* _targetViews;
   CAGradientLayer* _gradientLayer;
 }
 
 #pragma mark - Public
 
 - (instancetype)initWithWindow:(UIView*)window
-                     gridCells:(NSArray<UIView*>*)gridCells {
+                   targetViews:(NSArray<UIView*>*)targetViews {
   self = [super init];
   if (self) {
     _window = window;
-    _gridCells = gridCells;
+    _targetViews = targetViews;
     _startPoint =
         CGPointMake(kDefaultAnimationStartPointX, kDefaultAnimationStartPointY);
+    _type = RadialWipeAnimationType::kHideTarget;
   }
   return self;
 }
@@ -338,7 +340,7 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame,
       setAnimationTimingFunction:MaterialTimingFunction(MaterialCurveEaseIn)];
   [CATransaction setAnimationDuration:kAnimationDuration];
 
-  __weak TabsClosureAnimation* weakSelf = self;
+  __weak RadialWipeAnimation* weakSelf = self;
   [CATransaction setCompletionBlock:^{
     [weakSelf onAnimationCompleted];
 
@@ -350,7 +352,7 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame,
   CFTimeInterval mediaTime = CACurrentMediaTime();
 
   [self addWipeEffectAnimationWithMediaTime:mediaTime];
-  [self addGridCellDisapperingAnimationWithMediaTime:mediaTime];
+  [self addTargetViewDisappearingAnimationWithMediaTime:mediaTime];
 
   [CATransaction commit];
 }
@@ -362,48 +364,48 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame,
   _gradientLayer = GetAnimatedWipeEffect(
       _window.bounds, kAnimationDuration,
       [_window.layer convertTime:mediaTime fromLayer:nil], self.startPoint);
-  // The grid view is scrollable. The animation should happen on what is visible
-  // in the window not in the middle of the grid view which might not even be
-  // visible.
+  // The animation should happen centered on the window.
   _gradientLayer.position = CGPointMake(_window.bounds.size.width / 2.0,
                                         _window.bounds.size.height / 2.0);
   [_window.layer addSublayer:_gradientLayer];
 }
 
-// Adds the disappering animation to all views in `_gridCells` with `mediaTime`.
-- (void)addGridCellDisapperingAnimationWithMediaTime:(CFTimeInterval)mediaTime {
-  for (UIView* cell : _gridCells) {
+// Adds the disappearing animation to all views in `_targetViews` with
+// `mediaTime`.
+- (void)addTargetViewDisappearingAnimationWithMediaTime:
+    (CFTimeInterval)mediaTime {
+  for (UIView* view : _targetViews) {
     bool invertMaskAlpha =
-        (self.type == TabsClosureAnimationType::kRevealGridCells);
-    CAGradientLayer* gridCellGradientLayer =
-        GetAnimatedGridCellDisappearingGradient(
-            _window.bounds, [cell.layer convertTime:mediaTime fromLayer:nil],
+        (self.type == RadialWipeAnimationType::kRevealTarget);
+    // Using the generalized helper function.
+    CAGradientLayer* viewGradientLayer =
+        GetAnimatedTargetViewDisappearingGradient(
+            _window.bounds, [view.layer convertTime:mediaTime fromLayer:nil],
             invertMaskAlpha, self.startPoint);
-    // Get position of the cell on the tab grid's coordinate system. The
-    // `gridCellGradientLayer` position coordinates are in the cell's coordinate
-    // system. As such, we need to adjust the `gridCellGradientLayer`'s position
-    // with the position of the cell in its superview, the grid view.
-    CGRect cellInTabGrid = [_window convertRect:cell.frame
-                                       fromView:cell.superview];
-    gridCellGradientLayer.position =
-        CGPointMake(_window.bounds.size.width / 2.0 - cellInTabGrid.origin.x,
-                    _window.bounds.size.height / 2.0 - cellInTabGrid.origin.y);
-    cell.layer.mask = gridCellGradientLayer;
+
+    // Get the frame of the view in the window's coordinate system.
+    CGRect viewInWindow = [_window convertRect:view.frame
+                                      fromView:view.superview];
+    // Adjust the gradient layer's position based on the offset of the view
+    // relative to the center of the window.
+    viewGradientLayer.position =
+        CGPointMake(_window.bounds.size.width / 2.0 - viewInWindow.origin.x,
+                    _window.bounds.size.height / 2.0 - viewInWindow.origin.y);
+    view.layer.mask = viewGradientLayer;
   }
 }
 
-// Cleans up the view hierarchy after the animation has run by removing
-// unnecessary layers.
+// Cleans up the view hierarchy after the animation has run.
 - (void)onAnimationCompleted {
   // Remove the main gradient layer after the animation has completed.
   [_gradientLayer removeFromSuperlayer];
   _gradientLayer = nil;
 
-  // Remove the gradient layer in each grid cell mask in favor of hiding the
-  // view.
-  for (UIView* cell : _gridCells) {
-    cell.hidden = (self.type == TabsClosureAnimationType::kHideGridCells);
-    cell.layer.mask = nil;
+  // Remove the gradient layer mask from each target view and set the final
+  // visibility state.
+  for (UIView* view : _targetViews) {
+    view.hidden = (self.type == RadialWipeAnimationType::kHideTarget);
+    view.layer.mask = nil;
   }
 }
 

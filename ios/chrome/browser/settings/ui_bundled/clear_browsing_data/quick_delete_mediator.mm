@@ -152,7 +152,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
 
-  BOOL _canPerformTabsClosureAnimation;
+  BOOL _canPerformRadialWipeAnimation;
 
   // Indicates if deletion has been triggered before.
   BOOL _deletionTriggered;
@@ -170,7 +170,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
                        identityManager:(signin::IdentityManager*)identityManager
                    browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover
                    discoverFeedService:(DiscoverFeedService*)discoverFeedService
-        canPerformTabsClosureAnimation:(BOOL)canPerformTabsClosureAnimation
+         canPerformRadialWipeAnimation:(BOOL)canPerformRadialWipeAnimation
                        uiBlockerTarget:(id<UIBlockerTarget>)uiBlockerTarget
               featureEngagementTracker:(feature_engagement::Tracker*)tracker {
   if ((self = [super init])) {
@@ -195,7 +195,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
     // Start observing preferences.
     [self observePreferences];
 
-    _canPerformTabsClosureAnimation = canPerformTabsClosureAnimation;
+    _canPerformRadialWipeAnimation = canPerformRadialWipeAnimation;
   }
   return self;
 }
@@ -230,7 +230,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
     // Start observing preferences.
     [self observePreferences];
 
-    _canPerformTabsClosureAnimation = NO;
+    _canPerformRadialWipeAnimation = NO;
   }
   return self;
 }
@@ -352,9 +352,9 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   CHECK((removeMask != BrowsingDataRemoveMask::REMOVE_NOTHING) ||
         shouldCloseTabs);
 
-  // If we cannot perform the tabs closure animation, then close the tabs when
+  // If we cannot perform the radial wipe animation, then close the tabs when
   // deleting the other data.
-  if (shouldCloseTabs && !_canPerformTabsClosureAnimation) {
+  if (shouldCloseTabs && !_canPerformRadialWipeAnimation) {
     _browsingDataRemover->SetCachedTabsInfo(_cachedTabsInfo);
     removeMask |= BrowsingDataRemoveMask::CLOSE_TABS;
   }
@@ -370,12 +370,12 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
 
   base::OnceClosure removeBrowsingDataCompletion;
 
-  // If we can perform the tabs closure animation, then don't close the tabs
+  // If we can perform the radial wipe animation, then don't close the tabs
   // right away, but perform the animation which will eventually close the tabs.
   // Also delay the reload of tabs that is needed when site data and cache is
   // delete to the end of the tabs being closed. This avoids reloading and
   // consequently writting history of tabs that will be closed.
-  if (shouldCloseTabs && _canPerformTabsClosureAnimation) {
+  if (shouldCloseTabs && _canPerformRadialWipeAnimation) {
     params.reload_web_states =
         BrowsingDataRemover::WebStatesReloadPolicy::kNoReload;
     BOOL forceWebStatesReload =
@@ -386,9 +386,9 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
         [](__typeof(self) strongSelf, base::Time beginTime, base::Time endTime,
            bool forceWebStatesReload) {
           [strongSelf
-              triggerTabsClosureAnimationWithBeginTime:beginTime
-                                               endTime:endTime
-                                  forceWebStatesReload:forceWebStatesReload];
+              triggerRadialWipeAnimationWithBeginTime:beginTime
+                                              endTime:endTime
+                                 forceWebStatesReload:forceWebStatesReload];
         },
         weakSelf, beginTime, endTime, forceWebStatesReload);
   } else {
@@ -552,18 +552,18 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
 
 #pragma mark - Private
 
-// Trigger the tab closure animation along with the actual closure of the
+// Trigger the radial wipe animation along with the actual closure of the
 // WebStates within [`beginTime`, `endTime`[ and indicates if reloading tabs is
 // necessary after the deletion has happen.
-- (void)triggerTabsClosureAnimationWithBeginTime:(base::Time)beginTime
-                                         endTime:(base::Time)endTime
-                            forceWebStatesReload:(BOOL)forceWebStatesReload {
-  CHECK(_canPerformTabsClosureAnimation);
+- (void)triggerRadialWipeAnimationWithBeginTime:(base::Time)beginTime
+                                        endTime:(base::Time)endTime
+                           forceWebStatesReload:(BOOL)forceWebStatesReload {
+  CHECK(_canPerformRadialWipeAnimation);
   [_presentationHandler
-      triggerTabsClosureAnimationWithBeginTime:beginTime
-                                       endTime:endTime
-                                cachedTabsInfo:_cachedTabsInfo
-                          forceWebStatesReload:forceWebStatesReload];
+      triggerRadialWipeAnimationWithBeginTime:beginTime
+                                      endTime:endTime
+                               cachedTabsInfo:_cachedTabsInfo
+                         forceWebStatesReload:forceWebStatesReload];
 }
 
 // Creates counters for browsing history, passwords and form data browsing data

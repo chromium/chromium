@@ -569,7 +569,7 @@ using base::UserMetricsAction;
       browsing_data::DeleteBrowsingDataDialogAction::
           kKeyboardEntryPointSelected);
 
-  [_quickDeleteHandler showQuickDeleteAndCanPerformTabsClosureAnimation:YES];
+  [_quickDeleteHandler showQuickDeleteAndCanPerformRadialWipeAnimation:YES];
 }
 
 #pragma mark - Private

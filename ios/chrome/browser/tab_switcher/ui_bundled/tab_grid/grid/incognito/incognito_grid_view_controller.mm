@@ -15,8 +15,8 @@
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui/base_grid_view_controller+subclassing.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/incognito_grid_commands.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tabs_closure_animation.h"
 #import "ios/chrome/common/material_timing.h"
+#import "ios/chrome/common/ui/animations/radial_wipe_animation.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 @implementation IncognitoGridViewController {
@@ -29,7 +29,7 @@
   UIView* _blackBackgroundView;
 
   // The object responsible for animating the tabs closure.
-  TabsClosureAnimation* _tabsClosureAnimation;
+  RadialWipeAnimation* _radialWipeAnimation;
 }
 
 #pragma mark - Parent's functions
@@ -178,13 +178,15 @@
   AddSameConstraints(self.collectionView.frameLayoutGuide,
                      _blackBackgroundView);
 
-  NSMutableArray<UIView*>* gridCells =
+  NSMutableArray<UIView*>* targetViews =
       [[NSMutableArray alloc] initWithObjects:_blockingView, nil];
-  _tabsClosureAnimation =
-      [[TabsClosureAnimation alloc] initWithWindow:window gridCells:gridCells];
+  _radialWipeAnimation =
+      [[RadialWipeAnimation alloc] initWithWindow:window
+                                      targetViews:targetViews];
+  _radialWipeAnimation.type = RadialWipeAnimationType::kHideTarget;
 
   __weak IncognitoGridViewController* weakSelf = self;
-  [_tabsClosureAnimation animateWithCompletion:^{
+  [_radialWipeAnimation animateWithCompletion:^{
     [weakSelf onTabsClosureAnimationCompleted:window];
   }];
 }
@@ -195,7 +197,7 @@
   [self.reauthHandler manualAuthenticationOverride];
   [self.tabGridHandler showPage:TabGridPageRegularTabs animated:YES];
   [window setUserInteractionEnabled:YES];
-  _tabsClosureAnimation = nil;
+  _radialWipeAnimation = nil;
 }
 
 @end

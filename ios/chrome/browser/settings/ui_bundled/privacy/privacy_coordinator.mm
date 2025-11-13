@@ -147,7 +147,7 @@
   id<QuickDeleteCommands> quickDeleteHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), QuickDeleteCommands);
   [quickDeleteHandler
-      showQuickDeleteAndCanPerformTabsClosureAnimation:
+      showQuickDeleteAndCanPerformRadialWipeAnimation:
           ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET];
 }
 

@@ -4661,18 +4661,18 @@ const char kChromeAppStoreUrl[] =
 }
 #pragma mark - QuickDeleteCommands
 
-- (void)showQuickDeleteAndCanPerformTabsClosureAnimation:
-    (BOOL)canPerformTabsClosureAnimation {
+- (void)showQuickDeleteAndCanPerformRadialWipeAnimation:
+    (BOOL)canPerformRadialWipeAnimation {
   CHECK(!self.isOffTheRecord);
 
   [_quickDeleteCoordinator stop];
 
   _quickDeleteCoordinator = [[QuickDeleteCoordinator alloc]
-          initWithBaseViewController:
-              top_view_controller::TopPresentedViewControllerFrom(
-                  self.sceneState.window.rootViewController)
-                             browser:self.browser
-      canPerformTabsClosureAnimation:canPerformTabsClosureAnimation];
+         initWithBaseViewController:
+             top_view_controller::TopPresentedViewControllerFrom(
+                 self.sceneState.window.rootViewController)
+                            browser:self.browser
+      canPerformRadialWipeAnimation:canPerformRadialWipeAnimation];
   [_quickDeleteCoordinator start];
 }
 

@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_mutator.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tabs_closure_animation.h"
+#import "ios/chrome/common/ui/animations/radial_wipe_animation.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 @interface ReaderModeViewController ()
@@ -18,7 +18,7 @@
 
 @implementation ReaderModeViewController {
   UIView* _contentView;
-  TabsClosureAnimation* _tabsClosureAnimation;
+  RadialWipeAnimation* _radialWipeAnimation;
   OverscrollActionsController* _overscrollActionsController;
 }
 
@@ -57,15 +57,15 @@
   if (animated) {
     [self.view setNeedsLayout];
     [self.view layoutIfNeeded];
-    _tabsClosureAnimation =
-        [[TabsClosureAnimation alloc] initWithWindow:self.view
-                                           gridCells:@[ _contentView ]];
-    _tabsClosureAnimation.type = TabsClosureAnimationType::kRevealGridCells;
-    _tabsClosureAnimation.startPoint = CGPointMake(0.5, 0);
+    _radialWipeAnimation =
+        [[RadialWipeAnimation alloc] initWithWindow:self.view
+                                        targetViews:@[ _contentView ]];
+    _radialWipeAnimation.type = RadialWipeAnimationType::kRevealTarget;
+    _radialWipeAnimation.startPoint = CGPointMake(0.5, 0);
     self.view.userInteractionEnabled = NO;
     __weak __typeof(self) weakSelf = self;
-    [_tabsClosureAnimation animateWithCompletion:^{
-      [weakSelf tabsClosureAnimationDidComplete];
+    [_radialWipeAnimation animateWithCompletion:^{
+      [weakSelf radialWipeAnimationDidComplete];
     }];
   } else {
     [self didMoveToParentViewController:parent];
@@ -77,14 +77,14 @@
   [_overscrollActionsController invalidate];
   _overscrollActionsController = nil;
   if (animated) {
-    _tabsClosureAnimation =
-        [[TabsClosureAnimation alloc] initWithWindow:self.view
-                                           gridCells:@[ _contentView ]];
-    _tabsClosureAnimation.startPoint = CGPointMake(0.5, 0);
+    _radialWipeAnimation =
+        [[RadialWipeAnimation alloc] initWithWindow:self.view
+                                        targetViews:@[ _contentView ]];
+    _radialWipeAnimation.startPoint = CGPointMake(0.5, 0);
     self.view.userInteractionEnabled = NO;
     __weak __typeof(self) weakSelf = self;
-    [_tabsClosureAnimation animateWithCompletion:^{
-      [weakSelf tabsClosureAnimationDidComplete];
+    [_radialWipeAnimation animateWithCompletion:^{
+      [weakSelf radialWipeAnimationDidComplete];
     }];
   } else {
     [self.view removeFromSuperview];
@@ -147,17 +147,17 @@
 
 // First restores user interaction in `self.view`. In case of dismissal, removes
 // the view and view controller from their hierarchy. Then calls
-// `didMoveToParentViewController:` and frees `_tabsClosureAnimation`.
-- (void)tabsClosureAnimationDidComplete {
+// `didMoveToParentViewController:` and frees `_radialWipeAnimation`.
+- (void)radialWipeAnimationDidComplete {
   self.view.userInteractionEnabled = YES;
-  if (_tabsClosureAnimation.type == TabsClosureAnimationType::kHideGridCells) {
+  if (_radialWipeAnimation.type == RadialWipeAnimationType::kHideTarget) {
     [self.view removeFromSuperview];
     [self removeFromParentViewController];
   } else {
     [self.delegate readerModeViewControllerAnimationDidComplete:self];
   }
   [self didMoveToParentViewController:self.parentViewController];
-  _tabsClosureAnimation = nil;
+  _radialWipeAnimation = nil;
 }
 
 @end

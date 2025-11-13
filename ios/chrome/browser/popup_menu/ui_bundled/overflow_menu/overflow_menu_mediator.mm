@@ -2337,8 +2337,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
           kMenuItemEntryPointSelected);
 
   [self dismissMenu];
-  [self.quickDeleteHandler
-      showQuickDeleteAndCanPerformTabsClosureAnimation:YES];
+  [self.quickDeleteHandler showQuickDeleteAndCanPerformRadialWipeAnimation:YES];
 }
 
 // Creates a new tab group with the current tab.

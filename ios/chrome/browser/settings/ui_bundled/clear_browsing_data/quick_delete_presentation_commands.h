@@ -26,15 +26,15 @@ enum class TimePeriod;
 // curate the list of selected browsing data to be deleted.
 - (void)showBrowsingDataPageWithTimeRange:(browsing_data::TimePeriod)timeRange;
 
-// Trigger the tabs closure animation along with the actual closure of the
+// Trigger the radial wipe animation along with the actual closure of the
 // WebStates within the deletion time frame. It also indicates if reloading tabs
 // is necessary after the deletion has finished.
-- (void)triggerTabsClosureAnimationWithBeginTime:(base::Time)beginTime
-                                         endTime:(base::Time)endTime
-                                  cachedTabsInfo:
-                                      (tabs_closure_util::WebStateIDToTime)
-                                          cachedTabsInfo
-                            forceWebStatesReload:(BOOL)forceWebStatesReload;
+- (void)triggerRadialWipeAnimationWithBeginTime:(base::Time)beginTime
+                                        endTime:(base::Time)endTime
+                                 cachedTabsInfo:
+                                     (tabs_closure_util::WebStateIDToTime)
+                                         cachedTabsInfo
+                           forceWebStatesReload:(BOOL)forceWebStatesReload;
 
 // Method invoked on deletion in progress to block other windows to avoid having
 // multiple deletions occur concurrently. Returns whether the block was

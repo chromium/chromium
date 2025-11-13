@@ -96,7 +96,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
                                    identityManager:identityManager
                                browsingDataRemover:browsing_data_remover
                                discoverFeedService:discover_feed_service
-                    canPerformTabsClosureAnimation:NO
+                     canPerformRadialWipeAnimation:NO
                                    uiBlockerTarget:scene_state_
                           featureEngagementTracker:tracker];
   }
