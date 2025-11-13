@@ -142,7 +142,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   self.showsVerticalScrollIndicator = NO;
   self.showDismissBarButton = NO;
   self.topAlignedLayout = YES;
-  self.customContentBottomInset = 0;
+  self.addsContentViewBottomInset = NO;
   self.actionHandler = self;
 
   [super viewDidLoad];

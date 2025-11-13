@@ -148,9 +148,6 @@
 // The action handler for interactions in this View Controller.
 @property(nonatomic, weak) id<ConfirmationAlertActionHandler> actionHandler;
 
-// Sets the custom content bottom insets.
-@property(nonatomic, assign) CGFloat customContentBottomInset;
-
 // Indicates whether information stack view items should horizontally fill the
 // space.
 @property(nonatomic) BOOL shouldFillInformationStack;

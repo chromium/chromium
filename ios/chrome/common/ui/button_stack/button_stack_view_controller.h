@@ -61,8 +61,9 @@
 // indicator. Must be set before the view is loaded. Default is YES.
 @property(nonatomic, assign) BOOL showsVerticalScrollIndicator;
 
-// Sets the custom height for the gradient view above the action buttons.
-@property(nonatomic, assign) CGFloat customGradientViewHeight;
+// Controls the addition of the a bottom inset to the contentView.
+// Defaults to YES.
+@property(nonatomic, assign) BOOL addsContentViewBottomInset;
 
 // Controls the visibility of the gradient view above the action buttons.
 // Defaults to YES.

@@ -16,11 +16,22 @@
 
 namespace {
 
+// Spacing between buttons in the stack.
 const CGFloat kButtonSpacing = 8.0;
+// Horizontal margin for the button stack.
 const CGFloat kButtonStackHorizontalMargin = 16.0;
 
+// Default bottom margin for the button stack.
 const CGFloat kButtonStackBottomMargin = 20.0;
+// Legacy bottom margin for the button stack.
 const CGFloat kLegacyButtonStackBottomMargin = 0.0;
+
+// Inset for the content view at the bottom, used when
+// `_addsContentViewBottomInset` is YES.
+const CGFloat kContentViewBottomInset = 20;
+
+// Height of the gradient view above the action buttons.
+const CGFloat kGradientHeight = 30;
 
 // The position of a button in the stack.
 typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
@@ -68,6 +79,7 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
     _configuration = configuration;
     _scrollEnabled = YES;
     _showsVerticalScrollIndicator = YES;
+    _addsContentViewBottomInset = YES;
     _showsGradientView = YES;
     _actionStackBottomMargin = kButtonStackBottomMargin;
   }
@@ -105,32 +117,39 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
 
-  if (self.customGradientViewHeight > 0 && !_gradientMask) {
+  // Determine if the gradient should be visible.
+  BOOL scrollable =
+      _scrollView.contentSize.height > _scrollView.bounds.size.height;
+  CGFloat effectiveGradientHeight =
+      kGradientHeight - _scrollView.contentInset.bottom;
+  BOOL shouldShowGradient =
+      _showsGradientView && scrollable && (effectiveGradientHeight > 0);
+
+  if (!shouldShowGradient) {
+    _scrollContainerView.layer.mask = nil;
+    return;
+  }
+
+  // Create mask if it doesn't exist.
+  if (!_gradientMask) {
     _gradientMask = [CAGradientLayer layer];
     _gradientMask.endPoint = CGPointMake(0.0, 1.0);
-    UIColor* bottomColor = BlendColors(
-        [UIColor clearColor], self.view.backgroundColor,
-        _scrollView.contentInset.bottom / self.customGradientViewHeight);
+    UIColor* bottomColor =
+        BlendColors([UIColor clearColor], self.view.backgroundColor,
+                    _scrollView.contentInset.bottom / kGradientHeight);
     _gradientMask.colors =
         @[ (id)self.view.backgroundColor.CGColor, (id)bottomColor.CGColor ];
-    _scrollContainerView.layer.mask = _showsGradientView ? _gradientMask : nil;
   }
 
-  if (_gradientMask) {
-    CGFloat effectiveGradientHeight =
-        self.customGradientViewHeight - _scrollView.contentInset.bottom;
-    if (effectiveGradientHeight <= 0) {
-      return;
-    }
+  // Apply mask and calculate geometry.
+  _scrollContainerView.layer.mask = _gradientMask;
+  _gradientMask.frame = _scrollContainerView.bounds;
 
-    _gradientMask.frame = _scrollContainerView.bounds;
-
-    CGFloat startY =
-        (effectiveGradientHeight >= _gradientMask.frame.size.height)
-            ? 0.0
-            : 1.0 - (effectiveGradientHeight / _gradientMask.frame.size.height);
-    _gradientMask.startPoint = CGPointMake(0.0, startY);
-  }
+  CGFloat startY =
+      (effectiveGradientHeight >= _gradientMask.frame.size.height)
+          ? 0.0
+          : 1.0 - (effectiveGradientHeight / _gradientMask.frame.size.height);
+  _gradientMask.startPoint = CGPointMake(0.0, startY);
 }
 
 #pragma mark - Public
@@ -157,6 +176,7 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
           systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
           .height;
   if (stackHeight > 0) {
+    stackHeight += [self contentViewBottomInset];
     return stackHeight + self.actionStackBottomMargin;
   }
   return 0;
@@ -221,6 +241,11 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 }
 
 #pragma mark - Private
+
+// Returns the bottom inset for the content view.
+- (CGFloat)contentViewBottomInset {
+  return _addsContentViewBottomInset ? kContentViewBottomInset : 0;
+}
 
 // Creates the scroll container view.
 - (UIView*)createScrollContainerView {
@@ -409,7 +434,8 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
     [_scrollContainerView.trailingAnchor
         constraintEqualToAnchor:view.trailingAnchor],
     [_scrollContainerView.bottomAnchor
-        constraintEqualToAnchor:_actionStackView.topAnchor],
+        constraintEqualToAnchor:_actionStackView.topAnchor
+                       constant:-[self contentViewBottomInset]],
     scrollContainerBottomToSafeAreaBottomConstraint,
   ]];
   AddSameConstraints(_scrollView, _scrollContainerView);

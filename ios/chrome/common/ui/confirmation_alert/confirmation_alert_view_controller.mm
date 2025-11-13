@@ -18,7 +18,6 @@
 
 namespace {
 
-const CGFloat kContentBottomInset = 20;
 const CGFloat kStackViewSpacing = 8;
 const CGFloat kStackViewSpacingAfterIllustration = 27;
 
@@ -67,7 +66,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
   if (self) {
     self.actionDelegate = self;
     _customSpacingAfterImage = kStackViewSpacingAfterIllustration;
-    _customContentBottomInset = kContentBottomInset;
     _customSpacing = kStackViewSpacing;
     _showDismissBarButton = YES;
     _dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
@@ -148,8 +146,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
   // horizontal scroll.
   [NSLayoutConstraint activateConstraints:@[
     [self.stackView.bottomAnchor
-        constraintEqualToAnchor:self.contentView.bottomAnchor
-                       constant:-self.customContentBottomInset]
+        constraintEqualToAnchor:self.contentView.bottomAnchor]
   ]];
 
   CGFloat stackViewTopConstant = 0;

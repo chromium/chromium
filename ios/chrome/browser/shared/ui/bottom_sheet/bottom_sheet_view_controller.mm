@@ -11,8 +11,6 @@ namespace {
 // Custom radius for the half sheet presentation.
 CGFloat const kHalfSheetCornerRadius = 20;
 
-CGFloat const kGradientHeight = 30;
-
 // Custom detent identifier for when the bottom sheet is minimized.
 NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 
@@ -26,7 +24,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 - (void)viewDidLoad {
   self.alwaysShowImage = YES;
-  self.customGradientViewHeight = kGradientHeight;
   [super viewDidLoad];
   [self setUpBottomSheetPresentationController];
   [self setUpBottomSheetDetents];

@@ -187,7 +187,7 @@ UIImageView* BrandingImageView() {
   self.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_BOTTOMSHEET_CANCEL_TEXT_IOS);
   [self reloadConfiguration];
-  self.customContentBottomInset = 0;
+  self.addsContentViewBottomInset = NO;
 
   // Don't show the dismiss bar button (with the secondary button used for
   // canceling), and ensure there is still sufficient space between the top of
