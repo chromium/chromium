@@ -4993,8 +4993,8 @@ void RenderViewContextMenu::OpenLinkInSplitView() {
 
   TabStripModel* const tab_strip_model = browser->tab_strip_model();
   tabs::TabInterface* const source_tab =
-      tabs::TabInterface::GetFromContents(source_web_contents_);
-  if (source_tab->IsSplit()) {
+      tabs::TabInterface::MaybeGetFromContents(source_web_contents_);
+  if (source_tab && source_tab->IsSplit()) {
     // Navigate the inactive tab to the URL
     const split_tabs::SplitTabId split_id = source_tab->GetSplit().value();
     for (tabs::TabInterface* tab :
