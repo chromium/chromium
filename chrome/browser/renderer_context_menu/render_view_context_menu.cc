@@ -2358,13 +2358,11 @@ void RenderViewContextMenu::AppendPartialTranslateItem() {
 }
 
 void RenderViewContextMenu::AppendTranslateItem() {
-  menu_model_.AddItemWithIcon(
+  menu_model_.AddItem(
       IDC_CONTENT_CONTEXT_TRANSLATE,
       l10n_util::GetStringFUTF16(
           IDS_CONTENT_CONTEXT_TRANSLATE,
-          GetTargetLanguageDisplayName(/*is_full_page_translation=*/true)),
-      ui::ImageModel::FromVectorIcon(vector_icons::kTranslateIcon,
-                                     ui::kColorMenuIcon, kTabMenuIconSize));
+          GetTargetLanguageDisplayName(/*is_full_page_translation=*/true)));
 }
 
 void RenderViewContextMenu::AppendMediaRouterItem() {

@@ -1316,29 +1316,6 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchChromeUIScheme) {
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 }
-
-// Test that the context menu item for translate is shown, and has an icon on
-// relevant platforms.
-TEST_F(RenderViewContextMenuPrefsTest, TranslateContextMenuHasIcon) {
-  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
-  params.has_image_contents = true;
-  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                 params);
-  menu.SetBrowser(GetBrowser());
-  menu.Init();
-  size_t index = 0;
-  raw_ptr<ui::MenuModel> model = nullptr;
-
-  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATE));
-  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_TRANSLATE,
-                                            &model, &index));
-#if BUILDFLAG(IS_MAC)
-  EXPECT_TRUE(model->GetIconAt(index).IsEmpty());
-#else
-  EXPECT_FALSE(model->GetIconAt(index).IsEmpty());
-#endif
-}
-
 // Verify that the adding the Lens image search option to the menu
 // issues a preconnection request to lens.google.com.
 TEST_F(RenderViewContextMenuPrefsTest,
