@@ -198,17 +198,13 @@ AssistiveSuggester::AssistiveSuggester(
 AssistiveSuggester::~AssistiveSuggester() = default;
 
 bool AssistiveSuggester::IsAssistiveFeatureEnabled() {
-  return IsEmojiSuggestAdditionEnabled() || IsMultiWordSuggestEnabled() ||
+  return IsMultiWordSuggestEnabled() ||
          IsDiacriticsOnPhysicalKeyboardLongpressEnabled();
 }
 
 void AssistiveSuggester::FetchEnabledSuggestionsFromBrowserContextThen(
     AssistiveSuggesterSwitch::FetchEnabledSuggestionsCallback callback) {
   suggester_switch_->FetchEnabledSuggestionsThen(std::move(callback), context_);
-}
-
-bool AssistiveSuggester::IsEmojiSuggestAdditionEnabled() {
-  return false;
 }
 
 bool AssistiveSuggester::IsMultiWordSuggestEnabled() {
@@ -275,7 +271,7 @@ AssistiveSuggester::GetAssistiveFeatureForType(AssistiveType type) {
 bool AssistiveSuggester::IsAssistiveTypeEnabled(AssistiveType type) {
   switch (GetAssistiveFeatureForType(type)) {
     case AssistiveFeature::kEmojiSuggestion:
-      return IsEmojiSuggestAdditionEnabled();
+      return false;
     case AssistiveFeature::kMultiWordSuggestion:
       return IsMultiWordSuggestEnabled();
     default:
@@ -591,13 +587,6 @@ bool AssistiveSuggester::TrySuggestWithSurroundingText(
   if (IsSuggestionShown()) {
     return current_suggester_->TrySuggestWithSurroundingText(text,
                                                              selection_range);
-  }
-  if (IsEmojiSuggestAdditionEnabled() &&
-      enabled_suggestions.emoji_suggestions &&
-      emoji_suggester_.TrySuggestWithSurroundingText(text, selection_range)) {
-    current_suggester_ = &emoji_suggester_;
-    RecordAssistiveCoverage(current_suggester_->GetProposeActionType());
-    return true;
   }
   // No suggestions were shown.
   return false;

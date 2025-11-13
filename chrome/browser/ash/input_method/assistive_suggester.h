@@ -123,8 +123,6 @@ class AssistiveSuggester : public SuggestionsSource {
 
   void DismissSuggestion();
 
-  bool IsEmojiSuggestAdditionEnabled();
-
   bool IsMultiWordSuggestEnabled();
 
   bool IsDiacriticsOnPhysicalKeyboardLongpressEnabled();
