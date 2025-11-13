@@ -13412,6 +13412,7 @@ from previous Chrome versions.
   <int value="-261444685" label="GlicUseToolbarHeightSidePanel:disabled"/>
   <int value="-261398170" label="ChromeLabs:enabled"/>
   <int value="-261089705" label="ViewTransitionLayeredCapture:disabled"/>
+  <int value="-261056034" label="AndroidTWAOriginDisplay:enabled"/>
   <int value="-259952983"
       label="AutofillVirtualCardsOnTouchToFillAndroid:enabled"/>
   <int value="-258081634" label="AutofillAssistantDirectActions:disabled"/>
@@ -17861,6 +17862,7 @@ from previous Chrome versions.
   <int value="1299336534"
       label="AutofillSuppressCreditCardSaveForAssistant:disabled"/>
   <int value="1299784522" label="EmptyStates:disabled"/>
+  <int value="1299981759" label="AndroidTWAOriginDisplay:disabled"/>
   <int value="1300282719" label="OfflinePagesBackgroundLoading:enabled"/>
   <int value="1300449228" label="EnableFileBackedBlobFactory:enabled"/>
   <int value="1300753556" label="ManualPasswordGenerationAndroid:disabled"/>

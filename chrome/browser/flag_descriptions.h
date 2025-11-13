@@ -5037,6 +5037,11 @@ inline constexpr char kAndroidTipsNotificationsName[] =
 inline constexpr char kAndroidTipsNotificationsDescription[] =
     "Enable tips notifications for supported features on Android.";
 
+inline constexpr char kAndroidEnableTWAOriginDisplayName[] =
+    "Enable TWA origin display";
+inline constexpr char kAndroidEnableTWAOriginDisplayDescription[] =
+    "For Trusted Web Apps (TWAs), display origin on web app header.";
+
 inline constexpr char kAndroidUseCorrectDisplayWorkAreaName[] =
     "Enable accounting system UI for computing the display work area";
 inline constexpr char kAndroidUseCorrectDisplayWorkAreaDescription[] =
