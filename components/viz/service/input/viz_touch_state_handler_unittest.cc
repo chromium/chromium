@@ -155,5 +155,35 @@ TEST_F(VizTouchStateHandlerTest, VizTouchStateWritesCorrectly) {
   EXPECT_FALSE(state->is_sequence_active.load(std::memory_order_acquire));
 }
 
+TEST_F(VizTouchStateHandlerTest, UpdateLastTransferredBackDownTimeMs) {
+  const VizTouchState* state = GetVizTouchState();
+  ASSERT_TRUE(state);
+
+  // Initially, the last transferred back down time should be 0.
+  EXPECT_EQ(
+      state->last_transferred_back_down_time_ms.load(std::memory_order_acquire),
+      0);
+
+  // Update the last transferred back down time.
+  int64_t down_time_ms = base::TimeTicks::Now().ToUptimeMillis();
+  handler_.UpdateLastTransferredBackDownTimeMs(down_time_ms);
+  EXPECT_EQ(
+      state->last_transferred_back_down_time_ms.load(std::memory_order_acquire),
+      down_time_ms);
+
+  // Update it again with a different value.
+  down_time_ms += 100;
+  handler_.UpdateLastTransferredBackDownTimeMs(down_time_ms);
+  EXPECT_EQ(
+      state->last_transferred_back_down_time_ms.load(std::memory_order_acquire),
+      down_time_ms);
+
+  // Reset the last transferred back down time to 0.
+  handler_.UpdateLastTransferredBackDownTimeMs(0);
+  EXPECT_EQ(
+      state->last_transferred_back_down_time_ms.load(std::memory_order_acquire),
+      0);
+}
+
 }  // namespace
 }  // namespace viz

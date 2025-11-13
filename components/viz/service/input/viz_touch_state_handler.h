@@ -28,6 +28,8 @@ class VIZ_SERVICE_EXPORT VizTouchStateHandler
 
   base::ReadOnlySharedMemoryRegion DuplicateVizTouchStateRegion() const;
 
+  virtual void UpdateLastTransferredBackDownTimeMs(int64_t down_time_ms);
+
  private:
   // Writable shared memory for VizTouchState. This is created and owned by Viz.
   base::WritableSharedMemoryMapping viz_touch_state_writable_mapping_;

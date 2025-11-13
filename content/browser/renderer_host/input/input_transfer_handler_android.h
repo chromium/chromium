@@ -10,6 +10,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "components/viz/common/input/viz_touch_state.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/android/transfer_input_to_viz_result.h"
 #include "content/public/browser/render_widget_host.h"
@@ -60,7 +61,7 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
   static constexpr const char* kEventsAfterTransferHistogram =
       "Android.InputOnViz.Browser.EventsAfterTransfer";
   static constexpr const char* kTransferInputToVizResultHistogram =
-      "Android.InputOnViz.Browser.TransferInputToVizResult";
+      "Android.InputOnViz.Browser.TransferInputToVizResult2";
   static constexpr const char* kEventsInDroppedSequenceHistogram =
       "Android.InputOnViz.Browser.NumEventsInDroppedSequence";
   static constexpr const char* kEventTypesInDroppedSequenceHistogram =
@@ -91,6 +92,10 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
   RenderWidgetHost::InputEventObserver& GetInputObserver() {
     return input_observer_;
   }
+
+ protected:
+  // Virtual for testing.
+  virtual const viz::VizTouchState* GetVizTouchState() const;
 
  private:
   class InputObserver : public RenderWidgetHost::InputEventObserver {

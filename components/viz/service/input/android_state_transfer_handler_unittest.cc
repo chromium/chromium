@@ -11,6 +11,7 @@
 
 #include "base/android/android_info.h"
 #include "base/android/jni_android.h"
+#include "components/viz/service/input/viz_touch_state_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -143,9 +144,15 @@ class MockAndroidStateTransferHandlerClient
   MOCK_METHOD((bool), TransferInputBackToBrowser, (), (override));
 };
 
+class MockVizTouchStateHandler : public VizTouchStateHandler {
+ public:
+  MOCK_METHOD(void, UpdateLastTransferredBackDownTimeMs, (int64_t), (override));
+};
+
 class AndroidStateTransferHandlerTest : public testing::Test {
  public:
-  AndroidStateTransferHandlerTest() : handler_(mock_handler_client_) {}
+  AndroidStateTransferHandlerTest()
+      : handler_(mock_handler_client_, &mock_viz_touch_state_handler_) {}
   void SetUp() override {
     if (base::android::android_info::sdk_int() <
         base::android::android_info::SDK_VERSION_V) {
@@ -158,6 +165,7 @@ class AndroidStateTransferHandlerTest : public testing::Test {
  protected:
   MockRenderInputRouterSupportAndroid mock_rir_support_;
   MockAndroidStateTransferHandlerClient mock_handler_client_;
+  MockVizTouchStateHandler mock_viz_touch_state_handler_;
   AndroidStateTransferHandler handler_;
 };
 
@@ -691,6 +699,55 @@ TEST_F(AndroidStateTransferHandlerTest,
   }
   EXPECT_EQ(handler_.GetEventsBufferSizeForTesting(), 0u);
   EXPECT_EQ(handler_.GetPendingTransferredStatesSizeForTesting(), 0u);
+}
+
+TEST_F(AndroidStateTransferHandlerTest,
+       CallsUpdateLastTransferredBackDownTimeMs) {
+  TestInputStream event_stream = GenerateEventsForSequence(
+      /*num_moves*/ 1,
+      /*include_touch_up*/ true);
+  auto state = input::mojom::TouchTransferState::New();
+  state->down_time_ms = event_stream.down_time_ms;
+  state->root_widget_frame_sink_id = kRootWidgetFrameSinkId;
+  state->browser_would_have_handled = true;
+
+  handler_.StateOnTouchTransfer(std::move(state),
+                                mock_rir_support_.GetWeakPtr());
+
+  // Expect UpdateLastTransferredBackDownTimeMs to be called when
+  // browser_would_have_handled is true.
+  EXPECT_CALL(mock_viz_touch_state_handler_,
+              UpdateLastTransferredBackDownTimeMs(
+                  event_stream.down_time_ms.ToUptimeMillis()))
+      .Times(1);
+  EXPECT_CALL(mock_handler_client_, TransferInputBackToBrowser()).Times(1);
+
+  for (auto& event : event_stream.events) {
+    handler_.OnMotionEvent(std::move(event), kRootCompositorFrameSinkId);
+  }
+
+  // Now test the case where browser_would_have_handled is false.
+  testing::Mock::VerifyAndClearExpectations(&mock_viz_touch_state_handler_);
+  TestInputStream event_stream2 = GenerateEventsForSequence(
+      /*num_moves*/ 1,
+      /*include_touch_up*/ true);
+  auto state2 = input::mojom::TouchTransferState::New();
+  state2->down_time_ms = event_stream2.down_time_ms;
+  state2->root_widget_frame_sink_id = kRootWidgetFrameSinkId;
+  state2->browser_would_have_handled = false;
+
+  handler_.StateOnTouchTransfer(std::move(state2),
+                                mock_rir_support_.GetWeakPtr());
+
+  // Expect UpdateLastTransferredBackDownTimeMs to be called with 0.
+  EXPECT_CALL(mock_viz_touch_state_handler_,
+              UpdateLastTransferredBackDownTimeMs(0))
+      .Times(1);
+  EXPECT_CALL(mock_rir_support_, OnTouchEvent(_, _)).Times(3);
+
+  for (auto& event : event_stream2.events) {
+    handler_.OnMotionEvent(std::move(event), kRootCompositorFrameSinkId);
+  }
 }
 
 }  // namespace viz

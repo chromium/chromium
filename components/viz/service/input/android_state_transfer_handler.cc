@@ -65,8 +65,9 @@ AndroidStateTransferHandler::TransferState::TransferState(
 }
 
 AndroidStateTransferHandler::AndroidStateTransferHandler(
-    AndroidStateTransferHandlerClient& client)
-    : client_(client) {}
+    AndroidStateTransferHandlerClient& client,
+    VizTouchStateHandler* viz_touch_state_handler)
+    : client_(client), viz_touch_state_handler_(viz_touch_state_handler) {}
 
 AndroidStateTransferHandler::~AndroidStateTransferHandler() = default;
 
@@ -225,6 +226,8 @@ bool AndroidStateTransferHandler::CanStartProcessingVizEvents(
   // processed before next sequence starts.
   if (event_down_time == state.transfer_state->down_time_ms) {
     if (state.transfer_state->browser_would_have_handled) {
+      viz_touch_state_handler_->UpdateLastTransferredBackDownTimeMs(
+          state.transfer_state->down_time_ms.ToUptimeMillis());
       if (client_->TransferInputBackToBrowser()) {
         EmitStateProcessingResultHistogram(
             InputOnVizStateProcessingResult::
@@ -236,6 +239,9 @@ bool AndroidStateTransferHandler::CanStartProcessingVizEvents(
       }
       ignore_remaining_touch_sequence_ = true;
     } else {
+      // Reset the last_transferred_back_down_time_ms since Viz is handling
+      // this new sequence.
+      viz_touch_state_handler_->UpdateLastTransferredBackDownTimeMs(0);
       EmitStateProcessingResultHistogram(
           InputOnVizStateProcessingResult::kProcessedSuccessfully);
     }

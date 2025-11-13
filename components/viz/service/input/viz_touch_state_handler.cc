@@ -61,4 +61,12 @@ VizTouchStateHandler::DuplicateVizTouchStateRegion() const {
   return base::ReadOnlySharedMemoryRegion();
 }
 
+void VizTouchStateHandler::UpdateLastTransferredBackDownTimeMs(
+    int64_t down_time_ms) {
+  if (viz_touch_state_) {
+    viz_touch_state_->last_transferred_back_down_time_ms.store(
+        down_time_ms, std::memory_order_release);
+  }
+}
+
 }  // namespace viz
