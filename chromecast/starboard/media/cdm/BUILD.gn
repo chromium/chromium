@@ -29,6 +29,7 @@ cast_source_set("starboard_drm_wrapper") {
   sources = [ "starboard_drm_wrapper.cc" ]
   public_deps = [
     "//base",
+    "//chromecast/common:timing_tracker",
     "//chromecast/starboard/media/media:starboard_api_wrapper",
   ]
   deps = [ "//chromecast/starboard/chromecast/starboard_adapter" ]

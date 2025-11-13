@@ -114,6 +114,7 @@ cast_source_set("starboard_api_wrapper") {
       sources += [ "starboard_api_wrapper_14.cc" ]
     }
     deps += [
+      "//chromecast/common:timing_tracker",
       "//chromecast/starboard/chromecast/starboard_adapter",
       "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
     ]

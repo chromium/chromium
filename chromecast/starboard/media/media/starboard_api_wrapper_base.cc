@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "chromecast/common/timing_tracker.h"
 #include "chromecast/starboard/chromecast/starboard_adapter/public/cast_starboard_api_adapter.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 
@@ -254,6 +255,7 @@ bool StarboardApiWrapperBase::EnsureInitialized() {
 void* StarboardApiWrapperBase::CreatePlayer(
     const StarboardPlayerCreationParam* creation_param,
     const StarboardPlayerCallbackHandler* callback_handler) {
+  CHROMECAST_TIMING_TRACKER;
   SbWindow window =
       chromecast::CastStarboardApiAdapter::GetInstance()->GetWindow(nullptr);
 
@@ -301,6 +303,7 @@ void StarboardApiWrapperBase::DestroyPlayer(void* player) {
 void* StarboardApiWrapperBase::CreateDrmSystem(
     const char* key_system,
     const StarboardDrmSystemCallbackHandler* callback_handler) {
+  CHROMECAST_TIMING_TRACKER;
   LOG(INFO) << "Creating SbDrmSystem";
   return SbDrmCreateSystem(
       key_system,
@@ -317,6 +320,7 @@ void StarboardApiWrapperBase::DrmGenerateSessionUpdateRequest(
     const char* type,
     const void* initialization_data,
     int initialization_data_size) {
+  CHROMECAST_TIMING_TRACKER;
   SbDrmGenerateSessionUpdateRequest(static_cast<SbDrmSystem>(drm_system),
                                     ticket, type, initialization_data,
                                     initialization_data_size);
@@ -328,6 +332,7 @@ void StarboardApiWrapperBase::DrmUpdateSession(void* drm_system,
                                                int key_size,
                                                const void* session_id,
                                                int session_id_size) {
+  CHROMECAST_TIMING_TRACKER;
   SbDrmUpdateSession(static_cast<SbDrmSystem>(drm_system), ticket, key,
                      key_size, session_id, session_id_size);
 }
@@ -335,6 +340,7 @@ void StarboardApiWrapperBase::DrmUpdateSession(void* drm_system,
 void StarboardApiWrapperBase::DrmCloseSession(void* drm_system,
                                               const void* session_id,
                                               int session_id_size) {
+  CHROMECAST_TIMING_TRACKER;
   SbDrmCloseSession(static_cast<SbDrmSystem>(drm_system), session_id,
                     session_id_size);
 }
@@ -344,17 +350,20 @@ void StarboardApiWrapperBase::DrmUpdateServerCertificate(
     int ticket,
     const void* certificate,
     int certificate_size) {
+  CHROMECAST_TIMING_TRACKER;
   SbDrmUpdateServerCertificate(static_cast<SbDrmSystem>(drm_system), ticket,
                                certificate, certificate_size);
 }
 
 bool StarboardApiWrapperBase::DrmIsServerCertificateUpdatable(
     void* drm_system) {
+  CHROMECAST_TIMING_TRACKER;
   return SbDrmIsServerCertificateUpdatable(
       static_cast<SbDrmSystem>(drm_system));
 }
 
 void StarboardApiWrapperBase::DrmDestroySystem(void* drm_system) {
+  CHROMECAST_TIMING_TRACKER;
   LOG(INFO) << "Destroying SbDrmSystem";
   SbDrmDestroySystem(static_cast<SbDrmSystem>(drm_system));
 }

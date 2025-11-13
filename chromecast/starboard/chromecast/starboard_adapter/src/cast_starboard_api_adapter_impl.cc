@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "chromecast/common/timing_tracker.h"
 
 // TODO(b/333961720): remove all the macros in this file and split the impl into
 // two different classes: one for SB 15+, one for older versions of starboard.
@@ -110,6 +111,7 @@ void CastStarboardApiAdapterImpl::EnsureInitialized() {
 
   if (need_to_start_starboard) {
     LOG(INFO) << "Starting starboard";
+    CHROMECAST_TIMING_TRACKER;
 #if SB_API_VERSION >= 15
     sb_main_ = std::make_unique<std::thread>(
         &SbRunStarboardMain, /*argc=*/0, /*argv=*/nullptr,
@@ -129,6 +131,7 @@ void CastStarboardApiAdapterImpl::EnsureInitialized() {
 }
 
 void CastStarboardApiAdapterImpl::Release() {
+  CHROMECAST_TIMING_TRACKER;
   LOG(INFO) << "CastStarboardApiAdapterImpl::Release";
   bool need_to_stop_starboard = false;
   {
@@ -173,6 +176,7 @@ void CastStarboardApiAdapterImpl::Release() {
 
 void CastStarboardApiAdapterImpl::Subscribe(void* context,
                                             CastStarboardApiAdapterImplCB cb) {
+  CHROMECAST_TIMING_TRACKER;
   LOG(INFO) << "CastStarboardApiAdapterImpl::Subscribe, context=" << context;
   EnsureInitialized();
 
@@ -181,6 +185,7 @@ void CastStarboardApiAdapterImpl::Subscribe(void* context,
 }
 
 void CastStarboardApiAdapterImpl::Unsubscribe(void* context) {
+  CHROMECAST_TIMING_TRACKER;
   LOG(INFO) << "CastStarboardApiAdapterImpl::Unsubscribe, context=" << context;
 
   bool do_release = false;

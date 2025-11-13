@@ -35,7 +35,10 @@ source_set("starboard_adapter_static") {
       "src/cast_starboard_api_adapter_impl.cc",
       "src/cast_starboard_api_adapter_impl.h",
     ]
-    public_deps += [ "//chromecast/starboard/chromecast/starboard_cast_api" ]
+    public_deps += [
+      "//chromecast/common:timing_tracker",
+      "//chromecast/starboard/chromecast/starboard_cast_api",
+    ]
   }
 
   # TODO(riazantsevv@): To implement this in a better way.

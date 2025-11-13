@@ -128,3 +128,11 @@ cast_source_set("common") {
 
   defines = [ "DEVICE_USER_AGENT_SUFFIX=\"${device_user_agent_suffix}\"" ]
 }
+
+cast_source_set("timing_tracker") {
+  sources = [
+    "timing_tracker.cc",
+    "timing_tracker.h",
+  ]
+  deps = [ "//base" ]
+}
