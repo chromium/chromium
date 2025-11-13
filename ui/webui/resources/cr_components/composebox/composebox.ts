@@ -429,7 +429,7 @@ export class ComposeboxElement extends I18nMixinLit
       return false;
     }
 
-    if (this.showTypedSuggest_ && this.input_.trim()) {
+    if (this.showTypedSuggest_ && this.lastQueriedInput_.trim()) {
       // If context is present, but not enabled, continue to avoid showing the
       // dropdown.
       if (!this.showTypedSuggestWithContext_ && this.contextFilesSize_ > 0) {
