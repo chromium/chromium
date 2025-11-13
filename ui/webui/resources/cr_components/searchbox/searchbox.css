@@ -397,6 +397,7 @@ cr-searchbox-icon {
     from other searchbox icons (composebox, voice, lens). */
   --cr-searchbox-icon-size: 40px;
   --cr-searchbox-voice-lens-size: 36px;
+  --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 0px;
   --text-input-inline-start-spacing: 16px;
 }
 
