@@ -18498,8 +18498,6 @@
                         "MacCriticalDiskSpacePressureThresholdMB": "250"
                     },
                     "enable_features": [
-                        "AndroidBcivBottomControls",
-                        "AndroidBrowserControlsInViz",
                         "AsyncSetCookie",
                         "AvoidCloneArgsOnExtensionFunctionDispatch",
                         "AvoidUnnecessaryGetMinimizeButtonOffset",
@@ -18534,8 +18532,6 @@
                         "MacCriticalDiskSpacePressureThresholdMB": "250"
                     },
                     "enable_features": [
-                        "AndroidBcivBottomControls",
-                        "AndroidBrowserControlsInViz",
                         "AsyncSetCookie",
                         "AvoidCloneArgsOnExtensionFunctionDispatch",
                         "AvoidUnnecessaryGetMinimizeButtonOffset",
