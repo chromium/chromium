@@ -17,6 +17,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/optional_ref.h"
 #include "base/unguessable_token.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -215,13 +216,18 @@ class RemoteSuggestionsService : public KeyedService {
   // `search_terms_args` is used to build the endpoint URL.
   // `search_terms_data` is used to build the endpoint URL.
   // `completion_callback` will be invoked when the transfer is done.
+  //
+  // When `timeout` is not empty, its value is set in `SimpleURLLoadaer` used
+  // internally. When the timeout occurs, a nullptr is passed to the callback:
+  // https://source.chromium.org/chromium/chromium/src/+/main:services/network/public/cpp/simple_url_loader.cc;l=758-764;drc=128f35b3fb019f2fa67e1e798e113ed95f766096
   std::unique_ptr<network::SimpleURLLoader> StartZeroPrefixSuggestionsRequest(
       RemoteRequestType request_type,
       bool is_off_the_record,
       const TemplateURL* template_url,
       TemplateURLRef::SearchTermsArgs search_terms_args,
       const SearchTermsData& search_terms_data,
-      CompletionCallback completion_callback);
+      CompletionCallback completion_callback,
+      base::optional_ref<const base::TimeDelta> timeout = std::nullopt);
 
   // Creates and starts a document suggestion request for `query` asynchronously
   // after obtaining an OAuth2 token for the signed-in users.
