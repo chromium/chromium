@@ -17,69 +17,27 @@
 #include "chrome/browser/ui/ash/input_method/assistive_delegate.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 
-class Profile;
-
 namespace ash {
 namespace input_method {
-
-inline constexpr int kEmojiSuggesterShowSettingMaxCount = 10;
 
 // An agent to suggest emoji when the user types, and adopt or
 // dismiss the suggestion according to the user action.
 class EmojiSuggester {
  public:
-  EmojiSuggester(SuggestionHandlerInterface* engine, Profile* profile);
+  EmojiSuggester();
   ~EmojiSuggester();
 
   void OnFocus(int context_id);
   void OnBlur();
-  void OnExternalSuggestionsUpdated(
-      const std::vector<ime::AssistiveSuggestion>& suggestions,
-      const std::optional<ime::SuggestionsTextContext>& context);
-  SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event);
-  bool TrySuggestWithSurroundingText(const std::u16string& text,
-                                     gfx::Range selection_range);
-  bool AcceptSuggestion(size_t index);
-  void DismissSuggestion();
-  AssistiveType GetProposeActionType();
-  bool HasSuggestions();
-  std::vector<ime::AssistiveSuggestion> GetSuggestions();
-
   bool ShouldShowSuggestion(const std::u16string& text);
 
   // TODO(crbug/1223666): Remove when we no longer need to prod private vars
   //     for unit testing.
   void LoadEmojiMapForTesting(const std::string& emoji_data);
-  size_t GetCandidatesSizeForTesting() const;
 
  private:
-  void ShowSuggestion(const std::string& text);
-  void ShowSuggestionWindow();
   void LoadEmojiMap();
   void OnEmojiDataLoaded(const std::string& emoji_data);
-  void RecordAcceptanceIndex(int index);
-
-  void SetButtonHighlighted(const ui::ime::AssistiveWindowButton& button,
-                            bool highlighted);
-
-  const raw_ptr<SuggestionHandlerInterface, DanglingUntriaged>
-      suggestion_handler_;
-  raw_ptr<Profile, DanglingUntriaged> profile_;
-
-  // ID of the focused text field, nullopt if none is focused.
-  std::optional<int> focused_context_id_;
-
-  // If we are showing a suggestion right now.
-  bool suggestion_shown_ = false;
-
-  // The current list of candidates.
-  std::vector<std::u16string> candidates_;
-  AssistiveWindowProperties properties_;
-
-  std::vector<ui::ime::AssistiveWindowButton> buttons_;
-  int highlighted_index_;
-  ui::ime::AssistiveWindowButton suggestion_button_;
-  ui::ime::AssistiveWindowButton learn_more_button_;
 
   // The map holding one-word-mapping to emojis.
   std::map<std::string, std::vector<std::u16string>> emoji_map_;

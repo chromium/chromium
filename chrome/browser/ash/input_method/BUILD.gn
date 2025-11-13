@@ -310,7 +310,6 @@ source_set("unit_tests") {
     "editor_metrics_recorder_unittest.cc",
     "editor_panel_manager_unittest.cc",
     "editor_switch_unittest.cc",
-    "emoji_suggester_unittest.cc",
     "fake_suggestion_handler.cc",
     "fake_suggestion_handler.h",
     "grammar_manager_unittest.cc",

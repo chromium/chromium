@@ -667,18 +667,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.Assistive.EmojiSuggestAddition.AcceptanceIndex"
-    units="times" expires_after="2026-09-01">
-  <owner>curtismcmullan@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    Warning: this histogram was expired from 2022-05 to 2023-11; data may be
-    missing. The number of times an emoji suggest addition is accepted at a
-    given index. Recorded when an user accepts an emoji suggestion appeared
-    after typing an emoji-triggered word.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.Assistive.Grammar.Actions"
     enum="IMEGrammarActions" expires_after="2026-09-01">
   <owner>jiwan@google.com</owner>

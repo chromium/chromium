@@ -185,7 +185,6 @@ AssistiveSuggester::AssistiveSuggester(
     Profile* profile,
     std::unique_ptr<AssistiveSuggesterSwitch> suggester_switch)
     : profile_(profile),
-      emoji_suggester_(suggestion_handler, profile),
       multi_word_suggester_(suggestion_handler, profile),
       longpress_diacritics_suggester_(suggestion_handler),
       longpress_control_v_suggester_(suggestion_handler),
