@@ -216,7 +216,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
      * @param loadUrlParams parameters of the url load.
      * @param type Information about how the tab was launched.
      * @param parent the parent tab, if present.
-     * @return The new tab or null if the tab in not created in current window.
+     * @return The new tab or null if the tab is not created in current window.
      */
     @Override
     public @Nullable Tab createNewTab(
@@ -231,7 +231,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
      * @param type Information about how the tab was launched.
      * @param parent the parent tab, if present.
      * @param position the requested position (index in the tab model)
-     * @return The new tab or null if the tab in not created in current window.
+     * @return The new tab or null if the tab is not created in current window.
      */
     @Override
     public @Nullable Tab createNewTab(
@@ -251,7 +251,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
      * @param type Information about how the tab was launched.
      * @param parent the parent tab, if present.
      * @param position the requested position (index in the tab model)
-     * @return The new tab or null if the tab in not created in current window.
+     * @return The new tab or null if the tab is not created in current window.
      */
     @Override
     public @Nullable Tab createNewTab(
@@ -271,7 +271,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
      * @param type Information about how the tab was launched.
      * @param parent the parent tab, if present.
      * @param intent the source of the url if it isn't null.
-     * @return The new tab or null if the tab in not created in current window.
+     * @return The new tab or null if the tab is not created in current window.
      */
     public @Nullable Tab createNewTab(
             LoadUrlParams loadUrlParams,
@@ -303,7 +303,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
      * @param position the requested position (index in the tab model)
      * @param intent the source of the url if it isn't null.
      * @param copyHistory Whether the new tab should have the same history stack as {@param parent}.
-     * @return The new tab or null if the tab in not created in current window.
+     * @return The new tab or null if the tab is not created in current window.
      */
     @Nullable Tab createNewTab(
             LoadUrlParams loadUrlParams,
@@ -575,7 +575,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
      *     (for example, in the foreground or background).
      * @param intent the source of url if it isn't null.
      * @param intentTimestamp the time the intent was received.
-     * @return the created tab or null if the tab in not created in current window.
+     * @return the created tab or null if the tab is not created in current window.
      */
     public @Nullable Tab launchUrl(
             String url, @TabLaunchType int type, @Nullable Intent intent, long intentTimestamp) {

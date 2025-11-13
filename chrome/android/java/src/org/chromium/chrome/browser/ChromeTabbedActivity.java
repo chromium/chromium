@@ -4316,8 +4316,10 @@ public class ChromeTabbedActivity extends ChromeActivity {
         return tab;
     }
 
-    private void maybeSetAppIdForViewIntent(Tab tab, Intent intent) {
+    private void maybeSetAppIdForViewIntent(@Nullable Tab tab, Intent intent) {
         if (!ChromeFeatureList.sAppSpecificHistoryViewIntent.isEnabled()) return;
+        // The tab object might be null if the tab is not created in current window.
+        if (tab == null) return;
 
         String appId =
                 IntentUtils.safeGetStringExtra(intent, IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE);
