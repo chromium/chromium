@@ -26,9 +26,6 @@ public class HostZoomMap {
     // The value of the base for zoom factor, should match |kTextSizeMultiplierRatio|.
     public static final float TEXT_SIZE_MULTIPLIER_RATIO = 1.2f;
 
-    // The set scaling factor used only on Desktop devices to make content slightly bigger.
-    public static final float DESKTOP_PLATFORM_SCALE_FACTOR = 1.09f;
-
     // A scale factor that can be used to adjust the zoom level transparently to the user. All zoom
     // levels will be increased/decreased by this factor, which is multiplicative (not additive).
     // That is, if this factor is 1.10f, a user choice of 100% zoom actually renders at 110% while

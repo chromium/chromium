@@ -5076,6 +5076,22 @@ const FeatureEntry::FeatureVariation kProfilePickerTextVariations[] = {
 };
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kAndroidDesktopZoomScalingFactorSmall[] = {
+    {"desktop-zoom-scaling-factor", "109"}};
+const FeatureEntry::FeatureParam kAndroidDesktopZoomScalingFactorMedium[] = {
+    {"desktop-zoom-scaling-factor", "115"}};
+const FeatureEntry::FeatureParam kAndroidDesktopZoomScalingFactorLarge[] = {
+    {"desktop-zoom-scaling-factor", "120"}};
+const FeatureEntry::FeatureVariation kAndroidDesktopZoomScalingVariations[] = {
+    {"with 109 scaling", kAndroidDesktopZoomScalingFactorSmall,
+     std::size(kAndroidDesktopZoomScalingFactorSmall), nullptr},
+    {"with 115 scaling", kAndroidDesktopZoomScalingFactorMedium,
+     std::size(kAndroidDesktopZoomScalingFactorMedium), nullptr},
+    {"with 120 scaling", kAndroidDesktopZoomScalingFactorLarge,
+     std::size(kAndroidDesktopZoomScalingFactorLarge), nullptr}};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -13329,7 +13345,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-desktop-zoom-scaling",
      flag_descriptions::kAndroidDesktopZoomScalingName,
      flag_descriptions::kAndroidDesktopZoomScalingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kAndroidDesktopZoomScaling)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kAndroidDesktopZoomScaling,
+                                    kAndroidDesktopZoomScalingVariations,
+                                    "AndroidDesktopZoomScaling")},
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

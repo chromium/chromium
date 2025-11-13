@@ -54,6 +54,7 @@ import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.ContentFeatureMapJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.Arrays;
@@ -65,7 +66,7 @@ import java.util.List;
 @DisableFeatures({
     ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2,
     ContentFeatureList.SMART_ZOOM,
-    ContentFeatureList.ANDROID_DESKTOP_ZOOM_SCALING
+    ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING
 })
 @Batch(Batch.PER_CLASS)
 public class PageZoomBarViewTest {

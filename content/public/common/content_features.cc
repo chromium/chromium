@@ -1317,6 +1317,8 @@ BASE_FEATURE(kAccessibilityManageBroadcastReceiverOnBackground,
 // Enables the ability to specify a platform-specific zoom scaling that will
 // apply transparently to all pages.
 BASE_FEATURE(kAndroidDesktopZoomScaling, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kAndroidDesktopZoomScalingFactor{
+    &kAndroidDesktopZoomScaling, "desktop-zoom-scaling-factor", 100};
 
 // Enable open PDF inline on Android.
 BASE_FEATURE(kAndroidOpenPdfInline, base::FEATURE_ENABLED_BY_DEFAULT);

@@ -4,7 +4,6 @@
 
 package org.chromium.content.browser;
 
-import static org.chromium.content_public.browser.HostZoomMap.DESKTOP_PLATFORM_SCALE_FACTOR;
 import static org.chromium.content_public.browser.HostZoomMap.TEXT_SIZE_MULTIPLIER_RATIO;
 import static org.chromium.content_public.browser.HostZoomMap.getPlatformScale;
 import static org.chromium.content_public.browser.HostZoomMap.getSystemFontScale;
@@ -28,6 +27,7 @@ import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.SiteZoomInfo;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.common.ContentFeatures;
 
 import java.util.HashMap;
 
@@ -115,8 +115,10 @@ public class HostZoomMapImpl {
         // The platform adjustment only applies to Desktop devices currently.
         // TODO(crbug.com/450281745): Add treatment for external monitors on per tab basis.
         if (DeviceInfo.isDesktop()) {
-            // TODO(crbug.com/450281745): Add tunable FeatureParam to test value.
-            setPlatformScale(DESKTOP_PLATFORM_SCALE_FACTOR);
+            // We use an int for the scaling factor FeatureParam, e.g. 109 = 109% scaling, but
+            // the underlying code expects a float of 1.09f in that case.
+            setPlatformScale(
+                    ContentFeatureList.sAndroidDesktopZoomScalingFactor.getValue() / 100.0f);
         }
         return adjustZoomLevel(zoomLevel, systemFontScale, getPlatformScale());
     }
@@ -162,7 +164,7 @@ public class HostZoomMapImpl {
 
         // When the Desktop zoom scaling flag is not enabled, set the effective adjustment to 1.
         float effectivePlatformAdjustment = platformAdjustment;
-        if (!ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_DESKTOP_ZOOM_SCALING)) {
+        if (!ContentFeatureMap.isEnabled(ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING)) {
             effectivePlatformAdjustment = 1.0f;
         }
 
