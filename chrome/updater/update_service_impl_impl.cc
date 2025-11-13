@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -47,6 +48,7 @@
 #include "chrome/updater/cleanup_task.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/event_history.h"
 #include "chrome/updater/handle_inconsistent_apps_task.h"
 #include "chrome/updater/installer.h"
 #include "chrome/updater/persisted_data.h"
@@ -1143,6 +1145,39 @@ void UpdateServiceImplImpl::Install(
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  std::unique_ptr<InstallEndEvent> event =
+      std::make_unique<InstallEndEvent>(InstallStartEvent()
+                                            .SetAppId(registration.app_id)
+                                            .WriteAsyncAndReturnEndEvent());
+  state_update =
+      base::BindRepeating(
+          [](InstallEndEvent* event, const UpdateState& update_state) {
+            if (update_state.error_category !=
+                UpdateService::ErrorCategory::kNone) {
+              event->AddError(
+                  {.category = static_cast<int>(update_state.error_category),
+                   .code = update_state.error_code,
+                   .extracode1 = update_state.extra_code1});
+            }
+            return update_state;
+          },
+          event.get())
+          .Then(state_update);
+  callback =
+      base::BindOnce(
+          [](std::unique_ptr<InstallEndEvent> event,
+             scoped_refptr<PersistedData> persisted_data,
+             const std::string& app_id, Result result) {
+            event
+                ->SetVersion(
+                    persisted_data->GetProductVersion(app_id).GetString())
+                .WriteAsync();
+            return result;
+          },
+          std::move(event), config_->GetUpdaterPersistedData(),
+          registration.app_id)
+          .Then(std::move(callback));
+
   base::MakeRefCounted<HandleInconsistentAppsTask>(config_, GetUpdaterScope())
       ->Run(base::BindOnce(
           &UpdateServiceImplImpl::FetchPolicies, this,
@@ -1313,7 +1348,8 @@ void UpdateServiceImplImpl::RunInstallerImpl(
   //   1) has SequencedTaskRunner::CurrentDefaultHandle set, to run
   //      `state_update` callback.
   //   2) may block, since `RunApplicationInstaller` blocks.
-  //   3) has `base::WithBaseSyncPrimitives()`, since `RunApplicationInstaller`
+  //   3) has `base::WithBaseSyncPrimitives()`, since
+  //   `RunApplicationInstaller`
   //      waits on process.
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::WithBaseSyncPrimitives(),
@@ -1410,8 +1446,8 @@ void UpdateServiceImplImpl::RunInstallerImpl(
 
             if (!persisted_data->GetEulaRequired()) {
               // Send an install ping. In some environments the ping cannot be
-              // sent, so do not wait for it to be sent before calling back the
-              // client.
+              // sent, so do not wait for it to be sent before calling back
+              // the client.
               update_client::CrxComponent install_data;
               install_data.ap = ap;
               install_data.app_id = app_id;
