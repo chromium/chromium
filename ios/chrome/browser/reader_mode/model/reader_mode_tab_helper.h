@@ -18,7 +18,6 @@
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
-@protocol SnackbarCommands;
 @protocol ReaderModeCommands;
 
 // Observes changes to the web state to perform reader mode operations.
@@ -96,9 +95,6 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // Setter and getter for the readerMode handler.
   void SetReaderModeHandler(id<ReaderModeCommands> reader_mode_handler);
   id<ReaderModeCommands> GetReaderModeHandler() const;
-
-  // Sets the snackbar handler.
-  void SetSnackbarHandler(id<SnackbarCommands> snackbar_handler);
 
   // Processes the result of the Reader Mode heuristic trigger.
   void HandleReaderModeHeuristicResult(ReaderModeHeuristicResult result);
@@ -201,7 +197,6 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // WebState used to render the Reader mode content. Lazily created the first
   // time Reader mode is activated and persists until the tab is closed.
   std::unique_ptr<web::WebState> reader_mode_web_state_;
-  id<SnackbarCommands> snackbar_handler_;
   base::OneShotTimer trigger_reader_mode_timer_;
   base::OneShotTimer reader_mode_distillation_timer_;
 

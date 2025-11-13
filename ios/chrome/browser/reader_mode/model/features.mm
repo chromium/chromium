@@ -41,8 +41,6 @@ BASE_FEATURE(kEnableReadabilityHeuristic, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableReaderModePageEligibilityForToolsMenu,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableReaderModeDebugInfo, base::FEATURE_DISABLED_BY_DEFAULT);
-
 const char kReaderModeHeuristicPageLoadDelayDurationStringName[] =
     "reader-mode-heuristic-page-load-delay-duration-string";
 
@@ -77,10 +75,6 @@ bool IsReaderModeAvailable() {
 
 bool IsReaderModeOmniboxEntryPointEnabled() {
   return base::FeatureList::IsEnabled(kEnableReaderModeOmniboxEntryPoint);
-}
-
-bool IsReaderModeSnackbarEnabled() {
-  return base::FeatureList::IsEnabled(kEnableReaderModeDebugInfo);
 }
 
 bool IsReaderModeTranslationAvailable() {

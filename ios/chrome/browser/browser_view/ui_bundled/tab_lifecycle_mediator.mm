@@ -210,12 +210,6 @@
   if (readerModeTabHelper) {
     readerModeTabHelper->SetReaderModeHandler(
         HandlerForProtocol(_commandDispatcher, ReaderModeCommands));
-    if (IsReaderModeSnackbarEnabled() &&
-        [_commandDispatcher
-            dispatchingForProtocol:@protocol(SnackbarCommands)]) {
-      readerModeTabHelper->SetSnackbarHandler(
-          static_cast<id<SnackbarCommands>>(_commandDispatcher));
-    }
   }
 
   DCHECK(_printCoordinator);
@@ -372,9 +366,6 @@
       ReaderModeTabHelper::FromWebState(webState);
   if (readerModeTabHelper) {
     readerModeTabHelper->SetReaderModeHandler(nil);
-    if (IsReaderModeSnackbarEnabled()) {
-      readerModeTabHelper->SetSnackbarHandler(nil);
-    }
   }
 
   PrintTabHelper::GetOrCreateForWebState(webState)->set_printer(nil);

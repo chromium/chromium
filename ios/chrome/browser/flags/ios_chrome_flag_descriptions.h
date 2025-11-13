@@ -840,9 +840,6 @@ extern const char kProvisionalNotificationAlertDescription[];
 extern const char kRcapsDynamicProfileCountryName[];
 extern const char kRcapsDynamicProfileCountryDescription[];
 
-extern const char kReaderModeDebugInfoName[];
-extern const char kReaderModeDebugInfoDescription[];
-
 extern const char kReaderModeName[];
 extern const char kReaderModeDescription[];
 
