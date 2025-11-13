@@ -133,4 +133,9 @@ void Mojo::bindInterface(ScriptState* script_state,
   context->GetBrowserInterfaceBroker().GetInterface(name, std::move(handle));
 }
 
+void Mojo::Trace(Visitor* visitor) const {
+  ScriptWrappable::Trace(visitor);
+  visitor->Trace(mojo_file_system_access_);
+}
+
 }  // namespace blink
