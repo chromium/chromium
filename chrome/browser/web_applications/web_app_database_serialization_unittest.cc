@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -81,10 +82,13 @@ TEST_F(WebAppDatabaseSerializationTest, RandomWebApps) {
 }
 
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_MissingSyncData) {
+  base::HistogramTester tester;
   proto::WebApp proto =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   proto.clear_sync_data();
   EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  EXPECT_THAT(tester.GetAllSamples("WebAppProto.Parse.Result"),
+              base::BucketsAre(base::Bucket(ProtoParseResult::kNoSyncData, 1)));
 }
 
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_MissingStartUrl) {
@@ -566,13 +570,15 @@ TEST_F(WebAppDatabaseSerializationTest,
 
 TEST_F(WebAppDatabaseSerializationTest,
        ParseWebAppProto_HasPendingUpdateInfo_NewName) {
+  base::HistogramTester tester;
   proto::WebApp proto =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* fix = proto.mutable_pending_update_info();
   fix->set_name("Pending Update Name");
   fix->set_was_ignored(false);
-
   EXPECT_THAT(ParseWebAppProto(proto), NotNull());
+  EXPECT_THAT(tester.GetAllSamples("WebAppProto.Parse.Result"),
+              base::BucketsAre(base::Bucket(ProtoParseResult::kSuccess, 1)));
 }
 
 TEST_F(WebAppDatabaseSerializationTest,

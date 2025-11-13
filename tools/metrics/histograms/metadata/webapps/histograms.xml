@@ -2909,6 +2909,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAppProto.Parse.Result" enum="WebAppProtoParseResult"
+    expires_after="2026-11-10">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the result of parsing a web app from a protobuf object into an
+    object stored on memory. Recorded whenever web apps are loaded on system
+    startup from the disk, or when web apps are synced on startup.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
