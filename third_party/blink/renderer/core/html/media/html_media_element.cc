@@ -84,6 +84,7 @@
 #include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
 #include "third_party/blink/renderer/core/html/media/media_source_handle.h"
 #include "third_party/blink/renderer/core/html/media/media_source_tracer.h"
+#include "third_party/blink/renderer/core/html/media/remote_playback_controller.h"
 #include "third_party/blink/renderer/core/html/time_ranges.h"
 #include "third_party/blink/renderer/core/html/track/audio_track.h"
 #include "third_party/blink/renderer/core/html/track/audio_track_list.h"
@@ -4579,7 +4580,9 @@ void HTMLMediaElement::Trace(Visitor* visitor) const {
   visitor->Trace(media_player_receiver_set_);
   visitor->Trace(opener_document_);
   visitor->Trace(opener_context_observer_);
-  Supplementable::Trace(visitor);
+  visitor->Trace(audio_output_device_controller_);
+  visitor->Trace(html_media_element_encrypted_media_);
+  visitor->Trace(remote_playback_controller_);
   HTMLElement::Trace(visitor);
   ExecutionContextLifecycleStateObserver::Trace(visitor);
 }

@@ -11,12 +11,8 @@
 
 namespace blink {
 
-class CORE_EXPORT AudioOutputDeviceController
-    : public Supplement<HTMLMediaElement> {
+class CORE_EXPORT AudioOutputDeviceController : public GarbageCollectedMixin {
  public:
-  static constexpr auto kSupplementIndex =
-      HTMLMediaElement::Supplements::kAudioOutputDeviceController;
-
   static AudioOutputDeviceController* From(HTMLMediaElement&);
 
   virtual void SetSinkId(const String&) = 0;
@@ -28,6 +24,8 @@ class CORE_EXPORT AudioOutputDeviceController
 
   // To be called by the implementation to register itself.
   static void ProvideTo(HTMLMediaElement&, AudioOutputDeviceController*);
+
+  Member<HTMLMediaElement> html_media_element_;
 };
 
 }  // namespace blink
