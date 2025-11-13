@@ -72,7 +72,7 @@ ExtensionSyncData::ExtensionSyncData()
       supports_disable_reasons_(false),
       incognito_enabled_(false),
       remote_install_(false),
-      launch_type_(LAUNCH_TYPE_INVALID) {}
+      launch_type_(LaunchType::kInvalid) {}
 
 ExtensionSyncData::ExtensionSyncData(const Extension& extension,
                                      bool enabled,
@@ -88,7 +88,7 @@ ExtensionSyncData::ExtensionSyncData(const Extension& extension,
                         update_url,
                         StringOrdinal(),
                         StringOrdinal(),
-                        LAUNCH_TYPE_INVALID) {}
+                        LaunchType::kInvalid) {}
 
 ExtensionSyncData::ExtensionSyncData(const Extension& extension,
                                      bool enabled,
@@ -197,7 +197,8 @@ void ExtensionSyncData::ToAppSpecifics(sync_pb::AppSpecifics* specifics) const {
 
   // The corresponding validation of this value during processing of an
   // ExtensionSyncData is in ExtensionSyncService::ApplySyncData.
-  if (launch_type_ >= LAUNCH_TYPE_FIRST && launch_type_ < NUM_LAUNCH_TYPES &&
+  if (launch_type_ >= LaunchType::kFirst &&
+      launch_type_ < LaunchType::kNumLaunchTypes &&
       sync_pb::AppSpecifics_LaunchType_IsValid(sync_launch_type)) {
     specifics->set_launch_type(sync_launch_type);
   }
@@ -279,7 +280,7 @@ bool ExtensionSyncData::PopulateFromAppSpecifics(
 
   launch_type_ = specifics.has_launch_type()
                      ? static_cast<LaunchType>(specifics.launch_type())
-                     : LAUNCH_TYPE_INVALID;
+                     : LaunchType::kInvalid;
 
   // Bookmark apps and chrome apps both have "app" specifics, but only bookmark
   // apps filled out the `bookmark_app*` fields.

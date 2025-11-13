@@ -571,8 +571,9 @@ void ExtensionSyncService::ApplySyncData(
   if (extension_sync_data.is_app()) {
     // The corresponding validation of this value during ExtensionSyncData
     // population is in ExtensionSyncData::ToAppSpecifics.
-    if (extension_sync_data.launch_type() >= extensions::LAUNCH_TYPE_FIRST &&
-        extension_sync_data.launch_type() < extensions::NUM_LAUNCH_TYPES) {
+    if (extension_sync_data.launch_type() >= extensions::LaunchType::kFirst &&
+        extension_sync_data.launch_type() <
+            extensions::LaunchType::kNumLaunchTypes) {
       extensions::SetLaunchType(profile_, id,
                                 extension_sync_data.launch_type());
     }

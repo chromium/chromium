@@ -1038,7 +1038,7 @@ class TestManagementAPIDelegate : public ManagementAPIDelegate {
   }
   LaunchType GetLaunchType(const ExtensionPrefs* prefs,
                            const Extension* extension) const override {
-    return LaunchType::LAUNCH_TYPE_DEFAULT;
+    return LaunchType::kDefault;
   }
   std::unique_ptr<InstallPromptDelegate> SetEnabledFunctionDelegate(
       content::WebContents* web_contents,

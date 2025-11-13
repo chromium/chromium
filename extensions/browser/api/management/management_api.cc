@@ -247,27 +247,27 @@ management::ExtensionInfo CreateExtensionInfo(
   if (extension.is_app()) {
     LaunchType launch_type;
     if (extension.is_platform_app()) {
-      launch_type = LAUNCH_TYPE_WINDOW;
+      launch_type = LaunchType::kWindow;
     } else {
       launch_type =
           delegate->GetLaunchType(ExtensionPrefs::Get(context), &extension);
     }
 
     switch (launch_type) {
-      case LAUNCH_TYPE_PINNED:
+      case LaunchType::kPinned:
         info.launch_type = management::LaunchType::kOpenAsPinnedTab;
         break;
-      case LAUNCH_TYPE_REGULAR:
+      case LaunchType::kRegular:
         info.launch_type = management::LaunchType::kOpenAsRegularTab;
         break;
-      case LAUNCH_TYPE_FULLSCREEN:
+      case LaunchType::kFullscreen:
         info.launch_type = management::LaunchType::kOpenFullScreen;
         break;
-      case LAUNCH_TYPE_WINDOW:
+      case LaunchType::kWindow:
         info.launch_type = management::LaunchType::kOpenAsWindow;
         break;
-      case LAUNCH_TYPE_INVALID:
-      case NUM_LAUNCH_TYPES:
+      case LaunchType::kInvalid:
+      case LaunchType::kNumLaunchTypes:
         NOTREACHED();
     }
 
@@ -1004,19 +1004,19 @@ ExtensionFunction::ResponseAction ManagementSetLaunchTypeFunction::Run() {
     return RespondNow(Error(keys::kLaunchTypeNotAvailableError));
   }
 
-  LaunchType launch_type = LAUNCH_TYPE_DEFAULT;
+  LaunchType launch_type = LaunchType::kDefault;
   switch (app_launch_type) {
     case management::LaunchType::kOpenAsPinnedTab:
-      launch_type = LAUNCH_TYPE_PINNED;
+      launch_type = LaunchType::kPinned;
       break;
     case management::LaunchType::kOpenAsRegularTab:
-      launch_type = LAUNCH_TYPE_REGULAR;
+      launch_type = LaunchType::kRegular;
       break;
     case management::LaunchType::kOpenFullScreen:
-      launch_type = LAUNCH_TYPE_FULLSCREEN;
+      launch_type = LaunchType::kFullscreen;
       break;
     case management::LaunchType::kOpenAsWindow:
-      launch_type = LAUNCH_TYPE_WINDOW;
+      launch_type = LaunchType::kWindow;
       break;
     case management::LaunchType::kNone:
       NOTREACHED();
