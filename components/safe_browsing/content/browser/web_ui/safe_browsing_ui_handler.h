@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_SAFE_BROWSING_UI_HANDLER_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_SAFE_BROWSING_UI_HANDLER_H_
 
+#include "base/values.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_local_state_delegate.h"
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_ui_util.h"
+#include "components/safe_browsing/core/browser/web_ui/web_ui_info_singleton_event_observer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -24,6 +26,27 @@ namespace safe_browsing {
 
 class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
  public:
+  // A delegate class that communicates the changes received by the
+  // WebUIInfoSingletonEventObserver to the SafeBrowsingUIHandler for the
+  // purpose of notify JavaScript listeners.
+  class ObserverDelegate : public WebUIInfoSingletonEventObserver::Delegate {
+   public:
+    explicit ObserverDelegate(SafeBrowsingUIHandler& handler);
+    ~ObserverDelegate() override;
+
+    // WebUIInfoSingletonEventObserver::Delegate::
+    base::Value::Dict GetFormattedTailoredVerdictOverride() override;
+    void SendEventToHandler(std::string_view event_name,
+                            base::Value value) override;
+    void SendEventToHandler(std::string_view event_name,
+                            base::Value::List& list) override;
+    void SendEventToHandler(std::string_view event_name,
+                            base::Value::Dict dict) override;
+
+   private:
+    raw_ref<SafeBrowsingUIHandler> handler_;
+  };
+
   SafeBrowsingUIHandler(
       content::BrowserContext* context,
       std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate,
@@ -153,111 +176,23 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // Register callbacks for WebUI messages.
   void RegisterMessages() override;
 
+  // Accessor method that returns the observer object.
+  WebUIInfoSingletonEventObserver* event_observer();
+
   // Sets the WebUI for testing
   void SetWebUIForTesting(content::WebUI* web_ui);
 
  private:
-  friend class WebUIContentInfoSingleton;
-
-  // Called when a new download URL is checked while one or more WebUI tabs are
-  // open.
-  void NotifyDownloadUrlCheckedJsListener(const std::vector<GURL>& gurl,
-                                          DownloadCheckResult result);
-
-  // Called when any new ClientDownloadRequest messages are sent while one or
-  // more WebUI tabs are open.
-  void NotifyClientDownloadRequestJsListener(
-      ClientDownloadRequest* client_download_request);
-
-  // Called when any new ClientDownloadResponse messages are received while one
-  // or more WebUI tabs are open.
-  void NotifyClientDownloadResponseJsListener(
-      ClientDownloadResponse* client_download_response);
-
-  // Called when any new ClientPhishingRequest messages are sent (potentially
-  // with token in header) while one or more WebUI tabs are open.
-  void NotifyClientPhishingRequestJsListener(
-      const web_ui::ClientPhishingRequestAndToken& client_phishing_request);
-
-  // Called when any new ClientPhishingResponse messages are received while one
-  // or more WebUI tabs are open.
-  void NotifyClientPhishingResponseJsListener(
-      ClientPhishingResponse* client_phishing_response);
-
-  // Get the new ThreatDetails messages sent from ThreatDetails when a ping is
-  // sent, while one or more WebUI tabs are opened.
-  void NotifyCSBRRJsListener(ClientSafeBrowsingReportRequest* csbrr);
-
-  // Get the new HitReport messages sent from PingManager when a ping is
-  // sent, while one or more WebUI tabs are opened.
-  void NotifyHitReportJsListener(HitReport* hit_report);
-
-  // Called when any new PhishGuard events are sent while one or more WebUI tabs
-  // are open.
-  void NotifyPGEventJsListener(const sync_pb::UserEventSpecifics& event);
-
-  // Called when any new Security events are sent while one or more WebUI tabs
-  // are open.
-  void NotifySecurityEventJsListener(const sync_pb::GaiaPasswordReuse& event);
-
-  // Called when any new PhishGuard pings are sent while one or more WebUI tabs
-  // are open.
-  void NotifyPGPingJsListener(
-      int token,
-      const web_ui::LoginReputationClientRequestAndToken& request);
-
-  // Called when any new PhishGuard responses are received while one or more
-  // WebUI tabs are open.
-  void NotifyPGResponseJsListener(
-      int token,
-      const LoginReputationClientResponse& response);
-
-  // Called when any new URL real time lookup pings are sent while one or more
-  // WebUI tabs are open.
-  void NotifyURTLookupPingJsListener(int token,
-                                     const web_ui::URTLookupRequest& request);
-
-  // Called when any new URL real time lookup responses are received while one
-  // or more WebUI tabs are open.
-  void NotifyURTLookupResponseJsListener(int token,
-                                         const RTLookupResponse& response);
-
-  // Called when any new hash-prefix real-time lookup pings are sent while one
-  // or more WebUI tabs are open.
-  void NotifyHPRTLookupPingJsListener(int token,
-                                      const web_ui::HPRTLookupRequest& request);
-
-  // Called when any new hash-prefix real-time lookup responses are received
-  // while one or more WebUI tabs are open.
-  void NotifyHPRTLookupResponseJsListener(
-      int token,
-      const V5::SearchHashesResponse& response);
-
-  // Called when any new log messages are received while one or more WebUI tabs
-  // are open.
-  void NotifyLogMessageJsListener(const base::Time& timestamp,
-                                  const std::string& message);
-
-  // Called when any new reporting events are sent while one or more WebUI tabs
-  // are open.
-  void NotifyReportingEventJsListener(const base::Value::Dict& event);
-  void NotifyReportingEventJsListener(
-      const ::chrome::cros::reporting::proto::UploadEventsRequest& event,
-      const base::Value::Dict& result);
-
-#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
-  // Called when any deep scans are updated while one or more WebUI
-  // tabs are open.
-  void NotifyDeepScanJsListener(const std::string& token,
-                                const web_ui::DeepScanDebugData& request);
-#endif
+  // Notifies JS listeners of changes.
+  template <typename... Values>
+  void NotifyWebUIListener(std::string_view event_name,
+                           const Values&... values) {
+    AllowJavascript();
+    FireWebUIListener(event_name, values...);
+  }
 
   // Gets the tailored verdict override in a format for displaying.
   base::Value::Dict GetFormattedTailoredVerdictOverride();
-
-  // Notifies the WebUI instance that a change in tailored verdict override
-  // occurred.
-  void NotifyTailoredVerdictOverrideJsListener();
 
   // Sends formatted tailored verdict override information to the WebUI.
   void ResolveTailoredVerdictOverrideCallback(const std::string& callback_id);
@@ -280,6 +215,10 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate_;
 
   const raw_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+
+  // An observer object that waits for changes to the WebUIInfoSingleton and
+  // updates the SafeBrowsingUIHandler.
+  std::unique_ptr<WebUIInfoSingletonEventObserver> event_observer_;
 
   base::WeakPtrFactory<SafeBrowsingUIHandler> weak_factory_{this};
 };

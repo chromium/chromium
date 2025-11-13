@@ -9,6 +9,7 @@
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_ui_util.h"
+#include "components/safe_browsing/core/browser/web_ui/web_ui_info_singleton_event_observer.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_WEB_UI_CONTENT_INFO_SINGLETON_H_
@@ -25,7 +26,7 @@ class UserEventSpecifics;
 namespace safe_browsing {
 class ReferrerChainProvider;
 class SafeBrowsingServiceInterface;
-class SafeBrowsingUIHandler;
+class WebUIInfoSingletonEventObserver;
 
 class WebUIContentInfoSingleton
     : public RealTimeUrlLookupServiceBase::WebUIDelegate,
@@ -199,7 +200,7 @@ class WebUIContentInfoSingleton
   // Overwrites any existing override.
   void SetTailoredVerdictOverride(
       ClientDownloadResponse::TailoredVerdict new_value,
-      const SafeBrowsingUIHandler* new_source);
+      const WebUIInfoSingletonEventObserver* new_source);
 
   // Clears any registered tailored verdict override.
   void ClearTailoredVerdictOverride();
@@ -207,11 +208,11 @@ class WebUIContentInfoSingleton
         // !BUILDFLAG(IS_ANDROID)
 
   // Register the new WebUI listener object.
-  void RegisterWebUIInstance(SafeBrowsingUIHandler* webui);
+  void RegisterWebUIInstance(WebUIInfoSingletonEventObserver* observer);
 
   // Unregister the WebUI listener object, and clean the list of reports, if
   // this is last listener.
-  void UnregisterWebUIInstance(SafeBrowsingUIHandler* webui);
+  void UnregisterWebUIInstance(WebUIInfoSingletonEventObserver* observer);
 
   // Get the list of download URLs checked since the oldest currently open
   // chrome://safe-browsing tab was opened.
@@ -263,7 +264,8 @@ class WebUIContentInfoSingleton
   }
 
   // Get the list of WebUI listener objects.
-  const std::vector<raw_ptr<SafeBrowsingUIHandler, VectorExperimental>>&
+  const std::vector<
+      raw_ptr<WebUIInfoSingletonEventObserver, VectorExperimental>>&
   webui_instances() const {
     return webui_instances_;
   }
@@ -453,10 +455,10 @@ class WebUIContentInfoSingleton
   // the corresponding request in |hprt_lookup_pings_|.
   std::map<int, V5::SearchHashesResponse> hprt_lookup_responses_;
 
-  // List of WebUI listener objects. "SafeBrowsingUIHandler*" cannot be const,
-  // due to being used by functions that call AllowJavascript(), which is not
-  // marked const.
-  std::vector<raw_ptr<SafeBrowsingUIHandler, VectorExperimental>>
+  // List of WebUI listener objects. "WebUIInfoSingletonEventObserver*" cannot
+  // be const, due to being used by functions that call AllowJavascript(), which
+  // is not marked const.
+  std::vector<raw_ptr<WebUIInfoSingletonEventObserver, VectorExperimental>>
       webui_instances_;
 
   // List of messages logged since the oldest currently open

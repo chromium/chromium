@@ -8,6 +8,7 @@
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
+#include "components/safe_browsing/core/browser/web_ui/web_ui_info_singleton_event_observer_impl.h"
 #include "components/safe_browsing/core/common/proto/csd.to_value.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/global_routing_id.h"
@@ -18,30 +19,66 @@
 
 namespace safe_browsing {
 
+SafeBrowsingUIHandler::ObserverDelegate::ObserverDelegate(
+    SafeBrowsingUIHandler& handler)
+    : handler_(handler) {}
+
+SafeBrowsingUIHandler::ObserverDelegate::~ObserverDelegate() = default;
+
+base::Value::Dict
+SafeBrowsingUIHandler::ObserverDelegate::GetFormattedTailoredVerdictOverride() {
+  return handler_->GetFormattedTailoredVerdictOverride();
+}
+
+void SafeBrowsingUIHandler::ObserverDelegate::SendEventToHandler(
+    std::string_view event_name,
+    base::Value value) {
+  handler_->NotifyWebUIListener(event_name, value);
+}
+
+void SafeBrowsingUIHandler::ObserverDelegate::SendEventToHandler(
+    std::string_view event_name,
+    base::Value::List& list) {
+  handler_->NotifyWebUIListener(event_name, list);
+}
+
+void SafeBrowsingUIHandler::ObserverDelegate::SendEventToHandler(
+    std::string_view event_name,
+    base::Value ::Dict dict) {
+  handler_->NotifyWebUIListener(event_name, dict);
+}
+
 SafeBrowsingUIHandler::SafeBrowsingUIHandler(
     content::BrowserContext* context,
     std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate,
     os_crypt_async::OSCryptAsync* os_crypt_async)
     : browser_context_(context),
       delegate_(std::move(delegate)),
-      os_crypt_async_(os_crypt_async) {}
+      os_crypt_async_(os_crypt_async) {
+  auto observer_delegate = std::make_unique<ObserverDelegate>(*this);
+  event_observer_ = std::make_unique<WebUIInfoSingletonEventObserverImpl>(
+      std::move(observer_delegate));
+}
 
 SafeBrowsingUIHandler::~SafeBrowsingUIHandler() {
-  WebUIContentInfoSingleton::GetInstance()->UnregisterWebUIInstance(this);
+  WebUIContentInfoSingleton::GetInstance()->UnregisterWebUIInstance(
+      event_observer_.get());
 }
 
 void SafeBrowsingUIHandler::OnJavascriptAllowed() {
   // We don't want to register the SafeBrowsingUIHandler with the
   // WebUIInfoSingleton at construction, since this can lead to
   // messages being sent to the renderer before it's ready. So register it here.
-  WebUIContentInfoSingleton::GetInstance()->RegisterWebUIInstance(this);
+  WebUIContentInfoSingleton::GetInstance()->RegisterWebUIInstance(
+      event_observer_.get());
 }
 
 void SafeBrowsingUIHandler::OnJavascriptDisallowed() {
   // In certain situations, Javascript can become disallowed before the
   // destructor is called (e.g. tab refresh/renderer crash). In these situation,
   // we want to stop receiving JS messages.
-  WebUIContentInfoSingleton::GetInstance()->UnregisterWebUIInstance(this);
+  WebUIContentInfoSingleton::GetInstance()->UnregisterWebUIInstance(
+      event_observer_.get());
 }
 
 void SafeBrowsingUIHandler::GetExperiments(const base::Value::List& args) {
@@ -163,19 +200,6 @@ void SafeBrowsingUIHandler::GetDatabaseManagerInfo(
   ResolveJavascriptCallback(callback_id, database_manager_info);
 }
 
-std::string SerializeDownloadUrlChecked(const std::vector<GURL>& urls,
-                                        DownloadCheckResult result) {
-  base::Value::Dict url_and_result;
-  base::Value::List urls_value;
-  for (const GURL& url : urls) {
-    urls_value.Append(url.spec());
-  }
-  url_and_result.Set("download_url_chain", std::move(urls_value));
-  url_and_result.Set("result", DownloadCheckResultToString(result));
-
-  return web_ui::SerializeJson(url_and_result);
-}
-
 void SafeBrowsingUIHandler::GetDownloadUrlsChecked(
     const base::Value::List& args) {
   const std::vector<std::pair<std::vector<GURL>, DownloadCheckResult>>&
@@ -186,7 +210,8 @@ void SafeBrowsingUIHandler::GetDownloadUrlsChecked(
   for (const auto& url_and_result : urls_checked) {
     const std::vector<GURL>& urls = url_and_result.first;
     DownloadCheckResult result = url_and_result.second;
-    urls_checked_value.Append(SerializeDownloadUrlChecked(urls, result));
+    urls_checked_value.Append(
+        web_ui::SerializeDownloadUrlChecked(urls, result));
   }
 
   AllowJavascript();
@@ -557,7 +582,7 @@ base::Value::Dict SafeBrowsingUIHandler::GetFormattedTailoredVerdictOverride() {
   if (!override_data.override_value) {
     override_dict.Set(kStatusKey, base::Value("No override set."));
   } else {
-    if (override_data.IsFromSource(this)) {
+    if (override_data.IsFromSource(event_observer_.get())) {
       override_dict.Set(kStatusKey, base::Value("Override set from this tab."));
     } else {
       override_dict.Set(kStatusKey,
@@ -593,7 +618,7 @@ void SafeBrowsingUIHandler::SetTailoredVerdictOverride(
   }
 
   WebUIContentInfoSingleton::GetInstance()->SetTailoredVerdictOverride(
-      std::move(tv), this);
+      std::move(tv), event_observer_.get());
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) &&
         // !BUILDFLAG(IS_ANDROID)
 
@@ -619,179 +644,6 @@ void SafeBrowsingUIHandler::ResolveTailoredVerdictOverrideCallback(
   AllowJavascript();
   ResolveJavascriptCallback(callback_id, GetFormattedTailoredVerdictOverride());
 }
-
-void SafeBrowsingUIHandler::NotifyTailoredVerdictOverrideJsListener() {
-  AllowJavascript();
-  FireWebUIListener("tailored-verdict-override-update",
-                    GetFormattedTailoredVerdictOverride());
-}
-
-void SafeBrowsingUIHandler::NotifyDownloadUrlCheckedJsListener(
-    const std::vector<GURL>& urls,
-    DownloadCheckResult result) {
-  AllowJavascript();
-  FireWebUIListener("download-url-checked-update",
-                    base::Value(SerializeDownloadUrlChecked(urls, result)));
-}
-
-void SafeBrowsingUIHandler::NotifyClientDownloadRequestJsListener(
-    ClientDownloadRequest* client_download_request) {
-  AllowJavascript();
-  FireWebUIListener("sent-client-download-requests-update",
-                    base::Value(web_ui::SerializeClientDownloadRequest(
-                        *client_download_request)));
-}
-
-void SafeBrowsingUIHandler::NotifyClientDownloadResponseJsListener(
-    ClientDownloadResponse* client_download_response) {
-  AllowJavascript();
-  FireWebUIListener("received-client-download-responses-update",
-                    base::Value(web_ui::SerializeClientDownloadResponse(
-                        *client_download_response)));
-}
-
-void SafeBrowsingUIHandler::NotifyClientPhishingRequestJsListener(
-    const web_ui::ClientPhishingRequestAndToken& client_phishing_request) {
-  AllowJavascript();
-  FireWebUIListener(
-      "sent-client-phishing-requests-update",
-      base::Value(SerializeClientPhishingRequest(client_phishing_request)));
-}
-
-void SafeBrowsingUIHandler::NotifyClientPhishingResponseJsListener(
-    ClientPhishingResponse* client_phishing_response) {
-  AllowJavascript();
-  FireWebUIListener("received-client-phishing-responses-update",
-                    base::Value(web_ui::SerializeClientPhishingResponse(
-                        *client_phishing_response)));
-}
-
-void SafeBrowsingUIHandler::NotifyCSBRRJsListener(
-    ClientSafeBrowsingReportRequest* csbrr) {
-  AllowJavascript();
-  FireWebUIListener("sent-csbrr-update",
-                    base::Value(web_ui::SerializeCSBRR(*csbrr)));
-}
-
-void SafeBrowsingUIHandler::NotifyHitReportJsListener(HitReport* hit_report) {
-  AllowJavascript();
-  FireWebUIListener("sent-hit-report-list",
-                    base::Value(web_ui::SerializeHitReport(*hit_report)));
-}
-
-void SafeBrowsingUIHandler::NotifyPGEventJsListener(
-    const sync_pb::UserEventSpecifics& event) {
-  AllowJavascript();
-  FireWebUIListener("sent-pg-event", web_ui::SerializePGEvent(event));
-}
-
-void SafeBrowsingUIHandler::NotifySecurityEventJsListener(
-    const sync_pb::GaiaPasswordReuse& event) {
-  AllowJavascript();
-  FireWebUIListener("sent-security-event",
-                    web_ui::SerializeSecurityEvent(event));
-}
-
-void SafeBrowsingUIHandler::NotifyPGPingJsListener(
-    int token,
-    const web_ui::LoginReputationClientRequestAndToken& request) {
-  base::Value::List request_list;
-  request_list.Append(token);
-  request_list.Append(SerializePGPing(request));
-
-  AllowJavascript();
-  FireWebUIListener("pg-pings-update", request_list);
-}
-
-void SafeBrowsingUIHandler::NotifyPGResponseJsListener(
-    int token,
-    const LoginReputationClientResponse& response) {
-  base::Value::List response_list;
-  response_list.Append(token);
-  response_list.Append(web_ui::SerializePGResponse(response));
-
-  AllowJavascript();
-  FireWebUIListener("pg-responses-update", response_list);
-}
-
-void SafeBrowsingUIHandler::NotifyURTLookupPingJsListener(
-    int token,
-    const web_ui::URTLookupRequest& request) {
-  base::Value::List request_list;
-  request_list.Append(token);
-  request_list.Append(SerializeURTLookupPing(request));
-
-  AllowJavascript();
-  FireWebUIListener("urt-lookup-pings-update", request_list);
-}
-
-void SafeBrowsingUIHandler::NotifyURTLookupResponseJsListener(
-    int token,
-    const RTLookupResponse& response) {
-  base::Value::List response_list;
-  response_list.Append(token);
-  response_list.Append(web_ui::SerializeURTLookupResponse(response));
-
-  AllowJavascript();
-  FireWebUIListener("urt-lookup-responses-update", response_list);
-}
-
-void SafeBrowsingUIHandler::NotifyHPRTLookupPingJsListener(
-    int token,
-    const web_ui::HPRTLookupRequest& request) {
-  base::Value::List request_list;
-  request_list.Append(token);
-  request_list.Append(SerializeHPRTLookupPing(request));
-
-  AllowJavascript();
-  FireWebUIListener("hprt-lookup-pings-update", request_list);
-}
-
-void SafeBrowsingUIHandler::NotifyHPRTLookupResponseJsListener(
-    int token,
-    const V5::SearchHashesResponse& response) {
-  base::Value::List response_list;
-  response_list.Append(token);
-  response_list.Append(web_ui::SerializeHPRTLookupResponse(response));
-
-  AllowJavascript();
-  FireWebUIListener("hprt-lookup-responses-update", response_list);
-}
-
-void SafeBrowsingUIHandler::NotifyLogMessageJsListener(
-    const base::Time& timestamp,
-    const std::string& message) {
-  AllowJavascript();
-  FireWebUIListener("log-messages-update",
-                    web_ui::SerializeLogMessage(timestamp, message));
-}
-
-void SafeBrowsingUIHandler::NotifyReportingEventJsListener(
-    const ::chrome::cros::reporting::proto::UploadEventsRequest& event,
-    const base::Value::Dict& result) {
-  AllowJavascript();
-  FireWebUIListener("reporting-events-update",
-                    web_ui::SerializeUploadEventsRequest(event, result));
-}
-
-// TODO(crbug.com/443997643): Delete when
-// UploadRealtimeReportingEventsUsingProto is cleaned up.
-void SafeBrowsingUIHandler::NotifyReportingEventJsListener(
-    const base::Value::Dict& event) {
-  AllowJavascript();
-  FireWebUIListener("reporting-events-update",
-                    web_ui::SerializeReportingEvent(event));
-}
-
-#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
-void SafeBrowsingUIHandler::NotifyDeepScanJsListener(
-    const std::string& token,
-    const web_ui::DeepScanDebugData& deep_scan_data) {
-  AllowJavascript();
-  FireWebUIListener("deep-scan-request-update",
-                    SerializeDeepScanDebugData(token, deep_scan_data));
-}
-#endif
 
 void SafeBrowsingUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -908,6 +760,10 @@ void SafeBrowsingUIHandler::RegisterMessages() {
       "clearTailoredVerdictOverride",
       base::BindRepeating(&SafeBrowsingUIHandler::ClearTailoredVerdictOverride,
                           base::Unretained(this)));
+}
+
+WebUIInfoSingletonEventObserver* SafeBrowsingUIHandler::event_observer() {
+  return event_observer_.get();
 }
 
 void SafeBrowsingUIHandler::SetWebUIForTesting(content::WebUI* web_ui) {

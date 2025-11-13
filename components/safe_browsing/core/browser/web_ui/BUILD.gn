@@ -6,6 +6,36 @@ source_set("local_state_delegate") {
   sources = [ "safe_browsing_local_state_delegate.h" ]
 }
 
+source_set("event_observer") {
+  sources = [ "web_ui_info_singleton_event_observer.h" ]
+
+  deps = [
+    "//base",
+    "//components/enterprise/common/proto:upload_request_response",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/browser:download_check_result",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
+    "//components/sync/protocol",
+    "//url",
+  ]
+}
+
+source_set("event_observer_impl") {
+  sources = [
+    "web_ui_info_singleton_event_observer_impl.cc",
+    "web_ui_info_singleton_event_observer_impl.h",
+  ]
+
+  deps = [
+    ":event_observer",
+    ":util",
+    "//base",
+    "//components/safe_browsing/core/browser/db:hit_report",
+  ]
+}
+
 source_set("util") {
   sources = [
     "safe_browsing_ui_util.cc",
@@ -13,6 +43,7 @@ source_set("util") {
   ]
 
   deps = [
+    ":event_observer",
     "//base",
     "//base:i18n",
     "//components/enterprise/common/proto:connectors_proto",
@@ -20,6 +51,7 @@ source_set("util") {
     "//components/enterprise/common/proto:upload_request_response",
     "//components/enterprise/connectors/core:constants",
     "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/browser:download_check_result",
     "//components/safe_browsing/core/browser:referring_app_info",
     "//components/safe_browsing/core/browser/db:hit_report",
     "//components/safe_browsing/core/common/proto:csd_proto",

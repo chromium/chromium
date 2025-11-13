@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
-#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui_handler.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -38,7 +37,7 @@ void WebUIContentInfoSingleton::AddToDownloadUrlsChecked(
     return;
   }
 
-  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
        webui_instances_) {
     webui_listener->NotifyDownloadUrlCheckedJsListener(urls, result);
   }
@@ -51,7 +50,7 @@ void WebUIContentInfoSingleton::AddToClientDownloadRequestsSent(
     return;
   }
 
-  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
        webui_instances_) {
     webui_listener->NotifyClientDownloadRequestJsListener(
         client_download_request.get());
@@ -76,7 +75,7 @@ void WebUIContentInfoSingleton::AddToClientDownloadResponsesReceived(
     return;
   }
 
-  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
        webui_instances_) {
     webui_listener->NotifyClientDownloadResponseJsListener(
         client_download_response.get());
@@ -98,7 +97,7 @@ void WebUIContentInfoSingleton::AddToClientPhishingRequestsSent(
   }
   web_ui::ClientPhishingRequestAndToken ping(
       std::move(*client_phishing_request), std::move(token));
-  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
        webui_instances_) {
     webui_listener->NotifyClientPhishingRequestJsListener(ping);
   }
@@ -116,7 +115,7 @@ void WebUIContentInfoSingleton::AddToClientPhishingResponsesReceived(
     return;
   }
 
-  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
        webui_instances_) {
     webui_listener->NotifyClientPhishingResponseJsListener(
         client_phishing_response.get());
@@ -136,7 +135,7 @@ void WebUIContentInfoSingleton::AddToCSBRRsSent(
     return;
   }
 
-  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
        webui_instances_) {
     webui_listener->NotifyCSBRRJsListener(csbrr.get());
   }
@@ -162,7 +161,7 @@ void WebUIContentInfoSingleton::AddToHitReportsSent(
     return;
   }
 
-  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
        webui_instances_) {
     webui_listener->NotifyHitReportJsListener(hit_report.get());
   }
@@ -179,7 +178,7 @@ void WebUIContentInfoSingleton::AddToPGEvents(
     return;
   }
 
-  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
        webui_instances_) {
     webui_listener->NotifyPGEventJsListener(event);
   }
@@ -197,7 +196,7 @@ void WebUIContentInfoSingleton::AddToSecurityEvents(
     return;
   }
 
-  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
        webui_instances_) {
     webui_listener->NotifySecurityEventJsListener(event);
   }
@@ -218,7 +217,7 @@ int WebUIContentInfoSingleton::AddToPGPings(
 
   web_ui::LoginReputationClientRequestAndToken ping(request, oauth_token);
 
-  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
        webui_instances_) {
     webui_listener->NotifyPGPingJsListener(pg_pings_.size(), ping);
   }
@@ -235,7 +234,7 @@ void WebUIContentInfoSingleton::AddToPGResponses(
     return;
   }
 
-  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
        webui_instances_) {
     webui_listener->NotifyPGResponseJsListener(token, response);
   }
@@ -257,7 +256,7 @@ int WebUIContentInfoSingleton::AddToURTLookupPings(
 
   web_ui::URTLookupRequest ping(request, oauth_token);
 
-  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
        webui_instances_) {
     webui_listener->NotifyURTLookupPingJsListener(urt_lookup_pings_.size(),
                                                   ping);
@@ -275,7 +274,7 @@ void WebUIContentInfoSingleton::AddToURTLookupResponses(
     return;
   }
 
-  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
        webui_instances_) {
     webui_listener->NotifyURTLookupResponseJsListener(token, response);
   }
@@ -297,11 +296,12 @@ std::optional<int> WebUIContentInfoSingleton::AddToHPRTLookupPings(
   }
   web_ui::HPRTLookupRequest request(*inner_request, std::move(relay_url_spec),
                                     std::move(ohttp_key));
-  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
        webui_instances_) {
     webui_listener->NotifyHPRTLookupPingJsListener(hprt_lookup_pings_.size(),
                                                    request);
   }
+
   hprt_lookup_pings_.emplace_back(std::move(request));
   return hprt_lookup_pings_.size() - 1;
 }
@@ -313,7 +313,7 @@ void WebUIContentInfoSingleton::AddToHPRTLookupResponses(
     return;
   }
 
-  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
        webui_instances_) {
     webui_listener->NotifyHPRTLookupResponseJsListener(token, *response);
   }
@@ -348,8 +348,7 @@ void WebUIContentInfoSingleton::ClearLogMessages() {
     const base::Time& timestamp,
     const std::string& message) {
   WebUIContentInfoSingleton* web_ui_info = GetInstance();
-
-  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
        web_ui_info->webui_instances()) {
     webui_listener->NotifyLogMessageJsListener(timestamp, message);
   }
@@ -362,7 +361,7 @@ void WebUIContentInfoSingleton::AddToReportingEvents(
     return;
   }
 
-  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
        webui_instances_) {
     webui_listener->NotifyReportingEventJsListener(event, result);
   }
@@ -378,7 +377,7 @@ void WebUIContentInfoSingleton::AddToReportingEvents(
     return;
   }
 
-  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
        webui_instances_) {
     webui_listener->NotifyReportingEventJsListener(event);
   }
@@ -428,7 +427,7 @@ void WebUIContentInfoSingleton::AddToDeepScanRequests(
   deep_scan_request.upload_info = upload_info;
   deep_scan_request.upload_url = upload_url;
 
-  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
        webui_instances_) {
     webui_listener->NotifyDeepScanJsListener(
         request.request_token(), deep_scan_requests_[request.request_token()]);
@@ -447,7 +446,7 @@ void WebUIContentInfoSingleton::AddToDeepScanResponses(
   deep_scan_requests_[token].response_status = status;
   deep_scan_requests_[token].response = response;
 
-  for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
+  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
        webui_instances_) {
     webui_listener->NotifyDeepScanJsListener(token, deep_scan_requests_[token]);
   }
@@ -460,12 +459,12 @@ void WebUIContentInfoSingleton::ClearDeepScans() {
 
 void WebUIContentInfoSingleton::SetTailoredVerdictOverride(
     ClientDownloadResponse::TailoredVerdict new_value,
-    const SafeBrowsingUIHandler* new_source) {
+    const WebUIInfoSingletonEventObserver* new_source) {
   tailored_verdict_override_.Set(std::move(new_value), new_source);
 
   // Notify other listeners of the change. The source itself is notified by the
   // caller.
-  for (SafeBrowsingUIHandler* listener : webui_instances()) {
+  for (WebUIInfoSingletonEventObserver* listener : webui_instances()) {
     if (!tailored_verdict_override_.IsFromSource(listener)) {
       listener->NotifyTailoredVerdictOverrideJsListener();
     }
@@ -477,7 +476,7 @@ void WebUIContentInfoSingleton::ClearTailoredVerdictOverride() {
 
   // Notify other listeners of the change. The source itself is notified by the
   // caller.
-  for (SafeBrowsingUIHandler* listener : webui_instances()) {
+  for (WebUIInfoSingletonEventObserver* listener : webui_instances()) {
     if (!tailored_verdict_override_.IsFromSource(listener)) {
       listener->NotifyTailoredVerdictOverrideJsListener();
     }
@@ -487,12 +486,12 @@ void WebUIContentInfoSingleton::ClearTailoredVerdictOverride() {
         // !BUILDFLAG(IS_ANDROID)
 
 void WebUIContentInfoSingleton::RegisterWebUIInstance(
-    SafeBrowsingUIHandler* webui) {
+    WebUIInfoSingletonEventObserver* webui) {
   webui_instances_.push_back(webui);
 }
 
 void WebUIContentInfoSingleton::UnregisterWebUIInstance(
-    SafeBrowsingUIHandler* webui) {
+    WebUIInfoSingletonEventObserver* webui) {
   std::erase(webui_instances_, webui);
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
@@ -500,7 +499,7 @@ void WebUIContentInfoSingleton::UnregisterWebUIInstance(
   // going away.
   if (tailored_verdict_override_.IsFromSource(webui)) {
     tailored_verdict_override_.Clear();
-    for (SafeBrowsingUIHandler* listener : webui_instances()) {
+    for (WebUIInfoSingletonEventObserver* listener : webui_instances()) {
       listener->NotifyTailoredVerdictOverrideJsListener();
     }
   }

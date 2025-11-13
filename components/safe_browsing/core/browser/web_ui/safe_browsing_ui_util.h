@@ -11,6 +11,7 @@
 #include "components/enterprise/common/proto/upload_request_response.pb.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
+#include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
@@ -22,6 +23,7 @@ namespace internal {
 struct ReferringAppInfo;
 }  // namespace internal
 class SafeBrowsingUIHandler;
+class WebUIInfoSingletonEventObserver;
 }  // namespace safe_browsing
 
 namespace safe_browsing::web_ui {
@@ -56,8 +58,8 @@ struct TailoredVerdictOverrideData {
   ~TailoredVerdictOverrideData();
 
   void Set(ClientDownloadResponse::TailoredVerdict new_value,
-           const SafeBrowsingUIHandler* new_source);
-  bool IsFromSource(const SafeBrowsingUIHandler* maybe_source) const;
+           const WebUIInfoSingletonEventObserver* new_source);
+  bool IsFromSource(const WebUIInfoSingletonEventObserver* maybe_source) const;
   void Clear();
 
   std::optional<ClientDownloadResponse::TailoredVerdict> override_value;
@@ -136,6 +138,8 @@ std::string SerializeClientPhishingRequest(
     const ClientPhishingRequestAndToken& cprat);
 std::string SerializeClientPhishingResponse(const ClientPhishingResponse& cpr);
 std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report);
+std::string SerializeDownloadUrlChecked(const std::vector<GURL>& urls,
+                                        DownloadCheckResult result);
 std::string SerializeHitReport(const HitReport& hit_report);
 std::string SerializeJson(base::ValueView value);
 base::Value::Dict SerializePGEvent(const sync_pb::UserEventSpecifics& event);

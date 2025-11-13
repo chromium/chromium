@@ -8,6 +8,7 @@
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui_handler.h"
+#include "components/safe_browsing/core/browser/web_ui/web_ui_info_singleton_event_observer.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -48,7 +49,8 @@ class SafeBrowsingUITest : public testing::Test {
   }
 
   void UnregisterHandler(SafeBrowsingUIHandler* handler) {
-    WebUIContentInfoSingleton::GetInstance()->UnregisterWebUIInstance(handler);
+    WebUIContentInfoSingleton::GetInstance()->UnregisterWebUIInstance(
+        handler->event_observer());
   }
 
  protected:

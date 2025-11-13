@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/safe_browsing/core/browser/referring_app_info.h"
+#include "components/safe_browsing/core/browser/web_ui/web_ui_info_singleton_event_observer.h"
 #include "components/safe_browsing/core/common/proto/csd.to_value.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.to_value.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.to_value.h"
@@ -41,13 +42,13 @@ TailoredVerdictOverrideData::~TailoredVerdictOverrideData() = default;
 
 void TailoredVerdictOverrideData::Set(
     ClientDownloadResponse::TailoredVerdict new_value,
-    const SafeBrowsingUIHandler* new_source) {
+    const WebUIInfoSingletonEventObserver* new_source) {
   override_value = std::move(new_value);
   source = reinterpret_cast<SourceId>(new_source);
 }
 
 bool TailoredVerdictOverrideData::IsFromSource(
-    const SafeBrowsingUIHandler* maybe_source) const {
+    const WebUIInfoSingletonEventObserver* maybe_source) const {
   return reinterpret_cast<SourceId>(maybe_source) == source;
 }
 
@@ -255,6 +256,19 @@ std::string SerializeClientPhishingResponse(const ClientPhishingResponse& cpr) {
 
 std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
   return SerializeJson(ToValue(report));
+}
+
+std::string SerializeDownloadUrlChecked(const std::vector<GURL>& urls,
+                                        DownloadCheckResult result) {
+  base::Value::Dict url_and_result;
+  base::Value::List urls_value;
+  for (const GURL& url : urls) {
+    urls_value.Append(url.spec());
+  }
+  url_and_result.Set("download_url_chain", std::move(urls_value));
+  url_and_result.Set("result", DownloadCheckResultToString(result));
+
+  return web_ui::SerializeJson(url_and_result);
 }
 
 std::string SerializeHitReport(const HitReport& hit_report) {
