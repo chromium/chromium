@@ -81,6 +81,16 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
         readOnly: true,
       },
 
+      isFjord: {
+        type: Boolean,
+        value: function() {
+          return (
+              loadTimeData.valueExists('deviceFlowType') &&
+              loadTimeData.getString('deviceFlowType') === 'fjord');
+        },
+        readOnly: true,
+      },
+
       isBootAnimation: {
         type: Boolean,
         value: function() {
@@ -115,6 +125,7 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
   private debuggingLinkVisible: boolean;
   override hidden: boolean;
   private isMeet: boolean;
+  private isFjord: boolean;
   private isBootAnimation: boolean;
   private isDeviceRequisitionConfigurable: boolean;
   private isOobeLoaded: boolean;
