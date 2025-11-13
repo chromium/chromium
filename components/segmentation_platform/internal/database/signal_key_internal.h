@@ -117,6 +117,10 @@ std::ostream& operator<<(std::ostream& os, const SignalKeyInternal& key);
 std::ostream& operator<<(std::ostream& os,
                          const SignalKeyInternal::Prefix& prefix);
 
+bool operator==(const SignalKeyInternal::Prefix& lhs,
+                const SignalKeyInternal::Prefix& rhs);
+bool operator==(const SignalKeyInternal& lhs, const SignalKeyInternal& rhs);
+
 }  // namespace segmentation_platform
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_SIGNAL_KEY_INTERNAL_H_

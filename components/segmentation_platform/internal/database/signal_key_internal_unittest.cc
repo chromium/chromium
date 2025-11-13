@@ -13,21 +13,6 @@
 namespace segmentation_platform {
 
 namespace {
-void VerifyEqual(SignalKeyInternal a, SignalKeyInternal b) {
-  UNSAFE_TODO(ASSERT_EQ(0, memcmp(&a, &b, sizeof(SignalKeyInternal))));
-}
-
-void VerifyNotEqual(SignalKeyInternal a, SignalKeyInternal b) {
-  UNSAFE_TODO(ASSERT_NE(0, memcmp(&a, &b, sizeof(SignalKeyInternal))));
-}
-
-void VerifyEqual(SignalKeyInternal::Prefix a, SignalKeyInternal::Prefix b) {
-  UNSAFE_TODO(ASSERT_EQ(0, memcmp(&a, &b, sizeof(SignalKeyInternal::Prefix))));
-}
-
-void VerifyNotEqual(SignalKeyInternal::Prefix a, SignalKeyInternal::Prefix b) {
-  UNSAFE_TODO(ASSERT_NE(0, memcmp(&a, &b, sizeof(SignalKeyInternal::Prefix))));
-}
 
 TEST(SignalKeyInternalTest, TestKeyConversionToAndFromBinary) {
   SignalKeyInternal key;
@@ -39,7 +24,7 @@ TEST(SignalKeyInternalTest, TestKeyConversionToAndFromBinary) {
   std::string binary = SignalKeyInternalToBinary(key);
   SignalKeyInternal result;
   EXPECT_TRUE(SignalKeyInternalFromBinary(binary, &result));
-  VerifyEqual(key, result);
+  ASSERT_EQ(key, result);
 }
 
 TEST(SignalKeyInternalTest, TestKeyConversionFailureFromBinary) {
@@ -54,7 +39,7 @@ TEST(SignalKeyInternalTest, TestKeyConversionFailureFromBinary) {
     const std::string shorter = binary.substr(0, binary.size() - 1);
     SignalKeyInternal result;
     EXPECT_FALSE(SignalKeyInternalFromBinary(shorter, &result));
-    VerifyEqual(SignalKeyInternal{}, result);
+    ASSERT_EQ(SignalKeyInternal{}, result);
   }
 
   {
@@ -62,14 +47,14 @@ TEST(SignalKeyInternalTest, TestKeyConversionFailureFromBinary) {
     longer.append("x");
     SignalKeyInternal result;
     EXPECT_FALSE(SignalKeyInternalFromBinary(longer, &result));
-    VerifyEqual(SignalKeyInternal{}, result);
+    ASSERT_EQ(SignalKeyInternal{}, result);
   }
 
   {
     const std::string empty;
     SignalKeyInternal result;
     EXPECT_FALSE(SignalKeyInternalFromBinary(empty, &result));
-    VerifyEqual(SignalKeyInternal{}, result);
+    ASSERT_EQ(SignalKeyInternal{}, result);
   }
 }
 
@@ -81,7 +66,7 @@ TEST(SignalKeyInternalTest, TestPrefixConversionToAndFromBinary) {
   std::string binary = SignalKeyInternalPrefixToBinary(prefix);
   SignalKeyInternal::Prefix result;
   EXPECT_TRUE(SignalKeyInternalPrefixFromBinary(binary, &result));
-  VerifyEqual(prefix, result);
+  ASSERT_EQ(prefix, result);
 }
 
 TEST(SignalKeyInternalTest, TestPrefixConversionFailureFromBinary) {
@@ -94,7 +79,7 @@ TEST(SignalKeyInternalTest, TestPrefixConversionFailureFromBinary) {
     std::string shorter = binary.substr(0, binary.size() - 1);
     SignalKeyInternal::Prefix result;
     EXPECT_FALSE(SignalKeyInternalPrefixFromBinary(shorter, &result));
-    VerifyEqual(SignalKeyInternal::Prefix{}, result);
+    ASSERT_EQ(SignalKeyInternal::Prefix{}, result);
   }
 
   {
@@ -102,14 +87,14 @@ TEST(SignalKeyInternalTest, TestPrefixConversionFailureFromBinary) {
     longer.append("x");
     SignalKeyInternal::Prefix result;
     EXPECT_FALSE(SignalKeyInternalPrefixFromBinary(longer, &result));
-    VerifyEqual(SignalKeyInternal::Prefix{}, result);
+    ASSERT_EQ(SignalKeyInternal::Prefix{}, result);
   }
 
   {
     const std::string empty;
     SignalKeyInternal::Prefix result;
     EXPECT_FALSE(SignalKeyInternalPrefixFromBinary(empty, &result));
-    VerifyEqual(SignalKeyInternal::Prefix{}, result);
+    ASSERT_EQ(SignalKeyInternal::Prefix{}, result);
   }
 }
 
@@ -124,31 +109,31 @@ TEST(SignalKeyInternalTest, TestChangingAnyKeyFieldMakesNotEqual) {
   SignalKeyInternal result;
   EXPECT_TRUE(
       SignalKeyInternalFromBinary(SignalKeyInternalToBinary(copy), &result));
-  VerifyEqual(original, result);
+  ASSERT_EQ(original, result);
 
   SignalKeyInternal different_kind = original;
   different_kind.prefix.kind = 'r';
   EXPECT_TRUE(SignalKeyInternalFromBinary(
       SignalKeyInternalToBinary(different_kind), &result));
-  VerifyNotEqual(original, result);
+  ASSERT_NE(original, result);
 
   SignalKeyInternal different_name_hash = original;
   different_name_hash.prefix.name_hash = 84;
   EXPECT_TRUE(SignalKeyInternalFromBinary(
       SignalKeyInternalToBinary(different_name_hash), &result));
-  VerifyNotEqual(original, result);
+  ASSERT_NE(original, result);
 
   SignalKeyInternal different_time_range_end_sec = original;
   different_time_range_end_sec.time_range_end_sec = 1546300800000;
   EXPECT_TRUE(SignalKeyInternalFromBinary(
       SignalKeyInternalToBinary(different_time_range_end_sec), &result));
-  VerifyNotEqual(original, result);
+  ASSERT_NE(original, result);
 
   SignalKeyInternal different_time_range_start_sec = original;
   different_time_range_start_sec.time_range_start_sec = 1546300800000;
   EXPECT_TRUE(SignalKeyInternalFromBinary(
       SignalKeyInternalToBinary(different_time_range_start_sec), &result));
-  VerifyNotEqual(original, result);
+  ASSERT_NE(original, result);
 }
 
 TEST(SignalKeyInternalTest, TestChangingAnyPrefixFieldMakesNotEqual) {
@@ -160,19 +145,19 @@ TEST(SignalKeyInternalTest, TestChangingAnyPrefixFieldMakesNotEqual) {
   SignalKeyInternal::Prefix result;
   EXPECT_TRUE(SignalKeyInternalPrefixFromBinary(
       SignalKeyInternalPrefixToBinary(copy), &result));
-  VerifyEqual(original, result);
+  ASSERT_EQ(original, result);
 
   SignalKeyInternal::Prefix different_kind = original;
   different_kind.kind = 'r';
   EXPECT_TRUE(SignalKeyInternalPrefixFromBinary(
       SignalKeyInternalPrefixToBinary(different_kind), &result));
-  VerifyNotEqual(original, result);
+  ASSERT_NE(original, result);
 
   SignalKeyInternal::Prefix different_name_hash = original;
   different_name_hash.name_hash = 84;
   EXPECT_TRUE(SignalKeyInternalPrefixFromBinary(
       SignalKeyInternalPrefixToBinary(different_name_hash), &result));
-  VerifyNotEqual(original, result);
+  ASSERT_NE(original, result);
 }
 
 TEST(SignalKeyInternalTest, TestKeyDebugStringRepresentation) {
