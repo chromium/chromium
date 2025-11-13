@@ -63,7 +63,7 @@ def get_gen_jni_class(*,
   name = name_prefix + ('N' if short else 'GEN_JNI')
   gen_jni_class = java_types.JavaClass(f'{package}/{name}')
 
-  if package_prefix and common.should_rename_package('org.jni_zero',
+  if package_prefix and common.should_prefix_package('org.jni_zero',
                                                      package_prefix_filter):
     return gen_jni_class.make_prefixed(package_prefix)
 

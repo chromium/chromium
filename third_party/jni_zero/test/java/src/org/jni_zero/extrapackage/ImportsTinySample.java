@@ -1,8 +1,9 @@
 package org.jni_zero.extrapackage;
 
+import org.jni_zero.NativeMethods;
 import org.jni_zero.TinySample;
 
-class ImportsTinySample {
+public class ImportsTinySample {
     TinySample a;
 
     @NativeMethods()

@@ -28,6 +28,8 @@ android_library("test_java") {
     "java/src/org/jni_zero/SampleForAnnotationProcessor.java",
     "java/src/org/jni_zero/SampleForTests.java",
     "java/src/org/jni_zero/SampleUnderSamePackage.java",
+    "java/src/org/jni_zero/TinySample.java",
+    "java/src/org/jni_zero/extrapackage/ImportsTinySample.java",
   ]
 
   deps = [

@@ -355,7 +355,7 @@ int main() {
         jni_zero::tests::Java_InnerStructA_create(
             env, 0, 1, ScopedJavaLocalRef<jstring>());
     jni_zero::tests::Java_SampleForTests_addStructA(env, my_java_object,
-                                                    struct_a);
+                                                    struct_a, nullptr);
   }
   jni_zero::tests::Java_SampleForTests_iterateAndDoSomething(env,
                                                              my_java_object);

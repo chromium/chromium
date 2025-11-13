@@ -130,7 +130,7 @@ _CLASSES_REGEX = re.compile(
 
 
 # Does not handle doubly-nested classes.
-def _parse_java_classes(contents):
+def _parse_java_classes(contents, package_prefix, package_prefix_filter):
   package = _parse_package(contents).replace('.', '/')
   outer_class = None
   null_marked = False
@@ -145,6 +145,9 @@ def _parse_java_classes(contents):
     if outer_class is None:
       outer_class = java_types.JavaClass(f'{package}/{class_name}')
       null_marked = contents.find('@NullMarked', 0, m.start(2)) != -1
+      if package_prefix and common.should_prefix_package(
+          outer_class.package_with_dots, package_prefix_filter):
+        outer_class = outer_class.make_prefixed(package_prefix)
     else:
       nested_classes.add(outer_class.make_nested(class_name))
 
@@ -418,19 +421,19 @@ def _do_parse(filename, *, package_prefix, package_prefix_filter,
   contents = _remove_comments(contents)
   contents = _remove_generics(contents)
 
-  outer_class, nested_classes, null_marked = _parse_java_classes(contents)
+  outer_class, nested_classes, null_marked = _parse_java_classes(
+      contents, package_prefix, package_prefix_filter)
 
   expected_name = os.path.splitext(os.path.basename(filename))[0]
   if outer_class.name != expected_name:
     raise ParseError(
         f'Found class "{outer_class.name}" but expected "{expected_name}".')
 
-  if package_prefix and common.should_rename_package(
-      outer_class.package_with_dots, package_prefix_filter):
-    outer_class = outer_class.make_prefixed(package_prefix)
-    nested_classes = [c.make_prefixed(package_prefix) for c in nested_classes]
-
-  type_resolver = java_types.TypeResolver(outer_class, null_marked=null_marked)
+  type_resolver = java_types.TypeResolver(
+      outer_class,
+      null_marked=null_marked,
+      package_prefix=package_prefix,
+      package_prefix_filter=package_prefix_filter)
   for java_class in _parse_imports(contents):
     type_resolver.add_import(java_class)
   for java_class in nested_classes:
