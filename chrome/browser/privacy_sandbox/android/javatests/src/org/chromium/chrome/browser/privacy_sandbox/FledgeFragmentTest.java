@@ -26,6 +26,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxTestUtils.clickImageButtonNextToText;
+import static org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxTestUtils.clickRecyclerViewItemWithText;
 import static org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxTestUtils.getRootViewSanitized;
 import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -72,6 +73,7 @@ import java.io.IOException;
 public final class FledgeFragmentTest {
     private static final String SITE_NAME_1 = "first.com";
     private static final String SITE_NAME_2 = "second.com";
+    private String mSeeAllSitesLabel;
 
     @Rule public ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
@@ -111,6 +113,10 @@ public final class FledgeFragmentTest {
 
     private void startFledgeSettings() {
         mSettingsActivityTestRule.startSettingsActivity();
+        mSeeAllSitesLabel =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .getString(R.string.settings_fledge_page_see_all_sites_label);
         ViewUtils.onViewWaiting(
                 allOf(
                         withText(R.string.settings_fledge_page_title),
@@ -174,8 +180,8 @@ public final class FledgeFragmentTest {
             mFakePrivacySandboxBridge.setFledgeJoiningAllowed(generateSiteFromNr(i), true);
         }
         startFledgeSettings();
-        scrollToSetting(withText(R.string.settings_fledge_page_see_all_sites_label));
-        onView(withText(R.string.settings_fledge_page_see_all_sites_label)).perform(click());
+        scrollToSetting(withText(mSeeAllSitesLabel));
+        clickRecyclerViewItemWithText(mSeeAllSitesLabel);
         mRenderTestRule.render(getAllSitesPageRootView(), "fledge_all_sites_page");
     }
 
@@ -342,7 +348,7 @@ public final class FledgeFragmentTest {
         startFledgeSettings();
 
         // Check that the all sites pref is not displayed
-        onView(withText(R.string.settings_fledge_page_see_all_sites_label)).check(doesNotExist());
+        onView(withText(mSeeAllSitesLabel)).check(doesNotExist());
 
         // Check that the sites are displayed.
         onView(withText(SITE_NAME_1)).check(matches(isDisplayed()));
@@ -359,7 +365,7 @@ public final class FledgeFragmentTest {
         startFledgeSettings();
 
         // Scroll to pref below last displayed site.
-        scrollToSetting(withText(R.string.settings_fledge_page_see_all_sites_label));
+        scrollToSetting(withText(mSeeAllSitesLabel));
 
         String lastDisplayedSite = generateSiteFromNr(FledgeFragment.MAX_DISPLAYED_SITES - 1);
         String firstNotDisplayedSite = generateSiteFromNr(FledgeFragment.MAX_DISPLAYED_SITES);
@@ -369,7 +375,7 @@ public final class FledgeFragmentTest {
         onView(withText(firstNotDisplayedSite)).check(doesNotExist());
 
         // Navigate to All Sites page.
-        onView(withText(R.string.settings_fledge_page_see_all_sites_label)).perform(click());
+        clickRecyclerViewItemWithText(mSeeAllSitesLabel);
 
         // Verify that all sites are displayed
         scrollToSetting(withText(firstNotDisplayedSite));
