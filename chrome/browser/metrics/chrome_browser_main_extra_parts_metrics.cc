@@ -120,7 +120,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/process_requirement.h"
-#include "chrome/common/chrome_version.h"
+#include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace {
@@ -128,12 +128,6 @@ namespace {
 // The number of restarts to wait until removing the enable-benchmarking flag.
 constexpr int kEnableBenchmarkingCountdownDefault = 3;
 constexpr char kEnableBenchmarkingPrefId[] = "enable_benchmarking_countdown";
-
-#if BUILDFLAG(IS_MAC)
-constexpr char kUnexportableKeysKeychainAccessGroup[] =
-    MAC_TEAM_IDENTIFIER_STRING "." MAC_BUNDLE_IDENTIFIER_STRING
-                               ".unexportable-keys";
-#endif  // BUILDFLAG(IS_MAC)
 
 void RecordMemoryMetrics();
 
@@ -881,7 +875,8 @@ void RecordStartupMetrics() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   crypto::UnexportableKeyProvider::Config config;
 #if BUILDFLAG(IS_MAC)
-  config.keychain_access_group = kUnexportableKeysKeychainAccessGroup;
+  config.keychain_access_group =
+      UnexportableKeyServiceFactory::GetKeychainAccessGroup();
 #endif  // BUILDFLAG(IS_MAC)
   crypto::MaybeMeasureTpmOperations(std::move(config));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
