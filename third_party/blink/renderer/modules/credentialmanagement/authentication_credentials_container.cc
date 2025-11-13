@@ -1069,6 +1069,20 @@ void EmitImmediateMediationUseCounters(
   }
 }
 
+bool IsImmediateGetRequest(const ExecutionContext& context,
+                           const CredentialRequestOptions& options) {
+  if (options.mediation() ==
+      V8CredentialMediationRequirement::Enum::kImmediate) {
+    return true;
+  }
+  if (RuntimeEnabledFeatures::WebAuthenticationUiModeEnabled(&context) &&
+      options.hasUiMode() &&
+      options.uiMode() == V8CredentialUiModeRequirement::Enum::kImmediate) {
+    return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 const unsigned AuthenticationCredentialsContainer::kSupplementIndex =
@@ -1469,8 +1483,7 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
         "Conditional mediation is not supported for this credential type"));
     return promise;
   }
-  if (options->mediation() ==
-      V8CredentialMediationRequirement::Enum::kImmediate) {
+  if (IsImmediateGetRequest(*context, *options)) {
     if (RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled(context)) {
       if (options->password()) {
         if (RuntimeEnabledFeatures::
@@ -1985,28 +1998,27 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
   }
 
   Mediation mediation = Mediation::MODAL;
-  switch (options->mediation().AsEnum()) {
-    case V8CredentialMediationRequirement::Enum::kConditional:
-      UseCounter::Count(context, WebFeature::kWebAuthnConditionalUiGet);
-      CredentialMetrics::From(script_state).RecordWebAuthnConditionalUiCall();
-      mediation = Mediation::CONDITIONAL;
-      break;
-    case V8CredentialMediationRequirement::Enum::kImmediate:
-      if (RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled(
-              context)) {
-        mediation = Mediation::IMMEDIATE;
-        EmitImmediateMediationUseCounters(context, options);
-      } else {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotSupportedError,
-            "Immediate mediation not implemented"));
-        return;
-      }
-      break;
-    case V8CredentialMediationRequirement::Enum::kSilent:
-    case V8CredentialMediationRequirement::Enum::kOptional:
-    case V8CredentialMediationRequirement::Enum::kRequired:
-      break;
+  if (options->mediation() ==
+      V8CredentialMediationRequirement::Enum::kConditional) {
+    if (IsImmediateGetRequest(*context, *options)) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Immediate uiMode is not compatible with conditional mediation"));
+      return;
+    }
+    UseCounter::Count(context, WebFeature::kWebAuthnConditionalUiGet);
+    CredentialMetrics::From(script_state).RecordWebAuthnConditionalUiCall();
+    mediation = Mediation::CONDITIONAL;
+  } else if (IsImmediateGetRequest(*context, *options)) {
+    if (RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled(context)) {
+      mediation = Mediation::IMMEDIATE;
+      EmitImmediateMediationUseCounters(context, options);
+    } else {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Immediate mediation not implemented"));
+      return;
+    }
   }
   if (mediation == Mediation::IMMEDIATE) {
     if (options->hasPublicKey() &&

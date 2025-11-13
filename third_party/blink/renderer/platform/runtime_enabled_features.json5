@@ -5651,6 +5651,13 @@
       name: "WebAuthenticationSupplementalPubKeys",
       status: "experimental",
     },
+    // Enables `uiMode` enumeration field in CredentialRequestOptions struct.
+    // This is an alternate API shape for `WebAuthenticationImmediateGet`.
+    // See https://github.com/w3c/webauthn/issues/2228.
+    {
+      name: "WebAuthenticationUiMode",
+      status: "experimental",
+    },
     // WebBluetooth is enabled by default on Android, ChromeOS, iOS, macOS and
     // Windows.
     {
