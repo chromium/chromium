@@ -19,7 +19,7 @@ class MojoFileSystemAccess final
     : public GarbageCollected<MojoFileSystemAccess>,
       public GarbageCollectedMixin {
  public:
-  explicit MojoFileSystemAccess(Mojo&);
+  MojoFileSystemAccess() = default;
   static MojoFileSystemAccess& From(Mojo&);
 
   // IDL interface methods:
@@ -27,9 +27,6 @@ class MojoFileSystemAccess final
       FileSystemFileHandle* fs_handle);
 
   void Trace(Visitor* visitor) const override;
-
- private:
-  Member<Mojo> mojo_;
 };
 
 }  // namespace blink
