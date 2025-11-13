@@ -314,10 +314,12 @@ HEADLESS_MODE_PROTOCOL_TEST(MaximizedWindowSize,
                             "shared/maximized-window-size.js")
 #endif  // !BUILDFLAG(IS_MAC)
 
-// This currently fails on Mac, see https://crbug.com/1500046
+// These currently fail on Mac, see https://crbug.com/1500046
 #if !BUILDFLAG(IS_MAC)
 HEADLESS_MODE_PROTOCOL_TEST(FullscreenWindowSize,
                             "shared/fullscreen-window-size.js")
+HEADLESS_MODE_PROTOCOL_TEST(FullscreenWindowSizeScaled,
+                            "shared/fullscreen-window-size-scaled.js")
 #endif  // !BUILDFLAG(IS_MAC)
 
 HEADLESS_MODE_PROTOCOL_TEST(PrintToPdfTinyPage,

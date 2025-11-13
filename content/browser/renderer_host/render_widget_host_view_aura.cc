@@ -1171,10 +1171,13 @@ gfx::Rect RenderWidgetHostViewAura::GetBoundsInRootWindow() {
 
     // If this is a headless window return the headless window bounds stored in
     // Aura window properties instead of the actual platform window bounds which
-    // may be different.
+    // may be different. Note that headless window bounds are in screen
+    // coordinates, so they need to be converted back to DIPs just like the
+    // regular ones below.
     if (gfx::Rect* headless_bounds =
             host->window()->GetProperty(aura::client::kHeadlessBoundsKey)) {
-      return *headless_bounds;
+      return display::Screen::Get()->ScreenToDIPRectInWindow(top_level,
+                                                             *headless_bounds);
     }
 
     RECT window_rect = {0};

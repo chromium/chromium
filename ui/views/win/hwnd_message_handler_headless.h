@@ -97,6 +97,8 @@ class VIEWS_EXPORT HWNDMessageHandlerHeadless : public HWNDMessageHandler {
   void SetBoundsInternal(const gfx::Rect& bounds_in_pixels,
                          bool force_size_changed) override;
 
+  gfx::Rect GetZoomedWindowBounds();
+
   void RestoreBounds();
 
  private:

@@ -622,6 +622,9 @@ HEADLESS_PROTOCOL_TEST(MaximizedWindowSize, "shared/maximized-window-size.js")
 
 HEADLESS_PROTOCOL_TEST(FullscreenWindowSize, "shared/fullscreen-window-size.js")
 
+HEADLESS_PROTOCOL_TEST(FullscreenWindowSizeScaled,
+                       "shared/fullscreen-window-size-scaled.js")
+
 HEADLESS_PROTOCOL_TEST(WindowOpenOnSecondaryScreen,
                        "shared/window-open-on-secondary-screen.js")
 

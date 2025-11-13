@@ -40,12 +40,6 @@ gfx::Rect ScaleWindowBoundsMaybe(HWND hwnd, const gfx::Rect& bounds) {
   return bounds;
 }
 
-gfx::Rect GetZoomedWindowBounds(const gfx::Rect& bounds) {
-  return display::win::GetScreenWinHeadless()
-      ->GetDisplayMatching(bounds)
-      .work_area();
-}
-
 }  // namespace
 
 HWNDMessageHandlerHeadless::HWNDMessageHandlerHeadless(
@@ -267,7 +261,7 @@ void HWNDMessageHandlerHeadless::Maximize() {
   restored_bounds_ = bounds_;
   window_state_ = WindowState::kMaximized;
 
-  gfx::Rect bounds = GetZoomedWindowBounds(bounds_);
+  gfx::Rect bounds = GetZoomedWindowBounds();
   SetBoundsInternal(bounds, /*force_size_changed=*/false);
   delegate_->HandleCommand(static_cast<int>(SC_MAXIMIZE));
 }
@@ -390,7 +384,7 @@ void HWNDMessageHandlerHeadless::SetFullscreen(bool fullscreen,
 
     window_state_ = WindowState::kFullscreen;
 
-    gfx::Rect bounds = GetZoomedWindowBounds(bounds_);
+    gfx::Rect bounds = GetZoomedWindowBounds();
     SetBoundsInternal(bounds, /*force_size_changed=*/false);
 
   } else {
@@ -464,6 +458,15 @@ void HWNDMessageHandlerHeadless::SetBoundsInternal(
   if (old_bounds.size() != bounds_in_pixels.size() || force_size_changed) {
     delegate_->HandleClientSizeChanged(GetClientAreaBounds().size());
   }
+}
+
+gfx::Rect HWNDMessageHandlerHeadless::GetZoomedWindowBounds() {
+  gfx::Rect zoomed_bounds = display::win::GetScreenWinHeadless()
+                                ->GetDisplayMatching(bounds_)
+                                .work_area();
+  // Convert the work area bounds from DIP to device pixels as expected by
+  // SetBounds().
+  return display::win::GetScreenWin()->DIPToScreenRect(hwnd(), zoomed_bounds);
 }
 
 void HWNDMessageHandlerHeadless::RestoreBounds() {
