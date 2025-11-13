@@ -876,7 +876,9 @@ export class ComposeboxElement extends I18nMixinLit
     if (!context) {
       return;
     }
-    this.input_ = context.input;
+    if (context.input.length > 0) {
+      this.input_ = context.input;
+    }
     this.$.context.setStateFromSearchContext(context);
   }
 

@@ -25,12 +25,18 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/omnibox_popup_resources.h"
@@ -309,7 +315,28 @@ void OmniboxContextMenuController::UpdateSearchboxContext(
     context->mode = *tool_mode;
   }
 
-  searchbox_context_data->SetPendingContext(std::move(context));
+  OmniboxController* omnibox_controller = nullptr;
+  if (auto* helper =
+          OmniboxPopupWebContentsHelper::FromWebContents(web_contents_.get())) {
+    omnibox_controller = helper->get_omnibox_controller();
+  }
+
+  if (omnibox_controller &&
+      omnibox_controller->popup_state_manager()->popup_state() ==
+          OmniboxPopupState::kAim) {
+    if (auto* webui = web_contents_->GetWebUI()) {
+      if (auto* webui_controller = webui->GetController()) {
+        auto* omnibox_popup_ui = webui_controller->GetAs<OmniboxPopupUI>();
+        if (omnibox_popup_ui && omnibox_popup_ui->popup_aim_handler()) {
+          // TODO (crbug.com/460471173): Clean this up and create a method
+          // or other clearly supported way to update context.
+          omnibox_popup_ui->popup_aim_handler()->OnShow(std::move(context));
+        }
+      }
+    }
+  } else {
+    searchbox_context_data->SetPendingContext(std::move(context));
+  }
 }
 
 void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
