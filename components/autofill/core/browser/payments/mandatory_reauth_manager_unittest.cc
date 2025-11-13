@@ -6,6 +6,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -27,6 +28,9 @@
 namespace autofill::payments {
 
 using autofill_metrics::MandatoryReauthOfferOptInDecision;
+using ::base::test::RunOnceCallback;
+using ::testing::Return;
+
 #if BUILDFLAG(IS_ANDROID)
 using device_reauth::BiometricStatus;
 #endif
@@ -74,12 +78,12 @@ class MandatoryReauthManagerTest : public testing::Test {
       biometric_status = BiometricStatus::kOnlyLskfAvailable;
     }
     ON_CALL(device_authenticator(), GetBiometricAvailabilityStatus)
-        .WillByDefault(testing::Return(biometric_status));
+        .WillByDefault(Return(biometric_status));
 #else
     ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
-        .WillByDefault(testing::Return(biometrics_available));
+        .WillByDefault(Return(biometrics_available));
     ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
-        .WillByDefault(testing::Return(screen_lock_available));
+        .WillByDefault(Return(screen_lock_available));
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
@@ -323,10 +327,7 @@ TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   ON_CALL(device_authenticator(), AuthenticateWithMessage)
-      .WillByDefault(
-          testing::WithArg<1>([](base::OnceCallback<void(bool)> callback) {
-            std::move(callback).Run(false);
-          }));
+      .WillByDefault(RunOnceCallback<1>(false));
 
   // We need to call `StartOptInFlow()` here to ensure the device
   // authenticator gets set.
@@ -350,10 +351,7 @@ TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
       std::move(mock_device_authenticator2));
 
   ON_CALL(device_authenticator(), AuthenticateWithMessage)
-      .WillByDefault(
-          testing::WithArg<1>([](base::OnceCallback<void(bool)> callback) {
-            std::move(callback).Run(true);
-          }));
+      .WillByDefault(RunOnceCallback<1>(true));
 
   // We need to call `StartOptInFlow()` here to ensure the device
   // authenticator gets set.
@@ -462,10 +460,7 @@ class MandatoryReauthManagerOptInFlowTest
 
   void SetUpDeviceAuthenticator(bool success) {
     ON_CALL(device_authenticator(), AuthenticateWithMessage)
-        .WillByDefault(testing::WithArg<1>(
-            [success](base::OnceCallback<void(bool)> callback) {
-              std::move(callback).Run(success);
-            }));
+        .WillByDefault(RunOnceCallback<1>(success));
   }
 };
 

@@ -4,6 +4,7 @@
 
 #include "components/autofill/content/browser/email_verifier_delegate.h"
 
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -24,10 +25,10 @@ namespace autofill {
 
 namespace {
 
+using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
-using ::testing::WithArgs;
 
 class MockEmailVerifier : public content::webid::EmailVerifier {
  public:
@@ -115,10 +116,7 @@ TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
   form->field(0)->set_autofilled_type(EMAIL_ADDRESS);
 
   EXPECT_CALL(*email_verifier_, Verify("test@example.com", "test_nonce", _))
-      .WillOnce(WithArgs<2>(
-          [](content::webid::EmailVerifier::OnEmailVerifiedCallback callback) {
-            std::move(callback).Run("test_token");
-          }));
+      .WillOnce(RunOnceCallback<2>("test_token"));
 
   EXPECT_CALL(*driver_, DispatchEmailVerifiedEvent(form->field(0)->global_id(),
                                                    "test_token"));
@@ -252,10 +250,7 @@ TEST_F(EmailVerifierDelegateTest, VerificationFails) {
   form->field(0)->set_autofilled_type(EMAIL_ADDRESS);
 
   EXPECT_CALL(*email_verifier_, Verify)
-      .WillOnce(WithArgs<2>(
-          [](content::webid::EmailVerifier::OnEmailVerifiedCallback callback) {
-            std::move(callback).Run(std::nullopt);
-          }));
+      .WillOnce(RunOnceCallback<2>(std::nullopt));
 
   // When the verification fails, the event is not dispatched.
   EXPECT_CALL(*driver_, DispatchEmailVerifiedEvent).Times(0);
