@@ -37,11 +37,6 @@ PageActionPerActionMetricsRecorder::~PageActionPerActionMetricsRecorder() =
 
 void PageActionPerActionMetricsRecorder::OnPageActionModelChanged(
     const PageActionModelInterface& model) {
-  // Only record metrics for ephemeral page actions.
-  if (!model.IsEphemeral()) {
-    return;
-  }
-
   if (IsNewNavigation()) {
     current_navigation_metrics_.icon_shown_recorded = false;
     current_navigation_metrics_.chip_shown_recorded = false;

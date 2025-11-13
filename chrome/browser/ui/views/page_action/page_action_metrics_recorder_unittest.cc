@@ -84,21 +84,6 @@ class PageActionMetricsRecorderTest : public testing::Test {
   int visible_count_ = 1;
 };
 
-TEST_F(PageActionMetricsRecorderTest, NoRecordIfNotEphemeral) {
-  base::HistogramTester histogram_tester;
-  CreateRecorder();
-
-  // Make the page action "visible" and "non ephemeral". No metric will be
-  // recorded.
-  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
-  ON_CALL(mock_model_, IsEphemeral()).WillByDefault(Return(false));
-
-  FireModelChanged();
-  // Because is_ephemeral=false, `kIconActionTypeShow` is not
-  // recorded.
-  histogram_tester.ExpectTotalCount(kIconActionTypeShow, 0);
-}
-
 TEST_F(PageActionMetricsRecorderTest, RecordOnlyOncePerUrlIfEphemeral) {
   base::HistogramTester histogram_tester;
   CreateRecorder();
