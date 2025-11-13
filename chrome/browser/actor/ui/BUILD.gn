@@ -42,12 +42,6 @@ source_set("ui") {
     "actor_ui_window_controller.h",
     "handoff_button_controller.cc",
     "handoff_button_controller.h",
-    "task_list_bubble/actor_task_list_bubble.cc",
-    "task_list_bubble/actor_task_list_bubble.h",
-    "task_list_bubble/actor_task_list_bubble_controller.cc",
-    "task_list_bubble/actor_task_list_bubble_controller.h",
-    "task_list_bubble/actor_task_list_bubble_row_button.cc",
-    "task_list_bubble/actor_task_list_bubble_row_button.h",
   ]
   deps = [
     ":ui_event_types",

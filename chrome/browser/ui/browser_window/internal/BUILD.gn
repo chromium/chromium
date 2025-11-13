@@ -42,6 +42,7 @@ source_set("internal") {
 
     deps += [
       "//chrome/browser/actor/ui",
+      "//chrome/browser/actor/ui/task_list_bubble:controller",
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/devtools",

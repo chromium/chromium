@@ -7,6 +7,13 @@
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/views/controls/button/button.h"
+
+struct ActorTaskListBubbleRowButtonParams {
+  std::u16string title;
+  std::u16string subtitle;
+  views::Button::PressedCallback last_actuated_tab_callback;
+};
 
 // Controller that handles the visibility and display of the
 // ActorTaskListBubble.
