@@ -18,7 +18,15 @@ namespace {
 
 class WebCryptoFuzzer {
  public:
-  WebCryptoFuzzer() { blink::Platform::InitializeBlink(); }
+  WebCryptoFuzzer() {
+    // InitializeBlink() does process-wide initialization, and
+    // no code to uninitialize blink for testing. We have to block
+    // re-initializing blink in the same process.
+    if (!blink_initialized_) {
+      blink::Platform::InitializeBlink();
+      blink_initialized_ = true;
+    }
+  }
   ~WebCryptoFuzzer() = default;
 
   void ImportKeyFuzzer(blink::WebCryptoAlgorithm algo,
@@ -47,7 +55,12 @@ class WebCryptoFuzzer {
                         blink::WebCryptoKeyUsage key_usage,
                         base::span<const uint8_t> key_data,
                         unsigned int length_bits);
+
+ private:
+  static bool blink_initialized_;
 };
+
+bool WebCryptoFuzzer::blink_initialized_ = false;
 
 }  // namespace
 
