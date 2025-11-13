@@ -619,4 +619,16 @@ bool SetAutofillAiOptInStatus(AutofillClient& client,
   return true;
 }
 
+[[nodiscard]] bool HasSetLocalAutofillAiOptInStatus(
+    const PrefService* prefs,
+    const signin::IdentityManager* identity_manager) {
+  const std::optional<GaiaIdHash> signed_in_hash =
+      GetAccountGaiaIdHash(identity_manager);
+  return syncer::GetAccountKeyedPrefValue(prefs, prefs::kAutofillAiOptInStatus,
+                                          GetDefaultGaiaIdHash()) ||
+         (signed_in_hash &&
+          syncer::GetAccountKeyedPrefValue(prefs, prefs::kAutofillAiOptInStatus,
+                                           *signed_in_hash));
+}
+
 }  // namespace autofill

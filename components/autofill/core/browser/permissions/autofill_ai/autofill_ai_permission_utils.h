@@ -87,7 +87,7 @@ bool MayPerformAutofillAiAction(
 // account.
 [[nodiscard]] bool GetAutofillAiOptInStatus(const AutofillClient& client);
 [[nodiscard]] bool GetAutofillAiOptInStatus(
-    const PrefService* pref_service,
+    const PrefService* prefs,
     const signin::IdentityManager* identity_manager);
 
 // Sets the AutofillAI opt-in status for the profile and account tied to
@@ -95,6 +95,13 @@ bool MayPerformAutofillAiAction(
 // otherwise.
 bool SetAutofillAiOptInStatus(AutofillClient& client,
                               AutofillAiOptInStatus opt_in_status);
+
+// Returns whether the user has ever explicitly opted in or out of Autofill AI.
+//
+// This is only intended to be used during migration from local to synced prefs.
+[[nodiscard]] bool HasSetLocalAutofillAiOptInStatus(
+    const PrefService* prefs,
+    const signin::IdentityManager* identity_manager);
 
 }  // namespace autofill
 
