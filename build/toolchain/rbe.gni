@@ -63,9 +63,10 @@ if (use_remoteexec) {
          "Can't enable remoteexec when use_reclient and use_siso are false")
 }
 
-assert(
-    !(use_reclient && use_siso),
-    "Can't enable reclient with siso. please remove use_reclient=true from args.gn.")
+if (use_reclient && current_toolchain == default_toolchain) {
+  print(
+      "WARNING: crbug.com/424659245 - Reclient is deprecated. Please remove `use_siso=false` and/or `use_reclient=true` from `args.gn` to switch to Siso without Reclient.")
+}
 
 if (use_remoteexec) {
   rbe_logs = [ "use_remoteexec=true" ]
