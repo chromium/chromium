@@ -397,12 +397,12 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
       StartActorTaskInNewTab(task_url, kNewActorTabId),
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               kActivateSurfaceIncompatibilityNotice),
-      WaitForTaskTabForground(/*expected_foreground=*/true),
+      WaitForTaskTabForeground(/*expected_foreground=*/true),
       AddInstrumentedTab(kOtherTabId, other_url),
       FocusWebContents(kOtherTabId),
-      WaitForTaskTabForground(/*expected_foreground=*/false),
+      WaitForTaskTabForeground(/*expected_foreground=*/false),
       ActivateTaskTab(),
-      WaitForTaskTabForground(/*expected_foreground=*/true),
+      WaitForTaskTabForeground(/*expected_foreground=*/true),
       Do([&]() {
         EXPECT_EQ(1, user_action_tester.GetActionCount(
       "Glic.Instance.TaskTabForegrounded"));

@@ -518,7 +518,7 @@ MultiStep GlicActorUiTest::ActivateTaskTab() {
                RoundTrip());
 }
 
-MultiStep GlicActorUiTest::WaitForTaskTabForground(bool expected_foreground) {
+MultiStep GlicActorUiTest::WaitForTaskTabForeground(bool expected_foreground) {
   return InAnyContext(WithElement(
       kGlicContentsElementId,
       [&tab_handle = tab_handle_, expected_foreground](ui::TrackedElement* el) {

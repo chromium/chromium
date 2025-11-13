@@ -174,7 +174,7 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
 
   // Waits for the glic getTabById for the task tab to satisfy the expected
   // foreground value.
-  MultiStep WaitForTaskTabForground(bool expected_foreground);
+  MultiStep WaitForTaskTabForeground(bool expected_foreground);
 
   // Returns a callback that returns the given string as the action proto. Meant
   // for testing error handling since this allows providing an invalid proto.
