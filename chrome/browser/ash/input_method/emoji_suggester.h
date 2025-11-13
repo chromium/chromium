@@ -26,25 +26,24 @@ inline constexpr int kEmojiSuggesterShowSettingMaxCount = 10;
 
 // An agent to suggest emoji when the user types, and adopt or
 // dismiss the suggestion according to the user action.
-class EmojiSuggester : public Suggester {
+class EmojiSuggester {
  public:
   EmojiSuggester(SuggestionHandlerInterface* engine, Profile* profile);
-  ~EmojiSuggester() override;
+  ~EmojiSuggester();
 
-  // Suggester overrides:
-  void OnFocus(int context_id) override;
-  void OnBlur() override;
+  void OnFocus(int context_id);
+  void OnBlur();
   void OnExternalSuggestionsUpdated(
       const std::vector<ime::AssistiveSuggestion>& suggestions,
-      const std::optional<ime::SuggestionsTextContext>& context) override;
-  SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event) override;
+      const std::optional<ime::SuggestionsTextContext>& context);
+  SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event);
   bool TrySuggestWithSurroundingText(const std::u16string& text,
-                                     gfx::Range selection_range) override;
-  bool AcceptSuggestion(size_t index) override;
-  void DismissSuggestion() override;
-  AssistiveType GetProposeActionType() override;
-  bool HasSuggestions() override;
-  std::vector<ime::AssistiveSuggestion> GetSuggestions() override;
+                                     gfx::Range selection_range);
+  bool AcceptSuggestion(size_t index);
+  void DismissSuggestion();
+  AssistiveType GetProposeActionType();
+  bool HasSuggestions();
+  std::vector<ime::AssistiveSuggestion> GetSuggestions();
 
   bool ShouldShowSuggestion(const std::u16string& text);
 
