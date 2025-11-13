@@ -14,6 +14,8 @@
 // are only intended for manual debugging and testing purposes.
 namespace autofill::features::debug {
 
+// All features in alphabetical order.
+
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillCapturedSiteTestsMetricsScraper);
 COMPONENT_EXPORT(AUTOFILL)

@@ -178,14 +178,6 @@ BASE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// When enabled, the Virtual Card enrollment bottom sheet uses the Java
-// payments data manager and associated image fetcher to retrieve the cached
-// card art images (when available on Android). When not enabled, the native
-// payments data manager and associated image fetcher are used, where the image
-// is not cached.
-BASE_FEATURE(kAutofillEnableVirtualCardJavaPaymentsDataManager,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Buy now pay later issuer allow lists will be loaded after
 // payment data syncing instead of credit card form parsing.
 BASE_FEATURE(kAutofillEnableLoadBnplAllowlistAfterSyncing,
@@ -230,6 +222,14 @@ BASE_FEATURE(kAutofillEnableSeparatePixPreferenceItem,
 // the card, and FIDO is not.
 BASE_FEATURE(kAutofillEnableVcn3dsAuthentication,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, the Virtual Card enrollment bottom sheet uses the Java
+// payments data manager and associated image fetcher to retrieve the cached
+// card art images (when available on Android). When not enabled, the native
+// payments data manager and associated image fetcher are used, where the image
+// is not cached.
+BASE_FEATURE(kAutofillEnableVirtualCardJavaPaymentsDataManager,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_IOS)
 // When enabled, save card bottomsheet will be shown to save the card locally
@@ -279,6 +279,12 @@ BASE_FEATURE(kAutofillShowManualFillForVirtualCards,
 BASE_FEATURE(kAutofillSkipSaveCardForTabModalPopup,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, eWallet accounts are synced from the Google Payments servers
+// and displayed on the payment methods settings page.
+BASE_FEATURE(kAutofillSyncEwalletAccounts, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // When enabled, adds a timeout on the network request for Unmask requests.
 BASE_FEATURE(kAutofillUnmaskCardRequestTimeout,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -298,12 +304,6 @@ BASE_FEATURE(kAutofillVcnEnrollStrikeExpiryTime,
 const base::FeatureParam<int> kAutofillVcnEnrollStrikeExpiryTimeDays{
     &kAutofillVcnEnrollStrikeExpiryTime, "autofill_vcn_strike_expiry_time_days",
     /*default_value=*/180};
-
-#if BUILDFLAG(IS_ANDROID)
-// When enabled, eWallet accounts are synced from the Google Payments servers
-// and displayed on the payment methods settings page.
-BASE_FEATURE(kAutofillSyncEwalletAccounts, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
 
 bool ShouldShowImprovedUserConsentForCreditCardSave() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX)

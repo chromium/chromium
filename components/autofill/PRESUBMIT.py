@@ -250,6 +250,8 @@ def CheckFeatureFilesOrdering(input_api, output_api):
       "autofill_features.cc",
       "autofill_debug_features.h",
       "autofill_debug_features.cc",
+      "autofill_payments_features.h",
+      "autofill_payments_features.cc",
   ]
 
   def validate_ordering(file):

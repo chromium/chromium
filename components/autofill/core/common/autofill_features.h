@@ -13,6 +13,8 @@
 
 namespace autofill::features {
 
+// All features in alphabetical order.
+
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAcceptDomMutationAfterAutofillSubmission);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillAcrossIframesIos);
