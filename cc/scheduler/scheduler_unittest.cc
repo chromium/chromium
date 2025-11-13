@@ -8,13 +8,13 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -85,24 +85,24 @@ class FakeSchedulerClient : public SchedulerClient,
   bool needs_begin_frames() { return scheduler_->begin_frames_expected(); }
   int num_draws() const { return num_draws_; }
   bool invalidate_needs_redraw() const { return invalidate_needs_redraw_; }
-  const std::vector<std::string> Actions() const {
-    return std::vector<std::string>(actions_.begin(), actions_.end());
-  }
+  const std::vector<std::string>& Actions() const { return actions_; }
   base::TimeTicks posted_begin_impl_frame_deadline() const {
     return posted_begin_impl_frame_deadline_;
   }
 
   base::TimeDelta frame_interval() const { return frame_interval_; }
 
-  int ActionIndex(const char* action) const {
+  int ActionIndex(std::string_view action) const {
     for (size_t i = 0; i < actions_.size(); i++)
-      if (!UNSAFE_TODO(strcmp(actions_[i], action))) {
+      if (actions_[i] == action) {
         return base::checked_cast<int>(i);
       }
     return -1;
   }
 
-  bool HasAction(const char* action) const { return ActionIndex(action) >= 0; }
+  bool HasAction(std::string_view action) const {
+    return ActionIndex(action) >= 0;
+  }
 
   void SetWillBeginImplFrameRequestsOneBeginImplFrame(bool request) {
     will_begin_impl_frame_requests_one_begin_impl_frame_ = request;
@@ -276,8 +276,8 @@ class FakeSchedulerClient : public SchedulerClient,
                                scheduler_->current_frame_number());
   }
 
-  void PushAction(const char* description) {
-    actions_.push_back(description);
+  void PushAction(std::string_view description) {
+    actions_.emplace_back(description);
   }
 
   // FakeExternalBeginFrameSource::Client implementation.
@@ -306,7 +306,7 @@ class FakeSchedulerClient : public SchedulerClient,
   viz::BeginFrameArgs last_begin_main_frame_args_;
   viz::BeginFrameAck last_begin_frame_ack_;
   base::TimeTicks posted_begin_impl_frame_deadline_;
-  std::vector<const char*> actions_;
+  std::vector<std::string> actions_;
   raw_ptr<TestScheduler> scheduler_ = nullptr;
   base::TimeDelta frame_interval_;
   std::optional<FrameSkippedReason> last_frame_skipped_reason_;
