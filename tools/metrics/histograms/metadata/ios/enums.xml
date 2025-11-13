@@ -1300,6 +1300,19 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Incognito text search item"/>
 </enum>
 
+<!-- LINT.IfChange(IOSSigninFullscreenPromoEvents) -->
+
+<enum name="IOSSigninFullscreenPromoEvents">
+  <int value="0" label="Promo Manager Triggered"/>
+  <int value="1" label="Promo not shown due to policy"/>
+  <int value="2" label="Promo not shown because the UI was blocked."/>
+  <int value="3" label="Promo UI Started"/>
+  <int value="4" label="Sign in UI Started"/>
+  <int value="5" label="HistorySync UI Started"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h:SigninFullscreenPromoEvents) -->
+
 <enum name="IOSSpotlightAction">
   <int value="0" label="New Tab"/>
   <int value="1" label="New Incognito Tab"/>
