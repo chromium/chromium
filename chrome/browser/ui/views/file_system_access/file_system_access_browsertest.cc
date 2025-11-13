@@ -716,7 +716,9 @@ IN_PROC_BROWSER_TEST_P(PersistedPermissionsFileSystemAccessBrowserTest,
                       "  })})();"));
 
   // Top-level page in first window picks files and sends it to iframe.
-  first_party_web_contents->WasShown();
+  browser()->tab_strip_model()->ActivateTabAt(
+      browser()->tab_strip_model()->GetIndexOfWebContents(
+          first_party_web_contents));
   EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
             content::EvalJs(first_party_web_contents,
                             "(async () => {"
@@ -882,7 +884,9 @@ IN_PROC_BROWSER_TEST_P(PersistedPermissionsFileSystemAccessBrowserTest,
                       "  })})();"));
 
   // Top-level page in first window picks files and sends it to iframe.
-  first_party_web_contents->WasShown();
+  browser()->tab_strip_model()->ActivateTabAt(
+      browser()->tab_strip_model()->GetIndexOfWebContents(
+          first_party_web_contents));
   EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
             content::EvalJs(first_party_web_contents,
                             "(async () => {"

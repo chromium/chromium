@@ -4,9 +4,13 @@
 
 #include "content/browser/web_contents_based_canceller.h"
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "content/common/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
+
 namespace content {
 
 // static
@@ -37,7 +41,7 @@ bool WebContentsBasedCanceller::CanShow() {
     return false;
   }
   return CanShowForVisibility(web_contents()->GetVisibility()) &&
-         CanShowForRFHActiveState();
+         CanShowForRFHActiveState() && CanShowForTabState();
 }
 
 bool WebContentsBasedCanceller::CanShowForVisibility(Visibility visibility) {
@@ -48,6 +52,21 @@ bool WebContentsBasedCanceller::CanShowForVisibility(Visibility visibility) {
 bool WebContentsBasedCanceller::CanShowForRFHActiveState() {
   RenderFrameHost* render_frame_host = document_.AsRenderFrameHostIfValid();
   return render_frame_host && render_frame_host->IsActive();
+}
+
+bool WebContentsBasedCanceller::CanShowForTabState() {
+  if (!base::FeatureList::IsEnabled(
+          features::kSideBySideFilePickerCancelling)) {
+    return true;
+  }
+  // Within Split View, it is possible for the tab containing a WebContents to
+  // be visible but not active. This scenario is considered a cancel condition
+  // for kVisibility rather than kActiveState because kActiveState is determined
+  // by the RenderFrameHost state, while kVisibility is determined by the
+  // WebContents state.
+  WebContentsDelegate* web_contents_delegate = web_contents()->GetDelegate();
+  return condition_ != CancelCondition::kVisibility || !web_contents_delegate ||
+         web_contents_delegate->IsContentsActive(web_contents());
 }
 
 void WebContentsBasedCanceller::SetCancelCallback(

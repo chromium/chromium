@@ -35,11 +35,12 @@ class CONTENT_EXPORT WebContentsBasedCanceller : public WebContentsObserver {
     // something that is incompatible with back/forward-cache, e.g. screen
     // capture should not occur while in back/forward-cache.
     kActiveState = 0,
-    // Cancel if `WebContents::GetVisibility` is `HIDDEN`. Use this for
-    // something that is incompatible with switching tabs, e.g. a modal system
-    // dialog like a file-chooser that displays on top of everything should be
-    // dismissed if the tab is no longer the visible tab. This also implies
-    // `kActiveState` because an inactive RFH won't be visible.
+    // Cancel if `WebContents::GetVisibility` is `HIDDEN` or the WebContents is
+    // not the active tab in the browser. Use this for something that is
+    // incompatible with switching tabs, e.g. a modal system dialog like a
+    // file-chooser that displays on top of everything should be dismissed if
+    // the tab is no longer the visible tab. This also implies `kActiveState`
+    // because an inactive RFH won't be visible.
     kVisibility = 1,
   };
   // If the cancel condition is already true, this returns `nullptr`. Otherwise
@@ -63,6 +64,7 @@ class CONTENT_EXPORT WebContentsBasedCanceller : public WebContentsObserver {
   bool CanShow();
   bool CanShowForVisibility(Visibility visibility);
   bool CanShowForRFHActiveState();
+  bool CanShowForTabState();
 
   // WebContentsObserver
   void OnVisibilityChanged(Visibility visibility) override;

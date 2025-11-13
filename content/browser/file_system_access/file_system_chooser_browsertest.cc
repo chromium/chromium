@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -25,6 +26,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
@@ -2188,6 +2190,34 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, DontShowWhileHidden) {
   // Hide the WebContents.
   WebContents* wc = shell()->web_contents();
   wc->UpdateWebContentsVisibility(content::Visibility::HIDDEN);
+
+  // JS should see the dialog as aborted.
+  EXPECT_EQ(
+      "AbortError",
+      content::EvalJs(wc, "window.showOpenFilePicker().catch(e => e.name)"));
+  // The dialog should not have been created.
+  EXPECT_EQ(recorder.state, SelectFileDialogRecorder::kNotCreated);
+}
+
+class InactiveWebContentsDelegate : public content::WebContentsDelegate {
+  bool IsContentsActive(WebContents* wc) override { return false; }
+};
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, DontShowWhileInactive) {
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  // Record the state of the dialog.
+  SelectFileDialogRecorder recorder;
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<ObservableSelectFileDialogFactory>(
+          recorder.GetWeakPtr()));
+
+  // Provide a WebContentsDelegate that marks all web contents as inactive.
+  WebContents* wc = shell()->web_contents();
+  std::unique_ptr<InactiveWebContentsDelegate> mock =
+      std::make_unique<InactiveWebContentsDelegate>();
+  wc->SetDelegate(mock.get());
 
   // JS should see the dialog as aborted.
   EXPECT_EQ(
