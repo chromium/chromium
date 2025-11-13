@@ -25,7 +25,9 @@
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -45,10 +47,15 @@
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_service_impl.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/service/data_type_controller.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/mock_commit_queue.h"
 #include "components/sync_sessions/session_sync_service_impl.h"
 #include "components/sync_sessions/synced_session.h"
@@ -683,3 +690,57 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
           model.GetSubmenuModelAt(model.GetItemCount() - 1)->GetLabelAt(2),
           model.GetSubmenuModelAt(model.GetItemCount() - 1)->GetLabelAt(3)));
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest, OtherDevicesAvailability) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    GTEST_SKIP();
+  }
+
+  std::vector<ModelData> kDataWithOtherDevices = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // History
+      {ui::MenuModel::TYPE_COMMAND, true},    // History Cluster
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, false},   // Recent Tabs
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_TITLE, false},     // Your devices
+      {ui::MenuModel::TYPE_SUBMENU, true}     // session 0 submenu
+  };
+
+  std::vector<ModelData> kDataWithoutOtherDevices = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // History
+      {ui::MenuModel::TYPE_COMMAND, true},    // History Cluster
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, false}    // Recent Tabs
+  };
+
+  Init();
+  EnableSync();
+  RecentTabsBuilderTestHelper recent_tabs_builder;
+  recent_tabs_builder.AddSession();
+  recent_tabs_builder.AddWindow(0);
+  recent_tabs_builder.AddTab(0, 0);
+  RegisterRecentTabs(&recent_tabs_builder);
+
+  // Default state.
+  VerifyModel(RecentTabsSubMenuModel(nullptr, browser()),
+              kDataWithOtherDevices);
+
+  // Signed in.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  signin::MakePrimaryAccountAvailable(identity_manager, "test@gmail.com",
+                                      signin::ConsentLevel::kSignin);
+  VerifyModel(RecentTabsSubMenuModel(nullptr, browser()),
+              kDataWithOtherDevices);
+
+  // History sync explicitly disabled: tabs from other devices are not shown.
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(browser()->profile());
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kTabs, false);
+  VerifyModel(RecentTabsSubMenuModel(nullptr, browser()),
+              kDataWithoutOtherDevices);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)

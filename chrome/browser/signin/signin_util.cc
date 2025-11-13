@@ -407,10 +407,18 @@ bool IsSyncingUserSelectableTypesAllowedByPolicy(
 bool HasExplicitlyDisabledHistorySync(
     const syncer::SyncService* sync_service,
     const signin::IdentityManager* identity_manager) {
-  // If the user is signed out, we cannot know if the toggles were interacted
-  // with or not.
-  CHECK(GetSignedInState(identity_manager) ==
-        signin_util::SignedInState::kSignedIn);
+  switch (GetSignedInState(identity_manager)) {
+    case SignedInState::kSignedOut:
+    case SignedInState::kWebOnlySignedIn:
+      // If the user is signed out, we cannot know if the toggles were
+      // interacted with or not.
+      NOTREACHED();
+    case SignedInState::kSignedIn:
+    case SignedInState::kSyncing:
+    case SignedInState::kSignInPending:
+    case SignedInState::kSyncPaused:
+      break;
+  }
 
   if (!sync_service) {
     return false;

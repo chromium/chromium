@@ -209,7 +209,8 @@ bool IsSyncingUserSelectableTypesAllowedByPolicy(
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // True if the user has explicitly disabled syncing history, tabs or saved tab
-// groups through the settings.
+// groups through the settings. The primary account must be set (this crashes
+// otherwise).
 // This method does not take into account the feature flag
 // `ReplaceSyncPromosWithSignInPromos`.
 bool HasExplicitlyDisabledHistorySync(

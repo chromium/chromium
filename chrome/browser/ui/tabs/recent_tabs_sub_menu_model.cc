@@ -30,6 +30,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -49,6 +50,7 @@
 #include "components/favicon_base/favicon_types.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -431,14 +433,41 @@ void RecentTabsSubMenuModel::BuildLocalEntries() {
 }
 
 void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
-  // This option should not be built if syncing tabs is disabled by policy.
+#if !BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) &&
-      !signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
-          SyncServiceFactory::GetForProfile(browser_->profile()),
-          {syncer::UserSelectableType::kTabs})) {
-    return;
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    syncer::SyncService* sync_service =
+        SyncServiceFactory::GetForProfile(browser_->profile());
+    if (!sync_service) {
+      return;
+    }
+
+    if (!signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
+            sync_service, {syncer::UserSelectableType::kTabs})) {
+      // This option should not be built if syncing tabs is disabled by policy.
+      return;
+    }
+
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(browser_->profile());
+    switch (signin_util::GetSignedInState(identity_manager)) {
+      case signin_util::SignedInState::kSignedIn:
+      case signin_util::SignedInState::kSignInPending:
+        if (signin_util::HasExplicitlyDisabledHistorySync(sync_service,
+                                                          identity_manager)) {
+          // This option should not be built if syncing tabs is explicitly
+          // disabled by the user.
+          return;
+        }
+        break;
+      case signin_util::SignedInState::kSignedOut:
+      case signin_util::SignedInState::kWebOnlySignedIn:
+      case signin_util::SignedInState::kSyncing:
+      case signin_util::SignedInState::kSyncPaused:
+        break;
+    }
   }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // All other devices' items (device headers or tabs) use AddItem*() to append
   // a menu item, because they take always place in the end of menu.
