@@ -1239,6 +1239,9 @@ class ContextSharingBorderViewWithoutHardwareAccelerationUiTest
 // Ensures that when there is no hardware acceleration, the emphasis animation
 // is skipped and we just show an opacity ramp up and ramp down animation.
 // Note: Ramp up and ramp down duration in this case is 200ms.
+// Secondary Note: ChromeOS requires hardware acceleration, so this test doesn't
+// make sense on that platform.
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(
     ContextSharingBorderViewWithoutHardwareAccelerationUiTest,
     BasicRampingUpAndDown) {
@@ -1301,6 +1304,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
   EXPECT_FALSE(border->IsShowing());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Regression test for crbug.com/409649143. Ensure we clear the "start ramp down
 // state" if StopShowing is called immediately after starting the ramp down.
