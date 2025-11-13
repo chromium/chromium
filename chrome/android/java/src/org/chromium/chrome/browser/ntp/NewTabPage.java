@@ -221,6 +221,8 @@ public class NewTabPage
     private NtpCustomizationConfigManager.@org.chromium.build.annotations.Nullable
             HomepageStateListener
             mHomepageStateListener;
+    // A flag to use light tint on toolbar and status bar icons.
+    private boolean mUseLightIconTint;
 
     private @Nullable SearchResumptionModuleCoordinator mSearchResumptionModuleCoordinator;
     private @Nullable NtpSmoothTransitionDelegate mSmoothTransitionDelegate;
@@ -667,6 +669,7 @@ public class NewTabPage
         if (mCanSupportEdgeToEdgeForCustomizedTheme) {
             initTopInsetCoordinatorObserver();
             initHomepageStateListener();
+            initUseLightIconTint();
         }
 
         NewTabPageUma.recordContentSuggestionsDisplayStatus(profile);
@@ -830,6 +833,7 @@ public class NewTabPage
                             boolean fromInitialization,
                             int oldType,
                             int newType) {
+                        mUseLightIconTint = true;
                         if (NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox(oldType)) {
                             return;
                         }
@@ -843,6 +847,8 @@ public class NewTabPage
                             boolean fromInitialization,
                             int oldType,
                             int newType) {
+                        mUseLightIconTint = false;
+
                         if (!NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox(oldType)) {
                             return;
                         }
@@ -852,6 +858,20 @@ public class NewTabPage
                     }
                 };
         NtpCustomizationConfigManager.getInstance().addListener(mHomepageStateListener, mContext);
+    }
+
+    /** Initializes whether to use a light tint color on icons of toolbar and status bar. */
+    private void initUseLightIconTint() {
+        if (mIsTablet) return;
+
+        @NtpBackgroundImageType
+        int imageType = NtpCustomizationConfigManager.getInstance().getBackgroundImageType();
+        if (imageType == NtpBackgroundImageType.IMAGE_FROM_DISK
+                || imageType == NtpBackgroundImageType.THEME_COLLECTION) {
+            mUseLightIconTint = true;
+        } else {
+            mUseLightIconTint = false;
+        }
     }
 
     /**
@@ -1228,6 +1248,11 @@ public class NewTabPage
     @Override
     public int getBackgroundColor() {
         return mBackgroundColor;
+    }
+
+    @Override
+    public boolean useLightIconTint() {
+        return mUseLightIconTint;
     }
 
     @Override

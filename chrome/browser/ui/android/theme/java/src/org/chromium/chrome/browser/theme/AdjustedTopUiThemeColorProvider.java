@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.theme;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 
@@ -13,8 +15,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tab.CurrentTabObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
@@ -49,39 +49,14 @@ public class AdjustedTopUiThemeColorProvider extends TopUiThemeColorProvider {
                 allowThemingInNightMode,
                 allowBrightThemeColors,
                 allowThemingOnTablets);
-
-        mTabObserver =
-                new CurrentTabObserver(
-                        tabSupplier,
-                        new EmptyTabObserver() {
-                            @Override
-                            public void onDidChangeThemeColor(Tab tab, int themeColor) {
-                                // TODO(https://crbug.com/423579377): get adjustTintColor from tab.
-                                updateColor(
-                                        tab,
-                                        themeColor,
-                                        /* forceLightTintOnIcons= */ false,
-                                        /* shouldAnimate= */ true);
-                            }
-                        },
-                        (tab) -> {
-                            if (tab != null) {
-                                // TODO(https://crbug.com/423579377): get adjustTintColor from tab.
-                                updateColor(
-                                        tab,
-                                        tab.getThemeColor(),
-                                        /* forceLightTintOnIcons= */ false,
-                                        /* shouldAnimate= */ false);
-                            }
-                        });
     }
 
     /** Updates tint colors of the given tab. */
     @VisibleForTesting
-    void updateColor(
-            Tab tab, int themeColor, boolean forceLightTintOnIcons, boolean shouldAnimate) {
-        if (!forceLightTintOnIcons) {
-            updateColor(tab, themeColor, shouldAnimate);
+    @Override
+    protected void updateColor(Tab tab, int themeColor, boolean shouldAnimate) {
+        if (!tab.isNativePage() || !assumeNonNull(tab.getNativePage()).useLightIconTint()) {
+            super.updateColor(tab, themeColor, shouldAnimate);
             return;
         }
 
@@ -89,6 +64,6 @@ public class AdjustedTopUiThemeColorProvider extends TopUiThemeColorProvider {
         ColorStateList iconTint =
                 AppCompatResources.getColorStateList(
                         mContext, R.color.default_icon_color_white_tint_list);
-        updateTint(iconTint, iconTint, BrandedColorScheme.DARK_BRANDED_THEME);
+        super.updateTint(iconTint, iconTint, BrandedColorScheme.DARK_BRANDED_THEME);
     }
 }

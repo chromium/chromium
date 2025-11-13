@@ -64,6 +64,15 @@ public interface NativePage {
     int getBackgroundColor();
 
     /**
+     * Returns whether to use a light tint on icons of the toolbar and status bar for this tab. For
+     * example, new tab page can use a light tint icons on icons of toolbar and status bar when a
+     * customized background image is applied.
+     */
+    default boolean useLightIconTint() {
+        return false;
+    }
+
+    /**
      * @param defaultColor Default color if not customized.
      * @return The color of the toolbar textbox background.
      */
