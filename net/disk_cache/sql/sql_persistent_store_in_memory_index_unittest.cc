@@ -10,10 +10,10 @@ namespace disk_cache {
 
 namespace {
 
-const CacheEntryKey::Hash kHash1(1);
-const SqlPersistentStore::ResId kResId1(1);
-const CacheEntryKey::Hash kHash2(2);
-const SqlPersistentStore::ResId kResId2(2);
+const CacheEntryKeyHash kHash1(1);
+const SqlPersistentStoreResId kResId1(1);
+const CacheEntryKeyHash kHash2(2);
+const SqlPersistentStoreResId kResId2(2);
 
 }  // namespace
 
@@ -87,8 +87,8 @@ TEST(SqlPersistentStoreInMemoryIndexTest, MultipleEntries) {
 }
 
 TEST(SqlPersistentStoreInMemoryIndexTest, BehavesCorrectlyWithBothMaps) {
-  const CacheEntryKey::Hash kHashLarge(3);
-  const SqlPersistentStore::ResId kResIdLarge(
+  const CacheEntryKeyHash kHashLarge(3);
+  const SqlPersistentStoreResId kResIdLarge(
       static_cast<int64_t>(std::numeric_limits<uint32_t>::max()) + 1);
 
   SqlPersistentStoreInMemoryIndex index;
@@ -162,8 +162,8 @@ TEST(SqlPersistentStoreInMemoryIndexTest, MoveOperations) {
 }
 
 TEST(SqlPersistentStoreInMemoryIndexTest, MoveOperationsWithResId64) {
-  const CacheEntryKey::Hash kHashLarge(3);
-  const SqlPersistentStore::ResId kResIdLarge(
+  const CacheEntryKeyHash kHashLarge(3);
+  const SqlPersistentStoreResId kResIdLarge(
       static_cast<int64_t>(std::numeric_limits<uint32_t>::max()) + 1);
 
   // Test move constructor with ResId64.

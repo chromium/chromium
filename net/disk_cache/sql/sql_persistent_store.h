@@ -19,6 +19,7 @@
 #include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
+#include "net/disk_cache/sql/sql_backend_ids.h"
 
 // This backend is experimental and only available when the build flag is set.
 static_assert(BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND));
@@ -47,10 +48,10 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   // The primary key for resources managed in the SqlPersistentStore's resources
   // table.
-  using ResId = base::StrongAlias<class ResIdTag, int64_t>;
+  using ResId = SqlPersistentStoreResId;
 
   // A unique identifier for a database shard.
-  using ShardId = base::StrongAlias<class ResIdTag, uint8_t>;
+  using ShardId = SqlPersistentStoreShardId;
 
   // Represents the error of SqlPersistentStore operation.
   // These values are persisted to logs. Entries should not be renumbered and

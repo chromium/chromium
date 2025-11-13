@@ -9,7 +9,7 @@
 #include "base/types/strong_alias.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/sql/indexed_pair_set.h"
-#include "net/disk_cache/sql/sql_persistent_store.h"
+#include "net/disk_cache/sql/sql_backend_ids.h"
 
 namespace disk_cache {
 
@@ -43,10 +43,10 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
   SqlPersistentStoreInMemoryIndex& operator=(
       SqlPersistentStoreInMemoryIndex&& other) noexcept;
 
-  bool Insert(CacheEntryKey::Hash hash, SqlPersistentStore::ResId res_id);
-  bool Contains(CacheEntryKey::Hash hash) const;
-  bool Remove(SqlPersistentStore::ResId res_id);
-  bool Remove(CacheEntryKey::Hash hash, SqlPersistentStore::ResId res_id);
+  bool Insert(CacheEntryKeyHash hash, SqlPersistentStoreResId res_id);
+  bool Contains(CacheEntryKeyHash hash) const;
+  bool Remove(SqlPersistentStoreResId res_id);
+  bool Remove(CacheEntryKeyHash hash, SqlPersistentStoreResId res_id);
   void Clear();
 
   size_t size() const;
@@ -57,7 +57,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
   template <class ResIdType>
   class Impl {
    public:
-    using ResIdToHashMap = absl::flat_hash_map<ResIdType, CacheEntryKey::Hash>;
+    using ResIdToHashMap = absl::flat_hash_map<ResIdType, CacheEntryKeyHash>;
 
     Impl() = default;
     ~Impl() = default;
@@ -66,7 +66,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
     Impl(Impl&& other) noexcept = default;
     Impl& operator=(Impl&& other) noexcept = default;
 
-    bool Insert(CacheEntryKey::Hash hash, ResIdType res_id) {
+    bool Insert(CacheEntryKeyHash hash, ResIdType res_id) {
       if (res_id_to_hash_map_.contains(res_id)) {
         return false;
       }
@@ -77,7 +77,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
       return false;
     }
 
-    bool Contains(CacheEntryKey::Hash hash) const {
+    bool Contains(CacheEntryKeyHash hash) const {
       return hash_res_id_set_.Contains(hash);
     }
 
@@ -90,7 +90,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
       return true;
     }
 
-    bool Remove(CacheEntryKey::Hash hash, ResIdType res_id) {
+    bool Remove(CacheEntryKeyHash hash, ResIdType res_id) {
       auto it = res_id_to_hash_map_.find(res_id);
       if (it == res_id_to_hash_map_.end()) {
         return false;
@@ -114,7 +114,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
     }
 
    private:
-    using HashResIdSet = IndexedPairSet<CacheEntryKey::Hash, ResIdType>;
+    using HashResIdSet = IndexedPairSet<CacheEntryKeyHash, ResIdType>;
 
     void RemoveInternal(ResIdToHashMap::iterator it) {
       DCHECK(it != res_id_to_hash_map_.end());
@@ -126,10 +126,10 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
     ResIdToHashMap res_id_to_hash_map_;
   };
 
-  static std::optional<ResId32> ToResId32(SqlPersistentStore::ResId res_id);
+  static std::optional<ResId32> ToResId32(SqlPersistentStoreResId res_id);
 
   Impl<ResId32> impl32_;
-  std::optional<Impl<SqlPersistentStore::ResId>> impl64_;
+  std::optional<Impl<SqlPersistentStoreResId>> impl64_;
 };
 
 }  // namespace disk_cache

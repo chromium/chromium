@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/types/strong_alias.h"
 #include "net/base/net_export.h"
+#include "net/disk_cache/sql/sql_backend_ids.h"
 
 namespace disk_cache {
 
@@ -37,7 +38,7 @@ namespace disk_cache {
 // the main cache key string.
 class NET_EXPORT_PRIVATE CacheEntryKey {
  public:
-  using Hash = base::StrongAlias<class HashTag, int32_t>;
+  using Hash = CacheEntryKeyHash;
 
   explicit CacheEntryKey(std::string str = "");
   ~CacheEntryKey();

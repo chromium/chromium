@@ -8,8 +8,8 @@
 
 namespace disk_cache {
 
-using Hash = CacheEntryKey::Hash;
-using ResId = SqlPersistentStore::ResId;
+using Hash = CacheEntryKeyHash;
+using ResId = SqlPersistentStoreResId;
 
 SqlPersistentStoreInMemoryIndex::SqlPersistentStoreInMemoryIndex() = default;
 SqlPersistentStoreInMemoryIndex::~SqlPersistentStoreInMemoryIndex() = default;
