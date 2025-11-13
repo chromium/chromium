@@ -81,6 +81,19 @@ namespace blink {
 
 namespace {
 
+// Controls whether the canvas resource in ExportLowLatencyCanvasResource()
+// should be created with the SyncToken returned from back color buffer
+// (when enabled) or with an empty SyncToken (when disabled). Enabling this
+// feature would prevent flickering in some cases where desynchronized canvas
+// are periodically refreshed on Windows.
+BASE_FEATURE(kUseNonEmptySyncTokenForLowLatencyCanvas,
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 const float kResourceAdjustedRatio = 0.5;
 
 bool g_should_fail_drawing_buffer_creation_for_testing = false;
@@ -776,6 +789,7 @@ DrawingBuffer::CreateOrRecycleColorBuffer() {
 
 scoped_refptr<ExternalCanvasResource>
 DrawingBuffer::ExportLowLatencyCanvasResource() {
+  gpu::SyncToken sync_token;
   if (contents_changed_) {
     ScopedStateRestorer scoped_state_restorer(this);
     ResolveIfNeeded(kDiscardAllowed);
@@ -783,12 +797,17 @@ DrawingBuffer::ExportLowLatencyCanvasResource() {
     // Restart SharedImage access on the back buffer to ensure a write fence is
     // generated on it to guarantee display reads this frame completely.
     // Display may still read parts of subsequent frames, which is okay.
-    back_color_buffer_->EndAccess();
+    if (base::FeatureList::IsEnabled(
+            kUseNonEmptySyncTokenForLowLatencyCanvas)) {
+      sync_token = back_color_buffer_->EndAccess();
+    } else {
+      back_color_buffer_->EndAccess();
+    }
     back_color_buffer_->BeginAccess(gpu::SyncToken(), /*readonly=*/false);
   }
 
   return ExternalCanvasResource::Create(
-      back_color_buffer_->shared_image, gpu::SyncToken(),
+      back_color_buffer_->shared_image, sync_token,
       viz::TransferableResource::ResourceSource::kDrawingBuffer, hdr_metadata_,
       viz::ReleaseCallback(), context_provider_->GetWeakPtr());
 }
