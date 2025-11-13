@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp2t/es_parser_h264.h"
 
 #include <limits>
@@ -14,8 +9,10 @@
 
 #include "base/containers/adapters.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/encryption_pattern.h"
@@ -46,19 +43,16 @@ const int kSampleAESPatternUnit =
 // position of the EP3B, or 0 if there are none.
 // Note: the EP3B always follows two zero bytes, so the value 0 can never be a
 // valid position.
-int FindEP3B(const uint8_t* buffer, int start_pos, int end_pos) {
-  const uint8_t* data = buffer + start_pos;
-  int data_size = end_pos - start_pos;
-  DCHECK_GE(data_size, 0);
-  int bytes_left = data_size;
-
-  while (bytes_left >= 4) {
-    if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x03 &&
-        data[3] <= 0x03) {
-      return (data - buffer) + 2;
+size_t FindEP3B(base::span<const uint8_t> buffer) {
+  base::SpanReader reader(buffer);
+  while (reader.remaining() >= 4) {
+    static constexpr uint32_t kMaxValue = 0x0303;
+    static constexpr uint32_t kMinValue = 0x0300;
+    const uint32_t value = base::U32FromBigEndian(buffer.first<4u>());
+    if (kMinValue <= value && value <= kMaxValue) {
+      return reader.num_read() + 2;
     }
-    ++data;
-    --bytes_left;
+    reader.Read<1u>();
   }
   return 0;
 }
@@ -87,9 +81,12 @@ base::HeapArray<uint8_t> AdjustAUForSampleAES(
     int start_pos = protected_blocks.start(i);
     int end_pos = protected_blocks.end(i);
     int search_pos = start_pos;
-    int epb_pos;
+    size_t epb_pos_in_relative;
     int block_adjustment = 0;
-    while ((epb_pos = FindEP3B(au.data(), search_pos, end_pos))) {
+    while ((epb_pos_in_relative = FindEP3B(au.subspan(
+                base::checked_cast<size_t>(search_pos),
+                base::checked_cast<size_t>(end_pos - search_pos))))) {
+      size_t epb_pos = search_pos + epb_pos_in_relative;
       epbs.push_back(epb_pos);
       block_adjustment++;
       search_pos = epb_pos + 2;

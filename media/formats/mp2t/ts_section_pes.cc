@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp2t/ts_section_pes.h"
 
 #include <memory>
 
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/bit_reader.h"
 #include "media/base/byte_queue.h"
@@ -102,20 +98,19 @@ void TsSectionPes::Reset() {
 }
 
 bool TsSectionPes::Emit(bool emit_for_unknown_size) {
-  int raw_pes_size = pes_byte_queue_.Data().size();
-  const uint8_t* raw_pes = pes_byte_queue_.Data().data();
+  auto pes = pes_byte_queue_.Data();
 
   // A PES should be at least 6 bytes.
   // Wait for more data to come if not enough bytes.
-  if (raw_pes_size < 6)
+  if (pes.size() < 6) {
     return true;
+  }
 
   // Check whether we have enough data to start parsing.
-  int pes_packet_length =
-      (static_cast<int>(raw_pes[4]) << 8) |
-      (static_cast<int>(raw_pes[5]));
+  size_t pes_packet_length =
+      (static_cast<size_t>(pes[4]) << 8) | (static_cast<size_t>(pes[5]));
   if ((pes_packet_length == 0 && !emit_for_unknown_size) ||
-      (pes_packet_length != 0 && raw_pes_size < pes_packet_length + 6)) {
+      (pes_packet_length != 0 && pes.size() < pes_packet_length + 6)) {
     // Wait for more data to come either because:
     // - there are not enough bytes,
     // - or the PES size is unknown and the "force emit" flag is not set.
@@ -125,7 +120,7 @@ bool TsSectionPes::Emit(bool emit_for_unknown_size) {
   DVLOG(LOG_LEVEL_PES) << "pes_packet_length=" << pes_packet_length;
 
   // Parse the packet.
-  bool parse_result = ParseInternal(raw_pes, raw_pes_size);
+  bool parse_result = ParseInternal(pes);
 
   // Reset the state.
   ResetPesState();
@@ -133,8 +128,8 @@ bool TsSectionPes::Emit(bool emit_for_unknown_size) {
   return parse_result;
 }
 
-bool TsSectionPes::ParseInternal(const uint8_t* raw_pes, int raw_pes_size) {
-  BitReader bit_reader(raw_pes, raw_pes_size);
+bool TsSectionPes::ParseInternal(base::span<const uint8_t> pes) {
+  BitReader bit_reader(pes);
 
   // Read up to the pes_packet_length (6 bytes).
   uint32_t packet_start_code_prefix;
@@ -198,10 +193,11 @@ bool TsSectionPes::ParseInternal(const uint8_t* raw_pes, int raw_pes_size) {
   // Compute the size and the offset of the ES payload.
   // "6" for the 6 bytes read before and including |pes_packet_length|.
   // "3" for the 3 bytes read before and including |pes_header_data_length|.
-  int es_size = pes_packet_length - 3 - pes_header_data_length;
-  int es_offset = 6 + 3 + pes_header_data_length;
-  RCHECK(es_size >= 0);
-  RCHECK(es_offset + es_size <= raw_pes_size);
+  int es_size_int = pes_packet_length - 3 - pes_header_data_length;
+  RCHECK(es_size_int >= 0);
+  size_t es_size = base::checked_cast<size_t>(es_size_int);
+  uint32_t es_offset = 6 + 3 + pes_header_data_length;
+  RCHECK(es_offset + es_size <= pes.size());
 
   // Read the timing information section.
   bool is_pts_valid = false;
@@ -253,7 +249,8 @@ bool TsSectionPes::ParseInternal(const uint8_t* raw_pes, int raw_pes_size) {
       << " pts=" << media_pts.InMilliseconds()
       << " dts=" << media_dts.InMilliseconds()
       << " data_alignment_indicator=" << data_alignment_indicator;
-  return es_parser_->Parse(&raw_pes[es_offset], es_size, media_pts, media_dts);
+  return es_parser_->Parse(pes.subspan(es_offset, es_size), media_pts,
+                           media_dts);
 }
 
 void TsSectionPes::ResetPesState() {

@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/extend.h"
+#include "base/containers/span.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/format_macros.h"
 #include "base/strings/cstring_view.h"
@@ -94,7 +95,9 @@ bool EsParserTestBase::ProcessPesPackets(EsParser* es_parser,
     }
 
     DCHECK_LT(cur_pes_offset, stream_.size());
-    if (!es_parser->Parse(&stream_[cur_pes_offset], cur_pes_size, pts, dts)) {
+    if (!es_parser->Parse(
+            base::as_byte_span(stream_).subspan(cur_pes_offset, cur_pes_size),
+            pts, dts)) {
       return false;
     }
   }

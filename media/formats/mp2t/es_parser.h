@@ -11,6 +11,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -40,8 +41,7 @@ class MEDIA_EXPORT EsParser {
 
   // ES parsing.
   // Should use kNoTimestamp when a timestamp is not valid.
-  bool Parse(const uint8_t* buf,
-             int size,
+  bool Parse(base::span<const uint8_t> buf,
              base::TimeDelta pts,
              DecodeTimestamp dts);
 
