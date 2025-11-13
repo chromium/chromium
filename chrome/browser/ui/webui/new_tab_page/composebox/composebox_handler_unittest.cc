@@ -181,8 +181,8 @@ TEST_F(ComposeboxHandlerTest, SetDeepSearchMode) {
   // Submitting with setting deep search.
   handler().SetDeepSearchMode(true);
   histogram_tester().ExpectUniqueSample(
-      "NewTabPage.Composebox.Tools.DeepSearch",
-      static_cast<int>(AimToolState::kEnabled), 1);
+      "ContextualSearch.Tools.DeepSearch.NewTabPage",
+      contextual_search::AimToolState::kEnabled, 1);
   SubmitQueryAndWaitForNavigation();
   GURL query_url_dr =
       web_contents()->GetController().GetLastCommittedEntry()->GetURL();
@@ -191,14 +191,14 @@ TEST_F(ComposeboxHandlerTest, SetDeepSearchMode) {
 
   // Submitting after disabling deep search.
   handler().SetDeepSearchMode(false);
-  histogram_tester().ExpectTotalCount("NewTabPage.Composebox.Tools.DeepSearch",
-                                      2);
-  histogram_tester().ExpectBucketCount("NewTabPage.Composebox.Tools.DeepSearch",
-                                       static_cast<int>(AimToolState::kEnabled),
-                                       1);
+  histogram_tester().ExpectTotalCount(
+      "ContextualSearch.Tools.DeepSearch.NewTabPage", 2);
   histogram_tester().ExpectBucketCount(
-      "NewTabPage.Composebox.Tools.DeepSearch",
-      static_cast<int>(AimToolState::kDisabled), 1);
+      "ContextualSearch.Tools.DeepSearch.NewTabPage",
+      contextual_search::AimToolState::kEnabled, 1);
+  histogram_tester().ExpectBucketCount(
+      "ContextualSearch.Tools.DeepSearch.NewTabPage",
+      contextual_search::AimToolState::kDisabled, 1);
   SubmitQueryAndWaitForNavigation();
   GURL query_url_disabled_dr =
       web_contents()->GetController().GetLastCommittedEntry()->GetURL();
@@ -229,8 +229,8 @@ TEST_F(ComposeboxHandlerTest, SetCreateImageMode) {
   // Submitting with create image mode enabled.
   handler().SetCreateImageMode(true, /*image_present= */ false);
   histogram_tester().ExpectUniqueSample(
-      "NewTabPage.Composebox.Tools.CreateImage",
-      static_cast<int>(AimToolState::kEnabled), 1);
+      "ContextualSearch.Tools.CreateImages.NewTabPage",
+      contextual_search::AimToolState::kEnabled, 1);
   SubmitQueryAndWaitForNavigation();
   GURL query_url_create_image =
       web_contents()->GetController().GetLastCommittedEntry()->GetURL();
@@ -241,14 +241,14 @@ TEST_F(ComposeboxHandlerTest, SetCreateImageMode) {
 
   // Submitting with create image mode disabled.
   handler().SetCreateImageMode(false, /*image_present= */ false);
-  histogram_tester().ExpectTotalCount("NewTabPage.Composebox.Tools.CreateImage",
-                                      2);
+  histogram_tester().ExpectTotalCount(
+      "ContextualSearch.Tools.CreateImages.NewTabPage", 2);
   histogram_tester().ExpectBucketCount(
-      "NewTabPage.Composebox.Tools.CreateImage",
-      static_cast<int>(AimToolState::kEnabled), 1);
+      "ContextualSearch.Tools.CreateImages.NewTabPage",
+      contextual_search::AimToolState::kEnabled, 1);
   histogram_tester().ExpectBucketCount(
-      "NewTabPage.Composebox.Tools.CreateImage",
-      static_cast<int>(AimToolState::kDisabled), 1);
+      "ContextualSearch.Tools.CreateImages.NewTabPage",
+      contextual_search::AimToolState::kDisabled, 1);
   SubmitQueryAndWaitForNavigation();
   GURL query_url_disabled_create_image =
       web_contents()->GetController().GetLastCommittedEntry()->GetURL();
@@ -286,24 +286,24 @@ TEST_F(ComposeboxHandlerTest, DeleteFileAndSubmitQuery) {
 TEST_F(ComposeboxHandlerTest, SubmitQueryWithToolMetric) {
   // Submit with no tools enabled.
   SubmitQueryAndWaitForNavigation();
-  histogram_tester().ExpectUniqueSample(
-      "NewTabPage.Composebox.Tools.SubmissionType",
-      static_cast<int>(SubmissionType::kDefault), 1);
+  histogram_tester().ExpectBucketCount(
+      "ContextualSearch.Tools.SubmissionType.NewTabPage",
+      contextual_search::SubmissionType::kDefault, 1);
 
   // Submitting with deep search mode enabled.
   handler().SetDeepSearchMode(true);
   SubmitQueryAndWaitForNavigation();
   histogram_tester().ExpectBucketCount(
-      "NewTabPage.Composebox.Tools.SubmissionType",
-      static_cast<int>(SubmissionType::kDeepSearch), 1);
+      "ContextualSearch.Tools.SubmissionType.NewTabPage",
+      contextual_search::SubmissionType::kDeepSearch, 1);
 
   // Submitting with create image mode enabled.
   handler().SetCreateImageMode(true, /*image_present= */ false);
   SubmitQueryAndWaitForNavigation();
   histogram_tester().ExpectBucketCount(
-      "NewTabPage.Composebox.Tools.SubmissionType",
-      static_cast<int>(SubmissionType::kCreateImages), 1);
+      "ContextualSearch.Tools.SubmissionType.NewTabPage",
+      contextual_search::SubmissionType::kCreateImages, 1);
 
   histogram_tester().ExpectTotalCount(
-      "NewTabPage.Composebox.Tools.SubmissionType", 3);
+      "ContextualSearch.Tools.SubmissionType.NewTabPage", 3);
 }

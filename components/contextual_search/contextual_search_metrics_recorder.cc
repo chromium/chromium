@@ -179,15 +179,15 @@ void ContextualSearchMetricsRecorder::RecordTabClickedMetrics(
     bool has_duplicate_title,
     std::optional<int> recency_ranking) {
   base::UmaHistogramBoolean(
-      "ContextualSearch.TabContextAdded." + GetMetricsSuffix(), true);
+      "ContextualSearch.TabContextAdded." + metrics_suffix_, true);
 
   base::UmaHistogramBoolean(
-      "ContextualSearch.TabWithDuplicateTitleClicked." + GetMetricsSuffix(),
+      "ContextualSearch.TabWithDuplicateTitleClicked." + metrics_suffix_,
       has_duplicate_title);
 
   if (recency_ranking) {
     base::UmaHistogramCounts100(
-        "ContextualSearch.AddedTabContextRecencyRanking." + GetMetricsSuffix(),
+        "ContextualSearch.AddedTabContextRecencyRanking." + metrics_suffix_,
         *recency_ranking);
   }
 }
@@ -196,11 +196,29 @@ void ContextualSearchMetricsRecorder::RecordTabContextMenuMetrics(
     int total_tab_count,
     int duplicate_title_count) {
   base::UmaHistogramCounts1000(
-      "ContextualSearch.ActiveTabsCountOnContextMenuOpen." + GetMetricsSuffix(),
+      "ContextualSearch.ActiveTabsCountOnContextMenuOpen." + metrics_suffix_,
       total_tab_count);
   base::UmaHistogramCounts1000(
-      "ContextualSearch.DuplicateTabTitlesShownCount." + GetMetricsSuffix(),
+      "ContextualSearch.DuplicateTabTitlesShownCount." + metrics_suffix_,
       duplicate_title_count);
+}
+
+void ContextualSearchMetricsRecorder::RecordToolsSubmissionType(
+    SubmissionType submission_type) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"ContextualSearch.Tools.SubmissionType", ".", metrics_suffix_}),
+      submission_type);
+}
+
+void ContextualSearchMetricsRecorder::RecordToolState(
+    SubmissionType submission_type,
+    AimToolState tool_state) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ContextualSearch.Tools.",
+                    SubmissionTypeToString(submission_type), ".",
+                    metrics_suffix_}),
+      tool_state);
 }
 
 void ContextualSearchMetricsRecorder::NotifySessionStarted() {
@@ -349,6 +367,18 @@ std::string ContextualSearchMetricsRecorder::ContextualSearchSourceToString(
       return "NewTabPage";
     case ContextualSearchSource::kUnknown:
       return "Unknown";
+  }
+}
+
+std::string ContextualSearchMetricsRecorder::SubmissionTypeToString(
+    SubmissionType submission_type) {
+  switch (submission_type) {
+    case SubmissionType::kDefault:
+      return "Default";
+    case SubmissionType::kDeepSearch:
+      return "DeepSearch";
+    case SubmissionType::kCreateImages:
+      return "CreateImages";
   }
 }
 

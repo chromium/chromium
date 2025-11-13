@@ -86,6 +86,8 @@ class ContextualSearchMetricsRecorder {
   std::string MimeTypeToString(lens::MimeType mime_type);
   // Maps contextual search sources to its string version for histogram naming.
   std::string ContextualSearchSourceToString(ContextualSearchSource source);
+  // Maps submission types to its string version for histogram naming.
+  std::string SubmissionTypeToString(SubmissionType submission_type);
 
   // Records several metrics about the query, such the number of characters
   // found in the query.
@@ -104,7 +106,9 @@ class ContextualSearchMetricsRecorder {
   void RecordTabContextMenuMetrics(int total_tab_count,
                                    int duplicate_title_count);
 
-  std::string GetMetricsSuffix() const { return metrics_suffix_; }
+  void RecordToolsSubmissionType(SubmissionType submission_type);
+
+  void RecordToolState(SubmissionType submission_type, AimToolState tool_state);
 
  private:
   // Called when the session starts to correctly track session

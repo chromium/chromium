@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "components/contextual_search/contextual_search_types.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -123,23 +124,26 @@ omnibox::ChromeAimToolsAndModels ComposeboxHandler::GetAimToolMode() {
 void ComposeboxHandler::SetDeepSearchMode(bool enabled) {
   if (enabled) {
     aim_tool_mode_ = omnibox::ChromeAimToolsAndModels::TOOL_MODE_DEEP_SEARCH;
-    base::UmaHistogramEnumeration("NewTabPage.Composebox.Tools.DeepSearch",
-                                  AimToolState::kEnabled);
   } else {
     aim_tool_mode_ = omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
-    base::UmaHistogramEnumeration("NewTabPage.Composebox.Tools.DeepSearch",
-                                  AimToolState::kDisabled);
+  }
+
+  if (auto* metrics_recorder = GetMetricsRecorder()) {
+    metrics_recorder->RecordToolState(
+        contextual_search::SubmissionType::kDeepSearch,
+        enabled ? contextual_search::AimToolState::kEnabled
+                : contextual_search::AimToolState::kDisabled);
   }
 }
 
 void ComposeboxHandler::SetCreateImageMode(bool enabled, bool image_present) {
+  std::optional<contextual_search::AimToolState> tool_state;
   if (enabled) {
     // Only log if not already in some form of create image mode so this metric
     // does not get double counted.
     if (aim_tool_mode_ ==
         omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED) {
-      base::UmaHistogramEnumeration("NewTabPage.Composebox.Tools.CreateImage",
-                                    AimToolState::kEnabled);
+      tool_state = contextual_search::AimToolState::kEnabled;
     }
     // Server uses different `azm` param to make IMAGE_GEN requests when an
     // image is present.
@@ -151,8 +155,15 @@ void ComposeboxHandler::SetCreateImageMode(bool enabled, bool image_present) {
     }
   } else {
     aim_tool_mode_ = omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
-    base::UmaHistogramEnumeration("NewTabPage.Composebox.Tools.CreateImage",
-                                  AimToolState::kDisabled);
+    tool_state = contextual_search::AimToolState::kDisabled;
+  }
+
+  if (!tool_state) {
+    return;
+  }
+  if (auto* metrics_recorder = GetMetricsRecorder()) {
+    metrics_recorder->RecordToolState(
+        contextual_search::SubmissionType::kCreateImages, *tool_state);
   }
 }
 
@@ -213,25 +224,24 @@ void ComposeboxHandler::SubmitQuery(
     const std::string& query_text,
     WindowOpenDisposition disposition,
     std::map<std::string, std::string> additional_params) {
+  contextual_search::SubmissionType submission_type;
   switch (aim_tool_mode_) {
     case omnibox::ChromeAimToolsAndModels::TOOL_MODE_DEEP_SEARCH:
       additional_params["dr"] = "1";
-      base::UmaHistogramEnumeration(
-          "NewTabPage.Composebox.Tools.SubmissionType",
-          SubmissionType::kDeepSearch);
+      submission_type = contextual_search::SubmissionType::kDeepSearch;
       break;
     case omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN:
     case omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN_UPLOAD:
       additional_params["imgn"] = "1";
-      base::UmaHistogramEnumeration(
-          "NewTabPage.Composebox.Tools.SubmissionType",
-          SubmissionType::kCreateImages);
+      submission_type = contextual_search::SubmissionType::kCreateImages;
       break;
     default:
-      base::UmaHistogramEnumeration(
-          "NewTabPage.Composebox.Tools.SubmissionType",
-          SubmissionType::kDefault);
+      submission_type = contextual_search::SubmissionType::kDefault;
       break;
+  }
+
+  if (auto* metrics_recorder = GetMetricsRecorder()) {
+    metrics_recorder->RecordToolsSubmissionType(submission_type);
   }
 
   ComputeAndOpenQueryUrl(query_text, disposition, std::move(additional_params));

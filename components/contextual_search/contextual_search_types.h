@@ -90,6 +90,29 @@ struct FileInfo {
   std::optional<GURL> tab_url;
 };
 
+// LINT.IfChange(SubmissionType)
+
+// How an AIM Composebox query was submitted.
+enum class SubmissionType {
+  kDefault = 0,
+  kDeepSearch = 1,
+  kCreateImages = 2,
+  kMaxValue = kCreateImages,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:SubmissionType)
+
+// LINT.IfChange(AimToolState)
+
+// Value to hold the state of an AIM Tool.
+enum class AimToolState {
+  kDisabled = 0,
+  kEnabled = 1,
+  kMaxValue = kEnabled,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:AimToolState)
+
 }  // namespace contextual_search
 
 #endif  // COMPONENTS_CONTEXTUAL_SEARCH_CONTEXTUAL_SEARCH_TYPES_H_

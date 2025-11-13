@@ -26,11 +26,30 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(AimToolState) -->
+
+<enum name="ContextualSearchAimToolState">
+  <int value="0" label="AIM Tool Disabled"/>
+  <int value="1" label="AIM Tool Enabled"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/contextual_search/contextual_search_types.h:AimToolState) -->
+
 <enum name="ContextualSearchMultimodalState">
   <int value="0" label="Text Only"/>
   <int value="1" label="File Only"/>
   <int value="2" label="Text and File"/>
 </enum>
+
+<!-- LINT.IfChange(SubmissionType) -->
+
+<enum name="ContextualSearchSubmissionType">
+  <int value="0" label="Submission with no tools"/>
+  <int value="1" label="DeepSearch"/>
+  <int value="2" label="CreateImages"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/contextual_search/contextual_search_types.h:SubmissionType) -->
 
 </enums>
 

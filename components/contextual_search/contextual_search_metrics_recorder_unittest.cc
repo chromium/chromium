@@ -51,6 +51,10 @@ const char kContextualSearchQueryCount[] =
     "ContextualSearch.Session.QueryCount.Unknown";
 const char kContextualSearchFileSizePdf[] =
     "ContextualSearch.File.Size.Pdf.Unknown";
+const char kContextualSearchToolsSubmissionType[] =
+    "ContextualSearch.Tools.SubmissionType.Unknown";
+const char kContextualSearchDeepSearchToolState[] =
+    "ContextualSearch.Tools.DeepSearch.Unknown";
 
 std::string UploadStatusToString(FileUploadStatus status) {
   switch (status) {
@@ -209,6 +213,25 @@ TEST_F(ContextualSearchMetricsRecorderTest, MultimodalQuerySubmissionSession) {
                                        MultimodalState::kTextAndFile, 1);
   histogram_tester().ExpectBucketCount(kContextualSearchQueryFileCount,
                                        file_count, 1);
+}
+
+TEST_F(ContextualSearchMetricsRecorderTest, ToolsSubmissionType) {
+  // Setup user flow.
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  metrics().RecordToolsSubmissionType(SubmissionType::kDeepSearch);
+
+  histogram_tester().ExpectBucketCount(kContextualSearchToolsSubmissionType,
+                                       SubmissionType::kDeepSearch, 1);
+}
+
+TEST_F(ContextualSearchMetricsRecorderTest, ToolState) {
+  // Setup user flow.
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  metrics().RecordToolState(SubmissionType::kDeepSearch,
+                            AimToolState::kEnabled);
+
+  histogram_tester().ExpectBucketCount(kContextualSearchDeepSearchToolState,
+                                       AimToolState::kEnabled, 1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, FileUploadSuccess) {

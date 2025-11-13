@@ -316,6 +316,38 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
+<histogram
+    name="ContextualSearch.Tools.SubmissionType.{ContextualSearchSource}"
+    enum="ContextualSearchSubmissionType" expires_after="2026-06-10">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks whether the user submitted a query using a tool or model or through a
+    suggestion. This metric is recorded only once the user has submitted the
+    query and navigated to AIM.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.Tools.{ContextualSearchSubmissionType}.{ContextualSearchSource}"
+    enum="ContextualSearchAimToolState" expires_after="2026-06-10">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks the number of times the {ContextualSearchSubmissionType} tool
+    selected or deselected in the composebox. The metric is only recorded when
+    the {ContextualSearchSubmissionType} tool chip or the create images dropdown
+    item in the composebox context menu is selected.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+  <token key="ContextualSearchSubmissionType">
+    <variant name="CreateImages" summary="create images"/>
+    <variant name="DeepSearch" summary="deep search"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
