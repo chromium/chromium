@@ -600,7 +600,32 @@ TypedResult<IconMetadataForUpdate> ReadIconsForUpdateBlocking(
   TRACE_EVENT0("ui", "web_app_icon_manager::ReadIconsForUpdateBlocking");
   TypedResult<IconMetadataForUpdate> result;
 
-  // Read the "to" icon for the update dialog if there is one.
+  // First, read the trusted icon to be shown on the update dialog (the "from")
+  // icon.
+  IconId icon_id_trusted(app_id, purpose_for_current_trusted_icon, icon_size);
+  TypedResult<SkBitmap> read_result =
+      ReadIconBlocking(utils, web_apps_directory, icon_id_trusted,
+                       ReadConfiguration::kTrustedIcons);
+
+  // This guarantees that `from` icons are always populated, because there is a
+  // chance that the app might not have had trusted icons.
+  if (read_result.HasErrors()) {
+    read_result.error_log = {};
+    read_result = ReadIconBlocking(utils, web_apps_directory,
+                                   IconId(app_id, IconPurpose::ANY, icon_size),
+                                   ReadConfiguration::kManifestIcons);
+  }
+
+  // Return if there are no manifest icons as well, this is a legitimate error
+  // case.
+  if (read_result.HasErrors()) {
+    return {.error_log = std::move(read_result.error_log)};
+  }
+
+  result.value.from_icon = std::move(read_result.value);
+  result.value.from_icon_purpose = purpose_for_current_trusted_icon;
+
+  // Second, read the "to" icon for the update dialog if there is one.
   if (purpose_for_pending_info.has_value()) {
     IconId icon_id_pending(app_id, *purpose_for_pending_info, icon_size);
     TypedResult<SkBitmap> pending_read_result =
@@ -613,19 +638,6 @@ TypedResult<IconMetadataForUpdate> ReadIconsForUpdateBlocking(
     result.value.to_icon = std::move(pending_read_result.value);
     result.value.to_icon_purpose = purpose_for_pending_info;
   }
-
-  // Second, read the trusted icon to be shown on the update dialog (the "from")
-  // icon.
-  IconId icon_id_trusted(app_id, purpose_for_current_trusted_icon, icon_size);
-  TypedResult<SkBitmap> trusted_read_result =
-      ReadIconBlocking(utils, web_apps_directory, icon_id_trusted,
-                       ReadConfiguration::kTrustedIcons);
-  if (trusted_read_result.HasErrors()) {
-    return {.error_log = std::move(trusted_read_result.error_log)};
-  }
-
-  result.value.from_icon = std::move(trusted_read_result.value);
-  result.value.from_icon_purpose = purpose_for_current_trusted_icon;
 
   return result;
 }

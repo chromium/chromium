@@ -54,7 +54,7 @@ enum class ManifestSilentUpdateCommandStage {
 //
 // LINT.IfChange(ManifestSilentUpdateCheckResult)
 enum class ManifestSilentUpdateCheckResult {
-  kAppNotInstalled = 0,
+  // kAppNotInstalled = 0, DEPRECATED.
   kAppUpdateFailedDuringInstall = 1,
   kSystemShutdown = 2,
   kAppSilentlyUpdated = 3,
@@ -69,7 +69,8 @@ enum class ManifestSilentUpdateCheckResult {
   kUserNavigated = 12,
   kManifestToWebAppInstallInfoError = 13,
   kAppHasSecurityUpdateDueToThrottle = 14,
-  kMaxValue = kAppHasSecurityUpdateDueToThrottle,
+  kAppNotAllowedToUpdate = 15,
+  kMaxValue = kAppNotAllowedToUpdate,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebAppManifestSilentUpdateCheckResult)
 

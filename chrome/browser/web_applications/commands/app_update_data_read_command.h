@@ -21,12 +21,39 @@ namespace proto {
 class PendingUpdateInfo;
 }  // namespace proto
 
+// The result of constructing the required metadata for an app update dialog to
+// be shown to the user for `app_id`. These values are persisted to logs.
+// Entries should not be renumbered and numeric values should never be reused.
+
+// LINT.IfChange(AppUpdateDataReadResult)
+
+enum class AppUpdateDataReadResult {
+  // Flag isn't enabled.
+  kFlagNotEnabled = 0,
+  // App is not installed.
+  kAppNotInstalled = 1,
+  // App does not have any pending update metadata.
+  kAppDoesNotHavePendingUpdate = 2,
+  // Failed to read existing app icons for update dialog.
+  kFailedToReadExistingAppIcons = 3,
+  // Failed to read pending app icons for update dialog.
+  kFailedToReadPendingAppIconsWhenRequested = 4,
+  // System shutdown in the middle of running.
+  kSystemShutdown = 5,
+  // Data parsing successful.
+  kSuccess = 6,
+  kMaxValue = kSuccess
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebAppUpdateDataReadResult)
+
 using UpdateMetadata = std::optional<WebAppIdentityUpdate>;
 
 // Parse a web app's pending update metadata and icons stored on the disk to
 // construct a `WebAppIdentityUpdate` instance that can be use to show the app
 // identity update dialog.
-class AppUpdateDataReadCommand : public WebAppCommand<AppLock, UpdateMetadata> {
+class AppUpdateDataReadCommand
+    : public WebAppCommand<AppLock, AppUpdateDataReadResult, UpdateMetadata> {
  public:
   AppUpdateDataReadCommand(
       const webapps::AppId& app_id,
@@ -46,7 +73,7 @@ class AppUpdateDataReadCommand : public WebAppCommand<AppLock, UpdateMetadata> {
   void SetOldIconForIdentityUpdate(SkBitmap old_icon);
   void SetNewIconForIdentityUpdate(SkBitmap new_icon);
   void OnIconsProcessedCreateIdentity();
-  void ReportResultAndDestroy(CommandResult result);
+  void ReportResultAndDestroy(AppUpdateDataReadResult data_read_result);
 
   std::unique_ptr<AppLock> lock_;
   const webapps::AppId app_id_;

@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/concurrent_closures.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/commands/command_result.h"
 #include "chrome/browser/web_applications/icons/icon_masker.h"
@@ -44,16 +45,42 @@ IconPurpose ConvertIconSyncPurposeToImageResourcePurpose(
   }
 }
 
+std::string ToString(AppUpdateDataReadResult read_result) {
+  switch (read_result) {
+    case AppUpdateDataReadResult::kFlagNotEnabled:
+      return "flag_not_enabled";
+    case AppUpdateDataReadResult::kAppNotInstalled:
+      return "app_not_installed";
+    case AppUpdateDataReadResult::kAppDoesNotHavePendingUpdate:
+      return "app_doesnt_have_pending_update";
+    case AppUpdateDataReadResult::kFailedToReadExistingAppIcons:
+      return "failed_to_read_existing_app_icons";
+    case AppUpdateDataReadResult::kFailedToReadPendingAppIconsWhenRequested:
+      return "failed_to_read_pending_app_icons_when_requested";
+    case AppUpdateDataReadResult::kSystemShutdown:
+      return "system_shutdown_while_commands_were_running";
+    case AppUpdateDataReadResult::kSuccess:
+      return "data_parse_success";
+  }
+}
+
 }  // namespace
 
 AppUpdateDataReadCommand::AppUpdateDataReadCommand(
     const webapps::AppId& app_id,
     base::OnceCallback<void(UpdateMetadata)> completed_callback)
-    : WebAppCommand<AppLock, UpdateMetadata>(
+    : WebAppCommand<AppLock, AppUpdateDataReadResult, UpdateMetadata>(
           "AppUpdateDataReadCommand",
           AppLockDescription(app_id),
-          std::move(completed_callback),
-          /*args_for_shutdown=*/std::nullopt),
+          base::BindOnce([](AppUpdateDataReadResult result,
+                            UpdateMetadata update_metadata) {
+            base::UmaHistogramEnumeration("WebApp.PendingUpdateData.ReadResult",
+                                          result);
+            return update_metadata;
+          }).Then(std::move(completed_callback)),
+          /*args_for_shutdown=*/
+          std::make_tuple(AppUpdateDataReadResult::kSystemShutdown,
+                          std::nullopt)),
       app_id_(app_id) {
   GetMutableDebugValue().Set("app_id", app_id);
 }
@@ -64,19 +91,23 @@ void AppUpdateDataReadCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   lock_ = std::move(lock);
 
   if (!base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating)) {
-    ReportResultAndDestroy(CommandResult::kFailure);
+    ReportResultAndDestroy(AppUpdateDataReadResult::kFlagNotEnabled);
     return;
   }
 
   const WebAppRegistrar& registrar = lock_->registrar();
   if (!registrar.AppMatches(app_id_, WebAppFilter::InstalledInChrome())) {
-    ReportResultAndDestroy(CommandResult::kFailure);
+    ReportResultAndDestroy(AppUpdateDataReadResult::kAppNotInstalled);
     return;
   }
 
   const WebApp* web_app = registrar.GetAppById(app_id_);
   if (!web_app->pending_update_info().has_value()) {
-    ReportResultAndDestroy(CommandResult::kFailure);
+    GetMutableDebugValue().Set(
+        "result",
+        ToString(AppUpdateDataReadResult::kAppDoesNotHavePendingUpdate));
+    ReportResultAndDestroy(
+        AppUpdateDataReadResult::kAppDoesNotHavePendingUpdate);
     return;
   }
 
@@ -100,7 +131,8 @@ void AppUpdateDataReadCommand::OnIconFetchedMaybeMaskForUpdate(
     IconMetadataForUpdate icon_metadata) {
   // The `from_icon` has to be populated.
   if (icon_metadata.from_icon.drawsNothing()) {
-    ReportResultAndDestroy(CommandResult::kFailure);
+    ReportResultAndDestroy(
+        AppUpdateDataReadResult::kFailedToReadExistingAppIcons);
     return;
   }
 
@@ -120,7 +152,8 @@ void AppUpdateDataReadCommand::OnIconFetchedMaybeMaskForUpdate(
   // Only start reading the "to" icons if they are required.
   if (icon_metadata.to_icon.has_value()) {
     if (icon_metadata.to_icon->drawsNothing()) {
-      ReportResultAndDestroy(CommandResult::kFailure);
+      ReportResultAndDestroy(
+          AppUpdateDataReadResult::kFailedToReadPendingAppIconsWhenRequested);
       return;
     }
 
@@ -166,13 +199,30 @@ void AppUpdateDataReadCommand::OnIconsProcessedCreateIdentity() {
           ? std::make_optional(base::UTF8ToUTF16(pending_update_info_.name()))
           : std::nullopt;
   GetMutableDebugValue().Set("new_name", update_.new_title.has_value());
-  ReportResultAndDestroy(CommandResult::kSuccess);
+  ReportResultAndDestroy(AppUpdateDataReadResult::kSuccess);
 }
 
-void AppUpdateDataReadCommand::ReportResultAndDestroy(CommandResult result) {
-  CompleteAndSelfDestruct(result, result == CommandResult::kSuccess
-                                      ? std::make_optional(update_)
-                                      : std::nullopt);
+void AppUpdateDataReadCommand::ReportResultAndDestroy(
+    AppUpdateDataReadResult data_read_result) {
+  GetMutableDebugValue().Set("result", ToString(data_read_result));
+  CommandResult command_result = CommandResult::kFailure;
+  switch (data_read_result) {
+    case AppUpdateDataReadResult::kAppNotInstalled:
+    case AppUpdateDataReadResult::kAppDoesNotHavePendingUpdate:
+    case AppUpdateDataReadResult::kFailedToReadExistingAppIcons:
+    case AppUpdateDataReadResult::kFailedToReadPendingAppIconsWhenRequested:
+    case AppUpdateDataReadResult::kSystemShutdown:
+      command_result = CommandResult::kFailure;
+      break;
+    case AppUpdateDataReadResult::kFlagNotEnabled:
+    case AppUpdateDataReadResult::kSuccess:
+      command_result = CommandResult::kSuccess;
+      break;
+  }
+  CompleteAndSelfDestruct(command_result, data_read_result,
+                          command_result == CommandResult::kSuccess
+                              ? std::make_optional(update_)
+                              : std::nullopt);
 }
 
 }  // namespace web_app

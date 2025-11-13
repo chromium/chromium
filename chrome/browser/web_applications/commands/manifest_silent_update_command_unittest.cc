@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-data-view.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
@@ -207,12 +208,12 @@ TEST_F(ManifestSilentUpdateCommandTest, AppNotInstalledNotSilentlyUpdated) {
   SetupBasicInstallablePageState();
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
-            ManifestSilentUpdateCheckResult::kAppNotInstalled);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(
-          "Webapp.Update.ManifestSilentUpdateCheckResult"),
-      BucketsAre(base::Bucket(ManifestSilentUpdateCheckResult::kAppNotInstalled,
-                              /*count=*/1)));
+            ManifestSilentUpdateCheckResult::kAppNotAllowedToUpdate);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppNotAllowedToUpdate,
+                  /*count=*/1)));
 }
 
 TEST_F(ManifestSilentUpdateCommandTest, StartUrlUpdatedSilently) {
@@ -1281,16 +1282,34 @@ TEST_F(ManifestSilentUpdateCommandTest,
 }
 
 TEST_F(ManifestSilentUpdateCommandTest, NoIconToIcons) {
-  // Install via WebAppInstallInfo, with no icons
+  // Install via WebAppInstallInfo, with no icons and OS integration, to full
+  // icons.
   auto web_app_install_info =
       WebAppInstallInfo::CreateWithStartUrlForTesting(kAppUrl);
   web_app_install_info->title = u"A Basic Web App";
+  web_app_install_info->display_mode = DisplayMode::kStandalone;
+  web_app_install_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+  web_app_install_info->is_generated_icon = true;
   webapps::AppId app_id =
       test::InstallWebApp(profile(), std::move(web_app_install_info));
 
   SetupBasicInstallablePageState();
   ManifestSilentUpdateCheckResult result = RunManifestUpdateAndGetResult();
   EXPECT_TRUE(IsAppUpdated(result));
+}
+
+TEST_F(ManifestSilentUpdateCommandTest, OpenInBrowserTabNoUpdate) {
+  auto web_app_install_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(kAppUrl);
+  web_app_install_info->title = u"A Basic Web App";
+  web_app_install_info->display_mode = DisplayMode::kBrowser;
+  web_app_install_info->user_display_mode = mojom::UserDisplayMode::kBrowser;
+  webapps::AppId app_id =
+      test::InstallWebApp(profile(), std::move(web_app_install_info));
+
+  SetupBasicInstallablePageState();
+  ManifestSilentUpdateCheckResult result = RunManifestUpdateAndGetResult();
+  EXPECT_FALSE(IsAppUpdated(result));
 }
 
 TEST_F(ManifestSilentUpdateCommandTest, IconDownloadFailure) {
@@ -1464,6 +1483,7 @@ class ManifestSilentUpdateCommandExternalAppsTest
       public testing::WithParamInterface<ExternalInstallSource> {
  public:
   webapps::AppId InstallExternallyManagedAppFromSource() {
+    // This will always install external apps that open in a new browser tab.
     ExternalInstallOptions install_options(kAppUrl,
                                            /*user_display_mode=*/std::nullopt,
                                            GetParam());

@@ -530,7 +530,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(WebAppManifestSilentUpdateCheckResult) -->
 
 <enum name="WebAppManifestSilentUpdateCheckResult">
-  <int value="0" label="App not installed"/>
+  <int value="0" label="App not installed (deprecated)"/>
   <int value="1" label="App update failed during installation"/>
   <int value="2" label="System shutdown"/>
   <int value="3" label="App silently updated"/>
@@ -547,6 +547,9 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Manifest could not be converted to a web app"/>
   <int value="14"
       label="App not updated due to icon diff throttle, secure fields stored"/>
+  <int value="15"
+      label="App not allowed to update because it opened in a browser tab, or
+             it is not installed."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/web_applications/commands/manifest_silent_update_command.h:ManifestSilentUpdateCheckResult) -->
@@ -742,6 +745,20 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Sub apps uninstall kicked off by parent app"/>
   <int value="18" label="Lock screen app infrastructure"/>
 </enum>
+
+<!-- LINT.IfChange(WebAppUpdateDataReadResult) -->
+
+<enum name="WebAppUpdateDataReadResult">
+  <int value="0" label="Flag not enabled"/>
+  <int value="1" label="App not installed"/>
+  <int value="2" label="App does not have pending update"/>
+  <int value="3" label="Failed to read existing app icons"/>
+  <int value="4" label="Failed to read pending update app icons"/>
+  <int value="5" label="Command failed due to system shutdown"/>
+  <int value="6" label="Command ran successfully"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/web_applications/commands/app_update_data_read_command.h:AppUpdateDataReadResult) -->
 
 <enum name="WebAppUrlLoaderResult">
   <int value="0" label="UrlLoaded"/>
