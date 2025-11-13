@@ -465,6 +465,14 @@ BASE_FEATURE(kGlicActorSelectCancelsPopup, base::FEATURE_ENABLED_BY_DEFAULT);
 // release tool
 BASE_FEATURE(kGlicActorSplitDragAndRelease, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether to trigger mouse move events with each click.
+BASE_FEATURE(kGlicActorMoveBeforeClick, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Delay between move event and click event.
+const base::FeatureParam<base::TimeDelta> kGlicActorMoveBeforeClickDelay{
+    &kGlicActorMoveBeforeClick, "glic-actor-move-before-click-delay",
+    base::Milliseconds(5)};
+
 // Controls whether the Glic's act-on-web capability is checked for managed
 // trial clients.
 BASE_FEATURE(kGlicActOnWebCapabilityForManagedTrials,
