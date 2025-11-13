@@ -8,7 +8,9 @@
 #include <ranges>
 #include <variant>
 
+#include "base/feature_list.h"
 #include "base/i18n/time_formatting.h"
+#include "base/i18n/unicodestring.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -27,6 +29,8 @@
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "third_party/icu/source/i18n/unicode/dtptngen.h"
+#include "third_party/icu/source/i18n/unicode/smpdtfmt.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace autofill {
@@ -101,6 +105,40 @@ std::u16string Format(
   return s;
 }
 
+// TODO(crbug.com/434122759): Consider adding a timezone parameter to
+// LocalizedTimeFormatWithPattern instead.
+std::optional<icu::SimpleDateFormat> GetFlightDepartureDateFormatter(
+    std::string_view app_locale) {
+  UErrorCode status = U_ZERO_ERROR;
+  // `CreateSimpleDateFormatter` uses the generator to find the best pattern
+  // for the locale - it is done in the exact same way as in that function.
+  icu::Locale locale(std::string(app_locale).c_str());
+  if (locale.isBogus()) {
+    return std::nullopt;
+  }
+  std::unique_ptr<icu::DateTimePatternGenerator> generator(
+      icu::DateTimePatternGenerator::createInstance(locale, status));
+  if (U_FAILURE(status)) {
+    return std::nullopt;
+  }
+  icu::UnicodeString generated_pattern =
+      generator->getBestPattern("MMM d", status);
+  if (U_FAILURE(status)) {
+    return std::nullopt;
+  }
+  icu::SimpleDateFormat formatter(generated_pattern, locale, status);
+  if (U_FAILURE(status)) {
+    return std::nullopt;
+  }
+  formatter.setTimeZone(*icu::TimeZone::getGMT());
+  return formatter;
+}
+
+// This feature is a kill switch for the locale-aware formatting of the flight
+// departure date.
+BASE_FEATURE(kAutofillFlightEnableLocaleAwareDepartureDate,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // TODO(crbug.com/434122759): Move this functionality to
 // autofill::data_util::FormatDate.
 std::u16string FormatFlightDepartureDate(std::u16string_view raw_info,
@@ -114,8 +152,17 @@ std::u16string FormatFlightDepartureDate(std::u16string_view raw_info,
     return u"";
   }
 
-  // TODO(crbug.com/434122759): This conversion should support non-English
-  // locales.
+  if (base::FeatureList::IsEnabled(
+          kAutofillFlightEnableLocaleAwareDepartureDate)) {
+    if (const std::optional<icu::SimpleDateFormat> formatter =
+            GetFlightDepartureDateFormatter(app_locale)) {
+      icu::UnicodeString date_string;
+      formatter->format(departure_time.InMillisecondsFSinceUnixEpoch(),
+                        date_string);
+      return base::i18n::UnicodeStringToString16(date_string);
+    }
+  }
+
   return base::UTF8ToUTF16(base::UnlocalizedTimeFormatWithPattern(
       departure_time, "MMM d", icu::TimeZone::getGMT()));
 }

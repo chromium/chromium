@@ -423,7 +423,38 @@ TEST(AutofillEntityInstanceTest, FormatFlightDepartureDate) {
                     /*app_locale=*/"", /*format_string=*/
                     AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
                     VerificationStatus::kObserved);
-  EXPECT_EQ(GetInfo(attribute, FLIGHT_RESERVATION_DEPARTURE_DATE), u"Jan 1");
+  EXPECT_EQ(GetInfo(attribute, FLIGHT_RESERVATION_DEPARTURE_DATE,
+                    {.app_locale = "en_US"}),
+            u"Jan 1");
+}
+
+TEST(AutofillEntityInstanceTest, FormatFlightDepartureDate_IsLocaleDependent) {
+  AttributeType type(kFlightReservationDepartureDate);
+  AttributeInstance attribute(type);
+  attribute.SetInfo(FLIGHT_RESERVATION_DEPARTURE_DATE, u"2025-01-01",
+                    /*app_locale=*/"", /*format_string=*/
+                    AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
+                    VerificationStatus::kObserved);
+  EXPECT_EQ(GetInfo(attribute, FLIGHT_RESERVATION_DEPARTURE_DATE,
+                    {.app_locale = "PL_pl"}),
+            u"1 sty");
+}
+
+TEST(AutofillEntityInstanceTest,
+     FormatFlightDepartureDate_IsNotLocaleDependent_WithFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitFromCommandLine(
+      /*enable_features=*/"",
+      /*disable_features=*/"AutofillFlightEnableLocaleAwareDepartureDate");
+  AttributeType type(kFlightReservationDepartureDate);
+  AttributeInstance attribute(type);
+  attribute.SetInfo(FLIGHT_RESERVATION_DEPARTURE_DATE, u"2025-01-01",
+                    /*app_locale=*/"", /*format_string=*/
+                    AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
+                    VerificationStatus::kObserved);
+  EXPECT_EQ(GetInfo(attribute, FLIGHT_RESERVATION_DEPARTURE_DATE,
+                    {.app_locale = "PL_pl"}),
+            u"Jan 1");
 }
 
 // Tests that the metadata of an entity instance can be updated correctly.
