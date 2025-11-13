@@ -44,8 +44,9 @@ constexpr char kWindowTypesKey[] = "windowTypes";
 bool ControllerVisibleToListener(WindowController* window_controller,
                                  const Extension* extension,
                                  const base::Value::Dict* listener_filter) {
-  if (!window_controller)
+  if (!window_controller) {
     return false;
+  }
 
   // If there is no filter the visibility is based on the extension.
   const base::Value::List* filter_value = nullptr;
@@ -168,7 +169,6 @@ WindowsEventRouter::WindowsEventRouter(Profile* profile)
           base::BindRepeating(&WindowsEventRouter::OnActiveWindowChanged,
                               base::Unretained(this))),
 #endif
-      focused_profile_(nullptr),
       focused_window_id_(extension_misc::kUnknownWindowId) {
   DCHECK(!profile->IsOffTheRecord());
 
@@ -198,10 +198,12 @@ WindowsEventRouter::~WindowsEventRouter() {
 
 void WindowsEventRouter::OnWindowControllerAdded(
     WindowController* window_controller) {
-  if (!HasEventListener(windows::OnCreated::kEventName))
+  if (!HasEventListener(windows::OnCreated::kEventName)) {
     return;
-  if (!profile_->IsSameOrParent(window_controller->profile()))
+  }
+  if (!profile_->IsSameOrParent(window_controller->profile())) {
     return;
+  }
   // Ignore any windows without an associated browser (e.g., AppWindows).
   if (!window_controller->GetBrowserWindowInterface()) {
     return;
@@ -220,10 +222,12 @@ void WindowsEventRouter::OnWindowControllerAdded(
 
 void WindowsEventRouter::OnWindowControllerRemoved(
     WindowController* window_controller) {
-  if (!HasEventListener(windows::OnRemoved::kEventName))
+  if (!HasEventListener(windows::OnRemoved::kEventName)) {
     return;
-  if (!profile_->IsSameOrParent(window_controller->profile()))
+  }
+  if (!profile_->IsSameOrParent(window_controller->profile())) {
     return;
+  }
   // Ignore any windows without an associated browser (e.g., AppWindows).
   if (!window_controller->GetBrowserWindowInterface()) {
     return;
@@ -238,10 +242,12 @@ void WindowsEventRouter::OnWindowControllerRemoved(
 
 void WindowsEventRouter::OnWindowBoundsChanged(
     WindowController* window_controller) {
-  if (!HasEventListener(windows::OnBoundsChanged::kEventName))
+  if (!HasEventListener(windows::OnBoundsChanged::kEventName)) {
     return;
-  if (!profile_->IsSameOrParent(window_controller->profile()))
+  }
+  if (!profile_->IsSameOrParent(window_controller->profile())) {
     return;
+  }
   // Ignore any windows without an associated browser (e.g., AppWindows).
   if (!window_controller->GetBrowserWindowInterface()) {
     return;
@@ -268,8 +274,9 @@ void WindowsEventRouter::OnWindowFocusChanged(
 
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
 void WindowsEventRouter::OnNativeFocusChanged(gfx::NativeView focused_now) {
-  if (!focused_now)
+  if (!focused_now) {
     OnActiveWindowChanged(nullptr);
+  }
 }
 #endif
 
@@ -281,24 +288,21 @@ void WindowsEventRouter::OnNoKeyWindow() {
 
 void WindowsEventRouter::OnActiveWindowChanged(
     WindowController* window_controller) {
-  Profile* window_profile = nullptr;
   int window_id = extension_misc::kUnknownWindowId;
   if (window_controller &&
       profile_->IsSameOrParent(window_controller->profile())) {
-    window_profile = window_controller->profile();
     window_id = window_controller->GetWindowId();
   }
 
-  if (focused_window_id_ == window_id)
+  if (focused_window_id_ == window_id) {
     return;
+  }
 
-  // window_profile is either the default profile for the active window, its
-  // incognito profile, or nullptr if the previous profile is losing focus.
-  focused_profile_ = window_profile;
   focused_window_id_ = window_id;
 
-  if (!HasEventListener(windows::OnFocusChanged::kEventName))
+  if (!HasEventListener(windows::OnFocusChanged::kEventName)) {
     return;
+  }
 
   std::unique_ptr<Event> event = std::make_unique<Event>(
       events::WINDOWS_ON_FOCUS_CHANGED, windows::OnFocusChanged::kEventName,
