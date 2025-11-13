@@ -15,6 +15,7 @@
 #include "pdf/page_orientation.h"
 #include "pdf/pdf_caret_client.h"
 #include "pdf/region_data.h"
+#include "pdf/test/mock_pdf_caret_client.h"
 #include "pdf/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,64 +82,6 @@ AccessibilityTextRunInfo GenerateTestTextRunInfo(
   return text_run;
 }
 
-class MockTestClient : public PdfCaretClient {
- public:
-  MockTestClient() = default;
-  MockTestClient(const MockTestClient&) = delete;
-  MockTestClient& operator=(const MockTestClient&) = delete;
-  ~MockTestClient() override = default;
-
-  const gfx::Rect& invalidated_rect() const { return invalidated_rect_; }
-
-  // PdfCaretClient:
-  MOCK_METHOD(void, ClearTextSelection, (), (override));
-
-  MOCK_METHOD(void,
-              ExtendAndInvalidateSelectionByChar,
-              (const PageCharacterIndex& index),
-              (override));
-
-  MOCK_METHOD(uint32_t, GetCharCount, (uint32_t page_index), (const override));
-
-  MOCK_METHOD(PageOrientation, GetCurrentOrientation, (), (const override));
-
-  MOCK_METHOD(std::vector<gfx::Rect>,
-              GetScreenRectsForCaret,
-              (const PageCharacterIndex& index),
-              (const override));
-
-  MOCK_METHOD(std::optional<AccessibilityTextRunInfo>,
-              GetTextRunInfoAt,
-              (const PageCharacterIndex& index),
-              (const override));
-
-  void InvalidateRect(const gfx::Rect& rect) override {
-    invalidated_rect_ = rect;
-  }
-
-  MOCK_METHOD(bool, IsSelecting, (), (const override));
-
-  MOCK_METHOD(bool,
-              IsSynthesizedNewline,
-              (const PageCharacterIndex& index),
-              (const override));
-
-  MOCK_METHOD(bool, PageIndexInBounds, (int index), (const override));
-
-  MOCK_METHOD(void,
-              ScrollToChar,
-              (const PageCharacterIndex& index),
-              (override));
-
-  MOCK_METHOD(void,
-              StartSelection,
-              (const PageCharacterIndex& index),
-              (override));
-
- private:
-  gfx::Rect invalidated_rect_;
-};
-
 class PdfCaretTest : public testing::Test {
  public:
   PdfCaretTest() = default;
@@ -146,7 +89,7 @@ class PdfCaretTest : public testing::Test {
   PdfCaretTest& operator=(const PdfCaretTest&) = delete;
   ~PdfCaretTest() override = default;
 
-  MockTestClient& client() { return client_; }
+  MockPdfCaretClient& client() { return client_; }
 
   PdfCaret& caret() { return *caret_; }
 
@@ -301,7 +244,7 @@ class PdfCaretTest : public testing::Test {
   }
 
  private:
-  StrictMock<MockTestClient> client_;
+  StrictMock<MockPdfCaretClient> client_;
   std::unique_ptr<PdfCaret> caret_;
   SkBitmap bitmap_;
 };
