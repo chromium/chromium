@@ -30,8 +30,9 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
          *
          * @param preferenceFragment Package name of the Fragment containing the chosen setting.
          * @param key A unique key associated with the chosen setting.
+         * @param extras The additional args required to launch the pref.
          */
-        void onSelected(String preferenceFragment, String key);
+        void onSelected(String preferenceFragment, String key, Bundle extras);
     }
 
     private final SearchResults mPreferenceData;
@@ -80,7 +81,7 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
                             fragmentToOpen = info.fragment;
                         }
                         if (fragmentToOpen != null) {
-                            mSelectedCallback.onSelected(fragmentToOpen, info.key);
+                            mSelectedCallback.onSelected(fragmentToOpen, info.key, info.extras);
                         }
                         return true;
                     });

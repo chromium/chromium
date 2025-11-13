@@ -81,7 +81,7 @@ public class SettingsIndexData {
         public final String parentFragment;
 
         /** Extra arguments needed to launch a pref. */
-        public final @Nullable Bundle extras;
+        public final Bundle extras;
 
         private final @Nullable String mTitleNormalized;
         private final @Nullable String mSummaryNormalized;
@@ -92,7 +92,7 @@ public class SettingsIndexData {
                 @Nullable String header,
                 @Nullable String summary,
                 @Nullable String fragment,
-                @Nullable Bundle extras,
+                Bundle extras,
                 String parentFragment,
                 @Nullable String titleNormalized,
                 @Nullable String summaryNormalized) {
@@ -117,7 +117,7 @@ public class SettingsIndexData {
             private @Nullable String mHeader;
             private @Nullable String mSummary;
             private @Nullable String mFragment;
-            private @Nullable Bundle mExtras;
+            private Bundle mExtras;
             private final String mParentFragment;
 
             /**
@@ -132,6 +132,7 @@ public class SettingsIndexData {
                 mKey = key;
                 mTitle = title;
                 mParentFragment = parentFragment;
+                mExtras = new Bundle();
             }
 
             /**
@@ -164,7 +165,7 @@ public class SettingsIndexData {
                 return this;
             }
 
-            public Builder setArguments(@Nullable Bundle extras) {
+            public Builder setArguments(Bundle extras) {
                 mExtras = extras;
                 return this;
             }

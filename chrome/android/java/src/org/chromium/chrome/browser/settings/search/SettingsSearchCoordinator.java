@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -451,14 +452,16 @@ public class SettingsSearchCoordinator {
      *
      * @param preferenceFragment Settings fragment to show.
      * @param key The key of the chosen preference in the fragment.
+     * @param extras The additional args required to launch the pref.
      */
-    private void onResultSelected(String preferenceFragment, String key) {
+    private void onResultSelected(String preferenceFragment, String key, Bundle extras) {
         try {
             EditText queryEdit = mActivity.findViewById(R.id.search_query);
             KeyboardUtils.hideAndroidSoftKeyboard(queryEdit);
             Class fragment = Class.forName(preferenceFragment);
             Constructor constructor = fragment.getConstructor();
             var pf = (PreferenceFragmentCompat) constructor.newInstance();
+            pf.setArguments(extras);
             FragmentManager fragmentManager = getSettingsFragmentManager();
             fragmentManager
                     .beginTransaction()
