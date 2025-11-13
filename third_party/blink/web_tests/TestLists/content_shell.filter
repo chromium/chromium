@@ -417,6 +417,7 @@ external/wpt/css/css-ui/outline-020.html
 external/wpt/css/css-ui/text-overflow-027.html
 external/wpt/css/css-ui/text-overflow-028.html
 external/wpt/css/css-ui/text-overflow-029.html
+external/wpt/css/css-values/viewport-units-scrollbars*
 external/wpt/css/css-variables/variable-presentation-attribute.html
 external/wpt/css/css-will-change/will-change-fixedpos-cb-*
 external/wpt/css/css-will-change/will-change-transform-zero-size-child-overflow-visible.html
