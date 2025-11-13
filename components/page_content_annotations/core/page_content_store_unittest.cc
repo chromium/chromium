@@ -213,6 +213,35 @@ TEST_F(PageContentStoreTest, DeletePageContentForTab) {
   ASSERT_FALSE(got_apc.has_value());
 }
 
+TEST_F(PageContentStoreTest, DeletePageContentForTabs) {
+  const base::Time visit_timestamp = base::Time::Now();
+  const base::Time extraction_timestamp = base::Time::Now();
+
+  EXPECT_TRUE(store_->AddPageContent(GURL("https://example.com/1"),
+                                     TestContent("test title 1"),
+                                     visit_timestamp, extraction_timestamp, 1));
+  EXPECT_TRUE(store_->AddPageContent(GURL("https://example.com/2"),
+                                     TestContent("test title 2"),
+                                     visit_timestamp, extraction_timestamp, 2));
+  EXPECT_TRUE(store_->AddPageContent(GURL("https://example.com/3"),
+                                     TestContent("test title 3"),
+                                     visit_timestamp, extraction_timestamp, 3));
+
+  EXPECT_TRUE(store_->DeletePageContentForTabs({1, 3}));
+
+  EXPECT_FALSE(store_->GetPageContentForTab(1).has_value());
+  EXPECT_TRUE(store_->GetPageContentForTab(2).has_value());
+  EXPECT_FALSE(store_->GetPageContentForTab(3).has_value());
+
+  // Deleting a non-existent tab ID should not fail.
+  EXPECT_TRUE(store_->DeletePageContentForTabs({4}));
+  EXPECT_TRUE(store_->GetPageContentForTab(2).has_value());
+
+  // Deleting with an empty set should not fail.
+  EXPECT_TRUE(store_->DeletePageContentForTabs({}));
+  EXPECT_TRUE(store_->GetPageContentForTab(2).has_value());
+}
+
 TEST_F(PageContentStoreTest, GetPageContentForTab) {
   const GURL url(kUrl);
   const auto apc = TestContent("test title");

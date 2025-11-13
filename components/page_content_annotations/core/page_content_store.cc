@@ -5,6 +5,7 @@
 #include "components/page_content_annotations/core/page_content_store.h"
 
 #include <functional>
+#include <set>
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
@@ -302,6 +303,59 @@ bool PageContentStore::DeletePageContentForTab(int64_t tab_id) {
   if (!delete_metadata_statement.Run()) {
     return false;
   }
+  return transaction.Commit();
+}
+
+bool PageContentStore::DeletePageContentForTabs(
+    const std::set<int64_t>& tab_ids) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!db_initialized_) {
+    return false;
+  }
+  if (tab_ids.empty()) {
+    return true;
+  }
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  std::string placeholders;
+  placeholders.reserve(tab_ids.size() * 2 - 1);
+  for (size_t i = 0; i < tab_ids.size(); ++i) {
+    if (i > 0) {
+      placeholders.append(",");
+    }
+    placeholders.append("?");
+  }
+
+  const std::string delete_content_sql = base::StringPrintf(
+      "DELETE FROM page_content WHERE id IN "
+      "(SELECT content_id FROM page_metadata WHERE tab_id IN (%s))",
+      placeholders.c_str());
+  sql::Statement delete_content_statement(
+      db_.GetUniqueStatement(delete_content_sql));
+  int i = 0;
+  for (int64_t tab_id : tab_ids) {
+    delete_content_statement.BindInt64(i++, tab_id);
+  }
+  if (!delete_content_statement.Run()) {
+    return false;
+  }
+
+  const std::string delete_metadata_sql = base::StringPrintf(
+      "DELETE FROM page_metadata WHERE tab_id IN (%s)", placeholders.c_str());
+  sql::Statement delete_metadata_statement(
+      db_.GetUniqueStatement(delete_metadata_sql));
+  i = 0;
+  for (int64_t tab_id : tab_ids) {
+    delete_metadata_statement.BindInt64(i++, tab_id);
+  }
+  if (!delete_metadata_statement.Run()) {
+    return false;
+  }
+
   return transaction.Commit();
 }
 

@@ -59,6 +59,9 @@ class PageContentStore {
   // Deletes the page content entry for `tab_id`.
   bool DeletePageContentForTab(int64_t tab_id);
 
+  // Deletes the page content entries for `tab_ids`.
+  bool DeletePageContentForTabs(const std::set<int64_t>& tab_ids);
+
   // Deletes all entries.
   bool DeleteAllEntries();
 
