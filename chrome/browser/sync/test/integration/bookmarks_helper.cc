@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -232,35 +233,6 @@ size_t CountNodes(BookmarkModel* model, BookmarkNode::Type node_type) {
   return count;
 }
 
-// Checks if the favicon data in |bitmap_a| and |bitmap_b| are equivalent.
-// Returns true if they match.
-bool FaviconRawBitmapsMatch(const SkBitmap& bitmap_a,
-                            const SkBitmap& bitmap_b) {
-  if (bitmap_a.computeByteSize() == 0U && bitmap_b.computeByteSize() == 0U) {
-    return true;
-  }
-  if ((bitmap_a.computeByteSize() != bitmap_b.computeByteSize()) ||
-      (bitmap_a.width() != bitmap_b.width()) ||
-      (bitmap_a.height() != bitmap_b.height())) {
-    LOG(ERROR) << "Favicon size mismatch: " << bitmap_a.computeByteSize()
-               << " (" << bitmap_a.width() << "x" << bitmap_a.height()
-               << ") vs. " << bitmap_b.computeByteSize() << " ("
-               << bitmap_b.width() << "x" << bitmap_b.height() << ")";
-    return false;
-  }
-  void* node_pixel_addr_a = bitmap_a.getPixels();
-  EXPECT_TRUE(node_pixel_addr_a);
-  void* node_pixel_addr_b = bitmap_b.getPixels();
-  EXPECT_TRUE(node_pixel_addr_b);
-  if (UNSAFE_TODO(memcmp(node_pixel_addr_a, node_pixel_addr_b,
-                         bitmap_a.computeByteSize())) != 0) {
-    LOG(ERROR) << "Favicon bitmap mismatch";
-    return false;
-  } else {
-    return true;
-  }
-}
-
 // Represents a favicon image and the icon URL associated with it.
 struct FaviconData {
   FaviconData(const gfx::Image& favicon_image, const GURL& favicon_url)
@@ -383,18 +355,14 @@ bool FaviconsMatch(BookmarkModel* model_a,
   gfx::Image image_a = favicon_data_a->image;
   gfx::Image image_b = favicon_data_b->image;
 
-  if (image_a.IsEmpty() && image_b.IsEmpty()) {
-    return true;  // Two empty images are equivalent.
-  }
-
-  if (image_a.IsEmpty() != image_b.IsEmpty()) {
+  if (image_a.Size() != image_b.Size()) {
+    LOG(ERROR) << "Favicon size mismatch: " << image_a.Size().ToString()
+               << " vs " << image_b.Size().ToString();
     return false;
   }
 
   // Compare only the 1x bitmaps as only those are synced.
-  SkBitmap bitmap_a = image_a.AsImageSkia().GetRepresentation(1.0f).GetBitmap();
-  SkBitmap bitmap_b = image_b.AsImageSkia().GetRepresentation(1.0f).GetBitmap();
-  return FaviconRawBitmapsMatch(bitmap_a, bitmap_b);
+  return image_a.As1xPNGBytes()->Equals(image_b.As1xPNGBytes());
 }
 
 // Does a deep comparison of BookmarkNode fields in |model_a| and |model_b|.
