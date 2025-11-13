@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
@@ -24,7 +25,11 @@ namespace {
 
 class ActorNavigateToolBrowserTest : public ActorToolsTest {
  public:
-  ActorNavigateToolBrowserTest() = default;
+  ActorNavigateToolBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{kGlicCrossOriginNavigationGating});
+  }
   ~ActorNavigateToolBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -32,6 +37,9 @@ class ActorNavigateToolBrowserTest : public ActorToolsTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Basic test of the NavigateTool.
