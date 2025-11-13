@@ -159,11 +159,17 @@ AttributionScope AttributionScopeFromWorkerType(
 void AddMemoryBytes(mojom::WebMemoryBreakdownEntry* aggregation_point,
                     const V8DetailedMemoryExecutionContextData* data,
                     bool is_same_process) {
-  if (!data) {
+  // Same-process frames without data should remain nullopt to be filtered out.
+  if (!data && is_same_process) {
     return;
   }
+  // Initialize memory to ByteCount(0) for cross-process or frames with data.
   if (!aggregation_point->memory.has_value()) {
     aggregation_point->memory.emplace();
+  }
+  // Cross-process without data are now set to 0 bytes; nothing more to add.
+  if (!data) {
+    return;
   }
   // Ensure this frame is actually in the same process as the requesting
   // frame. If not it should be considered to have 0 bytes.

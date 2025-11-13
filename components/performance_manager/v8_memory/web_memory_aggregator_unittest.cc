@@ -339,6 +339,31 @@ TEST_F(WebMemoryAggregatorTest, AggregateNestedCrossOrigin) {
             NormalizeMeasurement(expected_result));
 }
 
+TEST_F(WebMemoryAggregatorTest, CrossProcessFrameWithoutMeasurementData) {
+  FrameNodeImpl* main_frame =
+      AddFrameNode("https://example.com/", base::ByteCount(10));
+
+  // Cross-process frame without measurement data. Should still appear in
+  // breakdown with 0 bytes to expose container attribution (id, src) to
+  // JavaScript.
+  AddCrossProcessFrameNode("https://foo.com/iframe", std::nullopt, main_frame,
+                           "iframe-id");
+
+  WebMemoryAggregator aggregator(main_frame);
+  auto result = aggregator.AggregateMeasureMemoryResult();
+
+  auto expected_result = CreateExpectedMemoryMeasurement({
+      ExpectedMemoryBreakdown(base::ByteCount(10), AttributionScope::kWindow,
+                              "https://example.com/"),
+      ExpectedMemoryBreakdown(base::ByteCount(0),
+                              AttributionScope::kCrossOriginAggregated,
+                              std::nullopt, "iframe-id"),
+  });
+
+  EXPECT_EQ(NormalizeMeasurement(result),
+            NormalizeMeasurement(expected_result));
+}
+
 TEST_F(WebMemoryAggregatorTest, AggregateSameOriginAboutBlank) {
   FrameNodeImpl* main_frame =
       AddFrameNode("https://example.com/", base::ByteCount(10));
