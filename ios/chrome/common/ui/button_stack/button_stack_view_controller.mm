@@ -91,8 +91,9 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   _contentView.translatesAutoresizingMaskIntoConstraints = NO;
   [_scrollView addSubview:_contentView];
 
-  [self createAndConfigureButtons];
+  [self createButtons];
   [self setupConstraints];
+  [self reconfigureButtons];
   [self updateButtonState];
 }
 
@@ -252,9 +253,8 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   return scrollView;
 }
 
-// Creates the button stack and configures the buttons based on the initial
-// configuration.
-- (void)createAndConfigureButtons {
+// Creates the button stack and the buttons.
+- (void)createButtons {
   _actionStackView = [[UIStackView alloc] init];
   _actionStackView.axis = UILayoutConstraintAxisVertical;
   _actionStackView.spacing = kButtonSpacing;
@@ -308,8 +308,6 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   }
 
   [self.view addSubview:_actionStackView];
-
-  [self reconfigureButtons];
 }
 
 // Updates the buttons' visibility, titles, and images based on the current
@@ -388,14 +386,23 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   UIView* view = self.view;
 
   // Scroll container view constraints.
+  // Ensure the scroll container expands to the bottom of the safe area when the
+  // action stack is empty.
+  NSLayoutConstraint* scrollContainerBottomToSafeAreaBottomConstraint =
+      [_scrollContainerView.bottomAnchor
+          constraintEqualToAnchor:safeAreaLayoutGuide.bottomAnchor];
+  scrollContainerBottomToSafeAreaBottomConstraint.priority =
+      UILayoutPriorityDefaultHigh;
+
   [NSLayoutConstraint activateConstraints:@[
     [_scrollContainerView.topAnchor constraintEqualToAnchor:view.topAnchor],
-    [_scrollContainerView.bottomAnchor
-        constraintEqualToAnchor:_actionStackView.topAnchor],
     [_scrollContainerView.leadingAnchor
         constraintEqualToAnchor:view.leadingAnchor],
     [_scrollContainerView.trailingAnchor
         constraintEqualToAnchor:view.trailingAnchor],
+    [_scrollContainerView.bottomAnchor
+        constraintEqualToAnchor:_actionStackView.topAnchor],
+    scrollContainerBottomToSafeAreaBottomConstraint,
   ]];
   AddSameConstraints(_scrollView, _scrollContainerView);
 
@@ -404,6 +411,12 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   [NSLayoutConstraint activateConstraints:@[
     [_contentView.widthAnchor constraintEqualToAnchor:_scrollView.widthAnchor],
   ]];
+
+  // Ensures the content view either fills the scroll view (for short content)
+  // or expands to enable scrolling (for long content).
+  NSLayoutConstraint* contentViewHeightConstraint = [_contentView.heightAnchor
+      constraintGreaterThanOrEqualToAnchor:_scrollView.heightAnchor];
+  contentViewHeightConstraint.priority = UILayoutPriorityDefaultLow;
 
   _actionStackSafeAreaBottomConstraint = [_actionStackView.bottomAnchor
       constraintEqualToAnchor:safeAreaLayoutGuide.bottomAnchor
@@ -423,6 +436,7 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
     [_actionStackView.trailingAnchor
         constraintEqualToAnchor:safeAreaLayoutGuide.trailingAnchor
                        constant:-kButtonStackHorizontalMargin],
+    contentViewHeightConstraint,
     _actionStackBottomConstraint,
     _actionStackSafeAreaBottomConstraint,
   ]];
