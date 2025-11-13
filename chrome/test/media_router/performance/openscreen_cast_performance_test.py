@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Performance test suite for video casting on a Fuchsia device.
+"""Performance test suite for video casting on a Chromecast device.
 
 This script uses Selenium and Chromedriver to automate performance tests for
 video playback and casting. It sets up an SSH tunnel to a remote machine,
@@ -74,7 +74,8 @@ CHROME_OPTIONS = [
     "--v=1",
     # Sets specific verbose logging levels for specific components relevant to
     # media routing and casting.
-    "--vmodule=media_router*=3,discovery_mdns*=3,cast*=3,webrtc_logging*=3",
+    "--vmodule=media_router*=3,discovery_mdns*=3,cast*=3,"
+    "webrtc_logging*=3",
     # Skips the first-run experience modal.
     "--no-first-run",
     # Prevents the "Set as default browser" prompt from appearing.
@@ -108,30 +109,41 @@ VIDEOS = [
     }
 ]
 
-SENDER_CHROMEDRIVER_CMD = (
-    f'nohup /tmp/chromedriver --port={CHROMEDRIVER_PORT} '
-    f'--allowed-origins=\"*\" '
-    f'--verbose '
-    f'--log-path=/tmp/chromedriver_verbose.log '
-    f'--enable-chrome-logs '
-    f'> /dev/null 2>&1 &'
-)
 
-SENDER_CHROMEDRIVER_CHECK_CMD = (
-    'ps aux | grep chromedriver | grep -v grep'
-)
+SENDER_CHROMEDRIVER_CHECK_CMD = {
+    'mac': (
+        'ps aux | grep chromedriver | grep -v grep'
+    ),
+    'win': (
+        'powershell -Command "Get-Process -Name chromedriver -ErrorAction '
+        'SilentlyContinue"'
+    ),
+}
 
-SENDER_STATUS_CMD = (
-    f'curl '
-    f'-s '
-    f'-o /dev/null '
-    f'-w "%{{http_code}}" '
-    f'http://127.0.0.1:{CHROMEDRIVER_PORT}/status'
-)
+SENDER_STATUS_CMD = {
+    'mac': (
+        f'curl '
+        f'-s '
+        f'-o /dev/null '
+        f"-w '%{{http_code}}' "
+        f'http://127.0.0.1:{CHROMEDRIVER_PORT}/status'
+    ),
+    'win': (
+        f'powershell -Command "(Invoke-WebRequest -Uri '
+        f'http://127.0.0.1:{CHROMEDRIVER_PORT}/status -UseBasicParsing '
+        f'-ErrorAction SilentlyContinue).StatusCode"'
+    ),
+}
 
-SENDER_TERMINATE_DRIVER_CMD = (
-    'killall chromedriver'
-)
+SENDER_TERMINATE_DRIVER_CMD = {
+    'mac': (
+        'killall chromedriver'
+    ),
+    'win': (
+        'powershell -Command "Stop-Process -Name chromedriver '
+        '-ErrorAction SilentlyContinue"'
+    ),
+}
 
 class StartProcess(AbstractContextManager):
     """Starts a multiprocessing.Process."""
@@ -164,10 +176,11 @@ def send_ssh_command(hostname, username, command, blocking=False):
     Returns:
         subprocess.CompletedProcess or subprocess.Popen: The process object.
     """
+    key_path = os.path.expanduser('~/.ssh/id_ed25519')
     ssh_command = [
         'ssh',
         '-i',
-        '~/.ssh/id_ed25519',
+        key_path,
         f'{username}@{hostname}',
         command
     ]
@@ -194,11 +207,13 @@ def send_ssh_command(hostname, username, command, blocking=False):
 def terminate_old_chromedriver(args):
     """Tries to terminate any existing chromedriver processes."""
     logging.info("Attempting to terminate old chromedriver processes...")
-    send_ssh_command(args.sender, args.username, SENDER_TERMINATE_DRIVER_CMD)
+    send_ssh_command(args.sender, args.username,
+                     SENDER_TERMINATE_DRIVER_CMD[args.sender_os])
 
     for _ in range(5):
-        result = send_ssh_command(args.sender, args.username,
-                                  SENDER_CHROMEDRIVER_CHECK_CMD, blocking=True)
+        result = send_ssh_command(
+            args.sender, args.username,
+            SENDER_CHROMEDRIVER_CHECK_CMD[args.sender_os], blocking=True)
         if not result.stdout.strip():
             logging.info("Old chromedriver processes confirmed gone.")
             return
@@ -206,7 +221,7 @@ def terminate_old_chromedriver(args):
         time.sleep(1)
     raise RuntimeError("Chromedriver processes lingered after kill attempts.")
 
-def download_cft_urls(version=None):
+def download_cft_urls(sender_os, version=None):
     """
     Downloads the CfT JSON and finds the URLs for a specific version.
     """
@@ -214,15 +229,24 @@ def download_cft_urls(version=None):
     with urllib.request.urlopen(CFT_JSON_URL) as url:
         data = json.loads(url.read().decode())
 
+    platform = {
+        'mac': (
+            'mac-arm64'
+        ),
+        'win': (
+            'win64'
+        ),
+    }
+
     for v in reversed(data['versions']):
         if not version or v['version'] == version:
             chrome_url = None
             driver_url = None
             for download in v['downloads']['chrome']:
-                if download['platform'] == 'mac-arm64':
+                if download['platform'] == platform[sender_os]:
                     chrome_url = download['url']
             for download in v['downloads']['chromedriver']:
-                if download['platform'] == 'mac-arm64':
+                if download['platform'] == platform[sender_os]:
                     driver_url = download['url']
             if chrome_url and driver_url:
                 logging.info("Found URLs for version %s", v['version'])
@@ -235,59 +259,116 @@ def install_and_setup_chrome(args, chrome_version):
     Downloads and sets up a specific version of Chrome for Testing and its
     matching chromedriver.
     """
-    chrome_url, driver_url = download_cft_urls(chrome_version)
+    chrome_url, driver_url = download_cft_urls(args.sender_os, chrome_version)
     chrome_zip = chrome_url.split('/')[-1]
     driver_zip = driver_url.split('/')[-1]
     chrome_unzip_dir = chrome_zip.replace('.zip', '')
     driver_unzip_dir = driver_zip.replace('.zip', '')
     # --- Download and Unzip on Remote ---
     logging.info("Downloading Chrome and Chromedriver on remote machine.")
-    download_commands = (
-        f"curl -L {chrome_url} -o /tmp/{chrome_zip} && "
-        f"curl -L {driver_url} -o /tmp/{driver_zip} && "
-        f"unzip -o /tmp/{chrome_zip} -d /tmp && "
-        f"unzip -o /tmp/{driver_zip} -d /tmp"
-    )
-    send_ssh_command(args.sender, args.username, download_commands,
-                     blocking=True)
-    remote_app_path = f'/tmp/{chrome_unzip_dir}/Google Chrome for Testing.app'
-    remote_chromedriver_path = f'/tmp/{driver_unzip_dir}/chromedriver'
+    if args.sender_os == 'mac':
+        remote_tmp_dir = '/tmp'
+        download_commands = (
+            f"curl -L {chrome_url} -o {remote_tmp_dir}/{chrome_zip} && "
+            f"curl -L {driver_url} -o {remote_tmp_dir}/{driver_zip} && "
+            f"unzip -o {remote_tmp_dir}/{chrome_zip} -d {remote_tmp_dir} && "
+            f"unzip -o {remote_tmp_dir}/{driver_zip} -d {remote_tmp_dir}"
+        )
+        send_ssh_command(args.sender, args.username, download_commands,
+                         blocking=True)
+        remote_app_path = (
+            f'{remote_tmp_dir}/{chrome_unzip_dir}/Google Chrome for '
+            'Testing.app')
+        remote_chromedriver_path = (
+            f'{remote_tmp_dir}/{driver_unzip_dir}/chromedriver')
+        remote_chromedriver_dir = f'{remote_tmp_dir}/{driver_unzip_dir}'
 
-    # --- Start Chromedriver ---
-    chmod_command = f'chmod +x {remote_chromedriver_path}'
-    send_ssh_command(args.sender, args.username, chmod_command, blocking=True)
+        # --- Start Chromedriver ---
+        chmod_command = f'chmod +x {remote_chromedriver_path}'
+        send_ssh_command(args.sender, args.username, chmod_command,
+                         blocking=True)
 
-    start_driver_cmd = (
-        f'nohup {remote_chromedriver_path} --port={CHROMEDRIVER_PORT} '
-        f'--allowed-origins=\"*\" '
-        f'--verbose '
-        f'--log-path=/tmp/chromedriver_verbose.log '
-        f'--enable-chrome-logs '
-        f'> /dev/null 2>&1 &'
-    )
-    send_ssh_command(args.sender, args.username, start_driver_cmd)
+    elif args.sender_os == 'win':
+        logging.info("Windows OS detected. Implementing install and setup.")
+        remote_tmp_dir = 'C:\\Windows\\Temp'
+        chrome_zip_path = f'{remote_tmp_dir}\\{chrome_zip}'
+        driver_zip_path = f'{remote_tmp_dir}\\{driver_zip}'
+
+        download_commands = (
+            f"powershell -Command \"Start-BitsTransfer -Source '{chrome_url}' "
+            f"-Destination '{chrome_zip_path}'; "
+            f"Start-BitsTransfer -Source '{driver_url}' "
+            f"-Destination '{driver_zip_path}'\""
+        )
+        logging.info("Downloading remote files...")
+        send_ssh_command(args.sender, args.username, download_commands,
+                         blocking=True)
+
+        unzip_commands = (
+            f"powershell -Command \"Expand-Archive -Path '{chrome_zip_path}' "
+            f"-DestinationPath '{remote_tmp_dir}' -Force; "
+            f"Expand-Archive -Path '{driver_zip_path}' "
+            f"-DestinationPath '{remote_tmp_dir}' -Force\""
+        )
+        logging.info("Unzipping remote files...")
+        send_ssh_command(args.sender, args.username, unzip_commands,
+                         blocking=True)
+
+        # Determine actual paths after unzipping (no nesting)
+        remote_app_path = f'{remote_tmp_dir}\\chrome-win64\\chrome.exe'
+        remote_chromedriver_dir = f'{remote_tmp_dir}\\chromedriver-win64'
+        remote_chromedriver_path = (
+            f'{remote_chromedriver_dir}\\chromedriver.exe')
+
+        # --- Start Chromedriver ---
+
+
+    start_driver_cmd = {
+        'mac': (
+            f'nohup {remote_chromedriver_path} --port={CHROMEDRIVER_PORT} '
+            f'--allowed-origins=\"*\" '
+            f'--verbose '
+            f'--log-path=/tmp/chromedriver_verbose.log '
+            f'--enable-chrome-logs '
+            f'> /dev/null 2>&1 &'
+        ),
+        'win': (
+            f"powershell -Command \"cd '{remote_chromedriver_dir}'; "
+            f"& '{remote_chromedriver_path}' --port={CHROMEDRIVER_PORT} "
+            f"--allowed-origins=* --verbose "
+            f"--log-path='{remote_chromedriver_dir}\\'"
+            f"'chromedriver_verbose.log' "
+            f"--enable-chrome-logs\""
+        )
+    }
+
+    send_ssh_command(args.sender, args.username,
+                     start_driver_cmd[args.sender_os])
     logging.info("Started new chromedriver.")
     return remote_app_path
 
 def wait_for_chromedriver(args):
     """Waits for the new chromedriver to be ready by checking its status URL."""
     logging.info("Starting Chromedriver status check...")
-    for i in range(5):
+    for i in range(10):
         try:
-            result = send_ssh_command(args.sender, args.username,
-                                      SENDER_STATUS_CMD, blocking=True)
+            result = send_ssh_command(
+                args.sender, args.username,
+                SENDER_STATUS_CMD[args.sender_os], blocking=True)
             stdout = result.stdout.strip()
             if result.returncode == 0 and stdout == '200':
                 logging.info("Chromedriver is ready.")
                 return
-            logging.warning(f"Attempt {i+1} failed. Chromedriver not ready. "
+            logging.warning(f"Attempt {i+1} failed. Chromedriver not "
+                          f"ready. "
                           f"Return code: {result.returncode}, "
                           f"stdout: '{stdout}', "
                           f"stderr: '{result.stderr.strip()}'")
         except subprocess.TimeoutExpired:
             logging.warning("Status check timed out. Retrying...")
         except Exception as e: # pylint: disable=broad-exception-caught
-            logging.warning("A script-level error occurred: %s. Retrying...", e)
+            logging.warning(
+                "A script-level error occurred: %s. Retrying...", e)
         time.sleep(2)
     raise RuntimeError("Chromedriver still not ready after multiple attempts.")
 
@@ -351,11 +432,17 @@ def setup_test_environment(args, chrome_version):
         chrome_options.add_argument(option)
 
     binary_path = None
-    if 'mac' in args.sender or args.username == 'swarming':
-        binary_path = (
-            f'{remote_app_path}/Contents/MacOS/Google Chrome for Testing'
-        )
-        logging.info("Setting binary_location to: %s", binary_path)
+    if args.sender_os == 'mac':
+        binary_path = (f'{remote_app_path}/Contents/MacOS/Google Chrome for '
+                       'Testing')
+        logging.info(
+            "Mac OS detected. Setting binary_location to: %s",
+            binary_path)
+    elif args.sender_os == 'win':
+        logging.info(
+            "Windows OS detected. Setting binary_location to: %s",
+            remote_app_path)
+        binary_path = remote_app_path
 
     chrome_options.binary_location = binary_path
     driver = connect_to_remote_driver(chrome_options, binary_path)
@@ -383,8 +470,8 @@ def teardown_recording_process(rec_proc):
                             "seconds. Terminating it now.")
             rec_proc.terminate()
             rec_proc.wait()
-            raise RuntimeError("Recording process timed out and was forcefully "
-                               "terminated.") from e
+            raise RuntimeError("Recording process timed out and was "
+                               "forcefully terminated.") from e
 
 def teardown_test_environment(driver, tunnel_proc, args):
     """
@@ -408,10 +495,28 @@ def teardown_test_environment(driver, tunnel_proc, args):
         tunnel_proc.terminate()
         logging.info("Terminated tunnel.")
 
-    cleanup_command = (
-        "rm -rf /tmp/chrome-mac-arm64 /tmp/chromedriver-mac-arm64 /tmp/*.zip"
-    )
-    send_ssh_command(args.sender, args.username, cleanup_command)
+    cleanup_command = {
+        'mac': (
+            f"rm -rf /tmp/chrome-mac-arm64 /tmp/chromedriver-mac-arm64 "
+            f"/tmp/*.zip"
+        ),
+        'win': (
+            f'powershell -Command "'
+            f'Remove-Item -Path C:\\Windows\\Temp\\*.zip -ErrorAction '
+            f'SilentlyContinue; '
+            f'Remove-Item -Path C:\\Windows\\Temp\\chrome-win64 -Recurse '
+            f'-Force -ErrorAction SilentlyContinue; '
+            f'Remove-Item -Path C:\\Windows\\Temp\\chromedriver-win64 '
+            f'-Recurse -Force -ErrorAction SilentlyContinue; '
+            f'Remove-Item -Path '
+            f'C:\\Windows\\Temp\\chromedriver_verbose.log -ErrorAction '
+            f'SilentlyContinue'
+            f'"'
+        ),
+    }
+
+    send_ssh_command(args.sender, args.username,
+                     cleanup_command[args.sender_os])
     logging.info("Cleaned up tmp files on remote machine.")
 
 def enable_tab_mirroring(driver):
@@ -427,8 +532,9 @@ def enable_tab_mirroring(driver):
     """
     driver.get(CAST_URL)
 
-    wait = WebDriverWait(driver, 30)  # Wait up to 30 seconds for the element
-    button = wait.until(ec.element_to_be_clickable((By.XPATH, CAST_BTN_XPATH)))
+    wait = WebDriverWait(driver, 300)
+    button = wait.until(
+        ec.element_to_be_clickable((By.XPATH, CAST_BTN_XPATH)))
     button.click()
 
     logging.info("Enabling Cast discovery via CDP...")
@@ -436,8 +542,9 @@ def enable_tab_mirroring(driver):
 
     # Wait for the debug message to indicate a receiver has been found.
     logging.info("Waiting for receiver to be found...")
-    wait.until(ec.text_to_be_present_in_element((By.ID, "debugmessage"),
-                                                "receiver found"))
+    wait.until(
+        ec.text_to_be_present_in_element((By.ID, "debugmessage"),
+                                         "receiver found"))
     logging.info("Receiver found in debug message.")
 
 def start_tab_mirroring(driver, args):
@@ -515,8 +622,7 @@ def run_performance_test(video_file: str, framerate: int,
     ]
 
     wait = WebDriverWait(driver, 30)
-    driver.get(f'http://127.0.0.1:'
-               f'{SERVER_PORT}/video.html?file={video_file}')
+    driver.get(f'http://127.0.0.1:{SERVER_PORT}/video.html?file={video_file}')
     wait.until(ec.presence_of_element_located((By.ID, "video")))
 
     casting = False
@@ -532,13 +638,14 @@ def run_performance_test(video_file: str, framerate: int,
                      "mapping:' confirmation...")
 
         while True:
-            line = rec_proc_local.stderr.readline() # Use local variable
-            if line:
-                line = line.strip()
-                logging.info("FFMPEG STARTUP: %s", line)
-                if "Stream mapping:" in line:
-                    logging.info("Started recording.")
-                    break
+            line = rec_proc_local.stderr.readline()
+            if not line:
+                raise RuntimeError("ffmpeg process exited before starting.")
+            line = line.strip()
+            logging.info("FFMPEG STARTUP: %s", line)
+            if "Stream mapping:" in line:
+                logging.info("Started recording.")
+                break
 
         casting = start_tab_mirroring(driver, args)
 
@@ -631,12 +738,13 @@ def main():
     )
     parser.add_argument('--username', help='Sender device username.')
     parser.add_argument('--sender', help='Sender device IP.')
-    parser.add_argument('--receiver',help='Receiver device sink name.')
+    parser.add_argument('--receiver', help='Receiver device sink name.')
     parser.add_argument(
         '--chrome-version',
         default=None,
         help='Chrome for Testing version to use. Defaults to the latest '
     'known good version.')
+    parser.add_argument('--sender-os', help='OS of the sender device.')
     args, _ = parser.parse_known_args()
     cv = args.chrome_version
 
@@ -659,6 +767,7 @@ def main():
                                                 args)
             except Exception: # pylint: disable=broad-exception-caught
                 logging.exception("Error during video %s test", video['name'])
+                raise
             finally:
                 teardown_recording_process(rec_proc)
     finally:
