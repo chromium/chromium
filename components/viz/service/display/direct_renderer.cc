@@ -1081,10 +1081,13 @@ gfx::Size DirectRenderer::CalculateTextureSizeForRenderPass(
 // buffer area and number of reallocations to quantify the trade-off.
 gfx::Size DirectRenderer::CalculateSizeForOutputSurface(
     const gfx::Size& requested_viewport_size) {
+  const gfx::Size surface_size = surface_size_for_swap_buffers();
+
   // We're not able to clip back buffers if output surface does not support
-  // clipping.
-  if (requested_viewport_size == surface_size_for_swap_buffers() ||
+  // clipping. We don't round on the initial frame when a window is first shown.
+  if (requested_viewport_size == surface_size ||
       !output_surface_->capabilities().supports_viewporter ||
+      surface_size.IsZero() ||
       settings_->dont_round_texture_sizes_for_pixel_tests) {
     device_viewport_size_ = requested_viewport_size;
     return requested_viewport_size;
@@ -1102,8 +1105,8 @@ gfx::Size DirectRenderer::CalculateSizeForOutputSurface(
   // allows backings to be more easily reused during a resize operation.
   const int request_width = requested_viewport_size.width();
   const int request_height = requested_viewport_size.height();
-  int surface_width = surface_size_for_swap_buffers().width();
-  int surface_height = surface_size_for_swap_buffers().height();
+  int surface_width = surface_size.width();
+  int surface_height = surface_size.height();
   constexpr int multiple = 256;
 
   // If |request_width| or |request_height| is already a multiple of |multiple|,
