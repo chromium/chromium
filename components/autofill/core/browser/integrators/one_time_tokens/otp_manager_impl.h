@@ -56,6 +56,10 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
       AutofillManager& manager,
       FormGlobalId form,
       AutofillManager::Observer::FieldTypeSource source) override;
+  void OnBeforeFocusOnFormField(AutofillManager& manager,
+                                FormGlobalId form,
+                                FieldGlobalId field) override;
+  void OnBeforeFocusOnNonFormField(AutofillManager& manager) override;
 
  private:
   // Fetches recent OTPs and creates or renewes a subscription. Any OTPs

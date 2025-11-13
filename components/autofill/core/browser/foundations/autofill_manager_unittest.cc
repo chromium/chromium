@@ -514,6 +514,10 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
     std::move(run_loop).Run();
   }
 
+  EXPECT_CALL(observer, OnBeforeFocusOnNonFormField(m));
+  EXPECT_CALL(observer, OnAfterFocusOnNonFormField(m));
+  autofill_manager().OnFocusOnNonFormField();
+
   {
     base::RunLoop run_loop;
     EXPECT_CALL(observer, OnBeforeJavaScriptChangedAutofilledValue(m, f, ff));

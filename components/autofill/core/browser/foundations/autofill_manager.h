@@ -158,6 +158,9 @@ class AutofillManager
                                          FormGlobalId form,
                                          FieldGlobalId field) {}
 
+    virtual void OnBeforeFocusOnNonFormField(AutofillManager& manager) {}
+    virtual void OnAfterFocusOnNonFormField(AutofillManager& manager) {}
+
     virtual void OnBeforeSelectFieldOptionsDidChange(AutofillManager& manager,
                                                      FormGlobalId form) {}
     virtual void OnAfterSelectFieldOptionsDidChange(AutofillManager& manager,

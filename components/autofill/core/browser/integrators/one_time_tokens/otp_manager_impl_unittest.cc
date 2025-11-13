@@ -449,4 +449,73 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_NoPhishingDelegate) {
       /*OneTimeTokensPhishGuardVerdict::kUnknown*/ 0, 1);
 }
 
+// Tests that `OnBeforeFocusOnFormField` clears the pending callback for
+// `GetOtpSuggestions`.
+TEST_F(OtpManagerImplTest, OnBeforeFocusOnFormField_ClearsPendingCallback) {
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  // Prepare the handling of SMS requests from the SMS backend.
+  one_time_tokens::OtpFetchReply reply = GetDefaultOtpFetchReply();
+  base::OnceCallback<void(const one_time_tokens::OtpFetchReply&)>
+      sms_backend_callback;
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp)
+      .WillOnce(
+          [&](base::OnceCallback<void(const one_time_tokens::OtpFetchReply&)>
+                  callback) { sms_backend_callback = std::move(callback); });
+  base::test::TestFuture<const std::vector<std::string>> future;
+  otp_manager.GetOtpSuggestions(future.GetCallback());
+
+  // The future should not be ready yet, as the SMS backend has not responded.
+  EXPECT_FALSE(future.IsReady());
+
+  // Simulate a focus on a form field. This should clear the pending callback.
+  otp_manager.OnBeforeFocusOnFormField(autofill_manager(), FormGlobalId(),
+                                       FieldGlobalId());
+
+  // The future should now be ready, and contain an empty vector.
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+
+  // Now, let the SMS backend respond. This should not affect the already run
+  // callback.
+  std::move(sms_backend_callback).Run(reply);
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+}
+
+// Tests that `OnBeforeFocusOnNonFormField` clears the pending callback for
+// `GetOtpSuggestions`.
+TEST_F(OtpManagerImplTest, OnBeforeFocusOnNonFormField_ClearsPendingCallback) {
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  // Prepare the handling of SMS requests from the SMS backend.
+  one_time_tokens::OtpFetchReply reply = GetDefaultOtpFetchReply();
+  base::OnceCallback<void(const one_time_tokens::OtpFetchReply&)>
+      sms_backend_callback;
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp)
+      .WillOnce(
+          [&](base::OnceCallback<void(const one_time_tokens::OtpFetchReply&)>
+                  callback) { sms_backend_callback = std::move(callback); });
+
+  base::test::TestFuture<const std::vector<std::string>> future;
+  otp_manager.GetOtpSuggestions(future.GetCallback());
+
+  // The future should not be ready yet, as the SMS backend has not responded.
+  EXPECT_FALSE(future.IsReady());
+
+  // Simulate a focus on a non-form field. This should clear the pending
+  // callback.
+  otp_manager.OnBeforeFocusOnNonFormField(autofill_manager());
+
+  // The future should now be ready, and contain an empty vector.
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+
+  // Now, let the SMS backend respond. This should not affect the already run
+  // callback.
+  std::move(sms_backend_callback).Run(reply);
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+}
+
 }  // namespace autofill
