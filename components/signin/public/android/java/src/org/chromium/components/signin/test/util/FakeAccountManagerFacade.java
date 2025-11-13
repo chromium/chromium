@@ -7,9 +7,7 @@ package org.chromium.components.signin.test.util;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 
@@ -39,7 +37,6 @@ import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -50,9 +47,6 @@ import java.util.stream.Collectors;
 
 /** FakeAccountManagerFacade is an {@link AccountManagerFacade} stub intended for testing. */
 public class FakeAccountManagerFacade implements AccountManagerFacade {
-    private static final String FAKE_ACCOUNTS_PREF = "FakeAccountManagerFacade.ACCOUNTS";
-    private static final String ACCOUNTS_KEY = "accounts";
-
     /**
      * Can be closed to unblock updates to the list of accounts. See {@link
      * FakeAccountManagerFacade#blockGetAccounts}.
@@ -158,7 +152,10 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     public FakeAccountManagerFacade(boolean serializeToPrefs) {
         mSerializeToPrefs = serializeToPrefs;
         if (mSerializeToPrefs) {
-            ThreadUtils.runOnUiThreadBlocking(this::loadAccounts);
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        setAccounts(SharedPrefsAccountStorage.loadAccounts());
+                    });
         }
     }
 
@@ -368,7 +365,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
             fireOnAccountsChangedNotification();
         }
         if (mSerializeToPrefs) {
-            saveAccounts();
+            SharedPrefsAccountStorage.saveAccounts(getPlatformAccountInfosInternal());
         }
     }
 
@@ -431,7 +428,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
             fireOnAccountsChangedNotification();
         }
         if (mSerializeToPrefs) {
-            saveAccounts();
+            SharedPrefsAccountStorage.saveAccounts(getPlatformAccountInfosInternal());
         }
     }
 
@@ -613,7 +610,8 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @AnyThread
-    private @Nullable AccountHolder getAccountHolder(CoreAccountId accountId) {
+    @Nullable
+    private AccountHolder getAccountHolder(CoreAccountId accountId) {
         synchronized (mAccountHolders) {
             return mAccountHolders.stream()
                     .filter(
@@ -625,7 +623,8 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @AnyThread
-    private @Nullable FakePlatformAccount getPlatformAccount(GaiaId gaiaId) {
+    @Nullable
+    private FakePlatformAccount getPlatformAccount(GaiaId gaiaId) {
         synchronized (mPlatformAccounts) {
             return (FakePlatformAccount)
                     mPlatformAccounts.stream()
@@ -672,52 +671,21 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         }
     }
 
-    @MainThread
-    private void loadAccounts() {
+    private void setAccounts(List<AccountInfo> accounts) {
         ThreadUtils.checkUiThread();
-        SharedPreferences prefs =
-                ContextUtils.getApplicationContext()
-                        .getSharedPreferences(FAKE_ACCOUNTS_PREF, Context.MODE_PRIVATE);
-        Set<String> serializedAccounts = prefs.getStringSet(ACCOUNTS_KEY, null);
-        if (serializedAccounts == null) {
-            return;
-        }
-
-        for (String serializedAccount : serializedAccounts) {
-            AccountInfo accountInfo = AccountInfoSerializer.fromJsonString(serializedAccount);
-            if (accountInfo == null) {
-                throw new IllegalStateException(
-                        "Error deserializing account: " + serializedAccount);
-            }
-            if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+        if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+            mPlatformAccounts.clear();
+            for (AccountInfo accountInfo : accounts) {
                 mPlatformAccounts.add(new FakePlatformAccount(accountInfo));
-            } else {
+            }
+        } else {
+            mAccountHolders.clear();
+            for (AccountInfo accountInfo : accounts) {
                 mAccountHolders.add(new AccountHolder(accountInfo));
             }
         }
         if (mBlockedGetAccountsPromise == null) {
             fireOnAccountsChangedNotification();
         }
-    }
-
-    @MainThread
-    private void saveAccounts() {
-        ThreadUtils.checkUiThread();
-        List<AccountInfo> accounts = getPlatformAccountInfosInternal();
-        Set<String> serializedAccounts = new HashSet<>();
-        for (AccountInfo accountInfo : accounts) {
-            String serializedAccountInfo = AccountInfoSerializer.toJsonString(accountInfo);
-            if (serializedAccountInfo != null) {
-                serializedAccounts.add(serializedAccountInfo);
-            } else {
-                throw new IllegalStateException(
-                        "Error serializing account: " + accountInfo.getEmail());
-            }
-        }
-
-        SharedPreferences prefs =
-                ContextUtils.getApplicationContext()
-                        .getSharedPreferences(FAKE_ACCOUNTS_PREF, Context.MODE_PRIVATE);
-        prefs.edit().putStringSet(ACCOUNTS_KEY, serializedAccounts).commit();
     }
 }

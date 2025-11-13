@@ -143,6 +143,7 @@ android_library("signin_java_test_support") {
     "java/src/org/chromium/components/signin/test/util/FakeAccountManagerFacade.java",
     "java/src/org/chromium/components/signin/test/util/FakeIdentityManager.java",
     "java/src/org/chromium/components/signin/test/util/FakePlatformAccount.java",
+    "java/src/org/chromium/components/signin/test/util/SharedPrefsAccountStorage.java",
     "java/src/org/chromium/components/signin/test/util/SigninMatchers.java",
     "java/src/org/chromium/components/signin/test/util/TestAccounts.java",
   ]
