@@ -40,8 +40,8 @@ void InternalSettingsGenerated::Trace(Visitor* visitor) const {
 }
 
 Settings& InternalSettingsGenerated::GetSettings() {
-  CHECK(GetSupplementable());
-  return GetSupplementable()->GetSettings();
+  CHECK(page_);
+  return page_->GetSettings();
 }
 
 } // namespace blink

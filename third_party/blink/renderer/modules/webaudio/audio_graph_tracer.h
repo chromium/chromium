@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -24,10 +23,8 @@ class Page;
 
 class MODULES_EXPORT AudioGraphTracer final
     : public GarbageCollected<AudioGraphTracer>,
-      public Supplement<Page> {
+      public GarbageCollectedMixin {
  public:
-  static const unsigned kSupplementIndex;
-
   static void ProvideAudioGraphTracerTo(Page&);
 
   AudioGraphTracer(Page& page);
@@ -74,6 +71,7 @@ class MODULES_EXPORT AudioGraphTracer final
   static AudioGraphTracer* FromWindow(const LocalDOMWindow&);
 
  private:
+  Member<Page> page_;
   Member<InspectorWebAudioAgent> inspector_agent_;
   HeapHashSet<WeakMember<BaseAudioContext>> contexts_;
 };
