@@ -52,6 +52,7 @@ source_set("libfuzzer_main") {
     ]
   } else {
     sources += [ "unittest_main.cc" ]
+    deps += [ "//base" ]
   }
 }
 
