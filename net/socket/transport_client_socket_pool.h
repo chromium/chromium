@@ -157,8 +157,8 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   };
 
   TransportClientSocketPool(
-      int max_sockets,
-      int max_sockets_per_group,
+      size_t max_sockets,
+      size_t max_sockets_per_group,
       SocketPoolAdditionalCapacity additional_capacity,
       base::TimeDelta unused_idle_socket_timeout,
       const ProxyChain& proxy_chain,
@@ -176,8 +176,8 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   // |connect_backup_jobs_enabled| can be set to false to disable backup connect
   // jobs (Which are normally enabled).
   static std::unique_ptr<TransportClientSocketPool> CreateForTesting(
-      int max_sockets,
-      int max_sockets_per_group,
+      size_t max_sockets,
+      size_t max_sockets_per_group,
       SocketPoolAdditionalCapacity additional_capacity,
       base::TimeDelta unused_idle_socket_timeout,
       base::TimeDelta used_idle_socket_timeout,
@@ -215,7 +215,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
-      int num_sockets,
+      size_t num_sockets,
       bool fail_if_alias_requires_proxy_override,
       CompletionOnceCallback callback,
       const NetLogWithSource& net_log) override;
@@ -232,7 +232,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   void CloseIdleSockets(const char* net_log_reason_utf8) override;
   void CloseIdleSocketsInGroup(const GroupId& group_id,
                                const char* net_log_reason_utf8) override;
-  int IdleSocketCount() const override;
+  size_t IdleSocketCount() const override;
   size_t IdleSocketCountInGroup(const GroupId& group_id) const override;
   LoadState GetLoadState(const GroupId& group_id,
                          const ClientSocketHandle* handle) const override;
@@ -261,7 +261,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     return NumConnectJobsInGroup(group_id);
   }
 
-  int NumActiveSocketsInGroupForTesting(const GroupId& group_id) const {
+  size_t NumActiveSocketsInGroupForTesting(const GroupId& group_id) const {
     return NumActiveSocketsInGroup(group_id);
   }
 
@@ -360,19 +360,18 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
              bound_requests_.empty();
     }
 
-    bool HasAvailableSocketSlot(int max_sockets_per_group) const {
+    bool HasAvailableSocketSlot(size_t max_sockets_per_group) const {
       return NumActiveSocketSlots() < max_sockets_per_group;
     }
 
-    int NumActiveSocketSlots() const {
-      return active_socket_count_ + static_cast<int>(jobs_.size()) +
-             static_cast<int>(idle_sockets_.size()) +
-             static_cast<int>(bound_requests_.size());
+    size_t NumActiveSocketSlots() const {
+      return active_socket_count_ + jobs_.size() + idle_sockets_.size() +
+             bound_requests_.size();
     }
 
     // Returns true if the group could make use of an additional socket slot, if
     // it were given one.
-    bool CanUseAdditionalSocketSlot(int max_sockets_per_group) const {
+    bool CanUseAdditionalSocketSlot(size_t max_sockets_per_group) const {
       return HasAvailableSocketSlot(max_sockets_per_group) &&
              unbound_requests_.size() > jobs_.size();
     }
@@ -480,7 +479,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     size_t unassigned_job_count() const { return unassigned_jobs_.size(); }
     const JobList& jobs() const { return jobs_; }
     const std::list<IdleSocket>& idle_sockets() const { return idle_sockets_; }
-    int active_socket_count() const { return active_socket_count_; }
+    size_t active_socket_count() const { return active_socket_count_; }
     std::list<IdleSocket>* mutable_idle_sockets() { return &idle_sockets_; }
     size_t never_assigned_job_count() const {
       return never_assigned_job_count_;
@@ -568,7 +567,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
                     // element of |unbound_requests_|.
     std::list<raw_ptr<ConnectJob, CtnExperimental>> unassigned_jobs_;
     RequestQueue unbound_requests_;
-    int active_socket_count_ = 0;  // number of active sockets used by clients
+    size_t active_socket_count_ = 0;  // number of active client sockets
     // A timer for when to start the backup job.
     base::OneShotTimer backup_job_timer_;
 
@@ -611,8 +610,8 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
       std::map<const ClientSocketHandle*, CallbackResultPair>;
 
   TransportClientSocketPool(
-      int max_sockets,
-      int max_sockets_per_group,
+      size_t max_sockets,
+      size_t max_sockets_per_group,
       SocketPoolAdditionalCapacity additional_capacity,
       base::TimeDelta unused_idle_socket_timeout,
       base::TimeDelta used_idle_socket_timeout,
@@ -643,7 +642,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     return group_map_.find(group_id)->second->ConnectJobCount();
   }
 
-  int NumActiveSocketsInGroup(const GroupId& group_id) const {
+  size_t NumActiveSocketsInGroup(const GroupId& group_id) const {
     return group_map_.find(group_id)->second->active_socket_count();
   }
 
@@ -807,19 +806,19 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   PendingCallbackMap pending_callback_map_;
 
   // The total number of idle sockets in the system.
-  int idle_socket_count_ = 0;
+  size_t idle_socket_count_ = 0;
 
   // Number of connecting sockets across all groups.
-  int connecting_socket_count_ = 0;
+  size_t connecting_socket_count_ = 0;
 
   // Number of connected sockets we handed out across all groups.
-  int handed_out_socket_count_ = 0;
+  size_t handed_out_socket_count_ = 0;
 
   // The maximum total number of sockets. See ReachedMaxSocketsLimit.
-  const int max_sockets_;
+  const size_t max_sockets_;
 
   // The maximum number of sockets kept per group.
-  const int max_sockets_per_group_;
+  const size_t max_sockets_per_group_;
 
   // The time to wait until closing idle sockets.
   const base::TimeDelta unused_idle_socket_timeout_;

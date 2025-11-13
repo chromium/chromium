@@ -64,8 +64,8 @@ ClientSocketPool* ClientSocketPoolManagerImpl::GetSocketPool(
   if (it != socket_pools_.end())
     return it->second.get();
 
-  int sockets_per_proxy_chain;
-  int sockets_per_group;
+  size_t sockets_per_proxy_chain;
+  size_t sockets_per_group;
   if (proxy_chain.is_direct()) {
     sockets_per_proxy_chain = max_sockets_per_pool(pool_type_);
     sockets_per_group = max_sockets_per_group(pool_type_);

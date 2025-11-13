@@ -790,7 +790,7 @@ class CaptureGroupIdTransportSocketPool : public TransportClientSocketPool {
   void CloseIdleSockets(const char* net_log_reason_utf8) override {}
   void CloseIdleSocketsInGroup(const ClientSocketPool::GroupId& group_id,
                                const char* net_log_reason_utf8) override {}
-  int IdleSocketCount() const override { return 0; }
+  size_t IdleSocketCount() const override { return 0; }
   size_t IdleSocketCountInGroup(
       const ClientSocketPool::GroupId& group_id) const override {
     return 0;

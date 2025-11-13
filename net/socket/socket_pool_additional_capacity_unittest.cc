@@ -67,8 +67,6 @@ TEST(SocketPoolAdditionalCapacityTest, InvalidCreation) {
       kEmptyPool);
 
   // capacity range
-  EXPECT_EQ(SocketPoolAdditionalCapacity::CreateForTest(0.1, -2, 0.3, 0.4),
-            kEmptyPool);
   EXPECT_EQ(SocketPoolAdditionalCapacity::CreateForTest(0.1, 2000, 0.3, 0.4),
             kEmptyPool);
 
@@ -99,14 +97,6 @@ TEST(SocketPoolAdditionalCapacityTest, NextStateBeforeAllocation) {
       SocketPoolAdditionalCapacity::CreateForTest(0.0, 2, 0.5, 0.0);
 
   // Test out of bounds cases
-  EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateBeforeAllocation(
-                                          SocketPoolState::kUncapped, -2, 2));
-  EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateBeforeAllocation(
-                                          SocketPoolState::kCapped, -2, 2));
-  EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateBeforeAllocation(
-                                          SocketPoolState::kUncapped, 2, -2));
-  EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateBeforeAllocation(
-                                          SocketPoolState::kCapped, 2, -2));
   EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateBeforeAllocation(
                                           SocketPoolState::kUncapped, 5, 2));
   EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateBeforeAllocation(
@@ -139,7 +129,7 @@ TEST(SocketPoolAdditionalCapacityTest, NextStateBeforeAllocation) {
   // a coin toss, but to prevent this from being flakey we run it 1000 times.
   bool did_see_uncapped = false;
   bool did_see_capped = false;
-  for (int i = 0; i < 1000; ++i) {
+  for (size_t i = 0; i < 1000; ++i) {
     if (SocketPoolState::kUncapped == pool_capacity.NextStateBeforeAllocation(
                                           SocketPoolState::kUncapped, 3, 2)) {
       did_see_uncapped = true;
@@ -159,14 +149,6 @@ TEST(SocketPoolAdditionalCapacityTest, NextStateAfterRelease) {
       SocketPoolAdditionalCapacity::CreateForTest(0.0, 2, 0.5, 0.0);
 
   // Test out of bounds cases
-  EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateAfterRelease(
-                                          SocketPoolState::kUncapped, -2, 2));
-  EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateAfterRelease(
-                                          SocketPoolState::kCapped, -2, 2));
-  EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateAfterRelease(
-                                          SocketPoolState::kUncapped, 2, -2));
-  EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateAfterRelease(
-                                          SocketPoolState::kCapped, 2, -2));
   EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateAfterRelease(
                                           SocketPoolState::kUncapped, 5, 2));
   EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateAfterRelease(
@@ -199,7 +181,7 @@ TEST(SocketPoolAdditionalCapacityTest, NextStateAfterRelease) {
   // a coin toss, but to prevent this from being flakey we run it 1000 times.
   bool did_see_uncapped = false;
   bool did_see_capped = false;
-  for (int i = 0; i < 1000; ++i) {
+  for (size_t i = 0; i < 1000; ++i) {
     if (SocketPoolState::kUncapped ==
         pool_capacity.NextStateAfterRelease(SocketPoolState::kCapped, 3, 2)) {
       did_see_uncapped = true;
@@ -260,10 +242,10 @@ TEST(SocketPoolAdditionalCapacityTest,
   // In order to do that we need an easy way to measure distributions.
   // Since we are applying noise, we run a ten thousand variants.
   auto percentage_transition_for_allocation_and_release =
-      [&](int sockets_in_use) -> std::tuple<double, double> {
-    int transition_allocation_count = 0;
-    int transition_release_count = 0;
-    for (int i = 0; i < 10000; ++i) {
+      [&](size_t sockets_in_use) -> std::tuple<double, double> {
+    size_t transition_allocation_count = 0;
+    size_t transition_release_count = 0;
+    for (size_t i = 0; i < 10000; ++i) {
       if (SocketPoolState::kCapped ==
           pool_capacity.NextStateBeforeAllocation(SocketPoolState::kUncapped,
                                                   sockets_in_use, 256)) {
@@ -310,17 +292,17 @@ TEST(SocketPoolAdditionalCapacityTest,
 }
 
 void ValidateRandomizedInputs(double base,
-                              int capacity,
+                              size_t capacity,
                               double minimum,
                               double noise,
                               bool capped,
-                              int sockets_in_use,
-                              int socket_soft_cap) {
+                              size_t sockets_in_use,
+                              size_t socket_soft_cap) {
   SocketPoolAdditionalCapacity pool =
       SocketPoolAdditionalCapacity::CreateForTest(base, capacity, minimum,
                                                   noise);
   // Because there's some randomization here, we want to run these a few times.
-  for (int i = 0; i < 1000; ++i) {
+  for (size_t i = 0; i < 1000; ++i) {
     pool.NextStateBeforeAllocation(
         capped ? SocketPoolState::kCapped : SocketPoolState::kUncapped,
         sockets_in_use, socket_soft_cap);
@@ -331,20 +313,20 @@ void ValidateRandomizedInputs(double base,
 }
 FUZZ_TEST(SocketPoolAdditionalCapacityTest, ValidateRandomizedInputs)
     .WithDomains(fuzztest::Arbitrary<double>(),
-                 fuzztest::Arbitrary<int>(),
+                 fuzztest::Arbitrary<size_t>(),
                  fuzztest::Arbitrary<double>(),
                  fuzztest::Arbitrary<double>(),
                  fuzztest::Arbitrary<bool>(),
-                 fuzztest::Arbitrary<int>(),
-                 fuzztest::Arbitrary<int>())
+                 fuzztest::Arbitrary<size_t>(),
+                 fuzztest::Arbitrary<size_t>())
     .WithSeeds({
         {std::nan(""), 0, std::nan(""), std::nan(""), false, 0, 0},
         {0.0, 0, 0.0, 0.0, false, 0, 0},
         {0.3, 64, 0.1, 0.1, false, 96, 64},
         {0.6, 128, 0.2, 0.2, true, 192, 128},
         {1.0, 256, 1.0, 1.0, true, 320, 256},
-        {1.0, 256, 1.0, 1.0, true, std::numeric_limits<int32_t>::max(),
-         std::numeric_limits<int32_t>::max()},
+        {1.0, 256, 1.0, 1.0, true, std::numeric_limits<uint32_t>::max(),
+         std::numeric_limits<uint32_t>::max()},
     });
 
 }  // namespace

@@ -287,7 +287,7 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
-      int num_sockets,
+      size_t num_sockets,
       bool fail_if_alias_requires_proxy_override,
       CompletionOnceCallback callback,
       const NetLogWithSource& net_log) = 0;
@@ -342,7 +342,7 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
                                        const char* net_log_reason_utf8) = 0;
 
   // The total number of idle sockets in the pool.
-  virtual int IdleSocketCount() const = 0;
+  virtual size_t IdleSocketCount() const = 0;
 
   // The total number of idle sockets in a connection group.
   virtual size_t IdleSocketCountInGroup(const GroupId& group_id) const = 0;

@@ -148,11 +148,11 @@ PrefService* ApplicationContext::GetLocalState() {
 
     sessions::SessionIdGenerator::GetInstance()->Init(local_state_.get());
 
-    int max_normal_socket_pool_count =
+    size_t max_normal_socket_pool_count =
         net::ClientSocketPoolManager::max_sockets_per_group(
             net::HttpNetworkSession::NORMAL_SOCKET_POOL);
-    int socket_count = std::max<int>(net::kDefaultMaxSocketsPerProxyChain,
-                                     max_normal_socket_pool_count);
+    size_t socket_count = std::max<size_t>(net::kDefaultMaxSocketsPerProxyChain,
+                                           max_normal_socket_pool_count);
     net::ClientSocketPoolManager::set_max_sockets_per_proxy_chain(
         net::HttpNetworkSession::NORMAL_SOCKET_POOL, socket_count);
   }

@@ -520,7 +520,7 @@ class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
       const ClientSocketPool::GroupId& group_id,
       scoped_refptr<ClientSocketPool::SocketParams> socket_params,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
-      int num_sockets,
+      size_t num_sockets,
       bool fail_if_alias_requires_proxy_override,
       CompletionOnceCallback callback,
       const NetLogWithSource& net_log) override {
@@ -542,7 +542,7 @@ class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
   void CloseIdleSockets(const char* net_log_reason_utf8) override {
     ADD_FAILURE();
   }
-  int IdleSocketCount() const override {
+  size_t IdleSocketCount() const override {
     ADD_FAILURE();
     return 0;
   }

@@ -718,7 +718,7 @@ void ApplicationContextImpl::CreateLocalState() {
 
   net::ClientSocketPoolManager::set_max_sockets_per_proxy_chain(
       net::HttpNetworkSession::NORMAL_SOCKET_POOL,
-      std::max(std::min<int>(net::kDefaultMaxSocketsPerProxyChain, 99),
+      std::max(std::min<size_t>(net::kDefaultMaxSocketsPerProxyChain, 99u),
                net::ClientSocketPoolManager::max_sockets_per_group(
                    net::HttpNetworkSession::NORMAL_SOCKET_POOL)));
 

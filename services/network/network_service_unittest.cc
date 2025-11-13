@@ -1040,7 +1040,7 @@ TEST_F(NetworkServiceTest, AuthAndroidNegotiateAccountType) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-static int GetGlobalMaxConnectionsPerProxyChain() {
+static size_t GetGlobalMaxConnectionsPerProxyChain() {
   return net::ClientSocketPoolManager::max_sockets_per_proxy_chain(
       net::HttpNetworkSession::NORMAL_SOCKET_POOL);
 }
@@ -1048,9 +1048,9 @@ static int GetGlobalMaxConnectionsPerProxyChain() {
 // Tests that NetworkService::SetMaxConnectionsPerProxyChain() (1) modifies
 // globals in net::ClientSocketPoolManager (2) saturates out of bound values.
 TEST_F(NetworkServiceTest, SetMaxConnectionsPerProxyChain) {
-  const int kDefault = net::kDefaultMaxSocketsPerProxyChain;
-  const int kMin = 6;
-  const int kMax = 99;
+  const size_t kDefault = net::kDefaultMaxSocketsPerProxyChain;
+  const size_t kMin = 6;
+  const size_t kMax = 99;
 
   // Starts off at default value.
   EXPECT_EQ(net::kDefaultMaxSocketsPerProxyChain,
@@ -1066,11 +1066,7 @@ TEST_F(NetworkServiceTest, SetMaxConnectionsPerProxyChain) {
 
   // Anything in between kMin and kMax should be set exactly.
   service()->SetMaxConnectionsPerProxyChain(58);
-  EXPECT_EQ(58, GetGlobalMaxConnectionsPerProxyChain());
-
-  // Negative values select the default.
-  service()->SetMaxConnectionsPerProxyChain(-2);
-  EXPECT_EQ(kDefault, GetGlobalMaxConnectionsPerProxyChain());
+  EXPECT_EQ(58u, GetGlobalMaxConnectionsPerProxyChain());
 
   // Restore the default value to minize sideffects.
   service()->SetMaxConnectionsPerProxyChain(kDefault);

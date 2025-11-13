@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
@@ -833,8 +834,9 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
 
   int max_connections_per_proxy =
       local_state_->GetInteger(prefs::kMaxConnectionsPerProxy);
-  if (max_connections_per_proxy != -1) {
-    network_service->SetMaxConnectionsPerProxyChain(max_connections_per_proxy);
+  if (max_connections_per_proxy >= 0) {
+    network_service->SetMaxConnectionsPerProxyChain(
+        base::saturated_cast<uint32_t>(max_connections_per_proxy));
   }
 
   network_service_network_context_.reset();

@@ -21,10 +21,10 @@ enum class SocketPoolAdditionalCapacityError {
   kInvalidCapacity = 1,
   kInvalidMinimum = 2,
   kInvalidNoise = 3,
-  kSocketSoftCapInvalid = 4,
-  kSocketAllocationUnderflow = 5,
-  kSocketAllocationOverflow = 6,
-  kMaxValue = kSocketAllocationOverflow,
+  kInvalidSocketSoftCap = 4,
+  kInvalidSocketInUse = 5,
+  kInvalidSocketAllocation = 6,
+  kMaxValue = kInvalidSocketAllocation,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SocketPoolAdditionalCapacityError)
 
@@ -44,7 +44,7 @@ SocketPoolAdditionalCapacity SocketPoolAdditionalCapacity::Create() {
 // static
 SocketPoolAdditionalCapacity SocketPoolAdditionalCapacity::CreateForTest(
     double base,
-    int capacity,
+    size_t capacity,
     double minimum,
     double noise) {
   return SocketPoolAdditionalCapacity(base, capacity, minimum, noise);
@@ -52,8 +52,8 @@ SocketPoolAdditionalCapacity SocketPoolAdditionalCapacity::CreateForTest(
 
 SocketPoolState SocketPoolAdditionalCapacity::NextStateBeforeAllocation(
     SocketPoolState current_state,
-    int sockets_in_use,
-    int socket_soft_cap) const {
+    size_t sockets_in_use,
+    size_t socket_soft_cap) const {
   SocketPoolState next_state = NextStateBeforeAllocationImpl(
       current_state, sockets_in_use, socket_soft_cap);
   LogStateTransition(SocketPoolAction::kAllocation, current_state, next_state,
@@ -63,8 +63,8 @@ SocketPoolState SocketPoolAdditionalCapacity::NextStateBeforeAllocation(
 
 SocketPoolState SocketPoolAdditionalCapacity::NextStateAfterRelease(
     SocketPoolState current_state,
-    int sockets_in_use,
-    int socket_soft_cap) const {
+    size_t sockets_in_use,
+    size_t socket_soft_cap) const {
   SocketPoolState next_state =
       NextStateAfterReleaseImpl(current_state, sockets_in_use, socket_soft_cap);
   LogStateTransition(SocketPoolAction::kRelease, current_state, next_state,
@@ -77,7 +77,7 @@ void SocketPoolAdditionalCapacity::LogStateTransition(
     SocketPoolAction action,
     SocketPoolState current_state,
     SocketPoolState next_state,
-    int sockets_in_use) {
+    size_t sockets_in_use) {
   base::UmaHistogramCounts1000(
       base::StringPrintf(
           "Net.TcpSocketPoolLimitRandomization.Transition.%s.%sTo%s",
@@ -88,7 +88,7 @@ void SocketPoolAdditionalCapacity::LogStateTransition(
 }
 
 SocketPoolAdditionalCapacity::SocketPoolAdditionalCapacity(double base,
-                                                           int capacity,
+                                                           size_t capacity,
                                                            double minimum,
                                                            double noise)
     : base_(base), capacity_(capacity), minimum_(minimum), noise_(noise) {
@@ -98,7 +98,7 @@ SocketPoolAdditionalCapacity::SocketPoolAdditionalCapacity(double base,
         kErrorHistogramName, SocketPoolAdditionalCapacityError::kInvalidBase);
     is_invalid = true;
   }
-  if (capacity_ < 0 || capacity_ > 256) {
+  if (capacity_ > 256) {
     base::UmaHistogramEnumeration(
         kErrorHistogramName,
         SocketPoolAdditionalCapacityError::kInvalidCapacity);
@@ -127,8 +127,8 @@ SocketPoolAdditionalCapacity::SocketPoolAdditionalCapacity(double base,
 
 SocketPoolState SocketPoolAdditionalCapacity::NextStateBeforeAllocationImpl(
     SocketPoolState current_state,
-    int sockets_in_use,
-    int socket_soft_cap) const {
+    size_t sockets_in_use,
+    size_t socket_soft_cap) const {
   std::optional<SocketPoolState> common_state =
       NextStateCommonImpl(sockets_in_use, socket_soft_cap);
   if (common_state) {
@@ -152,8 +152,8 @@ SocketPoolState SocketPoolAdditionalCapacity::NextStateBeforeAllocationImpl(
 
 SocketPoolState SocketPoolAdditionalCapacity::NextStateAfterReleaseImpl(
     SocketPoolState current_state,
-    int sockets_in_use,
-    int socket_soft_cap) const {
+    size_t sockets_in_use,
+    size_t socket_soft_cap) const {
   std::optional<SocketPoolState> common_state =
       NextStateCommonImpl(sockets_in_use, socket_soft_cap);
   if (common_state) {
@@ -176,43 +176,32 @@ SocketPoolState SocketPoolAdditionalCapacity::NextStateAfterReleaseImpl(
 }
 
 std::optional<SocketPoolState>
-SocketPoolAdditionalCapacity::NextStateCommonImpl(int sockets_in_use,
-                                                  int socket_soft_cap) const {
+SocketPoolAdditionalCapacity::NextStateCommonImpl(
+    size_t sockets_in_use,
+    size_t socket_soft_cap) const {
   // We don't want to throw in this code, so for range errors we simply log and
   // cap the pool to prevent overallocation of sockets.
-  if (socket_soft_cap < 0) {
+  if (!base::IsValueInRangeForNumericType<uint16_t>(socket_soft_cap)) {
     base::UmaHistogramEnumeration(
         kErrorHistogramName,
-        SocketPoolAdditionalCapacityError::kSocketSoftCapInvalid);
+        SocketPoolAdditionalCapacityError::kInvalidSocketSoftCap);
     return SocketPoolState::kCapped;
   }
-  if (!base::IsValueInRangeForNumericType<int16_t>(socket_soft_cap)) {
+  if (!base::IsValueInRangeForNumericType<uint16_t>(sockets_in_use)) {
     base::UmaHistogramEnumeration(
         kErrorHistogramName,
-        SocketPoolAdditionalCapacityError::kSocketSoftCapInvalid);
-    return SocketPoolState::kCapped;
-  }
-  if (sockets_in_use < 0) {
-    base::UmaHistogramEnumeration(
-        kErrorHistogramName,
-        SocketPoolAdditionalCapacityError::kSocketAllocationUnderflow);
-    return SocketPoolState::kCapped;
-  }
-  if (!base::IsValueInRangeForNumericType<int16_t>(sockets_in_use)) {
-    base::UmaHistogramEnumeration(
-        kErrorHistogramName,
-        SocketPoolAdditionalCapacityError::kSocketAllocationOverflow);
+        SocketPoolAdditionalCapacityError::kInvalidSocketInUse);
     return SocketPoolState::kCapped;
   }
 
-  // At this point we know all three numbers are below an int16_t, so there's no
-  // risk doing math with them.
+  // At this point we know all three numbers are below an uint16_t, so there's
+  // no risk doing math with them.
 
   // We cannot allow more sockets than the maximum allowed to be in use.
   if (sockets_in_use > (socket_soft_cap + capacity_)) {
     base::UmaHistogramEnumeration(
         kErrorHistogramName,
-        SocketPoolAdditionalCapacityError::kSocketAllocationOverflow);
+        SocketPoolAdditionalCapacityError::kInvalidSocketAllocation);
     return SocketPoolState::kCapped;
   }
 
@@ -232,17 +221,15 @@ SocketPoolAdditionalCapacity::NextStateCommonImpl(int sockets_in_use,
 
 bool SocketPoolAdditionalCapacity::ShouldTransitionState(
     SocketPoolAction action,
-    int actions_taken) const {
+    size_t actions_taken) const {
   // We need to enforce bounds before any math is done here.
   CHECK_GE(base_, 0.0);
   CHECK_LE(base_, 1.0);
-  CHECK_GT(capacity_, 0);
-  CHECK_LE(capacity_, 256);
+  CHECK_LE(capacity_, 256u);
   CHECK_GE(minimum_, 0.0);
   CHECK_LE(minimum_, 1.0);
   CHECK_GE(noise_, 0.0);
   CHECK_LE(noise_, 1.0);
-  CHECK_GE(actions_taken, 0);
   CHECK_LE(actions_taken, capacity_);
 
   // First, we determine the percentage of the actions remaining.
