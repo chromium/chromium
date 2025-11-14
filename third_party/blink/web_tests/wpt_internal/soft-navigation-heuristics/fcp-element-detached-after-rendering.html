@@ -23,8 +23,8 @@
       });
     }, {once: true});
 
-    const softNavPromise = SoftNavigationTestHelper.getPerformanceEntries(
-      /*type=*/"soft-navigation", /*min_num_entries=*/1);
+    const softNavPromise =
+        SoftNavigationTestHelper.getPerformanceEntries("soft-navigation");
 
     if (test_driver) {
       test_driver.click(navigateButton);

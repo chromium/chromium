@@ -51,8 +51,8 @@
 
     // Wait for the first soft navigation, which is initiated when the
     // `navigateForward` is clicked during the load event.
-    let softNavPromise = SoftNavigationTestHelper.getPerformanceEntries(
-        /*type=*/ 'soft-navigation', /*min_num_entries=*/ 1);
+    let softNavPromise =
+        SoftNavigationTestHelper.getPerformanceEntries('soft-navigation');
     let entries = await helper.withTimeoutMessage(
         softNavPromise, 'Soft navigation entry never arrived.', 3000);
     assert_equals(entries.length, 1, 'Expected exactly one soft navigation.');
@@ -61,8 +61,8 @@
         'Expected URL to end with /forward/ but got ' + entries[0].name);
 
     // Now click back. This simulates a browser-initiated back navigation.
-    softNavPromise = SoftNavigationTestHelper.getPerformanceEntries(
-        /*type=*/ 'soft-navigation', /*min_num_entries=*/ 1);
+    softNavPromise =
+        SoftNavigationTestHelper.getPerformanceEntries('soft-navigation');
     if (test_driver) {
       test_driver.click(navigateBack);
     }
