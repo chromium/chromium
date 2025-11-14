@@ -7,6 +7,7 @@
 
 #include "base/containers/queue.h"
 #include "crypto/unexportable_key.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace unexportable_keys {
 
@@ -14,18 +15,37 @@ namespace unexportable_keys {
 // `MockUnexportableKey`s while it is in scope.
 // The mock provider will return mock keys previously added via
 // `AddNextGeneratedKey()` in the queue order.
-class ScopedMockUnexportableKeyProvider {
+class ScopedMockUnexportableKeyProvider
+    : public crypto::UnexportableKeyProvider {
  public:
   ScopedMockUnexportableKeyProvider();
   ScopedMockUnexportableKeyProvider(const ScopedMockUnexportableKeyProvider&) =
       delete;
   ScopedMockUnexportableKeyProvider& operator=(
       const ScopedMockUnexportableKeyProvider&) = delete;
-  ~ScopedMockUnexportableKeyProvider();
+  ~ScopedMockUnexportableKeyProvider() override;
+
+  // crypto::UnexportableKeyProvider:
+  MOCK_METHOD(std::optional<crypto::SignatureVerifier::SignatureAlgorithm>,
+              SelectAlgorithm,
+              (base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+                   acceptable_algorithms),
+              (override));
+  MOCK_METHOD(std::unique_ptr<crypto::UnexportableSigningKey>,
+              GenerateSigningKeySlowly,
+              (base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+                   acceptable_algorithms),
+              (override));
+  MOCK_METHOD(std::unique_ptr<crypto::UnexportableSigningKey>,
+              FromWrappedSigningKeySlowly,
+              (base::span<const uint8_t> wrapped_key),
+              (override));
+  MOCK_METHOD(bool,
+              DeleteSigningKeySlowly,
+              (base::span<const uint8_t> wrapped_key),
+              (override));
 
   void AddNextGeneratedKey(std::unique_ptr<crypto::UnexportableSigningKey> key);
-
-  std::unique_ptr<crypto::UnexportableSigningKey> GetNextGeneratedKey();
 
  private:
   base::queue<std::unique_ptr<crypto::UnexportableSigningKey>>
