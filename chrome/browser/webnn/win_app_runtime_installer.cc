@@ -19,6 +19,8 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/post_async_results.h"
 #include "base/win/scoped_hstring.h"
@@ -220,8 +222,13 @@ void OnInstallationStarted(
       .Done(base::BindOnce(&OnInstallationCompleted));
 }
 
-// Starts the installation using the IAppInstallManager API.
-void StartInstallation() {
+// Activates and returns the IAppInstallManager instance.
+Microsoft::WRL::ComPtr<abi_install::IAppInstallManager>
+ActivateAppInstallManager() {
+  // `RoActivateInstance()` below loads Microsoft Store Install Service dlls.
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
   // `app_install_manager` must remain valid throughout the entire asynchronous
   // installation process, otherwise WinRT may release related resources
   // prematurely, causing the callbacks not to be triggered.
@@ -233,12 +240,21 @@ void StartInstallation() {
       &app_install_manager);
   if (FAILED(hr)) {
     RecordInstallState(WinAppRuntimeInstallStateUma::kActivationFailure);
+    return nullptr;
+  }
+  return app_install_manager;
+}
+
+// Starts the installation using the IAppInstallManager API.
+void StartInstallation(Microsoft::WRL::ComPtr<abi_install::IAppInstallManager>
+                           app_install_manager) {
+  if (!app_install_manager) {
     return;
   }
 
   Microsoft::WRL::ComPtr<abi_install::IAppInstallManager3>
       app_install_manager_3;
-  hr = app_install_manager.As(&app_install_manager_3);
+  HRESULT hr = app_install_manager.As(&app_install_manager_3);
   CHECK_EQ(hr, S_OK);
 
   auto catalog_id = base::win::ScopedHString::Create(std::wstring_view());
@@ -313,7 +329,12 @@ void EnsureInstallation() {
     return;
   }
 
-  StartInstallation();
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&ActivateAppInstallManager),
+      base::BindOnce(&StartInstallation));
 }
 
 }  // namespace
