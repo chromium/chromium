@@ -415,6 +415,14 @@ export class MockCdpNetworkEvents {
     });
   }
 
+  loadingFinished() {
+    this.cdpClient.emit('Network.loadingFinished', {
+      requestId: this.requestId,
+      timestamp: 279179.745291,
+      encodedDataLength: 999,
+    });
+  }
+
   setJsonEvent(json: string | Record<string, unknown>, _normalize = false) {
     const event = json instanceof Object ? json : JSON.parse(json);
 

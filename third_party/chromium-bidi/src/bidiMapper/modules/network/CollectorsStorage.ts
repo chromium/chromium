@@ -176,7 +176,7 @@ export class CollectorsStorage {
 
     if (
       dataType === Network.DataType.Response &&
-      request.bytesReceived > collector.maxEncodedDataSize
+      request.encodedResponseBodySize > collector.maxEncodedDataSize
     ) {
       this.#logger?.(
         LogType.debug,

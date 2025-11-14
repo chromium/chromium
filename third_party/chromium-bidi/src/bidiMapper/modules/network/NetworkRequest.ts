@@ -101,7 +101,16 @@ export class NetworkRequest {
     info?: Protocol.Network.Response;
     extraInfo?: Protocol.Network.ResponseReceivedExtraInfoEvent;
     paused?: Protocol.Fetch.RequestPausedEvent;
-  } = {};
+    loadingFinished?: Protocol.Network.LoadingFinishedEvent;
+    loadingFailed?: Protocol.Network.LoadingFailedEvent;
+    // Tracked decoded data size while the response is loading.
+    decodedSize: number;
+    // Tracked encoded data size while the response is loading.
+    encodedSize: number;
+  } = {
+    decodedSize: 0,
+    encodedSize: 0,
+  };
 
   #eventManager: EventManager;
   #networkStorage: NetworkStorage;
@@ -473,6 +482,8 @@ export class NetworkRequest {
     // TODO: use event.redirectResponse;
     // Temporary workaround to emit ResponseCompleted event for redirects
     this.#response.hasExtraInfo = false;
+    this.#response.decodedSize = 0;
+    this.#response.encodedSize = 0;
     this.#response.info = event.redirectResponse!;
     this.#emitEventsIfReady({
       wasRedirected: true,
@@ -482,13 +493,12 @@ export class NetworkRequest {
   #emitEventsIfReady(
     options: {
       wasRedirected?: boolean;
-      hasFailed?: boolean;
     } = {},
   ) {
     const requestExtraInfoCompleted =
       // Flush redirects
       options.wasRedirected ||
-      options.hasFailed ||
+      Boolean(this.#response.loadingFailed) ||
       this.#isDataUrl() ||
       Boolean(this.#request.extraInfo) ||
       // Requests from cache don't have extra info
@@ -537,10 +547,15 @@ export class NetworkRequest {
       !responseInterceptionExpected ||
       (responseInterceptionExpected && Boolean(this.#response.paused));
 
+    const loadingFinished =
+      Boolean(this.#response.loadingFailed) ||
+      Boolean(this.#response.loadingFinished);
+
     if (
       Boolean(this.#response.info) &&
       responseExtraInfoCompleted &&
-      responseInterceptionCompleted
+      responseInterceptionCompleted &&
+      (loadingFinished || options.wasRedirected)
     ) {
       this.#emitEvent(this.#getResponseReceivedEvent.bind(this));
       this.#networkStorage.disposeRequest(this.id);
@@ -590,10 +605,19 @@ export class NetworkRequest {
     this.#emitEventsIfReady();
   }
 
+  onLoadingFinishedEvent(event: Protocol.Network.LoadingFinishedEvent) {
+    this.#response.loadingFinished = event;
+    this.#emitEventsIfReady();
+  }
+
+  onDataReceivedEvent(event: Protocol.Network.DataReceivedEvent) {
+    this.#response.decodedSize += event.dataLength;
+    this.#response.encodedSize += event.encodedDataLength;
+  }
+
   onLoadingFailedEvent(event: Protocol.Network.LoadingFailedEvent) {
-    this.#emitEventsIfReady({
-      hasFailed: true,
-    });
+    this.#response.loadingFailed = event;
+    this.#emitEventsIfReady();
 
     this.#emitEvent(() => {
       return {
@@ -969,13 +993,12 @@ export class NetworkRequest {
         this.#servedFromCache,
       headers: this.#responseOverrides?.headers ?? headers,
       mimeType: this.#response.info?.mimeType || '',
-      bytesReceived: this.bytesReceived,
+      // TODO: this should be the size for the entire HTTP response.
+      bytesReceived: this.encodedResponseBodySize,
       headersSize: computeHeadersSize(headers),
-      // TODO: consider removing from spec.
-      bodySize: 0,
+      bodySize: this.encodedResponseBodySize,
       content: {
-        // TODO: consider removing from spec.
-        size: 0,
+        size: this.#response.decodedSize ?? 0,
       },
       ...(authChallenges ? {authChallenges} : {}),
     };
@@ -986,8 +1009,13 @@ export class NetworkRequest {
     } as Network.ResponseData;
   }
 
-  get bytesReceived() {
-    return this.#response.info?.encodedDataLength || 0;
+  get encodedResponseBodySize() {
+    return (
+      this.#response.loadingFinished?.encodedDataLength ??
+      this.#response.info?.encodedDataLength ??
+      this.#response.encodedSize ??
+      0
+    );
   }
 
   #getRequestData(): Network.RequestData {

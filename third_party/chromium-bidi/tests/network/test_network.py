@@ -269,9 +269,9 @@ async def test_network_response_completed_event_emitted(
                 "mimeType": AnyOr("", "text/html"),
                 "bytesReceived": ANY_NUMBER,
                 "headersSize": headers_size,
-                "bodySize": 0,
+                "bodySize": ANY_NUMBER,
                 "content": {
-                    "size": 0
+                    "size": ANY_NUMBER
                 }
             }
         }
@@ -326,7 +326,7 @@ async def test_network_response_started_event_emitted(websocket, context_id,
                 "mimeType": AnyOr("", "text/html"),
                 "bytesReceived": ANY_NUMBER,
                 "headersSize": headers_size,
-                "bodySize": 0,
+                "bodySize": ANY_NUMBER,
                 "content": {
                     "size": 0
                 }

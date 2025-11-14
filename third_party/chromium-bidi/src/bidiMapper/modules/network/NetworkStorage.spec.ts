@@ -413,6 +413,7 @@ describe('NetworkStorage', () => {
 
       request.requestWillBeSent();
       request.responseReceived();
+      request.loadingFinished();
       const event = await getEvent('network.responseCompleted');
       expect(event).to.exist;
     });
@@ -438,6 +439,7 @@ describe('NetworkStorage', () => {
       request.requestWillBeSentExtraInfo();
       request.responseReceived();
       request.responseReceivedExtraInfo();
+      request.loadingFinished();
 
       const event = await getEvent('network.responseCompleted');
 
@@ -466,6 +468,7 @@ describe('NetworkStorage', () => {
       });
       request.responseReceived();
       request.responseReceivedExtraInfo();
+      request.loadingFinished();
 
       const event = await getEvent('network.responseCompleted');
 
