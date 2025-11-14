@@ -323,10 +323,11 @@ BASE_FEATURE_PARAM(int,
 BASE_FEATURE(kAutofillAllowFillingModifiedInitialValues,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Guards the refactoring to allow showing Autofill and Password suggestions in
-// the same surface instead of being mutually exclusive.
+// TODO(crbug.com/460645840): Remove this feature flag once it is no longer
+// needed. Guards the refactoring to allow showing Autofill and Password
+// suggestions in the same surface instead of being mutually exclusive.
 BASE_FEATURE(kAutofillAndPasswordsInSameSurface,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // If enabled, on Android desktop, the Autofill keyboard accessory will have a

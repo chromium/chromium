@@ -2374,6 +2374,11 @@ TEST_F(PasswordAutofillAgentTest, OnChangeLoggingState_Deactivated) {
 // credential suggestion popup, and the user can autocomplete the password by
 // selecting the credential from the popup.
 TEST_F(PasswordAutofillAgentTest, ClickAndSelect) {
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
   FocusElement(kUsernameName);
 
   // SimulateElementClick() is called so that a user gesture is actually made
@@ -2402,6 +2407,11 @@ TEST_F(PasswordAutofillAgentTest, ClickAndSelect) {
 // TODO(b:322923603): Clean up when the feature is launched.
 TEST_F(PasswordAutofillAgentTest, SuggestionsPrefixMatchedByTypedUsername) {
   ConfigurePasswordSuggestionFiltering(/*enabled=*/false);
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
 
   ClearUsernameAndPasswordFieldValues();
   // Make sure there's password data to fill in the field.
@@ -2421,6 +2431,11 @@ TEST_F(PasswordAutofillAgentTest, SuggestionsPrefixMatchedByTypedUsername) {
 TEST_F(PasswordAutofillAgentTest,
        SuggestionsNotPrefixMatchedWhenFeatureEnabled) {
   ConfigurePasswordSuggestionFiltering(/*enabled=*/true);
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
 
   ClearUsernameAndPasswordFieldValues();
   // Make sure there's password data to fill in the field.
@@ -2439,6 +2454,11 @@ TEST_F(PasswordAutofillAgentTest,
 // fallback even when the triggering field that is classified as password.
 TEST_F(PasswordAutofillAgentTest,
        NoPopupOnPasswordFieldWhereAddressOrPaymentsManualFallbackWasSelected) {
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
   SimulateOnFillPasswordForm(fill_data_);
   // This call is necessary to setup the autofill agent appropriate for the
   // user selection; simulates the menu actually popping up.
@@ -2475,6 +2495,11 @@ TEST_F(
 
 TEST_F(PasswordAutofillAgentTest,
        PopupOnPasswordFieldWithoutSuggestionsWhenEligibleForPromo) {
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
   ClearUsernameAndPasswordFieldValues();
   UpdateRendererIDsInFillData();
 
@@ -2492,6 +2517,11 @@ TEST_F(PasswordAutofillAgentTest,
 // load and the element is autofilled, when the user clicks on an element that
 // has a matching username.
 TEST_F(PasswordAutofillAgentTest, CredentialsOnClick) {
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
   // Simulate the browser sending back the login info.
   SimulateOnFillPasswordForm(fill_data_);
 
@@ -2523,6 +2553,11 @@ TEST_F(PasswordAutofillAgentTest, CredentialsOnClick) {
 // Tests that there is an autosuggestion from the password manager when the
 // user clicks on the password field.
 TEST_F(PasswordAutofillAgentTest, NoCredentialsOnPasswordClick) {
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
   SimulateClosingKeyboardReplacingSurfaceIfAndroid(kUsernameName);
   // Simulate the browser sending back the login info.
   SimulateOnFillPasswordForm(fill_data_);
@@ -3101,6 +3136,11 @@ TEST_F(PasswordAutofillAgentTest, FillPasswordSuggestionById_NoFocusedElement) {
 }
 
 TEST_F(PasswordAutofillAgentTest, ShowPopupOnEmptyPasswordField) {
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
   // Load a form with no username and update test data.
   LoadHTML(kVisibleFormWithNoUsernameHTML);
   UpdateUrlForHTML(kVisibleFormWithNoUsernameHTML);
@@ -3126,6 +3166,11 @@ TEST_F(PasswordAutofillAgentTest, ShowPopupOnEmptyPasswordField) {
 }
 
 TEST_F(PasswordAutofillAgentTest, ShowPopupOnAutofilledPasswordField) {
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
   // Load a form with no username and update test data.
   LoadHTML(kVisibleFormWithNoUsernameHTML);
   UpdateUrlForHTML(kVisibleFormWithNoUsernameHTML);
@@ -3350,6 +3395,11 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationSupersedesAutofill) {
 // be displayed when available after the field is focused again.
 // Regression test for crbug/1495325.
 TEST_F(PasswordAutofillAgentTest, CanShowSuggestionsAfterManualGeneration) {
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
   // Simulate receiving credentials for filling from the browser.
   SimulateOnFillPasswordForm(fill_data_);
 
@@ -3410,6 +3460,11 @@ TEST_F(PasswordAutofillAgentTest, FillSuggestionPasswordChangeForms) {
 // credential suggestion popup on a change password form.
 TEST_F(PasswordAutofillAgentTest,
        SuggestionsOnUsernameFieldOfChangePasswordForm) {
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
   LoadHTML(kPasswordChangeFormHTML);
   UpdateUrlForHTML(kPasswordChangeFormHTML);
   UpdateUsernameAndPasswordElements();
@@ -3427,6 +3482,11 @@ TEST_F(PasswordAutofillAgentTest,
 // credential suggestion popup on a change password form.
 TEST_F(PasswordAutofillAgentTest,
        SuggestionsOnPasswordFieldOfChangePasswordForm) {
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
   LoadHTML(kPasswordChangeFormHTML);
   UpdateUrlForHTML(kPasswordChangeFormHTML);
   UpdateUsernameAndPasswordElements();
@@ -3952,6 +4012,11 @@ TEST_F(PasswordAutofillAgentTest, RememberChosenUsernamePassword) {
 // Tests that we can correctly suggest to autofill two forms without username
 // fields.
 TEST_F(PasswordAutofillAgentTest, ShowSuggestionForNonUsernameFieldForms) {
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
   LoadHTML(kTwoNoUsernameFormsHTML);
   fill_data_.preferred_login.username_value.clear();
   UpdateUrlForHTML(kTwoNoUsernameFormsHTML);
@@ -4046,6 +4111,11 @@ TEST_F(PasswordAutofillAgentTest,
 // Tests that a suggestion dropdown is shown on a password field even if a
 // username field is present.
 TEST_F(PasswordAutofillAgentTest, SuggestPasswordFieldSignInForm) {
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
   SimulateClosingKeyboardReplacingSurfaceIfAndroid(kUsernameName);
   // Simulate the browser sending back the login info.
   SimulateOnFillPasswordForm(fill_data_);
@@ -4065,6 +4135,11 @@ TEST_F(PasswordAutofillAgentTest, SuggestPasswordFieldSignInForm) {
 // Tests that filling is suggested in a form with read-only username and that
 // username field index is passed to the driver.
 TEST_F(PasswordAutofillAgentTest, SuggestPasswordWhenUsernameFieldDisabled) {
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
   SimulateClosingKeyboardReplacingSurfaceIfAndroid(kPasswordName);
   // Simulate that the username was pre-filled by website and the username field
   // is readonly.
@@ -4105,6 +4180,11 @@ TEST_F(PasswordAutofillAgentTest, SuggestPasswordWhenUsernameFieldDisabled) {
 // user chose one of the fields to autofill, a suggestion dropdown will be shown
 // only on this field.
 TEST_F(PasswordAutofillAgentTest, SuggestMultiplePasswordFields) {
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
   LoadHTML(kPasswordChangeFormHTML);
   UpdateUrlForHTML(kPasswordChangeFormHTML);
   UpdateUsernameAndPasswordElements();
@@ -4395,6 +4475,11 @@ TEST_F(PasswordAutofillAgentTest,
 }
 
 TEST_F(PasswordAutofillAgentTest, SuggestLatestCredentials) {
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
   password_autofill_agent_->ApplyFillDataOnParsingCompletion(fill_data_);
   ASSERT_TRUE(SimulateElementClick(kPasswordName));
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions)
@@ -4615,6 +4700,11 @@ TEST_F(PasswordAutofillAgentTest, SingleUsernameClearPreview) {
 // Fill on account select for credentials with empty usernames:
 // Do not refill usernames if non-empty username is already selected.
 TEST_F(PasswordAutofillAgentTest, NoUsernameCredential) {
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
   const char kPasswordForEmptyUsernameCredential[] = "empty";
   const char16_t kPasswordForEmptyUsernameCredential16[] = u"empty";
 
@@ -4995,6 +5085,11 @@ TEST_F(PasswordAutofillAgentTest,
        ShowSuggestionsOnParsingAutofocusedPasswordForm) {
   scoped_feature_list_.InitAndEnableFeature(
       password_manager::features::kShowSuggestionsOnAutofocus);
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
 
 #if BUILDFLAG(IS_ANDROID)
   // The method above leaves the field focused, which is not needed for this
@@ -5023,6 +5118,11 @@ TEST_F(PasswordAutofillAgentTest,
        ShowSuggestionsOnParsingAutofocusedWebAuthnForm) {
   scoped_feature_list_.InitAndEnableFeature(
       password_manager::features::kShowSuggestionsOnAutofocus);
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
   LoadHTML(kWebAutnFieldHTML);
   UpdateUsernameAndPasswordElements();
   UpdateRendererIDsInFillData();
@@ -5049,6 +5149,11 @@ TEST_F(PasswordAutofillAgentTest,
        DoNotShowSuggestionsOnParsingFocusedFormSecondTime) {
   scoped_feature_list_.InitAndEnableFeature(
       password_manager::features::kShowSuggestionsOnAutofocus);
+  // TODO(crbug.com/460655995): Adapt test to a world where
+  // kAutofillAndPasswordsInSameSurface is enabled.
+  base::test::ScopedFeatureList test_feature_list;
+  test_feature_list.InitAndDisableFeature(
+      features::kAutofillAndPasswordsInSameSurface);
 
 #if BUILDFLAG(IS_ANDROID)
   // The method above leaves the field focused, which is not needed for this
