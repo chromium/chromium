@@ -338,12 +338,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     didFinishPickingMediaWithInfo:(NSDictionary<NSString*, id>*)info {
   [picker dismissViewControllerAnimated:YES completion:nil];
   UIImage* image = info[UIImagePickerControllerOriginalImage];
-  NSURL* imageURL = info[UIImagePickerControllerImageURL];
-  if (!image || !imageURL) {
+  if (!image) {
     return;
   }
   NSItemProvider* provider = [[NSItemProvider alloc] initWithObject:image];
-  [_mediator processImageItemProvider:provider assetID:imageURL.absoluteString];
+  [_mediator processImageItemProvider:provider assetID:nil];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController*)picker {

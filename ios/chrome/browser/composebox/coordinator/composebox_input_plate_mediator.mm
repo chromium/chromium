@@ -770,6 +770,9 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 - (BOOL)assetAlreadyLoaded:(NSString*)assetID {
+  if (!assetID) {
+    return NO;
+  }
   for (ComposeboxInputItem* item in _items) {
     if ([item.assetID isEqualToString:assetID]) {
       return YES;
