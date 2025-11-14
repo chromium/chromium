@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [11.0.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v11.0.0...chromium-bidi-v11.0.1) (2025-11-14)
+
+
+### Bug Fixes
+
+* correctly report data sizes ([#3836](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3836)) ([154abaa](https://github.com/GoogleChromeLabs/chromium-bidi/commit/154abaaec7e35dc86bcc9dcfd9384d58a65cca08))
+
 ## [11.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.6.1...chromium-bidi-v11.0.0) (2025-11-07)
 
 
