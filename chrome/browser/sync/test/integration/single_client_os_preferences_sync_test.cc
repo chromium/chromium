@@ -31,6 +31,11 @@ class SingleClientOsPreferencesSyncTest : public SyncTest {
   SingleClientOsPreferencesSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientOsPreferencesSyncTest() override = default;
 
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
+
  protected:
   static std::string ConvertToSyncedPrefValue(const base::Value& value) {
     return base::WriteJson(value).value();
