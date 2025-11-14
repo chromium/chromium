@@ -5,8 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_SCENARIO_API_PERFORMANCE_SCENARIO_OBSERVER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_SCENARIO_API_PERFORMANCE_SCENARIO_OBSERVER_H_
 
-#include <array>
-
+#include "base/check.h"
 #include "base/component_export.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
@@ -14,14 +13,15 @@
 #include "base/observer_list_threadsafe.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation_traits.h"
-#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/types/pass_key.h"
 #include "components/performance_manager/scenario_api/performance_scenario_memory_forward.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace performance_scenarios {
 
+class MatchingScenarioObserver;
 class PerformanceScenarioObserverList;
 
 // An observer that watches for changes to values held in
@@ -59,26 +59,8 @@ class COMPONENT_EXPORT(SCENARIO_API) MatchingScenarioObserver
   virtual void OnScenarioMatchChanged(ScenarioScope scope,
                                       bool matches_pattern) = 0;
 
-  // Allows PerformanceScenarioObserverList to notify of scenario changes. Will
-  // invoke OnScenarioMatchChanged if necessary.
-  void NotifyIfScenarioMatchChanged(ScenarioScope scope,
-                                    LoadingScenario loading_scenario,
-                                    InputScenario input_scenario);
-
  private:
-  // Returns a reference into `last_match_notifications_` for `scope`.
-  bool& LastMatchNotification(ScenarioScope scope);
-
   const ScenarioPattern pattern_;
-
-  // This will be bound to whichever sequence calls
-  // PerformanceScenarioObserverList::AddMatchingObserver, to validate that the
-  // observer list always accesses this class on that sequence.
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  // The last match notification that was sent for each scope.
-  std::array<bool, ScenarioScopes::kValueCount> last_match_notifications_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 // Central list of PerformanceScenarioObservers for a scope, wrapping an
@@ -118,12 +100,12 @@ class COMPONENT_EXPORT(SCENARIO_API) PerformanceScenarioObserverList
   // Notifies observers of scenarios that have changed for this scope since the
   // last call.
   void NotifyIfScenarioChanged(
-      base::Location location = base::Location::Current());
+      const base::Location& location = base::Location::Current());
 
   // Notifies observers for all scopes of scenarios that have changed since the
   // last call.
   static void NotifyAllScopes(
-      base::Location location = base::Location::Current());
+      const base::Location& location = base::Location::Current());
 
   // Lets ScopedReadOnlyScenarioMemory create and destroy the notifier for
   // `scope`.
@@ -155,9 +137,29 @@ class COMPONENT_EXPORT(SCENARIO_API) PerformanceScenarioObserverList
   // destructor is private, but the pointer should never be reassigned.
   const scoped_refptr<ObserverList<PerformanceScenarioObserver>> observers_ =
       base::MakeRefCounted<ObserverList<PerformanceScenarioObserver>>();
-  const scoped_refptr<ObserverList<MatchingScenarioObserver>>
-      matching_observers_ =
-          base::MakeRefCounted<ObserverList<MatchingScenarioObserver>>();
+
+  // Lists of MatchingScenarioObservers that share the same ScenarioPattern,
+  // along with the last `matches_pattern` value that was sent to
+  // MatchingScenarioObserver::OnScenarioMatchChanged.
+  struct MatchingScenarioObservers {
+    bool last_matches_pattern = false;
+
+    scoped_refptr<ObserverList<MatchingScenarioObserver>> observer_list =
+        base::MakeRefCounted<ObserverList<MatchingScenarioObserver>>();
+
+    MatchingScenarioObservers();
+    ~MatchingScenarioObservers();
+
+    // Move-only.
+    MatchingScenarioObservers(const MatchingScenarioObservers&) = delete;
+    MatchingScenarioObservers& operator=(const MatchingScenarioObservers&) =
+        delete;
+    MatchingScenarioObservers(MatchingScenarioObservers&&);
+    MatchingScenarioObservers& operator=(MatchingScenarioObservers&&);
+  };
+
+  absl::flat_hash_map<ScenarioPattern, MatchingScenarioObservers>
+      matching_observers_by_pattern_ GUARDED_BY(lock_);
 };
 
 }  // namespace performance_scenarios

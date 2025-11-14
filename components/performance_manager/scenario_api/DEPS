@@ -6,4 +6,10 @@ noparent = True
 include_rules = [
   "+base",
   "+testing",
+
+  # Abseil is allowed by default, but some features are banned. See
+  # //styleguide/c++/c++-features.md.
+  # To prevent this getting out of sync with the list in //DEPS, this only lists
+  # absl headers that are currently used. Feel free to add more as needed.
+  "+third_party/abseil-cpp/absl/container/flat_hash_map.h",
 ]

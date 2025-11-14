@@ -11,6 +11,7 @@
 #include "base/types/pass_key.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace performance_manager {
 
@@ -90,8 +91,32 @@ class ProcessPerformanceScenarioObserverList {
 
   base::ObserverList<performance_scenarios::PerformanceScenarioObserver>
       observers_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::ObserverList<performance_scenarios::MatchingScenarioObserver>
-      matching_observers_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Lists of MatchingScenarioObservers that share the same ScenarioPattern,
+  // along with the last `matches_pattern` value that was sent to
+  // MatchingScenarioObserver::OnScenarioMatchChanged.
+  struct MatchingScenarioObservers {
+    bool last_matches_pattern = false;
+
+    std::unique_ptr<
+        base::ObserverList<performance_scenarios::MatchingScenarioObserver>>
+        observer_list = std::make_unique<base::ObserverList<
+            performance_scenarios::MatchingScenarioObserver>>();
+
+    MatchingScenarioObservers();
+    ~MatchingScenarioObservers();
+
+    // Move-only.
+    MatchingScenarioObservers(const MatchingScenarioObservers&) = delete;
+    MatchingScenarioObservers& operator=(const MatchingScenarioObservers&) =
+        delete;
+    MatchingScenarioObservers(MatchingScenarioObservers&&);
+    MatchingScenarioObservers& operator=(MatchingScenarioObservers&&);
+  };
+
+  absl::flat_hash_map<performance_scenarios::ScenarioPattern,
+                      MatchingScenarioObservers>
+      matching_observers_by_pattern_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace performance_manager
