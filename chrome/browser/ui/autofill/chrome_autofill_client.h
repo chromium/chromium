@@ -138,14 +138,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   AutofillAiModelExecutor* GetAutofillAiModelExecutor() final;
   optimization_guide::RemoteModelExecutor* GetRemoteModelExecutor() final;
   IdentityCredentialDelegate* GetIdentityCredentialDelegate() final;
-  void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
-                                bool is_manual_fallback,
-                                PlusAddressCallback callback) final;
-  void ShowPlusAddressError(PlusAddressErrorDialogType error_dialog_type,
-                            base::OnceClosure on_accepted) final;
-  void ShowPlusAddressAffiliationError(std::u16string affiliated_domain,
-                                       std::u16string affiliated_plus_address,
-                                       base::OnceClosure on_accepted) final;
   PrefService* GetPrefs() final;
   const PrefService* GetPrefs() const final;
   syncer::SyncService* GetSyncService() final;

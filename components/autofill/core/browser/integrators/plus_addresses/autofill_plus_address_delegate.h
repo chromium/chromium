@@ -131,8 +131,6 @@ class AutofillPlusAddressDelegate {
   // Starts a session for logging a form submission UKM specific to plus
   // addresses. `suggestion_type` is the type of the first shown plus address
   // suggestion.
-  // TODO(crbug.com/362445807): Investigate whether this can be moved into AED
-  // as well and be combined with OnShowedInlineSuggestion.
   virtual void OnPlusAddressSuggestionShown(
       AutofillManager& manager,
       FormGlobalId form,

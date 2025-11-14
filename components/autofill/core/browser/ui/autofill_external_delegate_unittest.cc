@@ -227,19 +227,7 @@ class MockAutofillClient : public TestAutofillClient {
               HideAutofillSuggestions,
               (SuggestionHidingReason),
               (override));
-  MOCK_METHOD(void,
-              OfferPlusAddressCreation,
-              (const url::Origin&, bool, PlusAddressCallback),
-              (override));
   MOCK_METHOD(void, ShowAutofillSettings, (SuggestionType), (override));
-  MOCK_METHOD(void,
-              ShowPlusAddressAffiliationError,
-              (std::u16string, std::u16string, base::OnceClosure),
-              (override));
-  MOCK_METHOD(void,
-              ShowPlusAddressError,
-              (AutofillClient::PlusAddressErrorDialogType, base::OnceClosure),
-              (override));
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
   MOCK_METHOD(void,
               TriggerPlusAddressUserPerceptionSurvey,
@@ -1491,8 +1479,6 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
   std::vector<Suggestion> suggestions;
   suggestions.emplace_back(/*main_text=*/plus_address,
                            SuggestionType::kFillExistingPlusAddress);
-  // This function tests the filling of existing plus addresses, which is why
-  // `OfferPlusAddressCreation` need not be mocked.
   OnSuggestionsReturned(queried_field().global_id(), suggestions);
 
   EXPECT_CALL(autofill_driver(), RendererShouldClearPreviewedForm());
@@ -1551,8 +1537,6 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
       Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid()));
   suggestions.emplace_back(/*main_text=*/u"test+plus@test.example",
                            SuggestionType::kFillExistingPlusAddress);
-  // This function tests the filling of existing plus addresses, which is why
-  // `OfferPlusAddressCreation` need not be mocked.
   OnSuggestionsReturned(queried_field().global_id(), suggestions);
 
   EXPECT_CALL(autofill_driver(), RendererShouldClearPreviewedForm());
@@ -1599,8 +1583,6 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
   std::vector<Suggestion> suggestions;
   suggestions.emplace_back(/*main_text=*/plus_address,
                            SuggestionType::kFillExistingPlusAddress);
-  // This function tests the filling of existing plus addresses, which is why
-  // `OfferPlusAddressCreation` need not be mocked.
   OnSuggestionsReturned(queried_field().global_id(), suggestions);
 
   EXPECT_CALL(autofill_driver(), RendererShouldClearPreviewedForm());

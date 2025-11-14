@@ -234,10 +234,6 @@ class MockAutofillClient : public autofill::TestContentAutofillClient {
  public:
   using autofill::TestContentAutofillClient::TestContentAutofillClient;
   MOCK_METHOD(void,
-              OfferPlusAddressCreation,
-              (const url::Origin&, bool, autofill::PlusAddressCallback),
-              (override));
-  MOCK_METHOD(void,
               TriggerPlusAddressUserPerceptionSurvey,
               (plus_addresses::hats::SurveyType),
               (override));
@@ -1847,37 +1843,6 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectHybridPasskeyOption) {
 
   controller()->OnOptionSelected(
       autofill::AccessoryAction::CROSS_DEVICE_PASSKEY);
-}
-
-// Verify that the plus address creation bottom sheet is opened when the
-// corresponding action is triggered.
-TEST_F(PasswordAccessoryControllerTest,
-       TriggersPlusAddressCreationBottomSheet) {
-  base::UserActionTester user_action_tester;
-  CreateSheetController();
-  controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField,
-      /*is_field_eligible_for_manual_generation=*/false);
-
-  const std::string plus_address = "example@gmail.com";
-  EXPECT_CALL(autofill_client(),
-              OfferPlusAddressCreation(_, /*is_manual_fallback=*/true, _))
-      .WillOnce([&plus_address](const url::Origin&, bool,
-                                autofill::PlusAddressCallback callback) {
-        std::move(callback).Run(plus_address);
-      });
-  EXPECT_CALL(*driver(), FillIntoFocusedField(/*is_password=*/false,
-                                              base::UTF8ToUTF16(plus_address)));
-  // Manual filling sheet is expected to be hidden when the plus address
-  // creation bottom sheet is opened.
-  EXPECT_CALL(mock_manual_filling_controller_, Hide());
-
-  controller()->OnOptionSelected(
-      autofill::AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
-  EXPECT_EQ(
-      user_action_tester.GetActionCount(
-          "PlusAddresses.CreateSuggestionOnPasswordManualFallbackSelected"),
-      1);
 }
 
 // Verify that when WebAuthnCredentialsDelegate::SelectPasskey can be invoked

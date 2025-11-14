@@ -465,13 +465,11 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForAction(
     case AccessoryAction::TOGGLE_SAVE_PASSWORDS:
     case AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY:
     case AccessoryAction::CROSS_DEVICE_PASSKEY:
-    case AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET:
     case AccessoryAction::SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET:
     case AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_PASSWORD_SHEET:
     case AccessoryAction::RETRIEVE_TRUSTED_VAULT_KEY:
       return pwd_controller_.get();
     case AccessoryAction::MANAGE_ADDRESSES:
-    case AccessoryAction::CREATE_PLUS_ADDRESS_FROM_ADDRESS_SHEET:
     case AccessoryAction::SELECT_PLUS_ADDRESS_FROM_ADDRESS_SHEET:
     case AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_ADDRESS_SHEET:
       return address_controller_.get();

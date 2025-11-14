@@ -371,15 +371,6 @@ AutofillPlusAddressDelegate* ChromeAutofillClientIOS::GetPlusAddressDelegate() {
   return PlusAddressServiceFactory::GetForProfile(profile_);
 }
 
-void ChromeAutofillClientIOS::OfferPlusAddressCreation(
-    const url::Origin& main_frame_origin,
-    bool is_manual_fallback,
-    PlusAddressCallback callback) {
-  AutofillBottomSheetTabHelper* bottomSheetTabHelper =
-      AutofillBottomSheetTabHelper::FromWebState(web_state());
-  bottomSheetTabHelper->ShowPlusAddressesBottomSheet(std::move(callback));
-}
-
 void ChromeAutofillClientIOS::UpdateAutofillDataListValues(
     base::span<const autofill::SelectOption> datalist) {
   // No op. ios/web_view does not support display datalist.

@@ -174,22 +174,6 @@ void AddressAccessoryControllerImpl::OnOptionSelected(
     case AccessoryAction::MANAGE_ADDRESSES:
       autofill::ShowAutofillProfileSettings(&GetWebContents());
       return;
-    case AccessoryAction::CREATE_PLUS_ADDRESS_FROM_ADDRESS_SHEET:
-      if (auto* client =
-              ContentAutofillClient::FromWebContents(&GetWebContents())) {
-        client->OfferPlusAddressCreation(
-            client->GetLastCommittedPrimaryMainFrameOrigin(),
-            /*is_manual_fallback=*/true,
-            base::BindOnce(
-                &AddressAccessoryControllerImpl::OnPlusAddressCreated,
-                weak_ptr_factory_.GetWeakPtr(),
-                GetManualFillingController()->GetLastFocusedFieldId()));
-        base::RecordAction(base::UserMetricsAction(
-            "PlusAddresses."
-            "CreateSuggestionOnAddressManualFallbackSelected"));
-        GetManualFillingController()->Hide();
-      }
-      return;
     case AccessoryAction::SELECT_PLUS_ADDRESS_FROM_ADDRESS_SHEET:
       if (!all_plus_addresses_bottom_sheet_controller_) {
         all_plus_addresses_bottom_sheet_controller_ = std::make_unique<

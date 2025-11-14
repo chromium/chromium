@@ -1378,32 +1378,4 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
   }
 }
 
-PlusAddressCallback AutofillExternalDelegate::CreatePlusAddressCallback(
-    SuggestionType suggestion_type) {
-  return base::BindRepeating(
-             [](const std::string& s) { return base::UTF8ToUTF16(s); })
-      .Then(CreateSingleFieldFillCallback(suggestion_type, EMAIL_ADDRESS));
-}
-
-PlusAddressCallback AutofillExternalDelegate::CreateInlinePlusAddressCallback(
-    SuggestionType suggestion_type) {
-  return CreatePlusAddressCallback(suggestion_type)
-      .Then(base::BindRepeating(
-          [](base::WeakPtr<AutofillClient> client, bool is_manual_fallback) {
-            if (is_manual_fallback) {
-              client->TriggerPlusAddressUserPerceptionSurvey(
-                  plus_addresses::hats::SurveyType::
-                      kCreatedPlusAddressViaManualFallback);
-            } else if (client->GetPlusAddressDelegate()
-                           ->GetPlusAddressesCount() > 2) {
-              client->TriggerPlusAddressUserPerceptionSurvey(
-                  plus_addresses::hats::SurveyType::
-                      kCreatedMultiplePlusAddresses);
-            }
-          },
-          manager_->client().GetWeakPtr(),
-          trigger_source_ ==
-              AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses));
-}
-
 }  // namespace autofill

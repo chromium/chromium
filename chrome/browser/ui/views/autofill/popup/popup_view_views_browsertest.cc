@@ -591,9 +591,7 @@ class PopupViewViewsPlusAddressSuggestionBrowsertest
 
   std::vector<Suggestion> GetPlusAddressSuggestion(
       const std::vector<std::string>& affiliated_plus_addresses) {
-    plus_addresses::PlusAddressSuggestionHelper helper(
-        &setting_service(), &allocator(),
-        url::Origin::Create(GURL("https://foo.bar")));
+    plus_addresses::PlusAddressSuggestionHelper helper;
     FormData form = autofill::test::CreateTestSignupFormData();
     return helper.GetSuggestions(affiliated_plus_addresses, form.fields()[0],
                                  /*is_plus_address_manually_triggered=*/false);

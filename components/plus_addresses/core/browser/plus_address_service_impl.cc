@@ -307,11 +307,8 @@ std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
   }
 
   std::vector<Suggestion> suggestions =
-      PlusAddressSuggestionHelper(&setting_service_.get(),
-                                  plus_address_allocator_.get(),
-                                  std::move(origin))
-          .GetSuggestions(plus_addresses, focused_field,
-                          is_plus_address_manually_triggered);
+      PlusAddressSuggestionHelper().GetSuggestions(
+          plus_addresses, focused_field, is_plus_address_manually_triggered);
   const autofill::DenseSet<SuggestionType> suggestion_types(suggestions,
                                                             &Suggestion::type);
 

@@ -475,21 +475,6 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
         }
       }
       return;
-    case autofill::AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET:
-      if (auto* client = autofill::ContentAutofillClient::FromWebContents(
-              &GetWebContents())) {
-        client->OfferPlusAddressCreation(
-            client->GetLastCommittedPrimaryMainFrameOrigin(),
-            /*is_manual_fallback=*/true,
-            base::BindOnce(
-                &PasswordAccessoryControllerImpl::OnPlusAddressCreated,
-                weak_ptr_factory_.GetWeakPtr()));
-        base::RecordAction(base::UserMetricsAction(
-            "PlusAddresses."
-            "CreateSuggestionOnPasswordManualFallbackSelected"));
-        GetManualFillingController()->Hide();
-      }
-      return;
     case autofill::AccessoryAction::SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET:
       all_plus_addresses_bottom_sheet_controller_ = std::make_unique<
           plus_addresses::AllPlusAddressesBottomSheetController>(

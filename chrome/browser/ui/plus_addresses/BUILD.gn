@@ -22,7 +22,6 @@ source_set("plus_addresses") {
   if (toolkit_views) {
     public += [
       "plus_address_creation_controller_desktop.h",
-      "plus_address_error_dialog.h",
       "plus_address_menu_model.h",
       "views/plus_address_creation_dialog_delegate.h",
     ]
@@ -60,7 +59,6 @@ source_set("plus_addresses") {
 source_set("impl") {
   if (toolkit_views) {
     sources = [
-      "plus_address_error_dialog.cc",
       "plus_address_menu_model.cc",
       "views/plus_address_creation_controller_desktop.cc",
       "views/plus_address_creation_dialog_delegate.cc",
@@ -124,10 +122,7 @@ source_set("interactive_ui_tests") {
   sources = []
 
   if (!is_android && !is_chromeos_device) {
-    sources += [
-      "plus_address_error_dialog_interactive_uitest.cc",
-      "views/plus_address_creation_dialog_interactive_uitest.cc",
-    ]
+    sources += [ "views/plus_address_creation_dialog_interactive_uitest.cc" ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     deps = [
       ":plus_addresses",

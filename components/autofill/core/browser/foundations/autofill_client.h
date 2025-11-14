@@ -415,35 +415,6 @@ class AutofillClient {
   virtual PasswordManagerDelegate* GetPasswordManagerDelegate(
       const FieldGlobalId& field_id);
 
-  // TODO(crbug.com/365494310): Move these methods to a plus-address-specific
-  // client class.
-
-  // Orchestrates UI for enterprise plus address creation; no-op
-  // except on supported platforms.
-  virtual void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
-                                        bool is_manual_fallback,
-                                        PlusAddressCallback callback);
-
-  enum class PlusAddressErrorDialogType {
-    kGenericError,
-    // The quota for plus address creation is exhausted (account-wide or
-    // site-specific).
-    kQuotaExhausted,
-    // The network request timed out.
-    kTimeout,
-  };
-  // Shows UI to inform the user about a plus address error (apart from
-  // affiliation errors).
-  virtual void ShowPlusAddressError(
-      PlusAddressErrorDialogType error_dialog_type,
-      base::OnceClosure on_accepted);
-
-  // Shows UI to inform the user about a plus address affiliation error.
-  virtual void ShowPlusAddressAffiliationError(
-      std::u16string affiliated_domain,
-      std::u16string affiliated_plus_address,
-      base::OnceClosure on_accepted);
-
   // Gets the preferences associated with the client.
   virtual PrefService* GetPrefs() = 0;
   virtual const PrefService* GetPrefs() const = 0;

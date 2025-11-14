@@ -330,40 +330,6 @@ TEST_F(PlusAddressServiceTest, IsEligibleForPlusAddress) {
   EXPECT_FALSE(service().IsFieldEligibleForPlusAddress(field));
 }
 
-// Verifies that plus address creation is not available for users without an
-// account.
-TEST_F(PlusAddressServiceTest, NoAccountPlusAddressCreation) {
-  base::test::TestFuture<const PlusProfileOrError&> future;
-  service().ReservePlusAddress(kNoSubdomainOrigin, future.GetCallback());
-  EXPECT_THAT(future.Get(), base::test::ErrorIs(PlusAddressRequestError(
-                                PlusAddressRequestErrorType::kUserSignedOut)));
-
-  future.Clear();
-  service().ConfirmPlusAddress(kNoSubdomainOrigin, PlusAddress(kPlusAddress),
-                               future.GetCallback());
-  EXPECT_THAT(future.Get(), base::test::ErrorIs(PlusAddressRequestError(
-                                PlusAddressRequestErrorType::kUserSignedOut)));
-}
-
-// Verifies that plus address creation is aborted if the user signs out.
-TEST_F(PlusAddressServiceTest, AbortPlusAddressCreation) {
-  const std::string invalid_email = "plus";
-  identity_env().MakeAccountAvailable(invalid_email,
-                                      {signin::ConsentLevel::kSignin});
-  InitService();
-
-  base::test::TestFuture<const PlusProfileOrError&> future;
-  service().ReservePlusAddress(kNoSubdomainOrigin, future.GetCallback());
-  EXPECT_THAT(future.Get(), base::test::ErrorIs(PlusAddressRequestError(
-                                PlusAddressRequestErrorType::kUserSignedOut)));
-
-  future.Clear();
-  service().ConfirmPlusAddress(kNoSubdomainOrigin, PlusAddress(kPlusAddress),
-                               future.GetCallback());
-  EXPECT_THAT(future.Get(), base::test::ErrorIs(PlusAddressRequestError(
-                                PlusAddressRequestErrorType::kUserSignedOut)));
-}
-
 // Tests that GetPlusProfiles returns all cached plus profiles.
 TEST_F(PlusAddressServiceTest, GetPlusProfiles) {
   PlusProfile profile1 = test::CreatePlusProfile();

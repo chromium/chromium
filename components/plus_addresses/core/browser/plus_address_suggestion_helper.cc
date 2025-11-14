@@ -8,24 +8,12 @@
 #include <utility>
 #include <vector>
 
-#include "base/check_deref.h"
-#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/transliterator.h"
-#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
-#include "components/autofill/core/common/unique_ids.h"
-#include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
-#include "components/plus_addresses/core/browser/plus_address_allocator.h"
-#include "components/plus_addresses/core/browser/plus_address_service.h"
-#include "components/plus_addresses/core/browser/plus_address_types.h"
-#include "components/plus_addresses/core/browser/settings/plus_address_setting_service.h"
-#include "components/plus_addresses/core/common/features.h"
-#include "net/http/http_status_code.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace plus_addresses {
@@ -33,7 +21,6 @@ namespace plus_addresses {
 namespace {
 
 using autofill::FormFieldData;
-using autofill::PasswordFormClassification;
 using autofill::Suggestion;
 using autofill::SuggestionType;
 
@@ -51,13 +38,7 @@ Suggestion CreateFillPlusAddressSuggestion(std::u16string plus_address) {
 
 }  // namespace
 
-PlusAddressSuggestionHelper::PlusAddressSuggestionHelper(
-    const PlusAddressSettingService* setting_service,
-    PlusAddressAllocator* allocator,
-    url::Origin origin)
-    : setting_service_(CHECK_DEREF(setting_service)),
-      allocator_(CHECK_DEREF(allocator)),
-      origin_(std::move(origin)) {}
+PlusAddressSuggestionHelper::PlusAddressSuggestionHelper() = default;
 
 PlusAddressSuggestionHelper::~PlusAddressSuggestionHelper() = default;
 
@@ -95,40 +76,6 @@ Suggestion PlusAddressSuggestionHelper::GetManagePlusAddressSuggestion() {
       SuggestionType::kManagePlusAddress);
   suggestion.icon = Suggestion::Icon::kGoogleMonochrome;
   return suggestion;
-}
-
-// static
-void PlusAddressSuggestionHelper::SetSuggestedPlusAddressForSuggestion(
-    const PlusAddress& plus_address,
-    autofill::Suggestion& suggestion) {
-  suggestion.payload =
-      Suggestion::PlusAddressPayload(base::UTF8ToUTF16(*plus_address));
-  SetLoadingStateForSuggestion(/*is_loading=*/false, suggestion);
-}
-
-// static
-void PlusAddressSuggestionHelper::SetLoadingStateForSuggestion(
-    bool is_loading,
-    autofill::Suggestion& suggestion) {
-  suggestion.is_loading = Suggestion::IsLoading(is_loading);
-  suggestion.acceptability = is_loading
-                                 ? Suggestion::Acceptability::kUnacceptable
-                                 : Suggestion::Acceptability::kAcceptable;
-  auto existing_payload =
-      suggestion.GetPayload<Suggestion::PlusAddressPayload>();
-  existing_payload.offer_refresh = !is_loading;
-  suggestion.payload = std::move(existing_payload);
-}
-
-bool PlusAddressSuggestionHelper::IsInlineGenerationEnabled() const {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (!setting_service_->GetHasAcceptedNotice()) {
-    return false;
-  }
-  return true;
-#else
-  return false;
-#endif
 }
 
 }  // namespace plus_addresses
