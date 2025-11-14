@@ -8,6 +8,7 @@
 
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/notifications/scheduler/internal/stats.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_constant.h"
 #include "chrome/browser/notifications/scheduler/public/tips_agent.h"
 #include "chrome/browser/notifications/scheduler/public/tips_utils.h"
@@ -36,6 +37,8 @@ void TipsClient::BeforeShowNotification(
     // Set a pref to mark that a notification for this feature type has shown.
     std::string pref = GetFeatureTypePref(type);
     pref_service_->SetBoolean(pref, true);
+
+    stats::LogTipsNotificationFeatureTypeShown(type);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -49,11 +52,7 @@ void TipsClient::OnSchedulerInitialized(
 }
 
 void TipsClient::OnUserAction(const UserActionData& action_data) {
-  // Early exit if the action is a dismissal.
-  if (action_data.action_type == UserActionType::kDismiss) {
-    return;
-  }
-
+#if BUILDFLAG(IS_ANDROID)
   // Check that a valid feature type for tips notifications is requested.
   auto it = action_data.custom_data.find(kTipsNotificationsFeatureType);
   if (it != action_data.custom_data.end()) {
@@ -62,8 +61,17 @@ void TipsClient::OnUserAction(const UserActionData& action_data) {
     base::StringToInt(feature_type, &type_int);
     TipsNotificationsFeatureType type =
         static_cast<TipsNotificationsFeatureType>(type_int);
+
+    stats::LogTipsNotificationFeatureTypeAction(action_data.action_type, type);
+
+    // Early exit if the action is a dismissal.
+    if (action_data.action_type == UserActionType::kDismiss) {
+      return;
+    }
+
     tips_agent_->ShowTipsPromo(type);
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void TipsClient::GetThrottleConfig(

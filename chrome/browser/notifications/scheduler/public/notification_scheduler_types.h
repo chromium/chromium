@@ -42,6 +42,8 @@ enum class SchedulerClientType {
 };
 
 // The Chrome feature correlating to each tip notification.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: (
 //   org.chromium.chrome.browser.notifications.scheduler)
@@ -93,6 +95,8 @@ enum class ImpressionResult {
 // Defines user actions type. Used in metrics, can only insert enum values, need
 // to sync with histogram enum NotificationSchedulerUserActionType in
 // enums.xml. A Java counterpart will be generated for this enum.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // GENERATED_JAVA_ENUM_PACKAGE: (
 //   org.chromium.chrome.browser.notifications.scheduler)
 enum class UserActionType {

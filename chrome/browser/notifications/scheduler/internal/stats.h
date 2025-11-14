@@ -63,6 +63,15 @@ void LogNotificationShow(const NotificationData& notification_data,
 // Logs scheduled notification life cycle event.
 void LogNotificationLifeCycleEvent(NotificationLifeCycleEvent event,
                                    SchedulerClientType client_type);
+
+// Logs shown tips notifications actions.
+void LogTipsNotificationFeatureTypeAction(
+    UserActionType action,
+    TipsNotificationsFeatureType feature_type);
+
+// Logs shown tips notifications by feature.
+void LogTipsNotificationFeatureTypeShown(
+    TipsNotificationsFeatureType feature_type);
 }  // namespace stats
 }  // namespace notifications
 

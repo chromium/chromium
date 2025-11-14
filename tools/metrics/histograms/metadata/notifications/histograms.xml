@@ -954,6 +954,36 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Notifications.Scheduler.Tips.FeatureTypeAction{NotificationTipsFeatureType}"
+    enum="NotificationSchedulerUserActionType" expires_after="2026-03-05">
+  <owner>wylieb@google.com</owner>
+  <owner>bjfong@google.com</owner>
+  <summary>
+    Records user actions for a shown tips notification, when the notification is
+    clicked through the body or button, or dismissed. This is for Android only.
+    {NotificationTipsFeatureType}
+  </summary>
+  <token key="NotificationTipsFeatureType">
+    <variant name=""/>
+    <variant name=".BottomOmnibox"/>
+    <variant name=".EnhancedBrowsing"/>
+    <variant name=".GoogleLens"/>
+    <variant name=".QuickDelete"/>
+  </token>
+</histogram>
+
+<histogram name="Notifications.Scheduler.Tips.FeatureTypeShown"
+    enum="TipsNotificationsFeatureType" expires_after="2026-03-05">
+  <owner>wylieb@google.com</owner>
+  <owner>bjfong@google.com</owner>
+  <summary>
+    Records the number of shown tips notifications broken down by feature type,
+    recorded just before the notification is expected to be shown. This is for
+    Android only.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.UsingSystemNotificationCenter"
     enum="BooleanSystemNotifications" expires_after="never">
 <!-- expires-never: core to the notification user experience. -->
