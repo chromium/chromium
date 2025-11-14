@@ -8,6 +8,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/update_client/configurator.h"
+#include "components/update_client/test_configurator.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_host_delegate.h"
 #include "extensions/browser/safe_browsing_delegate.h"
@@ -302,10 +304,16 @@ SafeBrowsingDelegate* TestExtensionsBrowserClient::GetSafeBrowsingDelegate() {
 
 scoped_refptr<update_client::UpdateClient>
 TestExtensionsBrowserClient::CreateUpdateClient(
-    content::BrowserContext* context) {
+    scoped_refptr<update_client::Configurator> /*configurator*/) {
   return update_client_factory_.is_null()
              ? nullptr
              : base::WrapRefCounted(update_client_factory_.Run());
+}
+
+scoped_refptr<update_client::Configurator>
+TestExtensionsBrowserClient::CreateUpdateClientConfigurator(
+    content::BrowserContext* context) {
+  return base::MakeRefCounted<update_client::TestConfigurator>(nullptr);
 }
 
 std::string TestExtensionsBrowserClient::GetApplicationLocale() {

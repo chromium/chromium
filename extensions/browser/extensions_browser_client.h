@@ -65,6 +65,7 @@ class NetworkContext;
 }  // namespace network
 
 namespace update_client {
+class Configurator;
 class UpdateClient;
 }  // namespace update_client
 
@@ -392,7 +393,11 @@ class ExtensionsBrowserClient {
 
   // Returns a new UpdateClient.
   virtual scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
-      content::BrowserContext* context);
+      scoped_refptr<update_client::Configurator> configurator);
+
+  // Returns a new update_client::Configurator.
+  virtual scoped_refptr<update_client::Configurator>
+  CreateUpdateClientConfigurator(content::BrowserContext* context);
 
   // Returns a new ScopedExtensionUpdaterKeepAlive, or nullptr if the embedder
   // does not support keeping the context alive while the updater is running.

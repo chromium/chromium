@@ -25,6 +25,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 
+namespace update_client {
+class Configurator;
+}
+
 namespace extensions {
 class KioskDelegate;
 
@@ -163,6 +167,8 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
   KioskDelegate* GetKioskDelegate() override;
   SafeBrowsingDelegate* GetSafeBrowsingDelegate() override;
   scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
+      scoped_refptr<update_client::Configurator> configurator) override;
+  scoped_refptr<update_client::Configurator> CreateUpdateClientConfigurator(
       content::BrowserContext* context) override;
   std::string GetApplicationLocale() override;
 

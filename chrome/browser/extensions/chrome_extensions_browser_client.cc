@@ -75,6 +75,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/update_client/configurator.h"
 #include "components/update_client/update_client.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
@@ -597,6 +598,12 @@ void ChromeExtensionsBrowserClient::AttachExtensionTaskManagerTag(
 
 scoped_refptr<update_client::UpdateClient>
 ChromeExtensionsBrowserClient::CreateUpdateClient(
+    scoped_refptr<update_client::Configurator> configurator) {
+  return update_client::UpdateClientFactory(configurator);
+}
+
+scoped_refptr<update_client::Configurator>
+ChromeExtensionsBrowserClient::CreateUpdateClientConfigurator(
     content::BrowserContext* context) {
   std::optional<GURL> override_url;
   GURL update_url = extension_urls::GetWebstoreUpdateUrl();
@@ -607,8 +614,7 @@ ChromeExtensionsBrowserClient::CreateUpdateClient(
       override_url = update_url;
     }
   }
-  return update_client::UpdateClientFactory(
-      ChromeUpdateClientConfig::Create(context, override_url));
+  return ChromeUpdateClientConfig::Create(context, override_url);
 }
 
 std::unique_ptr<ScopedExtensionUpdaterKeepAlive>

@@ -164,6 +164,7 @@ static_library("test_support") {
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//components/update_client",
+    "//components/update_client:test_support",
     "//components/user_prefs",
     "//content/public/common",
     "//content/test:test_support",
