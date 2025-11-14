@@ -464,11 +464,6 @@
       name: "AllowContentInitiatedDataUrlNavigations",
       base_feature: "none",
     },
-    // Fix for https://crbug.com/41238177.
-    {
-      name: "AllowCopyingEmptyLastTableCell",
-      status: "stable",
-    },
     {
       name: "AllowPreloadingWithCSPMetaTag",
       status: "experimental",
