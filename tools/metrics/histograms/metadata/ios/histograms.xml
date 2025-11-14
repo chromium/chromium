@@ -516,6 +516,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ConfirmationAlertSheet.Outcome"
+    enum="ConfirmationAlertSheetAction" expires_after="2026-12-01">
+  <owner>pabouchard@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the outcome of user interactions with the confirmation alert sheet.
+    This includes clicks on the primary, secondary, or tertiary action buttons,
+    as well as dismissing the alert.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ContentExtension.DisplayCount" units="count"
     expires_after="2024-09-18">
   <owner>olivierrobin@chromium.org</owner>

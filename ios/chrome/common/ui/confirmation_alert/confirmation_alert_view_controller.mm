@@ -5,10 +5,12 @@
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 
 #import "base/check.h"
+#import "base/metrics/histogram_functions.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/common/ui/promo_style/utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -315,12 +317,18 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
 - (void)didTapPrimaryActionButton {
   [self.actionHandler confirmationAlertPrimaryAction];
+  base::UmaHistogramEnumeration(
+      "IOS.ConfirmationAlertSheet.Outcome",
+      ConfirmationAlertSheetAction::kPrimaryButtonTapped);
 }
 
 - (void)didTapSecondaryActionButton {
   if ([self.actionHandler
           respondsToSelector:@selector(confirmationAlertSecondaryAction)]) {
     [self.actionHandler confirmationAlertSecondaryAction];
+    base::UmaHistogramEnumeration(
+        "IOS.ConfirmationAlertSheet.Outcome",
+        ConfirmationAlertSheetAction::kSecondaryButtonTapped);
   }
 }
 
@@ -328,6 +336,9 @@ const CGFloat kFaviconBadgeSideLength = 24;
   if ([self.actionHandler
           respondsToSelector:@selector(confirmationAlertTertiaryAction)]) {
     [self.actionHandler confirmationAlertTertiaryAction];
+    base::UmaHistogramEnumeration(
+        "IOS.ConfirmationAlertSheet.Outcome",
+        ConfirmationAlertSheetAction::kTertiaryButtonTapped);
   }
 }
 
@@ -361,6 +372,9 @@ const CGFloat kFaviconBadgeSideLength = 24;
   if ([self.actionHandler
           respondsToSelector:@selector(confirmationAlertDismissAction)]) {
     [self.actionHandler confirmationAlertDismissAction];
+    base::UmaHistogramEnumeration(
+        "IOS.ConfirmationAlertSheet.Outcome",
+        ConfirmationAlertSheetAction::kDismissButtonTapped);
   }
 }
 
@@ -586,8 +600,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
   stackView.spacing = self.customSpacing;
   return stackView;
 }
-
-
 
 // Update the width of the content area and action buttons to match
 // `PromoStyleViewController`. Should be invoked on `-viewDidLoad` to setup the

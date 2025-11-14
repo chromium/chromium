@@ -34,6 +34,17 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="PROXY_AUTH_REQUIRED"/>
 </enum>
 
+<!-- LINT.IfChange(ConfirmationAlertSheetAction) -->
+
+<enum name="ConfirmationAlertSheetAction">
+  <int value="1" label="Primary Button"/>
+  <int value="2" label="Secondary Button"/>
+  <int value="3" label="Tertiary Button"/>
+  <int value="4" label="Dismiss Button"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/common/ui/confirmation_alert/confirmation_alert_constants.h:ConfirmationAlertSheetAction) -->
+
 <enum name="CrFullscreenState">
   <int value="0" label="Entering Fullscreen State"/>
   <int value="1" label="Exiting Fullscreen State"/>
