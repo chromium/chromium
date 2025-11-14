@@ -58,9 +58,6 @@ class TestPageLoadMetricsEmbedder
   }
   bool IsExtensionUrl(const GURL& url) override { return false; }
   bool IsNonTabWebUI(const GURL& url) override { return false; }
-  bool IsIncognito(content::WebContents* web_contents) override {
-    return false;
-  }
 
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(

@@ -82,8 +82,7 @@ class AdsPageLoadMetricsObserver
       heavy_ad_intervention::HeavyAdService* heavy_ad_service,
       history::HistoryService* history_service,
       const ApplicationLocaleGetter& application_local_getter,
-      bool is_in_foreground,
-      bool is_incognito);
+      bool is_in_foreground);
 
   // For a given frame, returns whether or not the frame's url would be
   // considered same origin to the outermost main frame's url.
@@ -97,7 +96,6 @@ class AdsPageLoadMetricsObserver
       history::HistoryService* history_service,
       const ApplicationLocaleGetter& application_local_getter,
       bool is_in_foreground,
-      bool is_incognito,
       base::TickClock* clock = nullptr,
       heavy_ad_intervention::HeavyAdBlocklist* blocklist = nullptr);
 
@@ -360,9 +358,6 @@ class AdsPageLoadMetricsObserver
 
   // Tracks number of memory updates received.
   int memory_update_count_ = 0;
-
-  // Whether the WebContents being observed is for an Incognito profile.
-  bool is_incognito_;
 };
 
 }  // namespace page_load_metrics
