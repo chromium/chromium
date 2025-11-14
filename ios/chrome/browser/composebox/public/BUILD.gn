@@ -10,6 +10,20 @@ source_set("features") {
   deps = [ "//base" ]
 }
 
+source_set("theme") {
+  sources = [
+    "composebox_theme.h",
+    "composebox_theme.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/ui/colors",
+    "//ios/web/public",
+    "//ui/base",
+  ]
+  public_deps = [ ":input_plate_position" ]
+}
+
 source_set("input_plate_position") {
   sources = [ "composebox_input_plate_position.h" ]
   deps = [ "//base" ]

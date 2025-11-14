@@ -111,8 +111,7 @@ const CGFloat kTitleCloseButtonPadding = 6.0;
   // Icon Image View
   _leadingIconImageView = [[UIImageView alloc] init];
   _leadingIconImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  _leadingIconImageView.backgroundColor =
-      [UIColor colorNamed:kSecondaryBackgroundColor];
+  _leadingIconImageView.backgroundColor = UIColor.clearColor;
   _leadingIconImageView.layer.cornerRadius = kLeadingIconCornerRadius;
   _leadingIconImageView.clipsToBounds = YES;
   _leadingIconImageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -123,7 +122,7 @@ const CGFloat kTitleCloseButtonPadding = 6.0;
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   _titleLabel.font = PreferredFontForTextStyle(
       UIFontTextStyleFootnote, UIFontWeightRegular, kLabelFontSize);
-  _titleLabel.textColor = UIColor.blackColor;
+  _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   _titleLabel.lineBreakMode = NSLineBreakByClipping;
   [_titleLabel
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow

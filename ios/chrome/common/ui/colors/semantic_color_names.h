@@ -11,6 +11,7 @@
 // Element Colors
 // **************
 
+extern NSString* const kAimInputItemTopBackgroundColor;
 extern NSString* const kBackgroundColor;
 extern NSString* const kCloseButtonColor;
 extern NSString* const kDisabledTintColor;

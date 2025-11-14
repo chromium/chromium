@@ -42,7 +42,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/model:model_utils",
     "//ios/chrome/browser/composebox/public:features",
-    "//ios/chrome/browser/composebox/public:input_plate_position",
+    "//ios/chrome/browser/composebox/public:theme",
     "//ios/chrome/browser/composebox/ui",
     "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
     "//ios/chrome/browser/favicon/model",

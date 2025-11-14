@@ -31,7 +31,7 @@ source_set("ui") {
     "//base",
     "//build:branding_buildflags",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/composebox/public:input_plate_position",
+    "//ios/chrome/browser/composebox/public:theme",
     "//ios/chrome/browser/omnibox/ui:omnibox_internal",
     "//ios/chrome/browser/omnibox/ui/popup",
     "//ios/chrome/browser/shared/public/features",

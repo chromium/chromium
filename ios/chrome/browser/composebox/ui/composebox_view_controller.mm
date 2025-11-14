@@ -36,17 +36,14 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   __weak OmniboxPopupPresenter* _presenter;
   // View controller for the composebox composebox.
   __weak ComposeboxInputPlateViewController* _inputViewController;
-  // The preferred position of the input plate.
-  ComposeboxInputPlatePosition _preferredInputPlatePosition;
-
-  NSLayoutConstraint* _closeButtonConstraint;
+  // The theme of the composebox.
+  ComposeboxTheme* _theme;
 }
 
-- (instancetype)initWithPreferredInputPlatePosition:
-    (ComposeboxInputPlatePosition)preferredInputPlatePosition {
+- (instancetype)initWithTheme:(ComposeboxTheme*)theme {
   self = [super init];
   if (self) {
-    _preferredInputPlatePosition = preferredInputPlatePosition;
+    _theme = theme;
   }
 
   return self;
@@ -55,7 +52,7 @@ const CGFloat kCloseButtonAlpha = 0.6f;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  self.view.backgroundColor = _theme.composeboxBackgroundColor;
 
   // Close button.
   _closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -193,7 +190,7 @@ const CGFloat kCloseButtonAlpha = 0.6f;
 }
 
 - (ComposeboxInputPlatePosition)currentInputPlatePosition {
-  return _inputViewController.view ? _preferredInputPlatePosition
+  return _inputViewController.view ? _theme.inputPlatePosition
                                    : ComposeboxInputPlatePosition::kMissing;
 }
 

@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/composebox/public/composebox_input_plate_position.h"
+#import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/composebox/ui/composebox_animation_context_provider.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_consumer.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_mutator.h"
@@ -59,9 +59,8 @@
 /// Height of the input view.
 @property(nonatomic, readonly) CGFloat inputHeight;
 
-// Initializes a new instance with a given position.
-- (instancetype)initWithPosition:
-    (ComposeboxInputPlatePosition)inputPlatePosition;
+// Initializes a new instance with a given theme.
+- (instancetype)initWithTheme:(ComposeboxTheme*)theme;
 
 /// Sets the omnibox edit view.
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView;

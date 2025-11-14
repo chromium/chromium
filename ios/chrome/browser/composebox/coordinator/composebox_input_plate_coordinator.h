@@ -8,7 +8,7 @@
 #import <PhotosUI/PhotosUI.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
-#import "ios/chrome/browser/composebox/public/composebox_input_plate_position.h"
+#import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
@@ -41,8 +41,7 @@ class Browser;
                                 entrypoint:(ComposeboxEntrypoint)entrypoint
                                      query:(NSString*)query
                                  URLLoader:(id<ComposeboxURLLoader>)URLLoader
-                         preferredPosition:
-                             (ComposeboxInputPlatePosition)preferredPosition
+                                     theme:(ComposeboxTheme*)theme
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

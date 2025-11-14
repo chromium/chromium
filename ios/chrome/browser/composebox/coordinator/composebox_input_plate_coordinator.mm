@@ -86,7 +86,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   std::unique_ptr<LocationBarModelDelegateIOS> _locationBarModelDelegate;
   std::unique_ptr<LocationBarModel> _locationBarModel;
   ComposeboxTabPickerCoordinator* _tabPickerCoordinator;
-  ComposeboxInputPlatePosition _preferredPosition;
+  ComposeboxTheme* _theme;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -94,21 +94,20 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                                 entrypoint:(ComposeboxEntrypoint)entrypoint
                                      query:(NSString*)query
                                  URLLoader:(id<ComposeboxURLLoader>)URLLoader
-                         preferredPosition:
-                             (ComposeboxInputPlatePosition)preferredPosition {
+                                     theme:(ComposeboxTheme*)theme {
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (self) {
     _entrypoint = entrypoint;
     _query = query;
     _URLLoader = URLLoader;
-    _preferredPosition = preferredPosition;
+    _theme = theme;
   }
   return self;
 }
 
 - (void)start {
-  _viewController = [[ComposeboxInputPlateViewController alloc]
-      initWithPosition:_preferredPosition];
+  _viewController =
+      [[ComposeboxInputPlateViewController alloc] initWithTheme:_theme];
   _viewController.delegate = self;
 
   _tabPickerCoordinator = [[ComposeboxTabPickerCoordinator alloc]

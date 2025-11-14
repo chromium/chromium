@@ -143,19 +143,18 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   /// The cancellable callback for updating the glow effect.
   base::CancelableOnceClosure _updateGlowCallback;
 
-  // The preferred position of the input plate.
-  ComposeboxInputPlatePosition _preferredPosition;
+  // The theme of the composebox.
+  ComposeboxTheme* _theme;
 }
 
 /// ComposeboxAnimationContextProvider
 @synthesize inputPlateViewForAnimation = _inputPlateContainerView;
 
-- (instancetype)initWithPosition:
-    (ComposeboxInputPlatePosition)preferredPosition {
+- (instancetype)initWithTheme:(ComposeboxTheme*)theme {
   self = [super init];
   if (self) {
     _omniboxContainer = [[UIView alloc] init];
-    _preferredPosition = preferredPosition;
+    _theme = theme;
   }
   return self;
 }
@@ -461,14 +460,6 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   [self updateDepthShadowAppearance];
 }
 
-- (UIColor*)inputPlateBackgroundColor {
-  if (_preferredPosition == ComposeboxInputPlatePosition::kTop) {
-    return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-  }
-
-  return [UIColor colorNamed:kPrimaryBackgroundColor];
-}
-
 #pragma mark - UICollectionViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
@@ -496,6 +487,7 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 
 - (UICollectionViewDiffableDataSource<NSString*, ComposeboxInputItem*>*)
     createDataSource {
+  __weak ComposeboxTheme* theme = _theme;
   return [[UICollectionViewDiffableDataSource alloc]
       initWithCollectionView:_carouselView
                 cellProvider:^UICollectionViewCell*(
@@ -506,7 +498,7 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
                           dequeueReusableCellWithReuseIdentifier:
                               kItemCellReuseIdentifier
                                                     forIndexPath:indexPath];
-                  [cell configureWithItem:item];
+                  [cell configureWithItem:item theme:theme];
                   cell.delegate = self;
                   return cell;
                 }];
@@ -516,7 +508,7 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 
 - (void)updateDepthShadowAppearance {
   if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark ||
-      _preferredPosition == ComposeboxInputPlatePosition::kTop) {
+      _theme.isTopInputPlate) {
     _inputPlateContainerView.layer.shadowOpacity = 0;
   } else {
     _inputPlateContainerView.layer.shadowColor =
@@ -830,7 +822,7 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 - (void)setupInputPlateContainerView {
   _inputPlateContainerView = [[UIView alloc] init];
   _inputPlateContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-  _inputPlateContainerView.backgroundColor = [self inputPlateBackgroundColor];
+  _inputPlateContainerView.backgroundColor = _theme.inputPlateBackgroundColor;
   _inputPlateContainerView.layer.cornerRadius = kInputPlateCornerRadius;
 
   [self updateDepthShadowAppearance];

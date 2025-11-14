@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_coordinator.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_navigation_mediator.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_position.h"
+#import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_dismiss_animator.h"
 #import "ios/chrome/browser/composebox/ui/composebox_present_animator.h"
@@ -58,8 +59,8 @@
 }
 
 - (void)start {
-  _viewController = [[ComposeboxViewController alloc]
-      initWithPreferredInputPlatePosition:[self inputPlatePositionPreference]];
+  _viewController =
+      [[ComposeboxViewController alloc] initWithTheme:[self createTheme]];
   _viewController.modalPresentationStyle = UIModalPresentationCustom;
   _viewController.transitioningDelegate = self;
   if (self.isOffTheRecord) {
@@ -83,7 +84,7 @@
                       entrypoint:_entrypoint
                            query:_query
                        URLLoader:_navigationMediator
-               preferredPosition:[self inputPlatePositionPreference]];
+                           theme:[self createTheme]];
   _aimComposeboxCoordinator.omniboxPopupPresenterDelegate = _viewController;
   [_aimComposeboxCoordinator start];
 
@@ -148,6 +149,11 @@
   id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   [commands hideComposeboxImmediately:immediately];
+}
+
+- (ComposeboxTheme*)createTheme {
+  return [[ComposeboxTheme alloc]
+      initWithInputPlatePosition:[self inputPlatePositionPreference]];
 }
 
 - (ComposeboxInputPlatePosition)inputPlatePositionPreference {

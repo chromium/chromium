@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 
 @class ComposeboxInputItemCell;
@@ -15,6 +16,7 @@
 @protocol ComposeboxInputItemCellDelegate <NSObject>
 // Called when the close button is tapped.
 - (void)composeboxInputItemCellDidTapCloseButton:(ComposeboxInputItemCell*)cell;
+
 @end
 
 // A versatile cell for displaying any ComposeboxInputItem.
@@ -24,7 +26,8 @@
 @property(nonatomic, weak) id<ComposeboxInputItemCellDelegate> delegate;
 
 // Configures the cell with the given item.
-- (void)configureWithItem:(ComposeboxInputItem*)item;
+- (void)configureWithItem:(ComposeboxInputItem*)item
+                    theme:(ComposeboxTheme*)theme;
 
 @end
 

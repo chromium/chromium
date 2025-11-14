@@ -77,7 +77,8 @@ const CGFloat kMaxCellHeight = 36;
   [_inputItemView prepareForReuse];
 }
 
-- (void)configureWithItem:(ComposeboxInputItem*)item {
+- (void)configureWithItem:(ComposeboxInputItem*)item
+                    theme:(ComposeboxTheme*)theme {
   [_inputItemView configureWithItem:item];
 
   BOOL isLoading = item.state == ComposeboxInputItemState::kLoading ||
@@ -100,6 +101,8 @@ const CGFloat kMaxCellHeight = 36;
                                                   blue:0.0
                                                  alpha:0.5];
   }
+
+  _inputItemView.backgroundColor = theme.inputItemBackgroundColor;
 }
 
 #pragma mark private
