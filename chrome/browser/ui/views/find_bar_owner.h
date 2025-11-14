@@ -57,6 +57,9 @@ class FindBarOwner {
   // Called when the find bar's visibility changes. `visible_bounds` is the
   // find bar's bounds if it's visible, or an empty rect if it's not.
   virtual void OnFindBarVisibilityChanged(gfx::Rect visible_bounds) = 0;
+
+  // Closes any overlapping bubbles, such as the translate bubble.
+  virtual void CloseOverlappingBubbles() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FIND_BAR_OWNER_H_

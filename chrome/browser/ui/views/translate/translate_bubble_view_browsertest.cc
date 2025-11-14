@@ -35,6 +35,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/test/ax_event_counter.h"
+#include "ui/views/test/widget_test.h"
 
 namespace translate {
 
@@ -227,6 +228,22 @@ IN_PROC_BROWSER_TEST_F(TranslateBubbleVisualTest, InvokeUi_before_translate) {
 IN_PROC_BROWSER_TEST_F(TranslateBubbleVisualTest, InvokeUi_select_source) {
   set_state(TranslateBubbleModel::ViewState::VIEW_STATE_SOURCE_LANGUAGE);
   ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest,
+                       OpeningFindBarClosesTranslateBubble) {
+  GURL french_url = GURL(embedded_test_server()->GetURL("/french_page.html"));
+  NavigateAndWaitForLanguageDetection(french_url, "fr");
+  TranslateBubbleView* bubble =
+      TranslateBubbleController::From(browser())->GetTranslateBubble();
+  EXPECT_TRUE(bubble);
+
+  views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
+  chrome::Find(browser());
+  waiter.Wait();
+
+  bubble = TranslateBubbleController::From(browser())->GetTranslateBubble();
+  EXPECT_FALSE(bubble);
 }
 
 }  // namespace translate

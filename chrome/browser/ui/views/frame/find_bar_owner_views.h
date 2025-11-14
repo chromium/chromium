@@ -33,6 +33,7 @@ class FindBarOwnerViews : public FindBarOwner {
   views::Widget* GetWidgetForAnchoring() override;
   std::u16string GetFindBarAccessibleWindowTitle() override;
   void OnFindBarVisibilityChanged(gfx::Rect visible_bounds) override;
+  void CloseOverlappingBubbles() override;
 
   raw_ptr<BrowserView> browser_view_;
 };

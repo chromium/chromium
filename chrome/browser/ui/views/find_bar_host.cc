@@ -242,6 +242,10 @@ bool FindBarHost::HasFocus() const {
   return view_->ContainsFocus();
 }
 
+void FindBarHost::CloseOverlappingBubbles() {
+  find_bar_owner_->CloseOverlappingBubbles();
+}
+
 void FindBarHost::SetFindBarController(FindBarController* find_bar_controller) {
   find_bar_controller_ = find_bar_controller;
 

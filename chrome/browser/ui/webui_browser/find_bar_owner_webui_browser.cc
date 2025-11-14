@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -76,4 +77,11 @@ std::u16string FindBarOwnerWebUIBrowser::GetFindBarAccessibleWindowTitle() {
 void FindBarOwnerWebUIBrowser::OnFindBarVisibilityChanged(
     gfx::Rect visible_bounds) {
   window_->browser()->OnFindBarVisibilityChanged();
+}
+
+void FindBarOwnerWebUIBrowser::CloseOverlappingBubbles() {
+  if (TranslateBubbleController* controller =
+      TranslateBubbleController::From(window_->browser())) {
+    controller->CloseBubble();
+  }
 }

@@ -38,6 +38,9 @@ FindBarController::~FindBarController() {
 }
 
 void FindBarController::Show(bool find_next, bool forward_direction) {
+  // Close any overlapping bubbles before showing the find bar.
+  find_bar_->CloseOverlappingBubbles();
+
   find_in_page::FindTabHelper* find_tab_helper =
       find_in_page::FindTabHelper::FromWebContents(web_contents());
 
