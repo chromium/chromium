@@ -65,6 +65,29 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/omnibox/browser/aim_eligibility_service.h:EligibilityResponseSource) -->
 
+<!-- LINT.IfChange(AiModeActivationSource) -->
+
+<enum name="AiModeActivationSource">
+  <summary>The source of the response for AIM eligibility.</summary>
+  <int value="0" label="Tool Menu"/>
+  <int value="1" label="Dedicated Button"/>
+  <int value="2" label="NTP Button"/>
+  <int value="3" label="Implicit"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:AiModeActivationSource) -->
+
+<!-- LINT.IfChange(AutocompleteRequestType) -->
+
+<enum name="AutocompleteRequestType">
+  <int value="0" label="Search"/>
+  <int value="1" label="Search prefetch"/>
+  <int value="2" label="AI Mode"/>
+  <int value="3" label="Image Generation"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/omnibox/browser/android/java/src/org/chromium/components/omnibox/AutocompleteRequestType.java)-->
+
 <enum name="BooleanNavigated">
   <int value="0" label="Navigation did not occur"/>
   <int value="1" label="Navigation occurred"/>
@@ -121,6 +144,19 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Served then not served"/>
   <int value="3" label="Served then served"/>
 </enum>
+
+<!-- LINT.IfChange(FuseboxAttachmentButtonType) -->
+
+<enum name="FuseboxAttachmentButtonType">
+  <int value="0" label="Current Tab"/>
+  <int value="1" label="Tab Picker"/>
+  <int value="2" label="Camera"/>
+  <int value="3" label="Gallery"/>
+  <int value="4" label="Files"/>
+  <int value="5" label="Clipboard"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:FuseboxAttachmentButtonType) -->
 
 <enum name="GroupId">
   <summary>

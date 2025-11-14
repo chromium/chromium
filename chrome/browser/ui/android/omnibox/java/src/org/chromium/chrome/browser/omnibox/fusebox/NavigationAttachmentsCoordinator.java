@@ -23,6 +23,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
@@ -160,6 +161,11 @@ public class NavigationAttachmentsCoordinator
         }
     }
 
+    public void onAiModeActivatedFromNtp() {
+        if (mMediator == null) return;
+        mMediator.activateAiMode(AiModeActivationSource.NTP_BUTTON);
+    }
+
     /** Called when the URL focus changes. */
     @Override
     public void onUrlFocusChange(boolean hasFocus) {
@@ -184,6 +190,9 @@ public class NavigationAttachmentsCoordinator
         boolean isChangeable = hasFocus && isSupportedPageClass;
         mMediator.setAutocompleteRequestTypeChangeable(isChangeable);
         mMediator.setToolbarVisible(isChangeable);
+        if (isChangeable) {
+            FuseboxMetrics.notifyOmniboxSessionStarted();
+        }
     }
 
     // TemplateUrlServiceObserver
@@ -272,5 +281,10 @@ public class NavigationAttachmentsCoordinator
      */
     public static boolean isConventionalFulfillmentType(@AutocompleteRequestType int mode) {
         return mode == AutocompleteRequestType.SEARCH;
+    }
+
+    public void notifyOmniboxSessionEnded(boolean userDidNavigate) {
+        FuseboxMetrics.notifyOmniboxSessionEnded(
+                userDidNavigate, mAutocompleteRequestTypeSupplier.get());
     }
 }

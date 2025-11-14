@@ -231,8 +231,9 @@ class LocationBarMediator
     private @Nullable SearchEngineUtils mSearchEngineUtils;
     private @Nullable AddToHomescreenCoordinator mAddToHomescreenCoordinatorForTesting;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
-    private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
+    private final ObservableSupplier<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
+    private final NavigationAttachmentsCoordinator mNavigationAttachmentsCoordinator;
     private final boolean mPersistEditingState;
 
     private final ButtonToolbarWidthConsumer mBookmarkButtonToolbarWidthConsumer;
@@ -261,13 +262,14 @@ class LocationBarMediator
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @Nullable BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
-            ObservableSupplierImpl<@AutocompleteRequestType Integer>
-                    autocompleteRequestTypeSupplier,
+            ObservableSupplier<@AutocompleteRequestType Integer> autocompleteRequestTypeSupplier,
             @Nullable PageZoomIndicatorCoordinator pageZoomIndicatorCoordinator,
+            NavigationAttachmentsCoordinator navigationAttachmentsCoordinator,
             @Nullable MultiInstanceManager multiInstanceManager) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
+        mNavigationAttachmentsCoordinator = navigationAttachmentsCoordinator;
         mLocationBarDataProvider.addObserver(this);
         mEmbedderUiOverrides = embedderUiOverrides;
         mOverrideUrlLoadingDelegate = overrideUrlLoadingDelegate;
@@ -1763,7 +1765,9 @@ class LocationBarMediator
 
         boolean urlHasFocus = mUrlHasFocus;
         if (shouldBeFocused) {
-            mAutocompleteRequestTypeSupplier.set(requestType);
+            if (requestType == AutocompleteRequestType.AI_MODE) {
+                mNavigationAttachmentsCoordinator.onAiModeActivatedFromNtp();
+            }
             if (!urlHasFocus) {
                 recordOmniboxFocusReason(reason);
                 // Record Lens button shown when Omnibox is focused.

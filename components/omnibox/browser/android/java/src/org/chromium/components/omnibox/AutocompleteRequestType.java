@@ -14,6 +14,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /** The type of fulfillment for the autocomplete request. */
+// LINT.IfChange(AutocompleteRequestType)
 @IntDef({
     AutocompleteRequestType.SEARCH,
     AutocompleteRequestType.SEARCH_PREFETCH,
@@ -35,5 +36,9 @@ public @interface AutocompleteRequestType {
 
     /** Image generation. */
     int IMAGE_GENERATION = 3;
+
+    int COUNT = 4;
     /* Note: account for new types in {@link NavigationAttachmentsCoordinator#doesRequestTypeOverrideUrlFulfillment}. */
 }
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:AutocompleteRequestType)

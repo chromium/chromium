@@ -465,6 +465,8 @@ class AutocompleteMediator
             onTextChanged(
                     text, /* isOnFocusContext= */ OmniboxFeatures.shouldRetainOmniboxOnFocus());
         } else {
+            mNavigationAttachmentsCoordinator.notifyOmniboxSessionEnded(
+                    mOmniboxFocusResultedInNavigation);
             mDeferredIMEWindowInsetApplicationCallback.detach();
             stopMeasuringSuggestionRequestToUiModelTime();
             cancelAutocompleteRequests();

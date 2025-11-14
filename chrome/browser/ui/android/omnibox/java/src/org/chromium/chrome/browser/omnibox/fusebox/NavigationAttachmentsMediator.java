@@ -30,6 +30,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -110,7 +112,9 @@ public class NavigationAttachmentsMediator {
         mModel.set(
                 NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED,
                 this::onRequestTypeButtonClicked);
-        mModel.set(NavigationAttachmentsProperties.POPUP_AI_MODE_CLICKED, this::activateAiMode);
+        mModel.set(
+                NavigationAttachmentsProperties.POPUP_AI_MODE_CLICKED,
+                () -> activateAiMode(AiModeActivationSource.TOOL_MENU));
         mModel.set(
                 NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_CLICKED,
                 this::activateImageGeneration);
@@ -154,7 +158,7 @@ public class NavigationAttachmentsMediator {
                 break;
 
             default:
-                activateAiMode();
+                activateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
                 break;
         }
     }
@@ -169,9 +173,10 @@ public class NavigationAttachmentsMediator {
     }
 
     /** Activate AI Mode as the Next Request fulfillment type. */
-    void activateAiMode() {
+    void activateAiMode(@AiModeActivationSource int activationReason) {
         mPopup.dismiss();
         if (mAutocompleteRequestTypeSupplier.get() == AutocompleteRequestType.AI_MODE) return;
+        FuseboxMetrics.notifyAiModeActivated(activationReason);
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
     }
 
@@ -235,6 +240,7 @@ public class NavigationAttachmentsMediator {
                     Clipboard.getInstance().hasImage());
             mPopup.show();
         }
+        FuseboxMetrics.notifyAttachmentsPopupToggled(!mPopup.isShowing(), mModel);
     }
 
     private void updateModelForCurrentTab() {
@@ -273,7 +279,7 @@ public class NavigationAttachmentsMediator {
 
     private void onAddCurrentTab(Tab tab) {
         if (mComposeBoxQueryControllerBridge == null) return;
-        activateAiMode();
+        activateAiMode(AiModeActivationSource.IMPLICIT);
 
         var attachment = FuseboxAttachment.forTab(tab);
 
@@ -312,6 +318,7 @@ public class NavigationAttachmentsMediator {
     @VisibleForTesting
     void onCameraClicked() {
         mPopup.dismiss();
+        FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.CAMERA);
         if (mPermissionDelegate.hasPermission(Manifest.permission.CAMERA)) {
             launchCamera();
         } else {
@@ -362,6 +369,7 @@ public class NavigationAttachmentsMediator {
     void onImagePickerClicked() {
         mPopup.dismiss();
 
+        FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.GALLERY);
         Intent i;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             i =
@@ -398,6 +406,7 @@ public class NavigationAttachmentsMediator {
     @VisibleForTesting
     void onFilePickerClicked() {
         mPopup.dismiss();
+        FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.FILES);
         var i =
                 new Intent(Intent.ACTION_OPEN_DOCUMENT)
                         .addCategory(Intent.CATEGORY_OPENABLE)
@@ -426,6 +435,7 @@ public class NavigationAttachmentsMediator {
     @VisibleForTesting
     void onClipboardClicked() {
         mPopup.dismiss();
+        FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.CLIPBOARD);
         new AsyncTask<byte[]>() {
             @Override
             protected byte[] doInBackground() {
@@ -465,7 +475,7 @@ public class NavigationAttachmentsMediator {
      * @param attachmentDetails The details of the attachment to add.
      */
     /* package */ void uploadAndAddAttachment(FuseboxAttachment attachment) {
-        activateAiMode();
+        activateAiMode(AiModeActivationSource.IMPLICIT);
 
         // Use FuseboxModelList's unified add method
         mModelList.add(attachment);

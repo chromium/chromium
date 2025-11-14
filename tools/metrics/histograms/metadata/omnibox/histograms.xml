@@ -58,6 +58,15 @@ chromium-metrics-reviews@google.com.
   <variant name=".OnSuggest" summary="on-suggest trigger"/>
 </variants>
 
+<variants name="FuseboxAttachmentButtonType">
+  <variant name=".Camera" summary="Camera"/>
+  <variant name=".Clipboard" summary="Clipboard"/>
+  <variant name=".CurrentTab" summary="Current Tab button"/>
+  <variant name=".Files" summary="File picker"/>
+  <variant name=".Gallery" summary="Image picker"/>
+  <variant name=".TabPicker" summary="Tab picker"/>
+</variants>
+
 <variants name="KeywordType">
   <variant name="" summary="aggregated across all keyword types"/>
   <variant name=".DefaultSearchEngineSetByPolicy"
@@ -2324,6 +2333,83 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
   <token key="OmniboxAutocompleteUpdateSlice"
       variants="OmniboxAutocompleteUpdateSlice"/>
+</histogram>
+
+<histogram name="Omnibox.MobileFusebox.AiModeActivationSource"
+    enum="AiModeActivationSource" expires_after="2026-11-11">
+  <owner>pnoland@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the reason AI Mode was activated in the Mobile Fusebox: * Explicitly
+    via the tool menu * Explicitly via a dedicated button * Implicitly due to
+    the addition of attachment This is only recorded when transitioning to AI
+    Mode from some other state.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.MobileFusebox.AttachmentButtonShown"
+    enum="FuseboxAttachmentButtonType" expires_after="2026-11-11">
+  <owner>pnoland@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records which attachment buttons were shown when the attachments popup was
+    opened. Recorded once per popup open.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.MobileFusebox.AttachmentButtonUsed"
+    enum="FuseboxAttachmentButtonType" expires_after="2026-11-11">
+  <owner>pnoland@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Counts attachment button clicks, enumerated by the type of button. Recorded
+    once per button click.
+  </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.MobileFusebox.AttachmentButtonUsedInSession{FuseboxAttachmentButtonType}"
+    enum="Boolean" expires_after="2026-11-11">
+  <owner>pnoland@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records whether a given attachment button was used or not during an omnibox
+    session. Recorded when the omnibox session ends only for buttons that were
+    shown to the user.
+  </summary>
+  <token key="FuseboxAttachmentButtonType"
+      variants="FuseboxAttachmentButtonType"/>
+</histogram>
+
+<histogram name="Omnibox.MobileFusebox.AttachmentsPopupToggled" enum="Boolean"
+    expires_after="2026-11-11">
+  <owner>pnoland@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Counts the number of times the user deliberately toggled the attachments
+    popup on or off. Does not count popup dismissals as the result of attaching
+    an item.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.MobileFusebox.AutocompleteRequestTypeAtAbandon"
+    enum="AutocompleteRequestType" expires_after="2026-11-11">
+  <owner>pnoland@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the autocomplete request type at the time of leaving the omnibox.
+    Recorded when the omnibox is left without navigating.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.MobileFusebox.AutocompleteRequestTypeAtNavigation"
+    enum="AutocompleteRequestType" expires_after="2026-11-11">
+  <owner>pnoland@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the autocomplete request type at the time of navigation. Recorded
+    when the omnibox is used to navigate.
+  </summary>
 </histogram>
 
 <histogram name="Omnibox.MostVisitedProvider.QueryMostVisitedURLs.Duration"

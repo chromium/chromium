@@ -51,6 +51,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -297,7 +298,7 @@ public class NavigationAttachmentsMediatorUnitTest {
     public void activateSearchMode_clearsAttachmentsAndAbandonsSession() {
         addAttachment("title");
 
-        mMediator.activateAiMode();
+        mMediator.activateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
         assertEquals(
                 AutocompleteRequestType.AI_MODE,
@@ -312,7 +313,7 @@ public class NavigationAttachmentsMediatorUnitTest {
 
     @Test
     public void activateAiMode_startsSession() {
-        mMediator.activateAiMode();
+        mMediator.activateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
         verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
         assertEquals(
                 AutocompleteRequestType.AI_MODE,
@@ -382,7 +383,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
 
         // Manually start a session to test the hiding part.
-        mMediator.activateAiMode();
+        mMediator.activateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
         verifyNoMoreInteractions(mComposeBoxQueryControllerBridge);
 
         // Calling with true again. Should do nothing.
