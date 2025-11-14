@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 68 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Property scale value 'random(1, 11)'
   assert_true: 'random(1, 11)' is a supported value for scale. expected true got false
 [FAIL] Property scale value 'random(--foo, 2, 12)'
@@ -122,6 +122,10 @@ Found 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_greater_than_equal: random(element-shared --foo, 10, 20) expected a number greater than or equal to 10 but got NaN
 [FAIL] Property translate value 'random(10%, 100%)'
   assert_true: 'random(10%, 100%)' is a supported value for translate. expected true got false
+[FAIL] Property translate value 'random(fixed random(1, 2), 10%, 100%)'
+  assert_true: 'random(fixed random(1, 2), 10%, 100%)' is a supported value for translate. expected true got false
+[FAIL] Property translate value 'random(fixed random(-2, -1), 10%, 100%)'
+  assert_true: 'random(fixed random(-2, -1), 10%, 100%)' is a supported value for translate. expected true got false
 [FAIL] Maximum random: 'random(a, b)'
   assert_false: expected false got true
 [FAIL] Maximum random - shorthand: random(a, b))

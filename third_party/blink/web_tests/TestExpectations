@@ -3205,6 +3205,7 @@ crbug.com/41482962 external/wpt/svg/styling/css-linked-parameters/img-with-url-f
 crbug.com/418804914 virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-nn.html [ Skip Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-grid/subgrid/independent-formatting-context-fieldset.html [ Failure ]
 crbug.com/460204587 external/wpt/css/CSS2/borders/border-width-011.xht [ Failure ]
 crbug.com/460204587 external/wpt/css/CSS2/borders/border-width-012.xht [ Failure ]
 crbug.com/460207415 [ Android ] external/wpt/webdriver/tests/bidi/emulation/set_locale_override/contexts.py [ Failure ]

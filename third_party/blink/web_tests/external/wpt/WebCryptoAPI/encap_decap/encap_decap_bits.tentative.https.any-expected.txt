@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] ML-KEM-512 encapsulateBits basic functionality
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument"
+[FAIL] ML-KEM-512 decapsulateBits basic functionality
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument"
+[FAIL] ML-KEM-512 encapsulateBits/decapsulateBits round-trip compatibility
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument"
+[FAIL] ML-KEM-512 vector-based sampleCiphertext decapsulation
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument"
+[FAIL] ML-KEM-768 encapsulateBits basic functionality
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument"
+[FAIL] ML-KEM-768 decapsulateBits basic functionality
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument"
+[FAIL] ML-KEM-768 encapsulateBits/decapsulateBits round-trip compatibility
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument"
+[FAIL] ML-KEM-768 vector-based sampleCiphertext decapsulation
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument"
+[FAIL] ML-KEM-1024 encapsulateBits basic functionality
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument"
+[FAIL] ML-KEM-1024 decapsulateBits basic functionality
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument"
+[FAIL] ML-KEM-1024 encapsulateBits/decapsulateBits round-trip compatibility
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument"
+[FAIL] ML-KEM-1024 vector-based sampleCiphertext decapsulation
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument"
+Harness: the test ran to completion.
+

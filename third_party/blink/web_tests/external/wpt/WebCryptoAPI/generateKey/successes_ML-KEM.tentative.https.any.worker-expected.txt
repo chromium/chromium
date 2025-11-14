@@ -1,0 +1,940 @@
+This is a testharness.js-based test.
+Found 468 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Success: generateKey(ML-KEM-512, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-512, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-512}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-512, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-512}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-512, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-512}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-768, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-768}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-768, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-768}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-768, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-768}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ML-KEM-1024, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ML-KEM-1024}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ml-kem-1024, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ml-kem-1024}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ml-kem-1024, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ml-kem-1024}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': Invalid keyUsages argument Reached unreachable code Reached unreachable code
+Harness: the test ran to completion.
+

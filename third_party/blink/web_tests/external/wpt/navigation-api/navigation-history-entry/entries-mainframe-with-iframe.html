@@ -40,36 +40,22 @@ promise_test(async t => {
   assert_equals(mainEntries.length, 3, "main frame should have 3 entries");
 
   assert_true(mainEntries[0].url.includes(initialMainURL.split('#')[0]), "main entry 0 should be main frame URL");
-  assert_false(mainEntries[0].url.includes("blank.html"), "main entry 0 should not be iframe URL");
-
   assert_true(mainEntries[1].url.endsWith("#main1"), "main entry 1 should end with #main1");
-  assert_false(mainEntries[1].url.includes("blank.html"), "main entry 1 should not be iframe URL");
-
   assert_true(mainEntries[2].url.endsWith("#main2"), "main entry 2 should end with #main2");
-  assert_false(mainEntries[2].url.includes("blank.html"), "main entry 2 should not be iframe URL");
+
+  for (let entry of mainEntries)
+    assert_false(entry.url.includes("#iframe"), "main frame entry should not contain iframe hash: " + entry.url);
 
   // Verify iframe entries contain only iframe URLs
   let iframeEntries = i.contentWindow.navigation.entries();
   assert_equals(iframeEntries.length, 3, "iframe should have 3 entries");
 
-  assert_true(iframeEntries[0].url.includes("blank.html"), "iframe entry 0 should be iframe URL");
-  assert_false(iframeEntries[0].url.includes("mainframe-excludes-iframe-entries.html"), "iframe entry 0 should not be main frame URL");
+  assert_true(iframeEntries[0].url.includes(initialIframeURL.split('#')[0]), "iframe entry 0 should be iframe URL");
+  assert_true(iframeEntries[1].url.endsWith("#iframe1"), "iframe entry 1 should end with #iframe1");
+  assert_true(iframeEntries[2].url.endsWith("#iframe2"), "iframe entry 1 should end with #iframe2");
 
-  assert_true(iframeEntries[1].url.includes("blank.html") && iframeEntries[1].url.endsWith("#iframe1"), "iframe entry 1 should be blank.html#iframe1");
-  assert_false(iframeEntries[1].url.includes("#main"), "iframe entry 1 should not contain main frame hash");
-
-  assert_true(iframeEntries[2].url.includes("blank.html") && iframeEntries[2].url.endsWith("#iframe2"), "iframe entry 2 should be blank.html#iframe2");
-  assert_false(iframeEntries[2].url.includes("#main"), "iframe entry 2 should not contain main frame hash");
-
-  // Verify no main frame entries contain iframe hashes
-  for (let entry of mainEntries) {
-    assert_false(entry.url.includes("#iframe"), "main frame entry should not contain iframe hash: " + entry.url);
-  }
-
-  // Verify no iframe entries contain main frame hashes
-  for (let entry of iframeEntries) {
+  for (let entry of iframeEntries)
     assert_false(entry.url.includes("#main"), "iframe entry should not contain main frame hash: " + entry.url);
-  }
 
 }, "navigation.entries() for main frame excludes iframe history entries");
 </script>

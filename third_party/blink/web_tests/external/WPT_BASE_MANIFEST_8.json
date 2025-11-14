@@ -715,6 +715,13 @@
        {}
       ]
      ],
+     "anchor-size-in-flex-basis-crash.html": [
+      "0510a165f0fead40e5bded8a59ed0d085b1afa42",
+      [
+       null,
+       {}
+      ]
+     ],
      "chrome-1512373-2-crash.html": [
       "50d0aff5e92fea43360b7423d522db2e9e79e89b",
       [
@@ -88894,7 +88901,7 @@
       ]
      ],
      "css-box-shadow-001.html": [
-      "3a7f268ec57b233e498a9e7ab567c8d996326297",
+      "a24272ceb262fb3c6a3b819f726fa8b64c935e54",
       [
        null,
        [
@@ -88910,7 +88917,7 @@
           [
            [
             0,
-            56
+            68
            ],
            [
             0,
@@ -139681,6 +139688,71 @@
         {}
        ]
       ],
+      "grid-gap-decorations-054.html": [
+       "f139c32db68ae9fdaf227f609735326f1490d2da",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-054-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-gap-decorations-055.html": [
+       "7ec7f91cc03d3fa33aa981dc97c62e10bce1e669",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-055-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-gap-decorations-056.html": [
+       "e889b7632e7e255827311b7f48e534633d6a79c4",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-056-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-gap-decorations-057.html": [
+       "8d997bdc7dcd512a7cd433a19d656168c59a2ea3",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-057-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-gap-decorations-058.html": [
+       "ec5cddae3592e9294f4264107d05024328fc5966",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-058-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "grid-gap-decorations-38.html": [
        "2b3c46e44e843733e36c4ccce9d289c8d990c8dc",
        [
@@ -152992,8 +153064,21 @@
         {}
        ]
       ],
+      "independent-formatting-context-fieldset.html": [
+       "aaa9c0490efaf08845a8c237835baabc837429a1",
+       [
+        null,
+        [
+         [
+          "/css/css-grid/subgrid/independent-formatting-context-fieldset-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "independent-formatting-context.html": [
-       "5a76ac2d6dea91a0d13de29d9192aaf8df3ae350",
+       "9c6fc10cfab954d036e349f9ab995e3b51c34e95",
        [
         null,
         [
@@ -153610,6 +153695,19 @@
         [
          [
           "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "sticky-subgrid-item.html": [
+       "fa1fd9bd94048d36ac3115da07e8f4fae91dfa21",
+       [
+        null,
+        [
+         [
+          "/css/css-grid/subgrid/sticky-subgrid-item-ref.html",
           "=="
          ]
         ],
@@ -240438,6 +240536,19 @@
        {}
       ]
      ],
+     "perspective-zero-point-five.html": [
+      "0e2af5dabbb66ae750062c4b11dee911ae2af633",
+      [
+       null,
+       [
+        [
+         "/css/css-transforms/reference/green.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "perspective-zero.html": [
       "93d2b63f55425fff7f990ec0c7cd9470c9d04e16",
       [
@@ -260568,7 +260679,7 @@
       ]
      ],
      "outline-028.html": [
-      "416947d16d5d3cf25105eba6801f4b750a37be7a",
+      "216d843703e39f1bb73f466a8070bdd4da7c256f",
       [
        null,
        [
@@ -260577,7 +260688,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            2
+           ],
+           [
+            0,
+            4
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "outline-auto-dynamic-change.html": [
@@ -289694,7 +289821,7 @@
       ]
      ],
      "backdrop-filter-clip-rect-zoom.html": [
-      "22bc03f910d3ebffe5210f9c52dd5d933387be2c",
+      "9aeb51070e51baa466f3ae4b21b37b6b067d4f26",
       [
        null,
        [
@@ -289710,11 +289837,11 @@
           [
            [
             0,
-            1
+            56
            ],
            [
             0,
-            3
+            169
            ]
           ]
          ]
@@ -319820,6 +319947,19 @@
      ]
     },
     "reftest": {
+     "devicePixelRatio.html": [
+      "c59405e725cbf976518703c0cd65b7acdfa9fa1e",
+      [
+       null,
+       [
+        [
+         "/infrastructure/reftest/devicePixelRatio-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "green-ref.html": [
       "0e145d60b55b3502639d15f10d4d63a6b0f79b7d",
       [
@@ -326286,6 +326426,19 @@
        {}
       ]
      ],
+     "out-of-flow-svg-root.html": [
+      "30ddce3da1801666652c9aa2c865754f389ac682",
+      [
+       null,
+       [
+        [
+         "/svg/coordinate-systems/out-of-flow-svg-root-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "outer-svg-intrinsic-size-003.html": [
       "25549ef14ee705ff79e22e022690dde50fadc59d",
       [
@@ -328138,7 +328291,7 @@
        ]
       ],
       "marker-path-001.svg": [
-       "75bc5703b7b0851b92727cb00f078960346ce500",
+       "75ed6dbd294124ca7fe003a6164cf9fc38077a5d",
        [
         null,
         [
@@ -328154,11 +328307,11 @@
            [
             [
              0,
-             8
+             15
             ],
             [
              0,
-             8
+             49
             ]
            ]
           ]
@@ -335965,6 +336118,22 @@
      []
     ],
     "derive_bits_keys": {
+     "argon2.js": [
+      "f1609403d623fa28b4b9adfe37f0ab7a750d127e",
+      []
+     ],
+     "argon2.tentative.https.any-expected.txt": [
+      "926d5f15031eb4dbb47898a5af26948e4ed90511",
+      []
+     ],
+     "argon2.tentative.https.any.worker-expected.txt": [
+      "926d5f15031eb4dbb47898a5af26948e4ed90511",
+      []
+     ],
+     "argon2_vectors.js": [
+      "9b9acda5f42d3ac859993febcafd96ee0fbf1377",
+      []
+     ],
      "cfrg_curves_bits.js": [
       "8ab9db7bf71318b6b030f32ab7b8bd2554efa3e1",
       []
@@ -336138,9 +336307,53 @@
       []
      ]
     },
+    "digest": {
+     "cshake.tentative.https.any-expected.txt": [
+      "49906d7974e8cf49b1db9aa1dcfefeb9bbee04de",
+      []
+     ],
+     "cshake.tentative.https.any.worker-expected.txt": [
+      "49906d7974e8cf49b1db9aa1dcfefeb9bbee04de",
+      []
+     ],
+     "sha3.tentative.https.any-expected.txt": [
+      "49cd908524457712dcc5307cff8444a94d89e2ea",
+      []
+     ],
+     "sha3.tentative.https.any.worker-expected.txt": [
+      "49cd908524457712dcc5307cff8444a94d89e2ea",
+      []
+     ]
+    },
+    "encap_decap": {
+     "encap_decap_bits.tentative.https.any-expected.txt": [
+      "c36df25dc5000654d473898cac8c8004e58ca921",
+      []
+     ],
+     "encap_decap_bits.tentative.https.any.worker-expected.txt": [
+      "c36df25dc5000654d473898cac8c8004e58ca921",
+      []
+     ],
+     "encap_decap_keys.tentative.https.any-expected.txt": [
+      "fac14dc5e571b587ca4af44ac2dd4bf1652ec692",
+      []
+     ],
+     "encap_decap_keys.tentative.https.any.worker-expected.txt": [
+      "fac14dc5e571b587ca4af44ac2dd4bf1652ec692",
+      []
+     ],
+     "ml_kem_encap_decap.js": [
+      "9167efa63f0ca3f349c781fb55d70e80ef9eeb98",
+      []
+     ],
+     "ml_kem_vectors.js": [
+      "3e04fda6a3b3da4bd2dbc32bd5009354d5b027d8",
+      []
+     ]
+    },
     "encrypt_decrypt": {
      "aes.js": [
-      "fdeb7963f761e91545373df5846ff4be583deb8a",
+      "d93b60f8b87569c4f0907250427fa629171f388d",
       []
      ],
      "aes_cbc.https.any-expected.txt": [
@@ -336195,6 +336408,30 @@
       "965fe9564d461925df00ffc465f161e03436f817",
       []
      ],
+     "aes_ocb.tentative.https.any-expected.txt": [
+      "550d603a5e516cbb5b4df768ab16aab11f697ee6",
+      []
+     ],
+     "aes_ocb.tentative.https.any.worker-expected.txt": [
+      "550d603a5e516cbb5b4df768ab16aab11f697ee6",
+      []
+     ],
+     "aes_ocb_fixtures.js": [
+      "a5795195f163ce4c759700374b0991751bd70559",
+      []
+     ],
+     "aes_ocb_vectors.js": [
+      "eba4ecfcc5d72c0682c8c7a07173333135063263",
+      []
+     ],
+     "chacha20_poly1305.tentative.https.any-expected.txt": [
+      "e5db2a1fc53054dd070df1f0e787e9a19c4bce59",
+      []
+     ],
+     "chacha20_poly1305.tentative.https.any.worker-expected.txt": [
+      "e5db2a1fc53054dd070df1f0e787e9a19c4bce59",
+      []
+     ],
      "rsa.js": [
       "5eae06e474564af6721fd2f9e92620b339d7bde2",
       []
@@ -336206,7 +336443,7 @@
     },
     "generateKey": {
      "failures.js": [
-      "deaac636a99be570b118d8e8f8096b36a4a0b28f",
+      "a3258ae0dd7788241a971d746e0ffa2c843e4954",
       []
      ],
      "failures_AES-CBC.https.any-expected.txt": [
@@ -336241,12 +336478,36 @@
       "ab3908ab689aa4d5d1ea9fc73f2637d5c06cf127",
       []
      ],
+     "failures_AES-OCB.tentative.https.any-expected.txt": [
+      "df41403e48b58cf47ee17af3c5c05c27c48d40df",
+      []
+     ],
+     "failures_AES-OCB.tentative.https.any.worker-expected.txt": [
+      "df41403e48b58cf47ee17af3c5c05c27c48d40df",
+      []
+     ],
      "failures_Ed448.tentative.https.any-expected.txt": [
       "9e773ae68af00710e3ef5a44a921d178d7c5d4df",
       []
      ],
      "failures_Ed448.tentative.https.any.worker-expected.txt": [
       "9e773ae68af00710e3ef5a44a921d178d7c5d4df",
+      []
+     ],
+     "failures_ML-DSA.tentative.https.any-expected.txt": [
+      "934b1a8b1d7b59fbdbe27ca4ab5e947a81621e60",
+      []
+     ],
+     "failures_ML-DSA.tentative.https.any.worker-expected.txt": [
+      "934b1a8b1d7b59fbdbe27ca4ab5e947a81621e60",
+      []
+     ],
+     "failures_ML-KEM.tentative.https.any-expected.txt": [
+      "54b96ed319c2efcd0a19fa7f1af864f27dcd08b9",
+      []
+     ],
+     "failures_ML-KEM.tentative.https.any.worker-expected.txt": [
+      "54b96ed319c2efcd0a19fa7f1af864f27dcd08b9",
       []
      ],
      "failures_X448.tentative.https.any-expected.txt": [
@@ -336257,8 +336518,24 @@
       "53b8a7e9c387fc3e374b0a595d53ae66b007af36",
       []
      ],
+     "failures_chacha20_poly1305.tentative.https.any-expected.txt": [
+      "b6ed0de20af532f456c55255460a95b3472dd712",
+      []
+     ],
+     "failures_chacha20_poly1305.tentative.https.any.worker-expected.txt": [
+      "b6ed0de20af532f456c55255460a95b3472dd712",
+      []
+     ],
+     "failures_kmac.tentative.https.any-expected.txt": [
+      "22b751ed5e7edf8cca8b36105e777b519ad11a1e",
+      []
+     ],
+     "failures_kmac.tentative.https.any.worker-expected.txt": [
+      "22b751ed5e7edf8cca8b36105e777b519ad11a1e",
+      []
+     ],
      "successes.js": [
-      "13c96b7c735fcb67c567b82c64ede6edcb9b5eab",
+      "c72384b7b93bf466a911ec1363192ab108db1353",
       []
      ],
      "successes_AES-CBC.https.any-expected.txt": [
@@ -336293,12 +336570,36 @@
       "74b757b8e50c2418f328be60c8bea7dea8862100",
       []
      ],
+     "successes_AES-OCB.tentative.https.any-expected.txt": [
+      "1c550c108464ead6238bde91b4714a17b23c19a8",
+      []
+     ],
+     "successes_AES-OCB.tentative.https.any.worker-expected.txt": [
+      "1c550c108464ead6238bde91b4714a17b23c19a8",
+      []
+     ],
      "successes_Ed448.tentative.https.any-expected.txt": [
       "30f29525521455688b1c57973eb48f039224b4cc",
       []
      ],
      "successes_Ed448.tentative.https.any.worker-expected.txt": [
       "30f29525521455688b1c57973eb48f039224b4cc",
+      []
+     ],
+     "successes_ML-DSA.tentative.https.any-expected.txt": [
+      "1bf9fed8329d594058388ac0ee67d269d2ff2040",
+      []
+     ],
+     "successes_ML-DSA.tentative.https.any.worker-expected.txt": [
+      "1bf9fed8329d594058388ac0ee67d269d2ff2040",
+      []
+     ],
+     "successes_ML-KEM.tentative.https.any-expected.txt": [
+      "91b4342b2c33926521eb052fb04ef8f499071839",
+      []
+     ],
+     "successes_ML-KEM.tentative.https.any.worker-expected.txt": [
+      "91b4342b2c33926521eb052fb04ef8f499071839",
       []
      ],
      "successes_X448.tentative.https.any-expected.txt": [
@@ -336308,15 +336609,103 @@
      "successes_X448.tentative.https.any.worker-expected.txt": [
       "b47aa9dd80efc5d50eeba04e8040fc5696a0a68d",
       []
+     ],
+     "successes_chacha20_poly1305.tentative.https.any-expected.txt": [
+      "e2e12d0278a278a87fa7f761763e0449ecbd04e8",
+      []
+     ],
+     "successes_chacha20_poly1305.tentative.https.any.worker-expected.txt": [
+      "e2e12d0278a278a87fa7f761763e0449ecbd04e8",
+      []
+     ],
+     "successes_kmac.tentative.https.any-expected.txt": [
+      "9acafae3541b37bda45bb42052d3ffc064908f08",
+      []
+     ],
+     "successes_kmac.tentative.https.any.worker-expected.txt": [
+      "9acafae3541b37bda45bb42052d3ffc064908f08",
+      []
      ]
     },
+    "getPublicKey.tentative.https.any-expected.txt": [
+     "bf2fa5cf828a4a48d9bcb3cc0ed61e794062ae5e",
+     []
+    ],
+    "getPublicKey.tentative.https.any.worker-expected.txt": [
+     "bf2fa5cf828a4a48d9bcb3cc0ed61e794062ae5e",
+     []
+    ],
     "import_export": {
+     "AES-OCB_importKey.tentative.https.any-expected.txt": [
+      "031cf372be341dd196d37e9111c9d98d76501db4",
+      []
+     ],
+     "AES-OCB_importKey.tentative.https.any.worker-expected.txt": [
+      "031cf372be341dd196d37e9111c9d98d76501db4",
+      []
+     ],
+     "Argon2_importKey.tentative.https.any-expected.txt": [
+      "c8593a18cef693c96ac672d6c9c665814ede1417",
+      []
+     ],
+     "Argon2_importKey.tentative.https.any.worker-expected.txt": [
+      "c8593a18cef693c96ac672d6c9c665814ede1417",
+      []
+     ],
+     "ChaCha20-Poly1305_importKey.tentative.https.any-expected.txt": [
+      "574f95bd748b79e1b25b5d8aaff6837551f55876",
+      []
+     ],
+     "ChaCha20-Poly1305_importKey.tentative.https.any.worker-expected.txt": [
+      "574f95bd748b79e1b25b5d8aaff6837551f55876",
+      []
+     ],
+     "KMAC_importKey.tentative.https.any-expected.txt": [
+      "c1eeb12535a60458b9f3620ef18e4b7605851971",
+      []
+     ],
+     "KMAC_importKey.tentative.https.any.worker-expected.txt": [
+      "c1eeb12535a60458b9f3620ef18e4b7605851971",
+      []
+     ],
+     "ML-DSA_importKey.js": [
+      "3723b321e542d52ffacb6042d3fd7e7788aa11d8",
+      []
+     ],
+     "ML-DSA_importKey.tentative.https.any-expected.txt": [
+      "b9833975c65844613a8eeaf21d012faf995e8d15",
+      []
+     ],
+     "ML-DSA_importKey.tentative.https.any.worker-expected.txt": [
+      "b9833975c65844613a8eeaf21d012faf995e8d15",
+      []
+     ],
+     "ML-DSA_importKey_fixtures.js": [
+      "ef1f5a1f51a9446c93d027dbbb66fd18a158e1eb",
+      []
+     ],
+     "ML-KEM_importKey.js": [
+      "c264a163148438275d3d7f9ac4554dc0d7a679e4",
+      []
+     ],
+     "ML-KEM_importKey.tentative.https.any-expected.txt": [
+      "d8c1fe5a5d13eeffceb2304f668596dd783a9969",
+      []
+     ],
+     "ML-KEM_importKey.tentative.https.any.worker-expected.txt": [
+      "d8c1fe5a5d13eeffceb2304f668596dd783a9969",
+      []
+     ],
+     "ML-KEM_importKey_fixtures.js": [
+      "1c25d37614e92e6455194c15e971175fd35b1373",
+      []
+     ],
      "ec_importKey_failures_fixtures.js": [
       "dc0e11d551a92271e31dc9f000b18601deb9d53e",
       []
      ],
      "importKey_failures.js": [
-      "47d12f14500dfff929a6a11fb751b5e02c5b59f0",
+      "f45da96cf6b01ca6a01e13459619b0cc2880e007",
       []
      ],
      "okp_importKey.js": [
@@ -336370,6 +336759,10 @@
      "symmetric_importKey.https.any.worker-expected.txt": [
       "166b17e0956b7a3d464bdbabceaf2a43349e6c9e",
       []
+     ],
+     "symmetric_importKey.js": [
+      "07f367cab0133372a29ec8859ee912ee05e69fa6",
+      []
      ]
     },
     "sign_verify": {
@@ -336417,6 +336810,38 @@
       "de9642b181cc15a6893a1e6bb5c23307104776db",
       []
      ],
+     "kmac.js": [
+      "037dbec1097ddc3efd92cc3c76b4602454de7ebc",
+      []
+     ],
+     "kmac.tentative.https.any-expected.txt": [
+      "50f55ace292f4d2f0b9fc18bf315e01de3427695",
+      []
+     ],
+     "kmac.tentative.https.any.worker-expected.txt": [
+      "50f55ace292f4d2f0b9fc18bf315e01de3427695",
+      []
+     ],
+     "kmac_vectors.js": [
+      "39d0efe71ba3e28d1ddc1bfd66683b9392c3f101",
+      []
+     ],
+     "mldsa.js": [
+      "e31d36362b0dc9f59f77af505e92224f94be6776",
+      []
+     ],
+     "mldsa.tentative.https.any-expected.txt": [
+      "85627118138c16a826b7c873ee111c0ca92b2cb4",
+      []
+     ],
+     "mldsa.tentative.https.any.worker-expected.txt": [
+      "85627118138c16a826b7c873ee111c0ca92b2cb4",
+      []
+     ],
+     "mldsa_vectors.js": [
+      "a035821b7e35931f24069c5b7a326f98b2e27ac0",
+      []
+     ],
      "rsa.js": [
       "5abadd3d4b86299698e8d0e2b269d887dcd2ec70",
       []
@@ -336430,6 +336855,14 @@
       []
      ]
     },
+    "supports.tentative.https.any-expected.txt": [
+     "bc6c56d1ceda165404f99e5ee08fac64a07e5be0",
+     []
+    ],
+    "supports.tentative.https.any.worker-expected.txt": [
+     "bc6c56d1ceda165404f99e5ee08fac64a07e5be0",
+     []
+    ],
     "tools": {
      "generate.py": [
       "35ba0f0031555faa013c60b5fd6b7efb77569254",
@@ -336438,7 +336871,7 @@
     },
     "util": {
      "helpers.js": [
-      "488eadf29c09da38d5afa3af7cd7983fda262b33",
+      "dbcc5053b1313aa35ea40c7601ec391841e60f9f",
       []
      ],
      "worker-report-crypto-subtle-presence.js": [
@@ -349642,7 +350075,7 @@
       []
      ],
      "anchor-scroll-position-try-012-ref.html": [
-      "71599dcf73a8126372830a6cb55fc239c023e31d",
+      "10d2034b804bf83c9d93aa6d750ac5dd50e4840f",
       []
      ],
      "anchor-scroll-position-try-015-ref.html": [
@@ -367680,6 +368113,26 @@
        "60c2dd7eeb4f7f84e87d0f0f70cd40bc3d15b1df",
        []
       ],
+      "grid-gap-decorations-054-ref.html": [
+       "2eb132778b28b57374500fce92f8615ef02b0e87",
+       []
+      ],
+      "grid-gap-decorations-055-ref.html": [
+       "b6aa64a5d936ab86c8bbfdf38a01d999e55f6b9b",
+       []
+      ],
+      "grid-gap-decorations-056-ref.html": [
+       "01a4ef14b2cf33bebe5d6359f8b17cbb0a4c2eba",
+       []
+      ],
+      "grid-gap-decorations-057-ref.html": [
+       "738deafb0ef05405d0a479ca63b55446c29c7e91",
+       []
+      ],
+      "grid-gap-decorations-058-ref.html": [
+       "b1562c4a9914cb70e6208dc69d4e0bb0f439e047",
+       []
+      ],
       "subgrid": {
        "fragmentation": {
         "subgrid-gap-decorations-fragmentation-006-ref.html": [
@@ -370258,8 +370711,12 @@
        "fcd6851e2f84c2ec33a76b86ba4b15a70d36f7e8",
        []
       ],
+      "independent-formatting-context-fieldset-ref.html": [
+       "102d0eb85a3bf2c10469596a921229da02fc94f8",
+       []
+      ],
       "independent-formatting-context-ref.html": [
-       "fe842b2823832e9feaae3534eab8220dd65cf129",
+       "63bff59dab7eeba5c6635de147f82771e913063a",
        []
       ],
       "item-percentage-height-001-ref.html": [
@@ -370368,6 +370825,10 @@
       ],
       "scrollbar-gutter-001-ref.html": [
        "0d00d380b66f73184d0b16a277b6d63e3d49b999",
+       []
+      ],
+      "sticky-subgrid-item-ref.html": [
+       "c10b5ecc3f068c76ce69fb0d64220f755364409c",
        []
       ],
       "subgrid-baseline-001-ref.html": [
@@ -390021,10 +390482,6 @@
        ]
       },
       "properties": {
-       "WEB_FEATURES.yml": [
-        "e75d445cc38639497b08a90f2341032a1569b953",
-        []
-       ],
        "accent-color-expected.txt": [
         "f147be866d76b87d9209252a009357a123c9d4eb",
         []
@@ -392114,7 +392571,7 @@
       ]
      },
      "random-computed.tentative-expected.txt": [
-      "152dc9713518c4c1a4b7ff432787ddb17e973736",
+      "475af17a7b5755abef6e0b4380a848d9ad88b3af",
       []
      ],
      "random-in-keyframe-expected.txt": [
@@ -392122,7 +392579,7 @@
       []
      ],
      "random-serialize.tentative-expected.txt": [
-      "62eb81a6779f54ab7f8a0b0bba7c7413d300d731",
+      "1e201901ffbe837f6e834338abe5c1c0044e95ea",
       []
      ],
      "reference": {
@@ -422941,6 +423398,12 @@
          []
         ]
        },
+       "ready-states": {
+        "autoplay-expected.txt": [
+         "4c8013a46e6839495843e1c510b47e819381581a",
+         []
+        ]
+       },
        "src_object_blob-expected.txt": [
         "689c7ed3ea0db371bb7bf10d9822c1b100757068",
         []
@@ -430579,6 +431042,10 @@
      ]
     },
     "reftest": {
+     "devicePixelRatio-ref.html": [
+      "3853a301924434aca99a5e01e39f325f5334ee6e",
+      []
+     ],
      "fuzzy-ref-1.html": [
       "e50fc11ef6ea80754e702becfbf675feebe3dbb9",
       []
@@ -435137,7 +435604,7 @@
      []
     ],
     "MediaDevices-after-discard.https-expected.txt": [
-     "bcae750cf6cc1b48ae6abc6b1e85acefbed96600",
+     "975194031837a500134c7bea2c9190f5f5912c52",
      []
     ],
     "MediaDevices-enumerateDevices-not-allowed-camera.https-expected.txt": [
@@ -447265,6 +447732,10 @@
       "3801cce430df8e09167206a218355263f656bc79",
       []
      ],
+     "animate-stop-currentcolor-escaped-expected.txt": [
+      "b09c194cc1f877fe94b10a80dc839d9c0fec00fb",
+      []
+     ],
      "animateMotion-base-expected.txt": [
       "0e91870b592e8ade8fb730d2c174086424793ab2",
       []
@@ -447317,6 +447788,10 @@
      ]
     },
     "coordinate-systems": {
+     "out-of-flow-svg-root-ref.html": [
+      "af7bf4d5dcee0e81ee9c8e08e211f1820f1a56a8",
+      []
+     ],
      "support": {
       "abspos-ref.html": [
        "6966d8cbc88de06a3170fbd2d5941f858d004fe2",
@@ -454595,15 +455070,7 @@
          []
         ],
         "contexts-expected.txt": [
-         "2470dc4e741cba1a74a294d6e97d3039aa88eb47",
-         []
-        ],
-        "locale-expected.txt": [
-         "cc9c1f6bcbd272a8f8b2a826e7fd522004f33f94",
-         []
-        ],
-        "user_contexts-expected.txt": [
-         "1546c583bbd1c284ee172b727638fdc0a7e2c8d3",
+         "e47aa2cde3cb715125fce7176cf92d03c53076cc",
          []
         ]
        },
@@ -454641,6 +455108,10 @@
         "screen_orientation-expected.txt": [
          "7cc1d6f9a9446cc743f0ceb33ba24c398a0e5747",
          []
+        ],
+        "user_contexts-expected.txt": [
+         "3c2e32c9630b2b2bb2da4a20ad13c3ecd44addca",
+         []
         ]
        },
        "set_scripting_enabled": {
@@ -454661,10 +455132,6 @@
         "conftest.py": [
          "f5bc7a547d76e2204e6372142976634272e90752",
          []
-        ],
-        "user_contexts-expected.txt": [
-         "b577bb228bd1000cfc917981a0fe1815633fc36b",
-         []
         ]
        },
        "set_user_agent_override": {
@@ -454678,14 +455145,6 @@
         ],
         "contexts-expected.txt": [
          "e47aa2cde3cb715125fce7176cf92d03c53076cc",
-         []
-        ],
-        "global-expected.txt": [
-         "ea735fccff36a45d35a5c3f403d826e4f751b0d6",
-         []
-        ],
-        "user_contexts-expected.txt": [
-         "c15be8b8371effb2ce5ac28526634e7d757d3d52",
          []
         ]
        }
@@ -454879,10 +455338,6 @@
         "__init__.py": [
          "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
          []
-        ],
-        "before_request_sent-expected.txt": [
-         "076360f2ff1c471efd58fd8a17a704beef00caf8",
-         []
         ]
        },
        "combined": {
@@ -454988,10 +455443,6 @@
         ],
         "conftest.py": [
          "d2bb72647b2b2d986262d2e43c3687bc5b878376",
-         []
-        ],
-        "headers-expected.txt": [
-         "ba589fb23a27768a75da426ac11e478a4c6474c2",
          []
         ],
         "headers_name_standard_tentative-expected.txt": [
@@ -480621,6 +481072,65 @@
      ]
     ],
     "derive_bits_keys": {
+     "argon2.tentative.https.any.js": [
+      "55fb11c995653ea726c3ef9a3603ab6e83130323",
+      [
+       "WebCryptoAPI/derive_bits_keys/argon2.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: deriveBits() Using Argon2"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "script",
+          "argon2_vectors.js"
+         ],
+         [
+          "script",
+          "argon2.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/derive_bits_keys/argon2.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: deriveBits() Using Argon2"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "script",
+          "argon2_vectors.js"
+         ],
+         [
+          "script",
+          "argon2.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "cfrg_curves_bits_curve25519.https.any.js": [
       "866192e0193bc18953c224647ac51f2bb373746f",
       [
@@ -482413,6 +482923,41 @@
      ]
     },
     "digest": {
+     "cshake.tentative.https.any.js": [
+      "e793722d8be59833ed88ea07dd4a6aa98bbf67d2",
+      [
+       "WebCryptoAPI/digest/cshake.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: digest() cSHAKE algorithms"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/digest/cshake.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: digest() cSHAKE algorithms"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "digest.https.any.js": [
       "3b0972b1f2bf7d5a285765ab7cf2447acca21467",
       [
@@ -482438,6 +482983,145 @@
          [
           "title",
           "WebCryptoAPI: digest()"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "sha3.tentative.https.any.js": [
+      "8f84ad08ca1a25bd5fd465642559e70f8b7105ca",
+      [
+       "WebCryptoAPI/digest/sha3.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: digest() SHA-3 algorithms"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/digest/sha3.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: digest() SHA-3 algorithms"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ]
+    },
+    "encap_decap": {
+     "encap_decap_bits.tentative.https.any.js": [
+      "ab112e4d49767690804dc8deb2aa54df3e65c3ab",
+      [
+       "WebCryptoAPI/encap_decap/encap_decap_bits.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: ML-KEM encapsulateBits() and decapsulateBits() tests"
+         ],
+         [
+          "script",
+          "ml_kem_vectors.js"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/encap_decap/encap_decap_bits.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: ML-KEM encapsulateBits() and decapsulateBits() tests"
+         ],
+         [
+          "script",
+          "ml_kem_vectors.js"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "encap_decap_keys.tentative.https.any.js": [
+      "4ccb0585b84f875eef66e7c2be759a15156bf592",
+      [
+       "WebCryptoAPI/encap_decap/encap_decap_keys.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: ML-KEM encapsulateKey() and decapsulateKey() tests"
+         ],
+         [
+          "script",
+          "ml_kem_vectors.js"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/encap_decap/encap_decap_keys.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: ML-KEM encapsulateKey() and decapsulateKey() tests"
+         ],
+         [
+          "script",
+          "ml_kem_vectors.js"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
          ],
          [
           "timeout",
@@ -482660,6 +483344,100 @@
          [
           "script",
           "aes.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "aes_ocb.tentative.https.any.js": [
+      "1d321fcfe8a5a3cae60ff4497724d66764d2d073",
+      [
+       "WebCryptoAPI/encrypt_decrypt/aes_ocb.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: encrypt() Using AES-OCB w/ 120-bit iv"
+         ],
+         [
+          "script",
+          "aes_ocb_fixtures.js"
+         ],
+         [
+          "script",
+          "aes_ocb_vectors.js"
+         ],
+         [
+          "script",
+          "aes.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/encrypt_decrypt/aes_ocb.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: encrypt() Using AES-OCB w/ 120-bit iv"
+         ],
+         [
+          "script",
+          "aes_ocb_fixtures.js"
+         ],
+         [
+          "script",
+          "aes_ocb_vectors.js"
+         ],
+         [
+          "script",
+          "aes.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "chacha20_poly1305.tentative.https.any.js": [
+      "ed21fb5d7260e34972bc0ff14481160da9780c4d",
+      [
+       "WebCryptoAPI/encrypt_decrypt/chacha20_poly1305.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: encrypt()/decrypt() ChaCha20-Poly1305"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/encrypt_decrypt/chacha20_poly1305.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: encrypt()/decrypt() ChaCha20-Poly1305"
          ],
          [
           "timeout",
@@ -482904,6 +483682,57 @@
       ],
       [
        "WebCryptoAPI/generateKey/failures_AES-KW.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: generateKey() for Failures"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "failures.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "failures_AES-OCB.tentative.https.any.js": [
+      "d4a2cd868ff51a6f8d94bbabd2c997652fe84cd7",
+      [
+       "WebCryptoAPI/generateKey/failures_AES-OCB.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: generateKey() for Failures"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "failures.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/generateKey/failures_AES-OCB.tentative.https.any.worker.html",
        {
         "script_metadata": [
          [
@@ -483182,6 +484011,108 @@
        }
       ]
      ],
+     "failures_ML-DSA.tentative.https.any.js": [
+      "91e20bc6148fa32d01736b7412210088d48ce70a",
+      [
+       "WebCryptoAPI/generateKey/failures_ML-DSA.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: generateKey() for Failures"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "failures.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/generateKey/failures_ML-DSA.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: generateKey() for Failures"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "failures.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "failures_ML-KEM.tentative.https.any.js": [
+      "9cd347d00f815c105f83c58c37b7c254ba305e06",
+      [
+       "WebCryptoAPI/generateKey/failures_ML-KEM.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: generateKey() for Failures"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "failures.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/generateKey/failures_ML-KEM.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: generateKey() for Failures"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "failures.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "failures_RSA-OAEP.https.any.js": [
       "1d2bca96b18c7e37e3c87ddc11a4935057ba43ea",
       [
@@ -483437,6 +484368,108 @@
        }
       ]
      ],
+     "failures_chacha20_poly1305.tentative.https.any.js": [
+      "c9a278cdfc2b18bf1e2dc9595c9bcc03f459f5f1",
+      [
+       "WebCryptoAPI/generateKey/failures_chacha20_poly1305.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: generateKey() for Failures"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "failures.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/generateKey/failures_chacha20_poly1305.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: generateKey() for Failures"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "failures.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "failures_kmac.tentative.https.any.js": [
+      "f906038c7d3f4aad489e5c1ec8328c6419a921a9",
+      [
+       "WebCryptoAPI/generateKey/failures_kmac.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: generateKey() for Failures"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "failures.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/generateKey/failures_kmac.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: generateKey() for Failures"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "failures.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "successes_AES-CBC.https.any.js": [
       "80f92c2cb7d7a6bf5e47649ce9b13042f53fd54d",
       [
@@ -483646,6 +484679,65 @@
       ],
       [
        "WebCryptoAPI/generateKey/successes_AES-KW.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: generateKey() Successful Calls"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "script",
+          "successes.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "successes_AES-OCB.tentative.https.any.js": [
+      "b43abc4edb41c45b7989761538b6ccd801d85861",
+      [
+       "WebCryptoAPI/generateKey/successes_AES-OCB.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: generateKey() Successful Calls"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "script",
+          "successes.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/generateKey/successes_AES-OCB.tentative.https.any.worker.html",
        {
         "script_metadata": [
          [
@@ -483941,6 +485033,124 @@
       ],
       [
        "WebCryptoAPI/generateKey/successes_HMAC.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: generateKey() Successful Calls"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "script",
+          "successes.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "successes_ML-DSA.tentative.https.any.js": [
+      "15d52f2a5059f545ba29960eae701cc6d5ca4ce8",
+      [
+       "WebCryptoAPI/generateKey/successes_ML-DSA.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: generateKey() Successful Calls"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "script",
+          "successes.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/generateKey/successes_ML-DSA.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: generateKey() Successful Calls"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "script",
+          "successes.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "successes_ML-KEM.tentative.https.any.js": [
+      "68a0d97b97553762fd78800b4d28383ccfd8db59",
+      [
+       "WebCryptoAPI/generateKey/successes_ML-KEM.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: generateKey() Successful Calls"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "script",
+          "successes.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/generateKey/successes_ML-KEM.tentative.https.any.worker.html",
        {
         "script_metadata": [
          [
@@ -487742,8 +488952,169 @@
         "timeout": "long"
        }
       ]
+     ],
+     "successes_chacha20_poly1305.tentative.https.any.js": [
+      "a1cef25c2f24fba7582b883e1d01e7986d53794a",
+      [
+       "WebCryptoAPI/generateKey/successes_chacha20_poly1305.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: generateKey() Successful Calls"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "script",
+          "successes.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/generateKey/successes_chacha20_poly1305.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: generateKey() Successful Calls"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "script",
+          "successes.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "successes_kmac.tentative.https.any.js": [
+      "9f881f92bc17ccd859dfe73922b3c2fabec52e07",
+      [
+       "WebCryptoAPI/generateKey/successes_kmac.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: generateKey() Successful Calls"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "script",
+          "successes.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/generateKey/successes_kmac.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: generateKey() Successful Calls"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "script",
+          "successes.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
      ]
     },
+    "getPublicKey.tentative.https.any.js": [
+     "5c610752d96dff14e132a9818fcd87d96fe1ba20",
+     [
+      "WebCryptoAPI/getPublicKey.tentative.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "WebCryptoAPI: getPublicKey() method"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "script",
+         "util/helpers.js"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "WebCryptoAPI/getPublicKey.tentative.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "WebCryptoAPI: getPublicKey() method"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "script",
+         "util/helpers.js"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
     "getRandomValues.any.js": [
      "aecd38efd60bac63a28673241039d2743e5b911f",
      [
@@ -487835,6 +489206,328 @@
      ]
     ],
     "import_export": {
+     "AES-OCB_importKey.tentative.https.any.js": [
+      "7fa028aa5a03f0905e666c78f65d751b85b4d991",
+      [
+       "WebCryptoAPI/import_export/AES-OCB_importKey.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: importKey() for symmetric keys"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "symmetric_importKey.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/import_export/AES-OCB_importKey.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: importKey() for symmetric keys"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "symmetric_importKey.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "Argon2_importKey.tentative.https.any.js": [
+      "a3edc3896308e339b1d8cb007b8f64fe085636ba",
+      [
+       "WebCryptoAPI/import_export/Argon2_importKey.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: importKey() for symmetric keys"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "symmetric_importKey.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/import_export/Argon2_importKey.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: importKey() for symmetric keys"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "symmetric_importKey.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "ChaCha20-Poly1305_importKey.tentative.https.any.js": [
+      "620f22d4aecc35de6c8cd52a4558ab2822b4c91f",
+      [
+       "WebCryptoAPI/import_export/ChaCha20-Poly1305_importKey.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: importKey() for symmetric keys"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "symmetric_importKey.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/import_export/ChaCha20-Poly1305_importKey.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: importKey() for symmetric keys"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "symmetric_importKey.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "KMAC_importKey.tentative.https.any.js": [
+      "83995bca37acb60013d9fd455c2bd439d641e672",
+      [
+       "WebCryptoAPI/import_export/KMAC_importKey.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: importKey() for symmetric keys"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "symmetric_importKey.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/import_export/KMAC_importKey.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: importKey() for symmetric keys"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "symmetric_importKey.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "ML-DSA_importKey.tentative.https.any.js": [
+      "5ce13d858d6fff4ce72f743d9c0334bb80361ce5",
+      [
+       "WebCryptoAPI/import_export/ML-DSA_importKey.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: importKey() for ML-DSA keys"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "ML-DSA_importKey_fixtures.js"
+         ],
+         [
+          "script",
+          "ML-DSA_importKey.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/import_export/ML-DSA_importKey.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: importKey() for ML-DSA keys"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "ML-DSA_importKey_fixtures.js"
+         ],
+         [
+          "script",
+          "ML-DSA_importKey.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "ML-KEM_importKey.tentative.https.any.js": [
+      "8b459c17e2d329d66e9af4ca5efe7892972db8bf",
+      [
+       "WebCryptoAPI/import_export/ML-KEM_importKey.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: importKey() for ML-KEM keys"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "ML-KEM_importKey_fixtures.js"
+         ],
+         [
+          "script",
+          "ML-KEM_importKey.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/import_export/ML-KEM_importKey.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: importKey() for ML-KEM keys"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ],
+         [
+          "script",
+          "ML-KEM_importKey_fixtures.js"
+         ],
+         [
+          "script",
+          "ML-KEM_importKey.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "crashtests": {
       "importKey-unsettled-promise.https.any.js": [
        "0ceeea390ebf97d65f22fa20a41e22b0eac68d68",
@@ -488557,7 +490250,7 @@
       ]
      ],
      "symmetric_importKey.https.any.js": [
-      "01b3180189db83ba72402dd6f956e737e091ecc1",
+      "a1a4b5e1ea38f2d6435ffd887562189d6c09a9c9",
       [
        "WebCryptoAPI/import_export/symmetric_importKey.https.any.html",
        {
@@ -488573,6 +490266,10 @@
          [
           "script",
           "../util/helpers.js"
+         ],
+         [
+          "script",
+          "symmetric_importKey.js"
          ]
         ],
         "timeout": "long"
@@ -488593,6 +490290,10 @@
          [
           "script",
           "../util/helpers.js"
+         ],
+         [
+          "script",
+          "symmetric_importKey.js"
          ]
         ],
         "timeout": "long"
@@ -488876,6 +490577,108 @@
        }
       ]
      ],
+     "kmac.tentative.https.any.js": [
+      "a2b5203f196e8ffc9927be571704d0145e4b30f6",
+      [
+       "WebCryptoAPI/sign_verify/kmac.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: sign() and verify() Using KMAC"
+         ],
+         [
+          "script",
+          "kmac_vectors.js"
+         ],
+         [
+          "script",
+          "kmac.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/sign_verify/kmac.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: sign() and verify() Using KMAC"
+         ],
+         [
+          "script",
+          "kmac_vectors.js"
+         ],
+         [
+          "script",
+          "kmac.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "mldsa.tentative.https.any.js": [
+      "364e1d39e8eb27f7b7f157ed3d3e56aad4e0d6cd",
+      [
+       "WebCryptoAPI/sign_verify/mldsa.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: sign() and verify() Using ML-DSA"
+         ],
+         [
+          "script",
+          "mldsa_vectors.js"
+         ],
+         [
+          "script",
+          "mldsa.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/sign_verify/mldsa.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: sign() and verify() Using ML-DSA"
+         ],
+         [
+          "script",
+          "mldsa_vectors.js"
+         ],
+         [
+          "script",
+          "mldsa.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "rsa_pkcs.https.any.js": [
       "d930a715ac6babe017ffdfb11c39c6f93572e372",
       [
@@ -488979,6 +490782,39 @@
       ]
      ]
     },
+    "supports.tentative.https.any.js": [
+     "dd39273e4b918b4f835efc368407ca4accf440b0",
+     [
+      "WebCryptoAPI/supports.tentative.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "WebCrypto API: supports method tests"
+        ],
+        [
+         "script",
+         "util/helpers.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "WebCryptoAPI/supports.tentative.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "WebCrypto API: supports method tests"
+        ],
+        [
+         "script",
+         "util/helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "wrapKey_unwrapKey": {
      "wrapKey_unwrapKey.https.any.js": [
       "9dd837b3bf60a91793afc4008ad7625dc2e9b24d",
@@ -490828,7 +492664,7 @@
       ]
      ],
      "translator.optional.https.window.js": [
-      "23ac1d1d76ba2d268419ea784b62194aaa7c5d44",
+      "11fa4b834fc046c900b212e560d03969b9ecae62",
       [
        "ai/translator/translator.optional.https.window.html",
        {
@@ -513912,7 +515748,7 @@
      ]
     ],
     "cookieStore_subscribe_arguments.https.any.js": [
-     "451ba36a373ebf7ace94353323b80046584578b9",
+     "098f80dd825904820476f57cc6605194807db2aa",
      [
       "cookiestore/cookieStore_subscribe_arguments.https.any.html",
       {
@@ -527168,7 +529004,7 @@
        ]
       ],
       "flex-basis-invalid.html": [
-       "502a21c0160f7b6df688cfe79ed503a23a55bbf8",
+       "1cee46cc993fa7902ecec69ad410543a87e3411e",
        [
         null,
         {}
@@ -554854,7 +556690,7 @@
       ]
      ],
      "random-computed.tentative.html": [
-      "b0539acf5936d9bb742f855cae986ee591a919f4",
+      "08eb0992dc1b4c4dbadf18a0565bb6ae09fcfdb2",
       [
        null,
        {
@@ -554870,14 +556706,14 @@
       ]
      ],
      "random-invalid.tentative.html": [
-      "dd428868a2d0172c1cb0263e3467adab1e069b22",
+      "81c33d88063a15947461acc6c07035a4351648e3",
       [
        null,
        {}
       ]
      ],
      "random-serialize.tentative.html": [
-      "5c0b9601da055ca9a54231080df17b44a602d6dd",
+      "229274aee3ef806ad7b5a8d8ad5239d4eda97c27",
       [
        null,
        {}
@@ -556386,6 +558222,13 @@
       ],
       "start-view-transition.html": [
        "a1bc95891956e6678c8ee2ecd51be7d6e94b70ca",
+       [
+        null,
+        {}
+       ]
+      ],
+      "view-transition-is-anchor-auto.html": [
+       "9f8d7ea9d7990eb0e60c70d7aa16c63a0b744324",
        [
         null,
         {}
@@ -573963,6 +575806,15 @@
       [
        null,
        {}
+      ]
+     ],
+     "restyle-textcontrol-during-beforeinput.html": [
+      "6d1059dba546c1e8d960f8c0606828263c93edbf",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ],
      "select-all-and-delete-in-html-element-having-contenteditable.html": [
@@ -671127,7 +672979,7 @@
          ]
         ],
         "autoplay.html": [
-         "b60b58a4217b04eb79aaf8b37fd6777cf9f7229c",
+         "086f5f2f2e6c58d231aa432270572fa697788733",
          [
           null,
           {}
@@ -704418,7 +706270,7 @@
       ]
      ],
      "entries-mainframe-with-iframe.html": [
-      "2554da41a7815aac71b49836c7538d3699831ccb",
+      "a07c07050015d7b224874210bc670905d84dfc51",
       [
        null,
        {}
@@ -729479,7 +731331,7 @@
      ]
     ],
     "sanitizer-boolean-defaults.tentative.html": [
-     "3ccefafa70c90aee27f629d99af9153e089b0978",
+     "85154064f5e08190287466c1f65bdde9cff6f6b1",
      [
       null,
       {}
@@ -732651,7 +734503,7 @@
       ]
      ],
      "scroll-animation-effect-fill-modes.tentative.html": [
-      "b9cc154676135656a06966f4c369acfa4f06903f",
+      "d8d57ad50a8fd0c5b2c17ad720ae4f2b4aa36353",
       [
        null,
        {
@@ -732669,7 +734521,7 @@
       ]
      ],
      "scroll-animation-inactive-timeline.html": [
-      "02220cee141b0f33591c7e8a00ff8013b15e5219",
+      "6021ddea6f0c8d0f75287b439aa98a312c6d64e7",
       [
        null,
        {}
@@ -732697,7 +734549,7 @@
       ]
      ],
      "scroll-timeline-snapshotting.html": [
-      "1e43699d5bfea7f8331a090c01eddcae944b51cc",
+      "00d842df68bd41f3ab56b7caf84c1f1a2dc76f7a",
       [
        null,
        {
@@ -759476,6 +761328,20 @@
        {}
       ]
      ],
+     "animate-stop-currentcolor-ci.html": [
+      "9c858da8b13f8685865af9f5d205d986b07f8419",
+      [
+       null,
+       {}
+      ]
+     ],
+     "animate-stop-currentcolor-escaped.html": [
+      "0f3e2f5929f587fefac7bce593b2a68452ab8c05",
+      [
+       null,
+       {}
+      ]
+     ],
      "animate-stop-currentcolor.html": [
       "1536035dec58709256e5d09fec22eae999a0a00d",
       [
@@ -761569,7 +763435,7 @@
        ]
       ],
       "marker-computed.svg": [
-       "329dedbbce239c627ccf47c7a14b59b00ac7ebd2",
+       "32d41713541661e479bd91e3d29991ae175ecdef",
        [
         null,
         {}
@@ -769881,6 +771747,17 @@
        }
       ]
      ],
+     "role": {
+      "role_none_conflict_resolution.tentative.html": [
+       "01510f1acbe6984ff6ae3347455830b2153ef1c1",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ]
+     },
      "role_none_conflict_resolution.html": [
       "9e2ee6ccfe59cea79d39d915b175aec413a1fa85",
       [
@@ -785991,7 +787868,7 @@
        ]
       ],
       "audioworkletnode-channel-count.https.html": [
-       "11c237f19dd9d966d0367cc3c837c998886270fa",
+       "8ec69422a4ceefd811ae634b8b88b6c2a0124120",
        [
         null,
         {}
@@ -849524,7 +851401,7 @@
       ]
      ],
      "ar_hittest_subscription_states_regular.https.html": [
-      "9f5513fd1e73f034267e7171c95986dbcfbd54e2",
+      "664af6a817e2da95fad6a4129a4b06734a85a912",
       [
        null,
        {}
@@ -871832,7 +873709,7 @@
       "input": {
        "file_dialog_opened": {
         "file_dialog_opened.py": [
-         "8ecafa571c3e013e84941782599d12fdf51f8f05",
+         "356bab7c6c7e7156073dda6d8630624931835168",
          [
           null,
           {}

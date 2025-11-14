@@ -1,0 +1,292 @@
+This is a testharness.js-based test.
+Found 144 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Success: generateKey({length: 128, name: KMAC128}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: KMAC128}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: KMAC128}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: KMAC128}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: KMAC128}, false, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: KMAC128}, true, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: KMAC128}, false, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: KMAC128}, true, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: KMAC128}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: KMAC128}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: KMAC128}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: KMAC128}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: KMAC128}, false, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: KMAC128}, true, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: KMAC128}, false, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: KMAC128}, true, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: KMAC128}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: KMAC128}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: KMAC128}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: KMAC128}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: KMAC128}, false, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: KMAC128}, true, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: KMAC128}, false, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: KMAC128}, true, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: kmac128}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: kmac128}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: kmac128}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: kmac128}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: kmac128}, false, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: kmac128}, true, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: kmac128}, false, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: kmac128}, true, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: kmac128}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: kmac128}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: kmac128}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: kmac128}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: kmac128}, false, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: kmac128}, true, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: kmac128}, false, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: kmac128}, true, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: kmac128}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: kmac128}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: kmac128}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: kmac128}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: kmac128}, false, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: kmac128}, true, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: kmac128}, false, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: kmac128}, true, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: Kmac128}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: Kmac128}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: Kmac128}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: Kmac128}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: Kmac128}, false, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: Kmac128}, true, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: Kmac128}, false, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: Kmac128}, true, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: Kmac128}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: Kmac128}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: Kmac128}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: Kmac128}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: Kmac128}, false, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: Kmac128}, true, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: Kmac128}, false, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: Kmac128}, true, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: Kmac128}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: Kmac128}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: Kmac128}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: Kmac128}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: Kmac128}, false, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: Kmac128}, true, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: Kmac128}, false, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: Kmac128}, true, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: KMAC256}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: KMAC256}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: KMAC256}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: KMAC256}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: KMAC256}, false, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: KMAC256}, true, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: KMAC256}, false, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: KMAC256}, true, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: KMAC256}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: KMAC256}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: KMAC256}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: KMAC256}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: KMAC256}, false, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: KMAC256}, true, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: KMAC256}, false, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: KMAC256}, true, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: KMAC256}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: KMAC256}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: KMAC256}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: KMAC256}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: KMAC256}, false, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: KMAC256}, true, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: KMAC256}, false, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: KMAC256}, true, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: kmac256}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: kmac256}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: kmac256}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: kmac256}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: kmac256}, false, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: kmac256}, true, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: kmac256}, false, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: kmac256}, true, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: kmac256}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: kmac256}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: kmac256}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: kmac256}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: kmac256}, false, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: kmac256}, true, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: kmac256}, false, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: kmac256}, true, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: kmac256}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: kmac256}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: kmac256}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: kmac256}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: kmac256}, false, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: kmac256}, true, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: kmac256}, false, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: kmac256}, true, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: Kmac256}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: Kmac256}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: Kmac256}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: Kmac256}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: Kmac256}, false, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: Kmac256}, true, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: Kmac256}, false, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 128, name: Kmac256}, true, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: Kmac256}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: Kmac256}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: Kmac256}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: Kmac256}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: Kmac256}, false, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: Kmac256}, true, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: Kmac256}, false, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 160, name: Kmac256}, true, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: Kmac256}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: Kmac256}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: Kmac256}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: Kmac256}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: Kmac256}, false, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: Kmac256}, true, [verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: Kmac256}, false, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({length: 256, name: Kmac256}, true, [sign, verify, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+Harness: the test ran to completion.
+

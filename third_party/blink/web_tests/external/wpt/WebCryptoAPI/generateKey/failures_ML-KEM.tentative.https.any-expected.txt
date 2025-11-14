@@ -1,0 +1,1372 @@
+This is a testharness.js-based test.
+Found 684 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateBits, decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, encapsulateBits, decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [encapsulateKey, decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-512, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateBits, decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, encapsulateBits, decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [encapsulateKey, decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-512}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateBits, decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, encapsulateBits, decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [encapsulateKey, decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-768, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateBits, decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, encapsulateBits, decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [encapsulateKey, decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-768}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateBits, decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, encapsulateBits, decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [encapsulateKey, decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey(ML-KEM-1024, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateBits, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateBits, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateBits, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, sign])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateBits, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, verify])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateBits, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateBits, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateBits, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateBits, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateBits, decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, encapsulateBits, decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [encapsulateKey, decapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Bad usages: generateKey({name: ML-KEM-1024}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "TypeError"
+[FAIL] Empty usages: generateKey(ML-KEM-512, false, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey(ML-KEM-512, true, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({name: ML-KEM-512}, false, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({name: ML-KEM-512}, true, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey(ML-KEM-768, false, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey(ML-KEM-768, true, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({name: ML-KEM-768}, false, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({name: ML-KEM-768}, true, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey(ML-KEM-1024, false, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey(ML-KEM-1024, true, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({name: ML-KEM-1024}, false, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({name: ML-KEM-1024}, true, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+Harness: the test ran to completion.
+

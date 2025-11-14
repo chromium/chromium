@@ -1,0 +1,316 @@
+This is a testharness.js-based test.
+Found 156 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [verify, sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [sign, verify, sign, sign, verify, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [verify, sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [sign, verify, sign, sign, verify, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [verify, sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [sign, verify, sign, sign, verify, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [verify, sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [sign, verify, sign, sign, verify, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [verify, sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [sign, verify, sign, sign, verify, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [verify, sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-44, true, [sign, verify, sign, sign, verify, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [verify, sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [sign, verify, sign, sign, verify, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [verify, sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [sign, verify, sign, sign, verify, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [verify, sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [sign, verify, sign, sign, verify, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [verify, sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [sign, verify, sign, sign, verify, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [verify, sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [sign, verify, sign, sign, verify, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [verify, sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-44}, true, [sign, verify, sign, sign, verify, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [verify, sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [sign, verify, sign, sign, verify, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [verify, sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [sign, verify, sign, sign, verify, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [verify, sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [sign, verify, sign, sign, verify, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [verify, sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [sign, verify, sign, sign, verify, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [verify, sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [sign, verify, sign, sign, verify, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [verify, sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-65, true, [sign, verify, sign, sign, verify, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [verify, sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [sign, verify, sign, sign, verify, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [verify, sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [sign, verify, sign, sign, verify, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [verify, sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [sign, verify, sign, sign, verify, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [verify, sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [sign, verify, sign, sign, verify, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [verify, sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [sign, verify, sign, sign, verify, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [verify, sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-65}, true, [sign, verify, sign, sign, verify, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [verify, sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [sign, verify, sign, sign, verify, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [verify, sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [sign, verify, sign, sign, verify, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [verify, sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [sign, verify, sign, sign, verify, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [verify, sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [sign, verify, sign, sign, verify, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [verify, sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [sign, verify, sign, sign, verify, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [verify, sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey(ML-DSA-87, true, [sign, verify, sign, sign, verify, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [verify, sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [sign, verify, sign, sign, verify, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [verify, sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [sign, verify, sign, sign, verify, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [verify, sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [sign, verify, sign, sign, verify, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [verify, sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [sign, verify, sign, sign, verify, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [verify, sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [sign, verify, sign, sign, verify, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [verify, sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({name: ML-DSA-87}, true, [sign, verify, sign, sign, verify, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey(ML-DSA-44, false, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey(ML-DSA-44, true, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({name: ML-DSA-44}, false, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({name: ML-DSA-44}, true, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey(ML-DSA-65, false, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey(ML-DSA-65, true, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({name: ML-DSA-65}, false, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({name: ML-DSA-65}, true, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey(ML-DSA-87, false, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey(ML-DSA-87, true, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({name: ML-DSA-87}, false, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({name: ML-DSA-87}, true, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+Harness: the test ran to completion.
+

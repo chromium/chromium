@@ -1,0 +1,388 @@
+This is a testharness.js-based test.
+Found 192 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [verify, sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [verify, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [sign, verify, sign, verify, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [verify, sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [verify, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [sign, verify, sign, verify, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [verify, sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [verify, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [sign, verify, sign, verify, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [verify, sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [verify, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [sign, verify, sign, verify, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [verify, sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [verify, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [sign, verify, sign, verify, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [verify, sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [verify, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC128}, true, [sign, verify, sign, verify, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [verify, sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [verify, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [sign, verify, sign, verify, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [verify, sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [verify, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [sign, verify, sign, verify, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [verify, sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [verify, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [sign, verify, sign, verify, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [verify, sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [verify, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [sign, verify, sign, verify, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [verify, sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [verify, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [sign, verify, sign, verify, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [verify, sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [verify, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC128}, true, [sign, verify, sign, verify, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [verify, sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [verify, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [sign, verify, sign, verify, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [verify, sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [verify, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [sign, verify, sign, verify, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [verify, sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [verify, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [sign, verify, sign, verify, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [verify, sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [verify, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [sign, verify, sign, verify, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [verify, sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [verify, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [sign, verify, sign, verify, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [verify, sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [verify, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC128}, true, [sign, verify, sign, verify, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [verify, sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [verify, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [sign, verify, sign, verify, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [verify, sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [verify, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [sign, verify, sign, verify, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [verify, sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [verify, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [sign, verify, sign, verify, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [verify, sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [verify, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [sign, verify, sign, verify, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [verify, sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [verify, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [sign, verify, sign, verify, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [verify, sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [verify, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 128, name: KMAC256}, true, [sign, verify, sign, verify, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [verify, sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [verify, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [sign, verify, sign, verify, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [verify, sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [verify, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [sign, verify, sign, verify, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [verify, sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [verify, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [sign, verify, sign, verify, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [verify, sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [verify, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [sign, verify, sign, verify, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [verify, sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [verify, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [sign, verify, sign, verify, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [verify, sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [verify, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 160, name: KMAC256}, true, [sign, verify, sign, verify, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [verify, sign, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [verify, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [sign, verify, sign, verify, encrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [verify, sign, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [verify, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [sign, verify, sign, verify, decrypt])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [verify, sign, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [verify, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [sign, verify, sign, verify, wrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [verify, sign, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [verify, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [sign, verify, sign, verify, unwrapKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [verify, sign, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [verify, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [sign, verify, sign, verify, deriveKey])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [verify, sign, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [verify, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Bad usages: generateKey({length: 256, name: KMAC256}, true, [sign, verify, sign, verify, deriveBits])
+  assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({length: 128, name: KMAC128}, false, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({length: 128, name: KMAC128}, true, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({length: 160, name: KMAC128}, false, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({length: 160, name: KMAC128}, true, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({length: 256, name: KMAC128}, false, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({length: 256, name: KMAC128}, true, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({length: 128, name: KMAC256}, false, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({length: 128, name: KMAC256}, true, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({length: 160, name: KMAC256}, false, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({length: 160, name: KMAC256}, true, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({length: 256, name: KMAC256}, false, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Empty usages: generateKey({length: 256, name: KMAC256}, true, [])
+  assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
+Harness: the test ran to completion.
+
