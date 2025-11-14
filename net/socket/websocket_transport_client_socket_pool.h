@@ -42,8 +42,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
     : public ClientSocketPool {
  public:
   WebSocketTransportClientSocketPool(
-      size_t max_sockets,
-      size_t max_sockets_per_group,
+      size_t socket_soft_cap,
       SocketPoolAdditionalCapacity additional_capacity,
       const ProxyChain& proxy_chain,
       const CommonConnectJobParams* common_connect_job_params);
@@ -220,7 +219,6 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
   PendingConnectsMap pending_connects_;
   StalledRequestQueue stalled_request_queue_;
   StalledRequestMap stalled_request_map_;
-  const size_t max_sockets_;
   size_t handed_out_socket_count_ = 0;
   bool flushing_ = false;
 

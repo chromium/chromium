@@ -32,17 +32,16 @@
 namespace net {
 
 WebSocketTransportClientSocketPool::WebSocketTransportClientSocketPool(
-    size_t max_sockets,
-    size_t max_sockets_per_group,
+    size_t socket_soft_cap,
     SocketPoolAdditionalCapacity additional_capacity,
     const ProxyChain& proxy_chain,
     const CommonConnectJobParams* common_connect_job_params)
-    : ClientSocketPool(additional_capacity,
+    : ClientSocketPool(socket_soft_cap,
+                       additional_capacity,
                        /*is_for_websockets=*/true,
                        common_connect_job_params,
                        std::make_unique<ConnectJobFactory>()),
-      proxy_chain_(proxy_chain),
-      max_sockets_(max_sockets) {
+      proxy_chain_(proxy_chain) {
   DCHECK(common_connect_job_params->websocket_endpoint_lock_manager);
 }
 
@@ -259,8 +258,7 @@ base::Value WebSocketTransportClientSocketPool::GetInfoAsValue(
           .Set("connecting_socket_count",
                static_cast<int>(pending_connects_.size()))
           .Set("idle_socket_count", 0)
-          .Set("max_socket_count", static_cast<int>(max_sockets_))
-          .Set("max_sockets_per_group", static_cast<int>(max_sockets_))
+          .Set("socket_soft_cap", static_cast<int>(SocketSoftCap()))
           .Set("additional_capacity", std::string(AdditionalCapacity()));
   return base::Value(std::move(dict));
 }
@@ -381,8 +379,8 @@ void WebSocketTransportClientSocketPool::InvokeUserCallback(
 }
 
 bool WebSocketTransportClientSocketPool::ReachedMaxSocketsLimit() const {
-  return handed_out_socket_count_ >= max_sockets_ ||
-         pending_connects_.size() >= max_sockets_ - handed_out_socket_count_;
+  return handed_out_socket_count_ >= SocketSoftCap() ||
+         pending_connects_.size() >= SocketSoftCap() - handed_out_socket_count_;
 }
 
 void WebSocketTransportClientSocketPool::HandOutSocket(

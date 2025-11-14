@@ -181,7 +181,7 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
       : WithTaskEnvironment(time_source),
         old_max_group_sockets_(ClientSocketPoolManager::max_sockets_per_group(
             HttpNetworkSession::NORMAL_SOCKET_POOL)),
-        old_max_pool_sockets_(ClientSocketPoolManager::max_sockets_per_pool(
+        old_socket_soft_cap_(ClientSocketPoolManager::socket_soft_cap_per_pool(
             HttpNetworkSession::NORMAL_SOCKET_POOL)),
         test_url_(kDefaultUrl),
         test_server_(test_url_),
@@ -198,8 +198,8 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
   ~SpdySessionTest() override {
     // Important to restore the per-pool limit first, since the pool limit must
     // always be greater than group limit, and the tests reduce both limits.
-    ClientSocketPoolManager::set_max_sockets_per_pool_for_test(
-        HttpNetworkSession::NORMAL_SOCKET_POOL, old_max_pool_sockets_);
+    ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
+        HttpNetworkSession::NORMAL_SOCKET_POOL, old_socket_soft_cap_);
     ClientSocketPoolManager::set_max_sockets_per_group_for_test(
         HttpNetworkSession::NORMAL_SOCKET_POOL, old_max_group_sockets_);
   }
@@ -362,7 +362,7 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
   // Original socket limits.  Some tests set these.  Safest to always restore
   // them once each test has been run.
   int old_max_group_sockets_;
-  int old_max_pool_sockets_;
+  int old_socket_soft_cap_;
 
   SpdyTestUtil spdy_util_;
   SpdySessionDependencies session_deps_;
@@ -3308,7 +3308,7 @@ TEST_F(SpdySessionTest, ProtocolNegotiation) {
 TEST_F(SpdySessionTest, CloseOneIdleConnection) {
   ClientSocketPoolManager::set_max_sockets_per_group_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
-  ClientSocketPoolManager::set_max_sockets_per_pool_for_test(
+  ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
 
   MockRead reads[] = {
@@ -3361,7 +3361,7 @@ TEST_F(SpdySessionTest, CloseOneIdleConnection) {
 TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
   ClientSocketPoolManager::set_max_sockets_per_group_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
-  ClientSocketPoolManager::set_max_sockets_per_pool_for_test(
+  ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
 
   MockRead reads[] = {
@@ -3475,7 +3475,7 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
 TEST_F(SpdySessionTest, CloseSessionOnIdleWhenPoolStalled) {
   ClientSocketPoolManager::set_max_sockets_per_group_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
-  ClientSocketPoolManager::set_max_sockets_per_pool_for_test(
+  ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
 
   MockRead reads[] = {

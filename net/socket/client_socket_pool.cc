@@ -164,11 +164,13 @@ void ClientSocketPool::set_used_idle_socket_timeout(base::TimeDelta timeout) {
 }
 
 ClientSocketPool::ClientSocketPool(
+    size_t socket_soft_cap,
     SocketPoolAdditionalCapacity additional_capacity,
     bool is_for_websockets,
     const CommonConnectJobParams* common_connect_job_params,
     std::unique_ptr<ConnectJobFactory> connect_job_factory)
-    : additional_capacity_(additional_capacity),
+    : socket_soft_cap_(socket_soft_cap),
+      additional_capacity_(additional_capacity),
       is_for_websockets_(is_for_websockets),
       common_connect_job_params_(common_connect_job_params),
       connect_job_factory_(std::move(connect_job_factory)) {}
@@ -239,16 +241,14 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
       common_connect_job_params_, delegate);
 }
 
-void ClientSocketPool::UpdateStateBeforeAllocation(size_t sockets_in_use,
-                                                   size_t socket_soft_cap) {
+void ClientSocketPool::UpdateStateBeforeAllocation(size_t sockets_in_use) {
   state_ = additional_capacity_.NextStateBeforeAllocation(
-      State(), sockets_in_use, socket_soft_cap);
+      State(), sockets_in_use, SocketSoftCap());
 }
 
-void ClientSocketPool::UpdateStateAfterRelease(size_t sockets_in_use,
-                                               size_t socket_soft_cap) {
+void ClientSocketPool::UpdateStateAfterRelease(size_t sockets_in_use) {
   state_ = additional_capacity_.NextStateAfterRelease(State(), sockets_in_use,
-                                                      socket_soft_cap);
+                                                      SocketSoftCap());
 }
 
 }  // namespace net

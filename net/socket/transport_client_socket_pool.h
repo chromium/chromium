@@ -157,7 +157,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   };
 
   TransportClientSocketPool(
-      size_t max_sockets,
+      size_t socket_soft_cap,
       size_t max_sockets_per_group,
       SocketPoolAdditionalCapacity additional_capacity,
       base::TimeDelta unused_idle_socket_timeout,
@@ -176,7 +176,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   // |connect_backup_jobs_enabled| can be set to false to disable backup connect
   // jobs (Which are normally enabled).
   static std::unique_ptr<TransportClientSocketPool> CreateForTesting(
-      size_t max_sockets,
+      size_t socket_soft_cap,
       size_t max_sockets_per_group,
       SocketPoolAdditionalCapacity additional_capacity,
       base::TimeDelta unused_idle_socket_timeout,
@@ -610,7 +610,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
       std::map<const ClientSocketHandle*, CallbackResultPair>;
 
   TransportClientSocketPool(
-      size_t max_sockets,
+      size_t socket_soft_cap,
       size_t max_sockets_per_group,
       SocketPoolAdditionalCapacity additional_capacity,
       base::TimeDelta unused_idle_socket_timeout,
@@ -813,9 +813,6 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
 
   // Number of connected sockets we handed out across all groups.
   size_t handed_out_socket_count_ = 0;
-
-  // The maximum total number of sockets. See ReachedMaxSocketsLimit.
-  const size_t max_sockets_;
 
   // The maximum number of sockets kept per group.
   const size_t max_sockets_per_group_;

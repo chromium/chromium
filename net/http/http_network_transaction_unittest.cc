@@ -439,8 +439,8 @@ class HttpNetworkTransactionTestBase : public PlatformTest,
   ~HttpNetworkTransactionTestBase() override {
     // Important to restore the per-pool limit first, since the pool limit must
     // always be greater than group limit, and the tests reduce both limits.
-    ClientSocketPoolManager::set_max_sockets_per_pool_for_test(
-        HttpNetworkSession::NORMAL_SOCKET_POOL, old_max_pool_sockets_);
+    ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
+        HttpNetworkSession::NORMAL_SOCKET_POOL, old_socket_soft_cap_);
     ClientSocketPoolManager::set_max_sockets_per_group_for_test(
         HttpNetworkSession::NORMAL_SOCKET_POOL, old_max_group_sockets_);
   }
@@ -472,7 +472,7 @@ class HttpNetworkTransactionTestBase : public PlatformTest,
         ssl_(ASYNC, OK),
         old_max_group_sockets_(ClientSocketPoolManager::max_sockets_per_group(
             HttpNetworkSession::NORMAL_SOCKET_POOL)),
-        old_max_pool_sockets_(ClientSocketPoolManager::max_sockets_per_pool(
+        old_socket_soft_cap_(ClientSocketPoolManager::socket_soft_cap_per_pool(
             HttpNetworkSession::NORMAL_SOCKET_POOL)) {
     session_deps_.enable_http2_alternative_service = true;
   }
@@ -667,7 +667,7 @@ class HttpNetworkTransactionTestBase : public PlatformTest,
   // Original socket limits.  Some tests set these.  Safest to always restore
   // them once each test has been run.
   int old_max_group_sockets_;
-  int old_max_pool_sockets_;
+  int old_socket_soft_cap_;
 };
 
 class HttpNetworkTransactionTest
@@ -22736,7 +22736,7 @@ TEST_P(HttpNetworkTransactionTest, ErrorSocketNotConnected) {
 TEST_P(HttpNetworkTransactionTest, CloseIdleSpdySessionToOpenNewOne) {
   ClientSocketPoolManager::set_max_sockets_per_group_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
-  ClientSocketPoolManager::set_max_sockets_per_pool_for_test(
+  ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
 
   // Use two different hosts with different IPs so they don't get pooled.
@@ -23104,7 +23104,7 @@ TEST_P(HttpNetworkTransactionTest, HttpAsyncReadError) {
 TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest) {
   ClientSocketPoolManager::set_max_sockets_per_group_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
-  ClientSocketPoolManager::set_max_sockets_per_pool_for_test(
+  ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
 
   // Set up SSL request.
@@ -23202,7 +23202,7 @@ TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest) {
 TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest2) {
   ClientSocketPoolManager::set_max_sockets_per_group_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
-  ClientSocketPoolManager::set_max_sockets_per_pool_for_test(
+  ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
 
   // Set up an ssl request.

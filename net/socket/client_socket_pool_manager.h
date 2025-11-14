@@ -39,9 +39,9 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManager {
   // The setter methods below affect only newly created socket pools after the
   // methods are called. Normally they should be called at program startup
   // before any ClientSocketPoolManagerImpl is created.
-  static size_t max_sockets_per_pool(
+  static size_t socket_soft_cap_per_pool(
       HttpNetworkSession::SocketPoolType pool_type);
-  static void set_max_sockets_per_pool_for_test(
+  static void set_socket_soft_cap_per_pool_for_test(
       HttpNetworkSession::SocketPoolType pool_type,
       size_t socket_count);
 

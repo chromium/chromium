@@ -339,13 +339,14 @@ FUZZ_TEST(SocketPoolAdditionalCapacityTest, ValidateRandomizedInputs)
 class MockClientSocketPool : public ClientSocketPool {
  public:
   MockClientSocketPool()
-      : ClientSocketPool(kFieldTrialPool,
+      : ClientSocketPool(/*socket_soft_cap=*/256,
+                         kFieldTrialPool,
                          /*is_for_websockets=*/false,
                          /*common_connect_job_params*/ nullptr,
                          /*connect_job_factory*/ nullptr) {}
 
   SocketPoolState RequestSocket() {
-    UpdateStateBeforeAllocation(sockets_in_use_, socket_soft_cap_);
+    UpdateStateBeforeAllocation(sockets_in_use_);
     if (State() == SocketPoolState::kUncapped) {
       ++sockets_in_use_;
     }
@@ -355,7 +356,7 @@ class MockClientSocketPool : public ClientSocketPool {
 
   SocketPoolState ReleaseSocket() {
     --sockets_in_use_;
-    UpdateStateAfterRelease(sockets_in_use_, socket_soft_cap_);
+    UpdateStateAfterRelease(sockets_in_use_);
     CHECK_GE(sockets_in_use_, 0);
     return State();
   }
@@ -448,7 +449,6 @@ class MockClientSocketPool : public ClientSocketPool {
   }
 
  private:
-  const size_t socket_soft_cap_{256};
   size_t sockets_in_use_{0};
 };
 
