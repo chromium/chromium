@@ -94,16 +94,21 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // Handles passkey registration requests. Yields if any parameter is missing.
   void HandleCreateRequestedEvent(RegistrationRequestParams params);
 
-  // Adds a passkey to the passkey model while enabling the passkey creation
-  // infobar to be displayed if possible.
-  void AddNewPasskey(sync_pb::WebauthnCredentialSpecifics& passkey);
-
  private:
   friend class web::WebStateUserData<PasskeyTabHelper>;
+  friend class PasskeyTabHelperTest;
 
   explicit PasskeyTabHelper(web::WebState* web_state,
                             webauthn::PasskeyModel* passkey_model,
                             std::unique_ptr<IOSPasskeyClient> client);
+
+  // Returns whether the passkey model contains a passkey from the
+  // exclude credentials list from the provided parameters.
+  bool HasExcludedPasskey(const RegistrationRequestParams& params) const;
+
+  // Adds a passkey to the passkey model while enabling the passkey creation
+  // infobar to be displayed if possible.
+  void AddNewPasskey(sync_pb::WebauthnCredentialSpecifics& passkey);
 
   // Returns a web frame from a web frame id. May return null.
   web::WebFrame* GetWebFrame(const RequestParams& request_params) const;

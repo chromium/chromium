@@ -166,7 +166,8 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
   }
 
   if (!IsOriginValidForRelyingPartyId(web_frame->GetSecurityOrigin(),
-                                      params.request_params_.rp_entity_.id)) {
+                                      params.request_params_.rp_entity_.id) ||
+      HasExcludedPasskey(params)) {
     PasskeyJavaScriptFeature::GetInstance()->DeferToRenderer(web_frame);
     return;
   }
@@ -198,6 +199,31 @@ web::WebFrame* PasskeyTabHelper::GetWebFrame(
   return web_frames_manager
              ? web_frames_manager->GetFrameWithId(request_params.frame_id_)
              : nullptr;
+}
+
+bool PasskeyTabHelper::HasExcludedPasskey(
+    const RegistrationRequestParams& params) const {
+  if (params.exclude_credentials_.empty()) {
+    return false;
+  }
+
+  std::set<std::string> exclude_credentials;
+  std::transform(
+      params.exclude_credentials_.begin(), params.exclude_credentials_.end(),
+      std::inserter(exclude_credentials, exclude_credentials.begin()),
+      [](const device::PublicKeyCredentialDescriptor& desc) {
+        return std::string(desc.id.begin(), desc.id.end());
+      });
+
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
+      passkey_model_->GetPasskeysForRelyingPartyId(
+          params.request_params_.rp_entity_.id);
+  for (const auto& passkey : passkeys) {
+    if (exclude_credentials.contains(passkey.credential_id())) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void PasskeyTabHelper::AddNewPasskey(

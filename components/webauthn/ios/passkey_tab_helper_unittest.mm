@@ -15,10 +15,31 @@
 namespace {
 
 constexpr char kCredentialId[] = "credential_id";
+constexpr char kCredentialId2[] = "credential_id_2";
 constexpr char kRpId[] = "example.com";
 
 constexpr char kWebAuthenticationIOSContentAreaEventHistogram[] =
     "WebAuthentication.IOS.ContentAreaEvent";
+
+// Converts an std::string to a uint8_t vector.
+std::vector<uint8_t> AsByteVector(std::string str) {
+  return std::vector<uint8_t>(str.begin(), str.end());
+}
+
+// Builds RegistrationRequestParams from an exclude credentials list.
+PasskeyTabHelper::RegistrationRequestParams BuildRegistrationRequestParams(
+    const std::vector<device::PublicKeyCredentialDescriptor>&
+        exclude_credentials) {
+  std::string frame_id = "";
+  device::PublicKeyCredentialRpEntity rp_entity(kRpId);
+  std::vector<uint8_t> challenge;
+  device::PublicKeyCredentialUserEntity user_entity;
+  return PasskeyTabHelper::RegistrationRequestParams(
+      PasskeyTabHelper::RequestParams(
+          frame_id, std::move(rp_entity), std::move(challenge),
+          device::UserVerificationRequirement::kPreferred),
+      std::move(user_entity), exclude_credentials);
+}
 
 }  // namespace
 
@@ -49,6 +70,11 @@ class PasskeyTabHelperTest : public PlatformTest {
  protected:
   PasskeyTabHelper* passkey_tab_helper() {
     return PasskeyTabHelper::FromWebState(&fake_web_state_);
+  }
+
+  bool HasExcludedPasskey(
+      const PasskeyTabHelper::RegistrationRequestParams& params) {
+    return passkey_tab_helper()->HasExcludedPasskey(params);
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -125,4 +151,29 @@ TEST_F(PasskeyTabHelperTest, LogsEventFromCreateResolvedNonGpmString) {
   histogram_tester_.ExpectUniqueSample(
       kWebAuthenticationIOSContentAreaEventHistogram, kCreateRequestedBucket,
       /*count=*/1);
+}
+
+TEST_F(PasskeyTabHelperTest, HasExcludedPasskey) {
+  // Empty exclude credentials list, expecting no match.
+  std::vector<device::PublicKeyCredentialDescriptor> exclude_credentials;
+  ASSERT_FALSE(
+      HasExcludedPasskey(BuildRegistrationRequestParams(exclude_credentials)));
+
+  // Add passkey with kCredentialId.
+  sync_pb::WebauthnCredentialSpecifics passkey;
+  passkey.set_credential_id(kCredentialId);
+  passkey.set_rp_id(kRpId);
+  passkey_model_->AddNewPasskeyForTesting(std::move(passkey));
+
+  // Add kCredentialId2 to exclude credentials list, expecting no match.
+  exclude_credentials.push_back(
+      {device::CredentialType::kPublicKey, AsByteVector(kCredentialId2)});
+  ASSERT_FALSE(
+      HasExcludedPasskey(BuildRegistrationRequestParams(exclude_credentials)));
+
+  // Add kCredentialId to exclude credentials list, expecting a match.
+  exclude_credentials.push_back(
+      {device::CredentialType::kPublicKey, AsByteVector(kCredentialId)});
+  ASSERT_TRUE(
+      HasExcludedPasskey(BuildRegistrationRequestParams(exclude_credentials)));
 }
