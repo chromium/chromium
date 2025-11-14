@@ -484,7 +484,8 @@ class PausableResponseProvider : public HtmlResponseProvider {
 }
 
 // This is currently needed to prevent this test case from being ignored.
-- (void)testEmpty {
+// TODO(crbug.com/460751411): Test is flaky.
+- (void)FLAKY_testEmpty {
 }
 
 @end
