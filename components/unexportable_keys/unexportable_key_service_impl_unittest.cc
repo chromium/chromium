@@ -439,7 +439,7 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKeyCallsProvider) {
 
   // Delete the key.
   EXPECT_CALL(
-      SwitchToMockKeyProvider(),
+      SwitchToMockKeyProvider().mock(),
       DeleteSigningKeySlowly(Eq(service().GetWrappedKey(key_id).value())))
       .WillOnce(Return(true));
 

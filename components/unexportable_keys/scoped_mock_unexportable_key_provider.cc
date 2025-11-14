@@ -54,7 +54,8 @@ class ForwardingUnexportableKeyProvider
 };
 
 std::unique_ptr<crypto::UnexportableKeyProvider> GetMockKeyProvider() {
-  return std::make_unique<ForwardingUnexportableKeyProvider>(*g_mock_provider);
+  return std::make_unique<ForwardingUnexportableKeyProvider>(
+      g_mock_provider->mock());
 }
 
 std::unique_ptr<crypto::UnexportableSigningKey> GetNextGeneratedKey(
@@ -77,19 +78,19 @@ ScopedMockUnexportableKeyProvider::ScopedMockUnexportableKeyProvider() {
   g_mock_provider = this;
   crypto::internal::SetUnexportableKeyProviderForTesting(&GetMockKeyProvider);
 
-  ON_CALL(*this, SelectAlgorithm)
+  ON_CALL(mock_provider_, SelectAlgorithm)
       .WillByDefault(
           [](base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
                  algorithms) {
             return algorithms.empty() ? std::nullopt
                                       : std::optional(algorithms[0]);
           });
-  ON_CALL(*this, GenerateSigningKeySlowly).WillByDefault([this](auto) {
+  ON_CALL(mock_provider_, GenerateSigningKeySlowly).WillByDefault([this](auto) {
     return GetNextGeneratedKey(next_generated_keys_);
   });
-  ON_CALL(*this, FromWrappedSigningKeySlowly).WillByDefault([this](auto) {
-    return GetNextGeneratedKey(next_generated_keys_);
-  });
+  ON_CALL(mock_provider_, FromWrappedSigningKeySlowly)
+      .WillByDefault(
+          [this](auto) { return GetNextGeneratedKey(next_generated_keys_); });
 }
 
 ScopedMockUnexportableKeyProvider::~ScopedMockUnexportableKeyProvider() {

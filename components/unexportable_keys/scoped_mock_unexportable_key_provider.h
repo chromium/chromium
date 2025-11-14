@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_UNEXPORTABLE_KEYS_SCOPED_MOCK_UNEXPORTABLE_KEY_PROVIDER_H_
 #define COMPONENTS_UNEXPORTABLE_KEYS_SCOPED_MOCK_UNEXPORTABLE_KEY_PROVIDER_H_
 
+#include <memory>
+
 #include "base/containers/queue.h"
+#include "components/unexportable_keys/mock_unexportable_key_provider.h"
 #include "crypto/unexportable_key.h"
-#include "testing/gmock/include/gmock/gmock.h"
 
 namespace unexportable_keys {
 
@@ -15,39 +17,21 @@ namespace unexportable_keys {
 // `MockUnexportableKey`s while it is in scope.
 // The mock provider will return mock keys previously added via
 // `AddNextGeneratedKey()` in the queue order.
-class ScopedMockUnexportableKeyProvider
-    : public crypto::UnexportableKeyProvider {
+class ScopedMockUnexportableKeyProvider {
  public:
   ScopedMockUnexportableKeyProvider();
   ScopedMockUnexportableKeyProvider(const ScopedMockUnexportableKeyProvider&) =
       delete;
   ScopedMockUnexportableKeyProvider& operator=(
       const ScopedMockUnexportableKeyProvider&) = delete;
-  ~ScopedMockUnexportableKeyProvider() override;
+  ~ScopedMockUnexportableKeyProvider();
 
-  // crypto::UnexportableKeyProvider:
-  MOCK_METHOD(std::optional<crypto::SignatureVerifier::SignatureAlgorithm>,
-              SelectAlgorithm,
-              (base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-                   acceptable_algorithms),
-              (override));
-  MOCK_METHOD(std::unique_ptr<crypto::UnexportableSigningKey>,
-              GenerateSigningKeySlowly,
-              (base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-                   acceptable_algorithms),
-              (override));
-  MOCK_METHOD(std::unique_ptr<crypto::UnexportableSigningKey>,
-              FromWrappedSigningKeySlowly,
-              (base::span<const uint8_t> wrapped_key),
-              (override));
-  MOCK_METHOD(bool,
-              DeleteSigningKeySlowly,
-              (base::span<const uint8_t> wrapped_key),
-              (override));
+  MockUnexportableKeyProvider& mock() { return mock_provider_; }
 
   void AddNextGeneratedKey(std::unique_ptr<crypto::UnexportableSigningKey> key);
 
  private:
+  MockUnexportableKeyProvider mock_provider_;
   base::queue<std::unique_ptr<crypto::UnexportableSigningKey>>
       next_generated_keys_;
 };

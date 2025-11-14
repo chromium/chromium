@@ -503,7 +503,7 @@ TEST_F(UnexportableKeyTaskManagerTest, DeleteKeyAsyncFailureCryptoApiFailed) {
   std::vector<uint8_t> wrapped_key = {1, 2, 3};
 
   // Delete the key, but fail to do so.
-  EXPECT_CALL(SwitchToMockKeyProvider(), DeleteSigningKeySlowly)
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteSigningKeySlowly)
       .WillOnce(Return(false));
   task_manager().DeleteSigningKeySlowlyAsync(
       crypto::UnexportableKeyProvider::Config(), std::move(wrapped_key),
