@@ -195,18 +195,21 @@ This is emitted for two scenarios when a worker may be unregistered:
 </variants>
 
 <histogram name="ExtensionBlacklist.BlacklistInstalled"
-    enum="ExtensionLocation" expires_after="2024-10-23">
+    enum="ExtensionLocation" expires_after="2026-05-11">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The number of extensions that were blocklisted when already installed,
     grouped by Extension::Location. Logged when ExtensionService blockists and
     unloads an installed extension.
+
+    Warning: this histogram was expired from 2024-10-23 to 2025-11-13; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="ExtensionBlacklist.BlockCRX" enum="ExtensionLocation"
-    expires_after="2026-04-26">
+    expires_after="2026-05-11">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -217,7 +220,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="ExtensionBlacklist.SilentInstall" enum="ExtensionLocation"
-    expires_after="2024-10-23">
+    expires_after="2026-05-11">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -226,17 +229,23 @@ This is emitted for two scenarios when a worker may be unregistered:
     a blocklisted extension without blocking it (ExtensionBlacklist.BlockCRX
     would be logged otherwise). Typically this will be when a user has a
     blocklisted extension synced.
+
+    Warning: this histogram was expired from 2024-10-23 to 2025-11-13; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="ExtensionBlacklist.UnblacklistInstalled"
-    enum="ExtensionLocation" expires_after="2024-07-28">
+    enum="ExtensionLocation" expires_after="2026-05-11">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The number of extensions that were unblocklisted when installed, grouped by
     Extension::Location. Logged when ExtensionService unblocklists and loads a
     blocklisted extension.
+
+    Warning: this histogram was expired from 2024-07-28 to 2025-11-13; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -382,7 +391,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.CommandLineInstalled" units="count"
-    expires_after="2026-05-10">
+    expires_after="2026-05-11">
   <owner>richche@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -394,7 +403,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.CommandLineManifestSettingsOverride"
-    enum="ManifestSettingsOverrideType" expires_after="2026-05-10">
+    enum="ManifestSettingsOverrideType" expires_after="2026-05-11">
   <owner>richche@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -408,7 +417,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.CommandLineWith{DeveloperModeState}{ExtensionState}"
-    units="count" expires_after="2026-02-22">
+    units="count" expires_after="2026-05-11">
   <owner>richche@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -909,8 +918,8 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DaysSinceInstall" units="days"
-    expires_after="2026-04-05">
-  <owner>psarouthakis@google.com</owner>
+    expires_after="2026-05-11">
+  <owner>richche@google.com</owner>
   <owner>anunoy@chromium.org</owner>
   <summary>
     How many days ago an extension was first installed. Recorded during the
@@ -920,8 +929,8 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DaysSinceLastUpdate" units="days"
-    expires_after="2026-04-05">
-  <owner>psarouthakis@google.com</owner>
+    expires_after="2026-05-11">
+  <owner>richche@google.com</owner>
   <owner>anunoy@chromium.org</owner>
   <summary>
     How many days ago an extension was updated. Recorded during the
@@ -1335,7 +1344,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeveloperModeStatusEnabled" enum="Boolean"
-    expires_after="2026-03-22">
+    expires_after="2026-05-11">
   <owner>richche@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1875,7 +1884,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ExtensionAddDisabledRemotelyReason2"
-    enum="ExtensionUpdateCheckDataKey" expires_after="2024-08-11">
+    enum="ExtensionUpdateCheckDataKey" expires_after="2026-05-11">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1884,6 +1893,9 @@ This is emitted for two scenarios when a worker may be unregistered:
     during an update check for extensions. This metric was added in M92 to
     replace the old version, because the logic of logging greylisted extensions
     has changed.
+
+    Warning: this histogram was expired from 2024-08-11 to 2025-11-13; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -1914,7 +1926,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ExtensionDisabledRemotely2"
-    enum="ExtensionUpdateCheckDataKey" expires_after="2024-08-11">
+    enum="ExtensionUpdateCheckDataKey" expires_after="2026-05-11">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1923,6 +1935,9 @@ This is emitted for two scenarios when a worker may be unregistered:
     detected when Chrome checks for an update for the extension. This metric was
     added in M92 to replace the old version, because the logic of logging
     greylisted extensions has changed.
+
+    Warning: this histogram was expired from 2024-08-11 to 2025-11-13; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -1963,7 +1978,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ExtensionReenabledRemotely" units="count"
-    expires_after="2026-02-16">
+    expires_after="2026-05-11">
   <owner>richche@chromium.org</owner>
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -1974,12 +1989,15 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ExtensionReenabledRemotely{BlocklistState}"
-    units="count" expires_after="2024-06-10">
+    units="count" expires_after="2026-05-11">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Recorded when a {BlocklistState} extension that was previously only disabled
     remotely is re-enabled remotely during an update service session.
+
+    Warning: this histogram was expired from 2024-06-18 to 2025-11-13; data may
+    be missing.
   </summary>
   <token key="BlocklistState">
     <variant name="ForPolicyViolation" summary="policy violation"/>
@@ -1988,7 +2006,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ExternalItemState" enum="ExternalItemState"
-    expires_after="2023-07-07">
+    expires_after="2026-05-11">
   <owner>anunoy@chromium.org</owner>
   <summary>
     The number of sideloaded apps/extensions loaded on profile open grouped by
@@ -1998,11 +2016,14 @@ This is emitted for two scenarios when a worker may be unregistered:
     version that emits only on profile open for &quot;user&quot; profiles
     (profiles where people can install extensions, specifically profiles that
     can have non-component extensions installed).
+
+    Warning: this histogram was expired from 2023-07-07 to 2025-11-13; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Extensions.ExternalItemState2" enum="ExternalItemState"
-    expires_after="2026-04-05">
+    expires_after="2026-05-11">
   <owner>anunoy@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2282,7 +2303,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ForceInstalledManagementAuthorityTrustworthiness"
-    enum="ManagementAuthorityTrustworthiness" expires_after="2026-04-05">
+    enum="ManagementAuthorityTrustworthiness" expires_after="2026-05-11">
   <owner>richche@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2498,7 +2519,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.FromWebstoreInconsistency2"
-    enum="ExtensionFromWebstoreInconcistencyEnum" expires_after="2025-03-02">
+    enum="ExtensionFromWebstoreInconcistencyEnum" expires_after="2026-05-11">
   <owner>anunoy@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2508,6 +2529,9 @@ This is emitted for two scenarios when a worker may be unregistered:
     non-component extensions installed). This means an item that is flagged as
     from_webstore, but with either a non-webstore update_url or an external
     install location.
+
+    Warning: this histogram was expired from 2025-03-02 to 2025-11-13; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -2761,29 +2785,35 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Greylist.Disabled" enum="ExtensionLocation"
-    expires_after="2024-09-07">
+    expires_after="2026-05-11">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Emits the Extension::Location of a newly-disabled greylisted extension.
     Logged when SafeBrowsingVerdictHandler greylists and disables an installed
     extension.
+
+    Warning: this histogram was expired from 2024-09-07 to 2025-11-13; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Extensions.Greylist.Enabled" enum="ExtensionLocation"
-    expires_after="2024-09-07">
+    expires_after="2026-05-11">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Emits the Extension::Location of an extension that was ungreylisted. Logged
     when SafeBrowsingVerdictHandler ungreylists and enables an installed
     extension.
+
+    Warning: this histogram was expired from 2024-09-07 to 2025-11-13; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Extensions.GreylistedForceInstalled.{TrustLevel}.Enabled"
-    enum="Boolean" expires_after="2026-04-19">
+    enum="Boolean" expires_after="2026-05-11">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3319,7 +3349,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.LoadingFromCommandLine" enum="LoadExtensionFlag"
-    expires_after="2026-03-29">
+    expires_after="2026-05-11">
   <owner>richche@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3732,7 +3762,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.NonWebstoreLocationWith{DeveloperModeState}{ExtensionState}3"
-    enum="ExtensionLocation" expires_after="2026-03-15">
+    enum="ExtensionLocation" expires_after="2026-05-11">
   <owner>richche@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3751,7 +3781,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.NonWebStoreNewTabPageOverrides2" units="units"
-    expires_after="2026-04-05">
+    expires_after="2026-05-11">
   <owner>anunoy@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
