@@ -7,6 +7,10 @@ See https://www.chromium.org/developers/how-tos/depottools/presubmit-scripts/
 for more details about the presubmit API built into depot_tools.
 """
 
+# Pylint directives to disable warnings in cider.
+# pylint: disable=bad-indentation
+# pylint: disable=g-import-not-at-top
+
 import dataclasses
 from typing import Callable
 from typing import Optional
@@ -6266,8 +6270,8 @@ def CheckForDeprecatedOSMacros(input_api, output_api):
     # The OS_ macros are allowed to be used in build/build_config.h.
     config_h_file = input_api.os_path.join('build', 'build_config.h')
     for f in input_api.AffectedSourceFiles(None):
-        if not f.LocalPath().endswith(('.py', '.js', '.html', '.css', '.md')) \
-                and f.LocalPath() != config_h_file:
+        if (not f.LocalPath().endswith(('.py', '.js', '.html', '.css', '.md'))
+                and f.LocalPath() != config_h_file):
             bad_macros.extend(_CheckForDeprecatedOSMacrosInFile(input_api, f))
 
     if not bad_macros:
@@ -7409,7 +7413,7 @@ def _IsMiraclePtrDisallowed(input_api, affected_file):
     # Renderer-only code is generally allowed to use MiraclePtr. These
     # directories, however, are specifically disallowed, for perf reasons.
     if ('third_party/blink/renderer/core/' in path
-            or "third_party/blink/renderer/platform/heap/" in path
+            or 'third_party/blink/renderer/platform/heap/' in path
             or 'third_party/blink/renderer/platform/wtf/' in path
             or 'third_party/blink/renderer/platform/fonts/' in path):
         return True
@@ -7456,11 +7460,12 @@ def CheckAdvancedMemorySafetyChecksUsage(input_api, output_api):
             paths.add(f.LocalPath())
     if not paths:
         return []
-    return [output_api.PresubmitPromptWarning(
-              'ADVANCED_MEMORY_SAFETY_CHECKS() macro is managed by ' \
-              'the memory safety team (chrome-memory-safety@). ' \
-              'Please contact us to add/delete the uses of the macro.',
-              paths)]
+    return [
+        output_api.PresubmitPromptWarning(
+            'ADVANCED_MEMORY_SAFETY_CHECKS() macro is managed by '
+            'the memory safety team (chrome-memory-safety@). '
+            'Please contact us to add/delete the uses of the macro.', paths)
+    ]
 
 
 def CheckPythonShebang(input_api, output_api):
@@ -7747,7 +7752,7 @@ def CheckDanglingUntriaged(input_api, output_api):
 
     count = 0
     for f in input_api.AffectedFiles(file_filter=FilterFile):
-        count -= sum([l.count("DanglingUntriaged") for l in f.OldContents()])
+        count -= sum([l.count('DanglingUntriaged') for l in f.OldContents()])
         count += sum([l.count('DanglingUntriaged') for l in f.NewContents()])
 
     # Most likely, nothing changed:
@@ -7756,11 +7761,11 @@ def CheckDanglingUntriaged(input_api, output_api):
 
     # Congrats developers for improving it:
     if count < 0:
-        message = f"DanglingUntriaged pointers removed: {-count}\nThank you!"
+        message = f'DanglingUntriaged pointers removed: {-count}\nThank you!'
         return [output_api.PresubmitNotifyResult(message)]
 
     # Check for 'DanglingUntriaged-notes' in the description:
-    notes_regex = input_api.re.compile("DanglingUntriaged-notes[:=]")
+    notes_regex = input_api.re.compile('DanglingUntriaged-notes[:=]')
     if any(
             notes_regex.match(line)
             for line in input_api.change.DescriptionText().splitlines()):
@@ -7768,19 +7773,21 @@ def CheckDanglingUntriaged(input_api, output_api):
 
     # Check for DanglingUntriaged-notes in the git footer:
     if input_api.change.GitFootersFromDescription().get(
-            "DanglingUntriaged-notes", []):
+            'DanglingUntriaged-notes', []):
         return []
 
-    message = (
-        'Unexpected new occurrences of `DanglingUntriaged` detected. Please\n'
-        + "avoid adding new ones\n" + "\n" + "See documentation:\n" +
-        "https://chromium.googlesource.com/chromium/src/+/main/docs/dangling_ptr.md\n"
-        + "\n" + 'See also the guide to fix dangling pointers:\n' +
-        "https://chromium.googlesource.com/chromium/src/+/main/docs/dangling_ptr_guide.md\n"
-        + '\n' +
-        'To disable this warning, please add in the commit description:\n' +
-        "DanglingUntriaged-notes: <rationale for new untriaged dangling " +
-        'pointers>')
+    message = ("""Unexpected new occurrences of `DanglingUntriaged` detected.
+Please avoid adding new ones.
+
+See documentation:
+https://chromium.googlesource.com/chromium/src/+/main/docs/dangling_ptr.md
+
+See also the guide to fix dangling pointers:
+https://chromium.googlesource.com/chromium/src/+/main/docs/dangling_ptr_guide.md
+
+To disable this warning, please add in the commit description:
+DanglingUntriaged-notes: <rationale for new untriaged dangling pointers>""")
+
     return [output_api.PresubmitPromptWarning(message)]
 
 
