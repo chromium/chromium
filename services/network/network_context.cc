@@ -77,6 +77,7 @@
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/device_bound_sessions/session_service.h"
+#include "net/disk_cache/disk_cache.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/mapped_host_resolver.h"
 #include "net/extras/sqlite/cookie_crypto_delegate.h"
@@ -110,6 +111,7 @@
 #include "services/network/device_bound_session_manager.h"
 #include "services/network/devtools_durable_msg_collector.h"
 #include "services/network/disk_cache/mojo_backend_file_operations_factory.h"
+#include "services/network/enterprise/encryption/encrypted_backend_file_operations_factory.h"
 #include "services/network/host_resolver.h"
 #include "services/network/http_auth_cache_proxy_copier.h"
 #include "services/network/http_server_properties_pref_delegate.h"
@@ -2847,6 +2849,20 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
         cache_params.file_operations_factory =
             base::MakeRefCounted<MojoBackendFileOperationsFactory>(
                 std::move(params_->http_cache_file_operations_factory));
+      }
+
+      // For enterprise users, we wrap `BackendFileOperations` to intercept file
+      // I/O with encryption ops.
+      if (params_->enable_encrypted_http_cache) {
+        if (!cache_params.file_operations_factory) {
+          // Since it's the fallback later anyways, explicitly created here to
+          // wrap.
+          cache_params.file_operations_factory =
+              base::MakeRefCounted<disk_cache::TrivialFileOperationsFactory>();
+        }
+        cache_params.file_operations_factory = base::MakeRefCounted<
+            enterprise::EncryptedBackendFileOperationsFactory>(
+            std::move(cache_params.file_operations_factory));
       }
     }
     cache_params.reset_cache = params_->reset_http_cache_backend;

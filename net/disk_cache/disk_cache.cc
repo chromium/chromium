@@ -684,6 +684,10 @@ std::unique_ptr<UnboundBackendFileOperations> TrivialFileOperations::Unbind() {
   return std::make_unique<UnboundTrivialFileOperations>();
 }
 
+bool TrivialFileOperations::IsEncrypted() const {
+  return false;
+}
+
 TrivialFileOperationsFactory::TrivialFileOperationsFactory() = default;
 TrivialFileOperationsFactory::~TrivialFileOperationsFactory() = default;
 

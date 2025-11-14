@@ -24945,6 +24945,7 @@ Called by update_net_error_codes.py.-->
   <int value="8" label="kWriteFakeIndexFileFailed"/>
   <int value="9" label="kReplaceFileFailed"/>
   <int value="10" label="kBadFakeIndexReadSize"/>
+  <int value="11" label="kEncryptionStatusMismatch"/>
 </enum>
 
 <enum name="SimpleCacheIndexInitializeMethod">

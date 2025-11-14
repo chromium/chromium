@@ -45,6 +45,7 @@ bool WriteFakeIndexFile(disk_cache::BackendFileOperations* file_operations,
   file_contents.version = disk_cache::kSimpleVersion;
   file_contents.zero = 0;
   file_contents.zero2 = 0;
+  file_contents.encryption_status = file_operations->IsEncrypted() ? 1 : 0;
 
   if (!file.WriteAndCheck(0, base::byte_span_from_ref(file_contents))) {
     LOG(ERROR) << "Failed to write fake index file: "
@@ -134,6 +135,11 @@ SimpleCacheConsistencyResult UpgradeSimpleCacheOnDisk(
   if (file_header.zero != 0 && file_header.zero2 != 0) {
     LOG(WARNING) << "Rebuilding cache due to experiment change";
     return SimpleCacheConsistencyResult::kBadZeroCheck;
+  }
+
+  if (file_header.encryption_status != file_operations->IsEncrypted()) {
+    LOG(WARNING) << "Rebuilding cache due to encryption status change";
+    return SimpleCacheConsistencyResult::kEncryptionStatusMismatch;
   }
 
   bool new_fake_index_needed = (version_from != kSimpleVersion);

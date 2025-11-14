@@ -38,7 +38,8 @@ enum class SimpleCacheConsistencyResult {
   kWriteFakeIndexFileFailed = 8,
   kReplaceFileFailed = 9,
   kBadFakeIndexReadSize = 10,
-  kMaxValue = kBadFakeIndexReadSize,
+  kEncryptionStatusMismatch = 11,
+  kMaxValue = kEncryptionStatusMismatch,
 };
 
 // Performs all necessary disk IO to upgrade the cache structure if it is
@@ -71,9 +72,8 @@ struct NET_EXPORT_PRIVATE FakeIndexData {
   uint32_t zero = 0;
   uint32_t zero2 = 0;
 
-  // Avoid implicit padding so `std::has_unique_object_representations_v<>` will
-  // hold.
-  uint32_t unused_padding = 0;
+  // Whether cache entries are stored encrypted on disk.
+  uint32_t encryption_status = 0;
 };
 static_assert(std::has_unique_object_representations_v<FakeIndexData>);
 

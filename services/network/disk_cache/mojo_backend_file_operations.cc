@@ -146,6 +146,10 @@ MojoBackendFileOperations::Unbind() {
   return std::make_unique<UnboundMojoBackendFileOperations>(remote_.Unbind());
 }
 
+bool MojoBackendFileOperations::IsEncrypted() const {
+  return false;
+}
+
 UnboundMojoBackendFileOperations::UnboundMojoBackendFileOperations(
     mojo::PendingRemote<mojom::HttpCacheBackendFileOperations> pending_remote)
     : pending_remote_(std::move(pending_remote)) {}

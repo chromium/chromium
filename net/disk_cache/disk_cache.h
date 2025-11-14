@@ -692,6 +692,9 @@ class BackendFileOperations {
   // this method is called, no methods (except for the destructor) on this
   // object must not be called.
   virtual std::unique_ptr<UnboundBackendFileOperations> Unbind() = 0;
+
+  // Returns whether the cache entries are encrypted on disk.
+  virtual bool IsEncrypted() const = 0;
 };
 
 // BackendFileOperations which is not yet bound to a sequence.
@@ -722,7 +725,7 @@ class BackendFileOperationsFactory
 
 // A trivial BackendFileOperations implementation which uses corresponding
 // base functions.
-class NET_EXPORT TrivialFileOperations final : public BackendFileOperations {
+class NET_EXPORT TrivialFileOperations : public BackendFileOperations {
  public:
   TrivialFileOperations();
   ~TrivialFileOperations() override;
@@ -743,6 +746,7 @@ class NET_EXPORT TrivialFileOperations final : public BackendFileOperations {
   void CleanupDirectory(const base::FilePath& path,
                         base::OnceCallback<void(bool)> callback) override;
   std::unique_ptr<UnboundBackendFileOperations> Unbind() override;
+  bool IsEncrypted() const override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

@@ -41,6 +41,7 @@ class MojoBackendFileOperations final
   void CleanupDirectory(const base::FilePath& path,
                         base::OnceCallback<void(bool)> callback) override;
   std::unique_ptr<disk_cache::UnboundBackendFileOperations> Unbind() override;
+  bool IsEncrypted() const override;
 
  private:
   mojo::Remote<mojom::HttpCacheBackendFileOperations> remote_;
