@@ -360,9 +360,8 @@ IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerBrowserTest,
 // document here:
 // https://docs.google.com/document/d/1MFprp2ss2r9RNamJ7Jxva1bvRZvec3rzGceDGoJ6vW0/edit#heading=h.n2ppjzx4jpzt
 // TODO(crbug.com/40615943): Remove the test after RenderDocument is shipped.
-// TODO(crbug.com/460180756): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerBrowserTest,
-                       DISABLED_ProgrammaticInjectionRacingWithDidCommit) {
+                       ProgrammaticInjectionRacingWithDidCommit) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // The test assumes the RenderFrame stays the same after navigation. Disable
