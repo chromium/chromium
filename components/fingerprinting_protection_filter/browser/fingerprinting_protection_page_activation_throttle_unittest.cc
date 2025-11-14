@@ -119,7 +119,7 @@ TEST_F(FPFPageActivationThrottleTest,
   auto mock_throttle =
       MockActivationThrottleMockingNotifyPageActivationComputed(
           *mock_nav_registry_, test_support_.content_settings(),
-          test_support_.tracking_protection_settings(), test_support_.prefs());
+          test_support_.prefs());
 
   // Expect that NotifyPageActivationComputed is called with an ActivationState
   // with enable_logging == true.
@@ -143,7 +143,7 @@ TEST_F(FPFPageActivationThrottleTest,
   auto mock_throttle =
       MockActivationThrottleMockingNotifyPageActivationComputed(
           *mock_nav_registry_, test_support_.content_settings(),
-          test_support_.tracking_protection_settings(), test_support_.prefs(),
+          test_support_.prefs(),
           /*is_incognito=*/true);
 
   // Expect that NotifyPageActivationComputed is called with an ActivationState
@@ -168,7 +168,7 @@ TEST_F(
   auto mock_throttle =
       MockActivationThrottleMockingNotifyPageActivationComputed(
           *mock_nav_registry_, test_support_.content_settings(),
-          test_support_.tracking_protection_settings(), test_support_.prefs());
+          test_support_.prefs());
 
   // Expect that NotifyPageActivationComputed is called with an ActivationState
   // with enable_logging == false.
@@ -240,41 +240,6 @@ class FPFPageActivationThrottleWithTrackingProtectionSettingTest
   std::unique_ptr<content::MockNavigationThrottleRegistry> mock_nav_registry_;
 };
 
-TEST_F(FPFPageActivationThrottleWithTrackingProtectionSettingTest,
-       TrackingProtectionSettingsIgnoredOutsideOfIncognitoMode) {
-  scoped_feature_list_.Reset();
-  // Enable non-incognito as well as incognito features.
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/
-      {privacy_sandbox::kFingerprintingProtectionUx,
-       features::kEnableFingerprintingProtectionFilterInIncognito,
-       features::kEnableFingerprintingProtectionFilter},
-      /*disabled_features=*/{});
-
-  // Set FP to disabled in prefs.
-  test_support_.prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled,
-                                    false);
-
-  // Create TrackingProtectionSettings for regular browsing.
-  auto tracking_protection_settings =
-      std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
-          test_support_.prefs(), test_support_.content_settings(),
-          /*management_service=*/nullptr, /*is_incognito=*/false);
-
-  // Create ActivationThrottle with the TrackingProtectionSettings for regular
-  // browsing.
-  auto test_throttle = FingerprintingProtectionPageActivationThrottle(
-      *mock_nav_registry_, test_support_.content_settings(),
-      tracking_protection_settings.get(), test_support_.prefs(),
-      /*is_incognito=*/false);
-
-  // Activation should default to enabled irrespective of
-  // TrackingProtectionSettings.
-  GetActivationResult activation = test_throttle.GetActivation();
-  EXPECT_EQ(activation.level, ActivationLevel::kEnabled);
-  EXPECT_EQ(activation.decision, ActivationDecision::ACTIVATED);
-}
-
 const FPFGetActivationWithTrackingProtectionSettingTestCase
     kGetActivationWithTrackingProtectionSettingTestCases[] = {
         {.test_name = "TPSettingEnabled_Incognito_Enabled",
@@ -316,18 +281,10 @@ TEST_P(FPFPageActivationThrottleWithTrackingProtectionSettingTest,
   test_support_.prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled,
                                     test_case.tps_fp_setting_enabled);
 
-  // Create TrackingProtectionSettings with specified incognito mode.
-  auto tracking_protection_settings =
-      std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
-          test_support_.prefs(), test_support_.content_settings(),
-          /*management_service=*/nullptr, test_case.is_incognito);
-
-  // Create ActivationThrottle with the TrackingProtectionSettings, and
-  // specified incognito mode.
+  // Create ActivationThrottle.
   auto test_throttle = FingerprintingProtectionPageActivationThrottle(
       *mock_nav_registry_, test_support_.content_settings(),
-      tracking_protection_settings.get(), test_support_.prefs(),
-      test_case.is_incognito);
+      test_support_.prefs(), test_case.is_incognito);
 
   GetActivationResult activation = test_throttle.GetActivation();
   EXPECT_EQ(activation.level, test_case.expected_level);
@@ -341,7 +298,6 @@ struct FPFGetActivationTestCase {
   bool is_fp_feature_enabled;
   ActivationLevel activation_level_param;
   bool is_refresh_heuristic_breakage_exception_enabled;
-  bool site_has_tp_exception;
   bool site_has_refresh_heuristic_breakage_exception;
   bool only_if_3pc_blocked_param;
   bool is_localhost;
@@ -419,7 +375,6 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
     {.test_name = "FPFEnabled_ActivationEnabled_NoException_NotOnlyIf3pc",
      .is_fp_feature_enabled = true,
      .activation_level_param = ActivationLevel::kEnabled,
-     .site_has_tp_exception = false,
      .only_if_3pc_blocked_param = false,
      .is_localhost = false,
 
@@ -429,7 +384,6 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
          "FPFEnabled_ActivationEnabled_NoException_OnlyIf3pc_3pcBlocked",
      .is_fp_feature_enabled = true,
      .activation_level_param = ActivationLevel::kEnabled,
-     .site_has_tp_exception = false,
      .only_if_3pc_blocked_param = true,
      .is_localhost = false,
      .cookie_controls_mode =
@@ -437,42 +391,9 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
 
      .expected_level = ActivationLevel::kEnabled,
      .expected_decision = ActivationDecision::ACTIVATED},
-    {.test_name =
-         "FPFEnabled_ActivationEnabled_NoException_OnlyIf3pc_3pcNotBlocked",
+    {.test_name = "FPFEnabled_ActivationEnabled_OnlyIf3pc_3pcNotBlocked",
      .is_fp_feature_enabled = true,
      .activation_level_param = ActivationLevel::kEnabled,
-     .site_has_tp_exception = false,
-     .only_if_3pc_blocked_param = true,
-     .is_localhost = false,
-     .cookie_controls_mode = content_settings::CookieControlsMode::kOff,
-
-     .expected_level = ActivationLevel::kDisabled,
-     .expected_decision = ActivationDecision::ACTIVATION_CONDITIONS_NOT_MET},
-    {.test_name = "FPFEnabled_ActivationEnabled_Exception_NotOnlyIf3pc",
-     .is_fp_feature_enabled = true,
-     .activation_level_param = ActivationLevel::kEnabled,
-     .site_has_tp_exception = true,
-     .only_if_3pc_blocked_param = false,
-     .is_localhost = false,
-
-     .expected_level = ActivationLevel::kDisabled,
-     .expected_decision = ActivationDecision::URL_ALLOWLISTED},
-    {.test_name = "FPFEnabled_ActivationEnabled_Exception_OnlyIf3pc_3pcBlocked",
-     .is_fp_feature_enabled = true,
-     .activation_level_param = ActivationLevel::kEnabled,
-     .site_has_tp_exception = true,
-     .only_if_3pc_blocked_param = true,
-     .is_localhost = false,
-     .cookie_controls_mode =
-         content_settings::CookieControlsMode::kBlockThirdParty,
-
-     .expected_level = ActivationLevel::kDisabled,
-     .expected_decision = ActivationDecision::URL_ALLOWLISTED},
-    {.test_name =
-         "FPFEnabled_ActivationEnabled_Exception_OnlyIf3pc_3pcNotBlocked",
-     .is_fp_feature_enabled = true,
-     .activation_level_param = ActivationLevel::kEnabled,
-     .site_has_tp_exception = true,
      .only_if_3pc_blocked_param = true,
      .is_localhost = false,
      .cookie_controls_mode = content_settings::CookieControlsMode::kOff,
@@ -484,7 +405,6 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
      .is_fp_feature_enabled = true,
      .activation_level_param = ActivationLevel::kEnabled,
      .is_refresh_heuristic_breakage_exception_enabled = false,
-     .site_has_tp_exception = false,
      .site_has_refresh_heuristic_breakage_exception = true,
      .only_if_3pc_blocked_param = false,
      .is_localhost = false,
@@ -497,7 +417,6 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
      .is_fp_feature_enabled = true,
      .activation_level_param = ActivationLevel::kEnabled,
      .is_refresh_heuristic_breakage_exception_enabled = true,
-     .site_has_tp_exception = false,
      .site_has_refresh_heuristic_breakage_exception = true,
      .only_if_3pc_blocked_param = false,
      .is_localhost = false,
@@ -510,7 +429,6 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
      .is_fp_feature_enabled = true,
      .activation_level_param = ActivationLevel::kEnabled,
      .is_refresh_heuristic_breakage_exception_enabled = true,
-     .site_has_tp_exception = false,
      .site_has_refresh_heuristic_breakage_exception = false,
      .only_if_3pc_blocked_param = false,
      .is_localhost = false,
@@ -519,21 +437,10 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
      .expected_level = ActivationLevel::kEnabled,
      .expected_decision = ActivationDecision::ACTIVATED},
     // Not testing all permutations with FPF disabled because the expected
-    // return
-    // value is the same.
-    {.test_name = "FPFDisabled_NoException",
+    // return value is the same.
+    {.test_name = "FPFDisabled",
      .is_fp_feature_enabled = false,
      .activation_level_param = ActivationLevel::kDisabled,
-     .site_has_tp_exception = false,
-     .only_if_3pc_blocked_param = false,
-     .is_localhost = false,
-
-     .expected_level = ActivationLevel::kDisabled,
-     .expected_decision = ActivationDecision::UNKNOWN},
-    {.test_name = "FPFDisabled_Exception",
-     .is_fp_feature_enabled = false,
-     .activation_level_param = ActivationLevel::kDisabled,
-     .site_has_tp_exception = true,
      .only_if_3pc_blocked_param = false,
      .is_localhost = false,
 
@@ -542,7 +449,6 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
     {.test_name = "FPFDisabled_Localhost",
      .is_fp_feature_enabled = true,
      .activation_level_param = ActivationLevel::kEnabled,
-     .site_has_tp_exception = false,
      .only_if_3pc_blocked_param = false,
      .is_localhost = true,
 
@@ -553,7 +459,6 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
     {.test_name = "FPFEnabled_ActivationDryRun_NoException",
      .is_fp_feature_enabled = true,
      .activation_level_param = ActivationLevel::kDryRun,
-     .site_has_tp_exception = false,
      .only_if_3pc_blocked_param = false,
      .is_localhost = false,
 
@@ -562,7 +467,6 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
     {.test_name = "FPFEnabled_ActivationDryRun_Exception",
      .is_fp_feature_enabled = true,
      .activation_level_param = ActivationLevel::kDryRun,
-     .site_has_tp_exception = true,
      .only_if_3pc_blocked_param = false,
      .is_localhost = false,
 
@@ -596,11 +500,6 @@ TEST_P(FPFPageActivationThrottleTestGetActivationTest,
     AddBreakageException(GURL(GetTestUrl()), *test_support_.prefs());
   }
 
-  if (test_case.site_has_tp_exception) {
-    test_support_.tracking_protection_settings()
-        ->AddTrackingProtectionException(GetTestUrl());
-  }
-
   // Navigate to the test url, use localhost url when testing localhost.
   mock_nav_handle_->set_url(test_case.is_localhost ? GetLocalhostUrl()
                                                    : GetTestUrl());
@@ -608,7 +507,7 @@ TEST_P(FPFPageActivationThrottleTestGetActivationTest,
   // Prepare the manager under test and input with initial_decision param.
   auto test_throttle = FingerprintingProtectionPageActivationThrottle(
       *mock_nav_registry_, test_support_.content_settings(),
-      test_support_.tracking_protection_settings(), test_support_.prefs());
+      test_support_.prefs());
   GetActivationResult activation = test_throttle.GetActivation();
 
   EXPECT_EQ(activation.level, test_case.expected_level);

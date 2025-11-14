@@ -13,13 +13,8 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 
-class GURL;
 class HostContentSettingsMap;
 class PrefService;
-
-namespace content_settings {
-struct SettingInfo;
-}  // namespace content_settings
 
 namespace policy {
 class ManagementService;
@@ -63,27 +58,6 @@ class TrackingProtectionSettings : public KeyedService {
 
   // Returns whether IP protection is enabled.
   bool IsIpProtectionEnabled() const;
-
-  // Returns whether fingerprinting protection is enabled.
-  bool IsFpProtectionEnabled() const;
-
-  // Adds a site-scoped TRACKING_PROTECTION content setting equal to ALLOW for
-  // `first_party_url`.
-  void AddTrackingProtectionException(const GURL& first_party_url);
-
-  // Resets the TRACKING_PROTECTION content setting for `first_party_url`.
-  // Can reset both site-scoped (wildcarded) and origin-scoped exceptions.
-  void RemoveTrackingProtectionException(const GURL& first_party_url);
-
-  // Returns true if the user has a TRACKING_PROTECTION content setting equal to
-  // ALLOW, indicating ACT features should be disabled on `first_party_url`.
-  // NOTE: the default for TRACKING_PROTECTION is BLOCK and cannot be changed,
-  // meaning this function will only return true for site-level content settings
-  // (i.e. exceptions). To check whether individual ACT features are
-  // enabled/disabled please use the functions specific to those features.
-  bool HasTrackingProtectionException(
-      const GURL& first_party_url,
-      content_settings::SettingInfo* info = nullptr) const;
 
   // Returns whether IP protection is disabled, either because an enterprise
   // policy has been set that disables the feature or, when the

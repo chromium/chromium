@@ -34,10 +34,6 @@ class WebContents;
 
 class PrefService;
 
-namespace privacy_sandbox {
-class TrackingProtectionSettings;
-}  // namespace privacy_sandbox
-
 namespace subresource_filter {
 class VerifiedRulesetDealer;
 }  // namespace subresource_filter
@@ -46,7 +42,6 @@ namespace fingerprinting_protection_filter {
 namespace {
 
 using ::content::WebContents;
-using ::privacy_sandbox::TrackingProtectionSettings;
 using ::subresource_filter::VerifiedRulesetDealer;
 using ::subresource_filter::mojom::ActivationLevel;
 using ::testing::_;
@@ -197,7 +192,6 @@ TEST_P(CreateForWebContentsHelperTest, CreateForWebContents) {
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
       RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
       test_support_.content_settings(),
-      test_support_.tracking_protection_settings(),
       /*dealer=*/nullptr,
       /*is_incognito=*/test_case.is_incognito_profile);
 
@@ -236,7 +230,6 @@ TEST_F(FingerprintingProtectionNotifyOnBlockedSubresourceTest,
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
       RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
       test_support_.content_settings(),
-      test_support_.tracking_protection_settings(),
       /*dealer=*/nullptr,
       /*is_incognito=*/false);
 
@@ -259,7 +252,6 @@ TEST_F(FingerprintingProtectionNotifyOnBlockedSubresourceTest,
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
       RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
       test_support_.content_settings(),
-      test_support_.tracking_protection_settings(),
       /*dealer=*/nullptr,
       /*is_incognito=*/false);
 
@@ -283,7 +275,6 @@ TEST_F(
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
       RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
       test_support_.content_settings(),
-      test_support_.tracking_protection_settings(),
       /*dealer=*/nullptr,
       /*is_incognito=*/false);
 
@@ -317,7 +308,6 @@ TEST_F(
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
       RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
       test_support_.content_settings(),
-      test_support_.tracking_protection_settings(),
       /*dealer=*/nullptr,
       /*is_incognito=*/false);
 
@@ -350,7 +340,6 @@ TEST_F(FingerprintingProtectionNotifyOnBlockedSubresourceTest,
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
       RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
       test_support_.content_settings(),
-      test_support_.tracking_protection_settings(),
       /*dealer=*/nullptr,
       /*is_incognito=*/false);
 
@@ -413,7 +402,6 @@ class MockWCHForRefreshCountTests
       WebContents* web_contents,
       PrefService* pref_service,
       HostContentSettingsMap* content_settings,
-      TrackingProtectionSettings* tracking_protection_settings,
       VerifiedRulesetDealer::Handle* dealer_handle,
       bool is_incognito) {
     // Do nothing if a FingerprintingProtectionWebContentsHelper already exists
@@ -422,10 +410,12 @@ class MockWCHForRefreshCountTests
       return;
     }
 
-    content::WebContentsUserData<MockWCHForRefreshCountTests>::
-        CreateForWebContents(web_contents, pref_service, content_settings,
-                             tracking_protection_settings, dealer_handle,
-                             is_incognito);
+    content::WebContentsUserData<
+        MockWCHForRefreshCountTests>::CreateForWebContents(web_contents,
+                                                           pref_service,
+                                                           content_settings,
+                                                           dealer_handle,
+                                                           is_incognito);
   }
 
   static MockWCHForRefreshCountTests* FromWebContents(
@@ -438,13 +428,11 @@ class MockWCHForRefreshCountTests
       WebContents* web_contents,
       PrefService* pref_service,
       HostContentSettingsMap* content_settings,
-      TrackingProtectionSettings* tracking_protection_settings,
       VerifiedRulesetDealer::Handle* dealer_handle,
       bool is_incognito)
       : FingerprintingProtectionWebContentsHelper(web_contents,
                                                   pref_service,
                                                   content_settings,
-                                                  tracking_protection_settings,
                                                   dealer_handle,
                                                   is_incognito) {}
 

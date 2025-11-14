@@ -18,6 +18,7 @@
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/subresource_filter/content/shared/browser/utils.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom-shared.h"
@@ -41,13 +42,10 @@ FingerprintingProtectionPageActivationThrottle::
     FingerprintingProtectionPageActivationThrottle(
         content::NavigationThrottleRegistry& registry,
         HostContentSettingsMap* content_settings,
-        privacy_sandbox::TrackingProtectionSettings*
-            tracking_protection_settings,
         PrefService* prefs,
         bool is_incognito)
     : NavigationThrottle(registry),
       content_settings_(content_settings),
-      tracking_protection_settings_(tracking_protection_settings),
       prefs_(prefs),
       is_incognito_(is_incognito) {}
 
@@ -93,13 +91,7 @@ FingerprintingProtectionPageActivationThrottle::
           privacy_sandbox::kFingerprintingProtectionUx) &&
       is_incognito_) {
     // Gate path (1).
-    if (tracking_protection_settings_ == nullptr) {
-      // If the Tracking Protection UX is enabled, we should never see a null
-      // TrackingProtectionSettings. If we do, treat it like a disabled flag.
-      return GetActivationResult(ActivationLevel::kDisabled,
-                                 ActivationDecision::UNKNOWN);
-    }
-    if (!tracking_protection_settings_->IsFpProtectionEnabled()) {
+    if (!prefs_->GetBoolean(prefs::kFingerprintingProtectionEnabled)) {
       // Disabled by TP setting.
       return GetActivationResult(ActivationLevel::kDisabled,
                                  ActivationDecision::ACTIVATION_DISABLED);
@@ -169,10 +161,9 @@ bool FingerprintingProtectionPageActivationThrottle::
 
 bool FingerprintingProtectionPageActivationThrottle::
     DoesUrlHaveTrackingProtectionException() const {
-  if ((!base::FeatureList::IsEnabled(
-           privacy_sandbox::kFingerprintingProtectionUx) &&
-       HasContentSettingsCookieException()) ||
-      HasTrackingProtectionException()) {
+  if (!base::FeatureList::IsEnabled(
+          privacy_sandbox::kFingerprintingProtectionUx) &&
+      HasContentSettingsCookieException()) {
     return true;
   }
   return false;
@@ -248,13 +239,6 @@ bool FingerprintingProtectionPageActivationThrottle::
       &setting_info);
   return setting == ContentSetting::CONTENT_SETTING_ALLOW &&
          setting_info.secondary_pattern != ContentSettingsPattern::Wildcard();
-}
-
-bool FingerprintingProtectionPageActivationThrottle::
-    HasTrackingProtectionException() const {
-  return tracking_protection_settings_ != nullptr &&
-         tracking_protection_settings_->HasTrackingProtectionException(
-             navigation_handle()->GetURL());
 }
 
 }  // namespace fingerprinting_protection_filter

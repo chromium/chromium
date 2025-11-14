@@ -8,7 +8,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
 #include "content/public/browser/web_contents.h"
 
@@ -16,13 +15,12 @@ void CreateFingerprintingProtectionWebContentsHelper(
     content::WebContents* web_contents,
     PrefService* pref_service,
     HostContentSettingsMap* content_settings,
-    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
     bool is_incognito) {
   subresource_filter::RulesetService* ruleset_service =
       g_browser_process->fingerprinting_protection_ruleset_service();
   subresource_filter::VerifiedRulesetDealer::Handle* dealer =
       ruleset_service ? ruleset_service->GetRulesetDealer() : nullptr;
   fingerprinting_protection_filter::FingerprintingProtectionWebContentsHelper::
-      CreateForWebContents(web_contents, pref_service, content_settings,
-                           tracking_protection_settings, dealer, is_incognito);
+      CreateForWebContents(web_contents, pref_service, content_settings, dealer,
+                           is_incognito);
 }

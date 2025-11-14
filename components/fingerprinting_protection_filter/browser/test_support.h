@@ -6,7 +6,6 @@
 #define COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_BROWSER_TEST_SUPPORT_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 
 class HostContentSettingsMap;
@@ -23,10 +22,6 @@ class TestSupport {
   TestSupport(const TestSupport&) = delete;
   TestSupport& operator=(const TestSupport&) = delete;
 
-  privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings() {
-    return tracking_protection_settings_.get();
-  }
-
   HostContentSettingsMap* content_settings() {
     return host_content_settings_map_.get();
   }
@@ -38,8 +33,6 @@ class TestSupport {
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
-  std::unique_ptr<privacy_sandbox::TrackingProtectionSettings>
-      tracking_protection_settings_;
 };
 
 }  // namespace fingerprinting_protection_filter

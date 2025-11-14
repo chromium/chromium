@@ -14,7 +14,6 @@
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/fingerprinting_protection_filter/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/subresource_filter/content/shared/browser/utils.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
@@ -119,7 +118,6 @@ void FingerprintingProtectionWebContentsHelper::CreateForWebContents(
     content::WebContents* web_contents,
     PrefService* pref_service,
     HostContentSettingsMap* content_settings,
-    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
     VerifiedRulesetDealer::Handle* dealer_handle,
     bool is_incognito) {
   if (!features::IsFingerprintingProtectionEnabledForIncognitoState(
@@ -135,8 +133,7 @@ void FingerprintingProtectionWebContentsHelper::CreateForWebContents(
 
   content::WebContentsUserData<FingerprintingProtectionWebContentsHelper>::
       CreateForWebContents(web_contents, pref_service, content_settings,
-                           tracking_protection_settings, dealer_handle,
-                           is_incognito);
+                           dealer_handle, is_incognito);
 }
 
 // private
@@ -145,8 +142,6 @@ FingerprintingProtectionWebContentsHelper::
         content::WebContents* web_contents,
         PrefService* pref_service,
         HostContentSettingsMap* content_settings,
-        privacy_sandbox::TrackingProtectionSettings*
-            tracking_protection_settings,
         VerifiedRulesetDealer::Handle* dealer_handle,
         bool is_incognito)
     : content::WebContentsUserData<FingerprintingProtectionWebContentsHelper>(
@@ -154,7 +149,6 @@ FingerprintingProtectionWebContentsHelper::
       content::WebContentsObserver(web_contents),
       pref_service_(pref_service),
       content_settings_(content_settings),
-      tracking_protection_settings_(tracking_protection_settings),
       dealer_handle_(dealer_handle),
       is_incognito_(is_incognito) {}
 

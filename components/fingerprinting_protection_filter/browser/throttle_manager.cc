@@ -162,7 +162,6 @@ void ThrottleManager::MaybeCreateAndAddNavigationThrottles(
     registry.AddThrottle(
         std::make_unique<FingerprintingProtectionPageActivationThrottle>(
             registry, web_contents_helper_->content_settings(),
-            web_contents_helper_->tracking_protection_settings(),
             web_contents_helper_->pref_service(), is_incognito_));
     auto activation_throttle =
         ActivationStateComputingNavigationThrottle::CreateForRoot(

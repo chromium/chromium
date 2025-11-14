@@ -109,45 +109,6 @@ bool TrackingProtectionSettings::IsIpProtectionEnabled() const {
          base::FeatureList::IsEnabled(kIpProtectionUx);
 }
 
-bool TrackingProtectionSettings::IsFpProtectionEnabled() const {
-  return pref_service_->GetBoolean(prefs::kFingerprintingProtectionEnabled) &&
-         is_incognito_ &&
-         base::FeatureList::IsEnabled(kFingerprintingProtectionUx);
-}
-
-void TrackingProtectionSettings::AddTrackingProtectionException(
-    const GURL& first_party_url) {
-  host_content_settings_map_->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url),
-      ContentSettingsType::TRACKING_PROTECTION, CONTENT_SETTING_ALLOW);
-}
-
-void TrackingProtectionSettings::RemoveTrackingProtectionException(
-    const GURL& first_party_url) {
-  // Exceptions added via `AddTrackingProtectionException` are site scoped. This
-  // resets both origin scoped and site scoped exceptions.
-  auto pattern =
-      ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url);
-  content_settings::SettingInfo info;
-  host_content_settings_map_->GetContentSetting(
-      GURL(), first_party_url, ContentSettingsType::TRACKING_PROTECTION, &info);
-  if (!info.secondary_pattern.HasDomainWildcard()) {
-    pattern = info.secondary_pattern;
-  }
-  host_content_settings_map_->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(), pattern,
-      ContentSettingsType::TRACKING_PROTECTION, CONTENT_SETTING_DEFAULT);
-}
-
-bool TrackingProtectionSettings::HasTrackingProtectionException(
-    const GURL& first_party_url,
-    content_settings::SettingInfo* info) const {
-  return host_content_settings_map_->GetContentSetting(
-             GURL(), first_party_url, ContentSettingsType::TRACKING_PROTECTION,
-             info) == CONTENT_SETTING_ALLOW;
-}
-
 bool TrackingProtectionSettings::IsIpProtectionDisabledForEnterprise() {
   if (pref_service_->IsManagedPreference(prefs::kIpProtectionEnabled)) {
     return !pref_service_->GetBoolean(prefs::kIpProtectionEnabled);

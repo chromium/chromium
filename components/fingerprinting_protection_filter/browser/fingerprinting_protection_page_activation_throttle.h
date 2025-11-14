@@ -20,10 +20,6 @@ namespace content {
 class NavigationThrottleRegistry;
 }  // namespace content
 
-namespace privacy_sandbox {
-class TrackingProtectionSettings;
-}  // namespace privacy_sandbox
-
 namespace subresource_filter {
 enum class ActivationDecision;
 namespace mojom {
@@ -53,7 +49,6 @@ class FingerprintingProtectionPageActivationThrottle
   FingerprintingProtectionPageActivationThrottle(
       content::NavigationThrottleRegistry& registry,
       HostContentSettingsMap* content_settings,
-      privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
       PrefService* prefs,
       bool is_incognito = false);
 
@@ -72,8 +67,6 @@ class FingerprintingProtectionPageActivationThrottle
   const char* GetNameForLogging() override;
 
   bool HasContentSettingsCookieException() const;
-
-  bool HasTrackingProtectionException() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FPFPageActivationThrottleTestGetActivationTest,
@@ -126,8 +119,6 @@ class FingerprintingProtectionPageActivationThrottle
       subresource_filter::mojom::ActivationLevel level) const;
 
   raw_ptr<HostContentSettingsMap> content_settings_;
-  raw_ptr<privacy_sandbox::TrackingProtectionSettings>
-      tracking_protection_settings_;
   raw_ptr<PrefService> prefs_;
 
   // Set to TimeTicks::Now() when the navigation is deferred in

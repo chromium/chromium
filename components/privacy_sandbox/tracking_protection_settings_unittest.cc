@@ -114,19 +114,6 @@ TEST_F(TrackingProtectionSettingsTest, ReturnsIpProtectionStatus) {
   EXPECT_TRUE(tracking_protection_settings()->IsIpProtectionEnabled());
 }
 
-TEST_F(TrackingProtectionSettingsTest,
-       IsFpProtectionEnabledOnlyReturnsTrueInIncognito) {
-  prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled, true);
-  EXPECT_TRUE(TrackingProtectionSettings(prefs(), host_content_settings_map(),
-                                         management_service(),
-                                         /*is_incognito=*/true)
-                  .IsFpProtectionEnabled());
-  EXPECT_FALSE(TrackingProtectionSettings(prefs(), host_content_settings_map(),
-                                          management_service(),
-                                          /*is_incognito=*/false)
-                   .IsFpProtectionEnabled());
-}
-
 TEST_F(TrackingProtectionSettingsTest, ReturnsTrackingProtection3pcdStatus) {
   EXPECT_FALSE(
       tracking_protection_settings()->IsTrackingProtection3pcdEnabled());
@@ -152,71 +139,6 @@ TEST_F(TrackingProtectionSettingsTest, AreAll3pcBlockedFalseOutside3pcd) {
   prefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, true);
   EXPECT_FALSE(
       tracking_protection_settings()->AreAllThirdPartyCookiesBlocked());
-}
-
-// Content settings
-
-using HasTrackingProtectionExceptionTest = TrackingProtectionSettingsTest;
-
-TEST_F(HasTrackingProtectionExceptionTest,
-       ReturnsTrueWhenTrackingProtectionContentSettingForUrlIsAllow) {
-  host_content_settings_map()->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromURL(GetTestUrl()),
-      ContentSettingsType::TRACKING_PROTECTION,
-      ContentSetting::CONTENT_SETTING_ALLOW);
-  EXPECT_TRUE(tracking_protection_settings()->HasTrackingProtectionException(
-      GetTestUrl()));
-}
-
-TEST_F(HasTrackingProtectionExceptionTest, ReturnsFalseByDefault) {
-  EXPECT_FALSE(tracking_protection_settings()->HasTrackingProtectionException(
-      GetTestUrl()));
-}
-
-TEST_F(HasTrackingProtectionExceptionTest, FillsSettingInfo) {
-  content_settings::TestUtils::OverrideProvider(
-      host_content_settings_map(),
-      std::make_unique<content_settings::MockProvider>(),
-      content_settings::ProviderType::kPolicyProvider);
-  host_content_settings_map()->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromURL(GetTestUrl()),
-      ContentSettingsType::TRACKING_PROTECTION,
-      ContentSetting::CONTENT_SETTING_ALLOW);
-
-  content_settings::SettingInfo info;
-  EXPECT_TRUE(tracking_protection_settings()->HasTrackingProtectionException(
-      GetTestUrl(), &info));
-  EXPECT_EQ(info.primary_pattern, ContentSettingsPattern::Wildcard());
-  EXPECT_EQ(info.secondary_pattern,
-            ContentSettingsPattern::FromURL(GetTestUrl()));
-  EXPECT_EQ(info.source, content_settings::SettingSource::kPolicy);
-}
-
-TEST_F(TrackingProtectionSettingsTest,
-       AddTrackingProtectionExceptionAddsContentSetting) {
-  tracking_protection_settings()->AddTrackingProtectionException(GetTestUrl());
-  content_settings::SettingInfo info;
-  EXPECT_EQ(host_content_settings_map()->GetContentSetting(
-                GURL(), GetTestUrl(), ContentSettingsType::TRACKING_PROTECTION,
-                &info),
-            CONTENT_SETTING_ALLOW);
-  EXPECT_TRUE(info.metadata.expiration().is_null());
-}
-
-TEST_F(TrackingProtectionSettingsTest,
-       RemoveTrackingProtectionExceptionRemovesContentSetting) {
-  host_content_settings_map()->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromURLToSchemefulSitePattern(GetTestUrl()),
-      ContentSettingsType::TRACKING_PROTECTION,
-      ContentSetting::CONTENT_SETTING_ALLOW);
-  tracking_protection_settings()->RemoveTrackingProtectionException(
-      GetTestUrl());
-  EXPECT_EQ(host_content_settings_map()->GetContentSetting(
-                GURL(), GetTestUrl(), ContentSettingsType::TRACKING_PROTECTION),
-            CONTENT_SETTING_BLOCK);
 }
 
 // Sets prefs

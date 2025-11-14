@@ -28,7 +28,6 @@
 #include "chrome/browser/preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_tab_observer.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -377,7 +376,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     CreateFingerprintingProtectionWebContentsHelper(
         tab.GetContents(), profile->GetPrefs(),
         HostContentSettingsMapFactory::GetForProfile(profile),
-        TrackingProtectionSettingsFactory::GetForProfile(profile),
         profile->IsIncognitoProfile());
   }
 

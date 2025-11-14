@@ -41,82 +41,6 @@ void AllowlistViaContentSettings(HostContentSettingsMap* settings_map,
       content_settings::ContentSettingConstraints());
 }
 
-IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
-                       ActiveFilter_AllowsOnUserBypassException) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  // TODO(https://crbug.com/358371545): Test console messaging for subframe
-  // blocking once its implementation is resolved.
-  GURL url(GetTestUrl(kMultiPlatformTestFrameSetPath));
-
-  // Disallow loading child frame documents that in turn would end up
-  // loading included_script.js, unless the document is loaded from an allowed
-  // (not in the blocklist) domain.
-  ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  NavigateSubframesToCrossOriginSite();
-
-  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
-      kSubframeNames, kExpectOnlySecondSubframe));
-  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
-
-  // Simulate an explicit allowlisting via content settings.
-  HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-  AllowlistViaContentSettings(settings_map, url);
-
-  // Re-do the navigation after User Bypass is enabled and assert all frames are
-  // loaded despite the blocklist matching on the deactivated filter.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  NavigateSubframesToCrossOriginSite();
-
-  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
-      kSubframeNames, kExpectAllSubframes));
-  ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    FingerprintingProtectionFilterEnabledInIncognitoBrowserTest,
-    ActiveFilter_AllowsOnUserBypassException) {
-  // Close normal browser and switch the test's browser instance to an incognito
-  // instance.
-  BrowserWindowInterface* incognito =
-      CreateIncognitoBrowser(browser()->profile());
-  CloseBrowserSynchronously(browser());
-  SetBrowser(incognito);
-  ASSERT_EQ(browser(), incognito);
-
-  // TODO(https://crbug.com/358371545): Test console messaging for subframe
-  // blocking once its implementation is resolved.
-  GURL url(GetTestUrl(kMultiPlatformTestFrameSetPath));
-
-  // Disallow loading child frame documents that in turn would end up
-  // loading included_script.js, unless the document is loaded from an allowed
-  // (not in the blocklist) domain.
-  ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  NavigateSubframesToCrossOriginSite();
-
-  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
-      kSubframeNames, kExpectOnlySecondSubframe));
-  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
-
-  // Simulate an explicit allowlisting via content settings.
-  HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-  AllowlistViaContentSettings(settings_map, url);
-
-  // Re-do the navigation after User Bypass is enabled and assert all frames are
-  // loaded despite the blocklist matching on the deactivated filter.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  NavigateSubframesToCrossOriginSite();
-
-  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
-      kSubframeNames, kExpectAllSubframes));
-  ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
-}
-
 IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterDryRunBrowserTest,
                        ActiveFilter_UserByPassException_DoesNotBlock) {
   // TODO(https://crbug.com/358371545): Test console messaging for subframe
@@ -171,44 +95,6 @@ class FingerprintingProtectionFilterEnabled3PCookiesBlockedBrowserTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-IN_PROC_BROWSER_TEST_F(
-    FingerprintingProtectionFilterEnabled3PCookiesBlockedBrowserTest,
-    UserBypassException_ThirdPartyCookiesBlockingPrefOn_DoNotActivateFilter) {
-  // TODO(https://crbug.com/358371545): Test console messaging for subframe
-  // blocking once its implementation is resolved.
-  GURL url(GetTestUrl(kMultiPlatformTestFrameSetPath));
-
-  // Disallow loading child frame documents that in turn would end up
-  // loading included_script.js, unless the document is loaded from an allowed
-  // (not in the blocklist) domain.
-  ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
-
-  // Simulate enabling blocking third party cookies through prefs.
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
-
-  // Simulate an explicit allowlisting via content settings.
-  HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-  AllowlistViaContentSettings(settings_map, url);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  NavigateSubframesToCrossOriginSite();
-
-  // Assert that FPF is not activated due to the user bypass exception.
-
-  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
-      kSubframeNames, kExpectAllSubframes));
-  ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
-
-  // Check test UKM recorder contains no FingerprintingProtection ukm event,
-  // i.e. no resource was (or would be) blocked
-  // Check that exception UKM is logged as User Bypass is applied..
-  // Check that exception UKM is logged as User Bypass is applied..
-}
 
 IN_PROC_BROWSER_TEST_F(
     FingerprintingProtectionFilterEnabled3PCookiesBlockedBrowserTest,

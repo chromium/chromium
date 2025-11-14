@@ -83,7 +83,7 @@ class FingerprintingProtectionChildNavigationThrottleTest
     FingerprintingProtectionWebContentsHelper::CreateForWebContents(
         content::RenderViewHostTestHarness::web_contents(),
         test_support_.prefs(), test_support_.content_settings(),
-        test_support_.tracking_protection_settings(), /*dealer_handle=*/nullptr,
+        /*dealer_handle=*/nullptr,
         /*is_incognito=*/GetParam());
   }
 

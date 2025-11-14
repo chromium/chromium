@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -33,13 +34,9 @@
 #include "content/public/browser/global_request_id.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
-#include "net/base/features.h"
-#include "net/base/proxy_chain.h"
-#include "net/base/proxy_string_util.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -215,18 +212,6 @@ class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness {
 
   void FastForwardTo(base::Time target) {
     task_environment()->FastForwardBy(target - base::Time::Now());
-  }
-
-  blink::mojom::ResourceLoadInfoPtr
-  CreateResourceLoadInfoWithIpProtectionChain() {
-    blink::mojom::ResourceLoadInfoPtr resource_load_info =
-        blink::mojom::ResourceLoadInfo::New();
-
-    resource_load_info->proxy_chain = net::ProxyChain::ForIpProtection(
-        {net::ProxyUriToProxyServer("foo:555", net::ProxyServer::SCHEME_HTTPS),
-         net::ProxyUriToProxyServer("foo:666",
-                                    net::ProxyServer::SCHEME_HTTPS)});
-    return resource_load_info;
   }
 
  private:

@@ -249,8 +249,7 @@ class ThrottleManagerTest
 
     FingerprintingProtectionWebContentsHelper::CreateForWebContents(
         web_contents, test_support_->prefs(), test_support_->content_settings(),
-        test_support_->tracking_protection_settings(), dealer_handle_.get(),
-        GetParam().is_incognito);
+        dealer_handle_.get(), GetParam().is_incognito);
 
     Observe(web_contents);
 

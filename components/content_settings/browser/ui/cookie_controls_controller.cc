@@ -281,19 +281,6 @@ bool CookieControlsController::HasOriginSandboxedTopLevelDocument() const {
   return rfh->IsSandboxed(network::mojom::WebSandboxFlags::kOrigin);
 }
 
-void CookieControlsController::OnTrackingProtectionsChangedForSite() {
-  const GURL& url = GetWebContents()->GetLastCommittedURL();
-  bool reenable_protections =
-      tracking_protection_settings_->HasTrackingProtectionException(url);
-  if (reenable_protections) {
-    tracking_protection_settings_->RemoveTrackingProtectionException(url);
-  } else {
-    tracking_protection_settings_->AddTrackingProtectionException(url);
-  }
-  OnCookieBlockingEnabledForSite(
-      /*block_third_party_cookies=*/reenable_protections);
-}
-
 void CookieControlsController::OnCookieBlockingEnabledForSite(
     bool block_third_party_cookies) {
   const GURL& url = GetWebContents()->GetLastCommittedURL();

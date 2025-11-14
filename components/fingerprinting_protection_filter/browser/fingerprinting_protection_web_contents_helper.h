@@ -12,7 +12,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom-shared.h"
 #include "content/public/browser/browser_context.h"
@@ -99,7 +98,6 @@ class FingerprintingProtectionWebContentsHelper
       content::WebContents* web_contents,
       PrefService* pref_service,
       HostContentSettingsMap* content_settings,
-      privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
       subresource_filter::VerifiedRulesetDealer::Handle* dealer_handle,
       bool is_incognito);
 
@@ -137,9 +135,6 @@ class FingerprintingProtectionWebContentsHelper
     return subresource_blocked_in_current_primary_page_;
   }
   PrefService* pref_service() const { return pref_service_; }
-  privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings() {
-    return tracking_protection_settings_;
-  }
   HostContentSettingsMap* content_settings() { return content_settings_; }
 
   subresource_filter::LoadPolicy most_recent_child_frame_load_policy() {
@@ -151,7 +146,6 @@ class FingerprintingProtectionWebContentsHelper
       content::WebContents* web_contents,
       PrefService* pref_service,
       HostContentSettingsMap* content_settings,
-      privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
       subresource_filter::VerifiedRulesetDealer::Handle* dealer_handle,
       bool is_incognito);
 
@@ -199,9 +193,6 @@ class FingerprintingProtectionWebContentsHelper
   raw_ptr<PrefService> pref_service_;
 
   raw_ptr<HostContentSettingsMap> content_settings_;
-
-  raw_ptr<privacy_sandbox::TrackingProtectionSettings>
-      tracking_protection_settings_;
 
   raw_ptr<subresource_filter::VerifiedRulesetDealer::Handle> dealer_handle_;
 
