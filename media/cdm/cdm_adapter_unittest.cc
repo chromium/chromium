@@ -419,9 +419,11 @@ class CdmAdapterTestWithMockCdm : public CdmAdapterTestBase {
 
 INSTANTIATE_TEST_SUITE_P(CDM_10, CdmAdapterTestWithClearKeyCdm, Values(10));
 INSTANTIATE_TEST_SUITE_P(CDM_11, CdmAdapterTestWithClearKeyCdm, Values(11));
+INSTANTIATE_TEST_SUITE_P(CDM_12, CdmAdapterTestWithClearKeyCdm, Values(12));
 
 INSTANTIATE_TEST_SUITE_P(CDM_10, CdmAdapterTestWithMockCdm, Values(10));
 INSTANTIATE_TEST_SUITE_P(CDM_11, CdmAdapterTestWithMockCdm, Values(11));
+INSTANTIATE_TEST_SUITE_P(CDM_12, CdmAdapterTestWithMockCdm, Values(12));
 
 // CdmAdapterTestWithClearKeyCdm Tests
 
