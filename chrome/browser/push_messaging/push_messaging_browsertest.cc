@@ -58,7 +58,6 @@
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/push_messaging/app_identifier.h"
 #include "components/push_messaging/app_identifier_test_support.h"
@@ -187,6 +186,8 @@ class PushMessagingBrowserTestBase
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    // Used for PushMessagingPartitionedBrowserTest.CrossOriginFrame.
+    https_server_->SetCertHostnames({"embedder.com", "requester.com"});
     content::SetupCrossSiteRedirector(https_server_.get());
 
     site_engagement::SiteEngagementScore::SetParamValuesForTesting();
@@ -196,10 +197,6 @@ class PushMessagingBrowserTestBase
     // Enable experimental features for subscription restrictions.
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
-
-    // HTTPS server only serves a valid cert for localhost, so this is needed to
-    // load webby domains like "embedded.com" without an interstitial.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   // InProcessBrowserTest:
