@@ -213,46 +213,62 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
     const sentenceSegments: SegmentedSentence[] = [];
     let nodeIndex = 0;
     for (const sentence of sentences) {
-      const sentenceStart = sentence.index;
-      const sentenceEnd = sentence.index + sentence.text.length;
-      const segments: Segment[] = [];
-
-      for (let i = nodeIndex; i < nodeOffsets.length; i++) {
-        const offsetByNode = nodeOffsets[i]!;
-        const nodeLength = offsetByNode.node.getText().length;
-        const nodeEndOffset = offsetByNode.startOffset + nodeLength;
-
-        // If this node is completely after the current sentence, we can stop
-        // searching for this sentence.
-        if (offsetByNode.startOffset >= sentenceEnd) {
-          break;
-        }
-
-        // If this node is completely before the current sentence, we can
-        // skip it and start the next sentence's search from the next node.
-        if (nodeEndOffset <= sentenceStart) {
-          nodeIndex = i + 1;
-          continue;
-        }
-
-        // There is an overlap.
-        const overlapStart = Math.max(sentenceStart, offsetByNode.startOffset);
-        const overlapEnd = Math.min(sentenceEnd, nodeEndOffset);
-        const segment: Segment = {
-          node: offsetByNode.node,
-          start: overlapStart - offsetByNode.startOffset,
-          length: overlapEnd - overlapStart,
-        };
-        if (segment.length > 0) {
-          segments.push(segment);
-        }
-      }
-
+      const {segments, nextNodeIndex} =
+          this.createSegmentsForSentence_(sentence, nodeOffsets, nodeIndex);
+      nodeIndex = nextNodeIndex;
       if (segments.length > 0) {
-        sentenceSegments.push({sentenceInfo: sentence, segments: segments});
+        sentenceSegments.push({
+          sentenceInfo: sentence,
+          segments: segments,
+        });
       }
     }
     return sentenceSegments;
+  }
+
+  // Creates a list of segments for a given sentence.
+  private createSegmentsForSentence_(
+      sentence: Sentence,
+      nodeOffsets: OffsetByNode[],
+      startNodeIndex: number,
+      ): {segments: Segment[], nextNodeIndex: number} {
+    const sentenceStart = sentence.index;
+    const sentenceEnd = sentence.index + sentence.text.length;
+    const segments: Segment[] = [];
+    let nextNodeIndex = startNodeIndex;
+
+    for (let i = startNodeIndex; i < nodeOffsets.length; i++) {
+      const offsetByNode = nodeOffsets[i]!;
+      const nodeLength = offsetByNode.node.getText().length;
+      const nodeEndOffset = offsetByNode.startOffset + nodeLength;
+
+      // If this node is completely after the current sentence, we can stop
+      // searching for this sentence.
+      if (offsetByNode.startOffset >= sentenceEnd) {
+        break;
+      }
+
+      // If this node is completely before the current sentence, we can
+      // skip it and start the next sentence's search from the next node.
+      if (nodeEndOffset <= sentenceStart) {
+        nextNodeIndex = i + 1;
+        continue;
+      }
+
+      // There is an overlap.
+      const overlapStart = Math.max(sentenceStart, offsetByNode.startOffset);
+      const overlapEnd = Math.min(sentenceEnd, nodeEndOffset);
+      const segment: Segment = {
+        node: offsetByNode.node,
+        start: overlapStart - offsetByNode.startOffset,
+        length: overlapEnd - overlapStart,
+      };
+      if (segment.length > 0) {
+        segments.push(segment);
+      }
+    }
+
+    return {segments, nextNodeIndex};
   }
 
   private getAllTextNodesFrom_(node: Node|undefined): DomReadAloudNode[] {
