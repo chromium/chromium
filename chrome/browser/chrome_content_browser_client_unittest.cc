@@ -1150,6 +1150,18 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectAutofillURL) {
   EXPECT_EQ(GURL("chrome://settings/yourSavedInfo"), dest_url);
 }
 
+TEST_F(ChromeContentSettingsRedirectTest, RedirectEnhancedAutofillURL) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      autofill::features::kYourSavedInfoSettingsPage);
+
+  TestChromeContentBrowserClient test_content_browser_client;
+  const GURL enhanced_autofill_url("chrome://settings/enhancedAutofill");
+  GURL dest_url = enhanced_autofill_url;
+  test_content_browser_client.HandleWebUI(&dest_url, &profile_);
+  EXPECT_EQ(GURL("chrome://settings/yourSavedInfo"), dest_url);
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
