@@ -119,6 +119,8 @@ BASE_DECLARE_FEATURE(kDevToolsEnableDurableMessages);
 
 BASE_DECLARE_FEATURE(kDevToolsShowPolicyDialog);
 
+BASE_DECLARE_FEATURE(kDevToolsAiAssistanceContextSelectionAgent);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_

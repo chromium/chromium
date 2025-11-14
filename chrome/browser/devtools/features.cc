@@ -199,4 +199,7 @@ BASE_FEATURE(kDevToolsEnableDurableMessages, base::FEATURE_DISABLED_BY_DEFAULT);
 // TODO(crbug.com/442892562): Remove this flag once the feature is launched.
 BASE_FEATURE(kDevToolsShowPolicyDialog, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDevToolsAiAssistanceContextSelectionAgent,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
