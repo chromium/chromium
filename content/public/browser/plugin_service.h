@@ -66,8 +66,7 @@ class CONTENT_EXPORT PluginService {
                              const GURL& url,
                              const std::string& mime_type,
                              bool* is_stale,
-                             WebPluginInfo* info,
-                             std::string* actual_mime_type) = 0;
+                             WebPluginInfo* info) = 0;
 
   // Gets plugin info by plugin path (including disabled plugins). This will use
   // cached data in the plugin list.

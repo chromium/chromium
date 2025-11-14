@@ -1534,7 +1534,7 @@ void NavigationURLLoaderImpl::CheckPluginAndCallOnReceiveResponse(
   WebPluginInfo unused_info;
   bool has_plugin = PluginService::GetInstance()->GetPluginInfo(
       browser_context_, resource_request_->url, head->mime_type, &stale,
-      &unused_info, nullptr);
+      &unused_info);
   CHECK(!stale);
 
   bool is_download = !has_plugin;

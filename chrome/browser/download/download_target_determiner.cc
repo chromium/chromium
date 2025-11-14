@@ -796,15 +796,11 @@ void IsHandledBySafePlugin(content::BrowserContext* browser_context,
   DCHECK(!mime_type.empty());
   using content::WebPluginInfo;
 
-  std::string actual_mime_type;
   bool is_stale = false;
   WebPluginInfo plugin_info;
-
-  content::PluginService* plugin_service =
-      content::PluginService::GetInstance();
-  bool plugin_found =
-      plugin_service->GetPluginInfo(browser_context, url, mime_type, &is_stale,
-                                    &plugin_info, &actual_mime_type);
+  auto* plugin_service = content::PluginService::GetInstance();
+  bool plugin_found = plugin_service->GetPluginInfo(
+      browser_context, url, mime_type, &is_stale, &plugin_info);
   if (is_stale && stale_plugin_action == RETRY_IF_STALE_PLUGIN_LIST) {
     // The GetPluginsAsync call causes the plugin list to be refreshed. Once
     // that's done we can retry the GetPluginInfo call. We break out of this
@@ -829,20 +825,17 @@ bool IsHandledBySafePluginSynchronous(content::BrowserContext* browser_context,
   DCHECK(!mime_type.empty());
   using content::WebPluginInfo;
 
-  std::string actual_mime_type;
   bool is_stale = false;
   WebPluginInfo plugin_info;
 
   content::PluginService* plugin_service =
       content::PluginService::GetInstance();
-  bool plugin_found =
-      plugin_service->GetPluginInfo(browser_context, url, mime_type, &is_stale,
-                                    &plugin_info, &actual_mime_type);
+  bool plugin_found = plugin_service->GetPluginInfo(
+      browser_context, url, mime_type, &is_stale, &plugin_info);
   if (is_stale) {
     plugin_service->GetPlugins();
     plugin_found = plugin_service->GetPluginInfo(
-        browser_context, url, mime_type, &is_stale, &plugin_info,
-        &actual_mime_type);
+        browser_context, url, mime_type, &is_stale, &plugin_info);
   }
   // In practice, we assume that retrying once is enough.
   DCHECK(!is_stale);

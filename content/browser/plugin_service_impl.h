@@ -44,8 +44,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
                      const GURL& url,
                      const std::string& mime_type,
                      bool* is_stale,
-                     WebPluginInfo* info,
-                     std::string* actual_mime_type) override;
+                     WebPluginInfo* info) override;
   std::optional<WebPluginInfo> GetPluginInfoByPathForTesting(
       const base::FilePath& plugin_path) override;
   void GetPluginsAsync(GetPluginsCallback callback) override;

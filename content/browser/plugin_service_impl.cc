@@ -91,13 +91,11 @@ bool PluginServiceImpl::GetPluginInfo(content::BrowserContext* browser_context,
                                       const GURL& url,
                                       const std::string& mime_type,
                                       bool* is_stale,
-                                      WebPluginInfo* info,
-                                      std::string* actual_mime_type) {
+                                      WebPluginInfo* info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<WebPluginInfo> plugins;
-  std::vector<std::string> mime_types;
-
-  bool stale = GetPluginInfoArray(url, mime_type, &plugins, &mime_types);
+  bool stale = GetPluginInfoArray(url, mime_type, &plugins,
+                                  /*actual_mime_types=*/nullptr);
   if (is_stale) {
     *is_stale = stale;
   }
@@ -105,9 +103,6 @@ bool PluginServiceImpl::GetPluginInfo(content::BrowserContext* browser_context,
   for (size_t i = 0; i < plugins.size(); ++i) {
     if (!filter_ || filter_->IsPluginAvailable(browser_context, plugins[i])) {
       *info = plugins[i];
-      if (actual_mime_type) {
-        *actual_mime_type = mime_types[i];
-      }
       return true;
     }
   }
