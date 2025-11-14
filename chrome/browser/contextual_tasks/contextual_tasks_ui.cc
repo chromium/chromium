@@ -31,6 +31,7 @@
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -81,6 +82,14 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
                                          /*enable_lens_search=*/false);
   // Add strings.js
   source->UseStringsJs();
+
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"openInNewTab", IDS_CONTEXTUAL_TASKS_MENU_OPEN_IN_NEW_TAB},
+      {"openChromeSettings", IDS_CONTEXTUAL_TASKS_MENU_OPEN_CHROME_SETTINGS},
+      {"myActivity", IDS_CONTEXTUAL_TASKS_MENU_MY_ACTIVITY},
+      {"help", IDS_CONTEXTUAL_TASKS_MENU_HELP},
+  };
+  source->AddLocalizedStrings(kLocalizedStrings);
 
   // Support no file types.
   source->AddString("composeboxImageFileTypes", "");

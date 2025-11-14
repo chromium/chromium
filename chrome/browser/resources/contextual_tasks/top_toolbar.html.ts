@@ -25,7 +25,32 @@ export function getHtml(this: TopToolbarElement) {
     <cr-icon-button @click="${this.onCloseButtonClick_}" iron-icon="cr:close"
     title="Close">
     </cr-icon-button>
+    <cr-icon-button id="more" iron-icon="cr:more-vert"
+        title="More" @click="${this.onMoreClick_}">
+    </cr-icon-button>
   </div>
+  <cr-lazy-render-lit id="menu" .template="${() => html`
+    <cr-action-menu>
+      <button class="dropdown-item" @click="${this.onOpenInNewTabClick_}">
+        <cr-icon icon="cr:open-in-new"></cr-icon>
+        $i18n{openInNewTab}
+      </button>
+      <hr>
+      <button class="dropdown-item" @click="${this.onOpenChromeSettingsClick_}">
+        <cr-icon icon="cr:settings_icon"></cr-icon>
+        $i18n{openChromeSettings}
+      </button>
+      <!-- TODO(crbug.com/459817232): Provide G icon. -->
+      <button class="dropdown-item" @click="${this.onMyActivityClick_}">
+        <cr-icon icon="cr:history"></cr-icon>
+        $i18n{myActivity}
+      </button>
+      <button class="dropdown-item" @click="${this.onHelpClick_}">
+        <cr-icon icon="cr:help-outline"></cr-icon>
+        $i18n{help}
+      </button>
+    </cr-action-menu>`}">
+  </cr-lazy-render-lit>
   <!--_html_template_end_-->`;
 }
 // clang-format on

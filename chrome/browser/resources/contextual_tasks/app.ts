@@ -47,6 +47,10 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.threadUrl_ = url.toString();
   }
 
+  protected onCloseButtonClick_() {
+    this.browserProxy_.handler.closeSidePanel();
+  }
+
   protected async onNewThreadClick_() {
     const {url} = await this.browserProxy_.handler.getThreadUrl();
     this.threadUrl_ = url.url;
@@ -57,6 +61,14 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.historyThreads_ = threads;
     // TODO(crbug.com/445469925): Display the threads in a drawer.
   }
+
+  protected onOpenInNewTabClick_() {}
+
+  protected onOpenChromeSettingsClick_() {}
+
+  protected onMyActivityClick_() {}
+
+  protected onHelpClick_() {}
 
   override async connectedCallback() {
     super.connectedCallback();

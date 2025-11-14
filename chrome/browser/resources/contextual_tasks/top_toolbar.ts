@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
-import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {getCss} from './top_toolbar.css.js';
 import {getHtml} from './top_toolbar.html.js';
 
@@ -25,7 +28,10 @@ export class TopToolbarElement extends CrLitElement {
   }
 
   override accessor title: string = '';
-  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private get menu_(): CrLazyRenderLitElement<CrActionMenuElement>|null {
+    return this.shadowRoot
+        .querySelector<CrLazyRenderLitElement<CrActionMenuElement>>('#menu');
+  }
 
   override render() {
     return getHtml.bind(this)();
@@ -36,7 +42,7 @@ export class TopToolbarElement extends CrLitElement {
   }
 
   protected onCloseButtonClick_() {
-    this.browserProxy_.handler.closeSidePanel();
+    this.fire('close-button-click');
   }
 
   protected onNewThreadClick_() {
@@ -45,6 +51,30 @@ export class TopToolbarElement extends CrLitElement {
 
   protected onThreadHistoryClick_() {
     this.fire('thread-history-click');
+  }
+
+  protected onMoreClick_(e: MouseEvent) {
+    this.menu_?.get().showAt(e.target as HTMLElement);
+  }
+
+  protected onOpenInNewTabClick_() {
+    this.menu_?.get().close();
+    this.fire('open-in-new-tab-click');
+  }
+
+  protected onOpenChromeSettingsClick_() {
+    this.menu_?.get().close();
+    this.fire('open-chrome-settings-click');
+  }
+
+  protected onMyActivityClick_() {
+    this.menu_?.get().close();
+    this.fire('my-activity-click');
+  }
+
+  protected onHelpClick_() {
+    this.menu_?.get().close();
+    this.fire('help-click');
   }
 }
 

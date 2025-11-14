@@ -21,3 +21,12 @@
 #rightButtonContainer {
   float: right;
 }
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-item cr-icon {
+  padding-inline-end: 10px;
+}
