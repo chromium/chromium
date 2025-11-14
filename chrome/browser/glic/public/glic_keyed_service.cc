@@ -255,9 +255,10 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
     glic_profile_manager->SetActiveGlic(this);
   }
 
-  if (!GlicEnabling::IsUnifiedFreEnabled(profile_)) {
-    // Show the FRE if not yet completed, and if we have a browser to use.
-    if (fre_controller_->ShouldShowFreDialog()) {
+  // Show the FRE if not yet completed, and if we have a browser to use.
+  if (fre_controller_->ShouldShowFreDialog()) {
+    fre_controller_->MarkFreStartAttempt();
+    if (!GlicEnabling::IsUnifiedFreEnabled(profile_)) {
       Browser* browser = bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
       if (!fre_controller_->CanShowFreDialog(browser)) {
         // If the FRE is blocked because it is already showing, we should
@@ -269,6 +270,7 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
       fre_controller_->ShowFreDialog(browser, source);
       return;
     }
+    fre_controller_->MarkSidepanelFreShown();
   }
 
   window_controller().Toggle(bwi ? bwi : GetActiveGlicEligibleBrowser(profile_),

@@ -111,7 +111,8 @@ void GlicFreUI::BindInterface(
 void GlicFreUI::CreatePageHandler(
     mojo::PendingReceiver<glic::mojom::FrePageHandler> receiver) {
   fre_page_handler_ = std::make_unique<GlicFrePageHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
+      /*is_unified_fre=*/false, web_ui()->GetWebContents(),
+      std::move(receiver));
 }
 
 }  // namespace glic
