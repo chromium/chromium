@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AdapterObserverReceiver, AdapterRemote, ConnectResult, DiscoverySessionRemote} from './adapter.mojom-webui.js';
-import {BluetoothInternalsHandler, BluetoothInternalsHandlerRemote} from './bluetooth_internals.mojom-webui.js';
-import {Device, DeviceRemote} from './device.mojom-webui.js';
+import {AdapterObserverReceiver, ConnectResult} from './adapter.mojom-webui.js';
+import type {AdapterInfo, AdapterObserverInterface, AdapterRemote, DiscoverySessionRemote} from './adapter.mojom-webui.js';
+import {BluetoothInternalsHandler} from './bluetooth_internals.mojom-webui.js';
+import type {BluetoothInternalsHandlerRemote} from './bluetooth_internals.mojom-webui.js';
+import type {DeviceInfo, DeviceRemote} from './device.mojom-webui.js';
 
 const SCAN_CLIENT_NAME = 'Bluetooth Internals Page';
 
@@ -15,14 +17,13 @@ const SCAN_CLIENT_NAME = 'Bluetooth Internals Page';
 
 /**
  * Enum of adapter property names. Used for adapterchanged events.
- * @enum {string}
  */
-export const AdapterProperty = {
-  DISCOVERABLE: 'discoverable',
-  DISCOVERING: 'discovering',
-  POWERED: 'powered',
-  PRESENT: 'present',
-};
+export enum AdapterProperty {
+  DISCOVERABLE = 'discoverable',
+  DISCOVERING = 'discovering',
+  POWERED = 'powered',
+  PRESENT = 'present',
+}
 
 /**
  * The proxy class of an adapter and router of adapter events.
@@ -30,12 +31,13 @@ export const AdapterProperty = {
  * to specific AdapterObserver events.
  * Provides remote access to Adapter functions. Converts parameters to Mojo
  * handles and back when necessary.
- *
- * @implements {AdapterObserverInterface}
  */
-export class AdapterBroker extends EventTarget {
-  /** @param {!AdapterRemote} adapter */
-  constructor(adapter) {
+export class AdapterBroker extends EventTarget implements
+    AdapterObserverInterface {
+  private adapterObserverReceiver_: AdapterObserverReceiver;
+  private adapter_: AdapterRemote;
+
+  constructor(adapter: AdapterRemote) {
     super();
     this.adapterObserverReceiver_ = new AdapterObserverReceiver(this);
     this.adapter_ = adapter;
@@ -43,7 +45,7 @@ export class AdapterBroker extends EventTarget {
         this.adapterObserverReceiver_.$.bindNewPipeAndPassRemote());
   }
 
-  presentChanged(present) {
+  presentChanged(present: boolean) {
     this.dispatchEvent(new CustomEvent('adapterchanged', {
       detail: {
         property: AdapterProperty.PRESENT,
@@ -52,7 +54,7 @@ export class AdapterBroker extends EventTarget {
     }));
   }
 
-  poweredChanged(powered) {
+  poweredChanged(powered: boolean) {
     this.dispatchEvent(new CustomEvent('adapterchanged', {
       detail: {
         property: AdapterProperty.POWERED,
@@ -61,7 +63,7 @@ export class AdapterBroker extends EventTarget {
     }));
   }
 
-  discoverableChanged(discoverable) {
+  discoverableChanged(discoverable: boolean) {
     this.dispatchEvent(new CustomEvent('adapterchanged', {
       detail: {
         property: AdapterProperty.DISCOVERABLE,
@@ -70,7 +72,7 @@ export class AdapterBroker extends EventTarget {
     }));
   }
 
-  discoveringChanged(discovering) {
+  discoveringChanged(discovering: boolean) {
     this.dispatchEvent(new CustomEvent('adapterchanged', {
       detail: {
         property: AdapterProperty.DISCOVERING,
@@ -79,64 +81,55 @@ export class AdapterBroker extends EventTarget {
     }));
   }
 
-  deviceAdded(device) {
+  deviceAdded(device: DeviceInfo) {
     this.dispatchEvent(
         new CustomEvent('deviceadded', {detail: {deviceInfo: device}}));
   }
 
-  deviceChanged(device) {
+  deviceChanged(device: DeviceInfo) {
     this.dispatchEvent(
         new CustomEvent('devicechanged', {detail: {deviceInfo: device}}));
   }
 
-  deviceRemoved(device) {
+  deviceRemoved(device: DeviceInfo) {
     this.dispatchEvent(
         new CustomEvent('deviceremoved', {detail: {deviceInfo: device}}));
   }
 
   /**
    * Creates a GATT connection to the device with |address|.
-   * @param {string} address
-   * @return {!Promise<!DeviceRemote>}
    */
-  connectToDevice(address) {
+  connectToDevice(address: string): Promise<DeviceRemote> {
     return this.adapter_.connectToDevice(address).then(function(response) {
       if (response.result !== ConnectResult.SUCCESS) {
         // TODO(crbug.com/40492643): Replace with more descriptive error
         // messages.
-        const errorString = Object.keys(ConnectResult).find(function(key) {
-          return ConnectResult[key] === response.result;
-        });
-
-        throw new Error(errorString);
+        throw new Error(ConnectResult[response.result]);
       }
 
-      return response.device;
+      return response.device!;
     });
   }
 
   /**
    * Gets an array of currently detectable devices from the Adapter service.
-   * @return {Promise<{devices: Array<!DeviceInfo>}>}
    */
-  getDevices() {
+  getDevices(): Promise<{devices: DeviceInfo[]}> {
     return this.adapter_.getDevices();
   }
 
   /**
    * Gets the current state of the Adapter.
-   * @return {Promise<{info: AdapterInfo}>}
    */
-  getInfo() {
+  getInfo(): Promise<{info: AdapterInfo}> {
     return this.adapter_.getInfo();
   }
 
 
   /**
    * Requests the adapter to start a new discovery session.
-   * @return {!Promise<!DiscoverySessionRemote>}
    */
-  startDiscoverySession() {
+  startDiscoverySession(): Promise<DiscoverySessionRemote> {
     return this.adapter_.startDiscoverySession(SCAN_CLIENT_NAME)
         .then(function(response) {
           if (!response.session) {
@@ -148,26 +141,25 @@ export class AdapterBroker extends EventTarget {
   }
 }
 
-let adapterBroker = null;
+let adapterBroker: AdapterBroker|null = null;
 
 /**
  * Initializes an AdapterBroker if one doesn't exist.
- * @param {!BluetoothInternalsHandlerRemote=}
- *     opt_bluetoothInternalsHandler
- * @return {!Promise<!AdapterBroker>} resolves with
- *     AdapterBroker, rejects if Bluetooth is not supported.
+ * @return resolves with AdapterBroker, rejects if Bluetooth is not supported.
  */
-export function getAdapterBroker(opt_bluetoothInternalsHandler) {
+export function getAdapterBroker(
+    bluetoothInternalsHandler?: BluetoothInternalsHandlerRemote):
+    Promise<AdapterBroker> {
   if (adapterBroker) {
     return Promise.resolve(adapterBroker);
   }
 
-  const bluetoothInternalsHandler = opt_bluetoothInternalsHandler ?
-      opt_bluetoothInternalsHandler :
+  const handler = bluetoothInternalsHandler ?
+      bluetoothInternalsHandler :
       BluetoothInternalsHandler.getRemote();
 
   // Get an Adapter service.
-  return bluetoothInternalsHandler.getAdapter().then(function(response) {
+  return handler.getAdapter().then(function(response) {
     if (!response.adapter) {
       throw new Error('Bluetooth Not Supported on this platform.');
     }

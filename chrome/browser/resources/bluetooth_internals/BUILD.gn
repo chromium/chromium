@@ -27,22 +27,22 @@ build_webui("build") {
   ]
 
   ts_files = [
-    "adapter_broker.js",
+    "adapter_broker.ts",
     "adapter_page.ts",
     "bluetooth_internals.js",
     "characteristic_list.ts",
-    "debug_log_page.js",
+    "debug_log_page.ts",
     "descriptor_list.ts",
     "device_broker.ts",
-    "device_collection.js",
+    "device_collection.ts",
     "device_details_page.js",
     "device_utils.ts",
     "devices_page.ts",
     "main.ts",
-    "page.js",
+    "page.ts",
     "page_manager.js",
     "service_list.ts",
-    "sidebar.js",
+    "sidebar.ts",
   ]
 
   mojo_files_deps = [

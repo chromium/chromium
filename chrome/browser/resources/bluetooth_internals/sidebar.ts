@@ -10,50 +10,52 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {PageManager, PageManagerObserver} from './page_manager.js';
 
-/** @typedef {{pageName: string, text: string}} */
-let SidebarItem;
+interface SidebarItem {
+  pageName: string;
+  text: string;
+}
 
 /**
  * A side menu that lists the currently navigable pages.
  */
 export class Sidebar extends PageManagerObserver {
-  /** @param {!Element} sidebarDiv The div corresponding to the sidebar. */
-  constructor(sidebarDiv) {
+  private sidebarDiv_: HTMLElement;
+  private sidebarContent_: HTMLElement;
+  private sidebarList_: HTMLElement;
+  private overlayDiv_: HTMLElement;
+
+  /** @param sidebarDiv The div corresponding to the sidebar. */
+  constructor(sidebarDiv: HTMLElement) {
     super();
-    /** @private {!Element} */
     this.sidebarDiv_ = sidebarDiv;
-    /** @private {!Element} */
-    this.sidebarContent_ = this.sidebarDiv_.querySelector('.sidebar-content');
+    this.sidebarContent_ =
+        this.sidebarDiv_.querySelector<HTMLElement>('.sidebar-content')!;
     assert(this.sidebarContent_);
 
-    /** @private {!Element} */
-    this.sidebarList_ = this.sidebarContent_.querySelector('ul');
+    this.sidebarList_ = this.sidebarContent_.querySelector<HTMLElement>('ul')!;
     assert(this.sidebarList_);
 
-    this.sidebarList_.querySelectorAll('li button').forEach(function(item) {
+    this.sidebarList_.querySelectorAll('li button').forEach((item) => {
       item.addEventListener('click', this.onItemClick_.bind(this));
-    }, this);
+    });
 
-    /** @private {!Element} */
-    this.overlayDiv_ = this.sidebarDiv_.querySelector('.overlay');
+    this.overlayDiv_ = this.sidebarDiv_.querySelector<HTMLElement>('.overlay')!;
     assert(this.overlayDiv_);
     this.overlayDiv_.addEventListener('click', this.close.bind(this));
 
-    window.matchMedia('screen and (max-width: 600px)')
-        .addListener(function(query) {
-          if (!query.matches) {
-            this.close();
-          }
-        }.bind(this));
+    window.matchMedia('screen and (max-width: 600px)').addListener((query) => {
+      if (!query.matches) {
+        this.close();
+      }
+    });
   }
 
   /**
    * Adds a new list item to the sidebar using the given |item|.
-   * @param {!SidebarItem} item
    */
-  addItem(item) {
+  addItem(item: SidebarItem) {
     const sidebarItem = document.createElement('li');
-    sidebarItem.dataset.pageName = item.pageName.toLowerCase();
+    sidebarItem.dataset['pageName'] = item.pageName.toLowerCase();
 
     const button = document.createElement('button');
     button.classList.add('custom-appearance');
@@ -84,9 +86,8 @@ export class Sidebar extends PageManagerObserver {
 
   /**
    * Removes a sidebar item where |pageName| matches the item's pageName.
-   * @param {string} pageName
    */
-  removeItem(pageName) {
+  removeItem(pageName: string) {
     pageName = pageName.toLowerCase();
     const query = 'li[data-page-name="' + pageName + '"]';
     const selection = this.sidebarList_.querySelector(query);
@@ -100,23 +101,21 @@ export class Sidebar extends PageManagerObserver {
 
   /**
    * Called when a page is navigated to.
-   * @override
-   * @param {string} path The path of the page being visited.
+   * @param path The path of the page being visited.
    */
-  updateHistory(path) {
-    this.sidebarContent_.querySelectorAll('li').forEach(function(item) {
-      item.classList.toggle('selected', item.dataset.pageName === path);
+  override updateHistory(path: string) {
+    this.sidebarContent_.querySelectorAll<HTMLElement>('li').forEach((item) => {
+      item.classList.toggle('selected', item.dataset['pageName'] === path);
     });
   }
 
   /**
    * Switches the page based on which sidebar list button was clicked.
-   * @param {!Event} event
-   * @private
    */
-  onItemClick_(event) {
+  private onItemClick_(event: Event) {
     this.close();
-    PageManager.getInstance().showPageByName(
-        event.target.parentNode.dataset.pageName);
+    const target = event.target as HTMLElement;
+    const parent = target.parentNode as HTMLElement;
+    PageManager.getInstance().showPageByName(parent.dataset['pageName']!);
   }
 }

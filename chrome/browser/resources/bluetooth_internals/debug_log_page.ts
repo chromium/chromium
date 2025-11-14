@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {BluetoothInternalsHandlerRemote, DebugLogsChangeHandlerRemote} from './bluetooth_internals.mojom-webui.js';
+import type {BluetoothBtsnoopRemote, BluetoothInternalsHandlerRemote, DebugLogsChangeHandlerRemote} from './bluetooth_internals.mojom-webui.js';
 import {Page} from './page.js';
 
 /** @const {string} */
@@ -14,23 +14,17 @@ const LOGS_NOT_SUPPORTED_STRING = 'Debug logs not supported';
  * Page that allows user to enable/disable debug logs.
  */
 export class DebugLogPage extends Page {
-  /**
-   * @param {!BluetoothInternalsHandlerRemote} bluetoothInternalsHandler
-   */
-  constructor(bluetoothInternalsHandler) {
+  private debugLogsChangeHandler_: DebugLogsChangeHandlerRemote|null = null;
+  private inputElement_: HTMLInputElement|null = null;
+  private debugContainer_: HTMLDivElement;
+  private bluetoothInternalsHandler_: BluetoothInternalsHandlerRemote;
+  private btsnoopInterface_: BluetoothBtsnoopRemote|null = null;
+
+  constructor(bluetoothInternalsHandler: BluetoothInternalsHandlerRemote) {
     super('debug', 'Debug Logs', 'debug');
 
-    /**
-     * @private {?DebugLogsChangeHandlerRemote}
-     */
-    this.debugLogsChangeHandler_ = null;
-
-    /** @private {?HTMLInputElement} */
-    this.inputElement_ = null;
-
-    /** @private {!HTMLDivElement} */
     this.debugContainer_ =
-        /** @type {!HTMLDivElement} */ ($('debug-container'));
+        getRequiredElement<HTMLDivElement>('debug-container');
 
     this.bluetoothInternalsHandler_ = bluetoothInternalsHandler;
     this.btsnoopInterface_ = null;
@@ -49,15 +43,11 @@ export class DebugLogPage extends Page {
         });
   }
 
-  /**
-   * @param {!DebugLogsChangeHandlerRemote} handler
-   * @param {boolean} initialInputValue
-   */
-  setUpInput(handler, initialInputValue) {
+  setUpInput(
+      handler: DebugLogsChangeHandlerRemote, initialInputValue: boolean) {
     this.debugLogsChangeHandler_ = handler;
 
-    this.inputElement_ =
-        /** @type {!HTMLInputElement} */ (document.createElement('input'));
+    this.inputElement_ = document.createElement('input');
     this.inputElement_.setAttribute('type', 'checkbox');
     this.inputElement_.checked = initialInputValue;
     this.inputElement_.addEventListener(
@@ -66,24 +56,24 @@ export class DebugLogPage extends Page {
   }
 
   setUpBtmonButton() {
-    const elem = /** @type {!HTMLInputElement} */ ($('btmon-start-btn'));
+    const elem = getRequiredElement<HTMLInputElement>('btmon-start-btn');
     elem.addEventListener('click', this.onStartBtsnoopClick.bind(this));
     this.setBtmonButtonText('Start logging');
   }
 
-  setBtmonButtonText(text) {
-    const elem = /** @type {!HTMLInputElement} */ ($('btmon-start-btn'));
+  setBtmonButtonText(text: string) {
+    const elem = getRequiredElement<HTMLInputElement>('btmon-start-btn');
     elem.textContent = text;
   }
 
-  setBtmonStatusText(text) {
-    const elem = /** @type {!HTMLDivElement} */ ($('btmon-status-bar'));
+  setBtmonStatusText(text: string) {
+    const elem = getRequiredElement<HTMLDivElement>('btmon-status-bar');
     elem.textContent = text;
   }
 
   onToggleChange() {
-    this.debugLogsChangeHandler_.changeDebugLogsState(
-        this.inputElement_.checked);
+    this.debugLogsChangeHandler_!.changeDebugLogsState(
+        this.inputElement_!.checked);
   }
 
   onStartBtsnoopClick() {
@@ -126,8 +116,9 @@ export class DebugLogPage extends Page {
       return;
     }
 
-    this.pageDiv.appendChild(
-        document.importNode($('btsnoop-template').content, true /* deep */));
+    this.pageDiv.appendChild(document.importNode(
+        getRequiredElement<HTMLTemplateElement>('btsnoop-template').content,
+        true /* deep */));
     this.setUpBtmonButton();
   }
 }

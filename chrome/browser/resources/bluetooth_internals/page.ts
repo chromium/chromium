@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-function getRequiredElement(id) {
+function getRequiredElement(id: string): HTMLElement {
   // Disable getElementById restriction here, because this UI uses non valid
   // selectors that don't work with querySelector().
   // eslint-disable-next-line no-restricted-properties
@@ -15,18 +15,18 @@ function getRequiredElement(id) {
 
 /**
  * Finds a good place to set initial focus. Generally called when UI is shown.
- * @param {!Element} root Where to start looking for focusable controls.
+ * @param root Where to start looking for focusable controls.
  */
-function setInitialFocus(root) {
+function setInitialFocus(root: Element) {
   // Do not change focus if any element in |root| is already focused.
   if (root.contains(document.activeElement)) {
     return;
   }
 
-  const elements =
-      root.querySelectorAll('input, list, select, textarea, button');
+  const elements = root.querySelectorAll<HTMLElement>(
+      'input, list, select, textarea, button');
   for (let i = 0; i < elements.length; i++) {
-    const element = elements[i];
+    const element = elements[i]!;
     element.focus();
     // .focus() isn't guaranteed to work. Continue until it does.
     if (document.activeElement === element) {
@@ -43,45 +43,39 @@ function setInitialFocus(root) {
  * for each nested level to enforce the stack order of overlays.
  */
 export class Page extends EventTarget {
+  name: string;
+  title: string;
+  pageDivName: string;
+  pageDiv: HTMLElement&{page: Page | null};
+  tab: HTMLElement|null = null;
+  lastFocusedElement: HTMLElement|null = null;
+  hash: string = '';
+  // The parent page of this page; or null for root pages.
+  parentPage: Page|null = null;
+  // The section on the parent page that is associated with this page. Can be
+  // null.
+  associatedSection: Element|null = null;
+  // An array of controls that are associated with this page. The first control
+  // should be located on a root page.
+  associatedControls: Element[]|null = null;
+
   /**
-   * @param {string} name Page name.
-   * @param {string} title Page title, used for history.
-   * @param {string} pageDivName ID of the div corresponding to the page.
+   * @param name Page name.
+   * @param title Page title, used for history.
+   * @param pageDivName ID of the div corresponding to the page.
    */
-  constructor(name, title, pageDivName) {
+  constructor(name: string, title: string, pageDivName: string) {
     super();
 
     this.name = name;
     this.title = title;
     this.pageDivName = pageDivName;
-    this.pageDiv = getRequiredElement(this.pageDivName);
+    const element = getRequiredElement(this.pageDivName);
     // |pageDiv.page| is set to the page object (this) when the page is
     // visible to track which page is being shown when multiple pages can
     // share the same underlying div.
-    this.pageDiv.page = null;
-    this.tab = null;
-    this.lastFocusedElement = null;
-    this.hash = '';
-
-    /**
-     * The parent page of this page; or null for root pages.
-     * @type {Page}
-     */
-    this.parentPage = null;
-
-    /**
-     * The section on the parent page that is associated with this page.
-     * Can be null.
-     * @type {Element}
-     */
-    this.associatedSection = null;
-
-    /**
-     * An array of controls that are associated with this page. The first
-     * control should be located on a root page.
-     * @type {Array<Element>}
-     */
-    this.associatedControls = null;
+    (element as any).page = null;
+    this.pageDiv = element as HTMLElement & {page: Page | null};
   }
 
   /**
@@ -106,10 +100,10 @@ export class Page extends EventTarget {
   /**
    * Updates the hash of the current page. If the page is topmost, the history
    * state is updated.
-   * @param {string} hash The new hash value. Like location.hash, this
+   * @param hash The new hash value. Like location.hash, this
    *     should include the leading '#' if not empty.
    */
-  setHash(hash) {
+  setHash(hash: string) {
     if (this.hash === hash) {
       return;
     }
@@ -135,9 +129,8 @@ export class Page extends EventTarget {
 
   /**
    * Gets page visibility state.
-   * @type {boolean}
    */
-  get visible() {
+  get visible(): boolean {
     if (this.pageDiv.hidden) {
       return false;
     }
@@ -146,9 +139,8 @@ export class Page extends EventTarget {
 
   /**
    * Sets page visibility.
-   * @type {boolean}
    */
-  set visible(visible) {
+  set visible(visible: boolean) {
     if ((this.visible && visible) || (!this.visible && !visible)) {
       return;
     }
