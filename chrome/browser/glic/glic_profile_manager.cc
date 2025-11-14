@@ -167,17 +167,24 @@ void GlicProfileManager::OnUnloadingClientForService(GlicKeyedService* glic) {
 void GlicProfileManager::ShouldPreloadForProfile(
     Profile* profile,
     ShouldPreloadCallback callback) {
+  if (!base::FeatureList::IsEnabled(features::kGlicWarming)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       GlicPrewarmingChecksResult::kWarmingDisabled));
+    return;
+  }
   if (!profile || IsProfileDirectoryMarkedForDeletion(profile->GetPath())) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   GlicPrewarmingChecksResult::kProfileGone));
     return;
   }
-  if (!base::FeatureList::IsEnabled(features::kGlicWarming)) {
+  if (profile->ShutdownStarted()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
-                       GlicPrewarmingChecksResult::kWarmingDisabled));
+                       GlicPrewarmingChecksResult::kBrowserShuttingDown));
     return;
   }
   GlicPrewarmingChecksResult result;
@@ -338,6 +345,9 @@ void GlicProfileManager::CanPreloadForProfile(Profile* profile,
   };
   if (!profile || profile->ShutdownStarted()) {
     return produce_result(GlicPrewarmingChecksResult::kProfileGone);
+  }
+  if (profile->ShutdownStarted()) {
+    return produce_result(GlicPrewarmingChecksResult::kBrowserShuttingDown);
   }
   auto enablement = GlicEnabling::EnablementForProfile(profile);
   if (!enablement.IsProfileEligible()) {

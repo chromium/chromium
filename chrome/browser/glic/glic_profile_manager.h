@@ -166,7 +166,10 @@ enum class GlicPrewarmingChecksResult {
   // The device has a cellular connection.
   kCellularConnection = 13,
 
-  kMaxValue = kCellularConnection,
+  // The browser is being shutdown.
+  kBrowserShuttingDown = 14,
+
+  kMaxValue = kBrowserShuttingDown,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicPrewarmingChecksResult)
 

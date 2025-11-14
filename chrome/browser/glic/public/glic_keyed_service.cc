@@ -718,13 +718,6 @@ void GlicKeyedService::AddPreloadCallback(base::OnceCallback<void()> callback) {
 }
 
 void GlicKeyedService::TryPreload() {
-  if (base::FeatureList::IsEnabled(features::kGlicDisableWarming) &&
-      !base::FeatureList::IsEnabled(features::kGlicWarming)) {
-    // This is to ensure the preload process completes and preload_callback_ is
-    // called.
-    FinishPreload(GlicPrewarmingChecksResult::kWarmingDisabled);
-    return;
-  }
   GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
   CHECK(glic_profile_manager);
   base::TimeDelta delay = GetWarmingDelay();
@@ -754,8 +747,8 @@ void GlicKeyedService::TryPreloadAfterDelay() {
 }
 
 void GlicKeyedService::TryPreloadFre(GlicPrewarmingFreSource source) {
-  if (base::FeatureList::IsEnabled(features::kGlicDisableWarming) &&
-      !base::FeatureList::IsEnabled(features::kGlicFreWarming)) {
+  if (!base::FeatureList::IsEnabled(features::kGlicFreWarming)) {
+    // Early/duplicate FRE warming enabling check just to record this metric.
     base::UmaHistogramEnumeration(
         "Glic.PrewarmingFre.DisabledShouldNotPreloadFreForSource", source);
     return;
