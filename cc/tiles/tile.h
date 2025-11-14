@@ -56,6 +56,8 @@ class CC_EXPORT Tile {
     return id_;
   }
 
+  bool IsReadyToDraw() { return draw_info().IsReadyToDraw(); }
+
   // TODO(vmpstr): Move this to the iterators.
   bool required_for_activation() const { return required_for_activation_; }
   void set_required_for_activation(bool is_required) {
