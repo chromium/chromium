@@ -8,6 +8,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_context_controller.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_tasks/public/contextual_task.h"
@@ -57,10 +58,17 @@ class MockTaskInfoDelegate : public TaskInfoDelegate {
     title_ = title;
   }
 
+  bool IsShownInTab() override { return false; }
+
+  BrowserWindowInterface* GetBrowser() override {
+    return &mock_browser_window_interface_;
+  }
+
  private:
   std::optional<base::Uuid> task_id_;
   std::optional<std::string> thread_id_;
   std::optional<std::string> title_;
+  MockBrowserWindowInterface mock_browser_window_interface_;
 };
 
 std::unique_ptr<content::MockNavigationHandle> CreateMockNavigationHandle(

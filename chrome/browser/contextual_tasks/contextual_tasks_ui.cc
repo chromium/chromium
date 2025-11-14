@@ -176,6 +176,14 @@ void ContextualTasksUI::SetThreadTitle(std::optional<std::string> title) {
   }
 }
 
+bool ContextualTasksUI::IsShownInTab() {
+  return tabs::TabInterface::MaybeGetFromContents(web_ui()->GetWebContents());
+}
+
+BrowserWindowInterface* ContextualTasksUI::GetBrowser() {
+  return FromWebContents(web_ui()->GetWebContents());
+}
+
 void ContextualTasksUI::CloseSidePanel() {
   auto* browser = webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
   auto* coordinator =
@@ -246,7 +254,6 @@ ContextualTasksUI::FrameNavObserver::FrameNavObserver(
       ui_service_(ui_service),
       context_controller_(context_controller),
       task_info_delegate_(CHECK_DEREF(task_info_delegate)) {
-  browser_ = FromWebContents(web_contents);
 }
 
 void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
@@ -276,7 +283,11 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     task_info_delegate_->SetTaskId(std::nullopt);
     task_info_delegate_->SetThreadId(std::nullopt);
     task_info_delegate_->SetThreadTitle(std::nullopt);
-    ui_service_->OnTaskChangedInPanel(browser_, base::Uuid());
+    if (!task_info_delegate_->IsShownInTab() &&
+        task_info_delegate_->GetBrowser()) {
+      ui_service_->OnTaskChangedInPanel(task_info_delegate_->GetBrowser(),
+                                        base::Uuid());
+    }
     return;
   }
 
@@ -320,8 +331,11 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
       contextual_tasks::ThreadType::kAiMode, url_thread_id, mstk,
       task_info_delegate_->GetThreadTitle());
 
-  ui_service_->OnTaskChangedInPanel(browser_,
-                                    task_info_delegate_->GetTaskId().value());
+  if (!task_info_delegate_->IsShownInTab() &&
+      task_info_delegate_->GetBrowser()) {
+    ui_service_->OnTaskChangedInPanel(task_info_delegate_->GetBrowser(),
+                                      task_info_delegate_->GetTaskId().value());
+  }
 }
 
 ContextualTasksUI::InnerFrameCreationObvserver::InnerFrameCreationObvserver(
