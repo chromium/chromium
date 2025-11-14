@@ -39,12 +39,12 @@ using ::password_manager::SavedPasswordsPresenter;
 using ::password_manager::TestPasswordStore;
 using ::testing::SizeIs;
 
-CredentialExchangePassword* CreateTestPassword() {
-  return [[CredentialExchangePassword alloc]
-      initWithURL:[NSURL URLWithString:@"https://example.com"]
-         username:@"username"
-         password:@"password"
-             note:@"note"];
+CredentialExchangePassword* CreateTestPassword(NSString* url) {
+  return
+      [[CredentialExchangePassword alloc] initWithURL:[NSURL URLWithString:url]
+                                             username:@"username"
+                                             password:@"password"
+                                                 note:@"note"];
 }
 
 scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
@@ -132,7 +132,33 @@ class CredentialImporterTest : public PlatformTest {
 
 // TODO(crbug.com/458733320): Add tests for passkeys and invalid credentials.
 TEST_F(CredentialImporterTest, ImportsValidPassword) {
-  [importer_ onCredentialsTranslatedWithPasswords:@[ CreateTestPassword() ]
+  [importer_ onCredentialsTranslatedWithPasswords:@[ CreateTestPassword(
+                                                      @"https://example.com") ]
+                                         passkeys:@[]];
+
+  FakePasswordStoreObserver observer;
+  GetAccountStore().AddObserver(&observer);
+
+  [importer_ startImportingCredentialsWithSecurityDomainSecrets:nil];
+
+  ASSERT_TRUE(observer.WaitForLoginsChanged());
+  GetAccountStore().RemoveObserver(&observer);
+
+  EXPECT_TRUE(GetProfileStore().IsEmpty());
+  ASSERT_THAT(GetAccountStore().stored_passwords(), SizeIs(1));
+  std::vector<PasswordForm> forms =
+      GetAccountStore().stored_passwords().begin()->second;
+  ASSERT_THAT(forms, SizeIs(1));
+  EXPECT_EQ(forms[0].url.spec(), "https://example.com/");
+  EXPECT_EQ(forms[0].username_value, u"username");
+  EXPECT_EQ(forms[0].password_value, u"password");
+  EXPECT_EQ(forms[0].GetNoteWithEmptyUniqueDisplayName(), u"note");
+  EXPECT_EQ(forms[0].in_store, PasswordForm::Store::kAccountStore);
+}
+
+TEST_F(CredentialImporterTest, ImportsPasswordWithoutHttpsScheme) {
+  [importer_ onCredentialsTranslatedWithPasswords:@[ CreateTestPassword(
+                                                      @"example.com") ]
                                          passkeys:@[]];
 
   FakePasswordStoreObserver observer;

@@ -15,6 +15,8 @@
 #import "components/password_manager/core/browser/import/csv_password.h"
 #import "components/password_manager/core/browser/import/import_results.h"
 #import "components/password_manager/core/browser/import/password_importer.h"
+#import "components/password_manager/core/browser/password_manager_util.h"
+#import "components/password_manager/core/browser/ui/credential_utils.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/core/browser/import/import_processing_result.h"
@@ -154,12 +156,27 @@ std::string DataToString(NSData* data) {
   std::vector<password_manager::CSVPassword> csvPasswords;
   csvPasswords.reserve(_passwords.count);
   for (CredentialExchangePassword* password : _passwords) {
-    csvPasswords.push_back(password_manager::CSVPassword(
-        net::GURLWithNSURL(password.URL),
-        base::SysNSStringToUTF8(password.username),
-        base::SysNSStringToUTF8(password.password),
-        base::SysNSStringToUTF8(password.note),
-        password_manager::CSVPassword::Status::kOK));
+    std::string username = base::SysNSStringToUTF8(password.username);
+    std::string passwordStr = base::SysNSStringToUTF8(password.password);
+    std::string note = base::SysNSStringToUTF8(password.note);
+
+    // Even though the URL might not be valid, this status is just about parsing
+    // the fields. `_passwordImporter` will handle the invalid URL internally.
+    password_manager::CSVPassword::Status status =
+        password_manager::CSVPassword::Status::kOK;
+
+    // Password manager expects urls to be in HTTP or HTTPS scheme. The imported
+    // password might not contain it and e.g. just be an eTLD+1. Try adding the
+    // scheme and validate the result.
+    std::string urlStr = password.URL.absoluteString.UTF8String;
+    GURL url = password_manager_util::ConstructGURLWithScheme(urlStr);
+    if (password_manager::IsValidPasswordURL(url)) {
+      csvPasswords.emplace_back(password_manager::CSVPassword(
+          url, username, passwordStr, note, status));
+    } else {
+      csvPasswords.emplace_back(password_manager::CSVPassword(
+          urlStr, username, passwordStr, note, status));
+    }
   }
   return csvPasswords;
 }
