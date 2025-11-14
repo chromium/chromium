@@ -8457,6 +8457,7 @@ from previous Chrome versions.
       label="enable-search-button-in-omnibox-for-str-or-iip"/>
   <int value="-2003097010" label="TerminalSftp:enabled"/>
   <int value="-2002754843" label="FedCmButtonMode:enabled"/>
+  <int value="-2002739429" label="AndroidPbDisablePulseAnimation:disabled"/>
   <int value="-2002461806" label="ShoppingAssist:enabled"/>
   <int value="-2001869199" label="ShillSandboxing:enabled"/>
   <int value="-2001125545" label="OmniboxShortcutsAndroid:enabled"/>
@@ -11789,6 +11790,7 @@ from previous Chrome versions.
   <int value="-834661509" label="ModalPermissionPrompts:disabled"/>
   <int value="-834234595" label="BorealisProvision:enabled"/>
   <int value="-833449894" label="PrivacySandboxAdsNoticeCCT:disabled"/>
+  <int value="-833385103" label="AndroidPbDisableSmoothAnimation:disabled"/>
   <int value="-833319821" label="AutoRevokeSuspiciousNotification:enabled"/>
   <int value="-833024559" label="AuxiliarySearchDonation:enabled"/>
   <int value="-832970990" label="mantis-feature-key:disabled"/>
@@ -18878,6 +18880,7 @@ from previous Chrome versions.
   <int value="1659489775" label="TailoredSecurityDesktopNotice:disabled"/>
   <int value="1659969202" label="AlignWakeUps:disabled"/>
   <int value="1660002388" label="FilesWebDriveOffice:disabled"/>
+  <int value="1660469395" label="AndroidPbDisableSmoothAnimation:enabled"/>
   <int value="1660491118" label="AllowAmbientEQ:enabled"/>
   <int value="1660605883" label="WebPaymentAPICSP:disabled"/>
   <int value="1660772828" label="NtpModulesDragAndDrop:enabled"/>
@@ -19049,6 +19052,7 @@ from previous Chrome versions.
   <int value="1713230497" label="ColorCorrectRendering:disabled"/>
   <int value="1713419708" label="ProjectorV2:disabled"/>
   <int value="1713509078" label="NewBaseUrlInheritanceBehavior:enabled"/>
+  <int value="1713815796" label="AndroidPbDisablePulseAnimation:enabled"/>
   <int value="1713822664" label="WebXRHandInput:enabled"/>
   <int value="1714016217" label="EnableHeuristicPalmDetectionFilter:enabled"/>
   <int value="1714018180"

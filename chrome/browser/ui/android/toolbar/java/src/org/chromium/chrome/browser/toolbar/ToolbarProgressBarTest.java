@@ -49,6 +49,10 @@ import java.util.concurrent.TimeoutException;
 
 /** Tests related to the ToolbarProgressBar. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Features.DisableFeatures({
+    ChromeFeatureList.ANDROID_PB_DISABLE_PULSE_ANIMATION,
+    ChromeFeatureList.ANDROID_PB_DISABLE_SMOOTH_ANIMATION
+})
 public class ToolbarProgressBarTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ProgressBarObserver mMockProgressBarObserver;

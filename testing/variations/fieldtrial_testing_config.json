@@ -8951,6 +8951,22 @@
             ]
         }
     ],
+    "DisableProgressBarAndroidAnimations": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidPbDisablePulseAnimation",
+                        "AndroidPbDisableSmoothAnimation"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableSystemBlur": [
         {
             "platforms": [

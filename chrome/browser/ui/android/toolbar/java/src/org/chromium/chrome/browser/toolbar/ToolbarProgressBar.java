@@ -99,9 +99,17 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
             new Runnable() {
                 @Override
                 public void run() {
-                    if (!mIsStarted) return;
+                    if (!mIsStarted
+                            || ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.ANDROID_PB_DISABLE_PULSE_ANIMATION)) {
+                        return;
+                    }
                     mAnimationLogic.reset(getProgress());
-                    mSmoothProgressAnimator.start();
+
+                    if (!ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.ANDROID_PB_DISABLE_SMOOTH_ANIMATION)) {
+                        mSmoothProgressAnimator.start();
+                    }
 
                     if (mAnimatingView != null) {
                         int width =

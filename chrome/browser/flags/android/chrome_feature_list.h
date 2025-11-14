@@ -47,6 +47,8 @@ BASE_DECLARE_FEATURE(kAndroidNewMediaPicker);
 BASE_DECLARE_FEATURE(kAndroidNoVisibleHintForDifferentTLD);
 BASE_DECLARE_FEATURE(kAndroidOmniboxFocusedNewTabPage);
 BASE_DECLARE_FEATURE(kAndroidOpenPdfInlineBackport);
+BASE_DECLARE_FEATURE(kAndroidPbDisablePulseAnimation);
+BASE_DECLARE_FEATURE(kAndroidPbDisableSmoothAnimation);
 BASE_DECLARE_FEATURE(kAndroidPdfAssistContent);
 BASE_DECLARE_FEATURE(kAndroidPinnedTabs);
 BASE_DECLARE_FEATURE(kAndroidPinnedTabsTabletTabStrip);

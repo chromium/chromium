@@ -13471,6 +13471,18 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensOverlayNonBlockingPrivacyNotice)},
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+    {"android-pb-disable-pulse-animation",
+     flag_descriptions::kAndroidPbDisablePulseAnimationName,
+     flag_descriptions::kAndroidPbDisablePulseAnimationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidPbDisablePulseAnimation)},
+
+    {"android-pb-disable-smooth-animation",
+     flag_descriptions::kAndroidPbDisableSmoothAnimationName,
+     flag_descriptions::kAndroidPbDisableSmoothAnimationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidPbDisableSmoothAnimation)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
