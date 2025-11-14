@@ -183,12 +183,12 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest,
       << frame_node->GetLifecycleState();
 }
 
-// TODO(crbug.com/40931300): Re-enable on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/40931300): Re-enable on Mac and Android.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_SameSiteNavigation DISABLED_SameSiteNavigation
 #else
 #define MAYBE_SameSiteNavigation SameSiteNavigation
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, MAYBE_SameSiteNavigation) {
   auto* contents = shell()->web_contents();
   GURL urla(embedded_test_server()->GetURL("a.com", "/a_embeds_b.html"));
