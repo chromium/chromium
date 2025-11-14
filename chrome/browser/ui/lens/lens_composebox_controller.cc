@@ -17,6 +17,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_payload_construction.h"
+#include "components/lens/lens_url_utils.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
@@ -269,6 +270,13 @@ LensComposeboxController::GetLensSuggestInputs() const {
   if (!HasRegionSelection() &&
       lens::features::ClearVsintWhenNoRegionSelection()) {
     suggest_inputs.clear_encoded_visual_search_interaction_log_data();
+  }
+
+  if (lens::features::GetLensAimSuggestionsType() ==
+          lens::features::LensAimSuggestionsType::kMultimodal &&
+      lens::features::GetLensOverlaySendVitAsImageForLensSuggest()) {
+    suggest_inputs.set_contextual_visual_input_type(
+        kImageVisualInputTypeQueryParameterValue);
   }
   return suggest_inputs;
 }

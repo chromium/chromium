@@ -43,7 +43,8 @@ bool IsLensContextualSearchbox(OEP::PageClassification classification) {
 bool IsLensSearchbox(OEP::PageClassification classification) {
   return IsLensContextualSearchbox(classification) ||
          (classification == OEP::SEARCH_SIDE_PANEL_SEARCHBOX) ||
-         (classification == OEP::LENS_SIDE_PANEL_SEARCHBOX);
+         (classification == OEP::LENS_SIDE_PANEL_SEARCHBOX) ||
+         (classification == OEP::LENS_SIDE_PANEL_COMPOSEBOX);
 }
 
 bool IsCustomTab(OEP::PageClassification classification) {

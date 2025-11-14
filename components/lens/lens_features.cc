@@ -342,6 +342,10 @@ constexpr base::FeatureParam<bool>
         &kLensOverlaySuggestionsMigration,
         "send-lens-visual-interaction-data-for-lens-suggest", false};
 
+constexpr base::FeatureParam<bool> kLensOverlaySendVitAsImageForLensSuggest{
+    &kLensOverlaySuggestionsMigration,
+    "send-lens-send-vit-as-image-for-lens-suggest", false};
+
 constexpr base::FeatureParam<bool> kLensOverlaySendImageSignalsForLensSuggest{
     &kLensOverlaySuggestionsMigration, "send-image-signals-for-lens-suggest",
     true};
@@ -747,6 +751,10 @@ bool GetLensOverlaySendLensVisualInteractionDataForLensSuggest() {
 
 bool GetLensOverlaySendImageSignalsForLensSuggest() {
   return kLensOverlaySendImageSignalsForLensSuggest.Get();
+}
+
+bool GetLensOverlaySendVitAsImageForLensSuggest() {
+  return kLensOverlaySendVitAsImageForLensSuggest.Get();
 }
 
 uint32_t GetLensOverlayFileUploadLimitBytes() {

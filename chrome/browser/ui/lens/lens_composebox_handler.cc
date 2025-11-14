@@ -80,12 +80,6 @@ LensComposeboxOmniboxClient::~LensComposeboxOmniboxClient() = default;
 
 metrics::OmniboxEventProto::PageClassification
 LensComposeboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
-  // TODO(crbug.com/456528226): - multimodal suggestions are for teamfood only
-  // so the incorrect classification is fine for now.
-  if (lens::features::GetLensAimSuggestionsType() ==
-      lens::features::LensAimSuggestionsType::kMultimodal) {
-    return metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
-  }
   return metrics::OmniboxEventProto::LENS_SIDE_PANEL_COMPOSEBOX;
 }
 
