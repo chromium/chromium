@@ -26,4 +26,9 @@ public interface ParentAuthDelegate {
      */
     void requestLocalAuth(
             WindowAndroid windowAndroid, GURL url, Callback<Boolean> onCompletionCallback);
+
+    /**
+     * @see {@link ExtensionParentApproval#requestExtensionApproval()}
+     */
+    void requestExtensionAuth(WindowAndroid windowAndroid, Callback<Boolean> onCompletionCallback);
 }
