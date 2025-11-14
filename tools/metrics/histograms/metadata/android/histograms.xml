@@ -168,7 +168,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".PromptHatsMicrophoneCustomInvitation"/>
   <variant name=".PromptHatsMicrophoneGenericInvitation"/>
   <variant name=".PromptHatsQuickDelete"/>
-  <variant name=".PromptHatsSafetyHub"/>
   <variant name=".ReaderMode"/>
   <variant name=".ReloadPage"/>
   <variant name=".SafetyTip"/>
