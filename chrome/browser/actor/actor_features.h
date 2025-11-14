@@ -44,6 +44,9 @@ BASE_DECLARE_FEATURE_PARAM(bool, kGlicPromptUserForNavigationToNewOrigins);
 // Toggles whether novel origin gating is based on site (true) or origin
 // (false). Note that gating sensitive sites will still be origin based.
 BASE_DECLARE_FEATURE_PARAM(bool, kGlicNavigationGatingUseSiteNotOrigin);
+// Controls whether a hardcoded block list is enabled for the static block list.
+// TODO(crbug.com/453660392): Remove flag once Component Updater rollout starts.
+BASE_DECLARE_FEATURE_PARAM(bool, kGlicIncludeHardcodedBlockListEntries);
 
 // When enabled, `beforeunload` dialog will not be displayed and the callback
 // indicating the dialog outcome will be called with `true`.
