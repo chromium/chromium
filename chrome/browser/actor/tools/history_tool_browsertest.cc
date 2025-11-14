@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/actor/actor_features.h"
@@ -40,7 +41,11 @@ constexpr char kDomainA[] = "a.test";
 
 class ActorHistoryToolBrowserTest : public ActorToolsTest {
  public:
-  ActorHistoryToolBrowserTest() = default;
+  ActorHistoryToolBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{kGlicCrossOriginNavigationGating});
+  }
   ~ActorHistoryToolBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -48,6 +53,9 @@ class ActorHistoryToolBrowserTest : public ActorToolsTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO(crbug.com/415385900): Add a test for navigation API canceling a

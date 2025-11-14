@@ -45,7 +45,7 @@ BASE_FEATURE(kGlicDeferDownloadFilePickerToUserTakeover,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicCrossOriginNavigationGating,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
                    kGlicPromptUserForSensitiveNavigations,
                    &kGlicCrossOriginNavigationGating,
@@ -55,7 +55,7 @@ BASE_FEATURE_PARAM(bool,
                    kGlicConfirmNavigationToNewOrigins,
                    &kGlicCrossOriginNavigationGating,
                    "confirm_navigation_to_new_origins",
-                   true);
+                   false);
 BASE_FEATURE_PARAM(bool,
                    kGlicPromptUserForNavigationToNewOrigins,
                    &kGlicCrossOriginNavigationGating,

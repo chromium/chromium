@@ -78,10 +78,17 @@ class ExecutionEngineOriginGatingBrowserTestBase
     : public glic::NonInteractiveGlicTest {
  public:
   ExecutionEngineOriginGatingBrowserTestBase() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                              features::kGlicActor,
-                              kGlicCrossOriginNavigationGating},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {
+            {features::kGlic, {}},
+            {features::kGlicActor, {}},
+            {features::kTabstripComboButton, {}},
+            {kGlicCrossOriginNavigationGating,
+             {{
+                 {"confirm_navigation_to_new_origins", "true"},
+             }}},
+        },
         /*disabled_features=*/{features::kGlicWarming});
   }
   ~ExecutionEngineOriginGatingBrowserTestBase() override = default;
@@ -1118,6 +1125,8 @@ class ExecutionEngineSiteGatingBrowserTest
         {
             {kGlicCrossOriginNavigationGating,
              {{
+                 {"confirm_navigation_to_new_origins", "true"},
+                 {"prompt_user_for_navigation_to_new_origins", "false"},
                  {"gate_on_site_not_origin",
                   should_gate_by_site() ? "true" : "false"},
              }}},

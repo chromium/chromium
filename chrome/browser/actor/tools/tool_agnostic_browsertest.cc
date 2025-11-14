@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -40,7 +41,11 @@ namespace {
 
 class ActorToolAgnosticBrowserTest : public ActorToolsTest {
  public:
-  ActorToolAgnosticBrowserTest() = default;
+  ActorToolAgnosticBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{kGlicCrossOriginNavigationGating});
+  }
   ~ActorToolAgnosticBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -48,6 +53,9 @@ class ActorToolAgnosticBrowserTest : public ActorToolsTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that requesting tool use on a page that's not active fails. In this case
