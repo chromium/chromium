@@ -516,6 +516,9 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
       // received which means that all existing data should be cleaned up.
       pending_updates_.clear();
       entries_pending_decryption_.clear();
+      // Since there are no more entries pending decryption, there are also no
+      // more unknown encryption keys.
+      unknown_encryption_keys_by_name_.clear();
     }
 
     // Ignore collaboration GC for non-shared types.
