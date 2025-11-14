@@ -696,6 +696,10 @@ bool InputHandlerProxy::GenerateAndDispatchSyntheticScrollPrediction(
           currently_active_gesture_device_.value(),
           currently_active_gesture_scroll_modifiers_.value_or(0));
 
+  if (!event_with_callback) {
+    return false;
+  }
+
   int64_t trace_id = event_with_callback->latency_info().trace_id();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
               [&](perfetto::EventContext ctx) {
