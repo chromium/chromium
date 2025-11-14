@@ -66,6 +66,7 @@ public abstract class MultiInstanceManager {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({
+        CloseWindowAppSource.OTHER,
         CloseWindowAppSource.WINDOW_MANAGER,
         CloseWindowAppSource.RETENTION_PERIOD_EXPIRATION,
         CloseWindowAppSource.NO_TABS_IN_WINDOW

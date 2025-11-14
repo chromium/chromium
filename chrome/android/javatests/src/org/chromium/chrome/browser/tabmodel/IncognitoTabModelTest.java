@@ -191,6 +191,8 @@ public class IncognitoTabModelTest {
     @Test
     @SmallTest
     public void testHideLastRegularTab_OnModelChange() {
+        mActivityTestRule.skipWindowAndTabStateCleanup();
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertThat(mRegularTabModel)

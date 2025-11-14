@@ -428,6 +428,7 @@ public class TabSuspensionTest {
     // state anymore.
     @DisableFeatures(ChromeFeatureList.TAB_COLLECTION_ANDROID)
     public void testSuspendUninitializedCurrentTab() {
+        mActivityTestRule.skipWindowAndTabStateCleanup();
         mActivityTestRule.loadUrl(mStartingUrl);
         ThreadUtils.runOnUiThreadBlocking(() -> mTab.destroy());
 

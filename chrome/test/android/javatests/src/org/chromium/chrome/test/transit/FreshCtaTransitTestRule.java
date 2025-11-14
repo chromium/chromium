@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.test.transit;
 
+import android.app.Activity;
 import android.content.Intent;
 
 import com.google.errorprone.annotations.CheckReturnValue;
@@ -12,23 +13,34 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.TrafficControl;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
+import java.util.List;
+
 /**
  * Rule for integration tests that start a new {@link ChromeTabbedActivity} in each test case.
+ *
+ * <p>This rule closes all windows at the end of the test.
  *
  * <p>Tests using this can be batched, but the Activity won't be kept between tests; only the
  * process.
  */
 @NullMarked
 public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements TestRule {
+    private static final String TAG = "TestRule";
+    private boolean mSkipInstanceAndTabStateCleanup;
+
     FreshCtaTransitTestRule() {
         super();
     }
@@ -39,7 +51,48 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
 
     @Override
     public Statement apply(Statement statement, Description description) {
-        return mActivityTestRule.apply(statement, description);
+        Statement thisStatement =
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        mSkipInstanceAndTabStateCleanup = false;
+                        try {
+                            statement.evaluate();
+                        } finally {
+                            try {
+                                if (!mSkipInstanceAndTabStateCleanup) {
+                                    // TODO(crbug.com/460433346): Call closeAllWindows().
+                                    // This clean up causes issues in some tests, mostly post tasks
+                                    // running after instance and tab state clean up on destroyed
+                                    // Activities.
+                                }
+                            } finally {
+                                TrafficControl.hopOffPublicTransit();
+                            }
+                        }
+                    }
+                };
+
+        return mActivityTestRule.apply(thisStatement, description);
+    }
+
+    /** Close all Activities, cleaning up instance and tab state of ChromeTabbedActivities. */
+    public void closeAllWindowsAndDeleteInstanceAndTabState() {
+        List<Activity> allActivities = ApplicationStatus.getRunningActivities();
+        for (Activity activity : allActivities) {
+            if (activity instanceof ChromeTabbedActivity cta) {
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            MultiInstanceManager mim = cta.getMultiInstanceMangerForTesting();
+                            mim.closeWindow(
+                                    cta.getWindowIdForTesting(),
+                                    MultiInstanceManager.CloseWindowAppSource.OTHER);
+                        });
+                // closeWindow() already called finishAndRemoveTask().
+            } else {
+                activity.finishAndRemoveTask();
+            }
+        }
     }
 
     /**
@@ -154,5 +207,13 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
      */
     public WebPageStation alreadyStartedOnBlankPage() {
         return ChromeTabbedActivityEntryPoints.alreadyStartedOnBlankPage();
+    }
+
+    /**
+     * Avoid closing the {@link ChromeTabbedActivity} and cleaning up tab state and instances after
+     * the test.
+     */
+    public void skipWindowAndTabStateCleanup() {
+        mSkipInstanceAndTabStateCleanup = true;
     }
 }

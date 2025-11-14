@@ -553,6 +553,8 @@ public class PictureInPictureActivityTest {
     @MediumTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testNotifyNativeWhenTabClose() throws Throwable {
+        mActivityTestRule.skipWindowAndTabStateCleanup();
+
         PictureInPictureActivity activity = startPictureInPictureActivity();
         testExitOn(activity, () -> mTab.setClosing(/* closing= */ true));
         verify(mNativeMock, times(1)).destroyStartedByJava(NATIVE_OVERLAY);

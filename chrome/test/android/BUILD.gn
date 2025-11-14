@@ -280,6 +280,7 @@ android_library("chrome_java_transit") {
     "//chrome/browser/ui/android/appmenu/test:test_support_java",
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/multiwindow:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/omnibox:java",
     "//chrome/browser/ui/android/pdf:java",

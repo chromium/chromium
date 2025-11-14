@@ -18,6 +18,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,6 +50,11 @@ public class IncognitoTabLauncherTest {
     @Rule
     public final FreshCtaTransitTestRule mActivityRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    @After
+    public void tearDown() {
+        mActivityRule.skipWindowAndTabStateCleanup();
+    }
 
     @Test
     @Feature("Incognito")

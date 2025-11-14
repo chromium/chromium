@@ -63,6 +63,7 @@ import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -228,6 +229,11 @@ public class KeyboardAccessoryViewTest {
         public void addOnInitializedCallback(Callback<Boolean> callback) {
             throw new AssertionError("Implement addOnInitializedCallback if you need it.");
         }
+    }
+
+    @After
+    public void tearDown() {
+        mActivityTestRule.skipWindowAndTabStateCleanup();
     }
 
     @Before
