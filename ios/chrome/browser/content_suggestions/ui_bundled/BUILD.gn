@@ -56,7 +56,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells:shortcuts",
     "//ios/chrome/browser/content_suggestions/ui_bundled/default_browser/coordinator",
     "//ios/chrome/browser/content_suggestions/ui_bundled/default_browser/public:features",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/model",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:cells",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",

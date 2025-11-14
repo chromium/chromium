@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_IMPRESSION_LIMITS_IMPRESSION_LIMIT_SERVICE_OBSERVER_BRIDGE_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_IMPRESSION_LIMITS_IMPRESSION_LIMIT_SERVICE_OBSERVER_BRIDGE_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_IMPRESSION_LIMITS_MODEL_IMPRESSION_LIMIT_SERVICE_OBSERVER_BRIDGE_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_IMPRESSION_LIMITS_MODEL_IMPRESSION_LIMIT_SERVICE_OBSERVER_BRIDGE_H_
 
 #import <Foundation/Foundation.h>
 
 #import "base/scoped_observation.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/model/impression_limit_service.h"
 #import "url/gurl.h"
 
 // Delegate to receive events from ImpressionLimitService::Observer
@@ -41,4 +41,4 @@ class ImpressionLimitServiceObserverBridge
       scoped_observation_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_IMPRESSION_LIMITS_IMPRESSION_LIMIT_SERVICE_OBSERVER_BRIDGE_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_IMPRESSION_LIMITS_MODEL_IMPRESSION_LIMIT_SERVICE_OBSERVER_BRIDGE_H_

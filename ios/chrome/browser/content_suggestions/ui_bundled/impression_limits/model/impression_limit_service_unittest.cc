@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service.h"
+#include "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/model/impression_limit_service.h"
 
 #include "base/location.h"
 #include "base/strings/stringprintf.h"
@@ -25,7 +25,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #include "ios/chrome/browser/commerce/model/shopping_service_factory.h"
-#include "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service_factory.h"
+#include "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/model/impression_limit_service_factory.h"
 #include "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_prefs.h"
 #include "ios/chrome/browser/history/model/history_service_factory.h"
 #include "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"

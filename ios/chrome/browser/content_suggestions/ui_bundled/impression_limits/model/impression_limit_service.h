@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_IMPRESSION_LIMITS_IMPRESSION_LIMIT_SERVICE_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_IMPRESSION_LIMITS_IMPRESSION_LIMIT_SERVICE_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_IMPRESSION_LIMITS_MODEL_IMPRESSION_LIMIT_SERVICE_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_IMPRESSION_LIMITS_MODEL_IMPRESSION_LIMIT_SERVICE_H_
 
 #include <optional>
 
@@ -56,11 +56,11 @@ class ImpressionLimitService : public bookmarks::BaseBookmarkModelObserver,
 
   void RemoveObserver(ImpressionLimitService::Observer* observer);
 
-  // Logs a magic stack impression for a card generated using the |url| in
-  // the preference called |pref_name|.
+  // Logs a magic stack impression for a card generated using the `url` in
+  // the preference called `pref_name`.
   void LogImpressionForURL(const GURL& url, const std::string_view& pref_name);
 
-  // Get Impression count for |url| stored in |pref_name|.
+  // Get Impression count for `url` stored in `pref_name`.
   std::optional<int> GetImpressionCount(const GURL& url,
                                         const std::string_view& pref_name);
 
@@ -135,4 +135,4 @@ class ImpressionLimitService : public bookmarks::BaseBookmarkModelObserver,
   base::ObserverList<ImpressionLimitService::Observer> observers_;
 };
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_IMPRESSION_LIMITS_IMPRESSION_LIMIT_SERVICE_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_IMPRESSION_LIMITS_MODEL_IMPRESSION_LIMIT_SERVICE_H_
