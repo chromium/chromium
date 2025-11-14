@@ -17,6 +17,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/earl_grey_scoped_block_swizzler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -34,6 +35,30 @@ void TapMenuItem(int labelId) {
   id item = chrome_test_util::ContextMenuItemWithAccessibilityLabelId(labelId);
   [[EarlGrey selectElementWithMatcher:item] performAction:grey_tap()];
 }
+
+// Swizzles calls to `UIApplication` `openURL:` and allows inspecting the last
+// opened url.
+class ScopedOpenUrlSwizzler : public EarlGreyScopedBlockSwizzler {
+ public:
+  ScopedOpenUrlSwizzler()
+      : EarlGreyScopedBlockSwizzler(@"UIApplication",
+                                    @"openURL:options:completionHandler:",
+                                    ^(id application,
+                                      NSURL* url,
+                                      NSDictionary* options,
+                                      void (^completionHandler)(BOOL)) {
+                                      this->opened_url_ = url;
+                                      if (completionHandler) {
+                                        completionHandler(YES);
+                                      }
+                                    }) {}
+
+  // Returns the last opened url, or nil if `openURL:` has not been called.
+  NSURL* opened_url() { return opened_url_; }
+
+ private:
+  NSURL* opened_url_;
+};
 
 }  // namespace
 
@@ -60,10 +85,9 @@ void TapMenuItem(int labelId) {
   [super tearDownHelper];
 }
 
-// TODO(crbug.com/458605668): Test is flaky.
 // Tests that the prominence alert displays upon toggling a feature notification
 // setting when provisonal authorization is granted.
-- (void)DISABLED_testProminenceNotificationSettingAlertShows {
+- (void)testProminenceNotificationSettingAlertShows {
   // Swizzle in the "provisional' auth status for notifications.
   ScopedNotificationAuthSwizzler auth(UNAuthorizationStatusProvisional, YES);
 
@@ -85,18 +109,12 @@ void TapMenuItem(int labelId) {
       performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
 
   // Tap Go To Settings action.
+  ScopedOpenUrlSwizzler swizzler;
   TapMenuItem(IDS_IOS_PROMINENCE_NOTIFICATION_SETTINGS_OPEN_SETTINGS_BUTTON);
-
-  // Verify that settings has opened, then close it.
-  XCUIApplication* settingsApp = [[XCUIApplication alloc]
-      initWithBundleIdentifier:@"com.apple.Preferences"];
-  GREYAssertTrue([settingsApp waitForState:XCUIApplicationStateRunningForeground
-                                   timeout:5],
-                 @"The iOS Settings app should have opened.");
-  [settingsApp terminate];
-
-  // Reactivate the app.
-  [[[XCUIApplication alloc] init] activate];
+  NSURL* expectedURL =
+      [NSURL URLWithString:UIApplicationOpenNotificationSettingsURLString];
+  GREYAssertEqualObjects(swizzler.opened_url(), expectedURL,
+                         @"Expected Settings URL was not opened.");
 }
 
 @end
