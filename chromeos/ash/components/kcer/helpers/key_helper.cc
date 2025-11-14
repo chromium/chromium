@@ -10,7 +10,8 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/hash/sha1.h"
+#include "base/containers/to_vector.h"
+#include "crypto/obsolete/sha1.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/cert/x509_util_nss.h"
 #include "third_party/boringssl/src/include/openssl/asn1.h"
@@ -21,6 +22,10 @@
 #include "third_party/boringssl/src/include/openssl/mem.h"
 
 namespace kcer::internal {
+// Returns the SHA-1 hash of `data`.
+std::vector<uint8_t> Sha1ForPkcs11Id(base::span<const uint8_t> data) {
+  return base::ToVector(crypto::obsolete::Sha1::Hash(data));
+}
 
 crypto::ScopedSECItem MakeIdFromPubKeyNss(
     const std::vector<uint8_t>& public_key_bytes) {
@@ -38,12 +43,11 @@ std::vector<uint8_t> SECItemToBytes(const crypto::ScopedSECItem& id) {
 }
 
 std::vector<uint8_t> MakePkcs11IdForEcKey(base::span<const uint8_t> key_data) {
-  if (key_data.size() <= base::kSHA1Length) {
+  if (key_data.size() <= crypto::obsolete::kSha1Size) {
     return std::vector<uint8_t>(key_data.begin(), key_data.end());
   }
 
-  base::SHA1Digest hash = base::SHA1Hash(key_data);
-  return std::vector<uint8_t>(hash.begin(), hash.end());
+  return Sha1ForPkcs11Id(key_data);
 }
 
 std::vector<uint8_t> GetEcPublicKeyBytes(const EC_KEY* ec_key) {

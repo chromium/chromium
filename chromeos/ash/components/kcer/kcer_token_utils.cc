@@ -5,12 +5,12 @@
 #include "chromeos/ash/components/kcer/kcer_token_utils.h"
 
 #include "base/functional/callback_helpers.h"
-#include "base/hash/sha1.h"
 #include "chromeos/ash/components/kcer/helpers/key_helper.h"
 #include "chromeos/ash/components/kcer/kcer_histograms.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/evp.h"
 #include "crypto/keypair.h"
+#include "crypto/obsolete/sha1.h"
 #include "crypto/openssl_util.h"
 
 namespace kcer::internal {
@@ -71,13 +71,12 @@ PublicKeySpki MakeEcSpki(const base::span<const uint8_t>& ec_point) {
 }
 
 Pkcs11Id MakePkcs11Id(base::span<const uint8_t> public_key_data) {
-  if (public_key_data.size() <= base::kSHA1Length) {
+  if (public_key_data.size() <= crypto::obsolete::kSha1Size) {
     return Pkcs11Id(
         std::vector<uint8_t>(public_key_data.begin(), public_key_data.end()));
   }
 
-  base::SHA1Digest hash = base::SHA1Hash(public_key_data);
-  return Pkcs11Id(std::vector<uint8_t>(hash.begin(), hash.end()));
+  return Pkcs11Id(Sha1ForPkcs11Id(public_key_data));
 }
 
 base::expected<PublicKey, Error> MakeRsaPublicKey(

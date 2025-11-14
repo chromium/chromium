@@ -7,6 +7,7 @@
 
 #include <array>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
@@ -35,6 +36,10 @@ std::string Sha1AsHexForRefreshToken(std::string_view data);
 namespace ash::quick_start {
 std::string GetHashedAuthToken(std::string_view authentication_token);
 }  // namespace ash::quick_start
+
+namespace kcer::internal {
+std::vector<uint8_t> Sha1ForPkcs11Id(base::span<const uint8_t> data);
+}  // namespace kcer::internal
 
 namespace net {
 std::string ComputeSecWebSocketAccept(std::string_view key);
@@ -92,6 +97,10 @@ class CRYPTO_EXPORT Sha1 {
   // migrated to use SHA-256.
   friend std::string arc::GetSha1HashForArcPlayTermsOfService(
       std::string_view tos_content);
+
+  // TODO(crbug.com/459863801): get rid of this.
+  friend std::vector<uint8_t> kcer::internal::Sha1ForPkcs11Id(
+      base::span<const uint8_t> data);
 
   // TODO(crbug.com/458084930): get rid of this.
   friend std::string wallpaper::GetHexForWallpaperFilesId(

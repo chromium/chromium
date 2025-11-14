@@ -13,7 +13,6 @@
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/hash/hash.h"
-#include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/raw_span.h"
@@ -29,6 +28,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/hash.h"
+#include "crypto/obsolete/sha1.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_nss.h"
 #include "net/test/cert_builder.h"
@@ -770,7 +770,7 @@ void KcerFuzzer::RunGenerateRsaKey() {
   PublicKey public_key = generate_waiter.Take().value();
   PublicKeySpki spki = public_key.GetSpki();
   EXPECT_GE(public_key.GetPkcs11Id()->size(), 4u);
-  EXPECT_LE(public_key.GetPkcs11Id()->size(), base::kSHA1Length);
+  EXPECT_LE(public_key.GetPkcs11Id()->size(), crypto::obsolete::kSha1Size);
   EXPECT_GE(spki->size(), 4u);
   EXPECT_EQ(public_key.GetToken(), token);
 
@@ -801,7 +801,7 @@ void KcerFuzzer::RunGenerateEcKey() {
   PublicKey public_key = generate_waiter.Take().value();
   PublicKeySpki spki = public_key.GetSpki();
   EXPECT_GE(public_key.GetPkcs11Id()->size(), 4u);
-  EXPECT_LE(public_key.GetPkcs11Id()->size(), base::kSHA1Length);
+  EXPECT_LE(public_key.GetPkcs11Id()->size(), crypto::obsolete::kSha1Size);
   EXPECT_GE(spki->size(), 4u);
   EXPECT_EQ(public_key.GetToken(), token);
 
