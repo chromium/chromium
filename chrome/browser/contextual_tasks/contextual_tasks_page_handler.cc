@@ -9,9 +9,27 @@
 #include "base/uuid.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
+
+namespace {
+
+constexpr char kChromeSettingsAiModeUrl[] = "chrome://settings/ai/aimode";
+constexpr char kMyActivityUrl[] = "https://myactivity.google.com/myactivity";
+constexpr char kHelpUrl[] = "https://support.google.com/websearch/";
+
+void OpenUrlInNewTab(content::WebUI* web_ui, const GURL& url) {
+  NavigateParams params(Profile::FromWebUI(web_ui), url,
+                        ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
+}
+
+}  // namespace
 
 ContextualTasksPageHandler::ContextualTasksPageHandler(
     mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> page_handler,
@@ -61,4 +79,16 @@ void ContextualTasksPageHandler::ShowThreadHistory(
 void ContextualTasksPageHandler::IsShownInTab(IsShownInTabCallback callback) {
   std::move(callback).Run(
       tabs::TabInterface::MaybeGetFromContents(web_ui_->GetWebContents()));
+}
+
+void ContextualTasksPageHandler::OpenChromeSettingsUi() {
+  OpenUrlInNewTab(&web_ui_.get(), GURL(kChromeSettingsAiModeUrl));
+}
+
+void ContextualTasksPageHandler::OpenMyActivityUi() {
+  OpenUrlInNewTab(&web_ui_.get(), GURL(kMyActivityUrl));
+}
+
+void ContextualTasksPageHandler::OpenHelpUi() {
+  OpenUrlInNewTab(&web_ui_.get(), GURL(kHelpUrl));
 }

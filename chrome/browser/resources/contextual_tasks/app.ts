@@ -64,11 +64,17 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   protected onOpenInNewTabClick_() {}
 
-  protected onOpenChromeSettingsClick_() {}
+  protected onOpenChromeSettingsClick_() {
+    this.browserProxy_.handler.openChromeSettingsUi();
+  }
 
-  protected onMyActivityClick_() {}
+  protected onMyActivityClick_() {
+    this.browserProxy_.handler.openMyActivityUi();
+  }
 
-  protected onHelpClick_() {}
+  protected onHelpClick_() {
+    this.browserProxy_.handler.openHelpUi();
+  }
 
   override async connectedCallback() {
     super.connectedCallback();

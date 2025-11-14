@@ -27,6 +27,9 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'closeSidePanel',
       'showThreadHistory',
       'isShownInTab',
+      'openChromeSettingsUi',
+      'openMyActivityUi',
+      'openHelpUi',
     ]);
 
     this.url_ = {url};
@@ -66,6 +69,18 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
   isShownInTab() {
     this.methodCalled('isShownInTab');
     return Promise.resolve({isInTab: this.isInTab_});
+  }
+
+  openChromeSettingsUi() {
+    this.methodCalled('openChromeSettingsUi');
+  }
+
+  openMyActivityUi() {
+    this.methodCalled('openMyActivityUi');
+  }
+
+  openHelpUi() {
+    this.methodCalled('openHelpUi');
   }
 }
 

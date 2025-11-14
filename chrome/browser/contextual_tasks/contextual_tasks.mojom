@@ -48,6 +48,15 @@ interface PageHandler {
   // Returns whether the WebUI is being shown in a tab. If false, the UI is
   // shown in the side panel.
   IsShownInTab() => (bool is_in_tab);
+
+  // Opens the Chrome AI settings page in a new tab.
+  OpenChromeSettingsUi();
+
+  // Opens the My Activity page in a new tab.
+  OpenMyActivityUi();
+
+  // Opens the Help page in a new tab.
+  OpenHelpUi();
 };
 
 // The interface that defines the browser process to webui (typescript/renderer)
