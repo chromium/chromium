@@ -816,11 +816,6 @@ class IdentityManager : public KeyedService,
 #if BUILDFLAG(IS_ANDROID)
   // Java-side IdentityManager object.
   base::android::ScopedJavaGlobalRef<jobject> java_identity_manager_;
-
-  // CoreAccountId and the corresponding fetch start time, this is only
-  // used to record account information fetch duration.
-  base::flat_map<CoreAccountId, base::TimeTicks>
-      account_info_fetch_start_times_;
 #endif
 #if BUILDFLAG(IS_IOS)
   // `true` if there is an account switching back in progress.

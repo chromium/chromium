@@ -486,11 +486,6 @@ IdentityManager::GetIdentityMutatorJavaObject() {
 void IdentityManager::RefreshAccountInfoIfStale(
     const CoreAccountId& account_id) {
   DCHECK(HasAccountWithRefreshToken(account_id));
-  AccountInfo account_info =
-      account_tracker_service_->GetAccountInfo(account_id);
-  if (account_info.account_image.IsEmpty()) {
-    account_info_fetch_start_times_[account_id] = base::TimeTicks::Now();
-  }
   account_fetcher_service_->RefreshAccountInfoIfStale(account_id);
 }
 
@@ -780,14 +775,6 @@ void IdentityManager::OnAccountUpdated(const AccountInfo& info) {
   }
 #if BUILDFLAG(IS_ANDROID)
   if (java_identity_manager_) {
-    if (account_info_fetch_start_times_.count(info.account_id) &&
-        !info.account_image.IsEmpty()) {
-      base::UmaHistogramTimes(
-          "Signin.AndroidAccountInfoFetchTime",
-          base::TimeTicks::Now() -
-              account_info_fetch_start_times_[info.account_id]);
-      account_info_fetch_start_times_.erase(info.account_id);
-    }
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_IdentityManagerImpl_onExtendedAccountInfoUpdated(
         env, java_identity_manager_, ConvertToJavaAccountInfo(env, info));
