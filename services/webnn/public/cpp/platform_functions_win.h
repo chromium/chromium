@@ -12,11 +12,12 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
-#include "base/scoped_native_library.h"
 #include "base/strings/cstring_view.h"
 
 namespace webnn {
 
+// This class provides functions for managing the package dependencies of
+// Windows Store apps.
 class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) PlatformFunctionsWin {
  public:
   PlatformFunctionsWin(const PlatformFunctionsWin&) = delete;
@@ -24,11 +25,25 @@ class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) PlatformFunctionsWin {
 
   static PlatformFunctionsWin* GetInstance();
 
-  base::FilePath InitializePackageDependency(
+  // Creates and adds the package dependency with the lifetime of a process.
+  // Returns the package path if successful, or an empty path on failure.
+  base::FilePath InitializePackageDependencyForProcess(
       base::wcstring_view package_family_name,
       PACKAGE_VERSION min_version);
 
-  base::FilePath InitializeWinAppRuntimePackageDependency();
+  // Creates the package dependency with the lifetime of the provided file path.
+  // Returns the dependency ID if successful, or an empty string on failure.
+  std::wstring TryCreatePackageDependencyForFilePath(
+      base::wcstring_view package_family_name,
+      PACKAGE_VERSION min_version,
+      const base::FilePath& file_path);
+
+  // Adds the package dependency using the provided dependency ID. Returns the
+  // package path if successful, or an empty path on failure.
+  base::FilePath AddPackageDependency(base::wcstring_view dependency_id);
+
+  // Deletes the package dependency using the provided dependency ID.
+  bool DeletePackageDependency(base::wcstring_view dependency_id);
 
  private:
   friend class base::NoDestructor<PlatformFunctionsWin>;
@@ -36,16 +51,23 @@ class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) PlatformFunctionsWin {
   PlatformFunctionsWin();
   ~PlatformFunctionsWin();
 
+  std::wstring TryCreatePackageDependency(
+      base::wcstring_view package_family_name,
+      PACKAGE_VERSION min_version,
+      PackageDependencyLifetimeKind lifetime_kind,
+      const wchar_t* lifetime_artifact);
+
   bool AllFunctionsLoaded();
 
-  // Library and functions for package dependency initialization.
-  base::ScopedNativeLibrary app_model_library_;
-
-  using TryCreatePackageDependencyProc = decltype(TryCreatePackageDependency)*;
+  using TryCreatePackageDependencyProc =
+      decltype(::TryCreatePackageDependency)*;
   TryCreatePackageDependencyProc try_create_package_dependency_proc_ = nullptr;
 
-  using AddPackageDependencyProc = decltype(AddPackageDependency)*;
+  using AddPackageDependencyProc = decltype(::AddPackageDependency)*;
   AddPackageDependencyProc add_package_dependency_proc_ = nullptr;
+
+  using DeletePackageDependencyProc = decltype(::DeletePackageDependency)*;
+  DeletePackageDependencyProc delete_package_dependency_proc_ = nullptr;
 };
 
 }  // namespace webnn

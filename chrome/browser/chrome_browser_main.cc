@@ -236,6 +236,7 @@
 #include "chrome/browser/first_run/upgrade_util_win.h"
 #include "chrome/browser/notifications/win/notification_launch_id.h"
 #include "chrome/browser/ui/network_profile_bubble.h"
+#include "chrome/browser/webnn/win_app_runtime_installer.h"
 #include "chrome/browser/win/chrome_select_file_dialog_factory.h"
 #include "chrome/browser/win/parental_controls.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -1590,6 +1591,10 @@ void ChromeBrowserMainParts::PostBrowserStart() {
                    base::BindOnce(&WebUsbDetector::Initialize,
                                   base::Unretained(web_usb_detector_.get())));
   }
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  webnn::SchedulePlatformRuntimeInstallationIfRequired();
 #endif
 
   // At this point, StartupBrowserCreator::Start has run creating initial

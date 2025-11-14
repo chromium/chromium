@@ -13,6 +13,7 @@
 #include "base/strings/cstring_view.h"
 #include "base/strings/string_util_win.h"
 #include "services/webnn/public/cpp/platform_functions_win.h"
+#include "services/webnn/public/cpp/win_app_runtime_package_info.h"
 #include "services/webnn/webnn_switches.h"
 
 namespace webnn::ort {
@@ -47,9 +48,11 @@ PlatformFunctions::PlatformFunctions() {
     ort_library_path = base_path.Append(kOnnxRuntimeLibraryName);
   } else {
     ort_library_path =
-        platform_functions_win->InitializeWinAppRuntimePackageDependency();
+        platform_functions_win->InitializePackageDependencyForProcess(
+            kWinAppRuntimePackageFamilyName, kWinAppRuntimePackageMinVersion);
     if (ort_library_path.empty()) {
-      LOG(ERROR) << "[WebNN] Failed to initialize the WinAppRuntime package.";
+      LOG(ERROR)
+          << "[WebNN] Failed to initialize the Windows App Runtime package.";
       return;
     }
     ort_library_path = ort_library_path.Append(kOnnxRuntimeLibraryName);
@@ -108,7 +111,7 @@ base::FilePath PlatformFunctions::InitializePackageDependency(
     base::wcstring_view package_family_name,
     PACKAGE_VERSION min_version) {
   auto* platform_functions_win = PlatformFunctionsWin::GetInstance();
-  return platform_functions_win->InitializePackageDependency(
+  return platform_functions_win->InitializePackageDependencyForProcess(
       package_family_name, min_version);
 }
 

@@ -16,5 +16,8 @@ source_set("windows_app_sdk_headers") {
     "src/inc/abi/winml/winml/onnxruntime_session_options_config_keys.h",
   ]
 
-  visibility = [ "//services/webnn/*" ]
+  visibility = [
+    "//chrome/browser/webnn/*",
+    "//services/webnn/*",
+  ]
 }

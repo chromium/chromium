@@ -73,7 +73,10 @@ build_file = '''# Copyright 2025 The Chromium Authors
 source_set("windows_app_sdk_headers") {{
   sources = {sources}
 
-  visibility = [ "//services/webnn/*" ]
+  visibility = [
+    "//chrome/browser/webnn/*",
+    "//services/webnn/*",
+  ]
 }}
 '''.format(sources=format_headers(windows_app_sdk_headers))
 

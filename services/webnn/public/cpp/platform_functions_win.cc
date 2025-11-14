@@ -8,21 +8,13 @@
 #include <wrl.h>
 
 #include "base/logging.h"
-#include "base/native_library.h"
-#include "base/path_service.h"
+#include "base/scoped_generic.h"
 #include "base/strings/string_util_win.h"
-#include "third_party/windows_app_sdk_headers/src/inc/abi/runtime/WindowsAppSDK-VersionInfo.h"
+#include "services/webnn/public/cpp/win_app_runtime_package_info.h"
 
 namespace webnn {
 
 namespace {
-
-constexpr PACKAGE_VERSION kWinAppRuntimePackageVersion = {
-    .Major = WINDOWSAPPSDK_RUNTIME_VERSION_MAJOR,
-    .Minor = WINDOWSAPPSDK_RUNTIME_VERSION_MINOR,
-    .Build = WINDOWSAPPSDK_RUNTIME_VERSION_BUILD,
-    .Revision = WINDOWSAPPSDK_RUNTIME_VERSION_REVISION,
-};
 
 struct ScopedWcharTypeTraits {
   static wchar_t* InvalidValue() { return nullptr; }
@@ -64,18 +56,13 @@ base::FilePath GetPackagePath(const wchar_t* package_full_name) {
 }  // namespace
 
 PlatformFunctionsWin::PlatformFunctionsWin() {
-  app_model_library_ = base::ScopedNativeLibrary(
-      base::LoadSystemLibrary(L"KernelBase.dll", nullptr));
-  if (!app_model_library_.is_valid()) {
-    LOG(ERROR) << "[WebNN] Failed to load KernelBase.dll.";
-    return;
-  }
+  HMODULE kbase = ::GetModuleHandle(L"KernelBase.dll");
 
   // This function was introduced in Windows 11 (version 10.0.22000.0).
   // https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-trycreatepackagedependency#requirements
   try_create_package_dependency_proc_ =
       reinterpret_cast<TryCreatePackageDependencyProc>(
-          app_model_library_.GetFunctionPointer("TryCreatePackageDependency"));
+          ::GetProcAddress(kbase, "TryCreatePackageDependency"));
   if (!try_create_package_dependency_proc_) {
     LOG(ERROR) << "[WebNN] Failed to get TryCreatePackageDependency function "
                   "from KernelBase.dll.";
@@ -85,9 +72,19 @@ PlatformFunctionsWin::PlatformFunctionsWin() {
   // This function was introduced in Windows 11 (version 10.0.22000.0).
   // https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-addpackagedependency#requirements
   add_package_dependency_proc_ = reinterpret_cast<AddPackageDependencyProc>(
-      app_model_library_.GetFunctionPointer("AddPackageDependency"));
+      ::GetProcAddress(kbase, "AddPackageDependency"));
   if (!add_package_dependency_proc_) {
     LOG(ERROR) << "[WebNN] Failed to get AddPackageDependency function from "
+                  "KernelBase.dll.";
+  }
+
+  // This function was introduced in Windows 11 (version 10.0.22000.0).
+  // https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-deletepackagedependency#requirements
+  delete_package_dependency_proc_ =
+      reinterpret_cast<DeletePackageDependencyProc>(
+          ::GetProcAddress(kbase, "DeletePackageDependency"));
+  if (!delete_package_dependency_proc_) {
+    LOG(ERROR) << "[WebNN] Failed to get DeletePackageDependency function from "
                   "KernelBase.dll.";
   }
 }
@@ -103,48 +100,79 @@ PlatformFunctionsWin* PlatformFunctionsWin::GetInstance() {
   return instance.get();
 }
 
-base::FilePath PlatformFunctionsWin::InitializePackageDependency(
+base::FilePath PlatformFunctionsWin::InitializePackageDependencyForProcess(
     base::wcstring_view package_family_name,
     PACKAGE_VERSION min_version) {
-  ScopedWcharType package_dependency_id;
-  HRESULT hr = try_create_package_dependency_proc_(
-      /*user=*/nullptr, package_family_name.c_str(), min_version,
-      PackageDependencyProcessorArchitectures_None,
-      PackageDependencyLifetimeKind_Process,
-      /*lifetimeArtifact=*/nullptr, CreatePackageDependencyOptions_None,
-      ScopedWcharType::Receiver(package_dependency_id).get());
-  if (FAILED(hr)) {
-    LOG(ERROR) << "[WebNN] TryCreatePackageDependency failed for package: "
-               << package_family_name
-               << " . Error: " << logging::SystemErrorCodeToString(hr);
+  std::wstring dependency_id = TryCreatePackageDependency(
+      package_family_name, min_version, PackageDependencyLifetimeKind_Process,
+      /*lifetime_artifact=*/nullptr);
+  if (dependency_id.empty()) {
     return base::FilePath();
   }
+  return AddPackageDependency(dependency_id);
+}
 
+std::wstring PlatformFunctionsWin::TryCreatePackageDependencyForFilePath(
+    base::wcstring_view package_family_name,
+    PACKAGE_VERSION min_version,
+    const base::FilePath& file_path) {
+  return TryCreatePackageDependency(package_family_name, min_version,
+                                    PackageDependencyLifetimeKind_FilePath,
+                                    file_path.value().c_str());
+}
+
+base::FilePath PlatformFunctionsWin::AddPackageDependency(
+    base::wcstring_view dependency_id) {
   PACKAGEDEPENDENCY_CONTEXT context{};
   ScopedWcharType package_full_name;
-  hr = add_package_dependency_proc_(
-      package_dependency_id.get(), /*rank=*/0,
+  HRESULT hr = add_package_dependency_proc_(
+      dependency_id.c_str(), /*rank=*/0,
       AddPackageDependencyOptions_PrependIfRankCollision, &context,
       ScopedWcharType::Receiver(package_full_name).get());
   if (FAILED(hr)) {
-    LOG(ERROR) << "[WebNN] AddPackageDependency failed for package: "
-               << package_family_name
-               << ". Error: " << logging::SystemErrorCodeToString(hr);
+    LOG(WARNING) << "[WebNN] AddPackageDependency failed for dependency ID: "
+                 << dependency_id
+                 << " . Error: " << logging::SystemErrorCodeToString(hr);
     return base::FilePath();
   }
-
   return GetPackagePath(package_full_name.get());
 }
 
-base::FilePath
-PlatformFunctionsWin::InitializeWinAppRuntimePackageDependency() {
-  return InitializePackageDependency(
-      WINDOWSAPPSDK_RUNTIME_PACKAGE_FRAMEWORK_PACKAGEFAMILYNAME_W,
-      kWinAppRuntimePackageVersion);
+bool PlatformFunctionsWin::DeletePackageDependency(
+    base::wcstring_view dependency_id) {
+  HRESULT hr = delete_package_dependency_proc_(dependency_id.c_str());
+  if (FAILED(hr)) {
+    LOG(WARNING) << "[WebNN] DeletePackageDependency failed for dependency ID: "
+                 << dependency_id
+                 << " . Error: " << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+  return true;
+}
+
+std::wstring PlatformFunctionsWin::TryCreatePackageDependency(
+    base::wcstring_view package_family_name,
+    PACKAGE_VERSION min_version,
+    PackageDependencyLifetimeKind lifetime_kind,
+    const wchar_t* lifetime_artifact) {
+  ScopedWcharType package_dependency_id;
+  HRESULT hr = try_create_package_dependency_proc_(
+      /*user=*/nullptr, package_family_name.c_str(), min_version,
+      PackageDependencyProcessorArchitectures_None, lifetime_kind,
+      lifetime_artifact, CreatePackageDependencyOptions_None,
+      ScopedWcharType::Receiver(package_dependency_id).get());
+  if (FAILED(hr)) {
+    LOG(WARNING) << "[WebNN] TryCreatePackageDependency failed for package: "
+                 << package_family_name
+                 << " . Error: " << logging::SystemErrorCodeToString(hr);
+    return {};
+  }
+  return package_dependency_id.get();
 }
 
 bool PlatformFunctionsWin::AllFunctionsLoaded() {
-  return try_create_package_dependency_proc_ && add_package_dependency_proc_;
+  return try_create_package_dependency_proc_ && add_package_dependency_proc_ &&
+         delete_package_dependency_proc_;
 }
 
 }  // namespace webnn

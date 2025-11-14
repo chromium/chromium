@@ -26,6 +26,7 @@
 #include "base/win/scoped_hstring.h"
 #include "services/webnn/public/cpp/execution_providers_info.h"
 #include "services/webnn/public/cpp/platform_functions_win.h"
+#include "services/webnn/public/cpp/win_app_runtime_package_info.h"
 
 namespace webnn {
 
@@ -100,8 +101,12 @@ std::string GetProviderName(abi_winml::IExecutionProvider* provider) {
 std::vector<Microsoft::WRL::ComPtr<abi_winml::IExecutionProvider>>
 ActivateCatalogAndGetAvailableEps() {
   auto* platform_functions = PlatformFunctionsWin::GetInstance();
-  CHECK(platform_functions);
-  if (platform_functions->InitializeWinAppRuntimePackageDependency().empty()) {
+  // TODO(crbug.com/457463699): Retry EP catalog activation if the
+  // initialization of WinAppRuntime fails.
+  if (platform_functions
+          ->InitializePackageDependencyForProcess(
+              kWinAppRuntimePackageFamilyName, kWinAppRuntimePackageMinVersion)
+          .empty()) {
     return {};
   }
 

@@ -25,8 +25,9 @@ component("cpp") {
     "webnn_types.h",
   ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
     "//mojo/public/cpp/bindings",
     "//third_party/fp16",
   ]
@@ -43,6 +44,7 @@ component("cpp") {
       "execution_providers_info.h",
       "platform_functions_win.cc",
       "platform_functions_win.h",
+      "win_app_runtime_package_info.h",
     ]
 
     deps += [ "//third_party/windows_app_sdk_headers" ]
