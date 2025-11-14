@@ -2035,63 +2035,6 @@ inline TimelineOffset::NamedRange CSSIdentifierValue::ConvertTo() const {
 }
 
 template <>
-inline CSSIdentifierValue::CSSIdentifierValue(ScrollStartValueType value_type)
-    : CSSValue(kIdentifierClass) {
-  switch (value_type) {
-    case ScrollStartValueType::kAuto:
-      value_id_ = CSSValueID::kAuto;
-      break;
-    case ScrollStartValueType::kStart:
-      value_id_ = CSSValueID::kStart;
-      break;
-    case ScrollStartValueType::kCenter:
-      value_id_ = CSSValueID::kCenter;
-      break;
-    case ScrollStartValueType::kEnd:
-      value_id_ = CSSValueID::kEnd;
-      break;
-    case ScrollStartValueType::kTop:
-      value_id_ = CSSValueID::kTop;
-      break;
-    case ScrollStartValueType::kBottom:
-      value_id_ = CSSValueID::kBottom;
-      break;
-    case ScrollStartValueType::kLeft:
-      value_id_ = CSSValueID::kLeft;
-      break;
-    case ScrollStartValueType::kRight:
-      value_id_ = CSSValueID::kRight;
-      break;
-    case ScrollStartValueType::kLengthOrPercentage:
-      NOTREACHED();
-  }
-}
-
-template <>
-inline ScrollStartValueType CSSIdentifierValue::ConvertTo() const {
-  switch (GetValueID()) {
-    case CSSValueID::kAuto:
-      return ScrollStartValueType::kAuto;
-    case CSSValueID::kStart:
-      return ScrollStartValueType::kStart;
-    case CSSValueID::kCenter:
-      return ScrollStartValueType::kCenter;
-    case CSSValueID::kEnd:
-      return ScrollStartValueType::kEnd;
-    case CSSValueID::kTop:
-      return ScrollStartValueType::kTop;
-    case CSSValueID::kBottom:
-      return ScrollStartValueType::kBottom;
-    case CSSValueID::kLeft:
-      return ScrollStartValueType::kLeft;
-    case CSSValueID::kRight:
-      return ScrollStartValueType::kRight;
-    default:
-      NOTREACHED();
-  }
-}
-
-template <>
 inline CSSIdentifierValue::CSSIdentifierValue(EScrollInitialTarget target)
     : CSSValue(kIdentifierClass) {
   switch (target) {

@@ -622,7 +622,6 @@ CSSValue* ConsumeMarginOrOffset(CSSParserTokenStream&,
                                 UnitlessQuirk,
                                 CSSAnchorQueryTypes = kCSSAnchorQueryTypesNone);
 CSSValue* ConsumeScrollPadding(CSSParserTokenStream&, const CSSParserContext&);
-CSSValue* ConsumeScrollStart(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ConsumeOffsetPath(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ConsumePathOrNone(CSSParserTokenStream&);
 CSSValue* ConsumeOffsetRotate(CSSParserTokenStream&, const CSSParserContext&);

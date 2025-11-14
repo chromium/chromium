@@ -8183,19 +8183,6 @@ CSSValue* ConsumeScrollPadding(CSSParserTokenStream& stream,
                                 UnitlessQuirk::kForbid);
 }
 
-CSSValue* ConsumeScrollStart(CSSParserTokenStream& stream,
-                             const CSSParserContext& context) {
-  if (CSSIdentifierValue* ident =
-          ConsumeIdent<CSSValueID::kAuto, CSSValueID::kStart,
-                       CSSValueID::kCenter, CSSValueID::kEnd, CSSValueID::kTop,
-                       CSSValueID::kBottom, CSSValueID::kLeft,
-                       CSSValueID::kRight>(stream)) {
-    return ident;
-  }
-  return ConsumeLengthOrPercent(stream, context,
-                                CSSPrimitiveValue::ValueRange::kNonNegative);
-}
-
 CSSValue* ConsumeOffsetPath(CSSParserTokenStream& stream,
                             const CSSParserContext& context) {
   if (CSSValue* none = ConsumeIdent<CSSValueID::kNone>(stream)) {

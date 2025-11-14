@@ -449,8 +449,6 @@ class CORE_EXPORT ComputedStyleUtils {
                                                 CSSValuePhase);
   static CSSValue* ValueForIntrinsicLength(const ComputedStyle&,
                                            const StyleIntrinsicLength&);
-  static CSSValue* ValueForScrollStart(const ComputedStyle&,
-                                       const ScrollStartData&);
   static CSSValue* ValueForPositionArea(const blink::PositionArea&);
   static CSSValue* ValueForPositionTryFallbacks(const PositionTryFallbacks&);
   static CSSValue* ValueForFitText(const ComputedStyle&, const FitText&);

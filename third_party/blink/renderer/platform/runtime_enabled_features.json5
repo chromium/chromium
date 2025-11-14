@@ -1618,11 +1618,6 @@
       implied_by: ["CSSScrollSnapChangeEvent", "CSSScrollSnapChangingEvent"],
     },
     {
-      // https://drafts.csswg.org/css-scroll-snap-2#scroll-start
-      name: "CSSScrollStart",
-      status: "test",
-    },
-    {
       // scroll-target-group property
       // https://drafts.csswg.org/css-overflow-5/#scroll-target-group
       name: "CSSScrollTargetGroup",

@@ -3525,14 +3525,6 @@ void StyleResolver::PropagateStyleToViewport() {
                    SetColorSchemeFlagsIsNormal, false);
   }
 
-  // scroll-start
-  {
-    PROPAGATE_FROM(document_element_style, ScrollStartX, SetScrollStartX,
-                   ScrollStartData());
-    PROPAGATE_FROM(document_element_style, ScrollStartY, SetScrollStartY,
-                   ScrollStartData());
-  }
-
   changed |= PropagateScrollSnapStyleToViewport(
       GetDocument(), document_element_style, new_viewport_style_builder);
 

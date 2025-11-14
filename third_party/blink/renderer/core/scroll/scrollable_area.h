@@ -43,7 +43,6 @@
 #include "third_party/blink/renderer/core/loader/history_item.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
-#include "third_party/blink/renderer/core/style/scroll_start_data.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -586,11 +585,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   scoped_refptr<base::SingleThreadTaskRunner> GetCompositorTaskRunner();
   void EnqueueScrollSnapChangeEvent() const;
 
-  ScrollOffset ScrollOffsetFromScrollStartData(
-      const ScrollStartData& block_value,
-      const ScrollStartData& inline_value) const;
   void ApplyScrollStart();
-  bool ScrollStartIsDefault() const;
   virtual bool IsApplyingScrollStart() const { return false; }
 
   virtual void SetScrollsnapchangeTargetIds(
@@ -707,9 +702,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual void UpdateScrollOffset(const ScrollOffset&,
                                   mojom::blink::ScrollType,
                                   cc::ScrollSourceType) = 0;
-
-  float ScrollStartValueToOffsetAlongAxis(const ScrollStartData&,
-                                          cc::SnapAxis) const;
 
   virtual int LineStep(ScrollbarOrientation) const;
   virtual int PageStep(ScrollbarOrientation) const;

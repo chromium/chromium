@@ -681,10 +681,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.ScrollSnapStop() == b.ScrollSnapStop();
     case CSSPropertyID::kScrollSnapType:
       return a.GetScrollSnapType() == b.GetScrollSnapType();
-    case CSSPropertyID::kScrollStartX:
-      return a.ScrollStartX() == b.ScrollStartX();
-    case CSSPropertyID::kScrollStartY:
-      return a.ScrollStartY() == b.ScrollStartY();
     case CSSPropertyID::kShapeImageThreshold:
       return a.ShapeImageThreshold() == b.ShapeImageThreshold();
     case CSSPropertyID::kShapeMargin:
@@ -1232,8 +1228,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kScrollPaddingBlockStart:
     case CSSPropertyID::kScrollPaddingInlineEnd:
     case CSSPropertyID::kScrollPaddingInlineStart:
-    case CSSPropertyID::kScrollStartBlock:
-    case CSSPropertyID::kScrollStartInline:
     case CSSPropertyID::kInlineSize:
     case CSSPropertyID::kInsetBlock:
     case CSSPropertyID::kInsetInline:
@@ -1348,7 +1342,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kRuleStyle:
     case CSSPropertyID::kScrollMargin:
     case CSSPropertyID::kScrollPadding:
-    case CSSPropertyID::kScrollStart:
     case CSSPropertyID::kScrollTimeline:
     case CSSPropertyID::kTextBox:
     case CSSPropertyID::kTextDecoration:

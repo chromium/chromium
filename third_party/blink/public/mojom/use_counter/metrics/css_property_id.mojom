@@ -808,11 +808,13 @@ enum CSSSampleId {
     kWhiteSpaceCollapse = 749,
     kScrollTimelineAttachment = 750,
     kViewTimelineAttachment = 751,
-    kScrollStartBlock = 752,
-    kScrollStartInline = 753,
-    kScrollStartX = 754,
-    kScrollStartY = 755,
-    kScrollStart = 756,
+    // scroll-start is deprecated:
+    // https://github.com/w3c/csswg-drafts/issues/6985#issuecomment-2166073296
+    // kScrollStartBlock = 752,
+    // kScrollStartInline = 753,
+    // kScrollStartX = 754,
+    // kScrollStartY = 755,
+    // kScrollStart = 756,
     // kScrollStartTargetBlock = 757,
     // kScrollStartTargetInline = 758,
     // kScrollStartTargetX = 759,

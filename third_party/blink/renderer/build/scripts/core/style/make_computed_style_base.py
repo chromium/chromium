@@ -48,7 +48,6 @@ ALIGNMENT_ORDER = [
     'Vector<TimelineInset>',
     'HeapVector<Member<StyleTriggerAttachmentVector>>',
     'GridPosition',
-    'ScrollStartData',
     'AtomicString',
     'scoped_refptr',
     'std::unique_ptr',

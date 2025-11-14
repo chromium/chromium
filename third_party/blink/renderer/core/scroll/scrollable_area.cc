@@ -416,65 +416,6 @@ bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
   return SetScrollOffset(offset, type, source_type, behavior, ScrollCallback());
 }
 
-float ScrollableArea::ScrollStartValueToOffsetAlongAxis(
-    const ScrollStartData& data,
-    cc::SnapAxis axis) const {
-  using Type = blink::ScrollStartValueType;
-  using Axis = cc::SnapAxis;
-  DCHECK(axis == Axis::kX || axis == Axis::kY);
-  const float axis_scroll_extent = axis == Axis::kX
-                                       ? ScrollSize(kHorizontalScrollbar)
-                                       : ScrollSize(kVerticalScrollbar);
-  switch (data.value_type) {
-    case Type::kAuto:
-    case Type::kStart:
-    case Type::kTop:
-    case Type::kLeft:
-      return axis == Axis::kX ? MinimumScrollOffset().x()
-                              : MinimumScrollOffset().y();
-    case Type::kCenter:
-      return axis == Axis::kX
-                 ? MinimumScrollOffset().x() + 0.5 * axis_scroll_extent
-                 : MinimumScrollOffset().y() + 0.5 * axis_scroll_extent;
-    case Type::kEnd:
-      return axis == Axis::kX ? MaximumScrollOffset().x()
-                              : MaximumScrollOffset().y();
-    case Type::kBottom:
-      return axis == Axis::kY ? MaximumScrollOffset().y()
-                              : MinimumScrollOffset().x();
-    case Type::kRight:
-      return axis == Axis::kX ? MaximumScrollOffset().x()
-                              : MinimumScrollOffset().y();
-    case Type::kLengthOrPercentage: {
-      float offset = FloatValueForLength(data.value, axis_scroll_extent);
-      return axis == Axis::kY ? MinimumScrollOffset().y() + offset
-                              : MinimumScrollOffset().x() + offset;
-    }
-    default:
-      return axis == Axis::kX ? MinimumScrollOffset().x()
-                              : MinimumScrollOffset().y();
-  }
-}
-
-ScrollOffset ScrollableArea::ScrollOffsetFromScrollStartData(
-    const ScrollStartData& y_value,
-    const ScrollStartData& x_value) const {
-  ScrollOffset offset;
-
-  offset.set_x(ScrollStartValueToOffsetAlongAxis(x_value, cc::SnapAxis::kX));
-  offset.set_y(ScrollStartValueToOffsetAlongAxis(y_value, cc::SnapAxis::kY));
-
-  return ClampScrollOffset(offset);
-}
-
-bool ScrollableArea::ScrollStartIsDefault() const {
-  if (!GetLayoutBox()) {
-    return true;
-  }
-  return GetLayoutBox()->Style()->ScrollStartX() == ScrollStartData() &&
-         GetLayoutBox()->Style()->ScrollStartY() == ScrollStartData();
-}
-
 const LayoutObject* ScrollableArea::GetScrollInitialTarget() const {
   for (const auto& fragment : GetLayoutBox()->PhysicalFragments()) {
     if (auto scroll_start_target = fragment.ScrollInitialTarget()) {
@@ -547,16 +488,6 @@ void ScrollableArea::ApplyScrollStart() {
       // return here.
       return;
     }
-  }
-
-  if (RuntimeEnabledFeatures::CSSScrollStartEnabled()) {
-    const auto& y_data = GetLayoutBox()->Style()->ScrollStartY();
-    const auto& x_data = GetLayoutBox()->Style()->ScrollStartX();
-    ScrollOffset scroll_start_offset =
-        ScrollOffsetFromScrollStartData(y_data, x_data);
-    SetScrollOffset(scroll_start_offset, mojom::blink::ScrollType::kScrollStart,
-                    cc::ScrollSourceType::kAbsoluteScroll,
-                    mojom::blink::ScrollBehavior::kInstant);
   }
 }
 
