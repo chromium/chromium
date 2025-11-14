@@ -14,18 +14,24 @@
 
 namespace base::test {
 
+namespace {
+
+using ::testing::ElementsAre;
+using ::testing::IsNull;
+using ::testing::Pointee;
+
 template <class C>
 void IdentityTest() {
   C c = {1, 2, 3, 4, 5};
   auto vec = ToVector(c);
-  EXPECT_THAT(vec, testing::ElementsAre(1, 2, 3, 4, 5));
+  EXPECT_THAT(vec, ElementsAre(1, 2, 3, 4, 5));
 }
 
 template <class C>
 void ProjectionTest() {
   C c = {1, 2, 3, 4, 5};
   auto vec = ToVector(c, [](int x) { return x + 1; });
-  EXPECT_THAT(vec, testing::ElementsAre(2, 3, 4, 5, 6));
+  EXPECT_THAT(vec, ElementsAre(2, 3, 4, 5, 6));
 }
 
 TEST(ToVectorTest, Identity) {
@@ -49,23 +55,19 @@ TEST(ToVectorTest, MoveOnly) {
   v.push_back(std::make_unique<int>(3));
 
   auto v2 = base::ToVector(base::RangeAsRvalues(std::move(v)));
-  EXPECT_THAT(v2, testing::ElementsAre(testing::Pointee(1), testing::Pointee(2),
-                                       testing::Pointee(3)));
+  EXPECT_THAT(v2, ElementsAre(Pointee(1), Pointee(2), Pointee(3)));
 
   // The old vector should be consumed. The standard guarantees that a
   // moved-from std::unique_ptr will be null.
   // NOLINT(bugprone-use-after-move)
-  EXPECT_THAT(v, testing::ElementsAre(testing::IsNull(), testing::IsNull(),
-                                      testing::IsNull()));
+  EXPECT_THAT(v, ElementsAre(IsNull(), IsNull(), IsNull()));
 
   // Another method which is more verbose so not preferable.
   auto v3 = base::ToVector(
       std::move(v2), [](std::unique_ptr<int>& p) { return std::move(p); });
-  EXPECT_THAT(v3, testing::ElementsAre(testing::Pointee(1), testing::Pointee(2),
-                                       testing::Pointee(3)));
+  EXPECT_THAT(v3, ElementsAre(Pointee(1), Pointee(2), Pointee(3)));
   // NOLINT(bugprone-use-after-move)
-  EXPECT_THAT(v2, testing::ElementsAre(testing::IsNull(), testing::IsNull(),
-                                       testing::IsNull()));
+  EXPECT_THAT(v2, ElementsAre(IsNull(), IsNull(), IsNull()));
 }
 
 template <typename C, typename Proj, typename T>
@@ -84,5 +86,16 @@ TEST(ToVectorTest, CorrectlyProjected) {
       CorrectlyProjected<std::set<std::string>, decltype(&std::string::length),
                          std::size_t>);
 }
+
+TEST(ToVectorTest, MoveConstructionFromArray) {
+  auto vec = base::ToVector({
+      std::make_unique<int>(1),
+      std::make_unique<int>(2),
+      std::make_unique<int>(3),
+  });
+  EXPECT_THAT(vec, ElementsAre(Pointee(1), Pointee(2), Pointee(3)));
+}
+
+}  // namespace
 
 }  // namespace base::test
