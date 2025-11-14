@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CHROMEOS_ASH_COMPONENTS_MEMORY_USERSPACE_SWAP_REGION_H_
 #define CHROMEOS_ASH_COMPONENTS_MEMORY_USERSPACE_SWAP_REGION_H_
 
@@ -18,6 +13,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
@@ -76,7 +72,7 @@ class Region {
 
   template <typename T>
   base::span<T> AsSpan() const {
-    return base::span<T>(reinterpret_cast<T*>(address), length);
+    return UNSAFE_TODO(base::span<T>(reinterpret_cast<T*>(address), length));
   }
 
   struct iovec COMPONENT_EXPORT(USERSPACE_SWAP) AsIovec() const;

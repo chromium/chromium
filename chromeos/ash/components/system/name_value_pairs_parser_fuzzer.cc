@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "chromeos/ash/components/system/name_value_pairs_parser.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include "chromeos/ash/components/system/name_value_pairs_parser.h"
+#include "base/compiler_specific.h"
 
 namespace ash::system {
 
@@ -19,7 +16,7 @@ namespace ash::system {
 class NameValuePairsParserFuzzer {
  public:
   void testOneInput(const uint8_t* data, size_t size) {
-    const std::string input = std::string(data, data + size);
+    const std::string input = std::string(data, UNSAFE_TODO(data + size));
 
     name_value_map_.clear();
 
