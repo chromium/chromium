@@ -95,6 +95,9 @@ class SafeBrowsingPrefChangeHandler {
                            DidAddTab_NullTab);
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingPrefChangeHandlerAndroidTest,
                            OnTabModelAddedAndRemoved);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingPrefChangeHandlerAndroidTest,
+      MaybeShowEnhancedProtectionSettingChangeNotificationResetsPref);
 
   // Functions used for testing.
   // Sets the TabModel for testing purposes.

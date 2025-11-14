@@ -192,6 +192,8 @@ void SafeBrowsingPrefChangeHandler::
     // this device.
     if (profile_->GetPrefs()->GetBoolean(
             prefs::kSafeBrowsingSyncedEnhancedProtectionSetLocally)) {
+      profile_->GetPrefs()->SetBoolean(
+          prefs::kSafeBrowsingSyncedEnhancedProtectionSetLocally, false);
       retry_handler_->SaveRetryState(
           MessageRetryHandler::RetryState::NO_RETRY_NEEDED);
       return;
