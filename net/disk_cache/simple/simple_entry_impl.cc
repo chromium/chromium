@@ -22,6 +22,7 @@
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "base/trace_event/trace_event.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/prioritized_task_runner.h"
@@ -266,6 +267,8 @@ EntryResult SimpleEntryImpl::OpenOrCreateEntry(EntryResultCallback callback) {
   OpenEntryIndexEnum index_state =
       ComputeIndexState(backend_.get(), entry_hash_);
   RecordOpenEntryIndexState(cache_type_, index_state);
+  TRACE_EVENT("disk_cache", "SimpleEntryImpl::OpenOrCreateEntry", "index_state",
+              index_state);
 
   EntryResult result = EntryResult::MakeError(net::ERR_IO_PENDING);
   if (index_state == INDEX_MISS && use_optimistic_operations_ &&
