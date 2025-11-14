@@ -176,6 +176,12 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         AutofillSettingsReferrer.SETTINGS_MENU);
   }
 
+  private onYourSavedInfoClick_() {
+    this.metricsBrowserProxy_.recordAutofillSettingsReferrer(
+        'Autofill.YourSavedInfoSettingsPage.VisitReferrer',
+        AutofillSettingsReferrer.SETTINGS_MENU);
+  }
+
   private onAiPageClick_() {
     this.metricsBrowserProxy_.recordAction(
         'SettingsMenu_AiPageEntryPointClicked');

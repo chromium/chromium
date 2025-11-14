@@ -222,6 +222,11 @@ suite('SettingsMenu', function() {
 
     entry.click();
     await microtasksFinished();
+    const [histogramName, referrer] =
+        await metricsBrowserProxy.whenCalled('recordAutofillSettingsReferrer');
+    assertEquals(
+        'Autofill.YourSavedInfoSettingsPage.VisitReferrer', histogramName);
+    assertEquals(AutofillSettingsReferrer.SETTINGS_MENU, referrer);
 
     const selector = settingsMenu.$.menu;
     assertTrue(!!selector.selected);

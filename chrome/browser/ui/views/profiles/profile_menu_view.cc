@@ -514,6 +514,9 @@ void ProfileMenuView::OnYourSavedInfoSettingsButtonClicked() {
   if (!perform_menu_actions()) {
     return;
   }
+  base::UmaHistogramEnumeration(
+      "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
+      autofill::autofill_metrics::AutofillSettingsReferrer::kProfileMenu);
   chrome::ShowSettingsSubPage(&browser(), chrome::kYourSavedInfoSubPage);
 }
 

@@ -9093,6 +9093,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <summary>The time taken to display suggestion.</summary>
 </histogram>
 
+<histogram name="Autofill.YourSavedInfoSettingsPage.VisitReferrer"
+    enum="AutofillSettingsReferrer" expires_after="2026-10-28">
+  <owner>ireneuszszulc@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the entry point (referrer) every time the user visits the 'Your
+    saved info' settings page from a tracked entry point. This metric is emitted
+    on navigation to the page, with the enum values distinguishing the entry
+    points (different ways of reaching the page). Only applicable on Desktop.
+  </summary>
+</histogram>
+
 <histogram name="WebDatabase.AutofillAccountStorage"
     enum="WebDatabaseAutofillAccountStorageResult" expires_after="2026-03-22">
   <owner>mastiz@chromium.org</owner>
