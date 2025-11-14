@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.ui;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.ViewPropertyAnimator;
 import android.view.ViewStub;
 import android.widget.TextView;
 
@@ -30,6 +33,9 @@ import org.chromium.url.GURL;
 @NullMarked
 public class LinkHoverStatusBarCoordinator extends EmptyTabObserver {
     private static final int EXPAND_HOVER_DELAY_MS = 1600;
+    private static final int FADE_IN_DURATION_MS = 120;
+    private static final int FADE_OUT_DURATION_MS = 200;
+    private static final int HIDE_DELAY_MS = 250;
 
     private final CurrentTabObserver mCurrentTabObserver;
     private final TextView mLinkHoverStatusBar;
@@ -40,6 +46,8 @@ public class LinkHoverStatusBarCoordinator extends EmptyTabObserver {
 
     private GURL mCurrentUrl = GURL.emptyGURL();
     private @Nullable CancelableRunnable mExpandStatusBarCancelableRunnable;
+    private @Nullable ViewPropertyAnimator mStatusBarAnimator;
+    private @Nullable CancelableRunnable mHideRunnable;
 
     /**
      * @param context The current context.
@@ -68,15 +76,24 @@ public class LinkHoverStatusBarCoordinator extends EmptyTabObserver {
     public void onUpdateTargetUrl(Tab tab, GURL url) {
         // This method may be called with the same URL when the page is refreshed.
         if (url.equals(mCurrentUrl)) return;
+        mCurrentUrl = url;
 
+        // Cancel any pending animations or runnables from the previous URL update.
+        if (mStatusBarAnimator != null) {
+            mStatusBarAnimator.cancel();
+            mStatusBarAnimator = null;
+        }
+        if (mHideRunnable != null) {
+            mHideRunnable.cancel();
+            mHideRunnable = null;
+        }
         if (mExpandStatusBarCancelableRunnable != null) {
             mExpandStatusBarCancelableRunnable.cancel();
             mExpandStatusBarCancelableRunnable = null;
         }
 
         if (!url.isEmpty()) {
-            mCurrentUrl = url;
-            mLinkHoverStatusBar.setText(url.getSpec());
+            mLinkHoverStatusBar.setText(mCurrentUrl.getSpec());
             boolean isIncognito = tab.isIncognitoBranded();
             boolean isNightMode = ColorUtils.inNightMode(mContext);
             if (isIncognito || isNightMode) {
@@ -92,16 +109,59 @@ public class LinkHoverStatusBarCoordinator extends EmptyTabObserver {
             mLinkHoverStatusBar.setMaxWidth(mInitialMaxWidth);
 
             // TODO(crbug.com/454446656): Move the status bar to avoid the cursor.
-            // TODO(crbug.com/453901686): Implement fade-in/fade-out animation.
-            mLinkHoverStatusBar.setVisibility(View.VISIBLE);
+            if (mLinkHoverStatusBar.getVisibility() != View.VISIBLE) {
+                mLinkHoverStatusBar.setAlpha(0f);
+                mLinkHoverStatusBar.setVisibility(View.VISIBLE);
+                mStatusBarAnimator =
+                        mLinkHoverStatusBar
+                                .animate()
+                                .alpha(1f)
+                                .setDuration(FADE_IN_DURATION_MS)
+                                .setListener(
+                                        new AnimatorListenerAdapter() {
+                                            @Override
+                                            public void onAnimationEnd(Animator animation) {
+                                                mStatusBarAnimator = null;
+                                            }
+                                        });
+                mStatusBarAnimator.start();
+            } else {
+                // If the status bar is already visible, just make sure it's fully opaque.
+                // This is for the case where a fade-out animation was cancelled.
+                mLinkHoverStatusBar.setAlpha(1f);
+            }
+
             mExpandStatusBarCancelableRunnable = new CancelableRunnable(this::expandStatusBar);
             PostTask.postDelayedTask(
                     TaskTraits.UI_DEFAULT,
                     mExpandStatusBarCancelableRunnable,
                     EXPAND_HOVER_DELAY_MS);
         } else {
-            mCurrentUrl = GURL.emptyGURL();
-            mLinkHoverStatusBar.setVisibility(View.GONE);
+            Runnable hideStatusBar =
+                    () -> {
+                        mStatusBarAnimator =
+                                mLinkHoverStatusBar
+                                        .animate()
+                                        .alpha(0f)
+                                        .setDuration(FADE_OUT_DURATION_MS)
+                                        .setListener(
+                                                new AnimatorListenerAdapter() {
+                                                    @Override
+                                                    public void onAnimationEnd(Animator animation) {
+                                                        mLinkHoverStatusBar.setVisibility(
+                                                                View.GONE);
+                                                        mStatusBarAnimator = null;
+                                                    }
+                                                });
+                        mStatusBarAnimator.start();
+                    };
+            mHideRunnable =
+                    new CancelableRunnable(
+                            () -> {
+                                hideStatusBar.run();
+                                mHideRunnable = null;
+                            });
+            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, mHideRunnable, HIDE_DELAY_MS);
         }
     }
 
@@ -112,6 +172,14 @@ public class LinkHoverStatusBarCoordinator extends EmptyTabObserver {
             mExpandStatusBarCancelableRunnable = null;
         }
         mCurrentTabObserver.destroy();
+        if (mStatusBarAnimator != null) {
+            mStatusBarAnimator.cancel();
+            mStatusBarAnimator = null;
+        }
+        if (mHideRunnable != null) {
+            mHideRunnable.cancel();
+            mHideRunnable = null;
+        }
     }
 
     private void expandStatusBar() {

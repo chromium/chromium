@@ -1581,6 +1581,7 @@ android_library("chrome_test_java_various") {
     "src/org/chromium/chrome/browser/tabbed_mode/TabbedNavigationBarColorControllerTest.java",
     "src/org/chromium/chrome/browser/tabbed_mode/TabbedRootUiCoordinatorTest.java",
     "src/org/chromium/chrome/browser/tracing/settings/TracingSettingsTest.java",
+    "src/org/chromium/chrome/browser/ui/LinkHoverStatusBarCoordinatorTest.java",
     "src/org/chromium/chrome/browser/ui/MediaCaptureOverlayControllerTest.java",
     "src/org/chromium/chrome/browser/ui/WebAppHeaderLayoutBrowserTest.java",
     "src/org/chromium/chrome/browser/ui/system/StatusBarColorControllerTest.java",
@@ -1597,12 +1598,17 @@ android_library("chrome_test_java_various") {
     "src/org/chromium/chrome/test/crash/IntentionalCrashTest.java",
   ]
 
+  data = [ "//chrome/test/data/click.html" ]
+
   deps = [
     ":chrome_test_java_helper",
+    "//base:base_java_test_support",
     "//base:holder_java",
     "//chrome/browser/ntp_customization:java",
     "//components/browser_ui/http_auth/android:java",
     "//third_party/androidx:androidx_test_ext_junit_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
   ]
 }
 
