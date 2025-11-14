@@ -678,6 +678,9 @@ void TabStripActionContainer::OnGlicActorTaskIconClicked() {
 
 void TabStripActionContainer::OnTriggerGlicNudgeUI(std::string label) {
 #if BUILDFLAG(ENABLE_GLIC)
+  if (GetIsShowingGlicActorTaskIconNudge()) {
+    return;
+  }
 
   CHECK(glic_button_);
   if (!label.empty()) {
@@ -713,6 +716,11 @@ bool TabStripActionContainer::GetIsShowingGlicNudge() {
 void TabStripActionContainer::TriggerGlicActorNudge(
     const std::u16string nudge_text) {
   CHECK(glic_actor_task_icon_);
+  if (GetIsShowingGlicNudge()) {
+    HideTabStripNudge(glic_button_);
+  }
+  // Start animation for clearing text on the glic button.
+  glic_button_->SuppressLabel();
   ShowGlicActorTaskIcon();
   glic_actor_task_icon_->ShowNudgeLabel(nudge_text);
   HighlightGlicActorTaskIcon();
@@ -754,6 +762,9 @@ void TabStripActionContainer::HideGlicActorTaskIcon() {
 
   if (glic_actor_task_icon_->GetIsShowingNudge()) {
     HideTabStripNudge(glic_actor_task_icon_);
+    // Once we hide the nudge we want to bring the glic button default label
+    // back.
+    glic_button_->ShowDefaultLabel();
   }
   glic_actor_task_icon_->SetTaskIconToDefault();
   glic_button_ = AddChildView(std::move(glic_button_));
