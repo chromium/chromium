@@ -35,7 +35,7 @@ class SidePanelUI {
                         gfx::Rect starting_bounds) = 0;
 
   // Close the side panel.
-  virtual void Close() = 0;
+  virtual void Close(SidePanelEntry::PanelType panel_type) = 0;
 
   // Open the side panel for a key. If side panel for the key is already opened
   // then close the side panel.

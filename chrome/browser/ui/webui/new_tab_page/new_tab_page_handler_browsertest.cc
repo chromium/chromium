@@ -16,8 +16,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -85,6 +90,22 @@ class NewTabPageHandlerBaseBrowserTest : public InProcessBrowserTest {
   Profile* profile() { return browser()->profile(); }
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
+  }
+
+  void CloseSidePanel() {
+    BrowserWindowInterface* const browser_window_interface =
+        webui::GetBrowserWindowInterface(web_contents());
+    SidePanelRegistry* const side_panel_registry =
+        browser_window_interface->GetTabStripModel()
+            ->GetActiveTab()
+            ->GetTabFeatures()
+            ->side_panel_registry();
+    SidePanelEntry::PanelType panel_type =
+        side_panel_registry
+            ->GetEntryForKey(
+                SidePanelEntryKey(SidePanelEntryId::kCustomizeChrome))
+            ->type();
+    browser_window_interface->GetFeatures().side_panel_ui()->Close(panel_type);
   }
 
   MockPage* mock_page() { return &mock_page_; }
@@ -221,10 +242,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
 
   // Simulate side panel closed via explicit user action. After that, no new
   // Customize Chrome should be opened on the second NTP.
-  webui::GetBrowserWindowInterface(web_contents())
-      ->GetFeatures()
-      .side_panel_ui()
-      ->Close();
+  CloseSidePanel();
 
   OpenNewTabPageInForegroundAndWaitForLoad();
 

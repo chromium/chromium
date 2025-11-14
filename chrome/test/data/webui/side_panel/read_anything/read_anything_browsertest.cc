@@ -39,7 +39,7 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
     content::WaitForLoadStop(web_contents);
 
     ASSERT_TRUE(RunTestOnWebContents(web_contents, file, trigger, true));
-    side_panel_ui->Close();
+    side_panel_ui->Close(SidePanelEntry::PanelType::kContent);
   }
 
  private:

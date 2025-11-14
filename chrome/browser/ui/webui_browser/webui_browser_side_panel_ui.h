@@ -23,7 +23,7 @@ class WebUIBrowserSidePanelUI : public SidePanelUIBase {
   ~WebUIBrowserSidePanelUI() override;
 
   // SidePanelUI:
-  void Close() override;
+  void Close(SidePanelEntry::PanelType panel_type) override;
   void Toggle(SidePanelEntryKey key,
               SidePanelOpenTrigger open_trigger) override;
   void ShowFrom(SidePanelEntryKey entry_key,

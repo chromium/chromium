@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container_view_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
 #include "chrome/common/pref_names.h"
@@ -1067,7 +1068,8 @@ void ExtensionsToolbarContainer::UpdateControlsVisibility() {
 }
 
 void ExtensionsToolbarContainer::CloseSidePanelButtonPressed() {
-  browser_->GetFeatures().side_panel_ui()->Close();
+  browser_->GetFeatures().side_panel_ui()->Close(
+      extensions::ExtensionSidePanelCoordinator::GetPanelType());
 }
 
 void ExtensionsToolbarContainer::UpdateToolbarActionHoverCard(

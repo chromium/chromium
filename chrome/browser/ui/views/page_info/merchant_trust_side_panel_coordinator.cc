@@ -12,16 +12,19 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/page_info/merchant_trust_side_panel.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/web_view_side_panel_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "components/page_info/core/merchant_trust_service.h"
 #include "components/page_info/core/page_info_types.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
@@ -216,7 +219,19 @@ void MerchantTrustSidePanelCoordinator::OnMerchantTrustDataFetched(
     service->RecordMerchantTrustInteraction(
         url, page_info::MerchantTrustInteraction::
                  kSidePanelClosedOnSameTabNavigation);
-    side_panel_ui->Close();
+
+    SidePanelEntryKey entry_key =
+        SidePanelEntryKey(SidePanelEntry::Id::kMerchantTrust);
+    if (side_panel_ui->IsSidePanelEntryShowing(entry_key)) {
+      tabs::TabInterface* const tab_interface =
+          tabs::TabInterface::GetFromContents(web_contents());
+      SidePanelRegistry* const registry =
+          tab_interface->GetTabFeatures()->side_panel_registry();
+      SidePanelEntry* const side_panel_entry =
+          registry->GetEntryForKey(entry_key);
+      CHECK(side_panel_entry);
+      side_panel_ui->Close(side_panel_entry->type());
+    }
   }
 }
 

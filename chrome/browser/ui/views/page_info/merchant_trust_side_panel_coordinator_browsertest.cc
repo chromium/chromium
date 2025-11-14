@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
       SidePanelEntryKey(SidePanelEntryId::kMerchantTrust)));
 
   // Close side panel.
-  side_panel_coordinator()->Close();
+  side_panel_coordinator()->Close(SidePanelEntry::PanelType::kContent);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return browser()->GetBrowserView().contents_height_side_panel()->state() ==
            SidePanel::State::kClosed;

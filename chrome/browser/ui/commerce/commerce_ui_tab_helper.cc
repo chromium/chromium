@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
@@ -432,13 +433,14 @@ void CommerceUiTabHelper::SetPriceTrackingState(
 
 void CommerceUiTabHelper::OnPriceInsightsIconClicked() {
   auto* side_panel_ui = GetSidePanelUI();
-  DCHECK(side_panel_ui &&
-         side_panel_registry_->GetEntryForKey(
-             SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights)));
+  DCHECK(side_panel_ui);
+  SidePanelEntry* const entry = side_panel_registry_->GetEntryForKey(
+      SidePanelEntryKey(SidePanelEntry::Id::kShoppingInsights));
+  DCHECK(entry);
 
   if (side_panel_ui->IsSidePanelEntryShowing(
           SidePanelEntryKey(SidePanelEntryId::kShoppingInsights))) {
-    side_panel_ui->Close();
+    side_panel_ui->Close(entry->type());
   } else {
     side_panel_ui->Show(SidePanelEntryId::kShoppingInsights);
     if (price_insights_info_.has_value()) {
@@ -532,16 +534,21 @@ void CommerceUiTabHelper::MakeShoppingInsightsSidePanelAvailable() {
 }
 
 void CommerceUiTabHelper::MakeShoppingInsightsSidePanelUnavailable() {
+  SidePanelEntry* const entry = side_panel_registry_->GetEntryForKey(
+      SidePanelEntryKey(SidePanelEntry::Id::kShoppingInsights));
+
+  if (!entry) {
+    return;
+  }
+
   auto* side_panel_ui = GetSidePanelUI();
-  if (side_panel_ui && side_panel_ui->IsSidePanelEntryShowing(SidePanelEntryKey(
-                           SidePanelEntryId::kShoppingInsights))) {
-    side_panel_ui->Close();
+  if (side_panel_ui && side_panel_ui->IsSidePanelEntryShowing(entry->key())) {
+    side_panel_ui->Close(entry->type());
     base::RecordAction(base::UserMetricsAction(
         "Commerce.PriceInsights.NavigationClosedSidePanel"));
   }
 
-  side_panel_registry_->Deregister(
-      SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights));
+  side_panel_registry_->Deregister(entry->key());
 }
 
 std::unique_ptr<views::View> CommerceUiTabHelper::CreateShoppingInsightsWebView(

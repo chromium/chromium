@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, OpenWhileClosing) {
   }));
 
   // Closing the side panel is asynchronous.
-  coordinator()->Close();
+  coordinator()->Close(SidePanelEntry::PanelType::kContent);
   EXPECT_EQ(browser()->GetBrowserView().contents_height_side_panel()->state(),
             SidePanel::State::kClosing);
 
@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, OpenAndCloseWithoutAnimation) {
   EXPECT_EQ(browser()->GetBrowserView().contents_height_side_panel()->state(),
             SidePanel::State::kOpen);
 
-  coordinator()->Close();
+  coordinator()->Close(SidePanelEntry::PanelType::kContent);
   EXPECT_EQ(browser()->GetBrowserView().contents_height_side_panel()->state(),
             SidePanel::State::kClosed);
 }
@@ -1179,7 +1179,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
             SidePanelEntry::Id::kShoppingInsights);
 
   // Close the side panel.
-  coordinator()->Close();
+  coordinator()->Close(SidePanelEntry::PanelType::kContent);
   EXPECT_FALSE(
       browser()->GetBrowserView().contents_height_side_panel()->GetVisible());
   EXPECT_FALSE(global_registry()
@@ -1241,7 +1241,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
             SidePanelEntry::Id::kReadingList);
 
   // Close the side panel and verify the active entries are reset.
-  coordinator()->Close();
+  coordinator()->Close(SidePanelEntry::PanelType::kContent);
   EXPECT_FALSE(
       browser()->GetBrowserView().contents_height_side_panel()->GetVisible());
   EXPECT_FALSE(global_registry()
@@ -1304,7 +1304,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
             SidePanelEntry::Id::kShoppingInsights);
 
   // Close the side panel and verify the active entries are reset.
-  coordinator()->Close();
+  coordinator()->Close(SidePanelEntry::PanelType::kContent);
   EXPECT_FALSE(
       browser()->GetBrowserView().contents_height_side_panel()->GetVisible());
   EXPECT_FALSE(global_registry()
@@ -1333,7 +1333,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                    .has_value());
 
   // Close the side panel and verify the active entries.
-  coordinator()->Close();
+  coordinator()->Close(SidePanelEntry::PanelType::kContent);
   EXPECT_FALSE(
       browser()->GetBrowserView().contents_height_side_panel()->GetVisible());
   EXPECT_FALSE(global_registry()
@@ -1393,7 +1393,7 @@ IN_PROC_BROWSER_TEST_F(
                                SidePanelEntry::Id::kShoppingInsights);
 
   // Close the side panel and verify active entries.
-  coordinator()->Close();
+  coordinator()->Close(SidePanelEntry::PanelType::kContent);
   EXPECT_FALSE(
       browser()->GetBrowserView().contents_height_side_panel()->GetVisible());
   EXPECT_FALSE(global_registry()
@@ -1433,7 +1433,7 @@ IN_PROC_BROWSER_TEST_F(
                    .has_value());
 
   // Close the side panel and verify the active entries.
-  coordinator()->Close();
+  coordinator()->Close(SidePanelEntry::PanelType::kContent);
   EXPECT_FALSE(global_registry()
                    ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
                    .has_value());
@@ -1510,7 +1510,7 @@ IN_PROC_BROWSER_TEST_F(
                    ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
                    .has_value());
 
-  coordinator()->Close();
+  coordinator()->Close(SidePanelEntry::PanelType::kContent);
   EXPECT_FALSE(
       browser()->GetBrowserView().contents_height_side_panel()->GetVisible());
   EXPECT_FALSE(global_registry()
@@ -1673,7 +1673,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                    .has_value());
 
   // Verify the panel closes but the first tab still has an active entry.
-  coordinator()->Close();
+  coordinator()->Close(SidePanelEntry::PanelType::kContent);
   EXPECT_FALSE(
       browser()->GetBrowserView().contents_height_side_panel()->GetVisible());
   EXPECT_FALSE(global_registry()
@@ -1934,7 +1934,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   coordinator()->Show(SidePanelEntry::Id::kAboutThisSite);
 
   // Close the side panel.
-  coordinator()->Close();
+  coordinator()->Close(SidePanelEntry::PanelType::kContent);
 
   // Verify that the previous entry has deregistered and is hidden.
   EXPECT_THAT(observer->last_entry_will_hide_entry_id_,
@@ -1996,7 +1996,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
 
   // Allow content delays to more closely mimic real behavior.
   coordinator()->SetNoDelaysForTesting(false);
-  coordinator()->Close();
+  coordinator()->Close(SidePanelEntry::PanelType::kContent);
   browser()->GetBrowserView().Close();
 }
 

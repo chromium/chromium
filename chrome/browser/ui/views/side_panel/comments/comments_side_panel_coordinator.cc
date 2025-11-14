@@ -156,11 +156,12 @@ void CommentsSidePanelCoordinator::UpdateCommentsSidePanelVisibility(
   SidePanelCoordinator* side_panel_coordinator =
       browser_->GetFeatures().side_panel_coordinator();
 
+  SidePanelEntry::Key side_panel_entry_key(SidePanelEntry::Id::kComments);
+
   // TODO(crbug.com/430352059): This should also handle when a different side
   // panel is open.
   const bool side_panel_showing =
-      side_panel_coordinator->IsSidePanelEntryShowing(
-          SidePanelEntry::Key(SidePanelEntry::Id::kComments));
+      side_panel_coordinator->IsSidePanelEntryShowing(side_panel_entry_key);
 
   if (should_show_comments_action == side_panel_showing) {
     // Do nothing if the side panel is in the correct state.
@@ -168,9 +169,12 @@ void CommentsSidePanelCoordinator::UpdateCommentsSidePanelVisibility(
   }
 
   if (side_panel_showing) {
+    SidePanelEntry* const side_panel_entry =
+        side_panel_coordinator->GetWindowRegistry()->GetEntryForKey(
+            side_panel_entry_key);
     // Close the side panel, setting the flag to recall the state when the
     // comments action is shown again.
-    side_panel_coordinator->Close();
+    side_panel_coordinator->Close(side_panel_entry->type());
     side_panel_should_be_resumed_ = true;
     return;
   }
