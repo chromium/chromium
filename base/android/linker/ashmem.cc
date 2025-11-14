@@ -78,14 +78,6 @@ int system_property_get_int(const char* name) {
   return result;
 }
 
-int device_api_level() {
-  static int s_api_level = -1;
-  if (s_api_level < 0) {
-    s_api_level = system_property_get_int("ro.build.version.sdk");
-  }
-  return s_api_level;
-}
-
 int vendor_api_level() {
   static int v_api_level = -1;
   if (v_api_level < 0) {
@@ -129,9 +121,6 @@ AshmemStatus ashmem_get_status() {
 /* Returns true iff the ashmem device ioctl should be used for a given fd.
  * NOTE: Try not to use fstat() when possible to avoid performance issues. */
 bool is_ashmem_fd(int fd) {
-  if (device_api_level() <= __ANDROID_API_O_MR1__) {
-    return true;
-  }
   if (ashmem_get_status() == ASHMEM_STATUS_SUPPORTED) {
     struct stat st;
     return (fstat(fd, &st) == 0 && S_ISCHR(st.st_mode) && st.st_dev != 0 &&
