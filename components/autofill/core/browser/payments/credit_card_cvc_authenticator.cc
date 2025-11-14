@@ -87,14 +87,14 @@ void CreditCardCvcAuthenticator::OnFullCardRequestSucceeded(
   if (!requester_)
     return;
 
-  payments::UnmaskResponseDetails response =
+  const payments::UnmaskResponseDetails& response =
       full_card_request.unmask_response_details();
   requester_->OnCvcAuthenticationComplete(
       CvcAuthenticationResponse()
           .with_did_succeed(true)
           .with_card(&card)
           .with_cvc(cvc)
-          .with_request_options(std::move(response.fido_request_options))
+          .with_request_options(response.fido_request_options.Clone())
           .with_card_authorization_token(response.card_authorization_token));
 }
 

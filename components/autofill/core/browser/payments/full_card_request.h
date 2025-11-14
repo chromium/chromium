@@ -170,7 +170,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // CreditCardFidoAuthenticator to cancel the flow for opted-in users.
   void OnFIDOVerificationCancelled();
 
-  UnmaskResponseDetails unmask_response_details() const {
+  const UnmaskResponseDetails& unmask_response_details() const {
     return unmask_response_details_;
   }
 
