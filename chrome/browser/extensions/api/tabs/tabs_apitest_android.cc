@@ -21,4 +21,10 @@ IN_PROC_BROWSER_TEST_F(TabsApiTest, SmokeTest) {
   ASSERT_TRUE(RunExtensionTest("tabs/smoke")) << message_;
 }
 
+// Regression test for crbug.com/459932363. We should keep this test when the
+// rest of the file is deleted.
+IN_PROC_BROWSER_TEST_F(TabsApiTest, ZoomTest) {
+  ASSERT_TRUE(RunExtensionTest("tabs/zoom")) << message_;
+}
+
 }  // namespace extensions

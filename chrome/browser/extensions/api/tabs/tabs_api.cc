@@ -1909,8 +1909,11 @@ ExtensionFunction::ResponseAction TabsSetZoomFunction::Run() {
     return RespondNow(Error(std::move(error)));
   }
 
-  zoom::ZoomController* zoom_controller =
-      zoom::ZoomController::FromWebContents(web_contents);
+  auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents);
+  // Android native UI (like the new tab page) may not have a zoom controller.
+  if (!zoom_controller) {
+    return RespondNow(Error(tabs_constants::kCannotSetZoomThisTabError));
+  }
   double zoom_level = params->zoom_factor > 0
                           ? blink::ZoomFactorToZoomLevel(params->zoom_factor)
                           : zoom_controller->GetDefaultZoomLevel();
@@ -1937,9 +1940,13 @@ ExtensionFunction::ResponseAction TabsGetZoomFunction::Run() {
     return RespondNow(Error(std::move(error)));
   }
 
-  double zoom_level =
-      zoom::ZoomController::FromWebContents(web_contents)->GetZoomLevel();
-  double zoom_factor = blink::ZoomLevelToZoomFactor(zoom_level);
+  auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents);
+  // Android native UI (like the new tab page) may not have a zoom controller.
+  if (!zoom_controller) {
+    return RespondNow(Error(tabs_constants::kCannotGetZoomThisTabError));
+  }
+  const double zoom_level = zoom_controller->GetZoomLevel();
+  const double zoom_factor = blink::ZoomLevelToZoomFactor(zoom_level);
 
   return RespondNow(ArgumentList(tabs::GetZoom::Results::Create(zoom_factor)));
 }
@@ -1994,7 +2001,12 @@ ExtensionFunction::ResponseAction TabsSetZoomSettingsFunction::Run() {
       zoom_mode = zoom::ZoomController::ZOOM_MODE_DISABLED;
   }
 
-  zoom::ZoomController::FromWebContents(web_contents)->SetZoomMode(zoom_mode);
+  auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents);
+  // Android native UI (like the new tab page) may not have a zoom controller.
+  if (!zoom_controller) {
+    return RespondNow(Error(tabs_constants::kCannotSetZoomThisTabError));
+  }
+  zoom_controller->SetZoomMode(zoom_mode);
 
   return RespondNow(NoArguments());
 }
@@ -2011,8 +2023,11 @@ ExtensionFunction::ResponseAction TabsGetZoomSettingsFunction::Run() {
   if (!web_contents) {
     return RespondNow(Error(std::move(error)));
   }
-  zoom::ZoomController* zoom_controller =
-      zoom::ZoomController::FromWebContents(web_contents);
+  auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents);
+  // Android native UI (like the new tab page) may not have a zoom controller.
+  if (!zoom_controller) {
+    return RespondNow(Error(tabs_constants::kCannotGetZoomThisTabError));
+  }
 
   zoom::ZoomController::ZoomMode zoom_mode = zoom_controller->zoom_mode();
   api::tabs::ZoomSettings zoom_settings;
