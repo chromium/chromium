@@ -13,12 +13,14 @@
   --composebox-context-menu-entrypoint-button-color: var(--color-omnibox-composebox-primary-action);
   --cr-composebox-custom-font-size: var(--omnibox-font-size);
   --cr-composebox-expanded-border-radius: 16px;
+  --cr-composebox-input-bottom-spacing: 8px;
   --cr-composebox-input-placeholder-font-size: var(--omnibox-font-size);
   --cr-composebox-match-height: 40px;
   --cr-composebox-match-icon-container-padding-inline-start: 20px;
   --cr-composebox-match-icon-size: 16px;
   --cr-composebox-match-match-padding-bottom: 0;
   --cr-composebox-match-text-container-font-size: var(--omnibox-font-size);
+  --cr-composebox-max-height: 800px;
   --cr-composebox-text-container-padding-block-start: 0;
   --search-animated-glif-rotation-duration: 2000ms;
 }
