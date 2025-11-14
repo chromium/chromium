@@ -2724,7 +2724,7 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoAnnotationModeDisabled) {
   // Disable annotation mode. Undo/redo should still work.
   EXPECT_TRUE(ink_module().OnMessage(
       CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kOff)));
-  EXPECT_EQ(false, ink_module().enabled());
+  EXPECT_FALSE(ink_module().enabled());
 
   PerformUndo();
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
@@ -4400,6 +4400,16 @@ class PdfInkModuleTextHighlightCaretTest
     return ink_module().HandleInputEvent(event);
   }
 
+  // Expects `PdfInkModule` to handle `event` and for it to forward the event to
+  // the caret.
+  void HandleKeyboardEventAndExpectCaret(const blink::WebKeyboardEvent& event) {
+    EXPECT_CALL(*caret(), OnKeyDown(WebKeyboardEventEq(event.windows_key_code,
+                                                       event.GetModifiers())))
+        .WillOnce(Return(true));
+
+    EXPECT_TRUE(HandleKeyboardEvent(event));
+  }
+
   // Returns a keydown event for `key` with `modifiers`.
   blink::WebKeyboardEvent GenerateKeyDownEvent(ui::KeyboardCode key,
                                                int modifiers) {
@@ -4446,14 +4456,10 @@ class PdfInkModuleTextHighlightCaretTest
     // passed directly to `PdfCaret`.
     InSequence seq;
     SetSelectionRectMap({});
-    EXPECT_CALL(*caret(),
-                OnKeyDown(WebKeyboardEventEq(
-                    key, blink::WebInputEvent::Modifiers::kNoModifiers)))
-        .WillOnce(Return(true));
 
     blink::WebKeyboardEvent arrow_event = GenerateKeyDownEvent(
         key, blink::WebInputEvent::Modifiers::kNoModifiers);
-    EXPECT_TRUE(HandleKeyboardEvent(arrow_event));
+    HandleKeyboardEventAndExpectCaret(arrow_event);
 
     EXPECT_EQ(0, client().stroke_started_count());
 
@@ -4478,11 +4484,7 @@ class PdfInkModuleTextHighlightCaretTest
   void TestKeyEventTextHighlights(const blink::WebKeyboardEvent& event,
                                   const gfx::Rect& test_selection_rect) {
     SetSelectionRectsOnFirstPage(base::span_from_ref(test_selection_rect));
-    EXPECT_CALL(*caret(), OnKeyDown(WebKeyboardEventEq(event.windows_key_code,
-                                                       event.GetModifiers())))
-        .WillOnce(Return(true));
-
-    EXPECT_TRUE(HandleKeyboardEvent(event));
+    HandleKeyboardEventAndExpectCaret(event);
 
     ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/0,
                        /*unmodified_finished=*/0);
@@ -4560,6 +4562,7 @@ TEST_P(PdfInkModuleTextHighlightCaretTest, HandledArrowKeyDown) {
 
 TEST_P(PdfInkModuleTextHighlightCaretTest, ControlPEndsTextHighlight) {
   SetUpCaret();
+  InSequence seq;
   TestKeyEventTextHighlights(
       GenerateKeyDownEvent(ui::KeyboardCode::VKEY_LEFT,
                            blink::WebInputEvent::Modifiers::kShiftKey),
@@ -4573,6 +4576,7 @@ TEST_P(PdfInkModuleTextHighlightCaretTest, ControlPEndsTextHighlight) {
 
 TEST_P(PdfInkModuleTextHighlightCaretTest, ControlSEndsTextHighlight) {
   SetUpCaret();
+  InSequence seq;
   TestKeyEventTextHighlights(
       GenerateKeyDownEvent(ui::KeyboardCode::VKEY_LEFT,
                            blink::WebInputEvent::Modifiers::kShiftKey),
