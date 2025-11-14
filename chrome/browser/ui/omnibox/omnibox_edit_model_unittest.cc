@@ -570,6 +570,12 @@ class OmniboxEditModelPopupTest : public ::testing::Test {
   TestOmniboxClient* client() {
     return static_cast<TestOmniboxClient*>(controller()->client());
   }
+  AutocompleteInput& AutocompleteControllerInput() {
+    return controller()->autocomplete_controller()->input_;
+  }
+  AutocompleteResult& AutocompleteControllerPublishedResult() {
+    return controller()->autocomplete_controller()->published_result_;
+  }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
@@ -592,7 +598,7 @@ TEST_F(OmniboxEditModelPopupTest, SetSelectedLine) {
     match.allowed_to_be_default_match = true;
     matches.push_back(match);
   }
-  auto* result = &controller()->autocomplete_controller()->published_result_;
+  auto* result = &AutocompleteControllerPublishedResult();
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(matches);
@@ -657,8 +663,7 @@ TEST_F(OmniboxEditModelPopupTest,
   matches.push_back(gemini_match);
   matches.push_back(sitesearch_featured_match);
   matches.push_back(sitesearch_nonfeatured_match);
-  AutocompleteResult* result =
-      &controller()->autocomplete_controller()->published_result_;
+  AutocompleteResult* result = &AutocompleteControllerPublishedResult();
   result->AppendMatches(matches);
 
   // Test cases.
@@ -692,7 +697,7 @@ TEST_F(OmniboxEditModelPopupTest, SetSelectedLineWithNoDefaultMatches) {
     match.keyword = u"match";
     matches.push_back(match);
   }
-  auto* result = &controller()->autocomplete_controller()->published_result_;
+  auto* result = &AutocompleteControllerPublishedResult();
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(matches);
@@ -727,7 +732,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupPositionChanging) {
     match.allowed_to_be_default_match = true;
     matches.push_back(match);
   }
-  auto* result = &controller()->autocomplete_controller()->published_result_;
+  auto* result = &AutocompleteControllerPublishedResult();
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(matches);
@@ -778,7 +783,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   // Make match index 5 have a suggestion_group_id but no header text.
   matches[5].suggestion_group_id = omnibox::GROUP_HISTORY_CLUSTER;
 
-  auto* result = &controller()->autocomplete_controller()->published_result_;
+  auto* result = &AutocompleteControllerPublishedResult();
   result->AppendMatches(matches);
 
   omnibox::GroupConfigMap suggestion_groups_map;
@@ -893,7 +898,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithActions) {
   matches[3].takeover_action = base::MakeRefCounted<OmniboxAction>(
       OmniboxAction::LabelStrings(), GURL());
 
-  auto* result = &controller()->autocomplete_controller()->published_result_;
+  auto* result = &AutocompleteControllerPublishedResult();
   result->AppendMatches(matches);
 
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
@@ -991,7 +996,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupInlineAutocompleteAndTemporaryText) {
   const auto kNewGroupId = omnibox::GROUP_PREVIOUS_SEARCH_RELATED;
   matches[2].suggestion_group_id = kNewGroupId;
 
-  auto* result = &controller()->autocomplete_controller()->published_result_;
+  auto* result = &AutocompleteControllerPublishedResult();
   result->AppendMatches(matches);
 
   omnibox::GroupConfigMap suggestion_groups_map;
@@ -1049,7 +1054,7 @@ TEST_F(OmniboxEditModelPopupTest, ResetFocusOnResultChange) {
   match.has_tab_match = true;
   matches.push_back(match);
 
-  auto* result = &controller()->autocomplete_controller()->published_result_;
+  auto* result = &AutocompleteControllerPublishedResult();
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(matches);
@@ -1126,8 +1131,7 @@ TEST_F(OmniboxEditModelPopupTest, OpenActionSelectionLogsOmniboxEvent) {
   matches[1].provider =
       controller()->autocomplete_controller()->search_provider();
   matches[1].actions.push_back(base::MakeRefCounted<TabSwitchAction>(url));
-  AutocompleteResult* result =
-      &controller()->autocomplete_controller()->published_result_;
+  AutocompleteResult* result = &AutocompleteControllerPublishedResult();
   result->AppendMatches(matches);
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
@@ -1146,7 +1150,7 @@ TEST_F(OmniboxEditModelPopupTest, OpenActionSelectionLogsOmniboxEvent) {
 
 TEST_F(OmniboxEditModelPopupTest, OpenThumbsDownSelectionShowsFeedback) {
   // Set the input on the controller.
-  controller()->autocomplete_controller()->input_ = AutocompleteInput(
+  AutocompleteControllerInput() = AutocompleteInput(
       u"a", metrics::OmniboxEventProto::NTP, TestSchemeClassifier());
 
   // Set the matches on the controller.
@@ -1166,9 +1170,9 @@ TEST_F(OmniboxEditModelPopupTest, OpenThumbsDownSelectionShowsFeedback) {
     match.destination_url = GURL("https://foo/");
     matches.push_back(match);
   }
-  auto* result = &controller()->autocomplete_controller()->published_result_;
+  auto* result = &AutocompleteControllerPublishedResult();
   result->AppendMatches(matches);
-  result->SortAndCull(controller()->autocomplete_controller()->input_,
+  result->SortAndCull(AutocompleteControllerInput(),
                       /*template_url_service=*/nullptr,
                       triggered_feature_service(), /*is_lens_active=*/false,
                       /*can_show_contextual_suggestions=*/false,
@@ -1319,8 +1323,7 @@ TEST_F(OmniboxEditModelPopupTest,
                               AutocompleteMatchType::URL_WHAT_YOU_TYPED);
   url_match.keyword = u"match";
   matches.push_back(url_match);
-  AutocompleteResult* result =
-      &controller()->autocomplete_controller()->published_result_;
+  AutocompleteResult* result = &AutocompleteControllerPublishedResult();
   result->AppendMatches(matches);
 
   // Sets the icon bitmap for search aggregator match.
@@ -1345,8 +1348,7 @@ TEST_F(OmniboxEditModelPopupTest,
                                   AutocompleteMatchType::NAVSUGGEST);
   content_match.icon_url = GURL("https://example.com/icon.png");
   matches.push_back(content_match);
-  AutocompleteResult* result =
-      &controller()->autocomplete_controller()->published_result_;
+  AutocompleteResult* result = &AutocompleteControllerPublishedResult();
   result->AppendMatches(matches);
 
   // Sets the icon bitmap for content match.
@@ -1421,8 +1423,7 @@ TEST_F(OmniboxEditModelPopupTest, GetIconForExtensionWithImageURL) {
   // Creates a set of matches.
   ACMatches matches;
   matches.push_back(match);
-  AutocompleteResult* result =
-      &controller()->autocomplete_controller()->published_result_;
+  AutocompleteResult* result = &AutocompleteControllerPublishedResult();
   result->AppendMatches(matches);
 
   // Sets the popup rich suggestion bitmap for the extension match.
@@ -1597,7 +1598,7 @@ TEST_F(OmniboxEditModelPopupTest,
   match_without_associated_keyword.keyword =
       u"match_without_associated_keyword";
   matches.push_back(match_without_associated_keyword);
-  auto* result = &controller()->autocomplete_controller()->published_result_;
+  auto* result = &AutocompleteControllerPublishedResult();
   result->AppendMatches(matches);
 
   const SkBitmap* actual_bitmap =
@@ -1626,7 +1627,7 @@ TEST_F(OmniboxEditModelPopupTest,
   match_with_bitmap.keyword = u"match_with_bitmap";
   match_with_bitmap.associated_keyword = u"match_with_bitmap";
   matches.push_back(match_with_bitmap);
-  auto* result = &controller()->autocomplete_controller()->published_result_;
+  auto* result = &AutocompleteControllerPublishedResult();
   result->AppendMatches(matches);
 
   // Store bitmap for 'match_with_bitmap' match.

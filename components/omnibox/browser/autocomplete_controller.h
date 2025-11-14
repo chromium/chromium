@@ -314,6 +314,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   friend class OmniboxRowGroupedViewBrowserTest;
   friend class OmniboxSuggestionButtonRowBrowserTest;
   friend class ZeroSuggestPrefetchTabHelperBrowserTest;
+  friend class OmniboxEditModelPopupTest;
 #if BUILDFLAG(IS_IOS)
   friend class OmniboxInttestAutocompleteController;
 #endif
@@ -359,47 +360,15 @@ class AutocompleteController : public AutocompleteProviderListener,
 #if BUILDFLAG(IS_WIN)
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsUIATest, AccessibleOmnibox);
 #endif
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest, SetSelectedLine);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
-                           SetSelectedLineWithNoDefaultMatches);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest, ResetFocusOnResultChange);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest, PopupPositionChanging);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest, PopupStepSelection);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
-                           PopupStepSelectionWithHiddenGroupIds);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
-                           PopupStepSelectionWithActions);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
-                           PopupInlineAutocompleteAndTemporaryText);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest,
                            EmitSelectedChildrenChangedAccessibilityEvent);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
-                           OpenActionSelectionLogsOmniboxEvent);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
-                           OpenThumbsDownSelectionShowsFeedback);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest,
                            AccessibleActivedescendantId);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest,
                            AccessibleSelectionOnResultSelection);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, AccessibleResultName);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
-                           GetMatchIconForFeaturedEnterpriseSearchAggregator);
-  FRIEND_TEST_ALL_PREFIXES(
-      OmniboxEditModelPopupTest,
-      GetMatchIconForFeaturedEnterpriseSearchAggregatorContentSuggestion);
-  FRIEND_TEST_ALL_PREFIXES(
-      OmniboxEditModelPopupTest,
-      GetPopupRichSuggestionBitmapForMatchWithoutAssociatedKeyword);
-  FRIEND_TEST_ALL_PREFIXES(
-      OmniboxEditModelPopupTest,
-      GetPopupRichSuggestionBitmapForMatchWithAssociatedKeyword);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
-                           GetIconForExtensionWithImageURL);
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, RealboxUpdatesEditModelInput);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewPopupTest, GetIcon_IconUrl);
-  FRIEND_TEST_ALL_PREFIXES(
-      OmniboxEditModelPopupTest,
-      GetPopupAccessibilityLabelForCurrentSelection_KeywordMode);
 
   // A minimal representation of the previous `AutocompleteResult`. Used by
   // `UpdateResult()`'s helper methods.
