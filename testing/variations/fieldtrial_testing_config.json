@@ -20818,29 +20818,6 @@
             ]
         }
     ],
-    "ReadAnythingReadAloudDesktop": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReadAnythingReadAloud"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "ReadAnythingReadAloud"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReadAnythingReadAloudPhraseHighlighting": [
         {
             "platforms": [
