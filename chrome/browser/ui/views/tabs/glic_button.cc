@@ -760,6 +760,10 @@ void GlicButton::SetCloseButtonVisible(bool visible) {
   PreferredSizeChanged();
 }
 
+void GlicButton::RefreshBackground() {
+  UpdateColors();
+}
+
 gfx::SlideAnimation* GlicButton::GetExpansionAnimationForTesting() {
   return expansion_animation_.get();
 }

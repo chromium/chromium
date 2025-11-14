@@ -98,6 +98,9 @@ class GlicButton : public TabStripNudgeButton,
   gfx::SlideAnimation* GetExpansionAnimationForTesting() override;
   bool GetLabelEnabledForTesting() const;
 
+  // Updates the background painter to match the current border insets.
+  void RefreshBackground();
+
  private:
   // views::LabelButton:
   void SetText(std::u16string_view text) override;

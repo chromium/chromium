@@ -46,6 +46,9 @@ class GlicActorTaskIcon : public TabStripNudgeButton {
   // Sets the task icon to its default colors, label, and tooltip text.
   void SetTaskIconToDefault();
 
+  // Updates the background painter to match the current border insets.
+  void RefreshBackground();
+
  private:
   // Tab strip that contains this button.
   raw_ptr<TabStripController> tab_strip_controller_;
