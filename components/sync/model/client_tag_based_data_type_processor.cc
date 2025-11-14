@@ -1174,8 +1174,7 @@ std::optional<ModelError> ClientTagBasedDataTypeProcessor::OnFullUpdateReceived(
     CHECK(HasClearAllDirective(gc_directive));
 
     // Bridges with full updates only are not expected to support writes.
-    // TODO(crbug.com/455150916): make it CHECK once fixed.
-    DUMP_WILL_BE_CHECK_EQ(entity_tracker_->GetUnsyncedDataCount(), 0u);
+    CHECK_EQ(entity_tracker_->GetUnsyncedDataCount(), 0u);
     // If the bridge supports incremental updates, it should not receive a full
     // update on GC directive.
     CHECK(!bridge_->SupportsIncrementalUpdates());

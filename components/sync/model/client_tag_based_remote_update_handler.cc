@@ -166,8 +166,7 @@ ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
   if (!bridge_->SupportsIncrementalUpdates()) {
     // An additional CHECK that no entities are left unsynced for download-only
     // data types.
-    // TODO(crbug.com/455150916): make it CHECK once fixed.
-    DUMP_WILL_BE_CHECK_EQ(entity_tracker_->GetUnsyncedDataCount(), 0u);
+    CHECK_EQ(entity_tracker_->GetUnsyncedDataCount(), 0u);
   }
 
   // Inform the bridge of the new or updated data.
