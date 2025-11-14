@@ -4,7 +4,8 @@
 		{
 			"name": "@chromium-project",
 			"deps": [
-				"@chromium-luci"
+				"@chromium-luci",
+				"@chromium-targets"
 			],
 			"lucicfg": "1.44.1",
 			"resources": [
@@ -35,6 +36,16 @@
 				"path": "starlark-libs/chromium-luci"
 			},
 			"lucicfg": "1.45.0"
+		},
+		{
+			"name": "@chromium-targets",
+			"source": {
+				"path": "./targets"
+			},
+			"deps": [
+				"@chromium-luci"
+			],
+			"lucicfg": "1.46.1"
 		}
 	]
 }

@@ -33,6 +33,13 @@ pkg.depend(
     ),
 )
 
+pkg.depend(
+    name = "@chromium-targets",
+    source = pkg.source.local(
+        path = "targets",
+    ),
+)
+
 pkg.resources([
     "autoshard_exceptions.json",
     "dev/chromium-header.textpb",
