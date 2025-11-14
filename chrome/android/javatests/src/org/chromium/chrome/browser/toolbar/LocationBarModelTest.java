@@ -65,8 +65,6 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-// TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
-@DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
 public class LocationBarModelTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -158,6 +156,8 @@ public class LocationBarModelTest {
     @Test
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(IncognitoTransitionParamProvider.class)
+    // TODO(crbug.com/457847264): Restrict to phones after launch.
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOnIncognitoStateChange_toolbarDataProvider(
             boolean fromIncognito, boolean toIncognito) {
         AtomicReference<Integer> incognitoStateObserverCallCount =
@@ -211,6 +211,8 @@ public class LocationBarModelTest {
     @Test
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(IncognitoTransitionParamProvider.class)
+    // TODO(crbug.com/457847264): Restrict to phones after launch.
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOnIncognitoStateChange_switchTab(boolean fromIncognito, boolean toIncognito) {
         // Add a regular tab next to the one created in setup.
         mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ false);
@@ -261,6 +263,8 @@ public class LocationBarModelTest {
     @Test
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(IncognitoTransitionParamProvider.class)
+    // TODO(crbug.com/457847264): Restrict to phones after launch.
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOnIncognitoStateChange_newTab(boolean fromIncognito, boolean toIncognito) {
         // Add a regular tab next to the one created in setup.
         mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ false);
