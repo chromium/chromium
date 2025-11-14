@@ -342,8 +342,6 @@ const char kTestCauseOther[] = "other";
 
 // Constant for mocked kernel key version.
 const char kMockedKernelKeyVersion[] = "0x00010009";
-// Should be equivalent to ash::system::kKernelKeyVersion
-const char kKernelKeyVersion[] = "tpm_kernver";
 
 class TestingDeviceStatusCollectorOptions {
  public:
@@ -1824,7 +1822,7 @@ TEST_F(DeviceStatusCollectorTest, KernelKeyVersionNotSet) {
 
 TEST_F(DeviceStatusCollectorTest, KernelKeyVersionSet) {
   // Set the kernel key version.
-  fake_statistics_provider_.SetMachineStatistic(kKernelKeyVersion,
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kKernelKeyVersion,
                                                 kMockedKernelKeyVersion);
 
   // Expect the kernel key version info to be set.
