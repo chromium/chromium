@@ -31,3 +31,7 @@
 -PageContentProtoProviderBrowserTestFencedFrame.AIPageContentFencedFrame
 -PageContentProtoProviderBrowserTestPaidContentDisabled.PaidContentDisabled
 -ScaledPageContentProtoProviderBrowserTest.ScaleSizes
+
+# TODO(crbug.com/460416951): The test is flaky on the bot. It occurs in Andriod
+# and Linux as well.
+-PageContentMetadataObserverBrowserTest.NoMetaTags
