@@ -6,6 +6,7 @@
 
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/badges/ui_bundled/incognito_badge_view_controller.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_consumer.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
+
 @interface LocationBarBadgeCoordinator () <
     ContextualPanelEntrypointCommands,
     ContextualPanelEntrypointMediatorDelegate,
@@ -53,6 +55,8 @@
   // Pref service.
   raw_ptr<PrefService> _prefService;
 }
+
+#pragma mark - Public
 
 - (void)start {
   _viewController = [[LocationBarBadgeViewController alloc] init];
@@ -88,6 +92,11 @@
   _mediator = nil;
   _locationBarBadgeFullscreenUIUpdater = nullptr;
   _animatedFullscreenDisabler = nullptr;
+}
+
+- (void)addIncognitoBadgeViewController:
+    (IncognitoBadgeViewController*)incognitoViewController {
+  self.viewController.incognitoBadgeViewController = incognitoViewController;
 }
 
 // TODO(crbug.com/454351425): Remove pragma when Contextual Panel Entry Point is

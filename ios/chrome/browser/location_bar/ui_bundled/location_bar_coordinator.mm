@@ -364,14 +364,16 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     if (!IsLocationBarBadgeMigrationEnabled()) {
       self.incognitoBadgeViewController.visibilityDelegate =
           [self.viewController incognitoBadgeViewVisibilityDelegate];
+      [self.viewController
+          addChildViewController:self.incognitoBadgeViewController];
+      [self.viewController
+          setIncognitoBadgeView:self.incognitoBadgeViewController.view];
+      [self.incognitoBadgeViewController
+          didMoveToParentViewController:self.viewController];
+    } else {
+      [self.locationBarBadgeCoordinator
+          addIncognitoBadgeViewController:self.incognitoBadgeViewController];
     }
-
-    [self.viewController
-        addChildViewController:self.incognitoBadgeViewController];
-    [self.viewController
-        setIncognitoBadgeView:self.incognitoBadgeViewController.view];
-    [self.incognitoBadgeViewController
-        didMoveToParentViewController:self.viewController];
 
     self.incognitoBadgeMediator =
         [[IncognitoBadgeMediator alloc] initWithWebStateList:self.webStateList];

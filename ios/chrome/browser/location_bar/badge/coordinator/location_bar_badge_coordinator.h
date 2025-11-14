@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol LocationBarBadgeCoordinatorDelegate;
+@class IncognitoBadgeViewController;
 @class LocationBarBadgeMediator;
 @class LocationBarBadgeViewController;
 
@@ -25,6 +26,10 @@
 
 // The view controller for this coordinator.
 @property(nonatomic, strong) LocationBarBadgeViewController* viewController;
+
+// Adds incognito badge view controller to LocationBarBadgeViewController.
+- (void)addIncognitoBadgeViewController:
+    (IncognitoBadgeViewController*)incognitoViewController;
 
 @end
 
