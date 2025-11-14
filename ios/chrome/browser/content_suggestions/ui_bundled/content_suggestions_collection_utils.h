@@ -55,10 +55,12 @@ void ConfigureSearchHintLabel(UILabel* search_hint_label,
 // Configure the `voice_search_button` appearance.
 void ConfigureVoiceSearchButton(UIButton* voice_search_button,
                                 BOOL use_color_icon);
-// Configure the `lens_button` appearance.
+// Configure the `lens_button` appearance. If `new_badge_color` is nil, falls
+// back to the default badge color.
 void ConfigureLensButtonAppearance(UIButton* lens_button,
                                    BOOL use_new_badge,
-                                   BOOL use_color_icon);
+                                   BOOL use_color_icon,
+                                   UIColor* new_badge_color);
 // Configure the `lens_button` new badge's alpha.
 void ConfigureLensButtonWithNewBadgeAlpha(UIButton* lens_button,
                                           CGFloat new_badge_alpha);

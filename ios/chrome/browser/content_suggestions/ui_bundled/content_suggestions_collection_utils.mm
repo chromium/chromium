@@ -106,7 +106,8 @@ CGFloat FakeToolbarVerticalMargin() {
 }
 
 // Sets up fakebox button with a round background and new badge view.
-void SetUpButtonWithNewFeatureBadge(UIButton* button) {
+void SetUpButtonWithNewFeatureBadge(UIButton* button,
+                                    UIColor* new_badge_color) {
   [button setTranslatesAutoresizingMaskIntoConstraints:NO];
 
   button.backgroundColor = [UIColor colorNamed:kOmniboxKeyboardButtonColor];
@@ -129,6 +130,9 @@ void SetUpButtonWithNewFeatureBadge(UIButton* button) {
                                             fontSize:kNewFeatureFontSize];
   badgeView.translatesAutoresizingMaskIntoConstraints = NO;
   badgeView.accessibilityElementsHidden = YES;
+  if (new_badge_color) {
+    [badgeView setBadgeColor:new_badge_color];
+  }
   [button addSubview:badgeView];
 
   [NSLayoutConstraint activateConstraints:@[
@@ -308,7 +312,8 @@ void ConfigureVoiceSearchButton(UIButton* voice_search_button,
 
 void ConfigureLensButtonAppearance(UIButton* lens_button,
                                    BOOL use_new_badge,
-                                   BOOL use_color_icon) {
+                                   BOOL use_color_icon,
+                                   UIColor* new_badge_color) {
   lens_button.translatesAutoresizingMaskIntoConstraints = NO;
 
   UIButtonConfiguration* buttonConfig =
@@ -332,7 +337,7 @@ void ConfigureLensButtonAppearance(UIButton* lens_button,
 
   if (use_new_badge) {
     // Show the "New" badge and colored symbol.
-    SetUpButtonWithNewFeatureBadge(lens_button);
+    SetUpButtonWithNewFeatureBadge(lens_button, new_badge_color);
   }
 }
 

@@ -538,8 +538,14 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   content_suggestions::ConfigureVoiceSearchButton(self.voiceSearchButton,
                                                   useColorIcon);
   if (self.lensButton) {
+    // Only color the badge if there's no image background.
+    UIColor* newBadgeColor =
+        [self.traitCollection boolForNewTabPageImageBackgroundTrait]
+            ? nil
+            : [self.traitCollection objectForNewTabPageTrait].tintColor;
     content_suggestions::ConfigureLensButtonAppearance(
-        self.lensButton, _useNewBadgeForLensButton, useColorIcon);
+        self.lensButton, _useNewBadgeForLensButton, useColorIcon,
+        newBadgeColor);
     if (_useNewBadgeForLensButton) {
       content_suggestions::ConfigureLensButtonWithNewBadgeAlpha(
           self.lensButton, 1 - _lastAnimationPercent);

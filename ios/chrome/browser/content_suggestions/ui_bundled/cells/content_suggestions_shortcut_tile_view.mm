@@ -111,7 +111,16 @@ const CGFloat kCountBorderWidth = 24;
     _countLabel.layer.masksToBounds = YES;
     _countLabel.textColor = [UIColor colorNamed:kSolidButtonTextColor];
     _countLabel.textAlignment = NSTextAlignmentCenter;
-    _countLabel.backgroundColor = [UIColor colorNamed:kBlueColor];
+
+    NewTabPageColorPalette* colorPalette =
+        [self.traitCollection objectForNewTabPageTrait];
+    // Only color the count label if there's no image background.
+    if (![self.traitCollection boolForNewTabPageImageBackgroundTrait] &&
+        colorPalette) {
+      _countLabel.backgroundColor = colorPalette.tintColor;
+    } else {
+      _countLabel.backgroundColor = [UIColor colorNamed:kBlueColor];
+    }
 
     _countContainer.translatesAutoresizingMaskIntoConstraints = NO;
     _countLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -179,12 +188,18 @@ const CGFloat kCountBorderWidth = 24;
   if (hasImageBackground) {
     self.imageBackgroundView.tintColor = [UIColor colorNamed:kGrey100Color];
     self.iconView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
+    // Don't create count label if it's not already created.
+    _countLabel.backgroundColor = [UIColor colorNamed:kBlueColor];
   } else if (colorPalette) {
     self.imageBackgroundView.tintColor = colorPalette.tertiaryColor;
     self.iconView.tintColor = colorPalette.tintColor;
+    // Don't create count label if it's not already created.
+    _countLabel.backgroundColor = colorPalette.tintColor;
   } else {
     self.imageBackgroundView.tintColor = [UIColor colorNamed:kBlueHaloColor];
     self.iconView.tintColor = nil;
+    // Don't create count label if it's not already created.
+    _countLabel.backgroundColor = [UIColor colorNamed:kBlueColor];
   }
 }
 
