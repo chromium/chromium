@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/web_contents_close_handler.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
@@ -121,6 +122,15 @@ void ContentsWebView::UpdateBackgroundColor() {
   const SkColor color = GetColorProvider()->GetColor(
       is_letterboxing() ? kColorWebContentsBackgroundLetterboxing
                         : kColorWebContentsBackground);
+  // `color` must be opaque, see RenderWidgetHostView::SetBackgroundColor() for
+  // details.
+  // TODO(crbug.com/456309057): Update this to be a CHECK.
+  if (SkColorGetA(color) != SK_AlphaOPAQUE) {
+    base::debug::DumpWithoutCrashing();
+    if (background_visible_) {
+      return;
+    }
+  }
 
   ui::Layer* background_layer = layer();
   background_layer->SetColor(background_visible_ ? color : SK_ColorTRANSPARENT);
