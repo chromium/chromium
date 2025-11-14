@@ -26,6 +26,7 @@ source_set("searchbox") {
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
+    "//chrome/browser/ui/webui/top_chrome",
     "//components/lens/proto/server:proto",
     "//components/omnibox/browser",
     "//components/omnibox/browser:mojo_bindings",

@@ -43,6 +43,7 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
   base::WeakPtr<OmniboxPopupFileSelector> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
+
   // Virtual for testing.
   virtual void OpenFileUploadDialog(
       content::WebContents* web_contents,

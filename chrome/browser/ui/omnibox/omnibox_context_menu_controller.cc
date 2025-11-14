@@ -78,19 +78,10 @@ std::optional<lens::ImageEncodingOptions> CreateImageEncodingOptions() {
 }  // namespace
 
 OmniboxContextMenuController::OmniboxContextMenuController(
-    content::WebContents* web_contents,
     OmniboxPopupFileSelector* file_selector,
-    content::WebContents* aim_web_contents,
-    OmniboxEditModel* edit_model)
-    : web_contents_(web_contents->GetWeakPtr()),
-      file_selector_(file_selector->GetWeakPtr()),
-      edit_model_(edit_model) {
-  if (aim_web_contents) {
-    query_controller_ =
-        ContextualSearchWebContentsHelper::FromWebContents(aim_web_contents)
-            ->session_handle()
-            ->GetController();
-  }
+    content::WebContents* web_contents)
+    : file_selector_(file_selector->GetWeakPtr()),
+      web_contents_(web_contents->GetWeakPtr()) {
   menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
   next_command_id_ = kMinOmniboxContextMenuRecentTabsCommandId;
   BuildMenu();
@@ -276,11 +267,11 @@ void OmniboxContextMenuController::OnGetTabPageContext(
     const base::UnguessableToken& context_token,
     const TabInfo& tab_info,
     std::unique_ptr<lens::ContextualInputData> page_content_data) {
-  query_controller_->StartFileUploadFlow(context_token,
-                                         std::move(page_content_data),
-                                         CreateImageEncodingOptions());
+  GetQueryController()->StartFileUploadFlow(context_token,
+                                            std::move(page_content_data),
+                                            CreateImageEncodingOptions());
   UpdateSearchboxContext(/*tab_info=*/tab_info, /*tool_mode=*/std::nullopt);
-  edit_model_->OpenAiMode(/*via_keyboard=*/false, /*via_context_menu=*/true);
+  GetEditModel()->OpenAiMode(/*via_keyboard=*/false, /*via_context_menu=*/true);
 }
 
 void OmniboxContextMenuController::UpdateSearchboxContext(
@@ -339,6 +330,19 @@ void OmniboxContextMenuController::UpdateSearchboxContext(
   }
 }
 
+raw_ptr<contextual_search::ContextualSearchContextController>
+OmniboxContextMenuController::GetQueryController() {
+  return ContextualSearchWebContentsHelper::FromWebContents(web_contents_.get())
+      ->session_handle()
+      ->GetController();
+}
+
+raw_ptr<OmniboxEditModel> OmniboxContextMenuController::GetEditModel() {
+  return OmniboxPopupWebContentsHelper::FromWebContents(web_contents_.get())
+      ->get_omnibox_controller()
+      ->edit_model();
+}
+
 void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
   // Add tab context if tab is selected.
   if (id >= kMinOmniboxContextMenuRecentTabsCommandId &&
@@ -352,29 +356,29 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
   } else {
     switch (id) {
       case IDC_OMNIBOX_CONTEXT_ADD_IMAGE: {
-        file_selector_->OpenFileUploadDialog(web_contents_.get(),
-                                             /*is_image=*/true,
-                                             query_controller_, edit_model_);
+        file_selector_->OpenFileUploadDialog(
+            web_contents_.get(),
+            /*is_image=*/true, GetQueryController(), GetEditModel());
         break;
       }
       case IDC_OMNIBOX_CONTEXT_ADD_FILE:
-        file_selector_->OpenFileUploadDialog(web_contents_.get(),
-                                             /*is_image=*/false,
-                                             query_controller_, edit_model_);
+        file_selector_->OpenFileUploadDialog(
+            web_contents_.get(),
+            /*is_image=*/false, GetQueryController(), GetEditModel());
         break;
       case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
         UpdateSearchboxContext(
             /*tab_info=*/std::nullopt,
             /*tool_mode=*/searchbox::mojom::ToolMode::kDeepSearch);
-        edit_model_->OpenAiMode(/*via_keyboard=*/false,
-                                /*via_context_menu=*/true);
+        GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
+                                   /*via_context_menu=*/true);
         break;
       case IDC_OMNIBOX_CONTEXT_CREATE_IMAGES:
         UpdateSearchboxContext(
             /*tab_info=*/std::nullopt,
             /*tool_mode=*/searchbox::mojom::ToolMode::kCreateImage);
-        edit_model_->OpenAiMode(/*via_keyboard=*/false,
-                                /*via_context_menu=*/true);
+        GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
+                                   /*via_context_menu=*/true);
         break;
       default:
         NOTREACHED();

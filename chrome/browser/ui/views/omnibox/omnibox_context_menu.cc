@@ -18,16 +18,12 @@
 #include "ui/views/controls/menu/submenu_view.h"
 
 OmniboxContextMenu::OmniboxContextMenu(views::Widget* parent_widget,
-                                       content::WebContents* web_contents,
                                        OmniboxPopupFileSelector* file_selector,
-                                       content::WebContents* aim_web_contents,
-                                       OmniboxEditModel* edit_model)
+                                       content::WebContents* web_contents)
     : parent_widget_(parent_widget),
       controller_(
-          std::make_unique<OmniboxContextMenuController>(web_contents,
-                                                         file_selector,
-                                                         aim_web_contents,
-                                                         edit_model)) {
+          std::make_unique<OmniboxContextMenuController>(file_selector,
+                                                         web_contents)) {
   std::unique_ptr<views::MenuItemView> menu =
       std::make_unique<views::MenuItemView>(this);
   menu_ = menu.get();
