@@ -4,8 +4,11 @@
 
 #include "net/socket/socket_pool_additional_capacity.h"
 
+#include "base/notimplemented.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
+#include "net/socket/client_socket_pool.h"
+#include "net/socket/connect_job_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
@@ -15,6 +18,10 @@ namespace {
 
 const SocketPoolAdditionalCapacity kEmptyPool =
     SocketPoolAdditionalCapacity::CreateForTest(0.0, 0, 0.0, 0.0);
+
+// This should be kept in sync with the field trial config's default pool.
+const SocketPoolAdditionalCapacity kFieldTrialPool =
+    SocketPoolAdditionalCapacity::CreateForTest(0.000001, 256, 0.01, 0.2);
 
 TEST(SocketPoolAdditionalCapacityTest, CreateWithDisabledFeature) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -235,9 +242,6 @@ TEST(SocketPoolAdditionalCapacityTest, EmptyPool) {
 
 TEST(SocketPoolAdditionalCapacityTest,
      TestDefaultDistributionForFieldTrialConfig) {
-  // We want to validate the default config in the field trial here.
-  SocketPoolAdditionalCapacity pool_capacity =
-      SocketPoolAdditionalCapacity::CreateForTest(0.000001, 256, 0.01, 0.2);
 
   // In order to do that we need an easy way to measure distributions.
   // Since we are applying noise, we run a ten thousand variants.
@@ -247,13 +251,13 @@ TEST(SocketPoolAdditionalCapacityTest,
     size_t transition_release_count = 0;
     for (size_t i = 0; i < 10000; ++i) {
       if (SocketPoolState::kCapped ==
-          pool_capacity.NextStateBeforeAllocation(SocketPoolState::kUncapped,
-                                                  sockets_in_use, 256)) {
+          kFieldTrialPool.NextStateBeforeAllocation(SocketPoolState::kUncapped,
+                                                    sockets_in_use, 256)) {
         ++transition_allocation_count;
       }
       if (SocketPoolState::kUncapped ==
-          pool_capacity.NextStateAfterRelease(SocketPoolState::kCapped,
-                                              sockets_in_use, 256)) {
+          kFieldTrialPool.NextStateAfterRelease(SocketPoolState::kCapped,
+                                                sockets_in_use, 256)) {
         ++transition_release_count;
       }
     }
@@ -328,6 +332,201 @@ FUZZ_TEST(SocketPoolAdditionalCapacityTest, ValidateRandomizedInputs)
         {1.0, 256, 1.0, 1.0, true, std::numeric_limits<uint32_t>::max(),
          std::numeric_limits<uint32_t>::max()},
     });
+
+// This is mocked up so that we can model the sort of function usage we expect
+// in the additions to ClientSocketPool. We won't actually be implementing or
+// using the normal public interface functions of a ClientSocketPool.
+class MockClientSocketPool : public ClientSocketPool {
+ public:
+  MockClientSocketPool()
+      : ClientSocketPool(kFieldTrialPool,
+                         /*is_for_websockets=*/false,
+                         /*common_connect_job_params*/ nullptr,
+                         /*connect_job_factory*/ nullptr) {}
+
+  SocketPoolState RequestSocket() {
+    UpdateStateBeforeAllocation(sockets_in_use_, socket_soft_cap_);
+    if (State() == SocketPoolState::kUncapped) {
+      ++sockets_in_use_;
+    }
+    CHECK_LE(sockets_in_use_, 512);
+    return State();
+  }
+
+  SocketPoolState ReleaseSocket() {
+    --sockets_in_use_;
+    UpdateStateAfterRelease(sockets_in_use_, socket_soft_cap_);
+    CHECK_GE(sockets_in_use_, 0);
+    return State();
+  }
+
+  size_t SocketsInUse() { return sockets_in_use_; }
+
+ private:
+  int RequestSocket(
+      const GroupId& group_id,
+      scoped_refptr<SocketParams> params,
+      const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      RequestPriority priority,
+      const SocketTag& socket_tag,
+      RespectLimits respect_limits,
+      ClientSocketHandle* handle,
+      CompletionOnceCallback callback,
+      const ProxyAuthCallback& proxy_auth_callback,
+      bool fail_if_alias_requires_proxy_override,
+      const NetLogWithSource& net_log) override {
+    NOTIMPLEMENTED();
+    return ERR_IO_PENDING;
+  }
+  int RequestSockets(
+      const GroupId& group_id,
+      scoped_refptr<SocketParams> params,
+      const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      size_t num_sockets,
+      bool fail_if_alias_requires_proxy_override,
+      CompletionOnceCallback callback,
+      const NetLogWithSource& net_log) override {
+    NOTIMPLEMENTED();
+    return ERR_IO_PENDING;
+  }
+  void SetPriority(const GroupId& group_id,
+                   ClientSocketHandle* handle,
+                   RequestPriority priority) override {
+    NOTIMPLEMENTED();
+  }
+  void CancelRequest(const GroupId& group_id,
+                     ClientSocketHandle* handle,
+                     bool cancel_connect_job) override {
+    NOTIMPLEMENTED();
+  }
+  void ReleaseSocket(const GroupId& group_id,
+                     std::unique_ptr<StreamSocket> socket,
+                     int64_t generation) override {
+    NOTIMPLEMENTED();
+  }
+  void FlushWithError(int error, const char* net_log_reason_utf8) override {
+    NOTIMPLEMENTED();
+  }
+  void CloseIdleSockets(const char* net_log_reason_utf8) override {
+    NOTIMPLEMENTED();
+  }
+  void CloseIdleSocketsInGroup(const GroupId& group_id,
+                               const char* net_log_reason_utf8) override {
+    NOTIMPLEMENTED();
+  }
+  size_t IdleSocketCount() const override {
+    NOTIMPLEMENTED();
+    return 0;
+  }
+  size_t IdleSocketCountInGroup(const GroupId& group_id) const override {
+    NOTIMPLEMENTED();
+    return 0;
+  }
+  LoadState GetLoadState(const GroupId& group_id,
+                         const ClientSocketHandle* handle) const override {
+    NOTIMPLEMENTED();
+    return LOAD_STATE_IDLE;
+  }
+  base::Value GetInfoAsValue(const std::string& name,
+                             const std::string& type) const override {
+    NOTIMPLEMENTED();
+    return base::Value();
+  }
+  bool HasActiveSocket(const GroupId& group_id) const override {
+    NOTIMPLEMENTED();
+    return false;
+  }
+  bool IsStalled() const override {
+    NOTIMPLEMENTED();
+    return false;
+  }
+  void AddHigherLayeredPool(HigherLayeredPool* higher_pool) override {
+    NOTIMPLEMENTED();
+  }
+  void RemoveHigherLayeredPool(HigherLayeredPool* higher_pool) override {
+    NOTIMPLEMENTED();
+  }
+
+ private:
+  const size_t socket_soft_cap_{256};
+  size_t sockets_in_use_{0};
+};
+
+// The goal of this test is to walk a pool back and forth between being
+// capped and uncapped, tracking at what point the transition occurs
+// and using that data to validate expected behavior. We take this walk
+// about 1000 times as there is randomization in the transition points.
+TEST(SocketPoolAdditionalCapacityTest, ValidateMockClientSocketPool) {
+  MockClientSocketPool pool;
+  size_t total_sockets_seen_at_capping_point = 0;
+  size_t capping_points_seen = 0;
+  size_t minimum_sockets_seen_at_capping_point = 512;
+  size_t maximum_sockets_seen_at_capping_point = 0;
+  size_t total_sockets_seen_at_uncapping_point = 0;
+  size_t uncapping_points_seen = 0;
+  size_t minimum_sockets_seen_at_uncapping_point = 512;
+  size_t maximum_sockets_seen_at_uncapping_point = 0;
+  for (size_t i = 0; i < 1000; ++i) {
+    while (pool.RequestSocket() == SocketPoolState::kUncapped) {
+      continue;
+    }
+    total_sockets_seen_at_capping_point += pool.SocketsInUse();
+    ++capping_points_seen;
+    if (minimum_sockets_seen_at_capping_point > pool.SocketsInUse()) {
+      minimum_sockets_seen_at_capping_point = pool.SocketsInUse();
+    }
+    if (maximum_sockets_seen_at_capping_point < pool.SocketsInUse()) {
+      maximum_sockets_seen_at_capping_point = pool.SocketsInUse();
+    }
+    while (pool.ReleaseSocket() == SocketPoolState::kCapped) {
+      continue;
+    }
+    total_sockets_seen_at_uncapping_point += pool.SocketsInUse();
+    ++uncapping_points_seen;
+    if (minimum_sockets_seen_at_uncapping_point > pool.SocketsInUse()) {
+      minimum_sockets_seen_at_uncapping_point = pool.SocketsInUse();
+    }
+    if (maximum_sockets_seen_at_uncapping_point < pool.SocketsInUse()) {
+      maximum_sockets_seen_at_uncapping_point = pool.SocketsInUse();
+    }
+  }
+  int average_sockets_seen_at_capping_point =
+      total_sockets_seen_at_capping_point / capping_points_seen;
+  int average_sockets_seen_at_uncapping_point =
+      total_sockets_seen_at_uncapping_point / uncapping_points_seen;
+  int capping_range = maximum_sockets_seen_at_capping_point -
+                      minimum_sockets_seen_at_capping_point;
+  int uncapping_range = maximum_sockets_seen_at_uncapping_point -
+                        minimum_sockets_seen_at_uncapping_point;
+  int average_difference = average_sockets_seen_at_capping_point -
+                           average_sockets_seen_at_uncapping_point;
+
+  // The pool should always uncap between 256 and 512.
+  EXPECT_GE(minimum_sockets_seen_at_capping_point, 256);
+  EXPECT_LE(maximum_sockets_seen_at_capping_point, 512);
+
+  // The pool should always uncap between 255 and 511.
+  EXPECT_GE(minimum_sockets_seen_at_uncapping_point, 255);
+  EXPECT_LE(maximum_sockets_seen_at_uncapping_point, 511);
+
+  // We expect the capping range to start, average, and end after the uncapping.
+  EXPECT_GT(minimum_sockets_seen_at_capping_point,
+            minimum_sockets_seen_at_uncapping_point);
+  EXPECT_GT(average_sockets_seen_at_capping_point,
+            average_sockets_seen_at_uncapping_point);
+  EXPECT_GT(maximum_sockets_seen_at_capping_point,
+            maximum_sockets_seen_at_uncapping_point);
+
+  // We expect a range of 150 to 250 for both capping and uncapping ranges.
+  EXPECT_GT(capping_range, 150);
+  EXPECT_LT(capping_range, 250);
+  EXPECT_GT(uncapping_range, 150);
+  EXPECT_LT(uncapping_range, 250);
+
+  // We expect a range 20 to 80 between the average capping and uncapping.
+  EXPECT_GT(average_difference, 20);
+  EXPECT_LT(average_difference, 80);
+}
 
 }  // namespace
 

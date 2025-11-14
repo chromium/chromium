@@ -393,8 +393,18 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
     return additional_capacity_;
   }
 
+  SocketPoolState State() const { return state_; }
+
+  void UpdateStateBeforeAllocation(size_t sockets_in_use,
+                                   size_t socket_soft_cap);
+
+  void UpdateStateAfterRelease(size_t sockets_in_use, size_t socket_soft_cap);
+
  private:
-  SocketPoolAdditionalCapacity additional_capacity_;
+  // This section tracks information related to the overall pool capacity.
+  const SocketPoolAdditionalCapacity additional_capacity_;
+  SocketPoolState state_ = SocketPoolState::kUncapped;
+
   const bool is_for_websockets_;
   const raw_ptr<const CommonConnectJobParams> common_connect_job_params_;
   const std::unique_ptr<ConnectJobFactory> connect_job_factory_;

@@ -239,4 +239,16 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
       common_connect_job_params_, delegate);
 }
 
+void ClientSocketPool::UpdateStateBeforeAllocation(size_t sockets_in_use,
+                                                   size_t socket_soft_cap) {
+  state_ = additional_capacity_.NextStateBeforeAllocation(
+      State(), sockets_in_use, socket_soft_cap);
+}
+
+void ClientSocketPool::UpdateStateAfterRelease(size_t sockets_in_use,
+                                               size_t socket_soft_cap) {
+  state_ = additional_capacity_.NextStateAfterRelease(State(), sockets_in_use,
+                                                      socket_soft_cap);
+}
+
 }  // namespace net
