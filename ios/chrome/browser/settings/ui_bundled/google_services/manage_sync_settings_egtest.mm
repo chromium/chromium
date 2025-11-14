@@ -587,7 +587,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // Tests the account settings is disabling the types that were affected by the
 // SyncTypesListDisabled policy when the policy is apllied on a signed-in
 // account.
-- (void)testAccountSettingsWithSyncTypesListDisabledAppliedDynamically {
+// TODO(crbug.com/460742017): Test is flaky.
+- (void)FLAKY_testAccountSettingsWithSyncTypesListDisabledAppliedDynamically {
   // Sign in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
