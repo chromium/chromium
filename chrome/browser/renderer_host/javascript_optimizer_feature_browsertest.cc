@@ -938,8 +938,10 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
   EXPECT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
 }
 
-IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
-                       ExpectOptimizationsEnabledInSpeculativeRenderFrameHost) {
+// TODO(crbug.com/460621062): Re-enable the test
+IN_PROC_BROWSER_TEST_F(
+    JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
+    DISABLED_ExpectOptimizationsEnabledInSpeculativeRenderFrameHost) {
   // TODO(crbug.com/452130797): Determine desired behavior for this test case.
 
   const GURL kTestUrl = embedded_https_test_server().GetURL(
