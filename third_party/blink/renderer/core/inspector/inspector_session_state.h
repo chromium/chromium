@@ -150,7 +150,8 @@ class CORE_EXPORT InspectorAgentState {
         return;
       auto it = reattach_state->entries.find(prefix_key_);
       if (it != reattach_state->entries.end()) {
-        Deserialize(*it->value, &value_);
+        Deserialize(crdtp::span<uint8_t>(it->value->data(), it->value->size()),
+                    &value_);
       }
     }
 
@@ -238,7 +239,9 @@ class CORE_EXPORT InspectorAgentState {
           continue;
         blink::String suffix_key = entry.key.Substring(prefix_key_.length());
         ValueType v;
-        if (Deserialize(*entry.value, &v)) {
+        if (Deserialize(
+                crdtp::span<uint8_t>(entry.value->data(), entry.value->size()),
+                &v)) {
           map_.Set(suffix_key, v);
         }
       }

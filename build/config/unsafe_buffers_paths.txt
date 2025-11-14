@@ -5,7 +5,7 @@
 # See `docs/unsafe_buffers.md`.
 
 # Checks to enable.
-.buffers,container,libc,unique_ptr
+.buffers,libc,unique_ptr
 
 # Path to source root from the directory containing this file.
 $../../

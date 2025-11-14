@@ -105,10 +105,7 @@ fuzzer_test("devtools_protocol_encoding_cbor_fuzzer") {
 
 fuzzer_test("inspector_fuzzer") {
   sources = [ "../../browser/devtools/inspector_fuzzer.cc" ]
-  deps = [
-    "//base",
-    "//third_party/inspector_protocol:crdtp",
-  ]
+  deps = [ "//third_party/inspector_protocol:crdtp" ]
   seed_corpus = "//components/cbor/reader_fuzzer_corpus/"
 }
 

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/compiler_specific.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
 
 // A corpus for this fuzzer is located in
@@ -14,10 +13,7 @@
 namespace content {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string json;
-
-  // SAFETY: fuzzer ensures `data` is valid for `size` bytes.
-  crdtp::json::ConvertCBORToJSON(UNSAFE_TODO(crdtp::span<uint8_t>(data, size)),
-                                 &json);
+  crdtp::json::ConvertCBORToJSON(crdtp::span<uint8_t>(data, size), &json);
   return 0;
 }
 }  // namespace content

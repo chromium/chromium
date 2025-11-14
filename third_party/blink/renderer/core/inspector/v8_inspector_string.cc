@@ -96,7 +96,7 @@ class BinaryBasedOnCachedData : public Binary::Impl {
 
 // Implements Serializable.
 void Binary::AppendSerialized(std::vector<uint8_t>* out) const {
-  crdtp::cbor::EncodeBinary(*impl_, out);
+  crdtp::cbor::EncodeBinary(crdtp::span<uint8_t>(data(), size()), out);
 }
 
 String Binary::toBase64() const {
