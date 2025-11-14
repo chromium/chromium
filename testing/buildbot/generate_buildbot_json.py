@@ -277,8 +277,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
     @property
     def autoshard_exceptions_json_path(self):
-      return os.path.join(self.infra_config_dir, 'targets',
-                          'autoshard_exceptions.json')
+      return os.path.join(self.infra_config_dir, 'autoshard_exceptions.json')
 
     # gn_isolate_map.pyl, mixins.pyl, test_suites.pyl and variants.pyl can
     # either be generated to the generated/testing subdirectory of the infra

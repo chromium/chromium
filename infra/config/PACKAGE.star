@@ -34,6 +34,7 @@ pkg.depend(
 )
 
 pkg.resources([
+    "autoshard_exceptions.json",
     "dev/chromium-header.textpb",
     "lib/linux-default.json",
     "luci-analysis-dev.cfg",
@@ -42,7 +43,6 @@ pkg.resources([
     "luci-bisection.cfg",
     "milestones.json",
     "settings.json",
-    "targets/autoshard_exceptions.json",
     "templates/build_with_step_summary.template",
     "templates/tree_closure_email.template",
     "testhaus-staging.cfg",
