@@ -22,8 +22,8 @@ interface WebContentsNSView {
   // Clear the parent NSView and related state.
   ResetParentNSView();
 
-  // Set the NSView's frame in its NSWindow to |bounds_in_window|.
-  SetBounds(gfx.mojom.Rect bounds_in_window);
+  // Sets the NSView's frame in its superview's coordinate.
+  SetBounds(gfx.mojom.Rect bounds_in_superview);
 
   // Short or hide the NSView.
   SetVisible(bool visible);

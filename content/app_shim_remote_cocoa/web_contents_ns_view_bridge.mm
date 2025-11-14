@@ -70,16 +70,16 @@ void WebContentsNSViewBridge::ResetParentNSView() {
   [ns_view_ removeFromSuperview];
 }
 
-void WebContentsNSViewBridge::SetBounds(const gfx::Rect& bounds_in_window) {
-  NSWindow* window = [ns_view_ window];
-  NSRect window_content_rect = [window contentRectForFrameRect:[window frame]];
-  NSRect ns_bounds_in_window =
-      NSMakeRect(bounds_in_window.x(),
-                 window_content_rect.size.height - bounds_in_window.y() -
-                     bounds_in_window.height(),
-                 bounds_in_window.width(), bounds_in_window.height());
+void WebContentsNSViewBridge::SetBounds(const gfx::Rect& bounds_in_superview) {
+  NSView* superview = [ns_view_ superview];
+  NSRect superview_bounds = [superview bounds];
   NSRect ns_bounds_in_superview =
-      [[ns_view_ superview] convertRect:ns_bounds_in_window fromView:nil];
+      NSMakeRect(bounds_in_superview.x(),
+                 [superview isFlipped]
+                     ? bounds_in_superview.y()
+                     : superview_bounds.size.height - bounds_in_superview.y() -
+                           bounds_in_superview.height(),
+                 bounds_in_superview.width(), bounds_in_superview.height());
   [ns_view_ setFrame:ns_bounds_in_superview];
 }
 

@@ -30,7 +30,7 @@ class TestViewsHostable : public ui::ViewsHostableView {
   void ViewsHostableDetach() override {
     parent_accessibility_element_ = gfx::NativeViewAccessible();
   }
-  void ViewsHostableSetBounds(const gfx::Rect& bounds_in_window) override {}
+  void ViewsHostableSetBounds(const gfx::Rect& bounds_in_superview) override {}
   void ViewsHostableSetVisible(bool visible) override {}
   void ViewsHostableMakeFirstResponder() override {}
   void ViewsHostableSetParentAccessible(
