@@ -195,10 +195,8 @@ void ParseVpxKeyFrame(const media::DecoderBuffer& buffer,
 
 void ParseH264KeyFrame(const media::DecoderBuffer& buffer, bool* is_key_frame) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  auto buffer_span = base::span(buffer);
-  auto result =
-      media::mp4::AVC::AnalyzeAnnexB(buffer_span.data(), buffer_span.size(),
-                                     std::vector<media::SubsampleEntry>());
+  auto result = media::mp4::AVC::AnalyzeAnnexB(
+      buffer, std::vector<media::SubsampleEntry>());
   *is_key_frame = result.is_keyframe.value_or(false);
 #endif
 }
@@ -206,10 +204,8 @@ void ParseH264KeyFrame(const media::DecoderBuffer& buffer, bool* is_key_frame) {
 void ParseH265KeyFrame(const media::DecoderBuffer& buffer, bool* is_key_frame) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  auto buffer_span = base::span(buffer);
-  auto result =
-      media::mp4::HEVC::AnalyzeAnnexB(buffer_span.data(), buffer_span.size(),
-                                      std::vector<media::SubsampleEntry>());
+  auto result = media::mp4::HEVC::AnalyzeAnnexB(
+      buffer, std::vector<media::SubsampleEntry>());
   *is_key_frame = result.is_keyframe.value_or(false);
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)

@@ -106,8 +106,7 @@ class MEDIA_EXPORT HEVC {
   // |subsamples| contains the information about what parts of the buffer are
   // encrypted and which parts are clear.
   static BitstreamConverter::AnalysisResult AnalyzeAnnexB(
-      const uint8_t* buffer,
-      size_t size,
+      base::span<const uint8_t> buffer,
       const std::vector<SubsampleEntry>& subsamples);
 };
 
@@ -125,7 +124,7 @@ class HEVCBitstreamConverter : public BitstreamConverter {
  private:
   ~HEVCBitstreamConverter() override;
   AnalysisResult Analyze(
-      std::vector<uint8_t>* frame_buf,
+      base::span<const uint8_t> frame_buf,
       std::vector<SubsampleEntry>* subsamples) const override;
   std::unique_ptr<HEVCDecoderConfigurationRecord> hevc_config_;
 };

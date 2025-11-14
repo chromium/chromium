@@ -65,7 +65,7 @@ class MEDIA_EXPORT BitstreamConverter
   // inspects further to see if the converted frame appears to be a keyframe.
   // Note, the checks may not be exhaustive (or implemented at all).
   virtual AnalysisResult Analyze(
-      std::vector<uint8_t>* frame_buf,
+      base::span<const uint8_t> frame_buf,
       std::vector<SubsampleEntry>* subsamples) const = 0;
 };
 

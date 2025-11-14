@@ -10,8 +10,7 @@
 #include "media/formats/mp4/nalu_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace media {
-namespace mp4 {
+namespace media::mp4 {
 
 TEST(HEVCAnalyzeAnnexBTest, ValidAnnexBConstructs) {
   struct TestCases {
@@ -41,16 +40,14 @@ TEST(HEVCAnalyzeAnnexBTest, ValidAnnexBConstructs) {
     BitstreamConverter::AnalysisResult expected;
     expected.is_conformant = true;
     expected.is_keyframe = test_cases[i].is_keyframe;
-    EXPECT_PRED2(AnalysesMatch,
-                 HEVC::AnalyzeAnnexB(buf.data(), buf.size(), subsamples),
-                 expected)
+    EXPECT_PRED2(AnalysesMatch, HEVC::AnalyzeAnnexB(buf, subsamples), expected)
         << "'" << test_cases[i].case_string << "' failed";
   }
 }
 
 TEST(HEVCAnalyzeAnnexBTest, EmptyBuffer) {
   std::vector<SubsampleEntry> subsamples;
-  auto result = HEVC::AnalyzeAnnexB(nullptr, 0, subsamples);
+  auto result = HEVC::AnalyzeAnnexB(base::span<const uint8_t>(), subsamples);
   EXPECT_TRUE(result.is_conformant);
   EXPECT_TRUE(subsamples.empty());
   EXPECT_FALSE(result.is_keyframe.has_value());
@@ -91,9 +88,7 @@ TEST(HEVCAnalyzeAnnexBTest, InvalidAnnexBConstructs) {
     std::vector<SubsampleEntry> subsamples;
     HevcStringToAnnexB(test_cases[i].case_string, &buf, nullptr);
     expected.is_keyframe = test_cases[i].is_keyframe;
-    EXPECT_PRED2(AnalysesMatch,
-                 HEVC::AnalyzeAnnexB(buf.data(), buf.size(), subsamples),
-                 expected)
+    EXPECT_PRED2(AnalysesMatch, HEVC::AnalyzeAnnexB(buf, subsamples), expected)
         << "'" << test_cases[i].case_string << "' failed";
   }
 }
@@ -116,5 +111,4 @@ TEST(HEVCAnalyzeAnnexBTest, HEVCDecoderConfigurationRecordTakenFromStream) {
   EXPECT_TRUE(test_data == output);
 }
 
-}  // namespace mp4
-}  // namespace media
+}  // namespace media::mp4
