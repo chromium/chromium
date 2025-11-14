@@ -2644,6 +2644,12 @@
           =1 {1 selected}
           other {# selected}}
       </message>
+      <message name="IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS_DESELECT_ALL_BUTTON" desc="Title of the button in the bottom toolbar that allows the user to deselect all credentials in the export list. [iOS only]">
+        Deselect all
+      </message>
+      <message name="IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS_SELECT_ALL_BUTTON" desc="Title of the button in the bottom toolbar that allows the user to select all credentials in the export list. [iOS only]">
+        Select all
+      </message>
       <message name="IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS_SUBTITLE" desc="Subtitle text on the credential export selection screen, instructing the user to select accounts. [iOS only]">
         Select the accounts you want to export to another app.
       </message>

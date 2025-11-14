@@ -37,6 +37,24 @@ id<GREYMatcher> ExportButtonMatcher() {
       l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS));
 }
 
+// Matcher for the Toggle button (Select All / Deselect All) using its ID.
+id<GREYMatcher> ToggleSelectionButton() {
+  return grey_accessibilityID(
+      kCredentialExportSelectAllButtonAccessibilityIdentifier);
+}
+
+// Matcher for the specific state text "Select All".
+id<GREYMatcher> SelectAllText() {
+  return grey_accessibilityLabel(l10n_util::GetNSString(
+      IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS_SELECT_ALL_BUTTON));
+}
+
+// Matcher for the specific state text "Deselect All".
+id<GREYMatcher> DeselectAllText() {
+  return grey_accessibilityLabel(l10n_util::GetNSString(
+      IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS_DESELECT_ALL_BUTTON));
+}
+
 // Opens the Credential Export page from Password Settings.
 void OpenExportCredentialsPage() {
   OpenPasswordManager();
@@ -88,6 +106,55 @@ void OpenExportCredentialsPage() {
 
   [[EarlGrey selectElementWithMatcher:ContinueButton()]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Verifies the default state when opening the screen.
+- (void)testInitialState {
+  if (!@available(iOS 26, *)) {
+    EARL_GREY_TEST_SKIPPED(@"This feature works only for iOS 26 and higher.");
+  }
+  SavePasswordFormToAccountStore(@"password1", @"user1",
+                                 @"https://example1.com");
+  SavePasswordFormToAccountStore(@"password2", @"user2",
+                                 @"https://example2.com");
+  OpenExportCredentialsPage();
+
+  [[EarlGrey selectElementWithMatcher:ToggleSelectionButton()]
+      assertWithMatcher:DeselectAllText()];
+
+  [[EarlGrey selectElementWithMatcher:ContinueButton()]
+      assertWithMatcher:grey_enabled()];
+}
+
+// Tests the toggle functionality of the "Select All" / "Deselect All" button on
+// the export credentials page.
+- (void)testToggleSelectAllDeselectAll {
+  if (!@available(iOS 26, *)) {
+    EARL_GREY_TEST_SKIPPED(@"This feature works only for iOS 26 and higher.");
+  }
+  SavePasswordFormToAccountStore(@"password1", @"user1",
+                                 @"https://example1.com");
+  SavePasswordFormToAccountStore(@"password2", @"user2",
+                                 @"https://example2.com");
+  OpenExportCredentialsPage();
+
+  [[EarlGrey selectElementWithMatcher:ToggleSelectionButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:ToggleSelectionButton()]
+      assertWithMatcher:SelectAllText()];
+
+  [[EarlGrey selectElementWithMatcher:ContinueButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+
+  [[EarlGrey selectElementWithMatcher:ToggleSelectionButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:ToggleSelectionButton()]
+      assertWithMatcher:DeselectAllText()];
+
+  [[EarlGrey selectElementWithMatcher:ContinueButton()]
+      assertWithMatcher:grey_enabled()];
 }
 #endif
 
