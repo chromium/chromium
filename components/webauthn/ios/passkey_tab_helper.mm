@@ -52,6 +52,18 @@ class [[maybe_unused, nodiscard]] ScopedAllowPasskeyCreationInfobar {
   raw_ptr<IOSPasskeyClient> client_;
 };
 
+bool IsOriginValidForRelyingPartyId(const url::Origin& origin,
+                                    const std::string& rp_id) {
+  if (rp_id.empty()) {
+    return false;
+  }
+
+  // TODO(crbug.com/460485600): Implement proper rp_id/origin validation.
+  //                            See content related origin implementation:
+  // https://chromium-review.googlesource.com/c/chromium/src/+/4973980
+  return true;
+}
+
 }  // namespace
 
 PasskeyTabHelper::RequestParams::RequestParams()
@@ -136,6 +148,12 @@ void PasskeyTabHelper::HandleGetRequestedEvent(AssertionRequestParams params) {
     return;
   }
 
+  if (!IsOriginValidForRelyingPartyId(web_frame->GetSecurityOrigin(),
+                                      params.request_params_.rp_entity_.id)) {
+    PasskeyJavaScriptFeature::GetInstance()->DeferToRenderer(web_frame);
+    return;
+  }
+
   // TODO(crbug.com/385174410): Handle this event.
   PasskeyJavaScriptFeature::GetInstance()->DeferToRenderer(web_frame);
 }
@@ -144,6 +162,12 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
     RegistrationRequestParams params) {
   web::WebFrame* web_frame = GetWebFrame(params.request_params_);
   if (!web_frame) {
+    return;
+  }
+
+  if (!IsOriginValidForRelyingPartyId(web_frame->GetSecurityOrigin(),
+                                      params.request_params_.rp_entity_.id)) {
+    PasskeyJavaScriptFeature::GetInstance()->DeferToRenderer(web_frame);
     return;
   }
 
