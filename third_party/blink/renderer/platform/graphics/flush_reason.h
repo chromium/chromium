@@ -35,24 +35,20 @@ enum class FlushReason {
   // Should not happen while printing.
   kCreateImageBitmap = 5,
 
-  // The `getImageData` API method was called on the canvas's 2d context.
-  // This inhibits vector printing.
-  kGetImageData = 6,
-
   // The canvas element dispatched a frame to the compositor
   // This inhibits vector printing.
-  kCanvasPushFrame = 7,
+  kCanvasPushFrame = 6,
 
   // The canvas element dispatched a frame to the compositor while printing
   // was in progress.
   // This does not prevent vector printing as long as the current frame is
   // clear.
-  kCanvasPushFrameWhilePrinting = 8,
+  kCanvasPushFrameWhilePrinting = 7,
 
   // The canvas is being printed.
-  kPrinting = 9,
+  kPrinting = 8,
 
-  kOther = 10,
+  kOther = 9,
 
   kMaxValue = kOther,
 };
