@@ -62,6 +62,7 @@
   border: none;
   cursor: pointer;
   display: flex;
+  font-family: inherit;
   gap: 12px;
   height: 56px;
   isolation: isolate;
@@ -116,7 +117,7 @@
 }
 
 .action-chip-recent-tab-favicon {
-  border-radius: 100%;
+  border-radius: 2px;
   height: 24px;
   width: 24px;
 }
@@ -131,7 +132,7 @@
 
 .chip-title {
   color: var(--color-sys-on-surface);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   overflow: hidden;
   text-align: left;
