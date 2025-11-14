@@ -2213,8 +2213,6 @@ TEST_F(AttributionManagerImplTest, SendReport_RecordsSchedulerReportDelay) {
   // Cause any scheduled tasks to run.
   task_environment_.FastForwardBy(base::TimeDelta());
 
-  histograms.ExpectUniqueTimeSample("Conversions.SchedulerReportDelay",
-                                    base::Seconds(1), 1);
   histograms.ExpectUniqueTimeSample(
       "Conversions.AggregatableReport.SchedulerReportDelay", base::Seconds(1),
       1);

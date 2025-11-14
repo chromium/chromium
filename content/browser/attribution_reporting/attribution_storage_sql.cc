@@ -2025,11 +2025,6 @@ bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
   if (int64_t file_size = GetStorageFileSizeKB(path_to_database_);
       file_size > -1) {
     base::UmaHistogramCounts10M("Conversions.Storage.Sql.FileSize2", file_size);
-    std::optional<int64_t> number_of_sources = NumberOfSources();
-    if (number_of_sources.has_value() && *number_of_sources > 0) {
-      base::UmaHistogramCounts1M("Conversions.Storage.Sql.FileSize2.PerSource",
-                                 file_size * 1024 / *number_of_sources);
-    }
   }
 
   VerifyReports(/*deletion_counts=*/nullptr);
@@ -2039,16 +2034,6 @@ bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
                                  /*exclusive_max=*/500, /*buckets=*/50);
 
   return true;
-}
-
-std::optional<int64_t> AttributionStorageSql::NumberOfSources() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  sql::Statement statement(db_.GetCachedStatement(
-      SQL_FROM_HERE, attribution_queries::kCountSourcesSql));
-  if (!statement.Step()) {
-    return std::nullopt;
-  }
-  return statement.ColumnInt64(0);
 }
 
 // Deletes corrupt sources/reports if `deletion_counts` is not `nullptr`.
@@ -2981,10 +2966,6 @@ AttributionStorageSql::GetAggregatableDebugSourceData(
       .remaining_budget = statement.ColumnInt(0),
       .num_reports = statement.ColumnInt(1),
   };
-}
-
-int64_t AttributionStorageSql::StorageFileSizeKB() {
-  return GetStorageFileSizeKB(path_to_database_);
 }
 
 AggregatableDebugRateLimitTable::Result

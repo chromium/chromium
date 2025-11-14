@@ -281,19 +281,6 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
       count < 0) {
     return make_result(StoreSourceResult::InternalError());
   } else if (int64_t max = delegate_->GetMaxSourcesPerOrigin(); count >= max) {
-    if (int64_t file_size = storage_.StorageFileSizeKB(); file_size > -1) {
-      base::UmaHistogramCounts10M(
-          "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2",
-          file_size);
-      std::optional<int64_t> number_of_sources = storage_.NumberOfSources();
-      if (number_of_sources.has_value()) {
-        CHECK_GT(*number_of_sources, 0);
-        base::UmaHistogramCounts1M(
-            "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2."
-            "PerSource",
-            file_size * 1024 / *number_of_sources);
-      }
-    }
     return make_result(StoreSourceResult::InsufficientSourceCapacity(max));
   }
 

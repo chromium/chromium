@@ -369,10 +369,6 @@ void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
             UMA_HISTOGRAM_COUNTS_1000(
                 "Conversions.TimeFromConversionToReportSend",
                 time_from_conversion_to_report_send.InHours());
-
-            UMA_HISTOGRAM_CUSTOM_TIMES("Conversions.SchedulerReportDelay",
-                                       now - report.report_time(),
-                                       base::Seconds(1), base::Days(1), 50);
           },
           [&](const AttributionReport::AggregatableData& data) {
             if (data.is_null()) {

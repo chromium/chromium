@@ -231,25 +231,6 @@ void RecordBackgroundNavigationOutcome(BackgroundNavigationOutcome outcome) {
                                 outcome);
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(NavigationSourceScopesLimitOutcome)
-enum class NavigationSourceScopesLimitOutcome {
-  kNoScopesAllowed = 0,
-  kNoScopesDropped = 1,
-  kScopesAllowed = 2,
-  kScopesDropped = 3,
-  kMaxValue = kScopesDropped,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionNavigationSourceScopesLimitOutcome)
-
-void RecordNavigationSourceScopesLimitOutcome(
-    NavigationSourceScopesLimitOutcome outcome) {
-  base::UmaHistogramEnumeration(
-      "Conversions.NavigationSourceScopesLimitOutcome", outcome);
-}
-
 bool BackgroundRegistrationsEnabled() {
   return base::FeatureList::IsEnabled(
              blink::features::kKeepAliveInBrowserMigration) ||
@@ -1088,7 +1069,6 @@ class AttributionDataHostManagerImpl::OsRegistrationsBuffer {
 
 struct AttributionDataHostManagerImpl::
     ScopesAndCountForReportingOriginPerNavigation {
-  int count = 0;
   attribution_reporting::AttributionScopesSet scopes;
 };
 
@@ -2254,30 +2234,20 @@ bool AttributionDataHostManagerImpl::AddNavigationSourceRegistrationToBatchMap(
 
   auto [it_inner, inserted_inner] = it->second.try_emplace(
       reporting_origin, ScopesAndCountForReportingOriginPerNavigation());
-  it_inner->second.count++;
 
   std::optional<base::Value::Dict> invalid_parameter;
 
   if (const auto& scopes_data = reg.attribution_scopes_data) {
     if (inserted_inner ||
         it_inner->second.scopes == scopes_data->attribution_scopes_set()) {
-      RecordNavigationSourceScopesLimitOutcome(
-          NavigationSourceScopesLimitOutcome::kScopesAllowed);
       if (inserted_inner) {
         it_inner->second.scopes = scopes_data->attribution_scopes_set();
       }
     } else {
       invalid_parameter = scopes_data->ToJson();
-      RecordNavigationSourceScopesLimitOutcome(
-          NavigationSourceScopesLimitOutcome::kScopesDropped);
     }
-  } else if (inserted_inner || it_inner->second.scopes.scopes().empty()) {
-    RecordNavigationSourceScopesLimitOutcome(
-        NavigationSourceScopesLimitOutcome::kNoScopesAllowed);
-  } else {
+  } else if (!(inserted_inner || it_inner->second.scopes.scopes().empty())) {
     invalid_parameter.emplace();
-    RecordNavigationSourceScopesLimitOutcome(
-        NavigationSourceScopesLimitOutcome::kNoScopesDropped);
   }
 
   if (invalid_parameter.has_value()) {
@@ -2294,18 +2264,7 @@ bool AttributionDataHostManagerImpl::AddNavigationSourceRegistrationToBatchMap(
 
 void AttributionDataHostManagerImpl::ClearRegistrationsForNavigationBatch(
     int64_t navigation_id) {
-  auto it =
-      registrations_count_and_set_scopes_per_navigation_.find(navigation_id);
-  if (it == registrations_count_and_set_scopes_per_navigation_.end()) {
-    return;
-  }
-
-  for (const auto& [_, object] : it->second) {
-    base::UmaHistogramExactLinear(
-        "Conversions.NavigationSourceRegistrationsPerReportingOriginPerBatch",
-        object.count, /*exclusive_max=*/50);
-  }
-  registrations_count_and_set_scopes_per_navigation_.erase(it);
+  registrations_count_and_set_scopes_per_navigation_.erase(navigation_id);
 }
 
 void AttributionDataHostManagerImpl::MaybeBindDeferredReceivers(

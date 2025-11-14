@@ -710,32 +710,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Conversions.NavigationSourceRegistrationsPerReportingOriginPerBatch"
-    units="registrations" expires_after="2025-10-26">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how many parsable navigation source registrations tied to a single
-    reporting origin were received in a single navigation event. Records
-    immediately after the source registration is successfully parsed.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.NavigationSourceScopesLimitOutcome"
-    enum="ConversionNavigationSourceScopesLimitOutcome"
-    expires_after="2025-11-09">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how many parsable navigation source registrations were accepted or
-    rejected due to navigation source scopes limit. Records immediately after
-    the source registration is successfully parsed.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.NavigationUnexpectedRegistration"
     enum="ConversionNavigationUnexpectedRegistration"
     expires_after="2026-03-01">
@@ -991,20 +965,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SchedulerReportDelay" units="ms"
-    expires_after="2025-03-02">
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the time difference from when the report was intended to be sent,
-    and the actual report time. This is different from
-    Conversions.ExtraReportDelay2 because it uses the send attempt report time,
-    rather than initial report time assigned by the API. Accounts for any delays
-    in Chrome scheduling the report. Recorded when an event-level report is to
-    be sent.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.ScopesPer{Type}Registration" units="scopes"
     expires_after="2026-04-26">
   <owner>tquintanilla@chromium.org</owner>
@@ -1141,40 +1101,6 @@ chromium-metrics-reviews@google.com.
     When the storage database is initialized upon the API's first use, records
     the file size of the database in KB. Only recorded if initialization is
     successful.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.Storage.Sql.FileSize2.PerSource" units="bytes"
-    expires_after="2025-10-26">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    When the storage database is initialized upon the API's first use, records
-    the file size of the database in bytes divided by the number of sources in
-    storage. Only recorded if initialization is successful.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2"
-    units="KB" expires_after="2025-10-26">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the file size of the storage database in KB when the max sources per
-    origin limit is reached. Emitted whenever a source fails to be stored due to
-    this limit.
-  </summary>
-</histogram>
-
-<histogram
-    name="Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2.PerSource"
-    units="bytes" expires_after="2025-10-26">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the file size of the storage database in bytes divided by the number
-    of sources in storage. Reported when the max sources per origin limit is
-    reached. Emitted whenever a source fails to be stored due to this limit.
   </summary>
 </histogram>
 

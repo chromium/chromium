@@ -344,11 +344,6 @@ class CONTENT_EXPORT AttributionStorageSql {
       const std::vector<blink::mojom::AggregatableReportHistogramContribution>&
           contributions);
 
-  int64_t StorageFileSizeKB();
-
-  // Returns the number of sources in storage.
-  std::optional<int64_t> NumberOfSources();
-
   // Deactivates the given sources. Returns false on error.
   [[nodiscard]] bool DeactivateSources(base::span<const StoredSource::Id>);
 

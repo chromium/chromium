@@ -67,8 +67,6 @@ inline constexpr const char kCountActiveSourcesFromSourceOriginSql[] =
     "AND(event_level_active=1 OR aggregatable_active=1)"
     "AND expiry_time>?";
 
-inline constexpr const char kCountSourcesSql[] = "SELECT COUNT(*)FROM sources";
-
 inline constexpr const char kDedupKeySql[] =
     "SELECT dedup_key,report_type FROM dedup_keys WHERE source_id=?";
 

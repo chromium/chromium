@@ -920,10 +920,6 @@ TEST_F(AttributionStorageSqlTest, DBinitializationSucceeds_HistogramsRecorded) {
                                   AttributionStorageSql::InitStatus::kSuccess,
                                   1);
     EXPECT_GT(histograms.GetTotalSum("Conversions.Storage.Sql.FileSize2"), 0);
-    // The per source histogram should not be recorded when there is no sources
-    // in the db.
-    histograms.ExpectTotalCount("Conversions.Storage.Sql.FileSize2.PerSource",
-                                0u);
   }
   {
     base::HistogramTester histograms;
@@ -941,9 +937,6 @@ TEST_F(AttributionStorageSqlTest, DBinitializationSucceeds_HistogramsRecorded) {
     int64_t file_size =
         histograms.GetTotalSum("Conversions.Storage.Sql.FileSize2");
     EXPECT_GT(file_size, 0);
-    int64_t file_size_per_source =
-        histograms.GetTotalSum("Conversions.Storage.Sql.FileSize2.PerSource");
-    EXPECT_EQ(file_size_per_source, file_size * 1024 / 2);
   }
 }
 
@@ -2649,8 +2642,6 @@ TEST_F(AttributionStorageSqlTest, MaxImpressionsPerOrigin_LimitsStorage) {
   OpenDatabase();
   delegate()->set_max_sources_per_origin(2);
 
-  base::HistogramTester histograms;
-
   ASSERT_EQ(storage()
                 ->StoreSource(SourceBuilder()
                                   .SetSourceEventId(3)
@@ -2692,15 +2683,6 @@ TEST_F(AttributionStorageSqlTest, MaxImpressionsPerOrigin_LimitsStorage) {
                                   .Build())
                 .status(),
             StorableSource::Result::kInsufficientSourceCapacity);
-
-  int64_t file_size = histograms.GetTotalSum(
-      "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2");
-  EXPECT_GT(file_size, 0);
-
-  int64_t file_size_per_source = histograms.GetTotalSum(
-      "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2."
-      "PerSource");
-  EXPECT_EQ(file_size_per_source, file_size * 1024 / 2);
 
   ASSERT_THAT(storage()->GetActiveSources(),
               ElementsAre(SourceEventIdIs(5u), SourceEventIdIs(6u)));

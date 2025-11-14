@@ -861,10 +861,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   // kProcessed = 3.
   histograms.ExpectBucketCount(kNavigationDataHostStatusHistogram, 3, 2);
-
-  histograms.ExpectBucketCount(
-      "Conversions.NavigationSourceRegistrationsPerReportingOriginPerBatch", 2,
-      1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -993,17 +989,10 @@ TEST_F(AttributionDataHostManagerImplTest,
       reporting_origin, std::move(source_data), kViaServiceWorker);
 
   data_host_remote.FlushForTesting();
-
-  EXPECT_THAT(histograms.GetAllSamples(
-                  "Conversions.NavigationSourceScopesLimitOutcome"),
-              UnorderedElementsAre(base::Bucket(0, 3), base::Bucket(2, 1),
-                                   base::Bucket(3, 2)));
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
        NavigationSourceUniqueScopesSet_WithScopes) {
-  base::HistogramTester histograms;
-
   const auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
   const auto reporting_url = GURL("https://report.test");
   const auto reporting_origin = *SuitableOrigin::Create(reporting_url);
@@ -1178,11 +1167,6 @@ TEST_F(AttributionDataHostManagerImplTest,
                                         kViaServiceWorker);
 
   data_host_remote.FlushForTesting();
-
-  EXPECT_THAT(histograms.GetAllSamples(
-                  "Conversions.NavigationSourceScopesLimitOutcome"),
-              UnorderedElementsAre(base::Bucket(0, 1), base::Bucket(1, 2),
-                                   base::Bucket(2, 4), base::Bucket(3, 2)));
 }
 
 // Ensures correct behavior in
@@ -4257,14 +4241,6 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
     // kTiedWithDelay=1, kNeverTiedIneligible=3
     if (navigation_eventually_starts) {
       histograms.ExpectBucketCount(kBackgroundNavigationOutcome, 1, 2);
-      // reporting_url1
-      histograms.ExpectBucketCount(
-          "Conversions.NavigationSourceRegistrationsPerReportingOriginPerBatch",
-          2, 1);
-      // reporting_url2
-      histograms.ExpectBucketCount(
-          "Conversions.NavigationSourceRegistrationsPerReportingOriginPerBatch",
-          1, 1);
     } else {
       histograms.ExpectBucketCount(kBackgroundNavigationOutcome, 3, 2);
     }
