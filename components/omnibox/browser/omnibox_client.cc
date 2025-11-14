@@ -120,3 +120,7 @@ gfx::Image OmniboxClient::GetFaviconForKeywordSearchProvider(
 bool OmniboxClient::IsHistoryEmbeddingsEnabled() const {
   return false;
 }
+
+bool OmniboxClient::IsAimPopupEnabled() const {
+  return false;
+}

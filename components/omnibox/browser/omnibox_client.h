@@ -325,6 +325,10 @@ class OmniboxClient {
   // the search result page effectively.
   virtual void MaybePrewarmForDefaultSearchEngine() {}
 
+  // Whether WebUi Omnibox's aim popup is enabled and the user is eligible to
+  // use it.
+  virtual bool IsAimPopupEnabled() const;
+
   virtual base::WeakPtr<OmniboxClient> AsWeakPtr() = 0;
 };
 

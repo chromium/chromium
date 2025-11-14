@@ -615,11 +615,12 @@ class LocationBarViewAddContextButtonBrowserTest
  public:
   LocationBarViewAddContextButtonBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{omnibox::kWebUIOmniboxAimPopup,
+        /*enabled_features=*/
+        {{omnibox::internal::kWebUIOmniboxAimPopup,
           {{omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
             "inline"}}},
          {omnibox::kWebUIOmniboxPopup, {}}},
-        {});
+        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled});
   }
   ~LocationBarViewAddContextButtonBrowserTest() override = default;
 

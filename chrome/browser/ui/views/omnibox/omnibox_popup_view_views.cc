@@ -702,7 +702,7 @@ gfx::Rect OmniboxPopupViewViews::GetTargetBounds() const {
 
   if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup) &&
       !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) &&
-      !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup) &&
+      !omnibox::IsAimPopupFeatureEnabled() &&
       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopupDebug) &&
       omnibox::kWebUIOmniboxPopupDebugSxSParam.Get()) {
     if (auto bounds = GetDebugWidgetBounds(location_bar_view_, popup_height)) {

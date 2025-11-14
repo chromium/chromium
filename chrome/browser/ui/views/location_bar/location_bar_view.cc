@@ -338,7 +338,7 @@ void LocationBarView::Init() {
   omnibox_view_ = AddChildView(std::move(omnibox_view));
   omnibox_view_->Init();
 
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup)) {
+  if (omnibox::IsAimPopupFeatureEnabled()) {
     omnibox_popup_aim_presenter_ = std::make_unique<OmniboxPopupAimPresenter>(
         this, omnibox_controller_.get());
   }
@@ -358,7 +358,7 @@ void LocationBarView::Init() {
         /*omnibox_view=*/omnibox_view_, omnibox_controller_.get(),
         /*location_bar_view=*/this);
   }
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup)) {
+  if (omnibox::IsAimPopupFeatureEnabled()) {
     omnibox_popup_file_selector_ = std::make_unique<OmniboxPopupFileSelector>();
   }
 
