@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_tab_picker_coordinator.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_consumer.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_mutator.h"
+#import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 
 @protocol ComposeboxURLLoader;
@@ -29,7 +30,8 @@ class WebStateList;
                 ComposeboxInputPlateMutator,
                 ComposeboxFileUploadObserver,
                 ComposeboxTabPickerSelectionDelegate,
-                LoadQueryCommands>
+                LoadQueryCommands,
+                TextFieldViewContainingHeightDelegate>
 
 @property(nonatomic, weak) id<ComposeboxInputPlateConsumer> consumer;
 @property(nonatomic, weak) id<ComposeboxURLLoader> URLLoader;

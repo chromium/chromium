@@ -31,6 +31,9 @@
 // Sets whether AI mode is enabled.
 - (void)setAIModeEnabled:(BOOL)AIModeEnabled;
 
+// Whether to present in compact (single line) mode.
+- (void)setIsCompactMode:(BOOL)isCompactMode;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_CONSUMER_H_

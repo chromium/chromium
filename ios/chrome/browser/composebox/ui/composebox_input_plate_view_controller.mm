@@ -47,9 +47,11 @@ const CGFloat kAIMButtonHeight = 36.0f;
 /// The width of the AIM mode button.
 const CGFloat kAIMButtonWidth = 94.0f;
 /// The spacing for the horizontal buttons stack view.
+const CGFloat kButtonsCompactSpacing = 4.0f;
 const CGFloat kButtonsStackViewSpacing = 6.0f;
 /// The spacing between the Lens and Voice buttons.
 const CGFloat kShortcutsSpacing = 24.0f;
+const CGFloat kShortcutsSpacingCompact = 16.0f;
 /// The spacing for the main vertical input plate stack view.
 const CGFloat kInputPlateStackViewSpacing = 10.0f;
 /// The vertical padding for the input plate stack view.
@@ -66,6 +68,8 @@ const CGFloat kAIMButtonSymbolPointSize = 12;
 const CGFloat kGenericButtonWidth = 24.0f;
 /// The height of the buttons created with `createButtonWithImage:`.
 const CGFloat kGenericButtonHeight = 32.0f;
+/// The dimension of the send button.
+const CGFloat kSendButtonDimension = 32.0f;
 
 /// The duration for the glow effect.
 const CGFloat kGlowEffectDuration = 1.0f;
@@ -76,45 +80,13 @@ const CGFloat kGlowEffectWidth = 40.0f;
 const CGFloat kFadeViewWidth = 30.0f;
 /// The duration for the AIM button animation.
 const CGFloat kAIMButtonAnimationDuration = 0.25f;
-/// The ammount of padding to add to the input plate.
-const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
 }  // namespace
 
-// Delegate respoonsible for computing the intrinsic content size.
-@protocol IntrinsicContentSizeViewDelegate <NSObject>
-
-// Called by the associated view to compute the intrinsic content size.
-- (CGSize)intrinsicContentSizeForView:(UIView*)view;
-
-@end
-
-// View that delegates the computation of its intrinsic content size.
-@interface IntrinsicContentSizeView : UIView
-
-// The delegate of this instance.
-@property(nonatomic, weak) id<IntrinsicContentSizeViewDelegate> delegate;
-
-@end
-
-@implementation IntrinsicContentSizeView : UIView
-
-- (CGSize)intrinsicContentSize {
-  if (self.delegate) {
-    return [self.delegate intrinsicContentSizeForView:self];
-  }
-
-  // Explicitly call the super implementation as it uses
-  // (UIViewNoIntrinsicMetric, UIViewNoIntrinsicMetric) for the default case.
-  return [super intrinsicContentSize];
-}
-
-@end
 
 @interface ComposeboxInputPlateViewController () <
     UITextViewDelegate,
     ComposeboxInputItemCellDelegate,
     UICollectionViewDelegate,
-    IntrinsicContentSizeViewDelegate,
     UICollectionViewDelegateFlowLayout>
 
 /// Whether the AI mode is enabled.
@@ -128,6 +100,9 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
 
 /// Edit view contained in `_omniboxContainer`.
 @property(nonatomic, strong) UIView<TextFieldViewContaining>* editView;
+
+/// Whether the UI is in compact (single line) mode.
+@property(nonatomic, assign) BOOL isCompactMode;
 
 @end
 
@@ -185,136 +160,36 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
   return self;
 }
 
-- (void)loadView {
-  IntrinsicContentSizeView* view = [[IntrinsicContentSizeView alloc] init];
-  view.delegate = self;
-  self.view = view;
-}
-
 - (void)viewDidLoad {
   [super viewDidLoad];
 
   // --- Bottom Input Area ---
 
   // Input plate container
-  _inputPlateContainerView = [[UIView alloc] init];
-  _inputPlateContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-  _inputPlateContainerView.backgroundColor = [self inputPlateBackgroundColor];
-  _inputPlateContainerView.layer.cornerRadius = kInputPlateCornerRadius;
-
-  [self updateDepthShadowAppearance];
-  [self.view addSubview:_inputPlateContainerView];
-
-  _glowEffectView = ios::provider::CreateGlowEffect(
-      CGRectZero, kInputPlateCornerRadius, kGlowEffectWidth);
-  if (_glowEffectView) {
-    _glowEffectView.translatesAutoresizingMaskIntoConstraints = NO;
-    _glowEffectView.userInteractionEnabled = NO;
-    [self.view insertSubview:_glowEffectView
-                belowSubview:_inputPlateContainerView];
-    AddSameConstraintsWithInset(_inputPlateContainerView, _glowEffectView,
-                                kGlowEffectWidth);
-  }
+  [self setupInputPlateContainerView];
+  AddSameConstraints(_inputPlateContainerView, self.view);
 
   _omniboxContainer.translatesAutoresizingMaskIntoConstraints = NO;
 
   _micButton = [self createMicrophoneButton];
   _lensButton = [self createLensButton];
+  _plusButton = [self createPlusButton];
+  _sendButton = [self createSendButton];
+  [self updatePlusButtonItems];
+  [self setupCarouselContainer];
 
-  // Carousel view
-  UICollectionViewFlowLayout* layout =
-      [[UICollectionViewFlowLayout alloc] init];
-  layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-  layout.minimumLineSpacing = kCarouselItemSpacing;
-  _carouselView = [[UICollectionView alloc] initWithFrame:CGRectZero
-                                     collectionViewLayout:layout];
-  _carouselView.translatesAutoresizingMaskIntoConstraints = NO;
-  _carouselView.backgroundColor = UIColor.clearColor;
-  [_carouselView registerClass:[ComposeboxInputItemCell class]
-      forCellWithReuseIdentifier:kItemCellReuseIdentifier];
-  _dataSource = [self createDataSource];
-  _carouselView.dataSource = _dataSource;
-  _carouselView.delegate = self;
-  [_carouselView.heightAnchor constraintEqualToConstant:kCarouselHeight]
-      .active = YES;
-  _carouselView.showsHorizontalScrollIndicator = NO;
-
-  // Carousel container and fade view.
-  _carouselContainer = [[UIView alloc] init];
-  _carouselContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  [_carouselContainer addSubview:_carouselView];
-  _carouselContainer.hidden = YES;
-  AddSameConstraints(_carouselContainer, _carouselView);
-
-  _trailingCarouselFadeView = [[UIView alloc] init];
-  _trailingCarouselFadeView.translatesAutoresizingMaskIntoConstraints = NO;
-  _trailingCarouselFadeView.userInteractionEnabled = NO;
-  _trailingCarouselFadeView.hidden = YES;
-  [_carouselContainer addSubview:_trailingCarouselFadeView];
-
-  _leadingCarouselFadeView = [[UIView alloc] init];
-  _leadingCarouselFadeView.translatesAutoresizingMaskIntoConstraints = NO;
-  _leadingCarouselFadeView.userInteractionEnabled = NO;
-  _leadingCarouselFadeView.hidden = YES;
-  [_carouselContainer addSubview:_leadingCarouselFadeView];
-
-  [_trailingCarouselFadeView.layer
-      insertSublayer:[self createGradientLayerForLeading:NO]
-             atIndex:0];
-  [_leadingCarouselFadeView.layer
-      insertSublayer:[self createGradientLayerForLeading:YES]
-             atIndex:0];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [_trailingCarouselFadeView.trailingAnchor
-        constraintEqualToAnchor:_carouselContainer.trailingAnchor],
-    [_trailingCarouselFadeView.topAnchor
-        constraintEqualToAnchor:_carouselContainer.topAnchor],
-    [_trailingCarouselFadeView.bottomAnchor
-        constraintEqualToAnchor:_carouselContainer.bottomAnchor],
-    [_trailingCarouselFadeView.widthAnchor
-        constraintEqualToConstant:kFadeViewWidth],
-
-    [_leadingCarouselFadeView.leadingAnchor
-        constraintEqualToAnchor:_carouselContainer.leadingAnchor],
-    [_leadingCarouselFadeView.topAnchor
-        constraintEqualToAnchor:_carouselContainer.topAnchor],
-    [_leadingCarouselFadeView.bottomAnchor
-        constraintEqualToAnchor:_carouselContainer.bottomAnchor],
-    [_leadingCarouselFadeView.widthAnchor
-        constraintEqualToConstant:kFadeViewWidth],
-  ]];
-
-  // Toolbar view
-  UIView* toolbarView = [self createToolbarView];
-
-  // Main vertical stack view
-  _inputPlateStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-    _carouselContainer, _omniboxContainer, toolbarView
-  ]];
+  _inputPlateStackView =
+      [[UIStackView alloc] initWithArrangedSubviews:@[ _omniboxContainer ]];
   _inputPlateStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  _inputPlateStackView.axis = UILayoutConstraintAxisVertical;
-  _inputPlateStackView.spacing = kInputPlateStackViewSpacing;
   [_inputPlateContainerView addSubview:_inputPlateStackView];
+  AddSameConstraintsWithInsets(
+      _inputPlateStackView, _inputPlateContainerView,
+      NSDirectionalEdgeInsetsMake(kInputPlateStackViewVerticalPadding,
+                                  kInputPlateStackViewLeadingPadding,
+                                  kInputPlateStackViewVerticalPadding,
+                                  kInputPlateStackViewTrailingPadding));
 
-  AddSameConstraints(_inputPlateContainerView, self.view);
-
-  // Layout.
-  [NSLayoutConstraint activateConstraints:@[
-    // Main Stack View in Plate.
-    [_inputPlateStackView.topAnchor
-        constraintEqualToAnchor:_inputPlateContainerView.topAnchor
-                       constant:kInputPlateStackViewVerticalPadding],
-    [_inputPlateStackView.bottomAnchor
-        constraintEqualToAnchor:_inputPlateContainerView.bottomAnchor
-                       constant:-kInputPlateStackViewVerticalPadding],
-    [_inputPlateStackView.leadingAnchor
-        constraintEqualToAnchor:_inputPlateContainerView.leadingAnchor
-                       constant:kInputPlateStackViewLeadingPadding],
-    [_inputPlateStackView.trailingAnchor
-        constraintEqualToAnchor:_inputPlateContainerView.trailingAnchor
-                       constant:-kInputPlateStackViewTrailingPadding],
-  ]];
+  [self updateInputPlateStackView];
 
   [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                      withAction:@selector(userInterfaceStyleChanged)];
@@ -343,30 +218,6 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
   AddSameConstraints(_editView, _omniboxContainer);
 }
 
-#pragma mark - IntrinsicContentSizeViewDelegate
-
-- (CGSize)intrinsicContentSizeForView:(UIView*)view {
-  // The total intrinsic height of the view is determined by the cumulative
-  // intrinsic height of all constituent layers of the input plate.
-  CGFloat omniboxContainerIntrinsicHeight =
-      _editView.intrinsicContentSize.height;
-  CGFloat carouselHeight = _carouselContainer.hidden ? 0 : kCarouselHeight;
-  CGFloat buttonRowHeight = kAIMButtonHeight;
-
-  CGFloat visibleItemsCount = 0;
-  for (UIView* arrangedSubview in _inputPlateStackView.arrangedSubviews) {
-    if (arrangedSubview.hidden == NO) {
-      visibleItemsCount++;
-    }
-  }
-  CGFloat spacing = kInputPlateStackViewSpacing * (visibleItemsCount + 1);
-
-  CGFloat intrinsicHeight = omniboxContainerIntrinsicHeight + carouselHeight +
-                            buttonRowHeight + spacing +
-                            kInstrinsicHeightExtraPadding;
-  return CGSizeMake(UIViewNoIntrinsicMetric, intrinsicHeight);
-}
-
 #pragma mark - ComposeboxInputItemCellDelegate
 
 - (void)composeboxInputItemCellDidTapCloseButton:
@@ -393,10 +244,6 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
                   completion:^{
                     [weakSelf updateInputPlateLayout];
                   }];
-
-  [self.view invalidateIntrinsicContentSize];
-  [self.view.superview setNeedsLayout];
-  [self.view.superview layoutIfNeeded];
 }
 
 - (void)setCanAttachCurrentTab:(BOOL)canAttachCurrentTab {
@@ -437,6 +284,19 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
 
 - (void)hideSendButton:(BOOL)hidden {
   _sendButton.hidden = hidden;
+}
+
+- (void)setIsCompactMode:(BOOL)isCompactMode {
+  if (_isCompactMode == isCompactMode) {
+    return;
+  }
+  _isCompactMode = isCompactMode;
+
+  if (!self.viewLoaded) {
+    return;
+  }
+
+  [self updateInputPlateStackView];
 }
 
 #pragma mark - Actions
@@ -767,7 +627,8 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
   [sendButton addTarget:self
                  action:@selector(sendButtonTapped)
        forControlEvents:UIControlEventTouchUpInside];
-
+  AddSizeConstraints(sendButton,
+                     CGSizeMake(kSendButtonDimension, kSendButtonDimension));
   return sendButton;
 }
 
@@ -799,11 +660,6 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
 }
 
 - (UIView*)createToolbarView {
-  // Action buttons
-  _plusButton = [self createPlusButton];
-  [self updatePlusButtonItems];
-  _sendButton = [self createSendButton];
-
   _aimButton = [UIButton buttonWithType:UIButtonTypeSystem];
   _aimButton.translatesAutoresizingMaskIntoConstraints = NO;
   [_aimButton addTarget:self
@@ -830,7 +686,7 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
   [buttonsStackView setCustomSpacing:kShortcutsSpacing afterView:_micButton];
   buttonsStackView.axis = UILayoutConstraintAxisHorizontal;
   buttonsStackView.spacing = kButtonsStackViewSpacing;
-  buttonsStackView.alignment = UIStackViewAlignmentBottom;
+  buttonsStackView.alignment = UIStackViewAlignmentFill;
 
   return buttonsStackView;
 }
@@ -904,6 +760,122 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
   }
 
   _plusButton.menu = [UIMenu menuWithTitle:@"" children:menuItems];
+}
+
+- (void)setupCarouselContainer {
+  // Carousel view
+  UICollectionViewFlowLayout* layout =
+      [[UICollectionViewFlowLayout alloc] init];
+  layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+  layout.minimumLineSpacing = kCarouselItemSpacing;
+  _carouselView = [[UICollectionView alloc] initWithFrame:CGRectZero
+                                     collectionViewLayout:layout];
+  _carouselView.translatesAutoresizingMaskIntoConstraints = NO;
+  _carouselView.backgroundColor = UIColor.clearColor;
+  [_carouselView registerClass:[ComposeboxInputItemCell class]
+      forCellWithReuseIdentifier:kItemCellReuseIdentifier];
+  _dataSource = [self createDataSource];
+  _carouselView.dataSource = _dataSource;
+  _carouselView.delegate = self;
+  [_carouselView.heightAnchor constraintEqualToConstant:kCarouselHeight]
+      .active = YES;
+  _carouselView.showsHorizontalScrollIndicator = NO;
+
+  _carouselContainer = [[UIView alloc] init];
+  _carouselContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  [_carouselContainer addSubview:_carouselView];
+  _carouselContainer.hidden = YES;
+  AddSameConstraints(_carouselContainer, _carouselView);
+
+  _trailingCarouselFadeView = [[UIView alloc] init];
+  _trailingCarouselFadeView.translatesAutoresizingMaskIntoConstraints = NO;
+  _trailingCarouselFadeView.userInteractionEnabled = NO;
+  _trailingCarouselFadeView.hidden = YES;
+  [_carouselContainer addSubview:_trailingCarouselFadeView];
+
+  _leadingCarouselFadeView = [[UIView alloc] init];
+  _leadingCarouselFadeView.translatesAutoresizingMaskIntoConstraints = NO;
+  _leadingCarouselFadeView.userInteractionEnabled = NO;
+  _leadingCarouselFadeView.hidden = YES;
+  [_carouselContainer addSubview:_leadingCarouselFadeView];
+
+  [_trailingCarouselFadeView.layer
+      insertSublayer:[self createGradientLayerForLeading:NO]
+             atIndex:0];
+  [_leadingCarouselFadeView.layer
+      insertSublayer:[self createGradientLayerForLeading:YES]
+             atIndex:0];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_trailingCarouselFadeView.trailingAnchor
+        constraintEqualToAnchor:_carouselContainer.trailingAnchor],
+    [_trailingCarouselFadeView.topAnchor
+        constraintEqualToAnchor:_carouselContainer.topAnchor],
+    [_trailingCarouselFadeView.bottomAnchor
+        constraintEqualToAnchor:_carouselContainer.bottomAnchor],
+    [_trailingCarouselFadeView.widthAnchor
+        constraintEqualToConstant:kFadeViewWidth],
+
+    [_leadingCarouselFadeView.leadingAnchor
+        constraintEqualToAnchor:_carouselContainer.leadingAnchor],
+    [_leadingCarouselFadeView.topAnchor
+        constraintEqualToAnchor:_carouselContainer.topAnchor],
+    [_leadingCarouselFadeView.bottomAnchor
+        constraintEqualToAnchor:_carouselContainer.bottomAnchor],
+    [_leadingCarouselFadeView.widthAnchor
+        constraintEqualToConstant:kFadeViewWidth],
+  ]];
+}
+
+- (void)setupInputPlateContainerView {
+  _inputPlateContainerView = [[UIView alloc] init];
+  _inputPlateContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  _inputPlateContainerView.backgroundColor = [self inputPlateBackgroundColor];
+  _inputPlateContainerView.layer.cornerRadius = kInputPlateCornerRadius;
+
+  [self updateDepthShadowAppearance];
+  [self.view addSubview:_inputPlateContainerView];
+
+  _glowEffectView = ios::provider::CreateGlowEffect(
+      CGRectZero, kInputPlateCornerRadius, kGlowEffectWidth);
+  if (_glowEffectView) {
+    _glowEffectView.translatesAutoresizingMaskIntoConstraints = NO;
+    _glowEffectView.userInteractionEnabled = NO;
+    [self.view insertSubview:_glowEffectView
+                belowSubview:_inputPlateContainerView];
+    AddSameConstraintsWithInset(_inputPlateContainerView, _glowEffectView,
+                                kGlowEffectWidth);
+  }
+}
+
+- (void)updateInputPlateStackView {
+  for (UIView* arrangedSubview in _inputPlateStackView.arrangedSubviews) {
+    if (arrangedSubview != _omniboxContainer) {
+      [_inputPlateStackView removeArrangedSubview:arrangedSubview];
+      [arrangedSubview removeFromSuperview];
+    }
+  }
+
+  if (self.isCompactMode) {
+    [_inputPlateStackView insertArrangedSubview:_plusButton atIndex:0];
+    [_inputPlateStackView addArrangedSubview:_micButton];
+    [_inputPlateStackView addArrangedSubview:_lensButton];
+
+    _inputPlateStackView.axis = UILayoutConstraintAxisHorizontal;
+    _inputPlateStackView.spacing = 0;
+    [_inputPlateStackView setCustomSpacing:kButtonsCompactSpacing
+                                 afterView:_plusButton];
+    [_inputPlateStackView setCustomSpacing:kShortcutsSpacingCompact
+                                 afterView:_micButton];
+  } else {
+    UIView* toolbarView = [self createToolbarView];
+    [_inputPlateStackView insertArrangedSubview:_carouselContainer atIndex:0];
+    [_inputPlateStackView addArrangedSubview:toolbarView];
+    _inputPlateStackView.axis = UILayoutConstraintAxisVertical;
+    _inputPlateStackView.spacing = kInputPlateStackViewSpacing;
+  }
+
+  [_editView hideLeadingImage:self.isCompactMode];
 }
 
 @end

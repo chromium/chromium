@@ -176,6 +176,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   [_viewController
       addChildViewController:_omniboxCoordinator.managedViewController];
   [_viewController setEditView:_omniboxCoordinator.editView];
+  _omniboxCoordinator.editView.heightDelegate = _mediator;
   [_omniboxCoordinator.managedViewController
       didMoveToParentViewController:_viewController];
 

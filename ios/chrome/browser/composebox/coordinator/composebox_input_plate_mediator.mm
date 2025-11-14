@@ -154,6 +154,9 @@ CreateInputDataFromAnnotatedPageContent(
   // Check that the different methods are called from the correct sequence, as
   // this class defers work via PostTask APIs.
   SEQUENCE_CHECKER(_sequenceChecker);
+
+  // Whether the textfield is multiline or not.
+  BOOL _isMultiline;
 }
 
 - (instancetype)
@@ -320,6 +323,7 @@ CreateInputDataFromAnnotatedPageContent(
     [_items removeAllObjects];
     [self.consumer setItems:_items];
   }
+  [self updateCompactModeIfNeeded];
 }
 
 #pragma mark - ComposeboxTabPickerSelectionDelegate
@@ -835,6 +839,21 @@ CreateInputDataFromAnnotatedPageContent(
   if (_items.count > 0) {
     [self.consumer setAIModeEnabled:YES];
   }
+}
+
+- (void)updateCompactModeIfNeeded {
+  BOOL compactModeAllowed = IsComposeboxCompactModeEnabled();
+  BOOL requiresExpansion = _isMultiline || _AIModeEnabled;
+  BOOL isCompactMode = !requiresExpansion && compactModeAllowed;
+  [self.consumer setIsCompactMode:isCompactMode];
+}
+
+#pragma mark - TextFieldViewContainingHeightDelegate
+
+- (void)textFieldViewContaining:(UIView<TextFieldViewContaining>*)sender
+                didChangeHeight:(CGFloat)height {
+  _isMultiline = sender.numberOfLines > 1;
+  [self updateCompactModeIfNeeded];
 }
 
 @end

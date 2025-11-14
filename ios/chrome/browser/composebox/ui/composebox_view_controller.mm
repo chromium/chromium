@@ -12,7 +12,8 @@
 
 namespace {
 /// The padding for the close button.
-const CGFloat kCloseButtonPadding = 16.0f;
+const CGFloat kCloseButtonDefaultPadding = 16.0f;
+const CGFloat kCloseButtonTopAlignedPadding = 22.0f;
 /// The horizontal and bottom padding for the input plate container.
 const CGFloat kInputPlatePadding = 10.0f;
 /// The size for the close button.
@@ -37,6 +38,8 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   __weak ComposeboxInputPlateViewController* _inputViewController;
   // The preferred position of the input plate.
   ComposeboxInputPlatePosition _preferredInputPlatePosition;
+
+  NSLayoutConstraint* _closeButtonConstraint;
 }
 
 - (instancetype)initWithPreferredInputPlatePosition:
@@ -122,11 +125,9 @@ const CGFloat kCloseButtonAlpha = 0.6f;
 
   // Close button.
   [_constraintsForCurrentPosition addObjectsFromArray:@[
-    [_closeButton.topAnchor constraintEqualToAnchor:safeAreaGuide.topAnchor
-                                           constant:kCloseButtonPadding],
     [_closeButton.trailingAnchor
         constraintEqualToAnchor:safeAreaGuide.trailingAnchor
-                       constant:-kCloseButtonPadding],
+                       constant:-kCloseButtonDefaultPadding],
     [_closeButton.heightAnchor constraintEqualToConstant:kCloseButtonSize],
     [_closeButton.widthAnchor
         constraintEqualToAnchor:_closeButton.heightAnchor],
@@ -142,6 +143,9 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   switch ([self currentInputPlatePosition]) {
     case ComposeboxInputPlatePosition::kBottom:
       [_constraintsForCurrentPosition addObjectsFromArray:@[
+        [_closeButton.topAnchor
+            constraintEqualToAnchor:safeAreaGuide.topAnchor
+                           constant:kCloseButtonDefaultPadding],
         [_omniboxPopupContainer.topAnchor
             constraintEqualToAnchor:_closeButton.bottomAnchor],
         [_omniboxPopupContainer.bottomAnchor
@@ -159,6 +163,9 @@ const CGFloat kCloseButtonAlpha = 0.6f;
       break;
     case ComposeboxInputPlatePosition::kTop:
       [_constraintsForCurrentPosition addObjectsFromArray:@[
+        [_closeButton.topAnchor
+            constraintEqualToAnchor:safeAreaGuide.topAnchor
+                           constant:kCloseButtonTopAlignedPadding],
         [_omniboxPopupContainer.topAnchor
             constraintEqualToAnchor:_inputViewController.view.bottomAnchor],
         [_omniboxPopupContainer.leadingAnchor

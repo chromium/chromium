@@ -26,6 +26,10 @@
 @property(nonatomic, weak) id<TextFieldViewContainingHeightDelegate>
     heightDelegate;
 
+@property(nonatomic, readonly) NSUInteger numberOfLines;
+
+- (void)hideLeadingImage:(BOOL)hideLeadingImage;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_TEXT_FIELD_VIEW_CONTAINING_H_
