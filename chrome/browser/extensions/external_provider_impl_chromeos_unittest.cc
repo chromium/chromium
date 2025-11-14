@@ -305,12 +305,18 @@ TEST_F(ExternalProviderImplChromeOSTest, PriorityCompleted) {
   EXPECT_TRUE(registry()->GetInstalledExtension(kStandaloneAppId));
 }
 
+// The tests below runs with a set up that does not well mirror the production
+// behavior, especially around User and Profile handling. The gap unfortunately
+// causes production behavior, so temporarily disabled.
+// TODO(crbug.com/460295399): Re-enable these tests with fixing the test base
+// fixture.
+
 // Validate the external providers enabled in the Chrome App Kiosk session. The
 // expected number should be 3.
 // - |policy_provider|.
 // - |kiosk_app_provider|.
 // - |secondary_kiosk_app_provider|.
-TEST_F(ExternalProviderImplChromeOSTest, ChromeAppKiosk) {
+TEST_F(ExternalProviderImplChromeOSTest, DISABLED_ChromeAppKiosk) {
   const AccountId kiosk_account_id(AccountId::FromUserEmail(kTestUserAccount));
   fake_user_manager()->AddKioskChromeAppUser(kiosk_account_id);
   fake_user_manager()->LoginUser(kiosk_account_id);
@@ -321,7 +327,7 @@ TEST_F(ExternalProviderImplChromeOSTest, ChromeAppKiosk) {
 // Validate the external providers enabled in the Web App Kiosk session. The
 // expected number should be only 1.
 // - |policy_provider|.
-TEST_F(ExternalProviderImplChromeOSTest, WebAppKiosk) {
+TEST_F(ExternalProviderImplChromeOSTest, DISABLED_WebAppKiosk) {
   const AccountId kiosk_account_id(AccountId::FromUserEmail(kTestUserAccount));
   fake_user_manager()->AddKioskWebAppUser(kiosk_account_id);
   fake_user_manager()->LoginUser(kiosk_account_id);
