@@ -195,14 +195,17 @@ class BASE_EXPORT StatisticsRecorder {
   static std::string ToJSON(JSONVerbosityLevel verbosity_level);
 
   // Gets existing histograms. |include_persistent| determines whether
-  // histograms held in persistent storage are included.
+  // histograms held in persistent storage are included. Histograms with flags
+  // that intersect with |exclude_flags| are excluded.
   //
   // The order of returned histograms is not guaranteed.
   //
   // Ownership of the individual histograms remains with the StatisticsRecorder.
   //
   // This method is thread safe.
-  static Histograms GetHistograms(bool include_persistent = true)
+  static Histograms GetHistograms(
+      bool include_persistent = true,
+      int32_t exclude_flags = HistogramBase::Flags::kNoFlags)
       LOCKS_EXCLUDED(GetLock());
 
   // Gets BucketRanges used by all histograms registered. The order of returned

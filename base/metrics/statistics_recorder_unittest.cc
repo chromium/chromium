@@ -975,4 +975,60 @@ TEST_P(StatisticsRecorderTest, RecordHistogramChecker) {
   EXPECT_FALSE(StatisticsRecorder::ShouldRecordHistogram(2));
 }
 
+TEST_P(StatisticsRecorderTest, GetHistogramsExcludeFlags) {
+  std::vector<Histogram*> histograms = {
+      CreateHistogram("TestHistogram1", 1, 1000, 10),
+      CreateHistogram("TestHistogram2", 1, 1000, 10),
+      CreateHistogram("TestHistogram3", 1, 1000, 10),
+      CreateHistogram("TestHistogram4", 1, 1000, 10),
+      CreateHistogram("TestHistogram5", 1, 1000, 10),
+  };
+
+  // Set up histograms with different sets of flags.
+  histograms[0]->SetFlags(HistogramBase::Flags::kNoFlags);
+  histograms[1]->SetFlags(HistogramBase::Flags::kUmaTargetedHistogramFlag);
+  histograms[2]->SetFlags(HistogramBase::Flags::kUmaStabilityHistogramFlag);
+  histograms[3]->SetFlags(HistogramBase::Flags::kIPCSerializationSourceFlag);
+  histograms[4]->SetFlags(HistogramBase::Flags::kIPCSerializationSourceFlag |
+                          HistogramBase::Flags::kUmaTargetedHistogramFlag);
+
+  // Register histograms.
+  for (Histogram* histogram : histograms) {
+    EXPECT_EQ(histogram,
+              StatisticsRecorder::RegisterOrDeleteDuplicate(histogram));
+  }
+
+  EXPECT_EQ(StatisticsRecorder::GetHistograms().size(), 5);
+
+  EXPECT_THAT(
+      StatisticsRecorder::GetHistograms(true, HistogramBase::Flags::kNoFlags),
+      UnorderedElementsAre(  //
+          histograms[0], histograms[1], histograms[2], histograms[3],
+          histograms[4]));
+
+  EXPECT_THAT(StatisticsRecorder::GetHistograms(
+                  true, HistogramBase::Flags::kUmaTargetedHistogramFlag),
+              UnorderedElementsAre(histograms[0], histograms[3]));
+
+  EXPECT_THAT(StatisticsRecorder::GetHistograms(
+                  true, HistogramBase::Flags::kUmaStabilityHistogramFlag),
+              UnorderedElementsAre(histograms[0], histograms[3]));
+
+  EXPECT_THAT(
+      StatisticsRecorder::GetHistograms(
+          true, HistogramBase::Flags::kIPCSerializationSourceFlag),
+      UnorderedElementsAre(histograms[0], histograms[1], histograms[2]));
+
+  EXPECT_THAT(StatisticsRecorder::GetHistograms(
+                  true, HistogramBase::Flags::kCallbackExists),
+              UnorderedElementsAre(  //
+                  histograms[0], histograms[1], histograms[2], histograms[3],
+                  histograms[4]));
+
+  EXPECT_THAT(StatisticsRecorder::GetHistograms(
+                  true, HistogramBase::Flags::kUmaTargetedHistogramFlag |
+                            HistogramBase::Flags::kIPCSerializationSourceFlag),
+              UnorderedElementsAre(histograms[0]));
+}
+
 }  // namespace base

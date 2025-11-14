@@ -534,7 +534,8 @@ bool StatisticsRecorder::ShouldRecordHistogram(uint32_t histogram_hash) {
 
 // static
 StatisticsRecorder::Histograms StatisticsRecorder::GetHistograms(
-    bool include_persistent) {
+    bool include_persistent,
+    int32_t exclude_flags) {
   // This must be called *before* the lock is acquired below because it will
   // call back into this object to register histograms. Those called methods
   // will acquire the lock at that time.
@@ -558,6 +559,12 @@ StatisticsRecorder::Histograms StatisticsRecorder::GetHistograms(
     if (!include_persistent && is_persistent) {
       continue;
     }
+
+    if (exclude_flags & entry.second->flags()) {
+      // Skip the histogram if any flag from exclude_flags is set.
+      continue;
+    }
+
     out.push_back(entry.second);
   }
 
