@@ -145,6 +145,14 @@ bool IsSystemCursorSizeSupported() {
   return base::FeatureList::IsEnabled(kSystemCursorSizeSupported);
 }
 
+// When enabled, uses a WinEvent hook to track system cursor visibility
+// changes. This is only available on Windows.
+BASE_FEATURE(kUseCursorEventHook, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool ShouldUseCursorEventHook() {
+  return base::FeatureList::IsEnabled(kUseCursorEventHook);
+}
+
 // Allows system keyboard event capture via the keyboard lock API.
 BASE_FEATURE(kSystemKeyboardLock, base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -42,8 +42,9 @@ class VIEWS_EXPORT DesktopNativeCursorManager : public wm::NativeCursorManager {
   // Removes |host| from the set |hosts_|.
   void RemoveHost(aura::WindowTreeHost* host);
 
-  // Initialize the observer that will report system cursor size.
-  virtual void InitCursorSizeObserver(
+  // Initialize the observer that will report system cursor size and visibility
+  // state.
+  virtual void InitSystemCursorObservers(
       wm::NativeCursorManagerDelegate* delegate);
 
  private:

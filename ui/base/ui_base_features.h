@@ -87,6 +87,9 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kSystemCursorSizeSupported);
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsSystemCursorSizeSupported();
 
+BASE_DECLARE_FEATURE(kUseCursorEventHook);
+COMPONENT_EXPORT(UI_BASE_FEATURES) bool ShouldUseCursorEventHook();
+
 // Used to enable keyboard accessible tooltips in in-page content
 // (i.e., inside Blink). See
 // ::views::features::kKeyboardAccessibleTooltipInViews for
