@@ -34,6 +34,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/device_form_factor.h"
 
 using autofill::FormActivityParams;
 
@@ -167,8 +168,16 @@ TEST_F(FormInputAccessoryMediatorTest, Init) {
   EXPECT_TRUE(mediator_);
 }
 
-// Tests consumer and handler are reset when a field is a picker.
+// Tests consumer and handler are reset when a field is a picker on iPad.
 TEST_F(FormInputAccessoryMediatorTest, PickerReset) {
+  // On iPhone, a default input view with navigation buttons is shown for a
+  // picker instead of resetting. Therefore, the test should be skipped if the
+  // device is not an iPad.
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    GTEST_SKIP() << "Skipping FormInputAccessoryMediatorTest.PickerReset: The "
+                    "test is for iPad.";
+  }
+
   FormActivityParams params =
       CreateFormActivityParams(/*field_type=*/"select-one");
 
@@ -176,6 +185,25 @@ TEST_F(FormInputAccessoryMediatorTest, PickerReset) {
   test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
                                                         params);
   [handler_ verify];
+}
+
+// Tests consumer is set to show navigation buttons when a field is a picker on
+// iPhone
+TEST_F(FormInputAccessoryMediatorTest, PickerDoesNotReset) {
+  // Showing navigation buttons is enabled on iPhone, not on iPad.
+  // This test should be skipped if it is not running on an iPhone.
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
+    GTEST_SKIP() << "Skipping FormInputAccessoryMediatorTest.PickerReset: The "
+                    "test is for iPhone.";
+  }
+
+  FormActivityParams params =
+      CreateFormActivityParams(/*field_type=*/"select-one");
+
+  OCMExpect([consumer_ showNavigationButtons]);
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
+                                                        params);
+  [consumer_ verify];
 }
 
 // Tests consumer and handler are not reset when a field is text.

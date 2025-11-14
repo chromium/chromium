@@ -643,7 +643,7 @@ bool IsLiquidGlassEffectEnabled() {
 }
 
 BASE_FEATURE(kIOSKeyboardAccessoryDefaultView,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsIOSKeyboardAccessoryDefaultViewEnabled() {
   return base::FeatureList::IsEnabled(kIOSKeyboardAccessoryDefaultView);
