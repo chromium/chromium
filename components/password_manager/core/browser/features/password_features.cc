@@ -18,7 +18,7 @@ BASE_FEATURE(kActorLoginFillingHeuristics, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginLocalClassificationModel,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginReauthTaskRefocus, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kActorLoginQualityLogs, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kActorLoginQualityLogs, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginSameSiteIframeSupport,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableActorLoginPermissions, base::FEATURE_ENABLED_BY_DEFAULT);

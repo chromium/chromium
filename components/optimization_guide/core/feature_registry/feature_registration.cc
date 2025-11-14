@@ -52,7 +52,7 @@ const char kNotificationContentDetectionEnterprisePolicyAllowed[] =
 }  // namespace prefs
 
 namespace features {
-BASE_FEATURE(kActorLoginMqlsLogging, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kActorLoginMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kComposeMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
