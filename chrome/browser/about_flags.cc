@@ -9390,14 +9390,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableManagedConfigurationWebApiDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(blink::features::kManagedConfiguration)},
 
-    {"clear-cross-site-cross-browsing-context-group-window-name",
-     flag_descriptions::kClearCrossSiteCrossBrowsingContextGroupWindowNameName,
-     flag_descriptions::
-         kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         features::kClearCrossSiteCrossBrowsingContextGroupWindowName)},
-
 #if BUILDFLAG(IS_CHROMEOS)
     {kWallpaperFastRefreshInternalName,
      flag_descriptions::kWallpaperFastRefreshName,

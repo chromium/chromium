@@ -10676,8 +10676,6 @@ from previous Chrome versions.
   <int value="-1230443048"
       label="AndroidWebAppHeaderForStandaloneMode:enabled"/>
   <int value="-1229882308" label="DesktopPWAsTabStripCustomizations:disabled"/>
-  <int value="-1229114522"
-      label="ClearCrossSiteCrossBrowsingContextGroupWindowName:disabled"/>
   <int value="-1228782289" label="EventPath:disabled"/>
   <int value="-1228546373"
       label="UseLookalikesForNavigationSuggestions:enabled"/>
@@ -16008,8 +16006,6 @@ from previous Chrome versions.
       label="AdaptiveButtonInTopToolbarCustomizationV2:disabled"/>
   <int value="659086147" label="OverlayScrollbarFlashWhenMouseEnter:enabled"/>
   <int value="659775785" label="(Obsolete) disable-simplified-fullscreen-ui"/>
-  <int value="659871291"
-      label="ClearCrossSiteCrossBrowsingContextGroupWindowName:enabled"/>
   <int value="660018273"
       label="Prerender2EarlyDocumentLifecycleUpdate:enabled"/>
   <int value="661020875" label="AutofillSaveCardShowNoThanks:disabled"/>

@@ -1782,11 +1782,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "clear-cross-site-cross-browsing-context-group-window-name",
-    "owners": [ "ladan@chromium.org", "miketaylr@chromium.org" ],
-    "expiry_milestone": 141
-  },
-  {
     "name": "clear-instance-info-when-closed-intentionally",
     "owners": [
       "desiatyrikov@google.com",

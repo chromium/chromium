@@ -1200,15 +1200,6 @@ inline constexpr char kGetDisplayMediaConfersActivationDescription[] =
     "flag is enabled, then after the user chooses what to share, transient "
     "activation is conferred on the Web application.";
 
-inline constexpr char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[] =
-    "Clear window name in top-level cross-site cross-browsing-context-group "
-    "navigation";
-inline constexpr char
-    kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[] =
-        "Clear the preserved window.name property when it's a top-level "
-        "cross-site "
-        "navigation that swaps BrowsingContextGroup.";
-
 inline constexpr char kDevicePostureName[] = "Device Posture API";
 inline constexpr char kDevicePostureDescription[] =
     "Enables Device Posture API (foldable devices)";
