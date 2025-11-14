@@ -587,6 +587,9 @@ const base::FeatureParam<int> kAimSuggestionsCount{
 const base::FeatureParam<bool> kEnableAimTypeaheadSuggestions{
     &kLensAimSuggestions, "enable-typeahead-suggestions", false};
 
+const base::FeatureParam<bool> kClearVsintWhenNoRegionSelection{
+    &kLensAimSuggestions, "clear-vsint-when-no-region-selection", true};
+
 constexpr base::FeatureParam<base::TimeDelta> kLensAimSuggestionTimeout{
     &kLensAimSuggestions, "lens-aim-suggestion-timeout",
     base::Milliseconds(10000)};
@@ -1103,6 +1106,10 @@ base::TimeDelta GetLensAimSuggestionTimeout() {
 
 bool IsLensAimTypeAheadSuggestionsEnabled() {
   return GetAimSuggestionsEnabled() && kEnableAimTypeaheadSuggestions.Get();
+}
+
+bool ClearVsintWhenNoRegionSelection() {
+  return GetAimSuggestionsEnabled() && kClearVsintWhenNoRegionSelection.Get();
 }
 
 bool ShouldCloseOverlayOnAimTransition() {
