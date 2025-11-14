@@ -74,6 +74,7 @@ namespace {
 
 using ::autofill::test::LazyRef;
 using ::autofill::test::SaveArgPtr;
+using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
@@ -87,7 +88,6 @@ using ::testing::Pointwise;
 using ::testing::Property;
 using ::testing::SaveArg;
 using ::testing::SizeIs;
-using ::testing::WithArg;
 
 MATCHER(EqualsFillData, "") {
   FormFieldData lhs_field = std::get<0>(arg);
@@ -886,13 +886,9 @@ TEST_F(ContentAutofillDriverWithMultiFrameCreditCardForm,
 
 TEST_F(ContentAutofillDriverTest, GetFourDigitCombinationsFromDom_NoMatches) {
   base::RunLoop run_loop;
-  auto cb =
-      [](base::OnceCallback<void(const std::vector<std::string>&)> callback) {
-        std::vector<std::string> matches;
-        std::move(callback).Run(matches);
-      };
+  std::vector<std::string> empty_matches;
   EXPECT_CALL(agent(), GetPotentialLastFourCombinationsForStandaloneCvc)
-      .WillOnce(WithArg<0>(cb));
+      .WillOnce(RunOnceCallback<0>(empty_matches));
 
   std::vector<std::string> matches = {"dummy data"};
   driver().browser_events().GetFourDigitCombinationsFromDom(
@@ -901,27 +897,23 @@ TEST_F(ContentAutofillDriverTest, GetFourDigitCombinationsFromDom_NoMatches) {
         run_loop.Quit();
       }));
   run_loop.Run();
-  EXPECT_TRUE(matches.empty());
+  EXPECT_THAT(matches, IsEmpty());
 }
 
 TEST_F(ContentAutofillDriverTest,
        GetFourDigitCombinationsFromDom_SuccessfulMatches) {
   base::RunLoop run_loop;
-  auto cb =
-      [](base::OnceCallback<void(const std::vector<std::string>&)> callback) {
-        std::vector<std::string> matches = {"1234"};
-        std::move(callback).Run(matches);
-      };
+  std::vector<std::string> expected_matches = {"1234"};
   EXPECT_CALL(agent(), GetPotentialLastFourCombinationsForStandaloneCvc)
-      .WillOnce(WithArg<0>(cb));
-  std::vector<std::string> matches;
+      .WillOnce(RunOnceCallback<0>(expected_matches));
+  std::vector<std::string> actual_matches;
   driver().browser_events().GetFourDigitCombinationsFromDom(
       base::BindLambdaForTesting([&](const std::vector<std::string>& result) {
-        matches = result;
+        actual_matches = result;
         run_loop.Quit();
       }));
   run_loop.Run();
-  EXPECT_THAT(matches, ElementsAre("1234"));
+  EXPECT_EQ(expected_matches, actual_matches);
 }
 
 // Tests that calls from the renderer with trigger source
