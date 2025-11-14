@@ -133,7 +133,7 @@ class OmniboxPopupViewViews::PopupWidget final : public ThemeCopyingWidget {
 
   void SetPopupContentsView(OmniboxPopupViewViews* contents) {
     SetContentsView(std::make_unique<RoundedOmniboxResultsFrame>(
-        contents, contents->location_bar_view_));
+        contents, contents->location_bar_view_, /*forward_mouse_events=*/true));
   }
 
   void SetTargetBounds(const gfx::Rect& bounds) {

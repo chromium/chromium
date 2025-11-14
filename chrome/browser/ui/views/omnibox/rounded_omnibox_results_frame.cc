@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_aim_popup_webui_content.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -227,8 +228,9 @@ DEFINE_VIEW_BUILDER(/* no export */, TopBackgroundView)
 
 RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
     views::View* contents,
-    LocationBarView* location_bar)
-    : contents_(contents) {
+    LocationBarView* location_bar,
+    bool forward_mouse_events)
+    : contents_(contents), forward_mouse_events_(forward_mouse_events) {
   const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::ShapeContextTokens::kOmniboxExpandedRadius);
   // Host the contents in its own View to simplify layout and customization.
@@ -351,13 +353,24 @@ void RoundedOmniboxResultsFrame::Layout(PassKey) {
   contents_->SetBoundsRect(results_bounds);
 }
 
-void RoundedOmniboxResultsFrame::AddedToWidget() {
+void RoundedOmniboxResultsFrame::VisibilityChanged(View* starting_from,
+                                                   bool is_visible) {
+  views::View::VisibilityChanged(starting_from, is_visible);
 #if defined(USE_AURA)
-  // Use a ui::EventTargeter that allows mouse and touch events in the top
-  // portion of the Widget to pass through to the omnibox beneath it.
-  auto results_targeter = std::make_unique<aura::WindowTargeter>();
-  results_targeter->SetInsets(GetContentInsets());
-  GetWidget()->GetNativeWindow()->SetEventTargeter(std::move(results_targeter));
+  if (!forward_mouse_events_) {
+    return;
+  }
+
+  if (is_visible) {
+    // Use a ui::EventTargeter that allows mouse and touch events in the top
+    // portion of the Widget to pass through to the omnibox beneath it.
+    auto results_targeter = std::make_unique<aura::WindowTargeter>();
+    results_targeter->SetInsets(GetContentInsets());
+    GetWidget()->GetNativeWindow()->SetEventTargeter(
+        std::move(results_targeter));
+  } else {
+    GetWidget()->GetNativeWindow()->SetEventTargeter(nullptr);
+  }
 #endif  // USE_AURA
 }
 
