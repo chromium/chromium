@@ -137,6 +137,34 @@ chromium-metrics-reviews@google.com.
   <token key="WebNNOrtActions" variants="WebNNOrtActions"/>
 </histogram>
 
+<histogram name="WebNN.ORT.WinAppRuntimeInstallState"
+    enum="WinAppRuntimeInstallStateUma" expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    This histogram records the installation state during installation of the
+    Windows App Runtime package at browser startup. The state reflects whether
+    the installation completed, failed, or encountered other relevant
+    conditions.
+  </summary>
+</histogram>
+
+<histogram name="WebNN.ORT.{PackageDependencyAction}.ErrorResult"
+    enum="Hresult" expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    This histogram records the HRESULT of {PackageDependencyAction}. This action
+    occurs during installation of the Windows App Runtime package at browser
+    startup, or when initializing the WebNN ORT backend.
+  </summary>
+  <token key="PackageDependencyAction">
+    <variant name="AddPackageDependency"/>
+    <variant name="DeletePackageDependency"/>
+    <variant name="TryCreatePackageDependency"/>
+  </token>
+</histogram>
+
 <histogram name="WebNN.ORT.{WebNNOrtExecutionProvider}.Status"
     enum="ExecutionProviderStatusUma" expires_after="2026-06-27">
   <owner>reillyg@chromium.org</owner>

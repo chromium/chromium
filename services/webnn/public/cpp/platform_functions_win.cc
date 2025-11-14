@@ -8,6 +8,7 @@
 #include <wrl.h>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/scoped_generic.h"
 #include "base/strings/string_util_win.h"
 #include "services/webnn/public/cpp/win_app_runtime_package_info.h"
@@ -130,6 +131,7 @@ base::FilePath PlatformFunctionsWin::AddPackageDependency(
       AddPackageDependencyOptions_PrependIfRankCollision, &context,
       ScopedWcharType::Receiver(package_full_name).get());
   if (FAILED(hr)) {
+    base::UmaHistogramSparse("WebNN.ORT.AddPackageDependency.ErrorResult", hr);
     LOG(WARNING) << "[WebNN] AddPackageDependency failed for dependency ID: "
                  << dependency_id
                  << " . Error: " << logging::SystemErrorCodeToString(hr);
@@ -142,6 +144,8 @@ bool PlatformFunctionsWin::DeletePackageDependency(
     base::wcstring_view dependency_id) {
   HRESULT hr = delete_package_dependency_proc_(dependency_id.c_str());
   if (FAILED(hr)) {
+    base::UmaHistogramSparse("WebNN.ORT.DeletePackageDependency.ErrorResult",
+                             hr);
     LOG(WARNING) << "[WebNN] DeletePackageDependency failed for dependency ID: "
                  << dependency_id
                  << " . Error: " << logging::SystemErrorCodeToString(hr);
@@ -162,6 +166,8 @@ std::wstring PlatformFunctionsWin::TryCreatePackageDependency(
       lifetime_artifact, CreatePackageDependencyOptions_None,
       ScopedWcharType::Receiver(package_dependency_id).get());
   if (FAILED(hr)) {
+    base::UmaHistogramSparse("WebNN.ORT.TryCreatePackageDependency.ErrorResult",
+                             hr);
     LOG(WARNING) << "[WebNN] TryCreatePackageDependency failed for package: "
                  << package_family_name
                  << " . Error: " << logging::SystemErrorCodeToString(hr);

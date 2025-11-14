@@ -15,6 +15,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/concurrent_callbacks.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -47,6 +48,31 @@ using AppInstallItems =
 
 // The product ID of the Windows App Runtime package in Microsoft Store.
 constexpr std::wstring_view kWinAppRuntimeProductId = L"9NKRJ3SJ9SDG";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(WinAppRuntimeInstallStateUma)
+enum class WinAppRuntimeInstallStateUma {
+  kWindowsVersionTooOld = 0,
+  kActivationFailure = 1,
+  kCompleted = 2,
+  kError = 3,
+  kCanceled = 4,
+  kPaused = 5,
+  kPausedLowBattery = 6,
+  kPausedWiFiRecommended = 7,
+  kPausedWiFiRequired = 8,
+  kRuntimeAlreadyPresent = 9,
+  kInstallationFailedToStart = 10,
+
+  kMaxValue = kInstallationFailedToStart,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webnn/enums.xml:WinAppRuntimeInstallStateUma)
+
+void RecordInstallState(WinAppRuntimeInstallStateUma state) {
+  base::UmaHistogramEnumeration("WebNN.ORT.WinAppRuntimeInstallState", state);
+}
 
 // Creates a Windows App Runtime package dependency with the lifetime of the
 // user data directory.
@@ -97,6 +123,8 @@ void OnInstallationStarted(
   HRESULT hr = items->get_Size(&count);
   CHECK_EQ(hr, S_OK);
   if (count == 0) {
+    RecordInstallState(
+        WinAppRuntimeInstallStateUma::kInstallationFailedToStart);
     return;
   }
 
@@ -134,19 +162,49 @@ void OnInstallationStarted(
 
               switch (state) {
                 case abi_install::AppInstallState::AppInstallState_Completed: {
+                  RecordInstallState(WinAppRuntimeInstallStateUma::kCompleted);
                   item->remove_StatusChanged(*token);
                   if (!callback.is_null()) {
                     std::move(callback).Run(true);
                   }
                   break;
                 }
-                case abi_install::AppInstallState::AppInstallState_Error:
-                  [[fallthrough]];
-                case abi_install::AppInstallState::AppInstallState_Canceled: {
+                case abi_install::AppInstallState::AppInstallState_Error: {
+                  RecordInstallState(WinAppRuntimeInstallStateUma::kError);
                   item->remove_StatusChanged(*token);
                   if (!callback.is_null()) {
                     std::move(callback).Run(false);
                   }
+                  break;
+                }
+                case abi_install::AppInstallState::AppInstallState_Canceled: {
+                  RecordInstallState(WinAppRuntimeInstallStateUma::kCanceled);
+                  item->remove_StatusChanged(*token);
+                  if (!callback.is_null()) {
+                    std::move(callback).Run(false);
+                  }
+                  break;
+                }
+                case abi_install::AppInstallState::AppInstallState_Paused: {
+                  RecordInstallState(WinAppRuntimeInstallStateUma::kPaused);
+                  break;
+                }
+                case abi_install::AppInstallState::
+                    AppInstallState_PausedLowBattery: {
+                  RecordInstallState(
+                      WinAppRuntimeInstallStateUma::kPausedLowBattery);
+                  break;
+                }
+                case abi_install::AppInstallState::
+                    AppInstallState_PausedWiFiRecommended: {
+                  RecordInstallState(
+                      WinAppRuntimeInstallStateUma::kPausedWiFiRecommended);
+                  break;
+                }
+                case abi_install::AppInstallState::
+                    AppInstallState_PausedWiFiRequired: {
+                  RecordInstallState(
+                      WinAppRuntimeInstallStateUma::kPausedWiFiRequired);
                   break;
                 }
                 default:
@@ -174,6 +232,7 @@ void StartInstallation() {
           .get(),
       &app_install_manager);
   if (FAILED(hr)) {
+    RecordInstallState(WinAppRuntimeInstallStateUma::kActivationFailure);
     return;
   }
 
@@ -195,12 +254,22 @@ void StartInstallation() {
       /*repair=*/false, /*forceUseOfNonRemovableStorage=*/false,
       correlation_vector.get(), /*targetVolume=*/nullptr, &async_op);
   if (FAILED(hr)) {
+    RecordInstallState(
+        WinAppRuntimeInstallStateUma::kInstallationFailedToStart);
     return;
   }
 
-  base::win::PostAsyncHandlers(
+  hr = base::win::PostAsyncHandlers(
       async_op.Get(),
-      base::BindOnce(&OnInstallationStarted, std::move(app_install_manager)));
+      base::BindOnce(&OnInstallationStarted, std::move(app_install_manager)),
+      base::BindOnce([](HRESULT /*hr*/) {
+        RecordInstallState(
+            WinAppRuntimeInstallStateUma::kInstallationFailedToStart);
+      }));
+  if (FAILED(hr)) {
+    RecordInstallState(
+        WinAppRuntimeInstallStateUma::kInstallationFailedToStart);
+  }
 }
 
 // Ensures the Windows App Runtime package is installed and up to date.
@@ -208,6 +277,8 @@ void StartInstallation() {
 void EnsureInstallation() {
   auto* platform_functions = PlatformFunctionsWin::GetInstance();
   if (!platform_functions) {
+    RecordInstallState(
+        WinAppRuntimeInstallStateUma::kInstallationFailedToStart);
     return;
   }
 
@@ -224,6 +295,7 @@ void EnsureInstallation() {
         family_name == base::WideToUTF8(kWinAppRuntimePackageFamilyName) &&
         min_version == kWinAppRuntimePackageMinVersionString;
     if (package_up_to_date) {
+      RecordInstallState(WinAppRuntimeInstallStateUma::kRuntimeAlreadyPresent);
       return;
     }
 
@@ -236,6 +308,7 @@ void EnsureInstallation() {
   // the system.
   std::wstring new_dependency_id = TryCreateWinAppRuntimePackageDependency();
   if (!new_dependency_id.empty()) {
+    RecordInstallState(WinAppRuntimeInstallStateUma::kRuntimeAlreadyPresent);
     UpdatePrefs(new_dependency_id);
     return;
   }
@@ -246,11 +319,15 @@ void EnsureInstallation() {
 }  // namespace
 
 void SchedulePlatformRuntimeInstallationIfRequired() {
-  if (base::win::GetVersion() < base::win::Version::WIN11_24H2 ||
-      !base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(
           webnn::mojom::features::kWebMachineLearningNeuralNetwork) ||
       !base::FeatureList::IsEnabled(
           webnn::mojom::features::kWebNNOnnxRuntime)) {
+    return;
+  }
+
+  if (base::win::GetVersion() < base::win::Version::WIN11_24H2) {
+    RecordInstallState(WinAppRuntimeInstallStateUma::kWindowsVersionTooOld);
     return;
   }
 
