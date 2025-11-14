@@ -50,8 +50,10 @@ void OmniboxAimPopupWebUIContent::ShowUI() {
       if (!context) {
         context = std::make_unique<SearchboxContextData::Context>();
       }
-      context->text =
+      if (!controller()->edit_model()->CurrentTextIsURL()) {
+        context->text =
           base::UTF16ToUTF8(location_bar_view()->GetOmniboxView()->GetText());
+      }
       omnibox_popup_ui->popup_aim_handler()->OnShow(std::move(context));
     }
   }
