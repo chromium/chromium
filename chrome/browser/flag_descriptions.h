@@ -3420,7 +3420,8 @@ inline constexpr char kPasswordManualFallbackAvailableDescription[] =
 inline constexpr char kPdfXfaFormsName[] = "PDF XFA support";
 inline constexpr char kPdfXfaFormsDescription[] =
     "Enables support for XFA forms in PDFs. "
-    "Has no effect if Chrome was not built with XFA support.";
+    "Has no effect if Chrome was not built with XFA support, or if controlled "
+    "by an enterprise policy.";
 
 inline constexpr char kAutoWebContentsDarkModeName[] =
     "Auto Dark Mode for Web Contents";

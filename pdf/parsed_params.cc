@@ -43,7 +43,17 @@ std::optional<ParsedParams> ParseWebPluginParams(
       }
     } else if (params.attribute_names[i] == "javascript") {
       if (params.attribute_values[i] != "allow") {
+        // Can safely override both the default and `kJavaScriptAndXFA` if
+        // JavaScript isn't allowed.
         result.script_option = PDFiumFormFiller::ScriptOption::kNoJavaScript;
+      }
+    } else if (params.attribute_names[i] == "allow-xfa-forms") {
+      // Only override to allow XFA forms if JavaScript is allowed. If it isn't,
+      // enabling XFA forms doesn't have effect.
+      if (result.script_option !=
+          PDFiumFormFiller::ScriptOption::kNoJavaScript) {
+        result.script_option =
+            PDFiumFormFiller::ScriptOption::kJavaScriptAndXFA;
       }
     } else if (params.attribute_names[i] == "use-skia") {
       result.use_skia = true;
