@@ -7402,6 +7402,7 @@ interface PerformanceContainerTiming : PerformanceEntry
     getter identifier
     getter intersectionRect
     getter lastPaintedElement
+    getter rootElement
     getter size
     method constructor
     method toJSON

@@ -135,6 +135,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void AddContainerTiming(const DOMPaintTimingInfo& paint_timing_info,
                           const gfx::Rect& rect,
                           uint64_t size,
+                          Element* root_element,
                           const AtomicString& identifier,
                           Element* last_painted_element,
                           const DOMPaintTimingInfo& first_paint_timing_info);

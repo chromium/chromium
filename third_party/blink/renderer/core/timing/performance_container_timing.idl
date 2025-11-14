@@ -8,6 +8,7 @@
 ] interface PerformanceContainerTiming : PerformanceEntry {
     readonly attribute DOMRectReadOnly intersectionRect;
     readonly attribute double size;
+    readonly attribute Element? rootElement;
     readonly attribute DOMString identifier;
     readonly attribute Element? lastPaintedElement;
     readonly attribute DOMHighResTimeStamp firstRenderTime;

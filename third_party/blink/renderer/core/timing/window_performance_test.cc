@@ -1732,7 +1732,7 @@ TEST_P(WindowPerformanceTest, ContainerTimingTraceEvent) {
   trace_analyzer::Start("*");
   performance_->AddContainerTiming(
       DOMPaintTimingInfo{.paint_time = 2000, .presentation_time = 2000},
-      gfx::Rect(10, 20, 30, 40), 1200, AtomicString("identifier"),
+      gfx::Rect(10, 20, 30, 40), 1200, nullptr, AtomicString("identifier"),
       /*element*/ nullptr,
       DOMPaintTimingInfo{.paint_time = 1000, .presentation_time = 1000});
   auto analyzer = trace_analyzer::Stop();

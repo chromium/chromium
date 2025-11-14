@@ -124,13 +124,14 @@ void ContainerTiming::Record::MaybeUpdateLastNewPaintedArea(
 }
 
 void ContainerTiming::Record::MaybeEmitPerformanceEntry(
-    WindowPerformance* performance) {
+    WindowPerformance* performance,
+    Element* container_root) {
   if (!has_pending_changes_) {
     return;
   }
   performance->AddContainerTiming(
       last_new_painted_area_paint_timing_info_, painted_region_.bounds(),
-      GetRegionSize(painted_region_), identifier_,
+      GetRegionSize(painted_region_), container_root, identifier_,
       last_new_painted_area_element_, first_paint_timing_info_);
   has_pending_changes_ = false;
 }
@@ -219,7 +220,7 @@ void ContainerTiming::EmitPerformanceEntries() {
     Record* record = pair.value;
 
     if (can_report) {
-      record->MaybeEmitPerformanceEntry(performance_.Get());
+      record->MaybeEmitPerformanceEntry(performance_.Get(), pair.key.Get());
     }
   }
 }
