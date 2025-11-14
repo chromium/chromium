@@ -21,6 +21,8 @@
 
 namespace glic {
 
+constexpr int kActorNudgeLabelMargin = 6;
+
 GlicActorTaskIcon::GlicActorTaskIcon(TabStripController* tab_strip_controller,
                                      PressedCallback pressed_callback)
     : TabStripNudgeButton(
@@ -36,6 +38,15 @@ GlicActorTaskIcon::GlicActorTaskIcon(TabStripController* tab_strip_controller,
           /*show_close_button=*/false),
       tab_strip_controller_(tab_strip_controller) {
   SetProperty(views::kElementIdentifierKey, kGlicActorTaskIconElementId);
+
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
+    // Explicitly overwrite the horizontal margins. The underlying
+    // TabStripNudgeButton calculates defaults that account for a close button,
+    // which is not present here.
+    label()->SetProperty(views::kMarginsKey,
+                         gfx::Insets().set_left_right(kActorNudgeLabelMargin,
+                                                      kActorNudgeLabelMargin));
+  }
 
   SetTaskIconToDefault();
   UpdateColors();
