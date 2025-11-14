@@ -1535,6 +1535,16 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Ai.OptIn.PrefMigration."
+    enum="AutofillAiPrefMigrationStatus" expires_after="2026-12-12">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the Autofill AI syncable pref migration result, which depends on the
+    its initial value and the account keyed pref. Emitted during startup.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Ai.OptIn.Status" enum="AutofillAiOptInStatus"
     expires_after="2026-12-12">
   <owner>jihadghanna@google.com</owner>

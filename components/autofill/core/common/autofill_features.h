@@ -89,6 +89,8 @@ BASE_DECLARE_FEATURE_PARAM(bool, kAutofillAiServerModelSendPageUrl);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE_PARAM(bool, kAutofillAiServerModelUseCacheResults);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillAiSetSyncablePrefFromAccountPref);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAiVoteForFormatStringsForAffixes);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAiVoteForFormatStringsForFlightNumbers);

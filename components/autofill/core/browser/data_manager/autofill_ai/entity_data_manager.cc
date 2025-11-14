@@ -15,6 +15,8 @@
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
@@ -55,12 +57,45 @@ EntityDataManager::EntityDataManager(
         std::make_unique<AutofillAiSaveStrikeDatabaseByHost>(strike_database);
   }
 
+  const bool user_is_opted_in =
+      GetAutofillAiOptInStatus(pref_service, identity_manager);
+  // Initial Autofill AI users have their opt-in pref stored keyed by their
+  // gaia-id and not syncable. On the other hand, the new Autofill AI opt-in
+  // pref (`prefs::kAutofillAiSyncedOptInStatus`) is a regular syncable pref.
+  // The following code block migrates users who opted-in to the old pref to the
+  // new syncable pref. For the time being, it does not remove the old pref to
+  // allow rollbacks.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAiSetSyncablePrefFromAccountPref)) {
+    const PrefService::Preference* synced_pref =
+        pref_service->FindPreference(prefs::kAutofillAiSyncedOptInStatus);
+    CHECK(synced_pref);
+    if (HasSetLocalAutofillAiOptInStatus(pref_service, identity_manager)) {
+      if (!synced_pref->HasUserSetting()) {
+        pref_service->SetBoolean(prefs::kAutofillAiSyncedOptInStatus,
+                                 user_is_opted_in);
+        base::UmaHistogramEnumeration(
+            "Autofill.Ai.OptIn.PrefMigration",
+            user_is_opted_in
+                ? AutofillAiPrefMigrationStatus::kPrefMigratedEnabled
+                : AutofillAiPrefMigrationStatus::kPrefMigratedDisabled);
+      } else {
+        base::UmaHistogramEnumeration(
+            "Autofill.Ai.OptIn.PrefMigration",
+            AutofillAiPrefMigrationStatus::kPrefNotMigratedAlreadySet);
+      }
+    } else {
+      base::UmaHistogramEnumeration(
+          "Autofill.Ai.OptIn.PrefMigration",
+          AutofillAiPrefMigrationStatus::kPrefNotMigratedAccountPrefNeverSet);
+    }
+  }
+
   // This assumes that `EntityDataManager` is created once on profile creation.
-  base::UmaHistogramEnumeration(
-      "Autofill.Ai.OptIn.Status.Startup",
-      GetAutofillAiOptInStatus(pref_service, identity_manager)
-          ? AutofillAiOptInStatus::kOptedIn
-          : AutofillAiOptInStatus::kOptedOut);
+  base::UmaHistogramEnumeration("Autofill.Ai.OptIn.Status.Startup",
+                                user_is_opted_in
+                                    ? AutofillAiOptInStatus::kOptedIn
+                                    : AutofillAiOptInStatus::kOptedOut);
 }
 
 EntityDataManager::~EntityDataManager() {

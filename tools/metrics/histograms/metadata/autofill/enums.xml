@@ -215,6 +215,17 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h:AutofillAiOptInStatus) -->
 
+<!-- LINT.IfChange(AutofillAiPrefMigrationStatus) -->
+
+<enum name="AutofillAiPrefMigrationStatus">
+  <int value="0" label="Pref migrated (set to true)"/>
+  <int value="1" label="Pref migrated (set to false)"/>
+  <int value="2" label="Pref already set"/>
+  <int value="3" label="Pref not migrated (account keyed pref never set)"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h:AutofillAiPrefMigrationStatus) -->
+
 <enum name="AutofillAlternativeNameFieldValueCharacterSet">
   <int value="0" label="Katakana"/>
   <int value="1" label="Hiragana"/>

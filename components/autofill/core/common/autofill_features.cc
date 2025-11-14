@@ -281,6 +281,12 @@ BASE_FEATURE_PARAM(bool,
                    "autofill_ai_model_use_cache_results",
                    false);
 
+// If enabled the current account keyed Autofill AI opt-in pref
+// (`prefs::kAutofillAiOptInStatus`) is migrated to to the syncable
+// `kAutofillAiOptInStatus` pref.
+BASE_FEATURE(kAutofillAiSetSyncablePrefFromAccountPref,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, votes for prefix and suffix lengths of identification number
 // fields are uploaded. For example, if there's a passport with number CX1235987
 // on file, <input type=text value=CX12> uploads a format string "4".
