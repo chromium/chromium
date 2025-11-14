@@ -1352,6 +1352,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     public void onPictureInPictureUiStateChanged(PictureInPictureUiState pipState) {
+        super.onPictureInPictureUiStateChanged(pipState);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return;
         if (isActivityFinishingOrDestroyed()) return;
         ensureFullscreenVideoPictureInPictureController().onStashReported(pipState.isStashed());
