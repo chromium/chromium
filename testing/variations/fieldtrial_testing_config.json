@@ -14241,21 +14241,6 @@
             ]
         }
     ],
-    "IdentityInAuthError": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableIdentityInAuthError"
-                    ]
-                }
-            ]
-        }
-    ],
     "IgnoreDiscardAttemptMarker": [
         {
             "platforms": [
