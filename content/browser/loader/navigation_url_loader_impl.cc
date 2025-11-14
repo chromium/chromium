@@ -1509,8 +1509,10 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
   if (!head->intercepted_by_plugin && !must_download && !known_mime_type) {
     // No plugin throttles intercepted the response. Ask if the plugin
     // registered to PluginService wants to handle the request.
-    CheckPluginAndCallOnReceiveResponse(std::move(head),
-                                        std::move(url_loader_client_endpoints));
+    CheckPluginAndContinueOnReceiveResponse(
+        std::move(head), std::move(url_loader_client_endpoints),
+        /*is_download_if_not_handled_by_plugin=*/true,
+        std::vector<WebPluginInfo>());
     return;
   }
 #endif
@@ -1524,20 +1526,28 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-void NavigationURLLoaderImpl::CheckPluginAndCallOnReceiveResponse(
+void NavigationURLLoaderImpl::CheckPluginAndContinueOnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
-    network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints) {
-  // Refresh the plugins.
-  PluginService::GetInstance()->GetPlugins();
-
+    network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
+    bool is_download_if_not_handled_by_plugin,
+    const std::vector<WebPluginInfo>& plugins) {
   bool stale;
-  WebPluginInfo unused_info;
+  WebPluginInfo plugin;
   bool has_plugin = PluginService::GetInstance()->GetPluginInfo(
       browser_context_, resource_request_->url, head->mime_type, &stale,
-      &unused_info, nullptr);
-  CHECK(!stale);
+      &plugin, nullptr);
 
-  bool is_download = !has_plugin;
+  if (stale) {
+    // Refresh the plugins asynchronously.
+    PluginService::GetInstance()->GetPluginsAsync(base::BindOnce(
+        &NavigationURLLoaderImpl::CheckPluginAndContinueOnReceiveResponse,
+        weak_factory_.GetWeakPtr(), std::move(head),
+        std::move(url_loader_client_endpoints),
+        is_download_if_not_handled_by_plugin));
+    return;
+  }
+
+  bool is_download = !has_plugin && is_download_if_not_handled_by_plugin;
   CallOnReceivedResponse(std::move(head),
                          std::move(url_loader_client_endpoints), is_download);
 }
