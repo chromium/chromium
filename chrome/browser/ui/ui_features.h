@@ -338,10 +338,13 @@ BASE_DECLARE_FEATURE(kThreeButtonPasswordSaveDialog);
 // of the browser.
 BASE_DECLARE_FEATURE(kToolbarHeightSidePanel);
 
+// TODO(crbug.com/460764864): Cleanup all the enterprise badging feature flags.
 BASE_DECLARE_FEATURE(kEnterpriseProfileBadgingForMenu);
 BASE_DECLARE_FEATURE(kEnterpriseBadgingForNtpFooter);
 BASE_DECLARE_FEATURE(kEnterpriseBadgingForLocalManagemenetNtpFooter);
+BASE_DECLARE_FEATURE(kEnterpriseBadgingForNtpFooterWithOverThreePolicies);
 BASE_DECLARE_FEATURE(kNTPFooterBadgingPolicies);
+
 BASE_DECLARE_FEATURE(kEnterpriseManagementDisclaimerUsesCustomLabel);
 BASE_DECLARE_FEATURE(kManagedProfileRequiredInterstitial);
 

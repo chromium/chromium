@@ -18,6 +18,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -34,6 +35,7 @@
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/image_fetcher/core/image_fetcher_types.h"
 #include "components/image_fetcher/core/request_metadata.h"
+#include "components/policy/core/common/policy_namespace.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -447,14 +449,30 @@ BrowserManagementNoticeState GetManagementNoticeStateForNTPFooter(
     return BrowserManagementNoticeState::kEnabledByPolicy;
   }
 
-  if (management_service->GetManagementAuthorityTrustworthiness() <=
-          policy::ManagementAuthorityTrustworthiness::LOW &&
-      !base::FeatureList::IsEnabled(
-          features::kEnterpriseBadgingForLocalManagemenetNtpFooter)) {
-    return BrowserManagementNoticeState::kNotApplicable;
-  }
+  size_t policies_count = g_browser_process->browser_policy_connector()
+                              ->GetPolicyService()
+                              ->GetPolicies(policy::PolicyNamespace(
+                                  policy::POLICY_DOMAIN_CHROME, std::string()))
+                              .size();
+  const bool is_low_trust =
+      management_service->GetManagementAuthorityTrustworthiness() <=
+      policy::ManagementAuthorityTrustworthiness::LOW;
 
-  if (base::FeatureList::IsEnabled(features::kEnterpriseBadgingForNtpFooter)) {
+  const bool show_for_high_trust =
+      !is_low_trust &&
+      base::FeatureList::IsEnabled(features::kEnterpriseBadgingForNtpFooter);
+  const bool show_for_local_management =
+      is_low_trust &&
+      base::FeatureList::IsEnabled(
+          features::kEnterpriseBadgingForLocalManagemenetNtpFooter);
+  const bool show_for_three_or_more_policies_local_management =
+      is_low_trust &&
+      base::FeatureList::IsEnabled(
+          features::kEnterpriseBadgingForNtpFooterWithOverThreePolicies) &&
+      policies_count >= 3;
+
+  if (show_for_high_trust || show_for_local_management ||
+      show_for_three_or_more_policies_local_management) {
     return profile->GetPrefs()->GetBoolean(prefs::kNtpFooterVisible)
                ? BrowserManagementNoticeState::kEnabled
                : BrowserManagementNoticeState::kDisabled;
