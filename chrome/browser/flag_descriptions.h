@@ -1640,11 +1640,6 @@ inline constexpr char
     kApplyClientsideModelPredictionsForPasswordTypesDescription[] =
         "Enable using clientside model predictions to fill password forms.";
 
-inline constexpr char kApplyClientsideModelPredictionsForOtpsName[] =
-    "Apply clientside model predictions for OTPs.";
-inline constexpr char kApplyClientsideModelPredictionsForOtpsDescription[] =
-    "Enable using clientside model predictions to fill OTP forms.";
-
 inline constexpr char kNewMacNotificationAPIName[] =
     "Determines which notification API to use on macOS devices";
 inline constexpr char kNewMacNotificationAPIDescription[] =

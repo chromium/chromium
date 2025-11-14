@@ -12884,13 +12884,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(password_manager::features::
                             kApplyClientsideModelPredictionsForPasswordTypes)},
 
-    {"apply-clientside-model-predictions-for-otps",
-     flag_descriptions::kApplyClientsideModelPredictionsForOtpsName,
-     flag_descriptions::kApplyClientsideModelPredictionsForOtpsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kApplyClientsideModelPredictionsForOtps)},
-
     {"canvas-draw-element", flag_descriptions::kCanvasDrawElementName,
      flag_descriptions::kCanvasDrawElementDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kCanvasDrawElement)},

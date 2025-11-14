@@ -41,9 +41,6 @@ BASE_DECLARE_FEATURE(kAndroidSmsOtpFilling);
 // Enables using clientside form classifier predictions for password forms.
 BASE_DECLARE_FEATURE(kApplyClientsideModelPredictionsForPasswordTypes);
 
-// Enables using clientside form classifier predictions for OTP forms.
-BASE_DECLARE_FEATURE(kApplyClientsideModelPredictionsForOtps);
-
 // When enabled, updates to shared existing passwords from the same sender are
 // auto-approved.
 BASE_DECLARE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender);

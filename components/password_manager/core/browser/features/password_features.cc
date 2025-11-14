@@ -31,9 +31,6 @@ BASE_FEATURE(kAndroidSmsOtpFilling, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kApplyClientsideModelPredictionsForPasswordTypes,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kApplyClientsideModelPredictionsForOtps,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -32,9 +32,6 @@ extern const char kAppBackgroundRefreshDescription[];
 extern const char kAppleCalendarExperienceKitName[];
 extern const char kAppleCalendarExperienceKitDescription[];
 
-extern const char kApplyClientsideModelPredictionsForOtpsName[];
-extern const char kApplyClientsideModelPredictionsForOtpsDescription[];
-
 extern const char kApplyClientsideModelPredictionsForPasswordTypesName[];
 extern const char kApplyClientsideModelPredictionsForPasswordTypesDescription[];
 

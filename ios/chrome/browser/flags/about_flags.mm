@@ -2690,12 +2690,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::
                             kApplyClientsideModelPredictionsForPasswordTypes)},
-    {"apply-clientside-model-predictions-for-otps",
-     flag_descriptions::kApplyClientsideModelPredictionsForOtpsName,
-     flag_descriptions::kApplyClientsideModelPredictionsForOtpsDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kApplyClientsideModelPredictionsForOtps)},
     {"page-context-anchor-tags", flag_descriptions::kPageContextAnchorTagsName,
      flag_descriptions::kPageContextAnchorTagsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kPageContextAnchorTags)},

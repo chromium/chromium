@@ -30,11 +30,6 @@ const char kAppleCalendarExperienceKitDescription[] =
     "When enabled, long pressing on dates will trigger Experience Kit Apple "
     "Calendar event handling.";
 
-const char kApplyClientsideModelPredictionsForOtpsName[] =
-    "Apply clientside model predictions for OTPs.";
-const char kApplyClientsideModelPredictionsForOtpsDescription[] =
-    "Enable using clientside model predictions to fill OTP forms.";
-
 const char kApplyClientsideModelPredictionsForPasswordTypesName[] =
     "Apply clientside model predictions for password forms.";
 const char kApplyClientsideModelPredictionsForPasswordTypesDescription[] =
