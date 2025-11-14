@@ -218,6 +218,7 @@ if (is_android) {
       "//chrome/browser/tab:java",
       "//chrome/browser/ui/android/appmenu:java",
       "//chrome/browser/ui/android/appmenu/test:test_support_java",
+      "//chrome/browser/ui/android/multiwindow:java",
       "//chrome/test/android:chrome_java_integration_test_support",
       "//chrome/test/android:chrome_java_transit",
       "//chrome/test/android:pagecontroller_utils_java",
