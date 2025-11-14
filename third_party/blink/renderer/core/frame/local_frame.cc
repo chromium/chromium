@@ -539,7 +539,7 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(remote_object_gateway_impl_);
   visitor->Trace(text_suggestion_backend_impl_);
   Frame::Trace(visitor);
-  Supplementable::Trace(visitor);
+  visitor->Trace(dev_tools_frontend_impl_);
 }
 
 bool LocalFrame::IsLocalRoot() const {
@@ -820,11 +820,11 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
 
   probe::FrameDetachedFromParent(this, type);
 
-  std::fill(supplements_.begin(), supplements_.end(), nullptr);
   image_downloader_impl_ = nullptr;
   remote_object_gateway_factory_impl_ = nullptr;
   remote_object_gateway_impl_ = nullptr;
   text_suggestion_backend_impl_ = nullptr;
+  dev_tools_frontend_impl_ = nullptr;
 
   frame_scheduler_.reset();
   mojo_handler_->DidDetachFrame();
