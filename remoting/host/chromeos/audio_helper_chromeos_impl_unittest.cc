@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
@@ -36,6 +37,13 @@ namespace {
 
 constexpr int kSampleRate = 48000;
 constexpr int kFramesPerBuffer = kSampleRate / 100;
+
+constexpr char kAudioPlaybackModeHistogramName[] =
+    "Remoting.Host.ChromeOs.AudioStream.AudioPlaybackMode";
+constexpr char kAudioStreamOpenOutcomeHistogramName[] =
+    "Remoting.Host.ChromeOs.AudioStream.OpenOutcome";
+constexpr char kStartAudioStreamHistogramName[] =
+    "Remoting.Host.ChromeOs.AudioStream.StartResult";
 
 media::AudioParameters GetTestAudioParams() {
   return media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
@@ -179,6 +187,7 @@ class AudioHelperChromeOsImplTest : public testing::Test {
 };
 
 TEST_F(AudioHelperChromeOsImplTest, SuccessfulStartWithPackets) {
+  base::HistogramTester histogram_tester;
   // Simulate `audio_helper_chromeos_` being called on the `audio_runner_`.
   base::RunLoop start_loop;
   audio_runner_->PostTask(
@@ -192,6 +201,12 @@ TEST_F(AudioHelperChromeOsImplTest, SuccessfulStartWithPackets) {
       }));
   audio_runner_->PostTask(FROM_HERE, start_loop.QuitClosure());
   start_loop.Run();
+  histogram_tester.ExpectUniqueSample(kStartAudioStreamHistogramName,
+                                      AudioHelperStartStreamResult::kSuccess,
+                                      /* expected_bucket_count= */ 1);
+  histogram_tester.ExpectUniqueSample(kAudioStreamOpenOutcomeHistogramName,
+                                      OpenOutcomeChromeOs::kSuccess,
+                                      /* expected_bucket_count= */ 1);
 
   auto audio_bus = media::AudioBus::Create(GetTestAudioParams());
   audio_bus->Zero();
@@ -232,6 +247,7 @@ TEST_F(AudioHelperChromeOsImplTest, VerifyStreamParams) {
 }
 
 TEST_F(AudioHelperChromeOsImplTest, StartAudioStreamWithRemoteOnly) {
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   audio_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
                             audio_helper_chromeos_->StartAudioStream(
@@ -243,9 +259,13 @@ TEST_F(AudioHelperChromeOsImplTest, StartAudioStreamWithRemoteOnly) {
 
   EXPECT_EQ(media::AudioDeviceDescription::kLoopbackWithMuteDeviceId,
             audio_manager_->device_id());
+  histogram_tester.ExpectUniqueSample(kAudioPlaybackModeHistogramName,
+                                      AudioPlaybackMode::kRemoteOnly,
+                                      /* expected_bucket_count= */ 1);
 }
 
 TEST_F(AudioHelperChromeOsImplTest, StartAudioStreamWithRemoteAndLocal) {
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   audio_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
                             audio_helper_chromeos_->StartAudioStream(
@@ -257,9 +277,13 @@ TEST_F(AudioHelperChromeOsImplTest, StartAudioStreamWithRemoteAndLocal) {
 
   EXPECT_EQ(media::AudioDeviceDescription::kDefaultDeviceId,
             audio_manager_->device_id());
+  histogram_tester.ExpectUniqueSample(kAudioPlaybackModeHistogramName,
+                                      AudioPlaybackMode::kRemoteAndLocal,
+                                      /* expected_bucket_count= */ 1);
 }
 
 TEST_F(AudioHelperChromeOsImplTest, SuccessfulStartWithStreamFailure) {
+  base::HistogramTester histogram_tester;
   // Simulate `audio_helper_chromeos_` being called on the `audio_runner_`.
   base::RunLoop start_loop;
   audio_runner_->PostTask(
@@ -283,6 +307,7 @@ TEST_F(AudioHelperChromeOsImplTest, SuccessfulStartWithStreamFailure) {
 }
 
 TEST_F(AudioHelperChromeOsImplTest, FailedStartStreamNotCreated) {
+  base::HistogramTester histogram_tester;
   audio_manager_->SetFailStreamCreation(/* fail= */ true);
 
   // Simulate `audio_helper_chromeos_` being called on the `audio_runner_`.
@@ -301,9 +326,14 @@ TEST_F(AudioHelperChromeOsImplTest, FailedStartStreamNotCreated) {
 
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return on_error_called_count_ == 1; }));
+  histogram_tester.ExpectUniqueSample(
+      kStartAudioStreamHistogramName,
+      AudioHelperStartStreamResult::kFailedToCreateStream,
+      /* expected_bucket_count= */ 1);
 }
 
 TEST_F(AudioHelperChromeOsImplTest, FailedStartStreamNotOpened) {
+  base::HistogramTester histogram_tester;
   audio_manager_->SetFailStreamOpen(/* fail= */ true);
 
   // Simulate `audio_helper_chromeos_` being called on the `audio_runner_`.
@@ -323,6 +353,34 @@ TEST_F(AudioHelperChromeOsImplTest, FailedStartStreamNotOpened) {
 
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return on_error_called_count_ == 1; }));
+  histogram_tester.ExpectUniqueSample(
+      kStartAudioStreamHistogramName,
+      AudioHelperStartStreamResult::kFailedToOpenStream,
+      /* expected_bucket_count= */ 1);
+  histogram_tester.ExpectUniqueSample(kAudioStreamOpenOutcomeHistogramName,
+                                      OpenOutcomeChromeOs::kFailed,
+                                      /* expected_bucket_count= */ 1);
+}
+
+TEST_F(AudioHelperChromeOsImplTest, StreamAlreadyStarted) {
+  base::HistogramTester histogram_tester;
+  base::RunLoop start_loop;
+  audio_runner_->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        audio_helper_chromeos_->StartAudioStream(AudioPlaybackMode::kRemoteOnly,
+                                                 base::DoNothing(),
+                                                 base::DoNothing());
+        // Start stream again and expect the error response.
+        audio_helper_chromeos_->StartAudioStream(AudioPlaybackMode::kRemoteOnly,
+                                                 base::DoNothing(),
+                                                 base::DoNothing());
+        histogram_tester.ExpectBucketCount(
+            kStartAudioStreamHistogramName,
+            AudioHelperStartStreamResult::kStreamAlreadyStarted,
+            /* expected_count= */ 1);
+      }));
+  audio_runner_->PostTask(FROM_HERE, start_loop.QuitClosure());
+  start_loop.Run();
 }
 
 }  // namespace remoting

@@ -13,9 +13,11 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "media/audio/audio_device_description.h"
+#include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
@@ -31,6 +33,36 @@ namespace {
 // 48000 samples per second / 100 = 480 samples per 10ms.
 constexpr int kSampleRate = 48000;
 constexpr int kFramesPerBuffer = kSampleRate / 100;
+
+constexpr char kAudioPlaybackModeHistogramName[] =
+    "Remoting.Host.ChromeOs.AudioStream.AudioPlaybackMode";
+constexpr char kAudioStreamOpenOutcomeHistogramName[] =
+    "Remoting.Host.ChromeOs.AudioStream.OpenOutcome";
+constexpr char kStartAudioStreamHistogramName[] =
+    "Remoting.Host.ChromeOs.AudioStream.StartResult";
+
+void RecordOpenOutcome(media::AudioInputStream::OpenOutcome open_outcome) {
+  OpenOutcomeChromeOs open_outcome_chromeos;
+  switch (open_outcome) {
+    case media::AudioInputStream::OpenOutcome::kSuccess:
+      open_outcome_chromeos = OpenOutcomeChromeOs::kSuccess;
+      break;
+    case media::AudioInputStream::OpenOutcome::kAlreadyOpen:
+      open_outcome_chromeos = OpenOutcomeChromeOs::kAlreadyOpen;
+      break;
+    case media::AudioInputStream::OpenOutcome::kFailed:
+      open_outcome_chromeos = OpenOutcomeChromeOs::kFailed;
+      break;
+    case media::AudioInputStream::OpenOutcome::kFailedSystemPermissions:
+      open_outcome_chromeos = OpenOutcomeChromeOs::kFailedSystemPermissions;
+      break;
+    case media::AudioInputStream::OpenOutcome::kFailedInUse:
+      open_outcome_chromeos = OpenOutcomeChromeOs::kFailedInUse;
+      break;
+  }
+  base::UmaHistogramEnumeration(kAudioStreamOpenOutcomeHistogramName,
+                                open_outcome_chromeos);
+}
 
 }  // namespace
 
@@ -50,10 +82,15 @@ void AudioHelperChromeOsImpl::StartAudioStream(
     OnDataCallback on_data_callback,
     OnErrorCallback on_error_callback) {
   DCHECK(audio_runner_->RunsTasksInCurrentSequence());
+  base::UmaHistogramEnumeration(kAudioPlaybackModeHistogramName,
+                                audio_playback_mode);
 
   // TODO(crbug.com/450048643): Figure out error handling
   if (stream_) {
     LOG(WARNING) << "Audio stream already started.";
+    base::UmaHistogramEnumeration(
+        kStartAudioStreamHistogramName,
+        AudioHelperStartStreamResult::kStreamAlreadyStarted);
     return;
   }
 
@@ -83,19 +120,29 @@ void AudioHelperChromeOsImpl::StartAudioStream(
   if (!stream_) {
     LOG(ERROR) << "Failed to create input stream.";
     ReportError();
+    base::UmaHistogramEnumeration(
+        kStartAudioStreamHistogramName,
+        AudioHelperStartStreamResult::kFailedToCreateStream);
     return;
   }
 
   // TODO(crbug.com/450048643): Figure out error handling
-  if (stream_->Open() != media::AudioInputStream::OpenOutcome::kSuccess) {
+  media::AudioInputStream::OpenOutcome open_outcome = stream_->Open();
+  RecordOpenOutcome(open_outcome);
+  if (open_outcome != media::AudioInputStream::OpenOutcome::kSuccess) {
     LOG(ERROR) << "Failed to open stream.";
     stream_ = nullptr;
     ReportError();
+    base::UmaHistogramEnumeration(
+        kStartAudioStreamHistogramName,
+        AudioHelperStartStreamResult::kFailedToOpenStream);
     return;
   }
 
   stream_->Start(this);
   LOG(WARNING) << "Audio input stream successfully started.";
+  base::UmaHistogramEnumeration(kStartAudioStreamHistogramName,
+                                AudioHelperStartStreamResult::kSuccess);
 }
 
 void AudioHelperChromeOsImpl::StopAudioStream() {

@@ -16,6 +16,9 @@ namespace remoting {
 
 // Where to route audio from the local host during a CRD session, where a remote
 // client is viewing the local host's screen.
+// The enum below is used in histograms, do not remove/renumber entries. If
+// you're adding to this enum, update the corresponding enum listing in
+// tools/metrics/histograms/metadata/remoting/enums.xml.
 enum class AudioPlaybackMode {
   kUnknown,
   // Audio is played on the local (host) machine.
@@ -25,6 +28,7 @@ enum class AudioPlaybackMode {
   kRemoteAndLocal,
   // Audio is played on the remote (client) machine.
   kRemoteOnly,
+  kMaxValue = kRemoteOnly,
 };
 
 // A container of options a DesktopEnvironment or its derived classes need to
