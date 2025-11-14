@@ -57,6 +57,7 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 @end
 
 @implementation ButtonStackViewController {
+  NSLayoutConstraint* _scrollContainerBottomToSafeAreaBottomConstraint;
   // Stack view for the action buttons.
   UIStackView* _actionStackView;
   // The bottom constraint for the action stack view against the safe area.
@@ -180,6 +181,11 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
     return stackHeight + self.actionStackBottomMargin;
   }
   return 0;
+}
+
+- (BOOL)hasVisibleButtons {
+  return !(_primaryActionButton.hidden && _secondaryActionButton.hidden &&
+           _tertiaryActionButton.hidden);
 }
 
 #pragma mark - ButtonStackConsumer
@@ -359,18 +365,30 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
                                      ? kLegacyButtonStackBottomMargin
                                      : kButtonStackBottomMargin;
 
+  [self updateScrollContainerBottomConstraintPriority];
   [self reconfigureBottomConstraint];
 }
 
 // Sets the constant to the two constraints at the bottom of the button stack.
 - (void)reconfigureBottomConstraint {
   CGFloat contraintConstant = -self.actionStackBottomMargin;
-  if (_primaryActionButton.hidden && _secondaryActionButton.hidden &&
-      _tertiaryActionButton.hidden) {
+  if (![self hasVisibleButtons]) {
     contraintConstant = 0;
   }
   _actionStackSafeAreaBottomConstraint.constant = contraintConstant;
   _actionStackBottomConstraint.constant = contraintConstant;
+}
+
+// empty actions state is removed.
+// Dynamically updates the priority of the scroll container's bottom constraint.
+- (void)updateScrollContainerBottomConstraintPriority {
+  if ([self hasVisibleButtons]) {
+    _scrollContainerBottomToSafeAreaBottomConstraint.priority =
+        UILayoutPriorityDefaultLow - 1;
+  } else {
+    _scrollContainerBottomToSafeAreaBottomConstraint.priority =
+        UILayoutPriorityDefaultHigh;
+  }
 }
 
 // Configures a button with the given properties.
@@ -424,11 +442,9 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   // Scroll container view constraints.
   // Ensure the scroll container expands to the bottom of the safe area when the
   // action stack is empty.
-  NSLayoutConstraint* scrollContainerBottomToSafeAreaBottomConstraint =
+  _scrollContainerBottomToSafeAreaBottomConstraint =
       [_scrollContainerView.bottomAnchor
           constraintEqualToAnchor:safeAreaLayoutGuide.bottomAnchor];
-  scrollContainerBottomToSafeAreaBottomConstraint.priority =
-      UILayoutPriorityDefaultHigh;
 
   [NSLayoutConstraint activateConstraints:@[
     [_scrollContainerView.topAnchor constraintEqualToAnchor:view.topAnchor],
@@ -439,7 +455,7 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
     [_scrollContainerView.bottomAnchor
         constraintEqualToAnchor:_actionStackView.topAnchor
                        constant:-[self contentViewBottomInset]],
-    scrollContainerBottomToSafeAreaBottomConstraint,
+    _scrollContainerBottomToSafeAreaBottomConstraint,
   ]];
   AddSameConstraints(_scrollView, _scrollContainerView);
 

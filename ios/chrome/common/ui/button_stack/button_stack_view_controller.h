@@ -86,6 +86,9 @@
 // Returns the height of the button stack view.
 - (CGFloat)buttonStackHeight;
 
+// Returns YES if at least one button is visible.
+- (BOOL)hasVisibleButtons;
+
 @end
 
 #endif  // IOS_CHROME_COMMON_UI_BUTTON_STACK_BUTTON_STACK_VIEW_CONTROLLER_H_
