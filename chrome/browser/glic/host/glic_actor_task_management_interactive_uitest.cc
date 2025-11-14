@@ -7,6 +7,7 @@
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/download/download_test_file_activity_observer.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
+#include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -28,20 +29,11 @@ using MultiStep = GlicActorUiTest::MultiStep;
 
 class GlicActorTaskManagementUiTest : public GlicActorUiTest {
  public:
-  GlicActorTaskManagementUiTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kGlicActivateTabApi, features::kGlicGetTabByIdApi},
-        /*disabled_features=*/
-        {});
-  }
+  GlicActorTaskManagementUiTest() = default;
 
   // Note that CloseTab does not actually wait for the tab to close, as that is
   // done asynchronously.
   MultiStep CloseTab(ui::ElementIdentifier tab);
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 MultiStep GlicActorTaskManagementUiTest::CloseTab(ui::ElementIdentifier tab) {

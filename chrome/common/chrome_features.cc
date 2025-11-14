@@ -855,8 +855,6 @@ const base::FeatureParam<int> kGlicTabFocusDataDebounceDelayMs{
 const base::FeatureParam<int> kGlicTabFocusDataMaxDebounces{
     &kGlicTabFocusDataDedupDebounce, "glic-tab-focus-data-max-debounces", 5};
 
-// Kill switch for activateTab API.
-BASE_FEATURE(kGlicActivateTabApi, base::FEATURE_ENABLED_BY_DEFAULT);
 // Kill switch for getTabById API.
 BASE_FEATURE(kGlicGetTabByIdApi, base::FEATURE_ENABLED_BY_DEFAULT);
 // Kill switch for openPasswordManagerSettingsPage API.

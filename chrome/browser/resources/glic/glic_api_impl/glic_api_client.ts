@@ -631,6 +631,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     }
 
     if (!state.enableActivateTab) {
+      // MOJO_RUNTIME_FEATURE_GATED ActivateTab
       this.activateTab = undefined;
     }
 

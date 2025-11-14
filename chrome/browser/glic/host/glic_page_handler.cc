@@ -824,8 +824,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             actor_service->GetPolicyChecker().can_act_on_web();
       }
     }
-    state->enable_activate_tab =
-        base::FeatureList::IsEnabled(features::kGlicActivateTabApi);
+    state->enable_activate_tab = base::FeatureList::IsEnabled(
+        glic::mojom::features::kGlicActivateTabApi);
     state->enable_get_tab_by_id =
         base::FeatureList::IsEnabled(features::kGlicGetTabByIdApi);
     state->enable_open_password_manager_settings_page =
@@ -1133,12 +1133,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void ActivateTab(int32_t tab_id) override {
-    if (!base::FeatureList::IsEnabled(features::kGlicActivateTabApi)) {
-      receiver_.ReportBadMessage(
-          "ActivateTab cannot be called without GlicActivateTabApi enabled.");
-      return;
-    }
-
     tabs::TabInterface* tab = tabs::TabHandle(tab_id).Get();
     if (!tab) {
       return;

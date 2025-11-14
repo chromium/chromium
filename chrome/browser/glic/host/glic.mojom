@@ -687,6 +687,7 @@ interface WebClientHandler {
 
   // Foregrounds the given tab.
   // No-op if the tab doesn't exist or is already in the foreground.
+  [RuntimeFeature=glic.mojom.features.kGlicActivateTabApi]
   ActivateTab(int32 task_id);
 
   // Resize the widget hosting the WebUI to the given size.
