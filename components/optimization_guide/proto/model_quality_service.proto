@@ -6,6 +6,7 @@ syntax = "proto3";
 
 package optimization_guide.proto;
 
+import "components/optimization_guide/proto/features/actor_login.proto";
 import "components/optimization_guide/proto/features/amount_extraction.proto";
 import "components/optimization_guide/proto/features/bling_prototyping.proto";
 import "components/optimization_guide/proto/features/compose.proto";
@@ -96,6 +97,8 @@ message LogAiDataRequest {
     AmountExtractionLoggingData amount_extraction = 29;
 
     IosSmartTabGroupingLoggingData ios_smart_tab_grouping = 30;
+
+    ActorLoginLoggingData actor_login = 31;
 
     DefaultLoggingData default = 1000;
   }
