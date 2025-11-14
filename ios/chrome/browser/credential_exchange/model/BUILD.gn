@@ -54,3 +54,27 @@ swift_source_set("credential_import_manager_swift") {
     "Foundation.framework",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "credential_importer_unittest.mm" ]
+  deps = [
+    ":credential_exchange_types",
+    ":credential_import_manager_swift",
+    ":model",
+    "//base/test:test_support",
+    "//components/affiliations/core/browser:test_support",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/password_store:test_support",
+    "//components/password_manager/core/browser/ui",
+    "//components/webauthn/core/browser:test_support",
+    "//ios/chrome/browser/affiliations/model",
+    "//ios/chrome/browser/passwords/model:store_factory",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//url",
+  ]
+}

@@ -23,7 +23,6 @@
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_passkey.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_password.h"
-#import "ios/chrome/browser/credential_exchange/model/credential_import_manager_swift.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
@@ -37,9 +36,6 @@ std::string DataToString(NSData* data) {
 }
 
 }  // namespace
-
-@interface CredentialImporter () <CredentialImportManagerDelegate>
-@end
 
 @implementation CredentialImporter {
   // Imports credentials through the OS ASCredentialImportManager API.
@@ -126,12 +122,14 @@ std::string DataToString(NSData* data) {
 
 - (void)finishImport {
   __weak __typeof(_delegate) weakDelegate = _delegate;
-  // TODO(crbug.com/457354574): Handle passing selected_ids.
-  _passwordImporter->ContinueImport(
-      /*selected_ids=*/{},
-      base::BindOnce(^(const password_manager::ImportResults& results) {
-        [weakDelegate onPasswordsImported:results];
-      }));
+  if (_passwords.count > 0) {
+    // TODO(crbug.com/457354574): Handle passing selected_ids.
+    _passwordImporter->ContinueImport(
+        /*selected_ids=*/{},
+        base::BindOnce(^(const password_manager::ImportResults& results) {
+          [weakDelegate onPasswordsImported:results];
+        }));
+  }
   // TODO(crbug.com/458337350): Implement resume in passkey importer.
 }
 
@@ -194,6 +192,10 @@ std::string DataToString(NSData* data) {
 - (std::vector<sync_pb::WebauthnCredentialSpecifics>)
     translateCredentialExchangePasskeys:
         (NSArray<NSData*>*)securityDomainSecrets {
+  if (_passkeys.count == 0) {
+    return {};
+  }
+
   // `hw_protected` security domain currently supports a single secret.
   CHECK(securityDomainSecrets.count == 1);
   base::span<const uint8_t> securityDomainSecret =

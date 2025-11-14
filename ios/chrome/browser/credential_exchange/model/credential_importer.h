@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/credential_exchange/model/credential_import_manager_swift.h"
+
 namespace webauthn {
 class PasskeyModel;
 }  // namespace webauthn
@@ -30,8 +32,7 @@ class SavedPasswordsPresenter;
 
 // Handles importing credentials using the Credential Exchange Format
 // (https://fidoalliance.org/specifications-credential-exchange-specifications).
-// TODO(crbug.com/458733320): Add tests for this class.
-@interface CredentialImporter : NSObject
+@interface CredentialImporter : NSObject <CredentialImportManagerDelegate>
 
 - (instancetype)initWithDelegate:(id<CredentialImporterDelegate>)delegate
          savedPasswordsPresenter:
