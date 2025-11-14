@@ -77,12 +77,19 @@ import java.util.function.Supplier;
 @NullMarked
 public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
 
-    /** Observes toolbar color change. */
+    /** Observes toolbar color or expanding state change. */
     public interface ToolbarColorObserver {
         /**
          * @param color The toolbar color.
          */
         void onToolbarColorChanged(@ColorInt int color);
+
+        /**
+         * Notifies the observer when the Toolbar is expanding or has collapsed.
+         *
+         * @param isToolbarExpanding Whether the toolbar is expanding.
+         */
+        void onToolbarExpandingOnNtp(boolean isToolbarExpanding);
     }
 
     private final ToolbarLayout mToolbarLayout;

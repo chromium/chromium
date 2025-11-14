@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.system;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
@@ -105,6 +107,8 @@ public class StatusBarColorController
     private boolean mToolbarColorChanged;
     private @ColorInt int mToolbarColor;
     private @ColorInt int mBackgroundColorForNtp;
+    private final @ColorInt int mAdjustedBackgroundColorForNtpWithToolbarExpanding;
+    private final @ColorInt int mAdjustedBackgroundColorForNtpWithToolbarCollapsed;
 
     private @Nullable TabModelSelector mTabModelSelector;
     private CallbackController mCallbackController = new CallbackController();
@@ -180,6 +184,16 @@ public class StatusBarColorController
 
         mBackgroundColorForNtp =
                 ContextCompat.getColor(activity, R.color.home_surface_background_color);
+        // In light mode, when toolbar is expending, we want to tint status bar icon color from
+        // white to black, i.e, the same color of the location bar icons. To change icon tint to
+        // black, we need to set the background of status bar as white. In the dark mode, the
+        // background of status bar is set to black.
+        mAdjustedBackgroundColorForNtpWithToolbarExpanding =
+                activity.getColor(
+                        R.color.status_bar_background_color_on_ntp_with_toolbar_expanding);
+        mAdjustedBackgroundColorForNtpWithToolbarCollapsed =
+                activity.getColor(
+                        R.color.status_bar_background_color_on_ntp_with_toolbar_collapsed);
         mStatusIndicatorColor = UNDEFINED_STATUS_BAR_COLOR;
 
         // TODO(b/41494931): Share code with LocationBarCoordinator's constructor.
@@ -306,8 +320,26 @@ public class StatusBarColorController
                         mBackgroundColorForNtp = backgroundColor;
                         updateStatusBarColor();
                     }
+
+                    @Override
+                    public void onBackgroundImageChanged(
+                            Bitmap originalBitmap,
+                            @Nullable BackgroundImageInfo backgroundImageInfo,
+                            boolean fromInitialization,
+                            int oldType,
+                            int newType) {
+                        onBackgroundImageChangedImpl();
+                    }
                 };
         ntpCustomizationConfigManager.addListener(mHomepageStateListener, context);
+    }
+
+    /** Called when the background image of the NTP has changed. */
+    public void onBackgroundImageChangedImpl() {
+        if (mBackgroundColorForNtp == mAdjustedBackgroundColorForNtpWithToolbarCollapsed) return;
+
+        mBackgroundColorForNtp = mAdjustedBackgroundColorForNtpWithToolbarCollapsed;
+        updateStatusBarColor();
     }
 
     // DestroyObserver implementation.
@@ -351,6 +383,16 @@ public class StatusBarColorController
         // default color if toolbar never changes, for example, in dark mode.
         mToolbarColorChanged = true;
         mToolbarColor = color;
+        updateStatusBarColor();
+    }
+
+    @Override
+    public void onToolbarExpandingOnNtp(boolean isToolbarExpanding) {
+        if (isToolbarExpanding) {
+            mBackgroundColorForNtp = mAdjustedBackgroundColorForNtpWithToolbarExpanding;
+        } else {
+            mBackgroundColorForNtp = mAdjustedBackgroundColorForNtpWithToolbarCollapsed;
+        }
         updateStatusBarColor();
     }
 

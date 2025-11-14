@@ -853,8 +853,16 @@ public abstract class ToolbarLayout extends FrameLayout
         }
     }
 
+    /** Notifies the observer that the toolbar starts expanding or has collapsed. */
+    protected void notifyToolbarExpandingOnNtp(boolean isExpanding) {
+        if (mToolbarColorObserver != null) {
+            mToolbarColorObserver.onToolbarExpandingOnNtp(isExpanding);
+        }
+    }
+
     /**
      * This method sets the toolbar hairline visibility.
+     *
      * @param isHairlineVisible whether the toolbar hairline should be visible.
      */
     public void setHairlineVisibility(boolean isHairlineVisible) {

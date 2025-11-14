@@ -707,6 +707,22 @@ public class NtpCustomizationUtils {
         imageFetcher.fetchImage(params, callback);
     }
 
+    /**
+     * Returns whether it is necessary to apply an adjusted icon tint for NTPs. Returns true if the
+     * device is a phone, edge-to-edge is enabled and NTP has a customized background image.
+     *
+     * @param isTablet Whether the current device is a tablet.
+     */
+    public static boolean shouldAdjustIconTintForNtp(boolean isTablet) {
+        if (!canEnableEdgeToEdgeForCustomizedTheme(isTablet)) return false;
+
+        @NtpBackgroundImageType
+        int backgroundImageType =
+                NtpCustomizationConfigManager.getInstance().getBackgroundImageType();
+        return backgroundImageType == NtpBackgroundImageType.IMAGE_FROM_DISK
+                || backgroundImageType == NtpBackgroundImageType.THEME_COLLECTION;
+    }
+
     public static void resetSharedPreferenceForTesting() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE);

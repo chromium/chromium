@@ -62,6 +62,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarBackgroundDrawable;
 import org.chromium.chrome.browser.omnibox.LocationBarBackgroundDrawable.HairlineBehavior;
@@ -260,6 +261,8 @@ public class ToolbarPhone extends ToolbarLayout
 
     private final @ColorInt int mToolbarBackgroundColorForNtp;
     private final @ColorInt int mLocationBarBackgroundColorForNtp;
+    private final boolean mUseAdjustedTintColorForNtp;
+    private boolean mIsToolbarExpandedOnNtp;
 
     /** Used to specify the visual state of the toolbar. */
     @IntDef({
@@ -344,6 +347,8 @@ public class ToolbarPhone extends ToolbarLayout
                         SemanticColorUtils.getDefaultIconColorAccent1(context),
                         locationBarBackgroundColorAlphaForNtp);
         mDisableLocationBarRelayout = ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled();
+        mUseAdjustedTintColorForNtp =
+                NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false);
     }
 
     @Override
@@ -952,6 +957,16 @@ public class ToolbarPhone extends ToolbarLayout
         mNtpSearchBoxScrollFraction = scrollFraction;
         if (mNtpSearchBoxScrollFraction > 0) {
             updateLocationBarForNtp(mVisualState, urlHasFocus());
+        }
+
+        if (mUseAdjustedTintColorForNtp) {
+            if (!mIsToolbarExpandedOnNtp && mNtpSearchBoxScrollFraction > 0) {
+                mIsToolbarExpandedOnNtp = true;
+                notifyToolbarExpandingOnNtp(true);
+            } else if (mIsToolbarExpandedOnNtp && mNtpSearchBoxScrollFraction == 0) {
+                mIsToolbarExpandedOnNtp = false;
+                notifyToolbarExpandingOnNtp(false);
+            }
         }
         updateUrlExpansionFraction();
         // TODO(crbug.com/430347234): Cleaning up #updateUrlExpansionAnimation() would imply a

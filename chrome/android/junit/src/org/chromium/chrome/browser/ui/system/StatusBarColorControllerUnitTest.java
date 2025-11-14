@@ -102,7 +102,7 @@ public class StatusBarColorControllerUnitTest {
 
     @Test
     public void testInitialStatusBarColorOnTablet_NotInDesktopWindow() {
-        initialize(/* isTablet */ true, /* isInDesktopWindow= */ false);
+        initialize(/* isTablet= */ true, /* isInDesktopWindow= */ false);
         mStatusBarColorController.updateStatusBarColor();
         assertEquals(
                 "Status bar color is incorrect.",
@@ -113,7 +113,7 @@ public class StatusBarColorControllerUnitTest {
     @Test
     public void testInitialStatusBarColorOnTablet_InFocusedDesktopWindow() {
         when(mDesktopWindowStateManager.isInUnfocusedDesktopWindow()).thenReturn(false);
-        initialize(/* isTablet */ true, /* isInDesktopWindow= */ true);
+        initialize(/* isTablet= */ true, /* isInDesktopWindow= */ true);
         mStatusBarColorController.updateStatusBarColor();
         assertEquals(
                 "Status bar color is incorrect.",
@@ -124,7 +124,7 @@ public class StatusBarColorControllerUnitTest {
     @Test
     public void testInitialStatusBarColorOnTablet_InUnfocusedDesktopWindow() {
         when(mDesktopWindowStateManager.isInUnfocusedDesktopWindow()).thenReturn(true);
-        initialize(/* isTablet */ true, /* isInDesktopWindow= */ true);
+        initialize(/* isTablet= */ true, /* isInDesktopWindow= */ true);
         mStatusBarColorController.updateStatusBarColor();
         assertEquals(
                 "Status bar color is incorrect.",
@@ -138,7 +138,7 @@ public class StatusBarColorControllerUnitTest {
 
     @Test
     public void testOverviewMode() {
-        initialize(/* isTablet */ false, /* isInDesktopWindow= */ false);
+        initialize(/* isTablet= */ false, /* isInDesktopWindow= */ false);
         mOverviewColorSupplier.set(Color.RED);
         assertEquals(
                 "Status bar color is incorrect.",
@@ -148,7 +148,7 @@ public class StatusBarColorControllerUnitTest {
 
     @Test
     public void testOverviewModeOverlay() {
-        initialize(/* isTablet */ false, /* isInDesktopWindow= */ false);
+        initialize(/* isTablet= */ false, /* isInDesktopWindow= */ false);
         mStatusBarColorController.updateStatusBarColor();
         mStatusBarColorController.setScrimColor(Color.TRANSPARENT);
 
@@ -241,6 +241,50 @@ public class StatusBarColorControllerUnitTest {
                 currentNtpBackground,
                 mStatusBarColorController.getBackgroundColorForNtpForTesting());
         ntpCustomizationConfigManager.resetForTesting();
+    }
+
+    @Test
+    public void testOnToolbarExpandingOnNtp() {
+        initialize(
+                /* isTablet= */ false,
+                /* isInDesktopWindow= */ false,
+                /* supportEdgeToEdge= */ true);
+        @ColorInt
+        int defaultNtpBackground = mActivity.getColor(R.color.home_surface_background_color);
+        assertEquals(
+                defaultNtpBackground,
+                mStatusBarColorController.getBackgroundColorForNtpForTesting());
+
+        mStatusBarColorController.onToolbarExpandingOnNtp(true);
+        assertEquals(
+                mActivity.getColor(
+                        R.color.status_bar_background_color_on_ntp_with_toolbar_expanding),
+                mStatusBarColorController.getBackgroundColorForNtpForTesting());
+
+        mStatusBarColorController.onToolbarExpandingOnNtp(false);
+        assertEquals(
+                mActivity.getColor(
+                        R.color.status_bar_background_color_on_ntp_with_toolbar_collapsed),
+                mStatusBarColorController.getBackgroundColorForNtpForTesting());
+    }
+
+    @Test
+    public void testOnBackgroundImageChanged() {
+        initialize(
+                /* isTablet= */ false,
+                /* isInDesktopWindow= */ false,
+                /* supportEdgeToEdge= */ true);
+        @ColorInt
+        int defaultNtpBackground = mActivity.getColor(R.color.home_surface_background_color);
+        assertEquals(
+                defaultNtpBackground,
+                mStatusBarColorController.getBackgroundColorForNtpForTesting());
+
+        mStatusBarColorController.onBackgroundImageChangedImpl();
+        assertEquals(
+                mActivity.getColor(
+                        R.color.status_bar_background_color_on_ntp_with_toolbar_collapsed),
+                mStatusBarColorController.getBackgroundColorForNtpForTesting());
     }
 
     private void initialize(boolean isTablet, boolean isInDesktopWindow) {

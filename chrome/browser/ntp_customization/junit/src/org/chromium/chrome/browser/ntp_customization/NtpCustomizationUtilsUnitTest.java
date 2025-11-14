@@ -27,6 +27,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 
 import androidx.annotation.ColorInt;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -73,7 +74,7 @@ import java.io.File;
 
 /** Unit tests for {@link NtpCustomizationUtils} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.R)
 public class NtpCustomizationUtilsUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mTab;
@@ -629,5 +630,53 @@ public class NtpCustomizationUtilsUnitTest {
 
         ImageFetcher.Params params = paramsCaptor.getValue();
         assertEquals(imageUrl.getSpec(), params.url);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testShouldAdjustIconTintForNtp_flagDisabled() {
+        NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
+        configManager.setBackgroundImageTypeForTesting(NtpBackgroundImageType.IMAGE_FROM_DISK);
+
+        assertFalse(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false));
+
+        configManager.resetForTesting();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testShouldAdjustIconTintForNtp_isTablet() {
+        NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
+
+        configManager.setBackgroundImageTypeForTesting(NtpBackgroundImageType.IMAGE_FROM_DISK);
+        assertFalse(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ true));
+
+        configManager.setBackgroundImageTypeForTesting(NtpBackgroundImageType.THEME_COLLECTION);
+        assertFalse(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ true));
+
+        configManager.resetForTesting();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testShouldAdjustIconTintForNtp_phone() {
+        NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
+
+        configManager.setBackgroundImageTypeForTesting(NtpBackgroundImageType.DEFAULT);
+        assertFalse(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false));
+
+        configManager.setBackgroundImageTypeForTesting(NtpBackgroundImageType.CHROME_COLOR);
+        assertFalse(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false));
+
+        configManager.setBackgroundImageTypeForTesting(NtpBackgroundImageType.COLOR_FROM_HEX);
+        assertFalse(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false));
+
+        configManager.setBackgroundImageTypeForTesting(NtpBackgroundImageType.IMAGE_FROM_DISK);
+        assertTrue(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false));
+
+        configManager.setBackgroundImageTypeForTesting(NtpBackgroundImageType.THEME_COLLECTION);
+        assertTrue(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false));
+
+        configManager.resetForTesting();
     }
 }
