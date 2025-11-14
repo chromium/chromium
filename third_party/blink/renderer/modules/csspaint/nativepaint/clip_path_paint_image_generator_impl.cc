@@ -27,6 +27,12 @@ ClipPathPaintImageGeneratorImpl::ClipPathPaintImageGeneratorImpl(
     ClipPathPaintDefinition* clip_path_paint_definition)
     : clip_path_paint_definition_(clip_path_paint_definition) {}
 
+std::optional<gfx::RectF>
+ClipPathPaintImageGeneratorImpl::GetAnimationBoundingRect(
+    const LayoutObject& obj) {
+  return ClipPathPaintDefinition::GetAnimationBoundingRect(obj);
+}
+
 scoped_refptr<Image> ClipPathPaintImageGeneratorImpl::Paint(
     float zoom,
     const gfx::RectF& reference_box,

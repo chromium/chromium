@@ -2798,6 +2798,11 @@ class ScopedClipPathPaintImageGenerator {
       return GetAnimation(element, PropertyHandle(GetCSSPropertyClipPath()));
     }
 
+    std::optional<gfx::RectF> GetAnimationBoundingRect(
+        const LayoutObject& obj) override {
+      return gfx::RectF(InfiniteIntRect());
+    }
+
     void Shutdown() override {}
   };
 

@@ -180,7 +180,8 @@ void PaintWorkletBasedClip(GraphicsContext& context,
 
   // Bounding rect large enough to contain the entire animation, including
   // clip-path: none frames.
-  gfx::RectF dst_rect = ClipPathPaintImageGenerator::GetAnimationBoundingRect();
+  // This always returns a value for now.
+  gfx::RectF dst_rect = *generator->GetAnimationBoundingRect(clip_path_owner);
 
   // The mask image should be the same size as the destination rect, but will
   // have an origin of 0,0 as it has its own coordinate space.

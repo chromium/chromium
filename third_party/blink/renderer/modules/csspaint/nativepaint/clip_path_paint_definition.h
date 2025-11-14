@@ -35,6 +35,9 @@ class MODULES_EXPORT ClipPathPaintDefinition final
       const CompositorPaintWorkletInput*,
       const CompositorPaintWorkletJob::AnimatedPropertyValues&) override;
 
+  static std::optional<gfx::RectF> GetAnimationBoundingRect(
+      const LayoutObject& obj);
+
   // static method that accepts a worklet id, for use in tests. The instance
   // version of this method calls this
   static scoped_refptr<Image> Paint(float zoom,

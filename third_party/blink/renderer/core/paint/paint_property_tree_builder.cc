@@ -446,10 +446,9 @@ class FragmentPaintPropertyTreeBuilder {
   // True if, among all transform-relaed properties, there is a
   // non-identity transform that *is not* a 2D scale.
   bool has_non_scale2d_transform_ = false;
+  std::optional<gfx::RectF> paint_clip_path_rect_;
+  // Used for intersection observers, so that the current clip is available.
   std::optional<gfx::RectF> precise_clip_path_rect_;
-  // Used to indicate an expanded clip path rect is required a cc clip path
-  // animation.
-  bool requires_expanded_clip_rect_ = false;
 };
 
 // True if a scroll node and a ScrollTranslation transform node are needed.
@@ -1824,8 +1823,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
             *context_.current.clip,
             ClipPaintPropertyNode::State(
                 *context_.current.transform, combined_clip,
-                FloatRoundedRect(gfx::ToEnclosingRect(combined_clip)),
-                requires_expanded_clip_rect_)));
+                FloatRoundedRect(gfx::ToEnclosingRect(
+                    paint_clip_path_rect_.value_or(combined_clip))),
+                paint_clip_path_rect_)));
         // We don't use MaskClip as the output clip of Effect, Mask and
         // ClipPathMask because we only want to apply MaskClip to the contents,
         // not the masks.
@@ -2392,15 +2392,22 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
               object_,
               ClipPathClipper::CompositedStateResolutionType::kReadCache)) {
         needs_mask_based_clip_path_ = true;
+
         // If there's a composited clip path animation, we use a larger bounding
         // rect that can encompass the entire animation, that way no new main
-        // frames are needed to resize the clip area.
-        requires_expanded_clip_rect_ = true;
-        // In the case where clip-path: none, it is okay for the precise clip
-        // path to equal the expanded rect, since we need to assign it a value
+        // frames are needed to resize the clip area. If the mask image size is
+        // unconstrained, perf issues could result, so we fall back.
+        paint_clip_path_rect_ = object_.GetFrame()
+                                    ->GetClipPathPaintImageGenerator()
+                                    ->GetAnimationBoundingRect(object_);
+
+        // GetAnimationBoundingRect always returns a value for now.
+        CHECK(paint_clip_path_rect_);
+
         if (!precise_clip_path_rect_) {
-          precise_clip_path_rect_ =
-              ClipPathPaintImageGenerator::GetAnimationBoundingRect();
+          // In the case where clip-path: none, it is okay for the precise clip
+          // path to equal the expanded rect, since we need to assign it a value
+          precise_clip_path_rect_ = paint_clip_path_rect_;
         }
       }
 
@@ -2414,6 +2421,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
                 ? gfx::Vector2dF(context_.current.paint_offset)
                 : gfx::Vector2dF();
         precise_clip_path_rect_->Offset(paint_offset);
+
+        if (paint_clip_path_rect_) {
+          paint_clip_path_rect_->Offset(paint_offset);
+        }
+
         if (std::optional<Path> path =
                 ClipPathClipper::PathBasedClip(object_, paint_offset)) {
           std::optional<FloatRoundedRect> rrect;
@@ -2445,6 +2457,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
 
     if (!precise_clip_path_rect_ || needs_mask_based_clip_path_) {
       OnClearClip(properties_->ClearClipPathClip());
+    }
+
+    if (!paint_clip_path_rect_) {
+      paint_clip_path_rect_ = precise_clip_path_rect_;
     }
   }
 

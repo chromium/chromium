@@ -82,22 +82,21 @@ class PLATFORM_EXPORT ClipPaintPropertyNode final
   // a struct with default values is used to represent the state.
   struct PLATFORM_EXPORT State {
     DISALLOW_NEW();
+
    public:
     State(const TransformPaintPropertyNodeOrAlias& local_transform_space,
-          const gfx::RectF& layout_clip_rect,
+          const gfx::RectF& precise_layout_clip_rect,
           const FloatRoundedRect& paint_clip_rect,
-          bool requires_expanded_rect = false)
-        : local_transform_space(&local_transform_space),
-          requires_expanded_rect_(requires_expanded_rect) {
-      SetClipRect(layout_clip_rect, paint_clip_rect);
+          const std::optional<gfx::RectF> expanded_rect = std::nullopt)
+        : local_transform_space(&local_transform_space) {
+      SetClipRect(precise_layout_clip_rect, paint_clip_rect, expanded_rect);
     }
     State(const TransformPaintPropertyNodeOrAlias& local_transform_space,
           const EffectPaintPropertyNode* pixel_moving_filter)
         : local_transform_space(&local_transform_space),
-          pixel_moving_filter(pixel_moving_filter),
-          requires_expanded_rect_(false) {
-      DCHECK(layout_clip_rect_.IsInfinite());
-      paint_clip_rect_ = FloatRoundedRect(layout_clip_rect_.Rect());
+          pixel_moving_filter(pixel_moving_filter) {
+      DCHECK(expanded_layout_clip_rect_.IsInfinite());
+      paint_clip_rect_ = FloatRoundedRect(expanded_layout_clip_rect_.Rect());
     }
 
     Member<const TransformPaintPropertyNodeOrAlias> local_transform_space;
@@ -107,11 +106,20 @@ class PLATFORM_EXPORT ClipPaintPropertyNode final
     // expand clip rect for a pixel-moving filter.
     Member<const EffectPaintPropertyNode> pixel_moving_filter;
 
-    void SetClipRect(const gfx::RectF& layout_clip_rect_arg,
-                     const FloatRoundedRect& paint_clip_rect_arg) {
-      layout_clip_rect_.SetRect(layout_clip_rect_arg);
-      if (paint_clip_rect_arg.IsRounded())
-        layout_clip_rect_.SetHasRadius();
+    void SetClipRect(
+        const gfx::RectF& precise_layout_clip_rect_arg,
+        const FloatRoundedRect& paint_clip_rect_arg,
+        const std::optional<gfx::RectF> expanded_rect = std::nullopt) {
+      precise_layout_clip_rect_.SetRect(precise_layout_clip_rect_arg);
+      expanded_layout_clip_rect_.SetRect(
+          expanded_rect.value_or(precise_layout_clip_rect_arg));
+      if (paint_clip_rect_arg.IsRounded()) {
+        // Clip rects for cc clip-path animations are never rounded
+        if (!expanded_rect.has_value()) {
+          expanded_layout_clip_rect_.SetHasRadius();
+        }
+        precise_layout_clip_rect_.SetHasRadius();
+      }
       paint_clip_rect_ = paint_clip_rect_arg;
     }
 
@@ -125,8 +133,11 @@ class PLATFORM_EXPORT ClipPaintPropertyNode final
 
    private:
     friend class ClipPaintPropertyNode;
-    bool requires_expanded_rect_;
-    FloatClipRect layout_clip_rect_;
+
+    // See getter functions in parent ClipPaintPropertyNode for a description
+    // of each of these values.
+    FloatClipRect expanded_layout_clip_rect_;
+    FloatClipRect precise_layout_clip_rect_;
     FloatRoundedRect paint_clip_rect_;
   };
 
@@ -175,32 +186,34 @@ class PLATFORM_EXPORT ClipPaintPropertyNode final
   // The clip rect for painting and compositing. It may be pixel snapped, or
   // not (e.g. for SVG).
   const FloatRoundedRect& PaintClipRect() const {
-    if (state_.requires_expanded_rect_) {
-      return ExpandedPaintClipRect();
-    }
     return state_.paint_clip_rect_;
   }
-  // The clip rect used for GeometryMapper to map in layout coordinates.
+  // The clip rect used for GeometryMapper to map in layout coordinates,
+  // including potential expansions for cc-side clip-path animations which
+  // require a larger area to accommodate the entire animated path, which may be
+  // larger than the clip-path for the current animation frame. This is used in
+  // multiple places, including calculating cull rects. For better understanding
+  // of when this is used vs. PreciseLayoutClipRect, search for usage of
+  // blink::VisualRectFlags.
   const FloatClipRect& LayoutClipRect() const {
-    if (state_.requires_expanded_rect_) {
-      return ExpandedLayoutClipRect();
-    }
-    return state_.layout_clip_rect_;
+    return state_.expanded_layout_clip_rect_;
   }
   // The clip rect used for GeometryMapper to map in layout coordinates,
-  // ignoring cc clip paths
+  // accounting for only the clip path of the current main-thread animation
+  // frame. Currently used only by intersection observers.
   const FloatClipRect& PreciseLayoutClipRect() const {
-    return state_.layout_clip_rect_;
+    return state_.precise_layout_clip_rect_;
   }
 
   bool IsForCompositeClipPathAnimation() const {
-    return state_.requires_expanded_rect_;
+    return state_.expanded_layout_clip_rect_ !=
+           state_.precise_layout_clip_rect_;
   }
 
   const FloatClipRect& LayoutClipRectExcludingOverlayScrollbars() const {
     return state_.layout_clip_rect_excluding_overlay_scrollbars
                ? *state_.layout_clip_rect_excluding_overlay_scrollbars
-               : state_.layout_clip_rect_;
+               : state_.precise_layout_clip_rect_;
   }
 
   const std::optional<Path>& ClipPath() const { return state_.clip_path; }

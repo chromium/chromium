@@ -39,13 +39,6 @@ namespace blink {
 
 namespace {
 
-// produced an 'infinite' clip rect that will ensure no content is clipped. This
-// is used for the case when clip-path is none.
-SkPath InfiniteClipPath() {
-  return SkPath::Rect(gfx::RectFToSkRect(
-      ClipPathPaintImageGenerator::GetAnimationBoundingRect()));
-}
-
 // This struct contains the keyframe index and the intra-keyframe progress. It
 // is calculated by GetAdjustedProgress.
 struct AnimationProgress {
@@ -477,7 +470,8 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
       paths.push_back(path.GetSkPath());
       prev_type = basic_shape->GetType();
     } else {
-      paths.push_back(InfiniteClipPath());
+      paths.push_back(SkPath::Rect(
+          SkRect::MakeWH(clip_area_size.width(), clip_area_size.height())));
       prev_type = std::nullopt;
     }
 
@@ -524,7 +518,8 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
         }
         static_path = path.GetSkPath();
       } else {
-        static_path = InfiniteClipPath();
+        static_path = SkPath::Rect(
+            SkRect::MakeWH(clip_area_size.width(), clip_area_size.height()));
       }
       break;
     }
@@ -550,6 +545,15 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
           static_path, std::move(input_property_keys));
 
   return PaintWorkletDeferredImage::Create(std::move(input), clip_area_size);
+}
+
+// static
+std::optional<gfx::RectF> ClipPathPaintDefinition::GetAnimationBoundingRect(
+    const LayoutObject& obj) {
+  // TODO(clchambers): Replace with actual content-aware bounds calculation.
+  constexpr int kInfiniteXY = LayoutUnit::Min().ToInt() / 64;
+  constexpr int kInfiniteWH = LayoutUnit::Max().ToInt() / 32;
+  return gfx::RectF(kInfiniteXY, kInfiniteXY, kInfiniteWH, kInfiniteWH);
 }
 
 void ClipPathPaintDefinition::Trace(Visitor* visitor) const {
