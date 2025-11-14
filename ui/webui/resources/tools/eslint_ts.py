@@ -18,10 +18,26 @@ import node_modules
 
 _ESLINT_CONFIG_TEMPLATE = """import path from 'path';
 
-import defaultConfig from '%(config_base)s';
+import {defaultConfig} from '%(config_base)s';
 
 export default [
   ...defaultConfig,
+  {
+    languageOptions: {
+      parserOptions: {
+        'project': [path.join(import.meta.dirname, './%(tsconfig)s')],
+      },
+    },
+  },
+];"""
+
+_ESLINT_CONFIG_WITH_WEBUI_MISSING_DEPS_TEMPLATE = """import path from 'path';
+
+import {defaultConfig, webComponentMissingDepsConfig} from '%(config_base)s';
+
+export default [
+  ...defaultConfig,
+  webComponentMissingDepsConfig,
   {
     languageOptions: {
       parserOptions: {
@@ -39,12 +55,15 @@ export default [
 _TOKEN_TO_STRIP = 'potentially fixable with the `--fix` option'
 
 
-def _generate_config_file(out_dir, config_base, tsconfig):
-  config_file = os.path.join(out_dir, 'eslint.config.mjs')
+def _generate_config_file(args):
+  config_file = os.path.join(args.out_folder, 'eslint.config.mjs')
   with open(config_file, 'w', newline='', encoding='utf-8') as f:
-    f.write(_ESLINT_CONFIG_TEMPLATE % {
-        'config_base': config_base,
-        'tsconfig': tsconfig
+    template = _ESLINT_CONFIG_TEMPLATE
+    if args.enable_web_component_missing_deps:
+      template = _ESLINT_CONFIG_WITH_WEBUI_MISSING_DEPS_TEMPLATE
+    f.write(template % {
+        'config_base': args.config_base,
+        'tsconfig': args.tsconfig
     })
     return config_file
 
@@ -55,12 +74,13 @@ def main(argv):
   parser.add_argument('--out_folder', required=True)
   parser.add_argument('--config_base', required=True)
   parser.add_argument('--tsconfig', required=True)
+  parser.add_argument(
+      '--enable_web_component_missing_deps', action='store_true')
   parser.add_argument('--in_files', nargs='*', required=True)
 
   args = parser.parse_args(argv)
 
-  config_file = _generate_config_file(args.out_folder, args.config_base,
-                                      args.tsconfig)
+  config_file = _generate_config_file(args)
   if len(args.in_files) == 0:
     return
 

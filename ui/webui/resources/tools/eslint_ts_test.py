@@ -26,7 +26,7 @@ class EslintTsTest(unittest.TestCase):
     with open(path, "r", encoding="utf-8") as file:
       return file.read()
 
-  def _run_test(self, in_files):
+  def _run_test(self, in_files, enable_web_component_missing_deps=False):
     config_base = os.path.join(_HERE_DIR, "eslint_ts.config_base.mjs")
     tsconfig = os.path.join(self._in_folder, "tsconfig.json")
 
@@ -42,6 +42,9 @@ class EslintTsTest(unittest.TestCase):
         "--in_files",
         *in_files,
     ]
+
+    if enable_web_component_missing_deps:
+      args += ['--enable_web_component_missing_deps']
 
     eslint_ts.main(args)
 
@@ -104,6 +107,50 @@ class EslintTsTest(unittest.TestCase):
     ]
     for e in errors:
       self.assertTrue(e in str(context.exception))
+
+  def testWebUiEslintPlugin_WebComponentMissingDeps(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test(
+          ["with_webui_plugin_web_component_missing_deps_violations.html.ts"],
+          enable_web_component_missing_deps=True)
+
+    _EXPECTED_STRING = "@webui-eslint/web-component-missing-deps"
+    self.assertTrue(_EXPECTED_STRING in str(context.exception))
+
+    _EXPECTED_ERROR = "Missing explicit import statement for '%(tagName)s' in the class definition file 'with_webui_plugin_web_component_missing_deps_violations.ts'"
+
+    # The following strings *should* appear in the error output since the
+    # referenced dependencies are imported.
+    errors = [
+        _EXPECTED_ERROR % {
+            'tagName': 'cr-icon-button'
+        },
+        _EXPECTED_ERROR % {
+            'tagName': 'other-button1'
+        },
+        _EXPECTED_ERROR % {
+            'tagName': 'other-button2'
+        },
+    ]
+    for e in errors:
+      self.assertTrue(e in str(context.exception))
+
+    # The following strings *should not* appear in the error output since the
+    # referenced dependencies are imported.
+    non_errors = [
+        # Imported via cr_expand_button.js (testing exact matching between tag
+        # name and corresponding import).
+        _EXPECTED_ERROR % {
+            'tagName': 'cr-expand-button'
+        },
+        # Imported via other_button.js (testing fuzzy matching between tag name
+        # and corresponding import).
+        _EXPECTED_ERROR % {
+            'tagName': 'some-other-button'
+        },
+    ]
+    for e in non_errors:
+      self.assertFalse(e in str(context.exception))
 
 
 if __name__ == "__main__":

@@ -508,6 +508,11 @@ template("build_webui") {
       } else {
         deps += [ ":preprocess_ts_files" ]
       }
+
+      if (defined(invoker.eslint_enable_web_component_missing_deps)) {
+        enable_web_component_missing_deps =
+            invoker.eslint_enable_web_component_missing_deps
+      }
     }
   }
 

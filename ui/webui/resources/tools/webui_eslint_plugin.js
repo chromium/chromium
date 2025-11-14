@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import assert from 'node:assert';
+import fs from 'node:fs';
+import path from 'node:path';
+
 import {ESLintUtils} from '../../../../third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 
 // NOTE: Using `\u002F` instead of a forward slash, to workaround for
@@ -248,10 +252,127 @@ const polymerPropertyClassMemberRule = ESLintUtils.RuleCreator.withoutDocs({
   },
 });
 
+const webComponentMissingDeps = ESLintUtils.RuleCreator.withoutDocs({
+  name: 'web-component-missing-deps',
+  meta: {
+    type: 'problem',
+    docs: {
+      description:
+          'Ensures that all children of a web component are imported as dependencies',
+      recommended: 'error',
+    },
+    messages: {
+      missingImportStatement:
+          'Missing explicit import statement for \'{{childName}}\' in the class definition file \'{{fileName}}\'.',
+    },
+  },
+  defaultOptions: [],
+  create(context) {
+    const templateFilename = context.getFilename();
+    assert.ok(templateFilename.endsWith('.html.ts'));
+    const classDefinitionFilename =
+        templateFilename.replace(/\.html\.ts$/, '.ts');
+
+    function extractImportsUrlsFromFile(filepath) {
+      const contents = fs.readFileSync(filepath, 'utf-8');
+      const parser = context.languageOptions.parser;
+      const parserOptions = context.languageOptions.parserOptions;
+      const ast = parser.parse(contents, {
+        ...parserOptions,
+        filePath: filepath,
+      });
+      return ast.body
+          .filter(
+              node => node.type === 'ImportDeclaration' &&
+                  node.specifiers.length === 0)
+          .map(node => node.source.value);
+    }
+
+    /*
+     * Calculates a list of candidate filenames that could possibly host the
+     * definition of a custom element named `tagName`. For example:
+     * foo-bar-baz -> ['foo_bar_baz.js', 'bar_baz.js', 'baz.js'].
+     */
+    function getExpectedImportFilenames(tagName) {
+      const parts = tagName.split('-');
+      const filenames = new Set();
+      for (let i = 0; i < parts.length; i++) {
+        filenames.add(parts.slice(i).join('_') + '.js');
+      }
+
+      return filenames;
+    }
+
+    // Regular expression to extract all DOM tag names from a string.
+    const TAG_NAME_REGEX = /<(?<tagName>[^ >\/!\n]+)/g;
+
+    return {
+      ['FunctionDeclaration[id.name=/getHtml|getTemplate/]'](node) {
+        // Looking for either of the following patterns
+        //  - Lit templates: 'getHtml(this: SomeType) {...}'
+        //  - Polymer templates: 'getTemplate() {...}'
+
+        if (node.id.name === 'getHtml' &&
+            (node.params.length !== 1 || node.params[0].name !== 'this')) {
+          // Handle a few cases where lit-html is used directly and there is no
+          // classDefinitionFilename file.
+          return;
+        }
+
+        // Extract function's body as a string.
+        const bodyString = context.getSourceCode().getText(node.body);
+
+        // Extract all elements used in the function. Filter out tag names that
+        // don't include any '-' characters since these are native HTML
+        // elements.
+        const matches = Array.from(bodyString.matchAll(TAG_NAME_REGEX));
+        const tagNames = new Set(matches.map(match => match.groups['tagName'])
+                                     .filter(tagName => tagName.includes('-')));
+
+        if (tagNames.size === 0) {
+          // No custom element children detected. Nothing to check.
+          return;
+        }
+
+        // Compare tagNames against the list of imports.
+        const importedFilenames =
+            new Set(extractImportsUrlsFromFile(classDefinitionFilename)
+                        .map(url => path.basename(url)));
+
+        for (const tagName of tagNames) {
+          const expectedImportedFilenames = getExpectedImportFilenames(tagName);
+
+          if (importedFilenames.intersection(expectedImportedFilenames).size >
+              0) {
+            continue;
+          }
+
+          if (expectedImportedFilenames.has(
+                  path.basename(templateFilename).replace('.html.ts', '.js'))) {
+            // Handle edge case of self referencing web component.
+            continue;
+          }
+
+          // Report errors for each tagName that is not explicitly imported.
+          context.report({
+            node,
+            messageId: 'missingImportStatement',
+            data: {
+              childName: tagName,
+              fileName: path.basename(classDefinitionFilename),
+            },
+          });
+        }
+      },
+    };
+  },
+});
+
 const rules = {
   'lit-property-accessor': litPropertyAccessorRule,
   'polymer-property-declare': polymerPropertyDeclareRule,
   'polymer-property-class-member': polymerPropertyClassMemberRule,
+  'web-component-missing-deps': webComponentMissingDeps,
 };
 
 export default {rules};
