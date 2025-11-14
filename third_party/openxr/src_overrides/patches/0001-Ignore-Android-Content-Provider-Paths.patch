@@ -1,6 +1,6 @@
-From 68e5330abe00696562f6ccc23559562ef7b329a6 Mon Sep 17 00:00:00 2001
+From 786d8ea4e2c5dba5551e75cab263d546d62b0e30 Mon Sep 17 00:00:00 2001
 From: Alexander Cooper <alcooper@chromium.org>
-Date: Fri, 25 Jul 2025 15:55:26 -0700
+Date: Mon, 10 Nov 2025 17:39:46 -0800
 Subject: [PATCH] Ignore Android Content Provider Paths
 
 ---
@@ -42,26 +42,26 @@ index 54db54fffdb0b..7aa148bd2a4de 100644
  }  // namespace openxr_android
  
 diff --git a/third_party/openxr/src_overrides/src/loader/manifest_file.cpp b/third_party/openxr/src_overrides/src/loader/manifest_file.cpp
-index fa22ebb56c1b7..221ff4519252a 100644
+index 4aa7c2fc00145..9dfd22c2a6413 100644
 --- a/third_party/openxr/src_overrides/src/loader/manifest_file.cpp
 +++ b/third_party/openxr/src_overrides/src/loader/manifest_file.cpp
-@@ -681,14 +681,14 @@ XrResult RuntimeManifestFile::FindManifestFiles(const std::string &openxr_comman
+@@ -682,14 +682,14 @@ XrResult RuntimeManifestFile::FindManifestFiles(const std::string &openxr_comman
          }
  #else  // !defined(XR_OS_WINDOWS) && !defined(XR_OS_LINUX)
  
--#if defined(XR_KHR_LOADER_INIT_SUPPORT) && defined(XR_USE_PLATFORM_ANDROID)
-+#if defined(XR_KHR_LOADER_INIT_SUPPORT) && defined(XR_USE_PLATFORM_ANDROID) && !defined(XRLOADER_DISABLE_CONTENT_PROVIDERS)
+-#if defined(XR_USE_PLATFORM_ANDROID) && defined(XR_HAS_REQUIRED_PLATFORM_LOADER_INIT_STRUCT)
++#if defined(XR_USE_PLATFORM_ANDROID) && defined(XR_HAS_REQUIRED_PLATFORM_LOADER_INIT_STRUCT) && !defined(XRLOADER_DISABLE_CONTENT_PROVIDERS)
          Json::Value virtualManifest;
          result = GetPlatformRuntimeVirtualManifest(virtualManifest);
          if (XR_SUCCESS == result) {
              RuntimeManifestFile::CreateIfValid(virtualManifest, "", manifest_files);
              return result;
          }
--#endif  // defined(XR_USE_PLATFORM_ANDROID) && defined(XR_KHR_LOADER_INIT_SUPPORT)
-+#endif  // defined(XR_USE_PLATFORM_ANDROID) && defined(XR_KHR_LOADER_INIT_SUPPORT) && !defined(XRLOADER_DISABLE_CONTENT_PROVIDERS)
+-#endif  // defined(XR_USE_PLATFORM_ANDROID) && defined(XR_HAS_REQUIRED_PLATFORM_LOADER_INIT_STRUCT)
++#endif  // defined(XR_USE_PLATFORM_ANDROID) && defined(XR_HAS_REQUIRED_PLATFORM_LOADER_INIT_STRUCT) && !defined(XRLOADER_DISABLE_CONTENT_PROVIDERS)
+ 
          if (!PlatformGetGlobalRuntimeFileName(XR_VERSION_MAJOR(XR_CURRENT_API_VERSION), filename)) {
              LoaderLogger::LogErrorMessage(
-                 openxr_command,
 -- 
-2.50.1.552.g942d659e1b-goog
+2.51.2.1041.gc1ab5b90ca-goog
 

@@ -1,8 +1,8 @@
 Name: OpenXR SDK
 Short Name: OpenXR
 URL: https://github.com/KhronosGroup/OpenXR-SDK
-Version: 1.1.49
-Revision: 977f6675bc0057d5a54ed290cb5c71c699b1c0ab
+Version: 1.1.53
+Revision: 75c53b6e853dc12c7b3c771edc9c9c841b15faaa
 Update Mechanism: Manual
 License: Apache-2.0
 License File: src/LICENSE
