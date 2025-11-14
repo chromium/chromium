@@ -318,7 +318,7 @@ class RasterBufferProviderTest
 
  private:
   void Create3dResourceProvider() {
-    context_provider_ = viz::TestContextProvider::Create();
+    context_provider_ = viz::TestContextProvider::CreateRaster();
     context_provider_->BindToCurrentSequence();
 
     worker_context_provider_ = viz::TestContextProvider::CreateWorker();
