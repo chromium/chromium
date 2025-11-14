@@ -13,6 +13,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -44,7 +45,6 @@
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/extensions/api/downloads/download_extension_errors.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/icon_loader.h"
@@ -87,7 +87,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/download/download_danger_prompt.h"
-#include "chrome/browser/download/download_open_prompt.h"
+#include "chrome/browser/download/download_open_dialog.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #endif
@@ -137,6 +137,9 @@ const char kUrlKey[] = "url";
 const char kUrlRegexKey[] = "urlRegex";
 const char kFinalUrlKey[] = "finalUrl";
 const char kFinalUrlRegexKey[] = "finalUrlRegex";
+
+// Whether the dialog should be accepted without showing it on tests.
+bool g_accept_open_dialog_for_testing = false;
 
 extensions::api::downloads::DangerType ConvertDangerType(
     download::DownloadDangerType danger) {
@@ -1496,9 +1499,6 @@ ExtensionFunction::ResponseAction DownloadsShowDefaultFolderFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-DownloadsOpenFunction::OnPromptCreatedCallback*
-    DownloadsOpenFunction::on_prompt_created_cb_ = nullptr;
-
 DownloadsOpenFunction::DownloadsOpenFunction() = default;
 
 DownloadsOpenFunction::~DownloadsOpenFunction() = default;
@@ -1541,26 +1541,34 @@ ExtensionFunction::ResponseAction DownloadsOpenFunction::Run() {
     download_item->OpenDownload();
     return RespondNow(NoArguments());
   }
+
   // Prompt user for ack to open the download.
   // TODO(qinmin): check if user prefers to open all download using the same
   // extension, or check the recent user gesture on the originating webcontents
   // to avoid showing the prompt.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  DownloadOpenPrompt* download_open_prompt =
-      DownloadOpenPrompt::CreateDownloadOpenConfirmationDialog(
-          active_contents,
-          util::GetFixupExtensionNameForUIDisplay(extension()->name()),
-          download_item->GetFullPath(),
-          base::BindOnce(&DownloadsOpenFunction::OpenPromptDone, this,
-                         params->download_id));
-  if (on_prompt_created_cb_)
-    std::move(*on_prompt_created_cb_).Run(download_open_prompt);
+  // For testing, callers can use AcceptDialogForTesting() to pre-determine
+  // the dialog's result. This bypasses showing the dialog.
+  if (g_accept_open_dialog_for_testing) {
+    CHECK_IS_TEST();
+    OpenPromptDone(params->download_id, /*accept=*/true);
+    return RespondLater();
+  }
+  ShowDownloadOpenConfirmationDialog(
+      active_contents, extension()->name(), download_item->GetFullPath(),
+      base::BindOnce(&DownloadsOpenFunction::OpenPromptDone, this,
+                     params->download_id));
   RecordApiFunctions(DownloadsFunctionName::kDownloadsFunctionOpen);
   return RespondLater();
 #else
   NOTIMPLEMENTED();
   return RespondNow(Error("DownloadOpenPrompt not implemented"));
 #endif
+}
+
+// static
+base::AutoReset<bool> DownloadsOpenFunction::AcceptDialogForTesting() {
+  return base::AutoReset<bool>(&g_accept_open_dialog_for_testing, true);
 }
 
 void DownloadsOpenFunction::OpenPromptDone(int download_id, bool accept) {

@@ -28,7 +28,6 @@
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class DownloadFileIconExtractor;
-class DownloadOpenPrompt;
 class Profile;
 
 // Functions in the chrome.downloads namespace facilitate
@@ -238,19 +237,13 @@ class DownloadsOpenFunction : public ExtensionFunction {
 
   ResponseAction Run() override;
 
-  using OnPromptCreatedCallback = base::OnceCallback<void(DownloadOpenPrompt*)>;
-  static void set_on_prompt_created_cb_for_testing(
-      OnPromptCreatedCallback* on_prompt_created_cb) {
-    on_prompt_created_cb_ = on_prompt_created_cb;
-  }
+  [[nodiscard]] static base::AutoReset<bool> AcceptDialogForTesting();
 
  protected:
   ~DownloadsOpenFunction() override;
 
  private:
   void OpenPromptDone(int download_id, bool accept);
-
-  static OnPromptCreatedCallback* on_prompt_created_cb_;
 };
 
 // TODO(crbug.com/40858206): Remove this deprecated function.

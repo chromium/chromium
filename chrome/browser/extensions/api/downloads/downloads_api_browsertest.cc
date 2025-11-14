@@ -38,7 +38,7 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_file_icon_extractor.h"
-#include "chrome/browser/download/download_open_prompt.h"
+#include "chrome/browser/download/download_open_dialog.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_test_file_activity_observer.h"
 #include "chrome/browser/extensions/api/downloads/download_extension_errors.h"
@@ -140,16 +140,6 @@ bool IsDownloadExternallyRemoved(download::DownloadItem* item) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 void OnFileDeleted(bool success) {}
-
-void OnOpenPromptCreated(download::DownloadItem* item,
-                         DownloadOpenPrompt* prompt) {
-  EXPECT_FALSE(item->GetOpened());
-  // Posts a task to accept the DownloadOpenPrompt.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DownloadOpenPrompt::AcceptConfirmationDialogForTesting,
-                     base::Unretained(prompt)));
-}
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -1095,9 +1085,11 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, DownloadExtensionTest_Open) {
   args_list.Append(static_cast<int>(download_item->GetId()));
   open_function->SetArgs(std::move(args_list));
   open_function->set_extension(extension());
-  DownloadsOpenFunction::OnPromptCreatedCallback callback =
-      base::BindOnce(&OnOpenPromptCreated, base::Unretained(download_item));
-  DownloadsOpenFunction::set_on_prompt_created_cb_for_testing(&callback);
+
+  // Auto accept the dialog triggered when opening the download.
+  auto downloads_open_dialog_reset =
+      DownloadsOpenFunction::AcceptDialogForTesting();
+
   api_test_utils::SendResponseHelper response_helper(open_function.get());
   std::unique_ptr<ExtensionFunctionDispatcher> dispatcher(
       new ExtensionFunctionDispatcher(current_profile()));
