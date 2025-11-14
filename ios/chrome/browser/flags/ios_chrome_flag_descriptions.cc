@@ -1588,12 +1588,6 @@ const char kStrokesAPIEnabledName[] = "Enable Strokes API for Lens";
 const char kStrokesAPIEnabledDescription[] =
     "When enabled, Lens will use the Strokes API.";
 
-const char kSuggestStrongPasswordInAddPasswordName[] =
-    "Suggest Strong password in add password page";
-const char kSuggestStrongPasswordInAddPasswordDescription[] =
-    "Add field suggest strong password in add password page if the user is "
-    "signed in and syncing passwords to their Google Account.";
-
 const char kSupervisedUserBlockInterstitialV3Name[] =
     "Enable URL filter interstitial V3";
 const char kSupervisedUserBlockInterstitialV3Description[] =

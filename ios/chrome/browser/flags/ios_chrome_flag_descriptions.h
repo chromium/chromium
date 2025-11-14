@@ -946,9 +946,6 @@ extern const char kStartSurfaceDescription[];
 extern const char kStrokesAPIEnabledName[];
 extern const char kStrokesAPIEnabledDescription[];
 
-extern const char kSuggestStrongPasswordInAddPasswordName[];
-extern const char kSuggestStrongPasswordInAddPasswordDescription[];
-
 extern const char kSupervisedUserBlockInterstitialV3Name[];
 extern const char kSupervisedUserBlockInterstitialV3Description[];
 

@@ -2351,12 +2351,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"non-modal-sign-in-promo", flag_descriptions::kNonModalSignInPromoName,
      flag_descriptions::kNonModalSignInPromoDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kNonModalSignInPromo)},
-    {"suggest-strong-password-in-add-password",
-     flag_descriptions::kSuggestStrongPasswordInAddPasswordName,
-     flag_descriptions::kSuggestStrongPasswordInAddPasswordDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kSuggestStrongPasswordInAddPassword)},
     {"autofill-save-card-bottomsheet",
      flag_descriptions::kAutofillSaveCardBottomSheetName,
      flag_descriptions::kAutofillSaveCardBottomSheetDescription,
