@@ -181,6 +181,7 @@ void AsyncLayerTreeFrameSink::DetachFromClient() {
   compositor_frame_sink_.reset();
   compositor_frame_sink_associated_.reset();
   LayerTreeFrameSink::DetachFromClient();
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 void AsyncLayerTreeFrameSink::SetLocalSurfaceId(
