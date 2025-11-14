@@ -40,6 +40,34 @@ class NetworkFetcherFactory : public update_client::NetworkFetcherFactory {
   std::unique_ptr<Impl> impl_;
 };
 
+// Wraps a NetworkFetcher to provide event history logging.
+class LoggingNetworkFetcher final : public update_client::NetworkFetcher {
+ public:
+  explicit LoggingNetworkFetcher(
+      std::unique_ptr<update_client::NetworkFetcher> impl);
+  ~LoggingNetworkFetcher() override;
+
+  void PostRequest(
+      const GURL& url,
+      const std::string& post_data,
+      const std::string& content_type,
+      const base::flat_map<std::string, std::string>& post_additional_headers,
+      ResponseStartedCallback response_started_callback,
+      ProgressCallback progress_callback,
+      PostRequestCompleteCallback post_request_complete_callback) override;
+
+  base::OnceClosure DownloadToFile(
+      const GURL& url,
+      const base::FilePath& file_path,
+      ResponseStartedCallback response_started_callback,
+      ProgressCallback progress_callback,
+      DownloadToFileCompleteCallback download_to_file_complete_callback)
+      override;
+
+ private:
+  std::unique_ptr<update_client::NetworkFetcher> impl_;
+};
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_NET_NETWORK_H_

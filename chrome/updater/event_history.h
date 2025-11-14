@@ -360,37 +360,37 @@ class PersistedDataEvent : public HistoryEventBuilder<PersistedDataEvent> {
   std::vector<RegisteredApp> registered_apps_;
 };
 
-class OmahaRequestEndEvent : public HistoryEventBuilder<OmahaRequestEndEvent> {
+class PostRequestEndEvent : public HistoryEventBuilder<PostRequestEndEvent> {
  public:
-  OmahaRequestEndEvent();
-  OmahaRequestEndEvent(OmahaRequestEndEvent&&);
-  OmahaRequestEndEvent& operator=(OmahaRequestEndEvent&&);
-  OmahaRequestEndEvent(const OmahaRequestEndEvent&) = delete;
-  OmahaRequestEndEvent& operator=(const OmahaRequestEndEvent&) = delete;
-  ~OmahaRequestEndEvent() override;
+  PostRequestEndEvent();
+  PostRequestEndEvent(PostRequestEndEvent&&);
+  PostRequestEndEvent& operator=(PostRequestEndEvent&&);
+  PostRequestEndEvent(const PostRequestEndEvent&) = delete;
+  PostRequestEndEvent& operator=(const PostRequestEndEvent&) = delete;
+  ~PostRequestEndEvent() override;
 
-  OmahaRequestEndEvent& SetResponse(const std::string& response);
+  PostRequestEndEvent& SetResponse(const std::string& response);
 
  private:
   std::optional<base::Value::Dict> BuildInternal(
       base::Value::Dict event) const override;
 
-  std::string response_;
+  std::optional<std::string> response_;
 };
 
-class OmahaRequestStartEvent
-    : public HistoryEventBuilder<OmahaRequestStartEvent> {
+class PostRequestStartEvent
+    : public HistoryEventBuilder<PostRequestStartEvent> {
  public:
-  using EndEventType = OmahaRequestEndEvent;
+  using EndEventType = PostRequestEndEvent;
 
-  OmahaRequestStartEvent();
-  OmahaRequestStartEvent(OmahaRequestStartEvent&&);
-  OmahaRequestStartEvent& operator=(OmahaRequestStartEvent&&);
-  OmahaRequestStartEvent(const OmahaRequestStartEvent&) = delete;
-  OmahaRequestStartEvent& operator=(const OmahaRequestStartEvent&) = delete;
-  ~OmahaRequestStartEvent() override;
+  PostRequestStartEvent();
+  PostRequestStartEvent(PostRequestStartEvent&&);
+  PostRequestStartEvent& operator=(PostRequestStartEvent&&);
+  PostRequestStartEvent(const PostRequestStartEvent&) = delete;
+  PostRequestStartEvent& operator=(const PostRequestStartEvent&) = delete;
+  ~PostRequestStartEvent() override;
 
-  OmahaRequestStartEvent& SetRequest(const std::string& request);
+  PostRequestStartEvent& SetRequest(const std::string& request);
 
  private:
   std::optional<base::Value::Dict> BuildInternal(

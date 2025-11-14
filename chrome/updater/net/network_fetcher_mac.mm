@@ -910,12 +910,13 @@ NetworkFetcherFactory::~NetworkFetcherFactory() = default;
 std::unique_ptr<update_client::NetworkFetcher> NetworkFetcherFactory::Create()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::make_unique<FallbackNetFetcher>(
-      std::make_unique<NetworkFetcher>(impl_->event_logger()),
-      base::CommandLine::ForCurrentProcess()->HasSwitch(kNetWorkerSwitch)
-          ? nullptr  // Already a networker, should not fallback further.
-          : std::make_unique<OutOfProcessNetworkFetcher>(
-                impl_->event_logger()));
+  return std::make_unique<LoggingNetworkFetcher>(
+      std::make_unique<FallbackNetFetcher>(
+          std::make_unique<NetworkFetcher>(impl_->event_logger()),
+          base::CommandLine::ForCurrentProcess()->HasSwitch(kNetWorkerSwitch)
+              ? nullptr  // Already a networker, should not fallback further.
+              : std::make_unique<OutOfProcessNetworkFetcher>(
+                    impl_->event_logger())));
 }
 
 }  // namespace updater

@@ -405,14 +405,14 @@ TEST_F(EventHistoryTest, PersistedDataEventToDict) {
                       })));
 }
 
-TEST_F(EventHistoryTest, OmahaRequestStartEventToDict) {
-  std::optional<base::Value::Dict> event = OmahaRequestStartEvent()
+TEST_F(EventHistoryTest, PostRequestStartEventToDict) {
+  std::optional<base::Value::Dict> event = PostRequestStartEvent()
                                                .SetEventId("test-event-id")
                                                .SetRequest("test-request")
                                                .Build();
   ASSERT_TRUE(event);
   EXPECT_THAT(*event, DictHasFields(ExpectedFields({
-                          {"eventType", ValueIs("OMAHA_REQUEST")},
+                          {"eventType", ValueIs("POST_REQUEST")},
                           {"bound", ValueIs("START")},
                           {"eventId", ValueIs("test-event-id")},
                           {"request", ValueIs("test-request")},
@@ -422,14 +422,14 @@ TEST_F(EventHistoryTest, OmahaRequestStartEventToDict) {
                       })));
 }
 
-TEST_F(EventHistoryTest, OmahaRequestEndEventToDict) {
-  std::optional<base::Value::Dict> event = OmahaRequestEndEvent()
+TEST_F(EventHistoryTest, PostRequestEndEventToDict) {
+  std::optional<base::Value::Dict> event = PostRequestEndEvent()
                                                .SetEventId("test-event-id")
                                                .SetResponse("test-response")
                                                .Build();
   ASSERT_TRUE(event);
   EXPECT_THAT(*event, DictHasFields(ExpectedFields({
-                          {"eventType", ValueIs("OMAHA_REQUEST")},
+                          {"eventType", ValueIs("POST_REQUEST")},
                           {"bound", ValueIs("END")},
                           {"eventId", ValueIs("test-event-id")},
                           {"response", ValueIs("test-response")},
@@ -440,14 +440,8 @@ TEST_F(EventHistoryTest, OmahaRequestEndEventToDict) {
 }
 
 TEST_F(EventHistoryTest,
-       OmahaRequestStartEventBuilderReturnsNulloptOnMissingRequest) {
-  EXPECT_EQ(OmahaRequestStartEvent().SetEventId("test-event-id").Build(),
-            std::nullopt);
-}
-
-TEST_F(EventHistoryTest,
-       OmahaRequestEndEventBuilderReturnsNulloptOnMissingResponse) {
-  EXPECT_EQ(OmahaRequestEndEvent().SetEventId("test-event-id").Build(),
+       PostRequestStartEventBuilderReturnsNulloptOnMissingRequest) {
+  EXPECT_EQ(PostRequestStartEvent().SetEventId("test-event-id").Build(),
             std::nullopt);
 }
 

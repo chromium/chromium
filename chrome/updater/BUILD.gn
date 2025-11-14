@@ -162,6 +162,7 @@ if (is_win || is_mac || is_linux) {
       "lock.h",
       "net/fallback_net_fetcher.cc",
       "net/fallback_net_fetcher.h",
+      "net/network.cc",
       "net/network.h",
       "out_of_process_patcher.cc",
       "out_of_process_patcher.h",

@@ -93,14 +93,14 @@ The schema defines the following event types:
     * `cohort` (string): The cohort assignment of the app.
     * `brandCode` (string): The brand code of the app.
 
-### `OMAHA_REQUEST`: Omaha Request
+### `POST_REQUEST`: HTTP Post Request
 
-* **Description:** Recorded when an Omaha request is initiated or completed.
+* **Description:** Recorded when an HTTP POST request is initiated or completed.
 * **Bounds:**
   * `START`:
-    * `request` (string, required): The Omaha request payload.
+    * `request` (string, required): The base64-encoded HTTP request body.
   * `END`:
-    * `response` (string, required): The Omaha response payload.
+    * `response` (string): The base64-encoded HTTP response body.
 
 ### `LOAD_POLICY`: Load Policy
 

@@ -462,52 +462,49 @@ std::optional<base::Value::Dict> PersistedDataEvent::BuildInternal(
   return event;
 }
 
-OmahaRequestStartEvent::OmahaRequestStartEvent() = default;
-OmahaRequestStartEvent::OmahaRequestStartEvent(OmahaRequestStartEvent&&) =
-    default;
-OmahaRequestStartEvent& OmahaRequestStartEvent::operator=(
-    OmahaRequestStartEvent&&) = default;
-OmahaRequestStartEvent::~OmahaRequestStartEvent() = default;
+PostRequestStartEvent::PostRequestStartEvent() = default;
+PostRequestStartEvent::PostRequestStartEvent(PostRequestStartEvent&&) = default;
+PostRequestStartEvent& PostRequestStartEvent::operator=(
+    PostRequestStartEvent&&) = default;
+PostRequestStartEvent::~PostRequestStartEvent() = default;
 
-OmahaRequestStartEvent& OmahaRequestStartEvent::SetRequest(
+PostRequestStartEvent& PostRequestStartEvent::SetRequest(
     const std::string& request) {
   request_ = request;
   return *this;
 }
 
-std::optional<base::Value::Dict> OmahaRequestStartEvent::BuildInternal(
+std::optional<base::Value::Dict> PostRequestStartEvent::BuildInternal(
     base::Value::Dict event) const {
   if (request_.empty()) {
-    VLOG(1) << "Failed to build OmahaRequestStartEvent, request is empty";
+    VLOG(1) << "Failed to build PostRequestStartEvent, request is empty";
     return std::nullopt;
   }
-  event.Set("eventType", "OMAHA_REQUEST");
+  event.Set("eventType", "POST_REQUEST");
   event.Set("bound", "START");
   event.Set("request", request_);
   return event;
 }
 
-OmahaRequestEndEvent::OmahaRequestEndEvent() = default;
-OmahaRequestEndEvent::OmahaRequestEndEvent(OmahaRequestEndEvent&&) = default;
-OmahaRequestEndEvent& OmahaRequestEndEvent::operator=(OmahaRequestEndEvent&&) =
+PostRequestEndEvent::PostRequestEndEvent() = default;
+PostRequestEndEvent::PostRequestEndEvent(PostRequestEndEvent&&) = default;
+PostRequestEndEvent& PostRequestEndEvent::operator=(PostRequestEndEvent&&) =
     default;
-OmahaRequestEndEvent::~OmahaRequestEndEvent() = default;
+PostRequestEndEvent::~PostRequestEndEvent() = default;
 
-OmahaRequestEndEvent& OmahaRequestEndEvent::SetResponse(
+PostRequestEndEvent& PostRequestEndEvent::SetResponse(
     const std::string& response) {
   response_ = response;
   return *this;
 }
 
-std::optional<base::Value::Dict> OmahaRequestEndEvent::BuildInternal(
+std::optional<base::Value::Dict> PostRequestEndEvent::BuildInternal(
     base::Value::Dict event) const {
-  if (response_.empty()) {
-    VLOG(1) << "Failed to build OmahaRequestEndEvent, response is empty";
-    return std::nullopt;
-  }
-  event.Set("eventType", "OMAHA_REQUEST");
+  event.Set("eventType", "POST_REQUEST");
   event.Set("bound", "END");
-  event.Set("response", response_);
+  if (response_) {
+    event.Set("response", *response_);
+  }
   return event;
 }
 

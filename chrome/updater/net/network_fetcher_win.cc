@@ -345,7 +345,7 @@ NetworkFetcherFactory::~NetworkFetcherFactory() = default;
 std::unique_ptr<update_client::NetworkFetcher> NetworkFetcherFactory::Create()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return impl_->Create();
+  return std::make_unique<LoggingNetworkFetcher>(impl_->Create());
 }
 
 }  // namespace updater
