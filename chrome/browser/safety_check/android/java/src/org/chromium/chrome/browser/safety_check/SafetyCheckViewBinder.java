@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.safety_check;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
@@ -196,7 +197,9 @@ class SafetyCheckViewBinder {
                 getLastRunTimestampText(fragment.getContext(), lastRunTime, currentTime);
         if (!TextUtils.equals(fragment.getTimestampTextView().getText(), timestampText)) {
             fragment.getTimestampTextView().setText(timestampText);
-            fragment.getTimestampTextView().announceForAccessibility(timestampText);
+            fragment.getTimestampTextView()
+                    .sendAccessibilityEvent(
+                            AccessibilityEvent.CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION);
         }
     }
 
