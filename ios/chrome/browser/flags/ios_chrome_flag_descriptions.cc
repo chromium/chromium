@@ -513,30 +513,6 @@ const char kEnableCrossDevicePrefTrackerDescription[] =
     "Enables the tracking and sharing of select non-syncing preference values "
     "across a user's signed-in devices.";
 
-const char kEnableExpKitTextClassifierAddressName[] =
-    "Address with Text Classifier in Experience Kit";
-const char kEnableExpKitTextClassifierAddressDescription[] =
-    "When enabled, Experience Kit will use Text Classifier library in "
-    "address detection on long presses.";
-
-const char kEnableExpKitTextClassifierDateName[] =
-    "Date with Text Classifier in Experience Kit";
-const char kEnableExpKitTextClassifierDateDescription[] =
-    "When enabled, Experience Kit will use Text Classifier library in "
-    "date detection on long presses.";
-
-const char kEnableExpKitTextClassifierEmailName[] =
-    "Email with Text Classifier in Experience Kit";
-const char kEnableExpKitTextClassifierEmailDescription[] =
-    "When enabled, Experience Kit will use Text Classifier library in "
-    "email detection on long presses.";
-
-const char kEnableExpKitTextClassifierPhoneNumberName[] =
-    "Phone Number with Text Classifier in Experience Kit";
-const char kEnableExpKitTextClassifierPhoneNumberDescription[] =
-    "When enabled, Experience Kit will use Text Classifier library in "
-    "phone number detection on long presses.";
-
 const char kEnableFamilyLinkControlsName[] = "Family Link parental controls";
 const char kEnableFamilyLinkControlsDescription[] =
     "Enables parental controls from Family Link on supervised accounts "
