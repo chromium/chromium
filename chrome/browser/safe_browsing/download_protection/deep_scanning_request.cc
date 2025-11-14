@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
@@ -17,6 +18,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -271,16 +274,6 @@ DownloadCheckResult ResponseToDownloadCheckResult(
 
   CHECK(malware_action !=
         enterprise_connectors::TriggeredRule::FORCE_SAVE_TO_CLOUD);
-
-  // This is the entry point for processing Force Save to Cloud verdicts. To
-  // simplify gating the feature, we can simply force `BLOCK` behavior when the
-  // `FORCE_SAVE_TO_CLOUD` verdict is received in the case where the feature
-  // flag is disabled. No subsequent flag checks are necessary.
-  if (!base::FeatureList::IsEnabled(
-          enterprise_data_protection::kEnableForceDownloadToCloud) &&
-      dlp_action == enterprise_connectors::TriggeredRule::FORCE_SAVE_TO_CLOUD) {
-    dlp_action = enterprise_connectors::TriggeredRule::BLOCK;
-  }
 
   if (malware_action == enterprise_connectors::GetHighestPrecedenceAction(
                             malware_action, dlp_action)) {
@@ -664,10 +657,43 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
     enterprise_connectors::ScanRequestUploadResult result,
     enterprise_connectors::ContentAnalysisResponse response) {
   CHECK(IsEnterpriseTriggered());
+
   DownloadCheckResult download_result = DownloadCheckResult::UNKNOWN;
   if (result == enterprise_connectors::ScanRequestUploadResult::SUCCESS) {
     request_tokens_.push_back(response.request_token());
     download_result = ResponseToDownloadCheckResult(response);
+    if (download_result == DownloadCheckResult::FORCE_SAVE_TO_GDRIVE) {
+      if (!base::FeatureList::IsEnabled(
+              enterprise_data_protection::kEnableForceDownloadToCloud)) {
+        download_result = DownloadCheckResult::SENSITIVE_CONTENT_BLOCK;
+      } else {
+        // ProcessEnterpriseDownloadResult will run via dialog callback
+        base::OnceClosure keep_closure = base::BindOnce(
+            &DeepScanningRequest::ProcessEnterpriseDownloadResult,
+            weak_ptr_factory_.GetWeakPtr(),
+            DownloadCheckResult::FORCE_SAVE_TO_GDRIVE);
+        base::OnceClosure discard_closure = base::BindOnce(
+            &DeepScanningRequest::ProcessEnterpriseDownloadResult,
+            weak_ptr_factory_.GetWeakPtr(),
+            DownloadCheckResult::SENSITIVE_CONTENT_BLOCK);
+
+        new enterprise_connectors::ContentAnalysisDialogController(
+            std::make_unique<
+                enterprise_connectors::ContentAnalysisDownloadsDelegate>(
+                u"", u"", GURL(), false, std::move(keep_closure),
+                std::move(discard_closure), nullptr,
+                enterprise_connectors::ContentAnalysisResponse::Result::
+                    TriggeredRule::CustomRuleMessage()),
+            true,  // Downloads are always cloud-based for now.
+            web_contents(),
+            enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
+            /* file_count */ 1,
+            enterprise_connectors::FinalContentAnalysisResult::
+                FORCE_SAVE_TO_CLOUD,
+            nullptr);
+        return;
+      }
+    }
   } else if (result == enterprise_connectors::ScanRequestUploadResult::
                            FILE_TOO_LARGE &&
              analysis_settings_.block_large_files) {
@@ -682,9 +708,8 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
     download_result = DownloadCheckResult::BLOCKED_SCAN_FAILED;
   }
 
-  LogDeepScanResult(download_result, trigger_,
-                    metadata_->IsTopLevelEncryptedArchive());
-
+  // Reporting happens unconditionally and does not depend on
+  // DownloadCheckResult. Can be kept here.
   Profile* profile =
       Profile::FromBrowserContext(metadata_->GetBrowserContext());
   DCHECK(file_metadata_.count(current_path));
@@ -703,6 +728,13 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
     metadata_->AddScanResultMetadata(file_metadata);
   }
 
+  ProcessEnterpriseDownloadResult(download_result);
+}
+
+void DeepScanningRequest::ProcessEnterpriseDownloadResult(
+    DownloadCheckResult download_result) {
+  LogDeepScanResult(download_result, trigger_,
+                    metadata_->IsTopLevelEncryptedArchive());
   MaybeFinishRequest(download_result);
 }
 

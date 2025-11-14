@@ -152,6 +152,7 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
       const base::FilePath& current_path,
       enterprise_connectors::ScanRequestUploadResult result,
       enterprise_connectors::ContentAnalysisResponse response);
+  void ProcessEnterpriseDownloadResult(DownloadCheckResult download_result);
 
   // Called when a single file scanning request has completed. Calls
   // FinishRequest if it was the last required one.
