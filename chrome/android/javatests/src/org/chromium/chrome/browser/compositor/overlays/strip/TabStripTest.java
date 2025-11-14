@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -1686,7 +1685,7 @@ public class TabStripTest {
         CompositorButton incognitoIndicator =
                 TabStripUtils.getStripLayoutHelperManager(mActivityTestRule.getActivity())
                         .getModelSelectorButton();
-        if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+        if (!ChromeFeatureList.sTabStripIncognitoMigration.isEnabled()) {
             if (activeModel.isIncognitoBranded()) {
                 Assert.assertNotNull(
                         "Incognito indicator null in incognito mode", incognitoIndicator);
