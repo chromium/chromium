@@ -304,6 +304,14 @@ void RenderSurfaceImpl::CalculateContentRectFromAccumulatedContentRect(
   }
 #endif
 
+  if (surface_content_rect.width() > max_texture_size ||
+      surface_content_rect.height() > max_texture_size) {
+    VLOG(1) << "Max texture width or height (" << max_texture_size
+            << ") exceeded for render surface of width "
+            << surface_content_rect.width() << " and height "
+            << surface_content_rect.height();
+  }
+
   // The RenderSurfaceImpl backing texture cannot exceed the maximum supported
   // texture size.
   surface_content_rect.set_width(
