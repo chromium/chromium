@@ -38,6 +38,7 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_localalloc.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/event_history.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
@@ -134,7 +135,8 @@ bool IsSecureAppCommandExePath(UpdaterScope scope,
 
 }  // namespace
 
-AppCommandRunner::AppCommandRunner() = default;
+AppCommandRunner::AppCommandRunner(const std::wstring& app_id)
+    : app_id_(app_id) {}
 AppCommandRunner::~AppCommandRunner() = default;
 
 // static
@@ -154,7 +156,7 @@ HResultOr<scoped_refptr<AppCommandRunner>> AppCommandRunner::LoadAppCommand(
   }
 
   scoped_refptr<AppCommandRunner> app_command_runner =
-      base::MakeRefCounted<AppCommandRunner>();
+      base::MakeRefCounted<AppCommandRunner>(app_id);
   hr = GetAppCommandFormatComponents(scope, command_format,
                                      app_command_runner->executable_,
                                      app_command_runner->parameters_);
@@ -203,7 +205,13 @@ AppCommandRunner::LoadAutoRunOnOsUpgradeAppCommands(
 
 HRESULT AppCommandRunner::Run(base::span<const std::wstring> substitutions,
                               base::Process& process) {
+  AppCommandStartEvent start_event;
+  start_event.SetAppId(base::WideToUTF8(app_id_));
+
   if (executable_.empty()) {
+    start_event.AddError({.code = E_UNEXPECTED})
+        .WriteAsyncAndReturnEndEvent()
+        .WriteAsync();
     return E_UNEXPECTED;
   }
 
@@ -215,17 +223,24 @@ HRESULT AppCommandRunner::Run(base::span<const std::wstring> substitutions,
       FormatAppCommandLine(parameters_, substitutions);
   if (!command_line_parameters) {
     LOG(ERROR) << __func__ << "!command_line_parameters";
+    start_event.AddError({.code = E_INVALIDARG})
+        .WriteAsyncAndReturnEndEvent()
+        .WriteAsync();
     return E_INVALIDARG;
   }
-
-  VLOG(2) << __func__ << ": " << executable_ << ": "
-          << *command_line_parameters;
+  const std::wstring command_line = base::StrCat(
+      {base::CommandLine::QuoteForCommandLineToArgvW(executable_.value()), L" ",
+       *command_line_parameters});
+  VLOG(2) << __func__ << ": " << command_line;
 
   // `executable_` needs to be a full path to prevent `::CreateProcess` (which
   // `AppCommandRunner::LaunchProcess` uses internally) from using the search
   // path for path resolution.
   if (!executable_.IsAbsolute()) {
     LOG(ERROR) << __func__ << "!executable_.IsAbsolute(): " << executable_;
+    start_event.AddError({.code = E_INVALIDARG})
+        .WriteAsyncAndReturnEndEvent()
+        .WriteAsync();
     return E_INVALIDARG;
   }
 
@@ -242,6 +257,7 @@ HRESULT AppCommandRunner::Run(base::span<const std::wstring> substitutions,
             GetAppOutputWithExitCodeAndTimeoutResult> {
     std::optional<base::Process> process;
     std::optional<HRESULT> hr;
+    std::optional<int> exit_code;
     base::WaitableEvent process_event;
 
    private:
@@ -250,6 +266,9 @@ HRESULT AppCommandRunner::Run(base::span<const std::wstring> substitutions,
     virtual ~GetAppOutputWithExitCodeAndTimeoutResult() = default;
   };
 
+  AppCommandEndEvent end_event =
+      start_event.SetCommandLine(base::WideToUTF8(command_line))
+          .WriteAsyncAndReturnEndEvent();
   auto result =
       base::MakeRefCounted<GetAppOutputWithExitCodeAndTimeoutResult>();
   base::ThreadPool::CreateSequencedTaskRunner(
@@ -258,9 +277,9 @@ HRESULT AppCommandRunner::Run(base::span<const std::wstring> substitutions,
           FROM_HERE,
           base::BindOnce(
               [](scoped_refptr<AppCommandRunner> obj,
-                 const std::wstring& command_line_parameters,
-                 scoped_refptr<GetAppOutputWithExitCodeAndTimeoutResult>
-                     result) {
+                 const std::wstring& command_line,
+                 scoped_refptr<GetAppOutputWithExitCodeAndTimeoutResult> result)
+                  -> HRESULT {
                 base::LaunchOptions options = {};
                 options.feedback_cursor_off = true;
                 options.start_hidden = true;
@@ -269,27 +288,28 @@ HRESULT AppCommandRunner::Run(base::span<const std::wstring> substitutions,
                     base::TerminationStatus::TERMINATION_STATUS_MAX_ENUM;
 
                 int exit_code = -1;
-                std::ignore = base::GetAppOutputWithExitCodeAndTimeout(
-                    base::StrCat({base::CommandLine::QuoteForCommandLineToArgvW(
-                                      obj->executable_.value()),
-                                  L" ", command_line_parameters}),
-                    /*include_stderr=*/true, nullptr, &exit_code,
-                    kWaitForAppInstaller, options,
-                    [&](const base::Process& process,
-                        std::string_view partial_output) {
-                      if (!result->process) {
-                        result->process = process.Duplicate();
-                        VLOG(1) << "AppCommand pid: " << result->process->Pid();
-                        result->process_event.Signal();
-                      }
+                if (base::GetAppOutputWithExitCodeAndTimeout(
+                        command_line,
+                        /*include_stderr=*/true, nullptr, &exit_code,
+                        kWaitForAppInstaller, options,
+                        [&](const base::Process& process,
+                            std::string_view partial_output) {
+                          if (!result->process) {
+                            result->process = process.Duplicate();
+                            VLOG(1)
+                                << "AppCommand pid: " << result->process->Pid();
+                            result->process_event.Signal();
+                          }
 
-                      if (!partial_output.empty()) {
-                        VLOG(1) << "AppCommand output: " << partial_output;
-                        base::AutoLock lock{obj->lock_};
-                        obj->output_ += partial_output;
-                      }
-                    },
-                    &final_status);
+                          if (!partial_output.empty()) {
+                            VLOG(1) << "AppCommand output: " << partial_output;
+                            base::AutoLock lock{obj->lock_};
+                            obj->output_ += partial_output;
+                          }
+                        },
+                        &final_status)) {
+                  result->exit_code = exit_code;
+                }
 
                 if (final_status ==
                     base::TerminationStatus::TERMINATION_STATUS_LAUNCH_FAILED) {
@@ -302,9 +322,9 @@ HRESULT AppCommandRunner::Run(base::span<const std::wstring> substitutions,
                   return GOOPDATEINSTALL_E_INSTALLER_TIMED_OUT;
                 }
 
-                return exit_code;
+                return S_OK;
               },
-              base::WrapRefCounted(this), *command_line_parameters, result)
+              base::WrapRefCounted(this), command_line, result)
               .Then(base::BindOnce(
                   [](scoped_refptr<AppCommandRunner> obj,
                      scoped_refptr<GetAppOutputWithExitCodeAndTimeoutResult>
@@ -317,8 +337,21 @@ HRESULT AppCommandRunner::Run(base::span<const std::wstring> substitutions,
                   base::WrapRefCounted(this), result)));
 
   result->process_event.Wait();
+
+  HRESULT hr = result->hr.value_or(E_UNEXPECTED);
+  if (FAILED(hr)) {
+    end_event.AddError({.code = hr});
+  }
+  if (result->exit_code) {
+    end_event.SetExitCode(*result->exit_code);
+  }
+  std::string command_output = output();
+  if (!command_output.empty()) {
+    end_event.SetOutput(command_output);
+  }
+  end_event.WriteAsync();
+
   if (!result->process) {
-    const HRESULT hr = result->hr.value_or(E_UNEXPECTED);
     LOG(ERROR) << __func__ << ": base::LaunchProcess failed: " << hr;
     return hr;
   }

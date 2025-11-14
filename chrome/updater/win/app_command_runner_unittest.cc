@@ -397,7 +397,7 @@ INSTANTIATE_TEST_SUITE_P(RunAppCommandFormatTestCases,
 
 TEST_P(RunAppCommandFormatTest, TestCases) {
   scoped_refptr<AppCommandRunner> app_command_runner =
-      base::MakeRefCounted<AppCommandRunner>();
+      base::MakeRefCounted<AppCommandRunner>(kAppId1);
 
   base::Process process;
   ASSERT_EQ(app_command_runner->Run(GetParam().substitutions, process),
@@ -540,7 +540,7 @@ TEST_P(RunBothFormatsTest, TestCases) {
   }
 
   scoped_refptr<AppCommandRunner> app_command_runner =
-      base::MakeRefCounted<AppCommandRunner>();
+      base::MakeRefCounted<AppCommandRunner>(kAppId1);
   base::Process process;
   ASSERT_EQ(app_command_runner->Run({}, process), E_UNEXPECTED);
 
@@ -641,11 +641,9 @@ INSTANTIATE_TEST_SUITE_P(
     }));
 
 TEST_P(AppCommandOutputTest, TestCases) {
-  scoped_refptr<AppCommandRunner> app_command_runner =
-      base::MakeRefCounted<AppCommandRunner>();
   base::Process process;
   ASSERT_OK_AND_ASSIGN(
-      app_command_runner,
+      scoped_refptr<AppCommandRunner> app_command_runner,
       CreateAppCommandRunner(
           kAppId1, kCmdId1,
           base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",

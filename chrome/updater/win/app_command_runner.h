@@ -18,6 +18,7 @@
 #include "base/process/process.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/thread_annotations.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
 
@@ -27,7 +28,7 @@ namespace updater {
 // registry.
 class AppCommandRunner : public base::RefCountedThreadSafe<AppCommandRunner> {
  public:
-  AppCommandRunner();
+  explicit AppCommandRunner(const std::wstring& app_id);
 
   // Creates an instance of `AppCommandRunner` object corresponding to `app_id`
   // and `command_id`.
@@ -98,6 +99,7 @@ class AppCommandRunner : public base::RefCountedThreadSafe<AppCommandRunner> {
       const std::vector<std::wstring>& parameters,
       base::span<const std::wstring> substitutions);
 
+  const std::wstring app_id_;
   base::FilePath executable_;
   std::vector<std::wstring> parameters_;
   base::WaitableEvent command_completed_event_;
@@ -105,7 +107,7 @@ class AppCommandRunner : public base::RefCountedThreadSafe<AppCommandRunner> {
   // Access to the following object members must be serialized by using the
   // lock.
   mutable base::Lock lock_;
-  std::string output_;
+  std::string output_ GUARDED_BY(lock_);
 
   friend class base::RefCountedThreadSafe<AppCommandRunner>;
   FRIEND_TEST_ALL_PREFIXES(AppCommandFormatComponentsInvalidPathsTest,
