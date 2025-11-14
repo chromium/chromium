@@ -8,7 +8,9 @@
 #include <optional>
 #include <string>
 
+#include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -32,14 +34,22 @@
 
 namespace actor_login {
 
+using base::test::RunUntil;
 using password_manager::PasswordForm;
 using password_manager::PasswordFormManager;
 using testing::NiceMock;
 using testing::Return;
 using testing::ReturnRef;
 using testing::UnorderedElementsAre;
+using testing::WithArg;
 
 namespace {
+
+template <bool success>
+void PostResponse(base::OnceCallback<void(bool)> callback) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), success));
+}
 
 class FakePasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
@@ -113,6 +123,8 @@ class ActorLoginGetCredentialsHelperTest : public ::testing::Test {
     ON_CALL(client_, GetPasswordManager)
         .WillByDefault(Return(&password_manager_));
     ON_CALL(client_, IsFillingEnabled).WillByDefault(Return(true));
+    ON_CALL(driver_, CheckViewAreaVisible)
+        .WillByDefault(WithArg<1>(&PostResponse<true>));
   }
 
   void TearDown() override {
@@ -144,7 +156,7 @@ class ActorLoginGetCredentialsHelperTest : public ::testing::Test {
       const autofill::FormData& form_data,
       password_manager::PasswordManagerClient* client,
       MockPasswordManagerDriver& driver,
-      password_manager::FormFetcher* form_fetcher) {
+      password_manager::FakeFormFetcher* form_fetcher) {
     ON_CALL(driver, GetLastCommittedOrigin).WillByDefault(ReturnRef(origin));
     ON_CALL(driver, IsInPrimaryMainFrame)
         .WillByDefault(Return(is_in_main_frame));
@@ -156,6 +168,7 @@ class ActorLoginGetCredentialsHelperTest : public ::testing::Test {
         std::make_unique<password_manager::PasswordSaveManagerImpl>(client),
         /*metrics_recorder=*/nullptr);
     form_manager->DisableFillingServerPredictionsForTesting();
+    form_fetcher->NotifyFetchCompleted();
     return form_manager;
   }
 
@@ -178,11 +191,6 @@ class ActorLoginGetCredentialsHelperTest : public ::testing::Test {
 
     ON_CALL(form_cache_, GetFormManagers)
         .WillByDefault(Return(base::span(form_managers_)));
-  }
-
-  void SetBestMatches(std::vector<PasswordForm> best_matches) {
-    form_fetcher_.SetBestMatches(best_matches);
-    form_fetcher_.NotifyFetchCompleted();
   }
 
   const GURL kUrl = GURL("https://foo.com");
@@ -262,21 +270,24 @@ TEST_F(ActorLoginGetCredentialsHelperTest, UsernameAndPasswordFieldsVisible) {
       password_manager::features::kActorLoginFieldVisibilityCheck);
   PasswordForm saved_form =
       CreatePasswordForm(kUrl.spec(), u"foo_username", u"foo_password");
-  client()->profile_store()->AddLogin(saved_form);
   // To make GetSigninFormManager return a non-nullptr value, we need to
   // populate the PasswordFormCache with a PasswordFormManager that represents
   // a sign-in form.
   AddFormManager(CreateFormManager());
-  SetBestMatches({saved_form});
+  form_fetcher()->SetBestMatches({saved_form});
 
   EXPECT_CALL(driver(), CheckViewAreaVisible)
-      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(true));
+      .Times(2)
+      .WillRepeatedly(WithArg<1>(&PostResponse<true>));
 
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
                                         future.GetCallback());
 
-  base::RunLoop().RunUntilIdle();
+  // The helper only attaches itself as a consumer after all the
+  // async checks for signin forms are done.
+  ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
+
   // `FakeFormFetcher::AddConsumer` implementation differs from production,
   // therefore additional manual call to NotifyFetchCompleted is needed
   // after helper above gets registered as observer of `FakeFormFetcher`.
@@ -298,12 +309,15 @@ TEST_F(ActorLoginGetCredentialsHelperTest, FieldsAreNotVisible) {
       password_manager::features::kActorLoginFieldVisibilityCheck);
   PasswordForm saved_form =
       CreatePasswordForm(kUrl.spec(), u"foo_username", u"foo_password");
+  // There won't be a signin form, so the credential will be fetched from
+  // the store rather than the fake form fetcher.
   client()->profile_store()->AddLogin(saved_form);
+
   // To make GetSigninFormManager return a non-nullptr value, we need to
-  // populate the PasswordFormCache with a PasswordFormManager that represents
-  // a sign-in form.
+  // populate the PasswordFormCache with a PasswordFormManager that
+  // represents a sign-in form.
   AddFormManager(CreateFormManager());
-  SetBestMatches({saved_form});
+  form_fetcher()->SetBestMatches({saved_form});
 
   EXPECT_CALL(driver(), CheckViewAreaVisible)
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(false));
@@ -311,6 +325,11 @@ TEST_F(ActorLoginGetCredentialsHelperTest, FieldsAreNotVisible) {
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
                                         future.GetCallback());
+
+  // The helper only attaches itself as a consumer after all the
+  // async checks for signin forms are done.
+  ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
+
   // `FakeFormFetcher::AddConsumer` implementation differs from production,
   // therefore additional manual call to NotifyFetchCompleted is needed
   // after helper above gets registered as observer of `FakeFormFetcher`.
@@ -331,10 +350,10 @@ TEST_F(ActorLoginGetCredentialsHelperTest, IgnoresFormInFencedFrame) {
       CreatePasswordForm(kUrl.spec(), u"foo_username", u"foo_password");
   client()->profile_store()->AddLogin(saved_form);
   // To make GetSigninFormManager return a non-nullptr value, we need to
-  // populate the PasswordFormCache with a PasswordFormManager that represents
-  // a sign-in form.
+  // populate the PasswordFormCache with a PasswordFormManager that
+  // represents a sign-in form.
   AddFormManager(CreateFormManager());
-  SetBestMatches({saved_form});
+  form_fetcher()->SetBestMatches({saved_form});
 
   EXPECT_CALL(driver(), IsNestedWithinFencedFrame).WillOnce(Return(true));
 
@@ -371,7 +390,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
                         /*is_in_main_frame=*/false,
                         actor_login::CreateSigninFormData(same_site_url),
                         client(), driver(), form_fetcher()));
-  SetBestMatches({saved_form});
+  form_fetcher()->SetBestMatches({saved_form});
 
   ON_CALL(driver(), IsDirectChildOfPrimaryMainFrame)
       .WillByDefault(Return(true));
@@ -381,6 +400,11 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
                                         future.GetCallback());
+
+  // The helper only attaches itself as a consumer after all the
+  // async checks for signin forms are done.
+  ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
+
   form_fetcher()->NotifyFetchCompleted();
 
   ASSERT_TRUE(future.Get().has_value());
@@ -398,13 +422,15 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
   const url::Origin same_site_origin = url::Origin::Create(same_site_url);
   PasswordForm saved_form =
       CreatePasswordForm(same_site_url.spec(), u"user", u"pass");
+  // The same site form is ignored, so it'll end up fetching credentials
+  // from the store instead of the form manager's fake form fetcher.
   client()->profile_store()->AddLogin(saved_form);
   AddFormManager(
       CreateFormManager(same_site_origin,
                         /*is_in_main_frame=*/false,
                         actor_login::CreateSigninFormData(same_site_url),
                         client(), driver(), form_fetcher()));
-  SetBestMatches({saved_form});
+  form_fetcher()->SetBestMatches({saved_form});
 
   ON_CALL(driver(), IsDirectChildOfPrimaryMainFrame)
       .WillByDefault(Return(true));
@@ -412,6 +438,9 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
                                         future.GetCallback());
+  // The helper only attaches itself as a consumer after all the
+  // async checks for signin forms are done.
+  ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
   form_fetcher()->NotifyFetchCompleted();
 
   ASSERT_TRUE(future.Get().has_value());
@@ -422,19 +451,16 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
 
 TEST_F(ActorLoginGetCredentialsHelperTest, NestedFrameWithSameOrigin) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kActorLoginFieldVisibilityCheck);
   const GURL same_origin_url = GURL("https://foo.com/login");
   const url::Origin same_origin = url::Origin::Create(same_origin_url);
   PasswordForm saved_form =
       CreatePasswordForm(same_origin_url.spec(), u"user", u"pass");
-  client()->profile_store()->AddLogin(saved_form);
   AddFormManager(
       CreateFormManager(same_origin,
                         /*is_in_main_frame=*/false,
                         actor_login::CreateSigninFormData(same_origin_url),
                         client(), driver(), form_fetcher()));
-  SetBestMatches({saved_form});
+  form_fetcher()->SetBestMatches({saved_form});
 
   ON_CALL(driver(), IsDirectChildOfPrimaryMainFrame)
       .WillByDefault(Return(false));
@@ -442,6 +468,9 @@ TEST_F(ActorLoginGetCredentialsHelperTest, NestedFrameWithSameOrigin) {
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
                                         future.GetCallback());
+  // The helper only attaches itself as a consumer after all the
+  // async checks for signin forms are done.
+  ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
   form_fetcher()->NotifyFetchCompleted();
 
   ASSERT_TRUE(future.Get().has_value());
@@ -452,8 +481,6 @@ TEST_F(ActorLoginGetCredentialsHelperTest, NestedFrameWithSameOrigin) {
 
 TEST_F(ActorLoginGetCredentialsHelperTest, IgnoresSameSiteNestedFrame) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kActorLoginFieldVisibilityCheck);
   const GURL same_site_url = GURL("https://login.foo.com");
   const url::Origin same_site_origin = url::Origin::Create(same_site_url);
   PasswordForm saved_form =
@@ -464,7 +491,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest, IgnoresSameSiteNestedFrame) {
                         /*is_in_main_frame=*/false,
                         actor_login::CreateSigninFormData(same_site_url),
                         client(), driver(), form_fetcher()));
-  SetBestMatches({saved_form});
+  form_fetcher()->SetBestMatches({saved_form});
 
   ON_CALL(driver(), IsDirectChildOfPrimaryMainFrame)
       .WillByDefault(Return(false));
@@ -472,6 +499,9 @@ TEST_F(ActorLoginGetCredentialsHelperTest, IgnoresSameSiteNestedFrame) {
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
                                         future.GetCallback());
+  // The helper only attaches itself as a consumer after all the
+  // async checks for signin forms are done.
+  ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
   form_fetcher()->NotifyFetchCompleted();
 
   ASSERT_TRUE(future.Get().has_value());
@@ -484,8 +514,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
        IgnoresSameSiteNestedFrame_FeatureOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {}, {password_manager::features::kActorLoginSameSiteIframeSupport,
-           password_manager::features::kActorLoginFieldVisibilityCheck});
+      {}, {password_manager::features::kActorLoginSameSiteIframeSupport});
   const GURL same_site_url = GURL("https://login.foo.com");
   const url::Origin same_site_origin = url::Origin::Create(same_site_url);
   PasswordForm saved_form =
@@ -496,7 +525,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
                         /*is_in_main_frame=*/false,
                         actor_login::CreateSigninFormData(same_site_url),
                         client(), driver(), form_fetcher()));
-  SetBestMatches({saved_form});
+  form_fetcher()->SetBestMatches({saved_form});
 
   ON_CALL(driver(), IsDirectChildOfPrimaryMainFrame)
       .WillByDefault(Return(false));
@@ -504,6 +533,9 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
                                         future.GetCallback());
+  // The helper only attaches itself as a consumer after all the
+  // async checks for signin forms are done.
+  ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
   form_fetcher()->NotifyFetchCompleted();
 
   ASSERT_TRUE(future.Get().has_value());
@@ -525,11 +557,16 @@ TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsPrefersExactMatch) {
       CreatePasswordForm(kUrl.spec(), u"exact_username", u"exact_password");
   exact_match.actor_login_approved = true;
   AddFormManager(CreateFormManager());
-  SetBestMatches({exact_match, affiliated_match, psl_match});
-
+  form_fetcher()->SetBestMatches({exact_match, affiliated_match, psl_match});
   base::test::TestFuture<CredentialsOrError> future;
+
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
                                         future.GetCallback());
+
+  // The helper only attaches itself as a consumer after all the
+  // async checks for signin forms are done.
+  ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
+
   form_fetcher()->NotifyFetchCompleted();
 
   ASSERT_TRUE(future.Get().has_value());
@@ -549,13 +586,16 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
       PasswordForm::MatchType::kAffiliated);
   affiliated_match.actor_login_approved = true;
   AddFormManager(CreateFormManager());
-  SetBestMatches({affiliated_match, psl_match});
+  form_fetcher()->SetBestMatches({affiliated_match, psl_match});
 
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
                                         future.GetCallback());
-  form_fetcher()->NotifyFetchCompleted();
+  // The helper only attaches itself as a consumer after all the
+  // async checks for signin forms are done.
+  ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
 
+  form_fetcher()->NotifyFetchCompleted();
   ASSERT_TRUE(future.Get().has_value());
   const auto& credentials = future.Get().value();
   ASSERT_EQ(credentials.size(), 1u);
@@ -571,11 +611,16 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
       "https://m.foo.com", u"affiliated_username", u"affiliated_password",
       PasswordForm::MatchType::kAffiliated);
   AddFormManager(CreateFormManager());
-  SetBestMatches({affiliated_match, psl_match});
+  form_fetcher()->SetBestMatches({affiliated_match, psl_match});
 
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
                                         future.GetCallback());
+
+  // The helper only attaches itself as a consumer after all the
+  // async checks for signin forms are done.
+  ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
+
   form_fetcher()->NotifyFetchCompleted();
 
   ASSERT_TRUE(future.Get().has_value());
@@ -593,11 +638,16 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
       "https://m.foo.com", u"affiliated_username", u"affiliated_password",
       PasswordForm::MatchType::kAffiliated);
   AddFormManager(CreateFormManager());
-  SetBestMatches({affiliated_match, psl_match});
+  form_fetcher()->SetBestMatches({affiliated_match, psl_match});
 
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
                                         future.GetCallback());
+
+  // The helper only attaches itself as a consumer after all the
+  // async checks for signin forms are done.
+  ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
+
   form_fetcher()->NotifyFetchCompleted();
 
   ASSERT_TRUE(future.Get().has_value());
@@ -616,14 +666,20 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
   affiliated_match.actor_login_approved = true;
   PasswordForm exact_match =
       CreatePasswordForm(kUrl.spec(), u"exact_username", u"exact_password");
+
   AddFormManager(CreateFormManager());
-  // The order is important, as PWM would rank them in this order and we still
-  // want to return the affiliated match.
-  SetBestMatches({exact_match, affiliated_match, psl_match});
+  // The order is important, as PWM would rank them in this order and we
+  // still want to return the affiliated match.
+  form_fetcher()->SetBestMatches({exact_match, affiliated_match, psl_match});
 
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
                                         future.GetCallback());
+
+  // The helper only attaches itself as a consumer after all the
+  // async checks for signin forms are done.
+  ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
+
   form_fetcher()->NotifyFetchCompleted();
 
   ASSERT_TRUE(future.Get().has_value());
