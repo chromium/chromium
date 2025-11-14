@@ -1171,6 +1171,18 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
+                       TestOpenInForceSaveToCloudState) {
+  auto* dialog = CreateContentAnalysisDialog(
+                     std::make_unique<MockDelegate>(),
+                     FinalContentAnalysisResult::FORCE_SAVE_TO_CLOUD)
+                     ->dialog_delegate_for_testing();
+  EXPECT_EQ(nullptr, dialog->GetSideIconSpinnerForTesting());
+  EXPECT_EQ(dialog->GetMessageForTesting()->GetText(),
+            u"This file has sensitive or dangerous data. Your organization "
+            u"will let you save it to cloud storage or discard it");
+}
+
+IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        TestWithDownloadsDelegateBypassWarning) {
   download::MockDownloadItem mock_download_item;
   auto* dialog =

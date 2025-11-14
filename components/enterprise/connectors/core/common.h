@@ -215,6 +215,9 @@ enum class FinalContentAnalysisResult {
 
   // Show that no issue was found and that the user may proceed.
   SUCCESS = 5,
+
+  // Show that the download is blocked and may proceed to cloud storage.
+  FORCE_SAVE_TO_CLOUD = 6,
 };
 
 // Result for a single request of the RequestHandler classes.

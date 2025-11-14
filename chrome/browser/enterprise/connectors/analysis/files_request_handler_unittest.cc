@@ -245,6 +245,9 @@ void PrintTo(const RequestHandlerResult& request_handler_result,
     case FinalContentAnalysisResult::SUCCESS:
       *os << "SUCCESS";
       break;
+    case FinalContentAnalysisResult::FORCE_SAVE_TO_CLOUD:
+      *os << "FORCE_SAVE_TO_CLOUD";
+      break;
   }
   *os << "), tag: \"" << request_handler_result.tag << "\")";
 }

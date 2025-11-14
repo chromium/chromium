@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_delegate.h"
 
+#include <string>
+
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/enterprise/connectors/core/common.h"
@@ -156,6 +158,7 @@ int ContentAnalysisDialogDelegate::GetTopImageId() const {
       case State::SUCCESS:
         return IDR_UPLOAD_SUCCESS_DARK;
       case State::FAILURE:
+      case State::FORCE_SAVE_TO_CLOUD:
         return IDR_UPLOAD_VIOLATION_DARK;
       case State::WARNING:
         return IDR_UPLOAD_WARNING_DARK;
@@ -167,6 +170,7 @@ int ContentAnalysisDialogDelegate::GetTopImageId() const {
       case State::SUCCESS:
         return IDR_UPLOAD_SUCCESS;
       case State::FAILURE:
+      case State::FORCE_SAVE_TO_CLOUD:
         return IDR_UPLOAD_VIOLATION;
       case State::WARNING:
         return IDR_UPLOAD_WARNING;
@@ -185,6 +189,7 @@ ui::ColorId ContentAnalysisDialogDelegate::GetSideImageLogoColor() const {
     case State::SUCCESS:
     case State::FAILURE:
     case State::WARNING:
+    case State::FORCE_SAVE_TO_CLOUD:
       // In a result state, the side image is a circle colored with the result's
       // color and an enterprise logo in front of it, so the logo should have
       // the same color as the dialog's overall background.
@@ -202,6 +207,7 @@ ui::ColorId ContentAnalysisDialogDelegate::GetSideImageBackgroundColor() const {
     case State::SUCCESS:
       return ui::kColorAccent;
     case State::FAILURE:
+    case State::FORCE_SAVE_TO_CLOUD:
       return ui::kColorAlertHighSeverity;
     case State::WARNING:
       return ui::kColorAlertMediumSeverityIcon;
@@ -254,6 +260,9 @@ void ContentAnalysisDialogDelegate::UpdateStateFromFinalResult(
       break;
     case FinalContentAnalysisResult::WARNING:
       dialog_state_ = State::WARNING;
+      break;
+    case FinalContentAnalysisResult::FORCE_SAVE_TO_CLOUD:
+      dialog_state_ = State::FORCE_SAVE_TO_CLOUD;
       break;
   }
 }
@@ -330,6 +339,21 @@ void ContentAnalysisDialogDelegate::SetupButtons() {
 
     DialogDelegate::SetButtonLabel(ui::mojom::DialogButton::kCancel,
                                    GetCancelButtonText());
+  } else if (is_force_save_to_cloud()) {
+    DialogDelegate::SetButtons(
+        static_cast<int>(ui::mojom::DialogButton::kCancel) |
+        static_cast<int>(ui::mojom::DialogButton::kOk));
+    DialogDelegate::SetDefaultButton(
+        static_cast<int>(ui::mojom::DialogButton::kCancel));
+
+    // Do not allow overrides, since this option only applies to downloads.
+    SetButtonLabel(ui::mojom::DialogButton::kCancel,
+                   l10n_util::GetStringUTF16(
+                       IDS_DEEP_SCANNING_DIALOG_DOWNLOADS_DISCARD_FILE_BUTTON));
+
+    SetButtonLabel(ui::mojom::DialogButton::kOk,
+                   l10n_util::GetStringUTF16(
+                       IDS_DEEP_SCANNING_DIALOG_SAVE_TO_CLOUD_STORAGE_LABEL));
   } else {
     // Include no buttons otherwise.
     DialogDelegate::SetButtons(
@@ -350,6 +374,7 @@ std::u16string ContentAnalysisDialogDelegate::GetCancelButtonText() const {
     case State::PENDING:
       text_id = IDS_DEEP_SCANNING_DIALOG_CANCEL_UPLOAD_BUTTON;
       break;
+    case State::FORCE_SAVE_TO_CLOUD:
     case State::FAILURE:
       text_id = IDS_CLOSE;
       break;
@@ -364,6 +389,8 @@ std::u16string ContentAnalysisDialogDelegate::GetDialogMessage() const {
   switch (dialog_state_) {
     case State::PENDING:
       return GetPendingMessage();
+    case State::FORCE_SAVE_TO_CLOUD:
+      return GetForceSaveToCloudMessage();
     case State::FAILURE:
       return GetFailureMessage();
     case State::SUCCESS:
@@ -382,6 +409,14 @@ std::u16string ContentAnalysisDialogDelegate::GetPendingMessage() const {
 
   return l10n_util::GetPluralStringFUTF16(
       IDS_DEEP_SCANNING_DIALOG_UPLOAD_PENDING_MESSAGE, files_count_);
+}
+
+std::u16string ContentAnalysisDialogDelegate::GetForceSaveToCloudMessage()
+    const {
+  DCHECK(is_force_save_to_cloud());
+
+  return l10n_util::GetStringUTF16(
+      IDS_DEEP_SCANNING_DIALOG_SAVE_TO_CLOUD_STORAGE_MESSAGE);
 }
 
 std::u16string ContentAnalysisDialogDelegate::GetFailureMessage() const {

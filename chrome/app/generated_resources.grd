@@ -18361,6 +18361,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_DEEP_SCANNING_DIALOG_BYPASS_JUSTIFICATION_TEXT_LIMIT_LABEL" desc="A label that contains the current amount of characters in the bypass justification text box, as well as the maximum limit of characters. This is displayed to the user so they know when the limit is exceeded.">
       <ph name="ACTUAL_CHAR_COUNT">$1<ex>10</ex></ph>/<ph name="MAX_CHAR_COUNT">$2<ex>280</ex></ph>
     </message>
+    <message name="IDS_DEEP_SCANNING_DIALOG_SAVE_TO_CLOUD_STORAGE_LABEL" desc="Button text to allow the user to save a file to cloud storage">
+      Save to cloud storage
+    </message>
+    <message name="IDS_DEEP_SCANNING_DIALOG_SAVE_TO_CLOUD_STORAGE_MESSAGE" desc="Button text to allow the user to save a file to cloud storage">
+      This file has sensitive or dangerous data. Your organization will let you save it to cloud storage or discard it
+    </message>
 
     <!-- Data sharing UI strings -->
     <message name="IDS_DATA_SHARING_BUBBLE_DIALOG_TITLE" desc="Title of the data sharing bubble">
