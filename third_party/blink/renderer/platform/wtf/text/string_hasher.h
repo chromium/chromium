@@ -23,14 +23,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_HASHER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_HASHER_H_
 
+#include <stdint.h>
+
+#include <concepts>
 #include <cstring>
-#include <type_traits>
 
 #include "base/containers/span.h"
-#include "base/dcheck_is_on.h"
-#include "base/logging.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/rapidhash/rapidhash.h"
 
 namespace blink {
@@ -82,12 +81,14 @@ class StringHasher {
     return MaskTop8Bits(rapidhash<Reader>(data.data(), data.size()));
   }
 
-  static uint64_t HashMemory(base::span<const uint8_t> data) {
-    return rapidhash(data.data(), data.size());
-  }
-
-  template <size_t Extent>
-  static uint64_t HashMemory(base::span<const uint8_t, Extent> data) {
+  // TODO(crbug.com/458429790): Once clang is better able to optimize this,
+  // simplify this to a single overload that accepts a base::span<const
+  // uint8_t>.
+  template <typename T>
+    requires(std::convertible_to<T, base::span<const uint8_t>>)
+  static uint64_t HashMemory(const T& t) {
+    base::span data = t;
+    static_assert(std::same_as<typename decltype(data)::value_type, uint8_t>);
     return rapidhash(data.data(), data.size());
   }
 

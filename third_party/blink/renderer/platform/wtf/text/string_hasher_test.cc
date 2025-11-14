@@ -103,7 +103,10 @@ TEST(StringHasherTest, StringHasher_ComputeHashAndMaskTop8Bits) {
 }
 
 TEST(StringHasherTest, StringHasher_HashMemory) {
-  EXPECT_EQ(kEmptyStringHash, StringHasher::HashMemory({}));
+  EXPECT_EQ(kEmptyStringHash,
+            StringHasher::HashMemory(base::span<const uint8_t>()));
+  EXPECT_EQ(kEmptyStringHash,
+            StringHasher::HashMemory(base::span<const uint8_t, 0>()));
   EXPECT_EQ(kEmptyStringHash, StringHasher::HashMemory(
                                   base::as_byte_span(kNullUChars).first(0u)));
 
