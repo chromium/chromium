@@ -86,7 +86,8 @@ class PageContextExtractorJavaScriptFeatureTest : public PlatformTest {
   net::EmbeddedTestServer test_server_;
 };
 
-TEST_F(PageContextExtractorJavaScriptFeatureTest, ExtractPageContext) {
+// TODO(crbug.com/455761581): Test is flaky.
+TEST_F(PageContextExtractorJavaScriptFeatureTest, FLAKY_ExtractPageContext) {
   const std::string main_html =
       base::StrCat({"<html><head><title>Main</title></head><body><p>Main frame "
                     "text</p><iframe "
