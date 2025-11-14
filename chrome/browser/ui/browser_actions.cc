@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_page_action_controller.h"
+#include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_controller.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
@@ -1104,6 +1105,39 @@ void BrowserActions::InitializeBrowserActions() {
             .SetProperty(actions::kActionItemPinnableKey, false)
             .Build());
   }
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                tabs::TabInterface* active_tab = bwi->GetActiveTabInterface();
+                CHECK(active_tab);
+
+                std::underlying_type_t<page_actions::PageActionTrigger>
+                    page_action_trigger = context.GetProperty(
+                        page_actions::kPageActionTriggerKey);
+                CHECK_NE(page_action_trigger,
+                         page_actions::kInvalidPageActionTrigger);
+
+                LensOverlayHomeworkPageActionController::From(*active_tab)
+                    ->HandlePageActionEvent(
+                        static_cast<page_actions::PageActionTrigger>(
+                            page_action_trigger) ==
+                        page_actions::PageActionTrigger::kKeyboard);
+              },
+              bwi))
+          .SetActionId(kActionLensOverlayHomework)
+          .SetImage(ui::ImageModel::FromVectorIcon(
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+              vector_icons::kGoogleLensMonochromeLogoIcon
+#else
+              vector_icons::kSearchChromeRefreshIcon
+#endif
+              ))
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_CONTENT_LENS_OVERLAY_ASK_GOOGLE_ENTRYPOINT_LABEL))
+          .Build());
 
   root_action_item_->AddChild(
       actions::ActionItem::Builder(

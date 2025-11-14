@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/test/run_until.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_controller.h"
 #include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -32,6 +34,7 @@
 #include "components/lens/lens_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/test/widget_test.h"
 #include "url/url_constants.h"
@@ -104,10 +107,23 @@ class LensOverlayHomeworkPageActionIconViewTestBase
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  LensOverlayHomeworkPageActionIconView* lens_overlay_homework_icon_view() {
+  IconLabelBubbleView* lens_overlay_homework_icon_view() {
     return BrowserElementsViews::From(browser())
-        ->GetViewAs<LensOverlayHomeworkPageActionIconView>(
+        ->GetViewAs<IconLabelBubbleView>(
             kLensOverlayHomeworkPageActionIconElementId);
+  }
+
+  void PressOnView(bool is_migrated) {
+    if (IsPageActionMigrated(PageActionIconType::kLensOverlayHomework)) {
+      LensOverlayHomeworkPageActionController::From(
+          *browser()->tab_strip_model()->GetActiveTab())
+          ->HandlePageActionEvent(/*is_from_keyboard=*/true);
+    } else {
+      BrowserElementsViews::From(browser())
+          ->GetViewAs<LensOverlayHomeworkPageActionIconView>(
+              kLensOverlayHomeworkPageActionIconElementId)
+          ->ExecuteWithKeyboardSourceForTesting();
+    }
   }
 
   LocationBarView* location_bar_view() {
@@ -134,32 +150,39 @@ class LensOverlayHomeworkPageActionIconViewTestBase
 };
 
 class LensOverlayHomeworkPageActionIconViewTest
-    : public LensOverlayHomeworkPageActionIconViewTestBase {
+    : public LensOverlayHomeworkPageActionIconViewTestBase,
+      public ::testing::WithParamInterface<bool> {
  public:
   LensOverlayHomeworkPageActionIconViewTest() {
+    bool is_migrated = GetParam();
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        base::test::FeatureRefAndParams(lens::features::kLensOverlay, {}),
+        base::test::FeatureRefAndParams(
+            lens::features::kLensOverlayOmniboxEntryPoint, {}),
+        base::test::FeatureRefAndParams(
+            lens::features::kLensOverlayEduActionChip,
+            {{"url-allow-filters", "[\"*\"]"},
+             {"url-path-match-allow-filters", "[\"select\"]"},
+             {"max-shown-count", "3"}})};
+    enabled_features.push_back(base::test::FeatureRefAndParams(
+        features::kPageActionsMigration,
+        {{features::kPageActionsMigrationLensOverlayHomework.name,
+          is_migrated ? "true" : "false"}}));
+
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {base::test::FeatureRefAndParams(lens::features::kLensOverlay, {}),
-         base::test::FeatureRefAndParams(
-             lens::features::kLensOverlayOmniboxEntryPoint, {}),
-         base::test::FeatureRefAndParams(
-             lens::features::kLensOverlayEduActionChip,
-             {{"url-allow-filters", "[\"*\"]"},
-              {"url-path-match-allow-filters", "[\"select\"]"},
-              {"max-shown-count", "3"}})},
-        {lens::features::kLensOverlayKeyboardSelection,
-         lens::features::kLensOverlayOptimizationFilter});
+        enabled_features, {lens::features::kLensOverlayKeyboardSelection,
+                           lens::features::kLensOverlayOptimizationFilter});
   }
 };
 
-IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionIconViewTest,
+IN_PROC_BROWSER_TEST_P(LensOverlayHomeworkPageActionIconViewTest,
                        ShowsOnMatchingPage) {
   SetLensOverlayEduActionChipShownCount(browser()->profile(), 0);
   // Navigate to a matching page.
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
 
-  LensOverlayHomeworkPageActionIconView* icon_view =
-      lens_overlay_homework_icon_view();
+  IconLabelBubbleView* icon_view = lens_overlay_homework_icon_view();
   views::FocusManager* focus_manager = icon_view->GetFocusManager();
   focus_manager->ClearFocus();
   EXPECT_FALSE(focus_manager->GetFocusedView());
@@ -174,15 +197,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionIconViewTest,
   EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->profile()), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionIconViewTest,
+IN_PROC_BROWSER_TEST_P(LensOverlayHomeworkPageActionIconViewTest,
                        HidesOnNonMatchingPage) {
   SetLensOverlayEduActionChipShownCount(browser()->profile(), 0);
   // Navigate to a non-matching page.
   const GURL url = embedded_test_server()->GetURL(kDocument2);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
 
-  LensOverlayHomeworkPageActionIconView* icon_view =
-      lens_overlay_homework_icon_view();
+  IconLabelBubbleView* icon_view = lens_overlay_homework_icon_view();
   views::FocusManager* focus_manager = icon_view->GetFocusManager();
   focus_manager->ClearFocus();
   EXPECT_FALSE(focus_manager->GetFocusedView());
@@ -197,15 +219,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionIconViewTest,
   EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->profile()), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionIconViewTest,
+IN_PROC_BROWSER_TEST_P(LensOverlayHomeworkPageActionIconViewTest,
                        HidesAfterMaxShownCountReached) {
   SetLensOverlayEduActionChipShownCount(browser()->profile(), 4);
   // Navigate to a matching page.
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
 
-  LensOverlayHomeworkPageActionIconView* icon_view =
-      lens_overlay_homework_icon_view();
+  IconLabelBubbleView* icon_view = lens_overlay_homework_icon_view();
   views::FocusManager* focus_manager = icon_view->GetFocusManager();
   focus_manager->ClearFocus();
   EXPECT_FALSE(focus_manager->GetFocusedView());
@@ -228,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionIconViewTest,
   OpensNewTabWhenEnteredThroughKeyboard
 #endif
 // Flaky failures on Windows; see https://crbug.com/419308044.
-IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionIconViewTest,
+IN_PROC_BROWSER_TEST_P(LensOverlayHomeworkPageActionIconViewTest,
                        MAYBE_OpensNewTabWhenEnteredThroughKeyboard) {
   SetLensOverlayEduActionChipShownCount(browser()->profile(), 0);
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
@@ -243,8 +264,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionIconViewTest,
         ->CompletedFirstVisuallyNonEmptyPaint();
   }));
 
-  LensOverlayHomeworkPageActionIconView* icon_view =
-      lens_overlay_homework_icon_view();
+  IconLabelBubbleView* icon_view = lens_overlay_homework_icon_view();
   views::FocusManager* focus_manager = icon_view->GetFocusManager();
   focus_manager->ClearFocus();
   EXPECT_FALSE(focus_manager->GetFocusedView());
@@ -253,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionIconViewTest,
   // Executing the lens overlay icon view with keyboard source should open a new
   // tab.
   ui_test_utils::TabAddedWaiter tab_add(browser());
-  lens_overlay_homework_icon_view()->ExecuteWithKeyboardSourceForTesting();
+  PressOnView(lens_overlay_homework_icon_view());
   auto* new_tab_contents = tab_add.Wait();
 
   EXPECT_TRUE(new_tab_contents);
@@ -262,20 +282,35 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionIconViewTest,
               MatchesRegex("ep=crmntob&re=df&s=4&st=\\d+&lm=.+"));
 }
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         LensOverlayHomeworkPageActionIconViewTest,
+                         ::testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Migrated" : "Original";
+                         });
+
 class LensOverlayHomeworkPageActionIconViewTest_OptimizationFilter
-    : public LensOverlayHomeworkPageActionIconViewTestBase {
+    : public LensOverlayHomeworkPageActionIconViewTestBase,
+      public ::testing::WithParamInterface<bool> {
  public:
   LensOverlayHomeworkPageActionIconViewTest_OptimizationFilter() {
+    bool is_migrated = GetParam();
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        base::test::FeatureRefAndParams(lens::features::kLensOverlay, {}),
+        base::test::FeatureRefAndParams(
+            lens::features::kLensOverlayOmniboxEntryPoint, {}),
+        base::test::FeatureRefAndParams(
+            lens::features::kLensOverlayOptimizationFilter, {}),
+        base::test::FeatureRefAndParams(
+            lens::features::kLensOverlayEduActionChip,
+            {{"max-shown-count", "3"}})};
+    if (is_migrated) {
+      enabled_features.push_back(base::test::FeatureRefAndParams(
+          features::kPageActionsMigration,
+          {{features::kPageActionsMigrationLensOverlayHomework.name, "true"}}));
+    }
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {base::test::FeatureRefAndParams(lens::features::kLensOverlay, {}),
-         base::test::FeatureRefAndParams(
-             lens::features::kLensOverlayOmniboxEntryPoint, {}),
-         base::test::FeatureRefAndParams(
-             lens::features::kLensOverlayOptimizationFilter, {}),
-         base::test::FeatureRefAndParams(
-             lens::features::kLensOverlayEduActionChip,
-             {{"max-shown-count", "3"}})},
-        {lens::features::kLensOverlayKeyboardSelection});
+        enabled_features, {lens::features::kLensOverlayKeyboardSelection});
   }
 
   void SetupOptimizationFilter() {
@@ -290,7 +325,7 @@ class LensOverlayHomeworkPageActionIconViewTest_OptimizationFilter
   }
 };
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     LensOverlayHomeworkPageActionIconViewTest_OptimizationFilter,
     ShowsOnMatchingPage) {
   SetupOptimizationFilter();
@@ -299,8 +334,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
 
-  LensOverlayHomeworkPageActionIconView* icon_view =
-      lens_overlay_homework_icon_view();
+  IconLabelBubbleView* icon_view = lens_overlay_homework_icon_view();
   views::FocusManager* focus_manager = icon_view->GetFocusManager();
   focus_manager->ClearFocus();
   EXPECT_FALSE(focus_manager->GetFocusedView());
@@ -315,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->profile()), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     LensOverlayHomeworkPageActionIconViewTest_OptimizationFilter,
     HidesOnNonMatchingPage) {
   SetupOptimizationFilter();
@@ -324,8 +358,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL url = embedded_test_server()->GetURL(kDocument2);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
 
-  LensOverlayHomeworkPageActionIconView* icon_view =
-      lens_overlay_homework_icon_view();
+  IconLabelBubbleView* icon_view = lens_overlay_homework_icon_view();
   views::FocusManager* focus_manager = icon_view->GetFocusManager();
   focus_manager->ClearFocus();
   EXPECT_FALSE(focus_manager->GetFocusedView());
@@ -340,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->profile()), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     LensOverlayHomeworkPageActionIconViewTest_OptimizationFilter,
     HidesAfterMaxShownCountReached) {
   SetupOptimizationFilter();
@@ -349,8 +382,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
 
-  LensOverlayHomeworkPageActionIconView* icon_view =
-      lens_overlay_homework_icon_view();
+  IconLabelBubbleView* icon_view = lens_overlay_homework_icon_view();
   views::FocusManager* focus_manager = icon_view->GetFocusManager();
   focus_manager->ClearFocus();
   EXPECT_FALSE(focus_manager->GetFocusedView());
@@ -374,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(
   OpensNewTabWhenEnteredThroughKeyboard
 #endif
 // Flaky failures on Windows; see https://crbug.com/419308044.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     LensOverlayHomeworkPageActionIconViewTest_OptimizationFilter,
     MAYBE_OpensNewTabWhenEnteredThroughKeyboard) {
   SetupOptimizationFilter();
@@ -391,8 +423,7 @@ IN_PROC_BROWSER_TEST_F(
         ->CompletedFirstVisuallyNonEmptyPaint();
   }));
 
-  LensOverlayHomeworkPageActionIconView* icon_view =
-      lens_overlay_homework_icon_view();
+  IconLabelBubbleView* icon_view = lens_overlay_homework_icon_view();
   views::FocusManager* focus_manager = icon_view->GetFocusManager();
   focus_manager->ClearFocus();
   EXPECT_FALSE(focus_manager->GetFocusedView());
@@ -401,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(
   // Executing the lens overlay icon view with keyboard source should open a new
   // tab.
   ui_test_utils::TabAddedWaiter tab_add(browser());
-  lens_overlay_homework_icon_view()->ExecuteWithKeyboardSourceForTesting();
+  PressOnView(lens_overlay_homework_icon_view());
   auto* new_tab_contents = tab_add.Wait();
 
   EXPECT_TRUE(new_tab_contents);
@@ -409,5 +440,13 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(new_tab_contents->GetLastCommittedURL().GetQuery(),
               MatchesRegex("ep=crmntob&re=df&s=4&st=\\d+&lm=.+"));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LensOverlayHomeworkPageActionIconViewTest_OptimizationFilter,
+    ::testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "Migrated" : "Original";
+    });
 
 }  // namespace

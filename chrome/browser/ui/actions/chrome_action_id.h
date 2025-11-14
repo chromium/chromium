@@ -341,6 +341,7 @@
   E(kActionContentContextLensRegionSearch, \
     IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH) \
   E(kActionAiMode) \
+  E(kActionLensOverlayHomework) \
   E(kActionContentContextWebRegionSearch, \
     IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH) \
   E(kActionContentContextGeneratePassword, \

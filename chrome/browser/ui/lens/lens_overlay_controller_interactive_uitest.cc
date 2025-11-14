@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_icon_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/search_test_utils.h"
@@ -215,6 +216,17 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
 
     return Steps(EnsurePresent(overlayId),
                  WaitForStateChange(overlayId, screenshot_is_rendered));
+  }
+
+  bool TriggerLenOverlayHomeworkPageAction() {
+    auto* icon_view =
+        BrowserElementsViews::From(browser())->GetViewAs<IconLabelBubbleView>(
+            kLensOverlayHomeworkPageActionIconElementId);
+
+    views::FocusManager* focus_manager = icon_view->GetFocusManager();
+    focus_manager->ClearFocus();
+    EXPECT_FALSE(focus_manager->GetFocusedView());
+    return icon_view->GetVisible();
   }
 
  protected:
@@ -1196,6 +1208,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerStraightToSrpTest,
         ->GetContents()
         ->CompletedFirstVisuallyNonEmptyPaint();
   }));
+  ASSERT_TRUE(TriggerLenOverlayHomeworkPageAction());
 
   RunTestSequence(
       PressButton(kLensOverlayHomeworkPageActionIconElementId),
@@ -1265,6 +1278,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerStraightToSrpCustomQueryTest,
         ->GetContents()
         ->CompletedFirstVisuallyNonEmptyPaint();
   }));
+  ASSERT_TRUE(TriggerLenOverlayHomeworkPageAction());
 
   RunTestSequence(
       PressButton(kLensOverlayHomeworkPageActionIconElementId),
@@ -1347,6 +1361,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerEduActionChipTest,
         ->GetContents()
         ->CompletedFirstVisuallyNonEmptyPaint();
   }));
+  ASSERT_TRUE(TriggerLenOverlayHomeworkPageAction());
 
   RunTestSequence(
       // Ensure homework chip is visible.

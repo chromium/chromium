@@ -632,6 +632,12 @@ BASE_FEATURE_PARAM(bool,
                    "save_payments",
                    false);
 
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationLensOverlayHomework,
+                   &kPageActionsMigration,
+                   "lens_overlay_homework",
+                   false);
+
 BASE_FEATURE(kSavePasswordsContextualUi, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kByDateHistoryInSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);

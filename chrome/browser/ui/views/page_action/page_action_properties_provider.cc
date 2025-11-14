@@ -33,6 +33,15 @@ constexpr auto kPageActionProperties =
             },
         },
         {
+            kActionLensOverlayHomework,
+            {
+                .histogram_name = "LensOverlayHomework",
+                .type = PageActionIconType::kLensOverlayHomework,
+                .element_identifier =
+                    kLensOverlayHomeworkPageActionIconElementId,
+            },
+        },
+        {
             kActionShowTranslate,
             {
                 .histogram_name = "Translate",

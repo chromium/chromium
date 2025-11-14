@@ -61,6 +61,8 @@ const base::FeatureParam<bool>* GetPageActionsMigrationParam(
     case PageActionIconType::kSaveIban:
     case PageActionIconType::kSaveCard:
       return &features::kPageActionsMigrationSavePayments;
+    case PageActionIconType::kLensOverlayHomework:
+      return &features::kPageActionsMigrationLensOverlayHomework;
     default:
       return nullptr;
   }

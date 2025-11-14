@@ -20,6 +20,7 @@ class FileSystemAccessPageActionController;
 class FromGWSNavigationAndKeepAliveRequestObserver;
 class IntentPickerViewPageActionController;
 class LensOverlayController;
+class LensOverlayHomeworkPageActionController;
 class LensSearchController;
 class MemorySaverChipTabHelper;
 class PinnedTranslateActionListener;
@@ -422,6 +423,10 @@ class TabFeatures {
   // Manages the Cookie Controls page action.
   std::unique_ptr<CookieControlsPageActionController>
       cookie_controls_page_action_controller_;
+
+  // Manages the Lens Overlay Homework page action.
+  std::unique_ptr<LensOverlayHomeworkPageActionController>
+      lens_overlay_homework_page_action_controller_;
 
 #if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicInstanceHelper> glic_instance_helper_;
