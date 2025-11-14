@@ -13,7 +13,7 @@ enum AnEnum {
 
 [Extensible]
 enum AnExtensibleEnum {
-  FIRST, SECOND, THIRD
+  [Default] FIRST, SECOND, THIRD
 };
 
 union PodUnion {

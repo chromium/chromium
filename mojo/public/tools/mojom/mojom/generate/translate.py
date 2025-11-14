@@ -291,8 +291,6 @@ _EXTENSIBLE_ENUMS_MISSING_DEFAULT_TO_BE_FIXED = {
     'x:media_session.mojom.MediaSession.SuspendType',
     'x:media_session.mojom.EnforcementMode',
     'x:media_session.mojom.AudioFocusType',
-    'x:mojo.test.AnExtensibleEnum',
-    'x:mojo.test.EnumB',
     'x:mojo.test.ExtensibleEmptyEnum',
     'x:mojo.test.enum_default_unittest.mojom.ExtensibleEnumWithoutDefault',
     'x:network.mojom.WebSandboxFlags',
