@@ -34,30 +34,34 @@ bool IsLocalhost(const char16_t* spec, int begin, int end) {
 }
 
 template <typename CHAR>
-int DoFindWindowsDriveLetter(const CHAR* spec, int begin, int end) {
-  if (begin > end)
-    return -1;
+size_t DoFindWindowsDriveLetter(
+    std::optional<std::basic_string_view<CHAR>> path) {
+  using string_view = std::basic_string_view<CHAR>;
+  if (!path.has_value()) {
+    return string_view::npos;
+  }
 
   // First guess the beginning of the drive letter.
   // If there is something that looks like a drive letter in the spec between
   // begin and end, store its position in drive_letter_pos.
-  int drive_letter_pos =
-      DoesContainWindowsDriveSpecUntil(spec, begin, end, end);
-  if (drive_letter_pos < begin)
-    return -1;
+  int drive_letter_pos = DoesContainWindowsDriveSpecUntil(
+      path->data(), 0, path->length(), path->length());
+  if (drive_letter_pos < 0) {
+    return string_view::npos;
+  }
 
   // Check if the path up to the drive letter candidate can be canonicalized as
   // "/".
-  Component sub_path = MakeRange(begin, drive_letter_pos);
+  Component sub_path = MakeRange(0, drive_letter_pos);
   RawCanonOutput<1024> output;
   Component output_path;
-  bool success = CanonicalizePath(sub_path.maybe_as_string_view_on(spec),
-                                  &output, &output_path);
+  bool success =
+      CanonicalizePath(sub_path.MaybeAsViewOn(*path), &output, &output_path);
   if (!success || output_path.len != 1 || output.at(output_path.begin) != '/') {
-    return -1;
+    return string_view::npos;
   }
 
-  return drive_letter_pos;
+  return static_cast<size_t>(drive_letter_pos);
 }
 
 #ifdef WIN32
@@ -69,9 +73,8 @@ int DoFindWindowsDriveLetter(const CHAR* spec, int begin, int end) {
 // not).
 template <typename CHAR>
 size_t FileDoDriveSpec(std::basic_string_view<CHAR> path, CanonOutput* output) {
-  int drive_letter_pos = FindWindowsDriveLetter(
-      path.data(), 0, base::checked_cast<int>(path.length()));
-  if (drive_letter_pos < 0) {
+  size_t drive_letter_pos = FindWindowsDriveLetter(path);
+  if (drive_letter_pos == std::basic_string_view<CHAR>::npos) {
     return 0;
   }
 
@@ -86,7 +89,7 @@ size_t FileDoDriveSpec(std::basic_string_view<CHAR> path, CanonOutput* output) {
 
   // Normalize the character following it to a colon rather than pipe.
   output->push_back(':');
-  return static_cast<size_t>(drive_letter_pos + 2);
+  return drive_letter_pos + 2;
 }
 
 #endif  // WIN32
@@ -155,9 +158,10 @@ bool DoCanonicalizeFileUrl(const URLComponentSource<CHAR>& source,
   // TODO(crbug.com/41299821): According to the latest URL spec, this
   // transformation should be done regardless of the path.
   Component host_range = parsed.host;
+  using string_view = std::basic_string_view<CHAR>;
   if (IsLocalhost(source.host, host_range.begin, host_range.end()) &&
-      FindWindowsDriveLetter(source.path, parsed.path.begin,
-                             parsed.path.end()) >= parsed.path.begin) {
+      FindWindowsDriveLetter(parsed.path.maybe_as_string_view_on(
+          source.path)) != string_view::npos) {
     host_range.reset();
   }
 
@@ -167,8 +171,7 @@ bool DoCanonicalizeFileUrl(const URLComponentSource<CHAR>& source,
   // should probably handle validity checking of UNC hosts differently than
   // for regular IP hosts.
   bool success = CanonicalizeFileHost(
-      std::basic_string_view<CHAR>(
-          source.host, host_range.is_valid() ? host_range.end() : 0),
+      string_view(source.host, host_range.is_valid() ? host_range.end() : 0),
       host_range, *output, new_parsed->host);
   success &= DoFileCanonicalizePath<CHAR, UCHAR>(
       parsed.path.maybe_as_string_view_on(source.path), output,
@@ -184,12 +187,12 @@ bool DoCanonicalizeFileUrl(const URLComponentSource<CHAR>& source,
 
 } // namespace
 
-int FindWindowsDriveLetter(const char* spec, int begin, int end) {
-  return DoFindWindowsDriveLetter(spec, begin, end);
+size_t FindWindowsDriveLetter(std::optional<std::string_view> path) {
+  return DoFindWindowsDriveLetter(path);
 }
 
-int FindWindowsDriveLetter(const char16_t* spec, int begin, int end) {
-  return DoFindWindowsDriveLetter(spec, begin, end);
+size_t FindWindowsDriveLetter(std::optional<std::u16string_view> path) {
+  return DoFindWindowsDriveLetter(path);
 }
 
 bool CanonicalizeFileUrl(std::string_view spec,

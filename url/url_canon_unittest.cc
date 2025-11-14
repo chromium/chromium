@@ -2927,28 +2927,29 @@ TEST_F(URLCanonTest, DefaultPortForScheme) {
 }
 
 TEST_F(URLCanonTest, FindWindowsDriveLetter) {
+  constexpr size_t npos = std::string_view::npos;
   struct TestCase {
     std::string_view spec;
     int begin;
     int end;  // -1 for end of spec
-    int expected_drive_letter_pos;
+    size_t expected_drive_letter_pos;
   } cases[] = {
-      {"/", 0, -1, -1},
+      {"/", 0, -1, npos},
 
       {"c:/foo", 0, -1, 0},
       {"/c:/foo", 0, -1, 1},
-      {"//c:/foo", 0, -1, -1},  // "//" does not canonicalize to "/"
+      {"//c:/foo", 0, -1, npos},  // "//" does not canonicalize to "/"
       {"\\C|\\foo", 0, -1, 1},
-      {"/cd:/foo", 0, -1, -1},  // "/c" does not canonicalize to "/"
+      {"/cd:/foo", 0, -1, npos},  // "/c" does not canonicalize to "/"
       {"/./c:/foo", 0, -1, 3},
-      {"/.//c:/foo", 0, -1, -1},  // "/.//" does not canonicalize to "/"
+      {"/.//c:/foo", 0, -1, npos},  // "/.//" does not canonicalize to "/"
       {"/././c:/foo", 0, -1, 5},
-      {"/abc/c:/foo", 0, -1, -1},  // "/abc/" does not canonicalize to "/"
+      {"/abc/c:/foo", 0, -1, npos},  // "/abc/" does not canonicalize to "/"
       {"/abc/./../c:/foo", 0, -1, 10},
 
-      {"/c:/c:/foo", 3, -1, 4},  // actual input is "/c:/foo"
-      {"/c:/foo", 3, -1, -1},    // actual input is "/foo"
-      {"/c:/foo", 0, 1, -1},     // actual input is "/"
+      {"/c:/c:/foo", 3, -1, 1},  // actual input is "/c:/foo"
+      {"/c:/foo", 3, -1, npos},  // actual input is "/foo"
+      {"/c:/foo", 0, 1, npos},   // actual input is "/"
   };
 
   for (const auto& c : cases) {
@@ -2956,13 +2957,15 @@ TEST_F(URLCanonTest, FindWindowsDriveLetter) {
     if (end == -1)
       end = c.spec.size();
 
-    EXPECT_EQ(c.expected_drive_letter_pos,
-              FindWindowsDriveLetter(c.spec.data(), c.begin, end))
+    EXPECT_EQ(
+        c.expected_drive_letter_pos,
+        FindWindowsDriveLetter(MakeRange(c.begin, end).MaybeAsViewOn(c.spec)))
         << "for " << c.spec << "[" << c.begin << ":" << end << "] (UTF-8)";
 
     std::u16string spec16 = base::ASCIIToUTF16(c.spec);
-    EXPECT_EQ(c.expected_drive_letter_pos,
-              FindWindowsDriveLetter(spec16.data(), c.begin, end))
+    EXPECT_EQ(
+        c.expected_drive_letter_pos,
+        FindWindowsDriveLetter(MakeRange(c.begin, end).MaybeAsViewOn(spec16)))
         << "for " << c.spec << "[" << c.begin << ":" << end << "] (UTF-16)";
   }
 }

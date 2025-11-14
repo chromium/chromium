@@ -521,15 +521,15 @@ bool CanonicalizePartialPathInternal(std::u16string_view path,
                                      CanonOutput* output);
 
 // Find the position of a bona fide Windows drive letter in the given path. If
-// no leading drive letter is found, -1 is returned. This function correctly
+// no leading drive letter is found, `npos` is returned. This function correctly
 // treats /c:/foo and /./c:/foo as having drive letters, and /def/c:/foo as not
 // having a drive letter.
 //
 // Exported for tests.
 COMPONENT_EXPORT(URL)
-int FindWindowsDriveLetter(const char* spec, int begin, int end);
+size_t FindWindowsDriveLetter(std::optional<std::string_view> path);
 COMPONENT_EXPORT(URL)
-int FindWindowsDriveLetter(const char16_t* spec, int begin, int end);
+size_t FindWindowsDriveLetter(std::optional<std::u16string_view> path);
 
 // StringToUint64WithBase is implemented separately because std::strtoull (and
 // its variants like _stroui64 on Windows) are not guaranteed to be constexpr,
