@@ -5,6 +5,14 @@
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("ios") {
+  sources = [
+    "ios_passkey_client.h",
+    "passkey_java_script_feature.h",
+    "passkey_java_script_feature.mm",
+    "passkey_tab_helper.h",
+    "passkey_tab_helper.mm",
+  ]
+
   deps = [
     ":features",
     ":passkey_controller_js",
@@ -15,14 +23,6 @@ source_set("ios") {
     "//device/fido",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
-  ]
-
-  sources = [
-    "ios_passkey_client.h",
-    "passkey_java_script_feature.h",
-    "passkey_java_script_feature.mm",
-    "passkey_tab_helper.h",
-    "passkey_tab_helper.mm",
   ]
 
   frameworks = [ "AuthenticationServices.framework" ]
