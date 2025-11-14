@@ -565,13 +565,19 @@ class JSONParsingTest(unittest.TestCase):
     def testFailure(self):
         input_api = MockInputApi()
         test_data = [
-            ('invalid_json_1.json', ['{ x }'], 'Expecting property name'),
+            ('invalid_json_1.json', ['{ x }'], ['Expecting property name']),
             ('invalid_json_2.json', ['// Hello world!', '{ "hello": "world }'],
-             'Unterminated string starting at:'),
-            ('invalid_json_3.json', ['{ "a": "b", "c": "d", }'],
-             'Expecting property name'),
+             ['Unterminated string starting at:']),
+            (
+                'invalid_json_3.json',
+                ['{ "a": "b", "c": "d", }'],
+                # Different errors depending on Python version.
+                [
+                    'Illegal trailing comma before end of object',
+                    'Expecting property name'
+                ]),
             ('invalid_json_4.json', ['{ "a": "b" "c": "d" }'],
-             "Expecting ',' delimiter:"),
+             ["Expecting ',' delimiter:"]),
         ]
 
         input_api.files = [
@@ -579,11 +585,11 @@ class JSONParsingTest(unittest.TestCase):
             for (filename, contents, _) in test_data
         ]
 
-        for (filename, _, expected_error) in test_data:
+        for (filename, _, expected_errors) in test_data:
             actual_error = PRESUBMIT._GetJSONParseError(input_api, filename)
             self.assertTrue(
-                expected_error in str(actual_error),
-                f'{filename}: "{expected_error}" not found in "{actual_error}"'
+                any(e in str(actual_error) for e in expected_errors),
+                f'{filename}: "{expected_errors}" not found in "{actual_error}"'
             )
 
     def testNoEatComments(self):
