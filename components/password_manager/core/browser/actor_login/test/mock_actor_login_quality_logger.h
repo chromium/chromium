@@ -32,6 +32,11 @@ class MockActorLoginQualityLogger : public ActorLoginQualityLoggerInterface {
       (optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails),
       (override));
   MOCK_METHOD(void,
+              SetPermissionPicked,
+              (optimization_guide::proto::ActorLoginQuality_PermissionOption
+                   permission_option),
+              (override));
+  MOCK_METHOD(void,
               UploadFinalLog,
               (optimization_guide::ModelQualityLogsUploaderService *
                mqls_uploader),

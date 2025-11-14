@@ -32,6 +32,12 @@ using translate::testing::MockTranslateRanker;
 using ActorLoginQuality = optimization_guide::proto::ActorLoginQuality;
 using GetCredentialsDetails =
     optimization_guide::proto::ActorLoginQuality_GetCredentialsDetails;
+using AttemptLoginDetails =
+    optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails;
+using FillingFormResult = optimization_guide::proto::
+    ActorLoginQuality_AttemptLoginDetails_FillingFormResult;
+using PermissionDetails =
+    optimization_guide::proto::ActorLoginQuality_PermissionOption;
 
 // Expect two protos to be equal if they are serialized into the same strings.
 MATCHER_P(ProtoEquals, expected_message, "") {
@@ -176,4 +182,32 @@ TEST_F(ActorLoginQualityLoggerTest, LogsLocation) {
   EXPECT_THAT(logger.get_log_data(), ProtoEquals(expected_log));
 
   TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
+}
+
+TEST_F(ActorLoginQualityLoggerTest, AddAttemptLoginDetails) {
+  ActorLoginQualityLogger logger;
+
+  optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails
+      expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
+  expected_details.set_attempt_login_time_ms(0);
+  FillingFormResult* form_result = expected_details.add_filling_form_result();
+  form_result->set_was_password_filled(true);
+  logger.AddAttemptLoginDetails(expected_details);
+  logger.AddAttemptLoginDetails(expected_details);
+
+  ASSERT_EQ(logger.get_log_data().attempt_login_details().size(), 2);
+  EXPECT_THAT(logger.get_log_data().attempt_login_details(0),
+              ProtoEquals(expected_details));
+}
+
+TEST_F(ActorLoginQualityLoggerTest, SetsPermissionDetails) {
+  ActorLoginQualityLogger logger;
+
+  PermissionDetails expected_permission =
+      optimization_guide::proto::ActorLoginQuality_PermissionOption_ALLOW_ONCE;
+  logger.SetPermissionPicked(expected_permission);
+  EXPECT_EQ(logger.get_log_data().permission_picked(), expected_permission);
 }
