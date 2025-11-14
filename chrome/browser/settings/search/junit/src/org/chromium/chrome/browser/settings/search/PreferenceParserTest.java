@@ -110,7 +110,7 @@ public class PreferenceParserTest {
                 privacyParents.size());
         assertEquals(
                 "The parent of PrivacySettings should be the 'privacy' preference.",
-                "privacy",
+                PreferenceParser.createUniqueId(MainSettings.class.getName(), "privacy"),
                 privacyParents.get(0));
 
         assertTrue(

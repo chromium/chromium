@@ -131,9 +131,11 @@ public class PreferenceParser {
             String title = bundle.getString(METADATA_TITLE);
             if (TextUtils.isEmpty(key) || TextUtils.isEmpty(title)) continue;
 
-            indexData.updateEntry(
-                    key,
-                    new SettingsIndexData.Entry.Builder(key, title, prefFragment)
+            String uniqueId = createUniqueId(prefFragment, key);
+
+            indexData.addEntry(
+                    uniqueId,
+                    new SettingsIndexData.Entry.Builder(uniqueId, key, title, prefFragment)
                             .setSummary(bundle.getString(METADATA_SUMMARY))
                             .setFragment(bundle.getString(METADATA_FRAGMENT))
                             .build());
@@ -174,16 +176,18 @@ public class PreferenceParser {
         processedFragments.add(parentFragmentName);
 
         for (Bundle bundle : metadata) {
-            String parentPreferenceKey = bundle.getString(PreferenceParser.METADATA_KEY);
+            String parentKey = bundle.getString(PreferenceParser.METADATA_KEY);
             String childFragmentName = bundle.getString(PreferenceParser.METADATA_FRAGMENT);
 
             if (TextUtils.isEmpty(childFragmentName)) {
                 continue;
             }
 
-            assert !TextUtils.isEmpty(parentPreferenceKey) : "Parent preference key is null/empty.";
+            assert !TextUtils.isEmpty(parentKey) : "Parent preference key is null/empty.";
 
-            indexData.addParentChildLink(childFragmentName, parentPreferenceKey);
+            String uniqueParentId = createUniqueId(parentFragmentName, parentKey);
+
+            indexData.addChildParentLink(childFragmentName, uniqueParentId);
 
             SearchIndexProvider childProvider = providerMap.get(childFragmentName);
             // TODO(adelm): Once all prefs have been registered, this should become an assert.
@@ -192,5 +196,9 @@ public class PreferenceParser {
                         context, indexData, providerMap, processedFragments);
             }
         }
+    }
+
+    public static String createUniqueId(String parentFragmentName, String originalKey) {
+        return parentFragmentName + "#" + originalKey;
     }
 }

@@ -59,7 +59,10 @@ public class SettingsIndexData {
      * that its state cannot be changed after creation.
      */
     public static class Entry {
-        /** Key defined for Preference/Fragment. */
+        /** The entry's globally unique id. */
+        public final String id;
+
+        /** The original key defined for Preference/Fragment. */
         public final String key;
 
         /** Title of Preference/Fragment. */
@@ -87,6 +90,7 @@ public class SettingsIndexData {
         private final @Nullable String mSummaryNormalized;
 
         private Entry(
+                String id,
                 String key,
                 String title,
                 @Nullable String header,
@@ -96,6 +100,7 @@ public class SettingsIndexData {
                 String parentFragment,
                 @Nullable String titleNormalized,
                 @Nullable String summaryNormalized) {
+            this.id = id;
             this.key = key;
             this.title = title;
             this.header = header;
@@ -112,6 +117,7 @@ public class SettingsIndexData {
          * be aware of the normalized fields.
          */
         public static class Builder {
+            private final String mId;
             private final String mKey;
             private String mTitle;
             private @Nullable String mHeader;
@@ -124,11 +130,13 @@ public class SettingsIndexData {
              * Constructs a builder with the minimum required fields for creating a new {@link
              * Entry}.
              *
-             * @param key The unique key of the preference.
+             * @param id The unique id of the preference.
+             * @param key The key of the preference.
              * @param title The title of the preference.
              * @param parentFragment The class name of the fragment containing this preference.
              */
-            public Builder(String key, String title, String parentFragment) {
+            public Builder(String id, String key, String title, String parentFragment) {
+                mId = id;
                 mKey = key;
                 mTitle = title;
                 mParentFragment = parentFragment;
@@ -141,6 +149,7 @@ public class SettingsIndexData {
              * @param original The original {@link Entry} to copy.
              */
             public Builder(Entry original) {
+                mId = original.id;
                 mKey = original.key;
                 mTitle = original.title;
                 mHeader = original.header;
@@ -185,6 +194,7 @@ public class SettingsIndexData {
                 String summaryNormalized = normalizeString(mSummary);
 
                 return new Entry(
+                        mId,
                         mKey,
                         mTitle,
                         mHeader,
@@ -271,7 +281,7 @@ public class SettingsIndexData {
      * @param childFragmentName The class name of the child fragment.
      * @param parentPreferenceKey The key of the preference that links to the child fragment.
      */
-    public void addParentChildLink(String childFragmentName, String parentPreferenceKey) {
+    public void addChildParentLink(String childFragmentName, String parentPreferenceKey) {
         mChildFragmentToParentKeys
                 .computeIfAbsent(childFragmentName, k -> new ArrayList<>())
                 .add(parentPreferenceKey);
@@ -291,7 +301,7 @@ public class SettingsIndexData {
             // Root entries have their own title as the header.
             if (entry.parentFragment.equals(rootFragmentName)) {
                 Entry updatedEntry = new Entry.Builder(entry).setHeader(entry.title).build();
-                updateEntry(entry.key, updatedEntry);
+                updateEntry(entry.id, updatedEntry);
                 continue;
             }
 
@@ -299,10 +309,10 @@ public class SettingsIndexData {
                     findVisibleHeader(entry.parentFragment, resolvedHeaderCache, rootFragmentName);
             if (header != null) {
                 Entry updatedEntry = new Entry.Builder(entry).setHeader(header).build();
-                updateEntry(entry.key, updatedEntry);
+                updateEntry(entry.id, updatedEntry);
             } else {
                 // This entry is an orphan, we mark it for removal.
-                entriesToRemove.add(entry.key);
+                entriesToRemove.add(entry.id);
             }
         }
 

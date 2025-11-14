@@ -78,21 +78,28 @@ public class BaseSearchIndexProviderTest {
         assertFalse("Parent map should not be empty after registration.", parentMap.isEmpty());
 
         String appearanceFragmentName = AppearanceSettingsFragment.class.getName();
+        String expectedAppearanceParentKey =
+                PreferenceParser.createUniqueId(MainSettings.class.getName(), "appearance");
+
         assertTrue(
                 "Map should contain a link to AppearanceSettingsFragment.",
                 parentMap.containsKey(appearanceFragmentName));
         assertEquals(
                 "AppearanceSettings' parent preference should be 'appearance'.",
-                "appearance",
+                expectedAppearanceParentKey,
                 parentMap.get(appearanceFragmentName).get(0));
 
         String themeFragmentName = ThemeSettingsFragment.class.getName();
+        String expectedThemeParentKey =
+                PreferenceParser.createUniqueId(
+                        AppearanceSettingsFragment.class.getName(), "ui_theme");
+
         assertTrue(
                 "Map should contain a link to the grandchild ThemeSettingsFragment.",
                 parentMap.containsKey(themeFragmentName));
         assertEquals(
                 "ThemeSettings' parent preference should be 'ui_theme'.",
-                "ui_theme",
+                expectedThemeParentKey,
                 parentMap.get(themeFragmentName).get(0));
     }
 
@@ -103,10 +110,14 @@ public class BaseSearchIndexProviderTest {
         Map<String, SettingsIndexData.Entry> entries = mIndexData.getEntriesForTesting();
         assertFalse("Index should not be empty after indexing.", entries.isEmpty());
 
-        final String themeKey = "ui_theme";
-        SettingsIndexData.Entry themeEntry = entries.get(themeKey);
+        final String originalThemeKey = "ui_theme";
+        final String uniqueThemeKey =
+                PreferenceParser.createUniqueId(
+                        AppearanceSettingsFragment.class.getName(), originalThemeKey);
+
+        SettingsIndexData.Entry themeEntry = entries.get(uniqueThemeKey);
         assertNotNull("'ui_theme' should be indexed from appearance_preferences.", themeEntry);
-        assertEquals("Key should match the preference key.", themeKey, themeEntry.key);
+        assertEquals("Key should match the preference key.", originalThemeKey, themeEntry.key);
         assertEquals(
                 "Title should match the string resource.",
                 mContext.getString(R.string.theme_settings),
