@@ -71,6 +71,12 @@ class WebContentsView {
   // Get the bounds of the View in the global screen position.
   virtual gfx::Rect GetViewBounds() const = 0;
 
+  // Resizes the view to the new bounds.
+  virtual void Resize(const gfx::Rect& new_bounds) = 0;
+
+  // Returns the size of the view.
+  virtual gfx::Size GetSize() const = 0;
+
   virtual void CreateView(gfx::NativeView context) = 0;
 
   // Sets up the View that holds the rendered web page, receives messages for

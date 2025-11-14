@@ -2871,7 +2871,6 @@ source_set("browser") {
       "speech/tts_mac.mm",
       "theme_helper_mac.h",
       "theme_helper_mac.mm",
-      "web_contents/web_contents_impl_mac.mm",
       "web_contents/web_contents_view_mac.h",
       "web_contents/web_contents_view_mac.mm",
       "web_contents/web_drag_dest_mac.h",
@@ -2916,7 +2915,6 @@ source_set("browser") {
       "renderer_host/web_menu_runner_ios.h",
       "renderer_host/web_menu_runner_ios.mm",
       "speech/tts_ios.mm",
-      "web_contents/web_contents_impl_ios.mm",
       "web_contents/web_contents_view_ios.h",
       "web_contents/web_contents_view_ios.mm",
     ]

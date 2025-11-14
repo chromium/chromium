@@ -262,6 +262,18 @@ gfx::Rect WebContentsViewAndroid::GetViewBounds() const {
   return gfx::Rect(view_.GetSizeDIPs());
 }
 
+void WebContentsViewAndroid::Resize(const gfx::Rect& new_bounds) {
+  content::RenderWidgetHostView* view =
+      web_contents_->GetRenderWidgetHostView();
+  if (view) {
+    view->SetBounds(new_bounds);
+  }
+}
+
+gfx::Size WebContentsViewAndroid::GetSize() const {
+  return view_.GetSizeDIPs();
+}
+
 void WebContentsViewAndroid::CreateView(gfx::NativeView context) {}
 
 RenderWidgetHostViewBase* WebContentsViewAndroid::CreateViewForWidget(

@@ -174,6 +174,17 @@ gfx::Rect WebContentsViewIOS::GetViewBounds() const {
                    ui_view_->view_.contentSize.height);
 }
 
+void WebContentsViewIOS::Resize(const gfx::Rect& new_bounds) {
+  NOTIMPLEMENTED();
+}
+
+gfx::Size WebContentsViewIOS::GetSize() const {
+  UIView* view = GetNativeView().Get();
+  DCHECK(view);
+  CGRect frame = view.frame;
+  return gfx::Size(frame.size.width, frame.size.height);
+}
+
 void WebContentsViewIOS::GotFocus(RenderWidgetHostImpl* render_widget_host) {
   web_contents_->NotifyWebContentsFocused(render_widget_host);
 }
