@@ -1531,6 +1531,7 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
       break;
 
     // Roles not used on Android.
+    case ax::mojom::Role::kCaret:
     case ax::mojom::Role::kColumn:
     case ax::mojom::Role::kListGrid:
     case ax::mojom::Role::kMenuItemSeparator:
