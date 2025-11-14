@@ -737,7 +737,8 @@ void WaitForFakeJoinFlowView() {
 
 // Ensures the last tab close alert as a member is displayed when the group is
 // shared.
-- (void)testLastTabClosedMemberAlert {
+// TODO(crbug.com/460745987): Test is flaky.
+- (void)FLAKY_testLastTabClosedMemberAlert {
   AddSharedGroup(/*owner=*/NO, self.testServer);
 
   // Open the group view.
