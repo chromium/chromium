@@ -123,6 +123,7 @@ class ChromeOmniboxClient final : public OmniboxClient {
   void OpenUrl(GURL gurl) override;
   void OpenIphLink(GURL gurl) override;
   bool IsHistoryEmbeddingsEnabled() const override;
+  bool IsAimPopupEnabled() const override;
   std::optional<lens::proto::LensOverlaySuggestInputs>
   GetLensOverlaySuggestInputs() const override;
   void MaybePrewarmForDefaultSearchEngine() override;

@@ -500,7 +500,7 @@ ui::ImageModel OmniboxEditModel::GetSuperGIcon(int image_size,
 }
 
 bool OmniboxEditModel::ShouldShowAddContextButton() const {
-  return base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup) &&
+  return controller_->client()->IsAimPopupEnabled() &&
          omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.Get() ==
              omnibox::AddContextButtonVariant::kInline &&
          controller_->IsPopupOpen();
@@ -758,7 +758,7 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
   // If the omnibox hasn't been modified (changed selection or text), then AIM
   // button should open AIM popup. Otherwise, it should navigate to Google AI
   // page.
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup)) {
+  if (controller_->client()->IsAimPopupEnabled()) {
     bool omnibox_not_modified_by_user =
         (popup_selection_.line == 0 ||
          popup_selection_.line == OmniboxPopupSelection::kNoMatch) &&

@@ -67,6 +67,7 @@
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -854,6 +855,10 @@ void ChromeOmniboxClient::OpenIphLink(GURL gurl) {
 
 bool ChromeOmniboxClient::IsHistoryEmbeddingsEnabled() const {
   return history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile_);
+}
+
+bool ChromeOmniboxClient::IsAimPopupEnabled() const {
+  return omnibox::IsAimPopupEnabled(profile_);
 }
 
 std::optional<lens::proto::LensOverlaySuggestInputs>
