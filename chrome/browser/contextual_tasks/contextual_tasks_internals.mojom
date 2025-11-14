@@ -1,0 +1,32 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module contextual_tasks.mojom;
+
+import "url/mojom/url.mojom";
+
+struct GetRelevantContextRequest {
+  // The query to get relevant context for.
+  string query;
+};
+
+// Represents the tab.
+struct Tab {
+  // Tab title.
+  string title;
+  // Tab URL.
+  url.mojom.Url url;
+};
+
+struct GetRelevantContextResponse {
+  // The list of open tabs that are relevant to the query.
+  array<Tab> relevant_tabs;
+};
+
+// PageHandler for ContextualTasksInternals page.
+interface ContextualTasksInternalsPageHandler {
+  // Returns the relevant context for the given request.
+  GetRelevantContext(GetRelevantContextRequest request) =>
+      (GetRelevantContextResponse response);
+};

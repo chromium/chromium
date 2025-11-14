@@ -6,6 +6,8 @@
 #include "chrome/browser/actor/ui/actor_overlay_ui.h"
 #include "chrome/browser/chrome_browser_interface_binders_webui_parts.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_internals.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
@@ -570,6 +572,16 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
     RegisterWebUIControllerInterfaceBinder<
         legion_internals::mojom::LegionInternalsPageHandler, LegionInternalsUI>(
         map);
+  }
+
+  auto* contextual_tasks_context_service =
+      contextual_tasks::ContextualTasksContextServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(
+              render_frame_host->GetProcess()->GetBrowserContext()));
+  if (contextual_tasks_context_service) {
+    RegisterWebUIControllerInterfaceBinder<
+        contextual_tasks::mojom::ContextualTasksInternalsPageHandler,
+        ContextualTasksUI>(map);
   }
 }
 

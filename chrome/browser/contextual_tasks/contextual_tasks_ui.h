@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/uuid.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_internals.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
@@ -37,6 +38,7 @@ class ContextualTasksUiService;
 }  // namespace contextual_tasks
 
 class ContextualTasksComposeboxHandler;
+class ContextualTasksInternalsPageHandler;
 
 // An interface for managing task IDs held by the WebUI.
 class TaskInfoDelegate {
@@ -124,6 +126,11 @@ class ContextualTasksUI : public TaskInfoDelegate,
   void BindInterface(
       mojo::PendingReceiver<composebox::mojom::PageHandlerFactory> receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<
+          contextual_tasks::mojom::ContextualTasksInternalsPageHandler>
+          pending_receiver);
+
   static constexpr std::string_view GetWebUIName() { return "ContextualTasks"; }
 
   // Notify the UI that the WebContents has moved to or from the side panel or
@@ -192,6 +199,9 @@ class ContextualTasksUI : public TaskInfoDelegate,
   std::optional<std::string> thread_title_;
 
   mojo::Remote<contextual_tasks::mojom::Page> page_;
+
+  std::unique_ptr<ContextualTasksInternalsPageHandler>
+      contextual_tasks_internals_page_handler_;
 
   base::WeakPtrFactory<ContextualTasksUI> weak_ptr_factory_{this};
 

@@ -11,6 +11,8 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_internals_page_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
@@ -137,6 +139,14 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean("expandedComposeboxShowVoiceSearch", false);
   source->AddBoolean("composeboxShowContextMenuTabPreviews", false);
   source->AddBoolean("composeboxContextMenuEnableMultiTabSelection", false);
+
+  // Set up chrome://contextual-tasks/internals debug UI.
+  source->AddResourcePath(
+      "internals",
+      IDR_CONTEXTUAL_TASKS_INTERNALS_CONTEXTUAL_TASKS_INTERNALS_HTML);
+  source->AddResourcePath(
+      "internals/",
+      IDR_CONTEXTUAL_TASKS_INTERNALS_CONTEXTUAL_TASKS_INTERNALS_HTML);
 }
 
 ContextualTasksUI::~ContextualTasksUI() = default;
@@ -351,6 +361,19 @@ void ContextualTasksUI::InnerFrameCreationObvserver::InnerWebContentsCreated(
     content::WebContents* inner_web_contents) {
   CHECK(callback_);
   std::move(callback_).Run(inner_web_contents);
+}
+
+void ContextualTasksUI::BindInterface(
+    mojo::PendingReceiver<
+        contextual_tasks::mojom::ContextualTasksInternalsPageHandler>
+        receiver) {
+  Profile* profile = Profile::FromWebUI(web_ui());
+  auto* context_service =
+      contextual_tasks::ContextualTasksContextServiceFactory::GetForProfile(
+          profile);
+  contextual_tasks_internals_page_handler_ =
+      std::make_unique<ContextualTasksInternalsPageHandler>(
+          context_service, std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ContextualTasksUI)

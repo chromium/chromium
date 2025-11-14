@@ -92,6 +92,7 @@ if (!is_android) {
   source_set("ui") {
     sources = [
       "contextual_tasks_composebox_handler.h",
+      "contextual_tasks_internals_page_handler.h",
       "contextual_tasks_navigation_throttle.h",
       "contextual_tasks_page_handler.h",
       "contextual_tasks_side_panel_coordinator.h",
@@ -119,6 +120,7 @@ if (!is_android) {
   source_set("ui_impl") {
     sources = [
       "contextual_tasks_composebox_handler.cc",
+      "contextual_tasks_internals_page_handler.cc",
       "contextual_tasks_navigation_throttle.cc",
       "contextual_tasks_page_handler.cc",
       "contextual_tasks_side_panel_coordinator.cc",
@@ -146,7 +148,10 @@ if (!is_android) {
   }
 
   mojom("mojo_bindings") {
-    sources = [ "contextual_tasks.mojom" ]
+    sources = [
+      "contextual_tasks.mojom",
+      "contextual_tasks_internals.mojom",
+    ]
     webui_module_path = "/"
     public_deps = [
       "//mojo/public/mojom/base",
