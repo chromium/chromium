@@ -765,6 +765,7 @@
 <translation id="222962001646502673">ダークグレー 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 個のタブ}other{# 個のタブ}}</translation>
 <translation id="2233745931693710080">コンパクト ディスク</translation>
+<translation id="2236949375853147973">マイ アクティビティ</translation>
 <translation id="2239100178324503013">送信</translation>
 <translation id="224130779555573777">Redress 番号の追加</translation>
 <translation id="2241693394036365668">ファイルがダウンロードされた</translation>
@@ -1459,6 +1460,7 @@
 <translation id="3392028486601120379">URL パターン「<ph name="URL_PATTERN" />」のパスが指定されています。このキーのパスはサポートされていません。パスを削除してから、もう一度お試しください。例: *://example.com/ =&gt; *://example.com"</translation>
 <translation id="3395827396354264108">受け取り方法</translation>
 <translation id="3399161914051569225">ウェアラブル技術</translation>
+<translation id="3399930248910934354">Chrome の設定を開く</translation>
 <translation id="3399952811970034796">配達先住所</translation>
 <translation id="3402261774528610252">このサイトの読み込みで、TLS 1.0 または TLS 1.1 の接続が使用されました。これらの TLS バージョンのサポートは終了し、今後無効となる予定です。無効になると、このサイトは読み込めなくなります。サーバーで TLS 1.2 以降を有効にする必要があります。</translation>
 <translation id="3405664148539009465">フォントをカスタマイズ</translation>
@@ -4091,6 +4093,7 @@
 <translation id="7648133459447652947">カーソルを表示するには、アプリを切り替えるか、ページを再読み込みするか、前に戻ります</translation>
 <translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android の設定<ph name="END_ANDROID_SETTINGS_LINK" />で高度な保護機能を有効にしているため、このサイトはブロックされたままになります。<ph name="BEGIN_LEARN_MORE_LINK" />この警告の詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">このデバイスのファイルの保存</translation>
+<translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7653957176542370971">支払いハンドラのシートは閉じています</translation>
 <translation id="7655766454902053387">求人情報</translation>
 <translation id="765676359832457558">詳細設定を表示しない...</translation>

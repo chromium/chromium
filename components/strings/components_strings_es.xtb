@@ -765,6 +765,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="222962001646502673">Gris oscuro 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 pestaña}other{# pestañas}}</translation>
 <translation id="2233745931693710080">Disco compacto (CD)</translation>
+<translation id="2236949375853147973">Mi Actividad</translation>
 <translation id="2239100178324503013">Enviar ahora</translation>
 <translation id="224130779555573777">Añadir número Redress</translation>
 <translation id="2241693394036365668">Se ha descargado un archivo</translation>
@@ -1459,6 +1460,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3392028486601120379">Se ha especificado una ruta en el patrón de URL "<ph name="URL_PATTERN" />". No se admiten rutas para esta clave. Elimina la ruta e inténtalo de nuevo. Por ejemplo, *://example.com/ =&gt; *://example.com".</translation>
 <translation id="3395827396354264108">Método de recogida</translation>
 <translation id="3399161914051569225">Tecnología wearable</translation>
+<translation id="3399930248910934354">Abrir configuración de Chrome</translation>
 <translation id="3399952811970034796">Dirección de entrega</translation>
 <translation id="3402261774528610252">La conexión que se usa para cargar este sitio web utiliza TLS 1.0 o TLS 1.1, que están obsoletas y se inhabilitarán en el futuro. Cuando se inhabiliten, los usuarios no podrán cargar este sitio web. El servidor debería habilitar el uso de TLS 1.2 o versiones posteriores.</translation>
 <translation id="3405664148539009465">Personalizar fuentes</translation>
@@ -2946,6 +2948,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5813753398265398978">Física</translation>
 <translation id="5817918615728894473">Emparejar</translation>
 <translation id="5820625124144807242">Después de revisar tu pedido, debes iniciar sesión o crear una cuenta de <ph name="BNPL_ISSUER_NAME" />. Esta cuenta se vinculará automáticamente a Google Pay.</translation>
+<translation id="5820751560028604030">Descarga local bloqueada</translation>
 <translation id="5826507051599432481">Nombre común (CN)</translation>
 <translation id="5830698870816298009">uso y movimiento de la cámara</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -4090,6 +4093,7 @@ Más información:
 <translation id="7648133459447652947">Para mostrar el cursor, cambia de aplicación, vuelve a cargar la página o vuelve atrás</translation>
 <translation id="7648527891719919697">Este sitio seguirá bloqueado porque tienes activada la Protección Avanzada en los <ph name="BEGIN_ANDROID_SETTINGS_LINK" />ajustes de Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Almacenar archivos en este dispositivo</translation>
+<translation id="7649070708921625228">Ayuda</translation>
 <translation id="7653957176542370971">La hoja del controlador de pagos está cerrada</translation>
 <translation id="7655766454902053387">Ofertas de empleo</translation>
 <translation id="765676359832457558">Ocultar configuración avanzada...</translation>

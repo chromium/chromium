@@ -38,7 +38,7 @@
 <translation id="1112015203684611006">印刷できませんでした。</translation>
 <translation id="1118569444314402022">ようこそ、<ph name="USER_NAME" /> さん</translation>
 <translation id="1121850836842642159">写真と画像</translation>
-<translation id="1122068467107743258">仕事</translation>
+<translation id="1122068467107743258">職場</translation>
 <translation id="1126696498560056882">このデバイスのアカウントを管理</translation>
 <translation id="1126809382673880764">危険なウェブサイト、ダウンロード、拡張機能から保護されていません。セーフ ブラウジングによる保護は、Gmail や Google 検索など他の Google サービスで利用可能な場合は、引き続き有効です。</translation>
 <translation id="1136104150802877429">商品レビューを表示</translation>
@@ -2190,7 +2190,7 @@
 <translation id="926455622548529175">切り替えて削除</translation>
 <translation id="929748059769569925">選択したテキスト</translation>
 <translation id="932305336591073205">{count,plural, =1{タブを閉じる}other{タブを閉じる}}</translation>
-<translation id="932327136139879170">ホーム</translation>
+<translation id="932327136139879170">自宅</translation>
 <translation id="939472100615258482">現在のサイト</translation>
 <translation id="939598580284253335">パスフレーズを入力</translation>
 <translation id="939736085109172342">新しいフォルダ</translation>

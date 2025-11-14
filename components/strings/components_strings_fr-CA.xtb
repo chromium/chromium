@@ -765,6 +765,7 @@
 <translation id="222962001646502673">Gris foncé 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 onglet}one{# onglet}other{# onglets}}</translation>
 <translation id="2233745931693710080">Disque compact</translation>
+<translation id="2236949375853147973">Mon activité</translation>
 <translation id="2239100178324503013">Envoyer maintenant</translation>
 <translation id="224130779555573777">Ajouter un numéro de rectification</translation>
 <translation id="2241693394036365668">Un fichier est téléchargé</translation>
@@ -1459,6 +1460,7 @@
 <translation id="3392028486601120379">Le format d'URL « <ph name="URL_PATTERN" /> » comporte un chemin défini. Les chemins ne sont pas pris en charge pour cette clé, veuillez supprimer le chemin et réessayer. Par exemple *://exemple.com/ =&gt; *://exemple.com",</translation>
 <translation id="3395827396354264108">Mode de ramassage</translation>
 <translation id="3399161914051569225">Accessoires connectés</translation>
+<translation id="3399930248910934354">Ouvrir les paramètres de Chrome</translation>
 <translation id="3399952811970034796">Adresse de livraison</translation>
 <translation id="3402261774528610252">La connexion utilisée pour charger ce site faisait appel à TLS 1.0 ou à TLS 1.1, qui sont des versions obsolètes et qui seront désactivées à l'avenir. Une fois qu'elles seront désactivées, les utilisateurs ne seront pas en mesure de charger ce site. Le serveur devrait activer TLS 1.2 ou une version ultérieure.</translation>
 <translation id="3405664148539009465">Personnaliser les polices</translation>
@@ -4089,6 +4091,7 @@ Détails supplémentaires :
 <translation id="7648133459447652947">Pour afficher votre curseur, changer d'appli, actualiser la page ou revenir en arrière</translation>
 <translation id="7648527891719919697">Ce site restera bloqué, car vous avez activé la protection avancée dans les <ph name="BEGIN_ANDROID_SETTINGS_LINK" />paramètres Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Enregistrer des fichiers sur cet appareil</translation>
+<translation id="7649070708921625228">Aide</translation>
 <translation id="7653957176542370971">La feuille du module de traitement du paiement est fermée</translation>
 <translation id="7655766454902053387">Offres d'emploi</translation>
 <translation id="765676359832457558">Masquer les paramètres avancés…</translation>

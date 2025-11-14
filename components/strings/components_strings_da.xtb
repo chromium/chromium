@@ -765,6 +765,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="222962001646502673">Mørkegrå 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 fane}one{# fane}other{# faner}}</translation>
 <translation id="2233745931693710080">Cd</translation>
+<translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="2239100178324503013">Send nu</translation>
 <translation id="224130779555573777">Tilføj redress-nummer</translation>
 <translation id="2241693394036365668">En fil downloades</translation>
@@ -1459,6 +1460,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3392028486601120379">Der er angivet en sti for webadressemønsteret "<ph name="URL_PATTERN" />". Stier understøttes ikke for denne nøgle. Fjern stien, og prøv igen. F.eks.: *://eksempel.com/ =&gt; *://eksempel.com",</translation>
 <translation id="3395827396354264108">Afhentningsmetode</translation>
 <translation id="3399161914051569225">Teknologi til at tage på</translation>
+<translation id="3399930248910934354">Åbn indstillingerne for Chrome</translation>
 <translation id="3399952811970034796">Leveringsadresse</translation>
 <translation id="3402261774528610252">Den forbindelse, der blev brugt til at indlæse dette website, benyttede TSL 1.0 eller TLS 1.1, som er blevet udfaset, og som bliver deaktiveret inden for den nærmeste fremtid. Når deaktiveringen har fundet sted, kan brugerne ikke indlæse dette website. Serveren bør aktivere TLS 1.2 eller nyere.</translation>
 <translation id="3405664148539009465">Tilpas skrifttyper</translation>
@@ -4090,6 +4092,7 @@ Yderligere oplysninger:
 <translation id="7648133459447652947">Hvis du vil have vist markøren igen, skal du skifte app, genindlæse siden eller gå tilbage</translation>
 <translation id="7648527891719919697">Dette website forbliver blokeret, fordi Avanceret beskyttelse er aktiveret i <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android-indstillingerne<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger om denne advarsel<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Gemme filer på denne enhed</translation>
+<translation id="7649070708921625228">Hjælp</translation>
 <translation id="7653957176542370971">Regnearket for betalingshandler er lukket</translation>
 <translation id="7655766454902053387">Jobformidling</translation>
 <translation id="765676359832457558">Skjul avancerede indstillinger...</translation>

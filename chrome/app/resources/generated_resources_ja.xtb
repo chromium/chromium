@@ -185,7 +185,7 @@
 <translation id="1118738876271697201">デバイスの機種またはシリアル番号を特定できませんでした。</translation>
 <translation id="111897705806685148">別のデバイスのパスキーを使用</translation>
 <translation id="1119447706177454957">内部エラー</translation>
-<translation id="1122068467107743258">仕事</translation>
+<translation id="1122068467107743258">職場</translation>
 <translation id="1122198203221319518">ツール(&amp;T)</translation>
 <translation id="1122242684574577509">認証できませんでした。クリックして、ご利用の Wi-Fi ネットワーク（<ph name="NETWORK_ID" />）のログインページにアクセスしてください。</translation>
 <translation id="1122587596907914265">ユニークな壁紙にカスタマイズ</translation>
@@ -4027,6 +4027,7 @@
 <translation id="3756578970075173856">PIN を設定</translation>
 <translation id="3756806135608816820">サイトが Bluetooth デバイスの検出を要求できるようにする</translation>
 <translation id="3757567010566591880">ツールバーの固定を解除</translation>
+<translation id="3757645900890881944">検索ツール</translation>
 <translation id="3757733214359997190">サイトが見つかりません</translation>
 <translation id="375841316537350618">プロキシ スクリプトをダウンロードしています...</translation>
 <translation id="3758887577462995665">ヒント:</translation>
@@ -6781,7 +6782,6 @@
 <translation id="5689233503102158537">Alt+Backspace</translation>
 <translation id="5689516760719285838">位置情報</translation>
 <translation id="56907980372820799">データをリンク</translation>
-<translation id="5691581861107245578">入力した内容に基づいて絵文字の候補が表示されます</translation>
 <translation id="5691772641933328258">指紋を認識できません</translation>
 <translation id="5693255400847650006">マイクを使用中</translation>
 <translation id="5695046252726616755">Enter キーまたは Space キーを押すと、その他のオプションが表示されます。</translation>
@@ -8095,6 +8095,7 @@
 <translation id="6619990499523117484">PIN を確認してください</translation>
 <translation id="6620000730890558421">AI でタブをすっきり整理</translation>
 <translation id="6620254580880484313">コンテナ名</translation>
+<translation id="6621282332208609777">Google で検索または URL を入力</translation>
 <translation id="6621391692573306628">このタブを別のデバイスに送信するには、両方のデバイスで Chrome にログインしてください</translation>
 <translation id="6622980291894852883">画像を引き続きブロックする</translation>
 <translation id="6624036901798307345">タブレット モードのときに、ツールバーのタブカウンタ ボタンをタップして、各タブのサムネイルが表示された新しいタブバーを開きます。</translation>
@@ -9517,6 +9518,7 @@
 <translation id="7620616707541471029">続行するには、アカウントを選択してください</translation>
 <translation id="7621382409404463535">デバイスの設定を保存できませんでした。</translation>
 <translation id="7621595347123595643">パスワードや PIN を忘れた場合、ローカルデータを復元できなくなります。</translation>
+<translation id="7621863462266622331">タブを共有すると、そのページのコンテンツ、メディア、URL が Google に送信されます</translation>
 <translation id="7622114377921274169">充電しています。</translation>
 <translation id="7622768823216805500">多くのサイトは、お支払い手続きを簡易化するなど、ショッピングをより快適にするために支払いハンドラをインストールします。</translation>
 <translation id="7622966771025050155">キャプチャしたタブに切り替え</translation>
@@ -10022,6 +10024,7 @@
 <translation id="7952904276017482715">ID「<ph name="EXPECTED_ID" />」が必要ですが、ID「<ph name="NEW_ID" />」が検出されました</translation>
 <translation id="7953236668995583915">更新した設定をこのサイトに適用するには、このページを再読み込みしてください</translation>
 <translation id="7953669802889559161">入力方法</translation>
+<translation id="7953955868932471628">ショートカットの管理</translation>
 <translation id="7955105108888461311">直接リクエストする</translation>
 <translation id="7955177647836564772">Smart Lock がオンになっていて、スマートフォンのロックが解除されている場合、パスワードや PIN を入力する必要はありません</translation>
 <translation id="7956373551960864128">保存されているプリンタ</translation>
@@ -11408,6 +11411,7 @@
 <translation id="8886745493279779790">アクティブでないタブを確認</translation>
 <translation id="8888253246822647887">アップグレードが完了するとアプリが起動します。アップグレードには数分かかることがあります。</translation>
 <translation id="8888459276890791557">このサイドパネルを固定すると簡単にアクセスできます</translation>
+<translation id="8888621340860433230">オプションを表示</translation>
 <translation id="8889294078294184559">それ以降にアクセスしたサイトは、あなたが実在のユーザーであることを、前にアクセスしたサイトから Chrome を介して確認できます。</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> は次のファイルとフォルダを編集できます</translation>
 <translation id="8890170499370378450">モバイルデータ通信料が発生することがあります</translation>
@@ -11730,6 +11734,7 @@
 <translation id="909554839118732438">シークレット モードを終了</translation>
 <translation id="9095819602391364796">サイトによる MIDI デバイスの操作と再プログラムを許可しない</translation>
 <translation id="9096053102600371572">制御付きスクロール（<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" />）</translation>
+<translation id="9096221857560878399">オプションを比較</translation>
 <translation id="9096776523567481218">ローカルにインストールされていません</translation>
 <translation id="9098860402274800697">Google Play と Android アプリを削除する</translation>
 <translation id="9099220545925418560">ユーザーの閲覧履歴に基づいて特定されます。この設定は無効になっています。</translation>
@@ -11913,7 +11918,7 @@
 <translation id="930991362911221750">このタブの表示を <ph name="APP_NAME" /> に許可しますか？</translation>
 <translation id="931273044114601262">このサイトで許可されています</translation>
 <translation id="93140074055951850">Android アプリを停止しました</translation>
-<translation id="932327136139879170">ホーム</translation>
+<translation id="932327136139879170">自宅</translation>
 <translation id="932508678520956232">印刷を開始できませんでした。</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{このファイルはセキュリティ チェックには大きすぎます。アップロードできるファイルの最大サイズは 50 MB です。}other{一部のファイルがセキュリティ チェックには大きすぎます。アップロードできるファイルの最大サイズは 50 MB です。}}</translation>
 <translation id="93343527085570547">法的な理由でコンテンツの変更をリクエストするには、<ph name="BEGIN_LINK1" />法的な問題に関するヘルプページ<ph name="END_LINK1" />にアクセスしてください。リクエストの際、アカウントとシステムに関する情報の一部が Google に送信される場合があります。Google は受け取った情報を、Google の<ph name="BEGIN_LINK2" />プライバシー ポリシー<ph name="END_LINK2" />と<ph name="BEGIN_LINK3" />利用規約<ph name="END_LINK3" />に従って、技術的な問題への対処やサービスの改善に使用します。</translation>

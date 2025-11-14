@@ -765,6 +765,7 @@
 <translation id="222962001646502673">Цёмна-шэры 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 укладка}one{# укладка}few{# укладкі}many{# укладак}other{# укладкі}}</translation>
 <translation id="2233745931693710080">Кампакт-дыск</translation>
+<translation id="2236949375853147973">Мае дзеянні</translation>
 <translation id="2239100178324503013">Адправіць</translation>
 <translation id="224130779555573777">Дадаванне нумара перагляду</translation>
 <translation id="2241693394036365668">Спампоўваецца файл</translation>
@@ -1460,6 +1461,7 @@
 <translation id="3392028486601120379">Указаны шлях для шаблона URL-адраса "<ph name="URL_PATTERN" />" Шляхі для гэтага ключа не падтрымліваюцца. Выдаліце шлях і паўтарыце спробу: напрыклад, замест *://example.com/ увядзіце *://example.com.</translation>
 <translation id="3395827396354264108">Спосаб прыняцця</translation>
 <translation id="3399161914051569225">Нацельныя прылады</translation>
+<translation id="3399930248910934354">Адкрыць налады Chrome</translation>
 <translation id="3399952811970034796">Адрас дастаўкі</translation>
 <translation id="3402261774528610252">Для загрузкі гэтага сайта выкарыстоўвалася падключэнне праз састарэлы пратакол TLS 1.0 або TLS 1.1, які ў далейшым будзе адключаны. Пасля яго адключэння карыстальнікі не змогуць загружаць гэты сайт. На серверы трэба ўключыць пратакол TLS версіі 1.2 або навейшай.</translation>
 <translation id="3405664148539009465">Наладзіць шрыфты</translation>
@@ -4089,6 +4091,7 @@
 <translation id="7648133459447652947">Каб паказаць курсор, змяніце праграмы, перазагрузіце старонку ці вярніцеся на папярэднюю</translation>
 <translation id="7648527891719919697">Гэты сайт застанецца заблакіраваным, бо вы ўключылі Палепшаную абарону ў <ph name="BEGIN_ANDROID_SETTINGS_LINK" />наладах Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш пра гэта папярэджанне.<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Захоўваць файлы на гэтай прыладзе</translation>
+<translation id="7649070708921625228">Даведка</translation>
 <translation id="7653957176542370971">Аркуш апрацоўшчыка плацяжоў закрыты</translation>
 <translation id="7655766454902053387">Вакансіі</translation>
 <translation id="765676359832457558">Схаваць пашыраныя налады...</translation>

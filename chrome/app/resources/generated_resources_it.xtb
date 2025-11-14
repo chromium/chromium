@@ -2978,6 +2978,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3019023222666709803">Strumento Freccia</translation>
 <translation id="3019285239893817657">Pulsante pagina secondaria</translation>
 <translation id="3019595674945299805">Servizio VPN</translation>
+<translation id="3020101754533552167">Verifica dell'accesso in corso…</translation>
 <translation id="3020183492814296499">Scorciatoie</translation>
 <translation id="3020990233660977256">Numero di serie: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Durante l'utilizzo della batteria</translation>
@@ -4034,6 +4035,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3756578970075173856">Imposta il PIN</translation>
 <translation id="3756806135608816820">I siti possono chiedere di cercare dispositivi Bluetooth</translation>
 <translation id="3757567010566591880">Sblocca dalla barra degli strumenti</translation>
+<translation id="3757645900890881944">Strumenti di ricerca</translation>
 <translation id="3757733214359997190">Nessun sito trovato</translation>
 <translation id="375841316537350618">Download script proxy...</translation>
 <translation id="3758887577462995665">Suggerimento:</translation>
@@ -6792,7 +6794,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5689233503102158537">Alt + backspace</translation>
 <translation id="5689516760719285838">Posizione</translation>
 <translation id="56907980372820799">Collega dati</translation>
-<translation id="5691581861107245578">Ricevi suggerimenti di emoji basati su quello che scrivi</translation>
 <translation id="5691772641933328258">Impronta digitale non riconosciuta</translation>
 <translation id="5693255400847650006">Microfono in uso</translation>
 <translation id="5695046252726616755">Premi Invio o la barra spaziatrice per altre opzioni.</translation>
@@ -10037,6 +10038,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7952904276017482715">ID previsto: "<ph name="EXPECTED_ID" />", ID rilevato: "<ph name="NEW_ID" />"</translation>
 <translation id="7953236668995583915">Ricarica la pagina per applicare le impostazioni aggiornate a questo sito</translation>
 <translation id="7953669802889559161">Metodi di immissione</translation>
+<translation id="7953955868932471628">Gestisci scorciatoie</translation>
 <translation id="7955105108888461311">Chiedi di persona</translation>
 <translation id="7955177647836564772">Se la funzionalità Smart Lock è attiva e il telefono è sbloccato, non è necessario inserire una password o un PIN</translation>
 <translation id="7956373551960864128">Stampanti salvate</translation>
@@ -11423,6 +11425,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8886745493279779790">Rivedi le schede non attive</translation>
 <translation id="8888253246822647887">L'app verrà aperta al termine dell'upgrade. Gli upgrade possono richiedere qualche minuto.</translation>
 <translation id="8888459276890791557">Puoi bloccare questo riquadro laterale per un semplice accesso</translation>
+<translation id="8888621340860433230">Mostra opzioni</translation>
 <translation id="8889294078294184559">Mentre continui a navigare, i siti possono controllare su Chrome e verificare con un sito che hai visitato in precedenza che potresti essere una persona reale</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> può modificare i file e le cartelle indicati di seguito</translation>
 <translation id="8890170499370378450">Potrebbero esserti addebitati costi per l'utilizzo dei dati mobili</translation>

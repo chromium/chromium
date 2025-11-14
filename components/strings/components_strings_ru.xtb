@@ -765,6 +765,7 @@
 <translation id="222962001646502673">Темно-серый 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 вкладка}one{# вкладка}few{# вкладки}many{# вкладок}other{# вкладки}}</translation>
 <translation id="2233745931693710080">Компакт-диск</translation>
+<translation id="2236949375853147973">Мои действия</translation>
 <translation id="2239100178324503013">Отправить</translation>
 <translation id="224130779555573777">Добавить идентификатор Redress Number</translation>
 <translation id="2241693394036365668">Скачан файл</translation>
@@ -1458,6 +1459,7 @@
 <translation id="3392028486601120379">Задан путь для шаблона URL "<ph name="URL_PATTERN" />". Пути для этого ключа не поддерживаются. Удалите путь и попробуйте снова. Например, вместо *://example.com/ введите *://example.com.</translation>
 <translation id="3395827396354264108">Способ выдачи</translation>
 <translation id="3399161914051569225">Носимые устройства</translation>
+<translation id="3399930248910934354">Открыть настройки Chrome</translation>
 <translation id="3399952811970034796">Адрес доставки</translation>
 <translation id="3402261774528610252">Сайт использует устаревший протокол TLS 1.0 или TLS 1.1. В будущем эти протоколы будут отключены, из-за чего пользователи не смогут зайти на сайт. На сервере нужно включить протокол TLS 1.2 или более поздней версии.</translation>
 <translation id="3405664148539009465">Настроить шрифты</translation>
@@ -2945,6 +2947,7 @@
 <translation id="5813753398265398978">Физика</translation>
 <translation id="5817918615728894473">Подключить</translation>
 <translation id="5820625124144807242">После проверки заказа войдите в аккаунт <ph name="BNPL_ISSUER_NAME" /> или создайте его. Этот аккаунт будет автоматически связан с Google Pay.</translation>
+<translation id="5820751560028604030">Скачивание на устройство заблокировано</translation>
 <translation id="5826507051599432481">Общее имя (CN)</translation>
 <translation id="5830698870816298009">использование и перемещение камеры</translation>
 <translation id="5831217499016131155">Google Кошелек</translation>
@@ -4089,6 +4092,7 @@
 <translation id="7648133459447652947">Чтобы увидеть указатель, переключитесь между приложениями, обновите страницу или вернитесь назад.</translation>
 <translation id="7648527891719919697">Сайт останется заблокированным, поскольку вы включили Дополнительную защиту в <ph name="BEGIN_ANDROID_SETTINGS_LINK" />настройках Android<ph name="END_ANDROID_SETTINGS_LINK" />. Подробнее <ph name="BEGIN_LEARN_MORE_LINK" />об этом уведомлении<ph name="END_LEARN_MORE_LINK" />…</translation>
 <translation id="7648992873808071793">сохранение файлов на этом устройстве</translation>
+<translation id="7649070708921625228">Справка</translation>
 <translation id="7653957176542370971">Лист с обработчиком платежа закрыт</translation>
 <translation id="7655766454902053387">Вакансии</translation>
 <translation id="765676359832457558">Скрыть дополнительные настройки</translation>

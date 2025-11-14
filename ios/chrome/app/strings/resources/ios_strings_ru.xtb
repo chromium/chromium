@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
+<translation id="1004825134262590729">{count,plural, =1{{count} ключ доступа}one{{count} ключ доступа}few{{count} ключа доступа}many{{count} ключей доступа}other{{count} ключа доступа}}</translation>
 <translation id="1005023885865154304">Откройте настройки автозаполнения паролей.</translation>
 <translation id="1005230401424685968">ГГГГ</translation>
 <translation id="1013952917065545813">Здесь можно посмотреть недавно закрытые вкладки.</translation>
@@ -213,7 +214,7 @@
 <translation id="17906873777101817">Предл. сохр. пароли и ключи доступа</translation>
 <translation id="1794893174442046596">Группа вкладок</translation>
 <translation id="1807893857950749072">Включить уведомления об изменении цены</translation>
-<translation id="1809929083618343438">Выбранные данные будут удалены из Chrome, но не из аккаунта Google</translation>
+<translation id="1809929083618343438">Выбранные данные будут удалены из Chrome, но не из аккаунта Google.</translation>
 <translation id="1810976980198522421">Отмена</translation>
 <translation id="1815941218935345331">Код доступа</translation>
 <translation id="1818687879307252150">{count,plural, =0{Нет раскрытых паролей}=1{{count} раскрытый пароль}one{{count} раскрытый пароль}few{{count} раскрытых пароля}many{{count} раскрытых паролей}other{{count} раскрытого пароля}}</translation>
@@ -1708,7 +1709,7 @@
 <translation id="7491131399623468277">Открыть настройки</translation>
 <translation id="7491161827858509164">Чтобы посмотреть ранее скачанные файлы, откройте приложение <ph name="BEGIN_LINK" />Файлы<ph name="END_LINK" />.</translation>
 <translation id="7498234416455752244">Продолжить редактирование</translation>
-<translation id="7500244509706269886">Заполнить автоматически</translation>
+<translation id="7500244509706269886">Заполнить форму</translation>
 <translation id="750493650310597496">Закладки не выбраны</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Чтобы закреплять вкладки инкогнито, настройте Touch ID, Face ID или код доступа.</translation>
@@ -2212,5 +2213,6 @@
 <translation id="984275831282074731">Способы оплаты</translation>
 <translation id="985379595344853742">Закрыть все вкладки инкогнито</translation>
 <translation id="988141524645182168">Другие устройства</translation>
+<translation id="995174784802614337">{count,plural, =1{Импортирован {count} ключ доступа}one{Импортирован {count} ключ доступа}few{Импортировано {count} ключа доступа}many{Импортировано {count} ключей доступа}other{Импортировано {count} ключа доступа}}</translation>
 <translation id="999768147936949692">Сейчас вы можете делиться паролями только с участниками семейной группы. <ph name="BEGIN_LINK" />Пригласите в нее пользователей<ph name="END_LINK" /> и предоставьте им доступ к продуктам и подпискам Google.</translation>
 </translationbundle>

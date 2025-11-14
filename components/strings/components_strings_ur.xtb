@@ -765,6 +765,7 @@
 <translation id="222962001646502673">گہرا خاکستری 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 ٹیب}other{# ٹیبز}}</translation>
 <translation id="2233745931693710080">کمپیکٹ ڈسک</translation>
+<translation id="2236949375853147973">میری سرگرمی</translation>
 <translation id="2239100178324503013">ابھی بھیجیں</translation>
 <translation id="224130779555573777">ریڈریس نمبر شامل کریں</translation>
 <translation id="2241693394036365668">فائل ڈاؤن لوڈ کی جاتی ہے</translation>
@@ -1460,6 +1461,7 @@
 <translation id="3392028486601120379">‏URL پیٹرن "<ph name="URL_PATTERN" />" میں ایک راستہ متعین کیا گیا ہے۔ اس کلید کے لیے راستے تعاون یافتہ نہیں ہیں براہ کرم راستہ ہٹائیں اور دوبارہ کوشش کریں۔ جیسے ,‎*://example.com/ =&gt; *://example.com"‎</translation>
 <translation id="3395827396354264108">پِک اپ کا طریقہ</translation>
 <translation id="3399161914051569225">ویئرایبل ٹیکنالوجی</translation>
+<translation id="3399930248910934354">‏Chrome کی ترتیبات کھولیں</translation>
 <translation id="3399952811970034796">ڈیلیوری کا پتہ</translation>
 <translation id="3402261774528610252">‏اس سائٹ کو لوڈ کرنے کے لئے استعمال ہونے والے کنکشن میں TLS 1.0 یا TLS 1.1 استعمال کیا گیا تھا، جو فرسودہ ہیں اور مستقبل میں بھی غیر فعال کر دیے جائیں گے۔ ایک بار غیر فعال ہوجانے پر، صارفین کو اس سائٹ کو لوڈ کرنے سے روکا جائے گا۔ سرور کو TLS 1.2 یا اس سے اعلی ورژن کو فعال کرنا چاہیے۔</translation>
 <translation id="3405664148539009465">فونٹس کو حسب ضرورت بنائیں</translation>
@@ -4091,6 +4093,7 @@
 <translation id="7648133459447652947">اپنا کرسر دکھانے کے لیے، ایپس کو سوئچ کریں، صفحہ کو دوبارہ لوڈ کریں یا واپس جائیں</translation>
 <translation id="7648527891719919697">‏یہ سائٹ مسدود رہے گی کیونکہ آپ نے <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android کی ترتیبات<ph name="END_ANDROID_SETTINGS_LINK" /> میں اعلی تحفظ کو آن کیا ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">فائلیں اس آلہ پر اسٹور کریں</translation>
+<translation id="7649070708921625228">مدد</translation>
 <translation id="7653957176542370971">ادائیگی ہینڈلر کی شیٹ بند ہے</translation>
 <translation id="7655766454902053387">جاب کی فہرستیں</translation>
 <translation id="765676359832457558">اعلی ترتیبات چھپائیں…</translation>

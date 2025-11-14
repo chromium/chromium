@@ -4045,6 +4045,7 @@
 <translation id="3756578970075173856">設定 PIN</translation>
 <translation id="3756806135608816820">網站可要求尋找藍牙裝置</translation>
 <translation id="3757567010566591880">從「工具列」中取消固定</translation>
+<translation id="3757645900890881944">搜尋工具</translation>
 <translation id="3757733214359997190">找不到任何網站</translation>
 <translation id="375841316537350618">正在下載 Proxy 指令碼…</translation>
 <translation id="3758887577462995665">提示：</translation>
@@ -6799,7 +6800,6 @@
 <translation id="5689233503102158537">Alt 鍵 + Backspace 鍵</translation>
 <translation id="5689516760719285838">位置</translation>
 <translation id="56907980372820799">連結數據</translation>
-<translation id="5691581861107245578">根據輸入內容取得 Emoji 建議</translation>
 <translation id="5691772641933328258">識別唔到指紋</translation>
 <translation id="5693255400847650006">麥克風正在使用中</translation>
 <translation id="5695046252726616755">㩒一下 Enter 或者 Space 掣就可以睇到多啲選項。</translation>
@@ -10039,6 +10039,7 @@
 <translation id="7952904276017482715">預期 ID 為「<ph name="EXPECTED_ID" />」，但實際為「<ph name="NEW_ID" />」</translation>
 <translation id="7953236668995583915">重新載入此頁面，即可將已更新的設定套用至此網站</translation>
 <translation id="7953669802889559161">輸入方法</translation>
+<translation id="7953955868932471628">管理快速鍵</translation>
 <translation id="7955105108888461311">要求存取權</translation>
 <translation id="7955177647836564772">如果 Smart Lock 已開啟，且手機已解鎖，您將不需要輸入密碼或 PIN</translation>
 <translation id="7956373551960864128">已儲存的打印機</translation>
@@ -11421,6 +11422,7 @@
 <translation id="8886745493279779790">檢視閒置分頁</translation>
 <translation id="8888253246822647887">升級完成後，應用程式隨即啟動。升級過程可能需時幾分鐘。</translation>
 <translation id="8888459276890791557">你可固定此側面板以方便存取</translation>
+<translation id="8888621340860433230">顯示選項</translation>
 <translation id="8889294078294184559">您隨後瀏覽的網站可從 Chrome 取得前一個網站提供的資料，確認您應該是真人</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> 可編輯以下檔案和資料夾</translation>
 <translation id="8890170499370378450">您可能需要支付流動數據費用</translation>

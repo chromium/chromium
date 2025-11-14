@@ -765,6 +765,7 @@
 <translation id="222962001646502673">Хар саарал 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 таб}other{# таб}}</translation>
 <translation id="2233745931693710080">Компакт диск</translation>
+<translation id="2236949375853147973">Миний үйл ажиллагаа</translation>
 <translation id="2239100178324503013">Одоо илгээх</translation>
 <translation id="224130779555573777">Нөхөн төлөх дугаар нэмэх</translation>
 <translation id="2241693394036365668">Файлыг татдаг</translation>
@@ -1460,6 +1461,7 @@
 <translation id="3392028486601120379">URL-н "<ph name="URL_PATTERN" />" загварт замыг заасан байна. Энэ түлхүүрт замуудыг дэмждэггүй. Замыг хасаад, дахин оролдоно уу. Ж.нь *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Авах арга</translation>
 <translation id="3399161914051569225">Зүүсгэл технологи</translation>
+<translation id="3399930248910934354">Chrome-н тохиргоог нээнэ үү</translation>
 <translation id="3399952811970034796">Хүргэлтийн хаяг</translation>
 <translation id="3402261774528610252">Энэ сайтыг ачаалахад ашигласан холболт TLS 1.0 эсвэл TLS 1.1-ийг ашигласан байна. Эдгээр нь хуучирсан бөгөөд эдгээрийг ирээдүйд идэвхгүй болгоно. Идэвхгүй болгосон тохиолдолд хэрэглэгчдийг энэ сайтыг ачаалахаас сэргийлнэ. Сервер TLS 1.2 эсвэл түүнээс дээших хувилбарыг идэвхжүүлэх шаардлагатай.</translation>
 <translation id="3405664148539009465">Үсгийн хэвийг өөрчлөх</translation>
@@ -4089,6 +4091,7 @@
 <translation id="7648133459447652947">Курсороо харуулахын тулд апп сэлгэх, хуудсыг дахин ачаалах эсвэл буцна уу</translation>
 <translation id="7648527891719919697">Та <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android-н тохиргооноос<ph name="END_ANDROID_SETTINGS_LINK" /> Дэвшилтэт хамгаалалтыг асаасан тул энэ сайтыг блоклосон хэвээр үлдэнэ. <ph name="BEGIN_LEARN_MORE_LINK" />Энэ сануулгын талаар нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Энэхүү төхөөрөмж дээр файлуудыг хадгалах</translation>
+<translation id="7649070708921625228">Тусламж</translation>
 <translation id="7653957176542370971">Төлбөр хариуцагчийн хүснэгт хаалттай байна</translation>
 <translation id="7655766454902053387">Ажлын байрны жагсаалтууд</translation>
 <translation id="765676359832457558">Ахисан түвшний тохиргоог нуух...</translation>

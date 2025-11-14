@@ -4034,6 +4034,7 @@
 <translation id="3756578970075173856">પિન સેટ કરો</translation>
 <translation id="3756806135608816820">બ્લૂટૂથ ડિવાઇસ શોધવા માટે સાઇટ પૂછી શકશે</translation>
 <translation id="3757567010566591880">ટૂલબારથી અનપિન કરો</translation>
+<translation id="3757645900890881944">Searchના ટૂલ</translation>
 <translation id="3757733214359997190">કોઈ સાઇટ મળી નથી</translation>
 <translation id="375841316537350618">પ્રૉક્સી સ્ક્રિપ્ટ ડાઉનલોડ થાય છે...</translation>
 <translation id="3758887577462995665">ટિપ:</translation>
@@ -6796,7 +6797,6 @@
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">સ્થાન</translation>
 <translation id="56907980372820799">ડેટાને લિંક કરો</translation>
-<translation id="5691581861107245578">તમે જે ટાઇપ કરી રહ્યાં છો, તેના આધારે ઇમોજી માટેના સૂચનો મેળવો</translation>
 <translation id="5691772641933328258">ફિંગરપ્રિન્ટ ઓળખી શકાઈ નથી</translation>
 <translation id="5693255400847650006">માઇક્રોફોન ઉપયોગમાં છે</translation>
 <translation id="5695046252726616755">વધુ વિકલ્પો માટે Enter અથવા Space દબાવો.</translation>
@@ -10043,6 +10043,7 @@ USB ડિવાઇસ</translation>
 <translation id="7952904276017482715">અપેક્ષિત ID "<ph name="EXPECTED_ID" />" છે, પણ ID "<ph name="NEW_ID" />" હતું.</translation>
 <translation id="7953236668995583915">આ સાઇટ પર તમારા અપડેટ કરેલા સેટિંગ લાગુ કરવા માટે આ પેજને ફરીથી લોડ કરો</translation>
 <translation id="7953669802889559161">ઇનપુટ</translation>
+<translation id="7953955868932471628">શૉર્ટકટ્સનું સંચાલન કરો</translation>
 <translation id="7955105108888461311">રૂબરૂ પૂછો</translation>
 <translation id="7955177647836564772">જો Smart Lock ચાલુ કરેલું હોય અને તમારો ફોન અનલૉક કરેલો હોય, તો તમારે પાસવર્ડ કે પિન દાખલ કરવાની જરૂર રહેતી નથી</translation>
 <translation id="7956373551960864128">તમે સાચવેલું પ્રિન્ટર</translation>
@@ -11425,6 +11426,7 @@ USB ડિવાઇસ</translation>
 <translation id="8886745493279779790">નિષ્ક્રિય ટૅબ રિવ્યૂ કરો</translation>
 <translation id="8888253246822647887">જ્યારે અપગ્રેડ પૂર્ણ થશે ત્યારે તમારી ઍપ ખુલશે. અપગ્રેડમાં થોડી મિનિટ લાગી શકે છે.</translation>
 <translation id="8888459276890791557">સરળ ઍક્સેસ માટે, તમે બાજુની આ પૅનલ પિન કરી શકો છો</translation>
+<translation id="8888621340860433230">વિકલ્પો બતાવો</translation>
 <translation id="8889294078294184559">જેમ જેમ તમે બ્રાઉઝ કરવાનું ચાલુ રાખો છો, તેમ તેમ વિવિધ વેબસાઇટ Chrome વડે એ ચેક કરી શકે છે કે તમે અસલી વપરાશકર્તા છો કે નહીં અને સાથે જ તમે મુલાકાત લીધી હોય એવી અગાઉની સાઇટ વડે આ બાબતની ચકાસણી પણ તે કરી શકે છે</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> નીચે આપેલી ફાઇલો અને ફોલ્ડરોમાં ફેરફાર કરી શકે છે</translation>
 <translation id="8890170499370378450">મોબાઇલ ડેટા શુલ્ક લાગુ થઈ શકે</translation>

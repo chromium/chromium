@@ -765,6 +765,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="222962001646502673">Ciemnoszary 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 karta}few{# karty}many{# kart}other{# karty}}</translation>
 <translation id="2233745931693710080">Dysk kompaktowy</translation>
+<translation id="2236949375853147973">Moja aktywność</translation>
 <translation id="2239100178324503013">Wyślij teraz</translation>
 <translation id="224130779555573777">Dodaj numer Redress</translation>
 <translation id="2241693394036365668">Pobrano plik</translation>
@@ -1459,6 +1460,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3392028486601120379">Wzorzec adresu URL „<ph name="URL_PATTERN" />” ma określoną ścieżkę. W przypadku tego klucza ścieżki nie są obsługiwane. Usuń ścieżkę i spróbuj ponownie, np. *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Metoda odbioru</translation>
 <translation id="3399161914051569225">Urządzenia do noszenia</translation>
+<translation id="3399930248910934354">Otwórz ustawienia Chrome</translation>
 <translation id="3399952811970034796">Adres dostawy</translation>
 <translation id="3402261774528610252">Do połączenia z tą stroną użyto protokołu TLS 1.0 lub 1.1. Obie te wersje zostały wycofane, a w przyszłości zostaną wyłączone. Po ich wyłączeniu użytkownicy nie będą mogli otwierać tej strony. Serwer powinien korzystać z protokołu TLS w wersji 1.2 lub nowszej.</translation>
 <translation id="3405664148539009465">Dostosuj czcionki</translation>
@@ -4090,6 +4092,7 @@ Dodatkowe informacje:
 <translation id="7648133459447652947">Aby wyświetlić kursor, przełącz aplikacje, odśwież stronę lub wróć do poprzedniej</translation>
 <translation id="7648527891719919697">Ta strona pozostanie zablokowana, ponieważ w <ph name="BEGIN_ANDROID_SETTINGS_LINK" />ustawieniach Androida<ph name="END_ANDROID_SETTINGS_LINK" /> masz włączoną Ochronę zaawansowaną. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji o tym ostrzeżeniu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Zapisywanie plików na tym urządzeniu</translation>
+<translation id="7649070708921625228">Pomoc</translation>
 <translation id="7653957176542370971">Arkusz modułu do obsługi płatności jest zamknięty</translation>
 <translation id="7655766454902053387">Oferty pracy</translation>
 <translation id="765676359832457558">Ukryj ustawienia zaawansowane...</translation>

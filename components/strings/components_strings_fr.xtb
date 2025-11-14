@@ -765,6 +765,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="222962001646502673">Gris foncé 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 onglet}one{# onglet}other{# onglets}}</translation>
 <translation id="2233745931693710080">Disque compact</translation>
+<translation id="2236949375853147973">Mon activité</translation>
 <translation id="2239100178324503013">Envoyer maintenant</translation>
 <translation id="224130779555573777">Ajouter un numéro de recours</translation>
 <translation id="2241693394036365668">Fichier téléchargé</translation>
@@ -1459,6 +1460,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3392028486601120379">Le format d'URL "<ph name="URL_PATTERN" />" a un chemin d'accès spécifié. Les chemins d'accès ne sont pas compatibles avec cette clé. Veuillez supprimer le chemin et réessayer. Par exemple *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Mode d'enlèvement</translation>
 <translation id="3399161914051569225">Accessoires connectés</translation>
+<translation id="3399930248910934354">Accéder aux paramètres de Chrome</translation>
 <translation id="3399952811970034796">Adresse de livraison</translation>
 <translation id="3402261774528610252">La connexion utilisée pour charger ce site l'a fait au moyen de TLS 1.0 ou TLS 1.1, qui sont obsolètes et seront désactivés à l'avenir. Une fois ces protocoles désactivés, les utilisateurs ne seront plus autorisés à charger ce site. Le serveur doit activer TLS 1.2 ou version ultérieure.</translation>
 <translation id="3405664148539009465">Personnaliser les polices</translation>
@@ -4091,6 +4093,7 @@ Informations supplémentaires :
 <translation id="7648133459447652947">Pour afficher le curseur, changez d'appli, actualisez la page ou revenez en arrière</translation>
 <translation id="7648527891719919697">Ce site restera bloqué, car la Protection Avancée est activée dans les <ph name="BEGIN_ANDROID_SETTINGS_LINK" />paramètres Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Stocker les fichiers sur cet appareil</translation>
+<translation id="7649070708921625228">Aide</translation>
 <translation id="7653957176542370971">La feuille du gestionnaire de paiement est fermée</translation>
 <translation id="7655766454902053387">Offres d'emploi</translation>
 <translation id="765676359832457558">Masquer les paramètres avancés…</translation>

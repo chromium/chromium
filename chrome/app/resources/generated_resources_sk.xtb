@@ -4037,6 +4037,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3756578970075173856">Nastavenie kódu PIN</translation>
 <translation id="3756806135608816820">Weby môžu žiadať o povolenie vyhľadávať zariadenia s rozhraním Bluetooth</translation>
 <translation id="3757567010566591880">Odopnúť z panela s nástrojmi</translation>
+<translation id="3757645900890881944">Vyhľadávacie nástroje</translation>
 <translation id="3757733214359997190">Nenašli sa žiadne weby</translation>
 <translation id="375841316537350618">Sťahovanie skriptu servera proxy...</translation>
 <translation id="3758887577462995665">Tip:</translation>
@@ -6796,7 +6797,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Poloha</translation>
 <translation id="56907980372820799">Prepojiť údaje</translation>
-<translation id="5691581861107245578">Dostávajte návrhy emodži na základe písaného textu</translation>
 <translation id="5691772641933328258">Odtlačok prsta nebol rozpoznaný</translation>
 <translation id="5693255400847650006">Mikrofón sa používa</translation>
 <translation id="5695046252726616755">Ďalšie možnosti zobrazíte stlačením klávesa Enter alebo medzerníka.</translation>
@@ -10043,6 +10043,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7952904276017482715">Očakávané ID bolo „<ph name="EXPECTED_ID" />“. Skutočné ID bolo „<ph name="NEW_ID" />“.</translation>
 <translation id="7953236668995583915">Znova načítajte túto stránku, aby sa použili aktualizované nastavenie na tomto webe</translation>
 <translation id="7953669802889559161">Vstupy</translation>
+<translation id="7953955868932471628">Spravovať skratky</translation>
 <translation id="7955105108888461311">Požiadať osobne</translation>
 <translation id="7955177647836564772">Ak je funkcia Smart Lock zapnutá a telefón odomknutý, nemusíte zadávať heslo ani PIN</translation>
 <translation id="7956373551960864128">Vaše uložené tlačiarne</translation>
@@ -11431,6 +11432,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="8886745493279779790">Skontrolovať neaktívne karty</translation>
 <translation id="8888253246822647887">Aplikácia sa spustí po dokončení inovácie. Inovácia môže trvať niekoľko minút.</translation>
 <translation id="8888459276890791557">Tento bočný panel si môžete pripnúť, aby ste k nemu mali ľahký prístup</translation>
+<translation id="8888621340860433230">Zobraziť možnosti</translation>
 <translation id="8889294078294184559">Pri ďalšom prehliadaní môžu weby pomocou Chromu overiť informácie z predchádzajúceho navštíveného webu, že ste zrejme skutočná osoba</translation>
 <translation id="8889651696183044030">Web <ph name="ORIGIN" /> môže upravovať nasledujúce súbory a priečinky</translation>
 <translation id="8890170499370378450">Môžu sa vám účtovať poplatky za mobilné dáta</translation>

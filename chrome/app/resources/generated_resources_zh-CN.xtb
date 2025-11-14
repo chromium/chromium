@@ -185,7 +185,7 @@
 <translation id="1118738876271697201">系统未能确定设备型号或序列号。</translation>
 <translation id="111897705806685148">使用另一部设备中的通行密钥</translation>
 <translation id="1119447706177454957">内部错误</translation>
-<translation id="1122068467107743258">工作</translation>
+<translation id="1122068467107743258">工作单位</translation>
 <translation id="1122198203221319518">工具(&amp;T)</translation>
 <translation id="1122242684574577509">身份验证失败。请点击此处访问当前所用 Wi-Fi 网络（“<ph name="NETWORK_ID" />”）的登录页面。</translation>
 <translation id="1122587596907914265">风格独特的壁纸</translation>
@@ -4025,6 +4025,7 @@
 <translation id="3756578970075173856">设置 PIN 码</translation>
 <translation id="3756806135608816820">网站可以请求寻找蓝牙设备</translation>
 <translation id="3757567010566591880">取消固定到工具栏</translation>
+<translation id="3757645900890881944">搜索工具</translation>
 <translation id="3757733214359997190">未找到任何网站</translation>
 <translation id="375841316537350618">正在下载代理脚本...</translation>
 <translation id="3758887577462995665">提示：</translation>
@@ -6781,7 +6782,6 @@
 <translation id="5689233503102158537">alt + 退格键</translation>
 <translation id="5689516760719285838">位置信息</translation>
 <translation id="56907980372820799">关联数据</translation>
-<translation id="5691581861107245578">根据您输入的内容，获取表情符号建议</translation>
 <translation id="5691772641933328258">无法识别指纹</translation>
 <translation id="5693255400847650006">麦克风正在使用中</translation>
 <translation id="5695046252726616755">按 Enter 键或空格键可查看更多选项。</translation>
@@ -10024,6 +10024,7 @@
 <translation id="7952904276017482715">预期 ID 是“<ph name="EXPECTED_ID" />”，但实际 ID 是“<ph name="NEW_ID" />”</translation>
 <translation id="7953236668995583915">重新加载此页面，即可在该网站上应用更新后的设置</translation>
 <translation id="7953669802889559161">输入法</translation>
+<translation id="7953955868932471628">管理快捷方式</translation>
 <translation id="7955105108888461311">当面请求</translation>
 <translation id="7955177647836564772">如果 Smart Lock 已开启且您的手机处于未锁定状态，您无需输入密码或 PIN 码</translation>
 <translation id="7956373551960864128">已保存的打印机</translation>
@@ -11410,6 +11411,7 @@
 <translation id="8886745493279779790">查看闲置标签页</translation>
 <translation id="8888253246822647887">待完成升级后，您的应用即会打开。升级过程可能会持续几分钟。</translation>
 <translation id="8888459276890791557">您可以固定此侧边栏以方便访问</translation>
+<translation id="8888621340860433230">显示选项</translation>
 <translation id="8889294078294184559">随着您继续浏览，所访问的网站可从 Chrome 中获取上一个网站提供的相关信息来验证您可能是真实的用户</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> 可修改以下文件和文件夹</translation>
 <translation id="8890170499370378450">可能会产生移动数据费用</translation>
@@ -11915,7 +11917,7 @@
 <translation id="930991362911221750">允许“<ph name="APP_NAME" />”查看此标签页？</translation>
 <translation id="931273044114601262">允许在此网站上使用</translation>
 <translation id="93140074055951850">Android 应用被停止了</translation>
-<translation id="932327136139879170">首页</translation>
+<translation id="932327136139879170">家</translation>
 <translation id="932508678520956232">无法开始打印。</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{这个文件太大，无法进行安全检查。您只能上传不超过 50 MB 的文件。}other{这些文件中的部分文件太大，无法进行安全检查。您只能上传不超过 50 MB 的文件。}}</translation>
 <translation id="93343527085570547">如要依法提出内容更改请求，请前往<ph name="BEGIN_LINK1" />法律帮助页面<ph name="END_LINK1" />。系统可能会将部分账号和系统信息发送给 Google。我们会根据<ph name="BEGIN_LINK2" />隐私权政策<ph name="END_LINK2" />和<ph name="BEGIN_LINK3" />服务条款<ph name="END_LINK3" />使用您提供的信息，以解决技术问题并改进服务。</translation>

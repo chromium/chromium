@@ -765,6 +765,7 @@
 <translation id="222962001646502673">אפור כהה 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{כרטיסייה אחת}one{‫# כרטיסיות}two{‫# כרטיסיות}other{‫# כרטיסיות}}</translation>
 <translation id="2233745931693710080">Compact Disc</translation>
+<translation id="2236949375853147973">הפעילות שלי</translation>
 <translation id="2239100178324503013">שליחה</translation>
 <translation id="224130779555573777">‏הוספת מספר Redress</translation>
 <translation id="2241693394036365668">הורדת קובץ</translation>
@@ -1459,6 +1460,7 @@
 <translation id="3392028486601120379">‏בתבנית ה-URL‏ <ph name="URL_PATTERN" /> צוין נתיב. אין תמיכה בנתיבים למפתח הזה. יש להסיר את הנתיב ולנסות שוב. לדוגמה: ‎*://example.com/‎ ‏=&gt; ‎*://example.com"‎,</translation>
 <translation id="3395827396354264108">שיטת איסוף</translation>
 <translation id="3399161914051569225">טכנולוגיה לבישה</translation>
+<translation id="3399930248910934354">‏פתיחת ההגדרות של Chrome</translation>
 <translation id="3399952811970034796">כתובת למשלוח</translation>
 <translation id="3402261774528610252">‏החיבור ששימש לצורך טעינת האתר הזה היה מבוסס על הפרוטוקול TLS 1.0 או TLS 1.1, שהוצא משימוש ויושבת בעתיד. אחרי שהפרוטוקול יושבת, משתמשים לא יוכלו לטעון את האתר הזה. יש להפעיל בשרת את הפרוטוקול TLS 1.2 ואילך.</translation>
 <translation id="3405664148539009465">התאמה אישית של גופנים</translation>
@@ -4095,6 +4097,7 @@ Del</translation>
 <translation id="7648133459447652947">כדי להציג את הסמן, צריך לעבור בין אפליקציות, לטעון מחדש את הדף או לחזור אחורה</translation>
 <translation id="7648527891719919697">‏האתר הזה יישאר חסום כי ההגנה המתקדמת מופעלת <ph name="BEGIN_ANDROID_SETTINGS_LINK" />בהגדרות של Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">לאחסן קבצים במכשיר הזה</translation>
+<translation id="7649070708921625228">עזרה</translation>
 <translation id="7653957176542370971">גיליון פרטי התשלום סגור</translation>
 <translation id="7655766454902053387">מודעות דרושים</translation>
 <translation id="765676359832457558">הסתרת הגדרות מתקדמות...</translation>

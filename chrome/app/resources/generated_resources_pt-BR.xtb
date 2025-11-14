@@ -4049,6 +4049,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3756578970075173856">Definir PIN</translation>
 <translation id="3756806135608816820">Os sites podem pedir para procurar dispositivos Bluetooth</translation>
 <translation id="3757567010566591880">Liberar da barra de ferramentas</translation>
+<translation id="3757645900890881944">Ferramentas de pesquisa</translation>
 <translation id="3757733214359997190">Nenhum site encontrado</translation>
 <translation id="375841316537350618">Fazendo o download do script de proxy...</translation>
 <translation id="3758887577462995665">Dica:</translation>
@@ -6811,7 +6812,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Local</translation>
 <translation id="56907980372820799">Vincular dados</translation>
-<translation id="5691581861107245578">Receber sugestões de emojis com base no que você está digitando</translation>
 <translation id="5691772641933328258">Impressão digital não reconhecida</translation>
 <translation id="5693255400847650006">Microfone em uso</translation>
 <translation id="5695046252726616755">Pressione "Enter" ou a barra de espaço para ver mais opções.</translation>
@@ -8446,7 +8446,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Remover guia e excluir grupo?}=1{Remover guia e excluir grupo?}one{Remover guia e excluir grupo?}other{Remover guias e excluir grupo?}}</translation>
 <translation id="6833479554815567477">A guia foi removida do grupo <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Equilibrada (recomendado)</translation>
-<translation id="6835624277262316125">Seu endereço de trabalho pode ajudar você a realizar ações nos Serviços do Google, como receber resultados da Pesquisa e rotas do Google Maps mais relevantes. É possível editar ou excluir seu endereço na sua <ph name="BEGIN_LINK" />Conta do Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
+<translation id="6835624277262316125">Seu endereço do trabalho deixa os Serviços do Google, como receber resultados da Pesquisa e rotas do Google Maps, mais úteis e relevantes. Ele pode ser editado ou excluído na sua <ph name="BEGIN_LINK" />Conta do Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="6835762382653651563">Conecte-se à Internet para atualizar seu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838992358006915573">A lupa segue o foco do ChromeVox</translation>
 <translation id="6839916869147598086">O login mudou</translation>
@@ -9817,7 +9817,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
     Visível para dispositivos por perto, como o <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="7786889348652477777">&amp;Recarregar aplicativo</translation>
 <translation id="7787308148023287649">Exibir em outra tela</translation>
-<translation id="7789895198197042595">Seu endereço de casa pode ajudar você a realizar ações nos Serviços do Google, como receber resultados da Pesquisa e rotas do Google Maps mais relevantes. É possível editar ou excluir seu endereço na sua <ph name="BEGIN_LINK" />Conta do Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
+<translation id="7789895198197042595">Seu endereço de casa deixa os Serviços do Google, como receber resultados da Pesquisa e rotas do Google Maps, mais úteis e relevantes. Ele pode ser editado ou excluído na sua <ph name="BEGIN_LINK" />Conta do Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="7791269138074599214">Método de entrada</translation>
 <translation id="7791429245559955092">Esse app será instalado no perfil do Chrome usado no momento</translation>
 <translation id="7791436592012979144">Rolagem reversa ativada</translation>
@@ -10057,6 +10057,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7952904276017482715">O código esperado era "<ph name="EXPECTED_ID" />", mas o instalado foi "<ph name="NEW_ID" />"</translation>
 <translation id="7953236668995583915">Recarregue esta página para aplicar as configurações atualizadas ao site.</translation>
 <translation id="7953669802889559161">Entradas</translation>
+<translation id="7953955868932471628">Gerenciar atalhos</translation>
 <translation id="7955105108888461311">Perguntar diretamente</translation>
 <translation id="7955177647836564772">Se o Smart Lock estiver ativado e o smartphone desbloqueado, você não vai precisar digitar uma senha ou um PIN</translation>
 <translation id="7956373551960864128">Suas impressoras salvas</translation>
@@ -11444,6 +11445,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8886745493279779790">Revisar guias inativas</translation>
 <translation id="8888253246822647887">O app será aberto após a conclusão do upgrade. Os upgrades podem levar alguns minutos.</translation>
 <translation id="8888459276890791557">Fixe este painel lateral para facilitar o acesso</translation>
+<translation id="8888621340860433230">Mostrar opções</translation>
 <translation id="8889294078294184559">Conforme você navega, eles podem verificar com o navegador e o site visitado anteriormente que você é uma pessoa real</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> pode editar os arquivos e as pastas a seguir</translation>
 <translation id="8890170499370378450">Sujeito a cobrança para dados móveis</translation>

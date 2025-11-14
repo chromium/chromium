@@ -4030,6 +4030,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3756578970075173856">PIN festlegen</translation>
 <translation id="3756806135608816820">Websites dürfen darum bitten, nach Bluetooth-Geräten zu suchen</translation>
 <translation id="3757567010566591880">Von Symbolleiste loslösen</translation>
+<translation id="3757645900890881944">Suchoptionen</translation>
 <translation id="3757733214359997190">Keine Websites gefunden</translation>
 <translation id="375841316537350618">Proxy-Script wird heruntergeladen...</translation>
 <translation id="3758887577462995665">Hinweis:</translation>
@@ -6787,7 +6788,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5689233503102158537">Alt + Rücktaste</translation>
 <translation id="5689516760719285838">Standort</translation>
 <translation id="56907980372820799">Daten verknüpfen</translation>
-<translation id="5691581861107245578">Vorschläge für Emojis basierend auf der Eingabe erhalten</translation>
 <translation id="5691772641933328258">Fingerabdruck nicht erkannt</translation>
 <translation id="5693255400847650006">Mikrofon aktiv</translation>
 <translation id="5695046252726616755">Drücke die Eingabe- oder Leertaste, um weitere Optionen aufzurufen.</translation>
@@ -10030,6 +10030,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7952904276017482715">Erwartete ID: "<ph name="EXPECTED_ID" />", tatsächliche ID: "<ph name="NEW_ID" />"</translation>
 <translation id="7953236668995583915">Aktualisiere diese Seite, um die neuen Einstellungen auf dieser Website zu übernehmen</translation>
 <translation id="7953669802889559161">Eingaben</translation>
+<translation id="7953955868932471628">Verknüpfungen verwalten</translation>
 <translation id="7955105108888461311">Persönlich fragen</translation>
 <translation id="7955177647836564772">Wenn Smart Lock aktiviert ist und dein Smartphone entsperrt ist, musst du weder ein Passwort noch eine PIN eingeben</translation>
 <translation id="7956373551960864128">Deine gespeicherten Drucker</translation>
@@ -11416,6 +11417,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8886745493279779790">Inaktive Tabs überprüfen</translation>
 <translation id="8888253246822647887">Deine App wird geöffnet, wenn das Upgrade abgeschlossen ist. Upgrades können ein paar Minuten dauern.</translation>
 <translation id="8888459276890791557">Du kannst diese Seitenleiste anpinnen, um leichter darauf zuzugreifen</translation>
+<translation id="8888621340860433230">Optionen anzeigen</translation>
 <translation id="8889294078294184559">Wenn du weitersurfst, können Websites diese Daten von Chrome abrufen und über eine zuvor von dir besuchte Website bestätigen, dass du wahrscheinlich eine echte Person bist</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> kann die folgenden Dateien und Ordner bearbeiten</translation>
 <translation id="8890170499370378450">Es können Gebühren für mobile Daten anfallen</translation>

@@ -3668,6 +3668,11 @@ Verbindungen, die diese Prüfung nicht bestehen, schlagen mit dem Fehler ERR_SSL
 <translation id="3665437376055221832">Nutzer nur dann auffordern, wenn kein Zertifikat zur automatischen Auswahl passt.</translation>
 <translation id="3671773704245936868">„Objekt mit Tastaturfokus hervorheben“ deaktivieren</translation>
 <translation id="3674010627788940405">CORS-Anfrageheader ohne Platzhalter nicht unterstützen.</translation>
+<translation id="3675248815331229366">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die Websites angeben, die nicht auf den Standort des Nutzers zugreifen dürfen und auch keine Nutzerberechtigung dafür anfordern können.
+
+      Wenn die Richtlinie nicht konfiguriert ist, gilt die Einstellung „<ph name="DEFAULT_GEOLOCATION_SETTING" />“ für alle Websites, sofern sie festgelegt ist. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
+
+      Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
 <translation id="3675303748198647471">„setTimeout(…, 0)“ wird häufig verwendet, um lange JavaScript-Aufgaben aufzuteilen.
           Wenn die Richtlinie aktiviert ist, werden die JavaScript-Funktionen „setTimeouts“ und „setIntervals“ mit einem kleineren Intervall als 4 ms weniger aggressiv verzögert.
           So wird die Leistung kurzfristig verbessert, aber für Websites, die die API missbrauchen, wird „setTimeouts“ trotzdem verzögert.
@@ -6172,6 +6177,7 @@ Wenn die in der Richtlinie <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> ange
 
       Wenn die Richtlinie nicht konfiguriert ist, können Nutzer die Sichtbarkeit von Karten steuern. Standardmäßig sind Karten sichtbar.
       </translation>
+<translation id="5446826778796489105">Standortbestimmung auf diesen Websites blockieren</translation>
 <translation id="5448022937220253000">Festlegen, was mit Nutzerdaten geschehen soll, nachdem <ph name="LACROS_NAME" /> deaktiviert wurde</translation>
 <translation id="5449690328792750354">Die Event.path API ist verfügbar.</translation>
 <translation id="5452024130413254050">Bestimmt, ob VMs, für die diese Konfiguration verwendet wird, Zugriff auf ein vTPM haben. Der Standardwert ist „false“ und „<ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" />“, falls nicht konfiguriert.</translation>
@@ -11254,6 +11260,7 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 
       Inkorrekt formatierte Vorlagen werden ignoriert.</translation>
 <translation id="9068629430243705879">Port 6566 (Blockierung kann bis 15.10.2021 aufgehoben werden)</translation>
+<translation id="9069432851455606924">Einstellungen für die Standortbestimmung</translation>
 <translation id="9069503402414011061">Wenn die Richtlinie konfiguriert ist, wird die Cache-Lebensdauer für Authentifizierungsdaten in Stunden festgelegt. Im Cache befinden sich Daten zu Bereichen, die der Computer als vertrauenswürdig einstuft, d. h. verwandte Bereiche. Das Speichern von Authentifizierungsdaten im Cache beschleunigt die Anmeldung. Im Cache werden keine nutzerspezifischen Daten und auch keine Daten zu nicht verwandten Bereichen gespeichert.
 
 Wenn die Richtlinie auf „0“ gesetzt ist, wird die Speicherung der Authentifizierungsdaten im Cache deaktiviert. Bereichsspezifische Daten werden bei jeder Anmeldung abgerufen, daher kann ein Ausschalten der Speicherung von Authentifizierungsdaten im Cache die Nutzeranmeldung erheblich verlangsamen.

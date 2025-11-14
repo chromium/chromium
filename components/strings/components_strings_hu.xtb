@@ -765,6 +765,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="222962001646502673">Sötétszürke 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 lap}other{# lap}}</translation>
 <translation id="2233745931693710080">Kompakt lemez</translation>
+<translation id="2236949375853147973">Saját tevékenységek</translation>
 <translation id="2239100178324503013">Küldés most</translation>
 <translation id="224130779555573777">Helyesbítési ügy számának megadása</translation>
 <translation id="2241693394036365668">Letöltés történt</translation>
@@ -1457,6 +1458,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3392028486601120379">A(z) „<ph name="URL_PATTERN" />” URL-mintához elérési út van megadva. Ennél a kulcsnál nem használható elérési út. Távolítsa el az útvonalat, majd próbálkozzon újra, pl.: *://example.com/ =&gt; *://example.com”,</translation>
 <translation id="3395827396354264108">Átvételi mód</translation>
 <translation id="3399161914051569225">Hordható technológia</translation>
+<translation id="3399930248910934354">Chrome-beállítások megnyitása</translation>
 <translation id="3399952811970034796">Szállítási cím</translation>
 <translation id="3402261774528610252">A webhely betöltésére használt kapcsolat a TLS 1.0 vagy a TLS 1.1 protokollt használta, amelyek elavultak, és a jövőben le lesznek tiltva. A letiltásuk után a felhasználók nem fogják tudni betölteni ezt a webhelyet. A szerveren a TLS 1.2-es vagy újabb verzióját kell használni.</translation>
 <translation id="3405664148539009465">Betűtípusok testreszabása</translation>
@@ -4087,6 +4089,7 @@ További részletek:
 <translation id="7648133459447652947">A kurzor megjelenítéséhez, az alkalmazások közötti váltáshoz, az oldal újratöltéséhez vagy a visszalépéshez</translation>
 <translation id="7648527891719919697">Ez a webhely továbbra is le lesz tiltva, mert be van kapcsolva a Speciális védelem az <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android-beállításokban<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />További információ erről a figyelmeztetésről<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="7648992873808071793">Fájlok tárolása ezen az eszközön</translation>
+<translation id="7649070708921625228">Súgó</translation>
 <translation id="7653957176542370971">A fizetési információk munkalapja zárva van</translation>
 <translation id="7655766454902053387">Álláshirdetések</translation>
 <translation id="765676359832457558">Speciális beállítások elrejtése...</translation>

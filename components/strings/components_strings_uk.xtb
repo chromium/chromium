@@ -765,6 +765,7 @@
 <translation id="222962001646502673">Темно-сірий 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 вкладка}one{# вкладка}few{# вкладки}many{# вкладок}other{# вкладки}}</translation>
 <translation id="2233745931693710080">Компакт-диск</translation>
+<translation id="2236949375853147973">Мої дії</translation>
 <translation id="2239100178324503013">Надіслати</translation>
 <translation id="224130779555573777">Додати номер оскарження</translation>
 <translation id="2241693394036365668">Завантажено файл</translation>
@@ -1459,6 +1460,7 @@
 <translation id="3392028486601120379">У шаблоні URL-адреси "<ph name="URL_PATTERN" />" указано шлях. Шляхи для цього ключа не підтримуються. Вилучіть шлях і повторіть спробу. Приклад: *://example.com/ =&gt; *://example.com".</translation>
 <translation id="3395827396354264108">Спосіб отримання</translation>
 <translation id="3399161914051569225">Гаджети</translation>
+<translation id="3399930248910934354">Відкрити налаштування Chrome</translation>
 <translation id="3399952811970034796">Адреса доставки</translation>
 <translation id="3402261774528610252">Цей веб-сайт використовує протоколи TLS версії 1.0 або 1.1, які вже не підтримуються. Коли їх буде вимкнено, користувачі більше не зможуть його завантажувати. На сервері має бути встановлено протокол TLS 1.2 або новішої версії.</translation>
 <translation id="3405664148539009465">Налаштувати шрифти</translation>
@@ -4090,6 +4092,7 @@
 <translation id="7648133459447652947">Щоб показати курсор, перейдіть в інший додаток, оновіть сторінку або поверніться назад</translation>
 <translation id="7648527891719919697">Цей сайт залишатиметься заблокованим, оскільки в <ph name="BEGIN_ANDROID_SETTINGS_LINK" />налаштуваннях Android<ph name="END_ANDROID_SETTINGS_LINK" /> увімкнено Додатковий захист. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Зберігати файли на цьому пристрої</translation>
+<translation id="7649070708921625228">Довідка</translation>
 <translation id="7653957176542370971">Аркуш обробника платежу закрито</translation>
 <translation id="7655766454902053387">Списки вакансій</translation>
 <translation id="765676359832457558">Сховати розширені налаштування...</translation>

@@ -4033,6 +4033,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3756578970075173856">Podesite PIN</translation>
 <translation id="3756806135608816820">Sajtovi imaju dozvolu da traže Bluetooth uređaje</translation>
 <translation id="3757567010566591880">Otkači sa trake s alatkama</translation>
+<translation id="3757645900890881944">Alatke za pretragu</translation>
 <translation id="3757733214359997190">Nije pronađen nijedan sajt</translation>
 <translation id="375841316537350618">Preuzimanje skripte proksija...</translation>
 <translation id="3758887577462995665">Savet:</translation>
@@ -6793,7 +6794,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Lokacija</translation>
 <translation id="56907980372820799">Poveži podatke</translation>
-<translation id="5691581861107245578">Dobijajte predloge za emodžije na osnovu onoga što kucate</translation>
 <translation id="5691772641933328258">Otisak prsta nije prepoznat</translation>
 <translation id="5693255400847650006">Mikrofon se koristi</translation>
 <translation id="5695046252726616755">Pritisnite Enter ili taster za razmak za još opcija.</translation>
@@ -10041,6 +10041,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7952904276017482715">Očekivao se ID „<ph name="EXPECTED_ID" />“, ali ID je bio „<ph name="NEW_ID" />“</translation>
 <translation id="7953236668995583915">Ponovo učitajte ovu stranicu da biste primenili ažurirana podešavanja na ovaj sajt</translation>
 <translation id="7953669802889559161">Unosi</translation>
+<translation id="7953955868932471628">Upravljaj prečicama</translation>
 <translation id="7955105108888461311">Zatraži lično</translation>
 <translation id="7955177647836564772">Ako je Smart Lock uključen i telefon je otključan, ne morate da unosite lozinku ili PIN</translation>
 <translation id="7956373551960864128">Sačuvani štampači</translation>
@@ -11429,6 +11430,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="8886745493279779790">Pregledajte neaktivne kartice</translation>
 <translation id="8888253246822647887">Aplikacija će se otvoriti kada se nadogradnja završi. Nadogradnje mogu da traju par minuta.</translation>
 <translation id="8888459276890791557">Možete da zakačite ovu bočnu tablu da biste joj lako pristupali</translation>
+<translation id="8888621340860433230">Prikaži opcije</translation>
 <translation id="8889294078294184559">Dok nastavljate sa pregledanjem, sajtovi mogu da proveravaju u Chrome-u i da od prethodnog sajta koji ste posetili dobiju potvrdu da ste verovatno stvarna osoba</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> može da menja datoteke i direktorijume u nastavku</translation>
 <translation id="8890170499370378450">Možda će doći do troškova za prenos podataka preko mobilnog operatera</translation>

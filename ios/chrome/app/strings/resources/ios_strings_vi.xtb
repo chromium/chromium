@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="1004825134262590729">{count,plural, =1{{count} khoá truy cập}other{{count} khoá truy cập}}</translation>
 <translation id="1005023885865154304">Mở phần cài đặt Tự động điền mật khẩu</translation>
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">Bạn có thể quay lại đây để mở lại các thẻ mà bạn đã đóng gần đây</translation>
@@ -2212,5 +2213,6 @@
 <translation id="984275831282074731">Phương thức thanh toán</translation>
 <translation id="985379595344853742">Đóng tất cả các thẻ ẩn danh</translation>
 <translation id="988141524645182168">Thiết bị khác</translation>
+<translation id="995174784802614337">{count,plural, =1{Đã nhập {count} khoá truy cập}other{Đã nhập {count} khoá truy cập}}</translation>
 <translation id="999768147936949692">Hiện tại, bạn chỉ có thể chia sẻ mật khẩu với các thành viên gia đình. <ph name="BEGIN_LINK" />Mời thành viên gia đình<ph name="END_LINK" /> tham gia nhóm của bạn để sử dụng các sản phẩm và gói thuê bao của bạn trên Google hiệu quả hơn.</translation>
 </translationbundle>

@@ -765,6 +765,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="222962001646502673">Tmavě šedá 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 karta}few{# karty}many{# karty}other{# karet}}</translation>
 <translation id="2233745931693710080">Kompaktní disk</translation>
+<translation id="2236949375853147973">Moje aktivita</translation>
 <translation id="2239100178324503013">Odeslat</translation>
 <translation id="224130779555573777">Přidat nápravné číslo</translation>
 <translation id="2241693394036365668">Stažení souboru</translation>
@@ -1456,6 +1457,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3392028486601120379">Vzor adresy URL <ph name="URL_PATTERN" /> má zadanou cestu. Cesty u tohoto klíče nejsou podporovány. Odstraňte cestu a zkuste to znovu, např. *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Způsob vyzvednutí</translation>
 <translation id="3399161914051569225">Nositelná elektronika</translation>
+<translation id="3399930248910934354">Otevřít nastavení Chromu</translation>
 <translation id="3399952811970034796">Adresa doručení</translation>
 <translation id="3402261774528610252">Připojení použité k načtení tohoto webu použilo protokol TLS 1.0 nebo TLS 1.1, který již není podporován a v budoucnu bude deaktivován. Po deaktivaci již uživatelé nebudou moci tento web načíst. Na serveru je třeba aktivovat protokol TLS 1.2 nebo novější.</translation>
 <translation id="3405664148539009465">Personalizovat písma</translation>
@@ -4084,6 +4086,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7648133459447652947">Pokud chcete zobrazit kurzor, přepněte aplikace, načtěte stránku znovu nebo se vraťte zpět</translation>
 <translation id="7648527891719919697">Tento web zůstane zablokován, protože máte v <ph name="BEGIN_ANDROID_SETTINGS_LINK" />nastavení systému Android <ph name="END_ANDROID_SETTINGS_LINK" />zapnutou pokročilou ochranu. <ph name="BEGIN_LEARN_MORE_LINK" />Další informace o tomto upozornění<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Ukládat soubory v tomto zařízení</translation>
+<translation id="7649070708921625228">Nápověda</translation>
 <translation id="7653957176542370971">List obslužného nástroje pro platby je zavřený</translation>
 <translation id="7655766454902053387">Nabídky práce</translation>
 <translation id="765676359832457558">Skrýt rozšířená nastavení...</translation>

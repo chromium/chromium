@@ -765,6 +765,7 @@
 <translation id="222962001646502673">짙은 회색 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{탭 1개}other{탭 #개}}</translation>
 <translation id="2233745931693710080">컴팩트 디스크</translation>
+<translation id="2236949375853147973">내 활동</translation>
 <translation id="2239100178324503013">지금 보내기</translation>
 <translation id="224130779555573777">리드레스 넘버 추가</translation>
 <translation id="2241693394036365668">파일 다운로드됨</translation>
@@ -1459,6 +1460,7 @@
 <translation id="3392028486601120379">URL 패턴 "<ph name="URL_PATTERN" />"에 지정된 경로가 있습니다. 이 키에는 경로가 지원되지 않습니다. *://example.com/ =&gt; *://example.com"과 같이 경로를 삭제한 후 다시 시도해 주세요.</translation>
 <translation id="3395827396354264108">수령 방법</translation>
 <translation id="3399161914051569225">웨어러블 기술</translation>
+<translation id="3399930248910934354">Chrome 설정 열기</translation>
 <translation id="3399952811970034796">배달 주소</translation>
 <translation id="3402261774528610252">이 사이트를 로드하는 데 사용된 연결에는 TLS 1.0 또는 TLS 1.1이 사용되었으며, 이러한 TLS는 지원이 중단되어 향후 사용 중지될 예정입니다. 사용 중지된 후에는 사용자가 이 사이트를 로드할 수 없습니다. 서버에서 TLS 1.2 이상을 사용해야 합니다.</translation>
 <translation id="3405664148539009465">글꼴 맞춤설정</translation>
@@ -4089,6 +4091,7 @@
 <translation id="7648133459447652947">커서를 표시하려면 앱을 전환하거나, 페이지를 새로고침하거나, 뒤로 돌아가세요.</translation>
 <translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android 설정<ph name="END_ANDROID_SETTINGS_LINK" />에서 고급 보호를 사용 설정했기 때문에 이 사이트는 차단된 상태로 유지됩니다. <ph name="BEGIN_LEARN_MORE_LINK" />이 경고 자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">이 기기에 파일 저장</translation>
+<translation id="7649070708921625228">도움말</translation>
 <translation id="7653957176542370971">결제 핸들러 시트가 닫힘</translation>
 <translation id="7655766454902053387">구인/구직 정보</translation>
 <translation id="765676359832457558">고급 설정 숨기기</translation>

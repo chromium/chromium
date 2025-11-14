@@ -4031,6 +4031,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3756578970075173856">PIN ayarlayın</translation>
 <translation id="3756806135608816820">Siteler, Bluetooth cihazları aramak isteyebilir</translation>
 <translation id="3757567010566591880">Sabitlemeyi araç çubuğundan kaldır</translation>
+<translation id="3757645900890881944">Arama araçları</translation>
 <translation id="3757733214359997190">Hiç site bulunamadı</translation>
 <translation id="375841316537350618">Proxy komut dosyası indiriliyor...</translation>
 <translation id="3758887577462995665">İpucu:</translation>
@@ -6792,7 +6793,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Konum</translation>
 <translation id="56907980372820799">Verileri bağla</translation>
-<translation id="5691581861107245578">Ne yazdığınıza bağlı olarak emoji önerileri alın</translation>
 <translation id="5691772641933328258">Parmak izi tanınmadı</translation>
 <translation id="5693255400847650006">Mikrofon kullanılıyor</translation>
 <translation id="5695046252726616755">Diğer seçenekler için Enter veya boşluk tuşuna basın.</translation>
@@ -10035,6 +10035,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7952904276017482715">Beklenen Kimlik "<ph name="EXPECTED_ID" />" idi, ancak "<ph name="NEW_ID" />" kimliği belirlendi</translation>
 <translation id="7953236668995583915">Güncellenen ayarlarınızı bu siteye uygulamak için sayfayı yeniden yükleyin</translation>
 <translation id="7953669802889559161">Girişler</translation>
+<translation id="7953955868932471628">Kısayolları yönet</translation>
 <translation id="7955105108888461311">Şahsen sor</translation>
 <translation id="7955177647836564772">Smart Lock açıksa ve telefonunuzun da kilidi açıksa şifre ya da PIN girmeniz gerekmez</translation>
 <translation id="7956373551960864128">Kayıtlı yazıcılarınız</translation>
@@ -11421,6 +11422,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="8886745493279779790">Etkin Olmayan Sekmeleri İncele</translation>
 <translation id="8888253246822647887">Uygulamanız, yeni sürüme geçme işlemi tamamlandığında açılır. Yeni sürüme geçme işlemi birkaç dakika sürebilir.</translation>
 <translation id="8888459276890791557">Daha kolay erişmek için bu yan paneli sabitleyebilirsiniz</translation>
+<translation id="8888621340860433230">Seçenekleri göster</translation>
 <translation id="8889294078294184559">Siz sitelere göz atarken siteler de Chrome'dan kontrol ederek ziyaret ettiğiniz önceki bir siteden büyük olasılıkla gerçek bir kişi olduğunuzu doğrular</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> sitesi şu dosya ve klasörleri düzenleyebilir:</translation>
 <translation id="8890170499370378450">Mobil veri ücretleri alınabilir</translation>
@@ -11926,7 +11928,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="930991362911221750"><ph name="APP_NAME" /> uygulamasının bu sekmeyi görmesine izin verilsin mi?</translation>
 <translation id="931273044114601262">Bu sitede izin veriliyor</translation>
 <translation id="93140074055951850">Android uygulamaları durduruldu</translation>
-<translation id="932327136139879170">Ana Sayfa</translation>
+<translation id="932327136139879170">Ev</translation>
 <translation id="932508678520956232">Yazdırma başlatılamadı.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Bu dosya güvenlik kontrolü için çok büyük. 50 MB'a kadar olan dosyaları yükleyebilirsiniz.}other{Bu dosyaların bazıları güvenlik kontrolü için çok büyük. 50 MB'a kadar olan dosyaları yükleyebilirsiniz.}}</translation>
 <translation id="93343527085570547">Yasal nedenlerle içerik değişikliği talebinde bulunmak için <ph name="BEGIN_LINK1" />Yasal Yardım sayfasına<ph name="END_LINK1" /> gidin. Bazı hesap ve sistem bilgileri Google'a gönderilebilir. Bize verdiğiniz bilgileri, <ph name="BEGIN_LINK2" />Gizlilik Politikası<ph name="END_LINK2" /> ve <ph name="BEGIN_LINK3" />Hizmet Şartları<ph name="END_LINK3" />'na tabi olarak hizmetlerimizi iyileştirmek ve teknik sorunları gidermek için kullanırız.</translation>

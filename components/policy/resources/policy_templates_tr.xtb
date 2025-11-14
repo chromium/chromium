@@ -3763,6 +3763,11 @@ HTTPS'ye yönelik RSA sertifikalarına her ikisini de eklemelidir.</translation>
 <translation id="3665437376055221832">Yalnızca otomatik seçimle eşleşen sertifika olmadığında kullanıcıdan seçim yapmasını iste.</translation>
 <translation id="3671773704245936868">Klavye odağını vurgulamayı devre dışı bırak</translation>
 <translation id="3674010627788940405">CORS joker karakter olmayan istek başlıklarını destekleme.</translation>
+<translation id="3675248815331229366">Bu politikayı ayarlayarak kullanıcının coğrafi konumuna erişmesine izin verilmeyen ve bunu yapmak için kullanıcı izni istemesi engellenen sitelerin belirtildiği URL kalıplarının listesini oluşturabilirsiniz.
+
+      Politika ayarlanmadan bırakılırsa tüm sitelerde <ph name="DEFAULT_GEOLOCATION_SETTING" /> (ayarlanmışsa) geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
+
+      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
 <translation id="3675303748198647471">setTimeout(…, 0) genellikle uzun JavaScript görevlerinin dökümünü almak için kullanılır.
           Politika, Etkin değerine ayarlandığında 4 ms'den kısa bir aralığa sahip setTimeout'lar ve setInterval'lar yoğun şekilde zaman aşımına uğramaz.
           Bu şekilde kısa dönem performansı iyileştirilir ancak API'yi kötüye kullanan web sitelerinin setTimeout'ları nihayetinde zaman aşımına uğrar.
@@ -6281,6 +6286,7 @@ Bu politika 3 aşama boyunca kullanılabilir.</translation>
 
       Politika ayarlanmazsa kart görünürlüğünü kullanıcı kontrol edebilir. Varsayılan ayarda kartlar görünür.
       </translation>
+<translation id="5446826778796489105">Bu sitelerde coğrafi konumu engelle</translation>
 <translation id="5448022937220253000"><ph name="LACROS_NAME" /> devre dışı bırakıldıktan sonra kullanıcı verilerine ne olacağını seçin</translation>
 <translation id="5449690328792750354">Event.path API kullanılabilir.</translation>
 <translation id="5452024130413254050">Bu yapılandırmayı kullanan sanal makinelerin, vTPM'ye erişip erişemediğini kontrol eder, ayarlanmadığı takdirde varsayılan olarak yanlış ve <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> değerini alır.</translation>
@@ -11489,6 +11495,7 @@ Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTI
 
       Yanlış biçimlendirilmiş şablonlar yok sayılır.</translation>
 <translation id="9068629430243705879">bağlantı noktası 6566 (15.10.2021'e kadar engellemesi kaldırılabilir)</translation>
+<translation id="9069432851455606924">Coğrafi konum ayarları</translation>
 <translation id="9069503402414011061">Politikanın ayarlanması, kimlik doğrulama verisi önbellek ömrünü saat cinsinden belirtir. Önbellek, makine alanının (ilişkili alanlar) güvendiği alanlar hakkında verilere sahiptir. Bu nedenle, kimlik doğrulama verilerini önbelleğe alma, oturum açmayı hızlandırmaya yardımcı olur. Kullanıcıya özgü veriler ve ilişkili olmayan alanlara ait veriler önbelleğe alınmaz.
 
 Politikanın 0 değerine ayarlanması, kimlik doğrulama verilerini önbelleğe almayı devre dışı bırakır. Alana özgü veriler, her oturum açmada getirilir. Bu nedenle, kimlik doğrulama verilerinin önbelleğe alınmasını devre dışı bırakmak kullanıcının oturum açmasını önemli ölçüde yavaşlatabilir.

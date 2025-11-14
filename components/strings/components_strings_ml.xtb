@@ -765,6 +765,7 @@
 <translation id="222962001646502673">ഇരുണ്ട ഗ്രേ 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{ഒരു ടാബ്}other{# ടാബുകൾ}}</translation>
 <translation id="2233745931693710080">കോംപാക്റ്റ് ഡിസ്‌ക്</translation>
+<translation id="2236949375853147973">എന്റെ ആക്റ്റിവിറ്റി</translation>
 <translation id="2239100178324503013">ഇപ്പോൾ അയയ്‌ക്കുക</translation>
 <translation id="224130779555573777">റിഡ്രെസ് നമ്പർ ചേർക്കുക</translation>
 <translation id="2241693394036365668">ഫയൽ ഡൗൺലോഡ് ചെയ്യുമ്പോൾ</translation>
@@ -1458,6 +1459,7 @@
 <translation id="3392028486601120379">"<ph name="URL_PATTERN" />" എന്ന URL പാറ്റേണിന് വ്യക്തമാക്കിയ ഒരു പാതയുണ്ട്. പാതകൾ ഈ കീയെ പിന്തുണയ്ക്കുന്നില്ല, പാത നീക്കം ചെയ്‌ത് വീണ്ടും ശ്രമിക്കുക. e.g. *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">പിക്കപ്പ് രീതി</translation>
 <translation id="3399161914051569225">ധരിക്കാനാകുന്ന സാങ്കേതികവിദ്യ</translation>
+<translation id="3399930248910934354">Chrome ക്രമീകരണം തുറക്കുക</translation>
 <translation id="3399952811970034796">ഡെലിവറി നൽകേണ്ട വിലാസം</translation>
 <translation id="3402261774528610252">ഈ സൈറ്റ് ലോഡ് ചെയ്യാൻ ഉപയോഗിച്ച കണക്ഷൻ ഉപയോഗിച്ചത് TLS 1.0 അല്ലെങ്കിൽ TLS 1.1 പതിപ്പാണ്, ഇവ അവസാനിപ്പിച്ചതും ഭാവിയിൽ പ്രവർത്തനരഹിതമാക്കപ്പെടുന്നതും ആണ്. പ്രവർത്തനരഹിതം ആയിക്കഴിഞ്ഞാൽ, ഈ സൈറ്റ് ലോഡ് ചെയ്യുന്നതിൽ നിന്ന് ഉപയോക്താക്കളെ തടയും. TLS 1.2 അല്ലെങ്കിൽ അതിന് ശേഷമുള്ള പതിപ്പ് സെർവർ പ്രവർത്തനക്ഷമമാക്കണം.</translation>
 <translation id="3405664148539009465">ഫോണ്ടുകള്‍ ഇച്ഛാനുസൃതമാക്കുക</translation>
@@ -2945,6 +2947,7 @@
 <translation id="5813753398265398978">ഭൗതികശാസ്‌ത്രം</translation>
 <translation id="5817918615728894473">ജോടിയാക്കുക</translation>
 <translation id="5820625124144807242">നിങ്ങളുടെ ഓർഡർ അവലോകനം ചെയ്ത ശേഷം, <ph name="BNPL_ISSUER_NAME" /> അക്കൗണ്ട് സൃഷ്ടിക്കുകയോ അതിലേക്ക് സൈൻ ഇൻ ചെയ്യുകയോ വേണം. ഈ അക്കൗണ്ട് Google Pay-യിലേക്ക് സ്വയമേവ ലിങ്ക് ചെയ്യും.</translation>
+<translation id="5820751560028604030">ലോക്കൽ ഡൗൺലോഡ് ബ്ലോക്ക് ചെയ്തു</translation>
 <translation id="5826507051599432481">പൊതുവായ പേര് (CN)</translation>
 <translation id="5830698870816298009">ക്യാമറയുടെ ഉപയോഗവും ചലനവും</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -4087,6 +4090,7 @@
 <translation id="7648133459447652947">നിങ്ങളുടെ കഴ്‌സർ കാണിക്കാൻ, ആപ്പുകൾ മാറുകയോ പേജ് റീലോഡ് ചെയ്യുകയോ മടങ്ങുകയോ ചെയ്യുക</translation>
 <translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android ക്രമീകരണത്തിൽ<ph name="END_ANDROID_SETTINGS_LINK" /> വിപുലമായ പരിരക്ഷ ഓണാക്കിയിരിക്കുന്നതിനാൽ ഈ സൈറ്റ് ബ്ലോക്ക് ചെയ്ത നിലയിൽ തുടരും. <ph name="BEGIN_LEARN_MORE_LINK" />ഈ മുന്നറിയിപ്പിനെ കുറിച്ച് കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">ഈ ഉപകരണത്തിൽ ഫയലുകൾ സംഭരിക്കുക</translation>
+<translation id="7649070708921625228">സഹായം</translation>
 <translation id="7653957176542370971">പേയ്മെന്റ് കൈകാര്യം ചെയ്യുന്ന ഷീറ്റ് അടച്ചു</translation>
 <translation id="7655766454902053387">ജോലി ലിസ്റ്റിംഗുകൾ</translation>
 <translation id="765676359832457558">വിപുലമായ ക്രമീകരണങ്ങൾ മറയ്‌ക്കുക...</translation>

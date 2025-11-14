@@ -4037,6 +4037,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3756578970075173856">Postavljanje PIN-a</translation>
 <translation id="3756806135608816820">Web-lokacije mogu tražiti dopuštenje traženja Bluetooth uređaja</translation>
 <translation id="3757567010566591880">Otkvači s alatne trake</translation>
+<translation id="3757645900890881944">Alati za pretraživanje</translation>
 <translation id="3757733214359997190">Nijedna web-lokacija nije pronađena</translation>
 <translation id="375841316537350618">Preuzimanje proxy skripte...</translation>
 <translation id="3758887577462995665">Savjet:</translation>
@@ -6794,7 +6795,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5689233503102158537">Alt + Backspace</translation>
 <translation id="5689516760719285838">Lokacija</translation>
 <translation id="56907980372820799">Povežite podatke</translation>
-<translation id="5691581861107245578">Primajte prijedloge emojija na temelju onoga što upisujete</translation>
 <translation id="5691772641933328258">Otisak prsta nije prepoznat</translation>
 <translation id="5693255400847650006">Upotrebljava se mikrofon</translation>
 <translation id="5695046252726616755">Pritisnite Enter ili razmaknicu za više opcija.</translation>
@@ -8112,6 +8112,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6619990499523117484">Potvrdite PIN</translation>
 <translation id="6620000730890558421">Organizirajte kartice pomoću AI-ja</translation>
 <translation id="6620254580880484313">Naziv spremnika</translation>
+<translation id="6621282332208609777">Postavite pitanje Googleu ili unesite URL</translation>
 <translation id="6621391692573306628">Da biste poslali ovu karticu na drugi uređaj, prijavite se na Chrome na oba uređaja</translation>
 <translation id="6622980291894852883">Nastavi blokirati slike</translation>
 <translation id="6624036901798307345">U načinu rada tableta dodirnite na gumb alatne trake brojača kartica da biste otvorili novu vrpcu kartica koja prikazuje minijature svake kartice.</translation>
@@ -9535,6 +9536,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7620616707541471029">Odaberite račun da biste nastavili</translation>
 <translation id="7621382409404463535">Sustav nije uspio spremiti konfiguraciju uređaja.</translation>
 <translation id="7621595347123595643">Nećete moći oporaviti lokalne podatke ako zaboravite zaporku ili PIN.</translation>
+<translation id="7621863462266622331">Kad se kartice dijele, njihov sadržaj, mediji i URL-ovi šalju se Googleu</translation>
 <translation id="7622114377921274169">Punjenje.</translation>
 <translation id="7622768823216805500">Web-lokacije obično instaliraju rukovatelje plaćanjem radi značajki kupnje poput jednostavnije naplate</translation>
 <translation id="7622966771025050155">Prijeđi na snimljenu karticu</translation>
@@ -10041,6 +10043,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7952904276017482715">Očekivan je ID "<ph name="EXPECTED_ID" />", no ID je bio "<ph name="NEW_ID" />".</translation>
 <translation id="7953236668995583915">Ponovno učitajte ovu stranicu da biste primijenili ažurirane postavke na ovoj web-lokaciji</translation>
 <translation id="7953669802889559161">Unosi</translation>
+<translation id="7953955868932471628">Upravljanje prečacima</translation>
 <translation id="7955105108888461311">Pitaj osobno</translation>
 <translation id="7955177647836564772">Ako je Smart Lock uključen, a telefon otključan, ne trebate unijeti zaporku ili PIN</translation>
 <translation id="7956373551960864128">Spremljeni pisači</translation>
@@ -11429,6 +11432,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="8886745493279779790">Pregledajte neaktivne kartice</translation>
 <translation id="8888253246822647887">Aplikacija će se otvoriti kad nadogradnja završi. Nadogradnje mogu trajati nekoliko minuta.</translation>
 <translation id="8888459276890791557">Tu bočnu ploču možete prikvačiti radi lakšeg pristupa</translation>
+<translation id="8888621340860433230">Prikaz opcija</translation>
 <translation id="8889294078294184559">Tijekom vašeg daljnjeg pregledavanja web-lokacije mogu provjeriti u Chromeu i od prethodne web-lokacije koju ste posjetili dobiti potvrdu da ste vjerojatno stvarna osoba</translation>
 <translation id="8889651696183044030">Web-lokacija <ph name="ORIGIN" /> može uređivati sljedeće datoteke i mape</translation>
 <translation id="8890170499370378450">Možda će se naplatiti mobilni podatkovni promet</translation>
@@ -11751,6 +11755,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="909554839118732438">Zatvori anonimne prozore</translation>
 <translation id="9095819602391364796">Ne dopuštaj web-lokacijama upravljanje i reprogramiranje MIDI uređaja</translation>
 <translation id="9096053102600371572">Kontrolirano pomicanje <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Usporedite opcije</translation>
 <translation id="9096776523567481218">nije instalirano lokalno</translation>
 <translation id="9098860402274800697">Uklanjanje Google Playa i Android aplikacija</translation>
 <translation id="9099220545925418560">Na temelju vaše povijesti pregledavanja. Postavka je isključena.</translation>

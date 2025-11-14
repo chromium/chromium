@@ -4047,6 +4047,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3756578970075173856">Aseta PIN-koodi</translation>
 <translation id="3756806135608816820">Sivustot voivat pyytää lupaa etsiä Bluetooth-laitteita</translation>
 <translation id="3757567010566591880">Irrota yläpalkista</translation>
+<translation id="3757645900890881944">Hakutyökalut</translation>
 <translation id="3757733214359997190">Sivustoja ei löytynyt</translation>
 <translation id="375841316537350618">Ladataan välityspalvelinohjelmaa…</translation>
 <translation id="3758887577462995665">Vinkki:</translation>
@@ -6805,7 +6806,6 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5689233503102158537">alt + askelpalautin</translation>
 <translation id="5689516760719285838">Sijainti</translation>
 <translation id="56907980372820799">Yhdistä tiedot</translation>
-<translation id="5691581861107245578">Voit saada emojiehdotuksia kirjoittamasi tekstin perusteella</translation>
 <translation id="5691772641933328258">Sormenjälkeä ei tunnistettu</translation>
 <translation id="5693255400847650006">Mikrofoni käytössä</translation>
 <translation id="5695046252726616755">Paina Enteriä tai välilyöntiä, jos haluat nähdä lisää vaihtoehtoja.</translation>
@@ -10049,6 +10049,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7952904276017482715">Tunnusta <ph name="EXPECTED_ID" /> odotettiin, mutta tunnus oli <ph name="NEW_ID" />.</translation>
 <translation id="7953236668995583915">Päivitä tämä sivu, jos haluat ottaa päivitetyt asetukset käyttöön tällä sivustolla</translation>
 <translation id="7953669802889559161">Syötteet</translation>
+<translation id="7953955868932471628">Hallinnoi pikanäppäimiä</translation>
 <translation id="7955105108888461311">Kysy henkilökohtaisesti</translation>
 <translation id="7955177647836564772">Jos Smart Lock on päällä ja puhelimesi on lukitsematon, salasanaa tai PIN-koodia ei tarvitse lisätä</translation>
 <translation id="7956373551960864128">Tallentamasi tulostimet</translation>
@@ -11435,6 +11436,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="8886745493279779790">Tarkista ei-aktiiviset välilehdet</translation>
 <translation id="8888253246822647887">Sovelluksesi avautuu, kun päivitys on valmis. Päivitykset voivat kestää muutaman minuutin.</translation>
 <translation id="8888459276890791557">Kiinnitä sivupaneeli, niin voit käyttää sitä helposti</translation>
+<translation id="8888621340860433230">Näytä vaihtoehdot</translation>
 <translation id="8889294078294184559">Kun jatkat selaamista, sivustot voivat Chromen avulla tarkistaa edelliseltä avaamasi sivustolta, että olet todennäköisesti oikea ihminen.</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> saa muokata seuraavia tiedostoja ja kansioita</translation>
 <translation id="8890170499370378450">Voi aiheuttaa mobiilidatamaksuja</translation>

@@ -765,6 +765,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="222962001646502673">Mörkgrå 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 flik}other{# flikar}}</translation>
 <translation id="2233745931693710080">Cd</translation>
+<translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="2239100178324503013">Skicka nu</translation>
 <translation id="224130779555573777">Lägg till ditt Redress Number</translation>
 <translation id="2241693394036365668">Fil laddas ned</translation>
@@ -1459,6 +1460,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3392028486601120379">Webbadressmönstret <ph name="URL_PATTERN" /> har en angiven sökväg. Sökvägar stöds inte för den här nyckeln. Ta bort sökvägen och försök igen (t.ex. *://example.com/ =&gt; *://example.com)</translation>
 <translation id="3395827396354264108">Alternativ för utlämning</translation>
 <translation id="3399161914051569225">Smarta accessoarer</translation>
+<translation id="3399930248910934354">Öppna inställningarna för Chrome</translation>
 <translation id="3399952811970034796">Leveransadress</translation>
 <translation id="3402261774528610252">TLS 1.0 eller TLS 1.1 användes för anslutningen när den här webbplatsen lästes in. De versionerna har fasats ut och kommer att inaktiveras i framtiden. Efter inaktiveringen kan användarna inte längre läsa in den här webbplatsen. TLS 1.2 eller senare behöver aktiveras på servern.</translation>
 <translation id="3405664148539009465">Anpassa teckensnitt</translation>
@@ -4090,6 +4092,7 @@ Mer information.
 <translation id="7648133459447652947">Visa markören genom att byta app, läsa in sidan igen eller gå tillbaka</translation>
 <translation id="7648527891719919697">Den här webbplatsen förblir blockerad eftersom Avancerat skydd är aktiverat i <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android-inställningarna<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer om den här varningen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Spara filer på enheten</translation>
+<translation id="7649070708921625228">Hjälp</translation>
 <translation id="7653957176542370971">Arbetsbladet för betalningshantering har stängts</translation>
 <translation id="7655766454902053387">Jobbannonser</translation>
 <translation id="765676359832457558">Dölj avancerade inställningar ...</translation>

@@ -765,6 +765,7 @@
 <translation id="222962001646502673">அடர் சாம்பல் 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 பக்கம்}other{# பக்கங்கள்}}</translation>
 <translation id="2233745931693710080">காம்பேக்ட் டிஸ்க்</translation>
+<translation id="2236949375853147973">எனது செயல்பாடுகள்</translation>
 <translation id="2239100178324503013">இப்போதே அனுப்பு</translation>
 <translation id="224130779555573777">குறைதீர்வு எண்ணைச் சேர்த்தல்</translation>
 <translation id="2241693394036365668">ஃபைல் பதிவிறக்கப்படும்போது</translation>
@@ -1456,6 +1457,7 @@
 <translation id="3392028486601120379">"<ph name="URL_PATTERN" />" எனும் URL பேட்டர்னிற்குத் தடம் குறிப்பிடப்பட்டுள்ளது. இந்த URLலுக்குத் தடங்கள் ஆதரிக்கப்படவில்லை. தடத்தை அகற்றிவிட்டு மீண்டும் முயலவும். எ.கா. *://example.com/ =&gt; *://example.com"</translation>
 <translation id="3395827396354264108">பிக்அப் முறை</translation>
 <translation id="3399161914051569225">அணியக்கூடிய தொழில்நுட்பம்</translation>
+<translation id="3399930248910934354">Chrome அமைப்புகளைத் திற</translation>
 <translation id="3399952811970034796">டெலிவரி முகவரி</translation>
 <translation id="3402261774528610252">இந்தத் தளத்தை ஏற்றுவதற்குப் பயன்படுத்தப்பட்ட இணைப்பு TLS 1.0 அல்லது TLS 1.1 பதிப்பைப் பயன்படுத்தியது, இவை நிறுத்தப்பட்டுள்ளதோடு விரைவில் முடக்கப்படும். முடக்கப்பட்டவுடன் பயனர்களால் இந்தத் தளத்தை ஏற்ற முடியாது. சேவையகம் TLS 1.2 அல்லது அதற்குப் பிந்தைய பதிப்பை இயக்க வேண்டும்.</translation>
 <translation id="3405664148539009465">எழுத்துருக்களைப் பிரத்தியேகமாக்கு</translation>
@@ -2942,6 +2944,7 @@
 <translation id="5813753398265398978">இயற்பியல்</translation>
 <translation id="5817918615728894473">இணை</translation>
 <translation id="5820625124144807242">உங்கள் ஆர்டரைச் சரிபார்த்த பிறகு, நீங்கள் <ph name="BNPL_ISSUER_NAME" /> கணக்கில் உள்நுழைய வேண்டும் அல்லது கணக்கை உருவாக்க வேண்டும். இந்தக் கணக்கு Google Pay உடன் தானாகவே இணைக்கப்படும்.</translation>
+<translation id="5820751560028604030">சாதனத்தில் பதிவிறக்குதல் தடுக்கப்பட்டுள்ளது</translation>
 <translation id="5826507051599432481">பொதுவான பெயர் (CN)</translation>
 <translation id="5830698870816298009">கேமரா உபயோகம் &amp; நகர்வு</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -4085,6 +4088,7 @@
 <translation id="7648133459447652947">உங்கள் கர்சரைக் காட்ட ஆப்ஸிற்கிடையே மாறவும், பக்கத்தை ரெஃப்ரெஷ் செய்யவும் அல்லது பின் செல்லவும்</translation>
 <translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android அமைப்புகளில்<ph name="END_ANDROID_SETTINGS_LINK" /> நீங்கள் மேம்பட்ட பாதுகாப்பை ஆன் செய்திருப்பதால் இந்தத் தளம் தடுக்கப்பட்டே இருக்கும். <ph name="BEGIN_LEARN_MORE_LINK" />இந்த எச்சரிக்கை குறித்து மேலும் தெரிந்துகொள்ளுங்கள்<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">இந்தச் சாதனத்தில் ஃபைல்களைச் சேமிக்கும்</translation>
+<translation id="7649070708921625228">உதவி</translation>
 <translation id="7653957176542370971">பேமெண்ட் ஹேண்ட்லர் ஷீட் மூடியுள்ளது</translation>
 <translation id="7655766454902053387">வேலைவாய்ப்புகள்</translation>
 <translation id="765676359832457558">மேம்பட்ட அமைப்புகளை மறை...</translation>

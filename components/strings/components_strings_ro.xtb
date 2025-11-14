@@ -765,6 +765,7 @@
 <translation id="222962001646502673">Gri închis 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{O filă}few{# file}other{# de file}}</translation>
 <translation id="2233745931693710080">Disc compact</translation>
+<translation id="2236949375853147973">Activitatea mea</translation>
 <translation id="2239100178324503013">Trimite acum</translation>
 <translation id="224130779555573777">Adaugă numărul de remediere</translation>
 <translation id="2241693394036365668">Fișierul este descărcat</translation>
@@ -1459,6 +1460,7 @@
 <translation id="3392028486601120379">Modelul de adresă URL <ph name="URL_PATTERN" /> are o cale specificată. Căile nu sunt acceptate pentru această cheie. Elimină calea și încearcă din nou. De ex., *://example.com/ =&gt; *://example.com.</translation>
 <translation id="3395827396354264108">Metodă de preluare</translation>
 <translation id="3399161914051569225">Tehnologie portabilă</translation>
+<translation id="3399930248910934354">Deschide setările Chrome</translation>
 <translation id="3399952811970034796">Adresă de livrare</translation>
 <translation id="3402261774528610252">Conexiunea folosită pentru a încărca acest site a utilizat TLS 1.0 sau TLS 1.1, care sunt învechite și vor fi dezactivate în viitor. După dezactivare, utilizatorii nu vor mai putea să încarce site-ul. Serverul ar trebui să activeze TLS 1.2 sau o versiune ulterioară.</translation>
 <translation id="3405664148539009465">Personalizați fonturile</translation>
@@ -4090,6 +4092,7 @@ Detalii suplimentare:
 <translation id="7648133459447652947">Pentru a afișa cursorul, a schimba aplicații, a reîncărca pagina sau a reveni</translation>
 <translation id="7648527891719919697">Site-ul va rămâne blocat deoarece ai activat Protecția avansată în <ph name="BEGIN_ANDROID_SETTINGS_LINK" />setările Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe despre acest mesaj de avertisment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Stocheze fișiere pe acest dispozitiv</translation>
+<translation id="7649070708921625228">Ajutor</translation>
 <translation id="7653957176542370971">Foaia handlerului pentru plăți este închisă</translation>
 <translation id="7655766454902053387">Anunțuri de joburi</translation>
 <translation id="765676359832457558">Ascundeți setările avansate...</translation>

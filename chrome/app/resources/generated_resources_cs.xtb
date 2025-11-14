@@ -4035,6 +4035,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3756578970075173856">Nastavit PIN</translation>
 <translation id="3756806135608816820">Weby mohou žádat o vyhledání zařízení Bluetooth</translation>
 <translation id="3757567010566591880">Odepnout z lišty</translation>
+<translation id="3757645900890881944">Vyhledávací nástroje</translation>
 <translation id="3757733214359997190">Nebyly nalezeny žádné weby</translation>
 <translation id="375841316537350618">Stahování skriptu proxy...</translation>
 <translation id="3758887577462995665">Tip:</translation>
@@ -6791,7 +6792,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Poloha</translation>
 <translation id="56907980372820799">Propojit data</translation>
-<translation id="5691581861107245578">Zobrazovat návrhy emodži podle toho, co píšete</translation>
 <translation id="5691772641933328258">Otisk prstu nebyl rozpoznán</translation>
 <translation id="5693255400847650006">Používá se mikrofon</translation>
 <translation id="5695046252726616755">Další možnosti zobrazíte stisknutím klávesy Enter nebo mezerníku.</translation>
@@ -10037,6 +10037,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7952904276017482715">Bylo očekáváno ID <ph name="EXPECTED_ID" />, ale bylo použito ID <ph name="NEW_ID" /></translation>
 <translation id="7953236668995583915">Pokud na tomto webu chcete použít aktualizovaná nastavení, načtěte tuto stránku znovu</translation>
 <translation id="7953669802889559161">Metody zadávání</translation>
+<translation id="7953955868932471628">Spravovat zástupce</translation>
 <translation id="7955105108888461311">Zeptat se osobně</translation>
 <translation id="7955177647836564772">Pokud je zapnutá funkce Smart Lock a váš telefon je odemknutý, heslo ani PIN zadávat nemusíte.</translation>
 <translation id="7956373551960864128">Vaše uložené tiskárny</translation>
@@ -11424,6 +11425,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="8886745493279779790">Zkontrolovat neaktivní karty</translation>
 <translation id="8888253246822647887">Aplikace se spustí po dokončení upgradu. Upgrade může trvat několik minut.</translation>
 <translation id="8888459276890791557">Tento boční panel můžete pro snadný přístup připnout</translation>
+<translation id="8888621340860433230">Zobrazit možnosti</translation>
 <translation id="8889294078294184559">Při dalším procházení může Chrome na požádání jinému webu sdělit, že vás předchozí web ověřil jako pravděpodobně skutečného uživatele</translation>
 <translation id="8889651696183044030">Web <ph name="ORIGIN" /> může upravovat následující soubory a složky</translation>
 <translation id="8890170499370378450">Mohou být účtovány poplatky za mobilní data</translation>

@@ -4038,6 +4038,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3756578970075173856">PIN ayarlayın</translation>
 <translation id="3756806135608816820">Saytlar Bluetooth cihazlarını axtarmağı istəyə bilər</translation>
 <translation id="3757567010566591880">Alətlər panelinə bərkitməyin</translation>
+<translation id="3757645900890881944">Axtarış alətləri</translation>
 <translation id="3757733214359997190">Sayt tapılmadı</translation>
 <translation id="375841316537350618">Proksi skripti endirilir...</translation>
 <translation id="3758887577462995665">İpucu:</translation>
@@ -6797,7 +6798,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5689233503102158537">alt + geri düyməsi</translation>
 <translation id="5689516760719285838">Məkan</translation>
 <translation id="56907980372820799">Link datası</translation>
-<translation id="5691581861107245578">Yazdıqlarınıza əsasən emoji təklifləri alın</translation>
 <translation id="5691772641933328258">Barmaq izi tanınmadı</translation>
 <translation id="5693255400847650006">Mikrofon istifadə olunur</translation>
 <translation id="5695046252726616755">Digər seçimlər üçün enter və ya spaсe düyməsinə basın.</translation>
@@ -10038,6 +10038,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7952904276017482715">Gözlənilən ID "<ph name="EXPECTED_ID" />"olsa da, artırmanın ID-si "<ph name="NEW_ID" />" idi</translation>
 <translation id="7953236668995583915">Bu saytda yenilənmiş ayarların tətbiqi üçün bu səhifəni yenidən yükləyin</translation>
 <translation id="7953669802889559161">Daxiletmələr</translation>
+<translation id="7953955868932471628">Qısayolları idarə edin</translation>
 <translation id="7955105108888461311">Şəxsən soruşun</translation>
 <translation id="7955177647836564772">Smart Lock aktiv edilibsə və telefonunuzun kilidi açılıbsa, parol və ya PIN daxil etməyinizə ehtiyac yoxdur</translation>
 <translation id="7956373551960864128">Yadda saxlanılmış printerlər</translation>
@@ -11421,6 +11422,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="8886745493279779790">Qeyri-aktiv tabları nəzərdən keçirin</translation>
 <translation id="8888253246822647887">Tətbiq güncəlləmə tamamlandıqdan sonra açılacaq. Güncəlləmə bir neçə dəqiqə çəkə bilər.</translation>
 <translation id="8888459276890791557">Asan giriş üçün bu yan paneli bərkidə bilərsiniz</translation>
+<translation id="8888621340860433230">Seçimləri göstərin</translation>
 <translation id="8889294078294184559">Baxmağa davam etdikcə saytlar Chrome ilə yoxlanış apara və daxil olduğunuz əvvəlki sayt ilə real insan olduğunuzu təsdiqləyə bilər</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> aşağıdakı fayl və qovluqları redaktə edə bilər</translation>
 <translation id="8890170499370378450">Mobil data xərcləri tutula bilər</translation>

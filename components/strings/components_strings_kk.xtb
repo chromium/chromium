@@ -765,6 +765,7 @@
 <translation id="222962001646502673">Күңгірт сұр 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 қойынды}other{# қойынды}}</translation>
 <translation id="2233745931693710080">Компакт диск</translation>
+<translation id="2236949375853147973">Әрекеттерім</translation>
 <translation id="2239100178324503013">Қазір жіберу</translation>
 <translation id="224130779555573777">Қайта қарау нөмірін қосу</translation>
 <translation id="2241693394036365668">Файл жүктеп алынды</translation>
@@ -1458,6 +1459,7 @@
 <translation id="3392028486601120379">"<ph name="URL_PATTERN" />" URL өрнегінде жол көрсетілген. Бұл кілтте жол көрсетуге болмайды. Жолды жойып, әрекетті қайталап көріңіз (мысалы, *://example.com/ =&gt; *://example.com").</translation>
 <translation id="3395827396354264108">Таңдау әдісі</translation>
 <translation id="3399161914051569225">Денеге тағылатын құрылғылар</translation>
+<translation id="3399930248910934354">Chrome параметрлерін ашу</translation>
 <translation id="3399952811970034796">Жеткізу мекенжайы</translation>
 <translation id="3402261774528610252">Бұл сайтты жүктеуге қолданылған байланыс үшін ескірген және алдағы уақытта өшірілетін TLS 1.0 немесе TLS 1.1 протоколы пайдаланылған. Ол өшірілгеннен кейін, пайдаланушылар бұл сайтқа кіре алмайды. Серверде TLS 1.2 протоколы немесе одан кейінгі нұсқасы қосылуы тиіс.</translation>
 <translation id="3405664148539009465">Қаріптерді реттеу</translation>
@@ -4088,6 +4090,7 @@
 <translation id="7648133459447652947">Курсорды көрсету үшін қолданбаларды ауыстырыңыз, бетті қайта жүктеңіз немесе артқа оралыңыз.</translation>
 <translation id="7648527891719919697">Бұл сайт блокталған күйі қалады, себебі <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android параметрлерінде<ph name="END_ANDROID_SETTINGS_LINK" /> күшейтілген қорғаныс қосылды. <ph name="BEGIN_LEARN_MORE_LINK" />Бұл ескерту туралы толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Файлдарды осы құрылғыда сақтау</translation>
+<translation id="7649070708921625228">Анықтама</translation>
 <translation id="7653957176542370971">Төлем өңдегіш беті жабық.</translation>
 <translation id="7655766454902053387">Вакансиялар</translation>
 <translation id="765676359832457558">Қосымша параметрлерді жасыру…</translation>

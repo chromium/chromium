@@ -764,6 +764,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="222962001646502673">Toʻq kulrang 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 ta varaq}other{# ta varaq}}</translation>
 <translation id="2233745931693710080">Kompakt disk</translation>
+<translation id="2236949375853147973">Harakatlarim</translation>
 <translation id="2239100178324503013">Hozir yuborish</translation>
 <translation id="224130779555573777">Redress raqamini kiritish</translation>
 <translation id="2241693394036365668">Fayl yuklab olinishi</translation>
@@ -1456,6 +1457,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3392028486601120379">“<ph name="URL_PATTERN" />” URL namunasi belgilangan yoʻlga ega. Bu kalit uchun yoʻllar qoʻllab-quvvatlanmaydi, yoʻlni olib tashlang va qaytadan urinib koʻring. masalan. *://example.com/ =&gt; *://example.com»,</translation>
 <translation id="3395827396354264108">Olib ketish usuli</translation>
 <translation id="3399161914051569225">Taqiladigan qurilmalar</translation>
+<translation id="3399930248910934354">Chrome sozlamalarini oching</translation>
 <translation id="3399952811970034796">Yetkazib berish manzili</translation>
 <translation id="3402261774528610252">Bu sayt eskirgan TLS 1.0 yoki TLS 1.1 ishlatadi, shuning uchun keyingi versiyalarda faolsizlantiriladi. Faolsizlantirilsa, foydalanuvchilar bu saytni ocha olmaydi. Serverda TLS 1.2 yoki yuqoriroq versiya yoqilishi lozim.</translation>
 <translation id="3405664148539009465">Shriftlarni sozlash</translation>
@@ -2941,6 +2943,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5813753398265398978">Fizika</translation>
 <translation id="5817918615728894473">Ulanish</translation>
 <translation id="5820625124144807242">Buyurtmani tekshirib, <ph name="BNPL_ISSUER_NAME" /> bilan hisobga kiring yoki yangi hisob yarating. Bu hisob avtomatik ravishda Google Pay xizmatiga ulanadi.</translation>
+<translation id="5820751560028604030">Qurilmadan yuklab olish bloklandi</translation>
 <translation id="5826507051599432481">Umumiy Ism (CN)</translation>
 <translation id="5830698870816298009">kameradan foydalanish va siljitish</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -4083,6 +4086,7 @@ Batafsil axborot:
 <translation id="7648133459447652947">Kursorni chiqarish uchun ilovalarni almashtiring, sahifani qayta yuklang yoki orqaga qayting</translation>
 <translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android sozlamalarida<ph name="END_ANDROID_SETTINGS_LINK" /> Google Kuchaytirilgan himoya yoqilgani uchun bu sayt bloklangan holatda qoladi. <ph name="BEGIN_LEARN_MORE_LINK" />Bu ogohlantirish haqida batafsil<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Fayllarni bu qurilmada saqlash</translation>
+<translation id="7649070708921625228">Yordam</translation>
 <translation id="7653957176542370971">Toʻlovlarni qayta ishlash vositasi yopildi</translation>
 <translation id="7655766454902053387">Boʻsh ish oʻrni</translation>
 <translation id="765676359832457558">Qo‘shimcha sozlamalarni yashirish</translation>

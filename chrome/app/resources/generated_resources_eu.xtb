@@ -4033,6 +4033,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3756578970075173856">Ezarri PINa</translation>
 <translation id="3756806135608816820">Webguneek Bluetooth bidezko gailuak bilatzeko baimena eska dezakete</translation>
 <translation id="3757567010566591880">Kendu aingura tresna-barratik</translation>
+<translation id="3757645900890881944">Bilaketa-tresnak</translation>
 <translation id="3757733214359997190">Ez da aurkitu webgunerik</translation>
 <translation id="375841316537350618">Proxyaren scripta deskargatzen…</translation>
 <translation id="3758887577462995665">Aholkua:</translation>
@@ -6790,7 +6791,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5689233503102158537">Alt + Atzera tekla</translation>
 <translation id="5689516760719285838">Kokapena</translation>
 <translation id="56907980372820799">Estekatu datuak</translation>
-<translation id="5691581861107245578">Lortu emojien iradokizunak, idazten ari zarenaren arabera</translation>
 <translation id="5691772641933328258">Ez da ezagutu hatz-marka</translation>
 <translation id="5693255400847650006">Mikrofonoa abian da</translation>
 <translation id="5695046252726616755">Sakatu Sartu edo zuriune-barra aukera gehiago ikusteko.</translation>
@@ -10031,6 +10031,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7952904276017482715">"<ph name="EXPECTED_ID" />"identifikatzaileaespero zen, baina "<ph name="NEW_ID" />" da identifikatzailea</translation>
 <translation id="7953236668995583915">Kargatu berriro orria ezarpen berriak webgune honetan aplikatzeko</translation>
 <translation id="7953669802889559161">Idazketa-metodoak</translation>
+<translation id="7953955868932471628">Kudeatu lasterbideak</translation>
 <translation id="7955105108888461311">Eska iezadazu zuzenean</translation>
 <translation id="7955177647836564772">Smart Lock aktibatuta badago eta telefonoa, berriz, desblokeatuta, ez duzu pasahitzik edo PINik idatzi behar</translation>
 <translation id="7956373551960864128">Gordetako inprimagailuak</translation>
@@ -11416,6 +11417,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8886745493279779790">Berrikusi fitxa inaktiboak</translation>
 <translation id="8888253246822647887">Bertsio-berritzen amaitzen denean irekiko da aplikazioa. Agian minutu batzuk beharko dira bertsioa berritzeko.</translation>
 <translation id="8888459276890791557">Errazago atzitzeko, ainguratu alboko panela</translation>
+<translation id="8888621340860433230">Erakutsi aukerak</translation>
 <translation id="8889294078294184559">Arakatzen jarraitu ahala, beste webgune batzuek Chrome-ren informazioa ikus dezakete, eta aurrez bisitatu duzun webgune batek benetako pertsonatzat hartu zaituela egiaztatu.</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> webguneak fitxategi eta karpeta hauek edita ditzake</translation>
 <translation id="8890170499370378450">Baliteke datu-erabilera ordaindu behar izatea</translation>

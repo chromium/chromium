@@ -3833,6 +3833,11 @@ incluir as duas opções em certificados RSA destinados a HTTPS.</translation>
 <translation id="3665437376055221832">Consultar o usuário apenas quando nenhum certificado corresponder à seleção automática.</translation>
 <translation id="3671773704245936868">Desativar destaque de foco do teclado</translation>
 <translation id="3674010627788940405">Não oferecer suporte a cabeçalhos de solicitação de CORS sem caractere curinga.</translation>
+<translation id="3675248815331229366">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não têm permissão para acessar a geolocalização do usuário e também não podem pedir permissão do usuário para fazer isso.
+
+      Se a política não for definida, <ph name="DEFAULT_GEOLOCATION_SETTING" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
+
+      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://chromeenterprise.google/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
 <translation id="3675303748198647471">A função setTimeout(…, 0) normalmente é usada para dividir tarefas longas de JavaScript.
           Quando a política for ativada, as funções setTimeouts e setIntervals com um intervalo menor que 4ms não vão ser limitadas de forma tão agressiva.
           Isso vai melhorar a performance no curto prazo, mas os sites que abusam da API ainda terão as setTimeouts limitadas.
@@ -6401,6 +6406,7 @@ A política vai ficar disponível por 3 marcos.</translation>
 
       Se a política não for definida, os usuários poderão controlar a visibilidade dos cards. O padrão é visível.
       </translation>
+<translation id="5446826778796489105">Bloquear a geolocalização nestes sites</translation>
 <translation id="5448022937220253000">Escolher o que acontece com os dados do usuário depois que o <ph name="LACROS_NAME" /> é desativado</translation>
 <translation id="5449690328792750354">A API Event.path vai estar disponível.</translation>
 <translation id="5452024130413254050">Controla se as VMs que usam essa configuração têm acesso a um vTPM. O padrão é falso e <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> quando não é definido.</translation>
@@ -11716,6 +11722,7 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 
       Modelos formatados incorretamente vão ser ignorados.</translation>
 <translation id="9068629430243705879">porta 6566 (pode ser desbloqueada até 15/10/2021)</translation>
+<translation id="9069432851455606924">Configurações de geolocalização</translation>
 <translation id="9069503402414011061">A definição da política especifica, em horas, o ciclo de vida do armazenamento em cache dos dados de autenticação. O cache contém dados sobre realms confiáveis pelo realm da máquina (realms afiliados). Portanto, o armazenamento em cache dos dados de autenticação acelera o login. Dados específicos do usuário e dados de realms não afiliados não são armazenados em cache.
 
 Se a política for definida como "0", o armazenamento em cache dos dados de autenticação será desativado. Os dados específicos de realm são buscados em todos os logins, então a desativação do armazenamento em cache dos dados de autenticação pode deixar o login mais lento.

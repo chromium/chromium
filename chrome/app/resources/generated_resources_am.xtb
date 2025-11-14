@@ -4044,6 +4044,7 @@
 <translation id="3756578970075173856">ፒን ያዘጋጁ</translation>
 <translation id="3756806135608816820">ጣቢያዎች የብሉቱዝ መሣሪያዎችን ለመፈለግ መጠየቅ ይችላሉ</translation>
 <translation id="3757567010566591880">ከመሣሪያ አሞሌ ንቀል</translation>
+<translation id="3757645900890881944">የፍለጋ መሣሪያዎች</translation>
 <translation id="3757733214359997190">ምንም ጣቢያዎች አልተገኙም</translation>
 <translation id="375841316537350618">ተኪ ስክሪፕትን በማውረድ ላይ...</translation>
 <translation id="3758887577462995665">ጠቃሚ ምክር፦</translation>
@@ -6803,7 +6804,6 @@
 <translation id="5689233503102158537">alt + የኋሊት መደምሰሻ</translation>
 <translation id="5689516760719285838">አካባቢ</translation>
 <translation id="56907980372820799">ውሂብ አገናኝ</translation>
-<translation id="5691581861107245578">በሚተይቡት ላይ በመመርኮዝ የስሜት ገላጭ ምስል አስተያየት ጥቆማዎችን ያግኙ</translation>
 <translation id="5691772641933328258">የጣት አሻራ አልታወቀም</translation>
 <translation id="5693255400847650006">ማይክሮፎን ሥራ ላይ ነው</translation>
 <translation id="5695046252726616755">ለተጨማሪ አማራጮች አስገባን ወይም ክፍተትን ይጫኑ።</translation>
@@ -10049,6 +10049,7 @@
 <translation id="7952904276017482715">የተጠበቀው መታወቂያ «<ph name="EXPECTED_ID" />» ነበር፣ ነገር ግን መታወቂያው «<ph name="NEW_ID" />» ነበር</translation>
 <translation id="7953236668995583915">በዚህ ጣቢያ ላይ የተዘመኑ ቅንብሮችዎን ለመተግበር ይህን ገፅ እንደገና ይጫኑ</translation>
 <translation id="7953669802889559161">ግቤቶች</translation>
+<translation id="7953955868932471628">አቋራጮችን ያቀናብሩ</translation>
 <translation id="7955105108888461311">በአካል ጠይቅ</translation>
 <translation id="7955177647836564772">Smart Lock በርቶ ከሆነ እና የእርስዎ ስልክ የተከፈተ ከሆነ የይለፍ ቃል ወይም ፒን ማስገባት አያስፈልግዎትም</translation>
 <translation id="7956373551960864128">የእርስዎ የተቀመጡ አታሚዎች</translation>
@@ -11441,6 +11442,7 @@ nil</translation>
 <translation id="8886745493279779790">ገቢር ያልሆኑ ትሮችን ገምግም</translation>
 <translation id="8888253246822647887">ማላቁ ሲያልቅ መተግበሪያዎ ይከፈታል ማላቆች ጥቂት ደቂቃዎችን ሊወስዱ ይችላሉ</translation>
 <translation id="8888459276890791557">በቀላሉ ለመድረስ ይህንን የጐን ፓነል ፒን ማድረግ ይችላሉ</translation>
+<translation id="8888621340860433230">አማራጮችን አሳይ</translation>
 <translation id="8889294078294184559">ማሰስዎን ሲቀጥሉ እውነተኛ ሰው ሊሆኑ እንደሚችሉ ጣቢያዎች በChrome መፈተሽ እና እርስዎ ከዚህ ቀደም በጎበኙት ጣቢያ ላይ ማረጋገጥ ይችላሉ</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> የሚከተሉትን ፋይሎች እና አቃፊዎች ማርትዕ ይችላል</translation>
 <translation id="8890170499370378450">የተንቀሳቃሽ ስልክ ውሂብ ክፍያዎችን ሊያስከትል ይችላል</translation>

@@ -765,6 +765,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="222962001646502673">Temno siva 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 zavihek}one{# zavihek}two{# zavihka}few{# zavihki}other{# zavihkov}}</translation>
 <translation id="2233745931693710080">Compact Disc</translation>
+<translation id="2236949375853147973">Moja dejavnost</translation>
 <translation id="2239100178324503013">Pošlji</translation>
 <translation id="224130779555573777">Dodaj kontrolno številko</translation>
 <translation id="2241693394036365668">Datoteka je prenesena</translation>
@@ -1459,6 +1460,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3392028486601120379">Vzorec URL »<ph name="URL_PATTERN" />« ima navedeno pot. Poti niso podprte za ta ključ. Odstranite pot in poskusite znova. Npr. *://example.com/ =&gt; *://example.com«.</translation>
 <translation id="3395827396354264108">Način prevzema</translation>
 <translation id="3399161914051569225">Nosljiva tehnologija</translation>
+<translation id="3399930248910934354">Odpri nastavitve Chroma</translation>
 <translation id="3399952811970034796">Naslov za dostavo</translation>
 <translation id="3402261774528610252">Povezava, prek katere je bilo naloženo to spletno mesto, uporablja standard TLS 1.0 ali TLS 1.1; ta standarda sta zastarela in bosta v prihodnje onemogočena. Ko bosta onemogočena, bo uporabnikom preprečeno naložiti to spletno mesto. V strežniku omogočite standard TLS 1.2 ali novejšega.</translation>
 <translation id="3405664148539009465">Prilagodi pisave</translation>
@@ -4090,6 +4092,7 @@ Dodatne podrobnosti:
 <translation id="7648133459447652947">Če želite prikazati kazalec, preklopiti med aplikacijami, znova naložiti stran ali se vrniti nazaj</translation>
 <translation id="7648527891719919697">To spletno mesto bo ostalo blokirano, ker je v <ph name="BEGIN_ANDROID_SETTINGS_LINK" />nastavitvah za Android<ph name="END_ANDROID_SETTINGS_LINK" /> vklopljena dodatna zaščita. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem opozorilu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Shranjevanje datotek v tej napravi</translation>
+<translation id="7649070708921625228">Pomoč</translation>
 <translation id="7653957176542370971">List rutine za obravnavo plačil je zaprt</translation>
 <translation id="7655766454902053387">Odprta delovna mesta</translation>
 <translation id="765676359832457558">Skrij dodatne nastavitve ...</translation>

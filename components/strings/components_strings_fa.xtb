@@ -765,6 +765,7 @@
 <translation id="222962001646502673">خاکستری تیره ۲</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{‫۱ زبانه}one{‫# زبانه}other{‫# زبانه}}</translation>
 <translation id="2233745931693710080">لوح فشرده</translation>
+<translation id="2236949375853147973">فعالیت‌هایم</translation>
 <translation id="2239100178324503013">اکنون ارسال شود</translation>
 <translation id="224130779555573777">افزودن شماره جبران خسارت</translation>
 <translation id="2241693394036365668">فایل بارگیری شده است</translation>
@@ -1459,6 +1460,7 @@
 <translation id="3392028486601120379">‏در الگوی نشانی وب «<ph name="URL_PATTERN" />»، مسیری مشخص شده است. این کلید از مسیر پشتیبانی نمی‌کند، لطفاً مسیر را حذف کنید و دوباره امتحان کنید. برای مثال، ‎*://example.com/ =&gt; *://example.com",‎</translation>
 <translation id="3395827396354264108">روش تحویل گرفتن</translation>
 <translation id="3399161914051569225">فناوری پوشیدنی</translation>
+<translation id="3399930248910934354">‏باز کردن «تنظیمات Chrome»</translation>
 <translation id="3399952811970034796">نشانی تحویل کالا</translation>
 <translation id="3402261774528610252">اتصال استفاده‌شده برای بار کردن این سایت از «امنیت لایه انتقال» نسخه ۱.۰ یا ۱.۱ استفاده می‌کرد که منسوخ شده است و در آینده غیرفعال خواهد شد. بعد از غیرفعال شدن، کاربران نمی‌توانند این سایت را بار کنند. سرور باید «امنیت لایه انتقال» نسخه ۱.۲ یا بالاتر را فعال کند.</translation>
 <translation id="3405664148539009465">سفارشی کردن قلم‌ها</translation>
@@ -4090,6 +4092,7 @@
 <translation id="7648133459447652947">برای نمایش مکان‌نما، بین برنامه‌ها جابه‌جا شوید، صفحه را مجدداً بار کنید، یا به عقب برگردید</translation>
 <translation id="7648527891719919697">‏این سایت مسدود خواهد ماند زیرا «محافظت پیشرفته» را در <ph name="BEGIN_ANDROID_SETTINGS_LINK" />تنظیمات Android<ph name="END_ANDROID_SETTINGS_LINK" /> روشن کرده‌اید. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">ذخیره کردن فایل در این دستگاه</translation>
+<translation id="7649070708921625228">راهنما</translation>
 <translation id="7653957176542370971">برگ کنترل‌کننده پرداخت بسته است</translation>
 <translation id="7655766454902053387">فهرستگان شغلی</translation>
 <translation id="765676359832457558">پنهان کردن تنظیمات پیشرفته…</translation>

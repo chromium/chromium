@@ -4033,6 +4033,7 @@
 <translation id="3756578970075173856">Ընտրեք PIN կոդ</translation>
 <translation id="3756806135608816820">Կայքերը կարող են Bluetooth սարքեր որոնելու թույլտվություն հայցել</translation>
 <translation id="3757567010566591880">Ապամրացնել գործիքագոտուց</translation>
+<translation id="3757645900890881944">Որոնման գործիքներ</translation>
 <translation id="3757733214359997190">Կայքեր չեն գտնվել</translation>
 <translation id="375841316537350618">Պրոքսի-սերվերի սկրիպտը ներբեռնվում է…</translation>
 <translation id="3758887577462995665">Հուշում․</translation>
@@ -6791,7 +6792,6 @@
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Տեղորոշում</translation>
 <translation id="56907980372820799">Հղման տվյալներ</translation>
-<translation id="5691581861107245578">Ստացեք էմոջիների առաջարկներ՝ ձեր մուտքագրած տեքստի հիման վրա</translation>
 <translation id="5691772641933328258">Չհաջողվեց ճանաչել մատնահետքը</translation>
 <translation id="5693255400847650006">Խոսափողը ներկայումս օգտագործվում է</translation>
 <translation id="5695046252726616755">Սեղմեք Enter կամ բացատ՝ այլ ընտրանքներ բացելու համար։</translation>
@@ -10035,6 +10035,7 @@
 <translation id="7952904276017482715">Սպասված ID-ն՝ «<ph name="EXPECTED_ID" />», ստացված ID-ն՝ «<ph name="NEW_ID" />»</translation>
 <translation id="7953236668995583915">Վերաբեռնեք էջը՝ այս կայքում ձեր թարմացված կարգավորումները կիրառելու համար</translation>
 <translation id="7953669802889559161">Ներածման մեթոդներ</translation>
+<translation id="7953955868932471628">Կառավարել դյուրանցումները</translation>
 <translation id="7955105108888461311">Հարցնել անձամբ</translation>
 <translation id="7955177647836564772">Եթե Smart Lock-ը միացված է, և հեռախոսն ապակողպված է, PIN կոդ կամ գաղտնաբառ մուտքագրելու կարիք չկա</translation>
 <translation id="7956373551960864128">Ձեր պահված տպիչները</translation>
@@ -11421,6 +11422,7 @@
 <translation id="8886745493279779790">Ստուգել ոչ ակտիվ ներդիրները</translation>
 <translation id="8888253246822647887">Հավելվածը կբացվի նորացումն ավարտելուց հետո: Դա կարող է մի քանի րոպե տևել:</translation>
 <translation id="8888459276890791557">Կարող եք ամրացնել այս կողային վահանակը, որպեսզի հարկ եղած դեպքում արագ բացեք այն</translation>
+<translation id="8888621340860433230">Ցույց տալ կարգավորումները</translation>
 <translation id="8889294078294184559">Երբ դուք կայքեր եք դիտարկում, դրանք կարող են Chrome-ում տեղեկություններ պահել, որոնք հաստատում են, որ դուք իրական օգտատեր եք։</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> կայքը կարող է փոփոխել հետևյալ ֆայլերն ու պանակները</translation>
 <translation id="8890170499370378450">Բջջային ինտերնետի համար կարող է վճար գանձվել</translation>

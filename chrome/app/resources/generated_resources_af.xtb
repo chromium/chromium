@@ -4048,6 +4048,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3756578970075173856">Stel PIN</translation>
 <translation id="3756806135608816820">Werwe kan vra om Bluetooth-toestelle te soek</translation>
 <translation id="3757567010566591880">Ontspeld van nutsbalk</translation>
+<translation id="3757645900890881944">Soeknutsgoed</translation>
 <translation id="3757733214359997190">Geen werwe gekry nie</translation>
 <translation id="375841316537350618">Laai tans instaanbedienerskrip af …</translation>
 <translation id="3758887577462995665">Wenk:</translation>
@@ -6810,7 +6811,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Ligging</translation>
 <translation id="56907980372820799">Koppel data</translation>
-<translation id="5691581861107245578">Kry emosiekoonvoorstelle op grond van wat jy tik</translation>
 <translation id="5691772641933328258">Vingerafdruk nie herken nie</translation>
 <translation id="5693255400847650006">Mikrofoon in gebruik</translation>
 <translation id="5695046252726616755">Druk Enter of spasiebalk vir meer opsies.</translation>
@@ -10053,6 +10053,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7952904276017482715">Het ID "<ph name="EXPECTED_ID" />" verwag, maar ID was "<ph name="NEW_ID" />"</translation>
 <translation id="7953236668995583915">Herlaai hierdie bladsy om jou opgedateerde instellings op hierdie webwerf toe te pas</translation>
 <translation id="7953669802889559161">Invoere</translation>
+<translation id="7953955868932471628">Bestuur kortpaaie</translation>
 <translation id="7955105108888461311">Vra persoonlik</translation>
 <translation id="7955177647836564772">As Smart Lock aan is en jou foon is ontsluit, hoef jy nie ’n wagwoord of PIN in te voer nie</translation>
 <translation id="7956373551960864128">Jou gestoorde drukkers</translation>
@@ -11438,6 +11439,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="8886745493279779790">Hersien onaktiewe oortjies</translation>
 <translation id="8888253246822647887">Jou app sal oopmaak wanneer die opgradering voltooi is. Opgraderings kan 'n paar minute neem.</translation>
 <translation id="8888459276890791557">Jy kan vir maklike toegang hierdie kantpaneel vasspeld</translation>
+<translation id="8888621340860433230">Wys opsies</translation>
 <translation id="8889294078294184559">Terwyl jy aanhou blaai, kan werwe met Chrome kontroleer en met ’n vorige werf wat jy besoek het verifieer dat jy waarskynlik ’n regte persoon is</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> kan die volgende lêers en vouers wysig</translation>
 <translation id="8890170499370378450">Kan mobiele dataheffings aangaan</translation>

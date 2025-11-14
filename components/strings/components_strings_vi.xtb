@@ -765,6 +765,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="222962001646502673">Xám đậm 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 thẻ}other{# thẻ}}</translation>
 <translation id="2233745931693710080">Đĩa nén</translation>
+<translation id="2236949375853147973">Hoạt động của tôi</translation>
 <translation id="2239100178324503013">Gửi bây giờ</translation>
 <translation id="224130779555573777">Thêm mã số xác nhận trùng tên</translation>
 <translation id="2241693394036365668">Tải tệp xuống</translation>
@@ -1459,6 +1460,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3392028486601120379">Mẫu URL "<ph name="URL_PATTERN" />" chứa đường dẫn được chỉ định. Đường dẫn này không được hỗ trợ cho khoá này. Vui lòng xoá đường dẫn và thử lại. Ví dụ: *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Phương thức nhận hàng</translation>
 <translation id="3399161914051569225">Thiết bị công nghệ có thể đeo được</translation>
+<translation id="3399930248910934354">Mở phần Cài đặt của Chrome</translation>
 <translation id="3399952811970034796">Địa chỉ giao hàng</translation>
 <translation id="3402261774528610252">Đường kết nối dùng để tải trang web này đã sử dụng TLS 1.0 hoặc TLS 1.1. Các phiên bản này không được dùng nữa và sẽ bị vô hiệu hóa trong tương lai. Sau khi phiên bản bị vô hiệu hóa, người dùng sẽ không thể tải trang web này. Máy chủ cần bật phiên bản TLS 1.2 trở lên.</translation>
 <translation id="3405664148539009465">Tùy chỉnh phông chữ</translation>
@@ -2946,6 +2948,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5813753398265398978">Vật lý</translation>
 <translation id="5817918615728894473">Ghép nối</translation>
 <translation id="5820625124144807242">Sau khi xem lại đơn đặt hàng, bạn phải đăng nhập hoặc tạo một tài khoản <ph name="BNPL_ISSUER_NAME" />. Tài khoản này sẽ tự động liên kết với Google Pay.</translation>
+<translation id="5820751560028604030">Đã chặn tệp tải xuống thiết bị</translation>
 <translation id="5826507051599432481">Tên Phổ biến (CN)</translation>
 <translation id="5830698870816298009">sử dụng và di chuyển máy ảnh</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -4090,6 +4093,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7648133459447652947">Để hiện con trỏ, hãy chuyển ứng dụng, tải lại trang hoặc quay lại</translation>
 <translation id="7648527891719919697">Trang web này sẽ tiếp tục bị chặn vì bạn đã bật tính năng Bảo vệ nâng cao trong phần <ph name="BEGIN_ANDROID_SETTINGS_LINK" />cài đặt Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm về cảnh báo này<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Lưu trữ tệp trên thiết bị này</translation>
+<translation id="7649070708921625228">Trợ giúp</translation>
 <translation id="7653957176542370971">Trang tính trình xử lý thanh toán đang đóng</translation>
 <translation id="7655766454902053387">Danh sách việc làm</translation>
 <translation id="765676359832457558">Ẩn cài đặt nâng cao...</translation>

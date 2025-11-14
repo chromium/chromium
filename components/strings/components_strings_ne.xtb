@@ -765,6 +765,7 @@
 <translation id="222962001646502673">गाढा खरानी रङ २</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{एउटा ट्याब}other{# वटा ट्याब}}</translation>
 <translation id="2233745931693710080">कम्प्याक्ट डिस्क</translation>
+<translation id="2236949375853147973">मेरो गतिविधि</translation>
 <translation id="2239100178324503013">अहिले पठाउनुहोस्</translation>
 <translation id="224130779555573777">रिड्रेस नम्बर हाल्नुहोस्</translation>
 <translation id="2241693394036365668">फाइल डाउनलोड गरिँदा</translation>
@@ -1456,6 +1457,7 @@
 <translation id="3392028486601120379">URL को ढाँचा "<ph name="URL_PATTERN" />" का लागि पथ तोकिएको छ। यो कीमा पथ प्रयोग गर्न मिल्दैन। कृपया पथ हटाएर फेरि प्रयास गर्नुहोस्। उदाहरणका लागि: *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">पिकअप विधि</translation>
 <translation id="3399161914051569225">लगाउन मिल्ने प्रविधि</translation>
+<translation id="3399930248910934354">Chrome का सेटिङ खोल्नुहोस्</translation>
 <translation id="3399952811970034796">डेलिभरी गर्ने ठेगाना</translation>
 <translation id="3402261774528610252">यो साइट लोड गर्न प्रयोग गरिएको जडानले प्रचलनबाट हटाइएका TLS १.० वा TLS १.१ प्रयोग गरेको छ र तिनलाई भविष्यमा असक्षम पारिने छ। असक्षम पारेपछि, प्रयोगकर्ताहरू यो साइट लोड गर्न सक्ने छैनन्। सर्भरले TLS १.२ वा त्यसपछिको संस्करण सक्षम पार्नु पर्छ।</translation>
 <translation id="3405664148539009465">फन्टहरूलाई  कस्टम गर्नुहोस्</translation>
@@ -4087,6 +4089,7 @@
 <translation id="7648133459447652947">कर्सर देखाउन एपहरू अदलबदल गर्नुहोस्, पेज रिलोड गर्नुहोस् वा पछाडि जानुहोस्</translation>
 <translation id="7648527891719919697">तपाईंले <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android का सेटिङ<ph name="END_ANDROID_SETTINGS_LINK" />मा सुरक्षासम्बन्धी उन्नत सुविधा अन गर्नुभएकाले यो साइट ब्लक गरिराखिने छ। <ph name="BEGIN_LEARN_MORE_LINK" />यो चेतावनीका बारेमा थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">यस यन्त्रमा फाइलहरू भण्डार गर्नुहोस्</translation>
+<translation id="7649070708921625228">मद्दत</translation>
 <translation id="7653957176542370971">भुक्तानी ह्यान्ड्लरसम्बन्धी पाना बन्द गरिएको छ</translation>
 <translation id="7655766454902053387">जागरिका सूचीहरू</translation>
 <translation id="765676359832457558">उन्नत सेटिङहरू लुकाउनुहोस्...</translation>

@@ -4049,6 +4049,7 @@
 <translation id="3756578970075173856">Поставете PIN</translation>
 <translation id="3756806135608816820">Сајтовите може да прашуваат дали да бараат уреди со Bluetooth</translation>
 <translation id="3757567010566591880">Откачи од алатникот</translation>
+<translation id="3757645900890881944">Алатки за пребарување</translation>
 <translation id="3757733214359997190">Не се најдени сајтови</translation>
 <translation id="375841316537350618">Се презема прокси-скрипта...</translation>
 <translation id="3758887577462995665">Совет:</translation>
@@ -6810,7 +6811,6 @@
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Локација</translation>
 <translation id="56907980372820799">Поврзи податоци</translation>
-<translation id="5691581861107245578">Добивајте предлози за емоџија според она што го пишувате</translation>
 <translation id="5691772641933328258">Отпечатокот не е препознаен</translation>
 <translation id="5693255400847650006">Микрофонот е во употреба</translation>
 <translation id="5695046252726616755">Притиснете Enter или Space за повеќе опции.</translation>
@@ -10055,6 +10055,7 @@
 <translation id="7952904276017482715">Очекуван ID „<ph name="EXPECTED_ID" />“, но ID е „<ph name="NEW_ID" />“</translation>
 <translation id="7953236668995583915">Вчитајте ја страницава повторно за да се применат ажурираните поставки на сајтов</translation>
 <translation id="7953669802889559161">Методи за внесување</translation>
+<translation id="7953955868932471628">Управувај со кратенките</translation>
 <translation id="7955105108888461311">Прашај лично</translation>
 <translation id="7955177647836564772">Ако е вклучена Smart Lock, а вашиот телефон е отклучен, тогаш нема потреба да внесувате лозинка или PIN</translation>
 <translation id="7956373551960864128">Вашите зачувани печатачи</translation>
@@ -11444,6 +11445,7 @@
 <translation id="8886745493279779790">Прегледајте ги неактивните картички</translation>
 <translation id="8888253246822647887">Апликацијата ќе се отвори кога ќе заврши надградбата. Надградбите може да траат неколку минути.</translation>
 <translation id="8888459276890791557">За лесен пристап, може да ја закачите страничнава табла</translation>
+<translation id="8888621340860433230">Прикажи ги опциите</translation>
 <translation id="8889294078294184559">Додека прелистувате, сајтовите може да проверат со Chrome и да потврдат со некој претходен сајт што сте го отвориле дека најверојатно сте вистинска личност</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> може да ги изменува следниве датотеки и папки</translation>
 <translation id="8890170499370378450">Може да произлезат трошоци за мобилен интернет</translation>

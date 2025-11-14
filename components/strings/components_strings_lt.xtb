@@ -765,6 +765,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="222962001646502673">2 tamsiai pilka</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{Vienas skirtukas}one{# skirtukas}few{# skirtukai}many{# skirtuko}other{# skirtukų}}</translation>
 <translation id="2233745931693710080">Kompaktinis diskas</translation>
+<translation id="2236949375853147973">Mano veikla</translation>
 <translation id="2239100178324503013">Siųsti dabar</translation>
 <translation id="224130779555573777">Kompensavimo numerio pridėjimas</translation>
 <translation id="2241693394036365668">Atsisiųstas failas</translation>
@@ -1460,6 +1461,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3392028486601120379">URL šablone „<ph name="URL_PATTERN" />“ nurodytas kelias. Keliai nepalaikomi naudojant šį raktą, pašalinkite kelią ir bandykite dar kartą, pvz., *://example.com/ =&gt; *://example.com</translation>
 <translation id="3395827396354264108">Paėmimo metodas</translation>
 <translation id="3399161914051569225">Nešiojamosios technologijos</translation>
+<translation id="3399930248910934354">Atidarykite „Chrome“ nustatymus</translation>
 <translation id="3399952811970034796">Pristatymo adresas</translation>
 <translation id="3402261774528610252">Šiai svetainei įkelti naudojamam ryšiui buvo naudojama 1.0 arba 1.1 versijos TLS, kuri nebenaudojama ir ateityje bus išjungta. Išjungus naudotojai nebegalės įkelti šios svetainės. Serveryje reikia įgalinti 1.2 arba naujesnės versijos TLS.</translation>
 <translation id="3405664148539009465">Tinkinti šriftus</translation>
@@ -4091,6 +4093,7 @@ Papildoma išsami informacija:
 <translation id="7648133459447652947">Jei norite rodyti žymeklį, perjunkite programas, įkelkite puslapį iš naujo arba grįžkite</translation>
 <translation id="7648527891719919697">Ši svetainė liks užblokuota, nes <ph name="BEGIN_ANDROID_SETTINGS_LINK" />„Android“ nustatymuose<ph name="END_ANDROID_SETTINGS_LINK" /> įjungėte Papildomą apsaugą. <ph name="BEGIN_LEARN_MORE_LINK" />Sužinokite daugiau apie šį perspėjimą<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Saugoti failus šiame įrenginyje</translation>
+<translation id="7649070708921625228">Pagalba</translation>
 <translation id="7653957176542370971">Mokėjimo doroklės lapas uždarytas</translation>
 <translation id="7655766454902053387">Darbų sąrašai</translation>
 <translation id="765676359832457558">Slėpti išplėstinius nustatymus...</translation>

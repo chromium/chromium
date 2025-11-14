@@ -765,6 +765,7 @@
 <translation id="222962001646502673">गडद राखाडी २</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{१ टॅब}other{# टॅब}}</translation>
 <translation id="2233745931693710080">कॉम्पॅक्ट डिस्क</translation>
+<translation id="2236949375853147973">माझी अ‍ॅक्टिव्हिटी</translation>
 <translation id="2239100178324503013">आता पाठवा</translation>
 <translation id="224130779555573777">निवारणाचा क्रमांक जोडा</translation>
 <translation id="2241693394036365668">फाइल डाउनलोड केली गेली</translation>
@@ -1459,6 +1460,7 @@
 <translation id="3392028486601120379">URL पॅटर्न "<ph name="URL_PATTERN" />" मध्ये पाथ नमूद केलेला आहे. या कीसाठी पाथना सपोर्ट नाही, कृपया पाथ काढून टाका आणि पुन्हा प्रयत्न करा. उदा. *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">पिकअप पद्धत</translation>
 <translation id="3399161914051569225">वेअरेबल तंत्रज्ञान</translation>
+<translation id="3399930248910934354">Chrome सेटिंग्ज उघडा</translation>
 <translation id="3399952811970034796">वितरण पत्ता</translation>
 <translation id="3402261774528610252">कनेक्शनने ही साइट लोड करण्यासाठी कालबाह्य झालेले TLS 1.0 किंवा TLS 1.1 वापरले आहेत. ते भविष्यात बंद केले जातील. बंद केल्यानंतर, वापरकर्त्यांना ही साइट लोड करण्यापासून प्रतिबंधित केले जाईल. सर्व्हर TLS 1.2 किंवा त्यापुढील आवृत्तीवर सुरू करणे आवश्यक आहे.</translation>
 <translation id="3405664148539009465">फॉंट कस्टमाइझ करा</translation>
@@ -4090,6 +4092,7 @@
 <translation id="7648133459447652947">तुमचा कर्सर दाखवण्यासाठी, अ‍ॅप्स स्विच करा, पेज रीलोड करा किंवा परत जा</translation>
 <translation id="7648527891719919697">तुम्ही <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android सेटिंग्ज <ph name="END_ANDROID_SETTINGS_LINK" /> मध्ये प्रगत संरक्षण सुरू केलेले असल्यामुळे ही साइट ब्लॉक केलेली राहील. <ph name="BEGIN_LEARN_MORE_LINK" />या चेतावणीबद्दल अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">या डिव्हाइसवर फाइल संचयित करा</translation>
+<translation id="7649070708921625228">मदत</translation>
 <translation id="7653957176542370971">पेमेंट हँडलर शीट बंद केलेले आहे</translation>
 <translation id="7655766454902053387">नोकऱ्यांची सूची</translation>
 <translation id="765676359832457558">प्रगत सेटिंग्ज लपवा...</translation>

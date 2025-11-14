@@ -3727,6 +3727,11 @@ HTTPS용 RSA 인증서에 두 가지를 모두 포함해야 합니다.</translat
 <translation id="3665437376055221832">자동 선택과 일치하는 인증서가 없을 때만 사용자에게 메시지 표시</translation>
 <translation id="3671773704245936868">키보드 포커스 강조표시 사용 중지</translation>
 <translation id="3674010627788940405">와일드카드가 아닌 CORS 요청 헤더는 지원되지 않습니다.</translation>
+<translation id="3675248815331229366">정책을 설정하면 사용자의 위치정보에 액세스할 수 없으며 액세스 권한을 요청할 수 없는 사이트를 지정하는 URL 패턴 목록을 설정할 수 있습니다.
+
+      정책을 설정하지 않으면 <ph name="DEFAULT_GEOLOCATION_SETTING" />이 설정되어 있는 경우 모든 사이트에 적용됩니다. 설정되지 않았다면 사용자의 개인 설정이 적용됩니다.
+
+      유효한 <ph name="URL_LABEL" /> 패턴에 관해 자세히 알아보려면 https://chromeenterprise.google/policies/url-patterns를 참고하세요. 와일드 카드(<ph name="WILDCARD_VALUE" />)를 사용할 수 있습니다.</translation>
 <translation id="3675303748198647471">setTimeout(…, 0)은 흔히 시간이 오래 걸리는 자바스크립트 작업을 세분화하는 데 사용됩니다.
           정책을 사용으로 설정하면 간격이 4ms 미만인 setTimeout 및 setInterval이 제대로 고정되지 않으므로
           짧은 작업의 성능이 개선됩니다. 단, API를 악용하는 웹사이트에서는 여전히 setTimeout이 고정됩니다.
@@ -6273,6 +6278,7 @@ false로 설정되면 기능에 액세스할 수 없습니다.</translation>
 
       설정되어 있지 않으면 사용자가 카드 표시 여부를 제어할 수 있습니다. 기본값은 표시입니다.
       </translation>
+<translation id="5446826778796489105">이 사이트에서 위치정보 차단</translation>
 <translation id="5448022937220253000"><ph name="LACROS_NAME" />가 사용 중지된 후 사용자 데이터를 어떻게 처리할지 선택하세요</translation>
 <translation id="5449690328792750354">Event.path API를 사용할 수 있습니다.</translation>
 <translation id="5452024130413254050">이 구성을 사용하는 VM에 vTPM 액세스 권한이 있는지를 제어합니다. 기본값은 False이며, 설정하지 않은 경우 <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" />입니다.</translation>
@@ -11453,6 +11459,7 @@ JavaScript 최적화를 사용 중지하면(이 정책의 값을 2로 설정) <p
 
       잘못된 형식의 템플릿은 무시됩니다.</translation>
 <translation id="9068629430243705879">포트 6566(2021년 10월 15일까지 차단 해제될 수 있음)</translation>
+<translation id="9069432851455606924">위치정보 설정</translation>
 <translation id="9069503402414011061">정책을 설정하면 인증 데이터 캐시의 전체 기간이 시간 단위로 지정됩니다. 캐시에는 기기 영역에서 신뢰되는 영역(연결 영역)에 관한 데이터가 포함되어 있습니다. 따라서 인증 데이터를 캐시하면 로그인 속도가 빨라집니다. 사용자별 데이터 및 연결되지 않은 영역의 데이터는 캐시되지 않습니다.
 
 정책을 0으로 설정하면 인증 데이터 캐시가 사용 중지됩니다. 영역별 데이터는 로그인할 때마다 가져오므로 인증 데이터 캐시를 사용 중지하면 사용자 로그인 속도가 크게 느려집니다.

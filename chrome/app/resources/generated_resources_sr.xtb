@@ -4033,6 +4033,7 @@
 <translation id="3756578970075173856">Подесите PIN</translation>
 <translation id="3756806135608816820">Сајтови имају дозволу да траже Bluetooth уређаје</translation>
 <translation id="3757567010566591880">Откачи са траке с алаткама</translation>
+<translation id="3757645900890881944">Алатке за претрагу</translation>
 <translation id="3757733214359997190">Није пронађен ниједан сајт</translation>
 <translation id="375841316537350618">Преузимање скрипте проксија...</translation>
 <translation id="3758887577462995665">Савет:</translation>
@@ -6793,7 +6794,6 @@
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Локација</translation>
 <translation id="56907980372820799">Повежи податке</translation>
-<translation id="5691581861107245578">Добијајте предлоге за емоџије на основу онога што куцате</translation>
 <translation id="5691772641933328258">Отисак прста није препознат</translation>
 <translation id="5693255400847650006">Микрофон се користи</translation>
 <translation id="5695046252726616755">Притисните Enter или тастер за размак за још опција.</translation>
@@ -10041,6 +10041,7 @@
 <translation id="7952904276017482715">Очекивао се ИД „<ph name="EXPECTED_ID" />“, али ИД је био „<ph name="NEW_ID" />“</translation>
 <translation id="7953236668995583915">Поново учитајте ову страницу да бисте применили ажурирана подешавања на овај сајт</translation>
 <translation id="7953669802889559161">Уноси</translation>
+<translation id="7953955868932471628">Управљај пречицама</translation>
 <translation id="7955105108888461311">Затражи лично</translation>
 <translation id="7955177647836564772">Ако је Smart Lock укључен и телефон је откључан, не морате да уносите лозинку или PIN</translation>
 <translation id="7956373551960864128">Сачувани штампачи</translation>
@@ -11429,6 +11430,7 @@
 <translation id="8886745493279779790">Прегледајте неактивне картице</translation>
 <translation id="8888253246822647887">Апликација ће се отворити када се надоградња заврши. Надоградње могу да трају пар минута.</translation>
 <translation id="8888459276890791557">Можете да закачите ову бочну таблу да бисте јој лако приступали</translation>
+<translation id="8888621340860433230">Прикажи опције</translation>
 <translation id="8889294078294184559">Док настављате са прегледањем, сајтови могу да проверавају у Chrome-у и да од претходног сајта који сте посетили добију потврду да сте вероватно стварна особа</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> може да мења датотеке и директоријуме у наставку</translation>
 <translation id="8890170499370378450">Можда ће доћи до трошкова за пренос података преко мобилног оператера</translation>

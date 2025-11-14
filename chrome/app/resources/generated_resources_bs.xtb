@@ -4047,6 +4047,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3756578970075173856">Postavite PIN</translation>
 <translation id="3756806135608816820">Web lokacije mogu tražiti da pretraže Bluetooth uređaje</translation>
 <translation id="3757567010566591880">Otkači s alatne trake</translation>
+<translation id="3757645900890881944">Alati za pretraživanje</translation>
 <translation id="3757733214359997190">Nisu pronađene web lokacije</translation>
 <translation id="375841316537350618">Preuzimanje proksi skripte…</translation>
 <translation id="3758887577462995665">Savjet:</translation>
@@ -6808,7 +6809,6 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5689233503102158537">Alt i Backspace</translation>
 <translation id="5689516760719285838">Lokacija</translation>
 <translation id="56907980372820799">Poveži podatke</translation>
-<translation id="5691581861107245578">Primajte prijedloge emoji sličica na osnovu sadržaja koji pišete</translation>
 <translation id="5691772641933328258">Otisak prsta nije prepoznat</translation>
 <translation id="5693255400847650006">Mikrofon je u upotrebi</translation>
 <translation id="5695046252726616755">Prikaz više opcija pritiskom na Enter ili tipku za razmak</translation>
@@ -8127,6 +8127,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6619990499523117484">Potvrdite PIN</translation>
 <translation id="6620000730890558421">Organizirajte kartice putem AI-ja</translation>
 <translation id="6620254580880484313">Naziv spremnika</translation>
+<translation id="6621282332208609777">Postavite pitanje Googleu ili unesite URL</translation>
 <translation id="6621391692573306628">Da pošaljete ovu karticu na drugi uređaj, prijavite se na Chrome na oba uređaja</translation>
 <translation id="6622980291894852883">Nastavi blokirati slike</translation>
 <translation id="6624036901798307345">U načinu rada tableta dodirnite dugme alatne trake brojača kartica da otvorite novu traku kartice koja prikazuje sličice svake kartice.</translation>
@@ -9550,6 +9551,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7620616707541471029">Odaberite račun da nastavite</translation>
 <translation id="7621382409404463535">Sistem nije uspio sačuvati konfiguraciju uređaja.</translation>
 <translation id="7621595347123595643">Ako zaboravite lozinku ili PIN, nećete moći vratiti lokalne podatke.</translation>
+<translation id="7621863462266622331">Kad se kartice dijele, njihov sadržaj, mediji i URL-ovi šalju se Googleu</translation>
 <translation id="7622114377921274169">Punjenje.</translation>
 <translation id="7622768823216805500">Web lokacije obično instaliraju obrađivače plaćanja za funkcije kupovine, naprimjer, za lakše plaćanje</translation>
 <translation id="7622966771025050155">Pređi na snimljenu karticu</translation>
@@ -10056,6 +10058,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7952904276017482715">Očekivan je ID "<ph name="EXPECTED_ID" />", međutim ID je bio "<ph name="NEW_ID" />"</translation>
 <translation id="7953236668995583915">Ponovo učitajte stranicu da primijenite ažurirane postavke na ovoj web lokaciji</translation>
 <translation id="7953669802889559161">Unosi</translation>
+<translation id="7953955868932471628">Upravljanje prečicama</translation>
 <translation id="7955105108888461311">Pitajte lično</translation>
 <translation id="7955177647836564772">Ako je Smart Lock uključen i telefon otključan, ne morate unijeti lozinku ili PIN</translation>
 <translation id="7956373551960864128">Vaši sačuvani štampači</translation>
@@ -11444,6 +11447,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8886745493279779790">Pregledaj neaktivne kartice</translation>
 <translation id="8888253246822647887">Vaša aplikacija će se otvoriti kada se završi nadogradnja. Nadogradnje mogu potrajati nekoliko minuta.</translation>
 <translation id="8888459276890791557">Možete zakačiti ovu bočnu ploču radi lakog pristupa</translation>
+<translation id="8888621340860433230">Prikaži opcije</translation>
 <translation id="8889294078294184559">Kako nastavljate pregledati, web lokacije mogu provjeravati u Chromeu i s prethodnom web lokacijom koju ste posjetili potvrditi da ste stvarna osoba</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> može uređivati sljedeće fajlove i foldere</translation>
 <translation id="8890170499370378450">Mogu nastati troškovi prenosa podataka na mobilnoj mreži</translation>
@@ -11766,6 +11770,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="909554839118732438">Zatvori anonimni način rada</translation>
 <translation id="9095819602391364796">Nemoj dozvoliti web lokacijama da kontroliraju i reprogramiraju MIDI uređaje</translation>
 <translation id="9096053102600371572">Kontrolirano klizanje <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Usporedite opcije</translation>
 <translation id="9096776523567481218">nije lokalno instalirano</translation>
 <translation id="9098860402274800697">Uklonite Google Play i Android aplikacije</translation>
 <translation id="9099220545925418560">Na osnovu vaše historije pregledanja. Postavka je isključena.</translation>

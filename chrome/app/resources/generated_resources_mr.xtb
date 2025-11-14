@@ -4048,6 +4048,7 @@
 <translation id="3756578970075173856">पिन सेट करा</translation>
 <translation id="3756806135608816820">साइट या ब्लूटूथ डिव्हाइस शोधण्याची विनंती करू शकतात</translation>
 <translation id="3757567010566591880">टूलबारवरून अनपिन करा</translation>
+<translation id="3757645900890881944">शोध साधने</translation>
 <translation id="3757733214359997190">कोणत्याही साइट आढळल्या नाहीत</translation>
 <translation id="375841316537350618">प्रॉक्सी स्क्रिप्ट डाउनलोड करत आहे...</translation>
 <translation id="3758887577462995665">टीप:</translation>
@@ -6807,7 +6808,6 @@
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">स्थान</translation>
 <translation id="56907980372820799">डेटाची लिंक जोडा</translation>
-<translation id="5691581861107245578">तुम्ही काय टाइप करत आहात यावर आधारित इमोजी सूचना मिळवा</translation>
 <translation id="5691772641933328258">फिंगरप्रिंट ओळखली नाही</translation>
 <translation id="5693255400847650006">मायक्रोफोन वापरात आहे</translation>
 <translation id="5695046252726616755">आणखी पर्यायांसाठी एंटर किंवा स्पेस प्रेस करा.</translation>
@@ -10054,6 +10054,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7952904276017482715">अपेक्षित आयडी "<ph name="EXPECTED_ID" />", परंतु आयडी "<ph name="NEW_ID" />" होता</translation>
 <translation id="7953236668995583915">तुमची अपडेट केलेली सेटिंग्ज या साइटवर लागू करण्यासाठी हे पेज रीलोड करा</translation>
 <translation id="7953669802889559161">इनपुट</translation>
+<translation id="7953955868932471628">शॉर्टकट व्यवस्थापित करा</translation>
 <translation id="7955105108888461311">प्रत्यक्ष मंजुरी घ्या</translation>
 <translation id="7955177647836564772">Smart Lock सुरू असल्यास आणि तुमचा फोन अनलॉक केलेला असल्यास, तुम्ही पासवर्ड किंवा पिन एंटर करणे आवश्यक नाही</translation>
 <translation id="7956373551960864128">तुमचे सेव्ह केलेले प्रिंटर</translation>
@@ -11441,6 +11442,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8886745493279779790">इनॅक्टिव्ह टॅबचे पुनरावलोकन करा</translation>
 <translation id="8888253246822647887">अपग्रेड पूर्ण झाल्यावर तुमचे अ‍ॅप उघडेल. अपग्रेड करण्यास काही मिनिटे लागू शकतात.</translation>
 <translation id="8888459276890791557">सुलभ अ‍ॅक्सेससाठी तुम्ही हे साइड पॅनल पिन करू शकता</translation>
+<translation id="8888621340860433230">पर्याय दाखवा</translation>
 <translation id="8889294078294184559">तुम्ही ब्राउझ करणे पुढे सुरू ठेवता, तसे साइट Chrome सह तपासू शकतात आणि तुम्ही खरी व्यक्ती असल्याची भेट दिलेल्या मागील साइटवरून पडताळणी करू शकतात</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> खालील फाइल आणि फोल्डर संपादित करू शकते</translation>
 <translation id="8890170499370378450">मोबाइल डेटा शुल्क लागू शकते</translation>

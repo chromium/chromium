@@ -765,6 +765,7 @@
 <translation id="222962001646502673">Кочкул боз 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 өтмөк}other{# өтмөк}}</translation>
 <translation id="2233745931693710080">Компакт диск</translation>
+<translation id="2236949375853147973">Менин аракеттерим</translation>
 <translation id="2239100178324503013">Азыр жөнөтүү</translation>
 <translation id="224130779555573777">Redress номерин кошуу</translation>
 <translation id="2241693394036365668">Файл жүктөлүп алынды</translation>
@@ -1459,6 +1460,7 @@
 <translation id="3392028486601120379">URL үлгүсүнүн "<ph name="URL_PATTERN" />" жолу көрсөтүлдү. Бул ачкычтын жолдору колдоого алынбайт. Жолду өчүрүп, кайталап көрүңүз. Мисалы, *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Алып кетүү ыкмасы</translation>
 <translation id="3399161914051569225">Тагынма технологиялар</translation>
+<translation id="3399930248910934354">Chrome'дун параметрлерин ачыңыз</translation>
 <translation id="3399952811970034796">Жеткирүү дареги</translation>
 <translation id="3402261774528610252">Бул сайтты жүктөө үчүн TLS 1.0 же TLS 1.1 версиясы колдонулду. Алар жоюлган жана келечекте өчүрүлөт. Өчүрүлгөндөн кийин колдонуучулар бул сайтты жүктөй албай калышат. Сервер TLS 1.2 же андан кийинки версияны иштетиши керек.</translation>
 <translation id="3405664148539009465">Ариптерди өзгөчөлөштүрүү</translation>
@@ -4088,6 +4090,7 @@
 <translation id="7648133459447652947">Курсорду көрсөтүү үчүн колдонмолорду которуштуруп, бетти кайрадан жүктөп же артка кайтыңыз</translation>
 <translation id="7648527891719919697">Бул сайт бөгөттөлгөн бойдон калат, анткени <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android'дин параметрлеринде<ph name="END_ANDROID_SETTINGS_LINK" /> Күчөтүлгөн коргоо күйүк. <ph name="BEGIN_LEARN_MORE_LINK" />Бул эскертүү жөнүндө кеңири маалымат алыңыз<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Ушул түзмөккө файлдарды сактайт</translation>
+<translation id="7649070708921625228">Жардам</translation>
 <translation id="7653957176542370971">Төлөм иштетүүчү барак жабылды</translation>
 <translation id="7655766454902053387">Жумуш тизмелери</translation>
 <translation id="765676359832457558">Өркүндөтүлгөн параметрлерди жашыруу…</translation>

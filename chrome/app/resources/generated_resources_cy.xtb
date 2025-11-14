@@ -4051,6 +4051,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3756578970075173856">Gosod PIN</translation>
 <translation id="3756806135608816820">Gall gwefannau ofyn i edrych am ddyfeisiau Bluetooth</translation>
 <translation id="3757567010566591880">Dad-binio o'r Bar Offer</translation>
+<translation id="3757645900890881944">Offer chwilio</translation>
 <translation id="3757733214359997190">Ni chanfuwyd unrhyw wefannau</translation>
 <translation id="375841316537350618">Wrthi'n lawrlwytho sgript dirprwy weinydd...</translation>
 <translation id="3758887577462995665">Awgrym:</translation>
@@ -6812,7 +6813,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5689233503102158537">alt + ôl-nod</translation>
 <translation id="5689516760719285838">Lleoliad</translation>
 <translation id="56907980372820799">Cysylltu data</translation>
-<translation id="5691581861107245578">Cael awgrymiadau emoji yn seiliedig ar yr hyn rydych yn ei deipio</translation>
 <translation id="5691772641933328258">Nid ydym yn adnabod yr ôl bys</translation>
 <translation id="5693255400847650006">Mae'r meicroffon yn cael ei ddefnyddio</translation>
 <translation id="5695046252726616755">Pwyswch Enter neu Space am ragor o opsiynau.</translation>
@@ -10063,6 +10063,7 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7952904276017482715">Disgwylir y rhif adnabod "<ph name="EXPECTED_ID" />", ond y rhif adnabod oedd "<ph name="NEW_ID" />"</translation>
 <translation id="7953236668995583915">Ail-lwythwch y dudalen hon i gymhwyso'ch gosodiadau diweddaraf ar y wefan hon</translation>
 <translation id="7953669802889559161">Mewnbynnau</translation>
+<translation id="7953955868932471628">Rheoli llwybrau byr</translation>
 <translation id="7955105108888461311">Gofyn yn bersonol</translation>
 <translation id="7955177647836564772">Os caiff Smart Lock ei droi ymlaen a bod eich ffôn wedi'i ddatgloi, nid oes angen i chi roi cyfrinair na PIN</translation>
 <translation id="7956373551960864128">Argraffyddion rydych wedi'u cadw</translation>
@@ -11452,6 +11453,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="8886745493279779790">Adolygu Tabiau Anweithredol</translation>
 <translation id="8888253246822647887">Bydd eich ap yn agor pan fydd yr uwchraddiad wedi'i orffen. Gall uwchraddio gymryd ychydig funudau.</translation>
 <translation id="8888459276890791557">Gallwch binio'r panel ochr hwn i gael mynediad hawdd</translation>
+<translation id="8888621340860433230">Dangos y dewisiadau</translation>
 <translation id="8889294078294184559">Wrth i chi barhau i bori, gall gwefannau wirio gyda Chrome a chadarnhau gyda gwefan flaenorol rydych wedi ymweld â hi eich bod yn debygol o fod yn berson go iawn</translation>
 <translation id="8889651696183044030">Gall <ph name="ORIGIN" /> olygu'r ffeiliau a'r ffolderi canlynol</translation>
 <translation id="8890170499370378450">Mae'n bosib y codir taliadau data symudol</translation>

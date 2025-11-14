@@ -765,6 +765,7 @@
 <translation id="222962001646502673">গাঢ় ধোঁৱাবৰণীয়া ২</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{১ টা টেব}one{# টা টেব}other{# টা টেব}}</translation>
 <translation id="2233745931693710080">কমপেক্ট ডিস্ক</translation>
+<translation id="2236949375853147973">মোৰ কাৰ্যকলাপ</translation>
 <translation id="2239100178324503013">এতিয়াই পঠিয়াওক</translation>
 <translation id="224130779555573777">ৰিড্ৰেছ নম্বৰ যোগ দিয়ক</translation>
 <translation id="2241693394036365668">ফাইল ডাউনল’ড কৰিলে</translation>
@@ -1457,6 +1458,7 @@
 <translation id="3392028486601120379">"<ph name="URL_PATTERN" />" URLৰ আৰ্হিটোত এটা পথ নিৰ্দিষ্ট কৰা আছে। এই কীটোৰ বাবে পথ সমৰ্থিত নহয়, অনুগ্ৰহ কৰি পথটো আঁতৰাওক আৰু পুনৰ চেষ্টা কৰক। উদাহৰণ- *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">পিক্‌আপৰ পদ্ধতি</translation>
 <translation id="3399161914051569225">পৰিধানযোগ্য প্ৰযুক্তিবিদ্যা</translation>
+<translation id="3399930248910934354">Chromeৰ ছেটিং খোলক</translation>
 <translation id="3399952811970034796">ডেলিভেৰীৰ ঠিকনা</translation>
 <translation id="3402261774528610252">এই ছাইটটো ল’ড কৰিবলৈ ব্যৱহাৰ কৰা সংযোগটোৱে TLS 1.0 অথবা TLS 1.1 ব্যৱহাৰ কৰিছে, যিবোৰ অপ্ৰচলিত আৰু ভৱিষ্যতে সেইবোৰক অক্ষম কৰা হ’ব। অক্ষম কৰাৰ পাছত, ব্যৱহাৰকাৰীসকলক এই ছাইটটো ল’ড কৰিবলৈ দিয়া নহ’ব। ছার্ভাৰটোৱে TLS 1.2 অথবা তাতকৈ পাছৰ সংস্কৰণ সক্ষম কৰিব লাগে।</translation>
 <translation id="3405664148539009465">ফ’ণ্ট কাষ্টমাইজ কৰক</translation>
@@ -4084,6 +4086,7 @@
 <translation id="7648133459447652947">আপোনাৰ কাৰ্ছৰডাল দেখুৱাবলৈ, এপ্‌সমূহ সলনি কৰিবলৈ, পৃষ্ঠাটো পুনৰ ল’ড কৰিবলে বা উভতি যাবলৈ</translation>
 <translation id="7648527891719919697">আপুনি আপোনাৰ <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Androidৰ ছেটিঙ<ph name="END_ANDROID_SETTINGS_LINK" />ত সুৰক্ষা সম্পৰ্কীয় উন্নত সুবিধা অন কৰি থোৱাৰ বাবে এই ছাইটটো অৱৰোধিত হৈ থাকিব। <ph name="BEGIN_LEARN_MORE_LINK" />এই সকীয়নিৰ বিষয়ে অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">এই ডিভাইচত ফাইলসমূহ ষ্ট’ৰ কৰক</translation>
+<translation id="7649070708921625228">সহায়</translation>
 <translation id="7653957176542370971">পৰিশোধ নিয়ন্ত্ৰক শ্বীটখন বন্ধ কৰা আছে</translation>
 <translation id="7655766454902053387">চাকৰিৰ সূচী</translation>
 <translation id="765676359832457558">উন্নত ছেটিংসমূহ লুকুৱাওক...</translation>

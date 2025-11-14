@@ -766,6 +766,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="222962001646502673">Abu-Abu Tua 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 tab}other{# tab}}</translation>
 <translation id="2233745931693710080">Cakram Padat</translation>
+<translation id="2236949375853147973">Aktivitas Saya</translation>
 <translation id="2239100178324503013">Kirim sekarang</translation>
 <translation id="224130779555573777">Tambahkan Redress Number</translation>
 <translation id="2241693394036365668">File didownload</translation>
@@ -1460,6 +1461,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3392028486601120379">Pola URL "<ph name="URL_PATTERN" />" memiliki jalur yang ditetapkan. Jalur tidak didukung untuk kunci ini, hapus jalur dan coba lagi. Misalnya, *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Metode pengambilan</translation>
 <translation id="3399161914051569225">Teknologi Wearable</translation>
+<translation id="3399930248910934354">Buka Setelan Chrome</translation>
 <translation id="3399952811970034796">Alamat Pengiriman</translation>
 <translation id="3402261774528610252">Koneksi yang digunakan untuk memuat situs ini menggunakan TLS 1.0 atau TLS 1.1 yang tidak digunakan lagi dan akan dinonaktifkan pada waktu mendatang. Setelah dinonaktifkan, pengguna tidak akan dapat memuat situs ini. Sebaiknya server mengaktifkan TLS 1.2 atau yang lebih baru.</translation>
 <translation id="3405664148539009465">Sesuaikan font</translation>
@@ -4088,6 +4090,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7648133459447652947">Untuk menampilkan kursor, beralih aplikasi, memuat ulang halaman, atau kembali</translation>
 <translation id="7648527891719919697">Situs ini akan tetap diblokir karena Anda mengaktifkan Perlindungan Lanjutan di <ph name="BEGIN_ANDROID_SETTINGS_LINK" />setelan Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut peringatan ini<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Menyimpan file pada perangkat ini</translation>
+<translation id="7649070708921625228">Bantuan</translation>
 <translation id="7653957176542370971">Lembar handler pembayaran tertutup</translation>
 <translation id="7655766454902053387">Lowongan Pekerjaan</translation>
 <translation id="765676359832457558">Sembunyikan setelan lanjutan...</translation>

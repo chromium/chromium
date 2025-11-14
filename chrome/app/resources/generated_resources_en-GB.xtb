@@ -4048,6 +4048,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3756578970075173856">Set PIN</translation>
 <translation id="3756806135608816820">Sites can ask to look for Bluetooth devices</translation>
 <translation id="3757567010566591880">Unpin from Toolbar</translation>
+<translation id="3757645900890881944">Search tools</translation>
 <translation id="3757733214359997190">No sites found</translation>
 <translation id="375841316537350618">Downloading proxy script...</translation>
 <translation id="3758887577462995665">Tip:</translation>
@@ -6809,7 +6810,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Location</translation>
 <translation id="56907980372820799">Link data</translation>
-<translation id="5691581861107245578">Get emoji suggestions based on what you're typing</translation>
 <translation id="5691772641933328258">Fingerprint not recognised</translation>
 <translation id="5693255400847650006">Microphone in use</translation>
 <translation id="5695046252726616755">Press Enter or space for more options.</translation>
@@ -10053,6 +10053,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7952904276017482715">Expected ID '<ph name="EXPECTED_ID" />', but ID was '<ph name="NEW_ID" />'</translation>
 <translation id="7953236668995583915">Reload this page to apply your updated settings on this site</translation>
 <translation id="7953669802889559161">Inputs</translation>
+<translation id="7953955868932471628">Manage shortcuts</translation>
 <translation id="7955105108888461311">Ask in person</translation>
 <translation id="7955177647836564772">If Smart Lock is turned on and your phone is unlocked, you don't need to enter a password or PIN</translation>
 <translation id="7956373551960864128">Your saved printers</translation>
@@ -11439,6 +11440,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8886745493279779790">Review inactive tabs</translation>
 <translation id="8888253246822647887">Your app will open when the upgrade is finished. Upgrades can take a few minutes.</translation>
 <translation id="8888459276890791557">You can pin this side panel for easy access</translation>
+<translation id="8888621340860433230">Show options</translation>
 <translation id="8889294078294184559">As you keep browsing, sites can check with Chrome and verify with a previous site that you've visited that you're likely a real person</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> can edit the following files and folders</translation>
 <translation id="8890170499370378450">May incur mobile data charges</translation>

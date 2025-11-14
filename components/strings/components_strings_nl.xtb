@@ -765,6 +765,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="222962001646502673">Donkergrijs 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 tabblad}other{# tabbladen}}</translation>
 <translation id="2233745931693710080">Compact disc</translation>
+<translation id="2236949375853147973">Mijn activiteit</translation>
 <translation id="2239100178324503013">Nu verzenden</translation>
 <translation id="224130779555573777">Redress number toevoegen</translation>
 <translation id="2241693394036365668">Bestand wordt gedownload</translation>
@@ -1456,6 +1457,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3392028486601120379">Voor het URL-patroon <ph name="URL_PATTERN" /> is een pad opgegeven. Paden worden niet ondersteund voor deze sleutel. Verwijder het pad en probeer het opnieuw. Bijvoorbeeld: *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Ophaalmethode</translation>
 <translation id="3399161914051569225">Wearables</translation>
+<translation id="3399930248910934354">Chrome-instellingen openen</translation>
 <translation id="3399952811970034796">Bezorgadres</translation>
 <translation id="3402261774528610252">De verbinding waarmee deze site is geladen, gebruikte TLS 1.0 of TLS 1.1. Deze versies zijn verouderd en worden in de toekomst niet meer gebruikt. Dan kunnen gebruikers deze site niet meer laden. Voor de server moet TLS 1.2 of hoger worden gebruikt.</translation>
 <translation id="3405664148539009465">Lettertypen aanpassen</translation>
@@ -4083,6 +4085,7 @@ Aanvullende informatie:
 <translation id="7648133459447652947">Als je de cursor wilt weergeven, schakel je tussen apps, laad je de pagina opnieuw of ga je terug</translation>
 <translation id="7648527891719919697">Deze site blijft geblokkeerd omdat je Geavanceerde beveiliging hebt aangezet in de <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android-instellingen<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie over deze waarschuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Bestanden op dit apparaat bewaren</translation>
+<translation id="7649070708921625228">Hulp</translation>
 <translation id="7653957176542370971">Blad voor betalingshandler is gesloten</translation>
 <translation id="7655766454902053387">Vacatures</translation>
 <translation id="765676359832457558">Geavanceerde instellingen verbergen...</translation>

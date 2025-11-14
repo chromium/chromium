@@ -764,6 +764,7 @@
 <translation id="222962001646502673">深灰色 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 個分頁}other{# 個分頁}}</translation>
 <translation id="2233745931693710080">光碟</translation>
+<translation id="2236949375853147973">我的活動</translation>
 <translation id="2239100178324503013">立即傳送</translation>
 <translation id="224130779555573777">新增補救號碼 (redress number)</translation>
 <translation id="2241693394036365668">下載檔案</translation>
@@ -1457,6 +1458,7 @@
 <translation id="3392028486601120379">網址模式「<ph name="URL_PATTERN" />」已指定路徑。這個金鑰不支援路徑，請移除路徑然後再試一次。例如 *://example.com/ =&gt; *://example.com"。</translation>
 <translation id="3395827396354264108">取件方式</translation>
 <translation id="3399161914051569225">穿戴式裝置</translation>
+<translation id="3399930248910934354">開啟 Chrome 設定</translation>
 <translation id="3399952811970034796">快遞地址</translation>
 <translation id="3402261774528610252">用來載入這個網站的連線使用傳輸層安全標準 (TLS) 1.0 或 1.1，現已不適用，並將在日後遭到停用。一旦停用，使用者將無法載入這個網站。伺服器應啟用傳輸層安全標準 (TLS) 1.2 以上版本。</translation>
 <translation id="3405664148539009465">自訂字型</translation>
@@ -4088,6 +4090,7 @@
 <translation id="7648133459447652947">如要顯示游標，請切換應用程式、重新載入頁面或返回</translation>
 <translation id="7648527891719919697">你已在 <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android 設定<ph name="END_ANDROID_SETTINGS_LINK" />中開啟進階保護功能，因此這個網站將維持封鎖狀態。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解這項警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">在這個裝置上儲存檔案</translation>
+<translation id="7649070708921625228">說明</translation>
 <translation id="7653957176542370971">已關閉付款處理常式工作表</translation>
 <translation id="7655766454902053387">人才招聘</translation>
 <translation id="765676359832457558">隱藏進階設定...</translation>

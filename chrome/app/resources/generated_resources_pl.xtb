@@ -4017,6 +4017,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3756578970075173856">Ustawianie kodu PIN</translation>
 <translation id="3756806135608816820">Witryny mogą prosić o zgodę na wyszukanie urządzeń Bluetooth</translation>
 <translation id="3757567010566591880">Odepnij od paska narzędzi</translation>
+<translation id="3757645900890881944">Narzędzia wyszukiwania</translation>
 <translation id="3757733214359997190">Nie znaleziono stron</translation>
 <translation id="375841316537350618">Pobieram skrypt serwera proxy...</translation>
 <translation id="3758887577462995665">Wskazówka:</translation>
@@ -6773,7 +6774,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5689233503102158537">Alt + Backspace</translation>
 <translation id="5689516760719285838">Lokalizacja</translation>
 <translation id="56907980372820799">Połącz dane</translation>
-<translation id="5691581861107245578">Otrzymuj sugestie dotyczące emotikonów na podstawie tego, co piszesz</translation>
 <translation id="5691772641933328258">Nie rozpoznano odcisku palca</translation>
 <translation id="5693255400847650006">Mikrofon w użyciu</translation>
 <translation id="5695046252726616755">Aby wyświetlić więcej opcji, naciśnij Enter lub spację.</translation>
@@ -10020,6 +10020,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7952904276017482715">To jest identyfikator „<ph name="NEW_ID" />”, a oczekiwano identyfikatora „<ph name="EXPECTED_ID" />”</translation>
 <translation id="7953236668995583915">Załaduj ponownie tę stronę, aby zastosować zaktualizowane ustawienia w tej witrynie</translation>
 <translation id="7953669802889559161">Metody wprowadzania</translation>
+<translation id="7953955868932471628">Zarządzaj skrótami</translation>
 <translation id="7955105108888461311">Poproś osobiście</translation>
 <translation id="7955177647836564772">Jeśli funkcja Smart Lock jest włączona, a telefon odblokowany, nie musisz wpisywać hasła ani kodu PIN</translation>
 <translation id="7956373551960864128">Twoje zapisane drukarki</translation>
@@ -11404,6 +11405,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8886745493279779790">Sprawdź nieaktywne karty</translation>
 <translation id="8888253246822647887">Aplikacja otworzy się po zakończeniu uaktualnienia. Może to potrwać kilka minut.</translation>
 <translation id="8888459276890791557">Możesz przypiąć ten panel boczny, aby mieć do niego łatwy dostęp</translation>
+<translation id="8888621340860433230">Pokaż opcje</translation>
 <translation id="8889294078294184559">Witryny, które przeglądasz, mogą sprawdzać te informacje w Chrome i uzyskiwać potwierdzenie z wcześniej odwiedzonej witryny, że prawdopodobnie jesteś prawdziwą osobą.</translation>
 <translation id="8889651696183044030">Strona <ph name="ORIGIN" /> może edytować te pliki i foldery</translation>
 <translation id="8890170499370378450">Mogą się z tym wiązać opłaty</translation>

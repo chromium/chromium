@@ -4049,6 +4049,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3756578970075173856">Setha iphinikhodi</translation>
 <translation id="3756806135608816820">Amasayithi angacela ukubheka amadivayisi e-Bluetooth</translation>
 <translation id="3757567010566591880">Susa ukuphina Kwibha yamathuluzi</translation>
+<translation id="3757645900890881944">Amathuluzi okusesha</translation>
 <translation id="3757733214359997190">Awekho amasayithi atholiwe</translation>
 <translation id="375841316537350618">Ilanda isikripthi sommeleli...</translation>
 <translation id="3758887577462995665">Ithiphu:</translation>
@@ -6810,7 +6811,6 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="5689233503102158537">alt + i-backspace</translation>
 <translation id="5689516760719285838">Indawo</translation>
 <translation id="56907980372820799">Xhumanisa idatha</translation>
-<translation id="5691581861107245578">Thola iziphakamiso ze-emoji ngokusekelwe kulokho okuthayipayo</translation>
 <translation id="5691772641933328258">Isigxivizo somunwe asaziwa</translation>
 <translation id="5693255400847650006">Imakrofoni iyasebenza</translation>
 <translation id="5695046252726616755">Cindezela u-enter noma isikhala ukuze uthole okunye okungakhethwa kukho.</translation>
@@ -10055,6 +10055,7 @@ Cindezela iswishi enikeziwe noma ukhiye ukuze ususe umsebenzi ozokwenziwa</trans
 <translation id="7952904276017482715">I-ID elindelwe ngu-"<ph name="EXPECTED_ID" />", kodwa i-ID kube ngu-"<ph name="NEW_ID" />"</translation>
 <translation id="7953236668995583915">Layisha kabusha leli khasi ukuze usebenzise amasethingi akho abuyekeziwe kuleli sayithi</translation>
 <translation id="7953669802889559161">Okokufaka</translation>
+<translation id="7953955868932471628">Phatha izinqamuleli</translation>
 <translation id="7955105108888461311">Zibuzele mathupha</translation>
 <translation id="7955177647836564772">Uma i-Smart Lock sivuliwe futhi ifoni yakho ivuliwe, awudingi ukufaka iphasiwedi noma iphinikhodi</translation>
 <translation id="7956373551960864128">Amaphrinta akho alondoloziwe</translation>
@@ -11441,6 +11442,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="8886745493279779790">Buyekeza Amathebhu Angasebenzi</translation>
 <translation id="8888253246822647887">Uhlelo lwakho lokusebenza luzovuleka uma ukuthuthukiswa kuqediwe. Ukuthuthukiswa kungathatha amaminithi ambalwa.</translation>
 <translation id="8888459276890791557">Ungakwazi ukuphina le phaneli eseceleni ukuze ufinyelele kalula</translation>
+<translation id="8888621340860433230">Bonisa okungakhethwa kukho</translation>
 <translation id="8889294078294184559">Njengoba uqhubeka nokubhrawuza, amasayithi angahlola ne-Chrome futhi aqinisekise ngesayithi yangaphambilini owake wayivakashela ukuthi kungenzeka ungumuntu wangempela.</translation>
 <translation id="8889651696183044030">I-<ph name="ORIGIN" /> ingahlela amafayela alandelayo namafolda</translation>
 <translation id="8890170499370378450">Ingase ibe nezindleko zedatha yeselula</translation>

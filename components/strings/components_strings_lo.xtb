@@ -765,6 +765,7 @@
 <translation id="222962001646502673">ສີເທົາເຂັ້ມທີ 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 ແຖບ}other{# ແຖບ}}</translation>
 <translation id="2233745931693710080">ແຜ່ນຊີດີ</translation>
+<translation id="2236949375853147973">ການເຄື່ອນໄຫວຂອງຂ້ອຍ</translation>
 <translation id="2239100178324503013">ສົ່ງດຽວນີ້</translation>
 <translation id="224130779555573777">ເພີ່ມໝາຍເລກປະຈຳຕົວຜູ້ທີ່ຢູ່ໃນກຸ່ມສ່ຽງ</translation>
 <translation id="2241693394036365668">ລະບົບຈະດາວໂຫຼດໄຟລ໌</translation>
@@ -1459,6 +1460,7 @@
 <translation id="3392028486601120379">ຮູບແບບ URL "<ph name="URL_PATTERN" />" ມີເສັ້ນທາງທີ່ລະບຸໄວ້. ບໍ່ຮອງຮັບເສັ້ນທາງສຳລັບກະແຈນີ້, ກະລຸນາລຶບເສັ້ນທາງອອກແລ້ວລອງໃໝ່. ຕ.ຢ. *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">ວິທີການຮັບເຄື່ອງ</translation>
 <translation id="3399161914051569225">ເທັກໂນໂລຢີທີ່ສວມໃສ່ໄດ້</translation>
+<translation id="3399930248910934354">ເປີດການຕັ້ງຄ່າ Chrome</translation>
 <translation id="3399952811970034796">ທີ່ຢູ່ການຈັດສົ່ງ</translation>
 <translation id="3402261774528610252">ການເຊື່ອມຕໍ່ທີ່ໃຊ້ເພື່ອໂຫຼດເວັບໄຊນີ້ໃຊ້ TLS 1.0 ຫຼື TLS 1.1, ເຊິ່ງເຊົາຮອງຮັບແລ້ວ ແລະ ຈະຖືກປິດການນຳໃຊ້ໃນອະນາຄົດ. ເມື່ອປິດການນຳໃຊ້ແລ້ວ, ລະບົບຈະປ້ອງກັນບໍ່ໃຫ້ຜູ້ໃຊ້ໂຫຼດເວັບໄຊນີ້. ເຊີບເວີຄວນເປີດການນຳໃຊ້ TLS 1.2 ຫຼື ໃໝ່ກວ່າ.</translation>
 <translation id="3405664148539009465">ກໍານົດຟອນເອົາເອງ</translation>
@@ -4089,6 +4091,7 @@
 <translation id="7648133459447652947">ເພື່ອສະແດງເຄີເຊີຂອງທ່ານ, ໃຫ້ສະຫຼັບແອັບ, ໂຫຼດໜ້າເວັບໃໝ່ ຫຼື ກັບຄືນ</translation>
 <translation id="7648527891719919697">ເວັບໄຊນີ້ຈະຍັງຖືກບລັອກຢູ່ ຍ້ອນວ່າທ່ານໄດ້ເປີດການປົກປ້ອງຂັ້ນສູງໃນ <ph name="BEGIN_ANDROID_SETTINGS_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຳເຕືອນນີ້<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">ເກັ​ບ​ຮັກ​ສາ​ໄຟ​ລ໌​ໄວ້​ຢູ່​ໃນ​ອຸ​ປະ​ກອນ​ນີ້</translation>
+<translation id="7649070708921625228">ຊ່ວຍ​ເຫຼືອ</translation>
 <translation id="7653957176542370971">ແຜ່ນວຽກຂອງເຄື່ອງຈັດການການຈ່າຍເງິນປິດຢູ່</translation>
 <translation id="7655766454902053387">ປະກາດຮັບສະໝັກວຽກ</translation>
 <translation id="765676359832457558">ເຊື່ອງ​ການ​ຕັ້ງຄ່າຂັ້ນສູງ ...</translation>

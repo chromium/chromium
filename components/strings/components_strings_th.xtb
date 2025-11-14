@@ -765,6 +765,7 @@
 <translation id="222962001646502673">เทาเข้ม 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 แท็บ}other{# แท็บ}}</translation>
 <translation id="2233745931693710080">แผ่นซีดี</translation>
+<translation id="2236949375853147973">กิจกรรมของฉัน</translation>
 <translation id="2239100178324503013">ส่งเลย</translation>
 <translation id="224130779555573777">เพิ่มเลขประจำตัวผู้ที่อยู่ในกลุ่มเสี่ยง</translation>
 <translation id="2241693394036365668">มีการดาวน์โหลดไฟล์</translation>
@@ -1459,6 +1460,7 @@
 <translation id="3392028486601120379">รูปแบบ URL "<ph name="URL_PATTERN" />" มีเส้นทางที่ระบุ คีย์นี้ไม่รองรับเส้นทางดังกล่าว โปรดนำออกแล้วลองอีกครั้ง เช่น *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">วิธีการรับสินค้า</translation>
 <translation id="3399161914051569225">เทคโนโลยีที่สวมใส่ได้</translation>
+<translation id="3399930248910934354">เปิดการตั้งค่า Chrome</translation>
 <translation id="3399952811970034796">ที่อยู่สำหรับจัดส่ง</translation>
 <translation id="3402261774528610252">การเชื่อมต่อที่ใช้โหลดเว็บไซต์นี้ใช้ TLS 1.0 หรือ TLS 1.1 ซึ่งเลิกใช้งานแล้วและจะถูกปิดใช้ในอนาคต เมื่อปิดใช้แล้ว ระบบจะไม่ให้ผู้ใช้โหลดเว็บไซต์นี้ เซิร์ฟเวอร์ควรเปิดใช้ TLS 1.2 ขึ้นไป</translation>
 <translation id="3405664148539009465">กำหนดค่าแบบอักษร</translation>
@@ -4089,6 +4091,7 @@
 <translation id="7648133459447652947">หากต้องการแสดงเคอร์เซอร์ ให้สลับแอป โหลดหน้าเว็บซ้ำ หรือย้อนกลับ</translation>
 <translation id="7648527891719919697">เว็บไซต์นี้จะยังคงถูกบล็อกเนื่องจากคุณเปิดการปกป้องขั้นสูงใน<ph name="BEGIN_ANDROID_SETTINGS_LINK" />การตั้งค่า Android<ph name="END_ANDROID_SETTINGS_LINK" /> <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับคำเตือนนี้<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">จัดเก็บไฟล์บนอุปกรณ์นี้</translation>
+<translation id="7649070708921625228">ความช่วยเหลือ</translation>
 <translation id="7653957176542370971">แผ่นงานของเครื่องจัดการการชำระเงินปิดอยู่</translation>
 <translation id="7655766454902053387">ประกาศรับสมัครงาน</translation>
 <translation id="765676359832457558">ซ่อนการตั้งค่าขั้นสูง...</translation>

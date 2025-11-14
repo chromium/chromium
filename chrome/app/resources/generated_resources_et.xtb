@@ -4039,6 +4039,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3756578970075173856">PIN-koodi määramine</translation>
 <translation id="3756806135608816820">Saidid saavad küsida luba Bluetooth-seadmete otsimiseks</translation>
 <translation id="3757567010566591880">Tööriistaribalt vabastamine</translation>
+<translation id="3757645900890881944">Otsingutööriistad</translation>
 <translation id="3757733214359997190">Saite ei leitud</translation>
 <translation id="375841316537350618">Puhverserveri skripti allalaadimine ...</translation>
 <translation id="3758887577462995665">Nõuanne.</translation>
@@ -6800,7 +6801,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5689233503102158537">alt + tagasilüke</translation>
 <translation id="5689516760719285838">Asukoht</translation>
 <translation id="56907980372820799">Lingi andmed</translation>
-<translation id="5691581861107245578">Saate emotikonide soovitusi selle põhjal, mida sisestate</translation>
 <translation id="5691772641933328258">Sõrmejälge ei tuntud ära</translation>
 <translation id="5693255400847650006">Mikrofon on kasutuses</translation>
 <translation id="5695046252726616755">Lisavalikute nägemiseks vajutage sisestus- või tühikuklahvi.</translation>
@@ -10044,6 +10044,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7952904276017482715">Eeldatav ID oli „<ph name="EXPECTED_ID" />”, kuid ID oli „<ph name="NEW_ID" />”</translation>
 <translation id="7953236668995583915">Laadige see leht uuesti, et rakendada värskendatud seaded sellel saidil</translation>
 <translation id="7953669802889559161">Sisestusmeetodid</translation>
+<translation id="7953955868932471628">Otseteede haldamine</translation>
 <translation id="7955105108888461311">Küsi isiklikult</translation>
 <translation id="7955177647836564772">Kui Smart Lock on sisse lülitatud ja teie telefon on avatud, ei pea te parooli või PIN-koodi sisestama.</translation>
 <translation id="7956373551960864128">Teie salvestatud printerid</translation>
@@ -11430,6 +11431,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="8886745493279779790">Passiivsete vahelehtede vaatamine</translation>
 <translation id="8888253246822647887">Rakendus avatakse, kui uuendamine on lõppenud. Uuendamiseks võib kuluda mõni minut.</translation>
 <translation id="8888459276890791557">Võite selle külgpaneeli kiirjuurdepääsu jaoks kinnitada</translation>
+<translation id="8888621340860433230">Kuva valikud</translation>
 <translation id="8889294078294184559">Kui jätkate sirvimist, saavad saidid Chrome’iga kontrollida ja teie eelmisel külastatud saidil kinnitada, et olete tõenäoliselt päris inimene</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> saab muuta järgmisi faile ja kaustu</translation>
 <translation id="8890170499370378450">Võib põhjustada mobiilse andmeside tasusid</translation>

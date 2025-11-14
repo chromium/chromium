@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
+<translation id="1004825134262590729">{count,plural, =1{Ufunguo {count} wa siri}other{Funguo {count} za siri}}</translation>
 <translation id="1005023885865154304">Fungua mipangilio ya Kujaza Manenosiri Kiotomatiki</translation>
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">Unaweza kurudi hapa ili ufungue tena vichupo ambavyo ulifunga hivi majuzi</translation>
@@ -2212,5 +2213,6 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="984275831282074731">Njia za kulipa</translation>
 <translation id="985379595344853742">Funga vichupo vyote vya Faragha</translation>
 <translation id="988141524645182168">Vifaa Vingine</translation>
+<translation id="995174784802614337">{count,plural, =1{Imepakia ufunguo {count} wa siri}other{Imepakia funguo {count} za siri}}</translation>
 <translation id="999768147936949692">Kwa sasa, unaweza tu kushiriki manenosiri na wanafamilia. <ph name="BEGIN_LINK" />Waalike wanafamilia<ph name="END_LINK" /> wajiunge na kikundi chako na wanufaike zaidi na bidhaa na usajili wako kwenye Google.</translation>
 </translationbundle>

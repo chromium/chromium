@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
+<translation id="1004825134262590729">{count,plural, =1{{count} கடவுச்சாவி}other{{count} கடவுச்சாவிகள்}}</translation>
 <translation id="1005023885865154304">கடவுச்சொற்களைத் தானாக நிரப்புவதற்கான அமைப்புகளைத் திறக்கவும்</translation>
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">சமீபத்தில் மூடிய தாவல்களை இங்கே மீண்டும் திறக்கலாம்</translation>
@@ -2212,5 +2213,6 @@
 <translation id="984275831282074731">பேமெண்ட் முறைகள்</translation>
 <translation id="985379595344853742">எல்லா மறைநிலைப் பக்கங்களையும் மூடு</translation>
 <translation id="988141524645182168">பிற சாதனங்கள்</translation>
+<translation id="995174784802614337">{count,plural, =1{{count} கடவுச்சாவி இம்போர்ட் செய்யப்பட்டது}other{{count} கடவுச்சாவிகள் இம்போர்ட் செய்யப்பட்டன}}</translation>
 <translation id="999768147936949692">இப்போதைக்கு, குடும்ப உறுப்பினர்களுடன் மட்டுமே கடவுச்சொற்களைப் பகிர முடியும். உங்கள் குழுவில் இணைந்து Google முழுவதிலும் உங்களின் தயாரிப்புகள் மற்றும் சந்தாக்களில் இருந்து கூடுதல் பலன்களைப் பெற, <ph name="BEGIN_LINK" />குடும்ப உறுப்பினர்களை அழைத்திடுங்கள்<ph name="END_LINK" />.</translation>
 </translationbundle>

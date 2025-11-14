@@ -4047,6 +4047,7 @@
 <translation id="3756578970075173856">הגדרת קוד אימות</translation>
 <translation id="3756806135608816820">‏אתרים רשאים לבקש הרשאה לאיתור מכשירי Bluetooth</translation>
 <translation id="3757567010566591880">ביטול ההצמדה לסרגל הכלים</translation>
+<translation id="3757645900890881944">כלי החיפוש</translation>
 <translation id="3757733214359997190">לא נמצאו אתרים</translation>
 <translation id="375841316537350618">‏מוריד סקריפט של שרת proxy...</translation>
 <translation id="3758887577462995665">טיפ:</translation>
@@ -6809,7 +6810,6 @@
 <translation id="5689233503102158537">‏Alt + מקש Backspace</translation>
 <translation id="5689516760719285838">מיקום</translation>
 <translation id="56907980372820799">קישור נתונים</translation>
-<translation id="5691581861107245578">המערכת תציע לך סמלי אמוג'י על סמך הטקסט שהקלדת</translation>
 <translation id="5691772641933328258">טביעת האצבע לא זוהתה</translation>
 <translation id="5693255400847650006">המיקרופון נמצא בשימוש</translation>
 <translation id="5695046252726616755">‏מקישים על Enter. כדי לעבור לאפשרויות נוספות, מקישים על מקש הרווח.</translation>
@@ -10059,6 +10059,7 @@
 <translation id="7952904276017482715">המזהה הצפוי הוא "<ph name="EXPECTED_ID" />", אך המזהה היה "<ph name="NEW_ID" />"</translation>
 <translation id="7953236668995583915">צריך לטעון מחדש את הדף הזה כדי להחיל את ההגדרות המעודכנות על האתר הזה</translation>
 <translation id="7953669802889559161">שיטות קלט</translation>
+<translation id="7953955868932471628">ניהול קיצורי דרך</translation>
 <translation id="7955105108888461311">ביצוע בקשה פנים-אל-פנים</translation>
 <translation id="7955177647836564772">‏אם מצב Smart Lock מופעל והטלפון לא נעול, אין צורך להזין סיסמה או קוד אימות</translation>
 <translation id="7956373551960864128">מדפסות שמורות</translation>
@@ -11449,6 +11450,7 @@
 <translation id="8886745493279779790">בדיקת הכרטיסיות הלא פעילות</translation>
 <translation id="8888253246822647887">האפליקציה תיפתח בסיום השדרוג. פעולת השדרוג יכולה להימשך כמה דקות.</translation>
 <translation id="8888459276890791557">אפשר להצמיד את החלונית הצדדית הזאת כדי לגשת אליה בקלות</translation>
+<translation id="8888621340860433230">הצגת האפשרויות</translation>
 <translation id="8889294078294184559">‏במהלך הגלישה, אתרים אחרים יכולים לבדוק ב-Chrome ולאמת שסביר להניח שמדובר באדם אמיתי, לפי פרטים שנשמרו בביקור באתר קודם.</translation>
 <translation id="8889651696183044030">ל-<ph name="ORIGIN" /> יש הרשאה לערוך את הקבצים והתיקיות הבאים</translation>
 <translation id="8890170499370378450">ייתכנו חיובים בגין שימוש בנתונים סלולריים</translation>

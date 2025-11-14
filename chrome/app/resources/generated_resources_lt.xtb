@@ -6813,7 +6813,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5689233503102158537">„Alt“ + naikinimo klavišas</translation>
 <translation id="5689516760719285838">Vieta</translation>
 <translation id="56907980372820799">Susieti duomenis</translation>
-<translation id="5691581861107245578">Gaukite jaustukų pasiūlymų pagal renkamą tekstą</translation>
 <translation id="5691772641933328258">Piršto atspaudas neatpažintas</translation>
 <translation id="5693255400847650006">Naudojamas mikrofonas</translation>
 <translation id="5695046252726616755">Paspauskite „Enter“ arba tarpo klavišą, jei reikia daugiau parinkčių.</translation>
@@ -10065,6 +10064,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7952904276017482715">ID turėjo būti <ph name="EXPECTED_ID" />, o buvo pateiktas <ph name="NEW_ID" /></translation>
 <translation id="7953236668995583915">Įkelkite šį puslapį iš naujo, kad pritaikytumėte atnaujintus nustatymus šioje svetainėje</translation>
 <translation id="7953669802889559161">Įvestys</translation>
+<translation id="7953955868932471628">Valdyti sparčiuosius klavišus</translation>
 <translation id="7955105108888461311">Paklausti asmeniškai</translation>
 <translation id="7955177647836564772">Jei „Smart Lock“ įjungta ir telefonas atrakintas, slaptažodžio ar PIN kodo įvesti nereikia</translation>
 <translation id="7956373551960864128">Išsaugoti spausdintuvai</translation>

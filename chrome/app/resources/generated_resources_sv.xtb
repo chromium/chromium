@@ -4048,6 +4048,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3756578970075173856">Ange pinkod</translation>
 <translation id="3756806135608816820">Webbplatser kan begära att få söka efter Bluetooth-enheter</translation>
 <translation id="3757567010566591880">Lossa från verktygsfältet</translation>
+<translation id="3757645900890881944">Sökverktyg</translation>
 <translation id="3757733214359997190">Inga webbplatser hittades</translation>
 <translation id="375841316537350618">Laddar ned proxyskript ...</translation>
 <translation id="3758887577462995665">Tips:</translation>
@@ -6809,7 +6810,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5689233503102158537">alt + backsteg</translation>
 <translation id="5689516760719285838">Plats</translation>
 <translation id="56907980372820799">Koppla data</translation>
-<translation id="5691581861107245578">Få emoji-förslag utifrån det du skriver</translation>
 <translation id="5691772641933328258">Fingeravtrycket känns inte igen</translation>
 <translation id="5693255400847650006">Mikrofonen används</translation>
 <translation id="5695046252726616755">Tryck på retur eller blanksteg för att se fler alternativ.</translation>
@@ -10053,6 +10053,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7952904276017482715">Id <ph name="EXPECTED_ID" /> förväntades men id:t är <ph name="NEW_ID" /></translation>
 <translation id="7953236668995583915">Läs in sidan igen så att de uppdaterade inställningarna tillämpas på webbplatsen</translation>
 <translation id="7953669802889559161">Inmatningar</translation>
+<translation id="7953955868932471628">Hantera genvägar</translation>
 <translation id="7955105108888461311">Fråga själv</translation>
 <translation id="7955177647836564772">Om Smart Lock är aktiverat och telefonen är upplåst behöver du inte ange lösenord eller pinkod</translation>
 <translation id="7956373551960864128">Dina sparade skrivare</translation>
@@ -11439,6 +11440,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="8886745493279779790">Granska inaktiva flikar</translation>
 <translation id="8888253246822647887">Appen öppnas när uppgraderingen är klar. Uppgraderingen kan ta några minuter.</translation>
 <translation id="8888459276890791557">Du kan fästa den här sidopanelen så att du kommer åt den enkelt</translation>
+<translation id="8888621340860433230">Visa alternativ</translation>
 <translation id="8889294078294184559">När du fortsätter surfa kan webbplatser kontrollera informationen med Chrome och verifiera med den föregående webbplatsen du besökte att du troligen är en riktig person.</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> har redigeringsbehörighet till följande filer och mappar</translation>
 <translation id="8890170499370378450">Avgifter för mobildata kan tillkomma</translation>

@@ -765,6 +765,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="222962001646502673">Donkergrys 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 oortjie}other{# oortjies}}</translation>
 <translation id="2233745931693710080">Laserskyf</translation>
+<translation id="2236949375853147973">My aktiwiteit</translation>
 <translation id="2239100178324503013">Stuur nou</translation>
 <translation id="224130779555573777">Voeg regstelnommer by</translation>
 <translation id="2241693394036365668">Lêer is afgelaai</translation>
@@ -1459,6 +1460,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3392028486601120379">Daar is ’n pad vir die URL-patroon "<ph name="URL_PATTERN" />" gespesifiseer. Paaie word nie vir hierdie sleutel gesteun nie. Verwyder asseblief die pad en probeer weer, byvoorbeeld, *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Oplaaimetode</translation>
 <translation id="3399161914051569225">Drabare tegnologie</translation>
+<translation id="3399930248910934354">Maak Chrome-instellings oop</translation>
 <translation id="3399952811970034796">Afleweringadres</translation>
 <translation id="3402261774528610252">Die verbinding wat gebruik word om hierdie werf te laai, gebruik TLS 1.0 of TLS 1.1, wat opgeskort is en in die toekoms gedeaktiveer sal word. Nadat dit gedeaktiveer is, sal gebruikers verhinder word om hierdie werf te laai. Die bediener moet TLS 1.2 of nuwer aktiveer.</translation>
 <translation id="3405664148539009465">Pasmaak lettertipes</translation>
@@ -4089,6 +4091,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7648133459447652947">Wissel apps, herlaai die bladsy of gaan terug om jou skermpyltjie te wys</translation>
 <translation id="7648527891719919697">Hierdie werf sal geblokkeer bly want Gevorderde Beskerming is in <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android-instellings<ph name="END_ANDROID_SETTINGS_LINK" /> aangeskakel. <ph name="BEGIN_LEARN_MORE_LINK" />Kry meer inligting oor hierdie waarskuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Berg lêers in hierdie toestel</translation>
+<translation id="7649070708921625228">Hulp</translation>
 <translation id="7653957176542370971">Betalinghanteerdersigblad is toe</translation>
 <translation id="7655766454902053387">Werkgeleentheidinskrywings</translation>
 <translation id="765676359832457558">Versteek gevorderde instellings …</translation>

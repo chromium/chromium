@@ -4037,6 +4037,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3756578970075173856">Establecer PIN</translation>
 <translation id="3756806135608816820">Os sitios poden pedirche permiso para buscar dispositivos Bluetooth</translation>
 <translation id="3757567010566591880">Deixar de fixar na barra de ferramentas</translation>
+<translation id="3757645900890881944">Ferramentas de busca</translation>
 <translation id="3757733214359997190">Non se atoparon sitios</translation>
 <translation id="375841316537350618">Descargando script de proxy...</translation>
 <translation id="3758887577462995665">Consello:</translation>
@@ -6796,7 +6797,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5689233503102158537">alt + retroceso</translation>
 <translation id="5689516760719285838">Localización</translation>
 <translation id="56907980372820799">Ligar datos</translation>
-<translation id="5691581861107245578">Recibe suxestións de emojis baseadas no que escribas</translation>
 <translation id="5691772641933328258">Non se recoñeceu a impresión dixital</translation>
 <translation id="5693255400847650006">Estase utilizando o micrófono</translation>
 <translation id="5695046252726616755">Preme a tecla Introducir ou Espazo para acceder a máis opcións.</translation>
@@ -10038,6 +10038,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7952904276017482715">Esperábase o ID "<ph name="EXPECTED_ID" />", pero o recibido foi "<ph name="NEW_ID" />"</translation>
 <translation id="7953236668995583915">Volve cargar esta páxina para aplicar a configuración actualizada neste sitio</translation>
 <translation id="7953669802889559161">Métodos de introdución de texto</translation>
+<translation id="7953955868932471628">Xestionar atallos</translation>
 <translation id="7955105108888461311">Preguntar en persoa</translation>
 <translation id="7955177647836564772">Se activas Smart Lock e o teu teléfono está desbloqueado, non é necesario que poñas un contrasinal ou PIN</translation>
 <translation id="7956373551960864128">As túas impresoras gardadas</translation>
@@ -11423,6 +11424,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="8886745493279779790">Revisar pestanas inactivas</translation>
 <translation id="8888253246822647887">A aplicación abrirase cando finalice a actualización. As actualizacións poden tardar uns minutos.</translation>
 <translation id="8888459276890791557">Podes fixar este panel lateral para así acceder facilmente a el</translation>
+<translation id="8888621340860433230">Mostrar opcións</translation>
 <translation id="8889294078294184559">Cando navegues, os sitios poderán facer comprobacións con Chrome e verificar con outros sitios que xa visitases que es unha persoa real</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> pode editar os seguintes ficheiros e cartafoles</translation>
 <translation id="8890170499370378450">É posible que se apliquen cargos polo uso de datos móbiles</translation>

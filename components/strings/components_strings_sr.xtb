@@ -765,6 +765,7 @@
 <translation id="222962001646502673">Тамносива 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 картица}one{# картица}few{# картице}other{# картица}}</translation>
 <translation id="2233745931693710080">Компактни диск</translation>
+<translation id="2236949375853147973">Моје активности</translation>
 <translation id="2239100178324503013">Пошаљи одмах</translation>
 <translation id="224130779555573777">Додајте број за обештећење</translation>
 <translation id="2241693394036365668">Датотека је преузета</translation>
@@ -1459,6 +1460,7 @@
 <translation id="3392028486601120379">URL образац <ph name="URL_PATTERN" /> садржи наведену путању. Путање нису подржане за овај кључ. Уклоните путању и пробајте поново, нпр. *://example.com/ =&gt; *://example.com“,</translation>
 <translation id="3395827396354264108">Начин преузимања</translation>
 <translation id="3399161914051569225">Носива технологија</translation>
+<translation id="3399930248910934354">Отвори подешавања Chrome-а</translation>
 <translation id="3399952811970034796">Адреса испоруке</translation>
 <translation id="3402261774528610252">Веза коришћена за учитавање овог сајта је користила TLS 1.0 или TLS 1.1, који су застарели и биће онемогућени у будућности. Када буду онемогућени, корисници неће моћи да учитају овај сајт. Сервер треба да омогући TLS 1.2 или новију верзију.</translation>
 <translation id="3405664148539009465">Прилагоди фонтове</translation>
@@ -4089,6 +4091,7 @@
 <translation id="7648133459447652947">Да би се приказао курсор, промените апликацију, поново учитајте страницу или се вратите</translation>
 <translation id="7648527891719919697">Овај сајт ће остати блокиран јер сте укључили Напредну заштиту у <ph name="BEGIN_ANDROID_SETTINGS_LINK" />подешавањима Android-а<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више о овом упозорењу<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">складишти датотеке на овом уређају</translation>
+<translation id="7649070708921625228">Помоћ</translation>
 <translation id="7653957176542370971">Страница обрађивача плаћања је затворена</translation>
 <translation id="7655766454902053387">Огласи за посао</translation>
 <translation id="765676359832457558">Сакриј напредна подешавања...</translation>

@@ -4049,6 +4049,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3756578970075173856">Stilla PIN-númer</translation>
 <translation id="3756806135608816820">Vefsvæði geta beðið um að leita að Bluetooth-tækjum</translation>
 <translation id="3757567010566591880">Losa af tækjastiku</translation>
+<translation id="3757645900890881944">Leitarverkfæri</translation>
 <translation id="3757733214359997190">Engin vefsvæði fundust</translation>
 <translation id="375841316537350618">Sækir proxy-skriftu...</translation>
 <translation id="3758887577462995665">Ábending:</translation>
@@ -6810,7 +6811,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5689233503102158537">alt + bakklykill</translation>
 <translation id="5689516760719285838">Staðsetning</translation>
 <translation id="56907980372820799">Tenglagögn</translation>
-<translation id="5691581861107245578">Fáðu tillögur að emoji-táknum út frá því sem þú skrifar</translation>
 <translation id="5691772641933328258">Fingrafar þekkist ekki</translation>
 <translation id="5693255400847650006">Hljóðnemi í notkun</translation>
 <translation id="5695046252726616755">Ýttu á Enter eða bil til að fá fleiri valkosti.</translation>
@@ -8127,6 +8127,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6619990499523117484">Staðfestu PIN-númerið</translation>
 <translation id="6620000730890558421">Haltu skipulagi á flipunum þínum með aðstoð gervigreindar</translation>
 <translation id="6620254580880484313">Heiti geymis</translation>
+<translation id="6621282332208609777">Spyrðu Google eða sláðu inn vefslóð</translation>
 <translation id="6621391692573306628">Til að senda þennan flipa í annað tæki þarftu að skrá þig inn í Chrome í báðum tækjum</translation>
 <translation id="6622980291894852883">Halda áfram að útiloka myndir</translation>
 <translation id="6624036901798307345">Í spjaldtölvustillingu skaltu ýta á tækjastikuhnapp flipateljara til að opna nýja fliparæmu sem birtir smámyndir af hverjum flipa.</translation>
@@ -9549,6 +9550,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7620616707541471029">Veldu reikning til að halda áfram</translation>
 <translation id="7621382409404463535">Kerfið gat ekki vistað stillingu tækisins.</translation>
 <translation id="7621595347123595643">Þú getur ekki endurheimt staðbundin gögn ef þú gleymir aðgangsorðinu þínu eða PIN-númerinu.</translation>
+<translation id="7621863462266622331">Þegar flipum er deilt er efni þeirra, margmiðlunarefni og vefslóðir send til Google</translation>
 <translation id="7622114377921274169">Í hleðslu.</translation>
 <translation id="7622768823216805500">Vefsvæði setja yfirleitt upp greiðslumiðlara fyrir verslunareiginleika eins og einfaldari greiðslu</translation>
 <translation id="7622966771025050155">Skipta yfir í flipa sem var tekinn upp</translation>
@@ -10055,6 +10057,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7952904276017482715">Búist var við auðkenninu „<ph name="EXPECTED_ID" />“ en auðkennið er „<ph name="NEW_ID" />“</translation>
 <translation id="7953236668995583915">Endurnýjaðu þessa síðu til að nota uppfærðar stillingar á þessu vefsvæði</translation>
 <translation id="7953669802889559161">Innsláttur</translation>
+<translation id="7953955868932471628">Stjórna flýtileiðum</translation>
 <translation id="7955105108888461311">Spyrja í eigin persónu</translation>
 <translation id="7955177647836564772">Ef kveikt er á Smart Lock og síminn er ólæstur þarftu ekki að slá inn aðgangsorð eða PIN-númer</translation>
 <translation id="7956373551960864128">Vistaðir prentarar þínir</translation>
@@ -11441,6 +11444,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8886745493279779790">Fara yfir óvirka flipa</translation>
 <translation id="8888253246822647887">Forritið verður opnað að uppfærslunni lokinni. Uppfærslur geta tekið nokkrar mínútur.</translation>
 <translation id="8888459276890791557">Þú getur fest þennan hliðarglugga til að auðvelda aðgengi</translation>
+<translation id="8888621340860433230">Sjá valkosti</translation>
 <translation id="8889294078294184559">Þegar þú heldur áfram að vafra geta vefsvæði athugað upplýsingarnar hjá Chrome og staðfest frá fyrra vefsvæði að þú sért líklega mennskur notandi</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> getur breytt eftirfarandi skrám og möppum</translation>
 <translation id="8890170499370378450">Kann að hafa í för með sér gjöld fyrir farsímagögn</translation>
@@ -11763,6 +11767,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="909554839118732438">Loka huliðsgluggum</translation>
 <translation id="9095819602391364796">Ekki leyfa vefsvæðum að stjórna og endurforrita MIDI-tækin þín</translation>
 <translation id="9096053102600371572"><ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /> um stýrða flettingu</translation>
+<translation id="9096221857560878399">Bera saman valkosti</translation>
 <translation id="9096776523567481218">ekki sett upp staðbundið</translation>
 <translation id="9098860402274800697">Fjarlægja Google Play og Android-forrit</translation>
 <translation id="9099220545925418560">Byggt á vafraferlinum þínum. Slökkt er á þessari stillingu.</translation>

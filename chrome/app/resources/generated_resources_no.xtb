@@ -4042,6 +4042,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3756578970075173856">Angi PIN-kode</translation>
 <translation id="3756806135608816820">Nettsteder kan be om å få se etter Bluetooth-enheter</translation>
 <translation id="3757567010566591880">Løsne fra verktøyraden</translation>
+<translation id="3757645900890881944">Søkeverktøy</translation>
 <translation id="3757733214359997190">Fant ingen nettsteder</translation>
 <translation id="375841316537350618">Laster ned mellomtjenerskript ...</translation>
 <translation id="3758887577462995665">Tips:</translation>
@@ -6798,7 +6799,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5689233503102158537">alt + tilbaketast</translation>
 <translation id="5689516760719285838">Sted</translation>
 <translation id="56907980372820799">Koble sammen data</translation>
-<translation id="5691581861107245578">Få emojiforslag basert på det du skriver</translation>
 <translation id="5691772641933328258">Gjenkjenner ikke fingeravtrykket</translation>
 <translation id="5693255400847650006">Mikrofonen er i bruk</translation>
 <translation id="5695046252726616755">Trykk på Enter eller mellomrom for å vise flere alternativer.</translation>
@@ -10042,6 +10042,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7952904276017482715">Den forventede ID-en var «<ph name="EXPECTED_ID" />», men den faktiske ID-en var «<ph name="NEW_ID" />»</translation>
 <translation id="7953236668995583915">Last inn denne siden på nytt for å ta i bruk de oppdaterte innstillingene dine på dette nettstedet</translation>
 <translation id="7953669802889559161">Inndatametoder</translation>
+<translation id="7953955868932471628">Administrer snarveier</translation>
 <translation id="7955105108888461311">Spør fysisk</translation>
 <translation id="7955177647836564772">Hvis Smart Lock er slått på og telefonen låses opp, trenger du ikke å oppgi passord eller PIN-kode</translation>
 <translation id="7956373551960864128">Dine lagrede skrivere</translation>
@@ -11428,6 +11429,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8886745493279779790">Gjennomgå inaktive faner</translation>
 <translation id="8888253246822647887">Appen åpnes når oppgraderingen er ferdig. Oppgraderinger kan ta noen minutter.</translation>
 <translation id="8888459276890791557">Du kan feste dette sidepanelet for enkel tilgang</translation>
+<translation id="8888621340860433230">Vis alternativer</translation>
 <translation id="8889294078294184559">Når du fortsetter å surfe, kan nettsteder kontrollere denne informasjonen i Chrome og få bekreftet av nettsteder du har besøkt tidligere, at du sannsynligvis er en ekte person</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> kan redigere disse filene og mappene</translation>
 <translation id="8890170499370378450">Mobildatakostnader kan påløpe</translation>

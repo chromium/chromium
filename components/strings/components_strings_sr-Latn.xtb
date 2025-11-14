@@ -765,6 +765,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="222962001646502673">Tamnosiva 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 kartica}one{# kartica}few{# kartice}other{# kartica}}</translation>
 <translation id="2233745931693710080">Kompaktni disk</translation>
+<translation id="2236949375853147973">Moje aktivnosti</translation>
 <translation id="2239100178324503013">Pošalji odmah</translation>
 <translation id="224130779555573777">Dodajte broj za obeštećenje</translation>
 <translation id="2241693394036365668">Datoteka je preuzeta</translation>
@@ -1459,6 +1460,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3392028486601120379">URL obrazac <ph name="URL_PATTERN" /> sadrži navedenu putanju. Putanje nisu podržane za ovaj ključ. Uklonite putanju i probajte ponovo, npr. *://example.com/ =&gt; *://example.com“,</translation>
 <translation id="3395827396354264108">Način preuzimanja</translation>
 <translation id="3399161914051569225">Nosiva tehnologija</translation>
+<translation id="3399930248910934354">Otvori podešavanja Chrome-a</translation>
 <translation id="3399952811970034796">Adresa isporuke</translation>
 <translation id="3402261774528610252">Veza korišćena za učitavanje ovog sajta je koristila TLS 1.0 ili TLS 1.1, koji su zastareli i biće onemogućeni u budućnosti. Kada budu onemogućeni, korisnici neće moći da učitaju ovaj sajt. Server treba da omogući TLS 1.2 ili noviju verziju.</translation>
 <translation id="3405664148539009465">Prilagodi fontove</translation>
@@ -4089,6 +4091,7 @@ Dodatni detalji:
 <translation id="7648133459447652947">Da bi se prikazao kursor, promenite aplikaciju, ponovo učitajte stranicu ili se vratite</translation>
 <translation id="7648527891719919697">Ovaj sajt će ostati blokiran jer ste uključili Naprednu zaštitu u <ph name="BEGIN_ANDROID_SETTINGS_LINK" />podešavanjima Android-a<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o ovom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">skladišti datoteke na ovom uređaju</translation>
+<translation id="7649070708921625228">Pomoć</translation>
 <translation id="7653957176542370971">Stranica obrađivača plaćanja je zatvorena</translation>
 <translation id="7655766454902053387">Oglasi za posao</translation>
 <translation id="765676359832457558">Sakrij napredna podešavanja...</translation>

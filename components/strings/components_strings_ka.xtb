@@ -765,6 +765,7 @@
 <translation id="222962001646502673">მუქი ნაცრისფერი 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 ჩანართი}other{# ჩანართი}}</translation>
 <translation id="2233745931693710080">კომპაქტდისკი</translation>
+<translation id="2236949375853147973">ჩემი აქტივობა</translation>
 <translation id="2239100178324503013">ახლავე გაგზავნა</translation>
 <translation id="224130779555573777">კომპენსაციის ნომრის დამატება</translation>
 <translation id="2241693394036365668">ფაილის ჩამოტვირთვა</translation>
@@ -1459,6 +1460,7 @@
 <translation id="3392028486601120379">URL-ის შაბლონში „<ph name="URL_PATTERN" />“ მითითებულია მდებარეობა. მდებარეობები მხარდაუჭერელია ამ გასაღებისთვის. ამოშალეთ მდებარეობა და ცადეთ ხელახლა. მაგ., *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">წაღების მეთოდი</translation>
 <translation id="3399161914051569225">ტარებადი მოწყობილობები</translation>
+<translation id="3399930248910934354">Chrome-ის პარამეტრების გახსნა</translation>
 <translation id="3399952811970034796">მიწოდების მისამართი</translation>
 <translation id="3402261774528610252">საიტის ჩასატვირთად გამოიყენებოდა TLS 1.0 ან TLS 1.1, რომელიც მოძველებულია და მომავალში გაუქმდება. გაუქმების შემდეგ მომხმარებლები ვეღარ შეძლებენ ამ საიტის ჩატვირთვას. სერვერზე უნდა გააქტიურდეს TLS 1.2 ან უფრო ახალი ვერსია.</translation>
 <translation id="3405664148539009465">შრიფტების მორგება</translation>
@@ -4089,6 +4091,7 @@
 <translation id="7648133459447652947">იმისათვის, რომ აჩვენოთ თქვენი კურსორი, გადართოთ აპები, გადატვირთოთ გვერდი ან დაბრუნდეთ უკან</translation>
 <translation id="7648527891719919697">ეს საიტი დაბლოკილი დარჩება, რადგან თქვენ დამატებითი დაცვა ჩართეთ <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android პარამეტრებიდან<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />შეიტყვეთ მეტი ამ გაფრთხილების შესახებ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">ამ მოწყობილობაში ფაილების შენახვა</translation>
+<translation id="7649070708921625228">დახმარება</translation>
 <translation id="7653957176542370971">გადახდების დამმუშავებლის გვერდი დახურულია</translation>
 <translation id="7655766454902053387">ვაკანსიების განცხადებები</translation>
 <translation id="765676359832457558">დამალეთ გაფართოებული პარამეტრები…</translation>

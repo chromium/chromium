@@ -484,6 +484,7 @@
 <translation id="6417690341895039567">{COUNT,plural, =1{A sua organização fecha automaticamente o Chrome quando não é usado durante 1 minuto. Os dados de navegação são eliminados. Estas informações podem incluir o histórico, o preenchimento automático e as transferências.}other{A sua organização fecha automaticamente o Chrome quando não é usado durante # minutos. Os dados de navegação são eliminados. Estas informações podem incluir o histórico, o preenchimento automático e as transferências.}}</translation>
 <translation id="6418662306461808273">Mudar para o perfil do Chrome existente?</translation>
 <translation id="6426623519983252346">É apresentada uma indicação para experimentar o <ph name="FEATURE_NAME" /> da próxima vez que abrir o Chrome no iOS.</translation>
+<translation id="6434035853014503219">Obrigado por escolher o Chrome como o navegador predefinido!</translation>
 <translation id="6473905796280459355">Aceder à página Acerca do Chrome</translation>
 <translation id="6481963882741794338">Associe o Chrome e outros serviços Google para personalização e outras finalidades</translation>
 <translation id="648319183876919572">A Navegação segura melhorada faz mais para proteger contra transferências e Websites perigosos</translation>
@@ -581,6 +582,7 @@
 <translation id="756809126120519699">Dados do Chrome limpos</translation>
 <translation id="7572537927358445944">Desativada • O Chrome não consegue validar a origem desta extensão</translation>
 <translation id="7583399374488819119">Instalador do <ph name="COMPANY_NAME" /></translation>
+<translation id="7596160425942761210">Pode usar o Chrome sempre que clicar em links de mensagens, documentos e outras apps</translation>
 <translation id="7602868996817972616">Perguntar ao Google acerca desta página</translation>
 <translation id="760353356052806707">Outro programa no computador adicionou uma aplicação que pode alterar o funcionamento do Chrome.
 

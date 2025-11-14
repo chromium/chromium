@@ -4048,6 +4048,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3756578970075173856">Tetapkan PIN</translation>
 <translation id="3756806135608816820">Laman boleh meminta untuk mencari peranti Bluetooth</translation>
 <translation id="3757567010566591880">Nyahsemat daripada Bar alat</translation>
+<translation id="3757645900890881944">Alatan carian</translation>
 <translation id="3757733214359997190">Tiada tapak ditemui</translation>
 <translation id="375841316537350618">Memuat turun skrip proksi...</translation>
 <translation id="3758887577462995665">Petua:</translation>
@@ -6809,7 +6810,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Lokasi</translation>
 <translation id="56907980372820799">Pautkan data</translation>
-<translation id="5691581861107245578">Dapatkan cadangan emoji berdasarkan teks yang anda taip</translation>
 <translation id="5691772641933328258">Cap jari tidak dikenali</translation>
 <translation id="5693255400847650006">Mikrofon sedang digunakan</translation>
 <translation id="5695046252726616755">Tekan Enter atau jarak untuk melihat lebih banyak pilihan.</translation>
@@ -10055,6 +10055,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7952904276017482715">ID dijangkakan "<ph name="EXPECTED_ID" />", tetapi ID sebenar ialah "<ph name="NEW_ID" />"</translation>
 <translation id="7953236668995583915">Muatkan semula halaman ini untuk menggunakan tetapan anda yang dikemaskinikan pada laman ini</translation>
 <translation id="7953669802889559161">Masukan</translation>
+<translation id="7953955868932471628">Urus pintasan</translation>
 <translation id="7955105108888461311">Tanya sendiri</translation>
 <translation id="7955177647836564772">Jika Smart Lock dihidupkan dan telefon anda tidak berkunci, anda tidak perlu memasukkan kata laluan atau PIN</translation>
 <translation id="7956373551960864128">Pencetak yang disimpan</translation>
@@ -10894,6 +10895,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8517759303731677493">Edit…</translation>
 <translation id="8518809011298357036">Tutup Paparan Atas</translation>
 <translation id="8518942514525208851">Sembunyikan kata-kata cabul</translation>
+<translation id="8520238089740349550">Gagal - Muat turun setempat disekat</translation>
 <translation id="8523493869875972733">Simpan Perubahan</translation>
 <translation id="8523849605371521713">Ditambahkan oleh dasar</translation>
 <translation id="8524594273111932386">Search + anak panah ke bawah</translation>
@@ -11442,6 +11444,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="8886745493279779790">Semak Tab Tidak Aktif</translation>
 <translation id="8888253246822647887">Apl anda akan dibuka apabila peningkatan selesai. Peningkatan boleh mengambil masa beberapa minit.</translation>
 <translation id="8888459276890791557">Anda boleh menyematkan panel sisi ini untuk akses mudah</translation>
+<translation id="8888621340860433230">Tunjukkan pilihan</translation>
 <translation id="8889294078294184559">Sementara anda terus menyemak imbas, laman boleh menyemak dengan Chrome dan membuat pengesahan dengan laman yang telah anda lawati sebelum ini bahawa anda berkemungkinan merupakan orang yang sebenar</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> boleh mengedit fail dan folder berikut</translation>
 <translation id="8890170499370378450">Mungkin dikenakan caj data mudah alih</translation>

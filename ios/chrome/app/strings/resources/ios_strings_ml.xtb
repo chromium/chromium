@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
+<translation id="1004825134262590729">{count,plural, =1{{count} പാസ്‌കീ}other{{count} പാസ്‌കീകൾ}}</translation>
 <translation id="1005023885865154304">പാസ്‌വേഡ് സ്വയമേവ പൂരിപ്പിക്കൽ ക്രമീകരണം തുറക്കുക</translation>
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">നിങ്ങൾ അടുത്തിടെ അടച്ച ടാബുകൾ ഇവിടേക്ക് തിരികെ വന്ന് നിങ്ങൾക്ക് വീണ്ടും തുറക്കാം</translation>
@@ -2212,5 +2213,6 @@
 <translation id="984275831282074731">പേയ്‌മെന്റ് രീതികൾ</translation>
 <translation id="985379595344853742">എല്ലാ അദൃശ്യ ടാബുകളും അടയ്‌ക്കുക</translation>
 <translation id="988141524645182168">മറ്റ് ഉപകരണങ്ങൾ</translation>
+<translation id="995174784802614337">{count,plural, =1{{count} പാസ്‌കീ ഇമ്പോർട്ട് ചെയ്തു}other{{count} പാസ്‌കീകൾ ഇമ്പോർട്ട് ചെയ്തു}}</translation>
 <translation id="999768147936949692">ഇപ്പോൾ നിങ്ങൾക്ക്, കുടുംബാംഗങ്ങളുമായി മാത്രമേ പാസ്‌വേഡുകൾ പങ്കിടാനാകൂ. നിങ്ങളുടെ ഗ്രൂപ്പിൽ ചേരാൻ <ph name="BEGIN_LINK" />കുടുംബാംഗങ്ങളെ ക്ഷണിക്കുക<ph name="END_LINK" />, Google-ൽ ഉടനീളമുള്ള നിങ്ങളുടെ ഉൽപ്പന്നങ്ങളിൽ നിന്നും സബ്‌സ്‌ക്രിപ്‌ഷനുകളിൽ നിന്നും കൂടുതൽ നേടുക.</translation>
 </translationbundle>

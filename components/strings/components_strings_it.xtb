@@ -765,6 +765,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="222962001646502673">Grigio scuro 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 scheda}other{# schede}}</translation>
 <translation id="2233745931693710080">Compact disc</translation>
+<translation id="2236949375853147973">Le mie attività</translation>
 <translation id="2239100178324503013">Invia ora</translation>
 <translation id="224130779555573777">Aggiungi Redress Number</translation>
 <translation id="2241693394036365668">Viene scaricato un file</translation>
@@ -1456,6 +1457,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3392028486601120379">È stato specificato un percorso per il pattern URL "<ph name="URL_PATTERN" />". I percorsi non sono supportati per questa chiave. Rimuovi il percorso e riprova. Ad esempio *://example.com/ =&gt; *://example.com"</translation>
 <translation id="3395827396354264108">Metodo di ritiro</translation>
 <translation id="3399161914051569225">Tecnologia indossabile</translation>
+<translation id="3399930248910934354">Apri Impostazioni di Chrome</translation>
 <translation id="3399952811970034796">Indirizzo di consegna</translation>
 <translation id="3402261774528610252">La connessione utilizzata per caricare il sito usava TLS 1.0 o TLS 1.1, che ora sono obsoleti e in futuro verranno disattivati. In seguito alla disattivazione, gli utenti non potranno caricare questo sito. Il server dovrà abilitare TLS 1.2 o versione successiva.</translation>
 <translation id="3405664148539009465">Personalizza caratteri</translation>
@@ -4086,6 +4088,7 @@ Ulteriori dettagli:
 <translation id="7648133459447652947">Per mostrare il cursore, cambia app, ricarica la pagina o torna indietro</translation>
 <translation id="7648527891719919697">Questo sito rimarrà bloccato perché hai attivato la protezione avanzata nelle <ph name="BEGIN_ANDROID_SETTINGS_LINK" />impostazioni di Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più su questo avviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Memorizzare file sul dispositivo</translation>
+<translation id="7649070708921625228">Guida</translation>
 <translation id="7653957176542370971">Il foglio per la gestione dei pagamenti è chiuso</translation>
 <translation id="7655766454902053387">Annunci di lavoro</translation>
 <translation id="765676359832457558">Nascondi impostazioni avanzate...</translation>

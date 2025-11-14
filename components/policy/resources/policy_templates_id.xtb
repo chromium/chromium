@@ -3845,6 +3845,11 @@ menyertakan keduanya di sertifikat RSA yang ditujukan untuk HTTPS.</translation>
 <translation id="3665437376055221832">Hanya minta pengguna saat tidak ada sertifikat yang cocok dengan pemilihan otomatis.</translation>
 <translation id="3671773704245936868">Nonaktifkan penyorotan fokus keyboard</translation>
 <translation id="3674010627788940405">Jangan dukung header permintaan non-karakter pengganti CORS.</translation>
+<translation id="3675248815331229366">Jika kebijakan ini disetel, Anda dapat menetapkan daftar pola URL yang menentukan situs yang tidak diizinkan untuk mengakses geolokasi pengguna, dan juga tidak diizinkan untuk meminta izin pengguna untuk melakukannya.
+
+      Jika kebijakan ini tidak disetel, <ph name="DEFAULT_GEOLOCATION_SETTING" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
+
+      Untuk mengetahui informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://chromeenterprise.google/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.</translation>
 <translation id="3675303748198647471">setTimeout(…, 0) biasa digunakan untuk menguraikan tugas JavaScript panjang.
           Jika kebijakan disetel ke Aktif, setTimeout dan setInterval dengan interval yang lebih kecil dari 4 md tidak akan dibatasi dengan sangat cepat.
           Hal ini meningkatkan performa jangka pendek. Namun, situs yang menyalahgunakan API pada akhirnya akan memiliki setTimeout terbatas.
@@ -6418,6 +6423,7 @@ Kebijakan ini akan tersedia dalam 3 versi.</translation>
 
       Jika kebijakan tidak disetel, pengguna dapat mengontrol visibilitas kartu. Default-nya adalah kartu terlihat.
       </translation>
+<translation id="5446826778796489105">Blokir geolokasi di situs ini</translation>
 <translation id="5448022937220253000">Memilih apa yang akan terjadi pada data pengguna setelah <ph name="LACROS_NAME" /> dinonaktifkan</translation>
 <translation id="5449690328792750354">Event.path API akan tersedia.</translation>
 <translation id="5452024130413254050">Mengontrol apakah VM yang menggunakan konfigurasi ini memiliki akses ke vTPM. Setelan defaultnya adalah salah (false), dan <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> jika tidak disetel.</translation>
@@ -11749,6 +11755,7 @@ Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI g
 
       Template dengan format yang salah akan diabaikan.</translation>
 <translation id="9068629430243705879">port 6566 (blokir dapat dibatalkan hingga 15/10/2021)</translation>
+<translation id="9069432851455606924">Setelan geolokasi</translation>
 <translation id="9069503402414011061">Jika kebijakan disetel, durasi cache data autentikasi akan ditentukan dalam hitungan jam. Cache memiliki data tentang realm yang dipercaya oleh realm perangkat (realm terafiliasi). Oleh karena itu, penyimpanan data autentikasi ke cache akan membantu mempercepat login. Data khusus pengguna dan data untuk realm yang tidak terafiliasi tidak akan di-cache.
 
 Jika kebijakan disetel ke 0, penyimpanan data autentikasi ke cache akan dinonaktifkan. Data khusus realm diambil setiap login sehingga menonaktifkan penyimpanan data autentikasi ke cache dapat memperlambat login pengguna secara signifikan.

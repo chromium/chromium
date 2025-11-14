@@ -3323,6 +3323,11 @@ Als je het beleid niet instelt, wordt browsernavigatie voorkomen als het Always-
       Als je deze instelling uitzet of niet instelt, wordt het nieuwe inline inlogproces standaard gebruikt. Gebruikers kunnen het oude online inlogproces nog steeds gebruiken via de opdrachtregelflag --enable-web-based-signin.
 
       De experimentele instelling wordt in de toekomst verwijderd als het inline inlogproces alle SSO-inlogprocessen volledig ondersteunt.</translation>
+<translation id="3435229811562571593">Hiermee wordt een lijst met URL-patronen voor sites ingesteld waarmee sites worden gespecificeerd waarvoor het recht voor lokale lettertypen automatisch wordt geweigerd. Dit beperkt de mogelijkheid van sites om informatie over lokale lettertypen te bekijken.
+
+      Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige site-URL-patronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan. Dit beleid zoekt alleen overeenkomsten op basis van de herkomst, dus elk pad in het URL-patroon wordt genegeerd.
+
+      Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> van toepassing op de site (als dit is ingesteld), anders worden de standaardinstellingen van de browser gevolgd en kunnen gebruikers per site kiezen of ze dit recht willen verlenen.</translation>
 <translation id="3435796032110614169">Verwijderen van afdrukgeschiedenis toestaan</translation>
 <translation id="3436217793443508863">De tijdsduur zonder gebruikersinvoer waarna het scherm wordt vergrendeld als er op de batterij wordt gewerkt (in milliseconden)</translation>
 <translation id="3437391374720747482">Voorkeur geven aan sleuteluitwisselingsmethoden die voldoen aan de vereisten van CNSA 2.0</translation>
@@ -4375,6 +4380,17 @@ Beëindigd: De functie Pakket volgen is uitgezet sinds M132 en dit beleid heeft 
       Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting voor meer informatie.</translation>
 <translation id="4189872355465413041">Systeem-apps</translation>
 <translation id="4190316993598857632">Bewerken van bookmarks aanzetten</translation>
+<translation id="4190920373466996241">Met de Direct Sockets API kun je via TCP en UDP communiceren met willekeurige eindpunten.
+Ga naar https://github.com/WICG/direct-sockets voor meer informatie.
+
+Als je het beleid instelt, kun je een lijst met URL-patronen maken om aan te geven welke sites niet mogen communiceren via de Direct Sockets API.
+Geldige patronen zijn beperkt tot geïsoleerde web-apps.
+
+Als je het beleid niet instelt, is <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites.
+
+URL-patronen mogen geen conflict vormen met <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />. Geen van beide beleidsregels krijgt voorrang als een URL met beide overeenkomt.
+
+Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="4192388905594723944">URL voor het valideren van verificatietoken voor client voor externe toegang</translation>
 <translation id="4195119404667420672">SpeculationRules-prefetch kan naar URL's worden gestuurd die door ServiceWorker worden beheerd.</translation>
 <translation id="4195698007674066525">Standaard een numeriek toetsenbord tonen voor wachtwoordinvoer</translation>
@@ -9578,6 +9594,15 @@ Dit beleid wordt overschreven door het beleid <ph name="CUSTOM_PROFILE_LABEL_POL
 
 Als je het beleid niet toepast of niet instelt, bevat de gemaakte Kerberos-SPN geen poort.</translation>
 <translation id="7877924399554599110">Hiermee kun je aanzetten dat cloudbeleidsregels voor gebruikers worden samengevoegd in beleidsregels op machineniveau</translation>
+<translation id="7879142313118107127">Om veiligheidsredenen moet voor de web-API <ph name="REQUEST_FULLSCREEN_API_NAME" /> een eerder gebruikersgebaar ('tijdelijke activering') worden aangeroepen, anders mislukt deze. De persoonlijke instellingen van gebruikers kunnen toestaan dat bepaalde oorsprongen deze API aanroepen zonder eerder gebruikersgebaar, zoals beschreven in <ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
+
+Dit beleid vervangt de persoonlijke instellingen van gebruikers en staat toe dat overeenkomende oorsprongen de API aanroepen zonder eerder gebruikersgebaar.
+
+Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.
+Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
+
+Oorsprongen die overeenkomen met zowel geblokkeerde als toegestane beleidspatronen worden geblokkeerd.
+Voor oorsprongen waarvoor geen informatie is in beleid of gebruikersinstellingen is een eerder gebruikersgebaar vereist om deze API aan te roepen.</translation>
 <translation id="7881421274383404138">Met dit beleid worden bedrijfsprinters ingesteld. De indeling komt overeen met de dictionary <ph name="PRINTERS_POLICY_NAME" />, waarbij voor elke printer ook een veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> verplicht is voor de toelatingslijst of weigeringslijst. Bestanden moeten een json-indeling hebben en mogen maximaal 5 MB zijn. In een bestand van 5 MB kunnen ongeveer 21.000 printers staan. De cryptografische hash wordt gebruikt om de integriteit van de download te verifiëren. Het bestand wordt gedownload, gecachet en opnieuw gedownload als de URL of de hash wordt gewijzigd. <ph name="PRODUCT_OS_NAME" /> downloadt het bestand voor printerconfiguraties en maakt printers beschikbaar in overeenstemming met <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> en <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" />.
 
       Dit beleid is niet van invloed op de mogelijkheid van gebruikers om printers op afzonderlijke apparaten in te stellen. Het is bedoeld als aanvulling op de printerinstellingen van afzonderlijke gebruikers.
@@ -9705,6 +9730,15 @@ Dit beleid is tijdelijk en wordt in de toekomst verwijderd.</translation>
           Als deze instelling aanstaat, kan dit apparaat externe hosts zien en hier verbinding mee maken, zelfs als ze worden gescheiden door een firewall.
 
           Als deze instelling uitstaat en uitgaande UDP-verbindingen worden gefilterd door de firewall, kan dit apparaat alleen verbinding maken met hosts binnen het lokale netwerk.</translation>
+<translation id="7975777377454336782">Met dit beleid kun je een lijst met URL-patronen instellen van oorsprongen op het hoogste niveau waarvoor partitionering van opslag door derden (partitionering van cross-origin iframe-opslag) moet worden uitgezet.
+
+Als je dit beleid niet instelt of als de oorsprong op het hoogste niveau niet overeenkomt met een van de URL-patronen, wordt <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> toegepast.
+
+Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige patronen. Patronen die je hier vermeldt, worden behandeld als oorsprongen, niet als URL's. Voer dus geen pad in.
+
+Ga naar https://developers.google.com/privacy-sandbox/cookies/storage-partitioning voor meer informatie over partitionering van opslag door derden.
+
+Dit wordt verwijderd in Chrome 145. We raden je aan in plaats daarvan de methode requestStorageAccess te gebruiken: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Je kunt feedback geven op https://crbug.com/425248669.</translation>
 <translation id="7976103461034266553">Als het beleid wordt toegepast, wordt de JavaScript-functie setTimeout() met een time-out van 0 ms niet vastgezet op 1 ms.
           Als het beleid niet wordt toegepast, wordt de JavaScript-functie setTimeout() met een time-out van 0 ms vastgezet op 1 ms.
           Als het beleid niet is ingesteld, wordt het standaardgedrag van de browser gebruikt voor het vastzetten van de functie setTimeout().
@@ -10284,6 +10318,13 @@ Als je dit beleid niet instelt of instelt op 0, wordt de URL onmiddellijk in een
 <translation id="8400225642589806131">Als je dit beleid instelt op <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_ENABLED" /> (waarde 1), vraagt <ph name="PRODUCT_NAME" /> een clientcertificaat aan bij de apparaatbeheerserver voor een beheerde browsersessie. Dit certificaat wordt beschikbaar gemaakt voor bijvoorbeeld mTLS-verbindingen.
 
 Als je dit beleid instelt op <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_DISABLED" /> (waarde 0) of niet instelt, kan <ph name="PRODUCT_NAME" /> het clientcertificaat niet aanvragen. Als het beheerde clientcertificaat van een browser al is geregistreerd omdat dit beleid eerder werd toegepast, wordt het niet verwijderd maar is het niet beschikbaar voor mTLS-verbindingen en wordt het niet verlengd als het verloopt.</translation>
+<translation id="8401567123761348600">Als je het beleid instelt, kun je een lijst met URL-patronen instellen van sites met toegang tot sensoren, zoals bewegingssensoren en lichtsensoren.
+
+      Als je het beleid niet instelt, is <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
+
+      Als hetzelfde URL-patroon zowel in dit beleid als in het beleid <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" /> bestaat, krijgt het tweede beleid voorrang en wordt de toegang tot bewegings- of lichtsensoren geblokkeerd.
+
+      Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
 <translation id="8402079500086185021">Pdf-bestanden altijd extern openen</translation>
 <translation id="8402357110539568621">De toegankelijkheidsfunctie voor het virtuele toetsenbord aanzetten.
 

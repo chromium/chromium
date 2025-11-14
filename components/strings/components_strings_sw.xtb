@@ -765,6 +765,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="222962001646502673">Kijivu Iliyokolea ya 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{Kichupo 1}other{Vichupo #}}</translation>
 <translation id="2233745931693710080">Diski Ndogo (CD)</translation>
+<translation id="2236949375853147973">Shughuli Zangu</translation>
 <translation id="2239100178324503013">Tuma sasa</translation>
 <translation id="224130779555573777">Weka namba ya kutafuta haki</translation>
 <translation id="2241693394036365668">Faili inapopakuliwa</translation>
@@ -1459,6 +1460,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3392028486601120379">Muundo wa URL "<ph name="URL_PATTERN" />" una njia iliyobainishwa. Njia hazitumiki kwenye ufunguo huu, tafadhali ondoa njia na ujaribu tena. k.m. *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Mbinu ya kuchukua</translation>
 <translation id="3399161914051569225">Teknolojia ya Kifaa cha Kuvaliwa</translation>
+<translation id="3399930248910934354">Fungua Mipangilio ya Chrome</translation>
 <translation id="3399952811970034796">Mahali Bidhaa Itapelekwa</translation>
 <translation id="3402261774528610252">Muunganisho uliotumika kupakia tovuti hii ulitumia TLS 1.0 au TLS 1.1, ambayo ni matoleo yaliyoacha kutumika na yatazimwa baadaye. Yakishazimwa, watumiaji watazuiwa wasipakie tovuti hii. Seva inahitaji kuwasha TLS 1.2 au toleo jipya zaidi.</translation>
 <translation id="3405664148539009465">Badilisha fonti zikufae</translation>
@@ -2946,6 +2948,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5813753398265398978">Fizikia</translation>
 <translation id="5817918615728894473">Unganisha</translation>
 <translation id="5820625124144807242">Baada ya kukagua oda yako, ni lazima uingie katika akaunti au ufungue akaunti ya <ph name="BNPL_ISSUER_NAME" />. Akaunti hii itaunganishwa kiotomatiki na Google Pay.</translation>
+<translation id="5820751560028604030">Upakuaji wa faili kwenye kifaa umezuiwa</translation>
 <translation id="5826507051599432481">Jina la Kawaida (CN)</translation>
 <translation id="5830698870816298009">utumiaji na usogezaji wa kamera</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -4088,6 +4091,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7648133459447652947">Ili uonyeshe kiteuzi chako, badilisha programu, pakia upya ukurasa au urudi nyuma</translation>
 <translation id="7648527891719919697">Tovuti hii itaendelea kuzuiwa kwa sababu umewasha Ulinzi wa Hali ya Juu katika <ph name="BEGIN_ANDROID_SETTINGS_LINK" />mipangilio ya Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Pata maelezo zaidi kuhusu tahadhari hii<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Hifadhi faili kwenye kifaa hiki</translation>
+<translation id="7649070708921625228">Usaidizi</translation>
 <translation id="7653957176542370971">Laha la kidhibiti cha malipo limefungwa</translation>
 <translation id="7655766454902053387">Nafasi za Kazi</translation>
 <translation id="765676359832457558">Ficha mipangilio ya kina...</translation>

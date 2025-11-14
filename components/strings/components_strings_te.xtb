@@ -760,6 +760,7 @@
 <translation id="222962001646502673">ముదురు బూడిద రంగు 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 ట్యాబ్}other{# ట్యాబ్‌లు}}</translation>
 <translation id="2233745931693710080">కాంపాక్ట్ డిస్క్</translation>
+<translation id="2236949375853147973">నా యాక్టివిటీ</translation>
 <translation id="2239100178324503013">ఇప్పుడే పంపండి</translation>
 <translation id="224130779555573777">రిడ్రస్ నంబర్‌ను జోడించండి</translation>
 <translation id="2241693394036365668">ఫైల్ డౌన్‌లోడ్ చేసినప్పుడు</translation>
@@ -1454,6 +1455,7 @@
 <translation id="3392028486601120379">URL ఆకృతి "<ph name="URL_PATTERN" />" నిర్దిష్ట పాత్‌ను కలిగి ఉంది. ఈ కీకి పాత్‌లకు మద్దతు లేదు, దయచేసి పాత్‌ను తీసివేసి, మళ్లీ ట్రై చేయండి. ఉదా *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">పికప్ పద్ధతి</translation>
 <translation id="3399161914051569225">టెక్నాలజీ కలిగిన ధరించే పరికరాలు</translation>
+<translation id="3399930248910934354">Chrome సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="3399952811970034796">డెలివరీ అడ్రస్‌</translation>
 <translation id="3402261774528610252">ఈ సైట్‌ను లోడ్ చేయడానికి ఉపయోగించిన కనెక్షన్ TLS 1.0 లేదా TLS 1.1ను ఉపయోగించింది, ఇవి విస్మరించబడ్డాయి, భవిష్యత్తులో నిలిపివేయబడతాయి. ఒక సారి నిలిపివేయబడితే, యూజర్‌లు ఈ సైట్‌ను లోడ్ చేయకుండా నివారించబడతారు. సర్వర్ TLS 1.2 లేదా ఆపై వెర్షన్‌లను ఎనేబుల్ చేయాలి.</translation>
 <translation id="3405664148539009465">ఫాంట్‌లను అనుకూలంగా మార్చండి</translation>
@@ -4085,6 +4087,7 @@
 <translation id="7648133459447652947">మీ కర్సర్ చూపడానికి, యాప్‌లు మారండి, పేజీని రీలోడ్ చేయండి లేదా వెనుకకు వెళ్లండి</translation>
 <translation id="7648527891719919697">మీరు <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android సెట్టింగ్‌ల<ph name="END_ANDROID_SETTINGS_LINK" />లో అడ్వాన్స్‌డ్ ప్రొటెక్షన్‌ను ఆన్ చేసినందున ఈ సైట్ బ్లాక్ చేయబడి ఉంటుంది. <ph name="BEGIN_LEARN_MORE_LINK" />ఈ హెచ్చరిక గురించి మరింత తెలుసుకోండి<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">ఈ పరికరంలో ఫైళ్లను స్టోరేజ్‌ చేయాలనుకుంటోంది</translation>
+<translation id="7649070708921625228">సహాయం</translation>
 <translation id="7653957176542370971">చెల్లింపు హ్యాండ్లర్ షీట్ మూసివేయబడింది</translation>
 <translation id="7655766454902053387">ఉద్యోగ లిస్టింగ్‌లు</translation>
 <translation id="765676359832457558">అధునాతన సెట్టింగ్‌లను దాచు...</translation>

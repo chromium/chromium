@@ -4044,6 +4044,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3756578970075173856">Задаване на ПИН код</translation>
 <translation id="3756806135608816820">Сайтовете могат да извеждат запитвания за търсене на устройства с Bluetooth</translation>
 <translation id="3757567010566591880">Освобождаване от лентата с инструменти</translation>
+<translation id="3757645900890881944">Инструменти за търсене</translation>
 <translation id="3757733214359997190">Няма намерени сайтове</translation>
 <translation id="375841316537350618">Скриптът за прокси сървъра се изтегля...</translation>
 <translation id="3758887577462995665">Пояснение:</translation>
@@ -6807,7 +6808,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5689233503102158537">Alt + Backspace</translation>
 <translation id="5689516760719285838">Местоположение</translation>
 <translation id="56907980372820799">Свързване на данните</translation>
-<translation id="5691581861107245578">Получавайте предложения за емоджи въз основа на това, което въвеждате</translation>
 <translation id="5691772641933328258">Отпечатъкът не бе разпознат</translation>
 <translation id="5693255400847650006">Микрофонът се използва</translation>
 <translation id="5695046252726616755">Натиснете Enter или клавиша за интервал за още опции.</translation>
@@ -10051,6 +10051,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7952904276017482715">Очакваният идентификационен номер е <ph name="EXPECTED_ID" />, но той бе <ph name="NEW_ID" /></translation>
 <translation id="7953236668995583915">Презаредете страницата, за да приложите актуализираните настройки за този сайт</translation>
 <translation id="7953669802889559161">Въвеждане</translation>
+<translation id="7953955868932471628">Управление на преките пътища</translation>
 <translation id="7955105108888461311">Питане лично</translation>
 <translation id="7955177647836564772">Ако функцията Smart Lock е включена и телефонът ви е отключен, не е необходимо да въвеждате парола или ПИН код</translation>
 <translation id="7956373551960864128">Вашите запазени принтери</translation>
@@ -11437,6 +11438,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8886745493279779790">Преглед на неактивните раздели</translation>
 <translation id="8888253246822647887">Приложението ще се отвори, щом надстройването завърши. Това може да отнеме няколко минути.</translation>
 <translation id="8888459276890791557">Можете да фиксирате този страничен панел за лесен достъп</translation>
+<translation id="8888621340860433230">Показване на опциите</translation>
 <translation id="8889294078294184559">Докато сърфирате, сайтовете могат да направят справка с Chrome и да потвърдят чрез по-рано посетен от вас сайт, че най-вероятно сте истински човек</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> може да редактира следните файлове и папки</translation>
 <translation id="8890170499370378450">Може да доведе до таксуване за мобилни данни</translation>

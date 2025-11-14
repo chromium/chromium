@@ -766,6 +766,7 @@
 <translation id="222962001646502673">डार्क ग्रे 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 टैब}one{# टैब}other{# टैब}}</translation>
 <translation id="2233745931693710080">कॉम्पैक्ट डिस्क</translation>
+<translation id="2236949375853147973">मेरी गतिविधि</translation>
 <translation id="2239100178324503013">अभी भेजें</translation>
 <translation id="224130779555573777">Redress Number जोड़ें</translation>
 <translation id="2241693394036365668">फ़ाइल डाउनलोड की गई</translation>
@@ -1459,6 +1460,7 @@
 <translation id="3392028486601120379">यूआरएल पैटर्न "<ph name="URL_PATTERN" />" के पाथ की जानकारी दी गई है. इस कुंजी के लिए पाथ काम नहीं करते. कृपया पाथ हटाएं और फिर से कोशिश करें. उदाहरण *://example.com/ =&gt; *://example.com"</translation>
 <translation id="3395827396354264108">पिकअप का तरीका</translation>
 <translation id="3399161914051569225">पहने जाने वाले डिवाइस</translation>
+<translation id="3399930248910934354">Chrome की 'सेटिंग' खाेलें</translation>
 <translation id="3399952811970034796">डिलीवरी का पता</translation>
 <translation id="3402261774528610252">इस साइट को लोड करने में इस्तेमाल हुआ कनेक्शन TLS 1.0 या TLS 1.1 का इस्तेमाल कर रहा है. ये वर्शन रोक दिए गए हैं और आने वाले समय में इन्हें बंद कर दिया जाएगा. बंद होने के बाद, उपयोगकर्ता इस साइट को लोड नहीं कर पाएंगे. सर्वर पर TLS 1.2 या इसके बाद का वर्शन चालू होना चाहिए.</translation>
 <translation id="3405664148539009465">फ़ॉन्‍ट को पसंद के मुताबिक बनाएं</translation>
@@ -4090,6 +4092,7 @@
 <translation id="7648133459447652947">अपना कर्सर देखने के लिए ऐप्लिकेशन स्विच करें, पेज को फिर से लोड करें या वापस जाएं</translation>
 <translation id="7648527891719919697">यह साइट ब्लॉक ही रहेगी, क्योंकि आपने <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android की सेटिंग<ph name="END_ANDROID_SETTINGS_LINK" /> में, ऐडवांस सुरक्षा की सेटिंग चालू की है. <ph name="BEGIN_LEARN_MORE_LINK" />इस चेतावनी के बारे में ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">फ़ाइलों को इस डिवाइस पर संग्रहित करें</translation>
+<translation id="7649070708921625228">सहायता</translation>
 <translation id="7653957176542370971">पैसे चुकाने की हैंडलर शीट बंद है</translation>
 <translation id="7655766454902053387">नौकरी के विज्ञापन</translation>
 <translation id="765676359832457558">बेहतर सेटिंग छिपाएं...</translation>

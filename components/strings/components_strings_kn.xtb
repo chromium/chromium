@@ -764,6 +764,7 @@
 <translation id="222962001646502673">ಕಡು ಬೂದು 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 ಟ್ಯಾಬ್}one{# ಟ್ಯಾಬ್‌ಗಳು}other{# ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="2233745931693710080">ಕಾಂಪ್ಯಾಕ್ಟ್ ಡಿಸ್ಕ್</translation>
+<translation id="2236949375853147973">ನನ್ನ ಚಟುವಟಿಕೆ</translation>
 <translation id="2239100178324503013">ಈಗ ಕಳುಹಿಸಿ</translation>
 <translation id="224130779555573777">ರಿಡ್ರೆಸ್ ಸಂಖ್ಯೆಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="2241693394036365668">ಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಆದಾಗ</translation>
@@ -1457,6 +1458,7 @@
 <translation id="3392028486601120379">URL ಪ್ಯಾಟರ್ನ್‌ನಲ್ಲಿ "<ph name="URL_PATTERN" />" ಪಾಥ್ ಅನ್ನು ನಿರ್ದಿಷ್ಟಪಡಿಸಲಾಗಿದೆ. ಈ ಕೀಗಾಗಿ ಪಾಥ್‌ಗಳು ಬೆಂಬಲಿತವಾಗಿಲ್ಲ, ಪಾಥ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ. ಉದಾಹರಣೆ. *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">ಪಿಕಪ್ ವಿಧಾನ</translation>
 <translation id="3399161914051569225">ಧರಿಸಬಹುದಾದ ತಂತ್ರಜ್ಞಾನ</translation>
+<translation id="3399930248910934354">Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="3399952811970034796">ವಿತರಣೆಯ ವಿಳಾಸಗಳು</translation>
 <translation id="3402261774528610252">ಈ ಸೈಟ್ ಅನ್ನು ಲೋಡ್ ಮಾಡಲು ಬಳಸುವ ಕನೆಕ್ಷನ್, TLS 1.0 ಅಥವಾ TLS 1.1 ಅನ್ನು ಬಳಸುತ್ತದೆ, ಆದರೆ ಈ ಎರಡೂ ಆವೃತ್ತಿಗಳಿಗೆ ಸಮ್ಮತಿಸಿಲ್ಲ ಹಾಗೂ ಮುಂದಿನ ದಿನಗಳಲ್ಲಿ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ. ಒಮ್ಮೆ ಅವುಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ ನಂತರ, ಬಳಕೆದಾರರು ಇನ್ನು ಮುಂದೆ ಈ ಸೈಟ್‌ ಅನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ. TLS 1.2 ಅಥವಾ ನಂತರದ ಆವೃತ್ತಿಯನ್ನು ಸರ್ವರ್ ಸಕ್ರಿಯಗೊಳಿಸಬೇಕು.</translation>
 <translation id="3405664148539009465">ಫಾಂಟ್‌ಗಳನ್ನು ಕಸ್ಟಮೈಸ್‌ ಮಾಡಿ</translation>
@@ -2943,6 +2945,7 @@
 <translation id="5813753398265398978">ಭೌತಶಾಸ್ತ್ರ</translation>
 <translation id="5817918615728894473">ಜೋಡಿಸು</translation>
 <translation id="5820625124144807242">ನಿಮ್ಮ ಆರ್ಡರ್ ಅನ್ನು ನೀವು ಪರಿಶೀಲಿಸಿದ ನಂತರ, ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಬೇಕು ಅಥವಾ <ph name="BNPL_ISSUER_NAME" /> ಖಾತೆಯನ್ನು ರಚಿಸಬೇಕು. ಈ ಖಾತೆಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ Google Pay ಗೆ ಲಿಂಕ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
+<translation id="5820751560028604030">ಸ್ಥಳೀಯ ಡೌನ್‌ಲೋಡ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5826507051599432481">ಸಾಮಾನ್ಯ ಹೆಸರು (CN)</translation>
 <translation id="5830698870816298009">ಕ್ಯಾಮರಾದ ಬಳಕೆ ಮತ್ತು ಚಲನೆ</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -4086,6 +4089,7 @@
 <translation id="7648133459447652947">ನಿಮ್ಮ ಕರ್ಸರ್ ಅನ್ನು ತೋರಿಸಲು, ಆ್ಯಪ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿ, ಪುಟವನ್ನು ಪುನಃ ಲೋಡ್ ಮಾಡಿ ಅಥವಾ ಹಿಂದಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="7648527891719919697">ನೀವು <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_ANDROID_SETTINGS_LINK" /> ಸುಧಾರಿತ ಸಂರಕ್ಷಣೆಯನ್ನು ಆನ್ ಮಾಡಿರುವುದರಿಂದ ಈ ಸೈಟ್ ನಿರ್ಬಂಧಿತವಾಗಿರುತ್ತದೆ. <ph name="BEGIN_LEARN_MORE_LINK" />ಈ ಎಚ್ಚರಿಕೆಯ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">ಈ ಸಾಧನದಲ್ಲಿ ಫೈಲ್‌ಗಳನ್ನು ಸಂಗ್ರಹಿಸಿ</translation>
+<translation id="7649070708921625228">ಸಹಾಯ</translation>
 <translation id="7653957176542370971">ಪಾವತಿ ಹ್ಯಾಂಡ್‌ಲರ್ ಶೀಟ್ ಅನ್ನು ಮುಚ್ಚಿದೆ</translation>
 <translation id="7655766454902053387">ಕೆಲಸ ಪಟ್ಟಿಗಳು</translation>
 <translation id="765676359832457558">ಸುಧಾರಿತ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮರೆಮಾಡು...</translation>

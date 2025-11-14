@@ -765,6 +765,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="222962001646502673">Tummanharmaa 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 välilehti}other{# välilehteä}}</translation>
 <translation id="2233745931693710080">CD-levy</translation>
+<translation id="2236949375853147973">Omat tapahtumat</translation>
 <translation id="2239100178324503013">Lähetä nyt</translation>
 <translation id="224130779555573777">Lisää oikaisunumero</translation>
 <translation id="2241693394036365668">Tiedosto on ladattu</translation>
@@ -1460,6 +1461,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3392028486601120379">URL-osoitemallille <ph name="URL_PATTERN" /> on määritetty polku. Tämä avain ei tue polkuja, poista polku ja yritä uudelleen, esim. *://example.com/ =&gt; *://example.com".</translation>
 <translation id="3395827396354264108">Noutotapa</translation>
 <translation id="3399161914051569225">Puettava teknologia</translation>
+<translation id="3399930248910934354">Avaa Chromen asetukset</translation>
 <translation id="3399952811970034796">Toimitusosoite</translation>
 <translation id="3402261774528610252">Tämä sivusto ladattiin TLS 1.0:lla tai TLS 1.1:llä. Ne ovat vanhentuneet ja poistetaan käytöstä tulevaisuudessa. Kun ne poistetaan käytöstä, käyttäjät eivät voi enää ladata tätä sivustoa. Palvelimen pitäisi ottaa käyttöön TLS 1.2 tai uudempi versio.</translation>
 <translation id="3405664148539009465">Muokkaa kirjasimia</translation>
@@ -4091,6 +4093,7 @@ Lisätietoja:
 <translation id="7648133459447652947">Näytä kohdistin, vaihda sovellusta, päivitä sivu tai palaa takaisin</translation>
 <translation id="7648527891719919697">Tämä sivusto pysyy estettynä, koska Lisäsuojaus on päällä <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android-asetuksissa<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Lue lisää tästä varoituksesta<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Tallentaa tiedostoja tälle laitteelle.</translation>
+<translation id="7649070708921625228">Ohje</translation>
 <translation id="7653957176542370971">Maksujenkäsittelytaulukko on suljettu</translation>
 <translation id="7655766454902053387">Työpaikat</translation>
 <translation id="765676359832457558">Piilota lisäasetukset...</translation>

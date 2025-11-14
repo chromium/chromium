@@ -765,6 +765,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="222962001646502673">Cinzento-escuro 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 separador}other{# separadores}}</translation>
 <translation id="2233745931693710080">Disco compacto</translation>
+<translation id="2236949375853147973">A minha atividade</translation>
 <translation id="2239100178324503013">Enviar agora</translation>
 <translation id="224130779555573777">Adicione o número de correção</translation>
 <translation id="2241693394036365668">É transferido um ficheiro</translation>
@@ -1459,6 +1460,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3392028486601120379">O padrão do URL "<ph name="URL_PATTERN" />" tem um caminho especificado. Os caminhos não são suportados para esta chave. Remova o caminho e tente novamente. Por exemplo, *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Método de recolha</translation>
 <translation id="3399161914051569225">Tecnologia em wearable</translation>
+<translation id="3399930248910934354">Abrir definições do Chrome</translation>
 <translation id="3399952811970034796">Endereço de entrega</translation>
 <translation id="3402261774528610252">A ligação utilizada para carregar este site utilizou as versões TLS 1.0 ou TLS 1.1, que foram descontinuadas e serão desativadas no futuro. Após a desativação, os utilizadores serão impedidos de carregar este site. O servidor deverá ativar a versão TLS 1.2 ou posterior.</translation>
 <translation id="3405664148539009465">Personalizar tipos de letra</translation>
@@ -2946,6 +2948,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5813753398265398978">Física</translation>
 <translation id="5817918615728894473">Sincronizar</translation>
 <translation id="5820625124144807242">Depois de rever a encomenda, tem de iniciar sessão ou criar uma conta com <ph name="BNPL_ISSUER_NAME" />. Esta conta vai ser associada automaticamente ao Google Pay.</translation>
+<translation id="5820751560028604030">Transferência local bloqueada</translation>
 <translation id="5826507051599432481">Nome comum (CN)</translation>
 <translation id="5830698870816298009">utilização e movimento da câmara</translation>
 <translation id="5831217499016131155">Carteira do Google</translation>
@@ -4089,6 +4092,7 @@ Detalhes adicionais:
 <translation id="7648133459447652947">Para mostrar o cursor, mude de app, atualize a página ou retroceda</translation>
 <translation id="7648527891719919697">Este site vai permanecer bloqueado porque tem a Proteção avançada ativada nas <ph name="BEGIN_ANDROID_SETTINGS_LINK" />definições do Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais acerca deste aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Armazenar ficheiros neste dispositivo</translation>
+<translation id="7649070708921625228">Ajuda</translation>
 <translation id="7653957176542370971">A página do controlador do pagamento está fechada.</translation>
 <translation id="7655766454902053387">Ofertas de trabalho</translation>
 <translation id="765676359832457558">Ocultar definições avançadas...</translation>

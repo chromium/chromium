@@ -4051,6 +4051,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3756578970075173856">Nastavitev kode PIN</translation>
 <translation id="3756806135608816820">Spletna mesta lahko zahtevajo iskanje naprav Bluetooth.</translation>
 <translation id="3757567010566591880">Odpni iz orodne vrstice</translation>
+<translation id="3757645900890881944">Orodja za iskanje</translation>
 <translation id="3757733214359997190">Ni spletnih mest</translation>
 <translation id="375841316537350618">Prenašanje skripta namestniškega strežnika ...</translation>
 <translation id="3758887577462995665">Nasvet:</translation>
@@ -6814,7 +6815,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5689233503102158537">alt + vračalka</translation>
 <translation id="5689516760719285838">Lokacija</translation>
 <translation id="56907980372820799">Poveži podatke</translation>
-<translation id="5691581861107245578">Prejemanje predlogov za emodžije na podlagi tega, kaj vnesete</translation>
 <translation id="5691772641933328258">Prstni odtis ni prepoznan</translation>
 <translation id="5693255400847650006">Mikrofon je v uporabi</translation>
 <translation id="5695046252726616755">Pritisnite tipko Enter ali preslednico za več možnosti.</translation>
@@ -10064,6 +10064,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7952904276017482715">Pričakovani ID je »<ph name="EXPECTED_ID" />«, toda ID je bil »<ph name="NEW_ID" />«</translation>
 <translation id="7953236668995583915">Znova naložite to stran, če želite uporabiti posodobljene nastavitve na tem spletnem mestu</translation>
 <translation id="7953669802889559161">Načini vnosa</translation>
+<translation id="7953955868932471628">Upravljanje bližnjic</translation>
 <translation id="7955105108888461311">Vprašajte osebno</translation>
 <translation id="7955177647836564772">Če je vklopljena funkcija Smart Lock in je telefon odklenjen, vam ni treba vnesti gesla ali kode PIN.</translation>
 <translation id="7956373551960864128">Shranjeni tiskalniki</translation>
@@ -11453,6 +11454,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8886745493279779790">Pregled neaktivnih zavihkov</translation>
 <translation id="8888253246822647887">Aplikacija se bo odprla, ko bo nadgradnja dokončana. Nadgradnje lahko trajajo nekaj minut.</translation>
 <translation id="8888459276890791557">To stransko podokno lahko pripnete za preprost dostop</translation>
+<translation id="8888621340860433230">Prikaz možnosti</translation>
 <translation id="8889294078294184559">Med brskanjem se lahko spletna mesta obrnejo na Chrome in pri prejšnjem spletnem mestu, ki ste ga obiskali, potrdijo, da ste verjetno resnična oseba.</translation>
 <translation id="8889651696183044030">Spletno mesto <ph name="ORIGIN" /> lahko ureja naslednje datoteke in mape</translation>
 <translation id="8890170499370378450">Morda boste morali plačati stroške prenosa podatkov v mobilnem omrežju.</translation>

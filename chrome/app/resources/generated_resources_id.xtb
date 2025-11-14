@@ -4048,6 +4048,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3756578970075173856">Setel PIN</translation>
 <translation id="3756806135608816820">Situs dapat meminta untuk mencari perangkat Bluetooth</translation>
 <translation id="3757567010566591880">Lepaskan sematan dari Toolbar</translation>
+<translation id="3757645900890881944">Alat penelusuran</translation>
 <translation id="3757733214359997190">Tidak ada situs yang ditemukan</translation>
 <translation id="375841316537350618">Mendownload skrip proxy...</translation>
 <translation id="3758887577462995665">Tips:</translation>
@@ -6809,7 +6810,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Lokasi</translation>
 <translation id="56907980372820799">Tautkan data</translation>
-<translation id="5691581861107245578">Dapatkan saran emoji berdasarkan apa yang Anda ketik</translation>
 <translation id="5691772641933328258">Sidik jari tidak dikenali</translation>
 <translation id="5693255400847650006">Mikrofon sedang digunakan</translation>
 <translation id="5695046252726616755">Tekan tombol enter atau spasi untuk melihat opsi lainnya.</translation>
@@ -10052,6 +10052,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7952904276017482715">ID yang diharapkan "<ph name="EXPECTED_ID" />", namun ID-nya adalah "<ph name="NEW_ID" />"</translation>
 <translation id="7953236668995583915">Muat ulang halaman ini untuk menerapkan setelan yang diperbarui di situs ini</translation>
 <translation id="7953669802889559161">Input</translation>
+<translation id="7953955868932471628">Kelola pintasan</translation>
 <translation id="7955105108888461311">Tanya secara langsung</translation>
 <translation id="7955177647836564772">Jika Smart Lock diaktifkan dan ponsel tidak terkunci, Anda tidak perlu memasukkan sandi atau PIN</translation>
 <translation id="7956373551960864128">Printer yang Anda simpan</translation>
@@ -11438,6 +11439,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="8886745493279779790">Tinjau Tab Tidak Aktif</translation>
 <translation id="8888253246822647887">Aplikasi Anda akan terbuka setelah proses upgrade selesai. Proses upgrade dapat memerlukan waktu beberapa menit.</translation>
 <translation id="8888459276890791557">Anda dapat menyematkan panel samping ini agar mudah diakses</translation>
+<translation id="8888621340860433230">Tampilkan opsi</translation>
 <translation id="8889294078294184559">Saat Anda terus menjelajah, situs dapat mengonfirmasi ke Chrome dan memverifikasi dengan situs sebelumnya yang telah Anda buka bahwa Anda kemungkinan adalah orang sungguhan</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> dapat mengedit file dan folder berikut ini</translation>
 <translation id="8890170499370378450">Dapat dikenai biaya data seluler</translation>

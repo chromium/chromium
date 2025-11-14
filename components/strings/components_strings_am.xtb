@@ -765,6 +765,7 @@
 <translation id="222962001646502673">ጠቆር ያለ ግራጫ 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 ትር}one{# ትር}other{# ትሮች}}</translation>
 <translation id="2233745931693710080">ኮምፓክት ዲስክ</translation>
+<translation id="2236949375853147973">የእኔ እንቅስቃሴ</translation>
 <translation id="2239100178324503013">አሁን ላክ</translation>
 <translation id="224130779555573777">የማስተካከያ ቁጥር ያክሉ</translation>
 <translation id="2241693394036365668">ፋይል ወርዷል</translation>
@@ -1458,6 +1459,7 @@
 <translation id="3392028486601120379">የዩአርኤል ስርዓተ ጥለቱ «<ph name="URL_PATTERN" />» የተገለጸ ዱካ አለው። ለዚህ ቁልፍ ዱካዎች አይደገፉም፣ እባክዎ ዱካውን ያስወግዱ እና እንደገና ይሞክሩ። ለምሳሌ *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">የመውሰጃ ዘዴ</translation>
 <translation id="3399161914051569225">ተለባሽ ቴክኖሎጂ</translation>
+<translation id="3399930248910934354">የChrome ቅንብሮችን ይክፈቱ</translation>
 <translation id="3399952811970034796">የመላኪያ አድራሻ</translation>
 <translation id="3402261774528610252">ይህን ጣቢያ ለመጫን ሥራ ላይ የዋለው ግንኙነት TLS 1.0 ወይም TLS 1.1 ነው የተጠቀመው፣ እነዚህም የተቋረጡ እና ለወደፊቱ የሚሰናከሉ ናቸው። አንዴ ከተሰናከለ በኋላ ተጠቃሚዎች ይህን ጣቢያ እንዳይጭኑት ይከለከላሉ። አገልጋዩ TLS 1.2 ወይም ከዚያ በኋላ ማንቃት አለበት።</translation>
 <translation id="3405664148539009465">ቅርጸ-ቁምፊዎችን አብጅ</translation>
@@ -4089,6 +4091,7 @@
 <translation id="7648133459447652947">ጠቋሚዎን ለማሳየት መተግበሪያዎችን ይቀይሩ፣ ገፁን እንደገና ይጫኑ ወይም ይመለሱ</translation>
 <translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />የAndroid ቅንብሮች<ph name="END_ANDROID_SETTINGS_LINK" /> ውስጥ የላቀ ጥበቃን ስላበሩ ይህ ጣቢያ እንደታገደ ይቆያል። <ph name="BEGIN_LEARN_MORE_LINK" />ስለዚህ ማስጠንቀቂያ የበለጠ ይወቁ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">በዚህ መሣሪያ ላይ ፋይሎችን አከማች</translation>
+<translation id="7649070708921625228">እገዛ</translation>
 <translation id="7653957176542370971">የክፍያ ተቆጣጣሪ ሉህ ተዘግቷል</translation>
 <translation id="7655766454902053387">የስራ ዝርዝሮች</translation>
 <translation id="765676359832457558">የላቁ ቅንብሮችን ደብቅ...</translation>

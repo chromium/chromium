@@ -765,6 +765,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="222962001646502673">Llwyd Tywyll 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 tab}zero{# tab}two{# dab}few{# thab}many{# thab}other{# tab}}</translation>
 <translation id="2233745931693710080">Cryno Ddisg</translation>
+<translation id="2236949375853147973">Fy Ngweithgarwch</translation>
 <translation id="2239100178324503013">Anfon nawr</translation>
 <translation id="224130779555573777">Ychwanegu rhif gwneud iawn</translation>
 <translation id="2241693394036365668">Mae'r ffeil wedi'i lawrlwytho</translation>
@@ -1459,6 +1460,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3392028486601120379">Mae gan y patrwm URL "<ph name="URL_PATTERN" />" lwybr penodol. Ni chefnogir llwybrau ar gyfer yr allwedd hon, tynnwch y llwybr a rhowch gynnig arall arni. e.e. *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Dull casglu</translation>
 <translation id="3399161914051569225">Technoleg Gwisgadwy</translation>
+<translation id="3399930248910934354">Agorwch Osodiadau Chrome</translation>
 <translation id="3399952811970034796">Cyfeiriad Anfon</translation>
 <translation id="3402261774528610252">Gwnaeth y cysylltiad a ddefnyddiwyd i lwytho'r wefan hon ddefnyddio TLS 1.0 neu TLS 1.1, sy'n hen a byddant yn cael eu diffodd yn y dyfodol. Ar ôl eu diffodd, bydd defnyddwyr yn cael eu rhwystro rhag llwytho'r wefan hon. Dylai'r gweinydd alluogi TLS 1.2 neu'n ddiweddarach</translation>
 <translation id="3405664148539009465">Personoleiddio ffontiau</translation>
@@ -4089,6 +4091,7 @@ Manylion ychwanegol:
 <translation id="7648133459447652947">I ddangos eich cyrchwr, newidiwch apiau, ail-lwythwch y dudalen, neu ewch yn ôl</translation>
 <translation id="7648527891719919697">Bydd y wefan hon yn parhau i fod wedi'i rhwystro oherwydd bod gennych Ddiogelwch Uwch wedi'i droi ymlaen yng <ph name="BEGIN_ANDROID_SETTINGS_LINK" />ngosodiadau Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Dysgu rhagor am y rhybudd hwn<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Storio ffeiliau ar y ddyfais hon</translation>
+<translation id="7649070708921625228">Cymorth</translation>
 <translation id="7653957176542370971">Mae'r ddalen trinyddion taliadau ar gau</translation>
 <translation id="7655766454902053387">Rhestrau Swyddi</translation>
 <translation id="765676359832457558">Cuddio'r gosodiadau uwch...</translation>

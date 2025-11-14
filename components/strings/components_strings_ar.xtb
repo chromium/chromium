@@ -765,6 +765,7 @@
 <translation id="222962001646502673">رمادي داكن 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{علامة تبويب واحدة}zero{‫# علامة تبويب}two{علامتا تبويب}few{‫# علامات تبويب}many{‫# علامة تبويب}other{‫# علامة تبويب}}</translation>
 <translation id="2233745931693710080">قرص مضغوط</translation>
+<translation id="2236949375853147973">نشاطي</translation>
 <translation id="2239100178324503013">إرسال الآن</translation>
 <translation id="224130779555573777">إضافة رقم التعويض</translation>
 <translation id="2241693394036365668">تم تنزيل ملف</translation>
@@ -1459,6 +1460,7 @@
 <translation id="3392028486601120379">‏يتضمن نمط عنوان URL "<ph name="URL_PATTERN" />" مسارًا محددًا، وحيث إنّ المسارات غير متوافقة مع هذا المفتاح، يُرجى إزالة المسار والمحاولة مرة أخرى، على سبيل المثال، *://example.com/ =&gt; *://example.com".</translation>
 <translation id="3395827396354264108">طريقة الاستلام</translation>
 <translation id="3399161914051569225">أجهزة قابلة للارتداء</translation>
+<translation id="3399930248910934354">‏افتَح إعدادات Chrome.</translation>
 <translation id="3399952811970034796">عنوان التسليم</translation>
 <translation id="3402261774528610252">‏إن الاتصال المستخدَم لتحميل هذا الموقع الإلكتروني يعتمد على إصدارات متوقفة، مثل TLS 1.0 أو 1.1 TLS. وسيتم إيقاف هذه الإصدارات كليًا في المستقبل. وعندما يتم إيقافها كليًا، سيتم منع المستخدمين من تحميل هذا الموقع الإلكتروني. على الخادم تفعيل TLS 1.2 أو إصدار أحدث.</translation>
 <translation id="3405664148539009465">تخصيص الخطوط</translation>
@@ -4090,6 +4092,7 @@
 <translation id="7648133459447652947">لإظهار المؤشر، يمكنك التبديل بين التطبيقات أو إعادة تحميل الصفحة أو الرجوع</translation>
 <translation id="7648527891719919697">‏سيظل هذا الموقع الإلكتروني محظورًا لأنّ ميزة "الحماية المتقدّمة" مفعّلة في <ph name="BEGIN_ANDROID_SETTINGS_LINK" />إعدادات Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات حول هذا التحذير<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">تخزين الملفات على هذا الجهاز</translation>
+<translation id="7649070708921625228">مساعدة</translation>
 <translation id="7653957176542370971">جدول بيانات معالج الدفع مغلق</translation>
 <translation id="7655766454902053387">إعلانات وظائف</translation>
 <translation id="765676359832457558">إخفاء الإعدادات المتقدمة...</translation>

@@ -765,6 +765,7 @@
 <translation id="222962001646502673">ਗੂੜ੍ਹਾ ਸਲੇਟੀ 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 ਟੈਬ}one{# ਟੈਬ}other{# ਟੈਬਾਂ}}</translation>
 <translation id="2233745931693710080">ਕੌਮਪੈਕਟ ਡਿਸਕ</translation>
+<translation id="2236949375853147973">ਮੇਰੀ ਸਰਗਰਮੀ</translation>
 <translation id="2239100178324503013">ਹੁਣੇ ਭੇਜੋ</translation>
 <translation id="224130779555573777">Redress ਨੰਬਰ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="2241693394036365668">ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕੀਤੀ ਗਈ ਹੈ</translation>
@@ -1457,6 +1458,7 @@
 <translation id="3392028486601120379">URL ਪੈਟਰਨ "<ph name="URL_PATTERN" />" ਵਿੱਚ ਇੱਕ ਪਾਥ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਇਸ ਕੁੰਜੀ ਲਈ ਪਾਥ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ, ਕਿਰਪਾ ਕਰਕੇ ਪਾਥ ਨੂੰ ਹਟਾਓ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ। ਜਿਵੇਂ ਕਿ *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">ਪਿਕਅੱਪ ਵਿਧੀ</translation>
 <translation id="3399161914051569225">ਪਹਿਨਣਯੋਗ ਤਕਨਾਲੋਜੀ</translation>
+<translation id="3399930248910934354">Chrome ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="3399952811970034796">ਡਿਲੀਵਰੀ ਪਤਾ</translation>
 <translation id="3402261774528610252">ਕਨੈਕਸ਼ਨ ਨੇ ਇਸ ਸਾਈਟ ਨੂੰ ਲੋਡ ਕਰਨ ਲਈ TLS 1.0 ਜਾਂ TLS 1.1 ਨੂੰ ਵਰਤਿਆ, ਜਿਨ੍ਹਾਂ ਨੂੰ ਨਾਪਸੰਦ ਕੀਤਾ ਗਿਆ ਅਤੇ ਭਵਿੱਖ ਵਿੱਚ ਬੰਦ ਕੀਤਾ ਜਾਵੇਗਾ। ਬੰਦ ਕਰਨ 'ਤੇ, ਵਰਤੋਂਕਾਰਾਂ ਨੂੰ ਇਹ ਸਾਈਟ ਲੋਡ ਕਰਨ ਤੋਂ ਰੋਕਿਆ ਜਾਵੇਗਾ। ਸਰਵਰ ਨੂੰ TLS 1.2 ਜਾਂ ਬਾਅਦ ਵਾਲੇ ਵਰਜਨ ਨੂੰ ਵਰਤਣਾ ਚਾਹੀਦਾ ਹੈ।</translation>
 <translation id="3405664148539009465">ਫੌਂਟਾਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
@@ -4085,6 +4087,7 @@
 <translation id="7648133459447652947">ਆਪਣਾ ਕਰਸਰ ਦਿਖਾਉਣ ਲਈ, ਐਪਾਂ ਨੂੰ ਸਵਿੱਚ ਕਰੋ, ਪੰਨੇ ਨੂੰ ਰੀਲੋਡ ਕਰੋ ਜਾਂ ਵਾਪਸ ਜਾਓ</translation>
 <translation id="7648527891719919697">ਇਹ ਸਾਈਟ ਬਲਾਕ ਰਹੇਗੀ ਕਿਉਂਕਿ ਤੁਸੀਂ Android ਸੈਟਿੰਗਾਂ ਵਿੱਚ <ph name="BEGIN_ANDROID_SETTINGS_LINK" />ਅਡਵਾਂਸ ਸੁਰੱਖਿਆ<ph name="END_ANDROID_SETTINGS_LINK" /> ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਹੋਇਆ ਹੈ। <ph name="BEGIN_LEARN_MORE_LINK" />ਇਸ ਚਿਤਾਵਨੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਫਾਈਲਾਂ ਸਟੋਰ ਕਰੋ</translation>
+<translation id="7649070708921625228">ਸਹਾਇਤਾ</translation>
 <translation id="7653957176542370971">ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਸ਼ੀਟ ਬੰਦ ਹੈ</translation>
 <translation id="7655766454902053387">ਨੌਕਰੀਆਂ ਦੀਆਂ ਸੂਚੀਆਂ</translation>
 <translation id="765676359832457558">ਉੱਨਤ ਸੈਟਿੰਗਾਂ ਲੁਕਾਓ...</translation>

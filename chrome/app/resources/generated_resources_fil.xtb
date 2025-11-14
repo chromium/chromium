@@ -4049,6 +4049,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3756578970075173856">Magtakda ng PIN</translation>
 <translation id="3756806135608816820">Puwedeng hilingin ng mga site na maghanap ng mga Bluetooth device</translation>
 <translation id="3757567010566591880">I-unpin sa Toolbar</translation>
+<translation id="3757645900890881944">Mga tool sa paghahanap</translation>
 <translation id="3757733214359997190">Walang nakitang site</translation>
 <translation id="375841316537350618">Dina-download ang script ng proxy...</translation>
 <translation id="3758887577462995665">Tip:</translation>
@@ -6810,7 +6811,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Lokasyon</translation>
 <translation id="56907980372820799">I-link ang data</translation>
-<translation id="5691581861107245578">Makakuha ng mga suhestyong emoji batay sa kung ano ang tina-type mo</translation>
 <translation id="5691772641933328258">Hindi nakilala ang fingerprint</translation>
 <translation id="5693255400847650006">Ginagamit ang mikropono</translation>
 <translation id="5695046252726616755">Pindutin ang enter o space para sa higit pang opsyon.</translation>
@@ -10056,6 +10056,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7952904276017482715">"<ph name="EXPECTED_ID" />" ang inaasahang ID, ngunit "<ph name="NEW_ID" />" ang ID</translation>
 <translation id="7953236668995583915">I-reload ang page para ilapat ang iyong mga na-update na setting sa site na ito</translation>
 <translation id="7953669802889559161">Mga Input</translation>
+<translation id="7953955868932471628">Pamahalaan ang mga shortcut</translation>
 <translation id="7955105108888461311">Magtanong nang personal</translation>
 <translation id="7955177647836564772">Kung naka-on ang Smart Lock at naka-unlock ang iyong telepono, hindi mo kailangang maglagay ng password o PIN</translation>
 <translation id="7956373551960864128">Mga naka-save mong printer</translation>
@@ -11445,6 +11446,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8886745493279779790">Suriin ang Mga Hindi Aktibong Tab</translation>
 <translation id="8888253246822647887">Bubukas ang iyong app kapag tapos na ang pag-upgrade. Maaaring tumagal nang ilang minuto ang mga pag-upgrade.</translation>
 <translation id="8888459276890791557">Puwede mong i-pin ang panel sa gilid na ito para sa madaling access</translation>
+<translation id="8888621340860433230">Ipakita ang mga opsyon</translation>
 <translation id="8889294078294184559">Habang patuloy kang nagba-browse, puwedeng sumangguni ang mga site sa Chrome at i-verify sa naunang site na binisita mo kung malamang na totoong tao ka.</translation>
 <translation id="8889651696183044030">Puwedeng i-edit ng <ph name="ORIGIN" /> ang mga sumusunod na file at folder</translation>
 <translation id="8890170499370378450">Puwedeng magkaroon ng mga singil sa mobile data</translation>

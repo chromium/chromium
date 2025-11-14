@@ -3834,6 +3834,11 @@ incluir ambos en los certificados RSA para HTTPS.</translation>
 <translation id="3665437376055221832">Solo notificar al usuario cuando ningún certificado coincide con la selección automática</translation>
 <translation id="3671773704245936868">Inhabilitar el enfoque del teclado destacado</translation>
 <translation id="3674010627788940405">No admitir encabezados de solicitudes sin comodín CORS</translation>
+<translation id="3675248815331229366">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que no pueden acceder a la ubicación geográfica del usuario y que tampoco pueden solicitarle permiso para hacerlo.
+
+      Si no estableces la política, se aplicará <ph name="DEFAULT_GEOLOCATION_SETTING" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
+
+      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://chromeenterprise.google/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
 <translation id="3675303748198647471">setTimeout(…, 0) se usa en general para desglosar tareas largas de JavaScript.
           Si habilitas la política, los parámetros de setTimeout y setInterval con un intervalo inferior a 4 ms no se restringirán de forma tan agresiva.
           Esto mejora el rendimiento a corto plazo, pero los sitios web que abusen de la API tendrán, con el tiempo, sus parámetros de setTimeout restringidos.
@@ -6403,6 +6408,7 @@ Esta política estará disponible durante 3 hitos.</translation>
 
       Si no la estableces, el usuario podrá controlar la visibilidad de las tarjetas. Las tarjetas son visibles de forma predeterminada.
       </translation>
+<translation id="5446826778796489105">Bloquear la ubicación geográfica en estos sitios</translation>
 <translation id="5448022937220253000">Elegir qué sucede con los datos del usuario después de inhabilitar <ph name="LACROS_NAME" /></translation>
 <translation id="5449690328792750354">La API de Event.path estará disponible.</translation>
 <translation id="5452024130413254050">Controla si las VMs que usan esta configuración tienen acceso a un vTPM. El valor predeterminado es falso y <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> si no se establece.</translation>
@@ -11759,6 +11765,7 @@ Para obtener más información sobre el manejo de datos de las funciones potenci
 
       Se omitirán las plantillas con formato incorrecto.</translation>
 <translation id="9068629430243705879">puerto 6566 (puede desbloquearse hasta el 15/10/2021)</translation>
+<translation id="9069432851455606924">Configuración de ubicación geográfica</translation>
 <translation id="9069503402414011061">Si estableces la política, se especificará el tiempo (expresado en horas) de almacenamiento en caché de los datos de autenticación. La caché contiene datos sobre dominios en los que confía el dominio de la máquina (dominios afiliados). Por lo tanto, el almacenamiento en caché de los datos de autenticación permite agilizar el acceso. No se almacenan en caché los datos específicos del usuario ni los datos de dominios no afiliados.
 
 Si se establece la política con el valor "0", se desactivará el almacenamiento en caché de los datos de autenticación. En todos los accesos, se recuperan los datos específicos del dominio. Por lo tanto, si se desactiva el almacenamiento en caché de los datos de autenticación, es posible que se reduzca drásticamente la velocidad de acceso del usuario.

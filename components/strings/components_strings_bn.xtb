@@ -766,6 +766,7 @@
 <translation id="222962001646502673">গাঢ় ধূসর ২</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{১টি ট্যাব}one{#টি ট্যাব}other{#টি ট্যাব}}</translation>
 <translation id="2233745931693710080">কমপ্যাক্ট ডিস্ক</translation>
+<translation id="2236949375853147973">আমার অ্যাক্টিভিটি</translation>
 <translation id="2239100178324503013">এখনই পাঠান</translation>
 <translation id="224130779555573777">রিড্রেস নম্বর যোগ করুন</translation>
 <translation id="2241693394036365668">ফাইল ডাউনলোড করা হয়েছে</translation>
@@ -1460,6 +1461,7 @@
 <translation id="3392028486601120379">URL প্যাটার্নে একটি "<ph name="URL_PATTERN" />" পাথ নির্দিষ্ট করা আছে। এই কীয়ের জন্য পাথটি কাজ করে না, পাথটি সরিয়ে দিয়ে আবার চেষ্টা করুন। যেমন- *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">পিকআপের পদ্ধতি</translation>
 <translation id="3399161914051569225">পরে থাকা যায় এমন ডিভাইস</translation>
+<translation id="3399930248910934354">Chrome সেটিংস খুলুন</translation>
 <translation id="3399952811970034796">ডেলিভারির ঠিকানা</translation>
 <translation id="3402261774528610252">এই সাইট লোড করার জন্য যে কানেকশন ব্যবহার করা হয়েছে সেটি TLS 1.0 বা TLS 1.1 ব্যবহার করেছে যা শীঘ্রই বন্ধ করা হবে এবং ভবিষ্যতে আর পাওয়া যাবে না। একবার বন্ধ হয়ে যাওয়ার পরে, ব্যবহারকারীরা আর এই সাইটটি লোড করতে পারবেন না। সার্ভারটিতে TLS 1.2 বা এর পরবর্তী যেকোনও ভার্সন চালু করতে হবে।</translation>
 <translation id="3405664148539009465">হরফগুলি কাস্টমাইজ করুন</translation>
@@ -4090,6 +4092,7 @@
 <translation id="7648133459447652947">আপনার কার্সর দেখতে, অ্যাপ পরিবর্তন করুন, পৃষ্ঠাটি আবার লোড করুন অথবা ফিরে যান</translation>
 <translation id="7648527891719919697">আপনি <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android সেটিংস<ph name="END_ANDROID_SETTINGS_LINK" /> থেকে উন্নত সুরক্ষা চালু করেছেন বলে এই সাইটটি ব্লক করা থাকবে। <ph name="BEGIN_LEARN_MORE_LINK" />এই সতর্কতা সম্পর্কে আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">এই ডিভাইসে ফাইলগুলি জমা করুন</translation>
+<translation id="7649070708921625228">সহায়তা</translation>
 <translation id="7653957176542370971">পেমেন্ট হ্যান্ডলার শিট বন্ধ করা আছে</translation>
 <translation id="7655766454902053387">চাকরির তালিকা</translation>
 <translation id="765676359832457558">উন্নত সেটিংস লুকান...</translation>

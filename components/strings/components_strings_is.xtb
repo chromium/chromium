@@ -765,6 +765,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="222962001646502673">Dökkgrár 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 flipi}one{# flipi}other{# flipar}}</translation>
 <translation id="2233745931693710080">Geisladiskur</translation>
+<translation id="2236949375853147973">Mín virkni</translation>
 <translation id="2239100178324503013">Senda núna</translation>
 <translation id="224130779555573777">Bæta leiðréttingarnúmeri við</translation>
 <translation id="2241693394036365668">Skrá er sótt</translation>
@@ -1459,6 +1460,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3392028486601120379">Vefslóðarmynstrið „<ph name="URL_PATTERN" />“ er með tilgreinda vefslóð. Slóðir eru ekki studdar fyrir þennan lykil, fjarlægja þarf slóðina og reyna aftur, t.d. *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Afhendingarmáti</translation>
 <translation id="3399161914051569225">Tækni sem notandi ber á sér</translation>
+<translation id="3399930248910934354">Opna stillingar Chrome</translation>
 <translation id="3399952811970034796">Sendingarheimilisfang</translation>
 <translation id="3402261774528610252">Tengingin sem er notuð til að hlaða þessu vefsvæði notaði TLS 1.0 eða TLS 1.1, úreltar útgáfur sem verða gerðar óvirkar í framtíðinni. Þegar þær hafa verið gerðar óvirkar geta notendur ekki hlaðið þessu vefsvæði. Virkja ætti TLS 1.2 eða nýrri útgáfu á þjóninum.</translation>
 <translation id="3405664148539009465">Sérsníða letur</translation>
@@ -4089,6 +4091,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7648133459447652947">Til að sjá bendilinn þinn, skipta á milli forrita, endurnýja síðuna eða fara til baka</translation>
 <translation id="7648527891719919697">Þetta vefsvæði verður áfram á bannlista vegna þess að kveikt er á Áætlun um ítarlega vernd í <ph name="BEGIN_ANDROID_SETTINGS_LINK" />stillingum Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar um þessa viðvörun<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Geyma skrár í þessu tæki</translation>
+<translation id="7649070708921625228">Hjálp</translation>
 <translation id="7653957176542370971">Greiðsluhjálparforritið er lokað</translation>
 <translation id="7655766454902053387">Atvinnuauglýsingar</translation>
 <translation id="765676359832457558">Fela ítarlegar stillingar...</translation>

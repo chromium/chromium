@@ -765,6 +765,7 @@
 <translation id="222962001646502673">тъмносиво 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 раздел}other{# раздела}}</translation>
 <translation id="2233745931693710080">Компактдиск</translation>
+<translation id="2236949375853147973">Моята активност</translation>
 <translation id="2239100178324503013">Изпращане сега</translation>
 <translation id="224130779555573777">Добавяне на номер в програмата за обезщетения</translation>
 <translation id="2241693394036365668">Изтегляне на файл</translation>
@@ -1459,6 +1460,7 @@
 <translation id="3392028486601120379">В образеца на URL адрес <ph name="URL_PATTERN" /> е посочен път. За този ключ не се поддържат пътища. Моля, премахнете пътя и опитайте отново. Например променете *://example.com/ на *://example.com",</translation>
 <translation id="3395827396354264108">Начин на вземане</translation>
 <translation id="3399161914051569225">Носими технологии</translation>
+<translation id="3399930248910934354">Отваряне на настройките на Chrome</translation>
 <translation id="3399952811970034796">Адрес за бърза доставка</translation>
 <translation id="3402261774528610252">Връзката, чрез която се зарежда този сайт, използва TLS 1.0 или TLS 1.1. Тези версии са оттеглени и ще бъдат деактивирани в бъдеще. Когато това стане, потребителите няма да могат да зареждат сайта. Сървърът трябва да активира TLS 1.2 или по-нова версия.</translation>
 <translation id="3405664148539009465">Персонализиране на шрифтовете</translation>
@@ -4090,6 +4092,7 @@
 <translation id="7648133459447652947">За да се покаже курсорът, превключете между приложенията, презаредете страницата или се върнете назад</translation>
 <translation id="7648527891719919697">Този сайт ще остане блокиран, защото сте включили „Разширена защита“ от <ph name="BEGIN_ANDROID_SETTINGS_LINK" />настройките на Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече за това предупреждение<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Да съхранява файлове на това устройство.</translation>
+<translation id="7649070708921625228">Помощ</translation>
 <translation id="7653957176542370971">Листът на инструмента за обработване на плащания е затворен</translation>
 <translation id="7655766454902053387">Обяви за работа</translation>
 <translation id="765676359832457558">Скриване на разширените настройки...</translation>

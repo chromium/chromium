@@ -765,6 +765,7 @@
 <translation id="222962001646502673">Tünd boz 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 tab}other{# tab}}</translation>
 <translation id="2233745931693710080">Kompakt disk</translation>
+<translation id="2236949375853147973">Fəaliyyətim</translation>
 <translation id="2239100178324503013">İndi göndərin</translation>
 <translation id="224130779555573777">Təzminat nömrəsi əlavə edin</translation>
 <translation id="2241693394036365668">Fayl endirilir</translation>
@@ -1457,6 +1458,7 @@
 <translation id="3392028486601120379">"<ph name="URL_PATTERN" />" keçid modeli üçün yol təyin edilib. Bu açar üçün yollar dəstəklənmir, yolu silib yenidən cəhd edin. Məs. *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Götürmə üsulu</translation>
 <translation id="3399161914051569225">Daşına Bilən Texnologiya</translation>
+<translation id="3399930248910934354">Chrome Ayarlarını açın</translation>
 <translation id="3399952811970034796">Çatdırılma Ünvanı</translation>
 <translation id="3402261774528610252">Bu saytı yükləmək üçün istifadə edilən bağlantı köhnələn və gələcəkdə söndürüləcək TLS 1.0 və ya TLS 1.1 versiyasından istifadə etdi. Söndürüldükdən sonra istifadəçilərin bu saytı yükləməsinin qarşısı alınacaq. Server TLS 1.2 və ya daha sonrakı versiyanı aktivləşdirməlidir.</translation>
 <translation id="3405664148539009465">Şriftləri fərdiləşdirin</translation>
@@ -4085,6 +4087,7 @@
 <translation id="7648133459447652947">Kursoru göstərmək üçün tətbiqləri dəyişin, səhifəni yenidən yükləyin və ya geri qayıdın</translation>
 <translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android ayarlarında<ph name="END_ANDROID_SETTINGS_LINK" /> Qabaqcıl Qorumanı aktiv etdiyiniz üçün bu sayt blokda qalacaq. <ph name="BEGIN_LEARN_MORE_LINK" />Bu xəbərdarlıq haqqında ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Faylları bu cihazda saxlayın</translation>
+<translation id="7649070708921625228">Yardım</translation>
 <translation id="7653957176542370971">Ödəniş səhifəsi bağlıdır</translation>
 <translation id="7655766454902053387">İş Siyahısı</translation>
 <translation id="765676359832457558">Qabaqcıl ayarları gizlədin...</translation>

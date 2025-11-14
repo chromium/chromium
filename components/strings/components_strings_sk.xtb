@@ -765,6 +765,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="222962001646502673">Tmavosivá č. 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 karta}few{# karty}many{# tabs}other{# kariet}}</translation>
 <translation id="2233745931693710080">Kompaktný disk</translation>
+<translation id="2236949375853147973">Moja aktivita</translation>
 <translation id="2239100178324503013">Odoslať</translation>
 <translation id="224130779555573777">Pridanie čísla Redress</translation>
 <translation id="2241693394036365668">Súbor je stiahnutý</translation>
@@ -1456,6 +1457,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3392028486601120379">Vzor webovej adresy <ph name="URL_PATTERN" /> má špecifikovanú cestu. Pre tento kľúč nie sú cesty podporované. Odstráňte cestu a skúste to znova. Napr. *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Spôsob vyzdvihnutia</translation>
 <translation id="3399161914051569225">Nositeľná technológia</translation>
+<translation id="3399930248910934354">Otvoriť nastavenia Chromu</translation>
 <translation id="3399952811970034796">Doručovacia adresa</translation>
 <translation id="3402261774528610252">Pripojenie, pomocou ktorého bol načítaný tento web, používa protokol TLS 1.0 alebo TLS 1.1, ktorého podpora je zastaraná a ktorý bude v budúcnosti zakázaný. Po jeho zakázaní už používatelia nebudú môcť tento web načítať. Daný server by mal aktivovať protokol TLS verzie 1.2 alebo novšej.</translation>
 <translation id="3405664148539009465">Prispôsobiť písma</translation>
@@ -4085,6 +4087,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7648133459447652947">Ak chcete zobraziť kurzor, prepnite aplikácie, znova načítajte stránku alebo prejdite späť</translation>
 <translation id="7648527891719919697">Tento web zostane zablokovaný, pretože ste v <ph name="BEGIN_ANDROID_SETTINGS_LINK" />nastaveniach Androidu<ph name="END_ANDROID_SETTINGS_LINK" /> zapli rozšírenú ochranu. <ph name="BEGIN_LEARN_MORE_LINK" />Ďalšie informácie o tomto upozornení<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Ukladať súbory na tomto zariadení</translation>
+<translation id="7649070708921625228">Pomocník</translation>
 <translation id="7653957176542370971">Hárok obslužného nástroja platieb je zatvorený</translation>
 <translation id="7655766454902053387">Zoznamy pracovných ponúk</translation>
 <translation id="765676359832457558">Skryť rozšírené nastavenia...</translation>

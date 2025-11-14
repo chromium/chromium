@@ -4033,6 +4033,7 @@
 <translation id="3756578970075173856">ตั้ง PIN</translation>
 <translation id="3756806135608816820">เว็บไซต์ขอค้นหาอุปกรณ์บลูทูธได้</translation>
 <translation id="3757567010566591880">เลิกปักหมุดจากแถบเครื่องมือ</translation>
+<translation id="3757645900890881944">เครื่องมือค้นหา</translation>
 <translation id="3757733214359997190">ไม่พบเว็บไซต์</translation>
 <translation id="375841316537350618">กำลังดาวน์โหลดพร็อกซีสคริปต์...</translation>
 <translation id="3758887577462995665">เคล็ดลับ:</translation>
@@ -6790,7 +6791,6 @@
 <translation id="5689233503102158537">Alt + Backspace</translation>
 <translation id="5689516760719285838">ตำแหน่ง</translation>
 <translation id="56907980372820799">ลิงก์ข้อมูล</translation>
-<translation id="5691581861107245578">รับคำแนะนำอีโมจิตามคำที่คุณกำลังพิมพ์</translation>
 <translation id="5691772641933328258">ระบบไม่รู้จักลายนิ้วมือนี้</translation>
 <translation id="5693255400847650006">ใช้ไมโครโฟนอยู่</translation>
 <translation id="5695046252726616755">กด Enter หรือ Space เพื่อดูตัวเลือกเพิ่มเติม</translation>
@@ -10034,6 +10034,7 @@
 <translation id="7952904276017482715">คาดการณ์ ID "<ph name="EXPECTED_ID" />" แต่ ID ที่แจ้งคือ "<ph name="NEW_ID" />"</translation>
 <translation id="7953236668995583915">โหลดหน้านี้ซ้ำเพื่อใช้การตั้งค่าที่อัปเดตในเว็บไซต์นี้</translation>
 <translation id="7953669802889559161">การป้อนข้อมูล</translation>
+<translation id="7953955868932471628">จัดการทางลัด</translation>
 <translation id="7955105108888461311">ถามด้วยตนเอง</translation>
 <translation id="7955177647836564772">หากเปิด Smart Lock ไว้และโทรศัพท์ปลดล็อกแล้ว คุณไม่จําเป็นต้องป้อนรหัสผ่านหรือ PIN</translation>
 <translation id="7956373551960864128">เครื่องพิมพ์ที่คุณบันทึกไว้</translation>
@@ -11420,6 +11421,7 @@
 <translation id="8886745493279779790">ตรวจสอบแท็บที่ไม่ได้ใช้งาน</translation>
 <translation id="8888253246822647887">แอปจะเปิดเมื่อการอัปเกรดเสร็จสมบูรณ์ ซึ่งอาจใช้เวลาสักครู่</translation>
 <translation id="8888459276890791557">คุณสามารถปักหมุดแผงด้านข้างนี้เพื่อให้เข้าถึงได้ง่าย</translation>
+<translation id="8888621340860433230">แสดงตัวเลือก</translation>
 <translation id="8889294078294184559">ขณะท่องเว็บ เว็บไซต์ต่างๆ สามารถตรวจสอบกับ Chrome และยืนยันด้วยเว็บไซต์ที่เข้าชมก่อนหน้าได้ว่าคุณเป็นคนจริงๆ</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> แก้ไขไฟล์และโฟลเดอร์ต่อไปนี้ได้</translation>
 <translation id="8890170499370378450">อาจมีค่าบริการอินเทอร์เน็ตมือถือ</translation>

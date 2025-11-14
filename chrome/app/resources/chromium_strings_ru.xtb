@@ -519,6 +519,7 @@
 <translation id="705851970750939768">Обновить Chromium</translation>
 <translation id="7067091210845072982">Если у изображения нет понятного описания, Chromium попытается его найти. Для создания описаний изображения отправляются в Google.</translation>
 <translation id="7141270731789036260">Настроить Chrome для тестирования</translation>
+<translation id="7147227333672430807">С помощью Chromium можно открывать ссылки в сообщениях, документах и других приложениях</translation>
 <translation id="7163519456498498587">Удалить расширение "<ph name="EXTENSION_NAME" />" из Chromium</translation>
 <translation id="7173822816570314652">Ваша организация задала настройки, согласно которым данные Chromium удаляются, если они не используются в течение <ph name="TIMEOUT_DURATION" />. Они могут включать в себя историю, сведения для автозаполнения и скачанные файлы.</translation>
 <translation id="718435575166326686">Браузер Chromium запрашивает доступ к камере для этого сайта.</translation>
@@ -632,6 +633,7 @@
 <translation id="8471947159125090285">Чтобы использовать и сохранять данные Chromium в аккаунте Google, подтвердите свою личность.</translation>
 <translation id="8482493977473846331">Показывать подсказки для входа в Chromium</translation>
 <translation id="8493179195440786826">Версия Chromium устарела</translation>
+<translation id="850264194101621529">Спасибо, что выбрали Chromium в качестве браузера по умолчанию!</translation>
 <translation id="8522801943730206384">Чтобы браузер Chromium мог проверять пароли, сохраните их</translation>
 <translation id="8555465886620020932">Ошибка службы: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Для быстрого доступа к поиску по изображениям нажмите кнопку "Закрепить" в верхней части боковой панели</translation>

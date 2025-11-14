@@ -4050,6 +4050,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3756578970075173856">Angiv pinkode</translation>
 <translation id="3756806135608816820">Websites kan anmode om at søge efter Bluetooth-enheder</translation>
 <translation id="3757567010566591880">Frigør fra værktøjslinje</translation>
+<translation id="3757645900890881944">Søgeværktøjer</translation>
 <translation id="3757733214359997190">Der blev ikke fundet nogen websites</translation>
 <translation id="375841316537350618">Downloader proxyscript...</translation>
 <translation id="3758887577462995665">Tip!</translation>
@@ -6811,7 +6812,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5689233503102158537">Alt + Backspace</translation>
 <translation id="5689516760719285838">Placering</translation>
 <translation id="56907980372820799">Link data</translation>
-<translation id="5691581861107245578">Få emojiforslag baseret på det, du skriver</translation>
 <translation id="5691772641933328258">Fingeraftrykket kunne ikke genkendes</translation>
 <translation id="5693255400847650006">Mikrofonen er i brug</translation>
 <translation id="5695046252726616755">Tryk på Enter eller mellemrumstasten for at se flere valgmuligheder.</translation>
@@ -10057,6 +10057,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7952904276017482715">Det forventede id var "<ph name="EXPECTED_ID" />", men id'et viste sig at være "<ph name="NEW_ID" />"</translation>
 <translation id="7953236668995583915">Genindlæs denne side for at anvende dine opdaterede indstillinger på dette website</translation>
 <translation id="7953669802889559161">Indtastningsmetoder</translation>
+<translation id="7953955868932471628">Administrer genveje</translation>
 <translation id="7955105108888461311">Spørg direkte</translation>
 <translation id="7955177647836564772">Hvis Smart Lock er aktiveret, og din telefon er låst op, behøver du ikke at angive en adgangskode eller pinkode</translation>
 <translation id="7956373551960864128">Dine gemte printere</translation>
@@ -11445,6 +11446,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="8886745493279779790">Gennemgå inaktive faner</translation>
 <translation id="8888253246822647887">Din app åbner, når opgraderingen er fuldført. Opgraderinger kan tage et par minutter.</translation>
 <translation id="8888459276890791557">Du kan fastgøre dette sidepanel, så du nemt kan tilgå det</translation>
+<translation id="8888621340860433230">Vis valgmuligheder</translation>
 <translation id="8889294078294184559">Når du derefter bruger nettet, kan websites ved hjælp af Chrome tjekke og verificere via et website, du tidligere har besøgt, at du sandsynligvis er en rigtig person</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> kan redigere følgende filer og mapper</translation>
 <translation id="8890170499370378450">Der opkræves muligvis mobildatagebyrer</translation>

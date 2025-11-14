@@ -4033,6 +4033,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3756578970075173856">Pincode instellen</translation>
 <translation id="3756806135608816820">Sites kunnen vragen of ze naar bluetooth-apparaten mogen zoeken</translation>
 <translation id="3757567010566591880">Losmaken van werkbalk</translation>
+<translation id="3757645900890881944">Zoekhulpmiddelen</translation>
 <translation id="3757733214359997190">Geen sites gevonden</translation>
 <translation id="375841316537350618">Proxyscript downloaden...</translation>
 <translation id="3758887577462995665">Tip:</translation>
@@ -6789,7 +6790,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Locatie</translation>
 <translation id="56907980372820799">Gegevens koppelen</translation>
-<translation id="5691581861107245578">Krijg suggesties voor emoji's op basis van wat je typt</translation>
 <translation id="5691772641933328258">Vingerafdruk niet herkend</translation>
 <translation id="5693255400847650006">Microfoon in gebruik</translation>
 <translation id="5695046252726616755">Druk op Enter of de spatiebalk voor meer opties.</translation>
@@ -8103,6 +8103,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6619990499523117484">Je pincode bevestigen</translation>
 <translation id="6620000730890558421">Houd je tabbladen overzichtelijk met AI</translation>
 <translation id="6620254580880484313">Containernaam</translation>
+<translation id="6621282332208609777">Vraag het aan Google of typ een URL</translation>
 <translation id="6621391692573306628">Als je dit tabblad naar een ander apparaat wilt sturen, log je op beide apparaten in bij Chrome</translation>
 <translation id="6622980291894852883">Afbeeldingen blijven blokkeren</translation>
 <translation id="6624036901798307345">Tik in de tabletmodus op de werkbalkknop met de tabbladteller om de tabbladstrook te openen. Je ziet dan miniaturen van alle tabbladen.</translation>
@@ -9525,6 +9526,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7620616707541471029">Kies een account om door te gaan</translation>
 <translation id="7621382409404463535">Het systeem kan de apparaatconfiguratie niet opslaan.</translation>
 <translation id="7621595347123595643">Als je je wachtwoord of pincode vergeet, kun je geen lokale gegevens herstellen.</translation>
+<translation id="7621863462266622331">Wanneer tabbladen worden gedeeld, worden de bijbehorende paginacontent, media en URL's naar Google gestuurd</translation>
 <translation id="7622114377921274169">Opladen.</translation>
 <translation id="7622768823216805500">Sites installeren betalingshandlers meestal voor winkelfuncties zoals gemakkelijk betalen</translation>
 <translation id="7622966771025050155">Overschakelen naar vastgelegd tabblad</translation>
@@ -10031,6 +10033,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7952904276017482715">Verwachte ID '<ph name="EXPECTED_ID" />', maar ID is '<ph name="NEW_ID" />'</translation>
 <translation id="7953236668995583915">Laad deze pagina opnieuw om je geüpdatete instellingen toe te passen op deze site</translation>
 <translation id="7953669802889559161">Invoermethoden</translation>
+<translation id="7953955868932471628">Sneltoetsen beheren</translation>
 <translation id="7955105108888461311">Persoonlijk vragen</translation>
 <translation id="7955177647836564772">Als Smart Lock aanstaat en je telefoon is ontgrendeld, hoef je geen wachtwoord of pincode in te vullen.</translation>
 <translation id="7956373551960864128">Je opgeslagen printers</translation>
@@ -11418,6 +11421,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="8886745493279779790">Inactieve tabbladen checken</translation>
 <translation id="8888253246822647887">Je app wordt geopend wanneer de upgrade is voltooid. Upgrades kunnen enkele minuten duren.</translation>
 <translation id="8888459276890791557">Je kunt dit zijvenster vastzetten voor snelle toegang</translation>
+<translation id="8888621340860433230">Opties tonen</translation>
 <translation id="8889294078294184559">Terwijl je browst, kunnen sites via Chrome checken en met een eerder bezochte site verifiëren dat je waarschijnlijk een echte persoon bent</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> kan de volgende bestanden en mappen bewerken</translation>
 <translation id="8890170499370378450">Er kunnen kosten voor mobiele data in rekening worden gebracht</translation>
@@ -11740,6 +11744,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="909554839118732438">Incognitovenster sluiten</translation>
 <translation id="9095819602391364796">Niet toestaan dat sites je MIDI-apparaten bedienen en herprogrammeren</translation>
 <translation id="9096053102600371572">Gecontroleerd scrollen <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Vergelijk opties</translation>
 <translation id="9096776523567481218">niet lokaal geïnstalleerd</translation>
 <translation id="9098860402274800697">Google Play- en Android-apps verwijderen</translation>
 <translation id="9099220545925418560">Gebaseerd op je browsegeschiedenis. Deze instelling staat uit.</translation>

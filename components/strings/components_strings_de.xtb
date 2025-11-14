@@ -765,6 +765,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="222962001646502673">Dunkelgrau 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 Tab}other{# Tabs}}</translation>
 <translation id="2233745931693710080">Compact Disc</translation>
+<translation id="2236949375853147973">Meine Aktivitäten</translation>
 <translation id="2239100178324503013">Jetzt senden</translation>
 <translation id="224130779555573777">Redress-Nummer hinzufügen</translation>
 <translation id="2241693394036365668">Datei heruntergeladen</translation>
@@ -1459,6 +1460,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3392028486601120379">Im URL-Muster „<ph name="URL_PATTERN" />“ ist ein Pfad angegeben. Für diesen Schlüssel werden keine Pfade unterstützt. Bitte entferne den Pfad und versuch es noch einmal. Beispiel: *://beispiel.de/ =&gt; *://beispiel.de</translation>
 <translation id="3395827396354264108">Abholoption</translation>
 <translation id="3399161914051569225">Am Körper tragbare Technologie</translation>
+<translation id="3399930248910934354">Chrome-Einstellungen öffnen</translation>
 <translation id="3399952811970034796">Lieferadresse</translation>
 <translation id="3402261774528610252">Diese Website wurde unter Verwendung von TLS 1.0 oder TLS 1.1 geladen. Diese Versionen wurden eingestellt und werden zukünftig deaktiviert. Sobald sie deaktiviert wurden, können Nutzer diese Website nicht mehr aufrufen. Auf dem Server sollte TLS 1.2 oder höher laufen.</translation>
 <translation id="3405664148539009465">Schriftarten anpassen</translation>
@@ -4088,6 +4090,7 @@ Weitere Details:
 <translation id="7648133459447652947">Zum Einblenden des Cursors wechsle zu einer anderen App, lade die Seite neu oder gehe zurück</translation>
 <translation id="7648527891719919697">Diese Website bleibt gesperrt, weil du das erweiterte Sicherheitsprogramm in den <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android-Einstellungen<ph name="END_ANDROID_SETTINGS_LINK" /> aktiviert hast. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Dateien auf diesem Gerät speichern</translation>
+<translation id="7649070708921625228">Hilfe</translation>
 <translation id="7653957176542370971">Das Dokument zur Zahlungsabwicklung ist geschlossen</translation>
 <translation id="7655766454902053387">Stellenangebote</translation>
 <translation id="765676359832457558">Erweiterte Einstellungen ausblenden</translation>

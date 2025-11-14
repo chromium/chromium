@@ -4051,6 +4051,7 @@
 <translation id="3756578970075173856">Налаштувати PIN-код</translation>
 <translation id="3756806135608816820">Сайти можуть просити дозвіл шукати пристрої з Bluetooth</translation>
 <translation id="3757567010566591880">Відкріпити від панелі інструментів</translation>
+<translation id="3757645900890881944">Інструменти пошуку</translation>
 <translation id="3757733214359997190">Не знайдено сайтів</translation>
 <translation id="375841316537350618">Завантаження сценарію проксі-сервера…</translation>
 <translation id="3758887577462995665">Підказка</translation>
@@ -6808,7 +6809,6 @@
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Місцезнаходження</translation>
 <translation id="56907980372820799">Зв’язати облікові записи</translation>
-<translation id="5691581861107245578">Отримувати підказки смайлів на основі введених слів</translation>
 <translation id="5691772641933328258">Відбиток не розпізнано</translation>
 <translation id="5693255400847650006">Використовується мікрофон</translation>
 <translation id="5695046252726616755">Щоб переглянути інші варіанти, натисніть клавішу пробілу або Enter.</translation>
@@ -10056,6 +10056,7 @@
 <translation id="7952904276017482715">Очікувався ідентифікатор <ph name="EXPECTED_ID" />, але отримано <ph name="NEW_ID" /></translation>
 <translation id="7953236668995583915">Щоб застосувати оновлені налаштування на цьому сайті, оновіть сторінку</translation>
 <translation id="7953669802889559161">Методи введення</translation>
+<translation id="7953955868932471628">Керувати комбінаціями клавіш</translation>
 <translation id="7955105108888461311">Запитати особисто</translation>
 <translation id="7955177647836564772">Якщо Smart Lock увімкнено й телефон розблоковано, PIN-код або пароль вводити не потрібно</translation>
 <translation id="7956373551960864128">Збережені принтери</translation>
@@ -11445,6 +11446,7 @@
 <translation id="8886745493279779790">Переглянути неактивні вкладки</translation>
 <translation id="8888253246822647887">Додаток відкриється, коли завершиться оновлення. Воно може тривати кілька хвилин.</translation>
 <translation id="8888459276890791557">Ви можете закріпити цю бічну панель для швидкого доступу</translation>
+<translation id="8888621340860433230">Показати варіанти</translation>
 <translation id="8889294078294184559">Завдяки цьому інші відвідувані вами сайти зможуть перевіряти в Chrome, що ви, імовірно, реальна людина</translation>
 <translation id="8889651696183044030">Сайт <ph name="ORIGIN" /> може змінювати вказані нижче файли й папки</translation>
 <translation id="8890170499370378450">Може стягуватися плата за мобільний трафік</translation>

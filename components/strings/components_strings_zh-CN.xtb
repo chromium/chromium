@@ -765,6 +765,7 @@
 <translation id="222962001646502673">深灰色 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 个标签页}other{# 个标签页}}</translation>
 <translation id="2233745931693710080">CD</translation>
+<translation id="2236949375853147973">我的活动记录</translation>
 <translation id="2239100178324503013">立即发送</translation>
 <translation id="224130779555573777">添加身份纠正识别号</translation>
 <translation id="2241693394036365668">下载文件</translation>
@@ -1457,6 +1458,7 @@
 <translation id="3392028486601120379">网址格式“<ph name="URL_PATTERN" />”中指定了路径。此键不支持路径。请移除该路径，然后重试。例如 *://example.com/ =&gt; *://example.com</translation>
 <translation id="3395827396354264108">取货方式</translation>
 <translation id="3399161914051569225">穿戴式技术</translation>
+<translation id="3399930248910934354">打开 Chrome 设置</translation>
 <translation id="3399952811970034796">递送地址</translation>
 <translation id="3402261774528610252">用于加载此网站的连接使用的是 TLS 1.0 或 TLS 1.1，这两个 TLS 版本都已过时，将在不久后完全停用。届时，用户将无法再加载此网站。服务器应启用 TLS 1.2 或更高版本。</translation>
 <translation id="3405664148539009465">自定义字体</translation>
@@ -4085,6 +4087,7 @@
 <translation id="7648133459447652947">如需显示光标，请切换应用、重新加载页面或返回</translation>
 <translation id="7648527891719919697">由于您已在 <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android 设置<ph name="END_ANDROID_SETTINGS_LINK" />中开启高级保护功能，此网站将继续被屏蔽。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">在此设备上存储文件</translation>
+<translation id="7649070708921625228">帮助</translation>
 <translation id="7653957176542370971">付款处理程序工作表已关闭</translation>
 <translation id="7655766454902053387">招聘信息</translation>
 <translation id="765676359832457558">隐藏高级设置...</translation>
@@ -4857,7 +4860,7 @@
 <translation id="8968766641738584599">保存银行卡</translation>
 <translation id="8970887620466824814">出了点问题。</translation>
 <translation id="8971063699422889582">服务器的证书已过期。</translation>
-<translation id="8975012916872825179">包括电话号码、电子邮件地址和送货地址等信息</translation>
+<translation id="8975012916872825179">包括电话号码、邮箱和配送地址等信息</translation>
 <translation id="8975263830901772334">已打印的文件的名称</translation>
 <translation id="8982884016487650216">PDF 已加载完毕</translation>
 <translation id="8983369100812962543">现在，您可以调整应用大小</translation>

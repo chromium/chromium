@@ -4038,6 +4038,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3756578970075173856">Définir un NIP</translation>
 <translation id="3756806135608816820">Les sites peuvent demander à rechercher les appareils Bluetooth</translation>
 <translation id="3757567010566591880">Détacher de la barre d'outils</translation>
+<translation id="3757645900890881944">Outils de Recherche</translation>
 <translation id="3757733214359997190">Aucun site trouvé</translation>
 <translation id="375841316537350618">Téléchargement du script de mandataire en cours...</translation>
 <translation id="3758887577462995665">Conseil :</translation>
@@ -6797,7 +6798,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5689233503102158537">alt+retour arrière</translation>
 <translation id="5689516760719285838">Lieu</translation>
 <translation id="56907980372820799">Associer les données</translation>
-<translation id="5691581861107245578">Recevez des suggestions d'émojis en fonction de ce que vous tapez au clavier</translation>
 <translation id="5691772641933328258">Empreinte digitale non reconnue</translation>
 <translation id="5693255400847650006">Le microphone est en cours d'utilisation</translation>
 <translation id="5695046252726616755">Appuyer sur Entrée ou Espace pour plus d'options.</translation>
@@ -10042,6 +10042,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7952904276017482715">Identifiant « <ph name="NEW_ID" /> » reçu au lieu de l'identifiant « <ph name="EXPECTED_ID" /> » attendu</translation>
 <translation id="7953236668995583915">Actualisez cette page pour appliquer vos paramètres mis à jour sur ce site</translation>
 <translation id="7953669802889559161">Entrées</translation>
+<translation id="7953955868932471628">Gérer les raccourcis</translation>
 <translation id="7955105108888461311">Demander en personne</translation>
 <translation id="7955177647836564772">Lorsque Smart Lock est activé et que votre téléphone est déverrouillé, vous n'avez pas besoin d'entrer de mot de passe ni de NIP</translation>
 <translation id="7956373551960864128">Vos imprimantes enregistrées</translation>
@@ -11427,6 +11428,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8886745493279779790">Examiner les onglets inactifs</translation>
 <translation id="8888253246822647887">L'application s'ouvrira quand la mise à niveau sera terminée. Les mises à niveau peuvent prendre quelques minutes.</translation>
 <translation id="8888459276890791557">Vous pouvez épingler ce panneau latéral pour y accéder facilement</translation>
+<translation id="8888621340860433230">Afficher les options</translation>
 <translation id="8889294078294184559">Pendant que vous continuez à les parcourir, les sites peuvent vérifier la probabilité que vous soyez une personne réelle par le biais de Chrome et d'un site que vous avez visité précédemment</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> peut modifier les fichiers et les dossiers suivants</translation>
 <translation id="8890170499370378450">Cela pourrait engendrer des frais de données cellulaires</translation>

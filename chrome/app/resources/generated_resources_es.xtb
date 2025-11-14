@@ -4036,6 +4036,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3756578970075173856">Configurar PIN</translation>
 <translation id="3756806135608816820">Permitir que los sitios soliciten permiso para buscar dispositivos Bluetooth</translation>
 <translation id="3757567010566591880">Desfijar en la barra de herramientas</translation>
+<translation id="3757645900890881944">Herramientas de búsqueda</translation>
 <translation id="3757733214359997190">No se ha encontrado ningún sitio web</translation>
 <translation id="375841316537350618">Descargando secuencia de comandos proxy...</translation>
 <translation id="3758887577462995665">Nota:</translation>
@@ -6794,7 +6795,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5689233503102158537">Alt + Retroceso</translation>
 <translation id="5689516760719285838">Ubicación</translation>
 <translation id="56907980372820799">Vincular datos</translation>
-<translation id="5691581861107245578">Recibe sugerencias de emojis basadas en lo que escribas</translation>
 <translation id="5691772641933328258">Huella digital no reconocida</translation>
 <translation id="5693255400847650006">El micrófono se está usando</translation>
 <translation id="5695046252726616755">Pulsa Intro o la barra espaciadora para ver más opciones.</translation>
@@ -10038,6 +10038,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7952904276017482715">Se esperaba el ID "<ph name="EXPECTED_ID" />", pero se ha detectado el ID "<ph name="NEW_ID" />"</translation>
 <translation id="7953236668995583915">Vuelve a cargar esta página para aplicar la configuración actualizada a este sitio</translation>
 <translation id="7953669802889559161">Métodos de introducción de texto</translation>
+<translation id="7953955868932471628">Gestionar accesos directos</translation>
 <translation id="7955105108888461311">Preguntar en persona</translation>
 <translation id="7955177647836564772">Si Smart Lock está activado y tu teléfono está desbloqueado, no tendrás que introducir ni una contraseña ni un PIN</translation>
 <translation id="7956373551960864128">Tus impresoras guardadas</translation>
@@ -10876,6 +10877,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8517759303731677493">Editar…</translation>
 <translation id="8518809011298357036">Cerrar vista superior</translation>
 <translation id="8518942514525208851">Ocultar palabras malsonantes</translation>
+<translation id="8520238089740349550">Error: descarga local bloqueada</translation>
 <translation id="8523493869875972733">Mantener cambios</translation>
 <translation id="8523849605371521713">Añadida por política</translation>
 <translation id="8524594273111932386">Tecla de búsqueda + flecha hacia abajo</translation>
@@ -11424,6 +11426,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="8886745493279779790">Revisar pestañas inactivas</translation>
 <translation id="8888253246822647887">La aplicación se abrirá cuando la actualización se haya completado. Las actualizaciones pueden tardar varios minutos.</translation>
 <translation id="8888459276890791557">Puedes fijar este panel lateral para acceder a él fácilmente</translation>
+<translation id="8888621340860433230">Mostrar opciones</translation>
 <translation id="8889294078294184559">A medida que sigas navegando, los sitios podrán realizar comprobaciones con Chrome y verificar, con un sitio que hayas visitado anteriormente, que es probable que seas una persona real</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> puede editar los siguientes archivos y carpetas</translation>
 <translation id="8890170499370378450">Es posible que se apliquen cargos por el uso de datos móviles</translation>

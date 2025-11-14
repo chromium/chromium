@@ -765,6 +765,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="222962001646502673">Tumehall 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 vaheleht}other{# vahelehte}}</translation>
 <translation id="2233745931693710080">CD</translation>
+<translation id="2236949375853147973">Minu tegevused</translation>
 <translation id="2239100178324503013">Saada kohe</translation>
 <translation id="224130779555573777">Õiguskaitsenumbri lisamine</translation>
 <translation id="2241693394036365668">Fail on alla laaditud</translation>
@@ -1459,6 +1460,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3392028486601120379">URL-i mustrile „<ph name="URL_PATTERN" />“ on määratud tee. Selle võtme puhul teid ei toetata. Eemaldage tee ja proovige uuesti (nt *://example.com/ =&gt; *://example.com").</translation>
 <translation id="3395827396354264108">Kättesaamisviis</translation>
 <translation id="3399161914051569225">Kehal kantav tehnoloogia</translation>
+<translation id="3399930248910934354">Avage Chrome'i seaded.</translation>
 <translation id="3399952811970034796">Kohaletoimetamisaadress</translation>
 <translation id="3402261774528610252">Selle saidi laadimiseks kasutatud ühendus kasutas TLS 1.0 või TLS 1.1, mille tugi on katkestatud ja mis tulevikus keelatakse. Kui see keelatakse, siis ei saa kasutajad enam seda saiti laadida. Server peab lubama TLS 1.2 või uuema.</translation>
 <translation id="3405664148539009465">Kohanda fonte</translation>
@@ -4090,6 +4092,7 @@ Lisateave:
 <translation id="7648133459447652947">Kursori kuvamiseks vahetage rakendusi, laadige leht uuesti või minge tagasi</translation>
 <translation id="7648527891719919697">See sait jääb blokeerituks, kuna olete <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Androidi seadetes<ph name="END_ANDROID_SETTINGS_LINK" /> sisse lülitanud täiustatud kaitse. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave selle hoiatuse kohta<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Salvestada failid sellesse seadmesse</translation>
+<translation id="7649070708921625228">Abi</translation>
 <translation id="7653957176542370971">Maksetöötleja leht on suletud</translation>
 <translation id="7655766454902053387">Töökuulutused</translation>
 <translation id="765676359832457558">Peida täpsemad seaded ...</translation>

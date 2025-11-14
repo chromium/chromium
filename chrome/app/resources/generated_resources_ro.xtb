@@ -4035,6 +4035,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3756578970075173856">Setează codul PIN</translation>
 <translation id="3756806135608816820">Site-urile pot solicita permisiunea de a căuta dispozitive Bluetooth</translation>
 <translation id="3757567010566591880">Anulează fixarea în bara de instrumente</translation>
+<translation id="3757645900890881944">Instrumente de căutare</translation>
 <translation id="3757733214359997190">Nu a fost găsit niciun site</translation>
 <translation id="375841316537350618">Se descarcă scriptul pentru proxy...</translation>
 <translation id="3758887577462995665">Sfat:</translation>
@@ -6794,7 +6795,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Locație</translation>
 <translation id="56907980372820799">Conectați datele</translation>
-<translation id="5691581861107245578">Primește sugestii de emoji în funcție de ce tastezi</translation>
 <translation id="5691772641933328258">Amprenta nu a fost recunoscută</translation>
 <translation id="5693255400847650006">Microfonul este în uz</translation>
 <translation id="5695046252726616755">Apasă pe Enter sau pe tasta de spațiu pentru mai multe opțiuni.</translation>
@@ -10040,6 +10040,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7952904276017482715">ID-ul așteptat era „<ph name="EXPECTED_ID" />”, dar ID-ul a fost „<ph name="NEW_ID" />”</translation>
 <translation id="7953236668995583915">Reîncarcă pagina pentru a aplica setările actualizate pe acest site</translation>
 <translation id="7953669802889559161">Metode de introducere a textului</translation>
+<translation id="7953955868932471628">Gestionați comenzile rapide</translation>
 <translation id="7955105108888461311">Întreabă în persoană</translation>
 <translation id="7955177647836564772">Dacă Smart Lock este activat și telefonul este deblocat, nu este nevoie să introduci parola sau codul PIN</translation>
 <translation id="7956373551960864128">Imprimante salvate</translation>
@@ -11427,6 +11428,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="8886745493279779790">Examinează filele inactive</translation>
 <translation id="8888253246822647887">Aplicația ta se va deschide când se încheie upgrade-ul. Upgrade-urile pot dura câteva minute.</translation>
 <translation id="8888459276890791557">Poți fixa acest panou lateral pentru acces facil</translation>
+<translation id="8888621340860433230">Afișează opțiunile</translation>
 <translation id="8889294078294184559">În timp ce navighezi, site-urile pot să solicite informații de la Chrome și să confirme cu ajutorul unui site pe care l-ai accesat anterior că ești o persoană reală</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> poate edita următoarele fișiere și dosare</translation>
 <translation id="8890170499370378450">Se pot aplica taxe pentru date mobile</translation>

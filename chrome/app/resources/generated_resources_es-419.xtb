@@ -6793,7 +6793,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5689233503102158537">Alt + retroceso</translation>
 <translation id="5689516760719285838">Ubicación</translation>
 <translation id="56907980372820799">Vincular datos</translation>
-<translation id="5691581861107245578">Obtén sugerencias de emojis basadas en lo que estás escribiendo</translation>
 <translation id="5691772641933328258">No se reconoció la huella dactilar</translation>
 <translation id="5693255400847650006">Micrófono en uso</translation>
 <translation id="5695046252726616755">Presiona Intro o la barra espaciadora para ver más opciones.</translation>
@@ -10037,6 +10036,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7952904276017482715">Se esperaba un ID "<ph name="EXPECTED_ID" />", pero el ID fue "<ph name="NEW_ID" />"</translation>
 <translation id="7953236668995583915">Vuelve a cargar esta página para aplicar la configuración actualizada en este sitio</translation>
 <translation id="7953669802889559161">Entradas</translation>
+<translation id="7953955868932471628">Administrar accesos directos</translation>
 <translation id="7955105108888461311">Preguntar en persona</translation>
 <translation id="7955177647836564772">Si la función Smart Lock está activada y tu teléfono está desbloqueado, no tendrás que ingresar un PIN ni una contraseña.</translation>
 <translation id="7956373551960864128">Tus impresoras guardadas</translation>

@@ -6806,7 +6806,6 @@
 <translation id="5689233503102158537">alt + ухраах</translation>
 <translation id="5689516760719285838">Байршил</translation>
 <translation id="56907980372820799">Мэдээллийг холбо</translation>
-<translation id="5691581861107245578">Бичиж буй зүйл дээрээ тулгуурлан эможигийн санал аваарай</translation>
 <translation id="5691772641933328258">Хурууны хээг таньсангүй</translation>
 <translation id="5693255400847650006">Микрофоныг ашиглаж байна</translation>
 <translation id="5695046252726616755">Бусад сонголтыг харах бол enter эсвэл зай авах товчин дээр дарна уу.</translation>
@@ -10048,6 +10047,7 @@
 <translation id="7952904276017482715">Хүлээгдэж байсан ID нь "<ph name="EXPECTED_ID" />" хэдий ч ID "<ph name="NEW_ID" />" байсан</translation>
 <translation id="7953236668995583915">Шинэчилсэн тохиргоогоо энэ сайтад хэрэгжүүлэхийн тулд энэ хуудсыг дахин ачаална уу</translation>
 <translation id="7953669802889559161">Оролт</translation>
+<translation id="7953955868932471628">Богино холбоосыг зохицуулах</translation>
 <translation id="7955105108888461311">Өөрийн биеэр асуух</translation>
 <translation id="7955177647836564772">Хэрэв Ухаалаг түгжээг асаасан бөгөөд таны утасны түгжээг тайлсан бол та нууц үг эсвэл ПИН оруулах шаардлагагүй</translation>
 <translation id="7956373551960864128">Таны хадгалсан хэвлэгч</translation>

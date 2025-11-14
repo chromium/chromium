@@ -765,6 +765,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="222962001646502673">2. tamnosiva</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 kartica}one{# kartica}few{# kartice}other{# kartica}}</translation>
 <translation id="2233745931693710080">Kompaktni disk</translation>
+<translation id="2236949375853147973">Moja aktivnost</translation>
 <translation id="2239100178324503013">Pošaljite sada</translation>
 <translation id="224130779555573777">Dodajte broj za sprovođenje pravnih lijekova</translation>
 <translation id="2241693394036365668">Fajl je preuzet</translation>
@@ -1459,6 +1460,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3392028486601120379">Uzorak URL-a "<ph name="URL_PATTERN" />" ima navedenu putanju. Putanje nisu podržane za ovaj ključ. Uklonite putanju i pokušajte ponovno. Npr., *://primjer.com/ =&gt; *://primjer.com",</translation>
 <translation id="3395827396354264108">Način preuzimanja</translation>
 <translation id="3399161914051569225">Nosive tehnologije</translation>
+<translation id="3399930248910934354">Otvori postavke Chromea</translation>
 <translation id="3399952811970034796">Adresa za isporuku</translation>
 <translation id="3402261774528610252">Veza korištena za učitavanje ove web lokacije je koristila verzije TLS 1.0 ili TLS 1.1, koje su zastarjele i u budućnosti će se onemogućiti. Kada se onemoguće, korisnici neće moću učitati ovu web lokaciju. Server treba omogućiti verziju TLS 1.2 ili noviju.</translation>
 <translation id="3405664148539009465">Prilagodi fontove</translation>
@@ -4090,6 +4092,7 @@ Dodatni detalji:
 <translation id="7648133459447652947">Da prikažete kursor, promijenite aplikaciju, ponovo učitajte stranicu ili se vratite</translation>
 <translation id="7648527891719919697">Ova web lokacija će ostati blokirana jer ste uključili Naprednu zaštitu u <ph name="BEGIN_ANDROID_SETTINGS_LINK" />postavkama Androida<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o ovom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">pohraniti fajlove na ovom uređaju</translation>
+<translation id="7649070708921625228">Pomoć</translation>
 <translation id="7653957176542370971">Stranica obrađivača uplate je zatvorena</translation>
 <translation id="7655766454902053387">Oglasi za poslove</translation>
 <translation id="765676359832457558">Sakrij napredne postavke...</translation>

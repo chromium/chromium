@@ -765,6 +765,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="222962001646502673">Koyu Gri 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 sekme}other{# sekme}}</translation>
 <translation id="2233745931693710080">Kompakt Disk</translation>
+<translation id="2236949375853147973">Etkinliğim</translation>
 <translation id="2239100178324503013">Şimdi gönder</translation>
 <translation id="224130779555573777">Redress numarası ekle</translation>
 <translation id="2241693394036365668">Dosya indirme</translation>
@@ -1459,6 +1460,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3392028486601120379">"<ph name="URL_PATTERN" />" URL kalıbında, belirtilmiş bir yol mevcut. Yollar bu anahtarda desteklenmez. Lütfen yolu kaldırıp tekrar deneyin. Örneğin, *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Alım yöntemi</translation>
 <translation id="3399161914051569225">Giyilebilir Teknoloji Ürünleri</translation>
+<translation id="3399930248910934354">Chrome Ayarlarını Aç</translation>
 <translation id="3399952811970034796">Teslimat Adresi</translation>
 <translation id="3402261774528610252">Bu siteyi yüklemek için kullanılan bağlantı, kullanımdan kaldırılan ve ileride devre dışı bırakılacak olan TLS 1.0 veya TLS 1.1 kullandı. Devre dışı bırakıldığında, kullanıcıların bu siteyi yüklemeleri engellenir. Sunucu TLS 1.2 veya sonraki sürümleri etkinleştirmelidir.</translation>
 <translation id="3405664148539009465">Yazı tiplerini özelleştir</translation>
@@ -4090,6 +4092,7 @@ Ek ayrıntılar:
 <translation id="7648133459447652947">İmlecinizi göstermek için uygulamalar arasında geçiş yapın, sayfayı yeniden yükleyin veya geri gidin</translation>
 <translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android ayarlarında<ph name="END_ANDROID_SETTINGS_LINK" /> Gelişmiş Koruma etkin olduğu için bu site engellenmeye devam edecek. <ph name="BEGIN_LEARN_MORE_LINK" />Bu uyarı hakkında daha fazla bilgi edinin<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="7648992873808071793">Dosyaları bu cihazda depolama</translation>
+<translation id="7649070708921625228">Yardım</translation>
 <translation id="7653957176542370971">Ödeme işleyici sayfası kapatıldı</translation>
 <translation id="7655766454902053387">İş İlanları</translation>
 <translation id="765676359832457558">Gelişmiş ayarları gizle...</translation>
@@ -4862,7 +4865,7 @@ Ek ayrıntılar:
 <translation id="8968766641738584599">Kartı kaydet</translation>
 <translation id="8970887620466824814">Bir hata oluştu.</translation>
 <translation id="8971063699422889582">Sunucu sertifikasının süresi doldu.</translation>
-<translation id="8975012916872825179">Telefon numaraları, e-posta adresleri ve gönderim adresleri gibi bilgileri içerir</translation>
+<translation id="8975012916872825179">Telefon numaraları, e-posta adresleri ve kargo adresleri gibi bilgileri içerir</translation>
 <translation id="8975263830901772334">Yazdırdığınız dosyaların adları</translation>
 <translation id="8982884016487650216">PDF'nin yüklenmesi tamamlandı</translation>
 <translation id="8983369100812962543">Artık uygulamayı yeniden boyutlandırabilirsiniz</translation>

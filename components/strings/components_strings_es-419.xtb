@@ -765,6 +765,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="222962001646502673">Gris oscuro 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 pestaña}other{# pestañas}}</translation>
 <translation id="2233745931693710080">Disco compacto</translation>
+<translation id="2236949375853147973">Mi actividad</translation>
 <translation id="2239100178324503013">Enviar ahora</translation>
 <translation id="224130779555573777">Agregar un número de rectificación</translation>
 <translation id="2241693394036365668">Se descargó un archivo</translation>
@@ -1460,6 +1461,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3392028486601120379">El patrón de URL "<ph name="URL_PATTERN" />" tiene una ruta especificada. Esta clave no admite rutas. Quítalas y vuelve a intentarlo. P. ej., *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Método de retiro</translation>
 <translation id="3399161914051569225">Tecnología wearable</translation>
+<translation id="3399930248910934354">Abrir la configuración de Chrome</translation>
 <translation id="3399952811970034796">Dirección de entrega</translation>
 <translation id="3402261774528610252">La conexión que se usó para cargar el sitio implementa el protocolo TLS 1.0 o TLS 1.1, los cuales son obsoletos y se inhabilitarán en el futuro. Cuando esto ocurra, los usuarios no podrán cargar el sitio. El servidor debe habilitar el protocolo TLS 1.2 o versiones posteriores.</translation>
 <translation id="3405664148539009465">Personalizar fuentes</translation>
@@ -4091,6 +4093,7 @@ Detalles adicionales:
 <translation id="7648133459447652947">Para mostrar el cursor, cambia de app, vuelve a cargar la página o retrocede</translation>
 <translation id="7648527891719919697">Este sitio permanecerá bloqueado porque tienes activada la Protección avanzada en la <ph name="BEGIN_ANDROID_SETTINGS_LINK" />configuración de Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Obtén más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Almacenar archivos en el dispositivo</translation>
+<translation id="7649070708921625228">Ayuda</translation>
 <translation id="7653957176542370971">La hoja del controlador de pagos está cerrada</translation>
 <translation id="7655766454902053387">Publicaciones de empleo</translation>
 <translation id="765676359832457558">Ocultar configuración avanzada...</translation>

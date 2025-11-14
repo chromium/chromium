@@ -4033,6 +4033,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3756578970075173856">Defineix el PIN</translation>
 <translation id="3756806135608816820">Els llocs web poden demanar permís per cercar dispositius Bluetooth</translation>
 <translation id="3757567010566591880">Deixa de fixar a la barra d'eines</translation>
+<translation id="3757645900890881944">Eines de cerca</translation>
 <translation id="3757733214359997190">No s'ha trobat cap lloc web</translation>
 <translation id="375841316537350618">S'està baixant l'script de servidor intermediari...</translation>
 <translation id="3758887577462995665">Consell:</translation>
@@ -6791,7 +6792,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5689233503102158537">Alt+retrocés</translation>
 <translation id="5689516760719285838">Ubicació</translation>
 <translation id="56907980372820799">Enllaça les dades</translation>
-<translation id="5691581861107245578">Obtén suggeriments d'emojis basats en el que escrius</translation>
 <translation id="5691772641933328258">L'empremta digital no s'ha reconegut</translation>
 <translation id="5693255400847650006">Micròfon en ús</translation>
 <translation id="5695046252726616755">Prem la tecla Retorn o la barra espaiadora per veure més opcions.</translation>
@@ -10034,6 +10034,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7952904276017482715">L'identificador esperat era "<ph name="EXPECTED_ID" />", però el que hi havia era "<ph name="NEW_ID" />"</translation>
 <translation id="7953236668995583915">Torna a carregar aquesta pàgina per aplicar la configuració actualitzada en aquest lloc web</translation>
 <translation id="7953669802889559161">Introducció de text</translation>
+<translation id="7953955868932471628">Gestiona les dreceres</translation>
 <translation id="7955105108888461311">Pregunta en persona</translation>
 <translation id="7955177647836564772">Si Smart Lock està activat i el telèfon està desbloquejat, no caldrà que introdueixis cap contrasenya ni cap PIN</translation>
 <translation id="7956373551960864128">Les teves impressores desades</translation>
@@ -11421,6 +11422,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="8886745493279779790">Revisa les pestanyes inactives</translation>
 <translation id="8888253246822647887">L'aplicació s'obrirà quan finalitzi l'actualització. Les actualitzacions poden tardar uns quants minuts.</translation>
 <translation id="8888459276890791557">Pots fixar aquest tauler lateral per accedir-hi fàcilment</translation>
+<translation id="8888621340860433230">Mostra les opcions</translation>
 <translation id="8889294078294184559">Mentre continuïs navegant, els llocs web podran recórrer a Chrome per verificar que ets una persona real mitjançant llocs web que hagis visitat anteriorment</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> pot editar els fitxers i les carpetes següents</translation>
 <translation id="8890170499370378450">És possible que s'apliquin càrrecs per ús de dades mòbils</translation>

@@ -4037,6 +4037,7 @@
 <translation id="3756578970075173856">Установка PIN-кода</translation>
 <translation id="3756806135608816820">Сайты могут запрашивать разрешение на поиск устройств Bluetooth</translation>
 <translation id="3757567010566591880">Открепить от панели инструментов</translation>
+<translation id="3757645900890881944">Инструменты поиска</translation>
 <translation id="3757733214359997190">Ничего не найдено.</translation>
 <translation id="375841316537350618">Скрипт прокси-сервера скачивается…</translation>
 <translation id="3758887577462995665">Совет.</translation>
@@ -6797,7 +6798,6 @@
 <translation id="5689233503102158537">Alt + Backspace</translation>
 <translation id="5689516760719285838">Геоданные</translation>
 <translation id="56907980372820799">Связать аккаунты</translation>
-<translation id="5691581861107245578">Получать подсказки с эмодзи по мере ввода текста</translation>
 <translation id="5691772641933328258">Не удалось распознать отпечаток</translation>
 <translation id="5693255400847650006">Используется микрофон</translation>
 <translation id="5695046252726616755">Чтобы открыть список дополнительных вариантов, нажмите Ввод или Пробел.</translation>
@@ -10048,6 +10048,7 @@
 <translation id="7952904276017482715">Ожидаемый идентификатор: <ph name="EXPECTED_ID" />, полученный идентификатор: <ph name="NEW_ID" /></translation>
 <translation id="7953236668995583915">Чтобы обновленные настройки вступили в силу для этого сайта, перезагрузите страницу.</translation>
 <translation id="7953669802889559161">Способы ввода</translation>
+<translation id="7953955868932471628">Управление ярлыками</translation>
 <translation id="7955105108888461311">Попросить лично</translation>
 <translation id="7955177647836564772">Если функция Smart Lock включена и телефон разблокирован, вводить пароль или PIN-код не нужно.</translation>
 <translation id="7956373551960864128">Сохраненные принтеры</translation>
@@ -10886,6 +10887,7 @@
 <translation id="8517759303731677493">Изменить…</translation>
 <translation id="8518809011298357036">Закрыть верхнее окно</translation>
 <translation id="8518942514525208851">Скрывать непристойную лексику</translation>
+<translation id="8520238089740349550">Ошибка: скачивание на устройство заблокировано</translation>
 <translation id="8523493869875972733">Закрыть</translation>
 <translation id="8523849605371521713">Добавлено по правилу</translation>
 <translation id="8524594273111932386">Поиск + Стрелка вниз</translation>
@@ -11437,6 +11439,7 @@
 <translation id="8886745493279779790">Посмотреть неактивные вкладки</translation>
 <translation id="8888253246822647887">Приложение откроется, когда завершится обновление. Это может занять несколько минут.</translation>
 <translation id="8888459276890791557">Вы можете закрепить эту боковую панель.</translation>
+<translation id="8888621340860433230">Показать параметры</translation>
 <translation id="8889294078294184559">Затем другие сайты также могут запрашивать эти данные у браузера.</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> может изменять указанные ниже файлы и папки.</translation>
 <translation id="8890170499370378450">За использование мобильного Интернета может взиматься плата</translation>
