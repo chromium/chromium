@@ -1060,6 +1060,27 @@ TEST_F(LayerContextImplUpdateDisplayTreeClipNodeTest,
             "Invalid parent_id for non-root property tree node");
 }
 
+TEST_F(LayerContextImplUpdateDisplayTreeClipNodeTest, PixelMovingFilterId) {
+  // Apply a default valid update first.
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = CreateDefaultSecondaryRootClipNode();
+  node_update->pixel_moving_filter_id = cc::kSecondaryRootPropertyNodeId;
+  update2->clip_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::ClipNode* node_impl =
+      GetClipNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_EQ(node_impl->pixel_moving_filter_id,
+            cc::kSecondaryRootPropertyNodeId);
+}
+
 class LayerContextImplUpdateDisplayTreeEffectNodeTest
     : public LayerContextImplPropertyTreesTestBase {
  protected:
