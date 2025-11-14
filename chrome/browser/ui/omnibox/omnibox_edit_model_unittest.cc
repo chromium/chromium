@@ -1038,10 +1038,8 @@ TEST_F(OmniboxEditModelPopupTest, PopupInlineAutocompleteAndTemporaryText) {
   EXPECT_TRUE(model()->is_temporary_text());
 }
 
-// Makes sure focus remains on the tab switch button when nothing changes,
-// and leaves when it does. Exercises the ratcheting logic in
-// OmniboxEditModel::OnPopupResultChanged().
-TEST_F(OmniboxEditModelPopupTest, TestFocusFixing) {
+// Makes sure focus resets to the default match when results changes.
+TEST_F(OmniboxEditModelPopupTest, ResetFocusOnResultChange) {
   ACMatches matches;
   AutocompleteMatch match(nullptr, 1000, false,
                           AutocompleteMatchType::URL_WHAT_YOU_TYPED);
@@ -1059,18 +1057,20 @@ TEST_F(OmniboxEditModelPopupTest, TestFocusFixing) {
                       triggered_feature_service(), /*is_lens_active=*/false,
                       /*can_show_contextual_suggestions=*/false,
                       /*mia_enabled=*/false, /*is_incognito=*/false);
+  // Default match should be focused initially.
   model()->OnPopupResultChanged();
+  EXPECT_EQ(model()->GetPopupSelection(),
+            OmniboxPopupSelection(0u, Selection::NORMAL));
   model()->SetPopupSelection(Selection(0), true, false);
-  // The default state should be unfocused.
-  EXPECT_EQ(Selection::NORMAL, model()->GetPopupSelection().state);
+  EXPECT_EQ(model()->GetPopupSelection(),
+            OmniboxPopupSelection(0u, Selection::NORMAL));
 
-  // Focus the selection.
+  // Focus the button.
   model()->SetPopupSelection(Selection(0, Selection::FOCUSED_BUTTON_ACTION));
-  EXPECT_EQ(Selection::FOCUSED_BUTTON_ACTION,
-            model()->GetPopupSelection().state);
+  EXPECT_EQ(model()->GetPopupSelection(),
+            OmniboxPopupSelection(0u, Selection::FOCUSED_BUTTON_ACTION));
 
-  // Adding a match at end won't change that we selected first suggestion, so
-  // shouldn't change focused state.
+  // Adding a match at end. Expect focus to reset.
   matches[0].relevance = 999;
   // Give it a different name so not deduped.
   matches[0].contents = u"match2.com";
@@ -1081,17 +1081,21 @@ TEST_F(OmniboxEditModelPopupTest, TestFocusFixing) {
                       /*can_show_contextual_suggestions=*/false,
                       /*mia_enabled=*/false, /*is_incognito=*/false);
   model()->OnPopupResultChanged();
-  EXPECT_EQ(Selection::FOCUSED_BUTTON_ACTION,
-            model()->GetPopupSelection().state);
+  EXPECT_EQ(model()->GetPopupSelection(),
+            OmniboxPopupSelection(0u, Selection::NORMAL));
 
-  // Changing selection should change focused state.
+  // Focus the 2nd match.
   model()->SetPopupSelection(Selection(1));
-  EXPECT_EQ(Selection::NORMAL, model()->GetPopupSelection().state);
+  EXPECT_EQ(model()->GetPopupSelection(),
+            OmniboxPopupSelection(1u, Selection::NORMAL));
 
-  // Adding a match at end will reset selection to first, so should change
-  // selected line, and thus focus.
+  // Focus the button.
   model()->SetPopupSelection(Selection(model()->GetPopupSelection().line,
                                        Selection::FOCUSED_BUTTON_ACTION));
+  EXPECT_EQ(model()->GetPopupSelection(),
+            OmniboxPopupSelection(1u, Selection::FOCUSED_BUTTON_ACTION));
+
+  // Adding a match at end. Expect focus to reset.
   matches[0].relevance = 999;
   matches[0].contents = u"match3.com";
   matches[0].destination_url = GURL("http://match3.com");
@@ -1101,31 +1105,8 @@ TEST_F(OmniboxEditModelPopupTest, TestFocusFixing) {
                       /*can_show_contextual_suggestions=*/false,
                       /*mia_enabled=*/false, /*is_incognito=*/false);
   model()->OnPopupResultChanged();
-  EXPECT_EQ(0U, model()->GetPopupSelection().line);
-  EXPECT_EQ(Selection::NORMAL, model()->GetPopupSelection().state);
-
-  // Prepending a match won't change selection, but since URL is different,
-  // should clear the focus state.
-  model()->SetPopupSelection(Selection(model()->GetPopupSelection().line,
-                                       Selection::FOCUSED_BUTTON_ACTION));
-  matches[0].relevance = 1100;
-  matches[0].contents = u"match4.com";
-  matches[0].destination_url = GURL("http://match4.com");
-  result->AppendMatches(matches);
-  result->SortAndCull(input, /*template_url_service=*/nullptr,
-                      triggered_feature_service(), /*is_lens_active=*/false,
-                      /*can_show_contextual_suggestions=*/false,
-                      /*mia_enabled=*/false, /*is_incognito=*/false);
-  model()->OnPopupResultChanged();
-  EXPECT_EQ(0U, model()->GetPopupSelection().line);
-  EXPECT_EQ(Selection::NORMAL, model()->GetPopupSelection().state);
-
-  // Selecting |kNoMatch| should clear focus.
-  model()->SetPopupSelection(Selection(model()->GetPopupSelection().line,
-                                       Selection::FOCUSED_BUTTON_ACTION));
-  model()->SetPopupSelection(Selection(Selection::kNoMatch));
-  model()->OnPopupResultChanged();
-  EXPECT_EQ(Selection::NORMAL, model()->GetPopupSelection().state);
+  EXPECT_EQ(model()->GetPopupSelection(),
+            OmniboxPopupSelection(0u, Selection::NORMAL));
 }
 
 // Android handles actions and metrics differently from other platforms.

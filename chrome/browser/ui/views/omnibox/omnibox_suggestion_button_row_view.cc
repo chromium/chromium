@@ -125,15 +125,13 @@ class OmniboxSuggestionButtonRowLayout : public views::LayoutManager {
   ~OmniboxSuggestionButtonRowLayout() override = default;
 
   gfx::Size GetMinimumSize(const views::View* host) const override {
-    return CalculateSize(host, [](const views::View* v) {
-      return v->GetMinimumSize();
-    });
+    return CalculateSize(
+        host, [](const views::View* v) { return v->GetMinimumSize(); });
   }
 
   gfx::Size GetPreferredSize(const views::View* host) const override {
-    return CalculateSize(host, [](const views::View* v) {
-      return v->GetPreferredSize({});
-    });
+    return CalculateSize(
+        host, [](const views::View* v) { return v->GetPreferredSize({}); });
   }
 
   gfx::Size GetPreferredSize(
@@ -270,7 +268,9 @@ class OmniboxSuggestionButtonRowLayout : public views::LayoutManager {
   //   here or specified with `ChromeLayoutProvider`.
   gfx::Insets row_insets_ = gfx::Insets::TLBR(6, 4, 6, 0);
   gfx::Insets button_insets_ =
-      gfx::Insets::TLBR(0, 0, 0,
+      gfx::Insets::TLBR(0,
+                        0,
+                        0,
                         ChromeLayoutProvider::Get()->GetDistanceMetric(
                             views::DISTANCE_RELATED_BUTTON_HORIZONTAL));
 };
@@ -454,9 +454,8 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
     keyword_button_ = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
         base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                             base::Unretained(this), selection),
-        CONTEXT_OMNIBOX_PRIMARY,
-        vector_icons::kSearchChromeRefreshIcon, gfx::Image(), popup_view_,
-        selection));
+        CONTEXT_OMNIBOX_PRIMARY, vector_icons::kSearchChromeRefreshIcon,
+        gfx::Image(), popup_view_, selection));
   }
 
   // Only create buttons for existent actions.
@@ -468,9 +467,8 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
     auto* button = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
         base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                             base::Unretained(this), selection),
-        match().IsToolbelt()
-            ? CONTEXT_OMNIBOX_TOOLBELT_BUTTON
-            : CONTEXT_OMNIBOX_PRIMARY,
+        match().IsToolbelt() ? CONTEXT_OMNIBOX_TOOLBELT_BUTTON
+                             : CONTEXT_OMNIBOX_PRIMARY,
         match().actions[action_index]->GetVectorIcon(),
         match().actions[action_index]->GetIconImage(), popup_view_, selection));
     action_buttons_.push_back(button);
@@ -541,6 +539,14 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
         action_button->SetIcon(action->GetVectorIcon());
       }
     }
+  }
+
+  // Clear focus. Otherwise, an updated button might show the focus ring if the
+  // button its replacing was previously focused.
+  if (previous_active_button_) {
+    views::FocusRing::Get(previous_active_button_)->SchedulePaint();
+    previous_active_button_->GetViewAccessibility().SetIsSelected(false);
+    previous_active_button_ = nullptr;
   }
 
   const bool is_any_child_visible =
