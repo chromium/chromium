@@ -179,10 +179,14 @@ typedef int            FcBool;
 #define FC_WIDTH_EXTRAEXPANDED  150
 #define FC_WIDTH_ULTRAEXPANDED  200
 
-#define FC_PROPORTIONAL         0
-#define FC_DUAL                 90
-#define FC_MONO                 100
-#define FC_CHARCELL             110
+#define FC_SPACING_PROPORTIONAL 0
+#define FC_SPACING_DUAL         90
+#define FC_SPACING_MONO         100
+#define FC_SPACING_CHARCELL     110
+#define FC_PROPORTIONAL         FC_SPACING_PROPORTIONAL
+#define FC_DUAL                 FC_SPACING_DUAL
+#define FC_MONO                 FC_SPACING_MONO
+#define FC_CHARCELL             FC_SPACING_CHARCELL
 
 /* sub-pixel order */
 #define FC_RGBA_UNKNOWN         0
