@@ -35,6 +35,10 @@ class VIEWS_EXPORT MenuCocoaWatcherMac {
 
   ~MenuCocoaWatcherMac();
 
+  // Instructs the watcher to ignore only the next
+  // NSWindowDidBecomeKeyNotification.
+  void SetIgnoreWindowKeyNotificationOnce();
+
  private:
   void ExecuteCallback();
 
@@ -43,6 +47,7 @@ class VIEWS_EXPORT MenuCocoaWatcherMac {
 
   struct ObjCStorage;
   std::unique_ptr<ObjCStorage> objc_storage_;
+  bool ignore_window_key_notification_once_ = false;
 };
 
 }  // namespace views

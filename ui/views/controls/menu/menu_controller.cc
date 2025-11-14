@@ -81,6 +81,10 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/base/cocoa/appkit_utils.h"
+#endif
+
 using ui::OSExchangeData;
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(std::vector<views::ViewTracker>*)
@@ -828,6 +832,17 @@ bool MenuController::OnMousePressed(SubmenuView* source,
   // We should either have no current_mouse_event_target_, or should have a
   // pressed state stored.
   DCHECK(!current_mouse_event_target_ || current_mouse_pressed_state_);
+
+#if BUILDFLAG(IS_MAC)
+  // Mac: If the app is inactive, the first click activates the app and keys a
+  // window (NSWindowDidBecomeKey). Our watcher closes menus on that focus
+  // change, which would dismiss the menu before mouse-release can execute the
+  // item. Fix: when inactive, ignore exactly one upcoming "become key"
+  // notification for this press.
+  if (!ui::IsActiveApplication() && menu_cocoa_watcher_) {
+    menu_cocoa_watcher_->SetIgnoreWindowKeyNotificationOnce();
+  }
+#endif
 
   // Find the root view to check. If any buttons were previously pressed, this
   // is the same root view we've been forwarding to. Otherwise, it's the root
@@ -1642,13 +1657,23 @@ void MenuController::SetSelection(MenuItemView* menu_item,
   }
 
   // Notify an accessibility focus event on all menu items except for the root.
-  bool ensure_focus_within_popup =
+  bool should_notify_selected_child_changed =
       menu_item && pending_item_changed &&
       (MenuDepth(menu_item) != 1 ||
        menu_item->GetType() != MenuItemView::Type::kSubMenu ||
        (menu_item->GetType() == MenuItemView::Type::kActionableSubMenu &&
         (selection_types & SELECTION_OPEN_SUBMENU) == 0));
-  if (ensure_focus_within_popup) {
+  bool should_set_popup_focus_override = should_notify_selected_child_changed;
+#if BUILDFLAG(IS_MAC)
+  // On macOS, avoid setting popup focus when the app is inactive.
+  // Selecting a menu item sets popup_focus (see
+  // ui/accessibility/platform/ax_platform_node.cc). If popup_focus remains set
+  // while NSApp is inactive, clicking a menu item can activate a node in the
+  // browser window that doesn't match popup_focus and trigger a DCHECK in
+  // ui/views/accessibility/view_ax_platform_node_delegate.cc.
+  should_set_popup_focus_override &= ui::IsActiveApplication();
+#endif
+  if (should_set_popup_focus_override) {
     // The selection event is now fired when the selected state is set on the
     // accessibility cache when the MenuItem is selected. Before firing the
     // selection event, ensure that focus appears to be within the popup. This
@@ -1716,7 +1741,7 @@ void MenuController::SetSelection(MenuItemView* menu_item,
     StartShowTimer();
   }
 
-  if (ensure_focus_within_popup) {
+  if (should_notify_selected_child_changed) {
     // Notify an accessibility selected children changed event on the parent
     // submenu.
     if (menu_item->GetParentMenuItem() &&
