@@ -32,7 +32,7 @@ namespace enterprise_reporting {
 
 namespace {
 
-const int kMaximumRetry = 10;  // Retry 10 times takes about 15 to 19 hours.
+const int kMaximumRetry = 6;  // Retry 6 times takes about 4 hours.
 
 bool IsBrowserVersionUploaded(ReportTrigger trigger) {
   switch (trigger) {

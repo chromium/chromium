@@ -19,14 +19,14 @@ namespace enterprise_reporting {
 namespace {
 // Retry starts with 1 minute delay and is doubled with every failure.
 const net::BackoffEntry::Policy kDefaultReportUploadBackoffPolicy = {
-    0,      // Number of initial errors to ignore before applying
-            // exponential back-off rules.
-    60000,  // Initial delay is 60 seconds.
-    2,      // Factor by which the waiting time will be multiplied.
-    0.1,    // Fuzzing percentage.
-    -1,     // No maximum delay.
-    -1,     // It's up to the caller to reset the backoff time.
-    false   // Do not always use initial delay.
+    0,  // Number of initial errors to ignore before applying
+        // exponential back-off rules.
+    base::Minutes(2).InMilliseconds(),  // Initial delay
+    2,     // Factor by which the waiting time will be multiplied.
+    0.1,   // Fuzzing percentage.
+    -1,    // No maximum delay.
+    -1,    // It's up to the caller to reset the backoff time.
+    false  // Do not always use initial delay.
 };
 
 void RecordReportResponseMetrics(ReportResponseMetricsStatus status) {
