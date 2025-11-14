@@ -7,7 +7,6 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -47,17 +46,13 @@ class PageContentMetadataObserverBrowserTest
         net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->AddDefaultHandlers(GetTestDataDir());
     content::SetupCrossSiteRedirector(https_server_.get());
+    https_server_->SetCertHostnames({"a.com", "b.com", "c.com"});
 
     ASSERT_TRUE(https_server_->Start());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     content::ContentBrowserTest::SetUpCommandLine(command_line);
-
-    // HTTPS server only serves a valid cert for localhost, so this is needed
-    // to load pages from other hosts without an error.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-
     command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "1.0");
   }
 

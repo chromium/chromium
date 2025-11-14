@@ -19,7 +19,6 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/content/browser/mock_media_transcript_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -178,6 +177,7 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->AddDefaultHandlers(GetTestDataDir());
+    https_server_->SetCertHostnames({"a.com", "b.com", "c.com"});
     content::SetupCrossSiteRedirector(https_server_.get());
 
     ASSERT_TRUE(https_server_->Start());
@@ -185,11 +185,6 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     content::ContentBrowserTest::SetUpCommandLine(command_line);
-
-    // HTTPS server only serves a valid cert for localhost, so this is needed
-    // to load pages from other hosts without an error.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-
     command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "1.0");
 
     // Expose window.internals.setIsAdFrame for testing frame ad tagging.
@@ -1300,11 +1295,6 @@ class ScaledPageContentProtoProviderBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     content::ContentBrowserTest::SetUpCommandLine(command_line);
-
-    // HTTPS server only serves a valid cert for localhost, so this is needed
-    // to load pages from other hosts without an error.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-
     command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "2.0");
   }
 
