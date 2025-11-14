@@ -52,11 +52,8 @@ class OmniboxPopupPresenterBase {
   OmniboxPopupWebUIBaseContent* GetWebUIContent() const;
 
   // Sets the webview content reference.
-  void SetWebUIContent(OmniboxPopupWebUIBaseContent* webui_content);
-
-  // Create the Widget if not already created. Returns true if widget was just
-  // created.
-  bool EnsureWidgetCreated();
+  void SetWebUIContent(
+      std::unique_ptr<OmniboxPopupWebUIBaseContent> webui_content);
 
   // Called when the widget has just been destroyed.
   virtual void WidgetDestroyed();
