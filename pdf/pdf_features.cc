@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 #include "pdf/buildflags.h"
 
 namespace chrome_pdf::features {
@@ -45,6 +46,15 @@ BASE_FEATURE(kPdfUseSkiaRenderer, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature has no effect if Chrome is built with no XFA support.
 BASE_FEATURE(kPdfXfaSupport, base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Enables PDFium's version 2 font mapping interface, which uses per-request
+// font matching instead of enumerating all fonts upfront. This eliminates the
+// need for the ListFamilies() IPC call and improves PDF load performance on
+// Linux and ChromeOS. Version 2 makes PDFium call MapFont() directly for each
+// font request rather than searching a pre-built font list.
+BASE_FEATURE(kPdfiumPerRequestFontMatching, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 BASE_FEATURE(kPdfInk2, base::FEATURE_ENABLED_BY_DEFAULT);

@@ -30,6 +30,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/sequence_checker.h"
 #include "components/services/font/public/cpp/font_loader.h"
+#include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_font_helpers.h"
 #include "third_party/blink/public/platform/web_font_description.h"
@@ -197,8 +198,14 @@ class BlinkFontMapper {
   // This list is for CPWL_FontMap::GetDefaultFontByCharset().
   // We pretend to have these font natively and let the browser (or underlying
   // fontconfig) pick the proper font on the system.
+  //
+  // NOTE: When version 2 is enabled (features::kPdfiumPerRequestFontMatching),
+  // PDFium does NOT call this function. Instead, it calls MapFont() directly
+  // for each font request, eliminating the need for upfront enumeration.
   void EnumFonts(FPDF_SYSFONTINFO* sysfontinfo, void* mapper) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(
+        !base::FeatureList::IsEnabled(features::kPdfiumPerRequestFontMatching));
 
     if (!base::FeatureList::IsEnabled(kPdfEnumerateAllSystemFonts)) {
       FPDF_AddInstalledFont(mapper, "Arial", FXFONT_DEFAULT_CHARSET);
@@ -316,6 +323,15 @@ FPDF_SYSFONTINFO g_font_info = {.version = 1,
 }  // namespace
 
 void InitializeLinuxFontMapper() {
+  // Set version based on feature flag. Version 2 uses per-request font
+  // matching (MapFont called directly) instead of upfront enumeration
+  // (EnumFonts). This eliminates the expensive ListFamilies() IPC.
+  if (base::FeatureList::IsEnabled(features::kPdfiumPerRequestFontMatching)) {
+    g_font_info.version = 2;
+  } else {
+    g_font_info.version = 1;
+  }
+
   FPDF_SetSystemFontInfo(&g_font_info);
 }
 

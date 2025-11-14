@@ -12,6 +12,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 #include "pdf/buildflags.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF), "ENABLE_PDF not set to true");
@@ -29,6 +30,10 @@ BASE_DECLARE_FEATURE(kPdfTags);
 BASE_DECLARE_FEATURE(kPdfUseShowSaveFilePicker);
 BASE_DECLARE_FEATURE(kPdfUseSkiaRenderer);
 BASE_DECLARE_FEATURE(kPdfXfaSupport);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+BASE_DECLARE_FEATURE(kPdfiumPerRequestFontMatching);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 BASE_DECLARE_FEATURE(kPdfInk2);
