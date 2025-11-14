@@ -138,6 +138,12 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
   void OnIncrementalUpdateReceived(const sync_pb::DataTypeState& type_state,
                                    syncer::UpdateResponseDataList updates);
 
+  // Handles a full update (i.e. an update with a "clear all" GC directive) as
+  // an incremental update.
+  void ApplyFullUpdateAsIncrementalUpdate(
+      const sync_pb::DataTypeState& type_state,
+      syncer::UpdateResponseDataList updates);
+
   // Instantiates the required objects to track metadata and starts observing
   // changes from the bookmark model. Note that this does not include tracking
   // of metadata fields managed by the processor but only those tracked by the

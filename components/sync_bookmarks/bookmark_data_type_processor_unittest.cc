@@ -21,6 +21,7 @@
 #include "base/test/test_future.h"
 #include "base/uuid.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/bookmarks/test/test_matchers.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/features.h"
@@ -45,6 +46,8 @@ namespace sync_bookmarks {
 namespace {
 
 using base::ASCIIToUTF16;
+using bookmarks::test::IsUrlBookmark;
+using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::IsEmpty;
@@ -344,7 +347,7 @@ class BookmarkDataTypeProcessorTest : public testing::Test {
 
   syncer::CommitRequestDataList GetLocalChangesFromProcessor(
       size_t max_entries) {
-    base::MockOnceCallback<void(syncer::CommitRequestDataList &&)> callback;
+    base::MockOnceCallback<void(syncer::CommitRequestDataList&&)> callback;
     syncer::CommitRequestDataList local_changes;
     // Destruction of the mock upon return will verify that Run() was indeed
     // invoked.
@@ -488,8 +491,8 @@ TEST_F(BookmarkDataTypeProcessorTest,
   // upon OnSyncStarting().
   sync_pb::BookmarkModelMetadata new_model_metadata;
   new_model_metadata.ParseFromString(processor()->EncodeSyncMetadata());
-  EXPECT_FALSE(
-      new_model_metadata.has_last_initial_merge_remote_updates_exceeded_limit());
+  EXPECT_FALSE(new_model_metadata
+                   .has_last_initial_merge_remote_updates_exceeded_limit());
   EXPECT_TRUE(
       new_model_metadata
           .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros());
@@ -626,6 +629,106 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldUpdateModelAfterRemoteUpdate) {
   EXPECT_THAT(bookmark_bar->children().front().get(), Eq(bookmark_node));
   EXPECT_THAT(bookmark_node->GetTitle(), Eq(ASCIIToUTF16(kNewTitle)));
   EXPECT_THAT(bookmark_node->url(), Eq(GURL(kNewUrl)));
+}
+
+TEST_F(BookmarkDataTypeProcessorTest, ShouldApplyGcDirective) {
+  const std::string kTitle = "title";
+
+  const bookmarks::BookmarkNode* bookmark_bar =
+      bookmark_model()->bookmark_bar_node();
+
+  // Entity 1: Synced, will be deleted (not present in the update below).
+  const GURL kUrl1("https://www.url1.com");
+  const bookmarks::BookmarkNode* node1 = bookmark_model()->AddURL(
+      bookmark_bar, /*index=*/0, base::UTF8ToUTF16(kTitle), kUrl1);
+  // Entity 2: Synced, will be updated with a new value.
+  const GURL kUrl2("https://www.url2.com");
+  const bookmarks::BookmarkNode* node2 = bookmark_model()->AddURL(
+      bookmark_bar, /*index=*/1, base::UTF8ToUTF16(kTitle), kUrl2);
+  // Entity 3: Synced, will be updated with the same value.
+  const GURL kUrl3("https://www.url3.com");
+  const bookmarks::BookmarkNode* node3 = bookmark_model()->AddURL(
+      bookmark_bar, /*index=*/2, base::UTF8ToUTF16(kTitle), kUrl3);
+  // Entity 4: Unsynced, will be kept even though not present in the update.
+  const GURL kUrl4("https://www.url4.com");
+  const bookmarks::BookmarkNode* node4 = bookmark_model()->AddURL(
+      bookmark_bar, /*index=*/3, std::u16string(), kUrl4);
+  // Entity 5: Does not exist locally yet (remote creation).
+  const GURL kUrl5("https://www.url5.com");
+
+  SimulateModelReadyToSyncWithInitialSyncDone();
+  SimulateOnSyncStarting();
+  SimulateConnectSync();
+
+  // Make a local change to node 4, so it's unsynced.
+  bookmark_model()->SetTitle(node4, base::UTF8ToUTF16(kTitle));
+
+  const SyncedBookmarkTrackerEntity* entity1 =
+      processor()->GetTrackerForTest()->GetEntityForBookmarkNode(node1);
+  ASSERT_THAT(entity1, NotNull());
+  ASSERT_FALSE(entity1->IsUnsynced());
+
+  const SyncedBookmarkTrackerEntity* entity2 =
+      processor()->GetTrackerForTest()->GetEntityForBookmarkNode(node2);
+  ASSERT_THAT(entity2, NotNull());
+  ASSERT_FALSE(entity2->IsUnsynced());
+
+  const SyncedBookmarkTrackerEntity* entity3 =
+      processor()->GetTrackerForTest()->GetEntityForBookmarkNode(node3);
+  ASSERT_THAT(entity3, NotNull());
+  ASSERT_FALSE(entity3->IsUnsynced());
+
+  const SyncedBookmarkTrackerEntity* entity4 =
+      processor()->GetTrackerForTest()->GetEntityForBookmarkNode(node4);
+  ASSERT_THAT(entity4, NotNull());
+  // This one is unsynced!
+  ASSERT_TRUE(entity4->IsUnsynced());
+
+  // Process an update with a "clear all" GC directive.
+  const std::string kNewTitle2 = "new-title2";
+  syncer::UpdateResponseDataList updates;
+  // Entity 1: Not present in the update (remote deletion).
+  // Entity 2: Remote update (new title).
+  updates.push_back(CreateUpdateResponseData(
+      {entity2->metadata().server_id(), kNewTitle2, kUrl2.spec(),
+       kBookmarkBarId,
+       /*server_tag=*/std::string()},
+      syncer::UniquePosition::FromProto(entity2->metadata().unique_position()),
+      /*response_version=*/1, node2->uuid()));
+  // Entity 3: No-op remote update.
+  updates.push_back(CreateUpdateResponseData(
+      {entity3->metadata().server_id(), kTitle, kUrl3.spec(), kBookmarkBarId,
+       /*server_tag=*/std::string()},
+      syncer::UniquePosition::FromProto(entity3->metadata().unique_position()),
+      /*response_version=*/1, node3->uuid()));
+  // Entity 4: Not present (remote deletion) but has local changes.
+  // Entity 5: Remote creation.
+  const base::Uuid kUuid5 = base::Uuid::GenerateRandomV4();
+  updates.push_back(CreateUpdateResponseData(
+      {"id5", kTitle, kUrl5.spec(), kBookmarkBarId,
+       /*server_tag=*/std::string()},
+      syncer::UniquePosition::After(syncer::UniquePosition::FromProto(
+                                        entity4->metadata().unique_position()),
+                                    syncer::UniquePosition::RandomSuffix()),
+      /*response_version=*/1, kUuid5));
+
+  sync_pb::GarbageCollectionDirective garbage_collection_directive;
+  garbage_collection_directive.set_version_watermark(1);
+
+  processor()->OnUpdateReceived(CreateDataTypeState(), std::move(updates),
+                                garbage_collection_directive);
+
+  // Node 1 should have been deleted, and the new node 5 should've been added.
+  EXPECT_THAT(bookmark_bar->children(),
+              ElementsAre(IsUrlBookmark(_, kUrl2), IsUrlBookmark(_, kUrl3),
+                          IsUrlBookmark(_, kUrl4), IsUrlBookmark(_, kUrl5)));
+
+  // Node 4 should still be unsynced.
+  const std::vector<const SyncedBookmarkTrackerEntity*> unsynced_entities =
+      processor()->GetTrackerForTest()->GetEntitiesWithLocalChanges();
+  ASSERT_THAT(
+      unsynced_entities,
+      UnorderedElementsAre(TrackedEntityCorrespondsToBookmarkNode(node4)));
 }
 
 TEST_F(

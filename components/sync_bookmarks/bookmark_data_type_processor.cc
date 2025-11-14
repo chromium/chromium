@@ -44,6 +44,7 @@
 #include "components/sync_bookmarks/parent_guid_preprocessing.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/models/tree_node_iterator.h"
 
 namespace sync_bookmarks {
@@ -131,6 +132,13 @@ void RecordDataTypeNumUnsyncedEntitiesOnModelReadyForBookmarks(
   syncer::SyncRecordDataTypeNumUnsyncedEntitiesFromDataCounts(
       syncer::UnsyncedDataRecordingEvent::kOnModelReady,
       {{syncer::BOOKMARKS, tracker.GetUnsyncedDataCount()}});
+}
+
+// Returns whether `gc_directive` has a version_watermark based GC directive,
+// which indicates to clear all sync data that's stored locally.
+bool HasClearAllDirective(
+    const std::optional<sync_pb::GarbageCollectionDirective>& gc_directive) {
+  return gc_directive.has_value() && gc_directive->has_version_watermark();
 }
 
 }  // namespace
@@ -222,14 +230,13 @@ void BookmarkDataTypeProcessor::OnUpdateReceived(
   // `initial_merge_remote_updates_exceeded_limit_timestamp_` is set.
   DCHECK(!initial_merge_remote_updates_exceeded_limit_timestamp_);
 
-  // TODO(crbug.com/40860698): validate incoming updates, e.g. `gc_directive`
-  // must be empty for Bookmarks.
-
   // Clients before M94 did not populate the parent UUID in specifics.
   PopulateParentGuidInSpecifics(bookmark_tracker_.get(), &updates);
 
   if (!bookmark_tracker_) {
     OnInitialUpdateReceived(data_type_state, std::move(updates));
+  } else if (HasClearAllDirective(gc_directive)) {
+    ApplyFullUpdateAsIncrementalUpdate(data_type_state, std::move(updates));
   } else {
     OnIncrementalUpdateReceived(data_type_state, std::move(updates));
   }
@@ -755,6 +762,77 @@ void BookmarkDataTypeProcessor::OnIncrementalUpdateReceived(
     // Schedule save just in case one is needed.
     schedule_save_closure_.Run();
   }
+}
+
+void BookmarkDataTypeProcessor::ApplyFullUpdateAsIncrementalUpdate(
+    const sync_pb::DataTypeState& type_state,
+    syncer::UpdateResponseDataList updates) {
+  absl::flat_hash_set<const SyncedBookmarkTrackerEntity*> updated_entities;
+  for (const syncer::UpdateResponseData& update : updates) {
+    bool should_ignore_update = false;
+    const SyncedBookmarkTrackerEntity* tracked_entity =
+        BookmarkRemoteUpdatesHandler::DetermineLocalTrackedEntityToUpdate(
+            bookmark_tracker_.get(), update.entity, &should_ignore_update);
+    if (tracked_entity) {
+      // If the update is invalid and should be ignored, there should be no
+      // `tracked_entity`.
+      CHECK(!should_ignore_update);
+      updated_entities.insert(tracked_entity);
+    }
+  }
+
+  // Simulate the deletion of all entities that are not in the update (and
+  // synced).
+  for (const SyncedBookmarkTrackerEntity* entity :
+       bookmark_tracker_->GetAllEntities()) {
+    // Don't create deletions for permanent nodes.
+    if (entity->bookmark_node()->is_permanent_node()) {
+      continue;
+    }
+    if (entity->IsUnsyncedLocalCreation()) {
+      // Special case a local creation to avoid generating a deletion.
+      // Otherwise, it would result in a conflict with a remote deletion
+      // which is not real, polluting UMA metrics. This would still result
+      // in keeping the local creation but it'd be fragile and non-obvious.
+      continue;
+    }
+
+    // Do not handle local updates and deletions explicitly. Consider the
+    // following scenarios:
+    // 1. Local update, remote entity still exists. A deletion won't be
+    //    generated in this case, so it's a normal conflict.
+    // 2. Local update, remote entity deleted. A deletion will be generated
+    //    but the local update will be preferred during conflict resolution.
+    // 3. Local deletion, remote entity deleted. A deletion will be
+    //    generated in this case, so it's a normal conflict resulting in a
+    //    no-op for the bridge.
+    // 4. Local deletion, remote entity still exists. This case will result
+    //    in restoring the entity during conflict resolution. It's not ideal
+    //    but safer than data loss.
+    // TODO(crbug.com/40668179): Improve handling of local deletions during
+    // full updates.
+    if (updated_entities.contains(entity)) {
+      // Consider this as a normal incremental update. Note that this update
+      // might be dropped due to the version having been seen before.
+      continue;
+    }
+
+    syncer::UpdateResponseData deletion;
+    deletion.entity.id = entity->metadata().server_id();
+    deletion.entity.client_tag_hash = entity->GetClientTagHash();
+    deletion.entity.creation_time =
+        syncer::ProtoTimeToTime(entity->metadata().creation_time());
+    deletion.entity.modification_time =
+        syncer::ProtoTimeToTime(entity->metadata().modification_time());
+    deletion.entity.name = "tombstone";
+
+    // Increment the version to ensure that the deletion is not immediately
+    // ignored.
+    deletion.response_version = entity->metadata().server_version() + 1;
+    updates.push_back(std::move(deletion));
+  }
+
+  OnIncrementalUpdateReceived(type_state, std::move(updates));
 }
 
 void BookmarkDataTypeProcessor::StartTrackingMetadata() {
