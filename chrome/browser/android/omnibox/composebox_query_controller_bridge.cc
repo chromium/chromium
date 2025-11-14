@@ -259,6 +259,7 @@ void ComposeboxQueryControllerBridge::OnGetPageContentFromCache(
   std::unique_ptr<lens::ContextualInputData> input_data =
       std::make_unique<lens::ContextualInputData>();
   input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->primary_content_type = lens::MimeType::kAnnotatedPageContent;
 
   // Page URL and Title.
   if (page_context->has_url()) {
