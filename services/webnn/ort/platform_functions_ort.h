@@ -22,6 +22,7 @@ namespace webnn::ort {
 
 class COMPONENT_EXPORT(WEBNN_SERVICE) PlatformFunctions {
  public:
+  ~PlatformFunctions() = delete;
   PlatformFunctions(const PlatformFunctions&) = delete;
   PlatformFunctions& operator=(const PlatformFunctions&) = delete;
 
@@ -40,7 +41,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) PlatformFunctions {
   friend class base::NoDestructor<PlatformFunctions>;
 
   PlatformFunctions();
-  ~PlatformFunctions();
 
   bool AllFunctionsLoaded();
 

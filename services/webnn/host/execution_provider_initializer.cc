@@ -100,12 +100,10 @@ std::string GetProviderName(abi_winml::IExecutionProvider* provider) {
 // This method may block and must run on a background thread.
 std::vector<Microsoft::WRL::ComPtr<abi_winml::IExecutionProvider>>
 ActivateCatalogAndGetAvailableEps() {
-  auto* platform_functions = PlatformFunctionsWin::GetInstance();
   // TODO(crbug.com/457463699): Retry EP catalog activation if the
   // initialization of WinAppRuntime fails.
-  if (platform_functions
-          ->InitializePackageDependencyForProcess(
-              kWinAppRuntimePackageFamilyName, kWinAppRuntimePackageMinVersion)
+  if (InitializePackageDependencyForProcess(kWinAppRuntimePackageFamilyName,
+                                            kWinAppRuntimePackageMinVersion)
           .empty()) {
     return {};
   }

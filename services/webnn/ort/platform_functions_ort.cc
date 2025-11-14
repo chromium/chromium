@@ -27,11 +27,6 @@ constexpr base::wcstring_view kOnnxRuntimeLibraryName = L"onnxruntime.dll";
 }  // namespace
 
 PlatformFunctions::PlatformFunctions() {
-  auto* platform_functions_win = PlatformFunctionsWin::GetInstance();
-  if (!platform_functions_win) {
-    return;
-  }
-
   // If the switch `kWebNNOrtLibraryPathForTesting` is used, try to load ONNX
   // Runtime library from the specified path for testing development ORT build.
   // Otherwise, try to load it from the Windows ML package path.
@@ -47,12 +42,9 @@ PlatformFunctions::PlatformFunctions() {
     }
     ort_library_path = base_path.Append(kOnnxRuntimeLibraryName);
   } else {
-    ort_library_path =
-        platform_functions_win->InitializePackageDependencyForProcess(
-            kWinAppRuntimePackageFamilyName, kWinAppRuntimePackageMinVersion);
+    ort_library_path = InitializePackageDependency(
+        kWinAppRuntimePackageFamilyName, kWinAppRuntimePackageMinVersion);
     if (ort_library_path.empty()) {
-      LOG(ERROR)
-          << "[WebNN] Failed to initialize the Windows App Runtime package.";
       return;
     }
     ort_library_path = ort_library_path.Append(kOnnxRuntimeLibraryName);
@@ -92,8 +84,6 @@ PlatformFunctions::PlatformFunctions() {
   ort_model_editor_api_ = ort_model_editor_api;
 }
 
-PlatformFunctions::~PlatformFunctions() = default;
-
 // static
 PlatformFunctions* PlatformFunctions::GetInstance() {
   static base::NoDestructor<PlatformFunctions> instance;
@@ -110,9 +100,20 @@ bool PlatformFunctions::AllFunctionsLoaded() {
 base::FilePath PlatformFunctions::InitializePackageDependency(
     base::wcstring_view package_family_name,
     PACKAGE_VERSION min_version) {
-  auto* platform_functions_win = PlatformFunctionsWin::GetInstance();
-  return platform_functions_win->InitializePackageDependencyForProcess(
-      package_family_name, min_version);
+  std::wstring dependency_id =
+      TryCreatePackageDependencyForProcess(package_family_name, min_version);
+  if (dependency_id.empty()) {
+    LOG(ERROR) << "[WebNN] Failed to create package dependency for package: "
+               << package_family_name;
+    return base::FilePath();
+  }
+
+  base::FilePath package_path = AddPackageDependency(dependency_id);
+  if (package_path.empty()) {
+    LOG(ERROR) << "[WebNN] Failed to add package dependency for package: "
+               << package_family_name;
+  }
+  return package_path;
 }
 
 }  // namespace webnn::ort

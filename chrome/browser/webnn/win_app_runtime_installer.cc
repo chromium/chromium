@@ -4,7 +4,7 @@
 
 #include "chrome/browser/webnn/win_app_runtime_installer.h"
 
-#include <Windows.h>
+#include <windows.h>
 
 #include <Windows.ApplicationModel.store.preview.installcontrol.h>
 #include <appmodel.h>
@@ -82,10 +82,9 @@ std::wstring TryCreateWinAppRuntimePackageDependency() {
   base::FilePath user_data_dir =
       base::PathService::CheckedGet(chrome::DIR_USER_DATA);
 
-  auto* platform_functions = PlatformFunctionsWin::GetInstance();
-  return platform_functions->TryCreatePackageDependencyForFilePath(
-      kWinAppRuntimePackageFamilyName, kWinAppRuntimePackageMinVersion,
-      user_data_dir);
+  return TryCreatePackageDependencyForFilePath(kWinAppRuntimePackageFamilyName,
+                                               kWinAppRuntimePackageMinVersion,
+                                               user_data_dir);
 }
 
 // Called if the installation succeeds (or already installed) and the package
@@ -291,13 +290,6 @@ void StartInstallation(Microsoft::WRL::ComPtr<abi_install::IAppInstallManager>
 // Ensures the Windows App Runtime package is installed and up to date.
 // Runs on browser's UI thread.
 void EnsureInstallation() {
-  auto* platform_functions = PlatformFunctionsWin::GetInstance();
-  if (!platform_functions) {
-    RecordInstallState(
-        WinAppRuntimeInstallStateUma::kInstallationFailedToStart);
-    return;
-  }
-
   PrefService* local_state = g_browser_process->local_state();
   const std::string& dependency_id =
       local_state->GetString(prefs::kWinAppRuntimePackageDependencyId);
@@ -315,8 +307,7 @@ void EnsureInstallation() {
       return;
     }
 
-    platform_functions->DeletePackageDependency(
-        base::UTF8ToWide(dependency_id));
+    DeletePackageDependency(base::UTF8ToWide(dependency_id));
   }
 
   // Before starting the installation, first try to create the package
