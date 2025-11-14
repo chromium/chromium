@@ -79,6 +79,10 @@ class NavigationAttachmentsViewBinder {
             view.popup.mClipboardButton.setOnClickListener(
                     v -> model.get(NavigationAttachmentsProperties.POPUP_CLIPBOARD_CLICKED).run());
         } else if (propertyKey
+                == NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED) {
+            view.popup.mCreateImageButton.setEnabled(
+                    model.get(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+        } else if (propertyKey
                 == NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE) {
             // TODO(https://crbug.com/457465693): Set create image tool visibility.
         } else if (propertyKey == NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_CLICKED) {

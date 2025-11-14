@@ -90,6 +90,10 @@ class NavigationAttachmentsProperties {
     public static final WritableObjectPropertyKey<Runnable> POPUP_CLIPBOARD_CLICKED =
             new WritableObjectPropertyKey<>();
 
+    /** Whether the create image button is enabled or disabled. */
+    public static final WritableBooleanPropertyKey POPUP_CREATE_IMAGE_BUTTON_ENABLED =
+            new WritableBooleanPropertyKey();
+
     /** Whether the create image button in the popup is visible. */
     public static final WritableBooleanPropertyKey POPUP_CREATE_IMAGE_BUTTON_VISIBLE =
             new WritableBooleanPropertyKey();
@@ -140,6 +144,7 @@ class NavigationAttachmentsProperties {
         POPUP_CAMERA_CLICKED,
         POPUP_CLIPBOARD_BUTTON_VISIBLE,
         POPUP_CLIPBOARD_CLICKED,
+        POPUP_CREATE_IMAGE_BUTTON_ENABLED,
         POPUP_CREATE_IMAGE_BUTTON_VISIBLE,
         POPUP_CREATE_IMAGE_CLICKED,
         POPUP_FILE_CLICKED,

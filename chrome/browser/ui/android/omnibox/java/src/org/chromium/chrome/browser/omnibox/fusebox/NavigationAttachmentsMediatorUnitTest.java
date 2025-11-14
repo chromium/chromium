@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
@@ -535,5 +536,30 @@ public class NavigationAttachmentsMediatorUnitTest {
 
         // Verify AI mode is activated
         assertEquals(AutocompleteRequestType.AI_MODE, (int) mAutocompleteRequestTypeSupplier.get());
+    }
+
+    @Test
+    public void testAddAttachment_disablesCreateImage() {
+        doReturn("token-tab1")
+                .when(mComposeBoxQueryControllerBridge)
+                .addTabContextFromCache(anyLong());
+        doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
+        doReturn("Title1").when(mTab1).getTitle();
+        doReturn(new GURL("https://www.google.com")).when(mTab1).getUrl();
+        doReturn(true).when(mTab1).isInitialized();
+        doReturn(100L).when(mTab1).getTimestampMillis();
+
+        mModel.get(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED).run();
+        assertTrue(mModel.get(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+
+        mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_CLICKED).run();
+        assertEquals(1, mAttachments.size());
+        mModel.get(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED).run();
+        assertFalse(mModel.get(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+
+        mAttachments.get(0).model.get(FuseboxAttachmentProperties.ON_REMOVE).run();
+        assertEquals(0, mAttachments.size());
+        mModel.get(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED).run();
+        assertTrue(mModel.get(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
     }
 }

@@ -42,6 +42,7 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.ListObservable;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
@@ -132,18 +133,15 @@ public class NavigationAttachmentsMediator {
                 new ListObservable.ListObserver<>() {
                     @Override
                     public void onItemRangeInserted(ListObservable source, int index, int count) {
-                        mModel.set(
-                                NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE,
-                                !mModelList.isEmpty());
+                        onAttachmentsChanged();
                     }
 
                     @Override
                     public void onItemRangeRemoved(ListObservable source, int index, int count) {
-                        mModel.set(
-                                NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE,
-                                !mModelList.isEmpty());
+                        onAttachmentsChanged();
                     }
                 });
+        onAttachmentsChanged();
     }
 
     public void destroy() {
@@ -285,6 +283,22 @@ public class NavigationAttachmentsMediator {
 
         // Use FuseboxModelList's add method which handles upload automatically
         mModelList.add(attachment);
+    }
+
+    private void onAttachmentsChanged() {
+        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, !mModelList.isEmpty());
+        mModel.set(
+                NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED,
+                !attachmentsContainType(FuseboxAttachmentType.ATTACHMENT_TAB));
+    }
+
+    private boolean attachmentsContainType(@FuseboxAttachmentType int target) {
+        for (MVCListAdapter.ListItem listItem : mModelList) {
+            if (listItem.type == target) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @VisibleForTesting
