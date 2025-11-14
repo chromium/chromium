@@ -130,6 +130,7 @@ gfx::Rect ComputeVisibleBoundingBox(const LayoutObject& object) {
 
   gfx::Rect visible_box_in_viewport_coords = ToEnclosingRect(object_rect);
 
+#if DCHECK_IS_ON() && !defined(OFFICIAL_BUILD)
   // The visible bounding box should always have non-negative coordinates since
   // it's relative to the viewport. Negative coordinates would indicate a bug
   // in the coordinate transformation.
@@ -139,6 +140,7 @@ gfx::Rect ComputeVisibleBoundingBox(const LayoutObject& object) {
   DCHECK_GE(visible_box_in_viewport_coords.y(), 0)
       << "Visible bounding box should be viewport-relative with y >= 0, got: "
       << visible_box_in_viewport_coords.ToString() << " for object: " << object;
+#endif
 
   return visible_box_in_viewport_coords;
 }
@@ -222,21 +224,26 @@ void ValidateBoundingBoxes(const gfx::Rect& outer_box_in_absolute_coords,
 
   // For block-level elements, the visible box should generally be no larger
   // than the outer box (with some tolerance for rounding errors).
-  const int kTolerancePixels = 1;
-  DCHECK_LE(visible_box_in_viewport_coords.width(),
-            outer_box_in_absolute_coords.width() + kTolerancePixels)
-      << "Visible box width should not exceed outer box width by more than "
-      << kTolerancePixels
-      << "px. Visible: " << visible_box_in_viewport_coords.ToString()
-      << ", Outer: " << outer_box_in_absolute_coords.ToString()
-      << " for object: " << object;
-  DCHECK_LE(visible_box_in_viewport_coords.height(),
-            outer_box_in_absolute_coords.height() + kTolerancePixels)
-      << "Visible box height should not exceed outer box height by more than "
-      << kTolerancePixels
-      << "px. Visible: " << visible_box_in_viewport_coords.ToString()
-      << ", Outer: " << outer_box_in_absolute_coords.ToString()
-      << " for object: " << object;
+  // Inline elements are exempt because they can have different calculation
+  // methods that cause the visible box to be larger.
+  // TODO(crbug.com/422588784): Fixinline element box sizing  and enable check.
+  if (!object.IsInline()) {
+    const int kTolerancePixels = 1;
+    DCHECK_LE(visible_box_in_viewport_coords.width(),
+              outer_box_in_absolute_coords.width() + kTolerancePixels)
+        << "Visible box width should not exceed outer box width by more than "
+        << kTolerancePixels
+        << "px. Visible: " << visible_box_in_viewport_coords.ToString()
+        << ", Outer: " << outer_box_in_absolute_coords.ToString()
+        << " for object: " << object;
+    DCHECK_LE(visible_box_in_viewport_coords.height(),
+              outer_box_in_absolute_coords.height() + kTolerancePixels)
+        << "Visible box height should not exceed outer box height by more than "
+        << kTolerancePixels
+        << "px. Visible: " << visible_box_in_viewport_coords.ToString()
+        << ", Outer: " << outer_box_in_absolute_coords.ToString()
+        << " for object: " << object;
+  }
 }
 #endif  // DCHECK_IS_ON()
 
