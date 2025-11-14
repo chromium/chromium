@@ -50,6 +50,8 @@ namespace glic {
 
 BASE_FEATURE(kGlicBindOnlyForDaisyChainingFromFloatingUi,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicActorDaisyChainingFromFloatingUiDoesntClose,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 EmbedderKey CreateSidePanelEmbedderKey(tabs::TabInterface* tab) {
@@ -1009,7 +1011,14 @@ void GlicInstanceImpl::OnTabAddedToTask(
   }
   SidePanelShowOptions side_panel_options{*tab};
   side_panel_options.suppress_opening_animation = true;
-  Show(ShowOptions{side_panel_options});
+
+  if (base::FeatureList::IsEnabled(
+          kGlicActorDaisyChainingFromFloatingUiDoesntClose) &&
+      IsDetached()) {
+    ShowInactiveSidePanelEmbedderFor(tab);
+  } else {
+    Show(ShowOptions{side_panel_options});
+  }
   instance_metrics_.OnDaisyChain(DaisyChainSource::kActorAddTab,
                                  /*success=*/true, tab);
 }
