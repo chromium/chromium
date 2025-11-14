@@ -19,6 +19,7 @@
 #include "base/types/expected.h"
 #include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/entry_metadata.h"
+#include "components/persistent_cache/lock_state.h"
 
 namespace persistent_cache {
 
@@ -131,11 +132,11 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCache {
   // nothing if its backend is not operating or the params cannot be exported.
   std::optional<BackendParams> ExportReadWriteBackendParams();
 
-  // Marks a backend as not suitable for use. This property applies to
-  // all backends initialized with the same `BackendParam`s. This is different
-  // from deleting the backing files which is done to completely get rid of the
-  // data contained.
-  void Abandon();
+  // Marks the instance as no longer suitable for use. Returns the state of the
+  // shared lock at the moment of abandonment. Once an instance is abandoned,
+  // all other instances that share a connection with it will report
+  // `TransactionError::kConnectionError` for all operations.
+  LockState Abandon();
 
   Backend* GetBackendForTesting();
 

@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/entry_metadata.h"
+#include "components/persistent_cache/lock_state.h"
 #include "components/persistent_cache/transaction_error.h"
 
 namespace persistent_cache {
@@ -70,7 +71,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) Backend {
   virtual std::optional<BackendParams> ExportReadWriteParams() = 0;
 
   // See `PersistentCache::Abandon()` documentation.
-  virtual void Abandon() = 0;
+  virtual LockState Abandon() = 0;
 
  protected:
   Backend();

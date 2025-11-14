@@ -253,10 +253,10 @@ std::optional<BackendParams> SqliteBackendImpl::ExportReadWriteParams() {
   return ExportParams(/*read_write=*/true);
 }
 
-void SqliteBackendImpl::Abandon() {
+LockState SqliteBackendImpl::Abandon() {
   // Read only instances do not have the privilege of abandoning an instance.
   CHECK(!IsReadOnly());
-  vfs_file_set_.Abandon();
+  return vfs_file_set_.Abandon();
 }
 
 std::optional<BackendParams> SqliteBackendImpl::ExportParams(bool read_write) {

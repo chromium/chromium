@@ -520,7 +520,7 @@ TEST_P(PersistentCacheTest, AbandonementDetected) {
   EXPECT_NE(entry, nullptr);
 
   // Abandon cache, no further operations will succeed.
-  cache->Abandon();
+  EXPECT_EQ(cache->Abandon(), LockState::kNotHeld);
 
   // Calling Find() is no longer successful.
   EXPECT_THAT(cache->Find(kKey),

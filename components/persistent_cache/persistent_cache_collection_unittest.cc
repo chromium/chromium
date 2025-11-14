@@ -22,12 +22,19 @@
 #include "base/time/time.h"
 #include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/entry.h"
+#include "components/persistent_cache/mock/mock_backend.h"
+#include "components/persistent_cache/mock/mock_backend_storage_delegate.h"
 #include "components/persistent_cache/persistent_cache.h"
 #include "components/persistent_cache/sqlite/constants.h"
+#include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
+#include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
 #include "components/persistent_cache/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using testing::_;
+using testing::Return;
 
 std::vector<base::FilePath> GetPathsInDir(const base::FilePath& directory) {
   std::vector<base::FilePath> paths;
@@ -133,7 +140,7 @@ TEST_F(PersistentCacheCollectionTest, RetrievalAfterClear) {
   EXPECT_THAT(collection.Find(first_cache_id, first_key),
               base::test::ValueIs(testing::NotNull()));
 
-  collection.ClearForTesting();
+  collection.Clear();
 
   // Retrieval still works after clear because data persistence is unaffected by
   // lifetime of PersistentCache instances.
@@ -277,7 +284,7 @@ TEST_F(PersistentCacheCollectionTest, InstancesAbandonnedOnClear) {
                        collection.ExportReadWriteBackendParams(key));
   auto cache = PersistentCache::Open(std::move(params));
 
-  collection.ClearForTesting();
+  collection.Clear();
   EXPECT_THAT(cache->Find(key),
               base::test::ErrorIs(TransactionError::kConnectionError));
 }
@@ -303,7 +310,7 @@ TEST_F(PersistentCacheCollectionTest, AbandonnedErrorsDoNotCauseDeletions) {
   ASSERT_OK_AND_ASSIGN(auto params,
                        collection.ExportReadWriteBackendParams(first_cache_id));
   auto cache = PersistentCache::Open(std::move(params));
-  cache->Abandon();
+  EXPECT_EQ(cache->Abandon(), LockState::kNotHeld);
 
   EXPECT_THAT(cache->Find(first_key),
               base::test::ErrorIs(TransactionError::kConnectionError));
@@ -311,6 +318,79 @@ TEST_F(PersistentCacheCollectionTest, AbandonnedErrorsDoNotCauseDeletions) {
               base::test::ErrorIs(TransactionError::kConnectionError));
 
   // Files are still there.
+  EXPECT_THAT(
+      GetPathsInDir(temp_dir_.GetPath()),
+      testing::UnorderedElementsAre(
+          testing::Property(&base::FilePath::Extension,
+                            testing::StrEq(sqlite::kDbFileExtension)),
+          testing::Property(&base::FilePath::Extension,
+                            testing::StrEq(sqlite::kJournalFileExtension))));
+}
+
+TEST_F(PersistentCacheCollectionTest, EvictWhileLockedDeletesFiles) {
+  auto mock_delegate =
+      std::make_unique<testing::StrictMock<MockBackendStorageDelegate>>();
+  auto backend = std::make_unique<testing::StrictMock<MockBackend>>();
+
+  // Backend default behavior.
+  ON_CALL(*backend, IsReadOnly()).WillByDefault(Return(false));
+  EXPECT_CALL(*backend, IsReadOnly()).Times(testing::AnyNumber());
+  ON_CALL(*backend, GetType()).WillByDefault(Return(BackendType::kSqlite));
+  EXPECT_CALL(*backend, GetType()).Times(testing::AnyNumber());
+  ON_CALL(*backend, Initialize()).WillByDefault(Return(true));
+  EXPECT_CALL(*backend, Initialize()).Times(testing::AnyNumber());
+  ON_CALL(*backend, ExportReadWriteParams())
+      // Lambda used to nudge the compiler into detecting the right type.
+      .WillByDefault(
+          []() { return std::optional<BackendParams>(BackendParams{}); });
+  EXPECT_CALL(*backend, ExportReadWriteParams()).Times(testing::AnyNumber());
+
+  // Simulates the fact that readers are left over on abandonment.
+  EXPECT_CALL(*backend, Abandon()).WillOnce(Return(LockState::kReading));
+
+  ON_CALL(*mock_delegate, MakeBackend(_, _)).WillByDefault([&]() {
+    return (std::move(backend));
+  });
+  EXPECT_CALL(*mock_delegate, MakeBackend(_, _)).Times(1);
+
+  // This call only takes place as a reaction to the reader being left over
+  // after abandonment.
+  EXPECT_CALL(*mock_delegate, DeleteFiles(_, _)).Times(1);
+
+  PersistentCacheCollection collection(temp_dir_.GetPath(), kOneHundredMiB,
+                                       std::move(mock_delegate));
+  std::string first_cache_id = "first_cache_id";
+  // `ExportReadWriteBackendParams` called to force the collection to create a
+  // `PersistentCache`.
+  ASSERT_THAT(collection.ExportReadWriteBackendParams(first_cache_id),
+              testing::Ne(std::nullopt));
+  collection.Clear();
+}
+
+TEST_F(PersistentCacheCollectionTest,
+       BackendStorageCreationAfterDeleteSucceedsWithHeldFiles) {
+  PersistentCacheCollection collection(temp_dir_.GetPath(), kOneHundredMiB);
+  std::string first_cache_id = "first_cache_id";
+
+  // Files exists after creating a params since `ExportReadWriteBackendParams`
+  // forces the creation of a `PersistentCache`.
+  ASSERT_THAT(collection.ExportReadWriteBackendParams(first_cache_id),
+              testing::Ne(std::nullopt));
+  EXPECT_THAT(
+      GetPathsInDir(temp_dir_.GetPath()),
+      testing::UnorderedElementsAre(
+          testing::Property(&base::FilePath::Extension,
+                            testing::StrEq(sqlite::kDbFileExtension)),
+          testing::Property(&base::FilePath::Extension,
+                            testing::StrEq(sqlite::kJournalFileExtension))));
+
+  // No more files after delete.
+  collection.DeleteAllFiles();
+  EXPECT_THAT(GetPathsInDir(temp_dir_.GetPath()), testing::IsEmpty());
+
+  // It's possible to recreate params/files with the same cache_id.
+  ASSERT_OK_AND_ASSIGN(auto other_params,
+                       collection.ExportReadWriteBackendParams(first_cache_id));
   EXPECT_THAT(
       GetPathsInDir(temp_dir_.GetPath()),
       testing::UnorderedElementsAre(

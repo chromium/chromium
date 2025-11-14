@@ -98,6 +98,18 @@ chromium-metrics-reviews@google.com.
   <token key="FileType" variants="FileType"/>
 </histogram>
 
+<histogram name="PersistentCache.SandboxedFile.LockStateOnAbandon"
+    enum="LockState" expires_after="2026-11-04">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The state of the shared atomic lock at the moment a file is abandoned. The
+    lock being held on abandonment either causes loss of entries or copying
+    overhead. This is not expected to be a common case and this metric should be
+    monitored as such. Logged each time a file is abandoned.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

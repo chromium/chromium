@@ -9,6 +9,7 @@ component("persistent_cache") {
     "backend_storage.h",
     "entry.h",
     "entry_metadata.h",
+    "lock_state.h",
     "persistent_cache.h",
     "persistent_cache_collection.h",
     "transaction_error.h",

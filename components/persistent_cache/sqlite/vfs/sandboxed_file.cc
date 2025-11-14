@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/files/platform_file.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/sqlite/sqlite3.h"
@@ -97,8 +98,26 @@ int SandboxedFile::Close() {
   return SQLITE_OK;
 }
 
-void SandboxedFile::Abandon() {
-  GetSharedAtomicLock().fetch_or(kAbandonedBit);
+LockState SandboxedFile::Abandon() {
+  // Set `kAbandonedBit`, causing all subsequent attempts to raise the lock's
+  // state to a higher level by any party to fail with `SQLITE_IOERR_LOCK`.
+  // Determination of the state of the lock at the time of abandonment is made
+  // based on a snapshot of the lock at the moment that the bit is set. This is
+  // the only point where it is possible to know the state of the lock owing to
+  // the nature of atomic bitwise operations on the lock itself --
+  // `kReservedBit` and `kPendingBit` may be added to the lock after
+  // abandonment; such parties will properly detect that the lock has been
+  // abandoned.
+  uint32_t previous_state = GetSharedAtomicLock().fetch_or(kAbandonedBit);
+
+  LockState state =
+      ((previous_state & (kReservedBit | kPendingBit)) != 0)
+          ? LockState::kWriting
+          : (((previous_state & kSharedMask) != 0) ? LockState::kReading
+                                                   : LockState::kNotHeld);
+  base::UmaHistogramEnumeration(
+      "PersistentCache.SandboxedFile.LockStateOnAbandon", state);
+  return state;
 }
 
 int SandboxedFile::Read(void* buffer, int size, sqlite3_int64 offset) {

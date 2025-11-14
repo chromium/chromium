@@ -12,6 +12,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "components/persistent_cache/lock_state.h"
 #include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
 
 namespace persistent_cache {
@@ -55,9 +56,10 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteVfsFileSet {
   // lock.
   base::UnsafeSharedMemoryRegion DuplicateLock() const;
 
-  // Marks this file set as not usable anymore. Should only be used through
-  // `Backend::Abandon()`.
-  void Abandon();
+  // Marks the file as no longer suitable for use. Returns the state of the
+  // shared db file lock at the moment of abandonment. Should only be used
+  // through `Backend::Abandon()`.
+  LockState Abandon();
 
  private:
   base::FilePath GetJournalVirtualFilePath() const;

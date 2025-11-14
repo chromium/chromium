@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
   bool IsReadOnly() const override;
   std::optional<BackendParams> ExportReadOnlyParams() override;
   std::optional<BackendParams> ExportReadWriteParams() override;
-  void Abandon() override;
+  LockState Abandon() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PersistentCacheTest, RecoveryFromTransientError);

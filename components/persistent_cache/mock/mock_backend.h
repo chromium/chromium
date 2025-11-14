@@ -37,7 +37,7 @@ class MockBackend : public Backend {
               ExportReadWriteParams,
               (),
               (override));
-  MOCK_METHOD(void, Abandon, (), (override));
+  MOCK_METHOD(LockState, Abandon, (), (override));
 };
 
 }  // namespace persistent_cache

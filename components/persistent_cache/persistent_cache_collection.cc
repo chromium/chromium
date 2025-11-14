@@ -18,19 +18,11 @@
 #include "base/types/expected_macros.h"
 #include "components/persistent_cache/backend_storage.h"
 #include "components/persistent_cache/entry.h"
+#include "components/persistent_cache/lock_state.h"
 #include "components/persistent_cache/persistent_cache.h"
 #include "components/persistent_cache/transaction_error.h"
 
 namespace persistent_cache {
-
-// Custom deleter for PersistentCache that makes sure the instances are always
-// properly abandoned before deletion.
-struct PersistentCacheCollection::AbandoningDeleter {
-  void operator()(PersistentCache* cache) const {
-    cache->Abandon();
-    delete cache;
-  }
-};
 
 PersistentCacheCollection::PersistentCacheCollection(
     base::FilePath top_directory,
@@ -38,7 +30,20 @@ PersistentCacheCollection::PersistentCacheCollection(
     size_t lru_capacity)
     : backend_storage_(std::move(top_directory)),
       target_footprint_(target_footprint),
-      persistent_caches_(lru_capacity) {
+      lru_capacity_(lru_capacity),
+      persistent_caches_(PersistentCacheLRUMap::NO_AUTO_EVICT) {
+  ReduceFootPrint();
+}
+
+PersistentCacheCollection::PersistentCacheCollection(
+    base::FilePath top_directory,
+    int64_t target_footprint,
+    std::unique_ptr<BackendStorage::Delegate> storage_delegate,
+    size_t lru_capacity)
+    : backend_storage_(std::move(storage_delegate), std::move(top_directory)),
+      target_footprint_(target_footprint),
+      lru_capacity_(lru_capacity),
+      persistent_caches_(PersistentCacheLRUMap::NO_AUTO_EVICT) {
   ReduceFootPrint();
 }
 
@@ -101,7 +106,20 @@ void PersistentCacheCollection::DeleteAllFiles() {
 
   // Clear all managed persistent caches so that they close their files, thereby
   // allowing them to be deleted.
-  persistent_caches_.Clear();
+  Clear();
+}
+
+void PersistentCacheCollection::AbandonCache(
+    const std::string& cache_id,
+    PersistentCache* persistent_cache) {
+  if (persistent_cache->Abandon() != LockState::kNotHeld) {
+    // Some connections had a view of the files while abandoning. These could
+    // be zombie connections but more importantly hung clients that will
+    // eventually attempt to use the data again on resuming. Unlink files so
+    // clients retain a stable view of them and new files with the same name
+    // can be recreated if needed.
+    backend_storage_.DeleteFiles(BaseNameFromCacheId(cache_id));
+  }
 }
 
 std::optional<BackendParams>
@@ -141,6 +159,7 @@ TransactionError PersistentCacheCollection::HandleTransactionError(
     case TransactionError::kConnectionError:
       // Remove from opened caches to force re-opening since the files are
       // presumed still valid.
+      AbandonCache(it->first, it->second.get());
       persistent_caches_.Erase(it);
       break;
     case TransactionError::kPermanent:
@@ -150,6 +169,7 @@ TransactionError PersistentCacheCollection::HandleTransactionError(
       backend_storage_.DeleteFiles(BaseNameFromCacheId(cache_id));
 
       // Remove from opened caches since the backing files don't exist anymore.
+      AbandonCache(it->first, it->second.get());
       persistent_caches_.Erase(it);
       break;
   }
@@ -162,7 +182,7 @@ void PersistentCacheCollection::ReduceFootPrint() {
 
   // Clear all managed persistent caches so they don't hold on to files or
   // prevent their deletion.
-  persistent_caches_.Clear();
+  Clear();
 
   // Reducing the footprint of the collection to exactly the desired target
   // could have the effect of rapidly going over the limit again. This might end
@@ -199,15 +219,27 @@ PersistentCache* PersistentCacheCollection::GetOrCreateCache(
     return nullptr;
   }
 
+  // The cache would exceed capacity on next insert. Remove the oldest entry to
+  // make room.
+  if (persistent_caches_.size() == lru_capacity_) {
+    // Get the oldest entry iterator;
+    auto oldest_it = persistent_caches_.rbegin();
+    AbandonCache(oldest_it->first, oldest_it->second.get());
+    persistent_caches_.Erase(oldest_it);
+  }
+
   // Create the cache
   auto inserted_it = persistent_caches_.Put(
-      cache_id, std::unique_ptr<PersistentCache, AbandoningDeleter>(
-                    new PersistentCache(std::move(backend))));
+      cache_id, std::make_unique<PersistentCache>((std::move(backend))));
   return inserted_it->second.get();
 }
 
-void PersistentCacheCollection::ClearForTesting() {
+void PersistentCacheCollection::Clear() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (auto& [cache_id, cache] : persistent_caches_) {
+    AbandonCache(cache_id, cache.get());
+  }
   persistent_caches_.Clear();
 }
 

@@ -51,7 +51,7 @@ std::optional<BackendParams> PersistentCache::ExportReadWriteBackendParams() {
   NOTREACHED();
 }
 
-void PersistentCache::Abandon() {
+LockState PersistentCache::Abandon() {
   NOTREACHED();
 }
 

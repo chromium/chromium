@@ -108,10 +108,13 @@ std::optional<BackendParams> PersistentCache::ExportReadWriteBackendParams() {
   return backend_->ExportReadWriteParams();
 }
 
-void PersistentCache::Abandon() {
+LockState PersistentCache::Abandon() {
   if (backend_) {
-    backend_->Abandon();
+    return backend_->Abandon();
   }
+
+  // No backend means no lock means not technically held.
+  return LockState::kNotHeld;
 }
 
 Backend* PersistentCache::GetBackendForTesting() {

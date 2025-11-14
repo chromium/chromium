@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/shared_memory_safety_checker.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "components/persistent_cache/lock_state.h"
 #include "sql/sandboxed_vfs_file.h"
 
 namespace persistent_cache {
@@ -124,8 +125,9 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SandboxedFile
   // Marks this instance as not suitable for use anymore. Once called the effect
   // is permanent. After this call `Lock()` will not succeed anymore and
   // communicate the abandonment through the error code returned which
-  // lets code using the class observe the change.
-  void Abandon();
+  // lets code using the class observe the change. Returns the type of lock
+  // holder left over after abandonment.
+  LockState Abandon();
 
  private:
   // Returns a pointer to the lock state, which is shared across other instances

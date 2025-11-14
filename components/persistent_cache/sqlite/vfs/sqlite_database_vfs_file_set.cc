@@ -109,8 +109,8 @@ base::UnsafeSharedMemoryRegion SqliteVfsFileSet::DuplicateLock() const {
   return shared_lock_.Duplicate();
 }
 
-void SqliteVfsFileSet::Abandon() {
-  db_file_->Abandon();
+LockState SqliteVfsFileSet::Abandon() {
+  return db_file_->Abandon();
 }
 
 base::FilePath SqliteVfsFileSet::GetJournalVirtualFilePath() const {
