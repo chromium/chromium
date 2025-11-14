@@ -18,6 +18,7 @@
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
+#include "components/password_manager/core/browser/actor_login/test/mock_actor_login_quality_logger.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_form_cache.h"
@@ -183,6 +184,10 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
+  base::WeakPtr<MockActorLoginQualityLogger> mqls_logger() {
+    return mock_mqls_logger.AsWeakPtr();
+  }
+
   void SetUpActorCredentialFillerDeps() {
     SetUpGetCredentialsDeps();
     ON_CALL(mock_password_manager_, GetClient())
@@ -227,6 +232,7 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
   FakeFormFetcher form_fetcher_;
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_{
       {.disable_server_communication = true}};
+  MockActorLoginQualityLogger mock_mqls_logger;
 
   // Tab setup
   MockBrowserWindowInterface mock_browser_window_interface_;
@@ -244,7 +250,7 @@ TEST_F(ActorLoginDelegateImplTest, GetCredentialsSuccess_FeatureOn) {
   EXPECT_CALL(mock_form_cache_, GetFormManagers()).Times(1);
 
   base::test::TestFuture<CredentialsOrError> future;
-  delegate_->GetCredentials(future.GetCallback());
+  delegate_->GetCredentials(mqls_logger(), future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_TRUE(future.Get().value().empty());
@@ -255,7 +261,7 @@ TEST_F(ActorLoginDelegateImplTest, GetCredentials_FeatureOff) {
   scoped_feature_list.InitAndDisableFeature(
       password_manager::features::kActorLogin);
   base::test::TestFuture<CredentialsOrError> future;
-  delegate_->GetCredentials(future.GetCallback());
+  delegate_->GetCredentials(mqls_logger(), future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_TRUE(future.Get().value().empty());
@@ -269,10 +275,10 @@ TEST_F(ActorLoginDelegateImplTest, GetCredentialsServiceBusy) {
 
   // Start the first request.
   base::test::TestFuture<CredentialsOrError> first_future;
-  delegate_->GetCredentials(first_future.GetCallback());
+  delegate_->GetCredentials(mqls_logger(), first_future.GetCallback());
   // Immediately try to start a second request, which should fail.
   base::test::TestFuture<CredentialsOrError> second_future;
-  delegate_->GetCredentials(second_future.GetCallback());
+  delegate_->GetCredentials(mqls_logger(), second_future.GetCallback());
 
   ASSERT_FALSE(second_future.Get().has_value());
   EXPECT_EQ(second_future.Get().error(), ActorLoginError::kServiceBusy);
@@ -289,7 +295,8 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLogin_FeatureOff) {
   Credential credential = CreateTestCredential(u"username", url, origin);
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  delegate_->AttemptLogin(credential, false, future.GetCallback());
+  delegate_->AttemptLogin(credential, false, mqls_logger(),
+                          future.GetCallback());
 
   ASSERT_FALSE(future.Get().has_value());
   // When the ActorLogin features is disabled, the delegate returns
@@ -308,7 +315,8 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLogin_FeatureOn) {
   EXPECT_CALL(mock_form_cache_, GetFormManagers()).Times(1);
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  delegate_->AttemptLogin(credential, false, future.GetCallback());
+  delegate_->AttemptLogin(credential, false, mqls_logger(),
+                          future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorNoSigninForm);
@@ -326,14 +334,16 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLoginServiceBusy_FeatureOn) {
 
   // Start the first request (`AttemptLogin`).
   base::test::TestFuture<LoginStatusResultOrError> first_future;
-  delegate_->AttemptLogin(credential, false, first_future.GetCallback());
+  delegate_->AttemptLogin(credential, false, mqls_logger(),
+                          first_future.GetCallback());
   // Immediately try to start a second request of the same type.
   base::test::TestFuture<LoginStatusResultOrError> second_future;
-  delegate_->AttemptLogin(credential, false, second_future.GetCallback());
+  delegate_->AttemptLogin(credential, false, mqls_logger(),
+                          second_future.GetCallback());
 
   // Immediately try to start a `GetCredentials` request (different type).
   base::test::TestFuture<CredentialsOrError> third_future;
-  delegate_->GetCredentials(third_future.GetCallback());
+  delegate_->GetCredentials(mqls_logger(), third_future.GetCallback());
 
   // Both second and third request should be rejected as any request makes the
   // service busy.
@@ -356,12 +366,12 @@ TEST_F(ActorLoginDelegateImplTest, CallbacksAreResetAfterCompletion_FeatureOn) {
 
   // First `GetCredentials` call.
   base::test::TestFuture<CredentialsOrError> future1;
-  delegate_->GetCredentials(future1.GetCallback());
+  delegate_->GetCredentials(mqls_logger(), future1.GetCallback());
   ASSERT_TRUE(future1.Get().has_value());
 
   // Second `GetCredentials` call should now be possible.
   base::test::TestFuture<CredentialsOrError> future2;
-  delegate_->GetCredentials(future2.GetCallback());
+  delegate_->GetCredentials(mqls_logger(), future2.GetCallback());
   ASSERT_TRUE(future2.Get().has_value());
 
   GURL url = GURL(kTestUrl);
@@ -370,12 +380,14 @@ TEST_F(ActorLoginDelegateImplTest, CallbacksAreResetAfterCompletion_FeatureOn) {
 
   // First `AttemptLogin` call.
   base::test::TestFuture<LoginStatusResultOrError> future3;
-  delegate_->AttemptLogin(credential, false, future3.GetCallback());
+  delegate_->AttemptLogin(credential, false, mqls_logger(),
+                          future3.GetCallback());
   ASSERT_TRUE(future3.Get().has_value());
 
   // Second `AttemptLogin` call should now be possible.
   base::test::TestFuture<LoginStatusResultOrError> future4;
-  delegate_->AttemptLogin(credential, false, future4.GetCallback());
+  delegate_->AttemptLogin(credential, false, mqls_logger(),
+                          future4.GetCallback());
   ASSERT_TRUE(future4.Get().has_value());
 }
 
@@ -392,10 +404,11 @@ TEST_F(ActorLoginDelegateImplTest, GetCredentialsAndAttemptLogin) {
   auto get_credentials_callback =
       base::BindLambdaForTesting([&](CredentialsOrError result) {
         ASSERT_TRUE(result.has_value());
-        delegate_->AttemptLogin(credential, false, future.GetCallback());
+        delegate_->AttemptLogin(credential, false, mqls_logger(),
+                                future.GetCallback());
       });
 
-  delegate_->GetCredentials(get_credentials_callback);
+  delegate_->GetCredentials(mqls_logger(), get_credentials_callback);
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorNoSigninForm);
@@ -413,10 +426,10 @@ TEST_F(ActorLoginDelegateImplTest,
 
   base::test::TestFuture<CredentialsOrError> future;
   delegate_->AttemptLogin(
-      credential, false,
+      credential, false, mqls_logger(),
       base::BindLambdaForTesting([&](LoginStatusResultOrError result) {
         ASSERT_TRUE(result.has_value());
-        delegate_->GetCredentials(future.GetCallback());
+        delegate_->GetCredentials(mqls_logger(), future.GetCallback());
       }));
   ASSERT_TRUE(future.Get().has_value());
 }
@@ -432,7 +445,8 @@ TEST_F(ActorLoginDelegateImplTest, WebContentsDestroyedDuringAttemptLogin) {
   EXPECT_CALL(mock_form_cache_, GetFormManagers()).Times(1);
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  delegate_->AttemptLogin(credential, false, future.GetCallback());
+  delegate_->AttemptLogin(credential, false, mqls_logger(),
+                          future.GetCallback());
 
   delegate_ = nullptr;
   // This should invoke `WebContentsDestroyed`.
@@ -482,7 +496,8 @@ TEST_F(ActorLoginDelegateImplTest, FillingReauthRequiredWindowNotActive) {
   EXPECT_CALL(mock_browser_window_interface_, IsActive).WillOnce(Return(false));
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  delegate_->AttemptLogin(credential, false, future.GetCallback());
+  delegate_->AttemptLogin(credential, false, mqls_logger(),
+                          future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get().value(),

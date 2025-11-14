@@ -6,6 +6,8 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_DELEGATE_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 
 namespace actor_login {
@@ -18,14 +20,18 @@ class ActorLoginDelegate {
   virtual ~ActorLoginDelegate() = default;
 
   // Asynchronously retrieves credentials.
-  virtual void GetCredentials(CredentialsOrErrorReply callback) = 0;
+  virtual void GetCredentials(
+      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      CredentialsOrErrorReply callback) = 0;
 
   // Attempts to log in using the provided `credential`.
   // If `should_store_permission` is true, will persist the permission to use
   // `credential` in user's profile.
-  virtual void AttemptLogin(const Credential& credential,
-                            bool should_store_permission,
-                            LoginStatusResultOrErrorReply callback) = 0;
+  virtual void AttemptLogin(
+      const Credential& credential,
+      bool should_store_permission,
+      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      LoginStatusResultOrErrorReply callback) = 0;
 };
 
 }  // namespace actor_login

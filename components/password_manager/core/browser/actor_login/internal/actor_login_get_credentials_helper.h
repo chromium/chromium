@@ -6,6 +6,8 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_GET_CREDENTIALS_HELPER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "url/gurl.h"
@@ -29,6 +31,7 @@ class ActorLoginGetCredentialsHelper
       const url::Origin& origin,
       password_manager::PasswordManagerClient* client,
       password_manager::PasswordManagerInterface* password_manager,
+      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
       CredentialsOrErrorReply callback);
 
   ActorLoginGetCredentialsHelper(const ActorLoginGetCredentialsHelper&) =
@@ -52,6 +55,11 @@ class ActorLoginGetCredentialsHelper
 
   // Safe to access from everywhere apart from the destructor.
   raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
+
+  // Helper class that sends MQLS logs about full actor login attempt
+  // (GetCredentials + AttemptLogin). Owned by AttemptLoginTool.
+  // TODO(crbug.com/460025687): Use raw_ptr instead.
+  base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger_;
 
   // Helper object for finding login forms.
   std::unique_ptr<ActorLoginFormFinder> login_form_finder_;

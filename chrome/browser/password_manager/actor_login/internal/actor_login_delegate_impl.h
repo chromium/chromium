@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -48,9 +49,12 @@ class ActorLoginDelegateImpl
   ActorLoginDelegateImpl& operator=(const ActorLoginDelegateImpl&) = delete;
 
   // `ActorLoginDelegate` implementation:
-  void GetCredentials(CredentialsOrErrorReply callback) override;
+  void GetCredentials(
+      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      CredentialsOrErrorReply callback) override;
   void AttemptLogin(const Credential& credential,
                     bool should_store_permission,
+                    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
                     LoginStatusResultOrErrorReply callback) override;
 
  private:

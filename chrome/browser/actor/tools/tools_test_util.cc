@@ -57,6 +57,7 @@ MockActorLoginService::~MockActorLoginService() = default;
 
 void MockActorLoginService::GetCredentials(
     tabs::TabInterface* tab,
+    base::WeakPtr<actor_login::ActorLoginQualityLoggerInterface> mqls_logger,
     actor_login::CredentialsOrErrorReply callback) {
   std::move(callback).Run(credentials_);
 }
@@ -65,6 +66,7 @@ void MockActorLoginService::AttemptLogin(
     tabs::TabInterface* tab,
     const actor_login::Credential& credential,
     bool should_store_permission,
+    base::WeakPtr<actor_login::ActorLoginQualityLoggerInterface> mqls_logger,
     actor_login::LoginStatusResultOrErrorReply callback) {
   last_credential_used_ = credential;
   last_permission_was_permanent_ = should_store_permission;

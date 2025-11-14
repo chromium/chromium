@@ -89,7 +89,9 @@ ActorLoginDelegateImpl::ActorLoginDelegateImpl(
 ActorLoginDelegateImpl::~ActorLoginDelegateImpl() = default;
 
 // TODO(crbug.com/434156135): move to components/ as much as possible.
-void ActorLoginDelegateImpl::GetCredentials(CredentialsOrErrorReply callback) {
+void ActorLoginDelegateImpl::GetCredentials(
+    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+    CredentialsOrErrorReply callback) {
   CHECK(callback);
 
   // One request at a time mechanism using pending callbacks.
@@ -113,7 +115,7 @@ void ActorLoginDelegateImpl::GetCredentials(CredentialsOrErrorReply callback) {
 
   get_credentials_helper_ = std::make_unique<ActorLoginGetCredentialsHelper>(
       GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin(), client_,
-      driver->GetPasswordManager(),
+      driver->GetPasswordManager(), mqls_logger,
       base::BindOnce(&ActorLoginDelegateImpl::OnGetCredentialsCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -121,6 +123,7 @@ void ActorLoginDelegateImpl::GetCredentials(CredentialsOrErrorReply callback) {
 void ActorLoginDelegateImpl::AttemptLogin(
     const Credential& credential,
     bool should_store_permission,
+    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
     LoginStatusResultOrErrorReply callback) {
   CHECK(callback);
 
@@ -153,7 +156,7 @@ void ActorLoginDelegateImpl::AttemptLogin(
       GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
   credential_filler_ = std::make_unique<ActorLoginCredentialFiller>(
-      origin, credential, should_store_permission, client_,
+      origin, credential, should_store_permission, client_, mqls_logger,
       base::BindRepeating(&ActorLoginDelegateImpl::IsTaskInFocus,
                           base::Unretained(this)),
       base::BindPostTaskToCurrentDefault(

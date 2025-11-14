@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
@@ -17,6 +18,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
+#include "components/password_manager/core/browser/actor_login/test/mock_actor_login_quality_logger.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
@@ -142,6 +144,9 @@ class ActorLoginGetCredentialsHelperTest : public ::testing::Test {
   NiceMock<password_manager::MockPasswordFormCache>& form_cache() {
     return form_cache_;
   }
+  base::WeakPtr<MockActorLoginQualityLogger> mqls_logger() {
+    return mock_mqls_logger_.AsWeakPtr();
+  }
 
   std::unique_ptr<PasswordFormManager> CreateFormManager() {
     return CreateFormManager(kOrigin,
@@ -206,13 +211,14 @@ class ActorLoginGetCredentialsHelperTest : public ::testing::Test {
   NiceMock<MockPasswordManagerDriver> driver_;
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers_;
   NiceMock<password_manager::MockPasswordFormCache> form_cache_;
+  MockActorLoginQualityLogger mock_mqls_logger_;
 };
 
 TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsSuccess) {
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(
       url::Origin::Create(GURL("https://example.com")), client(),
-      password_manager(), future.GetCallback());
+      password_manager(), mqls_logger(), future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_TRUE(future.Get().value().empty());
@@ -227,7 +233,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsFiltersByDomain) {
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(
       url::Origin::Create(GURL("https://foo.com")), client(),
-      password_manager(), future.GetCallback());
+      password_manager(), mqls_logger(), future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
   const auto& credentials = future.Get().value();
@@ -250,7 +256,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsFromAllStores) {
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(
       url::Origin::Create(GURL("https://foo.com")), client(),
-      password_manager(), future.GetCallback());
+      password_manager(), mqls_logger(), future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
   const auto& credentials = future.Get().value();
@@ -282,7 +288,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest, UsernameAndPasswordFieldsVisible) {
 
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
-                                        future.GetCallback());
+                                        mqls_logger(), future.GetCallback());
 
   // The helper only attaches itself as a consumer after all the
   // async checks for signin forms are done.
@@ -324,7 +330,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest, FieldsAreNotVisible) {
 
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
-                                        future.GetCallback());
+                                        mqls_logger(), future.GetCallback());
 
   // The helper only attaches itself as a consumer after all the
   // async checks for signin forms are done.
@@ -359,7 +365,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest, IgnoresFormInFencedFrame) {
 
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
-                                        future.GetCallback());
+                                        mqls_logger(), future.GetCallback());
   // `FakeFormFetcher::AddConsumer` implementation differs from production,
   // therefore additional manual call to NotifyFetchCompleted is needed
   // after helper above gets registered as observer of `FakeFormFetcher`.
@@ -399,7 +405,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
 
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
-                                        future.GetCallback());
+                                        mqls_logger(), future.GetCallback());
 
   // The helper only attaches itself as a consumer after all the
   // async checks for signin forms are done.
@@ -437,7 +443,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
 
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
-                                        future.GetCallback());
+                                        mqls_logger(), future.GetCallback());
   // The helper only attaches itself as a consumer after all the
   // async checks for signin forms are done.
   ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
@@ -467,7 +473,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest, NestedFrameWithSameOrigin) {
 
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
-                                        future.GetCallback());
+                                        mqls_logger(), future.GetCallback());
   // The helper only attaches itself as a consumer after all the
   // async checks for signin forms are done.
   ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
@@ -498,7 +504,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest, IgnoresSameSiteNestedFrame) {
 
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
-                                        future.GetCallback());
+                                        mqls_logger(), future.GetCallback());
   // The helper only attaches itself as a consumer after all the
   // async checks for signin forms are done.
   ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
@@ -532,7 +538,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
 
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
-                                        future.GetCallback());
+                                        mqls_logger(), future.GetCallback());
   // The helper only attaches itself as a consumer after all the
   // async checks for signin forms are done.
   ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
@@ -561,12 +567,11 @@ TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsPrefersExactMatch) {
   base::test::TestFuture<CredentialsOrError> future;
 
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
-                                        future.GetCallback());
+                                        mqls_logger(), future.GetCallback());
 
   // The helper only attaches itself as a consumer after all the
   // async checks for signin forms are done.
   ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
-
   form_fetcher()->NotifyFetchCompleted();
 
   ASSERT_TRUE(future.Get().has_value());
@@ -590,7 +595,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
 
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
-                                        future.GetCallback());
+                                        mqls_logger(), future.GetCallback());
   // The helper only attaches itself as a consumer after all the
   // async checks for signin forms are done.
   ASSERT_TRUE(RunUntil([&]() { return form_fetcher()->HasConsumers(); }));
@@ -615,7 +620,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
 
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
-                                        future.GetCallback());
+                                        mqls_logger(), future.GetCallback());
 
   // The helper only attaches itself as a consumer after all the
   // async checks for signin forms are done.
@@ -642,7 +647,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
 
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
-                                        future.GetCallback());
+                                        mqls_logger(), future.GetCallback());
 
   // The helper only attaches itself as a consumer after all the
   // async checks for signin forms are done.
@@ -674,7 +679,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
 
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
-                                        future.GetCallback());
+                                        mqls_logger(), future.GetCallback());
 
   // The helper only attaches itself as a consumer after all the
   // async checks for signin forms are done.
@@ -694,7 +699,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest, FillingNotAllowed) {
       .WillOnce(Return(false));
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
-                                        future.GetCallback());
+                                        mqls_logger(), future.GetCallback());
 
   ASSERT_FALSE(future.Get().has_value());
   EXPECT_EQ(future.Get().error(), ActorLoginError::kFillingNotAllowed);

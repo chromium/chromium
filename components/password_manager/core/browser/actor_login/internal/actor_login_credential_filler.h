@@ -9,6 +9,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -28,12 +29,14 @@ class ActorLoginCredentialFiller {
  public:
   using IsTaskInFocus = base::RepeatingCallback<bool()>;
 
-  ActorLoginCredentialFiller(const url::Origin& main_frame_origin,
-                             const Credential& credential,
-                             bool should_store_permission,
-                             password_manager::PasswordManagerClient* client,
-                             IsTaskInFocus is_task_in_focus,
-                             LoginStatusResultOrErrorReply callback);
+  ActorLoginCredentialFiller(
+      const url::Origin& main_frame_origin,
+      const Credential& credential,
+      bool should_store_permission,
+      password_manager::PasswordManagerClient* client,
+      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      IsTaskInFocus is_task_in_focus,
+      LoginStatusResultOrErrorReply callback);
   ~ActorLoginCredentialFiller();
 
   ActorLoginCredentialFiller(const ActorLoginCredentialFiller&) = delete;
@@ -144,6 +147,11 @@ class ActorLoginCredentialFiller {
 
   // Safe to access from everywhere apart from the destructor.
   raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
+
+  // Helper class that sends MQLS logs about full actor login attempt
+  // (GetCredentials + AttemptLogin). Owned by AttemptLoginTool.
+  // TODO(crbug.com/460025687): Use raw_ptr instead.
+  base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger_;
 
   // Helper object for finding login forms.
   std::unique_ptr<ActorLoginFormFinder> login_form_finder_;

@@ -95,12 +95,14 @@ ActorLoginCredentialFiller::ActorLoginCredentialFiller(
     const Credential& credential,
     bool should_store_permission,
     PasswordManagerClient* client,
+    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
     IsTaskInFocus is_task_in_focus,
     LoginStatusResultOrErrorReply callback)
     : origin_(main_frame_origin),
       credential_(credential),
       should_store_permission_(should_store_permission),
       client_(client),
+      mqls_logger_(mqls_logger),
       login_form_finder_(std::make_unique<ActorLoginFormFinder>(client_)),
       is_task_in_focus_(std::move(is_task_in_focus)),
       callback_(std::move(callback)) {}

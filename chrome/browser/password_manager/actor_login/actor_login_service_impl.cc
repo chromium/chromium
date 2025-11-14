@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_delegate_impl.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_metrics.h"
 #include "components/tabs/public/tab_interface.h"
@@ -43,8 +44,10 @@ ActorLoginServiceImpl::ActorLoginServiceImpl() {
 
 ActorLoginServiceImpl::~ActorLoginServiceImpl() = default;
 
-void ActorLoginServiceImpl::GetCredentials(tabs::TabInterface* tab,
-                                           CredentialsOrErrorReply callback) {
+void ActorLoginServiceImpl::GetCredentials(
+    tabs::TabInterface* tab,
+    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+    CredentialsOrErrorReply callback) {
   CHECK(tab);
 
   content::WebContents* web_contents = tab->GetContents();
@@ -61,14 +64,15 @@ void ActorLoginServiceImpl::GetCredentials(tabs::TabInterface* tab,
       actor_login_delegate_factory_.Run(web_contents);
 
   // Delegate the call to the `WebContents`-scoped delegate.
-  delegate->GetCredentials(
-      base::BindOnce(&OnGetCredentialsResult, std::move(callback)));
+  delegate->GetCredentials(mqls_logger, base::BindOnce(&OnGetCredentialsResult,
+                                                       std::move(callback)));
 }
 
 void ActorLoginServiceImpl::AttemptLogin(
     tabs::TabInterface* tab,
     const Credential& credential,
     bool should_store_permission,
+    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
     LoginStatusResultOrErrorReply callback) {
   CHECK(tab);
 
@@ -87,7 +91,7 @@ void ActorLoginServiceImpl::AttemptLogin(
 
   // Delegate the call to the `WebContents`-scoped delegate.
   delegate->AttemptLogin(
-      credential, should_store_permission,
+      credential, should_store_permission, mqls_logger,
       base::BindOnce(&OnAttemptLoginResult, std::move(callback)));
 }
 
