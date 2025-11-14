@@ -16,16 +16,19 @@ namespace {
 
 template <typename XrLayerDataType>
 void FillSubImage(XrLayerDataType& xr_layer,
-                  const OpenXrCompositionLayer& layer) {
+                  const OpenXrCompositionLayer& layer,
+                  const XrEyeVisibility eye) {
+  const gfx::Rect info = layer.GetSubImageViewport(eye);
+
   xr_layer.subImage.swapchain = layer.color_swapchain();
   xr_layer.subImage.imageArrayIndex = 0;
   xr_layer.subImage.imageRect.offset = {
-      .x = 0,
-      .y = 0,
+      .x = info.x(),
+      .y = info.y(),
   };
   xr_layer.subImage.imageRect.extent = {
-      .width = static_cast<int>(layer.read_only_data().texture_width),
-      .height = static_cast<int>(layer.read_only_data().texture_height),
+      .width = info.width(),
+      .height = info.height(),
   };
 }
 
@@ -69,6 +72,7 @@ XrCompositionLayerProjection BuildProjectionLayerData(
 
 XrCompositionLayerQuad BuildQuadLayerData(const XrLocation& location,
                                           const OpenXrCompositionLayer& layer,
+                                          const XrEyeVisibility eye,
                                           const void* xr_next_struct) {
   CHECK(layer.mutable_data().layer_data->is_quad());
   const auto& layer_specific_data =
@@ -78,6 +82,7 @@ XrCompositionLayerQuad BuildQuadLayerData(const XrLocation& location,
   XrCompositionLayerQuad quad{XR_TYPE_COMPOSITION_LAYER_QUAD};
   quad.next = xr_next_struct;
   quad.space = location.space;
+  quad.eyeVisibility = eye;
   quad.size = {
       .width = layer_specific_data.width,
       .height = layer_specific_data.height,
@@ -86,7 +91,7 @@ XrCompositionLayerQuad BuildQuadLayerData(const XrLocation& location,
   if (layer.mutable_data().blend_texture_source_alpha) {
     quad.layerFlags |= XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
   }
-  FillSubImage(quad, layer);
+  FillSubImage(quad, layer, eye);
 
   return quad;
 }
@@ -94,6 +99,7 @@ XrCompositionLayerQuad BuildQuadLayerData(const XrLocation& location,
 XrCompositionLayerCylinderKHR BuildCylinderLayerData(
     const XrLocation& location,
     const OpenXrCompositionLayer& layer,
+    const XrEyeVisibility eye,
     const void* xr_next_struct) {
   CHECK(layer.mutable_data().layer_data->is_cylinder());
   const auto& layer_specific_data =
@@ -104,6 +110,7 @@ XrCompositionLayerCylinderKHR BuildCylinderLayerData(
       XR_TYPE_COMPOSITION_LAYER_CYLINDER_KHR};
   cylinder.next = xr_next_struct;
   cylinder.space = location.space;
+  cylinder.eyeVisibility = eye;
   cylinder.radius = layer_specific_data.radius;
   cylinder.centralAngle = layer_specific_data.central_angle;
   cylinder.aspectRatio = layer_specific_data.aspect_ratio;
@@ -111,7 +118,7 @@ XrCompositionLayerCylinderKHR BuildCylinderLayerData(
   if (layer.mutable_data().blend_texture_source_alpha) {
     cylinder.layerFlags |= XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
   }
-  FillSubImage(cylinder, layer);
+  FillSubImage(cylinder, layer, eye);
 
   return cylinder;
 }
@@ -119,6 +126,7 @@ XrCompositionLayerCylinderKHR BuildCylinderLayerData(
 XrCompositionLayerEquirect2KHR BuildEquirectLayerData(
     const XrLocation& location,
     const OpenXrCompositionLayer& layer,
+    const XrEyeVisibility eye,
     const void* xr_next_struct) {
   CHECK(layer.mutable_data().layer_data->is_equirect());
   const auto& layer_specific_data =
@@ -129,6 +137,7 @@ XrCompositionLayerEquirect2KHR BuildEquirectLayerData(
       XR_TYPE_COMPOSITION_LAYER_EQUIRECT2_KHR};
   equirect.next = xr_next_struct;
   equirect.space = location.space;
+  equirect.eyeVisibility = eye;
   equirect.radius = layer_specific_data.radius;
   equirect.centralHorizontalAngle =
       layer_specific_data.central_horizontal_angle;
@@ -138,7 +147,7 @@ XrCompositionLayerEquirect2KHR BuildEquirectLayerData(
   if (layer.mutable_data().blend_texture_source_alpha) {
     equirect.layerFlags |= XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
   }
-  FillSubImage(equirect, layer);
+  FillSubImage(equirect, layer, eye);
 
   return equirect;
 }
@@ -240,34 +249,42 @@ void OpenXrLayers::AddCompositionLayer(
     return;
   }
 
-  XrCompositionLayerUnion xr_layer_union;
-  switch (layer.type()) {
-    case OpenXrCompositionLayer::Type::kProjection:
-      CHECK(!projection_views.empty());
-      xr_layer_union.projection = BuildProjectionLayerData(
-          *location, layer, projection_views, xr_next_struct);
-      projection_views_pool_.push_back(std::move(projection_views));
-      break;
-    case OpenXrCompositionLayer::Type::kQuad:
-      xr_layer_union.quad =
-          BuildQuadLayerData(*location, layer, xr_next_struct);
-      break;
-    case OpenXrCompositionLayer::Type::kCylinder:
-      xr_layer_union.cylinder =
-          BuildCylinderLayerData(*location, layer, xr_next_struct);
-      break;
-    case OpenXrCompositionLayer::Type::kEquirect:
-      xr_layer_union.equirect =
-          BuildEquirectLayerData(*location, layer, xr_next_struct);
-      break;
-    default:
-      NOTREACHED();
-  }
+  for (XrEyeVisibility eye : layer.GetXrEyesForComposition()) {
+    // There is no need for per-eye sub-image composition for the projection
+    // layer.
+    if (layer.type() == OpenXrCompositionLayer::Type::kProjection) {
+      CHECK_EQ(eye, XR_EYE_VISIBILITY_BOTH);
+    }
 
-  composition_layers_.push_back(
-      std::make_unique<XrCompositionLayerUnion>(xr_layer_union));
-  primary_composition_layers_.push_back(
-      GetLayerHeaderFromUnion(*composition_layers_.back(), layer));
+    XrCompositionLayerUnion xr_layer_union;
+    switch (layer.type()) {
+      case OpenXrCompositionLayer::Type::kProjection:
+        CHECK(!projection_views.empty());
+        xr_layer_union.projection = BuildProjectionLayerData(
+            *location, layer, projection_views, xr_next_struct);
+        projection_views_pool_.push_back(std::move(projection_views));
+        break;
+      case OpenXrCompositionLayer::Type::kQuad:
+        xr_layer_union.quad =
+            BuildQuadLayerData(*location, layer, eye, xr_next_struct);
+        break;
+      case OpenXrCompositionLayer::Type::kCylinder:
+        xr_layer_union.cylinder =
+            BuildCylinderLayerData(*location, layer, eye, xr_next_struct);
+        break;
+      case OpenXrCompositionLayer::Type::kEquirect:
+        xr_layer_union.equirect =
+            BuildEquirectLayerData(*location, layer, eye, xr_next_struct);
+        break;
+      default:
+        NOTREACHED();
+    }
+
+    composition_layers_.push_back(
+        std::make_unique<XrCompositionLayerUnion>(xr_layer_union));
+    primary_composition_layers_.push_back(
+        GetLayerHeaderFromUnion(*composition_layers_.back(), layer));
+  }
 }
 
 }  // namespace device

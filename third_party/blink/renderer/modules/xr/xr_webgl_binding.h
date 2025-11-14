@@ -105,6 +105,9 @@ class XRWebGLBinding final : public ScriptWrappable, public XRGraphicsBinding {
   GLenum InternalFormatForLayerFormat(GLenum format);
   GLenum TypeForLayerFormat(GLenum format);
 
+  gfx::Size GetTextureSizeForLayer(const XRLayerInit*) const;
+  gfx::Rect GetViewportForLayer(const XRCompositionLayer&, V8XREye) const;
+
   XRWebGLSwapChain* CreateColorSwapchain(GLenum layer_format,
                                          gfx::Size layer_size);
   XRWebGLSwapChain* GetSwapchainForLayer(XRCompositionLayer* layer);

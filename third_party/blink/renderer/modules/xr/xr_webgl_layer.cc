@@ -519,6 +519,8 @@ device::mojom::blink::XRCompositionLayerDataPtr XRWebGLLayer::CreateLayerData()
   layer_data->read_only_data->texture_width = framebufferWidth();
   layer_data->read_only_data->texture_height = framebufferHeight();
   layer_data->read_only_data->is_static = false;
+  layer_data->read_only_data->layout =
+      V8ToMojomLayerLayout(V8XRLayerLayout::Enum::kDefault);
   // Mutable data.
   layer_data->mutable_data = device::mojom::blink::XRLayerMutableData::New();
   layer_data->mutable_data->blend_texture_source_alpha = false;

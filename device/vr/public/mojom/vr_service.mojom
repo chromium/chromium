@@ -757,11 +757,20 @@ union XRLayerSpecificData {
   XREquirectLayerData equirect;
 };
 
+enum XRLayerLayout {
+  kDefault = 0,
+  kMono = 1,
+  kStereo = 2,
+  kStereoLeftRight = 3,
+  kStereoTopBottom = 4,
+};
+
 // Read-only data is only used to create a layer,
 // and cannot be modified after.
 struct XRLayerReadOnlyData {
   // Unique id of the client-created layer, which is provided by the client.
   LayerId layer_id;
+  XRLayerLayout layout;
   uint32 texture_width;
   uint32 texture_height;
   bool is_static;

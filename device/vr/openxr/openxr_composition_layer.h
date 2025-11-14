@@ -115,6 +115,12 @@ class OpenXrCompositionLayer {
 
   LayerId GetLayerId() const;
 
+  // Returns the eye configuration specific to this layer and layout,
+  // which should be used for the OpenXR composition.
+  std::vector<XrEyeVisibility> GetXrEyesForComposition() const;
+  // Returns a viewport for the specified eye.
+  const gfx::Rect GetSubImageViewport(XrEyeVisibility eye) const;
+
   // A group of simple getters.
   XrSwapchain color_swapchain() const { return color_swapchain_; }
   bool has_active_swapchain_image() const {

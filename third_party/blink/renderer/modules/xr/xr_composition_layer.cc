@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_swap_chain.h"
 #include "third_party/blink/renderer/modules/xr/xr_system.h"
+#include "third_party/blink/renderer/modules/xr/xr_utils.h"
 
 namespace blink {
 
@@ -127,6 +128,7 @@ XRCompositionLayer::CreateLayerData() const {
   layer_data->read_only_data->texture_width = textureWidth();
   layer_data->read_only_data->texture_height = textureHeight();
   layer_data->read_only_data->is_static = isStatic();
+  layer_data->read_only_data->layout = V8ToMojomLayerLayout(layout_);
   // Mutable data.
   layer_data->mutable_data = device::mojom::blink::XRLayerMutableData::New();
   layer_data->mutable_data->blend_texture_source_alpha =

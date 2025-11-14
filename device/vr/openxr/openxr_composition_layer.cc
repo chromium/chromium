@@ -211,4 +211,35 @@ void OpenXrCompositionLayer::UpdateActiveSwapchainImageSize(
   }
 }
 
+const gfx::Rect OpenXrCompositionLayer::GetSubImageViewport(
+    XrEyeVisibility eye) const {
+  gfx::Rect info{0, 0, static_cast<int>(read_only_data().texture_width),
+                 static_cast<int>(read_only_data().texture_height)};
+  if (read_only_data().layout ==
+      device::mojom::XRLayerLayout::kStereoLeftRight) {
+    info.set_width(info.width() / 2);
+    if (eye == XR_EYE_VISIBILITY_RIGHT) {
+      info.set_x(info.width());
+    }
+  } else if (read_only_data().layout ==
+             device::mojom::XRLayerLayout::kStereoTopBottom) {
+    info.set_height(info.height() / 2);
+    if (eye == XR_EYE_VISIBILITY_RIGHT) {
+      info.set_y(info.height());
+    }
+  }
+  return info;
+}
+
+std::vector<XrEyeVisibility> OpenXrCompositionLayer::GetXrEyesForComposition()
+    const {
+  if (read_only_data().layout ==
+          device::mojom::XRLayerLayout::kStereoTopBottom ||
+      read_only_data().layout ==
+          device::mojom::XRLayerLayout::kStereoLeftRight) {
+    return {XR_EYE_VISIBILITY_LEFT, XR_EYE_VISIBILITY_RIGHT};
+  }
+  return {XR_EYE_VISIBILITY_BOTH};
+}
+
 }  // namespace device
