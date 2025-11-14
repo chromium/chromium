@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 // This small program is used to measure the performance of the various
 // resize algorithms offered by the ImageOperations::Resize function.
 // It will generate an empty source bitmap, and rescale it to specified
@@ -27,6 +22,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -85,7 +81,7 @@ void PrintMethods() {
     } else {
       print_comma = true;
     }
-    printf(" %s", resize_methods[i].name);
+    UNSAFE_TODO(printf(" %s", resize_methods[i].name));
   }
 }
 
@@ -172,14 +168,15 @@ const skia::ImageOperations::ResizeMethod Benchmark::kDefaultResizeMethod =
 
 // argument management
 void Benchmark::Usage() {
-  printf("image_operations_bench -source wxh -destination wxh "
-         "[-iterations i] [-method m] [-help]\n"
-         "  -source wxh: specify source width and height\n"
-         "  -destination wxh: specify destination width and height\n"
-         "  -iter i: perform i iterations (default:%d)\n"
-         "  -method m: use method m (default:%s), which can be:",
-         Benchmark::kDefaultNumberIterations,
-         MethodToString(Benchmark::kDefaultResizeMethod));
+  UNSAFE_TODO(
+      printf("image_operations_bench -source wxh -destination wxh "
+             "[-iterations i] [-method m] [-help]\n"
+             "  -source wxh: specify source width and height\n"
+             "  -destination wxh: specify destination width and height\n"
+             "  -iter i: perform i iterations (default:%d)\n"
+             "  -method m: use method m (default:%s), which can be:",
+             Benchmark::kDefaultNumberIterations,
+             MethodToString(Benchmark::kDefaultResizeMethod)));
   PrintMethods();
   printf("\n  -help: prints this help and exits\n");
 }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "skia/ext/image_operations.h"
 
 #include <stddef.h>
@@ -59,7 +54,7 @@ uint32_t AveragePixel(const SkBitmap& bmp,
 SkColor AveragePixel(const SkColor colors[], size_t color_count) {
   std::array<float, 4> accum = {0.0f, 0.0f, 0.0f, 0.0f};
   for (size_t i = 0; i < color_count; ++i) {
-    const SkColor cur = colors[i];
+    const SkColor cur = UNSAFE_TODO(colors[i]);
     accum[0] += static_cast<float>(SkColorGetA(cur));
     accum[1] += static_cast<float>(SkColorGetR(cur));
     accum[2] += static_cast<float>(SkColorGetG(cur));

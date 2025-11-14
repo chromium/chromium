@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef SKIA_PUBLIC_MOJOM_SKCOLORSPACE_MOJOM_TRAITS_H_
 #define SKIA_PUBLIC_MOJOM_SKCOLORSPACE_MOJOM_TRAITS_H_
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "skia/public/mojom/skcolorspace.mojom-shared.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/modules/skcms/skcms.h"
@@ -24,7 +20,7 @@ struct StructTraits<skia::mojom::SkcmsMatrix3x3DataView, ::skcms_Matrix3x3> {
     std::array<float, 9> out;
     for (size_t i = 0; i < 3; ++i) {
       for (size_t j = 0; j < 3; ++j) {
-        out[3 * i + j] = in.vals[i][j];
+        out[3 * i + j] = UNSAFE_TODO(in.vals[i][j]);
       }
     }
     return out;
@@ -39,7 +35,7 @@ struct StructTraits<skia::mojom::SkcmsMatrix3x3DataView, ::skcms_Matrix3x3> {
     }
     for (size_t i = 0; i < 3; ++i) {
       for (size_t j = 0; j < 3; ++j) {
-        out->vals[i][j] = data_matrix[3 * i + j];
+        UNSAFE_TODO(out->vals[i][j]) = data_matrix[3 * i + j];
       }
     }
     return true;
