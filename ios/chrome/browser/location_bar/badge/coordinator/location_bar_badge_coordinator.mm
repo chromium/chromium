@@ -175,7 +175,6 @@
           contextualSheetHandler:contextualSheetHandler
            entrypointHelpHandler:entrypointHelpHandler];
   _contextualPanelEntryPointMediator.delegate = self;
-  _contextualPanelEntryPointMediator.visibilityDelegate = _viewController;
 
   _contextualPanelEntryPointMediator.consumer = _viewController;
   _viewController.contextualPanelEntryPointMutator =

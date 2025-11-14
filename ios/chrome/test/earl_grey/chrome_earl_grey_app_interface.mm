@@ -51,7 +51,6 @@
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_provider.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
-#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
@@ -1208,10 +1207,6 @@ NSString* GetIdForWebState(web::WebState* web_state) {
 
 + (BOOL)isDemographicMetricsReportingEnabled {
   return base::FeatureList::IsEnabled(metrics::kDemographicMetricsReporting);
-}
-
-+ (BOOL)isAskGeminiChipEnabled {
-  return IsAskGeminiChipEnabled();
 }
 
 + (BOOL)appHasLaunchSwitch:(NSString*)launchSwitch {

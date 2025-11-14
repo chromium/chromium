@@ -190,10 +190,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isEnhancedSafeBrowsingInfobarEnabled];
 }
 
-- (BOOL)isAskGeminiChipEnabled {
-  return [ChromeEarlGreyAppInterface isAskGeminiChipEnabled];
-}
-
 - (UIInterfaceOrientation)interfaceOrientation {
   return [ChromeEarlGreyAppInterface interfaceOrientation];
 }
