@@ -14,7 +14,7 @@ import org.chromium.url.GURL;
  * This class holds the data used to represent a selectable credential in the Touch To Fill sheet.
  */
 @NullMarked
-public class Credential {
+public class Credential implements CredentialBase {
     private final String mUsername;
     private final String mPassword;
     private final String mFormattedUsername;

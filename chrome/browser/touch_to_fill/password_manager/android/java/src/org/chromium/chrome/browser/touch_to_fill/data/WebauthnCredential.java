@@ -13,7 +13,7 @@ import org.chromium.build.annotations.NullMarked;
  * Touch To Fill sheet.
  */
 @NullMarked
-public class WebauthnCredential {
+public class WebauthnCredential implements CredentialBase {
     private final String mRpId;
     private final byte[] mCredentialId;
     private final byte[] mUserId;

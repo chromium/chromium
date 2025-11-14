@@ -147,7 +147,6 @@ public class TouchToFillIntegrationTest {
                     mTouchToFill.showCredentials(
                             sExampleUrl,
                             true,
-                            Collections.emptyList(),
                             Collections.singletonList(sAna),
                             /* triggerSubmission= */ false,
                             /* showHybridPasskeyOption= */ false,
@@ -165,7 +164,6 @@ public class TouchToFillIntegrationTest {
                     mTouchToFill.showCredentials(
                             sExampleUrl,
                             true,
-                            Collections.emptyList(),
                             Collections.singletonList(sAna),
                             /* triggerSubmission= */ false,
                             /* showHybridPasskeyOption= */ false,
@@ -188,8 +186,7 @@ public class TouchToFillIntegrationTest {
                     mTouchToFill.showCredentials(
                             sExampleUrl,
                             true,
-                            Collections.singletonList(sCam),
-                            Collections.singletonList(sAna),
+                            Arrays.asList(sCam, sAna),
                             /* triggerSubmission= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
@@ -211,7 +208,6 @@ public class TouchToFillIntegrationTest {
                     mTouchToFill.showCredentials(
                             sExampleUrl,
                             true,
-                            Collections.emptyList(),
                             Collections.singletonList(sAna),
                             /* triggerSubmission= */ false,
                             /* showHybridPasskeyOption= */ false,
@@ -234,7 +230,6 @@ public class TouchToFillIntegrationTest {
                     mTouchToFill.showCredentials(
                             sExampleUrl,
                             true,
-                            Collections.emptyList(),
                             Arrays.asList(sAna, sBob),
                             /* triggerSubmission= */ false,
                             /* showHybridPasskeyOption= */ false,
@@ -256,7 +251,6 @@ public class TouchToFillIntegrationTest {
                     mTouchToFill.showCredentials(
                             sExampleUrl,
                             true,
-                            Collections.emptyList(),
                             Collections.singletonList(sAna),
                             /* triggerSubmission= */ false,
                             /* showHybridPasskeyOption= */ false,
@@ -287,7 +281,6 @@ public class TouchToFillIntegrationTest {
                     mTouchToFill.showCredentials(
                             sExampleUrl,
                             true,
-                            Collections.emptyList(),
                             Collections.singletonList(sAna),
                             /* triggerSubmission= */ false,
                             /* showHybridPasskeyOption= */ true,
@@ -396,7 +389,6 @@ public class TouchToFillIntegrationTest {
                     mTouchToFill.showCredentials(
                             sExampleUrl,
                             true,
-                            Collections.emptyList(),
                             Arrays.asList(sAna, sBob),
                             /* triggerSubmission= */ false,
                             /* showHybridPasskeyOption= */ false,
@@ -426,7 +418,6 @@ public class TouchToFillIntegrationTest {
                     mTouchToFill.showCredentials(
                             sExampleUrl,
                             true,
-                            Collections.emptyList(),
                             Collections.singletonList(sAna),
                             /* triggerSubmission= */ false,
                             /* showHybridPasskeyOption= */ false,

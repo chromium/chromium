@@ -10,6 +10,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
+import org.chromium.chrome.browser.touch_to_fill.data.CredentialBase;
 import org.chromium.chrome.browser.touch_to_fill.data.WebauthnCredential;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.url.GURL;
@@ -83,8 +84,9 @@ public interface TouchToFillComponent {
      *
      * @param url A {@link String} that contains the URL to display credentials for.
      * @param isOriginSecure A {@link boolean} that indicates whether the current origin is secure.
-     * @param webauthnCredentials A list of {@link WebauthnCredential}s that will be displayed.
-     * @param credentials A list of {@link Credential}s that will be displayed.
+     * @param credentials A list of {@link CredentialBase}s that will be displayed. These can be
+     *     {@link Credential}s and/or {@link WebauthnCredential}s, and will be displayed in the
+     *     order that they occur in the list.
      * @param triggerSubmission A {@link boolean} that indicates whether a form should be submitted
      *     after filling.
      * @param showHybridPasskeyOption A {@link boolean} that indicates whether the footer should
@@ -95,8 +97,7 @@ public interface TouchToFillComponent {
     void showCredentials(
             GURL url,
             boolean isOriginSecure,
-            List<WebauthnCredential> webauthnCredentials,
-            List<Credential> credentials,
+            List<CredentialBase> credentials,
             boolean triggerSubmission,
             boolean showHybridPasskeyOption,
             boolean showCredManEntry);

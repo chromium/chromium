@@ -197,7 +197,6 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA, CARL),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ true,
@@ -233,7 +232,6 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
@@ -263,7 +261,6 @@ public class TouchToFillControllerTest {
                 TEST_URL,
                 true,
                 Arrays.asList(DINO),
-                Collections.emptyList(),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
                 /* showHybridPasskeyOption= */ false);
@@ -291,8 +288,7 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Arrays.asList(DINO),
-                Arrays.asList(ANA),
+                Arrays.asList(DINO, ANA),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
                 /* showHybridPasskeyOption= */ false);
@@ -322,7 +318,6 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ true,
@@ -353,7 +348,6 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA, CARL, BOB),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
@@ -405,7 +399,6 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(sharedCredentials),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ true,
@@ -481,7 +474,6 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(sharedCredential1, sharedCredential2),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ true,
@@ -510,7 +502,6 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Collections.singletonList(CARL),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
@@ -546,7 +537,6 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(CARL, CARL_BACKUP),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
@@ -585,7 +575,6 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA, BOB),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
@@ -600,7 +589,6 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Collections.singletonList(ANA),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
@@ -615,7 +603,6 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Collections.singletonList(BOB),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
@@ -632,7 +619,6 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA, CARL, BOB),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
@@ -645,7 +631,6 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
@@ -667,7 +652,6 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA, CARL),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
@@ -689,7 +673,6 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA, CARL),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
@@ -709,7 +692,6 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA, CARL, BOB),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
@@ -728,7 +710,6 @@ public class TouchToFillControllerTest {
                 TEST_URL,
                 true,
                 Arrays.asList(DINO),
-                Collections.emptyList(),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
                 /* showHybridPasskeyOption= */ false);
@@ -744,8 +725,7 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Arrays.asList(DINO),
-                Arrays.asList(ANA),
+                Arrays.asList(ANA, DINO),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
                 /* showHybridPasskeyOption= */ false);
@@ -758,7 +738,6 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA, CARL, BOB),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
@@ -772,7 +751,6 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA, CARL, BOB),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
@@ -790,7 +768,6 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA),
                 /* showMorePasskeys= */ true,
                 /* triggerSubmission= */ false,
@@ -814,8 +791,7 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Arrays.asList(DINO),
-                Arrays.asList(ANA),
+                Arrays.asList(ANA, DINO),
                 /* showMorePasskeys= */ true,
                 /* triggerSubmission= */ false,
                 /* showHybridPasskeyOption= */ true);
@@ -839,7 +815,6 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA),
                 /* showMorePasskeys= */ true,
                 /* triggerSubmission= */ false,

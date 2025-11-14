@@ -53,6 +53,7 @@ android_library("public_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillComponent.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/data/Credential.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/data/CredentialBase.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/data/WebauthnCredential.java",
   ]
 }

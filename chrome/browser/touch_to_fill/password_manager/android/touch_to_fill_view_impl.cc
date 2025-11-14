@@ -114,11 +114,23 @@ bool TouchToFillViewImpl::Show(
   // to show it together with |url| to the user.
   JNIEnv* env = AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobjectArray> credential_array =
-      Java_TouchToFillBridge_createCredentialArray(env, credentials.size());
+      Java_TouchToFillBridge_createCredentialArray(
+          env, credentials.size() + passkey_credentials.size());
+  for (size_t i = 0; i < passkey_credentials.size(); ++i) {
+    const PasskeyCredential& credential = passkey_credentials[i];
+    Java_TouchToFillBridge_insertWebAuthnCredential(
+        env, credential_array, i,
+        ConvertUTF8ToJavaString(env, credential.rp_id()),
+        base::android::ToJavaByteArray(env, credential.credential_id()),
+        base::android::ToJavaByteArray(env, credential.user_id()),
+        ConvertUTF16ToJavaString(
+            env, password_manager::ToUsernameString(credential.username())));
+  }
+
   for (size_t i = 0; i < credentials.size(); ++i) {
     const password_manager::UiCredential& credential = credentials[i];
     Java_TouchToFillBridge_insertCredential(
-        env, credential_array, i,
+        env, credential_array, i + passkey_credentials.size(),
         ConvertUTF16ToJavaString(env, credential.username()),
         ConvertUTF16ToJavaString(env, credential.password()),
         ConvertUTF16ToJavaString(env, GetDisplayUsername(credential)),
@@ -134,22 +146,9 @@ bool TouchToFillViewImpl::Show(
         credential.is_backup_credential().value());
   }
 
-  base::android::ScopedJavaLocalRef<jobjectArray> passkey_array =
-      Java_TouchToFillBridge_createWebAuthnCredentialArray(
-          env, passkey_credentials.size());
-  for (size_t i = 0; i < passkey_credentials.size(); ++i) {
-    const PasskeyCredential& credential = passkey_credentials[i];
-    Java_TouchToFillBridge_insertWebAuthnCredential(
-        env, passkey_array, i, ConvertUTF8ToJavaString(env, credential.rp_id()),
-        base::android::ToJavaByteArray(env, credential.credential_id()),
-        base::android::ToJavaByteArray(env, credential.user_id()),
-        ConvertUTF16ToJavaString(
-            env, password_manager::ToUsernameString(credential.username())));
-  }
-
   Java_TouchToFillBridge_showCredentials(
       env, java_object_internal_, url::GURLAndroid::FromNativeGURL(env, url),
-      is_origin_secure.value(), passkey_array, credential_array,
+      is_origin_secure.value(), credential_array,
       !!(flags & TouchToFillView::kTriggerSubmission),
       !!(flags & TouchToFillView::kShouldShowHybridOption),
       !!(flags & TouchToFillView::kShouldShowCredManEntry));
