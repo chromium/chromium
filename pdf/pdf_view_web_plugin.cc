@@ -783,7 +783,7 @@ void PdfViewWebPlugin::UpdateScroll(const gfx::PointF& scroll_position) {
 
 void PdfViewWebPlugin::UpdateFocus(bool focused,
                                    blink::mojom::FocusType focus_type) {
-  if (has_focus_ != focused) {
+  if (engine_->has_focus() != focused) {
     engine_->UpdateFocus(focused);
     client_->UpdateTextInputState();
 
@@ -794,9 +794,8 @@ void PdfViewWebPlugin::UpdateFocus(bool focused,
       return;
     }
   }
-  has_focus_ = focused;
 
-  if (!has_focus_ || !SupportsKeyboardFocus()) {
+  if (!focused || !SupportsKeyboardFocus()) {
     return;
   }
 

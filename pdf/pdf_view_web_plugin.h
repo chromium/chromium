@@ -858,9 +858,6 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 
   blink::WebString composition_text_;
 
-  // Whether the plugin element currently has focus.
-  bool has_focus_ = false;
-
   blink::WebPluginParams initial_params_;
 
   v8::Persistent<v8::Object> scriptable_receiver_;

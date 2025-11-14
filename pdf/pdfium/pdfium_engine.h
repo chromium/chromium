@@ -368,6 +368,8 @@ class PDFiumEngine : public DocumentLoader::Client,
   // Notify whether the PDF currently has the focus or not.
   void UpdateFocus(bool has_focus);
 
+  bool has_focus() const { return has_focus_; }
+
   // Returns the focus info of current focus item.
   AccessibilityFocusInfo GetFocusInfo();
 
@@ -1217,6 +1219,9 @@ class PDFiumEngine : public DocumentLoader::Client,
 
   // Set to true when handling long touch press.
   bool handling_long_press_ = false;
+
+  // Whether the plugin element currently has focus.
+  bool has_focus_ = false;
 
   // Set to true when updating plugin focus.
   bool updating_focus_ = false;

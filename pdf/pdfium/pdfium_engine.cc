@@ -1381,6 +1381,7 @@ void PDFiumEngine::KillFormFocus() {
 }
 
 void PDFiumEngine::UpdateFocus(bool has_focus) {
+  has_focus_ = has_focus;
   bool can_focus = !IsReadOnly();
 #if BUILDFLAG(ENABLE_PDF_INK2)
   can_focus = can_focus && !client_->IsInAnnotationMode();
