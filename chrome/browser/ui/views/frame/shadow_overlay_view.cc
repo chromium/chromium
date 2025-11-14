@@ -15,6 +15,7 @@
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/proposed_layout.h"
+#include "ui/views/view.h"
 #include "ui/views/view_shadow.h"
 
 // Implements the opaque corners that overlay the main area of the browser and
@@ -43,6 +44,11 @@ class ShadowOverlayView::CornerView : public views::View {
   void Layout(PassKey) override {
     LayoutSuperclass<views::View>(this);
     SetClipPath(GetClipPath());
+  }
+
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    SchedulePaint();
   }
 
  private:
