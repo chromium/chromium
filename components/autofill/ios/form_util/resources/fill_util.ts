@@ -699,7 +699,7 @@ export function getUniqueID(element: any): string {
   }
 
   try {
-    const uniqueIDSymbol = gCrWebLegacy.fill.ID_SYMBOL;
+    const uniqueIDSymbol = fillConstants.ID_SYMBOL;
     if (typeof element[uniqueIDSymbol] !== 'undefined' &&
         !isNaN(element[uniqueIDSymbol]!)) {
       return element[uniqueIDSymbol].toString();

@@ -4,8 +4,6 @@
 
 import '//components/autofill/ios/form_util/resources/create_fill_namespace.js';
 
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-
 export declare type FormControlElement =
     HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
 
@@ -62,7 +60,7 @@ export const UNIQUE_ID_ATTRIBUTE = '__gChrome_uniqueID';
 /**
  * The JS Symbol object used to set stable unique form and field IDs.
  */
-const ID_SYMBOL = window.Symbol.for(UNIQUE_ID_ATTRIBUTE);
+export const ID_SYMBOL = window.Symbol.for(UNIQUE_ID_ATTRIBUTE);
 
 /**
  Name of the html attribute used for storing the remote frame token assigned to
@@ -71,5 +69,3 @@ const ID_SYMBOL = window.Symbol.for(UNIQUE_ID_ATTRIBUTE);
  */
 export const CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE =
     '__gChrome_childFrameRemoteToken';
-
-gCrWebLegacy.fill.ID_SYMBOL = ID_SYMBOL;
