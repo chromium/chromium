@@ -28,10 +28,8 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
 import org.chromium.chrome.browser.history.HistoryItem;
@@ -155,8 +153,6 @@ public class IncognitoHistoryLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(AllTypesToAllTypes.class)
-    // TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
-    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testTabNavigationHistoryDoNotLeakBetweenActivities(
             String activityType1, String activityType2) throws TimeoutException {
         ActivityType activity1 = ActivityType.valueOf(activityType1);
@@ -178,13 +174,46 @@ public class IncognitoHistoryLeakageTest {
         NavigationHistory navigationHistory2 =
                 tab2.getWebContents().getNavigationController().getNavigationHistory();
 
-        assertEquals(1, navigationHistory1.getEntryCount());
-        assertEquals(1, navigationHistory2.getEntryCount());
+        // With separated Regular profile and Incognito profile windows, the current testing
+        // framework requires first loading a new tab or blank page.
+        assertEquals(1, getRealEntryCount(navigationHistory1));
+        assertEquals(1, getRealEntryCount(navigationHistory2));
 
-        NavigationEntry entry1 = navigationHistory1.getEntryAtIndex(0);
-        NavigationEntry entry2 = navigationHistory2.getEntryAtIndex(0);
+        NavigationEntry entry1 = getFirstRealEntry(navigationHistory1);
+        NavigationEntry entry2 = getFirstRealEntry(navigationHistory2);
 
         assertEquals(mTestPage1, entry1.getOriginalUrl().getSpec());
         assertEquals(mTestPage2, entry2.getOriginalUrl().getSpec());
+    }
+
+    private static boolean isNtpOrAboutBlank(String url) {
+        return url.equals("chrome-native://newtab/") || url.equals("about:blank");
+    }
+
+    /**
+     * Returns the number of entries in the history that are not the new tab page or about:blank.
+     */
+    private static int getRealEntryCount(NavigationHistory history) {
+        int count = 0;
+        for (int i = 0; i < history.getEntryCount(); ++i) {
+            if (!isNtpOrAboutBlank(history.getEntryAtIndex(i).getOriginalUrl().getSpec())) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Returns the first navigation entry in the history that is not the new tab page or
+     * about:blank.
+     */
+    private static NavigationEntry getFirstRealEntry(NavigationHistory history) {
+        for (int i = 0; i < history.getEntryCount(); ++i) {
+            NavigationEntry entry = history.getEntryAtIndex(i);
+            if (!isNtpOrAboutBlank(entry.getOriginalUrl().getSpec())) {
+                return entry;
+            }
+        }
+        return null;
     }
 }
