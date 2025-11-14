@@ -392,7 +392,7 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   closeDropdown() {
-    this.clearAutocompleteMatches_();
+    this.clearAutocompleteMatches();
   }
 
   getSmartComposeForTesting() {
@@ -944,7 +944,7 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected onMatchClick_() {
-    this.clearAutocompleteMatches_();
+    this.clearAutocompleteMatches();
   }
 
   protected onSelectedMatchIndexChanged_(e: CustomEvent<{value: number}>) {
@@ -956,7 +956,7 @@ export class ComposeboxElement extends I18nMixinLit
   /**
    * Clears the autocomplete result on the page and on the autocomplete backend.
    */
-  private clearAutocompleteMatches_() {
+  clearAutocompleteMatches() {
     this.showDropdown_ = false;
     this.result_ = null;
     this.$.matches.unselect();
@@ -1078,7 +1078,7 @@ export class ComposeboxElement extends I18nMixinLit
   // matches.
   private queryAutocomplete(clearMatches: boolean) {
     if (clearMatches) {
-      this.clearAutocompleteMatches_();
+      this.clearAutocompleteMatches();
     }
     this.lastQueriedInput_ = this.input_;
     this.searchboxHandler_.queryAutocomplete(this.input_, false);
