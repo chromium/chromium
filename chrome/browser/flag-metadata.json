@@ -10692,6 +10692,11 @@
     "expiry_milestone": 138
   },
   {
+    "name": "web-request-security-info",
+    "owners": ["vkrot@google.com", "bhaskarsharma@google.com", "//extensions/OWNERS"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "web-serial-wired-devices-android",
     "owners": ["xutan@chromium.org", "ovn@google.com", "lt-web-apps-team@google.com"],
     "expiry_milestone": 146

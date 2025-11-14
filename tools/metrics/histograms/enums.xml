@@ -11921,6 +11921,7 @@ from previous Chrome versions.
   <int value="-784199026" label="EnableFilesAppCopyImage:enabled"/>
   <int value="-783999903" label="FilesTrashDrive:disabled"/>
   <int value="-783890018" label="LacrosProfileMigrationForAnyUser:disabled"/>
+  <int value="-783308028" label="WebRequestSecurityInfo:disabled"/>
   <int value="-783259450" label="PasswordLeakToggleMove:disabled"/>
   <int value="-783093620" label="WebViewHitTestInBlinkOnTouchStart:enabled"/>
   <int value="-782689039"
@@ -14239,6 +14240,7 @@ from previous Chrome versions.
   <int value="32057053" label="EnterpriseReportingInBrowser:disabled"/>
   <int value="32488630" label="EphemeralTab:enabled"/>
   <int value="32557641" label="HTTPAuthCommittedInterstitials:disabled"/>
+  <int value="32675677" label="WebRequestSecurityInfo:enabled"/>
   <int value="32701080" label="DropInputEventsBeforeFirstPaint:enabled"/>
   <int value="33778663" label="OriginTrials:enabled"/>
   <int value="34399969" label="SplitPartiallyOccludedQuads:enabled"/>

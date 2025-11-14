@@ -1778,6 +1778,12 @@ inline constexpr char kEnablePerfettoSystemTracingDescription[] =
     "When enabled, Chrome will attempt to connect to the system tracing "
     "service";
 
+inline constexpr char kWebRequestSecurityInfoName[] =
+    "Enable SecurityInfo in WebRequest API";
+inline constexpr char kWebRequestSecurityInfoDescription[] =
+    "Enables SecurityInfo in WebRequest API for extensions, allowing "
+    "them to retrieve certificate details.";
+
 inline constexpr char kEnableWindowsGamingInputDataFetcherName[] =
     "Enable Windows.Gaming.Input";
 inline constexpr char kEnableWindowsGamingInputDataFetcherDescription[] =
