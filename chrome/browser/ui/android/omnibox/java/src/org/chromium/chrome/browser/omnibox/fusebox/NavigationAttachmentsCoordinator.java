@@ -145,7 +145,10 @@ public class NavigationAttachmentsCoordinator
     }
 
     public void destroy() {
-        mMediator = null;
+        if (mMediator != null) {
+            mMediator.destroy();
+            mMediator = null;
+        }
         if (mTemplateUrlService != null) {
             mTemplateUrlService.removeObserver(this);
         }

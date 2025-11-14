@@ -66,6 +66,16 @@ public class NavigationAttachmentsMediator {
     private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
     private final ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
+    private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
+            this::onAutocompleteRequestTypeChanged;
+
+    private void onAutocompleteRequestTypeChanged(@AutocompleteRequestType Integer type) {
+        mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE, type);
+        boolean tabInputsEnabled = type != AutocompleteRequestType.IMAGE_GENERATION;
+        mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_ENABLED, tabInputsEnabled);
+        // TODO(https://www.crbug.com/456274957): Also set enabled on select tabs
+        // button.
+    }
 
     NavigationAttachmentsMediator(
             Context context,
@@ -87,17 +97,7 @@ public class NavigationAttachmentsMediator {
         mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
         mComposeBoxQueryControllerBridge = composeBoxQueryControllerBridge;
 
-        // TODO(https://crbug.com/460529475): Create a destroy method to remove this observer.
-        mAutocompleteRequestTypeSupplier.addObserver(
-                (type) -> {
-                    mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE, type);
-                    boolean tabInputsEnabled = type != AutocompleteRequestType.IMAGE_GENERATION;
-                    mModel.set(
-                            NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_ENABLED,
-                            tabInputsEnabled);
-                    // TODO(https://www.crbug.com/456274957): Also set enabled on select tabs
-                    // button.
-                });
+        mAutocompleteRequestTypeSupplier.addObserver(mOnAutocompleteRequestTypeChanged);
 
         mModel.set(
                 NavigationAttachmentsProperties.BUTTON_ADD_CLICKED, this::onToggleAttachmentsPopup);
@@ -140,6 +140,10 @@ public class NavigationAttachmentsMediator {
                                 !mModelList.isEmpty());
                     }
                 });
+    }
+
+    public void destroy() {
+        mAutocompleteRequestTypeSupplier.removeObserver(mOnAutocompleteRequestTypeChanged);
     }
 
     private void onRequestTypeButtonClicked() {

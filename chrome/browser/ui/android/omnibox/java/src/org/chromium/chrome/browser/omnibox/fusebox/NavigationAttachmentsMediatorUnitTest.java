@@ -165,6 +165,13 @@ public class NavigationAttachmentsMediatorUnitTest {
     }
 
     @Test
+    public void testDestroy() {
+        assertTrue(mAutocompleteRequestTypeSupplier.hasObservers());
+        mMediator.destroy();
+        assertFalse(mAutocompleteRequestTypeSupplier.hasObservers());
+    }
+
+    @Test
     public void initialState_toolbarIsHidden() {
         assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
     }
