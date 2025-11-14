@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/ash/event_rewriter_ash.h"
 
 #include <fcntl.h>
@@ -16,6 +11,7 @@
 #include <cstdint>
 
 #include "ash/constants/ash_features.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
@@ -433,7 +429,7 @@ bool RewriteWithKeyboardRemappings(
     EventRewriterAsh::MutableKeyState* remapped_state,
     bool strict = false) {
   for (size_t i = 0; i < num_mappings; ++i) {
-    const KeyboardRemapping& map = mappings[i];
+    const KeyboardRemapping& map = UNSAFE_TODO(mappings[i]);
     if (MatchKeyboardRemapping(input_state, map.condition, strict)) {
       remapped_state->flags = (input_state.flags & ~map.condition.flags);
       ApplyRemapping(map.result, remapped_state);
@@ -452,7 +448,7 @@ ui::KeyboardCode MatchedDeprecatedRemapping(
     size_t num_mappings,
     const EventRewriterAsh::MutableKeyState& input_state) {
   for (size_t i = 0; i < num_mappings; ++i) {
-    const KeyboardRemapping& map = mappings[i];
+    const KeyboardRemapping& map = UNSAFE_TODO(mappings[i]);
     if (MatchKeyboardRemapping(input_state, map.condition, /*strict=*/false)) {
       return map.result.key_code;
     }
@@ -522,7 +518,7 @@ bool IsKeyCodeInMappings(KeyboardCode key_code,
                          const KeyboardRemapping* mappings,
                          size_t num_mappings) {
   for (size_t i = 0; i < num_mappings; ++i) {
-    const KeyboardRemapping& map = mappings[i];
+    const KeyboardRemapping& map = UNSAFE_TODO(mappings[i]);
     if (key_code == map.condition.key_code) {
       return true;
     }
@@ -1506,10 +1502,10 @@ int EventRewriterAsh::GetRemappedModifierMasks(int device_id,
   for (size_t i = 0; unmodified_flags && (i < std::size(kModifierRemappings));
        ++i) {
     const ModifierRemapping* remapped_key = nullptr;
-    if (!(unmodified_flags & kModifierRemappings[i].flag)) {
+    if (!(unmodified_flags & UNSAFE_TODO(kModifierRemappings[i]).flag)) {
       continue;
     }
-    switch (kModifierRemappings[i].flag) {
+    switch (UNSAFE_TODO(kModifierRemappings[i]).flag) {
       case EF_COMMAND_DOWN:
         remapped_key =
             GetSearchRemappedKey(delegate_, device_id, *keyboard_capability_);
@@ -1537,16 +1533,18 @@ int EventRewriterAsh::GetRemappedModifierMasks(int device_id,
     }
     // ISO Level 5 Shift should already be handled, so do not try to remap it
     // here.
-    if (!remapped_key &&
-        &kModifierRemappings[i] != kModifierRemappingIsoLevel5ShiftMod3) {
-      const std::string pref_name = kModifierRemappings[i].pref_name
-                                        ? kModifierRemappings[i].pref_name
-                                        : "";
-      remapped_key = GetRemappedKey(device_id, kModifierRemappings[i].remap_to,
-                                    pref_name, delegate_);
+    if (!remapped_key && &UNSAFE_TODO(kModifierRemappings[i]) !=
+                             kModifierRemappingIsoLevel5ShiftMod3) {
+      const std::string pref_name =
+          UNSAFE_TODO(kModifierRemappings[i]).pref_name
+              ? UNSAFE_TODO(kModifierRemappings[i]).pref_name
+              : "";
+      remapped_key = GetRemappedKey(
+          device_id, UNSAFE_TODO(kModifierRemappings[i]).remap_to, pref_name,
+          delegate_);
     }
     if (remapped_key) {
-      unmodified_flags &= ~kModifierRemappings[i].flag;
+      unmodified_flags &= ~UNSAFE_TODO(kModifierRemappings[i]).flag;
       rewritten_flags |= remapped_key->flag;
     }
   }
@@ -2202,7 +2200,7 @@ bool EventRewriterAsh::RewriteTopRowKeysForCustomLayout(
   const bool is_action_key = (key_iter != scan_code_vector.end());
   if (is_action_key) {
     if (should_flip_top_row_mapping != ForceTopRowAsFunctionKeys(device_id)) {
-      ApplyRemapping(kCustomTopRowLayoutFKeys[std::distance(
+      ApplyRemapping(UNSAFE_TODO(kCustomTopRowLayoutFKeys)[std::distance(
                          scan_code_vector.begin(), key_iter)],
                      state);
     }

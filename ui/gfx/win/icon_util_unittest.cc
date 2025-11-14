@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/win/icon_util.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
@@ -73,7 +69,7 @@ class IconUtilTest : public testing::Test {
     SkBitmap bitmap;
     bitmap.allocN32Pixels(width, height);
     // Setting the pixels to transparent-black.
-    memset(bitmap.getPixels(), 0, width * height * 4);
+    UNSAFE_TODO(memset(bitmap.getPixels(), 0, width * height * 4));
     return bitmap;
   }
 
@@ -81,7 +77,7 @@ class IconUtilTest : public testing::Test {
     SkBitmap bitmap;
     bitmap.allocN32Pixels(width, height, /*isOpaque=*/true);
     // Setting the pixels to non-transparent white.
-    memset(bitmap.getPixels(), 0xFF, width * height * 4);
+    UNSAFE_TODO(memset(bitmap.getPixels(), 0xFF, width * height * 4));
     return bitmap;
   }
 
@@ -110,8 +106,9 @@ void IconUtilTest::CheckAllIconSizes(const base::FilePath& icon_filename,
   // Determine how many icons to expect, based on |max_icon_size|.
   int expected_num_icons = 0;
   for (size_t i = 0; i < IconUtil::kNumIconDimensions; ++i) {
-    if (IconUtil::kIconDimensions[i] > max_icon_size)
+    if (UNSAFE_TODO(IconUtil::kIconDimensions[i]) > max_icon_size) {
       break;
+    }
     ++expected_num_icons;
   }
 
@@ -129,7 +126,7 @@ void IconUtilTest::CheckAllIconSizes(const base::FilePath& icon_filename,
   // with the corresponding element of kIconDimensions.
   // Also extracts the 256x256 entry as png_entry.
   const IconUtil::ICONDIR* icon_dir =
-      reinterpret_cast<const IconUtil::ICONDIR*>(icon_data.data());
+      UNSAFE_TODO(reinterpret_cast<const IconUtil::ICONDIR*>(icon_data.data()));
   EXPECT_EQ(expected_num_icons, icon_dir->idCount);
   ASSERT_GE(IconUtil::kNumIconDimensions, icon_dir->idCount);
   ASSERT_GE(icon_data.length(),
@@ -137,10 +134,10 @@ void IconUtilTest::CheckAllIconSizes(const base::FilePath& icon_filename,
                 icon_dir->idCount * sizeof(IconUtil::ICONDIRENTRY));
   const IconUtil::ICONDIRENTRY* png_entry = NULL;
   for (size_t i = 0; i < icon_dir->idCount; ++i) {
-    const IconUtil::ICONDIRENTRY* entry = &icon_dir->idEntries[i];
+    const IconUtil::ICONDIRENTRY* entry = &UNSAFE_TODO(icon_dir->idEntries[i]);
     // Mod 256 because as a special case in ICONDIRENTRY, the value 0 represents
     // a width or height of 256.
-    int expected_size = IconUtil::kIconDimensions[i] % 256;
+    int expected_size = UNSAFE_TODO(IconUtil::kIconDimensions[i]) % 256;
     EXPECT_EQ(expected_size, static_cast<int>(entry->bWidth));
     EXPECT_EQ(expected_size, static_cast<int>(entry->bHeight));
     if (entry->bWidth == 0 && entry->bHeight == 0) {
@@ -301,7 +298,7 @@ TEST_F(IconUtilTest, TestBasicCreateHICONFromSkBitmap) {
   // compatible bitmap so we need to call ::GetDIBits() in order to retrieve
   // the bitmap's header information.
   BITMAPINFO bitmap_info;
-  ::ZeroMemory(&bitmap_info, sizeof(BITMAPINFO));
+  UNSAFE_TODO(::ZeroMemory(&bitmap_info, sizeof(BITMAPINFO)));
   bitmap_info.bmiHeader.biSize = sizeof(BITMAPINFO);
   HDC hdc = ::GetDC(NULL);
   int result = ::GetDIBits(hdc,
@@ -416,8 +413,8 @@ TEST_F(IconUtilTest, TestNumIconDimensionsUpToMediumSize) {
   ASSERT_LE(IconUtil::kNumIconDimensionsUpToMediumSize,
             IconUtil::kNumIconDimensions);
   EXPECT_EQ(IconUtil::kMediumIconSize,
-            IconUtil::kIconDimensions[
-                IconUtil::kNumIconDimensionsUpToMediumSize - 1]);
+            UNSAFE_TODO(IconUtil::kIconDimensions)
+                [IconUtil::kNumIconDimensionsUpToMediumSize - 1]);
 }
 
 TEST_F(IconUtilTest, TestTransparentIcon) {

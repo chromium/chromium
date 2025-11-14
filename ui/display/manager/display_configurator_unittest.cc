@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/display/manager/display_configurator.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -309,7 +305,7 @@ class DisplayConfiguratorTest : public testing::Test {
   // to |native_display_delegate_|. Must be followed by UpdateOutputs to effect
   // changes.
   void SetOutput(size_t index, std::unique_ptr<DisplaySnapshot> output) {
-    outputs_[index] = std::move(output);
+    UNSAFE_TODO(outputs_[index]) = std::move(output);
   }
 
   // Configures |native_display_delegate_| to return the first |num_outputs|
@@ -320,7 +316,7 @@ class DisplayConfiguratorTest : public testing::Test {
     ASSERT_LE(num_outputs, std::size(outputs_));
     std::vector<std::unique_ptr<DisplaySnapshot>> outputs;
     for (size_t i = 0; i < num_outputs; ++i) {
-      outputs.push_back(outputs_[i]->Clone());
+      outputs.push_back(UNSAFE_TODO(outputs_[i]->Clone()));
     }
     native_display_delegate_->SetOutputs(std::move(outputs));
 

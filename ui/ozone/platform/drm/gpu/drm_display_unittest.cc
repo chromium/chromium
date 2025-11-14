@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -88,13 +84,14 @@ std::unique_ptr<HardwareDisplayControllerInfo> GetDisplayInfo(
   connector->count_props = 0;
   connector->count_modes = kNumModes;
   connector->modes = DrmAllocator<drmModeModeInfo>(kNumModes);
-  std::memcpy(connector->modes, &modes[0], kNumModes * sizeof(drmModeModeInfo));
+  UNSAFE_TODO(std::memcpy(connector->modes, &modes[0],
+                          kNumModes * sizeof(drmModeModeInfo)));
 
   // Initialize a CRTC.
   ScopedDrmCrtcPtr crtc(DrmAllocator<drmModeCrtc>());
   crtc->crtc_id = crtc_id;
   crtc->mode_valid = 1;
-  crtc->mode = connector->modes[kNumModes - 1];
+  crtc->mode = UNSAFE_TODO(connector->modes[kNumModes - 1]);
 
   return std::make_unique<HardwareDisplayControllerInfo>(
       std::move(connector), std::move(crtc), index,
@@ -136,7 +133,7 @@ TEST(DrmDisplayTest, TiledDisplay) {
         {gfx::Size(3840, 4320), 60}, {gfx::Size(1920, 1080), 60}};
     primary_connector.encoders = std::vector<uint32_t>{primary_encoder.id};
     primary_connector.edid_blob = std::vector<uint8_t>(
-        kTiledDisplay, kTiledDisplay + kTiledDisplayLength);
+        kTiledDisplay, UNSAFE_TODO(kTiledDisplay + kTiledDisplayLength));
     primary_connector.properties.push_back(
         {.id = kTileBlobPropId, .value = kTileBlobId});
 
@@ -159,7 +156,7 @@ TEST(DrmDisplayTest, TiledDisplay) {
     nonprimary_connector.encoders =
         std::vector<uint32_t>{nonprimary_encoder.id};
     nonprimary_connector.edid_blob = std::vector<uint8_t>(
-        kTiledDisplay, kTiledDisplay + kTiledDisplayLength);
+        kTiledDisplay, UNSAFE_TODO(kTiledDisplay + kTiledDisplayLength));
     nonprimary_connector.properties.push_back(
         {.id = kTileBlobPropId, .value = kTileBlobId + 1});
     nonprimary_connector_id = nonprimary_connector.id;

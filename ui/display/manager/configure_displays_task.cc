@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/display/manager/configure_displays_task.h"
 
 #include <cstddef>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -118,12 +114,14 @@ void UpdateResolutionUma(const DisplayConfigureRequest& request,
   uint32_t width_idx = 0;
   uint32_t height_idx = 0;
   for (; width_idx < samples_list_size; width_idx++) {
-    if (size.width() <= kDisplayResolutionSamples[width_idx])
+    if (size.width() <= UNSAFE_TODO(kDisplayResolutionSamples[width_idx])) {
       break;
+    }
   }
   for (; height_idx < samples_list_size; height_idx++) {
-    if (size.height() <= kDisplayResolutionSamples[height_idx])
+    if (size.height() <= UNSAFE_TODO(kDisplayResolutionSamples[height_idx])) {
       break;
+    }
   }
 
   int display_resolution_index = 0;

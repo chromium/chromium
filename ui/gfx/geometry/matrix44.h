@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef UI_GFX_GEOMETRY_MATRIX44_H_
 #define UI_GFX_GEOMETRY_MATRIX44_H_
 
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "ui/gfx/geometry/double4.h"
@@ -107,14 +103,14 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) Matrix44 {
   constexpr double rc(int row, int col) const {
     DCHECK_LE(static_cast<unsigned>(row), 3u);
     DCHECK_LE(static_cast<unsigned>(col), 3u);
-    return matrix_[col][row];
+    return UNSAFE_TODO(matrix_[col][row]);
   }
 
   // Set a value in the matrix at |row|, |col|.
   void set_rc(int row, int col, double value) {
     DCHECK_LE(static_cast<unsigned>(row), 3u);
     DCHECK_LE(static_cast<unsigned>(col), 3u);
-    matrix_[col][row] = value;
+    UNSAFE_TODO(matrix_[col][row]) = value;
   }
 
   void GetColMajor(base::span<double, 16>) const;
@@ -196,8 +192,12 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) Matrix44 {
  private:
   std::optional<DecomposedTransform> Decompose2d() const;
 
-  ALWAYS_INLINE Double4 Col(int i) const { return LoadDouble4(matrix_[i]); }
-  ALWAYS_INLINE void SetCol(int i, Double4 v) { StoreDouble4(v, matrix_[i]); }
+  ALWAYS_INLINE Double4 Col(int i) const {
+    return LoadDouble4(UNSAFE_TODO(matrix_[i]));
+  }
+  ALWAYS_INLINE void SetCol(int i, Double4 v) {
+    StoreDouble4(v, UNSAFE_TODO(matrix_[i]));
+  }
 
   // This is indexed by [col][row].
   double matrix_[4][4];

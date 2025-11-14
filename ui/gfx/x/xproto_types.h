@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef UI_GFX_X_XPROTO_TYPES_H_
 #define UI_GFX_X_XPROTO_TYPES_H_
 
 #include <cstdint>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -188,7 +184,8 @@ class COMPONENT_EXPORT(X11) WriteBuffer {
     static_assert(std::is_trivially_copyable<T>::value, "");
     detail::VerifyAlignment(t, offset_);
     const uint8_t* start = reinterpret_cast<const uint8_t*>(t);
-    std::copy(start, start + sizeof(*t), std::back_inserter(current_buffer_));
+    std::copy(start, UNSAFE_TODO(start + sizeof(*t)),
+              std::back_inserter(current_buffer_));
     offset_ += sizeof(*t);
   }
 

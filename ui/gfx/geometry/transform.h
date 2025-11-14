@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef UI_GFX_GEOMETRY_TRANSFORM_H_
 #define UI_GFX_GEOMETRY_TRANSFORM_H_
 
@@ -15,6 +10,7 @@
 #include <optional>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
@@ -158,7 +154,7 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) Transform {
                        {0, axis_2d_.scale().y(), 0, axis_2d_.translation().y()},
                        {0, 0, 1, 0},
                        {0, 0, 0, 1}};
-      return m[row][col];
+      return UNSAFE_TODO(m[row][col]);
     }
     return matrix_.rc(row, col);
   }

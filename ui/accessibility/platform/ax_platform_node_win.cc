@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 
 #include <wrl/client.h>
@@ -19,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -587,7 +583,7 @@ SAFEARRAY* AXPlatformNodeWin::CreateClickablePointArray() {
   SafeArrayAccessData(clickable_point_array,
                       reinterpret_cast<void**>(&double_array));
   double_array[0] = center.x();
-  double_array[1] = center.y();
+  UNSAFE_TODO(double_array[1]) = center.y();
   SafeArrayUnaccessData(clickable_point_array);
 
   return clickable_point_array;
@@ -2143,8 +2139,8 @@ IFACEMETHODIMP AXPlatformNodeWin::get_relationTargetsOfType(BSTR type_bstr,
     *targets =
         static_cast<IUnknown**>(CoTaskMemAlloc(count * sizeof(IUnknown*)));
     for (LONG i = 0; i < count; ++i) {
-      (*targets)[i] = static_cast<IAccessible*>(alert_targets[i]);
-      (*targets)[i]->AddRef();
+      UNSAFE_TODO((*targets)[i]) = static_cast<IAccessible*>(alert_targets[i]);
+      UNSAFE_TODO((*targets)[i]->AddRef());
     }
     return S_OK;
   }
@@ -2168,8 +2164,8 @@ IFACEMETHODIMP AXPlatformNodeWin::get_relationTargetsOfType(BSTR type_bstr,
   for (AXPlatformNode* target : enumerated_targets) {
     if (target) {
       AXPlatformNodeWin* win_target = static_cast<AXPlatformNodeWin*>(target);
-      (*targets)[index] = static_cast<IAccessible*>(win_target);
-      (*targets)[index]->AddRef();
+      UNSAFE_TODO((*targets)[index]) = static_cast<IAccessible*>(win_target);
+      UNSAFE_TODO((*targets)[index]->AddRef());
       if (++index >= count) {
         break;
       }
@@ -2266,7 +2262,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_relations(LONG max_relations,
   count = std::min(count, max_relations);
   *n_relations = count;
   for (LONG i = 0; i < count; i++) {
-    hr = get_relation(i, &relations[i]);
+    hr = get_relation(i, &UNSAFE_TODO(relations[i]));
     if (!SUCCEEDED(hr))
       return hr;
   }
@@ -4206,7 +4202,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_selectedCells(IUnknown*** cells,
 
   for (size_t i = 0; i < selected.size(); ++i) {
     auto* node_win = static_cast<AXPlatformNodeWin*>(selected[i]);
-    node_win->QueryInterface(IID_PPV_ARGS(&(*cells)[i]));
+    node_win->QueryInterface(IID_PPV_ARGS(&UNSAFE_TODO((*cells)[i])));
   }
   return S_OK;
 }
@@ -4258,7 +4254,8 @@ IFACEMETHODIMP AXPlatformNodeWin::get_columnHeaderCells(
     AXPlatformNodeWin* node_win =
         static_cast<AXPlatformNodeWin*>(GetDelegate()->GetFromNodeID(node_id));
     if (node_win) {
-      node_win->QueryInterface(IID_PPV_ARGS(&(*cell_accessibles)[index]));
+      node_win->QueryInterface(
+          IID_PPV_ARGS(&UNSAFE_TODO((*cell_accessibles)[index])));
       ++index;
     }
   }
@@ -4311,7 +4308,8 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowHeaderCells(
     AXPlatformNodeWin* node_win =
         static_cast<AXPlatformNodeWin*>(GetDelegate()->GetFromNodeID(node_id));
     if (node_win) {
-      node_win->QueryInterface(IID_PPV_ARGS(&(*cell_accessibles)[index]));
+      node_win->QueryInterface(
+          IID_PPV_ARGS(&UNSAFE_TODO((*cell_accessibles)[index])));
       ++index;
     }
   }
@@ -8290,7 +8288,7 @@ HRESULT AXPlatformNodeWin::AllocateComArrayFromVector(
   *selected = static_cast<LONG*>(CoTaskMemAlloc(sizeof(LONG) * count));
 
   for (LONG i = 0; i < count; i++)
-    (*selected)[i] = results[i];
+    UNSAFE_TODO((*selected)[i]) = results[i];
   return S_OK;
 }
 

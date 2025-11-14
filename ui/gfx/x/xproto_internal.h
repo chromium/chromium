@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef UI_GFX_X_XPROTO_INTERNAL_H_
 #define UI_GFX_X_XPROTO_INTERNAL_H_
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 
 #ifndef IS_X11_IMPL
@@ -125,7 +121,7 @@ template <typename T>
 void Read(T* t, ReadBuffer* buf) {
   static_assert(std::is_trivially_copyable<T>::value, "");
   detail::VerifyAlignment(t, buf->offset);
-  memcpy(t, buf->data->bytes() + buf->offset, sizeof(*t));
+  UNSAFE_TODO(memcpy(t, buf->data->bytes() + buf->offset, sizeof(*t)));
   buf->offset += sizeof(*t);
 }
 

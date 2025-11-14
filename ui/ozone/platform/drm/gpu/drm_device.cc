@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 
 #include <fcntl.h>
@@ -19,6 +14,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -55,12 +51,12 @@ bool ProcessDrmEvent(int fd, const DrmEventHandler& callback) {
   while (idx < len) {
     DCHECK_LE(static_cast<int>(sizeof(drm_event)), len - idx);
     drm_event event;
-    memcpy(&event, &buffer[idx], sizeof(event));
+    UNSAFE_TODO(memcpy(&event, &buffer[idx], sizeof(event)));
     switch (event.type) {
       case DRM_EVENT_FLIP_COMPLETE: {
         DCHECK_LE(static_cast<int>(sizeof(drm_event_vblank)), len - idx);
         drm_event_vblank vblank;
-        memcpy(&vblank, &buffer[idx], sizeof(vblank));
+        UNSAFE_TODO(memcpy(&vblank, &buffer[idx], sizeof(vblank)));
         std::unique_ptr<base::trace_event::TracedValue> drm_data(
             new base::trace_event::TracedValue());
         drm_data->SetInteger("frame_count", 1);

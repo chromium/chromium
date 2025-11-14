@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/android/android_surface_control_compat.h"
 
 #include <android/data_space.h>
@@ -15,6 +10,7 @@
 
 #include "base/android/android_info.h"
 #include "base/atomic_sequence_num.h"
+#include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -503,10 +499,11 @@ SurfaceControl::TransactionStats ToTransactionStats(
       stats, &surface_controls, &size);
   transaction_stats.surface_stats.resize(size);
   for (size_t i = 0u; i < size; ++i) {
-    transaction_stats.surface_stats[i].surface = surface_controls[i];
+    transaction_stats.surface_stats[i].surface =
+        UNSAFE_TODO(surface_controls[i]);
     int fence_fd = SurfaceControlMethods::Get()
                        .ASurfaceTransactionStats_getPreviousReleaseFenceFdFn(
-                           stats, surface_controls[i]);
+                           stats, UNSAFE_TODO(surface_controls[i]));
     if (fence_fd != -1) {
       transaction_stats.surface_stats[i].fence = base::ScopedFD(fence_fd);
     }

@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef UI_GFX_GEOMETRY_DOUBLE4_H_
 #define UI_GFX_GEOMETRY_DOUBLE4_H_
 
 #include <type_traits>
+
+#include "base/compiler_specific.h"
 
 namespace gfx {
 
@@ -60,14 +57,14 @@ ALWAYS_INLINE double Sum(Double4 v) {
 }
 
 ALWAYS_INLINE Double4 LoadDouble4(const double s[4]) {
-  return Double4{s[0], s[1], s[2], s[3]};
+  return Double4{s[0], UNSAFE_TODO(s[1]), UNSAFE_TODO(s[2]), UNSAFE_TODO(s[3])};
 }
 
 ALWAYS_INLINE void StoreDouble4(Double4 v, double d[4]) {
   d[0] = v[0];
-  d[1] = v[1];
-  d[2] = v[2];
-  d[3] = v[3];
+  UNSAFE_TODO(d[1]) = v[1];
+  UNSAFE_TODO(d[2]) = v[2];
+  UNSAFE_TODO(d[3]) = v[3];
 }
 
 // The parameter should be the result of Double4/Float4 operations that would

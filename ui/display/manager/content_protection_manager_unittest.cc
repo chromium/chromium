@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/display/manager/content_protection_manager.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -71,11 +67,11 @@ class ContentProtectionManagerTest : public testing::Test {
         DISPLAY_CONNECTION_TYPE_INTERNAL, DISPLAY_CONNECTION_TYPE_HDMI,
         DISPLAY_CONNECTION_TYPE_VGA, DISPLAY_CONNECTION_TYPE_HDMI};
     for (size_t i = 0; i < std::size(kDisplayIds); ++i) {
-      displays_[i] = FakeDisplaySnapshot::Builder()
-                         .SetId(kDisplayIds[i])
-                         .SetType(conn_types[i])
-                         .SetCurrentMode(kDisplayMode.Clone())
-                         .Build();
+      UNSAFE_TODO(displays_[i]) = FakeDisplaySnapshot::Builder()
+                                      .SetId(UNSAFE_TODO(kDisplayIds[i]))
+                                      .SetType(UNSAFE_TODO(conn_types[i]))
+                                      .SetCurrentMode(kDisplayMode.Clone())
+                                      .Build();
     }
 
     UpdateDisplays(2);
@@ -102,7 +98,7 @@ class ContentProtectionManagerTest : public testing::Test {
 
     std::vector<std::unique_ptr<DisplaySnapshot>> displays;
     for (size_t i = 0; i < count; ++i)
-      displays.push_back(displays_[i]->Clone());
+      displays.push_back(UNSAFE_TODO(displays_[i]->Clone()));
 
     native_display_delegate_.SetOutputs(std::move(displays));
     layout_manager_.set_displays(native_display_delegate_.GetOutputs());

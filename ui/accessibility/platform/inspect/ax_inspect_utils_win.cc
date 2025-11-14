@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 
 #include <map>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -43,7 +39,7 @@ std::wstring GetNameForPlatformConstant(
     size_t table_size,
     int32_t value) {
   for (size_t i = 0; i < table_size; ++i) {
-    auto& entry = table[i];
+    auto& entry = UNSAFE_TODO(table[i]);
     if (entry.value == value)
       return base::ASCIIToWide(entry.name);
   }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager_legacy.h"
 
 #include <errno.h>
@@ -14,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -190,7 +186,7 @@ bool HardwareDisplayPlaneManagerLegacy::InitializePlanes() {
 
   for (uint32_t i = 0; i < plane_resources->count_planes; ++i) {
     std::unique_ptr<HardwareDisplayPlane> plane(
-        CreatePlane(plane_resources->planes[i]));
+        CreatePlane(UNSAFE_TODO(plane_resources->planes[i])));
 
     if (!plane->Initialize(drm_))
       continue;

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/accessibility/ax_tree_fuzzer_util.h"
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -31,12 +27,12 @@ size_t FuzzerData::RemainingBytes() {
 
 unsigned char FuzzerData::NextByte() {
   CHECK(RemainingBytes());
-  return data_[data_index_++];
+  return UNSAFE_TODO(data_[data_index_++]);
 }
 
 const unsigned char* FuzzerData::NextBytes(size_t amount) {
   CHECK(RemainingBytes() >= amount);
-  const unsigned char* current_position = &data_[data_index_];
+  const unsigned char* current_position = &UNSAFE_TODO(data_[data_index_]);
   data_index_ += amount;
   return current_position;
 }
@@ -348,8 +344,8 @@ std::u16string AXTreeFuzzerGenerator::GenerateInterestingText(
     size_t size) {
   std::u16string wide_str;
   for (size_t i = 0; i + 1 < size; i += 2) {
-    char16_t char_16 = data[i] << 8;
-    char_16 |= data[i + 1];
+    char16_t char_16 = UNSAFE_TODO(data[i]) << 8;
+    char_16 |= UNSAFE_TODO(data[i + 1]);
     // Don't insert a null character.
     if (char_16)
       wide_str.push_back(char_16);

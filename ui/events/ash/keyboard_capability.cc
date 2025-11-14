@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/ash/keyboard_capability.h"
 
 #include <fcntl.h>
@@ -23,6 +18,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
@@ -239,7 +235,7 @@ std::optional<uint32_t> ConvertScanCodeToEvdevKey(const base::ScopedFD& fd,
   struct input_keymap_entry keymap_entry {
     .flags = 0, .len = sizeof(scancode), .keycode = 0
   };
-  memcpy(keymap_entry.scancode, &scancode, sizeof(scancode));
+  UNSAFE_TODO(memcpy(keymap_entry.scancode, &scancode, sizeof(scancode)));
 
   int ret = ioctl(fd.get(), EVIOCGKEYCODE_V2, &keymap_entry);
   if (ret < 0) {
@@ -647,8 +643,8 @@ std::optional<KeyboardCode> KeyboardCapability::GetCorrespondingFunctionKey(
     return std::nullopt;
   }
 
-  return kFunctionKeys[std::distance(keyboard_info->top_row_action_keys.begin(),
-                                     iter)];
+  return UNSAFE_TODO(kFunctionKeys)[std::distance(
+      keyboard_info->top_row_action_keys.begin(), iter)];
 }
 
 std::optional<TopRowActionKey>

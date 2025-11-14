@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/keycodes/platform_key_map_win.h"
 
 #include <algorithm>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
@@ -47,16 +43,16 @@ void SetModifierState(BYTE* keyboard_state, int flags) {
   //    untoggled if the low-order bit is 0.
   // See https://msdn.microsoft.com/en-us/library/windows/desktop/ms646301.aspx
   if (flags & EF_SHIFT_DOWN)
-    keyboard_state[VK_SHIFT] |= 0x80;
+    UNSAFE_TODO(keyboard_state[VK_SHIFT]) |= 0x80;
 
   if (flags & EF_CONTROL_DOWN)
-    keyboard_state[VK_CONTROL] |= 0x80;
+    UNSAFE_TODO(keyboard_state[VK_CONTROL]) |= 0x80;
 
   if (flags & EF_ALT_DOWN)
-    keyboard_state[VK_MENU] |= 0x80;
+    UNSAFE_TODO(keyboard_state[VK_MENU]) |= 0x80;
 
   if (flags & EF_CAPS_LOCK_ON)
-    keyboard_state[VK_CAPITAL] |= 0x01;
+    UNSAFE_TODO(keyboard_state[VK_CAPITAL]) |= 0x01;
 
   DCHECK_EQ(flags & ~(EF_SHIFT_DOWN | EF_CONTROL_DOWN | EF_ALT_DOWN |
                       EF_CAPS_LOCK_ON),
@@ -81,7 +77,7 @@ int GetModifierFlags(int combination) {
   int flags = EF_NONE;
   for (size_t i = 0; i < std::size(modifier_flags); ++i) {
     if (combination & (1 << i))
-      flags |= modifier_flags[i];
+      flags |= UNSAFE_TODO(modifier_flags[i]);
   }
   return flags;
 }
@@ -385,7 +381,7 @@ void PlatformKeyMap::UpdateLayout(HKL layout) {
        modifier_combination <= kModifierFlagsCombinations;
        ++modifier_combination) {
     BYTE keyboard_state[256];
-    memset(keyboard_state, 0, sizeof(keyboard_state));
+    UNSAFE_TODO(memset(keyboard_state, 0, sizeof(keyboard_state)));
 
     // Setting up keyboard state for modifiers.
     int flags = GetModifierFlags(modifier_combination);
@@ -399,7 +395,7 @@ void PlatformKeyMap::UpdateLayout(HKL layout) {
       if (rv == -1) {
         // Dead key, injecting VK_SPACE to get character representation.
         BYTE empty_state[256];
-        memset(empty_state, 0, sizeof(empty_state));
+        UNSAFE_TODO(memset(empty_state, 0, sizeof(empty_state)));
         rv = ::ToUnicodeEx(VK_SPACE, 0, empty_state, translated_chars,
                            std::size(translated_chars), 0, keyboard_layout_);
         // Expecting a dead key character (not followed by a space).

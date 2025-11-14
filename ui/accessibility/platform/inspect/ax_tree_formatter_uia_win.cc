@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_uia_win.h"
 
 #include <math.h>
@@ -20,6 +15,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -86,8 +82,9 @@ void GetUIARuntimeId(IUIAutomationElement* first_child,
     CHECK(fragment_id_array);
     // Grab out the last three ints from the internal runtime id. This should
     // correspond with the frame tree id and DOM id.
-    internal_id = {fragment_id_array[1], fragment_id_array[2],
-                   fragment_id_array[3]};
+    internal_id = {UNSAFE_TODO(fragment_id_array[1]),
+                   UNSAFE_TODO(fragment_id_array[2]),
+                   UNSAFE_TODO(fragment_id_array[3])};
 
     ::SafeArrayUnaccessData(start_fragment_runtime_id.Get());
   }
@@ -111,9 +108,9 @@ void GetUIARuntimeId(IUIAutomationElement* first_child,
 
     // Stuff the internal id values in the last three spots in the grabbed
     // UIA-based runtime id.
-    runtime_id_array[upper_bound - 2] = internal_id[0];
-    runtime_id_array[upper_bound - 1] = internal_id[1];
-    runtime_id_array[upper_bound] = internal_id[2];
+    UNSAFE_TODO(runtime_id_array[upper_bound - 2]) = internal_id[0];
+    UNSAFE_TODO(runtime_id_array[upper_bound - 1]) = internal_id[1];
+    UNSAFE_TODO(runtime_id_array[upper_bound]) = internal_id[2];
     ::SafeArrayUnaccessData(runtime_id.Get());
   }
 
@@ -1084,9 +1081,9 @@ void AXTreeFormatterUia::WriteRectangleProperty(long propertyId,
 
   base::Value::Dict rectangle;
   rectangle.Set("left", static_cast<int>(data[0] - root_x));
-  rectangle.Set("top", static_cast<int>(data[1] - root_y));
-  rectangle.Set("width", static_cast<int>(data[2]));
-  rectangle.Set("height", static_cast<int>(data[3]));
+  rectangle.Set("top", static_cast<int>(UNSAFE_TODO(data[1] - root_y)));
+  rectangle.Set("width", static_cast<int>(UNSAFE_TODO(data[2])));
+  rectangle.Set("height", static_cast<int>(UNSAFE_TODO(data[3])));
   dict->SetByDottedPath(GetPropertyName(propertyId), std::move(rectangle));
 
   SafeArrayUnaccessData(value.parray);

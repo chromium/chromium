@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -291,7 +287,7 @@ void ModifierKeyboardHookWinImpl::UpdateModifierState(DWORD vk,
   }
 
   // Update the located virtual key first.
-  keyboard_state[vk] = is_key_down ? kKeyDown : kKeyUp;
+  UNSAFE_TODO(keyboard_state[vk]) = is_key_down ? kKeyDown : kKeyUp;
 
   // Now update the non-located virtual key.
   keyboard_state[VK_CONTROL] = (keyboard_state[VK_LCONTROL] == kKeyDown ||

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "ui/gfx/linux/drm_util_linux.h"
@@ -56,7 +52,7 @@ scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
   uint64_t modifiers[4] = {};
   if (params.modifier != DRM_FORMAT_MOD_INVALID) {
     for (size_t i = 0; i < params.num_planes; ++i)
-      modifiers[i] = params.modifier;
+      UNSAFE_TODO(modifiers[i]) = params.modifier;
   }
 
   const auto buffer_format = GetBufferFormatFromFourCCFormat(params.format);
@@ -114,9 +110,9 @@ scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
   params.is_original_buffer = is_original_buffer;
   params.preferred_modifiers = preferred_modifiers;
   for (size_t i = 0; i < params.num_planes; ++i) {
-    params.handles[i] = buffer->GetPlaneHandle(i);
-    params.strides[i] = buffer->GetPlaneStride(i);
-    params.offsets[i] = buffer->GetPlaneOffset(i);
+    UNSAFE_TODO(params.handles[i]) = buffer->GetPlaneHandle(i);
+    UNSAFE_TODO(params.strides[i]) = buffer->GetPlaneStride(i);
+    UNSAFE_TODO(params.offsets[i]) = buffer->GetPlaneOffset(i);
   }
 
   // AddFramebuffer2 only considers the modifiers if addfb_flags has

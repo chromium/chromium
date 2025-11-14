@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef UI_OZONE_PLATFORM_DRM_GPU_DRM_GPU_DISPLAY_MANAGER_UNITTEST_CC_
 #define UI_OZONE_PLATFORM_DRM_GPU_DRM_GPU_DISPLAY_MANAGER_UNITTEST_CC_
 
@@ -14,6 +9,7 @@
 
 #include <xf86drm.h>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -159,7 +155,7 @@ MATCHER_P(AtomicRequestHasCrtcConnectorPairs, pairings, "") {
 
   std::vector<drmModeAtomicReqItem> arg_items;
   for (uint32_t i = 0; i < arg->cursor; ++i) {
-    arg_items.push_back(arg->items[i]);
+    arg_items.push_back(UNSAFE_TODO(arg->items[i]));
   }
 
   for (const auto& [crtc, connector] : pairings) {
@@ -308,7 +304,7 @@ TEST_F(DrmGpuDisplayManagerTest, CapOutOnMaxDrmDeviceCount) {
     connector.modes = std::vector<ResolutionAndRefreshRate>{kStandardModes[0]};
     connector.encoders = std::vector<uint32_t>{encoder.id};
     connector.edid_blob =
-        std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+        std::vector<uint8_t>(kHPz32x, UNSAFE_TODO(kHPz32x + kHPz32xLength));
 
     fake_drm->InitializeState(/* use_atomic */ true);
   }
@@ -336,7 +332,7 @@ TEST_F(DrmGpuDisplayManagerTest, CapOutOnMaxConnectorCount) {
     connector.modes = std::vector<ResolutionAndRefreshRate>{kStandardModes[0]};
     connector.encoders = std::vector<uint32_t>{encoder.id};
     connector.edid_blob =
-        std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+        std::vector<uint8_t>(kHPz32x, UNSAFE_TODO(kHPz32x + kHPz32xLength));
   }
   fake_drm->InitializeState(/* use_atomic */ true);
 
@@ -361,7 +357,7 @@ TEST_F(DrmGpuDisplayManagerTest, FindAndConfigureDisplaysOnSameDrmDevice) {
         kStandardModes[i % kStandardModes.size()]};
     connector.encoders = std::vector<uint32_t>{encoder.id};
     connector.edid_blob =
-        std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+        std::vector<uint8_t>(kHPz32x, UNSAFE_TODO(kHPz32x + kHPz32xLength));
   }
   drm->InitializeState(/* use_atomic */ true);
 
@@ -409,7 +405,7 @@ TEST_F(DrmGpuDisplayManagerTest,
         kStandardModes[i % kStandardModes.size()]};
     connector.encoders = std::vector<uint32_t>{encoder.id};
     connector.edid_blob =
-        std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+        std::vector<uint8_t>(kHPz32x, UNSAFE_TODO(kHPz32x + kHPz32xLength));
 
     fake_drm->InitializeState(/* use_atomic */ true);
   }
@@ -460,7 +456,7 @@ TEST_F(DrmGpuDisplayManagerTest,
     connector.modes = std::vector<ResolutionAndRefreshRate>{kStandardModes[0]};
     connector.encoders = std::vector<uint32_t>{encoder.id};
     connector.edid_blob =
-        std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+        std::vector<uint8_t>(kHPz32x, UNSAFE_TODO(kHPz32x + kHPz32xLength));
   }
   fake_drm->InitializeState(/* use_atomic */ true);
 
@@ -538,7 +534,8 @@ TEST_F(DrmGpuDisplayManagerTest, TestEdidIdConflictResolution) {
     connector.modes = std::vector<ResolutionAndRefreshRate>{kStandardModes[3]};
     connector.encoders = std::vector<uint32_t>{encoder.id};
     connector.edid_blob = std::vector<uint8_t>(
-        kInternalDisplay, kInternalDisplay + kInternalDisplayLength);
+        kInternalDisplay,
+        UNSAFE_TODO(kInternalDisplay + kInternalDisplayLength));
   }
 
   // Next, add two external displays that will produce an EDID-based ID
@@ -555,7 +552,7 @@ TEST_F(DrmGpuDisplayManagerTest, TestEdidIdConflictResolution) {
     connector.encoders = std::vector<uint32_t>{encoder.id};
     connector.edid_blob = std::vector<uint8_t>(
         kNoSerialNumberDisplay,
-        kNoSerialNumberDisplay + kNoSerialNumberDisplayLength);
+        UNSAFE_TODO(kNoSerialNumberDisplay + kNoSerialNumberDisplayLength));
   }
 
   {
@@ -570,7 +567,7 @@ TEST_F(DrmGpuDisplayManagerTest, TestEdidIdConflictResolution) {
     connector.encoders = std::vector<uint32_t>{encoder.id};
     connector.edid_blob = std::vector<uint8_t>(
         kNoSerialNumberDisplay,
-        kNoSerialNumberDisplay + kNoSerialNumberDisplayLength);
+        UNSAFE_TODO(kNoSerialNumberDisplay + kNoSerialNumberDisplayLength));
   }
 
   fake_drm->InitializeState(/* use_atomic */ true);
@@ -1030,7 +1027,8 @@ class DrmGpuDisplayManagerGetSeamlessRefreshRateTest
       };
       connector.encoders = std::vector<uint32_t>{encoder.id};
       connector.edid_blob = std::vector<uint8_t>(
-          kInternalDisplay, kInternalDisplay + kInternalDisplayLength);
+          kInternalDisplay,
+          UNSAFE_TODO(kInternalDisplay + kInternalDisplayLength));
     }
 
     // Add external display with a possible downclock mode and with VRR
@@ -1053,7 +1051,7 @@ class DrmGpuDisplayManagerGetSeamlessRefreshRateTest
       // Use HPz32x because it sets vsync_rate_min=24Hz, which is required for
       // VRR capability.
       connector.edid_blob =
-          std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+          std::vector<uint8_t>(kHPz32x, UNSAFE_TODO(kHPz32x + kHPz32xLength));
       fake_drm_device_->AddProperty(connector.id,
                                     {.id = kVrrCapablePropId, .value = 1});
     }
@@ -1583,7 +1581,7 @@ TEST_F(TiledDisplayGetDisplaysTest, PrimaryCanStretchToFit) {
     // |kTiledDisplay| contains tile display DisplayID extension block with
     // stretch to fit behavior.
     primary_connector.edid_blob = std::vector<uint8_t>(
-        kTiledDisplay, kTiledDisplay + kTiledDisplayLength);
+        kTiledDisplay, UNSAFE_TODO(kTiledDisplay + kTiledDisplayLength));
     fake_drm->AddProperty(
         primary_connector.id,
         {.id = kTileBlobPropId, .value = primary_tile_property_blob->id()});
@@ -1612,7 +1610,7 @@ TEST_F(TiledDisplayGetDisplaysTest, PrimaryCanStretchToFit) {
     // any EDID ID that doesn't have that bit would suffice for scale_to_fit to
     // be false.
     nonprimary_connector.edid_blob =
-        std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+        std::vector<uint8_t>(kHPz32x, UNSAFE_TODO(kHPz32x + kHPz32xLength));
     fake_drm->AddProperty(
         nonprimary_connector.id,
         {.id = kTileBlobPropId, .value = nonprimary_tile_property_blob->id()});
@@ -1737,7 +1735,7 @@ TEST_F(TiledDisplayGetDisplaysTest, PruneTileModesNotInAllTiles) {
         {gfx::Size(3840, 4320), 60}, {gfx::Size(3840, 4320), 48}};
     primary_connector.encoders = std::vector<uint32_t>{primary_encoder.id};
     primary_connector.edid_blob =
-        std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+        std::vector<uint8_t>(kHPz32x, UNSAFE_TODO(kHPz32x + kHPz32xLength));
     fake_drm->AddProperty(
         primary_connector.id,
         {.id = kTileBlobPropId, .value = primary_tile_property_blob->id()});
@@ -1761,7 +1759,7 @@ TEST_F(TiledDisplayGetDisplaysTest, PruneTileModesNotInAllTiles) {
     nonprimary_connector.encoders =
         std::vector<uint32_t>{nonprimary_encoder.id};
     nonprimary_connector.edid_blob =
-        std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+        std::vector<uint8_t>(kHPz32x, UNSAFE_TODO(kHPz32x + kHPz32xLength));
     fake_drm->AddProperty(
         nonprimary_connector.id,
         {.id = kTileBlobPropId, .value = nonprimary_tile_property_blob->id()});
@@ -1810,7 +1808,7 @@ TEST_F(TiledDisplayGetDisplaysTest, NonTileModeNotPruned) {
         {gfx::Size(7680, 4320), 30}, {gfx::Size(3840, 4320), 60}};
     primary_connector.encoders = std::vector<uint32_t>{primary_encoder.id};
     primary_connector.edid_blob =
-        std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+        std::vector<uint8_t>(kHPz32x, UNSAFE_TODO(kHPz32x + kHPz32xLength));
     fake_drm->AddProperty(
         primary_connector.id,
         {.id = kTileBlobPropId, .value = primary_tile_property_blob->id()});
@@ -1858,7 +1856,7 @@ TEST_F(TiledDisplayGetDisplaysTest, ConfigureTileDisplayTileCompositeMode) {
         {gfx::Size(3840, 4320), 60}, {gfx::Size(1920, 1080), 60}};
     primary_connector.encoders = std::vector<uint32_t>{primary_encoder.id};
     primary_connector.edid_blob = std::vector<uint8_t>(
-        kTiledDisplay, kTiledDisplay + kTiledDisplayLength);
+        kTiledDisplay, UNSAFE_TODO(kTiledDisplay + kTiledDisplayLength));
     fake_drm->AddProperty(
         primary_connector.id,
         {.id = kTileBlobPropId, .value = primary_tile_property_blob->id()});
@@ -1883,7 +1881,7 @@ TEST_F(TiledDisplayGetDisplaysTest, ConfigureTileDisplayTileCompositeMode) {
     nonprimary_connector.encoders =
         std::vector<uint32_t>{nonprimary_encoder.id};
     nonprimary_connector.edid_blob = std::vector<uint8_t>(
-        kTiledDisplay, kTiledDisplay + kTiledDisplayLength);
+        kTiledDisplay, UNSAFE_TODO(kTiledDisplay + kTiledDisplayLength));
     fake_drm->AddProperty(
         nonprimary_connector.id,
         {.id = kTileBlobPropId, .value = nonprimary_tile_property_blob->id()});
@@ -1938,7 +1936,7 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
         {gfx::Size(3840, 4320), 60}, {gfx::Size(1920, 1080), 60}};
     primary_connector.encoders = std::vector<uint32_t>{primary_encoder.id};
     primary_connector.edid_blob = std::vector<uint8_t>(
-        kTiledDisplay, kTiledDisplay + kTiledDisplayLength);
+        kTiledDisplay, UNSAFE_TODO(kTiledDisplay + kTiledDisplayLength));
     drm->AddProperty(
         primary_connector.id,
         {.id = kTileBlobPropId, .value = primary_tile_property_blob->id()});
@@ -1963,7 +1961,7 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
     nonprimary_connector.encoders =
         std::vector<uint32_t>{nonprimary_encoder.id};
     nonprimary_connector.edid_blob = std::vector<uint8_t>(
-        kTiledDisplay, kTiledDisplay + kTiledDisplayLength);
+        kTiledDisplay, UNSAFE_TODO(kTiledDisplay + kTiledDisplayLength));
     drm->AddProperty(
         nonprimary_connector.id,
         {.id = kTileBlobPropId, .value = nonprimary_tile_property_blob->id()});
@@ -2028,7 +2026,7 @@ TEST_F(DrmGpuDisplayManagerTest, RelinquishDisplayControl) {
         kStandardModes[i % kStandardModes.size()]};
     connector.encoders = std::vector<uint32_t>{encoder.id};
     connector.edid_blob =
-        std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+        std::vector<uint8_t>(kHPz32x, UNSAFE_TODO(kHPz32x + kHPz32xLength));
   }
   drm->InitializeState(/* use_atomic */ true);
 
@@ -2067,7 +2065,7 @@ TEST_F(DrmGpuDisplayManagerTest, RelinquishDisplayControlFail) {
         kStandardModes[i % kStandardModes.size()]};
     connector.encoders = std::vector<uint32_t>{encoder.id};
     connector.edid_blob =
-        std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+        std::vector<uint8_t>(kHPz32x, UNSAFE_TODO(kHPz32x + kHPz32xLength));
   }
   drm->InitializeState(/* use_atomic */ true);
 
@@ -2103,7 +2101,8 @@ TEST_F(DrmGpuDisplayManagerTest, RelinquishDisplayControlFastDrop) {
   connector.connection = true;
   connector.modes = kStandardModes;
   connector.encoders = std::vector<uint32_t>{encoder.id};
-  connector.edid_blob = std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+  connector.edid_blob =
+      std::vector<uint8_t>(kHPz32x, UNSAFE_TODO(kHPz32x + kHPz32xLength));
 
   drm->InitializeState(/* use_atomic */ true);
 
@@ -2168,7 +2167,8 @@ TEST_F(DrmGpuDisplayManagerTest,
   connector.connection = true;
   connector.modes = kStandardModes;
   connector.encoders = std::vector<uint32_t>{encoder.id};
-  connector.edid_blob = std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+  connector.edid_blob =
+      std::vector<uint8_t>(kHPz32x, UNSAFE_TODO(kHPz32x + kHPz32xLength));
 
   drm->InitializeState(/* use_atomic */ true);
 

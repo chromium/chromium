@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/display/win/screen_win.h"
 
 #include <windows.h>
@@ -21,6 +16,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/features.h"
@@ -195,13 +191,13 @@ class TestScreenWinManager final : public TestScreenWinInitializer {
 
   HWND CreateFakeHwnd(const gfx::Rect& bounds) override {
     EXPECT_EQ(screen_win_, nullptr);
-    hwnd_map_.emplace(++hwndLast_, bounds);
+    hwnd_map_.emplace(UNSAFE_TODO(++hwndLast_), bounds);
     return hwndLast_;
   }
 
   HMONITOR CreateFakeHMONITOR(const MONITORINFOEX& info) override {
     EXPECT_EQ(screen_win_, nullptr);
-    hmonitor_map_.emplace(++hmonitorLast_, info);
+    hmonitor_map_.emplace(UNSAFE_TODO(++hmonitorLast_), info);
     return hmonitorLast_;
   }
 
