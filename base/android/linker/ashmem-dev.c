@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// This file is partially taken from AOSP and keeps its license.
+
 #include "ashmem.h"
 
 #include <dlfcn.h>
