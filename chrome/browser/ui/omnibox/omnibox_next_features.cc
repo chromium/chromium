@@ -22,14 +22,6 @@ constexpr base::FeatureState DISABLED = base::FEATURE_DISABLED_BY_DEFAULT;
 
 namespace omnibox {
 
-namespace internal {
-
-// If enabled, Omnibox popup will transition to AI-Mode with the compose-box
-// panel taking up the whole of the popup, covering the location bar completely.
-BASE_FEATURE(kWebUIOmniboxAimPopup, DISABLED);
-
-}  // namespace internal
-
 constexpr base::FeatureParam<AddContextButtonVariant>::Option
     kAddContextButtonVariantOptions[] = {
         {AddContextButtonVariant::kNone, "none"},
@@ -37,10 +29,13 @@ constexpr base::FeatureParam<AddContextButtonVariant>::Option
         {AddContextButtonVariant::kAboveResults, "above_results"},
         {AddContextButtonVariant::kInline, "inline"}};
 
+// If enabled, Omnibox popup will transition to AI-Mode with the compose-box
+// panel taking up the whole of the popup, covering the location bar completely.
+BASE_FEATURE(kWebUIOmniboxAimPopup, DISABLED);
 // Configures the placement of the "Add Context" button in the Omnibox popup.
 const base::FeatureParam<AddContextButtonVariant>
     kWebUIOmniboxAimPopupAddContextButtonVariantParam{
-        &internal::kWebUIOmniboxAimPopup, "AddContextButtonVariant",
+        &kWebUIOmniboxAimPopup, "AddContextButtonVariant",
         AddContextButtonVariant::kNone, &kAddContextButtonVariantOptions};
 // If enabled, removes the cutout for the location bar and fills the entire
 // popup content with the WebUI WebView.
@@ -154,29 +149,12 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
   return default_config;
 }
 
-bool IsAimPopupFeatureEnabled() {
-  return base::FeatureList::IsEnabled(internal::kWebUIOmniboxAimPopup);
-}
-
-bool IsAimPopupEnabled(Profile* profile) {
-  if (!profile) {
-    return false;
-  }
-
-  if (!IsAimPopupFeatureEnabled()) {
-    return false;
-  }
-
-  auto* aim_service = AimEligibilityServiceFactory::GetForProfile(profile);
-  return aim_service && aim_service->IsAimEligible();
-}
-
 bool IsCreateImagesEnabled(Profile* profile) {
   if (!profile) {
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(omnibox::internal::kWebUIOmniboxAimPopup)) {
+  if (!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup)) {
     return false;
   }
 
@@ -197,7 +175,7 @@ bool IsDeepSearchEnabled(Profile* profile) {
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(omnibox::internal::kWebUIOmniboxAimPopup)) {
+  if (!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup)) {
     return false;
   }
 
@@ -227,86 +205,80 @@ CreateQueryControllerConfigParams() {
 }
 
 const base::FeatureParam<bool> kCloseComposeboxByClickOutside(
-    &internal::kWebUIOmniboxAimPopup,
+    &kWebUIOmniboxAimPopup,
     "CloseComposeboxByClickOutside",
     true);
 const base::FeatureParam<bool> kCloseComposeboxByEscape(
-    &internal::kWebUIOmniboxAimPopup,
+    &kWebUIOmniboxAimPopup,
     "CloseComposeboxByEscape",
     true);
-const base::FeatureParam<std::string>
-    kConfigParam(&internal::kWebUIOmniboxAimPopup, "ConfigParam", "");
+const base::FeatureParam<std::string> kConfigParam(&kWebUIOmniboxAimPopup,
+                                                   "ConfigParam",
+                                                   "");
 const base::FeatureParam<bool> kContextMenuEnableMultiTabSelection(
-    &internal::kWebUIOmniboxAimPopup,
+    &kWebUIOmniboxAimPopup,
     "ContextMenuEnableMultiTabSelection",
     false);
 const base::FeatureParam<int> kContextMenuMaxTabSuggestions(
-    &internal::kWebUIOmniboxAimPopup,
+    &kWebUIOmniboxAimPopup,
     "ContextMenuMaxTabSuggestions",
     5);
-const base::FeatureParam<bool> kEnableViewportImages(
-    &internal::kWebUIOmniboxAimPopup,
-    "EnableViewportImages",
-    true);
-const base::FeatureParam<bool> kForceToolsAndModels(
-    &internal::kWebUIOmniboxAimPopup,
-    "ForceToolsAndModels",
-    false);
-const base::FeatureParam<int> kMaxNumFiles(&internal::kWebUIOmniboxAimPopup,
+const base::FeatureParam<bool> kEnableViewportImages(&kWebUIOmniboxAimPopup,
+                                                     "EnableViewportImages",
+                                                     true);
+const base::FeatureParam<bool> kForceToolsAndModels(&kWebUIOmniboxAimPopup,
+                                                    "ForceToolsAndModels",
+                                                    false);
+const base::FeatureParam<int> kMaxNumFiles(&kWebUIOmniboxAimPopup,
                                            "MaxNumFiles",
                                            1);
-const base::FeatureParam<bool> kSendLnsSurfaceParam(
-    &internal::kWebUIOmniboxAimPopup,
-    "SendLnsSurfaceParam",
-    true);
+const base::FeatureParam<bool> kSendLnsSurfaceParam(&kWebUIOmniboxAimPopup,
+                                                    "SendLnsSurfaceParam",
+                                                    true);
 const base::FeatureParam<bool> kShowComposeboxImageSuggestions(
-    &internal::kWebUIOmniboxAimPopup,
+    &kWebUIOmniboxAimPopup,
     "ShowComposeboxImageSuggestions",
     false);
 const base::FeatureParam<bool> kShowComposeboxTypedSuggest(
-    &internal::kWebUIOmniboxAimPopup,
+    &kWebUIOmniboxAimPopup,
     "ShowComposeboxTypedSuggest",
     true);
-const base::FeatureParam<bool> kShowComposeboxZps(
-    &internal::kWebUIOmniboxAimPopup,
-    "ShowComposeboxZps",
-    true);
-const base::FeatureParam<bool>
-    kShowContextMenu(&internal::kWebUIOmniboxAimPopup, "ShowContextMenu", true);
+const base::FeatureParam<bool> kShowComposeboxZps(&kWebUIOmniboxAimPopup,
+                                                  "ShowComposeboxZps",
+                                                  true);
+const base::FeatureParam<bool> kShowContextMenu(&kWebUIOmniboxAimPopup,
+                                                "ShowContextMenu",
+                                                true);
 const base::FeatureParam<bool> kShowContextMenuDescription(
-    &internal::kWebUIOmniboxAimPopup,
+    &kWebUIOmniboxAimPopup,
     "ShowContextMenuDescription",
     true);
 const base::FeatureParam<bool> kShowContextMenuTabPreviews(
-    &internal::kWebUIOmniboxAimPopup,
+    &kWebUIOmniboxAimPopup,
     "ShowContextMenuTabPreviews",
     true);
-const base::FeatureParam<bool> kShowCreateImageTool(
-    &internal::kWebUIOmniboxAimPopup,
-    "ShowCreateImageTool",
-    false);
-const base::FeatureParam<bool> kShowRecentTabChip(
-    &internal::kWebUIOmniboxAimPopup,
-    "ShowRecentTabChip",
-    true);
-const base::FeatureParam<bool> kShowSmartCompose(
-    &internal::kWebUIOmniboxAimPopup,
-    "ShowSmartCompose",
-    true);
-const base::FeatureParam<bool> kShowSubmit(&internal::kWebUIOmniboxAimPopup,
+const base::FeatureParam<bool> kShowCreateImageTool(&kWebUIOmniboxAimPopup,
+                                                    "ShowCreateImageTool",
+                                                    false);
+const base::FeatureParam<bool> kShowRecentTabChip(&kWebUIOmniboxAimPopup,
+                                                  "ShowRecentTabChip",
+                                                  true);
+const base::FeatureParam<bool> kShowSmartCompose(&kWebUIOmniboxAimPopup,
+                                                 "ShowSmartCompose",
+                                                 true);
+const base::FeatureParam<bool> kShowSubmit(&kWebUIOmniboxAimPopup,
                                            "ShowSubmit",
                                            true);
-const base::FeatureParam<bool> kShowToolsAndModels(
-    &internal::kWebUIOmniboxAimPopup,
-    "ShowToolsAndModels",
-    false);
+const base::FeatureParam<bool> kShowToolsAndModels(&kWebUIOmniboxAimPopup,
+                                                   "ShowToolsAndModels",
+                                                   false);
 const base::FeatureParam<bool> kSuppressLnsSurfaceParamIfNoImage(
-    &internal::kWebUIOmniboxAimPopup,
+    &kWebUIOmniboxAimPopup,
     "SuppressLnsSurfaceParamIfNoImage",
     true);
 const base::FeatureParam<bool>
     kUseSeparateRequestIdsForMultiContextViewportImages(
-        &internal::kWebUIOmniboxAimPopup,
+        &kWebUIOmniboxAimPopup,
         "UseSeparateRequestIdsForMultiContextViewportImages",
         false);
 

@@ -615,7 +615,7 @@ class LocationBarViewAddContextButtonBrowserTest
  public:
   LocationBarViewAddContextButtonBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{omnibox::internal::kWebUIOmniboxAimPopup,
+        {{omnibox::kWebUIOmniboxAimPopup,
           {{omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
             "inline"}}},
          {omnibox::kWebUIOmniboxPopup, {}}},

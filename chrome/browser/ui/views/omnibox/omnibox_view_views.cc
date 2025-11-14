@@ -411,10 +411,7 @@ void OmniboxViewViews::InstallPlaceholderText() {
                                                 ->client()
                                                 ->GetTemplateURLService()
                                                 ->GetDefaultSearchProvider()) {
-    const bool aim_popup_enabled =
-        location_bar_view_ &&
-        omnibox::IsAimPopupEnabled(location_bar_view_->profile());
-    if (aim_popup_enabled &&
+    if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup) &&
         search::DefaultSearchProviderIsGoogle(
             controller()->client()->GetTemplateURLService())) {
       SetPlaceholderText(l10n_util::GetStringFUTF16(

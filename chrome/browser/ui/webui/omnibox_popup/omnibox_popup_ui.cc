@@ -59,8 +59,7 @@ std::string AddContextButtonVariantToSearchboxLayoutMode(
 
 bool OmniboxPopupUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  return omnibox::IsAimPopupEnabled(profile) ||
+  return base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup) ||
          base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) ||
          base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup);
 }
@@ -85,6 +84,10 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   source->AddString(
       "resultChangedToPaintMetricName",
       "Omnibox.Popup.WebUI.ResultChangedToRepaintLatency.ToPaint");
+
+  source->AddBoolean(
+      "showContextEntrypoint",
+      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup));
 
   // Add composebox data.
   auto composebox_config = omnibox::FeatureConfig::Get().config.composebox();

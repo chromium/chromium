@@ -85,6 +85,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
 
       result_: {type: Object},
       searchboxLayoutMode_: {type: String},
+      showContextEntrypoint_: {type: Boolean},
     };
   }
 
@@ -96,6 +97,8 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   protected accessor result_: AutocompleteResult|null = null;
   protected accessor searchboxLayoutMode_: string =
       loadTimeData.getString('searchboxLayoutMode');
+  protected accessor showContextEntrypoint_: boolean =
+      loadTimeData.getBoolean('showContextEntrypoint');
 
   private callbackRouter_: PageCallbackRouter;
   private autocompleteResultChangedListenerId_: number|null = null;
