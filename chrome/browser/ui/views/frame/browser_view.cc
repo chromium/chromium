@@ -4339,7 +4339,10 @@ views::View* BrowserView::CreateMacOverlayView() {
   overlay_view->SetEventTargeter(std::make_unique<views::ViewTargeter>(
       std::make_unique<OverlayViewTargeterDelegate>()));
   overlay_view_tracker_.SetView(overlay_view.get());
-  overlay_widget_->GetRootView()->AddChildView(std::move(overlay_view));
+  // crbug.com/457473745: Set the overlay view as the widget's contents view
+  // to ensure it's sized to the widget. This prevents the overlay from having
+  // empty bounds during layout, which might hide its children.
+  overlay_widget_->SetContentsView(std::move(overlay_view));
 
   if (UsesImmersiveFullscreenTabbedMode()) {
     // Create the tab overlay widget as a child of overlay_widget_.
@@ -4350,8 +4353,7 @@ views::View* BrowserView::CreateMacOverlayView() {
     tab_overlay_view->SetEventTargeter(std::make_unique<views::ViewTargeter>(
         std::make_unique<OverlayViewTargeterDelegate>()));
     tab_overlay_view_ = tab_overlay_view.get();
-    tab_overlay_widget_->GetRootView()->AddChildView(
-        std::move(tab_overlay_view));
+    tab_overlay_widget_->SetContentsView(std::move(tab_overlay_view));
   }
 
   return overlay_view_tracker_.view();
