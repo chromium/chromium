@@ -17,6 +17,7 @@
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/renderer/actor/page_stability_metrics.h"
 #include "chrome/renderer/actor/paint_stability_monitor.h"
 #include "chrome/renderer/actor/tool_base.h"
 #include "content/public/renderer/render_frame.h"
@@ -92,6 +93,8 @@ void PageStabilityMonitor::NotifyWhenStable(base::TimeDelta observation_delay,
   CHECK(!is_stable_callback_);
   is_stable_callback_ = std::move(callback);
 
+  metrics_ = std::make_unique<PageStabilityMetrics>();
+
   if (render_frame_did_go_away_) {
     MoveToState(State::kRenderFrameGoingAway);
     return;
@@ -164,6 +167,9 @@ void PageStabilityMonitor::MoveToState(State new_state) {
     return;
   }
 
+  CHECK(metrics_);
+  metrics_->WillMoveToState(new_state);
+
   journal_entry_.reset();
   journal_entry_ = journal_->CreatePendingAsyncEntry(
       task_id_,
@@ -235,9 +241,13 @@ void PageStabilityMonitor::MoveToState(State new_state) {
           [](base::OnceClosure callback, base::TimeTicks unused_deadline) {
             std::move(callback).Run();
           },
-          MoveToStateClosure(State::kMaybeDelayCallback)));
+          MoveToStateClosure(State::kMainThreadIdle)));
       render_frame()->GetWebFrame()->PostIdleTask(
           FROM_HERE, main_thread_idle_callback_.callback());
+      break;
+    }
+    case State::kMainThreadIdle: {
+      MoveToState(State::kMaybeDelayCallback);
       break;
     }
     case State::kTimeout: {
@@ -262,11 +272,17 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       }
 
       if (callback_invoke_delay.is_positive()) {
-        PostMoveToStateClosure(State::kInvokeCallback, callback_invoke_delay)
-            .Run();
+        callback_invoke_delay_ = callback_invoke_delay;
+        MoveToState(State::kDelayCallback);
       } else {
         MoveToState(State::kInvokeCallback);
       }
+      break;
+    }
+    case State::kDelayCallback: {
+      CHECK(callback_invoke_delay_.is_positive());
+      PostMoveToStateClosure(State::kInvokeCallback, callback_invoke_delay_)
+          .Run();
       break;
     }
     case State::kInvokeCallback: {
@@ -399,10 +415,16 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
               State::kPaintStabilityReached,
               State::kTimeout,
               State::kRenderFrameGoingAway,
-              State::kMojoDisconnected}},
+              State::kMojoDisconnected,
+              State::kMainThreadIdle}},
+          {State::kMainThreadIdle, {
+              State::kMaybeDelayCallback}},
           {State::kTimeout, {
               State::kInvokeCallback}},
           {State::kMaybeDelayCallback, {
+              State::kDelayCallback,
+              State::kInvokeCallback}},
+          {State::kDelayCallback, {
               State::kPaintStabilityReached,
               State::kInvokeCallback,
               State::kTimeout,
@@ -443,6 +465,11 @@ void PageStabilityMonitor::Bind(
 }
 
 void PageStabilityMonitor::OnMojoDisconnected() {
+  // Don't enter the state machine until NotifyWhenStable is called.
+  if (state_ == State::kInitial) {
+    return;
+  }
+
   MoveToState(State::kMojoDisconnected);
 }
 
@@ -459,12 +486,16 @@ std::string_view PageStabilityMonitor::StateToString(State state) {
       return "StartMonitoring";
     case State::kWaitForNetworkIdle:
       return "WaitForNetworkIdle";
+    case State::kMainThreadIdle:
+      return "MainThreadIdle";
     case State::kWaitForMainThreadIdle:
       return "WaitForMainThreadIdle";
     case State::kTimeout:
       return "Timeout";
     case State::kMaybeDelayCallback:
       return "MaybeDelayCallback";
+    case State::kDelayCallback:
+      return "DelayCallback";
     case State::kInvokeCallback:
       return "InvokeCallback";
     case State::kRenderFrameGoingAway:

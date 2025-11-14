@@ -309,6 +309,17 @@ chromium-metrics-reviews@google.com.
   <summary>Number of tabs to observe in PerformActions response.</summary>
 </histogram>
 
+<histogram name="Actor.RendererPageStability.Outcome"
+    enum="PageStabilityOutcome" expires_after="2026-08-11">
+  <owner>linnan@google.com</owner>
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    Records the reason for page stability on renderer side. Recorded when the
+    stability check is complete. Only recorded if NotifyWhenStable() is called.
+  </summary>
+</histogram>
+
 <histogram name="Actor.Task.Count.{StoppedReason}" units="count"
     expires_after="2026-08-11">
   <owner>dtapuska@google.com</owner>

@@ -352,6 +352,8 @@ static_library("common_lib") {
       "actor/actor_logging.h",
       "actor/journal_details_builder.cc",
       "actor/journal_details_builder.h",
+      "actor/page_stability_metrics_common.cc",
+      "actor/page_stability_metrics_common.h",
       "actor/task_id.h",
       "read_anything/read_anything_util.cc",
       "read_anything/read_anything_util.h",

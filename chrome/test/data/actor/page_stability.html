@@ -13,6 +13,7 @@
         const fetch_button = document.getElementById('btnFetch');
         const fetch_and_work_button = document.getElementById('btnFetchAndWork');
         const work_forever_button = document.getElementById('btnWorkForever');
+        const paint_button = document.getElementById('btnPaint');
         const output = document.getElementById('output');
 
         window.doFetch = function(afterFetch) {
@@ -61,6 +62,10 @@
         work_forever_button.onclick = () => {
           doBusyWork(10000);
         };
+
+        paint_button.onclick = () => {
+          output.innerText = 'PAINT';
+        };
       }
     </script>
   </head>
@@ -68,6 +73,7 @@
     <button id="btnFetch">Fetch</button>
     <button id="btnFetchAndWork">Fetch and Work</button>
     <button id="btnWorkForever">Work Forever</button>
+    <button id="btnPaint">Paint</button>
     <p id="output">INITIAL</p>
   </body>
 </html>

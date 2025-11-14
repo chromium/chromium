@@ -157,6 +157,21 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/ui/event_dispatcher.h:ModelPageTargetType) -->
 
+<!-- LINT.IfChange(PageStabilityOutcome) -->
+
+<enum name="PageStabilityOutcome">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kNetworkAndMainThread"/>
+  <int value="2" label="kNetworkAndMainThreadDelayed"/>
+  <int value="3" label="kPaint"/>
+  <int value="4" label="kPaintDelayed"/>
+  <int value="5" label="kTimeout"/>
+  <int value="6" label="kRenderFrameGoingAway"/>
+  <int value="7" label="kMojoDisconnected"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/common/actor/page_stability_metrics_common.h:PageStabilityOutcome) -->
+
 <!-- LINT.IfChange(TimeOfUseResult) -->
 
 <enum name="TimeOfUseResult">
