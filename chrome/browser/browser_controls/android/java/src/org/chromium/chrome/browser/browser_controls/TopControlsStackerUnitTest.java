@@ -541,6 +541,76 @@ public class TopControlsStackerUnitTest {
     }
 
     @Test
+    public void repositionLayer_Scroll_NotRequestingNewFrame() {
+        var simulator = new TestBrowserControlsOffsetHelper();
+        simulator.setRequestNewFrame(false);
+
+        TestLayer tabStrip = TestLayer.tabStripLayer();
+        TestLayer toolbar = TestLayer.toolbarLayer();
+
+        mTopControlsStacker.addControl(tabStrip);
+        mTopControlsStacker.addControl(toolbar);
+        mTopControlsStacker.requestLayerUpdate(false);
+
+        // Resting position.
+        tabStrip.assertOffset(0);
+        toolbar.assertOffset(50);
+
+        // Scroll, the layers should hold the same offset since no new frame is requested.
+        // However, the layers should get the signal they are not at resting.
+        simulator.scrollBy(-20);
+        tabStrip.assertOffset(0).assertAtResting(false);
+        toolbar.assertOffset(50).assertAtResting(false);
+
+        simulator.scrollBy(-130);
+        tabStrip.assertOffset(0).assertAtResting(true);
+        toolbar.assertOffset(50).assertAtResting(true);
+
+        // Scroll to fully shown.
+        simulator.scrollBy(80);
+        tabStrip.assertOffset(0).assertAtResting(false);
+        toolbar.assertOffset(50).assertAtResting(false);
+
+        simulator.scrollBy(70);
+        tabStrip.assertOffset(0).assertAtResting(true);
+        toolbar.assertOffset(50).assertAtResting(true);
+    }
+
+    @Test
+    public void repositionLayer_ChangeConstraintShouldPostOffsetToLayers() {
+        var simulator = new TestBrowserControlsOffsetHelper();
+        simulator.setRequestNewFrame(false);
+
+        TestLayer tabStrip = TestLayer.tabStripLayer();
+        TestLayer toolbar = TestLayer.toolbarLayer();
+
+        mTopControlsStacker.addControl(tabStrip);
+        mTopControlsStacker.addControl(toolbar);
+        mTopControlsStacker.requestLayerUpdate(false);
+
+        // Resting position.
+        tabStrip.assertOffset(0);
+        toolbar.assertOffset(50);
+
+        // Scroll, the layers should hold the same offset since no new frame is requested.
+        // However, the layers should get the signal they are not at resting.
+        simulator.scrollBy(-20);
+        tabStrip.assertOffset(0).assertAtResting(false);
+        toolbar.assertOffset(50).assertAtResting(false);
+
+        simulator.scrollBy(-130);
+        tabStrip.assertOffset(0).assertAtResting(true);
+        toolbar.assertOffset(50).assertAtResting(true);
+
+        // At this point, the layers should be fully hidden now. However, if visibility constraint
+        // changed for the stacker, the layers should receive new offset at their hidden position.
+        simulator.setRequestNewFrame(true);
+        simulator.commitCurrentOffset();
+        tabStrip.assertOffset(-50).assertAtResting(true);
+        toolbar.assertOffset(-100).assertAtResting(true);
+    }
+
+    @Test
     public void repositionLayer_ChangeHeight_HideTopLayer() {
         TestLayer tabStrip = TestLayer.tabStripLayer();
         TestLayer toolbar = TestLayer.toolbarLayer();
@@ -1163,6 +1233,7 @@ public class TopControlsStackerUnitTest {
         private int mCurrentTopControlsMinHeightOffset;
 
         private int mTargetMinHeight;
+        private boolean mRequestNewFrame = true;
 
         TestBrowserControlsOffsetHelper() {
             this(0, 0);
@@ -1175,6 +1246,10 @@ public class TopControlsStackerUnitTest {
             doReturn(startTopMinHeightOffset)
                     .when(mBrowserControlsSizer)
                     .getTopControlsMinHeightOffset();
+        }
+
+        public void setRequestNewFrame(boolean requestNewFrame) {
+            mRequestNewFrame = requestNewFrame;
         }
 
         /** Simulate scroll the offset by delta. */
@@ -1228,7 +1303,7 @@ public class TopControlsStackerUnitTest {
                     0,
                     0,
                     /* bottomControlsMinHeightChanged= */ false,
-                    /* requestNewFrame= */ true,
+                    /* requestNewFrame= */ mRequestNewFrame,
                     /* isVisibilityForced= */ false);
         }
     }

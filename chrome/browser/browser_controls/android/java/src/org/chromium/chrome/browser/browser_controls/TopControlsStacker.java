@@ -228,7 +228,6 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
             repositionLayers(
                     mBrowserControlsSizer.getTopControlOffset(),
                     mBrowserControlsSizer.getTopControlsMinHeightOffset(),
-                    animate,
                     isBrowserControlsVisibilityForced());
         }
 
@@ -316,7 +315,6 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     private void repositionLayers(
             int initialTopOffset,
             int initialTopControlsMinHeightOffset,
-            boolean requestNewFrame,
             boolean offsetsAppliedByBrowser) {
         if (!BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()) return;
 
@@ -327,8 +325,6 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
                             + initialTopOffset
                             + " minHeightOffset="
                             + initialTopControlsMinHeightOffset
-                            + " requestNewFrame="
-                            + requestNewFrame
                             + " offsetsAppliedByBrowser="
                             + offsetsAppliedByBrowser);
         }
@@ -366,7 +362,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         // updates to layer that's changed from visible -> hidden.
 
         // The algorithm adjust layer's offset based on whether the control is showing or hiding.
-        if (requestNewFrame && initialTopOffset != 0 && hasAnimatingLayer) {
+        if (hasAnimatingLayer && initialTopOffset != 0) {
             // When animated size change, the browser controls will try to ensure it snaps to its
             // resting position. We'll use the minHeight as comparison first, then compare the
             // topOffset.
@@ -587,8 +583,8 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
      * most layer until the specified layer **(exclusive)**.
      *
      * <p><b>Warning:</b> The height returned might not be accurate during {@link
-     * #repositionLayers(int, int, boolean, boolean)} ()}, so it should not be used to determine a
-     * layer's attribute.
+     * #repositionLayers(int, int, boolean)} ()}, so it should not be used to determine a layer's
+     * attribute.
      *
      * @param stopLayer the layer in the stack order to stop at.
      * @return the total height of the visible UI from the specified layer to the top, or {@link
@@ -651,10 +647,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         if (mControls.isEmpty()) return;
 
         repositionLayers(
-                topOffset,
-                topControlsMinHeightOffset,
-                requestNewFrame,
-                requestNewFrame || isVisibilityForced);
+                topOffset, topControlsMinHeightOffset, requestNewFrame || isVisibilityForced);
     }
 
     /** Tear down |this| and clear all existing controls from the Map. */
