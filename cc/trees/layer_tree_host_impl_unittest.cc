@@ -11564,7 +11564,7 @@ class FakeLayerWithQuads : public LayerImpl {
 
 TEST_P(LayerTreeHostImplTest, LayersFreeTextures) {
   scoped_refptr<viz::TestContextProvider> context_provider =
-      viz::TestContextProvider::Create();
+      viz::TestContextProvider::CreateRaster();
   gpu::TestSharedImageInterface* sii = context_provider->SharedImageInterface();
   std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink(
       FakeLayerTreeFrameSink::Create3d(context_provider));
