@@ -22,6 +22,7 @@
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_provider_key.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/display/display.h"
 #include "ui/display/display_finder.h"
 #include "ui/display/screen.h"
@@ -311,6 +312,8 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(views::WidgetDelegate* delegate,
   params.wayland_app_id = params.wm_class_class + "-glic";
 #endif  // BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(IS_CHROMEOS)
+  // TODO(b:452406346): Use a `LAYER_NOT_DRAWN` for all the platforms.
+  params.layer_type = ui::LAYER_NOT_DRAWN;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params.init_properties_container.SetProperty(
       chromeos::kShouldHaveHighlightBorderOverlay, true);
