@@ -45,6 +45,8 @@ namespace performance_manager {
 
 namespace {
 
+BASE_FEATURE(kEarlyPMVisibilityUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Returns true if the opener relationship exists, false otherwise.
 bool ConnectWindowOpenRelationshipIfExists(PerformanceManagerTabHelper* helper,
                                            content::WebContents* web_contents) {
@@ -314,10 +316,22 @@ void PerformanceManagerTabHelper::RenderFrameHostStateChanged(
   frame_node->SetIsActive(render_frame_host->IsActive());
 }
 
+void PerformanceManagerTabHelper::OnVisibilityWillChange(
+    content::Visibility visibility) {
+  // Under EarlyPMVisibilityUpdate, going from hidden to visible is forwarded
+  // early so that process priority happens before any handler.
+  if (visibility == content::Visibility::VISIBLE &&
+      base::FeatureList::IsEnabled(kEarlyPMVisibilityUpdate)) {
+    page_node_->SetIsVisible(true);
+  }
+}
+
 void PerformanceManagerTabHelper::OnVisibilityChanged(
     content::Visibility visibility) {
-  const bool is_visible = visibility == content::Visibility::VISIBLE;
-  page_node_->SetIsVisible(is_visible);
+  if (visibility != content::Visibility::VISIBLE ||
+      !base::FeatureList::IsEnabled(kEarlyPMVisibilityUpdate)) {
+    page_node_->SetIsVisible(visibility == content::Visibility::VISIBLE);
+  }
 }
 
 void PerformanceManagerTabHelper::OnAudioStateChanged(bool audible) {

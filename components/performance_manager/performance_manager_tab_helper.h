@@ -74,6 +74,7 @@ class PerformanceManagerTabHelper
       content::RenderFrameHost* render_frame_host,
       content::RenderFrameHost::LifecycleState old_state,
       content::RenderFrameHost::LifecycleState new_state) override;
+  void OnVisibilityWillChange(content::Visibility visibility) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
   void OnAudioStateChanged(bool audible) override;
   void OnFrameAudioStateChanged(content::RenderFrameHost* render_frame_host,

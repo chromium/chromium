@@ -635,6 +635,9 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // configured to ignore UI events, and an UI event took place.
   virtual void DidGetIgnoredUIEvent() {}
 
+  // Invoked before the WebContents changes visibility.
+  virtual void OnVisibilityWillChange(Visibility visibility) {}
+
   // Invoked every time the WebContents changes visibility.
   virtual void OnVisibilityChanged(Visibility visibility) {}
 

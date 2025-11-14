@@ -4881,6 +4881,13 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
   const bool hide_or_reveal = (visibility_ == Visibility::HIDDEN) !=
                               (new_visibility == Visibility::HIDDEN);
 
+  if (new_visibility != visibility_ ||
+      (new_visibility == Visibility::VISIBLE && !did_first_set_visible_)) {
+    SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.OnVisibilityWillChange");
+    observers_.NotifyObservers(&WebContentsObserver::OnVisibilityWillChange,
+                               new_visibility);
+  }
+
   // Send ax modes to renderers before they start painting if they are being
   // revealed.
   if (!is_never_composited_ && hide_or_reveal &&
