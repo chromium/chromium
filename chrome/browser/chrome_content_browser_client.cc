@@ -4957,6 +4957,13 @@ base::FilePath ChromeContentBrowserClient::GetGraphiteDawnDiskCacheDirectory() {
   return user_data_dir.Append(FILE_PATH_LITERAL("GraphiteDawnCache"));
 }
 
+base::FilePath ChromeContentBrowserClient::GetGPUPersistentCacheDirectory() {
+  base::FilePath user_data_dir;
+  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+  DCHECK(!user_data_dir.empty());
+  return user_data_dir.Append(FILE_PATH_LITERAL("GPUPersistentCache"));
+}
+
 base::FilePath ChromeContentBrowserClient::GetNetLogDefaultDirectory() {
   base::FilePath user_data_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);

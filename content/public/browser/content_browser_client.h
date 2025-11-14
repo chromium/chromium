@@ -1551,6 +1551,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // graphite dawn.
   virtual base::FilePath GetGraphiteDawnDiskCacheDirectory();
 
+  // Returns the path to the GPU persistent cache root.
+  virtual base::FilePath GetGPUPersistentCacheDirectory();
+
   // Returns the path to the net log default directory.
   virtual base::FilePath GetNetLogDefaultDirectory();
 
