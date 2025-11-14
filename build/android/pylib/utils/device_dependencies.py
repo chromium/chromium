@@ -66,7 +66,7 @@ _EXCLUSIONS = [
 
 def _FilterDataDeps(abs_host_files):
   exclusions = _EXCLUSIONS + [
-      re.compile(os.path.join(constants.GetOutDirectory(), 'bin'))
+      re.compile(re.escape(os.path.join(constants.GetOutDirectory(), 'bin')))
   ]
   return [p for p in abs_host_files if not any(r.match(p) for r in exclusions)]
 
