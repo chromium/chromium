@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/android/device_info.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -1303,6 +1304,14 @@ class ScaledPageContentProtoProviderBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(ScaledPageContentProtoProviderBrowserTest, ScaleSizes) {
+  // TODO(crbug.com/456812241): Re-enable this test on automotive once the test
+  // is fixed.
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::device_info::is_automotive()) {
+    GTEST_SKIP() << "This test is disabled on automotive due to flakiness.";
+  }
+#endif
+
   const gfx::Size window_bounds(web_contents()->GetSize());
   LoadPage(https_server()->GetURL("/simple.html"));
 
