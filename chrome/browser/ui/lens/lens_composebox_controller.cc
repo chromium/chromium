@@ -211,16 +211,8 @@ void LensComposeboxController::AddVisualSelectionContext(
     return;
   }
 
-  // If there is existing visual selection context, mark it as expired. There
-  // should only be one visual selection context at a time. The UI should
-  // appropriately remove the existing thumbnail.
-  if (vsc_image_data_ && composebox_handler_) {
-    composebox_handler_->OnContextualInputStatusChanged(
-        vsc_image_data_->id,
-        composebox_query::mojom::FileUploadStatus::kUploadExpired,
-        std::nullopt);
-    vsc_image_data_.reset();
-  }
+  // Clear any existing visual selection context.
+  ClearVisualSelectionContext();
 
   vsc_image_data_.emplace(
       base::UnguessableToken::Create(),
@@ -233,16 +225,31 @@ void LensComposeboxController::AddVisualSelectionContext(
   }
 }
 
+void LensComposeboxController::ClearVisualSelectionContext() {
+  // If there is existing visual selection context, mark it as expired. There
+  // should only be one visual selection context at a time. The UI should
+  // appropriately remove the existing thumbnail.
+  if (vsc_image_data_ && composebox_handler_) {
+    composebox_handler_->OnContextualInputStatusChanged(
+        vsc_image_data_->id,
+        composebox_query::mojom::FileUploadStatus::kUploadExpired,
+        std::nullopt);
+  }
+  vsc_image_data_.reset();
+}
+
 void LensComposeboxController::DeleteContext(const base::UnguessableToken& id) {
   // If the id matches the visual selection context, delete it and notify
   // the overlay to clear the visual selection.
   if (vsc_image_data_ && vsc_image_data_->id == id) {
-    ClearVisualSelectionContext();
+    vsc_image_data_.reset();
+    lens_search_controller_->lens_overlay_controller()->ClearAllSelections();
   }
 }
 
 void LensComposeboxController::ClearFiles() {
   ClearVisualSelectionContext();
+  lens_search_controller_->lens_overlay_controller()->ClearAllSelections();
 }
 
 lens::LensSessionMetricsLogger*
@@ -322,11 +329,6 @@ LensComposeboxController::BuildVisualSelectionFileInfo(
   file_info->image_data_url = image_data_url;
   file_info->is_deletable = is_deletable;
   return file_info;
-}
-
-void LensComposeboxController::ClearVisualSelectionContext() {
-  vsc_image_data_.reset();
-  lens_search_controller_->lens_overlay_controller()->ClearAllSelections();
 }
 
 }  // namespace lens

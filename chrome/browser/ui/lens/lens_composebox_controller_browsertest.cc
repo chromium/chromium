@@ -859,6 +859,42 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
             static_cast<size_t>(0));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    LensComposeboxControllerBrowserTest,
+    AddVisualSelectionContext_DoesNotAddNonAimFollowUpSelections) {
+  WaitForPaint();
+
+  auto* lens_controller = GetLensSearchController();
+  ASSERT_TRUE(lens_controller);
+  auto* composebox_controller = GetLensComposeboxController();
+  auto* overlay_controller = GetLensOverlayController();
+  auto* test_composebox_controller =
+      static_cast<TestLensComposeboxController*>(composebox_controller);
+  ASSERT_TRUE(test_composebox_controller);
+
+  MockSearchboxPage& mock_searchbox_page =
+      test_composebox_controller->mock_searchbox_page();
+  EXPECT_CALL(mock_searchbox_page, AddFileContext(testing::_, testing::_))
+      .Times(0);
+
+  // Open the overlay directly to the side panel so composebox is visible. This
+  // will add a visual selection context.
+  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
+  lens_controller->OpenLensOverlayWithPendingRegion(
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      kTestRegion->Clone(), initial_bitmap);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return overlay_controller->state() == State::kOverlayAndResults;
+  }));
+
+  // A visual selection context should not have been added but the overlay
+  // should still have a region selection. This is because this is a not an AIM
+  // follow up selection.
+  auto vsc_id = composebox_controller->vsc_image_data_id_for_testing();
+  ASSERT_FALSE(vsc_id.has_value());
+  ASSERT_TRUE(overlay_controller->HasRegionSelection());
+}
+
 IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
                        AddVisualSelectionContext) {
   WaitForPaint();
@@ -1007,25 +1043,42 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
                        DeleteVisualSelectionContext) {
   WaitForPaint();
+  auto* controller = GetLensSearchController();
+  ASSERT_TRUE(controller->IsOff());
 
-  auto* lens_controller = GetLensSearchController();
-  ASSERT_TRUE(lens_controller);
+  // Issue a text search request to open the side panel without the overlay.
+  controller->IssueTextSearchRequest(
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuText, "query",
+      {}, AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      /*is_zero_prefix_suggestion=*/false,
+      /*suppress_contextualization=*/true);
+
+  // Wait for side panel to be visible.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetLensSidePanelCoordinator()->IsEntryShowing(); }));
+
+  // No visual selection context should have been added.
   auto* composebox_controller = GetLensComposeboxController();
   auto* overlay_controller = GetLensOverlayController();
+  EXPECT_FALSE(
+      composebox_controller->vsc_image_data_id_for_testing().has_value());
+  EXPECT_FALSE(overlay_controller->HasRegionSelection());
+  EXPECT_FALSE(overlay_controller->IsOverlayActive());
 
-  // Open the overlay directly to the side panel so composebox is visible. This
-  // will add a visual selection context.
-  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
-  lens_controller->OpenLensOverlayWithPendingRegion(
-      lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
-      kTestRegion->Clone(), initial_bitmap);
+  // Reshow the overlay.
+  controller->OpenLensOverlayInCurrentSession();
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return overlay_controller->state() == State::kOverlayAndResults;
   }));
 
+  // Issue a visual search request.
+  overlay_controller->IssueLensRegionRequestForTesting(kTestRegion.Clone(),
+                                                       /*is_click=*/false);
+
   // A visual selection context should have been added.
-  auto vsc_id = composebox_controller->vsc_image_data_id_for_testing();
-  ASSERT_TRUE(vsc_id.has_value());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return composebox_controller->vsc_image_data_id_for_testing().has_value();
+  }));
   ASSERT_TRUE(overlay_controller->HasRegionSelection());
 
   // Delete with a random token should not clear the selection.
@@ -1035,6 +1088,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
       composebox_controller->vsc_image_data_id_for_testing().has_value());
 
   // Delete with the correct token should clear the selection.
+  auto vsc_id = composebox_controller->vsc_image_data_id_for_testing();
   composebox_controller->DeleteContext(vsc_id.value());
   ASSERT_FALSE(overlay_controller->HasRegionSelection());
   ASSERT_FALSE(
@@ -1044,25 +1098,42 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
                        ClearFilesDeletesVisualSelectionContext) {
   WaitForPaint();
+  auto* controller = GetLensSearchController();
+  ASSERT_TRUE(controller->IsOff());
 
-  auto* lens_controller = GetLensSearchController();
-  ASSERT_TRUE(lens_controller);
+  // Issue a text search request to open the side panel without the overlay.
+  controller->IssueTextSearchRequest(
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuText, "query",
+      {}, AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      /*is_zero_prefix_suggestion=*/false,
+      /*suppress_contextualization=*/true);
+
+  // Wait for side panel to be visible.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetLensSidePanelCoordinator()->IsEntryShowing(); }));
+
+  // No visual selection context should have been added.
   auto* composebox_controller = GetLensComposeboxController();
   auto* overlay_controller = GetLensOverlayController();
+  EXPECT_FALSE(
+      composebox_controller->vsc_image_data_id_for_testing().has_value());
+  EXPECT_FALSE(overlay_controller->HasRegionSelection());
+  EXPECT_FALSE(overlay_controller->IsOverlayActive());
 
-  // Open the overlay directly to the side panel so composebox is visible. This
-  // will add a visual selection context.
-  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
-  lens_controller->OpenLensOverlayWithPendingRegion(
-      lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
-      kTestRegion->Clone(), initial_bitmap);
+  // Reshow the overlay.
+  controller->OpenLensOverlayInCurrentSession();
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return overlay_controller->state() == State::kOverlayAndResults;
   }));
 
+  // Issue a visual search request.
+  overlay_controller->IssueLensRegionRequestForTesting(kTestRegion.Clone(),
+                                                       /*is_click=*/false);
+
   // A visual selection context should have been added.
-  ASSERT_TRUE(
-      composebox_controller->vsc_image_data_id_for_testing().has_value());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return composebox_controller->vsc_image_data_id_for_testing().has_value();
+  }));
   ASSERT_TRUE(overlay_controller->HasRegionSelection());
 
   // ClearFiles should clear the selection.

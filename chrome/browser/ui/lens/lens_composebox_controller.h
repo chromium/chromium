@@ -70,6 +70,9 @@ class LensComposeboxController {
   // Adds the visual selection context to the compose box context carousel.
   void AddVisualSelectionContext(const std::string& image_data_url);
 
+  // Clears the visual selection context.
+  void ClearVisualSelectionContext();
+
   // Deletes the context associated with the given id.
   void DeleteContext(const base::UnguessableToken& id);
 
@@ -122,9 +125,6 @@ class LensComposeboxController {
   searchbox::mojom::SelectedFileInfoPtr BuildVisualSelectionFileInfo(
       const std::string& image_data_url,
       bool is_deletable);
-
-  // Clears the visual selection context.
-  void ClearVisualSelectionContext();
 
   // Owns this.
   const raw_ptr<LensSearchController> lens_search_controller_;
