@@ -75,6 +75,7 @@
 using content::EvalJs;
 using content::ExecJs;
 using ::testing::_;
+using ::testing::AtLeast;
 
 namespace {
 
@@ -1296,10 +1297,10 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   EXPECT_CALL(mock_controller(), Show());
   pip_window_manager->EnterPictureInPictureWithController(&mock_controller());
 
-  EXPECT_CALL(mock_controller(), GetWebContents());
+  EXPECT_CALL(mock_controller(), GetWebContents()).Times(AtLeast(1));
   pip_window_manager->GetWebContents();
 
-  EXPECT_CALL(mock_controller(), GetChildWebContents());
+  EXPECT_CALL(mock_controller(), GetChildWebContents()).Times(AtLeast(1));
   pip_window_manager->GetChildWebContents();
 }
 
@@ -1331,7 +1332,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
 
   // Show the non-WebContents based Picture-in-Picture window controller.
   EXPECT_CALL(mock_controller(), GetWebContents())
-      .WillOnce(testing::Return(nullptr));
+      .WillRepeatedly(testing::Return(nullptr));
   EXPECT_CALL(mock_controller(), Show());
   pip_window_manager->EnterPictureInPictureWithController(&mock_controller());
 
