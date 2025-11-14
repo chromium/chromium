@@ -4624,14 +4624,27 @@ TEST_P(PdfInkModuleTextHighlightCaretTest, UnhandledKeyEvents) {
   EXPECT_FALSE(HandleKeyboardEvent(control_s_event));
 }
 
-class PdfInkModuleTextHighlightMetricsTest
-    : public PdfInkModuleMetricsTestBase,
-      public PdfInkModuleTextHighlightTest {
+class PdfInkModuleTextHighlightMetricsTestBase
+    : public PdfInkModuleMetricsTestBase {
  protected:
   static constexpr char kTextHighlightColorMetric[] =
       "PDF.Ink2TextHighlighterColor";
   static constexpr char kTextHighlightInputDeviceMetric[] =
       "PDF.Ink2TextHighlightInputDeviceType";
+
+  // Validates the the total counts of all relevant text highlight metrics.
+  void ValidateHighlightMetricCounts(int expected_metric_count) {
+    histograms().ExpectTotalCount(kTextHighlightColorMetric,
+                                  expected_metric_count);
+    histograms().ExpectTotalCount(kTextHighlightInputDeviceMetric,
+                                  expected_metric_count);
+  }
+};
+
+class PdfInkModuleTextHighlightMetricsTest
+    : public PdfInkModuleTextHighlightMetricsTestBase,
+      public PdfInkModuleTextHighlightTest {
+ protected:
   static constexpr base::TimeDelta kOneMs = base::Milliseconds(1);
   static constexpr base::TimeDelta kTextSelectionClickTimeMs =
       base::Milliseconds(ui::kDoubleClickTimeMs);
@@ -4648,14 +4661,6 @@ class PdfInkModuleTextHighlightMetricsTest
             .SetClickCount(click_count)
             .Build();
     EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
-  }
-
-  // Validates the the total counts of all relevant text highlight metrics.
-  void ValidateHighlightMetricCounts(int expected_metric_count) {
-    histograms().ExpectTotalCount(kTextHighlightColorMetric,
-                                  expected_metric_count);
-    histograms().ExpectTotalCount(kTextHighlightInputDeviceMetric,
-                                  expected_metric_count);
   }
 };
 
@@ -4975,6 +4980,87 @@ TEST_P(PdfInkModuleTextHighlightMetricsTest, ThreeClickMove) {
   ValidateHighlightMetricCounts(1);
 }
 
+class PdfInkModuleTextHighlightCaretMetricsTest
+    : public PdfInkModuleTextHighlightMetricsTestBase,
+      public PdfInkModuleTextHighlightCaretTest {
+ protected:
+  void ApplySampleTextHighlight() {
+    SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
+    InSequence seq;
+    HandleKeyboardEventAndExpectCaret(
+        GenerateKeyDownEvent(ui::KeyboardCode::VKEY_RIGHT,
+                             blink::WebInputEvent::Modifiers::kShiftKey));
+    HandleKeyboardEventAndExpectCaret(
+        GenerateKeyDownEvent(ui::KeyboardCode::VKEY_RIGHT,
+                             blink::WebInputEvent::Modifiers::kNoModifiers));
+  }
+};
+
+TEST_P(PdfInkModuleTextHighlightCaretMetricsTest,
+       TextHighlightUndoRedoDoesNotAffectMetrics) {
+  SetUpCaret();
+
+  ValidateHighlightMetricCounts(0);
+
+  RunHandledArrowKeyTest(ui::KeyboardCode::VKEY_RIGHT);
+
+  ValidateHighlightMetricCounts(1);
+
+  PerformUndo();
+  PerformRedo();
+
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
+  ValidateHighlightMetricCounts(1);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretMetricsTest, Color) {
+  SetUpCaret();
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kRedBrushParams);
+
+  histograms().ExpectTotalCount(kTextHighlightColorMetric, 0);
+
+  ApplySampleTextHighlight();
+
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
+  histograms().ExpectUniqueSample(kTextHighlightColorMetric,
+                                  StrokeMetricHighlighterColor::kLightRed, 1);
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+  ApplySampleTextHighlight();
+
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
+  histograms().ExpectBucketCount(kTextHighlightColorMetric,
+                                 StrokeMetricHighlighterColor::kOrange, 1);
+  histograms().ExpectTotalCount(kTextHighlightColorMetric, 2);
+}
+
+TEST_P(PdfInkModuleTextHighlightCaretMetricsTest, InputDevice) {
+  SetUpCaret();
+
+  histograms().ExpectTotalCount(kTextHighlightInputDeviceMetric, 0);
+
+  ApplySampleTextHighlight();
+
+  // Apply a text highlight stroke with keyboard.
+  histograms().ExpectUniqueSample(kTextHighlightInputDeviceMetric,
+                                  StrokeMetricInputDeviceType::kKeyboard, 1);
+
+  // Apply a text highlight stroke with mouse.
+  SetTextAreaPoints({kStartPointInsidePage0, kEndPointInsidePage0});
+  ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPointInsidePage0},
+                               kEndPointInsidePage0);
+
+  histograms().ExpectBucketCount(kTextHighlightInputDeviceMetric,
+                                 StrokeMetricInputDeviceType::kMouse, 1);
+  histograms().ExpectBucketCount(kTextHighlightInputDeviceMetric,
+                                 StrokeMetricInputDeviceType::kKeyboard, 1);
+  histograms().ExpectTotalCount(kTextHighlightInputDeviceMetric, 2);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PdfInkModuleTest,
                          testing::ValuesIn(GetAllInkTestVariations()));
@@ -5001,6 +5087,10 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     PdfInkModuleTextHighlightMetricsTest,
+    testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PdfInkModuleTextHighlightCaretMetricsTest,
     testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
 
 }  // namespace chrome_pdf

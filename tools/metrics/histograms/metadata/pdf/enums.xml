@@ -230,6 +230,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Mouse"/>
   <int value="1" label="Touch"/>
   <int value="2" label="Pen"/>
+  <int value="3" label="Keyboard"/>
 </enum>
 
 <!-- LINT.ThenChange(//pdf/pdf_ink_metrics_handler.h:PDFInk2StrokeInputDeviceType) -->

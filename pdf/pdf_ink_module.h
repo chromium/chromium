@@ -160,7 +160,7 @@ class PdfInkModule {
     base::TimeTicks timestamp;
 
     // The type of tool used to generate the input.
-    ink::StrokeInput::ToolType tool_type;
+    ink::StrokeInput::ToolType tool_type = ink::StrokeInput::ToolType::kUnknown;
   };
 
   struct DrawingStrokeState {
@@ -254,6 +254,9 @@ class PdfInkModule {
     // active when the user is actively selecting text. The event time is
     // unused.
     EventDetails input_last_event;
+
+    // Whether the text highlight was initiated by a keyboard event.
+    bool initiated_by_keyboard = false;
   };
 
   // Drawing brush state changes that are pending the completion of an

@@ -425,11 +425,7 @@ bool PdfInkModule::OnKeyDown(const blink::WebKeyboardEvent& event) {
   if (!is_text_highlighting()) {
     client_->StrokeStarted();
     current_tool_state_.emplace<TextHighlightState>();
-    // TODO(crbug.com/454897819): The tool type is used for metrics reporting.
-    // Set to the unknown tool type for now, and find a different way to report
-    // text highlighting by caret.
-    text_highlight_state().input_last_event.tool_type =
-        ink::StrokeInput::ToolType::kUnknown;
+    text_highlight_state().initiated_by_keyboard = true;
     std::optional<PdfInkUndoRedoModel::DiscardedDrawCommands> discards =
         undo_redo_model_.StartDraw();
     CHECK(discards.has_value());
@@ -1097,9 +1093,9 @@ bool PdfInkModule::FinishTextHighlight(const gfx::PointF& position,
 
     const bool modified = !highlight_strokes.empty();
     if (modified) {
-      // TODO(crbug.com/454897819): Report keyboard input device types.
-      if (!text_selection_click_timer_.IsRunning() &&
-          tool_type != ink::StrokeInput::ToolType::kUnknown) {
+      if (state.initiated_by_keyboard) {
+        ReportKeyboardTextHighlight(highlighter_brush_.ink_brush());
+      } else if (!text_selection_click_timer_.IsRunning()) {
         ReportTextHighlight(highlighter_brush_.ink_brush(), tool_type);
       }
 
