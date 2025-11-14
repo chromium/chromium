@@ -5513,6 +5513,10 @@ bool BrowserView::MaybeShowBookmarkBar(WebContents* contents) {
   if (show_bookmark_bar && !bookmark_bar_view_->parent()) {
     // Add the bookmark bar to the view hierarchy if it might be shown.
     top_container_->AddChildView(bookmark_bar_view_.get());
+    // Make sure the contents separator is painted last as the background for
+    // BookmarkVieBar may paint over it otherwise.
+    top_container_->ReorderChildView(top_container_separator_,
+                                     top_container_->children().size());
     needs_layout = true;
   } else if (!show_bookmark_bar && bookmark_bar_view_->parent()) {
     // Remove the bookmark bar from the view hierarchy if it should be hidden.

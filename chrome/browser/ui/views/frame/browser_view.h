@@ -1135,15 +1135,13 @@ class BrowserView : public BrowserWindow,
   // |------------------------------------------------------------------------|
   // | Contents container (contents_container_)                               |
   // |  --------------------------------------------------------------------  |
-  // |  |  contents_web_view_ (or multi_contents_view_ if defined          |  |
+  // |  |  contents_web_view_ or multi_contents_view_ if defined           |  |
   // |  --------------------------------------------------------------------  |
   // |------------------------------------------------------------------------|
   // | ContentHeightSidePanel (contents_height_side_panel_)                   |
   // |------------------------------------------------------------------------|
-  // | ToolbarHeightSidePanel ()                                              |
+  // | ToolbarHeightSidePanel (toolbar_height_side_panel_)                    |
   // |------------------------------------------------------------------------|
-  // | Shadow Overlay (frames main browser area in some situations)           |
-  // --------------------------------------------------------------------------
 
   // The view that draws the background the main_container and
   // toolbar_height_side_panel are displayed on.

@@ -541,17 +541,6 @@ void BrowserViewLayoutImplOld::LayoutBookmarkBar(gfx::Rect& available_bounds) {
                                   available_bounds.width(),
                                   bookmark_bar_height);
   SetClipPathWithBottomAllowance(views().bookmark_bar);
-  if (!features::IsPixelCanvasRecordingEnabled()) {
-    // Make sure the contents separator is painted last as the background for
-    // BookmarkVieBar/ToolbarView may paint over it otherwise.
-    // TODO(https://crbug.com/41344902): Remove once the pixel canvas is enabled
-    // on all aura platforms.
-    if (views().top_container == views().bookmark_bar->parent()) {
-      views().top_container->ReorderChildView(
-          views().top_container_separator,
-          views().top_container->children().size());
-    }
-  }
 
   // Set visibility after setting bounds, as the visibility update uses the
   // bounds to determine if the mouse is hovering over a button.
