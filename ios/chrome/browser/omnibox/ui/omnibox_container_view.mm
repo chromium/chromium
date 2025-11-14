@@ -176,6 +176,9 @@ UIButton* CreateClearButton() {
   NSLayoutConstraint* _textInputViewLeadingToIconConstraint;
   // Text input height constraint.
   NSLayoutConstraint* _textInputHeightConstraint;
+  // The last known width of the text view, used to avoid redundant height
+  // calculations.
+  CGFloat _lastKnownTextViewWidth;
 }
 
 @synthesize heightDelegate = _heightDelegate;
@@ -273,7 +276,10 @@ UIButton* CreateClearButton() {
 
 - (void)layoutSubviews {
   [super layoutSubviews];
-  [self updateTextViewHeight];
+  if (_textView.bounds.size.width != _lastKnownTextViewWidth) {
+    _lastKnownTextViewWidth = _textView.bounds.size.width;
+    [self updateTextViewHeight];
+  }
 }
 
 - (void)setLeadingImage:(UIImage*)image
