@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
-#include "base/unguessable_token.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
@@ -36,10 +35,6 @@ class WebContents;
 namespace contextual_search {
 class ContextualSearchContextController;
 }
-
-namespace lens {
-struct ContextualInputData;
-}  // namespace lens
 
 // OmniboxContextMenuController creates and manages state for the context menu
 // shown for the omnibox.
@@ -98,11 +93,6 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   void OnFaviconDataAvailable(
       int command_id,
       const favicon_base::FaviconImageResult& image_result);
-
-  void OnGetTabPageContext(
-      const base::UnguessableToken& context_token,
-      const TabInfo& tab_info,
-      std::unique_ptr<lens::ContextualInputData> page_content_data);
 
   void UpdateSearchboxContextToolMode(searchbox::mojom::ToolMode tool_mode);
 
