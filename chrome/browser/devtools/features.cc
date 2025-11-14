@@ -197,8 +197,6 @@ BASE_FEATURE(kDevToolsEnableDurableMessages, base::FEATURE_DISABLED_BY_DEFAULT);
 // Whether the policy dialog should be shown instead of greying out the
 // Developer Tools toggle.
 // TODO(crbug.com/442892562): Remove this flag once the feature is launched.
-BASE_FEATURE(kDevToolsShowPolicyDialog,
-             "DevToolsShowPolicyDialog",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsShowPolicyDialog, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

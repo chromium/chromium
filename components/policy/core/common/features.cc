@@ -42,7 +42,6 @@ BASE_FEATURE(kSafeSitesCaptivePortalCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 // policies to supported on Android Desktop.
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
 BASE_FEATURE(kFuturePoliciesOnDesktopAndroid,
-             "FuturePoliciesOnDesktopAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
 
