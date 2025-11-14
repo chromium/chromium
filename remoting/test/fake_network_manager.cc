@@ -44,7 +44,7 @@ FakeNetworkManager::GetAnyAddressNetworks() {
 }
 
 void FakeNetworkManager::SendNetworksChangedSignal() {
-  SignalNetworksChanged();
+  NotifyNetworksChanged();
 }
 
 }  // namespace remoting
