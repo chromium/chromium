@@ -17,13 +17,12 @@ namespace metrics {
 
 void EncodeHistogramDelta(std::string_view histogram_name,
                           const base::HistogramSamples& snapshot,
-                          ChromeUserMetricsExtension* uma_proto) {
+                          HistogramEventProto* histogram_proto) {
   DCHECK_NE(0, snapshot.TotalCount());
-  DCHECK(uma_proto);
+  DCHECK(histogram_proto);
 
   // We will ignore the MAX_INT/infinite value in the last element of range[].
 
-  HistogramEventProto* histogram_proto = uma_proto->add_histogram_event();
   histogram_proto->set_name_hash(base::HashMetricName(histogram_name));
   if (snapshot.sum() != 0) {
     histogram_proto->set_sum(snapshot.sum());

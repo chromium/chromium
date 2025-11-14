@@ -476,7 +476,8 @@ void MetricsLog::RecordHistogramDelta(std::string_view histogram_name,
                                       const base::HistogramSamples& snapshot) {
   DCHECK(!closed_);
   log_metadata_.AddSampleCount(snapshot.TotalCount());
-  EncodeHistogramDelta(histogram_name, snapshot, &uma_proto_);
+  EncodeHistogramDelta(histogram_name, snapshot,
+                       uma_proto_.add_histogram_event());
 }
 
 void MetricsLog::RecordPreviousSessionData(

@@ -33,7 +33,7 @@ TEST(HistogramEncoder, HistogramBucketFields) {
   samples.Accumulate(11, 1);  // Bucket 11-12.
 
   ChromeUserMetricsExtension uma_proto;
-  EncodeHistogramDelta("Test", samples, &uma_proto);
+  EncodeHistogramDelta("Test", samples, uma_proto.add_histogram_event());
 
   const HistogramEventProto& histogram_proto =
       uma_proto.histogram_event(uma_proto.histogram_event_size() - 1);

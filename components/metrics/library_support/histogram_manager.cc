@@ -28,7 +28,8 @@ HistogramManager* HistogramManager::GetInstance() {
 
 void HistogramManager::RecordDelta(const base::HistogramBase& histogram,
                                    const base::HistogramSamples& snapshot) {
-  EncodeHistogramDelta(histogram.histogram_name(), snapshot, &uma_proto_);
+  EncodeHistogramDelta(histogram.histogram_name(), snapshot,
+                       uma_proto_.add_histogram_event());
 }
 
 // TODO(lukasza): https://crbug.com/881903: NO_THREAD_SAFETY_ANALYSIS below can

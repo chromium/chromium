@@ -19,10 +19,10 @@ class HistogramSamples;
 namespace metrics {
 
 // Record any changes (histogram deltas of counts from |snapshot|) into
-// |uma_proto| for the given histogram (|histogram_name|).
+// |histogram_proto| for the given histogram (|histogram_name|).
 void EncodeHistogramDelta(std::string_view histogram_name,
                           const base::HistogramSamples& snapshot,
-                          ChromeUserMetricsExtension* uma_proto);
+                          HistogramEventProto* histogram_proto);
 
 }  // namespace metrics
 
