@@ -90,11 +90,9 @@ void FakeModelBroker::UpdateLanguageDetectionModel(
 
 ModelBrokerState& FakeModelBroker::GetOrCreateBrokerState() {
   if (!model_broker_state_) {
-    model_broker_state_.emplace(&local_state_.local_state(),
+    model_broker_state_.emplace(local_state_.local_state(), model_provider_,
                                 component_state_.CreateDelegate(),
                                 fake_launcher_.LaunchFn());
-    model_broker_state_->Init();
-    asset_manager_ = model_broker_state_->CreateAssetManager(&model_provider_);
   }
   return *model_broker_state_;
 }

@@ -261,14 +261,6 @@ void OnDeviceModelComponentStateManager::
   BeginUpdateRegistration();
 }
 
-void OnDeviceModelComponentStateManager::OnStartup() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  model_execution::prefs::PruneOldUsagePrefs(local_state_);
-  performance_classifier_->ListenForPerformanceClassAvailable(base::BindOnce(
-      &OnDeviceModelComponentStateManager::OnPerformanceClassAvailable,
-      weak_ptr_factory_.GetWeakPtr()));
-}
-
 void OnDeviceModelComponentStateManager::InstallerRegistered() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::UmaHistogramBoolean(
@@ -423,6 +415,10 @@ OnDeviceModelComponentStateManager::OnDeviceModelComponentStateManager(
           &OnDeviceModelComponentStateManager::
               OnGenAILocalFoundationalModelEnterprisePolicyChanged,
           weak_ptr_factory_.GetWeakPtr()));
+  model_execution::prefs::PruneOldUsagePrefs(local_state_);
+  performance_classifier_->ListenForPerformanceClassAvailable(base::BindOnce(
+      &OnDeviceModelComponentStateManager::OnPerformanceClassAvailable,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 OnDeviceModelComponentStateManager::~OnDeviceModelComponentStateManager() =

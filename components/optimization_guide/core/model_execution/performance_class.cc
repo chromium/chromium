@@ -182,12 +182,7 @@ void UpdateDeviceInfoPrefs(PrefService* local_state,
 PerformanceClassifier::PerformanceClassifier(
     PrefService* local_state,
     base::SafeRef<on_device_model::ServiceClient> service_client)
-    : local_state_(local_state), service_client_(std::move(service_client)) {}
-PerformanceClassifier::~PerformanceClassifier() = default;
-
-void PerformanceClassifier::Init() {
-  CHECK_EQ(performance_class_state_, PerformanceClassState::kNotStarted);
-  CHECK(performance_class_callbacks_.empty());
+    : local_state_(local_state), service_client_(std::move(service_client)) {
   OnDeviceModelPerformanceClass override_class = GetPerformanceClassSwitch();
   if (override_class != OnDeviceModelPerformanceClass::kUnknown) {
     UpdatePerformanceClassPref(local_state_, override_class);
@@ -198,6 +193,7 @@ void PerformanceClassifier::Init() {
     performance_class_state_ = PerformanceClassState::kComplete;
   }
 }
+PerformanceClassifier::~PerformanceClassifier() = default;
 
 void PerformanceClassifier::ScheduleEvaluation() {
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

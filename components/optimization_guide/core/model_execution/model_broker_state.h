@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
@@ -22,7 +23,8 @@ namespace optimization_guide {
 class ModelBrokerState final : public OnDeviceCapability {
  public:
   ModelBrokerState(
-      PrefService* local_state,
+      PrefService& local_state,
+      OptimizationGuideModelProvider& model_provider,
       std::unique_ptr<OnDeviceModelComponentStateManager::Delegate> delegate,
       on_device_model::ServiceClient::LaunchFn launch_fn);
   ~ModelBrokerState() override;
@@ -41,17 +43,8 @@ class ModelBrokerState final : public OnDeviceCapability {
   }
 
   OnDeviceModelServiceController& service_controller() {
-    return *service_controller_;
+    return service_controller_;
   }
-
-  // Executes initialization steps. This is normally called immediately on
-  // construction, but can be called later to allow tests to register
-  // preferences and other state.
-  void Init();
-
-  // Create a new asset manager to provide extra models/configs to the broker.
-  std::unique_ptr<OnDeviceAssetManager> CreateAssetManager(
-      OptimizationGuideModelProvider* provider);
 
   // OnDeviceCapability
   void BindModelBroker(
@@ -86,12 +79,12 @@ class ModelBrokerState final : public OnDeviceCapability {
       base::OnceCallback<
           void(optimization_guide::OnDeviceModelEligibilityReason)> callback);
 
-  raw_ptr<PrefService> local_state_;
   on_device_model::ServiceClient service_client_;
   UsageTracker usage_tracker_;
   PerformanceClassifier performance_classifier_;
   OnDeviceModelComponentStateManager component_state_manager_;
-  std::unique_ptr<OnDeviceModelServiceController> service_controller_;
+  OnDeviceModelServiceController service_controller_;
+  OnDeviceAssetManager asset_manager_;
   base::WeakPtrFactory<ModelBrokerState> weak_ptr_factory_{this};
 };
 

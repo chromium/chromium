@@ -227,10 +227,6 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
   static bool VerifyInstallation(const base::FilePath& install_dir,
                                  const base::Value::Dict& manifest);
 
-  // Called at startup. Triggers install or uninstall of the component if
-  // necessary.
-  void OnStartup();
-
   // Should be called whenever the device performance class changes.
   void OnPerformanceClassAvailable();
 

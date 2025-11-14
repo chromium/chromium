@@ -68,7 +68,6 @@ class FakeModelBroker {
   }
 
   void SimulateShutdown() {
-    asset_manager_.reset();
     model_broker_state_.reset();
     component_state_.SimulateShutdown();
   }
@@ -103,7 +102,6 @@ class FakeModelBroker {
   OptimizationGuideLogger logger_;
   ModelProviderRegistry model_provider_{&logger_};
   std::optional<ModelBrokerState> model_broker_state_;
-  std::unique_ptr<OnDeviceAssetManager> asset_manager_;
 };
 
 }  // namespace optimization_guide

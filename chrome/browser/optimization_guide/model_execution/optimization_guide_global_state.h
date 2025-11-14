@@ -29,6 +29,23 @@ namespace optimization_guide {
 class ChromeModelComponentStateManagerObserver;
 class OptimizationGuideGlobalFeature;
 
+// Constructs and initializes a PredictionManager with it's dependencies.
+class ChromePredictionManager {
+ public:
+  ChromePredictionManager();
+  ~ChromePredictionManager();
+
+  PredictionModelStore& prediction_model_store() {
+    return prediction_model_store_;
+  }
+  PredictionManager& prediction_manager() { return prediction_manager_; }
+
+ private:
+  PredictionModelStore prediction_model_store_;
+  PredictionManager prediction_manager_;
+  ChromeProfileDownloadServiceTracker profile_download_service_tracker_;
+};
+
 // This holds the ModelBrokerState and other common objects shared between
 // profiles. Since some of the membersit hold raw_ptr to browser process level
 // objects, such as local state prefs, profile manager, it must not outlive the
@@ -50,10 +67,11 @@ class OptimizationGuideGlobalState final
   OnDeviceCapability& on_device_capability() { return on_device_capability_; }
 
   PredictionModelStore& prediction_model_store() {
-    return prediction_model_store_;
+    return prediction_manager_.prediction_model_store();
   }
-
-  PredictionManager& prediction_manager() { return prediction_manager_; }
+  PredictionManager& prediction_manager() {
+    return prediction_manager_.prediction_manager();
+  }
 
  private:
   friend base::RefCounted<OptimizationGuideGlobalState>;
@@ -61,16 +79,12 @@ class OptimizationGuideGlobalState final
   OptimizationGuideGlobalState();
   ~OptimizationGuideGlobalState();
 
-  PredictionModelStore prediction_model_store_;
-
-  ChromeProfileDownloadServiceTracker profile_download_service_tracker_;
-  PredictionManager prediction_manager_;
+  ChromePredictionManager prediction_manager_;
 
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
   ModelBrokerState on_device_capability_;
   std::unique_ptr<ChromeModelComponentStateManagerObserver>
       component_state_manager_observer_;
-  std::unique_ptr<OnDeviceAssetManager> asset_manager_;
 #elif BUILDFLAG(IS_ANDROID)
   ModelBrokerAndroid on_device_capability_;
 #else

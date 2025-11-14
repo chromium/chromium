@@ -81,10 +81,6 @@ class OnDeviceModelServiceController final {
       base::SafeRef<on_device_model::ServiceClient> service_client);
   ~OnDeviceModelServiceController();
 
-  // Initializes OnDeviceModelServiceController. This should be called once
-  // after creation.
-  void Init();
-
   // Whether an on-device session can be created for `feature`.
   OnDeviceModelEligibilityReason CanCreateSession(
       ModelBasedCapabilityKey feature);

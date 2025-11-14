@@ -160,6 +160,9 @@ class ChromeModelComponentStateManagerObserver final
       return;
     }
     observation_.Observe(state_manager.get());
+    if (const OnDeviceModelComponentState* state = state_manager->GetState()) {
+      StateChanged(state);
+    }
   }
 
   // OnDeviceModelComponentStateManager::Observer:
@@ -178,43 +181,41 @@ class ChromeModelComponentStateManagerObserver final
 };
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
-OptimizationGuideGlobalState::OptimizationGuideGlobalState()
+ChromePredictionManager::ChromePredictionManager()
     : prediction_model_store_(*g_browser_process->local_state()),
       prediction_manager_(&prediction_model_store_,
                           g_browser_process->shared_url_loader_factory(),
                           g_browser_process->local_state(),
                           g_browser_process->GetApplicationLocale(),
                           OptimizationGuideLogger::GetInstance(),
-                          base::BindRepeating(&unzip::LaunchUnzipper)),
-      on_device_capability_(
+                          base::BindRepeating(&unzip::LaunchUnzipper)) {
+  prediction_model_store_.Initialize(GetBaseStoreDir());
+  prediction_manager_.MaybeInitializeModelDownloads(
+      profile_download_service_tracker_, g_browser_process->local_state());
+}
+ChromePredictionManager::~ChromePredictionManager() = default;
+
+OptimizationGuideGlobalState::OptimizationGuideGlobalState()
+    : on_device_capability_(
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-          g_browser_process->local_state(),
+          *g_browser_process->local_state(),
+          prediction_manager_.prediction_manager(),
           std::make_unique<OnDeviceModelComponentStateManagerDelegate>(),
           base::BindRepeating(&LaunchService)
 #elif BUILDFLAG(IS_ANDROID)
           *g_browser_process->local_state(),
-          prediction_manager_
+          prediction_manager_.prediction_manager()
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
       ) {
-  prediction_model_store_.Initialize(GetBaseStoreDir());
-  prediction_manager_.MaybeInitializeModelDownloads(
-      profile_download_service_tracker_, g_browser_process->local_state());
-
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-  // Register an observer on the component state manager after it is created but
-  // before it has start up.
   component_state_manager_observer_ =
       std::make_unique<ChromeModelComponentStateManagerObserver>(
           on_device_capability_.component_state_manager().GetWeakPtr());
-
-  on_device_capability_.Init();
   on_device_capability_.performance_classifier()
       .ListenForPerformanceClassAvailable(
           base::BindOnce(&ChromeOnDeviceModelServiceController::
                              RegisterPerformanceClassSyntheticTrial));
   on_device_capability_.performance_classifier().ScheduleEvaluation();
-  asset_manager_ =
-      on_device_capability_.CreateAssetManager(&prediction_manager_);
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 }
 OptimizationGuideGlobalState::~OptimizationGuideGlobalState() = default;

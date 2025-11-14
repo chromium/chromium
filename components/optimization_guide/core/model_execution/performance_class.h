@@ -61,9 +61,6 @@ class PerformanceClassifier final {
     return weak_ptr_factory_.GetSafeRef();
   }
 
-  // Do deferred initialization, like reading prefs / checking features.
-  void Init();
-
   // Ensures the performance class will be up to date and available when
   // `complete` runs.
   void EnsurePerformanceClassAvailable(base::OnceClosure complete);
