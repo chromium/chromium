@@ -292,6 +292,14 @@ class AndroidComposeboxZpsSection : public ZpsSection {
                                        size_t max_contextual_suggestions);
 };
 
+class IOSComposeboxZpsSection : public ZpsSection {
+ public:
+  explicit IOSComposeboxZpsSection(omnibox::GroupConfigMap& group_configs,
+                                   size_t max_suggestions,
+                                   size_t max_aim_suggestions,
+                                   size_t max_contextual_suggestions);
+};
+
 class DesktopComposeboxZpsSection : public ZpsSection {
  public:
   explicit DesktopComposeboxZpsSection(omnibox::GroupConfigMap& group_configs,

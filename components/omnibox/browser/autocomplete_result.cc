@@ -644,6 +644,23 @@ void AutocompleteResult::SortAndCull(
       } else if (omnibox::IsSearchResultsPage(page_classification)) {
         sections.push_back(
             std::make_unique<IOSSRPZpsSection>(suggestion_groups_map_));
+      } else if (omnibox::IsComposebox(page_classification)) {
+        auto composebox_suggestion_limit_config =
+            omnibox_feature_configs::ComposeboxSuggestionLimit::Get();
+        size_t composebox_max_suggestions = 15u;
+        size_t max_aim_suggestions = 15u;
+        size_t max_contextual_suggestions = 15u;
+        if (composebox_suggestion_limit_config.enabled) {
+          composebox_max_suggestions =
+              composebox_suggestion_limit_config.max_suggestions;
+          max_aim_suggestions =
+              composebox_suggestion_limit_config.max_aim_suggestions;
+          max_contextual_suggestions =
+              composebox_suggestion_limit_config.max_contextual_suggestions;
+        }
+        sections.push_back(std::make_unique<IOSComposeboxZpsSection>(
+            suggestion_groups_map_, composebox_max_suggestions,
+            max_aim_suggestions, max_contextual_suggestions));
       } else {
         sections.push_back(
             std::make_unique<IOSWebZpsSection>(suggestion_groups_map_));
