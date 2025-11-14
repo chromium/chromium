@@ -98,6 +98,7 @@ export class OmniboxAimAppElement extends CrLitElement implements Page {
     assert(composebox);
     composebox.playGlowAnimation();
     composebox.setSearchContext(context);
+    composebox.focusInput();
   }
 
   private onClose_(): Promise<{input: string}> {
