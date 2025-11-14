@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdlib.h>
 
 #include <iostream>
 
+#include "base/compiler_specific.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
@@ -48,12 +44,13 @@ constexpr char const* kTlds[2] = {
 std::string ConvertSite(const related_website_sets::proto::Site& site) {
   std::string out = "https://";
   if (site.has_subdomain_index()) {
-    base::StrAppend(&out, {kSubdomains[site.subdomain_index()], "."});
+    base::StrAppend(&out,
+                    {UNSAFE_TODO(kSubdomains[site.subdomain_index()]), "."});
   }
   base::StrAppend(&out, {
-                            kSites[site.site_index()],
+                            UNSAFE_TODO(kSites[site.site_index()]),
                             ".",
-                            kTlds[site.tld()],
+                            UNSAFE_TODO(kTlds[site.tld()]),
                         });
 
   return out;

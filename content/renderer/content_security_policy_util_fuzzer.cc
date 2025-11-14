@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // Configure:
 // # tools/mb/mb.py gen -m chromium.fuzz -b 'Libfuzzer Upload Linux ASan'  out/libfuzzer
 // Build:
@@ -17,16 +12,17 @@
 // For more details, see
 // https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/README.md
 
+#include "content/renderer/content_security_policy_util.h"
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/i18n/icu_util.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_timeouts.h"
 #include "content/public/test/blink_test_environment.h"
-#include "content/renderer/content_security_policy_util.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
-
 
 namespace {
 
@@ -68,13 +64,13 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // We need two pieces of input: a URL and a CSP string. Split |data| in two at
   // the first whitespace.
   const uint8_t* it = data;
-  for (; it < data + size; it++) {
+  for (; it < UNSAFE_TODO(data + size); UNSAFE_TODO(it++)) {
     if (base::IsAsciiWhitespace(*reinterpret_cast<const char*>(it))) {
-      it++;
+      UNSAFE_TODO(it++);
       break;
     }
   }
-  if (it == data + size) {
+  if (it == UNSAFE_TODO(data + size)) {
     // Not much point in going on with an empty CSP string.
     return EXIT_SUCCESS;
   }
@@ -83,7 +79,8 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return EXIT_SUCCESS;
   }
 
-  std::string raw_url(reinterpret_cast<const char*>(data), it - 1 - data);
+  std::string raw_url(reinterpret_cast<const char*>(data),
+                      UNSAFE_TODO(it - 1 - data));
   std::string raw_csp(reinterpret_cast<const char*>(it), size - (it - data));
 
   if (blink::WebString::FromUTF8(raw_url).Utf8() != raw_url ||

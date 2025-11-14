@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 // This file is used to define IPC::ParamTraits<> specializations for a number
 // of types so that they can be serialized over IPC.  IPC::ParamTraits<>
 // specializations for basic types (like int and std::string) and types in the
@@ -23,6 +18,7 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
@@ -70,7 +66,7 @@ struct ParamTraits<gfx::NativeWindow> {
     size_t data_size = 0;
     bool result = iter->ReadData(&data, &data_size);
     if (result && data_size == sizeof(gfx::NativeWindow)) {
-      memcpy(r, data, sizeof(gfx::NativeWindow));
+      UNSAFE_TODO(memcpy(r, data, sizeof(gfx::NativeWindow)));
     } else {
       result = false;
       NOTREACHED();
