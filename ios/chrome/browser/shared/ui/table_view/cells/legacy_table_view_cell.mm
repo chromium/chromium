@@ -83,7 +83,7 @@ const CGFloat kTableViewCustomSeparatorHeight = 0.5;
 
 - (NSArray<NSString*>*)accessibilityUserInputLabels {
   NSObject* contentConfiguration = self.contentConfiguration;
-  if (contentConfiguration.accessibilityUserInputLabels) {
+  if (contentConfiguration.accessibilityUserInputLabels.count > 0) {
     return contentConfiguration.accessibilityUserInputLabels;
   }
   return [super accessibilityUserInputLabels];
