@@ -13,6 +13,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/lens/lens_overlay_non_blocking_privacy_notice_user_action.h"
 #include "components/lens/lens_side_panel_iframe_load_status.h"
 #include "net/base/net_errors.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -113,6 +114,23 @@ void RecordPermissionUserAction(LensPermissionUserAction user_action,
   const auto histogram_name =
       "Lens.Overlay.PermissionBubble.ByInvocationSource." +
       InvocationSourceToString(invocation_source) + ".UserAction";
+  base::UmaHistogramEnumeration(histogram_name, user_action);
+}
+
+void RecordNonBlockingPrivacyNoticeToBeShown(
+    LensOverlayInvocationSource invocation_source) {
+  base::UmaHistogramEnumeration("Lens.Overlay.NonBlockingPrivacyNotice.Shown",
+                                invocation_source);
+}
+
+void RecordNonBlockingPrivacyNoticeAccepted(
+    LensOverlayNonBlockingPrivacyNoticeUserAction user_action,
+    LensOverlayInvocationSource invocation_source) {
+  base::UmaHistogramEnumeration(
+      "Lens.Overlay.NonBlockingPrivacyNotice.Accepted", user_action);
+  const auto histogram_name =
+      "Lens.Overlay.NonBlockingPrivacyNotice.ByInvocationSource." +
+      InvocationSourceToString(invocation_source) + ".Accepted";
   base::UmaHistogramEnumeration(histogram_name, user_action);
 }
 

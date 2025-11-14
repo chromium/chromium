@@ -448,6 +448,14 @@ void LensOverlayController::CloseUI(
 
   // Update the entrypoints now that the controller is closed.
   UpdateEntryPointsState();
+
+  if (lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
+      !lens::DidUserGrantLensOverlayNeededPermissions(pref_service_)) {
+    lens::RecordNonBlockingPrivacyNoticeAccepted(
+        lens::LensOverlayNonBlockingPrivacyNoticeUserAction::
+            kClosedWithoutAccepting,
+        invocation_source_);
+  }
 }
 
 // static
@@ -934,6 +942,11 @@ void LensOverlayController::ShowUI(
     return;
   }
 
+  if (lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
+      !lens::DidUserGrantLensOverlayNeededPermissions(pref_service_)) {
+    lens::RecordNonBlockingPrivacyNoticeToBeShown(invocation_source);
+  }
+
   // If the side panel is already showing, then visual selections
   // are considered follow ups that should be fulfilled by AIM.
   use_aim_for_visual_search_ = IsResultsSidePanelShowing();
@@ -1243,6 +1256,10 @@ void LensOverlayController::OnSearchboxFocusChanged(bool focused) {
       // searchbox focus, then restart the query flow and upload page content
       // for contextualization.
       lens::GrantLensOverlayNeededPermissions(pref_service_);
+      lens::RecordNonBlockingPrivacyNoticeAccepted(
+          lens::LensOverlayNonBlockingPrivacyNoticeUserAction::
+              kComposeboxFocused,
+          invocation_source_);
       lens_overlay_query_controller_->MaybeRestartQueryFlow();
       GetContextualizationController()->TryUpdatePageContextualization(
           base::BindOnce(&LensOverlayController::NotifyPageContentUpdated,
@@ -3011,6 +3028,9 @@ void LensOverlayController::MaybeGrantLensOverlayPermissions() {
   if (lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
       !lens::DidUserGrantLensOverlayNeededPermissions(pref_service_)) {
     lens::GrantLensOverlayNeededPermissions(pref_service_);
+    lens::RecordNonBlockingPrivacyNoticeAccepted(
+        lens::LensOverlayNonBlockingPrivacyNoticeUserAction::kLensInteraction,
+        invocation_source_);
   }
 }
 

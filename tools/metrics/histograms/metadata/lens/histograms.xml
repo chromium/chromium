@@ -628,6 +628,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.NonBlockingPrivacyNotice.Accepted"
+    enum="LensOverlayNonBlockingPrivacyNoticeUserAction"
+    expires_after="2026-03-15">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded each time the user interacts with the Lens Permission Bubble,
+    enumerated by those actions.
+  </summary>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.NonBlockingPrivacyNotice.ByInvocationSource.{InvocationSource}.Accepted"
+    enum="LensOverlayNonBlockingPrivacyNoticeUserAction"
+    expires_after="2026-03-15">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded each time the user interacts with the Lens Permission Bubble,
+    enumerated by those actions and sliced by invocation source.
+  </summary>
+  <token key="InvocationSource" variants="InvocationSources"/>
+</histogram>
+
+<histogram name="Lens.Overlay.NonBlockingPrivacyNotice.Shown"
+    enum="LensOverlayInvocationSource" expires_after="2026-03-15">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded each time the Lens Permission Bubble is requested to be shown,
+    enumerated by invocation source.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.OcrDomSimilarity" units="%"
     expires_after="2026-03-22">
   <owner>mercerd@chromium.org</owner>

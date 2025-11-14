@@ -33,6 +33,7 @@ static_library("lens") {
     "lens_overlay_metrics.cc",
     "lens_overlay_metrics.h",
     "lens_overlay_new_tab_source.h",
+    "lens_overlay_non_blocking_privacy_notice_user_action.h",
     "lens_overlay_request_id_generator.cc",
     "lens_overlay_request_id_generator.h",
     "lens_overlay_side_panel_menu_option.h",

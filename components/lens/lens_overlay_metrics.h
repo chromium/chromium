@@ -15,6 +15,7 @@
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_new_tab_source.h"
+#include "components/lens/lens_overlay_non_blocking_privacy_notice_user_action.h"
 #include "components/lens/lens_overlay_side_panel_menu_option.h"
 #include "components/lens/lens_overlay_side_panel_result.h"
 #include "components/lens/lens_permission_user_action.h"
@@ -98,6 +99,16 @@ std::string DocumentTypeToString(lens::MimeType page_content_type);
 // unsliced.
 void RecordPermissionRequestedToBeShown(
     bool shown,
+    LensOverlayInvocationSource invocation_source);
+
+// Recorded when non-blocking privacy notice is requested to be shown.
+void RecordNonBlockingPrivacyNoticeToBeShown(
+    LensOverlayInvocationSource invocation_source);
+
+// Recorded when a user interaction causes the non-blocking privacy notice to be
+// accepted.
+void RecordNonBlockingPrivacyNoticeAccepted(
+    LensOverlayNonBlockingPrivacyNoticeUserAction user_action,
     LensOverlayInvocationSource invocation_source);
 
 // Records user action in lens permission. Both sliced and unsliced.
