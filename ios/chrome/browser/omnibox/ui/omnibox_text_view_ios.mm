@@ -550,6 +550,13 @@ using enum OmniboxKeyboardAction;
 - (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
     shouldRecognizeSimultaneouslyWithGestureRecognizer:
         (UIGestureRecognizer*)otherGestureRecognizer {
+  // Prevent conflicts between the pan gesture from the UIScrollView and the
+  // long press scroll gesture (crbug.com/457389541).
+  if ([gestureRecognizer isKindOfClass:UIPanGestureRecognizer.class] &&
+      [otherGestureRecognizer
+          isKindOfClass:UILongPressGestureRecognizer.class]) {
+    return NO;
+  }
   return YES;
 }
 
