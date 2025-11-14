@@ -12,6 +12,7 @@
 #include "base/containers/heap_array.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/thread_pool.h"
@@ -122,17 +123,14 @@ sk_sp<SkTypeface> FontDataManager::onMatchFamilyStyle(
     cpp_requested_family_name = requested_family_name;
   }
 
-  MatchFamilyRequest match_request{.name = cpp_requested_family_name,
-                                   .weight = requested_style.weight(),
-                                   .width = requested_style.width(),
-                                   .slant = requested_style.slant()};
-  {
-    base::AutoLock locked(lock_);
-    auto iter = typeface_cache_.Get(match_request);
-    if (iter != typeface_cache_.end()) {
-      return iter->second;
-    }
+  MatchFamilyRequest request(cpp_requested_family_name,
+                             requested_style.weight(), requested_style.width(),
+                             requested_style.slant());
+  std::optional<sk_sp<SkTypeface>> typeface_result = TryGetFromCache(request);
+  if (typeface_result) {
+    return *typeface_result;
   }
+
   // Proxy the font request to the font service.
   mojom::TypefaceStylePtr style(mojom::TypefaceStyle::New());
   style->weight = requested_style.weight();
@@ -152,10 +150,7 @@ sk_sp<SkTypeface> FontDataManager::onMatchFamilyStyle(
   // Update the cache with the resulting typeface even in case of a failure to
   // avoid calling the font service again. Failed typeface will go to the font
   // fallback stack.
-  {
-    base::AutoLock locked(lock_);
-    typeface_cache_.Put(std::move(match_request), typeface);
-  }
+  AddToCache(request, typeface);
 
   return typeface;
 }
@@ -171,11 +166,6 @@ sk_sp<SkTypeface> FontDataManager::onMatchFamilyStyleCharacter(
   if (requested_family_name) {
     cpp_requested_family_name = requested_family_name;
   }
-
-  MatchFamilyRequest match_request{.name = cpp_requested_family_name,
-                                   .weight = requested_style.weight(),
-                                   .width = requested_style.width(),
-                                   .slant = requested_style.slant()};
 
   // Proxy the font request to the font service.
   mojom::TypefaceStylePtr style(mojom::TypefaceStyle::New());
@@ -252,6 +242,14 @@ sk_sp<SkTypeface> FontDataManager::onLegacyMakeTypeface(
     cpp_requested_family_name = requested_family_name;
   }
 
+  MatchFamilyRequest request(cpp_requested_family_name,
+                             requested_style.weight(), requested_style.width(),
+                             requested_style.slant());
+  std::optional<sk_sp<SkTypeface>> typeface_result = TryGetFromCache(request);
+  if (typeface_result) {
+    return *typeface_result;
+  }
+
   // Proxy the font request to the font service.
   mojom::TypefaceStylePtr style(mojom::TypefaceStyle::New());
   style->weight = requested_style.weight();
@@ -267,7 +265,13 @@ sk_sp<SkTypeface> FontDataManager::onLegacyMakeTypeface(
         cpp_requested_family_name, std::move(style), &match_result);
   }
 
-  return CreateTypefaceFromMatchResult(std::move(match_result));
+  auto typeface = CreateTypefaceFromMatchResult(std::move(match_result));
+  // Update the cache with the resulting typeface even in case of a failure to
+  // avoid calling the font service again. Failed typeface will go to the font
+  // fallback stack.
+  AddToCache(request, typeface);
+
+  return typeface;
 }
 
 void FontDataManager::SetFontServiceForTesting(
@@ -382,6 +386,8 @@ sk_sp<SkTypeface> FontDataManager::CreateTypefaceFromMatchResult(
     base::AutoLock locked(lock_);
     if (mapped_font_file) {
       mapped_files_.push_back(std::move(mapped_font_file));
+      base::UmaHistogramCounts1000("Chrome.FontDataManager.NumMappedFiles",
+                                   mapped_files_.size());
     }
   }
 
@@ -391,5 +397,35 @@ sk_sp<SkTypeface> FontDataManager::CreateTypefaceFromMatchResult(
 void FontDataManager::GetAllFamilyNames() const {
   GetRemoteFontDataService().GetAllFamilyNames(&family_names_);
 }
+
+std::optional<sk_sp<SkTypeface>> FontDataManager::TryGetFromCache(
+    const FontDataManager::MatchFamilyRequest& request) const {
+  base::AutoLock locked(lock_);
+  auto iter = typeface_cache_.Get(request);
+  if (iter != typeface_cache_.end()) {
+    return iter->second;
+  }
+
+  return std::nullopt;
+}
+
+void FontDataManager::AddToCache(
+    const FontDataManager::MatchFamilyRequest& request,
+    sk_sp<SkTypeface> typeface) const {
+  base::AutoLock locked(lock_);
+  typeface_cache_.Put(std::move(request), typeface);
+}
+
+FontDataManager::MatchFamilyRequest::MatchFamilyRequest(
+    std::optional<std::string> name,
+    int weight,
+    int width,
+    SkFontStyle::Slant slant)
+    : name(name), weight(weight), width(width), slant(slant) {}
+FontDataManager::MatchFamilyRequest::MatchFamilyRequest(
+    const MatchFamilyRequest&) = default;
+FontDataManager::MatchFamilyRequest::MatchFamilyRequest(
+    FontDataManager::MatchFamilyRequest&&) = default;
+FontDataManager::MatchFamilyRequest::~MatchFamilyRequest() = default;
 
 }  // namespace font_data_service
