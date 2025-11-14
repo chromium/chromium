@@ -28,10 +28,6 @@ const char kHistogramFirstRequestAnimationFrameAfterBackForwardCacheRestore[] =
     "PageLoad.PaintTiming.NavigationToFirstPaint.BFCachePolyfillFirst";
 const char kHistogramSecondRequestAnimationFrameAfterBackForwardCacheRestore[] =
     "PageLoad.PaintTiming.NavigationToFirstPaint.BFCachePolyfillSecond";
-const char
-    kHistogramSecondRequestAnimationFrameAfterBackForwardCacheRestoreIncognito
-        [] = "PageLoad.PaintTiming.NavigationToFirstPaint."
-             "BFCachePolyfillSecond.Incognito";
 const char kHistogramThirdRequestAnimationFrameAfterBackForwardCacheRestore[] =
     "PageLoad.PaintTiming.NavigationToFirstPaint.BFCachePolyfillThird";
 const char kHistogramFirstInputDelayAfterBackForwardCacheRestore[] =
@@ -60,8 +56,7 @@ const char
 }  // namespace internal
 
 BackForwardCachePageLoadMetricsObserver::
-    BackForwardCachePageLoadMetricsObserver(bool is_incognito)
-    : is_incognito_(is_incognito) {}
+    BackForwardCachePageLoadMetricsObserver() = default;
 
 BackForwardCachePageLoadMetricsObserver::
     ~BackForwardCachePageLoadMetricsObserver() {
@@ -226,13 +221,6 @@ void BackForwardCachePageLoadMetricsObserver::
       internal::
           kHistogramThirdRequestAnimationFrameAfterBackForwardCacheRestore,
       request_animation_frames[2]);
-
-  if (is_incognito_) {
-    PAGE_LOAD_HISTOGRAM(
-        internal::
-            kHistogramSecondRequestAnimationFrameAfterBackForwardCacheRestoreIncognito,
-        request_animation_frames[1]);
-  }
 
   // HistoryNavigation is a singular event, and we share the same instance as
   // long as we use the same source ID.

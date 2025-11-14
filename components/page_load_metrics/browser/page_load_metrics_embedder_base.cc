@@ -46,11 +46,10 @@ void PageLoadMetricsEmbedderBase::RegisterCommonObservers(
     return;
   }
 
-  bool is_incognito = IsIncognito(tracker->GetWebContents());
   tracker->AddObserver(
-      std::make_unique<BackForwardCachePageLoadMetricsObserver>(is_incognito));
-  tracker->AddObserver(
-      std::make_unique<UmaPageLoadMetricsObserver>(is_incognito));
+      std::make_unique<BackForwardCachePageLoadMetricsObserver>());
+  tracker->AddObserver(std::make_unique<UmaPageLoadMetricsObserver>(
+      IsIncognito(tracker->GetWebContents())));
   tracker->AddObserver(std::make_unique<UseCounterPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<EarlyHintsPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<FencedFramesPageLoadMetricsObserver>());
