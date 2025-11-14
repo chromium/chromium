@@ -300,6 +300,11 @@ suite('Composebox', () => {
     assertTrue(isTrulyVisible(cancelButton));
     assertFalse(cancelButton.hasAttribute('disabled'));
 
+    // Clear the input to allow the composebox to collapse.
+    input.value = '';
+    input.dispatchEvent(new Event('input', {bubbles: true}));
+    await waitAfterNextRender(composebox);
+
     // Blur the input to collapse the composebox.
     const submitHidePromise = getTransitionEndPromise(submitButton, 'opacity');
     const cancelHidePromise =
