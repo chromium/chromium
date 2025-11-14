@@ -488,9 +488,7 @@ TEST_F(EventHistoryTest, UpdateStartEventToDict) {
       UpdateStartEvent()
           .SetEventId("test-event-id")
           .SetAppId("test-app-id")
-          .SetConnectionMetered(true)
           .SetPriority(UpdateService::Priority::kForeground)
-          .SetInstallSource("ondemand")
           .Build();
   ASSERT_TRUE(event);
   EXPECT_THAT(*event, DictHasFields(ExpectedFields({
@@ -498,9 +496,7 @@ TEST_F(EventHistoryTest, UpdateStartEventToDict) {
                           {"bound", ValueIs("START")},
                           {"eventId", ValueIs("test-event-id")},
                           {"appId", ValueIs("test-app-id")},
-                          {"connectionMetered", ValueIs(true)},
                           {"priority", ValueIs("FOREGROUND")},
-                          {"installSource", ValueIs("ondemand")},
                           {"deviceUptime", IsPositiveTimeDeltaValue()},
                           {"pid", ValueIs(GetCurrentPid())},
                           {"processToken", ValueIs(GetProcessToken())},
@@ -526,7 +522,7 @@ TEST_F(EventHistoryTest, UpdateEndEventToDict) {
       UpdateEndEvent()
           .SetEventId("test-event-id")
           .SetOutcome(UpdateService::UpdateState::State::kUpdateError)
-          .SetVersion("1.2.3.4")
+          .SetNextVersion("1.2.3.4")
           .Build();
   ASSERT_TRUE(event);
   EXPECT_THAT(*event, DictHasFields(ExpectedFields({
@@ -534,7 +530,7 @@ TEST_F(EventHistoryTest, UpdateEndEventToDict) {
                           {"bound", ValueIs("END")},
                           {"eventId", ValueIs("test-event-id")},
                           {"outcome", ValueIs("UPDATE_ERROR")},
-                          {"version", ValueIs("1.2.3.4")},
+                          {"nextVersion", ValueIs("1.2.3.4")},
                           {"deviceUptime", IsPositiveTimeDeltaValue()},
                           {"pid", ValueIs(GetCurrentPid())},
                           {"processToken", ValueIs(GetProcessToken())},

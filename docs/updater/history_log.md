@@ -119,16 +119,13 @@ The schema defines the following event types:
 * **Bounds:**
   * `START`:
     * `appId` (string): The ID of the application being checked.
-    * `connectionMetered` (boolean): Whether the update is projected to occur on
-      a metered network connection.
     * `priority` (string): Enum: `"BACKGROUND"`, `"FOREGROUND"`.
-    * `installSource` (string): The source triggering the installation/update.
   * `END`:
     * `outcome` (string): The result of the update operation. Enum: possible
       values are the upper snake case UpdaterState::State enum labels defined in
       UpdateService. Includes `"UPDATED"`, `"NO_UPDATE"`, and `"UPDATE_ERROR"`.
-    * `version` (string): The version of the application which the updater tried
-      to update to.
+    * `nextVersion` (string): The version of the application which the updater
+      tried to update to.
 
 ### `UPDATER_PROCESS`: Updater Process Lifetime
 

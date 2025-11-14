@@ -445,19 +445,19 @@ class UpdateEndEvent : public HistoryEventBuilder<UpdateEndEvent> {
   ~UpdateEndEvent() override;
 
   UpdateEndEvent& SetOutcome(UpdateService::UpdateState::State outcome);
-  UpdateEndEvent& SetVersion(const std::string& version);
+  UpdateEndEvent& SetNextVersion(const std::string& next_version);
 
  private:
   std::optional<base::Value::Dict> BuildInternal(
       base::Value::Dict event) const override;
 
   std::optional<UpdateService::UpdateState::State> outcome_;
-  std::optional<std::string> version_;
+  std::optional<std::string> next_version_;
 };
 
 class UpdateStartEvent : public HistoryEventBuilder<UpdateStartEvent> {
  public:
-  using EndEventType = UpdateStartEvent;
+  using EndEventType = UpdateEndEvent;
 
   UpdateStartEvent();
   UpdateStartEvent(UpdateStartEvent&&);
@@ -469,7 +469,6 @@ class UpdateStartEvent : public HistoryEventBuilder<UpdateStartEvent> {
   UpdateStartEvent& SetAppId(const std::string& app_id);
   UpdateStartEvent& SetConnectionMetered(bool connection_metered);
   UpdateStartEvent& SetPriority(UpdateService::Priority priority);
-  UpdateStartEvent& SetInstallSource(const std::string& install_source);
 
  private:
   std::optional<base::Value::Dict> BuildInternal(

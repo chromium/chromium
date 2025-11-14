@@ -1054,6 +1054,36 @@ void UpdateServiceImplImpl::Update(
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  std::unique_ptr<UpdateEndEvent> event =
+      std::make_unique<UpdateEndEvent>(UpdateStartEvent()
+                                           .SetAppId(app_id)
+                                           .SetPriority(priority)
+                                           .WriteAsyncAndReturnEndEvent());
+  state_update =
+      base::BindRepeating(
+          [](UpdateEndEvent* event, const UpdateState& update_state) {
+            if (update_state.error_category !=
+                UpdateService::ErrorCategory::kNone) {
+              event->AddError(
+                  {.category = static_cast<int>(update_state.error_category),
+                   .code = update_state.error_code,
+                   .extracode1 = update_state.extra_code1});
+            }
+            if (!update_state.next_version.empty()) {
+              event->SetNextVersion(update_state.next_version);
+            }
+            return update_state;
+          },
+          event.get())
+          .Then(state_update);
+  callback = base::BindOnce(
+                 [](std::unique_ptr<UpdateEndEvent> event, Result result) {
+                   event->WriteAsync();
+                   return result;
+                 },
+                 std::move(event))
+                 .Then(std::move(callback));
+
   base::MakeRefCounted<HandleInconsistentAppsTask>(config_, GetUpdaterScope())
       ->Run(base::BindOnce(
           &UpdateServiceImplImpl::FetchPolicies, this,
@@ -1114,6 +1144,49 @@ void UpdateServiceImplImpl::UpdateAll(
       static_cast<std::string (*)(std::string_view)>(&base::ToLowerASCII)));
 
   const Priority priority = Priority::kBackground;
+
+  auto events_by_app_id =
+      std::make_unique<base::flat_map<std::string, UpdateEndEvent>>();
+  for (const std::string& app_id : app_ids) {
+    (*events_by_app_id)[app_id] = UpdateStartEvent()
+                                      .SetAppId(app_id)
+                                      .SetPriority(priority)
+                                      .WriteAsyncAndReturnEndEvent();
+  }
+  state_update =
+      base::BindRepeating(
+          [](base::flat_map<std::string, UpdateEndEvent>* events_by_app_id,
+             const UpdateState& update_state) {
+            if (events_by_app_id->contains(update_state.app_id)) {
+              UpdateEndEvent& event = events_by_app_id->at(update_state.app_id);
+              if (update_state.error_category !=
+                  UpdateService::ErrorCategory::kNone) {
+                event.AddError(
+                    {.category = static_cast<int>(update_state.error_category),
+                     .code = update_state.error_code,
+                     .extracode1 = update_state.extra_code1});
+              }
+              if (!update_state.next_version.empty()) {
+                event.SetNextVersion(update_state.next_version);
+              }
+              event.SetOutcome(update_state.state);
+            }
+            return update_state;
+          },
+          events_by_app_id.get())
+          .Then(state_update);
+  callback = base::BindOnce(
+                 [](std::unique_ptr<base::flat_map<std::string, UpdateEndEvent>>
+                        events_by_app_id,
+                    Result result) {
+                   for (auto& [_, event] : *events_by_app_id) {
+                     event.WriteAsync();
+                   }
+                   return result;
+                 },
+                 std::move(events_by_app_id))
+                 .Then(std::move(callback));
+
   ShouldBlockUpdateForMeteredNetwork(
       priority,
       base::BindOnce(

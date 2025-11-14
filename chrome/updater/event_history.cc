@@ -555,21 +555,9 @@ UpdateStartEvent& UpdateStartEvent::SetAppId(const std::string& app_id) {
   return *this;
 }
 
-UpdateStartEvent& UpdateStartEvent::SetConnectionMetered(
-    bool connection_metered) {
-  connection_metered_ = connection_metered;
-  return *this;
-}
-
 UpdateStartEvent& UpdateStartEvent::SetPriority(
     UpdateService::Priority priority) {
   priority_ = priority;
-  return *this;
-}
-
-UpdateStartEvent& UpdateStartEvent::SetInstallSource(
-    const std::string& install_source) {
-  install_source_ = install_source;
   return *this;
 }
 
@@ -586,9 +574,6 @@ std::optional<base::Value::Dict> UpdateStartEvent::BuildInternal(
   if (priority_) {
     event.Set("priority", PriorityToString(*priority_));
   }
-  if (install_source_) {
-    event.Set("installSource", *install_source_);
-  }
   return event;
 }
 
@@ -603,8 +588,9 @@ UpdateEndEvent& UpdateEndEvent::SetOutcome(
   return *this;
 }
 
-UpdateEndEvent& UpdateEndEvent::SetVersion(const std::string& version) {
-  version_ = version;
+UpdateEndEvent& UpdateEndEvent::SetNextVersion(
+    const std::string& next_version) {
+  next_version_ = next_version;
   return *this;
 }
 
@@ -615,8 +601,8 @@ std::optional<base::Value::Dict> UpdateEndEvent::BuildInternal(
   if (outcome_) {
     event.Set("outcome", UpdateStateToString(*outcome_));
   }
-  if (version_) {
-    event.Set("version", *version_);
+  if (next_version_) {
+    event.Set("nextVersion", *next_version_);
   }
   return event;
 }
