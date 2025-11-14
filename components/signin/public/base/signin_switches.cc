@@ -306,9 +306,6 @@ const base::FeatureParam<int> kHistoryOptInEducationalTipVariation(
     1);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(kInterceptBubblesDismissibleByAvatarButton,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kMakeAccountsAvailableInIdentityManager,
              base::FEATURE_ENABLED_BY_DEFAULT);
