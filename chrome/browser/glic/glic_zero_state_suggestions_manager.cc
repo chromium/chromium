@@ -4,17 +4,27 @@
 
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/types/id_type.h"
+#include "chrome/browser/contextual_cueing/caching_zero_state_suggestions_manager.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "content/public/browser/page.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace glic {
 
 namespace {
+
+BASE_FEATURE(kCacheZeroStateSuggestions, base::FEATURE_ENABLED_BY_DEFAULT);
+
+std::vector<std::string> EmptySuggestions() {
+  return {};
+}
 
 mojom::ZeroStateSuggestionsV2Ptr MakePendingSuggestionsPtr() {
   auto pending_suggestions = mojom::ZeroStateSuggestionsV2::New();
@@ -33,7 +43,14 @@ GlicZeroStateSuggestionsManager::GlicZeroStateSuggestionsManager(
     contextual_cueing::ContextualCueingService* contextual_cueing_service)
     : sharing_manager_(sharing_manager),
       glic_instance_(glic_instance),
-      contextual_cueing_service_(contextual_cueing_service) {}
+      contextual_cueing_service_(contextual_cueing_service) {
+  if (contextual_cueing_service &&
+      base::FeatureList::IsEnabled(kCacheZeroStateSuggestions)) {
+    caching_zero_state_manager_ =
+        contextual_cueing::CreateCachingZeroStateSuggestionsManager(
+            contextual_cueing_service);
+  }
+}
 
 GlicZeroStateSuggestionsManager::~GlicZeroStateSuggestionsManager() = default;
 
@@ -70,15 +87,23 @@ void GlicZeroStateSuggestionsManager::
         MakePendingSuggestionsPtr(),
         mojom::ZeroStateSuggestionsOptions(is_first_run, supported_tools));
 
-    contextual_cueing_service_
-        ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
-            active_web_contents, is_first_run, supported_tools,
-            mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                base::BindOnce(&GlicZeroStateSuggestionsManager::
-                                   OnZeroStateSuggestionsNotify,
-                               GetWeakPtr(), is_first_run, supported_tools),
-                /*returned_suggestions=*/
-                std::vector<std::string>({})));
+    if (caching_zero_state_manager_) {
+      caching_zero_state_manager_
+          ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+              active_web_contents, is_first_run, supported_tools,
+              base::BindOnce(&GlicZeroStateSuggestionsManager::
+                                 OnZeroStateSuggestionsNotify,
+                             GetWeakPtr(), is_first_run, supported_tools));
+    } else {
+      contextual_cueing_service_
+          ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+              active_web_contents, is_first_run, supported_tools,
+              mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                  base::BindOnce(&GlicZeroStateSuggestionsManager::
+                                     OnZeroStateSuggestionsNotify,
+                                 GetWeakPtr(), is_first_run, supported_tools),
+                  EmptySuggestions()));
+    }
   }
 }
 
@@ -113,17 +138,19 @@ void GlicZeroStateSuggestionsManager::
   }
 
   if (contextual_cueing_service_) {
-    // Debounce if we already have an outstanding request for the same set.
-    std::optional<std::vector<content::WebContents*>>
-        outstanding_pinned_tabs_contents =
-            contextual_cueing_service_->GetOutstandingPinnedTabsContents();
-    if (outstanding_pinned_tabs_contents &&
-        outstanding_pinned_tabs_contents->size() ==
-            contents_for_request.size() &&
-        std::equal(outstanding_pinned_tabs_contents->begin(),
-                   outstanding_pinned_tabs_contents->end(),
-                   contents_for_request.begin())) {
-      return;
+    if (!caching_zero_state_manager_) {
+      // Debounce if we already have an outstanding request for the same set.
+      std::optional<std::vector<content::WebContents*>>
+          outstanding_pinned_tabs_contents =
+              contextual_cueing_service_->GetOutstandingPinnedTabsContents();
+      if (outstanding_pinned_tabs_contents &&
+          outstanding_pinned_tabs_contents->size() ==
+              contents_for_request.size() &&
+          std::equal(outstanding_pinned_tabs_contents->begin(),
+                     outstanding_pinned_tabs_contents->end(),
+                     contents_for_request.begin())) {
+        return;
+      }
     }
 
     // Notify host that suggestions are pending in case there were suggestions
@@ -132,23 +159,33 @@ void GlicZeroStateSuggestionsManager::
         MakePendingSuggestionsPtr(),
         mojom::ZeroStateSuggestionsOptions(is_first_run, supported_tools));
 
-    bool suggestions_pending =
-        contextual_cueing_service_
-            ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
-                contents_for_request, is_first_run, supported_tools,
-                active_web_contents,
-                mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                    base::BindOnce(&GlicZeroStateSuggestionsManager::
-                                       OnZeroStateSuggestionsNotify,
-                                   GetWeakPtr(), is_first_run, supported_tools),
-                    /*returned_suggestions=*/
-                    std::vector<std::string>({})));
+    if (caching_zero_state_manager_) {
+      caching_zero_state_manager_
+          ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+              contents_for_request, is_first_run, supported_tools,
+              active_web_contents,
+              base::BindOnce(&GlicZeroStateSuggestionsManager::
+                                 OnZeroStateSuggestionsNotify,
+                             GetWeakPtr(), is_first_run, supported_tools));
+    } else {
+      bool suggestions_pending =
+          contextual_cueing_service_
+              ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+                  contents_for_request, is_first_run, supported_tools,
+                  active_web_contents,
+                  mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                      base::BindOnce(&GlicZeroStateSuggestionsManager::
+                                         OnZeroStateSuggestionsNotify,
+                                     GetWeakPtr(), is_first_run,
+                                     supported_tools),
+                      EmptySuggestions()));
 
-    if (suggestions_pending) {
-      // Notify host that suggestions are pending.
-      host().NotifyZeroStateSuggestion(
-          MakePendingSuggestionsPtr(),
-          mojom::ZeroStateSuggestionsOptions(is_first_run, supported_tools));
+      if (suggestions_pending && !caching_zero_state_manager_) {
+        // Notify host that suggestions are pending.
+        host().NotifyZeroStateSuggestion(
+            MakePendingSuggestionsPtr(),
+            mojom::ZeroStateSuggestionsOptions(is_first_run, supported_tools));
+      }
     }
   }
 }
@@ -196,15 +233,25 @@ void GlicZeroStateSuggestionsManager::ObserveZeroStateSuggestions(
 
     if (auto pinned_tabs = sharing_manager_->GetPinnedTabs();
         !pinned_tabs.empty()) {
-      contextual_cueing_service_
-          ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
-              pinned_tabs, is_first_run, supported_tools,
-              /* focused_tab=*/nullptr,
-              mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                  base::BindOnce(&GlicZeroStateSuggestionsManager::
-                                     OnZeroStateSuggestionsFetched,
-                                 GetWeakPtr(), std::move(callback)),
-                  /*returned_suggestions=*/std::vector<std::string>({})));
+      if (caching_zero_state_manager_) {
+        caching_zero_state_manager_
+            ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+                pinned_tabs, is_first_run, supported_tools,
+                /* focused_tab=*/nullptr,
+                base::BindOnce(&GlicZeroStateSuggestionsManager::
+                                   OnZeroStateSuggestionsFetched,
+                               GetWeakPtr(), std::move(callback)));
+      } else {
+        contextual_cueing_service_
+            ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+                pinned_tabs, is_first_run, supported_tools,
+                /* focused_tab=*/nullptr,
+                mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                    base::BindOnce(&GlicZeroStateSuggestionsManager::
+                                       OnZeroStateSuggestionsFetched,
+                                   GetWeakPtr(), std::move(callback)),
+                    EmptySuggestions()));
+      }
       return;
     }
 
@@ -213,14 +260,23 @@ void GlicZeroStateSuggestionsManager::ObserveZeroStateSuggestions(
             ? sharing_manager_->GetFocusedTabData().focus()->GetContents()
             : nullptr;
     if (active_web_contents) {
-      contextual_cueing_service_
-          ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
-              active_web_contents, is_first_run, supported_tools,
-              mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                  base::BindOnce(&GlicZeroStateSuggestionsManager::
-                                     OnZeroStateSuggestionsFetched,
-                                 GetWeakPtr(), std::move(callback)),
-                  /*returned_suggestions=*/std::vector<std::string>({})));
+      if (caching_zero_state_manager_) {
+        caching_zero_state_manager_
+            ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+                active_web_contents, is_first_run, supported_tools,
+                base::BindOnce(&GlicZeroStateSuggestionsManager::
+                                   OnZeroStateSuggestionsFetched,
+                               GetWeakPtr(), std::move(callback)));
+      } else {
+        contextual_cueing_service_
+            ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+                active_web_contents, is_first_run, supported_tools,
+                mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                    base::BindOnce(&GlicZeroStateSuggestionsManager::
+                                       OnZeroStateSuggestionsFetched,
+                                   GetWeakPtr(), std::move(callback)),
+                    EmptySuggestions()));
+      }
       return;
     }
   } else {

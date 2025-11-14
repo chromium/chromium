@@ -5,14 +5,17 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_ZERO_STATE_SUGGESTIONS_MANAGER_H_
 #define CHROME_BROWSER_GLIC_GLIC_ZERO_STATE_SUGGESTIONS_MANAGER_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 
 namespace contextual_cueing {
 class ContextualCueingService;
+class CachingZeroStateSuggestionsManager;
 }  // namespace contextual_cueing
 
 namespace glic {
@@ -81,6 +84,12 @@ class GlicZeroStateSuggestionsManager {
   raw_ptr<GlicSharingManager> sharing_manager_;
   raw_ptr<GlicInstance> glic_instance_;
   raw_ptr<Host> host_;
+
+  // A caching wrapper around `contextual_cueing_service_`. Set only when
+  // kCacheZeroStateSuggestions is enabled. Should always be used if present,
+  // instead of `contextual_cueing_service_`.
+  std::unique_ptr<contextual_cueing::CachingZeroStateSuggestionsManager>
+      caching_zero_state_manager_;
 
   // This passed by the glic_keyed_service.
   raw_ptr<contextual_cueing::ContextualCueingService>
