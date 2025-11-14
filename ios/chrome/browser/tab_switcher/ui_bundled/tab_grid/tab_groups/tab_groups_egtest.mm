@@ -679,7 +679,8 @@ void TapTabGridEditButton() {
   [self testMovingBetweenGroupsUsingGridContextMenuInGrid:/*incognito*/ NO];
 }
 
-- (void)testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid {
+// TODO(crbug.com/460748104): Test is flaky.
+- (void)FLAKY_testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid {
   [self testMovingBetweenGroupsUsingGridContextMenuInGrid:/*incognito*/ YES];
 }
 
