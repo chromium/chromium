@@ -15,6 +15,9 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {PageHandlerFactory, PageHandlerRemote} from './watermark.mojom-webui.js';
 
+export const FONT_SIZE_MIN = 1;
+export const FONT_SIZE_MAX = 500;
+
 export interface WatermarkAppElement {
   $: {
     fontSizeInput: CrInputElement,
@@ -83,6 +86,7 @@ export class WatermarkAppElement extends CrLitElement {
   }
 
   override firstUpdated() {
+    this.$.fontSizeInput.value = this.fontSize_.toString();
     this.sendStyleToBackend_();
   }
 
@@ -107,15 +111,57 @@ export class WatermarkAppElement extends CrLitElement {
     this.pageHandler_.showNotificationToast();
   }
 
-  protected onFontSizeChanged_() {
-    const parsedValue = parseInt(this.$.fontSizeInput.value, 10);
-    if (isNaN(parsedValue) || parsedValue < 1 || parsedValue > 500) {
-      this.$.fontSizeInputError.style.visibility = 'visible';
+  protected onFontSizeInputMouseDown_(event: Event) {
+    // To prevent focus loss on the input when the button is clicked.
+    event.preventDefault();
+  }
+
+  protected updateFontSizeValue_(currentValue: number, newValue: number) {
+    if (currentValue === newValue) {
       return;
     }
-    this.$.fontSizeInputError.style.visibility = 'hidden';
-    this.fontSize_ = parsedValue;
+    this.fontSize_ = newValue;
+    this.$.fontSizeInput.value = newValue.toString();
     this.sendStyleToBackend_();
+  }
+
+  protected onIncrementFontSize_(_event: Event) {
+    this.$.fontSizeInput.focus();
+
+    const parsedValue = parseInt(this.$.fontSizeInput.value, 10);
+    const newValue = Math.max(FONT_SIZE_MIN, parsedValue + 1);
+    this.updateFontSizeValue_(parsedValue, newValue);
+  }
+
+  protected onDecrementFontSize_(_event: Event) {
+    this.$.fontSizeInput.focus();
+
+    const parsedValue = parseInt(this.$.fontSizeInput.value, 10);
+    const newValue = Math.min(FONT_SIZE_MAX, parsedValue - 1);
+    this.updateFontSizeValue_(parsedValue, newValue);
+  }
+
+  protected onFontSizeChanged_() {
+    const parsedValue = parseInt(this.$.fontSizeInput.value, 10);
+
+    if (isNaN(parsedValue)) {
+      this.$.fontSizeInputError.style.visibility = 'visible';
+      return;
+    } else if (parsedValue < FONT_SIZE_MIN || parsedValue > FONT_SIZE_MAX) {
+      this.$.fontSizeInputError.style.visibility = 'visible';
+    } else {
+      this.$.fontSizeInputError.style.visibility = 'hidden';
+    }
+
+    // Mapping value to range (FONT_SIZE_MIN, FONT_SIZE_MAX)
+    const valueWithinRange =
+        Math.min(Math.max(parsedValue, FONT_SIZE_MIN), FONT_SIZE_MAX);
+
+    // Ensures that font size is the closest to the enterd value
+    if (this.fontSize_ !== valueWithinRange) {
+      this.fontSize_ = valueWithinRange;
+      this.sendStyleToBackend_();
+    }
   }
 
   // To prevent special floating point chars such as e or '.'

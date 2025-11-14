@@ -64,6 +64,12 @@
   justify-content: space-between;
 }
 
+.number-control-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
 .control-row:has(cr-slider) {
   align-items: center;
 }
@@ -104,6 +110,58 @@ cr-input.font-size-input.stroked {
 
 cr-input.font-size-input.stroked > #input {
   text-align: center;
+}
+
+cr-input.font-size-input::part(input)::-webkit-inner-spin-button,
+cr-input.font-size-input::part(input)::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.spinner-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-100%);
+  visibility: hidden;
+}
+
+.number-control-container:focus-within .spinner-buttons {
+  visibility: visible;
+}
+
+.spinner-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  color: #5f6368;
+  opacity:0.9;
+}
+
+.spinner-btn.up {
+  border-bottom: 5px solid currentColor;
+}
+
+.spinner-btn.down {
+  border-top: 5px solid currentColor;
+}
+
+.spinner-btn:active:not(:disabled) {
+  transform: scale(0.75);
+}
+
+.spinner-btn:disabled,
+.spinner-btn.hidden {
+  cursor: default;
+  visibility: hidden;
 }
 
 #fontSizeInputError {
