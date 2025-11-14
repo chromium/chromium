@@ -1138,23 +1138,21 @@ config("compiler") {
     "-Cdefault-linker-libraries",
   ]
 
-  if (rustc_nightly_capability) {
-    rustflags += [
-      # To make Rust .d files compatible with ninja
-      "-Zdep-info-omit-d-target",
+  rustflags += [
+    # To make Rust .d files compatible with ninja
+    "-Zdep-info-omit-d-target",
 
-      # If a macro panics during compilation, show which macro and where it is
-      # defined.
-      "-Zmacro-backtrace",
+    # If a macro panics during compilation, show which macro and where it is
+    # defined.
+    "-Zmacro-backtrace",
 
-      # For deterministic builds, keep the local machine's current working
-      # directory from appearing in build outputs.
-      "-Zremap-cwd-prefix=.",
+    # For deterministic builds, keep the local machine's current working
+    # directory from appearing in build outputs.
+    "-Zremap-cwd-prefix=.",
 
-      # We use clang-rt sanitizer runtimes.
-      "-Zexternal-clangrt",
-    ]
-  }
+    # We use clang-rt sanitizer runtimes.
+    "-Zexternal-clangrt",
+  ]
 
   if (!is_win || force_rustc_color_output) {
     # Colorize error output. The analogous flag is passed for clang. This must
@@ -1221,9 +1219,7 @@ config("compiler") {
 # Don't allow unstable features to be enabled by `#![feature()]` without
 # additional command line flags.
 config("disallow_unstable_features") {
-  if (rustc_nightly_capability) {
-    rustflags = [ "-Zallow-features=" ]
-  }
+  rustflags = [ "-Zallow-features=" ]
 }
 
 # The BUILDCONFIG file sets this config on targets by default, which means when
