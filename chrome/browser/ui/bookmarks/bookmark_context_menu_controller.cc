@@ -235,7 +235,7 @@ void BookmarkContextMenuController::BuildMenu() {
               IDS_BOOKMARK_BAR_OPEN_IN_SPLIT_VIEW);
     }
   } else {
-    int count = bookmarks::OpenCount(parent_window_, selection_);
+    int count = bookmarks::OpenCount(selection_);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL,
             l10n_util::GetPluralStringFUTF16(IDS_BOOKMARK_BAR_OPEN_ALL_COUNT,
                                              count));
@@ -243,8 +243,7 @@ void BookmarkContextMenuController::BuildMenu() {
             l10n_util::GetPluralStringFUTF16(
                 IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_WINDOW, count));
 
-    int incognito_count =
-        bookmarks::OpenCount(parent_window_, selection_, profile_);
+    int incognito_count = bookmarks::OpenCount(selection_, profile_);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO,
             l10n_util::GetPluralStringFUTF16(
                 IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_INCOGNITO, incognito_count));

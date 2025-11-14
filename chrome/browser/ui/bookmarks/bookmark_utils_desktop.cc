@@ -570,20 +570,17 @@ void OpenAllIfAllowed(
           navigation_type, std::nullopt));
 }
 
-int OpenCount(gfx::NativeWindow parent,
-              const std::vector<raw_ptr<const bookmarks::BookmarkNode,
+int OpenCount(const std::vector<raw_ptr<const bookmarks::BookmarkNode,
                                         VectorExperimental>>& nodes,
               content::BrowserContext* incognito_context) {
   return GetURLsToOpen(nodes, incognito_context != nullptr).size();
 }
 
-int OpenCount(gfx::NativeWindow parent,
-              const BookmarkNode* node,
+int OpenCount(const BookmarkNode* node,
               content::BrowserContext* incognito_context) {
   std::vector<const BookmarkNode*> nodes;
   nodes.push_back(node);
   return OpenCount(
-      parent,
       std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>{
           node},
       incognito_context);

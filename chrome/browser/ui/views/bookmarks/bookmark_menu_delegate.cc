@@ -1007,7 +1007,7 @@ MenuItemView* BookmarkMenuDelegate::CreateMenu(
   if (base::FeatureList::IsEnabled(features::kTabGroupMenuImprovements)) {
     const bookmarks::BookmarkNode* node =
         GetBookmarkMergedSurfaceService()->GetUnderlyingNodes(folder)[0];
-    int count = bookmarks::OpenCount(parent_->GetNativeWindow(), node);
+    int count = bookmarks::OpenCount(node);
 
     if (count > 0) {
       menu->AppendMenuItem(IDC_BOOKMARK_BAR_OPEN_ALL,
