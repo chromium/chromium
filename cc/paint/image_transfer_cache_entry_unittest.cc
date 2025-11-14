@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "cc/paint/image_transfer_cache_entry.h"
 
 #include <stdint.h>
@@ -13,7 +18,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/memory/scoped_refptr.h"
@@ -248,14 +252,14 @@ TEST_P(ImageTransferCacheEntryTest, MAYBE_Deserialize) {
       true /* needs_mips */, std::nullopt));
   uint32_t size = client_entry->SerializedSize();
   auto data = PaintOpWriter::AllocateAlignedBuffer<uint8_t>(size);
-  UNSAFE_TODO(ASSERT_TRUE(client_entry->Serialize(
-      base::span(static_cast<uint8_t*>(data.get()), size))));
+  ASSERT_TRUE(client_entry->Serialize(
+      base::span(static_cast<uint8_t*>(data.get()), size)));
 
   // Create service-side entry from the client-side serialize info
   auto entry(std::make_unique<ServiceImageTransferCacheEntry>());
-  UNSAFE_TODO(ASSERT_TRUE(
+  ASSERT_TRUE(
       entry->Deserialize(gr_context(), /*graphite_recorder=*/nullptr,
-                         base::span(static_cast<uint8_t*>(data.get()), size))));
+                         base::span(static_cast<uint8_t*>(data.get()), size)));
   ASSERT_TRUE(entry->is_yuv());
 
   // Check color of pixels
@@ -399,13 +403,12 @@ TEST(ImageTransferCacheEntryTestNoYUV, CPUImageWithMips) {
       std::nullopt);
   const uint32_t storage_size = client_entry.SerializedSize();
   auto storage = PaintOpWriter::AllocateAlignedBuffer<uint8_t>(storage_size);
-  client_entry.Serialize(UNSAFE_TODO(base::span(storage.get(), storage_size)));
+  client_entry.Serialize(base::span(storage.get(), storage_size));
 
   ServiceImageTransferCacheEntry service_entry;
-  service_entry.Deserialize(
-      gr_context.get(),
-      /*graphite_recorder=*/nullptr,
-      UNSAFE_TODO(base::span(storage.get(), storage_size)));
+  service_entry.Deserialize(gr_context.get(),
+                            /*graphite_recorder=*/nullptr,
+                            base::span(storage.get(), storage_size));
   ASSERT_TRUE(service_entry.image());
   auto pre_mip_image = service_entry.image();
   EXPECT_FALSE(pre_mip_image->isTextureBacked());
@@ -430,13 +433,12 @@ TEST(ImageTransferCacheEntryTestNoYUV, CPUImageAddMipsLater) {
       std::nullopt);
   const uint32_t storage_size = client_entry.SerializedSize();
   auto storage = PaintOpWriter::AllocateAlignedBuffer<uint8_t>(storage_size);
-  client_entry.Serialize(UNSAFE_TODO(base::span(storage.get(), storage_size)));
+  client_entry.Serialize(base::span(storage.get(), storage_size));
 
   ServiceImageTransferCacheEntry service_entry;
-  service_entry.Deserialize(
-      gr_context.get(),
-      /*graphite_recorder=*/nullptr,
-      UNSAFE_TODO(base::span(storage.get(), storage_size)));
+  service_entry.Deserialize(gr_context.get(),
+                            /*graphite_recorder=*/nullptr,
+                            base::span(storage.get(), storage_size));
   ASSERT_TRUE(service_entry.image());
   auto pre_mip_image = service_entry.image();
   EXPECT_FALSE(pre_mip_image->isTextureBacked());
