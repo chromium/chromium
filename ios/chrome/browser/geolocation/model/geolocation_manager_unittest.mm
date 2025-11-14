@@ -88,7 +88,8 @@ TEST_F(GeolocationManagerTest, AuthorizationStatusCacheUtilSetAndRetrieve) {
 }
 
 // Tests that the internal CLLocationManager calls its delegate after creation.
-TEST_F(GeolocationManagerTest, LocationUpdatesOnCreation) {
+// TODO(crbug.com/460739169): Test is flaky.
+TEST_F(GeolocationManagerTest, FLAKY_LocationUpdatesOnCreation) {
   FakeCLLocationManagerDelegate* delegate =
       [[FakeCLLocationManagerDelegate alloc] init];
   ASSERT_EQ(delegate.delegateCallbackCount, 0);
