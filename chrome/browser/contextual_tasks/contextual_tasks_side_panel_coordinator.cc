@@ -150,13 +150,15 @@ void ContextualTasksSidePanelCoordinator::Show() {
                                             task.GetTaskId());
   }
 
-  Unhide();
+  browser_window_->GetFeatures().side_panel_ui()->Show(
+      SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
   UpdateOpenStateForCurrentTask(/*is_open=*/true);
 }
 
 void ContextualTasksSidePanelCoordinator::Close() {
   UpdateOpenStateForCurrentTask(/*is_open=*/false);
-  Hide();
+  browser_window_->GetFeatures().side_panel_ui()->Close(
+      SidePanelEntry::PanelType::kToolbar);
 }
 
 bool ContextualTasksSidePanelCoordinator::IsSidePanelOpen() {
@@ -330,13 +332,20 @@ content::WebContents* ContextualTasksSidePanelCoordinator::
 }
 
 void ContextualTasksSidePanelCoordinator::Hide() {
-  browser_window_->GetFeatures().side_panel_ui()->Close(
-      SidePanelEntry::PanelType::kToolbar);
+  auto* side_panel_ui = static_cast<SidePanelCoordinator*>(
+      browser_window_->GetFeatures().side_panel_ui());
+  side_panel_ui->Close(/*suppress_animations=*/true,
+                       SidePanelEntry::PanelType::kToolbar);
 }
 
 void ContextualTasksSidePanelCoordinator::Unhide() {
-  browser_window_->GetFeatures().side_panel_ui()->Show(
-      SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
+  auto* side_panel_ui = static_cast<SidePanelCoordinator*>(
+      browser_window_->GetFeatures().side_panel_ui());
+  side_panel_ui->Show(
+      SidePanelUIBase::UniqueKey{
+          /*tab_handle=*/std::nullopt,
+          SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks)},
+      /*open_trigger=*/std::nullopt, /*suppress_animations=*/true);
 }
 
 }  // namespace contextual_tasks
