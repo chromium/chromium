@@ -100,14 +100,14 @@
 }
 
 :host([ntp-realbox-next-enabled]) {
-  --cr-composebox-font-size: 16px;
+  --cr-composebox-font-size: var(--cr-composebox-custom-font-size, 16px);
   --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 0px;
   --input-bottom-spacing: 12px;
-  --text-input-inline-start-spacing: 18px;
+  --text-input-inline-start-spacing: var(--cr-composebox-text-input-inline-start, 18px);
 }
 
 :host([ntp-realbox-next-enabled]) #input::placeholder {
-  font-size: 18px;
+  font-size: var(--cr-composebox-input-placeholder-font-size, 18px);
   font-weight: 400;
 }
 
@@ -184,7 +184,8 @@ search-animated-glow {
 #textContainer {
   display: flex;
   flex-direction: row;
-  padding-block: 8px 0;
+  padding-block-start: var(--cr-composebox-text-container-padding-block-start, 8px);
+  padding-block-end: 0;
   padding-inline: var(--text-input-inline-start-spacing) 0;
 }
 
@@ -222,7 +223,7 @@ search-animated-glow {
 #smartCompose {
   box-sizing: border-box;
   font-family: inherit;
-  font-size: inherit;
+  font-size: var(--cr-composebox-font-size, inherit);
   line-height: 24px;
   min-height: 48px;
   max-height: var(--text-input-max-height);
@@ -645,7 +646,7 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
 }
 
 :host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
-  --cr-icon-button-icon-size: 24px;
+  --cr-icon-button-icon-size: 20px;
   --cr-icon-button-margin-start: 2px;
 }
 

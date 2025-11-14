@@ -12,12 +12,12 @@
 :host {
   --input-inline-spacing: 12px;
   outline: none;
-  height: 44px;
+  height: var(--cr-composebox-match-height, 44px);
   display: block;
 }
 
 :host(:not([is-last])) {
-  padding-bottom: 2px;
+  padding-bottom: var(--cr-composebox-match-match-padding-bottom, 2px);
 }
 
 .container {
@@ -27,7 +27,7 @@
   cursor: default;
   display: flex;
   font-size: 16px;
-  height: 44px;
+  height: var(--cr-composebox-match-height, 44px);
   line-height: 24px;
   position: relative;
 }
@@ -54,7 +54,7 @@
 #iconContainer {
   align-items: center;
   display: flex;
-  padding-inline-start: 18px;
+  padding-inline-start: var(--cr-composebox-match-icon-container-padding-inline-start, 18px);
   justify-content: center;
 }
 
@@ -63,14 +63,14 @@
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: cover;
   background-color: var(--color-composebox-input-icon);
-  height: 20px;
-  width: 20px;
+  height: var(--cr-composebox-match-icon-size, 20px);
+  width: var(--cr-composebox-match-icon-size, 20px);
 }
 
 #textContainer {
   align-content: center;
   color: var(--color-composebox-font-light);
-  font-size: 16px;
+  font-size: var(--cr-composebox-match-text-container-font-size, 16px);
   overflow: hidden;
   padding-inline: var(--input-inline-spacing) 64px;
   text-overflow: ellipsis;
