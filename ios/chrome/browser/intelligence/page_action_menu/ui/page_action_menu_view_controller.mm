@@ -893,6 +893,12 @@ const CGFloat kDividerWidth = 1.0;
                          action:@selector(handleFeatureButton:)
                forControlEvents:UIControlEventTouchUpInside];
         [stackView addArrangedSubview:actionButton];
+
+        // Add chevron for price tracking.
+        if (feature.featureType == PageActionMenuPriceTracking) {
+          UIImageView* chevronIcon = [self createNavigationChevron];
+          [stackView addArrangedSubview:chevronIcon];
+        }
       }
       break;
     }
