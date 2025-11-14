@@ -599,9 +599,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
                      ntp_composebox::kEnableDragAndDrop.Get());
 
   source->AddBoolean("composeboxCloseByEscape",
-                     composebox_config.close_by_escape());
+                     ntp_composebox::kCloseComposeboxByEscape.Get());
   source->AddBoolean("composeboxCloseByClickOutside",
-                     composebox_config.close_by_click_outside());
+                     ntp_composebox::kCloseComposeboxByClickOutside.Get());
   source->AddBoolean("composeboxSmartComposeEnabled",
                      ntp_composebox::kShowSmartCompose.Get());
   const auto* aim_eligibility_service =
