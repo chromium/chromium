@@ -174,6 +174,7 @@ void EncoderBase<Traits>::close(ExceptionState& exception_state) {
       DOMExceptionCode::kAbortError, "Aborted due to close()"));
   output_callback_.Clear();
   error_callback_.Clear();
+  logger_->log()->OnWebMediaPlayerDestroyed();
 }
 
 template <typename Traits>
@@ -275,6 +276,7 @@ void EncoderBase<Traits>::HandleError(DOMException* ex) {
   output_callback_.Clear();
 
   // Prevent further logging.
+  logger_->log()->OnWebMediaPlayerDestroyed();
   logger_->Neuter();
 
   if (!script_state_->ContextIsValid() || !error_callback)

@@ -85,6 +85,8 @@ DecoderTemplate<Traits>::DecoderTemplate(ScriptState* script_state,
   logger_ = std::make_unique<CodecLogger<media::DecoderStatus>>(
       context, main_thread_task_runner_);
 
+  logger_->SendPlayerNameInformation(*context, Traits::GetName());
+
   logger_->log()->SetProperty<media::MediaLogProperty::kFrameUrl>(
       context->Url().GetString().Ascii());
 
@@ -538,6 +540,7 @@ void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
   error_cb_.Release();
 
   // Prevent any further logging from being reported.
+  logger_->log()->OnWebMediaPlayerDestroyed();
   logger_->Neuter();
 
   // Clear decoding and JS-visible queue state. Use DeleteSoon() to avoid

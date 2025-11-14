@@ -36,7 +36,7 @@ namespace internal {
 
 void SendPlayerNameInformationInternal(media::MediaLog* media_log,
                                        const ExecutionContext& context,
-                                       std::string loadedAs);
+                                       std::string_view name);
 
 }  // namespace internal
 
@@ -91,9 +91,9 @@ class MODULES_EXPORT CodecLogger final {
   }
 
   void SendPlayerNameInformation(const ExecutionContext& context,
-                                 std::string loadedAs) {
+                                 std::string_view name) {
     internal::SendPlayerNameInformationInternal(media_log_.get(), context,
-                                                loadedAs);
+                                                name);
   }
 
   // Creates an OperationError DOMException with the given |error_msg|, and logs

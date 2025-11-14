@@ -267,7 +267,7 @@ export class ClientRenderer {
     if (key === 'error') {
       player.playerState = 'errored';
     } else if (
-        key === 'event' && value === 'kWebMediaPLayerDestroyed' &&
+        key === 'event' && value === 'kWebMediaPlayerDestroyed' &&
         player.playerState !== 'errored') {
       player.playerState = 'ended';
     }
@@ -506,7 +506,8 @@ export class ClientRenderer {
       if (lastEvent) {
         const playerFrame = document.createElement('div');
         playerFrame.classList.add('player-frame');
-        playerFrame.textContent = lastEvent;
+        playerFrame.textContent =
+            lastEvent === 'kWebMediaPlayerDestroyed' ? 'Destroyed' : lastEvent;
         treeItemHeader.appendChild(playerFrame);
       }
       treeItem.appendChild(treeItemHeader);
