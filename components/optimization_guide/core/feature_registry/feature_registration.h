@@ -29,6 +29,8 @@ extern const char kAutofillPredictionImprovementsEnterprisePolicyAllowed[];
 }  // namespace prefs
 
 namespace features {
+BASE_DECLARE_FEATURE(kActorLoginMqlsLogging);
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kComposeMqlsLogging);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

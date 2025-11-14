@@ -49,7 +49,7 @@ TEST_F(MqlsFeatureRegistryTest, MAYBE_RegisterFeature) {
           proto::LogAiDataRequest::FeatureCase::kCompose);
   EXPECT_TRUE(metadata_from_registry);
   EXPECT_EQ("Test", metadata_from_registry->name());
-  EXPECT_EQ("policy_name", metadata_from_registry->enterprise_policy().name());
+  EXPECT_EQ("policy_name", metadata_from_registry->enterprise_policy()->name());
   EXPECT_EQ(logging_callback,
             metadata_from_registry->get_user_feedback_callback());
   EXPECT_EQ(&kLoggingEnabledFeature,
@@ -86,6 +86,36 @@ TEST(MqlsFeatureMetadataTest, LoggingDisabledViaFieldTrial) {
       EnterprisePolicyPref("policy_name"), &kLoggingEnabledFeature,
       logging_callback);
   EXPECT_FALSE(metadata.LoggingEnabledViaFieldTrial());
+}
+
+TEST(MqlsFeatureMetadataTest, ActorLoginAllowsEmptyEnterprisePolicy) {
+  UserFeedbackCallback logging_callback =
+      base::BindRepeating([](proto::LogAiDataRequest& request_proto) {
+        return proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+      });
+  MqlsFeatureMetadata metadata("ActorLogin",
+                               proto::LogAiDataRequest::FeatureCase::kCompose,
+                               /* enterprise_policy= */ std::nullopt,
+                               &kLoggingEnabledFeature, logging_callback);
+
+  EXPECT_EQ("ActorLogin", metadata.name());
+  EXPECT_FALSE(metadata.enterprise_policy().has_value());
+}
+
+TEST(MqlsFeatureMetadataTest, ActorLoginDoesNotAllowsEmptyEnterprisePolicy) {
+  UserFeedbackCallback logging_callback =
+      base::BindRepeating([](proto::LogAiDataRequest& request_proto) {
+        return proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+      });
+
+  // This should crash because the name is not "ActorLogin" and policy is empty.
+  EXPECT_DEATH_IF_SUPPORTED(
+      {
+        MqlsFeatureMetadata(
+            "SomeOtherFeature", proto::LogAiDataRequest::FeatureCase::kCompose,
+            std::nullopt, &kLoggingEnabledFeature, logging_callback);
+      },
+      "");
 }
 
 }  // namespace optimization_guide

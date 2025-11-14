@@ -52,6 +52,8 @@ const char kNotificationContentDetectionEnterprisePolicyAllowed[] =
 }  // namespace prefs
 
 namespace features {
+BASE_FEATURE(kActorLoginMqlsLogging, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kComposeMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabOrganizationMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -85,6 +87,14 @@ UserFeedbackCallback FeedbackUnspecified() {
   return base::BindRepeating([](proto::LogAiDataRequest&) {
     return proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
   });
+}
+
+void RegisterActorLogin() {
+  MqlsFeatureRegistry::GetInstance().Register(
+      std::make_unique<MqlsFeatureMetadata>(
+          "ActorLogin", proto::LogAiDataRequest::FeatureCase::kActorLogin,
+          /*enterprise_policy=*/std::nullopt, &features::kActorLoginMqlsLogging,
+          FeedbackUnspecified()));
 }
 
 void RegisterCompose() {
@@ -263,6 +273,7 @@ void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
   if (!features_registered) {
     // The registries are static and so should only be populated once for the
     // program (rather than once per profile).
+    RegisterActorLogin();
     RegisterCompose();
     RegisterTabOrganization();
     RegisterWallpaperSearch();
