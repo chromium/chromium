@@ -97,6 +97,15 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyTaskManager {
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)> callback);
 
+  // Deletes a signing key asynchronously.
+  // Invokes `callback` with a `ServiceError` if an error occurs during deletion
+  // and `base::ok()` otherwise.
+  void DeleteSigningKeySlowlyAsync(
+      crypto::UnexportableKeyProvider::Config config,
+      std::vector<uint8_t> wrapped_key,
+      BackgroundTaskPriority priority,
+      base::OnceCallback<void(ServiceErrorOr<void>)> callback);
+
  private:
   // Scheduler to run long tasks in background.
   BackgroundLongTaskScheduler task_scheduler_{

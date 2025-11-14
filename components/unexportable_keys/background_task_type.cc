@@ -19,6 +19,8 @@ std::string_view GetBackgroundTaskTypeSuffixForHistograms(
       return ".FromWrappedKey";
     case BackgroundTaskType::kSign:
       return ".Sign";
+    case BackgroundTaskType::kDeleteKey:
+      return ".DeleteKey";
   }
   NOTREACHED();
 }

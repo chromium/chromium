@@ -33,6 +33,7 @@ using ::base::test::ErrorIs;
 using ::base::test::ValueIs;
 using ::testing::AtLeast;
 using ::testing::ElementsAreArray;
+using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
@@ -65,14 +66,10 @@ class UnexportableKeyServiceImplTest : public testing::Test {
     scoped_key_provider_.emplace<crypto::ScopedNullUnexportableKeyProvider>();
   }
 
-  unexportable_keys::ScopedMockUnexportableKeyProvider&
-  SwitchToMockKeyProvider() {
+  ScopedMockUnexportableKeyProvider& SwitchToMockKeyProvider() {
     // Using `emplace()` to destroy the existing scoped object before
     // constructing a new one.
-    scoped_key_provider_
-        .emplace<unexportable_keys::ScopedMockUnexportableKeyProvider>();
-    return std::get<unexportable_keys::ScopedMockUnexportableKeyProvider>(
-        scoped_key_provider_);
+    return scoped_key_provider_.emplace<ScopedMockUnexportableKeyProvider>();
   }
 
   // Generates a signing key and returns it. This key is NOT stored in the
@@ -98,7 +95,7 @@ class UnexportableKeyServiceImplTest : public testing::Test {
   // Provides a fake key provider by default.
   std::variant<crypto::ScopedFakeUnexportableKeyProvider,
                crypto::ScopedNullUnexportableKeyProvider,
-               unexportable_keys::ScopedMockUnexportableKeyProvider>
+               ScopedMockUnexportableKeyProvider>
       scoped_key_provider_;
   std::optional<UnexportableKeyTaskManager> task_manager_{std::in_place};
   std::optional<UnexportableKeyServiceImpl> service_{
@@ -431,6 +428,27 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteNonExistingKey) {
   RunBackgroundTasks();
   EXPECT_TRUE(delete_future.IsReady());
   EXPECT_THAT(delete_future.Get(), ErrorIs(ServiceError::kKeyNotFound));
+}
+
+TEST_F(UnexportableKeyServiceImplTest, DeleteKeyCallsProvider) {
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
+  service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
+                                          generate_future.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
+
+  // Delete the key.
+  EXPECT_CALL(
+      SwitchToMockKeyProvider(),
+      DeleteSigningKeySlowly(Eq(service().GetWrappedKey(key_id).value())))
+      .WillOnce(Return(true));
+
+  base::test::TestFuture<ServiceErrorOr<void>> delete_future;
+  service().DeleteKeySlowlyAsync(key_id, kTaskPriority,
+                                 delete_future.GetCallback());
+  RunBackgroundTasks();
+
+  EXPECT_OK(delete_future.Get());
 }
 
 TEST_F(UnexportableKeyServiceImplTest, SignWithDeletedKey) {

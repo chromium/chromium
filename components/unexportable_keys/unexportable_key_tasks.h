@@ -68,6 +68,17 @@ class SignTask : public internal::BackgroundTaskImpl<
       const ServiceErrorOr<std::vector<uint8_t>>& result) const override;
 };
 
+// A `BackgroundTask` to delete a `crypto::UnexportableSigningKey`.
+class DeleteKeyTask
+    : public internal::BackgroundTaskImpl<ServiceErrorOr<void>> {
+ public:
+  DeleteKeyTask(
+      std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
+      std::vector<uint8_t> wrapped_key,
+      BackgroundTaskPriority priority,
+      base::OnceCallback<void(DeleteKeyTask::ReturnType, size_t)> callback);
+};
+
 }  // namespace unexportable_keys
 
 #endif  // COMPONENTS_UNEXPORTABLE_KEYS_UNEXPORTABLE_KEY_TASKS_H_

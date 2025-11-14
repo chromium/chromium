@@ -14,7 +14,12 @@ namespace unexportable_keys {
 // Enum containing all supported types of background TPM operations.
 // These values are primarily used for histograms together with
 // `GetBackgroundTaskTypeSuffixForHistograms()` below.
-enum class BackgroundTaskType { kGenerateKey, kFromWrappedKey, kSign };
+enum class BackgroundTaskType {
+  kGenerateKey,
+  kFromWrappedKey,
+  kSign,
+  kDeleteKey,
+};
 
 // Converts `BackgroundTaskType` to a histogram suffix string. The string is
 // prepended with "." symbol so it can be directly concatenated with a base

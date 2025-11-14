@@ -170,8 +170,7 @@ void UnexportableKeyServiceImpl::DeleteKeySlowlyAsync(
     return;
   }
 
-  const std::vector<uint8_t> wrapped_key =
-      key_id_it->second->key().GetWrappedKey();
+  std::vector<uint8_t> wrapped_key = key_id_it->second->key().GetWrappedKey();
   auto wrapped_key_it = key_id_by_wrapped_key_.find(wrapped_key);
   CHECK(wrapped_key_it != key_id_by_wrapped_key_.end());
   CHECK(wrapped_key_it->second.HasKeyId());
@@ -180,8 +179,8 @@ void UnexportableKeyServiceImpl::DeleteKeySlowlyAsync(
   key_by_key_id_.erase(key_id_it);
   key_id_by_wrapped_key_.erase(wrapped_key_it);
 
-  // TODO: crbug.com/455538141 - Implement deletion in the task manager.
-  std::move(callback).Run(base::ok());
+  task_manager_->DeleteSigningKeySlowlyAsync(config_, std::move(wrapped_key),
+                                             priority, std::move(callback));
 }
 
 void UnexportableKeyServiceImpl::CopyKeyFromOtherService(
