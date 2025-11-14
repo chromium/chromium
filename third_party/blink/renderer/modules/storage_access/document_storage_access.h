@@ -21,9 +21,8 @@ class StorageAccessTypes;
 
 class DocumentStorageAccess final
     : public GarbageCollected<DocumentStorageAccess>,
-      public Supplement<Document> {
+      public GarbageCollectedMixin {
  public:
-  static const unsigned kSupplementIndex;
   static const char kNoAccessRequested[];
   static DocumentStorageAccess& From(Document& document);
   static ScriptPromise<IDLBoolean> hasStorageAccess(ScriptState* script_state,
@@ -84,6 +83,8 @@ class DocumentStorageAccess final
   void ProcessTopLevelStorageAccessPermissionState(
       ScriptPromiseResolver<IDLUndefined>* resolver,
       mojom::blink::PermissionStatus status);
+
+  Member<Document> document_;
 };
 
 }  // namespace blink

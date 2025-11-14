@@ -12,22 +12,18 @@
 namespace blink {
 
 PictureInPictureController::PictureInPictureController(Document& document)
-    : Supplement<Document>(document) {}
-
-// static
-const unsigned PictureInPictureController::kSupplementIndex =
-    static_cast<unsigned>(Document::Supplements::kPictureInPictureController);
+    : document_(document) {}
 
 // static
 PictureInPictureController& PictureInPictureController::From(
     Document& document) {
   PictureInPictureController* controller =
-      Supplement<Document>::From<PictureInPictureController>(document);
+      document.GetPictureInPictureController();
   if (!controller) {
     controller =
         CoreInitializer::GetInstance().CreatePictureInPictureController(
             document);
-    ProvideTo(document, controller);
+    document.SetPictureInPictureController(controller);
   }
   return *controller;
 }
@@ -38,7 +34,7 @@ bool PictureInPictureController::IsElementInPictureInPicture(
   DCHECK(element);
   Document& document = element->GetDocument();
   PictureInPictureController* controller =
-      Supplement<Document>::From<PictureInPictureController>(document);
+      document.GetPictureInPictureController();
   return controller && controller->IsPictureInPictureElement(element);
 }
 
@@ -60,7 +56,7 @@ LocalDOMWindow* PictureInPictureController::GetDocumentPictureInPictureWindow(
     const Document& document) {
 #if !BUILDFLAG(TARGET_OS_IS_ANDROID)
   PictureInPictureController* controller =
-      Supplement<Document>::From<PictureInPictureController>(document);
+      document.GetPictureInPictureController();
   return controller ? controller->GetDocumentPictureInPictureWindow() : nullptr;
 #else
   return nullptr;
@@ -72,7 +68,7 @@ LocalDOMWindow* PictureInPictureController::GetDocumentPictureInPictureOwner(
     const Document& document) {
 #if !BUILDFLAG(TARGET_OS_IS_ANDROID)
   PictureInPictureController* controller =
-      Supplement<Document>::From<PictureInPictureController>(document);
+      document.GetPictureInPictureController();
   return controller ? controller->GetDocumentPictureInPictureOwner() : nullptr;
 #else
   return nullptr;
@@ -80,7 +76,7 @@ LocalDOMWindow* PictureInPictureController::GetDocumentPictureInPictureOwner(
 }
 
 void PictureInPictureController::Trace(Visitor* visitor) const {
-  Supplement<Document>::Trace(visitor);
+  visitor->Trace(document_);
 }
 
 }  // namespace blink

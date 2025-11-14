@@ -21,9 +21,8 @@ class LocalFrame;
 // to InnerTextBuilder to handle building of the text.
 class InnerTextAgent final : public GarbageCollected<InnerTextAgent>,
                              public mojom::blink::InnerTextAgent,
-                             public Supplement<Document> {
+                             public GarbageCollectedMixin {
  public:
-  static const unsigned kSupplementIndex;
   static InnerTextAgent* From(Document&);
   static void BindReceiver(
       LocalFrame* frame,
@@ -43,6 +42,7 @@ class InnerTextAgent final : public GarbageCollected<InnerTextAgent>,
  private:
   void Bind(mojo::PendingReceiver<mojom::blink::InnerTextAgent> receiver);
 
+  Member<Document> document_;
   HeapMojoReceiverSet<mojom::blink::InnerTextAgent, InnerTextAgent>
       receiver_set_;
 };

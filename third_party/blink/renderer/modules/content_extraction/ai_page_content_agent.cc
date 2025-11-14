@@ -852,12 +852,8 @@ void OffsetNodeGeometry(mojom::blink::AIPageContentNode& node,
 }  // namespace
 
 // static
-const unsigned AIPageContentAgent::kSupplementIndex =
-    static_cast<unsigned>(Document::Supplements::kAIPageContentAgent);
-
-// static
 AIPageContentAgent* AIPageContentAgent::From(Document& document) {
-  return Supplement<Document>::From<AIPageContentAgent>(document);
+  return document.GetAIPageContentAgent();
 }
 
 // static
@@ -872,7 +868,7 @@ void AIPageContentAgent::BindReceiver(
   if (!agent) {
     agent = MakeGarbageCollected<AIPageContentAgent>(
         base::PassKey<AIPageContentAgent>(), *frame);
-    Supplement<Document>::ProvideTo(document, agent);
+    document.SetAIPageContentAgent(agent);
   }
   agent->Bind(std::move(receiver));
 }
@@ -885,15 +881,14 @@ AIPageContentAgent* AIPageContentAgent::GetOrCreateForTesting(
     DCHECK(document.GetFrame());
     agent = MakeGarbageCollected<AIPageContentAgent>(
         base::PassKey<AIPageContentAgent>(), *document.GetFrame());
-    Supplement<Document>::ProvideTo(document, agent);
+    document.SetAIPageContentAgent(agent);
   }
   return agent;
 }
 
 AIPageContentAgent::AIPageContentAgent(base::PassKey<AIPageContentAgent>,
                                        LocalFrame& frame)
-    : Supplement<Document>(*frame.GetDocument()),
-      receiver_set_(this, frame.DomWindow()) {
+    : document_(*frame.GetDocument()), receiver_set_(this, frame.DomWindow()) {
   DCHECK(frame.GetDocument());
 }
 
@@ -903,12 +898,12 @@ void AIPageContentAgent::Bind(
     mojo::PendingReceiver<mojom::blink::AIPageContentAgent> receiver) {
   receiver_set_.Add(
       std::move(receiver),
-      GetSupplementable()->GetTaskRunner(TaskType::kInternalUserInteraction));
+      document_->GetTaskRunner(TaskType::kInternalUserInteraction));
 }
 
 void AIPageContentAgent::Trace(Visitor* visitor) const {
+  visitor->Trace(document_);
   visitor->Trace(receiver_set_);
-  Supplement<Document>::Trace(visitor);
 }
 
 void AIPageContentAgent::DidFinishPostLifecycleSteps(const LocalFrameView&) {
@@ -923,7 +918,7 @@ void AIPageContentAgent::GetAIPageContent(
     GetAIPageContentCallback callback) {
   base::TimeTicks start_time = base::TimeTicks::Now();
 
-  LocalFrameView* view = GetSupplementable()->View();
+  LocalFrameView* view = document_->View();
 
   // If there's no lifecycle pending, we can't rely on post lifecycle
   // notifications and the layout is likely clean.
@@ -960,8 +955,7 @@ void AIPageContentAgent::GetAIPageContentSync(
 
   const auto end_time = base::TimeTicks::Now();
   RecordLatencyMetrics(start_time, sync_start_time, end_time,
-                       GetSupplementable()->GetFrame()->IsOutermostMainFrame(),
-                       *options);
+                       document_->GetFrame()->IsOutermostMainFrame(), *options);
   std::move(callback).Run(std::move(content));
 }
 
@@ -1003,7 +997,7 @@ String AIPageContentAgent::DumpContentNodeForTest(Node* node) {
 
 mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentInternal(
     const mojom::blink::AIPageContentOptions& options) const {
-  LocalFrame* frame = GetSupplementable()->GetFrame();
+  LocalFrame* frame = document_->GetFrame();
   if (!frame || !frame->GetDocument() || !frame->GetDocument()->View()) {
     return nullptr;
   }

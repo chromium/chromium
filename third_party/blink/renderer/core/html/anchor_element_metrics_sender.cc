@@ -53,10 +53,6 @@ bool ShouldReportViewportPositions() {
 
 }  // namespace
 
-// static
-const unsigned AnchorElementMetricsSender::kSupplementIndex =
-    static_cast<unsigned>(Document::Supplements::kAnchorElementMetricsSender);
-
 AnchorElementMetricsSender::~AnchorElementMetricsSender() = default;
 
 // static
@@ -67,11 +63,10 @@ AnchorElementMetricsSender* AnchorElementMetricsSender::From(
   // `ShouldHaveAnchorElementMetricsSender` as a guard clause here, that would
   // cause a measurable performance regression.
 
-  AnchorElementMetricsSender* sender =
-      Supplement<Document>::From<AnchorElementMetricsSender>(document);
+  AnchorElementMetricsSender* sender = document.GetAnchorElementMetricsSender();
   if (!sender && ShouldHaveAnchorElementMetricsSender(document)) {
     sender = MakeGarbageCollected<AnchorElementMetricsSender>(document);
-    ProvideTo(document, sender);
+    document.SetAnchorElementMetricsSender(sender);
   }
   return sender;
 }
@@ -117,7 +112,7 @@ void AnchorElementMetricsSender::
 void AnchorElementMetricsSender::MaybeReportClickedMetricsOnClick(
     const HTMLAnchorElementBase& anchor_element) {
   DCHECK(base::FeatureList::IsEnabled(features::kNavigationPredictor));
-  Document* top_document = GetSupplementable();
+  Document* top_document = document_;
   CHECK(top_document);
   if (!anchor_element.Href().ProtocolIsInHTTPFamily() ||
       !top_document->Url().ProtocolIsInHTTPFamily() ||
@@ -138,7 +133,7 @@ void AnchorElementMetricsSender::MaybeReportClickedMetricsOnClick(
 void AnchorElementMetricsSender::AddAnchorElement(
     HTMLAnchorElementBase& element) {
   DCHECK(base::FeatureList::IsEnabled(features::kNavigationPredictor));
-  if (!GetSupplementable()->GetFrame()) {
+  if (!document_->GetFrame()) {
     return;
   }
 
@@ -172,7 +167,7 @@ void AnchorElementMetricsSender::RemoveAnchorElement(
 
     if (auto* viewport_position_tracker =
             AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(
-                *GetSupplementable())) {
+                *document_)) {
       viewport_position_tracker->RemoveAnchor(element);
     }
   }
@@ -188,7 +183,7 @@ void AnchorElementMetricsSender::DocumentDetached(Document& document) {
   }
   // We also don't need to do anything if a subframe is being detached as part
   // of the main frame being detached, or when a navigation is committing.
-  LocalFrame* main_frame = GetSupplementable()->GetFrame();
+  LocalFrame* main_frame = document_->GetFrame();
   CHECK(main_frame);
   if (!main_frame->IsAttached() ||
       main_frame->Loader().IsCommittingNavigation()) {
@@ -204,10 +199,10 @@ void AnchorElementMetricsSender::DocumentDetached(Document& document) {
 }
 
 void AnchorElementMetricsSender::Trace(Visitor* visitor) const {
+  visitor->Trace(document_);
   visitor->Trace(anchor_elements_to_report_);
   visitor->Trace(metrics_host_);
   visitor->Trace(update_timer_);
-  Supplement<Document>::Trace(visitor);
   AnchorElementViewportPositionTracker::Observer::Trace(visitor);
 }
 
@@ -220,7 +215,7 @@ bool AnchorElementMetricsSender::AssociateInterface() {
     return true;
   }
 
-  Document* document = GetSupplementable();
+  Document* document = document_;
   // Unable to associate since no frame is attached.
   if (!document->GetFrame()) {
     return false;
@@ -239,7 +234,7 @@ bool AnchorElementMetricsSender::AssociateInterface() {
 }
 
 AnchorElementMetricsSender::AnchorElementMetricsSender(Document& document)
-    : Supplement<Document>(document),
+    : document_(document),
       metrics_host_(document.GetExecutionContext()),
       update_timer_(document.GetExecutionContext()->GetTaskRunner(
                         TaskType::kInternalDefault),
@@ -300,7 +295,7 @@ base::TimeTicks AnchorElementMetricsSender::NavigationStart() const {
     return mock_navigation_start_for_testing_.value();
   }
 
-  const Document* top_document = GetSupplementable();
+  const Document* top_document = document_;
   CHECK(top_document);
 
   return top_document->Loader()->GetTiming().NavigationStart();
@@ -424,7 +419,7 @@ void AnchorElementMetricsSender::RegisterForLifecycleNotifications() {
     return;
   }
 
-  if (LocalFrameView* view = GetSupplementable()->View()) {
+  if (LocalFrameView* view = document_->View()) {
     view->RegisterForLifecycleNotifications(this);
     is_registered_for_lifecycle_notifications_ = true;
   }
@@ -439,13 +434,12 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
       DocumentLifecycle::kAfterPerformLayout) {
     return;
   }
-  if (!GetSupplementable()->GetFrame()) {
+  if (!document_->GetFrame()) {
     return;
   }
 
   auto* viewport_position_tracker =
-      AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(
-          *GetSupplementable());
+      AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(*document_);
 
   for (const auto& member_element : anchor_elements_to_report_) {
     HTMLAnchorElementBase& anchor_element = *member_element;
@@ -499,9 +493,9 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
 
   MaybeUpdateMetrics();
 
-  DCHECK_EQ(&local_frame_view, GetSupplementable()->View());
+  DCHECK_EQ(&local_frame_view, document_->View());
   DCHECK(is_registered_for_lifecycle_notifications_);
-  GetSupplementable()->View()->UnregisterFromLifecycleNotifications(this);
+  document_->View()->UnregisterFromLifecycleNotifications(this);
   is_registered_for_lifecycle_notifications_ = false;
 }
 
@@ -601,7 +595,7 @@ void AnchorElementMetricsSender::UpdateMetrics(TimerBase* /*timer*/) {
 void AnchorElementMetricsSender::ViewportIntersectionUpdate(
     const HeapVector<Member<const HTMLAnchorElementBase>>& entered_viewport,
     const HeapVector<Member<const HTMLAnchorElementBase>>& left_viewport) {
-  if (!GetSupplementable()->GetFrame()) {
+  if (!document_->GetFrame()) {
     return;
   }
 

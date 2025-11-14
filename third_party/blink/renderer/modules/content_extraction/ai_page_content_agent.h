@@ -33,7 +33,6 @@ class LocalFrame;
 class MODULES_EXPORT AIPageContentAgent final
     : public GarbageCollected<AIPageContentAgent>,
       public mojom::blink::AIPageContentAgent,
-      public Supplement<Document>,
       public LocalFrameView::LifecycleNotificationObserver {
  public:
   static const unsigned kSupplementIndex;
@@ -174,6 +173,7 @@ class MODULES_EXPORT AIPageContentAgent final
 
   void Bind(mojo::PendingReceiver<mojom::blink::AIPageContentAgent> receiver);
 
+  Member<Document> document_;
   HeapMojoReceiverSet<mojom::blink::AIPageContentAgent, AIPageContentAgent>
       receiver_set_;
   // Already registered for lifetime notifications.

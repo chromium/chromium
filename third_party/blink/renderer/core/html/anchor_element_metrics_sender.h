@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -58,8 +57,7 @@ class PointerEvent;
 class CORE_EXPORT AnchorElementMetricsSender final
     : public GarbageCollected<AnchorElementMetricsSender>,
       public LocalFrameView::LifecycleNotificationObserver,
-      public AnchorElementViewportPositionTracker::Observer,
-      public Supplement<Document> {
+      public AnchorElementViewportPositionTracker::Observer {
  public:
   static const unsigned kSupplementIndex;
 
@@ -151,6 +149,8 @@ class CORE_EXPORT AnchorElementMetricsSender final
       override;
   void AnchorPositionsUpdated(
       HeapVector<Member<AnchorPositionUpdate>>& position_updates) override;
+
+  Member<Document> document_;
 
   // Mock timestamp for navigation start used for testing.
   std::optional<base::TimeTicks> mock_navigation_start_for_testing_;

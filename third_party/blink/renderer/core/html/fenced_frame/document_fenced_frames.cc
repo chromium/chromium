@@ -14,33 +14,28 @@
 namespace blink {
 
 // static
-const unsigned DocumentFencedFrames::kSupplementIndex =
-    static_cast<unsigned>(Document::Supplements::kDocumentFencedFrames);
-
-// static
 DocumentFencedFrames* DocumentFencedFrames::Get(Document& document) {
-  return Supplement<Document>::From<DocumentFencedFrames>(document);
+  return document.GetDocumentFencedFrames();
 }
 
 // static
 DocumentFencedFrames& DocumentFencedFrames::GetOrCreate(Document& document) {
-  DocumentFencedFrames* supplement =
-      Supplement<Document>::From<DocumentFencedFrames>(document);
+  DocumentFencedFrames* supplement = document.GetDocumentFencedFrames();
   if (!supplement) {
     supplement = MakeGarbageCollected<DocumentFencedFrames>(document);
-    Supplement<Document>::ProvideTo(document, supplement);
+    document.SetDocumentFencedFrames(supplement);
   }
   return *supplement;
 }
 
 DocumentFencedFrames::DocumentFencedFrames(Document& document)
-    : Supplement<Document>(document) {}
+    : document_(document) {}
 
 void DocumentFencedFrames::RegisterFencedFrame(
     HTMLFencedFrameElement* fenced_frame) {
   fenced_frames_.push_back(fenced_frame);
 
-  LocalFrame* frame = GetSupplementable()->GetFrame();
+  LocalFrame* frame = document_->GetFrame();
   if (!frame)
     return;
   if (Page* page = frame->GetPage())
@@ -54,7 +49,7 @@ void DocumentFencedFrames::DeregisterFencedFrame(
     fenced_frames_.EraseAt(index);
   }
 
-  LocalFrame* frame = GetSupplementable()->GetFrame();
+  LocalFrame* frame = document_->GetFrame();
   if (!frame)
     return;
   if (Page* page = frame->GetPage()) {
@@ -63,7 +58,7 @@ void DocumentFencedFrames::DeregisterFencedFrame(
 }
 
 void DocumentFencedFrames::Trace(Visitor* visitor) const {
-  Supplement<Document>::Trace(visitor);
+  visitor->Trace(document_);
   visitor->Trace(fenced_frames_);
 }
 

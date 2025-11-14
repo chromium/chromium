@@ -15,9 +15,8 @@ class Document;
 
 class RenderBlockingMetricsReporter final
     : public GarbageCollected<RenderBlockingMetricsReporter>,
-      public Supplement<Document> {
+      public GarbageCollectedMixin {
  public:
-  static const unsigned kSupplementIndex;
   static RenderBlockingMetricsReporter& From(Document&);
 
   explicit RenderBlockingMetricsReporter(Document&);
@@ -34,6 +33,8 @@ class RenderBlockingMetricsReporter final
  private:
   base::TimeDelta GetDeltaFromTimeOrigin();
   void Report();
+
+  Member<Document> document_;
 
   int pending_preloaded_fonts_ = 0;
   // Ensure that we don't report multiple times, in case some late preloaded

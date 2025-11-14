@@ -16,9 +16,8 @@ class ScriptState;
 // Helper class for CredentialsContainer API method implementations to record
 // metrics, and maintain metric-related state. It is unique per Document.
 class CredentialMetrics : public GarbageCollected<CredentialMetrics>,
-                          public Supplement<Document> {
+                          public GarbageCollectedMixin {
  public:
-  static const unsigned kSupplementIndex;
   static CredentialMetrics& From(ScriptState* script_state);
 
   explicit CredentialMetrics(Document& frame);
@@ -29,7 +28,11 @@ class CredentialMetrics : public GarbageCollected<CredentialMetrics>,
 
   void RecordWebAuthnConditionalUiCall();
 
+  void Trace(Visitor* visitor) const override { visitor->Trace(document_); }
+
  private:
+  Member<Document> document_;
+
   bool conditional_ui_timing_reported_ = false;
 };
 

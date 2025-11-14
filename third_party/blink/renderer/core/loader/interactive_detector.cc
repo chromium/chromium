@@ -54,17 +54,12 @@ const char kHistogramProcessingTime[] =
 const char kHistogramTimeToNextPaint[] =
     "PageLoad.InteractiveTiming.TimeToNextPaint";
 
-// static
-const unsigned InteractiveDetector::kSupplementIndex =
-    static_cast<unsigned>(Document::Supplements::kInteractiveDetector);
-
 InteractiveDetector* InteractiveDetector::From(Document& document) {
-  InteractiveDetector* detector =
-      Supplement<Document>::From<InteractiveDetector>(document);
+  InteractiveDetector* detector = document.GetInteractiveDetector();
   if (!detector) {
     detector = MakeGarbageCollected<InteractiveDetector>(
         document, std::make_unique<NetworkActivityChecker>(&document));
-    Supplement<Document>::ProvideTo(document, detector);
+    document.SetInteractiveDetector(detector);
   }
   return detector;
 }
@@ -76,8 +71,8 @@ const char* InteractiveDetector::SupplementName() {
 InteractiveDetector::InteractiveDetector(
     Document& document,
     std::unique_ptr<NetworkActivityChecker> network_activity_checker)
-    : Supplement<Document>(document),
-      ExecutionContextLifecycleObserver(document.GetExecutionContext()),
+    : ExecutionContextLifecycleObserver(document.GetExecutionContext()),
+      document_(document),
       clock_(base::DefaultTickClock::GetInstance()),
       network_activity_checker_(std::move(network_activity_checker)),
       time_to_interactive_timer_(
@@ -93,8 +88,9 @@ void InteractiveDetector::SetNavigationStartTime(
 
   // Don't record TTI for OOPIFs (yet).
   // TODO(crbug.com/808086): enable this case.
-  if (!GetSupplementable()->IsInMainFrame())
+  if (!document_->IsInMainFrame()) {
     return;
+  }
 
   LongTaskDetector::Instance().RegisterObserver(this);
   page_event_times_.nav_start = navigation_start_time;
@@ -168,8 +164,8 @@ std::optional<base::TimeDelta> InteractiveDetector::GetFirstScrollDelay()
 
 bool InteractiveDetector::PageWasBackgroundedSinceEvent(
     base::TimeTicks event_time) {
-  DCHECK(GetSupplementable());
-  if (GetSupplementable()->hidden()) {
+  DCHECK(document_);
+  if (document_->hidden()) {
     return true;
   }
 
@@ -303,8 +299,8 @@ void InteractiveDetector::HandleForInputDelay(
                              event_timestamp - page_event_times_.nav_start,
                              base::Milliseconds(10), base::Minutes(10), 100);
 
-  if (GetSupplementable()->Loader() && interactive_timing_metrics_changed) {
-    GetSupplementable()->Loader()->DidChangePerformanceTiming();
+  if (document_->Loader() && interactive_timing_metrics_changed) {
+    document_->Loader()->DidChangePerformanceTiming();
   }
 }
 
@@ -350,8 +346,9 @@ void InteractiveDetector::UpdateNetworkQuietState(
 
 void InteractiveDetector::OnResourceLoadBegin(
     std::optional<base::TimeTicks> load_begin_time) {
-  if (!GetSupplementable())
+  if (!document_) {
     return;
+  }
   if (!interactive_time_.is_null())
     return;
   // The request that is about to begin is not counted in ActiveConnections(),
@@ -363,8 +360,9 @@ void InteractiveDetector::OnResourceLoadBegin(
 // clock_->NowTicks.
 void InteractiveDetector::OnResourceLoadEnd(
     std::optional<base::TimeTicks> load_finish_time) {
-  if (!GetSupplementable())
+  if (!document_) {
     return;
+  }
   if (!interactive_time_.is_null())
     return;
   UpdateNetworkQuietState(ActiveConnections(), load_finish_time);
@@ -411,8 +409,9 @@ void InteractiveDetector::OnInvalidatingInputEvent(
   page_event_times_.first_invalidating_input =
       std::max(invalidation_time, page_event_times_.nav_start);
 
-  if (GetSupplementable()->Loader())
-    GetSupplementable()->Loader()->DidChangePerformanceTiming();
+  if (document_->Loader()) {
+    document_->Loader()->DidChangePerformanceTiming();
+  }
 }
 
 void InteractiveDetector::OnPageHiddenChanged(bool is_hidden) {
@@ -421,8 +420,9 @@ void InteractiveDetector::OnPageHiddenChanged(bool is_hidden) {
 }
 
 void InteractiveDetector::TimeToInteractiveTimerFired(TimerBase*) {
-  if (!GetSupplementable() || !interactive_time_.is_null())
+  if (!document_ || !interactive_time_.is_null()) {
     return;
+  }
 
   // Value of 0.0 indicates there is currently no active timer.
   time_to_interactive_timer_fire_time_ = base::TimeTicks();
@@ -574,14 +574,14 @@ void InteractiveDetector::CheckTimeToInteractiveReached() {
 void InteractiveDetector::OnTimeToInteractiveDetected() {
   LongTaskDetector::Instance().UnregisterObserver(this);
   network_quiet_windows_.clear();
-  LocalFrame* frame = GetSupplementable()->GetFrame();
-  DocumentLoader* loader = GetSupplementable()->Loader();
+  LocalFrame* frame = document_->GetFrame();
+  DocumentLoader* loader = document_->Loader();
   probe::LifecycleEvent(frame, loader, "InteractiveTime",
                         interactive_time_.since_origin().InSecondsF());
 
   TRACE_EVENT_MARK_WITH_TIMESTAMP2(
       "loading,rail", "InteractiveTime", interactive_time_, "frame",
-      GetFrameIdForTracing(GetSupplementable()->GetFrame()), "args",
+      GetFrameIdForTracing(document_->GetFrame()), "args",
       [&](perfetto::TracedValue context) {
         // We log the trace event even if there is user input, but annotate the
         // event with whether that happened.
@@ -626,7 +626,7 @@ void InteractiveDetector::ContextDestroyed() {
 
 void InteractiveDetector::Trace(Visitor* visitor) const {
   visitor->Trace(time_to_interactive_timer_);
-  Supplement<Document>::Trace(visitor);
+  visitor->Trace(document_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
@@ -654,8 +654,8 @@ void InteractiveDetector::DidObserveFirstScrollDelay(
   if (!page_event_times_.frist_scroll_delay.has_value()) {
     page_event_times_.frist_scroll_delay = first_scroll_delay;
     page_event_times_.first_scroll_timestamp = first_scroll_timestamp;
-    if (GetSupplementable()->Loader()) {
-      GetSupplementable()->Loader()->DidChangePerformanceTiming();
+    if (document_->Loader()) {
+      document_->Loader()->DidChangePerformanceTiming();
     }
   }
 }

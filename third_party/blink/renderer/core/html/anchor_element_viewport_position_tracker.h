@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -27,8 +26,7 @@ class PointerEvent;
 // after a scroll completes.
 class CORE_EXPORT AnchorElementViewportPositionTracker
     : public GarbageCollected<AnchorElementViewportPositionTracker>,
-      public LocalFrameView::LifecycleNotificationObserver,
-      public Supplement<Document> {
+      public LocalFrameView::LifecycleNotificationObserver {
  public:
   class Observer : public GarbageCollectedMixin {
    public:
@@ -109,6 +107,7 @@ class CORE_EXPORT AnchorElementViewportPositionTracker
   void InitializeIntersectionObserver();
   void PostFCPDelayTimerFired(TimerBase*);
 
+  Member<Document> document_;
   Member<IntersectionObserver> intersection_observer_;
   // Maximum number of observations for `intersection_observer_`.
   const wtf_size_t max_number_of_observations_;

@@ -11,12 +11,8 @@
 namespace blink {
 
 // static
-const unsigned InnerHtmlAgent::kSupplementIndex =
-    static_cast<unsigned>(Document::Supplements::kInnerHtmlAgent);
-
-// static
 InnerHtmlAgent* InnerHtmlAgent::From(Document& document) {
-  return Supplement<Document>::From<InnerHtmlAgent>(document);
+  return document.GetInnerHtmlAgent();
 }
 
 // static
@@ -29,7 +25,7 @@ void InnerHtmlAgent::BindReceiver(
   if (!agent) {
     agent = MakeGarbageCollected<InnerHtmlAgent>(
         base::PassKey<InnerHtmlAgent>(), *frame);
-    Supplement<Document>::ProvideTo(document, agent);
+    document.SetInnerHtmlAgent(agent);
   }
   agent->Bind(std::move(receiver));
 }

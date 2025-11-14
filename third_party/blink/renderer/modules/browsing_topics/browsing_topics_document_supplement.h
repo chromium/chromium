@@ -20,11 +20,8 @@ class BrowsingTopicsOptions;
 // Explainer: https://github.com/jkarlin/topics
 class MODULES_EXPORT BrowsingTopicsDocumentSupplement
     : public GarbageCollected<BrowsingTopicsDocumentSupplement>,
-      public Supplement<Document> {
+      public GarbageCollectedMixin {
  public:
-  static constexpr auto kSupplementIndex =
-      Document::Supplements::kBrowsingTopicsDocumentSupplement;
-
   // Supplement functionality.
   static BrowsingTopicsDocumentSupplement* From(Document&);
   static ScriptPromise<IDLSequence<BrowsingTopic>> browsingTopics(
@@ -50,6 +47,8 @@ class MODULES_EXPORT BrowsingTopicsDocumentSupplement
   void Trace(Visitor* visitor) const override;
 
  private:
+  Member<Document> document_;
+
   // Mojo remote used to query the browsing topics.
   HeapMojoRemote<mojom::blink::BrowsingTopicsDocumentService> document_host_;
 };

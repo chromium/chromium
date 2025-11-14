@@ -10,31 +10,27 @@
 
 namespace blink {
 
-const unsigned RenderBlockingMetricsReporter::kSupplementIndex =
-    static_cast<unsigned>(
-        Document::Supplements::kRenderBlockingMetricsReporter);
-
 RenderBlockingMetricsReporter::RenderBlockingMetricsReporter(Document& document)
-    : Supplement<Document>(document) {}
+    : document_(document) {}
 
 // static
 RenderBlockingMetricsReporter& RenderBlockingMetricsReporter::From(
     Document& document) {
   RenderBlockingMetricsReporter* supplement =
-      Supplement<Document>::From<RenderBlockingMetricsReporter>(document);
+      document.GetRenderBlockingMetricsReporter();
   if (!supplement) {
     supplement = MakeGarbageCollected<RenderBlockingMetricsReporter>(document);
-    ProvideTo(document, supplement);
+    document.SetRenderBlockingMetricsReporter(supplement);
   }
   return *supplement;
 }
 
 void RenderBlockingMetricsReporter::Trace(Visitor* visitor) const {
-  Supplement<Document>::Trace(visitor);
+  visitor->Trace(document_);
 }
 
 base::TimeDelta RenderBlockingMetricsReporter::GetDeltaFromTimeOrigin() {
-  Document* document = GetSupplementable();
+  Document* document = document_;
   DCHECK(document);
   LocalDOMWindow* window = document->domWindow();
   if (!window) {

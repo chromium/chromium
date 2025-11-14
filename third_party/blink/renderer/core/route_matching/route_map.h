@@ -28,12 +28,10 @@ class URLPattern;
 // See;
 // https://github.com/WICG/declarative-partial-updates?tab=readme-ov-file#part-2-route-matching
 class CORE_EXPORT RouteMap final : public ScriptWrappable,
-                                   public Supplement<Document> {
+                                   public GarbageCollectedMixin {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const unsigned kSupplementIndex;
-
   struct ParseResult final {
     // TODO(crbug.com/436805487): Error reporting needs to be specced.
     enum Status {
@@ -75,9 +73,8 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   static RouteMap& Ensure(Document&);
 
   Document& GetDocument() const {
-    Document* document = GetSupplementable();
-    DCHECK(document);
-    return *document;
+    DCHECK(document_);
+    return *document_;
   }
 
   ParseResult ParseAndApplyRoutes(const String& route_map_text);
@@ -113,6 +110,8 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   }
 
  private:
+  Member<Document> document_;
+
   HeapHashMap<String, Member<Route>> routes_;
   HeapHashMap<String, Member<Route>> anonymous_routes_;
 
