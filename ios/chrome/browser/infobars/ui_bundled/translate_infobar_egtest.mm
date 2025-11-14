@@ -824,7 +824,8 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Tests that the target language can be changed. TODO(crbug.com/40670920):
 // implement test for changing source language.
-- (void)testInfobarChangeTargetLanguage {
+// TODO(crbug.com/460748990): Test is flaky.
+- (void)FLAKY_testInfobarChangeTargetLanguage {
 // TODO(crbug.com/383556552): This test is flaky on iPad device.
 #if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
