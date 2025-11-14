@@ -369,9 +369,77 @@ public class TabStateStore implements TabPersistentStore {
             TabGroupVisualDataStore.cacheGroups(data.getGroupsData());
         }
 
-        // TODO(crbug.com/457771677): Special case the first batch to restore only the selected tab
-        // then restore the remainder in posted batches.
-        restoreNextBatchOfTabs(data, /* startIndex= */ 0, /* batchSize= */ loadedTabStates.length);
+        if (mRestoredTabCount == 0) {
+            onFinishedCreatingAllTabs(data);
+            return;
+        }
+
+        restoreActiveTab(data);
+    }
+
+    /**
+     * Restores the active tab from {@code data}. Will post a task to restore the next batch if
+     * there are more tabs to restore otherwise will signal the end of restoration.
+     *
+     * @param data The data to restore tabs from.
+     */
+    private void restoreActiveTab(StorageLoadedData data) {
+        LoadedTabState[] loadedTabStates = data.getLoadedTabStates();
+        assert loadedTabStates.length > 0;
+
+        int activeTabIndex = data.getActiveTabIndex();
+        int restoredActiveTabIndex =
+                (activeTabIndex > TabModel.INVALID_TAB_INDEX
+                                && activeTabIndex < loadedTabStates.length)
+                        ? activeTabIndex
+                        : 0;
+        restoreTab(
+                loadedTabStates[restoredActiveTabIndex],
+                restoredActiveTabIndex,
+                /* isIncognito= */ false,
+                /* isActive= */ true);
+
+        if (loadedTabStates.length == 1) {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> onFinishedCreatingAllTabs(data));
+            return;
+        }
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () ->
+                        restoreNextBatchOfTabs(
+                                data,
+                                restoredActiveTabIndex,
+                                /* startIndex= */ 0,
+                                /* batchSize= */ RESTORE_BATCH_SIZE));
+    }
+
+    /**
+     * Restores a single tab.
+     *
+     * @param loadedTabState The tab state to restore.
+     * @param index The index of the tab to restore.
+     * @param isIncognito Whether the tab is in incognito mode.
+     * @param isActive Whether the tab is the active tab.
+     */
+    private void restoreTab(
+            LoadedTabState loadedTabState, int index, boolean isIncognito, boolean isActive) {
+        @TabId int tabId = loadedTabState.tabId;
+        Tab tab = resolveTab(loadedTabState.tabState, tabId, index);
+        if (tab == null) return;
+
+        loadedTabState.onTabCreationCallback.onResult(tab);
+        // TODO(https://crbug.com/451624258): This is the opposite order of creation and details
+        // from how the previous implementation did it. Verify this doesn't break anything.
+        for (TabPersistentStoreObserver observer : mObservers) {
+            observer.onDetailsRead(
+                    index,
+                    tabId,
+                    tab.getUrl().getSpec(),
+                    /* isStandardActiveIndex= */ !isIncognito && isActive,
+                    /* isIncognitoActiveIndex= */ isIncognito && isActive,
+                    /* isIncognito= */ isIncognito,
+                    /* fromMerge= */ false);
+        }
     }
 
     /**
@@ -380,47 +448,32 @@ public class TabStateStore implements TabPersistentStore {
      * restore otherwise will signal the end of restoration.
      *
      * @param data The data to restore tabs from.
+     * @param restoredActiveTabIndex The index of the active tab that was restored already.
      * @param startIndex The index of the first tab to restore.
      * @param batchSize The number of tabs to restore.
      */
-    private void restoreNextBatchOfTabs(StorageLoadedData data, int startIndex, int batchSize) {
+    private void restoreNextBatchOfTabs(
+            StorageLoadedData data, int restoredActiveTabIndex, int startIndex, int batchSize) {
+        assert startIndex >= 0;
+        assert batchSize > 0;
         LoadedTabState[] loadedTabStates = data.getLoadedTabStates();
         int endIndex = Math.min(startIndex + batchSize, loadedTabStates.length);
 
         for (int i = startIndex; i < endIndex; i++) {
-            LoadedTabState loadedTabState = loadedTabStates[i];
-            @TabId int tabId = loadedTabState.tabId;
-            Tab tab = resolveTab(loadedTabState.tabState, tabId, i);
+            // Skip the active tab as it was already restored by {@link #restoreActiveTab}.
+            if (i == restoredActiveTabIndex) continue;
 
-            if (tab == null) {
-                continue;
-            }
-            loadedTabState.onTabCreationCallback.onResult(tab);
-
-            // TODO(https://crbug.com/448151052): Correctly mark the selected tab as active.
-            // TODO(https://crbug.com/451624258): This is the opposite order of creation and details
-            // from how the previous implementation did it. Verify this doesn't break anything.
-            for (TabPersistentStoreObserver observer : mObservers) {
-                observer.onDetailsRead(
-                        i,
-                        tabId,
-                        tab.getUrl().getSpec(),
-                        /* isStandardActiveIndex= */ false,
-                        /* isIncognitoActiveIndex= */ false,
-                        /* isIncognito= */ false,
-                        /* fromMerge= */ false);
-            }
+            restoreTab(loadedTabStates[i], i, /* isIncognito= */ false, /* isActive= */ false);
         }
 
         if (endIndex < loadedTabStates.length) {
-            // TODO(crbug.com/457771677): This is currently unreachable as we just fake restoring
-            // everything in one batch.
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT,
-                    () -> restoreNextBatchOfTabs(data, endIndex, RESTORE_BATCH_SIZE));
+                    () ->
+                            restoreNextBatchOfTabs(
+                                    data, restoredActiveTabIndex, endIndex, RESTORE_BATCH_SIZE));
         } else {
-            // TODO(crbug.com/457771677): Consider posting this to prevent jank.
-            onFinishedCreatingAllTabs(data);
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> onFinishedCreatingAllTabs(data));
         }
     }
 
