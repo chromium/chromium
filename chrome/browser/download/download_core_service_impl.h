@@ -52,9 +52,6 @@ class DownloadCoreServiceImpl : public DownloadCoreService {
   DownloadUIController* GetDownloadUIController() override;
   void SetDownloadHistoryForTesting(
       std::unique_ptr<DownloadHistory> download_history) override;
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  void SetDownloadUiEnabledForTest(bool enabled) override;
-#endif
 
   // KeyedService
   void Shutdown() override;
@@ -90,10 +87,6 @@ class DownloadCoreServiceImpl : public DownloadCoreService {
   // off-record profiles, so ExtensionSystem cannot own the EDER.
   std::unique_ptr<extensions::ExtensionDownloadsEventRouter>
       extension_event_router_;
-
-  // Simulates an extension enabling or disabling the downloads UI via
-  // chrome.download.setUiOptions().
-  std::optional<bool> is_download_ui_enabled_for_test_;
 #endif
 };
 
