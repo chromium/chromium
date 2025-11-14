@@ -294,11 +294,16 @@ bool GlicEnabling::IsShareImageEnabledForProfile(Profile* profile) {
     return false;
   }
 
-  // Should only have a cached value for enterprise accounts.
+  // LINT.IfChange(GlicCachedUserStatusScope)
+
+  // See GlicUserStatusFetcher for details on when we update the cached value
+  // and when we skip updating.
   if (base::FeatureList::IsEnabled(features::kGlicUserStatusCheck) &&
       GlicUserStatusFetcher::GetCachedUserStatus(profile).has_value()) {
     return false;
   }
+
+  // LINT.ThenChange(//chrome/browser/glic/glic_user_status_fetcher.cc:GlicCachedUserStatusScope)
 
   auto account_managed_status_finder = signin::AccountManagedStatusFinder(
       identity_manager,

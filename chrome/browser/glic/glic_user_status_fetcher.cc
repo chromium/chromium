@@ -175,6 +175,10 @@ void GlicUserStatusFetcher::UpdateUserStatusIfNeeded() {
 }
 
 void GlicUserStatusFetcher::UpdateUserStatus() {
+  // Ensure that assumptions about when we do or do not update the cached user
+  // status are not broken.
+  // LINT.IfChange(GlicCachedUserStatusScope)
+
   // If the admin has disabled Gemini, we don't need to send the request.
   if (profile_->GetPrefs()->GetInteger(::prefs::kGeminiSettings) ==
       static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled)) {
@@ -260,6 +264,8 @@ void GlicUserStatusFetcher::UpdateUserStatus() {
   if (!is_managed) {
     return;
   }
+
+  // LINT.ThenChange(//chrome/browser/glic/public/glic_enabling.cc:GlicCachedUserStatusScope)
 
   // Cancel any ongoing fetch. This will do nothing if the request is already
   // finished.
