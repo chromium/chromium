@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.widget.containment;
 
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -25,13 +26,24 @@ public class ContainmentViewStyler {
      * @param style The {@link ContainerStyle} to apply.
      */
     public static void applyBackgroundStyle(View view, ContainerStyle style) {
+        // If the style is EMPTY, do nothing. This preserve any existing background (e.g., ripples).
         if (style == ContainerStyle.EMPTY) {
-            view.setBackground(null);
             return;
         }
-        view.setBackground(
+
+        Drawable originalBackground = view.getBackground();
+        Drawable newBackground =
                 createRoundedDrawable(
-                        style.getTopRadius(), style.getBottomRadius(), style.getBackgroundColor()));
+                        style.getTopRadius(), style.getBottomRadius(), style.getBackgroundColor());
+        // If there is an existing background, layer the new background behind it.
+        // This preserves state-based drawables like RippleDrawable or other custom backgrounds.
+        if (originalBackground != null) {
+            Drawable[] layers = {newBackground, originalBackground};
+            LayerDrawable layerDrawable = new LayerDrawable(layers);
+            view.setBackground(layerDrawable);
+        } else {
+            view.setBackground(newBackground);
+        }
     }
 
     /**
