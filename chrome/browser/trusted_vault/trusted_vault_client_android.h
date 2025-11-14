@@ -69,7 +69,7 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
   void AddTrustedRecoveryMethodCompleted(JNIEnv* env, jint request_id);
 
   // Called from Java to notify that the keys in the vault may have changed.
-  void NotifyKeysChanged(JNIEnv* env);
+  void NotifyKeysChanged(JNIEnv* env, std::optional<jint> trigger);
 
   // Called from Java to notify that the recoverability of the vault may have
   // changed.

@@ -61,6 +61,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
+import org.chromium.components.trusted_vault.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -510,7 +511,8 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         // done even if the user cancelled the flow (i.e. resultCode != RESULT_OK) because it's
         // harmless to issue a redundant notifyKeysChanged().
         if (requestCode == REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL) {
-            TrustedVaultClient.get().notifyKeysChanged();
+            TrustedVaultClient.get()
+                    .notifyKeysChanged(TrustedVaultUserActionTriggerForUMA.SETTINGS);
         }
         if (requestCode == REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED) {
             TrustedVaultClient.get().notifyRecoverabilityChanged();

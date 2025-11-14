@@ -190,7 +190,7 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
                 // Upon key retrieval completion, the keys in TrustedVaultClient could have changed.
                 // This is done even if the user cancelled the flow (i.e. resultCode != RESULT_OK)
                 // because it's harmless to issue a redundant notifyKeysChanged().
-                TrustedVaultClient.get().notifyKeysChanged();
+                TrustedVaultClient.get().notifyKeysChanged(mUserActionTrigger);
                 break;
 
             case REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED:

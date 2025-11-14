@@ -128,9 +128,15 @@ void TrustedVaultClientAndroid::AddTrustedRecoveryMethodCompleted(
       .Run();
 }
 
-void TrustedVaultClientAndroid::NotifyKeysChanged(JNIEnv* env) {
+void TrustedVaultClientAndroid::NotifyKeysChanged(JNIEnv* env,
+                                                  std::optional<jint> trigger) {
   for (Observer& observer : observer_list_) {
-    observer.OnTrustedVaultKeysChanged(std::nullopt);
+    observer.OnTrustedVaultKeysChanged(
+        trigger
+            ? std::optional(static_cast<
+                            trusted_vault::TrustedVaultUserActionTriggerForUMA>(
+                  *trigger))
+            : std::nullopt);
   }
 }
 
