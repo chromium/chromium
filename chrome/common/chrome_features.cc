@@ -450,6 +450,9 @@ BASE_FEATURE_ENUM_PARAM(GlicActorEnterprisePrefDefault,
                         GlicActorEnterprisePrefDefault::kForcedDisabled,
                         &kGlicActorEnterprisePrefDefaultOptions);
 
+const base::FeatureParam<bool> kGlicActorPolicyControlExemption{
+    &kGlicActor, "glic_actor_policy_control_exemption", false};
+
 BASE_FEATURE(kGlicActorPermissionsBypass, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicActorToctouValidation, base::FEATURE_DISABLED_BY_DEFAULT);
