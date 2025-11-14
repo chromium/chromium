@@ -29,6 +29,11 @@ void ReadingListAdder::AddUrlToReadingListModel(ReadingListModel* model) {
 
 void ReadingListAdder::OnProfileLoaded(ScopedProfileKeepAliveIOS keep_alive,
                                        base::OnceClosure completion) {
+  if (!keep_alive.profile()) {
+    // Profile could not be loaded, abort the reading list item addition.
+    std::move(completion).Run();
+    return;
+  }
   keep_alive_ = std::move(keep_alive);
   completion_ = std::move(completion);
 
