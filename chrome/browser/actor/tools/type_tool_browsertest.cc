@@ -158,6 +158,30 @@ IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest,
             EvalJs(web_contents(), "document.getElementById('input').value"));
 }
 
+// Tests that it is possible to type an empty string when the existing field
+// is empty (effectively a no-op).
+IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest,
+                       TypeTool_TextInputEmptyString) {
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::string empty_string;
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+  ASSERT_EQ(empty_string,
+            EvalJs(web_contents(), "document.getElementById('input').value"));
+  std::unique_ptr<ToolRequest> action =
+      MakeTypeRequest(*main_frame(), input_id.value(), empty_string,
+                      /*follow_by_enter=*/true);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(empty_string,
+            EvalJs(web_contents(), "document.getElementById('input').value"));
+}
+
 // Ensure that if the page creates and focus on to a new input upon focusing on
 // the original target (even if the original target is readonly), type tool will
 // continue on to the new input.
@@ -281,6 +305,41 @@ IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest, TypeTool_Events) {
       EvalJs(web_contents(), "getStableEventLog()"));
 }
 
+// Tests that it is possible to type an empty string (which has the effect of
+// deleting any existing value) and the correct events are sent.
+IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest, TypeTool_Events_EmptyString) {
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // The log starts empty.
+  ASSERT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
+
+  std::string empty_string;
+
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+  ASSERT_TRUE(
+      ExecJs(web_contents(),
+             "document.getElementById('input').value = \'pumpkin pie\'"));
+
+  std::unique_ptr<ToolRequest> action =
+      MakeTypeRequest(*main_frame(), input_id.value(), empty_string,
+                      /*follow_by_enter=*/true);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(empty_string,
+            EvalJs(web_contents(), "document.getElementById('input').value"));
+  EXPECT_EQ(
+      // backspace
+      "keydown,input,keyup,"
+      // enter (causes submit to "click")
+      "keydown,click,keyup",
+      EvalJs(web_contents(), "getStableEventLog()"));
+}
+
 // Ensure type tool sends the expected events to an input box.
 IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest, TypeTool_EventsForDeadKey) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");
@@ -309,32 +368,6 @@ IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest, TypeTool_EventsForDeadKey) {
       // enter (causes submit to "click")
       "keydown,click,keyup",
       EvalJs(web_contents(), "getStableEventLog()"));
-}
-
-// Ensure the type tool can be used without text to send an enter key in an
-// input.
-IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest, TypeTool_EmptyText) {
-  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-
-  // The log starts empty.
-  ASSERT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
-
-  std::string typed_string = "";
-
-  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
-  ASSERT_TRUE(input_id);
-  std::unique_ptr<ToolRequest> action =
-      MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
-                      /*follow_by_enter=*/true);
-
-  ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectOkResult(result);
-
-  EXPECT_EQ(
-      // enter (causes submit to "click")
-      "keydown,click,keyup", EvalJs(web_contents(), "getStableEventLog()"));
 }
 
 // Ensure the type tool correctly sends the enter key after input if specified.

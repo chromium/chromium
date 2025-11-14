@@ -284,6 +284,18 @@ TypeTool::KeyParams TypeTool::GetEnterKeyParams() const {
   return params;
 }
 
+TypeTool::KeyParams TypeTool::GetBackspaceKeyParams() const {
+  TypeTool::KeyParams params;
+  params.windows_key_code = ui::VKEY_BACK;
+  params.native_key_code =
+      ui::KeycodeConverter::DomCodeToNativeKeycode(ui::DomCode::BACKSPACE);
+  params.dom_code = "Backspace";
+  params.dom_key = "Backspace";
+  params.text = ui::VKEY_BACK;
+  params.unmodified_text = ui::VKEY_BACK;
+  return params;
+}
+
 std::optional<TypeTool::KeyParams> TypeTool::GetKeyParamsForChar(
     char16_t c) const {
   // This function only supports ASCII characters. Non-ASCII characters are
@@ -541,10 +553,21 @@ void TypeTool::OnFocusingClickComplete(ToolFinishedCallback callback,
     }
   }
 
-  // Reserve two space per letter in text in case of composition keys.
-  key_sequence_.reserve(2 * action_->text.length() +
-                        (action_->follow_by_enter ? 1 : 0));
-  bool can_simulate_typing = ProcessInputText(key_sequence_);
+  bool can_simulate_typing = false;
+  // Empty text is used to simulate clearing the existing text with Backspace.
+  if (action_->text.empty()) {
+    can_simulate_typing = true;
+    key_sequence_.reserve(action_->follow_by_enter ? 2 : 1);
+    key_sequence_.push_back(GetBackspaceKeyParams());
+    if (action_->follow_by_enter) {
+      key_sequence_.push_back(GetEnterKeyParams());
+    }
+  } else {
+    // Reserve two space per letter in text in case of composition keys.
+    key_sequence_.reserve(2 * action_->text.length() +
+                          (action_->follow_by_enter ? 1 : 0));
+    can_simulate_typing = ProcessInputText(key_sequence_);
+  }
 
   if (can_simulate_typing) {
     if (!base::FeatureList::IsEnabled(features::kGlicActorIncrementalTyping)) {

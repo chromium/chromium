@@ -93,6 +93,10 @@ class ActorToolsTest : public InProcessBrowserTest {
   virtual std::unique_ptr<ExecutionEngine> CreateExecutionEngine(
       Profile* profile);
 
+  // Returns true if actuation should always be enabled for the test (regardless
+  // of policy / opt-in status).
+  virtual bool ShouldForceActOnWeb();
+
   TaskId task_id_;
 
  private:

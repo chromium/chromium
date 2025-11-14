@@ -147,7 +147,7 @@ void ActorPolicyChecker::MayActOnUrl(const GURL& url,
                                      TaskId task_id,
                                      DecisionCallbackWithReason callback) {
   // TODO(http://crbug.com/455645486): This may be turned into a CHECK.
-  if (!can_act_on_web_) {
+  if (!can_act_on_web()) {
     journal.Log(url, task_id, "MayActOnUrl",
                 JournalDetailsBuilder()
                     .AddError("Actuation capability disabled")

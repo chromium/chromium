@@ -74,6 +74,7 @@ class TypeTool : public ToolBase {
 
   // Return true if input text can be procssed into a series of keypresses.
   bool ProcessInputText(std::vector<KeyParams>& key_sequence) const;
+  KeyParams GetBackspaceKeyParams() const;
   KeyParams GetEnterKeyParams() const;
   std::optional<KeyParams> GetKeyParamsForChar(char16_t c) const;
   blink::WebInputEventResult CreateAndDispatchKeyEvent(
