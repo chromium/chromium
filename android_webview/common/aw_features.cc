@@ -165,7 +165,7 @@ BASE_FEATURE(kWebViewShortCircuitShouldInterceptRequest,
 // When enabled, WebView disables MSAA and doesn't auto sharpen mip-mapped
 // textures on very large screen devices (such as TVs). The exact criteria for
 // what qualifies for this can be found in AwGrContextOptionsProvider.java.
-BASE_FEATURE(kWebViewUseRenderingHeuristic, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebViewUseRenderingHeuristic, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, webview chromium initialization uses the startup tasks logic
 // where it runs the startup tasks asynchronously if startup is triggered from a
