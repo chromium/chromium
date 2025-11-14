@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {registerAllChildFrames} from '//components/autofill/ios/form_util/resources/child_frame_registration_test.js';
 import * as elementInferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference.js';
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
@@ -50,6 +51,7 @@ fillApi.addFunction(
     'isAutofillableInputElement', inferenceUtil.isAutofillableInputElement);
 fillApi.addFunction('isCheckableElement', inferenceUtil.isCheckableElement);
 fillApi.addFunction('isSelectElement', inferenceUtil.isSelectElement);
+fillApi.addFunction('registerAllChildFrames', registerAllChildFrames);
 fillApi.addFunction('setInputElementValue', fillUtil.setInputElementValue);
 fillApi.addFunction('shouldAutocomplete', fillUtil.shouldAutocomplete);
 // go/keep-sorted end

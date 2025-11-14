@@ -4,6 +4,7 @@
 
 import type {FormControlElement} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE, MAX_DATA_LENGTH, MAX_EXTRACTABLE_FIELDS} from '//components/autofill/ios/form_util/resources/fill_constants.js';
+import {registerChildFrame} from '//components/autofill/ios/form_util/resources/child_frame_registration_lib.js';
 import {inferLabelForElement, inferLabelFromNext} from '//components/autofill/ios/form_util/resources/fill_element_inference.js';
 import {findChildText, isAutofillableElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import type {AutofillFormData, AutofillFormFieldData, FrameTokenWithPredecessor} from '//components/autofill/ios/form_util/resources/fill_util.js';
@@ -276,7 +277,7 @@ function getChildFrameRemoteToken(frame: HTMLIFrameElement|null): string|null {
   }
   // Either register a new token when in the isolated world or read the last
   // registered token from the page content world.
-  return gCrWebLegacy.remoteFrameRegistration?.registerChildFrame(frame) ??
+  return registerChildFrame(frame) ??
       frame.getAttribute(CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE);
 }
 

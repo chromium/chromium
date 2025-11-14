@@ -8,8 +8,6 @@ import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_ut
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
-
-
 /**
  * @fileoverview Installs Autofill management functions on the __gCrWeb object.
  *

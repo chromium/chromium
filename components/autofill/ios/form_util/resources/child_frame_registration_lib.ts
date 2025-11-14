@@ -93,7 +93,7 @@ function updateRegistrationLogbook(remoteToken: string, count: number) {
  * Registers the local/remote ID pair with the C++ layer.
  * @param {string} remoteId The ID to be used as the remote frame token.
  */
-function registerSelfWithRemoteToken(remoteId: string): void {
+export function registerSelfWithRemoteToken(remoteId: string): void {
   sendWebKitMessage(NATIVE_MESSAGE_HANDLER, {
     'local_frame_id': gCrWeb.getFrameId(),
     'remote_frame_id': remoteId,
@@ -104,7 +104,7 @@ function registerSelfWithRemoteToken(remoteId: string): void {
  * Event handler for messages received via window.postMessage.
  * @param {MessageEvent} payload The data sent via postMessage.
  */
-function processChildFrameMessage(payload: MessageEvent): void {
+export function processChildFrameMessage(payload: MessageEvent): void {
   if (!autofillFormFeaturesApi.getFunction(
           'isAutofillAcrossIframesEnabled')()) {
     return;
@@ -163,7 +163,7 @@ function getRemoteIdForFrame(frame: HTMLIFrameElement): string {
  *     should not be assumed that this frame ID will be known to the browser by
  *     the time this function completes.
  */
-function registerChildFrame(frame: HTMLIFrameElement): string {
+export function registerChildFrame(frame: HTMLIFrameElement): string {
   const remoteFrameId: string = getRemoteIdForFrame(frame);
 
   // Store remote frame token in DOM. This way, page content world scripts can
@@ -206,9 +206,3 @@ function registerChildFrame(frame: HTMLIFrameElement): string {
 
   return remoteFrameId;
 }
-
-gCrWebLegacy.remoteFrameRegistration = {
-  processChildFrameMessage,
-  registerChildFrame,
-  registerSelfWithRemoteToken,
-};
