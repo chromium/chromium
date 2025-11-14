@@ -24,6 +24,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
 import org.chromium.chrome.browser.tab.Tab;
@@ -128,8 +129,10 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
     }
 
     /**
-     * Open an incognito tab by invoking the 'new incognito' menu item.
-     * Returns when receiving the 'PAGE_LOAD_FINISHED' notification.
+     * Open an incognito tab by invoking the 'new incognito' menu item. Returns when receiving the
+     * 'PAGE_LOAD_FINISHED' notification.
+     *
+     * @deprecated Prefer public transit APIs when possible.
      */
     public Tab newIncognitoTabFromMenu() {
         final CallbackHelper createdCallback = new CallbackHelper();
@@ -181,14 +184,52 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
     }
 
     /**
-     * New multiple incognito tabs by invoking the 'new incognito' menu item n times.
-     * @param n The number of tabs you want to create.
+     * Opens a new incognito window from the app menu.
+     *
+     * <p>This method will return when the new incognito window is opened and its tab becomes
+     * active.
+     *
+     * @deprecated Please prefer public transit APIs when possible.
+     * @return The {@link ChromeTabbedActivity} for the incognito window.
      */
-    public void newIncognitoTabsFromMenu(int n) {
-        while (n > 0) {
-            newIncognitoTabFromMenu();
-            --n;
-        }
+    public ChromeTabbedActivity newIncognitoWindowFromMenu() {
+        assert IncognitoUtils.shouldOpenIncognitoAsWindow()
+                : "This method shouldn't be called when we shouldn't open incognito windows";
+
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(),
+                getActivity(),
+                R.id.new_incognito_window_menu_id);
+
+        // Use an array of one element to capture the ChromeTabbedActivity in the lambda below.
+        // This is because we need something that's effectively final.
+        ChromeTabbedActivity[] chromeTabbedActivities = new ChromeTabbedActivity[1];
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    for (var activity : ApplicationStatus.getRunningActivities()) {
+                        if (!(activity instanceof ChromeTabbedActivity chromeTabbedActivity)) {
+                            continue;
+                        }
+                        if (!chromeTabbedActivity.isIncognitoWindow()) {
+                            continue;
+                        }
+
+                        var tab = chromeTabbedActivity.getActivityTabProvider().get();
+                        if (tab == null) {
+                            continue;
+                        }
+
+                        if (tab.isActivated()) {
+                            chromeTabbedActivities[0] = chromeTabbedActivity;
+                            return true;
+                        }
+                    }
+
+                    return false;
+                });
+
+        Log.d(TAG, "newIncognitoWindowFromMenu <<");
+        return chromeTabbedActivities[0];
     }
 
     /**

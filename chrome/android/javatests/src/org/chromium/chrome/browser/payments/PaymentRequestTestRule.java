@@ -26,6 +26,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.CardUnmaskPrompt;
 import org.chromium.chrome.browser.autofill.CardUnmaskPrompt.CardUnmaskObserverForTest;
 import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
@@ -228,16 +229,19 @@ import java.util.concurrent.atomic.AtomicReference;
         mInputProtector = new InputProtector(mClock);
     }
 
-    /* package */ void setObserversAndWaitForInitialPageLoad() throws TimeoutException {
-        try {
-            // TODO(crbug.com/40728764): Figure out what these tests need to wait on to not be flaky
-            // instead of sleeping.
-            Thread.sleep(2000);
-        } catch (Exception ex) {
-        }
+    /* package */ void setObserversAndWaitForInitialPageLoad() throws InterruptedException {
+        setObserversAndWaitForInitialPageLoad(getActivity());
+    }
+
+    /* package */ void setObserversAndWaitForInitialPageLoad(ChromeActivity activity)
+            throws InterruptedException {
+        // TODO(crbug.com/40728764): Figure out what these tests need to wait on to not be flaky
+        // instead of sleeping.
+        Thread.sleep(2000);
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mWebContentsRef.set(getActivity().getCurrentWebContents());
+                    mWebContentsRef.set(activity.getCurrentWebContents());
                     PaymentRequestUi.setEditorObserverForTest(PaymentRequestTestRule.this);
                     PaymentRequestUi.setPaymentRequestObserverForTest(PaymentRequestTestRule.this);
                     PaymentRequestService.setObserverForTest(PaymentRequestTestRule.this);
