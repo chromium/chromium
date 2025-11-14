@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_util.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_consumer.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_mutator.h"
-#import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -231,6 +230,24 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
   _badgeConfig = config;
 }
 
+#pragma mark - ContextualPanelEntrypointVisibilityDelegate
+
+// TODO(crbug.com/429140788): Remove after migration and BadgesContainerView
+// is obsolete. Should not be used to update Location Bar Badge visibility.
+// Should instead use `setLocationBarBadgeHidden`.
+- (void)setContextualPanelEntrypointHidden:(BOOL)hidden {
+  _contextualPanelEntrypointShouldBeVisible = !hidden;
+}
+
+- (void)setContextualPanelItemType:
+    (std::optional<ContextualPanelItemType>)itemType {
+  [self.visibilityDelegate setContextualPanelItemType:itemType];
+}
+
+- (void)setContextualPanelCurrentlyAnimating:(BOOL)animating {
+  [self.visibilityDelegate setContextualPanelCurrentlyAnimating:animating];
+}
+
 #pragma mark - IncognitoBadgeViewVisibilityDelegate
 
 - (void)setIncognitoBadgeViewHidden:(BOOL)hidden {
@@ -240,15 +257,6 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
 
   _incognitoBadgeViewShouldBeVisible = !hidden;
   [self setLocationBarBadgeHidden:hidden];
-}
-
-- (void)setContextualPanelItemType:
-    (std::optional<ContextualPanelItemType>)itemType {
-  // No-op.
-}
-
-- (void)setContextualPanelCurrentlyAnimating:(BOOL)animating {
-  // No-op.
 }
 
 #pragma mark - Private

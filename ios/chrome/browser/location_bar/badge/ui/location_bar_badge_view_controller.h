@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/badges/ui_bundled/badge_view_visibility_delegate.h"
 #import "ios/chrome/browser/badges/ui_bundled/incognito_badge_view_visibility_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_consumer.h"
+#import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_consumer.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_chip_visibility_delegate.h"
@@ -25,6 +26,7 @@
     : UIViewController <IncognitoBadgeViewVisibilityDelegate,
                         LocationBarBadgeConsumer,
                         ContextualPanelEntrypointConsumer,
+                        ContextualPanelEntrypointVisibilityDelegate,
                         FullscreenUIElement>
 
 // This view controller's LayoutGuideCenter.
