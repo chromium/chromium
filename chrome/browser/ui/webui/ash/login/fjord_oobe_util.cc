@@ -9,9 +9,23 @@
 
 namespace ash::fjord_util {
 
+namespace {
+const std::set<std::string>& kFjordOobeAllowedLanguages = {
+    "en", "es-419", "en-GB", "de", "fr", "ja", "fr-CA"};
+}
+
 bool ShouldShowFjordOobe() {
-  return policy::EnrollmentRequisitionManager::IsCuttlefishDevice() &&
-         features::IsFjordOobeEnabled();
+  return features::IsFjordOobeForceEnabled() ||
+         (policy::EnrollmentRequisitionManager::IsCuttlefishDevice() &&
+          features::IsFjordOobeEnabled());
+}
+
+bool IsAllowlistedLanguage(std::string_view language_code) {
+  return kFjordOobeAllowedLanguages.contains(language_code.data());
+}
+
+const std::set<std::string>& GetAllowlistedLanguagesForTesting() {
+  return kFjordOobeAllowedLanguages;
 }
 
 }  // namespace ash::fjord_util
