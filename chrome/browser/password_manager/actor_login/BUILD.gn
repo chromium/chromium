@@ -15,12 +15,16 @@ source_set("service") {
 
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/password_manager/actor_login/internal:delegate",
+    "//components/affiliations/core/browser:affiliations",
     "//components/optimization_guide/core:model_execution",
     "//components/password_manager/content/browser",
     "//components/password_manager/core/browser/actor_login:common",
     "//components/password_manager/core/browser/actor_login/internal:delegate",
     "//components/tabs:public",
+    "//components/translate/core/browser",
+    "//components/variations/service",
     "//content/public/browser",
   ]
 }
@@ -44,6 +48,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/actor_login/test:test_support",
     "//components/tabs:public",
     "//components/tabs:test_support",
+    "//components/translate/core/browser:test_support",
     "//content/public/browser",
     "//content/test:test_support",
     "//testing/gmock",

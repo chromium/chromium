@@ -7,6 +7,8 @@
 
 #include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
+#include "components/translate/core/browser/translate_manager.h"
+
 namespace optimization_guide {
 class ModelQualityLogsUploaderService;
 }  // namespace optimization_guide
@@ -22,6 +24,9 @@ class ActorLoginQualityLoggerInterface {
  public:
   virtual ~ActorLoginQualityLoggerInterface() = default;
 
+  virtual void SetDomainAndLanguage(
+      translate::TranslateManager* translate_manager,
+      const GURL& url) = 0;
   virtual void SetGetCredentialsDetails(
       optimization_guide::proto::ActorLoginQuality_GetCredentialsDetails
           get_credentials_details) = 0;

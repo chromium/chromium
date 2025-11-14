@@ -7,15 +7,28 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "components/language/core/browser/language_model.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/translate/core/browser/mock_translate_client.h"
+#include "components/translate/core/browser/mock_translate_driver.h"
+#include "components/translate/core/browser/mock_translate_ranker.h"
+#include "components/variations/pref_names.h"
+#include "components/variations/service/test_variations_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+using translate::testing::MockTranslateClient;
+using translate::testing::MockTranslateDriver;
+using translate::testing::MockTranslateRanker;
 
+using ActorLoginQuality = optimization_guide::proto::ActorLoginQuality;
 using GetCredentialsDetails =
     optimization_guide::proto::ActorLoginQuality_GetCredentialsDetails;
 
@@ -26,6 +39,11 @@ MATCHER_P(ProtoEquals, expected_message, "") {
   arg.SerializeToString(&actual_serialized);
   return expected_serialized == actual_serialized;
 }
+class FakeLanguageModel : public language::LanguageModel {
+  std::vector<LanguageDetails> GetLanguages() override {
+    return {LanguageDetails("en", 1.0)};
+  }
+};
 
 }  // namespace
 
@@ -78,5 +96,65 @@ TEST_F(ActorLoginQualityLoggerTest, SetsGetCredentialsDetails) {
 
   GetCredentialsDetails get_credentials_details =
       logger.get_log_data().get_credentials_details();
+
   EXPECT_THAT(get_credentials_details, ProtoEquals(expected_details));
+}
+
+TEST_F(ActorLoginQualityLoggerTest, SetsDomainAndLanguage) {
+  ActorLoginQualityLogger logger;
+
+  translate::testing::MockTranslateDriver translate_driver;
+  auto mock_translate_ranker =
+      std::make_unique<translate::testing::MockTranslateRanker>();
+  auto mock_translate_client =
+      std::make_unique<MockTranslateClient>(&translate_driver, nullptr);
+  auto language_model = std::make_unique<FakeLanguageModel>();
+  auto translate_manager = std::make_unique<translate::TranslateManager>(
+      mock_translate_client.get(), mock_translate_ranker.get(),
+      language_model.get());
+  translate_manager->GetLanguageState()->SetSourceLanguage("en-us");
+
+  const GURL url1("https://subdomain.example.com/login");
+  const GURL url2("https://someotherdomain.com");
+  logger.SetDomainAndLanguage(translate_manager.get(), url1);
+  logger.SetDomainAndLanguage(translate_manager.get(), url2);
+
+  // Only the first domain should be recorded and only the eTLD+1.
+  ActorLoginQuality expected_log;
+  expected_log.set_domain("example.com");
+  expected_log.set_language("en-us");
+
+  EXPECT_THAT(logger.get_log_data(), ProtoEquals(expected_log));
+}
+
+TEST_F(ActorLoginQualityLoggerTest, LogsLocation) {
+  // Required by the `VariationsService`.
+  base::test::TaskEnvironment task_environment;
+  // Set variation service.
+  variations::TestVariationsService::RegisterPrefs(pref_service_.registry());
+  auto enabled_state_provider =
+      std::make_unique<metrics::TestEnabledStateProvider>(/*consent=*/true,
+                                                          /*enabled=*/true);
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager =
+      metrics::MetricsStateManager::Create(
+          &pref_service_, enabled_state_provider.get(),
+          /*backup_registry_key=*/std::wstring(),
+          /*user_data_dir=*/base::FilePath(),
+          metrics::StartupVisibility::kUnknown);
+  auto variations_service = std::make_unique<variations::TestVariationsService>(
+      &pref_service_, metrics_state_manager.get());
+  TestingBrowserProcess::GetGlobal()->SetVariationsService(
+      variations_service.get());
+
+  // This pref directly overrides any country detection logic within the
+  // variations service.
+  pref_service_.SetString(variations::prefs::kVariationsCountry, "US");
+
+  ActorLoginQuality expected_log;
+  expected_log.set_location("US");
+
+  ActorLoginQualityLogger logger;
+  EXPECT_THAT(logger.get_log_data(), ProtoEquals(expected_log));
+
+  TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
 }

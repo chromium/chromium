@@ -10,6 +10,8 @@
 #include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
+#include "components/translate/core/browser/translate_manager.h"
+#include "content/public/browser/web_contents.h"
 
 namespace optimization_guide {
 class ModelQualityLogsUploaderService;
@@ -25,6 +27,8 @@ class ActorLoginQualityLogger
   ActorLoginQualityLogger& operator=(const ActorLoginQualityLogger&) = delete;
 
   // actor_login::ActorLoginQualityLoggerInterface:
+  void SetDomainAndLanguage(translate::TranslateManager* translate_manager,
+                            const GURL& url) override;
   void SetGetCredentialsDetails(
       optimization_guide::proto::ActorLoginQuality_GetCredentialsDetails
           get_credentials_details) override;

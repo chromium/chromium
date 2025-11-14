@@ -14,9 +14,11 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/buildflags.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_credential_filler.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_get_credentials_helper.h"
@@ -28,6 +30,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -113,9 +116,13 @@ void ActorLoginDelegateImpl::GetCredentials(
   PasswordManagerDriver* driver = driver_supplier_.Run(&GetWebContents());
   CHECK(driver);
 
+  const url::Origin request_origin =
+      GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  mqls_logger->SetDomainAndLanguage(
+      ChromeTranslateClient::GetManagerFromWebContents(&GetWebContents()),
+      request_origin.GetURL());
   get_credentials_helper_ = std::make_unique<ActorLoginGetCredentialsHelper>(
-      GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin(), client_,
-      driver->GetPasswordManager(), mqls_logger,
+      request_origin, client_, driver->GetPasswordManager(), mqls_logger,
       base::BindOnce(&ActorLoginDelegateImpl::OnGetCredentialsCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -154,6 +161,9 @@ void ActorLoginDelegateImpl::AttemptLogin(
 
   const url::Origin origin =
       GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  mqls_logger->SetDomainAndLanguage(
+      ChromeTranslateClient::GetManagerFromWebContents(&GetWebContents()),
+      origin.GetURL());
 
   credential_filler_ = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission, client_, mqls_logger,
