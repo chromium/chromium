@@ -53,6 +53,7 @@ class ContextualTasksPageHandler : public contextual_tasks::mojom::PageHandler {
   void OpenChromeSettingsUi() override;
   void OpenMyActivityUi() override;
   void OpenHelpUi() override;
+  void MoveTaskUiToToNewTab() override;
 
  private:
   mojo::Receiver<contextual_tasks::mojom::PageHandler> page_handler_;

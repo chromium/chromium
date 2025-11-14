@@ -30,6 +30,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'openChromeSettingsUi',
       'openMyActivityUi',
       'openHelpUi',
+      'moveTaskUiToToNewTab',
     ]);
 
     this.url_ = {url};
@@ -81,6 +82,10 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
 
   openHelpUi() {
     this.methodCalled('openHelpUi');
+  }
+
+  moveTaskUiToToNewTab() {
+    this.methodCalled('moveTaskUiToToNewTab');
   }
 }
 

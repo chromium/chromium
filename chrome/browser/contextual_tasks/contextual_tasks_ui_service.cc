@@ -319,6 +319,27 @@ void ContextualTasksUiService::OnTaskChangedInPanel(
   context_controller_->AssociateTabWithTask(new_task_id, active_id);
 }
 
+void ContextualTasksUiService::MoveTaskUiToToNewTab(
+    const base::Uuid& task_id,
+    BrowserWindowInterface* browser) {
+  auto* coordinator =
+      contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser);
+  CHECK(coordinator);
+
+  std::unique_ptr<content::WebContents> web_contents =
+      coordinator->DetachWebContentsForTask(task_id);
+  if (!web_contents) {
+    return;
+  }
+
+  NavigateParams params(browser, std::move(web_contents));
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.transition = ui::PAGE_TRANSITION_LINK;
+  Navigate(&params);
+
+  coordinator->Close();
+}
+
 bool ContextualTasksUiService::IsAiUrl(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() ||
       !base::EndsWith(url.host(), ai_page_host_.host())) {

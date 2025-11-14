@@ -62,7 +62,9 @@ export class ContextualTasksAppElement extends CrLitElement {
     // TODO(crbug.com/445469925): Display the threads in a drawer.
   }
 
-  protected onOpenInNewTabClick_() {}
+  protected onOpenInNewTabClick_() {
+    this.browserProxy_.handler.moveTaskUiToToNewTab();
+  }
 
   protected onOpenChromeSettingsClick_() {
     this.browserProxy_.handler.openChromeSettingsUi();

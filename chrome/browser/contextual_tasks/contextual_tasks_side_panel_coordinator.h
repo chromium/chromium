@@ -87,6 +87,10 @@ class ContextualTasksSidePanelCoordinator {
 
   content::WebContents* GetActiveWebContentsForTesting();
 
+  // Detaches the WebContents for the given task and returns it.
+  std::unique_ptr<content::WebContents> DetachWebContentsForTask(
+      const base::Uuid& task_id);
+
  private:
   // Get the task associated with the active tab.
   std::optional<ContextualTask> GetCurrentTask();

@@ -96,6 +96,10 @@ class ContextualTasksUiService : public KeyedService {
   void AssociateWebContentsToTask(content::WebContents* web_contents,
                                   const base::Uuid& task_id);
 
+  // Move the WebContents for the given task to a new tab.
+  virtual void MoveTaskUiToToNewTab(const base::Uuid& task_id,
+                                    BrowserWindowInterface* browser);
+
  private:
   const raw_ptr<Profile> profile_;
 

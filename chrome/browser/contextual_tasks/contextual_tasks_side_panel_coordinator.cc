@@ -193,6 +193,23 @@ ContextualTasksSidePanelCoordinator::GetActiveWebContentsForTesting() {
   return web_view_ ? web_view_->web_contents() : nullptr;
 }
 
+std::unique_ptr<content::WebContents>
+ContextualTasksSidePanelCoordinator::DetachWebContentsForTask(
+    const base::Uuid& task_id) {
+  // TODO(crbug.com/451706231): Simplify this when it's a map.
+  for (auto it = task_id_to_web_contents_cache_.begin();
+       it != task_id_to_web_contents_cache_.end(); ++it) {
+    if ((*it)->task_id && (*it)->task_id.value() == task_id) {
+      std::unique_ptr<content::WebContents> web_contents =
+          std::move((*it)->web_contents);
+      task_id_to_web_contents_cache_.erase(it);
+      return web_contents;
+    }
+  }
+
+  return nullptr;
+}
+
 std::optional<ContextualTask>
 ContextualTasksSidePanelCoordinator::GetCurrentTask() {
   tabs::TabInterface* active_tab_interface =

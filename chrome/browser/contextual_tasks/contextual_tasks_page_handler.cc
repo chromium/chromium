@@ -12,6 +12,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
@@ -91,4 +93,15 @@ void ContextualTasksPageHandler::OpenMyActivityUi() {
 
 void ContextualTasksPageHandler::OpenHelpUi() {
   OpenUrlInNewTab(&web_ui_.get(), GURL(kHelpUrl));
+}
+
+void ContextualTasksPageHandler::MoveTaskUiToToNewTab() {
+  auto* browser = webui::GetBrowserWindowInterface(web_ui_->GetWebContents());
+  const auto& task_id = web_ui_controller_->GetTaskId();
+  if (!task_id.has_value()) {
+    LOG(ERROR) << "Attempted to open in new tab with no valid task ID.";
+    return;
+  }
+
+  ui_service_->MoveTaskUiToToNewTab(task_id.value(), browser);
 }
