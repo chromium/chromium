@@ -254,6 +254,20 @@ int FetchLastTrustedVaultKeyVersionForProfile(
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+class MockTrustedVaultClientObserver
+    : public trusted_vault::TrustedVaultClient::Observer {
+ public:
+  MockTrustedVaultClientObserver() = default;
+  ~MockTrustedVaultClientObserver() override = default;
+
+  MOCK_METHOD(void,
+              OnTrustedVaultKeysChanged,
+              (std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+                   trigger),
+              (override));
+  MOCK_METHOD(void, OnTrustedVaultRecoverabilityChanged, (), (override));
+};
+
 class TrustedVaultEncryptionKeysTabHelperBrowserTest
     : public PlatformBrowserTest {
  public:
@@ -967,6 +981,52 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
                   browser()->profile(),
                   trusted_vault::SecurityDomainId::kChromeSync, FakeAccount()),
               IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
+                       ShouldPropagateUserActionTriggerForMetrics) {
+  const GURL initial_url =
+      https_server()->GetURL("accounts.google.com", "/title1.html");
+  content::NavigationController::LoadURLParams params(initial_url);
+
+  content::TestNavigationObserver same_tab_observer(
+      web_contents(), /*expected_number_of_navigations=*/1,
+      content::MessageLoopRunner::QuitMode::IMMEDIATE,
+      /*ignore_uncommitted_navigations=*/false);
+  same_tab_observer.set_expected_initial_url(initial_url);
+
+  // Mimic behaviour in chrome/browser/sync/sync_ui_util.cc: First start the
+  // navigation, and then set the user action trigger.
+  web_contents()->GetController().LoadURLWithParams(params);
+  auto* tab_helper =
+      TrustedVaultEncryptionKeysTabHelper::FromWebContents(web_contents());
+  ASSERT_TRUE(tab_helper);
+  tab_helper->SetUserActionTrigger(
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+  // Wait until the expected number of navigations finish.
+  same_tab_observer.Wait();
+
+  ASSERT_TRUE(HasEncryptionKeysApi(web_contents()->GetPrimaryMainFrame()));
+
+  testing::NiceMock<MockTrustedVaultClientObserver> mock_observer;
+  TrustedVaultServiceFactory::GetForProfile(browser()->profile())
+      ->GetTrustedVaultClient(trusted_vault::SecurityDomainId::kChromeSync)
+      ->AddObserver(&mock_observer);
+  EXPECT_CALL(
+      mock_observer,
+      OnTrustedVaultKeysChanged(std::make_optional(
+          trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu)));
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(kConsoleSuccessMessage);
+
+  // Call setClientEncryptionKeys() in the main frame and verify that the mock
+  // observer was called with the right user action trigger.
+  const std::vector<uint8_t> kEncryptionKey = {7};
+  ExecJsSetClientEncryptionKeys(web_contents()->GetPrimaryMainFrame(),
+                                kEncryptionKey);
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(1u, console_observer.messages().size());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
