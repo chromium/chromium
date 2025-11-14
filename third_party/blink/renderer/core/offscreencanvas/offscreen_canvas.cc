@@ -297,7 +297,7 @@ ScriptPromise<ImageBitmap> OffscreenCanvas::CreateImageBitmap(
     return EmptyPromise();
   }
   if (context_) {
-    context_->FinalizeFrame(FlushReason::kCreateImageBitmap);
+    context_->FinalizeFrame(FlushReason::kOther);
   }
   return ImageBitmapSource::FulfillImageBitmap(
       script_state,

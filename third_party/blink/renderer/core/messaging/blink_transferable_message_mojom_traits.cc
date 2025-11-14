@@ -43,7 +43,7 @@ ToSerializedAcceleratedImage(
   // TODO(crbug.com/374812177): Remove this clone once the lifetime issues
   // around sending accelerated StaticBitmapImage are resolved.
   auto cloned_image = blink::StaticBitmapImageTransform::Clone(
-      blink::FlushReason::kCreateImageBitmap, static_bitmap_image);
+      blink::FlushReason::kOther, static_bitmap_image);
   cloned_image->EnsureSyncTokenVerified();
 
   auto shared_image = cloned_image->GetSharedImage();

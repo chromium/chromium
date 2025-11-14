@@ -31,24 +31,20 @@ enum class FlushReason {
   // Should not happen while printing.
   kOffscreenCanvasPushFrame = 4,
 
-  // createImageBitmap() was called with the canvas as its argument.
-  // Should not happen while printing.
-  kCreateImageBitmap = 5,
-
   // The canvas element dispatched a frame to the compositor
   // This inhibits vector printing.
-  kCanvasPushFrame = 6,
+  kCanvasPushFrame = 5,
 
   // The canvas element dispatched a frame to the compositor while printing
   // was in progress.
   // This does not prevent vector printing as long as the current frame is
   // clear.
-  kCanvasPushFrameWhilePrinting = 7,
+  kCanvasPushFrameWhilePrinting = 6,
 
   // The canvas is being printed.
-  kPrinting = 8,
+  kPrinting = 7,
 
-  kOther = 9,
+  kOther = 8,
 
   kMaxValue = kOther,
 };
