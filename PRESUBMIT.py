@@ -525,43 +525,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         ),
     ),
     BanRule(
-        'setMatrixClip',
-        (
-            'Overriding setMatrixClip() is prohibited; ',
-            'the base function is deprecated. ',
-        ),
-        True,
-        (),
-    ),
-    BanRule(
-        'SkRefPtr',
-        ('The use of SkRefPtr is prohibited. ', 'Please use sk_sp<> instead.'),
-        True,
-        (),
-    ),
-    BanRule(
-        'SkAutoRef',
-        ('The indirect use of SkRefPtr via SkAutoRef is prohibited. ',
-         'Please use sk_sp<> instead.'),
-        True,
-        (),
-    ),
-    BanRule(
-        'SkAutoTUnref',
-        ('The use of SkAutoTUnref is dangerous because it implicitly ',
-         'converts to a raw pointer. Please use sk_sp<> instead.'),
-        True,
-        (),
-    ),
-    BanRule(
-        'SkAutoUnref',
-        ('The indirect use of SkAutoTUnref through SkAutoUnref is dangerous ',
-         'because it implicitly converts to a raw pointer. ',
-         'Please use sk_sp<> instead.'),
-        True,
-        (),
-    ),
-    BanRule(
         r'/HANDLE_EINTR\(.*close',
         ('HANDLE_EINTR(close) is invalid. If close fails with EINTR, the file',
          'descriptor will be closed, and it is incorrect to retry the close.',
@@ -2191,7 +2154,8 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
          'switch, strongly prefer to configure the EmbeddedTestServer with a '
          'valid certificate for the relevant hostname(s). For tips on how to do '
          'so, see comment above the kIgnoreCertificateErrors switch definition '
-         'or see https://www.chromium.org/developers/testing/browser-tests/#networking.',),
+         'or see https://www.chromium.org/developers/testing/browser-tests/#networking.',
+         ),
         treat_as_error=True,
         excluded_paths=[
             _THIRD_PARTY_EXCEPT_BLINK,
@@ -3976,31 +3940,13 @@ def CheckForAnonymousVariables(input_api, output_api):
     they_who_must_be_named = [
         'base::AutoLock',
         'base::AutoUnlock',
-        'SkAutoAlphaRestore',
-        'SkAutoBitmapShaderInstall',
         'SkAutoBlitterChoose',
-        'SkAutoBounderCommit',
-        'SkAutoCallProc',
         'SkAutoCanvasRestore',
-        'SkAutoCommentBlock',
         'SkAutoDescriptor',
-        'SkAutoDisableDirectionCheck',
-        'SkAutoDisableOvalCheck',
-        'SkAutoFree',
-        'SkAutoGlyphCache',
         'SkAutoHDC',
-        'SkAutoLockColors',
-        'SkAutoLockPixels',
         'SkAutoMalloc',
         'SkAutoMaskFreeImage',
-        'SkAutoMutexAcquire',
-        'SkAutoPathBoundsUpdate',
-        'SkAutoPDFRelease',
         'SkAutoRasterClipValidate',
-        'SkAutoRef',
-        'SkAutoTime',
-        'SkAutoTrace',
-        'SkAutoUnref',
     ]
     anonymous = r'(%s)\s*[({]' % '|'.join(they_who_must_be_named)
     # bad: base::AutoLock(lock.get());
