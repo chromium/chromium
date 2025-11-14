@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/format_macros.h"
 #include "base/time/time.h"
@@ -63,6 +64,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/pointer_type_names.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
@@ -1135,17 +1137,23 @@ void EventTarget::EnqueueEvent(Event& event, TaskType task_type) {
   context->GetTaskRunner(task_type)->PostTask(
       FROM_HERE,
       BindOnce(&EventTarget::DispatchEnqueuedEvent, WrapPersistent(this),
-               WrapPersistent(&event), WrapPersistent(context)));
+               WrapPersistent(&event), WrapPersistent(context),
+               WrapPersistent(CaptureCurrentTaskState(context))));
 }
 
-void EventTarget::DispatchEnqueuedEvent(Event* event,
-                                        ExecutionContext* context) {
+void EventTarget::DispatchEnqueuedEvent(
+    Event* event,
+    ExecutionContext* context,
+    scheduler::TaskAttributionInfo* task_state) {
   if (!GetExecutionContext()) {
     event->async_task_context()->Cancel();
     return;
   }
   this->ResetEventQueueStatus(event->type());
   probe::AsyncTask async_task(context, event->async_task_context());
+  std::optional<scheduler::TaskAttributionTracker::TaskScope> task_scope(
+      SetCurrentTaskStateIfTopLevel(task_state, GetExecutionContext(),
+                                    TaskScopeType::kMiscEvent));
   DispatchEvent(*event);
 }
 

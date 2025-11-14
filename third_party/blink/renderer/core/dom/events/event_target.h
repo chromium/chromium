@@ -43,6 +43,9 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
+namespace scheduler {
+class TaskAttributionInfo;
+}  // namespace scheduler
 
 class AddEventListenerOptionsResolved;
 class DOMWindow;
@@ -384,7 +387,9 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
                          EventListenerVector*,
                          EventListenerVector*);
 
-  void DispatchEnqueuedEvent(Event*, ExecutionContext*);
+  void DispatchEnqueuedEvent(Event*,
+                             ExecutionContext*,
+                             scheduler::TaskAttributionInfo*);
 
   Member<EventTargetData> data_;
 
