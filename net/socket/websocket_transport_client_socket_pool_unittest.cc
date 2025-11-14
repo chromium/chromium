@@ -117,7 +117,6 @@ class WebSocketTransportClientSocketPoolTest : public ::testing::Test,
             /*early_data_enabled=*/nullptr),
         pool_(kMaxSockets,
               SocketPoolAdditionalCapacity::Create(),
-              ProxyChain::Direct(),
               &common_connect_job_params_) {
     websocket_endpoint_lock_manager_.SetUnlockDelayForTesting(
         base::TimeDelta());

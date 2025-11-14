@@ -19,7 +19,6 @@
 #include "base/timer/timer.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
-#include "net/base/proxy_chain.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_pool.h"
 #include "net/socket/connect_job.h"
@@ -44,7 +43,6 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
   WebSocketTransportClientSocketPool(
       size_t socket_soft_cap,
       SocketPoolAdditionalCapacity additional_capacity,
-      const ProxyChain& proxy_chain,
       const CommonConnectJobParams* common_connect_job_params);
 
   WebSocketTransportClientSocketPool(
@@ -214,7 +212,6 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
   void ActivateStalledRequest();
   bool DeleteStalledRequest(ClientSocketHandle* handle);
 
-  const ProxyChain proxy_chain_;
   std::set<ClientSocketHandleID> pending_callbacks_;
   PendingConnectsMap pending_connects_;
   StalledRequestQueue stalled_request_queue_;
