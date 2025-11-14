@@ -1742,7 +1742,8 @@ void XRSession::MaybeRequestFrame() {
     if (init->hasBaseLayer()) {
       will_have_valid_render_state = !!init->baseLayer();
     } else if (init->hasLayers()) {
-      will_have_valid_render_state = init->layers()->size() > 0;
+      will_have_valid_render_state =
+          init->layers() && init->layers()->size() > 0;
     }
   }
 
