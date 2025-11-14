@@ -21,10 +21,22 @@ template("swift_source_set") {
     _generate_intents = invoker.generate_intents
   }
 
+  if (defined(invoker.cxx_modulemaps)) {
+    config("${target_name}_cxx_interop_config") {
+      swiftflags = []
+      foreach(modulemap, invoker.cxx_modulemaps) {
+        swiftflags += [ "-Xcc=-fmodule-map-file=" +
+                        rebase_path(modulemap, root_build_dir) ]
+      }
+    }
+  }
+
   _target_name = target_name
   not_needed([ "_target_name" ])
   source_set(target_name) {
-    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker,
+                           "*",
+                           TESTONLY_AND_VISIBILITY + [ "cxx_modulemaps" ])
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     if (!defined(module_name)) {
       _target_label = get_label_info(":$_target_name", "label_no_toolchain")
@@ -60,10 +72,17 @@ template("swift_source_set") {
       write_file("$_output_path.module_info.json", _module_info, "json")
     }
 
-    # Build targets with a direct dependency on a swift_source_set need to be
-    # able to indirectly include headers for the SDK that are needed for
-    # swift C++ interop.
-    public_configs = [ "//build/config/ios:swift_cxx_interop_includes" ]
+    if (defined(invoker.cxx_modulemaps)) {
+      configs += [
+        ":${target_name}_cxx_interop_config",
+        "//build/config/ios:enable_swift_cxx_interop",
+      ]
+
+      # Build targets with a direct dependency on a swift_source_set need to be
+      # able to indirectly include headers for the SDK that are needed for
+      # swift C++ interop.
+      public_configs = [ "//build/config/ios:swift_cxx_interop_includes" ]
+    }
   }
 }
 

@@ -297,7 +297,7 @@ config("swift_cxx_interop_includes") {
   } else {
     _swift_compatibility_libs_prefix = swift_toolchain_path
   }
-  include_dirs = [ "$_swift_compatibility_libs_prefix/usr/lib/swift" ]
+  include_dirs = [ "${_swift_compatibility_libs_prefix}/usr/lib/swift" ]
 }
 
 group("xctest") {
