@@ -225,6 +225,8 @@ source_set("modules_testing") {
     "accessibility/testing/internals_accessibility.h",
     "ad_auction/testing/internals_protected_audience.cc",
     "ad_auction/testing/internals_protected_audience.h",
+    "content_extraction/testing/internals_content_extraction.cc",
+    "content_extraction/testing/internals_content_extraction.h",
     "credentialmanagement/testing/internals_fed_cm.cc",
     "credentialmanagement/testing/internals_fed_cm.h",
     "device_posture/testing/internals_device_posture.cc",
