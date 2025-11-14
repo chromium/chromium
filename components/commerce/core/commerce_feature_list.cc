@@ -243,7 +243,6 @@ BASE_FEATURE(kCommerceDeveloper, base::FEATURE_DISABLED_BY_DEFAULT);
 const char kRetailCouponsWithCodeParam[] = "RetailCouponsWithCodeParam";
 
 extern const char kShopCardArm1[] = "arm_1";
-extern const char kShopCardArm2[] = "arm_2";
 extern const char kShopCardArm3[] = "arm_3";
 extern const char kShopCardArm4[] = "arm_4";
 // Regular Tab Resumption with same impression limits as ShopCard

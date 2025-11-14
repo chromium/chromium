@@ -136,11 +136,6 @@
   if (!_prefService->GetBoolean(commerce::kPriceTrackingHomeModuleEnabled)) {
     return;
   }
-  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm2 &&
-      !_prefService->GetBoolean(
-          prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled)) {
-    return;
-  }
 
   [self fetchPriceTrackedBookmarksIfApplicable];
 }
