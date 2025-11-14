@@ -269,6 +269,10 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 
 # --- Skia roll test suppressions
 
+# Slight anti-aliasing change for Graphite sw-raster atlas paths
+[ Mac ] virtual/gpu/fast/canvas/canvas-arc-circumference-fill.html [ Failure Pass ]
+[ Mac ] virtual/gpu/fast/canvas/canvas-ellipse-circumference-fill.html [ Failure Pass ]
+
 # --- END Skia roll test suppresions
 
 # Expected to crash: Test removes the browsing context during JS execution.
