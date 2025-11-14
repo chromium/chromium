@@ -42,6 +42,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/ntp_features.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
@@ -347,15 +348,17 @@ void MaybeAddContextualSuggestParams(
     const AutocompleteInput& input,
     TemplateURLRef::SearchTermsArgs& search_terms_args) {
   // Do not add the contextual suggest params if Lens is not enabled to fulfill
-  // the suggestion.
-  if (!client->IsLensEnabled()) {
+  // the suggestion, unless the input contains context data, in which case lens
+  // will not be used to fulfill the suggestion.
+  if (!client->IsLensEnabled() && input.context_tab_title().empty()) {
     return;
   }
 
   std::vector<std::string> additional_query_params;
 
-  if (!search_terms_args.current_page_url.empty() &&
-      omnibox::IsOtherWebPage(search_terms_args.page_classification)) {
+  if ((!search_terms_args.current_page_url.empty() &&
+       omnibox::IsOtherWebPage(search_terms_args.page_classification)) ||
+      !input.context_tab_title().empty()) {
     // Add "ctxus=" CGI param.
     std::string_view contextual_url_suggest_param =
         omnibox_feature_configs::ContextualSearch::Get()
@@ -370,11 +373,18 @@ void MaybeAddContextualSuggestParams(
     if (omnibox_feature_configs::ContextualSearch::Get()
             .send_page_title_suggest_param &&
         client->IsPersonalizedUrlDataCollectionActive()) {
-      std::string page_title = EncodeURIComponent(base::UTF16ToUTF8(
-          TruncateUTF16(input.current_title(), kMaxPageTitleLength)));
+      std::string page_title =
+          !input.context_tab_title().empty()
+              ? EncodeURIComponent(base::UTF16ToUTF8(TruncateUTF16(
+                    input.context_tab_title(), kMaxPageTitleLength)))
+              : EncodeURIComponent(base::UTF16ToUTF8(
+                    TruncateUTF16(input.current_title(), kMaxPageTitleLength)));
       if (client->ShouldSendPageTitleSuggestParam() && !page_title.empty()) {
         additional_query_params.push_back(
             base::StrCat({"pageTitle=", page_title}));
+      }
+      if (!input.context_tab_url().is_empty()) {
+        search_terms_args.current_page_url = input.context_tab_url().spec();
       }
     }
 

@@ -1457,7 +1457,8 @@ std::string TemplateURLRef::HandleReplacements(
             break;
           case RequestSource::NTP_COMPOSEBOX:
             if (base::FeatureList::IsEnabled(
-                    omnibox::kComposeboxUsesChromeComposeClient)) {
+                    omnibox::kComposeboxUsesChromeComposeClient) &&
+                search_terms_args.current_page_url.empty()) {
               HandleReplacement(std::string(), "chrome-compose", replacement,
                                 &url);
             } else {

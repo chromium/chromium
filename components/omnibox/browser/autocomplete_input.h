@@ -376,6 +376,15 @@ class AutocompleteInput {
       const omnibox::ChromeAimToolsAndModels& aim_tool_mode) {
     aim_tool_mode_ = aim_tool_mode;
   }
+  std::u16string context_tab_title() const { return context_tab_title_; }
+
+  void set_context_tab_title(std::u16string title) {
+    context_tab_title_ = title;
+  }
+
+  GURL context_tab_url() const { return context_tab_url_; }
+
+  void set_context_tab_url(GURL url) { context_tab_url_ = url; }
 
   // Resets all internal variables to the null-constructed state.
   void Clear();
@@ -461,6 +470,8 @@ class AutocompleteInput {
   // actually an HTTP server that pretends to serve HTTPS responses. Should only
   // be true on iOS.
   bool use_fake_https_for_https_upgrade_testing_;
+  std::u16string context_tab_title_;
+  GURL context_tab_url_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_INPUT_H_
