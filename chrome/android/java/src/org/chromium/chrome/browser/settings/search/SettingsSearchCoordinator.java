@@ -90,6 +90,11 @@ public class SettingsSearchCoordinator {
 
     private int mFragmentState;
 
+    // Whether the detailed pane was slided open (therefore came into view over header pane) when
+    // entering search mode. The pane needs opening in single-column mode viewing main settings
+    // in header pane, so that the results fragment can always be shown in the detail one.
+    private boolean mPaneOpenedBySearch;
+
     // True if multiple-column Fragment is activated. Both the window width and the feature flag
     // condition should be met.
     private boolean mUseMultiColumn;
@@ -269,6 +274,10 @@ public class SettingsSearchCoordinator {
         clearFragment(/* addToBackStack= */ true);
         mFragmentState = FS_SEARCH;
         mBackActionCallback.setEnabled(true);
+        if (mMultiColumnSettings != null && !mMultiColumnSettings.isLayoutOpen()) {
+            mMultiColumnSettings.getSlidingPaneLayout().openPane();
+            mPaneOpenedBySearch = true;
+        }
     }
 
     private void exitSearchState() {
@@ -288,6 +297,13 @@ public class SettingsSearchCoordinator {
         // fragment is visible behind the popped one through the transparent background.
         clearFragment(/* addToBackStack= */ false);
         getSettingsFragmentManager().popBackStack();
+        if (mMultiColumnSettings != null
+                && mMultiColumnSettings.isLayoutOpen()
+                && mPaneOpenedBySearch) {
+            mMultiColumnSettings.getSlidingPaneLayout().closePane();
+            mPaneOpenedBySearch = false;
+        }
+
         mFragmentState = FS_SETTINGS;
         mBackActionCallback.setEnabled(false);
     }
@@ -313,12 +329,11 @@ public class SettingsSearchCoordinator {
 
     /** Returns the view ID where search results will be displayed. */
     private int getViewIdForSearchDisplay() {
-        if (mMultiColumnSettings == null) {
-            return R.id.content;
-        }
-        return mMultiColumnSettings.isLayoutOpen()
-                ? R.id.preferences_detail
-                : R.id.preferences_header;
+        // We always show the search results in the detail pane when using MultiColumnSettings.
+        // The detail pane could be in closed state in a single column layout (on phone in
+        // portrait mode displaying the main settings). Then the detail pane needs to be slided
+        // open first by the caller to make the pane visible.
+        return mMultiColumnSettings != null ? R.id.preferences_detail : R.id.content;
     }
 
     private void updateDetailPanelWidth() {
