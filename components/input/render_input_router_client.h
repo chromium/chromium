@@ -50,6 +50,8 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouterClient {
       const gfx::Rect& focus_widget_rect_in_dips
 #endif  // BUILDFLAG(IS_WIN)
       ) = 0;
+
+  virtual void OnUnconfirmedTapConvertedToTap() = 0;
 };
 
 }  // namespace input

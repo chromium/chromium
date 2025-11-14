@@ -115,6 +115,8 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   // period of time.
   void ResetFallbackToFirstNavigationSurface() override {}
 
+  void OnUnconfirmedTapConvertedToTap() override;
+
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
   void EnsureSurfaceSynchronizedForWebTest() override;
 

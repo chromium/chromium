@@ -3157,6 +3157,12 @@ void RenderWidgetHostImpl::OnStartStylusWriting() {
   }
 }
 
+void RenderWidgetHostImpl::OnUnconfirmedTapConvertedToTap() {
+  if (view_) {
+    view_->OnUnconfirmedTapConvertedToTap();
+  }
+}
+
 void RenderWidgetHostImpl::UpdateElementFocusForStylusWriting(
 #if BUILDFLAG(IS_WIN)
     const gfx::Rect& focus_widget_rect_in_dips

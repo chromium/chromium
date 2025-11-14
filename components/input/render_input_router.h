@@ -102,6 +102,7 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
       bool unadjusted_movement,
       InputRouterImpl::RequestMouseLockCallback response) override;
   gfx::Size GetRootWidgetViewportSize() override;
+  void OnUnconfirmedTapConvertedToTap() override;
 
   // InputRouterImplClient overrides.
   blink::mojom::InputEventResultState FilterInputEvent(

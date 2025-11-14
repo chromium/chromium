@@ -180,6 +180,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       const gfx::Size& output_size,
       base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
           callback) override;
+  ui::FilteredGestureProvider* GetFilteredGestureProviderForTesting() override;
   void CopyFromExactSurfaceWithIpcDelay(
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
@@ -528,6 +529,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void UnlockOrientation() override;
   void SetHasPersistentVideo(bool has_persistent_video) override;
   void SetTouchpadOverscrollHistoryNavigation(bool enabled) override;
+  void OnUnconfirmedTapConvertedToTap() override;
 
   // This method is used as a callback for `ViewAndroid::HitTest` to determine
   // if the View is actually ready to send event.

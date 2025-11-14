@@ -51,7 +51,8 @@ void SetCursorControlIfNecessary(WebGestureEvent* event,
 
 }  // namespace
 
-TouchActionFilter::TouchActionFilter() {
+TouchActionFilter::TouchActionFilter(TouchActionFilterClient* client)
+    : client_(client) {
   ResetTouchAction();
 }
 
@@ -222,6 +223,7 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
           cc::TouchAction::kNone;
       if (!allow_current_double_tap_event_) {
         gesture_event->SetType(WebInputEvent::Type::kGestureTap);
+        client_->OnUnconfirmedTapConvertedToTap();
         drop_current_tap_ending_event_ = true;
       }
       break;

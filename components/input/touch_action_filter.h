@@ -7,8 +7,9 @@
 
 #include <optional>
 
-#include "cc/input/touch_action.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
+#include "cc/input/touch_action.h"
 
 namespace blink {
 class WebGestureEvent;
@@ -23,6 +24,11 @@ class SitePerProcessBrowserTouchActionTest;
 
 namespace input {
 
+class TouchActionFilterClient {
+ public:
+  virtual void OnUnconfirmedTapConvertedToTap() = 0;
+};
+
 enum class FilterGestureEventResult { kAllowed, kFiltered, kDelayed };
 
 // The TouchActionFilter is responsible for filtering scroll and pinch gesture
@@ -31,7 +37,7 @@ enum class FilterGestureEventResult { kAllowed, kFiltered, kDelayed };
 // For details see the touch-action design doc at http://goo.gl/KcKbxQ.
 class COMPONENT_EXPORT(INPUT) TouchActionFilter {
  public:
-  TouchActionFilter();
+  explicit TouchActionFilter(TouchActionFilterClient* client);
 
   TouchActionFilter(const TouchActionFilter&) = delete;
   TouchActionFilter& operator=(const TouchActionFilter&) = delete;
@@ -152,6 +158,8 @@ class COMPONENT_EXPORT(INPUT) TouchActionFilter {
 
   // Allowed touch action received from the compositor.
   cc::TouchAction compositor_allowed_touch_action_;
+
+  const raw_ptr<TouchActionFilterClient> client_;
 };
 
 }  // namespace input

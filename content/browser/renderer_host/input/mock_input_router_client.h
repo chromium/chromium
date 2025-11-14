@@ -61,6 +61,7 @@ class MockInputRouterClient : public input::InputRouterClient,
       const std::optional<std::vector<gfx::Rect>>& character_bounds) override {}
   input::StylusInterface* GetStylusInterface() override;
   void OnStartStylusWriting() override;
+  void OnUnconfirmedTapConvertedToTap() override {}
   input::DispatchToRendererCallback GetDispatchToRendererCallback() override;
 
   bool GetAndResetFilterEventCalled();

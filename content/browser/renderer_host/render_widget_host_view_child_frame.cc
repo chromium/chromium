@@ -639,6 +639,10 @@ void RenderWidgetHostViewChildFrame::GestureEventAck(
   input_helper_->GestureEventAckHelper(event, ack_source, ack_result);
 }
 
+void RenderWidgetHostViewChildFrame::OnUnconfirmedTapConvertedToTap() {
+  NOTREACHED();
+}
+
 void RenderWidgetHostViewChildFrame::ForwardTouchpadZoomEventIfNecessary(
     const blink::WebGestureEvent& event,
     blink::mojom::InputEventResultState ack_result) {

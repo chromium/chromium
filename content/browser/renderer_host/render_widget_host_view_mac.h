@@ -161,11 +161,13 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
       base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
           callback) override;
   void EnsureSurfaceSynchronizedForWebTest() override;
+  ui::FilteredGestureProvider* GetFilteredGestureProviderForTesting() override;
   void FocusedNodeChanged(bool is_editable_node,
                           const gfx::Rect& node_bounds_in_screen) override;
   void InvalidateLocalSurfaceIdAndAllocationGroup() override;
   void ClearFallbackSurfaceForCommitPending() override;
   void ResetFallbackToFirstNavigationSurface() override;
+  void OnUnconfirmedTapConvertedToTap() override;
   bool RequestRepaintOnNewSurface() override;
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible() override;
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessibleForWindow()

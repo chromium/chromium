@@ -221,6 +221,10 @@ void TestRenderWidgetHostView::ClearFallbackSurfaceForCommitPending() {
   clear_fallback_surface_for_commit_pending_called_ = true;
 }
 
+void TestRenderWidgetHostView::OnUnconfirmedTapConvertedToTap() {
+  NOTREACHED();
+}
+
 void TestRenderWidgetHostView::TakeFallbackContentFrom(
     RenderWidgetHostView* view) {
   take_fallback_content_from_called_ = true;

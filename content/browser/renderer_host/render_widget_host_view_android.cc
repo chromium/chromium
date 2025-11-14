@@ -1897,6 +1897,11 @@ void RenderWidgetHostViewAndroid::CopyFromSurface(
       /*ipc_delay=*/base::TimeDelta());
 }
 
+ui::FilteredGestureProvider*
+RenderWidgetHostViewAndroid::GetFilteredGestureProviderForTesting() {
+  return &gesture_provider_;
+}
+
 void RenderWidgetHostViewAndroid::CopyFromExactSurface(
     const gfx::Rect& src_rect,
     const gfx::Size& output_size,
@@ -3781,6 +3786,10 @@ void RenderWidgetHostViewAndroid::SetTouchpadOverscrollHistoryNavigation(
   if (overscroll_controller_) {
     overscroll_controller_->SetTouchpadOverscrollHistoryNavigation(enabled);
   }
+}
+
+void RenderWidgetHostViewAndroid::OnUnconfirmedTapConvertedToTap() {
+  gesture_provider_.OnUnconfirmedTapConvertedToTap();
 }
 
 CompositorImpl* RenderWidgetHostViewAndroid::GetCompositorImpl() {

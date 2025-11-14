@@ -92,6 +92,7 @@ InputRouterImpl::InputRouterImpl(
                            this,
                            fling_scheduler_client,
                            config.gesture_config),
+      touch_action_filter_(this),
       device_scale_factor_(1.f) {
   weak_this_ = weak_ptr_factory_.GetWeakPtr();
 
@@ -897,6 +898,10 @@ void InputRouterImpl::ForceResetTouchActionForTest() {
 
 bool InputRouterImpl::IsFlingActiveForTest() {
   return gesture_event_queue_.IsFlingActiveForTest();
+}
+
+void InputRouterImpl::OnUnconfirmedTapConvertedToTap() {
+  client_->OnUnconfirmedTapConvertedToTap();
 }
 
 void InputRouterImpl::UpdateTouchAckTimeoutEnabled() {

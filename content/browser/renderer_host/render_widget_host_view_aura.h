@@ -174,6 +174,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       const gfx::Size& output_size,
       base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
           callback) override;
+  ui::FilteredGestureProvider* GetFilteredGestureProviderForTesting() override;
   void EnsureSurfaceSynchronizedForWebTest() override;
   void TransformPointToRootSurface(gfx::PointF* point) override;
   gfx::Rect GetBoundsInRootWindow() override;
@@ -206,6 +207,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void InvalidateLocalSurfaceIdAndAllocationGroup() override;
   void ClearFallbackSurfaceForCommitPending() override;
   void ResetFallbackToFirstNavigationSurface() override;
+  void OnUnconfirmedTapConvertedToTap() override;
   bool RequestRepaintOnNewSurface() override;
   void DidStopFlinging() override;
   void OnOldViewDidNavigatePreCommit() override;

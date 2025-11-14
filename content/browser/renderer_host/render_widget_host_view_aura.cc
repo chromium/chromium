@@ -92,6 +92,7 @@
 #include "ui/events/event_observer.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
+#include "ui/events/gestures/gesture_provider_aura.h"
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/canvas.h"
@@ -1098,6 +1099,14 @@ void RenderWidgetHostViewAura::CopyFromSurface(
       std::move(callback));
 }
 
+ui::FilteredGestureProvider*
+RenderWidgetHostViewAura::GetFilteredGestureProviderForTesting() {
+  if (!window_ || !window_->provider()) {
+    return nullptr;
+  }
+  return &(window_->provider()->filtered_gesture_provider());
+}
+
 #if BUILDFLAG(IS_WIN)
 void RenderWidgetHostViewAura::UpdateMouseLockRegion() {
   RECT window_rect =
@@ -1138,6 +1147,13 @@ void RenderWidgetHostViewAura::ClearFallbackSurfaceForCommitPending() {
 void RenderWidgetHostViewAura::ResetFallbackToFirstNavigationSurface() {
   CHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
   delegated_frame_host_->ResetFallbackToFirstNavigationSurface();
+}
+
+void RenderWidgetHostViewAura::OnUnconfirmedTapConvertedToTap() {
+  if (!window_ || !window_->provider()) {
+    return;
+  }
+  window_->provider()->OnUnconfirmedTapConvertedToTap();
 }
 
 bool RenderWidgetHostViewAura::RequestRepaintOnNewSurface() {

@@ -151,6 +151,10 @@ class GESTURE_DETECTION_EXPORT GestureDetector {
       const MotionEvent* secondary_pointer_down_event,
       const int pointer_id) const;
 
+  void OnUnconfirmedTapConvertedToTap();
+
+  bool HasPendingTapTimeoutForTesting() const;
+
  private:
   void Init(const Config& config);
   void OnShowPressTimeout();

@@ -674,4 +674,12 @@ const MotionEvent* GestureDetector::GetSourcePointerDownEvent(
   return nullptr;
 }
 
+void GestureDetector::OnUnconfirmedTapConvertedToTap() {
+  timeout_handler_->StopTimeout(TAP);
+}
+
+bool GestureDetector::HasPendingTapTimeoutForTesting() const {
+  return timeout_handler_->HasTimeout(TAP);
+}
+
 }  // namespace ui

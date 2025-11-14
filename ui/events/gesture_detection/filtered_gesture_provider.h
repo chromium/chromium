@@ -70,6 +70,9 @@ class GESTURE_DETECTION_EXPORT FilteredGestureProvider final
   void SetDoubleTapSupportForPageEnabled(bool enabled);
   const ui::MotionEvent* GetCurrentDownEvent() const;
   const ui::MotionEvent* GetLastEventWithoutHistory() const;
+  void OnUnconfirmedTapConvertedToTap();
+
+  bool HasPendingTapTimeoutForTesting() const;
 
  private:
   // GestureProviderClient implementation.

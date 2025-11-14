@@ -53,6 +53,7 @@ class COMPONENT_EXPORT(INPUT) InputRouterImpl
       public MouseWheelEventQueueClient,
       public PassthroughTouchEventQueueClient,
       public TouchpadPinchEventQueueClient,
+      public TouchActionFilterClient,
       public blink::mojom::WidgetInputHandlerHost {
   // TODO(crbug.com/422044720): Remove this macro once the bug gets fixed.
   ADVANCED_MEMORY_SAFETY_CHECKS();
@@ -124,6 +125,9 @@ class COMPONENT_EXPORT(INPUT) InputRouterImpl
   void ForceResetTouchActionForTest();
 
   bool IsFlingActiveForTest();
+
+  // TouchActionFilterClient
+  void OnUnconfirmedTapConvertedToTap() override;
 
  private:
   friend class content::InputRouterImplTest;

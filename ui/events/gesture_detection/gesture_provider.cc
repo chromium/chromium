@@ -296,6 +296,10 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
              /*should_update=*/false);
   }
 
+  void OnUnconfirmedTapConvertedToTap() {
+    gesture_detector_.OnUnconfirmedTapConvertedToTap();
+  }
+
   // ScaleGestureListener implementation.
   bool OnScaleBegin(const ScaleGestureDetector& detector,
                     const MotionEvent& e) override {
@@ -719,6 +723,8 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
 
   bool IsPinchInProgress() const { return pinch_event_sent_; }
 
+  GestureDetector* GetGestureDetectorForTesting() { return &gesture_detector_; }
+
  private:
   bool OnSingleTapImpl(const MotionEvent& e, int tap_count) {
     // Long taps in the edges of the screen have their events delayed by
@@ -927,6 +933,18 @@ bool GestureProvider::IsDoubleTapInProgress() const {
 
 void GestureProvider::SendSynthesizedEndEvents() {
   gesture_listener_->SendSynthesizedEndEvents();
+}
+
+void GestureProvider::OnUnconfirmedTapConvertedToTap() {
+  gesture_listener_->OnUnconfirmedTapConvertedToTap();
+}
+
+GestureDetector* GestureProvider::GetGestureDetectorForTesting() {
+  if (!gesture_listener_) {
+    return nullptr;
+  }
+  return static_cast<GestureListenerImpl*>(gesture_listener_.get())
+      ->GetGestureDetectorForTesting();  // IN-TEST
 }
 
 bool GestureProvider::CanHandle(const MotionEvent& event) const {

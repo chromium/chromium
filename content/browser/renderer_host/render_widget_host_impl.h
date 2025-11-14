@@ -827,6 +827,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       const std::optional<std::vector<gfx::Rect>>& character_bounds) override;
   void OnImeCancelComposition() override;
   void OnStartStylusWriting() override;
+  void OnUnconfirmedTapConvertedToTap() override;
   void UpdateElementFocusForStylusWriting(
 #if BUILDFLAG(IS_WIN)
       const gfx::Rect& focus_widget_rect_in_dips

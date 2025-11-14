@@ -69,6 +69,7 @@ class EVENTS_EXPORT GestureProviderAura : public GestureProviderClient {
   // GestureProviderClient implementation
   void OnGestureEvent(const GestureEventData& gesture) override;
   bool RequiresDoubleTapGestureEvents() const override;
+  void OnUnconfirmedTapConvertedToTap();
 
  private:
   raw_ptr<GestureProviderAuraClient> client_;

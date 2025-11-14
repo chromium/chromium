@@ -54,6 +54,10 @@
 #include "ui/gfx/range/range.h"
 #include "url/origin.h"
 
+namespace ui {
+class FilteredGestureProvider;
+}
+
 namespace blink {
 class WebMouseEvent;
 class WebMouseWheelEvent;
@@ -175,6 +179,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
       const gfx::Size& output_size,
       base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
           callback);
+
+  // For testing only.
+  virtual ui::FilteredGestureProvider* GetFilteredGestureProviderForTesting();
 
 #if BUILDFLAG(IS_ANDROID)
   virtual void CopyFromExactSurfaceWithIpcDelay(
@@ -312,6 +319,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   virtual void ClearFallbackSurfaceForCommitPending() {}
   // This method will reset the fallback to the first surface after navigation.
   virtual void ResetFallbackToFirstNavigationSurface() = 0;
+
+  virtual void OnUnconfirmedTapConvertedToTap() = 0;
 
   // Requests a new CompositorFrame from the renderer. This is done by
   // allocating a new viz::LocalSurfaceId which forces a commit and draw.

@@ -33,6 +33,7 @@
 #include "content/common/input/synthetic_pointer_action_list_params.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
+#include "content/common/input/synthetic_tap_gesture.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
@@ -46,6 +47,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/blink/blink_features.h"
+#include "ui/events/gesture_detection/filtered_gesture_provider.h"
 #include "ui/latency/latency_info.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -479,9 +481,10 @@ class TouchActionBrowserTest : public ContentBrowserTest {
       EXPECT_GT(scroll_left, 0);
   }
 
+  std::unique_ptr<base::RunLoop> run_loop_;
+
  private:
   std::unique_ptr<RenderFrameSubmissionObserver> frame_observer_;
-  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 // TODO(crbug.com/40236573): Fix Mac failures.
@@ -530,6 +533,50 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest, MAYBE_TouchActionNone) {
   EXPECT_GE(EvalJs(shell(), "eventCounts.touchmove").ExtractInt(), 1);
   EXPECT_EQ(1, EvalJs(shell(), "eventCounts.touchend"));
   EXPECT_EQ(0, EvalJs(shell(), "eventCounts.touchcancel"));
+}
+
+// Tests that when double-tap zoom is disabled, the GestureTapUnconfirmed event
+// is converted to a GestureTap.
+IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest,
+                       GestureTapUnconfirmedNotSentWhenDoubleTapIsDisabled) {
+  const std::string kDoubleTapZoomDataURL = R"HTML(
+    data:text/html,<!DOCTYPE html>
+    <style>
+      html, body {
+        margin: 0;
+      }
+      .target {
+        width: 100vw;
+        height: 100vh;
+        touch-action: pan-y;
+      }
+      .spacer { height: 10000px; }
+    </style>
+    <div class=target></div>
+    <div class=spacer></div>
+    <script>
+      document.title='ready';
+    </script>)HTML";
+  LoadURL(kDoubleTapZoomDataURL);
+
+  SyntheticTapGestureParams params;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
+  params.position = gfx::PointF(50, 50);
+  params.duration_ms = 100;
+
+  run_loop_ = std::make_unique<base::RunLoop>();
+  GetWidgetHost()->QueueSyntheticGesture(
+      std::make_unique<SyntheticTapGesture>(params),
+      base::BindOnce(&TouchActionBrowserTest::OnSyntheticGestureCompleted,
+                     base::Unretained(this)));
+
+  run_loop_->Run();
+
+  RenderWidgetHostViewBase* rwhv = static_cast<RenderWidgetHostViewBase*>(
+      shell()->web_contents()->GetRenderWidgetHostView());
+  // After the tap gesture has been completed, the timer should be gone.
+  EXPECT_FALSE(rwhv->GetFilteredGestureProviderForTesting()
+                   ->HasPendingTapTimeoutForTesting());
 }
 
 // TODO(crbug.com/40236573): Fix Mac failures.

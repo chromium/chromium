@@ -109,6 +109,10 @@ class GESTURE_DETECTION_EXPORT GestureProvider {
     return last_event_without_history_.get();
   }
 
+  void OnUnconfirmedTapConvertedToTap();
+
+  GestureDetector* GetGestureDetectorForTesting();
+
  private:
   bool CanHandle(const MotionEvent& event) const;
   void OnTouchEventHandlingBegin(const MotionEvent& event);

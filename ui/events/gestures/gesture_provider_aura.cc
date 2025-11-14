@@ -94,6 +94,10 @@ bool GestureProviderAura::RequiresDoubleTapGestureEvents() const {
   return gesture_consumer_->RequiresDoubleTapGestureEvents();
 }
 
+void GestureProviderAura::OnUnconfirmedTapConvertedToTap() {
+  filtered_gesture_provider_.OnUnconfirmedTapConvertedToTap();
+}
+
 std::vector<std::unique_ptr<GestureEvent>>
 GestureProviderAura::GetAndResetPendingGestures() {
   std::vector<std::unique_ptr<GestureEvent>> result;
