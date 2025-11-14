@@ -160,7 +160,7 @@ class CreditCardAccessManagerBetterAuthOptInLogTest
     credit_card_access_manager().PrepareToFetchCreditCard();
     credit_card_access_manager().FetchCreditCard(
         GetCreditCard(), base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                        accessor_->GetWeakPtr()));
+                                        accessor().GetWeakPtr()));
   }
 
   bool IsVirtualCard() { return std::get<0>(GetParam()); }

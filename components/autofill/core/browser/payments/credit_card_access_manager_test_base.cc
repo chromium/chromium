@@ -84,7 +84,6 @@ void CreditCardAccessManagerTestBase::SetUp() {
   autofill_client().GetPrefs()->SetBoolean(
       prefs::kAutofillPaymentMethodsMandatoryReauth, false);
 #endif
-  accessor_ = std::make_unique<TestAccessor>();
 
   payments_autofill_client().set_payments_network_interface(
       std::make_unique<payments::TestPaymentsNetworkInterface>(
@@ -370,7 +369,7 @@ void CreditCardAccessManagerTestBase::
       .set_is_user_verifiable(is_user_verifiable);
   credit_card_access_manager().FetchCreditCard(
       card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                           accessor_->GetWeakPtr()));
+                           accessor().GetWeakPtr()));
 
   // This checks risk-based authentication flow is successfully invoked,
   // because it is always the very first authentication flow in a VCN
@@ -528,7 +527,7 @@ void CreditCardAccessManagerTestBase::
 void CreditCardAccessManagerTestBase::FetchCreditCard(const CreditCard* card) {
   credit_card_access_manager().FetchCreditCard(
       card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                           accessor_->GetWeakPtr()));
+                           accessor().GetWeakPtr()));
 }
 
 }  // namespace autofill

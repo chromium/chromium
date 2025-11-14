@@ -114,7 +114,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
           .with_card(card));
 
   // Ensure the accessor received the correct response.
-  EXPECT_EQ(accessor_->number(), base::UTF8ToUTF16(test_number));
+  EXPECT_EQ(accessor().number(), base::UTF8ToUTF16(test_number));
 
   // There was no interactive authentication in this flow, so check that this
   // is signaled correctly.
@@ -268,8 +268,8 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   // Expect CVC prompt to be invoked.
   EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kSuccess, test_number));
   // Ensure that the form is filled.
-  EXPECT_EQ(base::UTF8ToUTF16(test_number), accessor_->number());
-  EXPECT_EQ(kTestCvc16, accessor_->cvc());
+  EXPECT_EQ(base::UTF8ToUTF16(test_number), accessor().number());
+  EXPECT_EQ(kTestCvc16, accessor().cvc());
 
   // Expect that we did not signal that there was no interactive authentication.
   EXPECT_FALSE(
@@ -364,8 +364,8 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kSuccess, test_number,
                                    TestFidoRequestOptionsType::kNotPresent));
   // Ensure that the form is not filled yet (OnCreditCardFetched is not called).
-  EXPECT_EQ(accessor_->number(), std::u16string());
-  EXPECT_EQ(accessor_->cvc(), std::u16string());
+  EXPECT_EQ(accessor().number(), std::u16string());
+  EXPECT_EQ(accessor().cvc(), std::u16string());
 
   // Mock user response.
   EXPECT_EQ(CreditCardFidoAuthenticator::Flow::kFollowupAfterCvcAuthFlow,
@@ -374,8 +374,8 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
                                                 /*did_succeed=*/true);
   // Ensure that the form is filled after user verification (OnCreditCardFetched
   // is called).
-  EXPECT_EQ(base::UTF8ToUTF16(test_number), accessor_->number());
-  EXPECT_EQ(kTestCvc16, accessor_->cvc());
+  EXPECT_EQ(base::UTF8ToUTF16(test_number), accessor().number());
+  EXPECT_EQ(kTestCvc16, accessor().cvc());
 
   // Mock OptChange payments call.
   OptChange(PaymentsRpcResult::kSuccess, true);
@@ -415,8 +415,8 @@ TEST_F(
   // Expect CVC prompt to be invoked.
   EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kSuccess, test_number));
   // Ensure that the form is filled.
-  EXPECT_EQ(base::UTF8ToUTF16(test_number), accessor_->number());
-  EXPECT_EQ(kTestCvc16, accessor_->cvc());
+  EXPECT_EQ(base::UTF8ToUTF16(test_number), accessor().number());
+  EXPECT_EQ(kTestCvc16, accessor().cvc());
 
   // Expect that we did not signal that there was no interactive authentication.
   EXPECT_FALSE(
@@ -524,7 +524,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 
   credit_card_access_manager().FetchCreditCard(
       enrolled_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                    accessor_->GetWeakPtr()));
+                                    accessor().GetWeakPtr()));
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
@@ -545,7 +545,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
           .with_card(*enrolled_card));
 
   // Ensure the accessor received the correct response.
-  EXPECT_EQ(accessor_->number(), base::UTF8ToUTF16(test_number));
+  EXPECT_EQ(accessor().number(), base::UTF8ToUTF16(test_number));
 
   // There was no interactive authentication in this flow, so check that this
   // is signaled correctly.
@@ -574,7 +574,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 
   credit_card_access_manager().FetchCreditCard(
       enrolled_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                    accessor_->GetWeakPtr()));
+                                    accessor().GetWeakPtr()));
 
   // Mock that CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse
   // indicates a green path with valid card number returned.
@@ -636,7 +636,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
           .has_value());
 
   // Expect accessor to successfully retrieve the CVC.
-  EXPECT_EQ(kTestCvc16, accessor_->cvc());
+  EXPECT_EQ(kTestCvc16, accessor().cvc());
 }
 
 // Test the yellow path flow when the masked server card enrolled in card info
@@ -679,7 +679,7 @@ TEST_F(
           .has_value());
 
   // Expect accessor to successfully retrieve the CVC.
-  EXPECT_EQ(kTestCvc16, accessor_->cvc());
+  EXPECT_EQ(kTestCvc16, accessor().cvc());
 }
 
 // Params of the CardInfoRetrievalUnmaskingYellowPathMetricsTest:
@@ -797,7 +797,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   credit_card_access_manager().FetchCreditCard(
       card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                           accessor_->GetWeakPtr()));
+                           accessor().GetWeakPtr()));
 
   CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse response;
   response.result = CreditCardRiskBasedAuthenticator::

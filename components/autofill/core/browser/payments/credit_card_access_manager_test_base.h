@@ -164,6 +164,12 @@ class CreditCardAccessManagerTestBase
 
   void InvokeDelayedGetUnmaskDetailsResponse();
   void InvokeUnmaskDetailsTimeout();
+
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
+
+  // Runs until the task environment is idle.
   void WaitForCallbacks();
 
   void SetCreditCardFIDOAuthEnabled(bool enabled);
@@ -182,6 +188,8 @@ class CreditCardAccessManagerTestBase
   void VerifyOnSelectChallengeOptionInvoked();
 
  protected:
+  TestAccessor& accessor() { return accessor_; }
+
   CreditCardAccessManager& credit_card_access_manager() {
     return autofill_manager().GetCreditCardAccessManager();
   }
@@ -211,8 +219,9 @@ class CreditCardAccessManagerTestBase
 
   void FetchCreditCard(const CreditCard* card);
 
-  std::unique_ptr<TestAccessor> accessor_;
+ private:
   base::test::TaskEnvironment task_environment_;
+  TestAccessor accessor_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   syncer::TestSyncService sync_service_;

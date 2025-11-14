@@ -176,16 +176,16 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().FetchCreditCard(
       card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                           accessor_->GetWeakPtr()));
+                           accessor().GetWeakPtr()));
 
   // The only time we should expect an error is if mandatory re-auth is
   // enabled, but the mandatory re-auth authentication was not successful.
   if (IsMandatoryReauthEnabled() && HasAuthenticator() &&
       !MandatoryReauthResponseIsSuccess()) {
-    EXPECT_TRUE(accessor_->number().empty());
+    EXPECT_TRUE(accessor().number().empty());
   } else {
-    EXPECT_EQ(accessor_->number(), kTestNumber16);
-    EXPECT_EQ(accessor_->cvc(), kTestCvc16);
+    EXPECT_EQ(accessor().number(), kTestNumber16);
+    EXPECT_EQ(accessor().cvc(), kTestCvc16);
   }
 
   std::string reauth_usage_histogram_name =
@@ -241,7 +241,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
 
   credit_card_access_manager().FetchCreditCard(
       masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                         accessor_->GetWeakPtr()));
+                                         accessor().GetWeakPtr()));
 
   // This checks risk-based authentication flow is successfully invoked,
   // because it is always the very first authentication flow in a VCN
@@ -266,10 +266,10 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
   // Ensure the accessor received the correct response.
   if (!IsMandatoryReauthEnabled() || !HasAuthenticator() ||
       MandatoryReauthResponseIsSuccess()) {
-    EXPECT_EQ(accessor_->number(), u"4234567890123456");
-    EXPECT_EQ(accessor_->cvc(), u"321");
-    EXPECT_EQ(accessor_->expiry_month(), base::UTF8ToUTF16(test::NextMonth()));
-    EXPECT_EQ(accessor_->expiry_year(), base::UTF8ToUTF16(test::NextYear()));
+    EXPECT_EQ(accessor().number(), u"4234567890123456");
+    EXPECT_EQ(accessor().cvc(), u"321");
+    EXPECT_EQ(accessor().expiry_month(), base::UTF8ToUTF16(test::NextMonth()));
+    EXPECT_EQ(accessor().expiry_year(), base::UTF8ToUTF16(test::NextYear()));
   }
 
   std::string reauth_usage_histogram_name =
@@ -329,7 +329,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
 
   credit_card_access_manager().FetchCreditCard(
       masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                         accessor_->GetWeakPtr()));
+                                         accessor().GetWeakPtr()));
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
@@ -353,7 +353,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
   // Ensure the accessor received the correct response.
   if (!IsMandatoryReauthEnabled() || !HasAuthenticator() ||
       MandatoryReauthResponseIsSuccess()) {
-    EXPECT_EQ(accessor_->number(), base::UTF8ToUTF16(test_number));
+    EXPECT_EQ(accessor().number(), base::UTF8ToUTF16(test_number));
   }
   std::string reauth_usage_histogram_name =
       "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.ServerCard";
@@ -445,9 +445,9 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().FetchCreditCard(
       card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                           accessor_->GetWeakPtr()));
+                           accessor().GetWeakPtr()));
 
-  EXPECT_EQ(accessor_->cvc(),
+  EXPECT_EQ(accessor().cvc(),
             MandatoryReauthResponseIsSuccess() ? kTestCvc16 : u"");
   histogram_tester.ExpectBucketCount(
       "Autofill.CvcStorage.CvcFilling.LocalCard",
@@ -469,9 +469,9 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().FetchCreditCard(
       card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                           accessor_->GetWeakPtr()));
+                           accessor().GetWeakPtr()));
 
-  EXPECT_EQ(accessor_->cvc(), u"");
+  EXPECT_EQ(accessor().cvc(), u"");
   histogram_tester.ExpectBucketCount(
       "Autofill.CvcStorage.CvcFilling.LocalCard",
       autofill_metrics::CvcFillingFlowType::kMandatoryReauth, 0);
@@ -491,7 +491,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
 
   credit_card_access_manager().FetchCreditCard(
       masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                         accessor_->GetWeakPtr()));
+                                         accessor().GetWeakPtr()));
 
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
@@ -501,7 +501,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
                                kNoAuthenticationRequired)
           .with_card(*masked_server_card));
 
-  EXPECT_EQ(accessor_->cvc(),
+  EXPECT_EQ(accessor().cvc(),
             MandatoryReauthResponseIsSuccess() ? kTestCvc16 : u"");
   histogram_tester.ExpectBucketCount(
       "Autofill.CvcStorage.CvcFilling.ServerCard",
@@ -523,7 +523,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
 
   credit_card_access_manager().FetchCreditCard(
       masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                         accessor_->GetWeakPtr()));
+                                         accessor().GetWeakPtr()));
 
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
@@ -533,7 +533,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
                                kNoAuthenticationRequired)
           .with_card(*masked_server_card));
 
-  EXPECT_EQ(accessor_->cvc(), u"");
+  EXPECT_EQ(accessor().cvc(), u"");
   histogram_tester.ExpectBucketCount(
       "Autofill.CvcStorage.CvcFilling.ServerCard",
       autofill_metrics::CvcFillingFlowType::kMandatoryReauth, 0);
