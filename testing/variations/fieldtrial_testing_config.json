@@ -9468,28 +9468,6 @@
             ]
         }
     ],
-    "EmitPerScrollJankMetricsAtEndOfScroll": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Experiment_V1EnabledV4Disabled",
-                    "enable_features": [
-                        "EmitPerScrollJankV1MetricAtEndOfScroll"
-                    ],
-                    "disable_features": [
-                        "EmitPerScrollJankV4MetricAtEndOfScroll"
-                    ]
-                }
-            ]
-        }
-    ],
     "En840AndFstDecoderParamsUpdate": [
         {
             "platforms": [
