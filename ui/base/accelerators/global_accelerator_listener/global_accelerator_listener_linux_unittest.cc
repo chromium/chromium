@@ -24,6 +24,8 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/command.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
+#include "ui/gfx/native_ui_types.h"
+#include "ui/linux/linux_ui_delegate.h"
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -47,6 +49,23 @@ constexpr char16_t kShortcutDescription[] = u"Test Shortcut Description";
 MATCHER_P2(MatchMethod, interface, member, "") {
   return arg->GetInterface() == interface && arg->GetMember() == member;
 }
+
+class MockLinuxUiDelegate : public LinuxUiDelegate {
+ public:
+  MockLinuxUiDelegate() = default;
+  ~MockLinuxUiDelegate() override = default;
+
+  LinuxUiBackend GetBackend() const override { return LinuxUiBackend::kStub; }
+
+  void SetTransientWindowForParent(gfx::AcceleratedWidget parent,
+                                   gfx::AcceleratedWidget transient) override {}
+
+  MOCK_METHOD(void,
+              ExportWindowHandle,
+              (gfx::AcceleratedWidget window_id,
+               base::OnceCallback<void(std::string)> callback),
+              (override));
+};
 
 }  // namespace
 
@@ -165,6 +184,10 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
   auto observer = std::make_unique<MockObserver>();
   scoped_refptr<dbus::MockObjectProxy> session_proxy;
   ui::CommandMap commands;
+
+  // MockLinuxUiDelegate subclasses from LinuxUiDelegate which installs itself
+  // as the singleton instance on construction.
+  MockLinuxUiDelegate linux_ui_delegate;
 
   auto update_commands = [&]() {
     // These object proxies have unique generated names, so are initialized when
@@ -341,6 +364,13 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
           std::move(callback).Run(response.get(), nullptr);
         });
 
+    gfx::AcceleratedWidget widget = static_cast<gfx::AcceleratedWidget>(12345);
+    EXPECT_CALL(linux_ui_delegate, ExportWindowHandle(widget, _))
+        .WillOnce([](gfx::AcceleratedWidget window_id,
+                     base::OnceCallback<void(std::string)> callback) {
+          std::move(callback).Run("test_handle");
+        });
+
     // BindShortcuts request
     EXPECT_CALL(
         *mock_global_shortcuts_proxy,
@@ -358,6 +388,7 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
           EXPECT_TRUE(shortcuts);
           std::string parent_window;
           EXPECT_TRUE(reader.PopString(&parent_window));
+          EXPECT_EQ(parent_window, "test_handle");
 
           auto response = dbus::Response::CreateEmpty();
           dbus::MessageWriter writer(response.get());
@@ -365,8 +396,8 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
           std::move(callback).Run(response.get(), nullptr);
         });
 
-    global_shortcut_listener->OnCommandsChanged(kExtensionId, kProfileId,
-                                                commands, observer.get());
+    global_shortcut_listener->OnCommandsChanged(
+        kExtensionId, kProfileId, commands, widget, observer.get());
   };
 
   commands[kCommandName] = ui::Command(kCommandName, kShortcutDescription,

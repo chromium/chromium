@@ -1317,6 +1317,7 @@ test("ui_base_unittests") {
       "//content/test:test_support",
       "//dbus:test_support",
       "//ui/base/accelerators/global_accelerator_listener",
+      "//ui/linux:linux_ui",
     ]
   }
 

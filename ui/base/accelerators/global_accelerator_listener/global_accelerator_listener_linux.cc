@@ -23,6 +23,7 @@
 #include "dbus/object_path.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/command.h"
+#include "ui/linux/linux_ui_delegate.h"
 
 namespace ui {
 
@@ -139,11 +140,14 @@ void GlobalAcceleratorListenerLinux::OnCommandsChanged(
     const std::string& accelerator_group_id,
     const std::string& profile_id,
     const ui::CommandMap& commands,
+    gfx::AcceleratedWidget widget,
     Observer* observer) {
   // If starting the service failed, there's no need to add the command list.
   if (!service_started_.value_or(true)) {
     return;
   }
+
+  context_window_ = widget;
 
   const std::string prefix =
       GetShortcutPrefix(accelerator_group_id, profile_id);
@@ -229,14 +233,23 @@ void GlobalAcceleratorListenerLinux::OnListShortcuts(
   // them.
   for (const auto& [modified_id, bound_cmd] : bound_commands_) {
     if (registered_ids.find(modified_id) == registered_ids.end()) {
-      BindShortcuts(*shortcuts);
+      auto* delegate = ui::LinuxUiDelegate::GetInstance();
+      if (delegate && context_window_ != gfx::kNullAcceleratedWidget) {
+        delegate->ExportWindowHandle(
+            context_window_,
+            base::BindOnce(&GlobalAcceleratorListenerLinux::BindShortcuts,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(*shortcuts)));
+      } else {
+        BindShortcuts(std::move(*shortcuts), "");
+      }
       return;
     }
   }
 }
 
-void GlobalAcceleratorListenerLinux::BindShortcuts(
-    DbusShortcuts& old_shortcuts) {
+void GlobalAcceleratorListenerLinux::BindShortcuts(DbusShortcuts old_shortcuts,
+                                                   std::string parent_handle) {
   DbusShortcuts shortcuts;
   for (auto& old_shortcut : old_shortcuts) {
     const std::string& id = std::get<0>(old_shortcut);
@@ -263,7 +276,8 @@ void GlobalAcceleratorListenerLinux::BindShortcuts(
       kMethodBindShortcuts, dbus_xdg::Dictionary(),
       base::BindOnce(&GlobalAcceleratorListenerLinux::OnBindShortcuts,
                      weak_ptr_factory_.GetWeakPtr()),
-      session_proxy_->object_path(), std::move(shortcuts), std::string());
+      session_proxy_->object_path(), std::move(shortcuts),
+      std::move(parent_handle));
 }
 
 void GlobalAcceleratorListenerLinux::CloseSession() {

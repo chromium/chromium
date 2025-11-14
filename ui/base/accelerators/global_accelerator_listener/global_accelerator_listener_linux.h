@@ -20,6 +20,7 @@
 #include "dbus/object_proxy.h"
 #include "ui/base/accelerators/command.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace dbus_xdg {
 class Request;
@@ -86,6 +87,7 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
   void OnCommandsChanged(const std::string& accelerator_group_id,
                          const std::string& profile_id,
                          const ui::CommandMap& commands,
+                         gfx::AcceleratedWidget widget,
                          Observer* observer) override;
 
   void OnCreateSession(
@@ -108,7 +110,7 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
 
   void CreateSession();
 
-  void BindShortcuts(DbusShortcuts& old_shortcuts);
+  void BindShortcuts(DbusShortcuts old_shortcuts, std::string parent_handle);
 
   void CloseSession();
 
@@ -123,6 +125,7 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
   BindState bind_state_ = BindState::kNotBound;
   const std::string session_token_;
 
+  gfx::AcceleratedWidget context_window_ = gfx::kNullAcceleratedWidget;
   std::map<std::string, BoundCommand> bound_commands_;
 
   base::WeakPtrFactory<GlobalAcceleratorListenerLinux> weak_ptr_factory_{this};
