@@ -94,6 +94,10 @@ BASE_FEATURE(kInhibitSQLPreload, base::FEATURE_DISABLED_BY_DEFAULT);
 // fixed SSD*.
 BASE_FEATURE(kInhibitSQLPreloadOnFixedSSD, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the call to ReleaseCacheMemoryIfNeeded are ignored.
+BASE_FEATURE(kInhibitSQLReleaseCacheMemoryIfNeeded,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Returns true if `path` is on a drive that has no seek penalty and isn't
 // removable, or if that information cannot be obtained (most drives are fixed
 // and have no seek penalty, so `true` is the result that is most likely to be
@@ -662,6 +666,10 @@ void Database::Close() {
 // false.  The downside then is that it allows open-ended use of memory for
 // large transactions.
 void Database::ReleaseCacheMemoryIfNeeded(bool implicit_change_performed) {
+  if (base::FeatureList::IsEnabled(kInhibitSQLReleaseCacheMemoryIfNeeded)) {
+    return;
+  }
+
   TRACE_EVENT0("sql", "Database::ReleaseCacheMemoryIfNeeded");
   // The database could have been closed during a transaction as part of error
   // recovery.
