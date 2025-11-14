@@ -102,7 +102,6 @@ class CORE_EXPORT FontFaceSetDocument final : public FontFaceSet {
     Status status_;
   };
 
-  Member<Document> document_;
   FontLoadHistogram font_load_histogram_;
 
   HeapTaskRunnerTimer<FontFaceSetDocument> lcp_limit_timer_;

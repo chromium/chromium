@@ -29,12 +29,10 @@ class DocumentXSLT final : public GarbageCollected<DocumentXSLT>,
   static bool SheetLoaded(Document&, ProcessingInstruction*);
   static bool HasTransformSourceDocument(Document&);
 
-  explicit DocumentXSLT(Document&);
+  DocumentXSLT() = default;
   DocumentXSLT(const DocumentXSLT&) = delete;
   DocumentXSLT& operator=(const DocumentXSLT&) = delete;
   void Trace(Visitor*) const override;
-
-  Member<Document> document_;
 };
 
 }  // namespace blink

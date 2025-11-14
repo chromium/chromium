@@ -53,7 +53,6 @@ namespace blink {
 
 FontFaceSetDocument::FontFaceSetDocument(Document& document)
     : FontFaceSet(*document.GetExecutionContext()),
-      document_(document),
       lcp_limit_timer_(document.GetTaskRunner(TaskType::kInternalLoading),
                        this,
                        &FontFaceSetDocument::LCPLimitReached) {}
@@ -262,7 +261,6 @@ void FontFaceSetDocument::LCPLimitReached(TimerBase*) {
 }
 
 void FontFaceSetDocument::Trace(Visitor* visitor) const {
-  visitor->Trace(document_);
   visitor->Trace(lcp_limit_timer_);
   FontFaceSet::Trace(visitor);
 }

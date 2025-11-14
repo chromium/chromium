@@ -75,7 +75,7 @@ BrowsingTopicsDocumentSupplement::browsingTopics(
 
 BrowsingTopicsDocumentSupplement::BrowsingTopicsDocumentSupplement(
     Document& document)
-    : document_(document), document_host_(document.GetExecutionContext()) {}
+    : document_host_(document.GetExecutionContext()) {}
 
 ScriptPromise<IDLSequence<BrowsingTopic>>
 BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
@@ -209,7 +209,6 @@ BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
 }
 
 void BrowsingTopicsDocumentSupplement::Trace(Visitor* visitor) const {
-  visitor->Trace(document_);
   visitor->Trace(document_host_);
 }
 
