@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/auto_reset.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 
@@ -56,8 +57,9 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) BrowserContextHelper {
 
     // Returns the primary off-the-record BrowserContext instance corresponding
     // to the given `browser_context`. If there is not, creates the one.
-    virtual content::BrowserContext* GetOrCreatePrimaryOTRBrowserContext(
-        content::BrowserContext* browser_context) = 0;
+    virtual content::BrowserContext* GetPrimaryOTRBrowserContext(
+        content::BrowserContext* browser_context,
+        bool create_if_needed) = 0;
 
     // Returns the original BrowserContext instance. If the given
     // `browser_context` is not an off-the-record browser context, itself will
@@ -141,6 +143,19 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) BrowserContextHelper {
   void SetUseAnnotatedAccountIdForTesting() {
     use_annotated_account_id_for_testing_ = true;
   }
+
+  // Some of Get* functions, such as GetSigninBrowserContext() or
+  // GetLockScreenBrowserContext() automatically creates the BrowserContext
+  // instance if they are not created yet.
+  // However, in some tests, the creation happens during another
+  // BrowserContext's initialization. As a result, it caused crashes.
+  // This is the workaround for such cases by disabling the profile creation.
+  // See crbug.com/460334478 for more details.
+  // Destroying the return value will reset the disabling.
+  static base::AutoReset<bool> DisableImplicitBrowserContextCreationForTest();
+
+  // Returns whether the creation is kept enabled.
+  static bool IsImplicitBrowserContextCreationEnabled();
 
  private:
   // This is only for graceful migration.

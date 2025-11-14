@@ -683,6 +683,13 @@ Profile* ProfileManager::GetPrimaryUserProfile(
   base::UmaHistogramSparse(
       "Ash.BrowserContext.UnexpectedGetPrimaryUserProfile.LoginScreen.Location",
       LocationHash(location));
+
+  // Respect profile creation configuration.
+  // GetActiveUserOrOffTheRecordProfile() may create the profile if missing.
+  // This means unexpected uses. See also crbug.com/40227502.
+  if (!ash::BrowserContextHelper::IsImplicitBrowserContextCreationEnabled()) {
+    return nullptr;
+  }
 #endif
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -727,7 +734,15 @@ Profile* ProfileManager::GetActiveUserProfile(
         "Location",
         LocationHash(location));
   }
+
+  // Respect profile creation configuration.
+  // GetActiveUserOrOffTheRecordProfile() may create the profile if missing.
+  // This means unexpected uses. See also crbug.com/40227502.
+  if (!ash::BrowserContextHelper::IsImplicitBrowserContextCreationEnabled()) {
+    return nullptr;
+  }
 #endif
+
   Profile* profile = profile_manager->GetActiveUserOrOffTheRecordProfile();
   // |profile| could be null if the user doesn't have a profile yet and the path
   // is on a read-only volume (preventing Chrome from making a new one).

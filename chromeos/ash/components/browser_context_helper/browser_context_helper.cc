@@ -26,6 +26,8 @@ namespace {
 // Ex.: /home/chronos/u-0123456789
 constexpr char kBrowserContextDirPrefix[] = "u-";
 
+bool g_enable_implicit_browser_context_creation = true;
+
 BrowserContextHelper* g_instance = nullptr;
 
 bool ShouldAddBrowserContextDirPrefix(std::string_view user_id_hash) {
@@ -116,8 +118,8 @@ content::BrowserContext* BrowserContextHelper::GetBrowserContextByUser(
   // but actually its off-the-record profile should be used.
   // TODO(hidehiko): Replace this by user->GetType() == kGuest.
   if (user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
-    browser_context =
-        delegate_->GetOrCreatePrimaryOTRBrowserContext(browser_context);
+    browser_context = delegate_->GetPrimaryOTRBrowserContext(
+        browser_context, g_enable_implicit_browser_context_creation);
   }
 
   return browser_context;
@@ -192,17 +194,24 @@ content::BrowserContext* BrowserContextHelper::GetSigninBrowserContext() {
   if (!browser_context) {
     return nullptr;
   }
-  return delegate_->GetOrCreatePrimaryOTRBrowserContext(browser_context);
+
+  return delegate_->GetPrimaryOTRBrowserContext(
+      browser_context, g_enable_implicit_browser_context_creation);
 }
 
 content::BrowserContext*
 BrowserContextHelper::DeprecatedGetOrCreateSigninBrowserContext() {
+  if (!g_enable_implicit_browser_context_creation) {
+    return GetSigninBrowserContext();
+  }
+
   content::BrowserContext* browser_context =
       delegate_->DeprecatedGetBrowserContext(GetSigninBrowserContextPath());
   if (!browser_context) {
     return nullptr;
   }
-  return delegate_->GetOrCreatePrimaryOTRBrowserContext(browser_context);
+  return delegate_->GetPrimaryOTRBrowserContext(browser_context,
+                                                /*create_if_needed=*/true);
 }
 
 base::FilePath BrowserContextHelper::GetLockScreenBrowserContextPath() const {
@@ -215,7 +224,9 @@ content::BrowserContext* BrowserContextHelper::GetLockScreenBrowserContext() {
   if (!browser_context) {
     return nullptr;
   }
-  return delegate_->GetOrCreatePrimaryOTRBrowserContext(browser_context);
+
+  return delegate_->GetPrimaryOTRBrowserContext(
+      browser_context, g_enable_implicit_browser_context_creation);
 }
 
 base::FilePath BrowserContextHelper::GetShimlessRmaAppBrowserContextPath()
@@ -227,6 +238,18 @@ base::FilePath BrowserContextHelper::GetShimlessRmaAppBrowserContextPath()
 bool BrowserContextHelper::UseAnnotatedAccountId() {
   return base::FeatureList::IsEnabled(ash::features::kUseAnnotatedAccountId) ||
          use_annotated_account_id_for_testing_;
+}
+
+base::AutoReset<bool>
+BrowserContextHelper::DisableImplicitBrowserContextCreationForTest() {
+  CHECK(g_enable_implicit_browser_context_creation);
+  base::AutoReset<bool> result(&g_enable_implicit_browser_context_creation,
+                               false);
+  return result;
+}
+
+bool BrowserContextHelper::IsImplicitBrowserContextCreationEnabled() {
+  return g_enable_implicit_browser_context_creation;
 }
 
 }  // namespace ash

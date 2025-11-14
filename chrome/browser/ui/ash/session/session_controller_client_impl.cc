@@ -320,7 +320,11 @@ void SessionControllerClientImpl::EmitAshInitialized() {
 }
 
 PrefService* SessionControllerClientImpl::GetSigninScreenPrefService() {
-  return ash::ProfileHelper::Get()->GetSigninProfile()->GetPrefs();
+  auto* profile = ash::ProfileHelper::Get()->GetSigninProfile();
+  if (!profile) {
+    return nullptr;
+  }
+  return profile->GetPrefs();
 }
 
 PrefService* SessionControllerClientImpl::GetUserPrefService(
