@@ -83,7 +83,7 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
                 : SkColorSetRGB(0x00, 0x00, 0x00)};
   mixer[kColorComposeboxRecentTabChipOutline] = {kColorSysTonalOutline_Light};
   mixer[kColorComposeboxScrimBackground] = {ui::kColorSysBase};
-  mixer[kColorComposeboxSubmitButton] = {
+  mixer[kColorComposeboxSubmitButtonBackground] = {
       SkColorSetRGB(0x0B, 0x50, 0xD0)};
   mixer[kColorComposeboxSuggestionActivity] = {
       ui::kColorSysOnSurfaceSubtle};

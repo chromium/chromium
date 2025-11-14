@@ -10,6 +10,8 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --cr-composebox-outline-hcm: solid var(--color-composebox-outline-hcm);
+  --color-composebox-submit-button-hover: var(--color-searchbox-results-background-hovered);
   --cr-icon-button-size: 36px;
   --input-bottom-spacing: 10px;
   --text-input-top-spacing: 10px;
@@ -423,13 +425,13 @@ search-animated-glow {
 }
 
 :host([show-submit_][submit-enabled_]) #submitContainer:hover #submitOverlay {
-  background-color: var(--color-searchbox-results-background-hovered);
+  background-color: var(--color-composebox-submit-button-hover);
 }
 
 #submitIcon {
   --cr-icon-button-fill-color: white;
   --cr-icon-button-icon-size: 16px;
-  background-color: var(--color-composebox-submit-button);
+  background-color: var(--color-composebox-submit-button-background);
   bottom: 0;
   opacity: 30%; /* For Lens side panel. */
   inset-inline-end: 0;
@@ -461,7 +463,7 @@ search-animated-glow {
 @media (forced-colors: active) {
   :host,
   .action-icon {
-    border: solid var(--color-composebox-outline-hcm);
+    border: var(--composebox-outline-hcm);
   }
 }
 
