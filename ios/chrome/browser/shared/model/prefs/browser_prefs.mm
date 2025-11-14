@@ -105,7 +105,7 @@
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_path_cache.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_home_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_mediator.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/price_tracking_promo_prefs.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/model/price_tracking_promo_prefs.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_prefs.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_prefs.h"
 #import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service.h"

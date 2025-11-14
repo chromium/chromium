@@ -30,7 +30,7 @@ include_rules = [
   "+ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h",
   "+ios/chrome/browser/push_notification/model/push_notification_prefs.h",
   "+ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_mediator.h",
-  "+ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/price_tracking_promo_prefs.h",
+  "+ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/model/price_tracking_promo_prefs.h",
   "+ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_prefs.h",
   "+ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_prefs.h",
   "+ios/chrome/browser/welcome_back/model/welcome_back_prefs.h",

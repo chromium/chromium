@@ -118,7 +118,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/bookmarks/ui_bundled:core",
     "//ios/chrome/browser/bookmarks/ui_bundled/home",
     "//ios/chrome/browser/content_suggestions/ui_bundled:coordinator",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/model:prefs",
     "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check:prefs",
     "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card",
     "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card:prefs",

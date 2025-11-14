@@ -1,0 +1,43 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "price_tracking_promo_commands.h",
+    "price_tracking_promo_favicon_consumer.h",
+    "price_tracking_promo_favicon_consumer_source.h",
+    "price_tracking_promo_item.h",
+    "price_tracking_promo_item.mm",
+    "price_tracking_promo_module_view.h",
+    "price_tracking_promo_module_view.mm",
+  ]
+  deps = [
+    "//base:i18n",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/public:constants",
+    "//ios/chrome/browser/ntp/ui_bundled:theme",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "price_tracking_promo_module_view+testing.h",
+    "price_tracking_promo_module_view_unittest.mm",
+  ]
+  deps = [
+    ":ui",
+    "//testing/gtest",
+  ]
+}
