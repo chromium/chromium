@@ -290,7 +290,7 @@ void AnimationTimeline::UpdateAnimationTriggerAttachments() {
               // TODO(crbug.com/c/429392773): This attaches all triggers of
               // matching names. When a resolution for resolving triggers with
               // the same name has been reached, we should update this.
-              attachment->Attach(*trigger, *animation);
+              attachment->Attach(*trigger, *css_animation);
             }
           }
         }

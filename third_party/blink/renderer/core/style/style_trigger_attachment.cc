@@ -5,13 +5,13 @@
 #include "third_party/blink/renderer/core/style/style_trigger_attachment.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_animation_trigger_behavior.h"
-#include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/animation_trigger.h"
+#include "third_party/blink/renderer/core/animation/css/css_animation.h"
 
 namespace blink {
 
 void StyleTriggerAttachment::Attach(AnimationTrigger& trigger,
-                                    Animation& animation) const {
+                                    CSSAnimation& animation) const {
   std::optional<V8AnimationTriggerBehavior> enter_behavior(enter_behavior_);
 
   std::optional<V8AnimationTriggerBehavior> exit_behavior(
