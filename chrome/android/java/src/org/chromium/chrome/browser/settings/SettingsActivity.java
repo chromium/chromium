@@ -730,6 +730,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (mTitleUpdater != null) {
             getSupportFragmentManager().unregisterFragmentLifecycleCallbacks(mTitleUpdater);
         }
+        if (ChromeFeatureList.sSearchInSettings.isEnabled()) {
+            assumeNonNull(mSearchCoordinator).destroy();
+        }
         super.onDestroy();
     }
 

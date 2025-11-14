@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.settings.search;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -15,6 +17,7 @@ import androidx.preference.PreferenceScreen;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.search.SettingsIndexData.SearchResults;
@@ -22,6 +25,10 @@ import org.chromium.chrome.browser.settings.search.SettingsIndexData.SearchResul
 /** A simple Fragment to display a list of search results. */
 @NullMarked
 public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment {
+    // All search results fragment instance share a title supplier. This keeps
+    // |MultiColumnTitleUpdater| from adding titles every time a new fragment instance is created
+    // and replaced with the existing one upon user keystrokes entering queries.
+    private static @Nullable ObservableSupplier<String> sTitleSupplier;
 
     /** Interface for opening the setting selected from the search results. */
     public interface SelectedCallback {
@@ -37,7 +44,6 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
 
     private final SearchResults mPreferenceData;
     private final SelectedCallback mSelectedCallback;
-    private @Nullable ObservableSupplier<String> mTitleSupplier;
 
     /**
      * Constructor
@@ -93,8 +99,15 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
 
     @Override
     public ObservableSupplier<String> getPageTitle() {
-        if (mTitleSupplier == null) mTitleSupplier = new ObservableSupplierImpl<>();
-        return mTitleSupplier;
+        if (sTitleSupplier == null) {
+            var title = assumeNonNull(getContext()).getString(R.string.search_in_settings_results);
+            sTitleSupplier = new ObservableSupplierImpl<String>(title);
+        }
+        return sTitleSupplier;
+    }
+
+    static void reset() {
+        sTitleSupplier = null;
     }
 
     @Override

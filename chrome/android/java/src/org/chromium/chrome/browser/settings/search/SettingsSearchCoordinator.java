@@ -562,4 +562,9 @@ public class SettingsSearchCoordinator {
         }
         return highlightParams;
     }
+
+    public void destroy() {
+        // Title supplier should be nulled out as we step out of Settings for cleanup.
+        SearchResultsPreferenceFragment.reset();
+    }
 }
