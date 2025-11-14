@@ -576,6 +576,18 @@ gfx::PointF LayerTreeImpl::TotalScrollOffset() const {
   return gfx::PointAtOffsetFromOrigin(offset);
 }
 
+gfx::PointF LayerTreeImpl::TotalScrollOffset(ElementId element_id) const {
+  gfx::Vector2dF offset;
+  const auto& scroll_tree = property_trees()->scroll_tree();
+  const ScrollNode* scroll_node = scroll_tree.FindNodeFromElementId(element_id);
+  if (scroll_node) {
+    offset = scroll_tree.current_scroll_offset(scroll_node->element_id)
+                 .OffsetFromOrigin();
+  }
+
+  return gfx::PointAtOffsetFromOrigin(offset);
+}
+
 gfx::PointF LayerTreeImpl::TotalMaxScrollOffset() const {
   gfx::Vector2dF offset;
   const auto& scroll_tree = property_trees()->scroll_tree();
@@ -588,6 +600,18 @@ gfx::PointF LayerTreeImpl::TotalMaxScrollOffset() const {
   if (viewport_property_ids_.outer_scroll != kInvalidPropertyNodeId) {
     offset += scroll_tree.MaxScrollOffset(viewport_property_ids_.outer_scroll)
                   .OffsetFromOrigin();
+  }
+
+  return gfx::PointAtOffsetFromOrigin(offset);
+}
+
+gfx::PointF LayerTreeImpl::TotalMaxScrollOffset(ElementId element_id) const {
+  gfx::Vector2dF offset;
+  const auto& scroll_tree = property_trees()->scroll_tree();
+  const ScrollNode* scroll_node = scroll_tree.FindNodeFromElementId(element_id);
+
+  if (scroll_node) {
+    offset = scroll_tree.MaxScrollOffset(scroll_node->id).OffsetFromOrigin();
   }
 
   return gfx::PointAtOffsetFromOrigin(offset);

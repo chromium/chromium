@@ -308,7 +308,9 @@ class CC_EXPORT LayerTreeImpl {
   }
 
   gfx::PointF TotalScrollOffset() const;
+  gfx::PointF TotalScrollOffset(ElementId element_id) const;
   gfx::PointF TotalMaxScrollOffset() const;
+  gfx::PointF TotalMaxScrollOffset(ElementId element_id) const;
 
   void AddPresentationCallbacks(
       std::vector<PresentationTimeCallbackBuffer::Callback> callbacks);

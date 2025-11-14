@@ -2573,5 +2573,47 @@ TEST_F(LayerTreeImplOcclusionTest, Occlusion) {
                   .occlusion_in_content_space.HasOcclusion());
 }
 
+TEST_F(LayerTreeImplTest, TotalScrollOffsetForElement) {
+  LayerImpl* root = root_layer();
+  root->SetBounds(gfx::Size(100, 100));
+
+  LayerImpl* scroller = AddLayerInActiveTree<LayerImpl>();
+  scroller->SetBounds(gfx::Size(50, 50));
+  scroller->SetElementId(ElementId(100));
+  CopyProperties(root, scroller);
+  CreateTransformNode(scroller);
+  // Create a scroll node. The content is larger than the container.
+  CreateScrollNode(scroller, gfx::Size(50, 50));
+  GetScrollNode(scroller)->bounds = gfx::Size(100, 200);
+
+  host_impl().active_tree()->SetDeviceViewportRect(gfx::Rect(root->bounds()));
+  UpdateDrawProperties(host_impl().active_tree());
+
+  // Initial state, no scroll.
+  EXPECT_POINTF_EQ(
+      gfx::PointF(0, 0),
+      host_impl().active_tree()->TotalScrollOffset(scroller->element_id()));
+  EXPECT_POINTF_EQ(
+      gfx::PointF(50, 150),
+      host_impl().active_tree()->TotalMaxScrollOffset(scroller->element_id()));
+
+  // Apply some scroll.
+  SetScrollOffset(scroller, gfx::PointF(10, 20));
+  host_impl().active_tree()->SetDeviceViewportRect(gfx::Rect(root->bounds()));
+  UpdateDrawProperties(host_impl().active_tree());
+
+  EXPECT_POINTF_EQ(
+      gfx::PointF(10, 20),
+      host_impl().active_tree()->TotalScrollOffset(scroller->element_id()));
+
+  // Test with invalid ElementId.
+  EXPECT_POINTF_EQ(
+      gfx::PointF(0, 0),
+      host_impl().active_tree()->TotalScrollOffset(ElementId(999)));
+  EXPECT_POINTF_EQ(
+      gfx::PointF(0, 0),
+      host_impl().active_tree()->TotalMaxScrollOffset(ElementId(999)));
+}
+
 }  // namespace
 }  // namespace cc

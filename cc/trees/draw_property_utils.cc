@@ -1468,75 +1468,6 @@ void RecordRenderSurfaceReasonsForTracing(
   }
 }
 
-void UpdateElasticOverscroll(
-    PropertyTrees* property_trees,
-    TransformNode* overscroll_elasticity_transform_node,
-    const gfx::Vector2dF& elastic_overscroll,
-    const ScrollNode* inner_viewport) {
-  if (!overscroll_elasticity_transform_node) {
-    DCHECK(elastic_overscroll.IsZero());
-    return;
-  }
-#if BUILDFLAG(IS_ANDROID)
-  if (inner_viewport && property_trees->scroll_tree()
-                            .container_bounds(inner_viewport->id)
-                            .IsEmpty()) {
-    // Avoid divide by 0. Animation should not be visible for an empty viewport
-    // anyway.
-    return;
-  }
-
-  // On android, elastic overscroll is implemented by stretching the content
-  // from the overscrolled edge by applying a stretch transform
-  overscroll_elasticity_transform_node->local.MakeIdentity();
-  overscroll_elasticity_transform_node->origin.SetPoint(0.f, 0.f, 0.f);
-  overscroll_elasticity_transform_node->has_potential_animation =
-      !elastic_overscroll.IsZero();
-
-  if (!elastic_overscroll.IsZero() && inner_viewport) {
-    // The inner viewport container size takes into account the size change as a
-    // result of the top controls, see ScrollTree::container_bounds.
-    gfx::Size scroller_size =
-        property_trees->scroll_tree().container_bounds(inner_viewport->id);
-
-    overscroll_elasticity_transform_node->local.Scale(
-        1.f + std::abs(elastic_overscroll.x()) / scroller_size.width(),
-        1.f + std::abs(elastic_overscroll.y()) / scroller_size.height());
-
-    // If overscrolling to the right, stretch from right.
-    if (elastic_overscroll.x() > 0.f) {
-      overscroll_elasticity_transform_node->origin.set_x(scroller_size.width());
-    }
-
-    // If overscrolling off the bottom, stretch from bottom.
-    if (elastic_overscroll.y() > 0.f) {
-      overscroll_elasticity_transform_node->origin.set_y(
-          scroller_size.height());
-    }
-  }
-  overscroll_elasticity_transform_node->needs_local_transform_update = true;
-  property_trees->transform_tree_mutable().set_needs_update(true);
-
-#else  // BUILDFLAG(IS_ANDROID)
-
-  // On other platforms, we modify the translation offset to match the
-  // overscroll amount.
-  gfx::PointF overscroll_offset =
-      gfx::PointAtOffsetFromOrigin(elastic_overscroll);
-  if (overscroll_elasticity_transform_node->scroll_offset() ==
-      overscroll_offset) {
-    return;
-  }
-
-  overscroll_elasticity_transform_node->SetScrollOffset(
-      overscroll_offset, DamageReason::kUntracked);
-
-  overscroll_elasticity_transform_node->needs_local_transform_update = true;
-  property_trees->transform_tree_mutable().set_needs_update(true);
-
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
 void ComputeDrawPropertiesOfVisibleLayers(const LayerImplList* layer_list,
                                           PropertyTrees* property_trees) {
   for (LayerImpl* layer : *layer_list) {
@@ -1777,15 +1708,6 @@ void CalculateDrawProperties(
   UpdatePageScaleFactor(property_trees,
                         layer_tree_impl->PageScaleTransformNode(),
                         layer_tree_impl->current_page_scale_factor());
-  const ScrollNode* scroll_node = layer_tree_impl->InnerViewportScrollNode();
-  gfx::Vector2dF elastic_overscroll;
-  if (scroll_node) {
-    elastic_overscroll =
-        property_trees->scroll_tree().GetElasticOverscroll(*scroll_node);
-  }
-  UpdateElasticOverscroll(property_trees,
-                          layer_tree_impl->OverscrollElasticityTransformNode(),
-                          elastic_overscroll, scroll_node);
   // Similarly, the device viewport and device transform are shared
   // by both trees.
   property_trees->clip_tree_mutable().SetViewportClip(

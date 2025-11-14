@@ -6151,9 +6151,10 @@ void LayerTreeHostImpl::ScrollOffsetAnimationFinished(ElementId element_id) {
     input_delegate_->ScrollOffsetAnimationFinished(element_id);
 }
 
-void LayerTreeHostImpl::ElasticOverscrollAnimationFinished() {
+void LayerTreeHostImpl::ElasticOverscrollAnimationFinished(
+    ElementId finished_id) {
   if (input_delegate_) {
-    input_delegate_->ElasticOverscrollAnimationFinished();
+    input_delegate_->ElasticOverscrollAnimationFinished(finished_id);
   }
 }
 

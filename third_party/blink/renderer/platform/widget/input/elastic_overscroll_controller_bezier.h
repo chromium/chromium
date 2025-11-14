@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_ELASTIC_OVERSCROLL_CONTROLLER_BEZIER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_ELASTIC_OVERSCROLL_CONTROLLER_BEZIER_H_
 
+#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
@@ -28,15 +29,47 @@ class PLATFORM_EXPORT ElasticOverscrollControllerBezier
       const ElasticOverscrollControllerBezier&) = delete;
   ~ElasticOverscrollControllerBezier() override = default;
 
-  void DidEnterMomentumAnimatedState() override;
+  void DidEnterMomentumAnimatedState(OverscrollEntry& entry) override;
   gfx::Vector2d StretchAmountForTimeDelta(
+      const OverscrollEntry& entry,
       const base::TimeDelta& delta) const override;
   gfx::Vector2d StretchAmountForAccumulatedOverscroll(
+      const OverscrollEntry& entry,
       const gfx::Vector2dF& accumulated_overscroll) const override;
   gfx::Vector2d AccumulatedOverscrollForStretchAmount(
+      const OverscrollEntry& entry,
       const gfx::Vector2dF& delta) const override;
   gfx::Vector2dF OverscrollBoundary(const gfx::Size& scroller_bounds) const;
+
+ protected:
+  std::unique_ptr<OverscrollEntry> CreateOverscrollEntry(
+      cc::ElementId target_scroller_id) override;
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
+                           VerifyInitialStretchDelta);
+  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
+                           VerifyForwardAnimationIsNotPlayed);
+
+  class BezierOverscrollEntry : public OverscrollEntry {
+   public:
+    using OverscrollEntry::OverscrollEntry;
+
+    // This is the velocity (in px/ms) of the fling at the moment the scroller
+    // reaches its bounds. This is useful to tweak the Cubic Bezier curve for
+    // the bounce animation that is about to get played.
+    gfx::Vector2dF residual_velocity;
+
+    base::TimeDelta bounce_forwards_duration_x;
+    base::TimeDelta bounce_forwards_duration_y;
+    gfx::Vector2dF bounce_forwards_distance;
+
+    base::TimeDelta bounce_backwards_duration_x;
+    base::TimeDelta bounce_backwards_duration_y;
+  };
+
   double StretchAmountForForwardBounce(
+      const BezierOverscrollEntry& bezier_entry,
       const gfx::CubicBezier bounce_forwards_curve,
       const base::TimeDelta& delta,
       const base::TimeDelta& bounce_forwards_duration,
@@ -47,24 +80,6 @@ class PLATFORM_EXPORT ElasticOverscrollControllerBezier
       const base::TimeDelta& delta,
       const base::TimeDelta& bounce_backwards_duration,
       const double bounce_forwards_distance) const;
-
- private:
-  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
-                           VerifyInitialStretchDelta);
-  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
-                           VerifyForwardAnimationIsNotPlayed);
-
-  // This is the velocity (in px/ms) of the fling at the moment the scroller
-  // reaches its bounds. This is useful to tweak the Cubic Bezier curve for the
-  // bounce animation that is about to get played.
-  gfx::Vector2dF residual_velocity_;
-
-  base::TimeDelta bounce_forwards_duration_x_;
-  base::TimeDelta bounce_forwards_duration_y_;
-  gfx::Vector2dF bounce_forwards_distance_;
-
-  base::TimeDelta bounce_backwards_duration_x_;
-  base::TimeDelta bounce_backwards_duration_y_;
 };
 
 }  // namespace blink

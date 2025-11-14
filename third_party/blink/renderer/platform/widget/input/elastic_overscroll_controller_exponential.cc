@@ -24,7 +24,8 @@ ElasticOverscrollControllerExponential::ElasticOverscrollControllerExponential(
     cc::ScrollElasticityHelper* helper)
     : ElasticOverscrollController(helper) {}
 
-void ElasticOverscrollControllerExponential::DidEnterMomentumAnimatedState() {}
+void ElasticOverscrollControllerExponential::DidEnterMomentumAnimatedState(
+    OverscrollEntry& entry) {}
 
 // For these functions which compute the stretch amount, always return a
 // rounded value, instead of a floating-point value. The reason for this is
@@ -34,9 +35,8 @@ void ElasticOverscrollControllerExponential::DidEnterMomentumAnimatedState() {}
 // layer is pinned in a direction).
 
 gfx::Vector2d ElasticOverscrollControllerExponential::StretchAmountForTimeDelta(
+    const OverscrollEntry& entry,
     const base::TimeDelta& delta) const {
-  const OverscrollEntry* state = GetEntry();
-  CHECK(state);
   // Compute the stretch amount at a given time after some initial conditions.
   // Do this by first computing an intermediary position given the initial
   // position, initial velocity, time elapsed, and no external forces. Then
@@ -48,14 +48,15 @@ gfx::Vector2d ElasticOverscrollControllerExponential::StretchAmountForTimeDelta(
       expf((-delta.InSecondsF() * kRubberbandStiffness) / period);
 
   return gfx::ToRoundedVector2d(gfx::ScaleVector2d(
-      state->momentum_animation_initial_stretch +
-          gfx::ScaleVector2d(state->momentum_animation_initial_velocity,
+      entry.momentum_animation_initial_stretch +
+          gfx::ScaleVector2d(entry.momentum_animation_initial_velocity,
                              delta.InSecondsF() * amplitude),
       critical_dampening_factor));
 }
 
 gfx::Vector2d
 ElasticOverscrollControllerExponential::StretchAmountForAccumulatedOverscroll(
+    const OverscrollEntry& entry,
     const gfx::Vector2dF& accumulated_overscroll) const {
   const float stiffness = std::max(kRubberbandStiffness, 1.0);
   return gfx::ToRoundedVector2d(
@@ -64,6 +65,7 @@ ElasticOverscrollControllerExponential::StretchAmountForAccumulatedOverscroll(
 
 gfx::Vector2d
 ElasticOverscrollControllerExponential::AccumulatedOverscrollForStretchAmount(
+    const OverscrollEntry& entry,
     const gfx::Vector2dF& delta) const {
   return gfx::ToRoundedVector2d(
       gfx::ScaleVector2d(delta, kRubberbandStiffness));

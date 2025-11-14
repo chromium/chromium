@@ -1346,8 +1346,11 @@ void WidgetInputHandlerManager::ObserveGestureEventOnInputHandlingThread(
   // observe the event.
   if (!input_handler_proxy_->elastic_overscroll_controller())
     return;
+  const cc::ElementId latched_element_id =
+      input_handler_proxy_->LatchedScrollerElementId();
   input_handler_proxy_->elastic_overscroll_controller()
-      ->ObserveGestureEventAndResult(gesture_event, scroll_result);
+      ->ObserveGestureEventAndResult(latched_element_id, gesture_event,
+                                     scroll_result);
 }
 
 const scoped_refptr<base::SingleThreadTaskRunner>&

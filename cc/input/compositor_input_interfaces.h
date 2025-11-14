@@ -84,7 +84,7 @@ class InputDelegateForCompositor {
 
   // Called to let the input handler know that an elastic overscroll animation
   // has completed.
-  virtual void ElasticOverscrollAnimationFinished() = 0;
+  virtual void ElasticOverscrollAnimationFinished(ElementId element_id) = 0;
 
   // Called to inform the input handler when prefers-reduced-motion changes.
   virtual void SetPrefersReducedMotion(bool prefers_reduced_motion) = 0;

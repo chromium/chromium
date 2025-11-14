@@ -892,7 +892,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void NotifyNewLocalSurfaceIdExpectedWhilePaused();
 
-  void ElasticOverscrollAnimationFinished();
+  void ElasticOverscrollAnimationFinished(ElementId finished_id);
 
   void set_send_frame_token_to_embedder(bool send_frame_token_to_embedder) {
     send_frame_token_to_embedder_ = send_frame_token_to_embedder;

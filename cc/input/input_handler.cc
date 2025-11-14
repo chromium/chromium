@@ -25,6 +25,7 @@
 #include "cc/input/scrollbar_controller.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "cc/layers/viewport.h"
+#include "cc/paint/element_id.h"
 #include "cc/trees/compositor_commit_data.h"
 #include "cc/trees/latency_info_swap_promise_monitor.h"
 #include "cc/trees/layer_tree_host_impl.h"
@@ -158,8 +159,9 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
     // received a GSE but we're still animating the last scroll. If that's the
     // case, we'll simply un-defer the GSE and continue latching to the same
     // node.
-    DCHECK(deferred_scroll_end_);
-    deferred_scroll_end_ = false;
+    DCHECK(
+        deferred_scroll_ends_.contains(CurrentlyScrollingNode()->element_id));
+    deferred_scroll_ends_.erase(CurrentlyScrollingNode()->element_id);
     scroll_status.raster_inducing =
         GetScrollTree().CanRealizeScrollsOnPendingTree(
             *CurrentlyScrollingNode());
@@ -545,9 +547,9 @@ void InputHandler::ScrollEnd(bool should_snap) {
 void InputHandler::ScrollEnd(ScrollNode* scroll_node, bool should_snap) {
   ScrollNode* latched_node = CurrentlyScrollingNode();
 
-  auto end_of_scroll_cleanup = [&]() {
+  auto end_of_scroll_cleanup = [&](ElementId current_scroller_id) {
     compositor_delegate_->ScrollEnd();
-    deferred_scroll_end_ = false;
+    deferred_scroll_ends_.erase(current_scroller_id);
     snap_fling_state_ = kNoFling;
     snap_strategy_.reset();
   };
@@ -565,28 +567,38 @@ void InputHandler::ScrollEnd(ScrollNode* scroll_node, bool should_snap) {
     // else.
     if (!latched_node) {
       scrollbar_controller_->ResetState();
-      end_of_scroll_cleanup();
+      end_of_scroll_cleanup(scroll_node->element_id);
     }
     snap_animation_data_map_.erase(scroll_node->element_id);
   } else if (latched_node) {
     scrollbar_controller_->ResetState();
 
+    // Note that if we deferred the scroll end then we should not snap. We will
+    // snap once we deliver the deferred scroll end.
+    if (GetAnimatingNodeForCurrentScrollingNode()) {
+      DCHECK(!deferred_scroll_ends_.contains(latched_node->element_id));
+      deferred_scroll_ends_.insert(latched_node->element_id);
+      return;
+    }
+
+    // Snap takes priority over overscroll animations.
+    // This allows us to guarantee that snapping has been handled when the
+    // elastic overscroll animation finishes.
+    if (should_snap && SnapAtScrollEnd(SnapReason::kGestureScrollEnd)) {
+      deferred_scroll_ends_.insert(latched_node->element_id);
+      return;
+    }
+
     // Scroll end will be deferred if there is an overscroll animation and the
     // scrolling node need be snapped.
     bool overscroll_snapped_node =
         scroll_elasticity_helper_ &&
-        !scroll_elasticity_helper_->StretchAmount().IsZero() &&
+        !scroll_elasticity_helper_->StretchAmount(latched_node->element_id)
+             .IsZero() &&
         latched_node->snap_container_data.has_value();
-    // Note that if we deferred the scroll end then we should not snap. We will
-    // snap once we deliver the deferred scroll end.
-    if (GetAnimatingNodeForCurrentScrollingNode() || overscroll_snapped_node) {
-      DCHECK(!deferred_scroll_end_);
-      deferred_scroll_end_ = true;
-      return;
-    }
-
-    if (should_snap && SnapAtScrollEnd(SnapReason::kGestureScrollEnd)) {
-      deferred_scroll_end_ = true;
+    if (overscroll_snapped_node) {
+      DCHECK(!deferred_scroll_ends_.contains(latched_node->element_id));
+      deferred_scroll_ends_.insert(latched_node->element_id);
       return;
     }
 
@@ -598,7 +610,7 @@ void InputHandler::ScrollEnd(ScrollNode* scroll_node, bool should_snap) {
       InsertPendingScrollendContainer(latched_node->element_id);
     }
 
-    end_of_scroll_cleanup();
+    end_of_scroll_cleanup(latched_node->element_id);
     snap_animation_data_map_.erase(latched_node->element_id);
     ClearCurrentlyScrollingNode();
   } else {
@@ -991,7 +1003,7 @@ ScrollElasticityHelper* InputHandler::CreateScrollElasticityHelper() {
 
 void InputHandler::DestroyScrollElasticityHelper() {
   // Remove any stretch before destroying helper.
-  scroll_elasticity_helper_->SetStretchAmount(gfx::Vector2dF());
+  scroll_elasticity_helper_->ResetStretchAmounts();
   scroll_elasticity_helper_.reset();
 }
 
@@ -1271,6 +1283,13 @@ void InputHandler::DidActivatePendingTree() {
   if (!CurrentlyScrollingNode())
     ClearCurrentlyScrollingNode();
 
+  // Activation of pending tree overwrites impl thread only modifications
+  // of the active tree. This clears applied overscroll effects, so we force
+  // re-application to transform nodes with overscroll effects.
+  if (scroll_elasticity_helper_) {
+    scroll_elasticity_helper_->ForceApplyStretchAmounts();
+  }
+
   // Activation can change the root scroll offset, so inform the synchronous
   // input handler.
   UpdateRootLayerStateForSynchronousInputHandler();
@@ -1357,21 +1376,61 @@ void InputHandler::ScrollOffsetAnimationFinished(ElementId element_id) {
     return;
   }
 
-  ClearAnimatingSnapTargetsForElement(finished_node ? finished_node->element_id
-                                                    : element_id);
+  const ElementId target_element_id =
+      finished_node ? finished_node->element_id : element_id;
+  ClearAnimatingSnapTargetsForElement(target_element_id);
 
   // Call scrollEnd with the deferred scroll end state when the scroll animation
   // completes after GSE arrival.
-  if (deferred_scroll_end_) {
+  if (deferred_scroll_ends_.contains(target_element_id)) {
     ScrollEnd(/*should_snap=*/false);
     return;
   }
 }
 
-void InputHandler::ElasticOverscrollAnimationFinished() {
-  if (CurrentlyScrollingNode() &&
-      !IsAnimatingForSnap(CurrentlyScrollingNode()->element_id)) {
-    ScrollEnd(true /* should_snap */);
+void InputHandler::ElasticOverscrollAnimationFinished(ElementId finished_id) {
+  if (const ScrollNode* current = CurrentlyScrollingNode()) {
+    bool targets_currently_scrolling = false;
+    // Checks if our currently latched scroll node is root
+    if (current->scrolls_inner_viewport || current->scrolls_outer_viewport) {
+      if ((InnerViewportScrollNode() &&
+           InnerViewportScrollNode()->element_id == finished_id) ||
+          (OuterViewportScrollNode() &&
+           OuterViewportScrollNode()->element_id == finished_id)) {
+        targets_currently_scrolling = true;
+      }
+    } else {
+      targets_currently_scrolling = current->element_id == finished_id;
+    }
+    if (targets_currently_scrolling) {
+      if (!IsAnimatingForSnap(current->element_id)) {
+        ScrollEnd(true /* should_snap */);
+      }
+      // If the `finished_id` is the currently scrolling node, and `ScrollEnd`
+      // does not need to be immediately called - do not handle this case as the
+      // gesture lifecycle will handle it.
+      return;
+    }
+  }
+
+  // If this scroller is animating based on snap - just let snap handle it.
+  if (IsAnimatingForSnap(finished_id)) {
+    return;
+  }
+  // If finished node did not match `CurrentlyScrollingNode()`, then manually
+  // finish it if needed.
+  if (deferred_scroll_ends_.contains(finished_id)) {
+    ScrollNode* finished_node =
+        GetScrollTree().FindNodeFromElementId(finished_id);
+    bool inner_viewport_animating =
+        InnerViewportScrollNode() && finished_node == InnerViewportScrollNode();
+    if (inner_viewport_animating) {
+      // When the inner viewport node is animating, it is the outer viewport
+      // scroll node that is tracked as the CurrentlyScrollingNode and is
+      // associated with the snap targets.
+      finished_node = OuterViewportScrollNode();
+    }
+    ScrollEnd(finished_node);
   }
 }
 
@@ -2198,7 +2257,7 @@ void InputHandler::UpdateRootLayerStateForSynchronousInputHandler() {
 void InputHandler::DidLatchToScroller(const ScrollState& scroll_state,
                                       ui::ScrollInputType type) {
   DCHECK(CurrentlyScrollingNode());
-  deferred_scroll_end_ = false;
+  deferred_scroll_ends_.erase(CurrentlyScrollingNode()->element_id);
   compositor_delegate_->ScrollBegin();
   if (ScrollNode* animating_node = GetAnimatingNodeForCurrentScrollingNode()) {
     compositor_delegate_->ScrollAnimationAbort(animating_node->element_id);
@@ -2468,6 +2527,13 @@ void InputHandler::SetIsHandlingTouchSequence(bool is_handling_touch_sequence) {
   // We should not attempt to start handling a touch sequence twice.
   DCHECK(!is_handling_touch_sequence || !is_handling_touch_sequence_);
   is_handling_touch_sequence_ = is_handling_touch_sequence;
+}
+
+ElementId InputHandler::LatchedScrollerElementId() const {
+  if (const ScrollNode* node = CurrentlyScrollingNode()) {
+    return node->element_id;
+  }
+  return ElementId();
 }
 
 bool InputHandler::CurrentScrollNeedsFrameAlignment() const {

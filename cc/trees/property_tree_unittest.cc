@@ -226,6 +226,18 @@ TEST(PropertyTreeTest, UndoOverscroll) {
   overscroll_node.id = transform_tree.Insert(overscroll_node, 1);
   viewport_property_ids.overscroll_elasticity_transform = overscroll_node.id;
 
+  ScrollTree& scroll_tree = property_trees.scroll_tree_mutable();
+  ScrollNode scroll_node;
+  scroll_node.element_id = ElementId{2};
+  scroll_node.transform_id = contents_root.id;
+  scroll_node.scrolls_inner_viewport = true;
+  property_trees.scroll_tree_mutable().SetElasticOverscroll(
+      scroll_node, overscroll_offset.OffsetFromOrigin());
+  scroll_node.id = property_trees.scroll_tree_mutable().Insert(scroll_node, 0);
+  viewport_property_ids.inner_scroll = scroll_node.id;
+  scroll_tree.SetElasticOverscroll(scroll_node,
+                                   overscroll_offset.OffsetFromOrigin());
+
   TransformNode fixed_node;
   fixed_node.should_undo_overscroll = true;
   fixed_node.id = transform_tree.Insert(fixed_node, 2);

@@ -627,6 +627,9 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   bool SetElasticOverscroll(const ScrollNode& scroll_node,
                             const gfx::Vector2dF& elastic_overscroll);
   gfx::Vector2dF GetElasticOverscroll(const ScrollNode& scroll_node) const;
+  std::pair<ElementId, gfx::Vector2dF> FindElasticOverscrollFromTransformId(
+      int transform_id,
+      const ViewportPropertyIds* viewport_property_ids) const;
 
   // Sets the painting cull rect of scrolling contents of a scroll. If set, the
   // painting of scrolling contents in this cull rect is guaranteed to be

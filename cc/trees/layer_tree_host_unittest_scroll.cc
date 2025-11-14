@@ -1263,22 +1263,24 @@ class MAYBE_SmoothScrollAnimationEndNotification
 MULTI_THREAD_TEST_F(MAYBE_SmoothScrollAnimationEndNotification);
 
 void DoGestureScroll(LayerTreeHostImpl* host_impl,
-                     const scoped_refptr<Layer>& scroller,
                      gfx::Vector2dF offset,
-                     ElementId scroller_element_id) {
+                     ElementId scroller_element_id,
+                     bool require_found_target = true) {
   ScrollStateData begin_scroll_state_data;
   begin_scroll_state_data.set_current_native_scrolling_element(
       scroller_element_id);
   begin_scroll_state_data.delta_x_hint = offset.x();
   begin_scroll_state_data.delta_y_hint = offset.y();
-  std::unique_ptr<ScrollState> begin_scroll_state(
-      new ScrollState(begin_scroll_state_data));
+  std::unique_ptr<ScrollState> begin_scroll_state =
+      std::make_unique<ScrollState>(begin_scroll_state_data);
   auto scroll_status = host_impl->GetInputHandler().ScrollBegin(
       begin_scroll_state.get(), ui::ScrollInputType::kTouchscreen);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, scroll_status.thread);
   auto* scrolling_node = host_impl->CurrentlyScrollingNode();
   EXPECT_TRUE(scrolling_node);
-  EXPECT_EQ(scrolling_node->element_id, scroller_element_id);
+  if (require_found_target) {
+    EXPECT_EQ(scrolling_node->element_id, scroller_element_id);
+  }
 
   ScrollStateData update_scroll_state_data;
   update_scroll_state_data.delta_x = offset.x();
@@ -1365,8 +1367,7 @@ class MAYBE_LayerTreeHostScrollTestImplOnlyScrollSnap
       LayerImpl* scroller_impl =
           host_impl->active_tree()->LayerById(scroller_->id());
 
-      DoGestureScroll(host_impl, scroller_, impl_thread_scroll_,
-                      scroller_element_id_);
+      DoGestureScroll(host_impl, impl_thread_scroll_, scroller_element_id_);
 
       EXPECT_TRUE(host_impl->GetInputHandler().animating_for_snap_for_testing(
           scroller_element_id_));
@@ -1543,10 +1544,8 @@ class LayerTreeHostScrollTestImplOnlyMultipleScrollSnap
       LayerImpl* scroller_impl_b =
           host_impl->active_tree()->LayerById(scroller_b_->id());
 
-      DoGestureScroll(host_impl, scroller_a_, impl_thread_scroll_a_,
-                      scroller_a_element_id_);
-      DoGestureScroll(host_impl, scroller_b_, impl_thread_scroll_b_,
-                      scroller_b_element_id_);
+      DoGestureScroll(host_impl, impl_thread_scroll_a_, scroller_a_element_id_);
+      DoGestureScroll(host_impl, impl_thread_scroll_b_, scroller_b_element_id_);
 
       EXPECT_VECTOR2DF_EQ(impl_thread_scroll_a_, ScrollDelta(scroller_impl_a));
       EXPECT_VECTOR2DF_EQ(impl_thread_scroll_b_, ScrollDelta(scroller_impl_b));
@@ -2402,10 +2401,15 @@ class LayerTreeHostScrollTestElasticOverscroll
 
   void VerifyBeginMainFrameResultOnImplThread(LayerTreeHostImpl* host_impl,
                                               bool begin_main_frame_aborted) {
+    const ElementId inner_viewport_element_id =
+        host_impl->InnerViewportScrollNode()
+            ? host_impl->InnerViewportScrollNode()->element_id
+            : ElementId{};
     gfx::Vector2dF expected_elastic_overscroll =
         elastic_overscroll_test_cases_[num_begin_main_frames_impl_thread_];
-    EXPECT_EQ(expected_elastic_overscroll,
-              scroll_elasticity_helper_->StretchAmount());
+    EXPECT_EQ(
+        expected_elastic_overscroll,
+        scroll_elasticity_helper_->StretchAmount(inner_viewport_element_id));
 
     ++num_begin_main_frames_impl_thread_;
     gfx::Vector2dF next_test_case;
@@ -2423,19 +2427,23 @@ class LayerTreeHostScrollTestElasticOverscroll
       case 2:
         // The first BeginMainFrame is never aborted.
         EXPECT_FALSE(begin_main_frame_aborted);
-        scroll_elasticity_helper_->SetStretchAmount(next_test_case);
+        scroll_elasticity_helper_->SetStretchAmount(inner_viewport_element_id,
+                                                    next_test_case);
         break;
       case 3:
         EXPECT_FALSE(begin_main_frame_aborted);
-        scroll_elasticity_helper_->SetStretchAmount(next_test_case);
+        scroll_elasticity_helper_->SetStretchAmount(inner_viewport_element_id,
+                                                    next_test_case);
         break;
       case 4:
         EXPECT_FALSE(begin_main_frame_aborted);
-        scroll_elasticity_helper_->SetStretchAmount(next_test_case);
+        scroll_elasticity_helper_->SetStretchAmount(inner_viewport_element_id,
+                                                    next_test_case);
         break;
       case 5:
         EXPECT_FALSE(begin_main_frame_aborted);
-        scroll_elasticity_helper_->SetStretchAmount(next_test_case);
+        scroll_elasticity_helper_->SetStretchAmount(inner_viewport_element_id,
+                                                    next_test_case);
         break;
       case 6:
         EXPECT_FALSE(begin_main_frame_aborted);
@@ -2450,13 +2458,18 @@ class LayerTreeHostScrollTestElasticOverscroll
     if (num_begin_main_frames_impl_thread_ == 6) {
       return;
     }
+    const ElementId inner_viewport_element_id =
+        host_impl->InnerViewportScrollNode()
+            ? host_impl->InnerViewportScrollNode()->element_id
+            : ElementId{};
 
     // Ensure that the elastic overscroll value on the active tree remains
     // unmodified after activation.
     gfx::Vector2dF expected_elastic_overscroll =
         elastic_overscroll_test_cases_[num_begin_main_frames_impl_thread_];
-    EXPECT_EQ(expected_elastic_overscroll,
-              scroll_elasticity_helper_->StretchAmount());
+    EXPECT_EQ(
+        expected_elastic_overscroll,
+        scroll_elasticity_helper_->StretchAmount(inner_viewport_element_id));
   }
 
   void WillPrepareToDrawOnThread(LayerTreeHostImpl* host_impl) override {
@@ -2583,27 +2596,34 @@ class LayerTreeHostScrollTestSnapAfterElasticOverscroll
       return;
     }
 
+    const ElementId inner_viewport_element_id =
+        host_impl->InnerViewportScrollNode()
+            ? host_impl->InnerViewportScrollNode()->element_id
+            : ElementId{};
+
     ++num_begin_impl_frames_;
     switch (num_begin_impl_frames_) {
       case 1:
         EXPECT_POINTF_EQ(initial_scroll_, CurrentScrollOffset(scroll_layer));
-        scroll_elasticity_helper_->SetStretchAmount(gfx::Vector2dF(0, -30));
-        DoGestureScroll(host_impl, scroller_, impl_thread_scroll_,
-                        scroller_element_id_);
+        scroll_elasticity_helper_->SetStretchAmount(inner_viewport_element_id,
+                                                    gfx::Vector2dF(0, -30));
+        DoGestureScroll(host_impl, impl_thread_scroll_, scroller_element_id_);
         EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(scroll_layer));
         break;
       case 2:
-        scroll_elasticity_helper_->SetStretchAmount(gfx::Vector2dF(0, -20));
-        EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(scroll_layer));
+        scroll_elasticity_helper_->SetStretchAmount(inner_viewport_element_id,
+                                                    gfx::Vector2dF(0, -20));
         break;
       case 3:
-        scroll_elasticity_helper_->SetStretchAmount(gfx::Vector2dF(0, -10));
-        EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(scroll_layer));
+        scroll_elasticity_helper_->SetStretchAmount(inner_viewport_element_id,
+                                                    gfx::Vector2dF(0, -10));
+        EXPECT_NE(0, CurrentScrollOffset(scroll_layer).y());
         break;
       case 4:
-        scroll_elasticity_helper_->SetStretchAmount(gfx::Vector2dF(0, 0));
-        EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(scroll_layer));
-        scroll_elasticity_helper_->AnimationFinished();
+        scroll_elasticity_helper_->SetStretchAmount(inner_viewport_element_id,
+                                                    gfx::Vector2dF(0, 0));
+        EXPECT_NE(0, CurrentScrollOffset(scroll_layer).y());
+        scroll_elasticity_helper_->AnimationFinished(inner_viewport_element_id);
         break;
       default:
         break;
@@ -2644,6 +2664,308 @@ class LayerTreeHostScrollTestSnapAfterElasticOverscroll
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostScrollTestSnapAfterElasticOverscroll);
+
+class LayerTreeHostScrollTestSnapWhileOtherScrollerOverscrolls
+    : public LayerTreeHostScrollTest {
+ public:
+  LayerTreeHostScrollTestSnapWhileOtherScrollerOverscrolls() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kOverscrollEffectOnNonRootScrollers);
+  }
+
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    LayerTreeHostScrollTest::InitializeSettings(settings);
+    settings->enable_elastic_overscroll = true;
+  }
+
+  void SetupTree() override {
+    SetInitialRootBounds(gfx::Size(100, 100));
+    LayerTreeHostScrollTest::SetupTree();
+
+    child_scroller_ = Layer::Create();
+    child_scroller_->SetBounds(gfx::Size(60, 60));
+    child_scroller_->SetScrollable(gfx::Size(50, 50));
+    child_scroller_->SetIsDrawable(true);
+    child_scroller_->SetHitTestable(true);
+    child_scroller_element_id_ = ElementId(100);
+    child_scroller_->SetElementId(child_scroller_element_id_);
+
+    // Add to root before creating scroll node to ensure it's in the tree
+    layer_tree_host()->root_layer()->AddChild(child_scroller_);
+
+    // Setup Snap Data for child: Mandatory snap to y=100.
+    SnapContainerData snap_data(
+        ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
+        gfx::RectF(0, 0, 200, 200), gfx::PointF(0, 400));
+    snap_data.AddSnapAreaData(SnapAreaData(
+        ScrollSnapAlign(SnapAlignment::kStart), gfx::RectF(0, 100, 200, 100),
+        false, false, ElementId(101)));
+
+    CopyProperties(layer_tree_host()->root_layer(), child_scroller_.get());
+    CreateTransformNode(child_scroller_.get());
+    CreateScrollNode(child_scroller_.get(), gfx::Size(50, 50))
+        .snap_container_data = std::move(snap_data);
+  }
+
+  void BeginTest() override {
+    DCHECK(HasImplThread());
+    ImplThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LayerTreeHostScrollTestSnapWhileOtherScrollerOverscrolls::
+                BindInputHandler,
+            base::Unretained(this), layer_tree_host()->GetDelegateForInput()));
+    PostSetNeedsCommitToMainThread();
+  }
+
+  void BindInputHandler(base::WeakPtr<CompositorDelegateForInput> delegate) {
+    DCHECK(task_runner_provider()->IsImplThread());
+    base::WeakPtr<InputHandler> input_handler = InputHandler::Create(*delegate);
+    input_handler->BindToClient(&input_handler_client_);
+    scroll_elasticity_helper_ = input_handler->CreateScrollElasticityHelper();
+    DCHECK(scroll_elasticity_helper_);
+  }
+
+  void WillPrepareToDrawOnThread(LayerTreeHostImpl* host_impl) override {
+    EXPECT_CALL(input_handler_client_,
+                ReconcileElasticOverscrollAndRootScroll())
+        .Times(1);
+  }
+
+  void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
+                                  const viz::BeginFrameArgs& args,
+                                  bool has_damage) override {
+    if (!host_impl->active_tree()->LayerById(child_scroller_->id())) {
+      return;
+    }
+
+    ++num_begin_impl_frames_;
+
+    const ElementId root_id = host_impl->OuterViewportScrollNode()->element_id;
+
+    switch (num_begin_impl_frames_) {
+      case 1:
+        ForceScrollerToStretch(root_id, gfx::Vector2dF(0, 50));
+        ScrollToNearSnapPoint(host_impl, child_scroller_, gfx::Vector2dF(0, 90),
+                              child_scroller_element_id_);
+        break;
+      case 2:
+        VerifySnapped(host_impl, child_scroller_->id(),
+                      child_scroller_element_id_, 100);
+        VerifyStretchAmount(root_id, gfx::Vector2dF(0, 50));
+        EndTest();
+        break;
+    }
+  }
+
+  void ForceScrollerToStretch(ElementId element_id,
+                              const gfx::Vector2dF& stretch) {
+    scroll_elasticity_helper_->SetStretchAmount(element_id, stretch);
+    EXPECT_NE(gfx::Vector2dF(),
+              scroll_elasticity_helper_->StretchAmount(element_id));
+  }
+
+  void ScrollToNearSnapPoint(LayerTreeHostImpl* host_impl,
+                             const scoped_refptr<Layer>& scroller,
+                             const gfx::Vector2dF& delta,
+                             ElementId element_id) {
+    DoGestureScroll(host_impl, delta, element_id);
+  }
+
+  void VerifySnapped(LayerTreeHostImpl* host_impl,
+                     int layer_id,
+                     ElementId element_id,
+                     float expected_y) {
+    float current_y =
+        CurrentScrollOffset(host_impl->active_tree()->LayerById(layer_id)).y();
+
+    if (current_y == expected_y ||
+        host_impl->GetInputHandler().animating_for_snap_for_testing(
+            element_id)) {
+      did_snap_ = true;
+    }
+
+    EXPECT_TRUE(did_snap_) << "Scroller did not snap (remained at " << current_y
+                           << ").";
+  }
+
+  void VerifyStretchAmount(ElementId element_id,
+                           const gfx::Vector2dF& expected_stretch) {
+    EXPECT_EQ(expected_stretch,
+              scroll_elasticity_helper_->StretchAmount(element_id));
+  }
+
+  void AfterTest() override {
+    scroll_elasticity_helper_ = nullptr;
+    LayerTreeHostScrollTest::AfterTest();
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  MockInputHandlerClient input_handler_client_;
+  raw_ptr<ScrollElasticityHelper> scroll_elasticity_helper_ = nullptr;
+  scoped_refptr<Layer> child_scroller_;
+  ElementId child_scroller_element_id_;
+  int num_begin_impl_frames_ = 0;
+  bool did_snap_ = false;
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostScrollTestSnapWhileOtherScrollerOverscrolls);
+
+class LayerTreeHostScrollTestSnapAfterInterruptedOverscroll
+    : public LayerTreeHostScrollTestSnapWhileOtherScrollerOverscrolls {
+ public:
+  void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
+                                  const viz::BeginFrameArgs& args,
+                                  bool has_damage) override {
+    if (!host_impl->active_tree()->LayerById(child_scroller_->id())) {
+      return;
+    }
+
+    ++num_begin_impl_frames_;
+
+    const ElementId outer_viewport_element_id =
+        host_impl->OuterViewportScrollNode()->element_id;
+    switch (num_begin_impl_frames_) {
+      case 1: {
+        SetElasticOverscroll(host_impl, child_scroller_element_id_,
+                             gfx::Vector2dF(0, 5));
+        DoGestureScroll(host_impl, gfx::Vector2dF(0, 90),
+                        child_scroller_element_id_);
+        DoGestureScroll(host_impl, gfx::Vector2dF(150, 150),
+                        outer_viewport_element_id, false);
+        FinishElasticOverscroll(host_impl, child_scroller_element_id_);
+        FinishElasticOverscroll(host_impl, outer_viewport_element_id);
+        VerifySnapped(host_impl, child_scroller_->id(),
+                      child_scroller_element_id_, 100);
+        EndTest();
+        break;
+      }
+    }
+  }
+
+  void SetElasticOverscroll(LayerTreeHostImpl* host_impl,
+                            ElementId element_id,
+                            gfx::Vector2dF stretch_amount) {
+    scroll_elasticity_helper_->SetStretchAmount(element_id, stretch_amount);
+    host_impl->GetInputHandler().ElasticOverscrollAnimationFinished(element_id);
+  }
+
+  void FinishElasticOverscroll(LayerTreeHostImpl* host_impl,
+                               ElementId element_id) {
+    scroll_elasticity_helper_->SetStretchAmount(element_id,
+                                                gfx::Vector2dF(0, 0));
+    host_impl->GetInputHandler().ElasticOverscrollAnimationFinished(element_id);
+  }
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostScrollTestSnapAfterInterruptedOverscroll);
+
+class LayerTreeHostScrollTestElasticOverscrollDeferredCleanup
+    : public LayerTreeHostScrollTestSnapWhileOtherScrollerOverscrolls {
+ private:
+  void DoGestureScrollBegin(InputHandler& handler, ElementId element_id) {
+    ScrollStateData begin_scroll_state_data;
+    begin_scroll_state_data.set_current_native_scrolling_element(element_id);
+    std::unique_ptr<ScrollState> begin_scroll_state =
+        std::make_unique<ScrollState>(begin_scroll_state_data);
+
+    handler.ScrollBegin(begin_scroll_state.get(),
+                        ui::ScrollInputType::kTouchscreen);
+
+    // Send an empty update immediately to force the "Latch" logic to run,
+    // which sets CurrentlyScrollingNode().
+    handler.ScrollUpdate(ScrollState(ScrollStateData()));
+  }
+
+  void DoGestureScrollUpdate(InputHandler& handler,
+                             ElementId element_id,
+                             float stretch_y) {
+    // Send a dummy update so the system sees movement.
+    ScrollStateData update_data;
+    update_data.delta_y = stretch_y;
+    handler.ScrollUpdate(ScrollState(update_data));
+
+    // Manually force the stretch amount. This guarantees the ScrollEnd will
+    // enter the "deferred" state required for this test.
+    scroll_elasticity_helper_->SetStretchAmount(element_id,
+                                                gfx::Vector2dF(0, stretch_y));
+  }
+
+  void DoGestureScrollEnd(InputHandler& handler) {
+    handler.ScrollEnd(/*should_snap=*/true);
+  }
+
+ public:
+  void SetupTree() override {
+    LayerTreeHostScrollTestSnapWhileOtherScrollerOverscrolls::SetupTree();
+
+    // The root scroll layer must be scrollable for the interruption step
+    // in scenario 3 to successfully latch to the root.
+    if (Layer* root_scroll =
+            layer_tree_host()->OuterViewportScrollLayerForTesting()) {
+      root_scroll->SetBounds(gfx::Size(200, 200));
+    }
+  }
+
+  void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
+                                  const viz::BeginFrameArgs& args,
+                                  bool has_damage) override {
+    if (!host_impl->active_tree()->LayerById(child_scroller_->id())) {
+      return;
+    }
+
+    InputHandler& handler = host_impl->GetInputHandler();
+    const ElementId root_id = host_impl->OuterViewportScrollNode()->element_id;
+    const ElementId child_id = child_scroller_element_id_;
+
+    switch (num_begin_impl_frames_++) {
+      case 0:
+        // Case 1: Validate cleanup when the root scroller is active.
+        DoGestureScrollBegin(handler, root_id);
+        handler.ElasticOverscrollAnimationFinished(root_id);
+        DoGestureScrollEnd(handler);
+        break;
+
+      case 1:
+        // Case 2: Validate cleanup when a child scroller is active.
+        DoGestureScrollBegin(handler, child_id);
+        handler.ElasticOverscrollAnimationFinished(child_id);
+        DoGestureScrollEnd(handler);
+        break;
+
+      case 2:
+        // Case 3: Validate cleanup when a scroll end was deferred and the
+        // active scroller changed.
+
+        // Begin scrolling the child.
+        DoGestureScrollBegin(handler, child_id);
+
+        // Drag past the boundary. Force a stretch to ensure ScrollEnd defers.
+        DoGestureScrollUpdate(handler, child_id, 10.f);
+
+        // Lift finger. Because of the stretch and snap data, this call does not
+        // end the scroll; it adds `child_id` to `deferred_scroll_ends_`.
+        DoGestureScrollEnd(handler);
+
+        // Interrupt the child scroll by starting a new scroll on the root.
+        // This changes `CurrentlyScrollingNode` from child to root.
+        DoGestureScrollBegin(handler, root_id);
+
+        // Finish the child animation. Since the root is now active, this
+        // triggers the deferred cleanup path in
+        // ElasticOverscrollAnimationFinished.
+        handler.ElasticOverscrollAnimationFinished(child_id);
+
+        // Cleanup the root scroll.
+        DoGestureScrollEnd(handler);
+        EndTest();
+        break;
+    }
+  }
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostScrollTestElasticOverscrollDeferredCleanup);
 
 class LayerTreeHostScrollTestPropertyTreeUpdate
     : public LayerTreeHostScrollTest {
