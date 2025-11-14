@@ -262,17 +262,22 @@ void BnplManager::OnAmountExtractionReturned(
 void BnplManager::OnAmountExtractionReturnedFromAi(
     const std::optional<int64_t>& extracted_amount_in_micros,
     bool timeout_reached) {
-  CHECK(payments_autofill_client().GetBnplStrategy());
-  using enum BnplStrategy::BnplAmountExtractionReturnedNextAction;
-  switch (payments_autofill_client()
-              .GetBnplStrategy()
-              ->GetNextActionOnAmountExtractionReturned()) {
-    default:
-      // TODO(crbug.com/444685164) Add logic to handle BNPL flow once the model
-      // executor response comes back.
-      NOTIMPLEMENTED();
-      break;
+  if (timeout_reached) {
+    // TODO(crbug.com/444684996): Add the logic to handle the amount extraction
+    // from the server-side AI timeout case. Do not show BNPL chip anymore for
+    // this transaction if the previous amount extraction is timeout.
+    NOTREACHED();
   }
+
+  if (!extracted_amount_in_micros.has_value()) {
+    // TODO(crbug.com/444684996): Add the logic to handle no checkout amount is
+    // received from the server-side AI case.
+    NOTREACHED();
+  }
+
+  ongoing_flow_state_->final_checkout_amount = extracted_amount_in_micros;
+  CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
+      .UpdateBnplIssuerDialogUi(GetSortedBnplIssuerContext());
 }
 
 bool BnplManager::AcceptTosActionRequired() const {

@@ -35,6 +35,12 @@ class BnplUiDelegate {
       base::OnceClosure cancel_callback,
       bool has_seen_ai_terms) = 0;
 
+  // Update the issuer selection dialog based on `issuer_contexts`.
+  // `issuer_contexts` indicates the issuers' status based on the received
+  // amount and the issuers' eligibility.
+  virtual void UpdateBnplIssuerDialogUi(
+      std::vector<BnplIssuerContext> issuer_contexts) = 0;
+
   // Dismisses the BNPL issuer selection UI or hides the progress UI depending
   // on the platform.
   virtual void RemoveSelectBnplIssuerOrProgressUi() = 0;

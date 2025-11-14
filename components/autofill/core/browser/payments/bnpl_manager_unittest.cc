@@ -172,6 +172,10 @@ class MockBnplUiDelegate : public BnplUiDelegate {
                base::OnceClosure cancel_callback,
                bool has_seen_ai_terms),
               (override));
+  MOCK_METHOD(void,
+              UpdateBnplIssuerDialogUi,
+              (std::vector<BnplIssuerContext> bnpl_issuer_context),
+              (override));
   MOCK_METHOD(void, RemoveSelectBnplIssuerOrProgressUi, (), (override));
   MOCK_METHOD(void,
               ShowBnplTosUi,
@@ -1338,6 +1342,21 @@ TEST_F(BnplManagerTest,
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
   bnpl_manager_->OnAmountExtractionReturned(1'234'560'000ULL,
                                             /*timeout_reached=*/false);
+}
+
+TEST_F(BnplManagerTest, ValidAmountReturnedInTimeUpdateUi) {
+  bnpl_manager_->OnDidAcceptBnplSuggestion(
+      /*final_checkout_amount=*/std::nullopt,
+      /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
+  int64_t test_amount = 50'000'000;
+  SetUpUnlinkedBnplIssuer(
+      /*price_lower_bound_in_micros=*/10'000'000,
+      /*price_higher_bound_in_micros=*/1'000'000'000, IssuerId::kBnplAfterpay);
+
+  EXPECT_CALL(GetBnplUiDelegate(), UpdateBnplIssuerDialogUi);
+
+  bnpl_manager_->OnAmountExtractionReturnedFromAi(test_amount,
+                                                  /*timeout_reached=*/false);
 }
 
 // Tests that update suggestions callback is called when suggestions are shown

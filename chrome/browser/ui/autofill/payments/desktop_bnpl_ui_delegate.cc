@@ -41,6 +41,14 @@ void DesktopBnplUiDelegate::ShowSelectBnplIssuerUi(
       std::move(selected_issuer_callback), std::move(cancel_callback));
 }
 
+void DesktopBnplUiDelegate::UpdateBnplIssuerDialogUi(
+    std::vector<BnplIssuerContext> issuer_contexts) {
+  if (select_bnpl_issuer_dialog_controller_) {
+    select_bnpl_issuer_dialog_controller_->UpdateDialogWithIssuers(
+        std::move(issuer_contexts));
+  }
+}
+
 void DesktopBnplUiDelegate::RemoveSelectBnplIssuerOrProgressUi() {
   if (select_bnpl_issuer_dialog_controller_) {
     select_bnpl_issuer_dialog_controller_->Dismiss();

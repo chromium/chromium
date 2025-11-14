@@ -35,6 +35,12 @@ void AndroidBnplUiDelegate::ShowSelectBnplIssuerUi(
                                       std::move(cancel_callback));
 }
 
+void AndroidBnplUiDelegate::UpdateBnplIssuerDialogUi(
+    std::vector<BnplIssuerContext> issuer_contexts) {
+  // TODO(crbug.com/438783909): Add JNI call to update the TouchToFill bottom
+  // sheet once the new list of BNPL issuers comes back.
+}
+
 void AndroidBnplUiDelegate::RemoveSelectBnplIssuerOrProgressUi() {
   client_->SetTouchToFillVisible(/*visible=*/false);
 }
