@@ -26,13 +26,23 @@ import pathlib
 import re
 import subprocess
 import sys
+import typing
 
 import buildozer
 import post_migrate_targets_lib
+import pyl
 
 _INFRA_CONFIG_DIR = pathlib.Path(os.getcwd())
 _TESTING_BUILDBOT_DIR = (_INFRA_CONFIG_DIR / '../../testing/buildbot').resolve()
 _TARGETS_DIR = _INFRA_CONFIG_DIR / 'targets'
+
+
+def _get_literal(path: pathlib.Path) -> pyl.Value:
+  with open(path, encoding='utf-8') as f:
+    nodes = pyl.parse(path, f.read())
+  nodes = [n for n in nodes if isinstance(n, pyl.Value)]
+  assert len(nodes) == 1
+  return nodes[0]
 
 
 def _escape_spaces(s: str) -> str:
@@ -122,15 +132,15 @@ def main():
     match = _UNREFERENCED_SUITES_RE.search(ret.stderr)
     if match:
       unreferenced_suite_names = ast.literal_eval(match.group(1))
-      with open(_INFRA_CONFIG_DIR / 'generated/testing/test_suites.pyl',
-                encoding='utf-8') as f:
-        test_suites = ast.literal_eval(f.read())
+      test_suites = typing.cast(
+          pyl.Dict[pyl.Str, pyl.Dict[pyl.Str, pyl.Value]],
+          _get_literal(_INFRA_CONFIG_DIR / 'generated/testing/test_suites.pyl'))
 
       suites_to_migrate = {}
       for suite_type, handler in _SUITE_TYPE_HANDLERS.items():
-        for suite_name, suite in test_suites.get(suite_type, {}).items():
-          if suite_name in unreferenced_suite_names:
-            suites_to_migrate[suite_name] = _SuiteToMigrate(
+        for suite_name, suite in test_suites.items:
+          if suite_name.value in unreferenced_suite_names:
+            suites_to_migrate[suite_name.value] = _SuiteToMigrate(
                 suite_type=suite_type, attrs=handler(suite))
 
       _update_suites(suites_to_migrate)

@@ -5,10 +5,22 @@
 """Unit test for conversions module."""
 
 import textwrap
+import typing
 import unittest
 
+import pyl
 import starlark_conversions
 import values
+
+
+# return typing.Any to prevent type checkers from complaining about the general
+# typing.Value type being passed where a more specific type is expected without
+# having to specify a type or cast for each call
+def _to_pyl_value(value: object) -> typing.Any:
+  nodes = list(pyl.parse('test', repr(value)))
+  assert len(nodes) == 1 and isinstance(nodes[0], pyl.Value), (
+      f'{object!r} does not parse to a single pyl.Value, got {nodes}')
+  return nodes[0]
 
 
 class StarlarkConversionsTest(unittest.TestCase):
@@ -17,48 +29,51 @@ class StarlarkConversionsTest(unittest.TestCase):
     self.assertEqual(values.to_output(value), output)
 
   def test_convert_arg_simple_string(self):
-    self.assertOutputEquals(starlark_conversions.convert_arg('foo'), '"foo"')
+    self.assertOutputEquals(
+        starlark_conversions.convert_arg(_to_pyl_value('foo')), '"foo"')
 
   def test_convert_arg_magic_string(self):
     self.assertOutputEquals(
         starlark_conversions.convert_arg(
-            '$$MAGIC_SUBSTITUTION_AndroidDesktopTelemetryRemote'),
+            _to_pyl_value(
+                '$$MAGIC_SUBSTITUTION_AndroidDesktopTelemetryRemote')),
         'targets.magic_args.ANDROID_DESKTOP_TELEMETRY_REMOTE')
 
   def test_convert_args(self):
     self.assertOutputEquals(
         starlark_conversions.convert_args(
-            ['foo', '$$MAGIC_SUBSTITUTION_AndroidDesktopTelemetryRemote']),
+            _to_pyl_value(
+                ['foo', '$$MAGIC_SUBSTITUTION_AndroidDesktopTelemetryRemote'])),
         textwrap.dedent("""\
             [
               "foo",
               targets.magic_args.ANDROID_DESKTOP_TELEMETRY_REMOTE,
             ]"""))
 
-  def test_convert_direct_unhandled_type(self):
-    with self.assertRaises(Exception) as caught:
-      starlark_conversions.convert_direct(set())
-    self.assertEqual(str(caught.exception), "unhandled python value: set()")
-
   def test_convert_direct_none(self):
-    self.assertOutputEquals(starlark_conversions.convert_direct(None), 'None')
+    self.assertOutputEquals(
+        starlark_conversions.convert_direct(_to_pyl_value(None)), 'None')
 
   def test_convert_direct_int(self):
-    self.assertOutputEquals(starlark_conversions.convert_direct(1), '1')
+    self.assertOutputEquals(
+        starlark_conversions.convert_direct(_to_pyl_value(1)), '1')
 
   def test_convert_direct_bool(self):
-    self.assertOutputEquals(starlark_conversions.convert_direct(True), 'True')
+    self.assertOutputEquals(
+        starlark_conversions.convert_direct(_to_pyl_value(True)), 'True')
 
   def test_convert_direct_string(self):
-    self.assertOutputEquals(starlark_conversions.convert_direct('foo'), '"foo"')
+    self.assertOutputEquals(
+        starlark_conversions.convert_direct(_to_pyl_value('foo')), '"foo"')
 
   def test_convert_direct_string_with_embedded_quote(self):
-    self.assertOutputEquals(starlark_conversions.convert_direct('"foo"'),
-                            '"\\"foo\\""')
+    self.assertOutputEquals(
+        starlark_conversions.convert_direct(_to_pyl_value('"foo"')),
+        '"\\"foo\\""')
 
   def test_convert_direct_list(self):
     self.assertOutputEquals(
-        starlark_conversions.convert_direct(['foo', 'bar']),
+        starlark_conversions.convert_direct(_to_pyl_value(['foo', 'bar'])),
         textwrap.dedent("""\
             [
               "foo",
@@ -67,7 +82,7 @@ class StarlarkConversionsTest(unittest.TestCase):
 
   def test_convert_direct_dict(self):
     self.assertOutputEquals(
-        starlark_conversions.convert_direct({'foo': 'bar'}),
+        starlark_conversions.convert_direct(_to_pyl_value({'foo': 'bar'})),
         textwrap.dedent("""\
             {
               "foo": "bar",
@@ -75,13 +90,13 @@ class StarlarkConversionsTest(unittest.TestCase):
 
   def test_convert_resultdb_unhandled_key(self):
     with self.assertRaises(Exception) as caught:
-      starlark_conversions.convert_resultdb({'unhandled': True})
+      starlark_conversions.convert_resultdb(_to_pyl_value({'unhandled': True}))
     self.assertEqual(str(caught.exception),
-                     'unhandled key in resultdb: "unhandled"')
+                     'test:1:1: unhandled key in resultdb: "unhandled"')
 
   def test_convert_resultdb(self):
     self.assertOutputEquals(
-        starlark_conversions.convert_resultdb({'enable': True}),
+        starlark_conversions.convert_resultdb(_to_pyl_value({'enable': True})),
         textwrap.dedent("""\
             targets.resultdb(
               enable = True,
@@ -89,9 +104,9 @@ class StarlarkConversionsTest(unittest.TestCase):
 
   def test_convert_swarming_unhandled_key(self):
     with self.assertRaises(Exception) as caught:
-      starlark_conversions.convert_swarming({'unhandled': True})
+      starlark_conversions.convert_swarming(_to_pyl_value({'unhandled': True}))
     self.assertEqual(str(caught.exception),
-                     'unhandled key in swarming: "unhandled"')
+                     'test:1:1: unhandled key in swarming: "unhandled"')
 
   def test_convert_swarming(self):
     swarming = {
@@ -106,7 +121,7 @@ class StarlarkConversionsTest(unittest.TestCase):
         },
     }
     self.assertOutputEquals(
-        starlark_conversions.convert_swarming(swarming),
+        starlark_conversions.convert_swarming(_to_pyl_value(swarming)),
         textwrap.dedent("""\
             targets.swarming(
               shards = 2,
@@ -122,9 +137,9 @@ class StarlarkConversionsTest(unittest.TestCase):
 
   def test_convert_skylab_unhandled_key(self):
     with self.assertRaises(Exception) as caught:
-      starlark_conversions.convert_skylab({'unhandled': True})
+      starlark_conversions.convert_skylab(_to_pyl_value({'unhandled': True}))
     self.assertEqual(str(caught.exception),
-                     'unhandled key in skylab: "unhandled"')
+                     'test:1:1: unhandled key in skylab: "unhandled"')
 
   def test_convert_skylab(self):
     skylab = {
@@ -132,7 +147,7 @@ class StarlarkConversionsTest(unittest.TestCase):
         'timeout_sec': 60,
     }
     self.assertOutputEquals(
-        starlark_conversions.convert_skylab(skylab),
+        starlark_conversions.convert_skylab(_to_pyl_value(skylab)),
         textwrap.dedent("""\
             targets.skylab(
               shards = 2,

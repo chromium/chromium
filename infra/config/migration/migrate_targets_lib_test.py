@@ -5,17 +5,34 @@
 
 import pathlib
 import textwrap
+import typing
 import unittest
 from unittest import mock
 
 import migrate_targets_lib
+import pyl
+
+
+# return typing.Any to prevent type checkers from complaining about the general
+# typing.Value type being passed where a more specific type is expected without
+# having to specify a type or cast for each call
+def _to_pyl_value(value: object) -> typing.Any:
+  nodes = list(pyl.parse('test', repr(value)))
+  assert len(nodes) == 1 and isinstance(nodes[0], pyl.Value), (
+      f'{object!r} does not parse to a single pyl.Value, got {nodes}')
+  return nodes[0]
 
 
 class MigrateTargetsTest(unittest.TestCase):
 
   def test_process_waterfall_builder_group_not_found(self):
     with self.assertRaises(migrate_targets_lib.WaterfallError) as caught:
-      migrate_targets_lib.process_waterfall('non-existent', None, [], {})
+      migrate_targets_lib.process_waterfall(
+          'non-existent',
+          None,
+          _to_pyl_value([]),
+          _to_pyl_value({}),
+      )
     self.assertEqual(str(caught.exception),
                      'builder_group "non-existent" not found')
 
@@ -32,8 +49,8 @@ class MigrateTargetsTest(unittest.TestCase):
       migrate_targets_lib.process_waterfall(
           'test-group',
           {'builder-1', 'builder-2'},
-          waterfalls,
-          {},
+          _to_pyl_value(waterfalls),
+          _to_pyl_value({}),
       )
     self.assertEqual(
         str(caught.exception),
@@ -49,9 +66,14 @@ class MigrateTargetsTest(unittest.TestCase):
         },
     ]
     with self.assertRaises(Exception) as caught:
-      migrate_targets_lib.process_waterfall('test-group', None, waterfalls, {})
+      migrate_targets_lib.process_waterfall(
+          'test-group',
+          None,
+          _to_pyl_value(waterfalls),
+          _to_pyl_value({}),
+      )
     self.assertEqual(str(caught.exception),
-                     'unhandled key in waterfall: "unknown_key"')
+                     'test:1:40: unhandled key in waterfall: "unknown_key"')
 
   def test_process_waterfall_unhandled_suite_type(self):
     waterfalls = [
@@ -67,9 +89,14 @@ class MigrateTargetsTest(unittest.TestCase):
         },
     ]
     with self.assertRaises(Exception) as caught:
-      migrate_targets_lib.process_waterfall('test-group', None, waterfalls, {})
+      migrate_targets_lib.process_waterfall(
+          'test-group',
+          None,
+          _to_pyl_value(waterfalls),
+          _to_pyl_value({}),
+      )
     self.assertEqual(str(caught.exception),
-                     'unhandled suite type: "unhandled_suite"')
+                     'test:1:67: unhandled suite type: "unhandled_suite"')
 
   def test_process_waterfall_unhandled_builder_config_key(self):
     waterfalls = [
@@ -83,9 +110,15 @@ class MigrateTargetsTest(unittest.TestCase):
         },
     ]
     with self.assertRaises(Exception) as caught:
-      migrate_targets_lib.process_waterfall('test-group', None, waterfalls, {})
-    self.assertEqual(str(caught.exception),
-                     'unhandled key in builder config: "unknown_key"')
+      migrate_targets_lib.process_waterfall(
+          'test-group',
+          None,
+          _to_pyl_value(waterfalls),
+          _to_pyl_value({}),
+      )
+    self.assertEqual(
+        str(caught.exception),
+        'test:1:51: unhandled key in builder config: "unknown_key"')
 
   def test_process_waterfall_success(self):
     waterfalls = [
@@ -128,8 +161,8 @@ class MigrateTargetsTest(unittest.TestCase):
     edits = migrate_targets_lib.process_waterfall(
         'test-group',
         None,
-        waterfalls,
-        test_suite_exceptions,
+        _to_pyl_value(waterfalls),
+        _to_pyl_value(test_suite_exceptions),
     )
 
     self.assertEqual(
@@ -218,11 +251,12 @@ class MigrateTargetsTest(unittest.TestCase):
       migrate_targets_lib.process_waterfall(
           'test-group',
           None,
-          waterfalls,
-          test_suite_exceptions,
+          _to_pyl_value(waterfalls),
+          _to_pyl_value(test_suite_exceptions),
       )
-    self.assertEqual(str(caught.exception),
-                     'unhandled key in test_suite_exceptions: "unknown_key"')
+    self.assertEqual(
+        str(caught.exception),
+        'test:1:12: unhandled key in test_suite_exceptions: "unknown_key"')
 
   def test_process_waterfall_unhandled_mod_key(self):
     waterfalls = [
@@ -250,11 +284,12 @@ class MigrateTargetsTest(unittest.TestCase):
       migrate_targets_lib.process_waterfall(
           'test-group',
           None,
-          waterfalls,
-          test_suite_exceptions,
+          _to_pyl_value(waterfalls),
+          _to_pyl_value(test_suite_exceptions),
       )
-    self.assertEqual(str(caught.exception),
-                     'unhandled key in modifications: "unknown_key"')
+    self.assertEqual(
+        str(caught.exception),
+        'test:1:44: unhandled key in modifications: "unknown_key"')
 
   def test_process_waterfall_unhandled_replace_key(self):
     waterfalls = [{
@@ -280,11 +315,11 @@ class MigrateTargetsTest(unittest.TestCase):
       migrate_targets_lib.process_waterfall(
           'test-group',
           None,
-          waterfalls,
-          test_suite_exceptions,
+          _to_pyl_value(waterfalls),
+          _to_pyl_value(test_suite_exceptions),
       )
     self.assertEqual(str(caught.exception),
-                     'unhandled key in replacements: "unknown_key"')
+                     'test:1:43: unhandled key in replacements: "unknown_key"')
 
   def test_process_waterfall_with_exceptions(self):
     waterfalls = [{
@@ -343,10 +378,11 @@ class MigrateTargetsTest(unittest.TestCase):
     edits = migrate_targets_lib.process_waterfall(
         'test-group',
         None,
-        waterfalls,
-        test_suite_exceptions,
+        _to_pyl_value(waterfalls),
+        _to_pyl_value(test_suite_exceptions),
     )
 
+    self.maxDiff = None
     self.assertEqual(
         edits,
         migrate_targets_lib.StarlarkEdits(
@@ -447,8 +483,8 @@ class MigrateTargetsTest(unittest.TestCase):
     edits = migrate_targets_lib.process_waterfall(
         'test-group',
         {'builder-1', 'builder-2'},
-        waterfalls,
-        {},
+        _to_pyl_value(waterfalls),
+        _to_pyl_value({}),
     )
 
     self.assertCountEqual(edits.edits_by_builder.keys(),

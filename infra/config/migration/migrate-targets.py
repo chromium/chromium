@@ -8,18 +8,27 @@ Run this from the infra/config directory that should be modified.
 """
 
 import argparse
-import ast
 import glob
 import json
 import os
 import pathlib
 import subprocess
 import sys
+import typing
 
 import migrate_targets_lib
+import pyl
 
 _INFRA_CONFIG_DIR = pathlib.Path(os.getcwd())
 _TESTING_BUILDBOT_DIR = (_INFRA_CONFIG_DIR / '../../testing/buildbot').resolve()
+
+
+def _get_literal(path: pathlib.Path) -> pyl.Value:
+  with open(path, encoding='utf-8') as f:
+    nodes = pyl.parse(path, f.read())
+  nodes = [n for n in nodes if isinstance(n, pyl.Value)]
+  assert len(nodes) == 1
+  return nodes[0]
 
 
 def main(argv: list[str]):
@@ -31,21 +40,17 @@ def main(argv: list[str]):
 
   builders = set(args.builder) or None
 
-  with open(_TESTING_BUILDBOT_DIR / 'waterfalls.pyl', encoding='utf-8') as f:
-    waterfalls = ast.literal_eval(f.read())
-
-  with open(
-      _TESTING_BUILDBOT_DIR / 'test_suite_exceptions.pyl',
-      encoding='utf-8',
-  ) as f:
-    test_suite_exceptions = ast.literal_eval(f.read())
+  waterfalls = _get_literal(_TESTING_BUILDBOT_DIR / 'waterfalls.pyl')
+  test_suite_exceptions = _get_literal(_TESTING_BUILDBOT_DIR /
+                                       'test_suite_exceptions.pyl')
 
   try:
     edits = migrate_targets_lib.process_waterfall(
         args.builder_group,
         builders,
-        waterfalls,
-        test_suite_exceptions,
+        typing.cast(pyl.List[pyl.Dict[pyl.Str, pyl.Value]], waterfalls),
+        typing.cast(pyl.Dict[pyl.Str, pyl.Dict[pyl.Str, pyl.Value]],
+                    test_suite_exceptions),
     )
   except migrate_targets_lib.WaterfallError as e:
     print(e, file=sys.stderr)

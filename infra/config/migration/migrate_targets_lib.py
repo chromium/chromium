@@ -10,13 +10,14 @@ import pathlib
 import typing
 
 import buildozer
+import pyl
 import starlark_conversions
 import values
 
 
 def _per_test_modifications(
     builder: str,
-    test_suite_exceptions: dict[str, dict[str, typing.Any]],
+    test_suite_exceptions: pyl.Dict[pyl.Str, pyl.Dict[pyl.Str, pyl.Value]],
 ) -> values.Value:
 
   def mod_builder_factory():
@@ -25,72 +26,87 @@ def _per_test_modifications(
 
   mod_builders = collections.defaultdict(mod_builder_factory)
 
-  for test_name, exceptions in test_suite_exceptions.items():
+  for test_name, exceptions in test_suite_exceptions.items:
     test_name = starlark_conversions.convert_direct(test_name)
-    for key, value in exceptions.items():
-      match key:
+    for key, value in exceptions.items:
+      match key.value:
         case 'remove_from':
-          if builder not in value:
-            continue
-
-          mod_builders[test_name] = values.CallValueBuilder(
-              'targets.remove',
-              # Break up the string so that it doesn't get flagged by the
-              # presubmit check but the generated code will if not updated
-              {'reason': f'"DO{""} NOT SUBMIT provide an actual reason"'})
-          break
+          value = typing.cast(pyl.List[pyl.Str], value)
+          for builder_name in value.elements:
+            if builder_name.value == builder:
+              mod_builders[test_name] = values.CallValueBuilder(
+                  'targets.remove',
+                  # Break up the string so that it doesn't get flagged by the
+                  # presubmit check but the generated code will if not updated
+                  {'reason': f'"DO{""} NOT SUBMIT provide an actual reason"'})
+              break
 
         case 'modifications':
-          mods: dict[str, typing.Any] | None = value.get(builder)
-          if mods is None:
+          value = typing.cast(pyl.Dict[pyl.Str, pyl.Dict[pyl.Str, pyl.Value]],
+                              value)
+          for builder_name, mods in value.items:
+            if builder_name.value == builder:
+              break
+          else:
             continue
 
           mixin_builder = values.CallValueBuilder('targets.mixin')
           mod_builders[test_name]['mixins'] = mixin_builder
 
-          for mod_key, mod_value in mods.items():
-            match mod_key:
+          for mod_key, mod_value in mods.items:
+            match mod_key.value:
               case ('ci_only' | 'experiment_percentage'
                     | 'isolate_profile_data' | 'retry_only_failed_tests'):
-                mixin_builder[mod_key] = (
+                mixin_builder[mod_key.value] = (
                     starlark_conversions.convert_direct(mod_value))
 
               case 'args':
-                mixin_builder[mod_key] = (
+                mod_value = typing.cast(pyl.List[pyl.Str], mod_value)
+                mixin_builder[mod_key.value] = (
                     starlark_conversions.convert_args(mod_value))
 
               case 'swarming':
-                mixin_builder['swarming'] = (
+                mod_value = typing.cast(pyl.Dict[pyl.Str, pyl.Value], mod_value)
+                mixin_builder[mod_key.value] = (
                     starlark_conversions.convert_swarming(mod_value))
 
               case _:
-                raise Exception(f'unhandled key in modifications: "{mod_key}"')
+                raise Exception(
+                    f'{mod_key.start}: unhandled key in modifications: "{mod_key.value}"'
+                )
 
         case 'replacements':
-          replacements: dict[str, dict[str, dict[str, str]]] | None = (
-              value.get(builder))
-          if replacements is None:
+          value = typing.cast(
+              pyl.Dict[pyl.Str, pyl.Dict[pyl.Str, pyl.Dict[pyl.Str, pyl.Str]]],
+              value)
+          for builder_name, replacements in value.items:
+            if builder_name.value == builder:
+              break
+          else:
             continue
 
           replacements_builder = (
               values.CallValueBuilder('targets.replacements'))
           mod_builders[test_name]['replacements'] = replacements_builder
 
-          for replace_key, replace_value in replacements.items():
-            match replace_key:
+          for replace_key, replace_value in replacements.items:
+            match replace_key.value:
               case 'args' | 'precommit_args' | 'non_precommit_args':
                 args_builder = values.DictValueBuilder()
-                for arg_name, arg_value in replace_value.items():
+                for arg_name, arg_value in replace_value.items:
                   args_builder[starlark_conversions.convert_arg(arg_name)] = (
                       starlark_conversions.convert_direct(arg_value))
-                replacements_builder[replace_key] = args_builder
+                replacements_builder[replace_key.value] = args_builder
 
               case _:
                 raise Exception(
-                    f'unhandled key in replacements: "{replace_key}"')
+                    f'{replace_key.start}: unhandled key in replacements: "{replace_key.value}"'
+                )
 
         case _:
-          raise Exception(f'unhandled key in test_suite_exceptions: "{key}"')
+          raise Exception(
+              f'{key.start}: unhandled key in test_suite_exceptions: "{key.value}"'
+          )
 
   return values.DictValueBuilder(mod_builders)
 
@@ -121,8 +137,8 @@ _OS_TYPE_MAPPING = {
 
 def _compute_edits(
     builder: str,
-    builder_config: dict[str, typing.Any],
-    test_suite_exceptions: dict[str, dict[str, typing.Any]],
+    builder_config: pyl.Dict[pyl.Str, pyl.Value],
+    test_suite_exceptions: pyl.Dict[pyl.Str, pyl.Dict[pyl.Str, pyl.Value]],
 ) -> dict[str, str]:
   anonymous_mixin_builder = values.CallValueBuilder('targets.mixin')
   mixins_builder = values.ListValueBuilder([anonymous_mixin_builder])
@@ -136,64 +152,78 @@ def _compute_edits(
 
   settings_builder = values.CallValueBuilder('targets.settings')
 
-  for key, value in builder_config.items():
-    match key:
+  for key, value in builder_config.items:
+    match key.value:
       case 'test_suites':
+        value = typing.cast(pyl.Dict[pyl.Str, pyl.Str], value)
+
         skylab_targets_builder = values.ListValueBuilder()
         skylab_bundle_builder['targets'] = skylab_targets_builder
 
         targets_builder = values.ListValueBuilder([skylab_bundle_builder])
         bundle_builder['targets'] = targets_builder
 
-        for suite_type, suite in value.items():
-          match suite_type:
+        for suite_type, suite in value.items:
+          match suite_type.value:
             case ('android_webview_gpu_telemetry_tests'
                   | 'cast_streaming_tests' | 'gpu_telemetry_tests'
                   | 'gtest_tests' | 'isolated_scripts' | 'scripts'):
-              targets_builder.append(f'"{suite}"')
+              targets_builder.append(starlark_conversions.convert_direct(suite))
 
             case 'skylab_tests' | 'skylab_gpu_telemetry_tests':
-              skylab_targets_builder.append(f'"{suite}"')
+              skylab_targets_builder.append(
+                  starlark_conversions.convert_direct(suite))
               settings_builder['use_swarming'] = 'False'
 
             case 'junit_tests' | _:
-              raise Exception(f'unhandled suite type: "{suite_type}"')
+              raise Exception(
+                  f'{suite_type.start}: unhandled suite type: "{suite_type.value}"'
+              )
 
       case 'additional_compile_targets':
-        bundle_builder[key] = starlark_conversions.convert_direct(value)
+        bundle_builder[key.value] = starlark_conversions.convert_direct(value)
 
       case 'args':
+        value = typing.cast(pyl.List[pyl.Str], value)
         anonymous_mixin_builder['args'] = (
             starlark_conversions.convert_args(value))
 
       case 'mixins':
-        for element in value:
-          mixins_builder.append(f'"{element}"')
+        value = typing.cast(pyl.List[pyl.Str], value)
+        for element in value.elements:
+          mixins_builder.append(starlark_conversions.convert_direct(element))
 
       case 'cros_board':
         skylab_mixin_builder['skylab'] = values.CallValueBuilder(
-            'targets.skylab', {key: f'"{value}"'})
+            'targets.skylab',
+            {key.value: starlark_conversions.convert_direct(value)})
 
       case 'browser_config':
-        browser_config = _BROWSER_CONFIG_MAPPING[value]
-        settings_builder[key] = f'targets.browser_config.{browser_config}'
+        value = typing.cast(pyl.Str, value)
+        browser_config = _BROWSER_CONFIG_MAPPING[value.value]
+        settings_builder[key.value] = f'targets.browser_config.{browser_config}'
 
       case 'os_type':
-        settings_builder[key] = f'targets.os_type.{_OS_TYPE_MAPPING[value]}'
+        value = typing.cast(pyl.Str, value)
+        settings_builder[key.value] = (
+            f'targets.os_type.{_OS_TYPE_MAPPING[value.value]}')
 
       case 'skip_merge_script':
-        if value:
+        value = typing.cast(pyl.Bool, value)
+        if value.value:
           settings_builder['use_android_merge_script_by_default'] = str(False)
 
       case 'swarming':
+        value = typing.cast(pyl.Dict[pyl.Str, pyl.Value], value)
         anonymous_mixin_builder['swarming'] = (
             starlark_conversions.convert_swarming(value))
 
       case 'use_swarming':
-        settings_builder[key] = starlark_conversions.convert_direct(value)
+        settings_builder[key.value] = starlark_conversions.convert_direct(value)
 
       case _:
-        raise Exception(f'unhandled key in builder config: "{key}"')
+        raise Exception(
+            f'{key.start}: unhandled key in builder config: "{key.value}"')
 
   bundle_builder['per_test_modifications'] = _per_test_modifications(
       builder, test_suite_exceptions)
@@ -239,8 +269,8 @@ class StarlarkEdits:
 def process_waterfall(
     builder_group_name: str,
     builders: set[str] | None,
-    waterfalls: list[dict[str, typing.Any]],
-    test_suite_exceptions: dict[str, typing.Any],
+    waterfalls: pyl.List[pyl.Dict[pyl.Str, pyl.Value]],
+    test_suite_exceptions: pyl.Dict[pyl.Str, pyl.Dict[pyl.Str, pyl.Value]],
 ) -> StarlarkEdits:
   """Processes waterfall data to generate starlark migration edits.
 
@@ -256,8 +286,10 @@ def process_waterfall(
   Raises:
     WaterfallError: If the builder group or specified builders are not found.
   """
-  for waterfall in waterfalls:
-    if waterfall['name'] == builder_group_name:
+  for waterfall in waterfalls.elements:
+    if any(key.value == 'name'
+           and typing.cast(pyl.Str, value).value == builder_group_name
+           for key, value in waterfall.items):
       break
   else:
     raise WaterfallError(f'builder_group "{builder_group_name}" not found')
@@ -269,40 +301,44 @@ def process_waterfall(
   # Make a copy of builders since it will be modified
   builders_to_process = builders.copy() if builders is not None else None
 
-  for key, value in waterfall.items():
-    match key:
+  for key, value in waterfall.items:
+    match key.value:
       case 'project' | 'bucket' | 'name':
         pass
 
       case 'mixins':
+        value = typing.cast(pyl.List[pyl.Str], value)
         mixins_default_builder = values.ListValueBuilder(
-            [f'"{m}"' for m in value])
+            [f'"{m.value}"' for m in value.elements])
         targets_builder_defaults['mixins'] = mixins_default_builder.output()
 
       case 'machines':
-        for builder_name, builder_config in value.items():
+        value = typing.cast(pyl.Dict[pyl.Str, pyl.Dict[pyl.Str, pyl.Value]],
+                            value)
+        for builder_name, builder_config in value.items:
           if (builders_to_process is not None
-              and builder_name not in builders_to_process):
+              and builder_name.value not in builders_to_process):
             continue
 
-          edits_by_builder[builder_name] = _compute_edits(
-              builder_name,
+          edits_by_builder[builder_name.value] = _compute_edits(
+              builder_name.value,
               builder_config,
               test_suite_exceptions,
           )
 
           if builders_to_process is not None:
-            builders_to_process.remove(builder_name)
+            builders_to_process.remove(builder_name.value)
             if not builders_to_process:
               break
 
       case 'forbid_script_tests':
-        if value:
-          targets_settings_defaults['allow_script_tests'] = (
-              starlark_conversions.convert_direct(False))
+        value = typing.cast(pyl.Bool, value)
+        if value.value:
+          targets_settings_defaults['allow_script_tests'] = 'False'
 
       case _:
-        raise Exception(f'unhandled key in waterfall: "{key}"')
+        raise Exception(
+            f'{key.start}: unhandled key in waterfall: "{key.value}"')
 
   if builders_to_process:
     builder_message = ', '.join(f'"{b}"' for b in sorted(builders_to_process))

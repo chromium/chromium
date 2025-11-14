@@ -4,9 +4,21 @@
 # found in the LICENSE file.
 
 import textwrap
+import typing
 import unittest
 
 import post_migrate_targets_lib
+import pyl
+
+
+# return typing.Any to prevent type checkers from complaining about the general
+# typing.Value type being passed where a more specific type is expected without
+# having to specify a type or cast for each call
+def _to_pyl_value(value: object) -> typing.Any:
+  nodes = list(pyl.parse('test', repr(value)))
+  assert len(nodes) == 1 and isinstance(nodes[0], pyl.Value), (
+      f'{object!r} does not parse to a single pyl.Value, got {nodes}')
+  return nodes[0]
 
 
 class PostMigrateTargetsLibTest(unittest.TestCase):
@@ -18,10 +30,11 @@ class PostMigrateTargetsLibTest(unittest.TestCase):
         },
     }
     with self.assertRaises(Exception) as caught:
-      post_migrate_targets_lib.convert_basic_suite(suite)
+      post_migrate_targets_lib.convert_basic_suite(_to_pyl_value(suite))
     self.assertEqual(
         str(caught.exception),
-        'unhandled key in basic suite test definition: "unhandled_key"')
+        'test:1:11: unhandled key in basic suite test definition: "unhandled_key"'
+    )
 
   def test_convert_basic_suite(self):
     suite = {
@@ -54,7 +67,8 @@ class PostMigrateTargetsLibTest(unittest.TestCase):
             'telemetry_test_name': 'telemetry_test',
         },
     }
-    result = post_migrate_targets_lib.convert_basic_suite(suite)
+    result = post_migrate_targets_lib.convert_basic_suite(_to_pyl_value(suite))
+    self.maxDiff = None
     self.assertEqual(
         result,
         {
@@ -113,7 +127,8 @@ class PostMigrateTargetsLibTest(unittest.TestCase):
 
   def test_convert_compound_suite(self):
     suite = ['suite1', 'suite2']
-    result = post_migrate_targets_lib.convert_compound_suite(suite)
+    result = post_migrate_targets_lib.convert_compound_suite(
+        _to_pyl_value(suite))
     self.assertEqual(
         result,
         {
@@ -134,9 +149,11 @@ class PostMigrateTargetsLibTest(unittest.TestCase):
         },
     }
     with self.assertRaises(Exception) as caught:
-      post_migrate_targets_lib.convert_matrix_compound_suite(suite)
-    self.assertEqual(str(caught.exception),
-                     'unhandled key in matrix config: "unhandled_key"')
+      post_migrate_targets_lib.convert_matrix_compound_suite(
+          _to_pyl_value(suite))
+    self.assertEqual(
+        str(caught.exception),
+        'test:1:12: unhandled key in matrix config: "unhandled_key"')
 
   def test_convert_matrix_compound_suite(self):
     suite = {
@@ -146,7 +163,8 @@ class PostMigrateTargetsLibTest(unittest.TestCase):
             'variants': ['variant1'],
         },
     }
-    result = post_migrate_targets_lib.convert_matrix_compound_suite(suite)
+    result = post_migrate_targets_lib.convert_matrix_compound_suite(
+        _to_pyl_value(suite))
     self.assertEqual(
         result,
         {
