@@ -954,7 +954,8 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Tests that the "Never Translate ..." options dismisses the infobar and
 // updates the prefs accordingly.
-- (void)testInfobarNeverTranslate {
+// TODO(crbug.com/460749272): Test is flaky.
+- (void)FLAKY_testInfobarNeverTranslate {
 // TODO(crbug.com/383556552): This test is flaky on iPad device.
 #if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
