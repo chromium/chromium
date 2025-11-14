@@ -193,8 +193,8 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 // the device is an ipad.
 // TODO(crbug.com/40266894): Need to enable this test.
 - (void)DISABLED_testNoSignInPromoInLandscapeMode {
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                   error:nil];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 

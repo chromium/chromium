@@ -349,15 +349,16 @@ GREYElementInteraction* SearchAutofillFormButton(id<GREYMatcher> scroll_view) {
                                                              kPassword
                                              fieldToFill:kPasswordFieldID];
 
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeRight
+                                   error:nil];
   CheckHeader(/*is_landscape=*/true);
 
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                   error:nil];
   CheckHeader(/*is_landscape=*/true);
 
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                   error:nil];
   CheckHeader(/*is_landscape=*/false);
 }
 

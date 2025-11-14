@@ -165,8 +165,8 @@ UITraitCollection* RotateOrChangeTraitCollection(
             forViewController:topViewController];
   } else {
     // On iPhone rotate to test the the landscape orientation.
-    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                  error:nil];
+    [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                     error:nil];
     return topViewController.traitCollection;
   }
 }
@@ -458,7 +458,8 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
     }
   } else {
     // Cancel the rotation.
-    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+    [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                     error:nil];
   }
 
   // Check the visiblity after a rotation.
@@ -509,7 +510,8 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
     }
   } else {
     // Cancel the rotation.
-    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+    [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                     error:nil];
   }
 
   // Check the visiblity after a size class change. This should let the trait
@@ -597,8 +599,8 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 - (void)testShareButton {
   if (![ChromeEarlGrey isIPadIdiom]) {
     // If this test is run on an iPhone, rotate it to have the unsplit toolbar.
-    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                  error:nil];
+    [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                     error:nil];
   }
 
   // Setup the server.
@@ -614,7 +616,8 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
   if (![ChromeEarlGrey isIPadIdiom]) {
     // Cancel rotation.
-    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+    [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                     error:nil];
   }
 }
 
@@ -679,7 +682,8 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
     }
   } else {
     // Cancel the rotation.
-    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+    [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                     error:nil];
   }
 }
 
@@ -721,7 +725,8 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
     }
   } else {
     // Cancel the rotation.
-    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+    [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                     error:nil];
   }
 
   // Check the visiblity after a rotation.

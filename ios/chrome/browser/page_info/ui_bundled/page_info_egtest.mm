@@ -244,8 +244,8 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Rotates the device and checks that the page info view is still presented.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeRight
+                                   error:nil];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kPageInfoViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -396,15 +396,16 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Rotate to landscape mode and check the navigation bar is still visible.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeRight
+                                   error:nil];
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
                      kPageInfoViewNavigationBarAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Rotate back to portrait mode and check the navigation bar is still visible.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                   error:nil];
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
                      kPageInfoViewNavigationBarAccessibilityIdentifier)]

@@ -229,13 +229,14 @@ void CreateSharedGroupAndOpenMenu(
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Check that the indicator is not visible in landscape.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                   error:nil];
   [[EarlGrey selectElementWithMatcher:TabGroupIndicatorViewMatcher()]
       assertWithMatcher:grey_notVisible()];
 
   // Check that the indicator is visible when switching back to portrait.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                   error:nil];
   [[EarlGrey
       selectElementWithMatcher:TabGroupIndicatorViewMatcherWithGroupTitle(
                                    l10n_util::GetPluralNSStringF(

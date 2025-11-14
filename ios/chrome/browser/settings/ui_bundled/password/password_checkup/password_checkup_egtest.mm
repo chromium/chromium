@@ -515,8 +515,8 @@ NSString* LeakedPasswordDescription() {
 
   // Rotate device to left landscape orientation before opening the Password
   // Checkup Homepage.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                   error:nil];
 
   OpenPasswordCheckupHomepage(/*result_state=*/PasswordCheckStateSafe,
                               /*result_password_count=*/0);
@@ -528,14 +528,15 @@ NSString* LeakedPasswordDescription() {
 
   // The header image view should be visible after being rotated to portrait
   // orientation.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                   error:nil];
   [[EarlGrey selectElementWithMatcher:PasswordCheckupHompageHeaderImageView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // The header image view should not be visible after being rotated to right
   // landscape orientation.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeRight
+                                   error:nil];
   [[EarlGrey selectElementWithMatcher:PasswordCheckupHompageHeaderImageView()]
       assertWithMatcher:grey_notVisible()];
 }

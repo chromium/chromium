@@ -315,8 +315,8 @@ void OpensPasswordsInOtherApps() {
   OpensPasswordsInOtherApps();
   [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsImageMatcher()]
       assertWithMatcher:grey_minimumVisiblePercent(0.2)];
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                   error:nil];
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
     [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsImageMatcher()]
         assertWithMatcher:grey_notVisible()];
@@ -324,7 +324,8 @@ void OpensPasswordsInOtherApps() {
     [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsImageMatcher()]
         assertWithMatcher:grey_minimumVisiblePercent(0.2)];
   }
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                   error:nil];
   [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsImageMatcher()]
       assertWithMatcher:grey_minimumVisiblePercent(0.2)];
 }

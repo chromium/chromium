@@ -98,8 +98,8 @@
 
 // Tests `IsCurrentLayoutBottomOmnibox` on landscape mode.
 - (void)testIsBottomOmniboxOnLandscape {
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                   error:nil];
 
   [ChromeEarlGrey setBoolValue:NO
              forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
@@ -110,7 +110,8 @@
              forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   GREYWaitForAppToIdle(@"App failed to idle");
   [self assertIsBottomOmnibox:NO];
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                   error:nil];
   [self assertIsBottomOmnibox:YES];
 }
 

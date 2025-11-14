@@ -3923,8 +3923,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   // The Password Manager widget promo's elements should be visible in landscape
   // mode.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeRight
+                                   error:nil];
   CheckPasswordManagerWidgetPromoVisible();
 
   // The promo's close button should still be tappable in landscape mode.
@@ -4004,14 +4004,15 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   // The Password Manager widget promo's instructions should be visible with no
   // image in landscape mode.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeRight
+                                   error:nil];
   CheckPasswordManagerWidgetPromoInstructionScreenVisible(
       /*image_hidden=*/true);
 
   // When going back to portrait mode, the Password Manager widget promo's
   // instructions should be visible with its image.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                   error:nil];
   CheckPasswordManagerWidgetPromoInstructionScreenVisible();
 }
 

@@ -186,8 +186,8 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 
   // Switch to landscape.
   GREYAssert(
-      [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                    error:nil],
+      [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                       error:nil],
       @"Could not rotate device to Landscape Left");
 
   // Make sure that panel can still be closed.
@@ -352,8 +352,8 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 
   // Switch to landscape.
   GREYAssert(
-      [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                    error:nil],
+      [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                       error:nil],
       @"Could not rotate device to Landscape Left");
 
   // Check that the IPH has disappeared.

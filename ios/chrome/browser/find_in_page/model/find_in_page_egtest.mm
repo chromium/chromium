@@ -635,8 +635,8 @@ FindInPageTestCrossOriginFramePageHttpResponse(
 
   // Switch to landscape.
   GREYAssert(
-      [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                    error:nil],
+      [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                       error:nil],
       @"Could not rotate device to Landscape Left");
 
   // Test the query is still there will the same result.
@@ -645,9 +645,10 @@ FindInPageTestCrossOriginFramePageHttpResponse(
   [self assertResultStringIsResult:2 outOfTotal:2];
 
   // Switch back to portrait.
-  GREYAssert([EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
-                                           error:nil],
-             @"Could not rotate device to Portrait");
+  GREYAssert(
+      [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                       error:nil],
+      @"Could not rotate device to Portrait");
 
   // Test the query is still there will the same result.
   [[EarlGrey selectElementWithMatcher:[self findInPageInputField]]

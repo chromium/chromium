@@ -298,11 +298,9 @@ void ResetAuthentication() {
     // visible.
     ScopedSynchronizationDisabler disabler;
 
-    UIDeviceOrientation originalOrientation = [GREYConstants
-        deviceOrientationForInterfaceOrientation:_originalOrientation];
     // Rotate the device back to the original orientation, since some tests
     // attempt to run in other orientations.
-    [EarlGrey rotateDeviceToOrientation:originalOrientation error:nil];
+    [EarlGrey rotateInterfaceToOrientation:_originalOrientation error:nil];
   }
   _executedTestMethodSetUp = NO;
   [super tearDown];
@@ -462,7 +460,8 @@ void ResetAuthentication() {
   [ChromeEarlGrey setPopupPrefValue:CONTENT_SETTING_DEFAULT];
 
   // Enforce the assumption that the tests are runing in portrait.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                   error:nil];
 
   // Clear multiwindow root and any extra windows. Once in `setUpForTestCase`
   // (in case of crashes) and on every `tearDown`.

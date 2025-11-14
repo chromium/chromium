@@ -192,8 +192,8 @@ NSString* const kInvalidPasswordUsername = @"Superman";
     [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
         assertWithMatcher:grey_sufficientlyVisible()];
     /// Rotate.
-    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                  error:nil];
+    [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                     error:nil];
     /// Verify that NTP logo is mostly hidden after rotation.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
         assertWithMatcher:grey_not(grey_sufficientlyVisible())];

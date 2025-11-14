@@ -896,8 +896,8 @@ static const char* kInterstitialDetails = "Details";
 
   // Switch to landscape and check visibility.
   GREYAssert(
-      [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                    error:nil],
+      [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                       error:nil],
       @"Could not rotate device to Landscape Left");
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
@@ -905,9 +905,10 @@ static const char* kInterstitialDetails = "Details";
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Switch back to portrait and check visibility.
-  GREYAssert([EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
-                                           error:nil],
-             @"Could not rotate device to Portrait");
+  GREYAssert(
+      [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                       error:nil],
+      @"Could not rotate device to Portrait");
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kParentAccessViewAccessibilityIdentifier)]
