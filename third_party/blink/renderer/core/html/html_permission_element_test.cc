@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/html_geolocation_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_permission_element_test_helper.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
@@ -825,6 +826,40 @@ class HTMLPermissionElementSimTest : public SimTest {
   ScopedPermissionElementForTest scoped_feature_{true};
 };
 
+TEST_F(HTMLPermissionElementSimTest, GeolocationTypeDeprecationWarning) {
+  SimRequest resource("https://example.test", "text/html");
+  LoadURL("https://example.test");
+  resource.Complete(R"(
+    <body>
+    </body>
+  )");
+
+  // Check <permission type="geolocation">
+  auto* permission_element =
+      MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
+  permission_element->setAttribute(html_names::kTypeAttr,
+                                   AtomicString("geolocation"));
+  GetDocument().body()->AppendChild(permission_element);
+
+  auto& console_messages =
+      static_cast<frame_test_helpers::TestWebFrameClient*>(MainFrame().Client())
+          ->ConsoleMessages();
+  EXPECT_EQ(console_messages.size(), 1u);
+  EXPECT_TRUE(console_messages.front().Contains(
+      "Warning: <permission type=\"geolocation\"> is deprecated. Please use "
+      "the <geolocation> element instead. See: "
+      "https://github.com/WICG/PEPC/blob/main/geolocation_explainer.md"));
+  console_messages.clear();
+
+  // Check <geolocation>
+  auto* geolocation_element =
+      MakeGarbageCollected<HTMLGeolocationElement>(GetDocument());
+  GetDocument().body()->AppendChild(geolocation_element);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(console_messages.size(), 0u);
+}
+
 TEST_F(HTMLPermissionElementSimTest, InitializeGrantedText) {
   SimRequest resource("https://example.test", "text/html");
   LoadURL("https://example.test");
@@ -888,19 +923,27 @@ TEST_F(HTMLPermissionElementSimTest, BlockedByPermissionsPolicy) {
 
   auto* first_child_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
   auto* last_child_frame = To<WebLocalFrameImpl>(MainFrame().LastChild());
-  for (const char* permission : {"camera", "microphone", "geolocation"}) {
+  struct {
+    const char* permission;
+    unsigned console_message_count;
+  } kTests[] = {
+      {"camera", 0u},
+      {"microphone", 0u},
+      {"geolocation", 1u},
+  };
+  for (const auto& test : kTests) {
     auto* permission_element = CreatePermissionElement(
-        *last_child_frame->GetFrame()->GetDocument(), permission);
+        *last_child_frame->GetFrame()->GetDocument(), test.permission);
     WaitForPermissionElementRegistration(permission_element);
     // PermissionsPolicy passed with no console log.
     auto& last_console_messages =
         static_cast<frame_test_helpers::TestWebFrameClient*>(
             last_child_frame->Client())
             ->ConsoleMessages();
-    EXPECT_EQ(last_console_messages.size(), 0u);
+    EXPECT_EQ(last_console_messages.size(), test.console_message_count);
 
     CreatePermissionElement(*first_child_frame->GetFrame()->GetDocument(),
-                            permission);
+                            test.permission);
     permission_service()->set_pepc_registered_callback(
         BindOnce(&NotReachedForPEPCRegistered));
     base::RunLoop().RunUntilIdle();
@@ -1360,18 +1403,26 @@ TEST_F(HTMLPermissionElementSimTest, BlockedByMissingFrameAncestorsCSP) {
 
   auto* first_child_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
   auto* last_child_frame = To<WebLocalFrameImpl>(MainFrame().LastChild());
-  for (const char* permission : {"camera", "microphone", "geolocation"}) {
+  struct {
+    const char* permission;
+    unsigned console_message_count;
+  } kTests[] = {
+      {"camera", 0u},
+      {"microphone", 0u},
+      {"geolocation", 1u},
+  };
+  for (const auto& test : kTests) {
     auto* permission_element = CreatePermissionElement(
-        *last_child_frame->GetFrame()->GetDocument(), permission);
+        *last_child_frame->GetFrame()->GetDocument(), test.permission);
     WaitForPermissionElementRegistration(permission_element);
     auto& last_console_messages =
         static_cast<frame_test_helpers::TestWebFrameClient*>(
             last_child_frame->Client())
             ->ConsoleMessages();
-    EXPECT_EQ(last_console_messages.size(), 0u);
+    EXPECT_EQ(last_console_messages.size(), test.console_message_count);
 
     CreatePermissionElement(*first_child_frame->GetFrame()->GetDocument(),
-                            permission);
+                            test.permission);
     permission_service()->set_pepc_registered_callback(
         BindOnce(&NotReachedForPEPCRegistered));
     base::RunLoop().RunUntilIdle();

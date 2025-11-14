@@ -104,9 +104,25 @@ class PermissionElementBrowserTestBase : public InProcessBrowserTest {
   }
 
   void SkipInvalidElementMessage() {
-    ExpectConsoleMessage(
+    EXPECT_TRUE(console_observer_->Wait());
+    EXPECT_EQ(2u, console_observer_->messages().size());
+
+    EXPECT_EQ(
+        "Warning: <permission type=\"geolocation\"> is deprecated. Please use "
+        "the <geolocation> element instead. See: "
+        "https://github.com/WICG/PEPC/blob/main/geolocation_explainer.md",
+        console_observer_->GetMessageAt(0));
+
+    EXPECT_EQ(
         "The permission type 'invalid microphone' is not supported by the "
-        "permission element.");
+        "permission element.",
+        console_observer_->GetMessageAt(1));
+
+    // WebContentsConsoleObserver::Wait() will only wait until there is at least
+    // one message. We need to reset the |console_observer_| in order to be able
+    // to wait for the next message.
+    console_observer_ =
+        std::make_unique<content::WebContentsConsoleObserver>(web_contents());
   }
 
   void TestPromptPosition(
@@ -143,10 +159,23 @@ class PermissionElementBrowserTest : public PermissionElementBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
                        RequestInvalidPermissionType) {
-  ExpectConsoleMessage(
+  EXPECT_TRUE(console_observer_->Wait());
+  EXPECT_EQ(2u, console_observer_->messages().size());
+  EXPECT_EQ(
+      "Warning: <permission type=\"geolocation\"> is deprecated. Please use "
+      "the <geolocation> element instead. See: "
+      "https://github.com/WICG/PEPC/blob/main/geolocation_explainer.md",
+      console_observer_->GetMessageAt(0));
+
+  EXPECT_EQ(
       "The permission type 'invalid microphone' is not supported by the "
       "permission element.",
-      blink::mojom::ConsoleMessageLevel::kError);
+      console_observer_->GetMessageAt(1));
+
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kWarning,
+            console_observer_->messages()[0].log_level);
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
+            console_observer_->messages()[1].log_level);
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,

@@ -559,6 +559,12 @@ void HTMLPermissionElement::setType(const AtomicString& type) {
     return;
   }
 
+  if (TagQName() == html_names::kPermissionTag && GetType() == "geolocation") {
+    AddConsoleWarning(
+        "Warning: <permission type=\"geolocation\"> is deprecated. Please use "
+        "the <geolocation> element instead. See: "
+        "https://github.com/WICG/PEPC/blob/main/geolocation_explainer.md");
+  }
   CHECK_LE(permission_descriptors_.size(), 2U)
       << "Unexpected permissions size " << permission_descriptors_.size();
 }
