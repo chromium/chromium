@@ -318,8 +318,9 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmapForVulkan(
   NativePixmapUsageSet native_pixmap_usage =
       BufferUsageToNativePixmapUsage(usage);
   drm_thread_proxy_->CreateBuffer(
-      widget, size, /*framebuffer_size=*/size, gfx::BufferFormat::BGRA_8888,
-      native_pixmap_usage, GbmPixmap::kFlagNoModifiers, &buffer, &framebuffer);
+      widget, size, /*framebuffer_size=*/size,
+      viz::SinglePlaneFormat::kBGRA_8888, native_pixmap_usage,
+      GbmPixmap::kFlagNoModifiers, &buffer, &framebuffer);
   if (!buffer)
     return nullptr;
 
@@ -399,10 +400,10 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmap(
       BufferUsageToNativePixmapUsage(usage);
   std::unique_ptr<GbmBuffer> buffer;
   scoped_refptr<DrmFramebuffer> framebuffer;
-  drm_thread_proxy_->CreateBuffer(
-      widget, size, framebuffer_size ? *framebuffer_size : size,
-      viz::SharedImageFormatToBufferFormat(format), native_pixmap_usage,
-      /*flags=*/0, &buffer, &framebuffer);
+  drm_thread_proxy_->CreateBuffer(widget, size,
+                                  framebuffer_size ? *framebuffer_size : size,
+                                  format, native_pixmap_usage,
+                                  /*flags=*/0, &buffer, &framebuffer);
   if (!buffer)
     return nullptr;
   return base::MakeRefCounted<GbmPixmap>(this, std::move(buffer),
@@ -422,8 +423,7 @@ GbmSurfaceFactory::CreateNativePixmapFromHandleInternal(
   std::unique_ptr<GbmBuffer> buffer;
   scoped_refptr<DrmFramebuffer> framebuffer;
   drm_thread_proxy_->CreateBufferFromHandle(
-      widget, size, viz::SharedImageFormatToBufferFormat(format),
-      std::move(handle), &buffer, &framebuffer);
+      widget, size, format, std::move(handle), &buffer, &framebuffer);
   if (!buffer)
     return nullptr;
   return base::MakeRefCounted<GbmPixmap>(this, std::move(buffer),

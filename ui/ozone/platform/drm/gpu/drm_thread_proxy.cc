@@ -72,7 +72,7 @@ std::unique_ptr<DrmWindowProxy> DrmThreadProxy::CreateDrmWindowProxy(
 void DrmThreadProxy::CreateBuffer(gfx::AcceleratedWidget widget,
                                   const gfx::Size& size,
                                   const gfx::Size& framebuffer_size,
-                                  gfx::BufferFormat format,
+                                  viz::SharedImageFormat format,
                                   NativePixmapUsageSet usage,
                                   uint32_t flags,
                                   std::unique_ptr<GbmBuffer>* buffer,
@@ -83,7 +83,8 @@ void DrmThreadProxy::CreateBuffer(gfx::AcceleratedWidget widget,
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
   base::OnceClosure task = base::BindOnce(
       &DrmThread::CreateBuffer, base::Unretained(&drm_thread_), widget, size,
-      framebuffer_size, format, usage, flags, buffer, framebuffer);
+      framebuffer_size, viz::SharedImageFormatToBufferFormat(format), usage,
+      flags, buffer, framebuffer);
   PostSyncTask(drm_thread_.task_runner(),
                base::BindOnce(&DrmThread::RunTaskAfterDeviceReady,
                               base::Unretained(&drm_thread_), std::move(task)));
@@ -92,7 +93,7 @@ void DrmThreadProxy::CreateBuffer(gfx::AcceleratedWidget widget,
 void DrmThreadProxy::CreateBufferFromHandle(
     gfx::AcceleratedWidget widget,
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::NativePixmapHandle handle,
     std::unique_ptr<GbmBuffer>* buffer,
     scoped_refptr<DrmFramebuffer>* framebuffer) {
@@ -100,7 +101,8 @@ void DrmThreadProxy::CreateBufferFromHandle(
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
   base::OnceClosure task = base::BindOnce(
       &DrmThread::CreateBufferFromHandle, base::Unretained(&drm_thread_),
-      widget, size, format, std::move(handle), buffer, framebuffer);
+      widget, size, viz::SharedImageFormatToBufferFormat(format),
+      std::move(handle), buffer, framebuffer);
   PostSyncTask(drm_thread_.task_runner(),
                base::BindOnce(&DrmThread::RunTaskAfterDeviceReady,
                               base::Unretained(&drm_thread_), std::move(task)));

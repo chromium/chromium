@@ -129,7 +129,8 @@ TEST_F(VKMSTest, SinglePlanePageFlip) {
   FlipExpectingRecreateBuffers(window_proxy);
 
   // Note that as of 2022/04, the only vkms-supported buffers are RGB. Note that
-  // the BufferFormat order is flipped from DRM. See here for our conversions:
+  // the SharedImageFormat order is flipped from DRM. See here for our
+  // conversions:
   // ui/gfx/linux/drm_util_linux.cc
   std::unique_ptr<ui::GbmBuffer> buffer;
   scoped_refptr<ui::DrmFramebuffer> framebuffer;
@@ -138,7 +139,7 @@ TEST_F(VKMSTest, SinglePlanePageFlip) {
       ui::NativePixmapUsage::kCpuRead};
   drm_thread_proxy_->CreateBuffer(
       kWidget, kWindowRect.size(), kWindowRect.size(),
-      gfx::BufferFormat::BGRX_8888, scanout_cpu_usage,
+      viz::SinglePlaneFormat::kBGRX_8888, scanout_cpu_usage,
       /*flags=*/0, &buffer, &framebuffer);
 
   auto planes = std::vector<ui::DrmOverlayPlane>();
