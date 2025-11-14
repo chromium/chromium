@@ -126,9 +126,9 @@ class NdkVideoEncoderAcceleratorTest
         GTEST_SKIP() << "Not supported Android version. "
                      << "Surface input needs Android 15 or newer.";
       }
-      enabled_features.push_back(kEnableSurfaceInputForAndroidVEA);
+      enabled_features.push_back(kSurfaceInputForAndroidVEA);
     } else {
-      disabled_features.push_back(kEnableSurfaceInputForAndroidVEA);
+      disabled_features.push_back(kSurfaceInputForAndroidVEA);
     }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
 

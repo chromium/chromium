@@ -25032,7 +25032,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "EnableSurfaceInputForAndroidVEA"
+                        "SurfaceInputForAndroidVEA"
                     ]
                 }
             ]

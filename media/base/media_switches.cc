@@ -1011,8 +1011,7 @@ BASE_FEATURE(kContextMenuPictureInPictureAndroid,
 
 // Enables the use of a Surface (ANativeWindow) as the input for the
 // NdkVideoEncodeAccelerator on Android.
-BASE_FEATURE(kEnableSurfaceInputForAndroidVEA,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSurfaceInputForAndroidVEA, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables block model (LinearBlock) on supported devices.
 // TODO(crbug.com/327625558): Currently block model is buggy and can't be

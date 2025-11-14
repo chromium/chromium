@@ -5686,7 +5686,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"zero-copy-video-encoding", flag_descriptions::kZeroCopyVideoEncodingName,
      flag_descriptions::kZeroCopyVideoEncodingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(media::kEnableSurfaceInputForAndroidVEA)},
+     FEATURE_VALUE_TYPE(media::kSurfaceInputForAndroidVEA)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"enable-show-autofill-signatures",
      flag_descriptions::kShowAutofillSignaturesName,

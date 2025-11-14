@@ -122,7 +122,7 @@ void MojoVideoEncodeAcceleratorProvider::CreateVideoEncodeAccelerator(
 #elif BUILDFLAG(IS_APPLE)
   runner = base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 #elif BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(media::kEnableSurfaceInputForAndroidVEA)) {
+  if (base::FeatureList::IsEnabled(media::kSurfaceInputForAndroidVEA)) {
     runner = base::ThreadPool::CreateSingleThreadTaskRunner(
         {base::MayBlock(), base::WithBaseSyncPrimitives()},
         base::SingleThreadTaskRunnerThreadMode::DEDICATED);

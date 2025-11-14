@@ -515,7 +515,7 @@ bool ShouldUseSurfaceInput() {
   if (__builtin_available(android 35, *)) {
     // Limit surface input to Android 15+ (API Level: 35), because we see issues
     // on older devices.
-    if (base::FeatureList::IsEnabled(media::kEnableSurfaceInputForAndroidVEA)) {
+    if (base::FeatureList::IsEnabled(media::kSurfaceInputForAndroidVEA)) {
       return true;
     }
   }
