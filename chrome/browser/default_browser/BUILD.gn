@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(!is_android, "Default browser framework is only for desktop platforms")
+assert(!is_chromeos, "Default browser framework doesn't exist on chromeos")
+
 source_set("default_browser") {
   sources = [ "default_browser_manager.h" ]
 }

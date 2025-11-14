@@ -12,10 +12,6 @@
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
 
-namespace default_browser {
-class DefaultBrowserManager;
-}
-
 namespace system_permission_settings {
 class PlatformHandle;
 }  // namespace system_permission_settings
@@ -23,6 +19,10 @@ class PlatformHandle;
 namespace whats_new {
 class WhatsNewRegistry;
 }  // namespace whats_new
+
+namespace default_browser {
+class DefaultBrowserManager;
+}  // namespace default_browser
 #endif
 #if BUILDFLAG(ENABLE_GLIC)
 namespace glic {
