@@ -137,6 +137,7 @@ void RemotingClientIOProxyImpl::StartCrdClient(
                          observer_)),
       std::move(frame_consumer), std::move(audio_stream_consumer),
       shared_url_loader_factory_);
+  remoting_client_wrapper_->AddObserver(this);
 
   VLOG(1) << "[Boca] Starting CRD client for teacher";
   remoting_client_wrapper_->StartSession(

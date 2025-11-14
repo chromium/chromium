@@ -10,14 +10,17 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_constants.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_frame_consumer.h"
 #include "remoting/base/oauth_token_info.h"
 #include "remoting/client/common/client_status_observer.h"
@@ -48,7 +51,9 @@ class TestObserver : public RemotingClientIOProxy::Observer {
   void OnCrdSessionEnded() override {
     crd_session_ended_future_.GetCallback().Run();
   }
-  void OnStateUpdated(CrdConnectionState state) override {}
+  void OnStateUpdated(CrdConnectionState state) override {
+    state_updated_future_.GetCallback().Run(state);
+  }
   void OnFrameReceived(SkBitmap bitmap,
                        std::unique_ptr<webrtc::DesktopFrame> frame) override {
     frame_received_future_.GetCallback().Run(std::move(bitmap),
@@ -67,6 +72,8 @@ class TestObserver : public RemotingClientIOProxy::Observer {
 
   auto& audio_packet_received_future() { return audio_packet_received_future_; }
 
+  auto& state_updated_future() { return state_updated_future_; }
+
   base::WeakPtr<TestObserver> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -78,6 +85,7 @@ class TestObserver : public RemotingClientIOProxy::Observer {
       frame_received_future_;
   base::test::RepeatingTestFuture<std::unique_ptr<remoting::AudioPacket>>
       audio_packet_received_future_;
+  base::test::RepeatingTestFuture<CrdConnectionState> state_updated_future_;
   base::WeakPtrFactory<TestObserver> weak_ptr_factory_{this};
 };
 
@@ -105,8 +113,13 @@ class FakeRemotingClientWrapper
     oauth_token_info_ = oauth_token_info;
   }
   void StopSession() override {}
-  void AddObserver(remoting::ClientStatusObserver* observer) override {}
-  void RemoveObserver(remoting::ClientStatusObserver* observer) override {}
+  void AddObserver(remoting::ClientStatusObserver* observer) override {
+    client_status_observer_ = observer;
+  }
+  void RemoveObserver(remoting::ClientStatusObserver* observer) override {
+    CHECK_EQ(observer, client_status_observer_);
+    client_status_observer_ = nullptr;
+  }
 
   const std::string& support_access_code() const {
     return support_access_code_;
@@ -124,6 +137,10 @@ class FakeRemotingClientWrapper
     return audio_stream_consumer_->GetWeakPtr();
   }
 
+  remoting::ClientStatusObserver* client_status_observer() const {
+    return client_status_observer_;
+  }
+
   base::WeakPtr<FakeRemotingClientWrapper> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -137,6 +154,7 @@ class FakeRemotingClientWrapper
 
   std::string support_access_code_;
   remoting::OAuthTokenInfo oauth_token_info_;
+  raw_ptr<remoting::ClientStatusObserver> client_status_observer_ = nullptr;
   base::WeakPtrFactory<FakeRemotingClientWrapper> weak_ptr_factory_{this};
 };
 
@@ -202,6 +220,7 @@ TEST_F(RemotingClientIOProxyImplTest, StopCrdClient) {
       std::string(kAuthorizedHelperEmail), observer.GetWeakPtr());
   remoting_client_io_proxy_->StopCrdClient(base::BindLambdaForTesting(
       [&on_stopped_called]() { on_stopped_called = true; }));
+  EXPECT_EQ(fake_remoting_client_wrapper_->client_status_observer(), nullptr);
   task_environment_.FastForwardBy(base::Seconds(3));
 
   EXPECT_TRUE(on_stopped_called);
@@ -254,6 +273,50 @@ TEST_F(RemotingClientIOProxyImplTest,
 
   std::move(second_quit_closure).Run();
   EXPECT_TRUE(second_observer.crd_session_ended_future().Wait());
+}
+
+TEST_F(RemotingClientIOProxyImplTest, ConnectionStateConnected) {
+  TestObserver observer;
+  remoting_client_io_proxy_->StartCrdClient(
+      std::string(kConnectionCode), std::string(kAccessToken),
+      std::string(kAuthorizedHelperEmail), observer.GetWeakPtr());
+  fake_remoting_client_wrapper_->client_status_observer()->OnConnected();
+
+  EXPECT_EQ(observer.state_updated_future().Take(),
+            CrdConnectionState::kConnected);
+}
+
+TEST_F(RemotingClientIOProxyImplTest, ConnectionStateFailed) {
+  TestObserver observer;
+  remoting_client_io_proxy_->StartCrdClient(
+      std::string(kConnectionCode), std::string(kAccessToken),
+      std::string(kAuthorizedHelperEmail), observer.GetWeakPtr());
+  fake_remoting_client_wrapper_->client_status_observer()->OnConnectionFailed();
+
+  EXPECT_EQ(observer.state_updated_future().Take(),
+            CrdConnectionState::kFailed);
+}
+
+TEST_F(RemotingClientIOProxyImplTest, ConnectionStateDisconnected) {
+  TestObserver observer;
+  remoting_client_io_proxy_->StartCrdClient(
+      std::string(kConnectionCode), std::string(kAccessToken),
+      std::string(kAuthorizedHelperEmail), observer.GetWeakPtr());
+  fake_remoting_client_wrapper_->client_status_observer()->OnDisconnected();
+
+  EXPECT_EQ(observer.state_updated_future().Take(),
+            CrdConnectionState::kDisconnected);
+}
+
+TEST_F(RemotingClientIOProxyImplTest, ConnectionStateDestroyed) {
+  TestObserver observer;
+  remoting_client_io_proxy_->StartCrdClient(
+      std::string(kConnectionCode), std::string(kAccessToken),
+      std::string(kAuthorizedHelperEmail), observer.GetWeakPtr());
+  fake_remoting_client_wrapper_->client_status_observer()->OnClientDestroyed();
+
+  EXPECT_EQ(observer.state_updated_future().Take(),
+            CrdConnectionState::kDisconnected);
 }
 
 }  // namespace
