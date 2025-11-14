@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/contextual_search/contextual_search_types.h"
@@ -32,21 +31,6 @@
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
-namespace {
-
-std::optional<lens::ImageEncodingOptions> CreateImageEncodingOptions() {
-  auto image_upload_config =
-      ntp_composebox::FeatureConfig::Get().config.composebox().image_upload();
-  return lens::ImageEncodingOptions{
-      .enable_webp_encoding = image_upload_config.enable_webp_encoding(),
-      .max_size = image_upload_config.downscale_max_image_size(),
-      .max_height = image_upload_config.downscale_max_image_height(),
-      .max_width = image_upload_config.downscale_max_image_width(),
-      .compression_quality = image_upload_config.image_compression_quality()};
-}
-
-}  // namespace
-
 OmniboxPopupFileSelector::OmniboxPopupFileSelector() = default;
 
 OmniboxPopupFileSelector::~OmniboxPopupFileSelector() = default;
@@ -55,10 +39,12 @@ void OmniboxPopupFileSelector::OpenFileUploadDialog(
     content::WebContents* web_contents,
     bool is_image,
     contextual_search::ContextualSearchContextController* query_controller,
-    OmniboxEditModel* edit_model) {
+    OmniboxEditModel* edit_model,
+    std::optional<lens::ImageEncodingOptions> image_encoding_options) {
   web_contents_ = web_contents;
   query_controller_ = query_controller;
   edit_model_ = edit_model;
+  image_encoding_options_ = image_encoding_options;
   file_dialog_ = ui::SelectFileDialog::Create(
       this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
 
@@ -115,12 +101,10 @@ void OmniboxPopupFileSelector::OnFileDataReady(
   base::UnguessableToken file_token = base::UnguessableToken::Create();
 
   lens::MimeType mime_type;
-  std::optional<lens::ImageEncodingOptions> image_options = std::nullopt;
   if (file_data->mime_type.find("pdf") != std::string::npos) {
     mime_type = lens::MimeType::kPdf;
   } else if (file_data->mime_type.find("image") != std::string::npos) {
     mime_type = lens::MimeType::kImage;
-    image_options = CreateImageEncodingOptions();
   } else {
     NOTREACHED();
   }
@@ -138,7 +122,7 @@ void OmniboxPopupFileSelector::OnFileDataReady(
       lens::ContextualInput(std::move(file_data_vector), mime_type));
 
   query_controller_->StartFileUploadFlow(file_token, std::move(input_data),
-                                         std::move(image_options));
+                                         std::move(image_encoding_options_));
 
   std::string image_data_url;
   if (mime_type == lens::MimeType::kImage) {

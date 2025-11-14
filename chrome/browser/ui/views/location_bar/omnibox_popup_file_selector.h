@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OMNIBOX_POPUP_FILE_SELECTOR_H_
 
 #include "base/memory/weak_ptr.h"
+#include "components/lens/lens_bitmap_processing.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace content {
@@ -49,7 +50,8 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
       content::WebContents* web_contents,
       bool is_image,
       contextual_search::ContextualSearchContextController* query_controller,
-      OmniboxEditModel* edit_model);
+      OmniboxEditModel* edit_model,
+      std::optional<lens::ImageEncodingOptions> image_encoding_options);
 
   void OnFileDataReady(std::unique_ptr<FileData> file_data);
 
@@ -70,6 +72,7 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
   std::string file_info_type_;
   raw_ptr<content::WebContents> web_contents_;
   raw_ptr<OmniboxEditModel> edit_model_;
+  std::optional<lens::ImageEncodingOptions> image_encoding_options_;
 
   base::WeakPtrFactory<OmniboxPopupFileSelector> weak_factory_{this};
 };
