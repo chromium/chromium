@@ -2554,6 +2554,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Enterprise.IOS.WebState.DataControls.Clipboard.{Action}.Verdict"
+    enum="EnterpriseDlpPolicyLevel" expires_after="2026-04-30">
+  <owner>eic@google.com</owner>
+  <owner>bling-enterprise@google.com</owner>
+  <summary>
+    Records the level of verdict triggered by enterprise users when trying to
+    {Action} web content according to the policy settings.
+  </summary>
+  <token key="Action">
+    <variant name="Copy" summary="copy"/>
+    <variant name="Paste" summary="paste"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Enterprise.IOS.WebState.DataControls.Clipboard.{Action}.WarningBypassed"
+    enum="Boolean" expires_after="2026-04-30">
+  <owner>eic@google.com</owner>
+  <owner>bling-enterprise@google.com</owner>
+  <summary>
+    Records whenever a user sees a warning and chooses to ignore/bypass the
+    warning and decides to {Action} anyways.
+  </summary>
+  <token key="Action">
+    <variant name="Copy" summary="copy"/>
+    <variant name="Paste" summary="paste"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.KeySignatureVerification"
     enum="EnterpriseKeySignatureVerification" expires_after="2026-07-10">
   <owner>igorcov@chromium.org</owner>

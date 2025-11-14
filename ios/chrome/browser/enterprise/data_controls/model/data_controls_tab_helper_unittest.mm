@@ -8,6 +8,7 @@
 #import "base/run_loop.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
@@ -16,6 +17,7 @@
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/data_controls_metrics.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_pasteboard_manager.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_test_utils.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -308,6 +310,7 @@ class DataControlsTabHelperTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_;
@@ -319,6 +322,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Default) {
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_TRUE(allowed);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardCopyVerdictHistogram,
+        Rule::Level::kNotSet, 1);
     run_loop.Quit();
   }));
   run_loop.Run();
@@ -339,6 +345,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Blocked) {
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_FALSE(allowed);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardCopyVerdictHistogram,
+        Rule::Level::kBlock, 1);
     run_loop.Quit();
   }));
   run_loop.Run();
@@ -366,6 +375,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Blocked_WithDomain) {
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_FALSE(allowed);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardCopyVerdictHistogram,
+        Rule::Level::kBlock, 1);
     run_loop.Quit();
   }));
   run_loop.Run();
@@ -379,6 +391,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Allowed) {
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_TRUE(allowed);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardCopyVerdictHistogram,
+        Rule::Level::kAllow, 1);
     run_loop.Quit();
   }));
   run_loop.Run();
@@ -394,6 +409,12 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Warn_NotBypassed) {
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_FALSE(allowed);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardCopyVerdictHistogram,
+        Rule::Level::kWarn, 1);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardCopyClipboardWarningBypassedHistogram,
+        FALSE, 1);
     run_loop.Quit();
   }));
   EXPECT_TRUE(
@@ -426,6 +447,12 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Warn_Bypassed) {
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_TRUE(allowed);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardCopyVerdictHistogram,
+        Rule::Level::kWarn, 1);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardCopyClipboardWarningBypassedHistogram,
+        TRUE, 1);
     run_loop.Quit();
   }));
   EXPECT_TRUE(
@@ -463,6 +490,12 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Warn_Bypassed_WithDomain) {
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_TRUE(allowed);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardCopyVerdictHistogram,
+        Rule::Level::kWarn, 1);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardCopyClipboardWarningBypassedHistogram,
+        TRUE, 1);
     run_loop.Quit();
   }));
   EXPECT_TRUE(
@@ -496,6 +529,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_OtherUrl) {
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_TRUE(allowed);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardCopyVerdictHistogram,
+        Rule::Level::kNotSet, 1);
     run_loop.Quit();
   }));
   run_loop.Run();
@@ -511,6 +547,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_FeatureDisabled) {
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_TRUE(allowed);
+    histogram_tester_.ExpectTotalCount(
+        kIOSWebStateDataControlsClipboardCopyVerdictHistogram, 0);
     run_loop.Quit();
   }));
   run_loop.Run();
@@ -521,6 +559,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Default) {
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_TRUE(allowed);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardPasteVerdictHistogram,
+        Rule::Level::kNotSet, 1);
     run_loop.Quit();
   }));
   run_loop.Run();
@@ -541,6 +582,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Blocked) {
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_FALSE(allowed);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardPasteVerdictHistogram,
+        Rule::Level::kBlock, 1);
     run_loop.Quit();
   }));
   run_loop.Run();
@@ -554,6 +598,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Allowed) {
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_TRUE(allowed);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardPasteVerdictHistogram,
+        Rule::Level::kAllow, 1);
     run_loop.Quit();
   }));
   run_loop.Run();
@@ -580,6 +627,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Blocked_WithDomain) {
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_FALSE(allowed);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardPasteVerdictHistogram,
+        Rule::Level::kBlock, 1);
     run_loop.Quit();
   }));
   run_loop.Run();
@@ -596,6 +646,12 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Warn_NotBypassed) {
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_FALSE(allowed);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardPasteVerdictHistogram,
+        Rule::Level::kWarn, 1);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardPasteClipboardWarningBypassedHistogram,
+        FALSE, 1);
     run_loop.Quit();
   }));
   EXPECT_TRUE(
@@ -628,6 +684,12 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Warn_Bypassed) {
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_TRUE(allowed);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardPasteVerdictHistogram,
+        Rule::Level::kWarn, 1);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardPasteClipboardWarningBypassedHistogram,
+        TRUE, 1);
     run_loop.Quit();
   }));
   EXPECT_TRUE(
@@ -665,6 +727,12 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Warn_Bypassed_WithDomain) {
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_TRUE(allowed);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardPasteVerdictHistogram,
+        Rule::Level::kWarn, 1);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardPasteClipboardWarningBypassedHistogram,
+        TRUE, 1);
     run_loop.Quit();
   }));
   EXPECT_TRUE(
@@ -696,6 +764,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_OtherUrl) {
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_TRUE(allowed);
+    histogram_tester_.ExpectUniqueSample(
+        kIOSWebStateDataControlsClipboardPasteVerdictHistogram,
+        Rule::Level::kNotSet, 1);
     run_loop.Quit();
   }));
   run_loop.Run();
@@ -710,6 +781,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedForSource) {
   // Simulate copying from other.com.
   web_state_->SetCurrentURL(GURL(kOtherUrl));
   EXPECT_TRUE(ShouldAllowCopy(tab_helper()));
+  histogram_tester_.ExpectUniqueSample(
+      kIOSWebStateDataControlsClipboardCopyVerdictHistogram,
+      Rule::Level::kNotSet, 1);
 
   UIPasteboard.generalPasteboard.string = @"copied content";
 
@@ -718,6 +792,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedForSource) {
   // Simulate pasting to allow.com
   web_state_->SetCurrentURL(GURL(kAllowedUrl));
   EXPECT_FALSE(ShouldAllowPaste(tab_helper()));
+  histogram_tester_.ExpectUniqueSample(
+      kIOSWebStateDataControlsClipboardPasteVerdictHistogram,
+      Rule::Level::kBlock, 1);
 }
 
 // Tests that paste is blocked when a rule is set to block pasting from an
@@ -735,6 +812,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedFromIncognito) {
   // Simulate copying from the incognito profile.
   incognito_web_state->SetCurrentURL(GURL(kOtherUrl));
   EXPECT_TRUE(ShouldAllowCopy(incognito_tab_helper));
+  histogram_tester_.ExpectUniqueSample(
+      kIOSWebStateDataControlsClipboardCopyVerdictHistogram,
+      Rule::Level::kNotSet, 1);
 
   UIPasteboard.generalPasteboard.string = @"copied content";
 
@@ -743,6 +823,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedFromIncognito) {
   // Simulate pasting to kDataControlsBlockedUrl in the non-incognito profile.
   web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   EXPECT_FALSE(ShouldAllowPaste(tab_helper()));
+  histogram_tester_.ExpectUniqueSample(
+      kIOSWebStateDataControlsClipboardPasteVerdictHistogram,
+      Rule::Level::kBlock, 1);
 }
 
 // Tests that paste is blocked when a rule is set to block pasting from another
@@ -761,6 +844,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedFromOtherProfile) {
   // Simulate copying from the second profile.
   source_web_state->SetCurrentURL(GURL(kOtherUrl));
   EXPECT_TRUE(ShouldAllowCopy(source_tab_helper));
+  histogram_tester_.ExpectUniqueSample(
+      kIOSWebStateDataControlsClipboardCopyVerdictHistogram,
+      Rule::Level::kNotSet, 1);
 
   UIPasteboard.generalPasteboard.string = @"copied content";
 
@@ -769,6 +855,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedFromOtherProfile) {
   // Simulate pasting to kDataControlsBlockedUrl in the primary profile.
   web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   EXPECT_FALSE(ShouldAllowPaste(tab_helper()));
+  histogram_tester_.ExpectUniqueSample(
+      kIOSWebStateDataControlsClipboardPasteVerdictHistogram,
+      Rule::Level::kBlock, 1);
 }
 
 // Tests that paste is blocked when a rule is set to block pasting from the OS
@@ -779,6 +868,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedFromOSClipboard) {
   // Simulate pasting to kDataControlsBlockedUrl.
   web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   EXPECT_FALSE(ShouldAllowPaste(tab_helper()));
+  histogram_tester_.ExpectUniqueSample(
+      kIOSWebStateDataControlsClipboardPasteVerdictHistogram,
+      Rule::Level::kBlock, 1);
 }
 
 // Tests that, for content that is not allowed on the OS clipboard, the content
@@ -791,6 +883,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedToOSClipboard) {
   // Simulate copying from block.com.
   web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   ASSERT_TRUE(ShouldAllowCopy(tab_helper()));
+  histogram_tester_.ExpectUniqueSample(
+      kIOSWebStateDataControlsClipboardCopyVerdictHistogram,
+      Rule::Level::kNotSet, 1);
 
   NSString* copied_content = @"copied content";
   UIPasteboard.generalPasteboard.string = copied_content;
@@ -807,6 +902,10 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedToOSClipboard) {
   // Simulate pasting to allow.com
   web_state_->SetCurrentURL(GURL(kAllowedUrl));
   ASSERT_TRUE(ShouldAllowPaste(tab_helper()));
+
+  histogram_tester_.ExpectUniqueSample(
+      kIOSWebStateDataControlsClipboardPasteVerdictHistogram,
+      Rule::Level::kNotSet, 1);
 
   ASSERT_TRUE(WaitForKnownPasteboardSource());
 
@@ -829,6 +928,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_FeatureDisabled) {
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_TRUE(allowed);
+    histogram_tester_.ExpectTotalCount(
+        kIOSWebStateDataControlsClipboardPasteVerdictHistogram, 0);
     run_loop.Quit();
   }));
   run_loop.Run();

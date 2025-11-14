@@ -10,6 +10,8 @@ source_set("model") {
   sources = [
     "data_controls_edit_menu_builder.h",
     "data_controls_edit_menu_builder.mm",
+    "data_controls_metrics.h",
+    "data_controls_metrics.mm",
     "data_controls_pasteboard_manager.h",
     "data_controls_pasteboard_manager.mm",
     "data_controls_tab_helper.h",

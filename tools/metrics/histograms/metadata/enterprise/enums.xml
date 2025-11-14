@@ -636,6 +636,18 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="kShare"/>
 </enum>
 
+<!-- LINT.IfChange(EnterpriseDlpPolicyLevel) -->
+
+<enum name="EnterpriseDlpPolicyLevel">
+  <int value="0" label="Not Set"/>
+  <int value="1" label="Report"/>
+  <int value="2" label="Warn"/>
+  <int value="3" label="Block"/>
+  <int value="4" label="Allow"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/enterprise/data_controls/core/browser/rule.h:Level) -->
+
 <enum name="EnterpriseDlpPolicyRestriction">
   <summary>
     Type of restriction enforced by Data Leak Prevention policy.
