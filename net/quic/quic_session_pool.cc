@@ -2008,6 +2008,8 @@ QuicSessionPool::CreateSessionHelper(
   if (params_.enable_debugging_sni_in_transport_param &&
       IsGoogleHost(server_id.host())) {
     config.SetDebuggingSniToSend(server_id.host());
+    // Send debugging SNI even when ECH GREASE is enabled.
+    config.AddConnectionOptionsToSend({quic::kDSNI});
   }
 
   if (base::FeatureList::IsEnabled(features::kTryQuicByDefault)) {
