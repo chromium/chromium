@@ -82,7 +82,7 @@ ClientSocketPool* ClientSocketPoolManagerImpl::GetSocketPool(
       proxy_chain.is_direct()) {
     new_pool = std::make_unique<WebSocketTransportClientSocketPool>(
         sockets_per_proxy_chain, SocketPoolAdditionalCapacity::Create(),
-        &websocket_common_connect_job_params_);
+        proxy_chain, &websocket_common_connect_job_params_);
   } else {
     new_pool = std::make_unique<TransportClientSocketPool>(
         sockets_per_proxy_chain, sockets_per_group,

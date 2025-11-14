@@ -19,7 +19,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "net/base/net_errors.h"
-#include "net/base/proxy_chain.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_source_type.h"
@@ -35,12 +34,14 @@ namespace net {
 WebSocketTransportClientSocketPool::WebSocketTransportClientSocketPool(
     size_t socket_soft_cap,
     SocketPoolAdditionalCapacity additional_capacity,
+    const ProxyChain& proxy_chain,
     const CommonConnectJobParams* common_connect_job_params)
     : ClientSocketPool(socket_soft_cap,
                        additional_capacity,
                        /*is_for_websockets=*/true,
                        common_connect_job_params,
-                       std::make_unique<ConnectJobFactory>()) {
+                       std::make_unique<ConnectJobFactory>()),
+      proxy_chain_(proxy_chain) {
   DCHECK(common_connect_job_params->websocket_endpoint_lock_manager);
 }
 
@@ -108,9 +109,9 @@ int WebSocketTransportClientSocketPool::RequestSocket(
       std::make_unique<ConnectJobDelegate>(this, std::move(callback), handle,
                                            request_net_log);
 
-  std::unique_ptr<ConnectJob> connect_job = CreateConnectJob(
-      group_id, params, ProxyChain::Direct(), proxy_annotation_tag, priority,
-      SocketTag(), connect_job_delegate.get());
+  std::unique_ptr<ConnectJob> connect_job =
+      CreateConnectJob(group_id, params, proxy_chain_, proxy_annotation_tag,
+                       priority, SocketTag(), connect_job_delegate.get());
 
   int result = connect_job_delegate->Connect(std::move(connect_job));
 
