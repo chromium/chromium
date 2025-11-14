@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ipc/param_traits_utils.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <string_view>
 #include <type_traits>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -88,7 +84,7 @@ bool ReadCharVector(const base::Pickle* m,
     return false;
   }
   const CharType* begin = reinterpret_cast<const CharType*>(data);
-  const CharType* end = begin + data_size;
+  const CharType* end = UNSAFE_TODO(begin + data_size);
   r->assign(begin, end);
   return true;
 }
@@ -316,7 +312,7 @@ bool ParamTraits<signed char>::Read(const base::Pickle* m,
   if (!iter->ReadBytes(&data, sizeof(param_type))) {
     return false;
   }
-  memcpy(r, data, sizeof(param_type));
+  UNSAFE_TODO(memcpy(r, data, sizeof(param_type)));
   return true;
 }
 
@@ -331,7 +327,7 @@ bool ParamTraits<unsigned char>::Read(const base::Pickle* m,
   if (!iter->ReadBytes(&data, sizeof(param_type))) {
     return false;
   }
-  memcpy(r, data, sizeof(param_type));
+  UNSAFE_TODO(memcpy(r, data, sizeof(param_type)));
   return true;
 }
 
@@ -346,7 +342,7 @@ bool ParamTraits<unsigned short>::Read(const base::Pickle* m,
   if (!iter->ReadBytes(&data, sizeof(param_type))) {
     return false;
   }
-  memcpy(r, data, sizeof(param_type));
+  UNSAFE_TODO(memcpy(r, data, sizeof(param_type)));
   return true;
 }
 
@@ -361,7 +357,7 @@ bool ParamTraits<double>::Read(const base::Pickle* m,
   if (!iter->ReadBytes(&data, sizeof(*r))) {
     NOTREACHED();
   }
-  memcpy(r, data, sizeof(param_type));
+  UNSAFE_TODO(memcpy(r, data, sizeof(param_type)));
   return true;
 }
 
@@ -1166,7 +1162,7 @@ bool ParamTraits<MSG>::Read(const base::Pickle* m,
   size_t data_size = 0;
   bool result = iter->ReadData(&data, &data_size);
   if (result && data_size == sizeof(MSG)) {
-    memcpy(r, data, sizeof(MSG));
+    UNSAFE_TODO(memcpy(r, data, sizeof(MSG)));
   } else {
     NOTREACHED();
   }

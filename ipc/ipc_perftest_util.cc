@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ipc/ipc_perftest_util.h"
 
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -35,8 +31,8 @@ LockThreadAffinity::LockThreadAffinity(int cpu_number)
   affinity_set_ok_ = old_affinity_ != 0;
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   cpu_set_t cpuset;
-  CPU_ZERO(&cpuset);
-  CPU_SET(cpu_number, &cpuset);
+  UNSAFE_TODO(CPU_ZERO(&cpuset));
+  UNSAFE_TODO(CPU_SET(cpu_number, &cpuset));
   auto get_result = sched_getaffinity(0, sizeof(old_cpuset_), &old_cpuset_);
   DCHECK_EQ(0, get_result);
   auto set_result = sched_setaffinity(0, sizeof(cpuset), &cpuset);

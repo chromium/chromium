@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ipc/param_traits_utils.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
@@ -146,7 +142,7 @@ TYPED_TEST(SharedMemoryRegionTypedTest, WriteAndRead) {
   const size_t pre_size = pre_pickle.GetSize();
 
   const std::string content = "Hello, world!";
-  memcpy(pre_mapping.memory(), content.data(), content.size());
+  UNSAFE_TODO(memcpy(pre_mapping.memory(), content.data(), content.size()));
 
   IPC::Message message;
   IPC::WriteParam(&message, pre_pickle);
@@ -158,8 +154,8 @@ TYPED_TEST(SharedMemoryRegionTypedTest, WriteAndRead) {
   EXPECT_EQ(pre_size, post_pickle.GetSize());
   typename TypeParam::MappingType post_mapping = post_pickle.Map();
   EXPECT_EQ(pre_mapping.guid(), post_mapping.guid());
-  EXPECT_EQ(0, memcmp(pre_mapping.memory(), post_mapping.memory(),
-                      post_pickle.GetSize()));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(pre_mapping.memory(), post_mapping.memory(),
+                                  post_pickle.GetSize())));
 }
 
 TYPED_TEST(SharedMemoryRegionTypedTest, InvalidRegion) {

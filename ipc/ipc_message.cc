@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ipc/ipc_message.h"
 
 #include <limits.h>
@@ -14,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/atomic_sequence_num.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/pickle.h"
@@ -34,7 +30,7 @@ Message::Message() : base::Pickle(sizeof(Header)) {}
 
 Message::Message(const char* data, size_t data_len)
     : base::Pickle(base::Pickle::kUnownedData,
-                   base::as_bytes(base::span(data, data_len))) {}
+                   base::as_bytes(UNSAFE_TODO(base::span(data, data_len)))) {}
 
 Message::Message(const Message& other) : base::Pickle(other) {
   attachment_set_ = other.attachment_set_;
