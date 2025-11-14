@@ -615,6 +615,7 @@ _CROSSBENCH_WEBVIEW = frozenset([
             '--embedder-process-name=googleapp',
             '--embedder-setup-command-config=../../clank/android_webview/tools/crossbench_config/'
             'agsa_setup_config.hjson',
+            '--embedder-drop-caches',
         ]),
 ])
 # pylint: enable=line-too-long
