@@ -277,6 +277,23 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
 }
 
 void ActorTask::OnFinishedAct(
+    base::WeakPtr<ActorTask> actor_task,
+    ActCallback callback,
+    mojom::ActionResultPtr result,
+    std::optional<size_t> index_of_failed_action,
+    std::vector<ActionResultWithLatencyInfo> action_results) {
+  // Actor task disappeared.
+  if (!actor_task) {
+    std::move(callback).Run(MakeResult(mojom::ActionResultCode::kTaskWentAway),
+                            std::nullopt, {});
+    return;
+  }
+  actor_task->OnFinishedActImpl(std::move(callback), std::move(result),
+                                index_of_failed_action,
+                                std::move(action_results));
+}
+
+void ActorTask::OnFinishedActImpl(
     ActCallback callback,
     mojom::ActionResultPtr result,
     std::optional<size_t> index_of_failed_action,
