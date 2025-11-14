@@ -794,6 +794,19 @@ GaiaCookieManagerService::GetCookieManagerForPartition() {
   return signin_client_->GetCookieManager();
 }
 
+bool GaiaCookieManagerService::CanBindCookiesForPartition() {
+  // `GaiaCookieManagerService` manages the cookies for the default storage
+  // partition, the default storage partition should always allow cookie
+  // binding.
+  return true;
+}
+
+std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
+GaiaCookieManagerService::
+    CreateBoundSessionOAuthMultiLoginDelegateForPartition() {
+  return signin_client_->CreateBoundSessionOAuthMultiloginDelegate();
+}
+
 void GaiaCookieManagerService::InitializeListedAccountsIds() {
   for (gaia::ListedAccount& account : accounts_) {
     DCHECK(account.id.empty());

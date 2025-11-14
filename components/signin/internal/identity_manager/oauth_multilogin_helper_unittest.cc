@@ -306,17 +306,23 @@ class OAuthMultiloginHelperTest
     : public testing::Test,
       public AccountsCookieMutator::PartitionDelegate {
  public:
-  OAuthMultiloginHelperTest()
+  explicit OAuthMultiloginHelperTest(
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      const std::vector<base::test::FeatureRefAndParams>& enabled_features = {{
+        switches::kEnableOAuthMultiloginCookiesBindingForNonDefaultPartitions,
+        {}
+      }},
+      const std::vector<base::test::FeatureRef>& disabled_features = {}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+      )
       : kAccountId(CoreAccountId::FromGaiaId(kGaiaId)),
         kAccountId2(CoreAccountId::FromGaiaId(kGaiaId2)),
         test_signin_client_(&pref_service_),
         mock_token_service_(
             std::make_unique<MockTokenService>(&pref_service_)) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    test_signin_client_.SetBoundSessionOauthMultiloginDelegateFactory(
-        base::BindRepeating(&OAuthMultiloginHelperTest::
-                                CreateMockBoundSessionOAuthMultiLoginDelegate,
-                            base::Unretained(this)));
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   }
 
@@ -341,15 +347,12 @@ class OAuthMultiloginHelperTest
   }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  std::unique_ptr<BoundSessionOAuthMultiLoginDelegate>
-  CreateMockBoundSessionOAuthMultiLoginDelegate() {
-    auto delegate = std::make_unique<MockBoundSessionOAuthMultiLoginDelegate>();
-    bound_session_delegate_ = delegate.get();
-    return delegate;
-  }
-
   MockBoundSessionOAuthMultiLoginDelegate* bound_session_delegate() {
     return bound_session_delegate_;
+  }
+
+  void SetShouldReturnBoundSessionDelegate(bool value) {
+    should_return_bound_session_delegate_ = value;
   }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -399,6 +402,22 @@ class OAuthMultiloginHelperTest
     return &mock_cookie_manager_;
   }
 
+  std::unique_ptr<BoundSessionOAuthMultiLoginDelegate>
+  CreateBoundSessionOAuthMultiLoginDelegateForPartition() override {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    if (should_return_bound_session_delegate_) {
+      auto delegate =
+          std::make_unique<MockBoundSessionOAuthMultiLoginDelegate>();
+      bound_session_delegate_ = delegate.get();
+      return delegate;
+    } else {
+      return nullptr;
+    }
+#else
+    return nullptr;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+  }
+
   const CoreAccountId kAccountId;
   const CoreAccountId kAccountId2;
   base::test::TaskEnvironment task_environment_;
@@ -412,8 +431,10 @@ class OAuthMultiloginHelperTest
   std::unique_ptr<MockTokenService> mock_token_service_;
   std::unique_ptr<OAuthMultiloginHelper> helper_;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  bool should_return_bound_session_delegate_ = true;
   raw_ptr<MockBoundSessionOAuthMultiLoginDelegate> bound_session_delegate_ =
       nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 };
 
@@ -613,14 +634,14 @@ TEST_F(OAuthMultiloginHelperTest, SuccessWithExternalCcResult) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class OAuthMultiloginHelperCookieBindingTest
     : public OAuthMultiloginHelperTest,
-      public testing::WithParamInterface<MultiloginCookieBindingTestParam> {};
+      public testing::WithParamInterface<MultiloginCookieBindingTestParam> {
+ public:
+  OAuthMultiloginHelperCookieBindingTest()
+      : OAuthMultiloginHelperTest(GetParam().enabled_features,
+                                  GetParam().disabled_features) {}
+};
 
 TEST_P(OAuthMultiloginHelperCookieBindingTest, RequestUrlParameter) {
-  const MultiloginCookieBindingTestParam& param = GetParam();
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(param.enabled_features,
-                                             param.disabled_features);
-
   token_service()->UpdateCredentials(kAccountId, "refresh_token");
   CreateHelper(/*accounts=*/{{kAccountId, kGaiaId}});
 
@@ -630,7 +651,7 @@ TEST_P(OAuthMultiloginHelperCookieBindingTest, RequestUrlParameter) {
   token_service()->IssueAllTokensForAccount(kAccountId, success_response);
 
   EXPECT_TRUE(
-      url_loader()->IsPending(multilogin_url() + param.expected_url_param,
+      url_loader()->IsPending(multilogin_url() + GetParam().expected_url_param,
                               /*request_out=*/nullptr));
 }
 
@@ -641,6 +662,9 @@ INSTANTIATE_TEST_SUITE_P(
         MultiloginCookieBindingTestParam{
             /*enabled_features=*/
             {{switches::kEnableOAuthMultiloginCookiesBinding, {}},
+             {switches::
+                  kEnableOAuthMultiloginCookiesBindingForNonDefaultPartitions,
+              {}},
              {switches::kEnableOAuthMultiloginCookiesBindingServerExperiment,
               {{"enforced", "false"}}}},
             /*disabled_features=*/{},
@@ -649,6 +673,9 @@ INSTANTIATE_TEST_SUITE_P(
         MultiloginCookieBindingTestParam{
             /*enabled_features=*/
             {{switches::kEnableOAuthMultiloginCookiesBinding, {}},
+             {switches::
+                  kEnableOAuthMultiloginCookiesBindingForNonDefaultPartitions,
+              {}},
              {switches::kEnableOAuthMultiloginCookiesBindingServerExperiment,
               {{"enforced", "true"}}}},
             /*disabled_features=*/{},
@@ -657,6 +684,9 @@ INSTANTIATE_TEST_SUITE_P(
         MultiloginCookieBindingTestParam{
             /*enabled_features=*/
             {{switches::kEnableOAuthMultiloginCookiesBinding, {}},
+             {switches::
+                  kEnableOAuthMultiloginCookiesBindingForNonDefaultPartitions,
+              {}},
              {switches::kEnableOAuthMultiloginCookiesBindingServerExperiment,
               {}}},
             /*disabled_features=*/{},
@@ -664,11 +694,36 @@ INSTANTIATE_TEST_SUITE_P(
             /*test_suffix=*/"Default"},
         MultiloginCookieBindingTestParam{
             /*enabled_features=*/
-            {{switches::kEnableOAuthMultiloginCookiesBinding, {}}},
+            {
+                {switches::kEnableOAuthMultiloginCookiesBinding, {}},
+                {switches::
+                     kEnableOAuthMultiloginCookiesBindingForNonDefaultPartitions,
+                 {}},
+            },
             /*disabled_features=*/
             {switches::kEnableOAuthMultiloginCookiesBindingServerExperiment},
             /*expected_url_param=*/"",
-            /*test_suffix=*/"Disabled"}),
+            /*test_suffix=*/"Disabled"},
+        MultiloginCookieBindingTestParam{
+            /*enabled_features=*/
+            {{switches::kEnableOAuthMultiloginCookiesBinding, {}},
+             {switches::kEnableOAuthMultiloginCookiesBindingServerExperiment,
+              {{"enforced", "false"}}}},
+            /*disabled_features=*/
+            {switches::
+                 kEnableOAuthMultiloginCookiesBindingForNonDefaultPartitions},
+            /*expected_url_param=*/"",
+            /*test_suffix=*/"UnenforcedButDisabledForPartition"},
+        MultiloginCookieBindingTestParam{
+            /*enabled_features=*/
+            {{switches::kEnableOAuthMultiloginCookiesBinding, {}},
+             {switches::kEnableOAuthMultiloginCookiesBindingServerExperiment,
+              {{"enforced", "true"}}}},
+            /*disabled_features=*/
+            {switches::
+                 kEnableOAuthMultiloginCookiesBindingForNonDefaultPartitions},
+            /*expected_url_param=*/"",
+            /*test_suffix=*/"EnforcedButDisabledForPartition"}),
     [](const testing::TestParamInfo<MultiloginCookieBindingTestParam>& info) {
       return info.param.test_suffix;
     });
@@ -916,6 +971,34 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessNoChallenge) {
   EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
 }
 
+TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessNoBoundSessionDelegate) {
+  SetShouldReturnBoundSessionDelegate(false);
+  ReplaceTokenService(/*use_refresh_tokens_for_multilogin=*/true);
+  token_service()->UpdateCredentials(
+      kAccountId, "refresh_token",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      /*wrapped_binding_key=*/{1, 2, 3});
+  CreateHelper(/*accounts=*/{{kAccountId, kGaiaId}});
+
+  // No bound session delegate is created (no mock is created either).
+  MockBoundSessionOAuthMultiLoginDelegate* mock_bound_session_delegate =
+      bound_session_delegate();
+  ASSERT_EQ(mock_bound_session_delegate, nullptr);
+  // Make sure the cookies are still set despite the missing bound session
+  // delegate.
+  MockCookieManager* mock_cookie_manager = cookie_manager();
+  ASSERT_NE(mock_cookie_manager, nullptr);
+  EXPECT_CALL(*mock_cookie_manager, SetCanonicalCookie)
+      .WillOnce(RunSetCookieCallbackWithSuccess);
+
+  ASSERT_TRUE(url_loader()->IsPending(multilogin_url()));
+
+  url_loader()->AddResponse(multilogin_url(), kMultiloginSuccessResponse);
+
+  ASSERT_FALSE(url_loader()->IsPending(multilogin_url()));
+  EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
+}
+
 TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessWithChallenge) {
   ReplaceTokenService(/*use_refresh_tokens_for_multilogin=*/true);
   std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
@@ -1108,6 +1191,45 @@ TEST_F(OAuthMultiloginHelperTest, BoundSessionHelperCalled) {
   // All set cookie calls must be sent before adding any mock expectation,
   // otherwise the test will fail.
   task_environment_.RunUntilIdle();
+  EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
+}
+
+class OAuthMultiloginHelperOAMLCookieBindingDisabledForPartitionTest
+    : public OAuthMultiloginHelperTest {
+ public:
+  OAuthMultiloginHelperOAMLCookieBindingDisabledForPartitionTest()
+      : OAuthMultiloginHelperTest(
+            /*enabled_features=*/{},
+            /*disabled_features=*/
+            {switches::
+                 kEnableOAuthMultiloginCookiesBindingForNonDefaultPartitions}) {
+  }
+};
+
+TEST_F(OAuthMultiloginHelperOAMLCookieBindingDisabledForPartitionTest,
+       BoundTokenSuccessNoChallenge) {
+  ReplaceTokenService(/*use_refresh_tokens_for_multilogin=*/true);
+  token_service()->UpdateCredentials(
+      kAccountId, "refresh_token",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      /*wrapped_binding_key=*/{1, 2, 3});
+  CreateHelper(/*accounts=*/{{kAccountId, kGaiaId}});
+
+  MockBoundSessionOAuthMultiLoginDelegate* mock_bound_session_delegate =
+      bound_session_delegate();
+  ASSERT_NE(mock_bound_session_delegate, nullptr);
+  EXPECT_CALL(*mock_bound_session_delegate, BeforeSetCookies).Times(0);
+  EXPECT_CALL(*mock_bound_session_delegate, OnCookiesSet).Times(0);
+  MockCookieManager* mock_cookie_manager = cookie_manager();
+  ASSERT_NE(mock_cookie_manager, nullptr);
+  EXPECT_CALL(*mock_cookie_manager, SetCanonicalCookie)
+      .WillOnce(RunSetCookieCallbackWithSuccess);
+
+  ASSERT_TRUE(url_loader()->IsPending(multilogin_url()));
+
+  url_loader()->AddResponse(multilogin_url(), kMultiloginSuccessResponse);
+
+  ASSERT_FALSE(url_loader()->IsPending(multilogin_url()));
   EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

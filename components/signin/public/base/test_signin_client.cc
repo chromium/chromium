@@ -140,14 +140,3 @@ version_info::Channel TestSigninClient::GetClientChannel() {
 
 void TestSigninClient::OnPrimaryAccountChanged(
     signin::PrimaryAccountChangeEvent event_details) {}
-
-std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
-TestSigninClient::CreateBoundSessionOAuthMultiloginDelegate() const {
-  return bound_session_delegate_factory_ ? bound_session_delegate_factory_.Run()
-                                         : nullptr;
-}
-
-void TestSigninClient::SetBoundSessionOauthMultiloginDelegateFactory(
-    BoundSessionOauthMultiloginDelegateFactory factory) {
-  bound_session_delegate_factory_ = std::move(factory);
-}
