@@ -141,22 +141,32 @@ function extractRequestInformation(options: Options): RequestInformation {
   };
 }
 
-// Serializes a PublicKeyCredentialDescriptor array to a string.
-function publicKeyCredentialDescriptorToString(
-    descriptors?: PublicKeyCredentialDescriptor[]): string {
-  if (descriptors == null) {
-    return '';
+// Utility function to ensure transports are expressed as an array of strings.
+function transportsAsStrings(transports?: AuthenticatorTransport[]): string[] {
+  return (transports ?? []).map(transport => transport as string);
+}
+
+// Interface containing information about the credential descriptors.
+interface SerializedDescriptor {
+  type: string;
+  id: string;
+  transports: string[];
+}
+
+// Serializes a PublicKeyCredentialDescriptor array to a serialized descriptors
+// array.
+function publicKeyCredentialDescriptorAsSerializedDescriptors(
+    descriptors?: PublicKeyCredentialDescriptor[]): SerializedDescriptor[] {
+  if (!descriptors) {
+    return [];
   }
 
   // Map the array and convert BufferSource to base64.
-  const serializableDescriptors =
-      descriptors.map((desc) => ({
-                        type: desc.type,
-                        id: bufferSourceToBase64(desc.id),
-                        transports: desc.transports,
-                      }));
-
-  return JSON.stringify(serializableDescriptors);
+  return descriptors.map((desc) => ({
+                           type: desc.type,
+                           id: bufferSourceToBase64(desc.id),
+                           transports: transportsAsStrings(desc.transports),
+                         }));
 }
 
 function createPublicKeyCredential(
@@ -290,7 +300,7 @@ function createRegistrationRequest(
     'request': extractRequestInformation(publicKeyOptions),
     'rpEntity': extractRelyingPartyEntity(publicKeyOptions),
     'userEntity': extractUserEntity(publicKeyOptions.user),
-    'excludeCredentials': publicKeyCredentialDescriptorToString(
+    'excludeCredentials': publicKeyCredentialDescriptorAsSerializedDescriptors(
         publicKeyOptions.excludeCredentials),
   });  // Attestation request
 
@@ -306,7 +316,7 @@ function createAttestationRequest(
     'frameId': gCrWeb.getFrameId(),
     'request': extractRequestInformation(publicKeyOptions),
     'rpEntity': extractRelyingPartyEntity(publicKeyOptions),
-    'allowCredentials': publicKeyCredentialDescriptorToString(
+    'allowCredentials': publicKeyCredentialDescriptorAsSerializedDescriptors(
         publicKeyOptions.allowCredentials),
   });  // Attestation request
 

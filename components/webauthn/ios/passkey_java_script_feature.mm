@@ -64,6 +64,10 @@ constexpr char kName[] = "name";
 // Member exclusive to the "userEntity" dictionary.
 constexpr char kDisplayName[] = "displayName";
 
+// Member of the credential descriptors array.
+constexpr char kType[] = "type";
+constexpr char kTransports[] = "transports";
+
 // Parameters of the "getResolved" event.
 constexpr char kCredentialId[] = "credential_id";
 constexpr char kRpId[] = "rp_id";
@@ -188,15 +192,46 @@ device::UserVerificationRequirement ExtractUserVerification(
   return user_verification_requirement;
 }
 
-// Reads a list of PublicKeyCredentialDescriptor from the provided dictionary.
+// Reads a list of PublicKeyCredentialDescriptor from the provided list.
 std::vector<device::PublicKeyCredentialDescriptor> ExtractCredentials(
-    const base::Value::Dict* dict) {
+    const base::Value::List* serialized_descriptors) {
   std::vector<device::PublicKeyCredentialDescriptor> credential_descriptors;
-  if (!dict) {
+  if (!serialized_descriptors) {
     return credential_descriptors;
   }
 
-  // TODO(crbug.com/385174410): Read credential descriptors.
+  for (const auto& serialized_descriptor : *serialized_descriptors) {
+    const base::Value::Dict& dict = serialized_descriptor.GetDict();
+    std::vector<uint8_t> decoded_id = Base64Decode(dict.FindString(kId));
+    if (decoded_id.empty()) {
+      continue;
+    }
+
+    // Only the public-key type is supported.
+    const std::string* type = dict.FindString(kType);
+    if (!type || *type != device::kPublicKey) {
+      continue;
+    }
+
+    device::PublicKeyCredentialDescriptor credential_descriptor(
+        device::CredentialType::kPublicKey, std::move(decoded_id));
+
+    // Read transport protocols.
+    const base::Value::List* transports = dict.FindList(kTransports);
+    if (transports) {
+      for (const auto& transport : *transports) {
+        std::optional<device::FidoTransportProtocol> fidoTransportProtocol =
+            device::ConvertToFidoTransportProtocol(transport.GetString());
+        if (fidoTransportProtocol.has_value()) {
+          credential_descriptor.transports.insert(
+              *fidoTransportProtocol);
+        }
+      }
+    }
+
+    credential_descriptors.emplace_back(credential_descriptor);
+  }
+
   return credential_descriptors;
 }
 
@@ -222,7 +257,7 @@ PasskeyTabHelper::AssertionRequestParams ExtractAssertionRequestParams(
     const base::Value::Dict& dict) {
   return PasskeyTabHelper::AssertionRequestParams(
       ExtractRequestParams(dict.FindDict(kRequest)),
-      ExtractCredentials(dict.FindDict(kAllowCredentials)));
+      ExtractCredentials(dict.FindList(kAllowCredentials)));
 }
 
 // Extracts all parameters required to build a RegistrationRequestParams object
@@ -232,7 +267,7 @@ PasskeyTabHelper::RegistrationRequestParams ExtractRegistrationRequestParams(
   return PasskeyTabHelper::RegistrationRequestParams(
       ExtractRequestParams(dict.FindDict(kRequest)),
       ExtractUserEntity(dict.FindDict(kUserEntity)),
-      ExtractCredentials(dict.FindDict(kExcludeCredentials)));
+      ExtractCredentials(dict.FindList(kExcludeCredentials)));
 }
 
 }  // namespace
