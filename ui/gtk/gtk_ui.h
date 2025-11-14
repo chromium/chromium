@@ -93,6 +93,7 @@ class GtkUi : public ui::LinuxUiAndTheme {
       ui::WindowButtonOrderObserver* observer) override;
   WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) override;
+  int GetWindowDragThresholdPx() const override;
   std::vector<std::string> GetCmdLineFlagsForCopy() const override;
 
   // ui::LinuxUiTheme:

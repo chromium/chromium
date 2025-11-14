@@ -149,6 +149,10 @@ ui::WindowFrameProvider* FallbackLinuxUi::GetWindowFrameProvider(
   return nullptr;
 }
 
+int FallbackLinuxUi::GetWindowDragThresholdPx() const {
+  return kDefaultWindowDragThreshold;
+}
+
 base::flat_map<std::string, std::string>
 FallbackLinuxUi::GetKeyboardLayoutMap() {
   return ui::GenerateDomKeyboardLayoutMap();

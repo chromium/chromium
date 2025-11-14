@@ -84,6 +84,10 @@ LinuxUi::WindowFrameAction FakeLinuxUi::GetWindowFrameAction(
   return WindowFrameAction::kNone;
 }
 
+int FakeLinuxUi::GetWindowDragThresholdPx() const {
+  return kDefaultWindowDragThreshold;
+}
+
 std::vector<std::string> FakeLinuxUi::GetCmdLineFlagsForCopy() const {
   return {};
 }

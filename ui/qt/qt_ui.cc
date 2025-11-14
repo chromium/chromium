@@ -350,6 +350,13 @@ QtUi::WindowFrameAction QtUi::GetWindowFrameAction(
   }
 }
 
+int QtUi::GetWindowDragThresholdPx() const {
+  // TODO(crbug.com/459840685): Qt supports both startDragDistance and
+  // startDragTime as thresholds:
+  // https://doc.qt.io/qt-6/qapplication.html#startDragDistance-prop.
+  return kDefaultWindowDragThreshold;
+}
+
 std::vector<std::string> QtUi::GetCmdLineFlagsForCopy() const {
   return {std::string(switches::kUiToolkitFlag) + "=qt",
           base::StrCat({switches::kQtVersionFlag, "=",
