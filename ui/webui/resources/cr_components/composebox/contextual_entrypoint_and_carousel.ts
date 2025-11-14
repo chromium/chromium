@@ -231,7 +231,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       if ('tabId' in file) {
         // If the composebox is being initialized with tab context, we want to
         // keep the context menu open to allow for multi-tab selection.
-        if (this.contextMenuEnabled_)  {
+        if (this.contextMenuEnabled_ && !file.delayUpload)  {
           this.$.contextEntrypoint.openMenuForMultiSelection();
         }
         this.addTabContext_(new CustomEvent('addTabContext', {
