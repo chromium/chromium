@@ -7,6 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/base_export.h"
+#include "base/memory/stack_allocated.h"
 
 namespace base::android {
 
@@ -31,6 +32,10 @@ namespace base::android {
 // While it is in batch mode, BindService will queue up binding requests. When
 // the batch is over, the queue is flushed.
 class BASE_EXPORT ScopedServiceBindingBatch {
+  // Disallow allocation on heap to enforce RAII usage. This is to prevent
+  // overlapping batch updates partially which can cause too long batch window.
+  STACK_ALLOCATED();
+
  public:
   ScopedServiceBindingBatch();
   ~ScopedServiceBindingBatch();
@@ -38,9 +43,13 @@ class BASE_EXPORT ScopedServiceBindingBatch {
   ScopedServiceBindingBatch(const ScopedServiceBindingBatch&) = delete;
   ScopedServiceBindingBatch& operator=(const ScopedServiceBindingBatch&) =
       delete;
+  // Disable move constructor and move assignment operator to ensure that
+  // scopes are not interleaved, but just cleanly nested.
+  ScopedServiceBindingBatch(ScopedServiceBindingBatch&&) = delete;
+  ScopedServiceBindingBatch& operator=(ScopedServiceBindingBatch&&) = delete;
 
  private:
-  base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  base::android::ScopedJavaLocalRef<jobject> java_object_;
 };
 
 }  // namespace base::android
