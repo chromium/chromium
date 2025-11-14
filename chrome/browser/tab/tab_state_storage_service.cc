@@ -20,6 +20,7 @@
 #include "chrome/browser/tab/tab_storage_util.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace tabs {
 
@@ -71,6 +72,39 @@ void MoveNodeSequence(const TabCollection* prev_parent,
   SaveChildrenInternal(builder, prev_parent, service, packager);
   SaveChildrenInternal(builder, curr_parent, service, packager);
   backend->Update(builder.Build());
+}
+
+// Strip + Pinned/Unpinned + TabGroup + Split + Tab = 5 levels.
+constexpr int kMaxTreeHeight = 5;
+
+// Performs a recursive in-order traversal of the tree rooted at
+// `current_node_storage_id` in `children_map`. Tabs are drained from
+// `loaded_tabs_map` and added to `sorted_tabs` in the order they are
+// encountered during the traversal. The height of the tree is small
+// so there is no risk of stack overflow from recursing.
+void SortTabsInOrder(
+    int current_node_storage_id,
+    const absl::flat_hash_map<int, std::vector<int>>& children_map,
+    absl::flat_hash_map<int, LoadedTabState>& loaded_tabs_map,
+    std::vector<LoadedTabState>& sorted_tabs,
+    int depth = 0) {
+  DCHECK_LE(depth, kMaxTreeHeight) << "Tree is too tall, possible cycle?";
+  const auto it = children_map.find(current_node_storage_id);
+  if (it != children_map.end()) {
+    for (const int child_id : it->second) {
+      SortTabsInOrder(child_id, children_map, loaded_tabs_map, sorted_tabs,
+                      depth + 1);
+    }
+  } else {
+    auto tab_it = loaded_tabs_map.find(current_node_storage_id);
+    // TODO(crbug.com/460490530): DCHECK that we found a tab otherwise we have
+    // collections that are missing their child tabs. Also consider emitting
+    // a metric for this.
+    if (tab_it != loaded_tabs_map.end()) {
+      sorted_tabs.emplace_back(std::move(tab_it->second));
+      loaded_tabs_map.erase(tab_it);
+    }
+  }
 }
 
 }  // namespace
@@ -193,12 +227,23 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
       base::BindRepeating(&TabStateStorageService::OnCollectionCreated,
                           weak_ptr_factory_.GetWeakPtr());
 
-  std::vector<LoadedTabState> loaded_tabs;
-  std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups;
   std::unique_ptr<RestoreIdAssociatorBuilder> builder =
       builder_factory_.Run(on_tab_association, on_collection_association);
 
   DCHECK(builder) << "Associator builder has not been instantiated";
+
+  if (entries.empty()) {
+    std::move(callback).Run(std::make_unique<StorageLoadedData>(
+        std::vector<LoadedTabState>(),
+        std::vector<std::unique_ptr<TabGroupCollectionData>>(),
+        builder->BuildAssociator()));
+    return;
+  }
+
+  std::optional<int> root_storage_id;
+  absl::flat_hash_map<int, LoadedTabState> loaded_tabs_map;
+  absl::flat_hash_map<int, std::vector<int>> children_map;
+  std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups;
 
   int max_storage_id = 0;
   for (auto& entry : entries) {
@@ -207,15 +252,25 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
       tabs_pb::TabState tab_state;
       if (tab_state.ParseFromString(entry.payload)) {
         builder->RegisterTab(entry.id, tab_state);
-        loaded_tabs.emplace_back(
-            std::move(tab_state),
-            base::BindOnce(&TabStateStorageService::OnTabCreated,
-                           weak_ptr_factory_.GetWeakPtr(), entry.id));
+        loaded_tabs_map.emplace(
+            entry.id,
+            std::make_pair(
+                std::move(tab_state),
+                base::BindOnce(&TabStateStorageService::OnTabCreated,
+                               weak_ptr_factory_.GetWeakPtr(), entry.id)));
       }
     } else {
+      if (entry.type == TabStorageType::kTabStrip) {
+        DCHECK(!root_storage_id.has_value())
+            << "Multiple root nodes for window tag in the database.";
+        root_storage_id = entry.id;
+      }
       tabs_pb::Children children;
       if (children.ParseFromString(entry.children)) {
         builder->RegisterCollection(entry.id, entry.type, children);
+        const auto& storage_ids = children.storage_id();
+        children_map.emplace(
+            entry.id, std::vector<int>(storage_ids.begin(), storage_ids.end()));
       }
 
       if (entry.type == TabStorageType::kGroup) {
@@ -228,6 +283,25 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
     }
   }
   next_storage_id_ = max_storage_id + 1;
+
+  std::vector<LoadedTabState> loaded_tabs;
+  loaded_tabs.reserve(loaded_tabs_map.size());
+
+  // TODO(crbug.com/460490530): Change this to a DCHECK once we've worked out
+  // why this is sometimes not present.
+  if (root_storage_id.has_value()) {
+    SortTabsInOrder(root_storage_id.value(), children_map, loaded_tabs_map,
+                    loaded_tabs);
+  } else {
+    // Temporarily fallback to just loading the tabs in a random order.
+    for (auto& [unused, tab] : loaded_tabs_map) {
+      loaded_tabs.emplace_back(std::move(tab));
+    }
+  }
+
+  // TODO(crbug.com/460490530): CHECK that every tab row was found in the
+  // child traversal. Otherwise we've got an inconsistent state and cleanup
+  // may be necessary.
 
   auto loaded_data = std::make_unique<StorageLoadedData>(
       std::move(loaded_tabs), std::move(loaded_groups),
