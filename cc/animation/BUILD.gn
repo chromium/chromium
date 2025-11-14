@@ -19,6 +19,8 @@ cc_component("animation") {
     "animation_id_provider.h",
     "animation_timeline.cc",
     "animation_timeline.h",
+    "animation_trigger.cc",
+    "animation_trigger.h",
     "element_animations.cc",
     "element_animations.h",
     "filter_animation_curve.cc",
@@ -37,6 +39,8 @@ cc_component("animation") {
     "scroll_offset_animations_impl.h",
     "scroll_timeline.cc",
     "scroll_timeline.h",
+    "timeline_trigger.cc",
+    "timeline_trigger.h",
     "worklet_animation.cc",
     "worklet_animation.h",
   ]

@@ -1099,6 +1099,18 @@
       }
     },
     {
+      // When enabled, EventTriggers[1] will function via cc::EventTrigger
+      // objects that live on the compositor thread.
+      // [1] https://drafts.csswg.org/css-animations-2/#event-triggers
+      name: "CompositorEventTrigger"
+    },
+    {
+      // When enabled, TimelineTriggers[1] will function via cc::TimelineTrigger
+      // objects that live on the compositor thread.
+      // [1] https://drafts.csswg.org/css-animations-2/#timeline-triggers
+      name: "CompositorTimelineTrigger",
+    },
+    {
       name: "CompressionDictionaryTransport",
       base_feature: "none",
       public: true,

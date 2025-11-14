@@ -21,6 +21,7 @@
 #include "cc/animation/animation_events.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/animation_timeline.h"
+#include "cc/animation/animation_trigger.h"
 #include "cc/animation/element_animations.h"
 #include "cc/animation/keyframe_effect.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
@@ -88,10 +89,26 @@ AnimationTimeline* AnimationHost::GetTimelineById(int timeline_id) {
                                                      : f->second.get();
 }
 
+scoped_refptr<AnimationTimeline> AnimationHost::GetScopedRefTimelineById(
+    int timeline_id) {
+  auto f = id_to_timeline_map_.Write(*this).find(timeline_id);
+  return f == id_to_timeline_map_.Write(*this).end() ? nullptr : f->second;
+}
+
+const AnimationTrigger* AnimationHost::GetTriggerById(int id) const {
+  const auto& it = id_to_trigger_map_.Read(*this).find(id);
+  return it == id_to_trigger_map_.Read(*this).end() ? nullptr
+                                                    : it->second.get();
+}
+
 void AnimationHost::ClearMutators() {
   for (auto& kv : id_to_timeline_map_.Read(*this))
     EraseTimeline(kv.second);
   id_to_timeline_map_.Write(*this).clear();
+  for (auto& it : id_to_trigger_map_.Write(*this)) {
+    it.second->SetAnimationHost(nullptr);
+  }
+  id_to_trigger_map_.Write(*this).clear();
 }
 
 base::TimeDelta AnimationHost::MinimumTickInterval() const {
@@ -122,11 +139,23 @@ void AnimationHost::AddAnimationTimeline(
   SetNeedsPushProperties();
 }
 
+void AnimationHost::AddTrigger(scoped_refptr<AnimationTrigger> trigger) {
+  trigger->SetAnimationHost(this);
+  id_to_trigger_map_.Write(*this).insert(
+      std::make_pair(trigger->id(), trigger));
+  SetNeedsPushProperties();
+}
+
 void AnimationHost::RemoveAnimationTimeline(
     scoped_refptr<AnimationTimeline> timeline) {
   DCHECK(timeline->id());
   EraseTimeline(timeline);
   id_to_timeline_map_.Write(*this).erase(timeline->id());
+  SetNeedsPushProperties();
+}
+
+void AnimationHost::RemoveTrigger(scoped_refptr<AnimationTrigger> trigger) {
+  id_to_trigger_map_.Write(*this).erase(trigger->id());
   SetNeedsPushProperties();
 }
 
@@ -138,6 +167,16 @@ void AnimationHost::DetachAnimationTimeline(
         std::make_pair(timeline->id(), timeline));
   } else {
     RemoveAnimationTimeline(timeline);
+  }
+}
+
+void AnimationHost::DetachTrigger(scoped_refptr<AnimationTrigger> trigger) {
+  if (InProtectedSequence()) {
+    // Defer cleanup until post-commit.
+    detached_trigger_map_.Write(*this).insert(
+        std::make_pair(trigger->id(), trigger));
+  } else {
+    RemoveTrigger(trigger);
   }
 }
 
@@ -364,6 +403,8 @@ void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl,
     needs_push_properties_.Write(*this) = false;
     PushTimelinesToImplThread(host_impl);
     RemoveTimelinesFromImplThread(host_impl);
+    PushTriggersToImplThread(host_impl);
+    RemoveTriggersFromImplThread(host_impl);
     PushPropertiesToImplThread(host_impl);
 
     // When using a display tree this ensures that any new animation updates are
@@ -385,6 +426,18 @@ void AnimationHost::RemoveStaleTimelines() {
   detached_timeline_map_.Write(*this).clear();
 }
 
+void AnimationHost::RemoveStaleTriggers() {
+  DCHECK(!InProtectedSequence());
+  if (detached_trigger_map_.Read(*this).empty()) {
+    return;
+  }
+
+  for (auto& kv : detached_trigger_map_.Read(*this)) {
+    RemoveTrigger(kv.second);
+  }
+  detached_trigger_map_.Write(*this).clear();
+}
+
 void AnimationHost::PushTimelinesToImplThread(AnimationHost* host_impl) const {
   for (auto& kv : id_to_timeline_map_.Read(*this)) {
     auto& timeline = kv.second;
@@ -398,12 +451,27 @@ void AnimationHost::PushTimelinesToImplThread(AnimationHost* host_impl) const {
   }
 }
 
+void AnimationHost::PushTriggersToImplThread(AnimationHost* host_impl) const {
+  for (auto& it : id_to_trigger_map_.Read(*this)) {
+    const scoped_refptr<AnimationTrigger>& trigger = it.second;
+    if (host_impl->GetTriggerById(trigger->id())) {
+      continue;
+    }
+
+    auto to_add = trigger->CreateImplInstance(*host_impl);
+    host_impl->AddTrigger(std::move(to_add));
+  }
+}
+
 void AnimationHost::RemoveTimelinesFromImplThread(
     AnimationHost* host_impl) const {
   IdToTimelineMap& timelines_impl =
       host_impl->id_to_timeline_map_.Write(*host_impl);
 
   // Erase all the impl timelines which |this| doesn't have.
+  // TODO(crbug.com/459538550): It might be too early to remove a timeline here
+  // as the timeline might still be relevant to the active tree until the
+  // pending tree becomes active.
   for (auto it = timelines_impl.begin(); it != timelines_impl.end();) {
     auto& timeline_impl = it->second;
     if (timeline_impl->is_impl_only() || GetTimelineById(timeline_impl->id())) {
@@ -413,6 +481,19 @@ void AnimationHost::RemoveTimelinesFromImplThread(
       it = timelines_impl.erase(it);
     }
   }
+}
+
+void AnimationHost::RemoveTriggersFromImplThread(
+    AnimationHost* host_impl) const {
+  IdToTriggerMap& impl_list = host_impl->id_to_trigger_map_.Write(*host_impl);
+  // TODO(crbug.com/459538550): It might be too early to remove a trigger here
+  // as the trigger might still be relevant to the active tree until the pending
+  // tree becomes active.
+  std::erase_if(
+      impl_list,
+      [&](const std::pair<int, scoped_refptr<AnimationTrigger>>& pair) {
+        return !GetTriggerById(pair.second->id());
+      });
 }
 
 void AnimationHost::PushPropertiesToImplThread(AnimationHost* host_impl) {

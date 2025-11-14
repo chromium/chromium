@@ -59,6 +59,7 @@ class MutatorHost {
                                 const PropertyTrees& property_trees) = 0;
 
   virtual void RemoveStaleTimelines() = 0;
+  virtual void RemoveStaleTriggers() = 0;
 
   virtual void SetScrollAnimationDurationForTesting(
       base::TimeDelta duration) = 0;

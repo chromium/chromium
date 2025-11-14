@@ -91,6 +91,9 @@ class CORE_EXPORT TimelineTrigger : public AnimationTrigger {
     return ComputeTriggerBoundaries(current_offset, timeline_source, timeline);
   }
 
+  void CreateCompositorTrigger() override;
+  void DestroyCompositorTrigger() override;
+
   using TimelineState = ScrollSnapshotTimeline::TimelineState;
 
  private:

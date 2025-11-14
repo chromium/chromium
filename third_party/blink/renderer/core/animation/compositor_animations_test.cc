@@ -40,7 +40,9 @@
 #include "cc/animation/animation_host.h"
 #include "cc/animation/keyframe_model.h"
 #include "cc/layers/picture_layer.h"
+#include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/transform_node.h"
+#include "content/test/test_blink_web_unit_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
@@ -80,6 +82,8 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_request.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
@@ -3608,6 +3612,199 @@ TEST_P(AnimationCompositorAnimationsTest,
                 GetDocument().View()->GetPaintArtifactCompositor()));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+}
+
+class CompositorAnimationTriggerTest : public SimTest {
+ public:
+  CompositorAnimationTriggerTest() {
+    scoped_composited_timeline_triggers_ =
+        std::make_unique<ScopedCompositorTimelineTriggerForTest>(true);
+  }
+  void SetUp() override {
+    was_threaded_animation_enabled_ =
+        content::TestBlinkWebUnitTestSupport::SetThreadedAnimationEnabled(true);
+    SimTest::SetUp();
+  }
+
+  void TearDown() override {
+    SimTest::TearDown();
+
+    content::TestBlinkWebUnitTestSupport::SetThreadedAnimationEnabled(
+        was_threaded_animation_enabled_);
+  }
+
+  cc::LayerTreeHostImpl* GetLayerTreeHostImpl() {
+    return static_cast<cc::SingleThreadProxy*>(
+               GetWebFrameWidget().LayerTreeHostForTesting()->proxy())
+        ->LayerTreeHostImplForTesting();
+  }
+
+  cc::AnimationHost* GetAnimationHostImpl() {
+    return static_cast<cc::AnimationHost*>(
+        GetLayerTreeHostImpl()->mutator_host());
+  }
+
+  Element* GetElement(String id) {
+    return GetDocument().getElementById(AtomicString(id));
+  }
+
+ private:
+  std::unique_ptr<ScopedCompositorTimelineTriggerForTest>
+      scoped_composited_timeline_triggers_;
+  bool was_threaded_animation_enabled_;
+};
+
+TEST_F(CompositorAnimationTriggerTest, AddTimelineTriggers) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      @keyframes expand {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(5); }
+      }
+      @keyframes expand2 {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(5); }
+      }
+      @keyframes expand3 {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(5); }
+      }
+
+      .one {
+        timeline-trigger: --trigger view();
+        animation: expand .5s, expand;
+        animation-trigger: --trigger play;
+      }
+      .two {
+        timeline-trigger: --trigger view(), --trigger2 view();
+        animation: expand .5s, expand2 .4s;
+        animation-trigger: --trigger play --trigger2 pause;
+      }
+      .three {
+        timeline-trigger: --trigger view(), --trigger2 view(),
+                          --trigger3 view();
+        animation: expand .5s, expand2 .4s, expand3 .3s;
+        animation-trigger: --trigger play, --trigger2 play, --trigger3 play;
+      }
+
+      #target {
+        background: green;
+        height: 100px;
+        width: 100px;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Element* target = GetElement("target");
+
+  cc::AnimationHost* host = GetAnimationHostImpl();
+  const cc::AnimationHost::IdToTriggerMap& triggers =
+      host->GetTriggersForTesting();
+
+  auto test_for_n_triggers = [&](int n) {
+    EXPECT_EQ(triggers.size(), n);
+    for (auto& it : triggers) {
+      const cc::AnimationTrigger* trigger = it.second.get();
+      EXPECT_TRUE(trigger->IsTimelineTrigger());
+      EXPECT_FALSE(trigger->IsEventTrigger());
+      // TODO(crbug.com/451238244): Test cc animations held by the trigger.
+    }
+  };
+
+  test_for_n_triggers(0);
+
+  target->classList().add({"one"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  test_for_n_triggers(1);
+
+  target->classList().remove({"one"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  test_for_n_triggers(0);
+
+  target->classList().add({"two"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  test_for_n_triggers(2);
+
+  target->classList().remove({"two"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  test_for_n_triggers(0);
+
+  target->classList().add({"three"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  test_for_n_triggers(3);
+
+  target->classList().remove({"three"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  test_for_n_triggers(0);
+}
+
+TEST_F(CompositorAnimationTriggerTest, ChangeTimelineTrigger) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      @keyframes expand {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(5); }
+      }
+
+      .source1 {
+        timeline-trigger: --trigger --timeline;
+      }
+      .source2 {
+        timeline-trigger: --trigger scroll();
+      }
+      .source3 {
+        timeline-trigger: --trigger view() contain 0%;
+      }
+
+      #target {
+        animation: expand .5s, expand;
+        animation-trigger: --trigger play;
+        background: green;
+        height: 100px;
+        width: 100px;
+        view-timeline: --timeline;
+      }
+    </style>
+    <div id="target" class="source1"></div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Element* target = GetElement("target");
+
+  cc::AnimationHost* host = GetAnimationHostImpl();
+  const cc::AnimationHost::IdToTriggerMap& triggers =
+      host->GetTriggersForTesting();
+  scoped_refptr<cc::AnimationTrigger> trigger1 = triggers.begin()->second;
+
+  target->classList().remove({"source1"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  EXPECT_TRUE(triggers.empty());
+
+  target->classList().add({"source2"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  scoped_refptr<cc::AnimationTrigger> trigger2 = triggers.begin()->second.get();
+  EXPECT_NE(trigger1, trigger2);
+  EXPECT_NE(trigger1->id(), trigger2->id());
+
+  target->classList().remove({"source2"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  EXPECT_TRUE(triggers.empty());
+
+  target->classList().add({"source3"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  scoped_refptr<cc::AnimationTrigger> trigger3 = triggers.begin()->second.get();
+  EXPECT_NE(trigger1, trigger3);
+  EXPECT_NE(trigger1->id(), trigger2->id());
+  EXPECT_NE(trigger2, trigger3);
+  EXPECT_NE(trigger2->id(), trigger3->id());
 }
 
 }  // namespace blink

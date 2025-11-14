@@ -37,6 +37,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
+#include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/pending_animations.h"
 #include "third_party/blink/renderer/core/animation/worklet_animation_controller.h"
@@ -141,6 +142,8 @@ void DocumentAnimations::UpdateAnimations(
     document_->View()->ScheduleAnimation();
   }
 
+  UpdateCompositorAnimationTriggers();
+
   document_->GetWorkletAnimationController().UpdateAnimationStates();
   document_->GetFrame()->ScheduleNextServiceForScrollSnapshotClients();
   for (auto& timeline : timelines_) {
@@ -213,9 +216,31 @@ void DocumentAnimations::DetachCompositorTimelines() {
   }
 }
 
+void DocumentAnimations::DetachCompositorTriggers() {
+  if (!Platform::Current()->IsThreadedAnimationEnabled() ||
+      !document_->GetSettings()->GetAcceleratedCompositingEnabled() ||
+      !document_->GetPage()) {
+    return;
+  }
+
+  for (auto& trigger : triggers_) {
+    cc::AnimationTrigger* compositor_trigger = trigger->CompositorTrigger();
+    if (!compositor_trigger) {
+      continue;
+    }
+
+    if (cc::AnimationHost* host =
+            document_->GetPage()->GetChromeClient().GetCompositorAnimationHost(
+                *document_->GetFrame())) {
+      host->DetachTrigger(compositor_trigger);
+    }
+  }
+}
+
 void DocumentAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(timelines_);
+  visitor->Trace(triggers_);
 }
 
 void DocumentAnimations::GetAnimationsTargetingTreeScope(
@@ -300,6 +325,21 @@ void DocumentAnimations::RemoveReplacedAnimations(
 void DocumentAnimations::UpdateAnimationTriggerAttachments() {
   for (const auto& timeline : timelines_) {
     timeline->UpdateAnimationTriggerAttachments();
+  }
+}
+
+void DocumentAnimations::AddAnimationTrigger(AnimationTrigger& trigger) {
+  triggers_.insert(&trigger);
+}
+
+void DocumentAnimations::UpdateCompositorAnimationTriggers() {
+  if (!RuntimeEnabledFeatures::AnimationTriggerEnabled() ||
+      !Platform::Current()->IsThreadedAnimationEnabled()) {
+    return;
+  }
+
+  for (AnimationTrigger* trigger : triggers_) {
+    trigger->UpdateCompositorTrigger();
   }
 }
 

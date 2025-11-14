@@ -82,12 +82,19 @@ class CORE_EXPORT DocumentAnimations final
   // reattached if needed.
   void DetachCompositorTimelines();
 
+  // Detach animation triggers on the compositor.
+  void DetachCompositorTriggers();
+
   const HeapHashSet<WeakMember<AnimationTimeline>>& GetTimelinesForTesting()
       const {
     return timelines_;
   }
 
+  void AddAnimationTrigger(AnimationTrigger& trigger);
+
   void UpdateAnimationTriggerAttachments();
+
+  void UpdateCompositorAnimationTriggers();
 
   uint64_t current_transition_generation_;
   void Trace(Visitor*) const;
@@ -103,6 +110,7 @@ class CORE_EXPORT DocumentAnimations final
 
   Member<Document> document_;
   HeapHashSet<WeakMember<AnimationTimeline>> timelines_;
+  HeapHashSet<WeakMember<AnimationTrigger>> triggers_;
 };
 
 }  // namespace blink

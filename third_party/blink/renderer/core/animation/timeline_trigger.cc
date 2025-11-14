@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/animation/timeline_trigger.h"
 
+#include "cc/animation/animation_id_provider.h"
+#include "cc/animation/timeline_trigger.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_animation_trigger_behavior.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
@@ -115,6 +117,10 @@ TimelineTrigger::TimelineTrigger(AnimationTimeline* timeline,
       range_end_(range_end),
       exit_range_start_(exit_range_start),
       exit_range_end_(exit_range_end) {
+  if (timeline_) {
+    timeline_->GetDocument()->GetDocumentAnimations().AddAnimationTrigger(
+        *this);
+  }
   // A default trigger will need to trip immediately.
   Update();
 }
@@ -412,6 +418,44 @@ bool TimelineTrigger::CanTrigger() const {
 
 bool TimelineTrigger::IsTimelineTrigger() const {
   return true;
+}
+
+void TimelineTrigger::CreateCompositorTrigger() {
+  if (compositor_trigger_) {
+    return;
+  }
+
+  if (!timeline_ || !timeline_->GetDocument()) {
+    return;
+  }
+
+  cc::AnimationTimeline* cc_timeline = timeline_->EnsureCompositorTimeline();
+  if (!cc_timeline) {
+    return;
+  }
+  timeline_->GetDocument()->AttachCompositorTimeline(cc_timeline);
+  cc::AnimationHost* host = cc_timeline->animation_host();
+  CHECK(host);
+
+  scoped_refptr<cc::AnimationTimeline> scopedref_cc_timeline =
+      host->GetScopedRefTimelineById(cc_timeline->id());
+
+  scoped_refptr<cc::TimelineTrigger> cc_trigger = cc::TimelineTrigger::Create(
+      cc::AnimationIdProvider::NextAnimationTriggerId(), scopedref_cc_timeline);
+  host->AddTrigger(cc_trigger);
+
+  compositor_trigger_ =
+      static_cast<scoped_refptr<cc::AnimationTrigger>>(cc_trigger);
+}
+
+void TimelineTrigger::DestroyCompositorTrigger() {
+  if (compositor_trigger_) {
+    cc::AnimationHost* host = compositor_trigger_->GetAnimationHost();
+    if (host) {
+      host->RemoveTrigger(compositor_trigger_.get());
+    }
+    compositor_trigger_ = nullptr;
+  }
 }
 
 }  // namespace blink

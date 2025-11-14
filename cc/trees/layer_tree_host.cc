@@ -428,6 +428,7 @@ std::unique_ptr<CommitState> LayerTreeHost::WillCommit(
     result = ActivateCommitState();
   swap_promise_manager_.WillCommit();
   mutator_host()->RemoveStaleTimelines();
+  mutator_host()->RemoveStaleTriggers();
   client_->WillCommit(has_updates ? *result : *pending_commit_state());
   pending_commit_state()->source_frame_number++;
   commit_completion_event_ = std::move(completion);
@@ -504,6 +505,7 @@ void LayerTreeHost::CommitComplete(int source_frame_number,
   // already signaled.
   if (!in_commit()) {
     mutator_host()->RemoveStaleTimelines();
+    mutator_host()->RemoveStaleTriggers();
   }
   if (commit_completion_event_ && commit_completion_event_->IsSignaled())
     WaitForCommitCompletion(/* for_protected_sequence */ false);

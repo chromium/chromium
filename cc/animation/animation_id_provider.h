@@ -18,6 +18,7 @@ class CC_ANIMATION_EXPORT AnimationIdProvider {
   static int NextGroupId();
   static int NextTimelineId();
   static int NextAnimationId();
+  static int NextAnimationTriggerId();
 };
 
 }  // namespace cc

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/animation/animation_trigger.h"
 
+#include "cc/animation/animation_id_provider.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
 
@@ -150,13 +152,16 @@ bool AnimationTrigger::HasPausedCSSPlayState(Animation* animation) {
   return animation->GetTriggerActionPlayState() == EAnimPlayState::kPaused;
 }
 
+void AnimationTrigger::Dispose() {
+  DestroyCompositorTrigger();
+}
+
 void AnimationTrigger::addAnimation(
     Animation* animation,
     V8AnimationTriggerBehavior activate_behavior,
     V8AnimationTriggerBehavior deactivate_behavior,
     ExceptionState& exception_state) {
   if (!animation) {
-    // TODO(390314945): Throw an exception maybe?
     return;
   }
 
@@ -231,6 +236,33 @@ void AnimationTrigger::PerformDeactivate() {
     }
     PerformBehavior(*animation, behaviors.second, ASSERT_NO_EXCEPTION);
   }
+}
+
+void AnimationTrigger::UpdateCompositorTrigger() {
+  DCHECK(Platform::Current()->IsThreadedAnimationEnabled());
+
+  bool compositing_supported =
+      (IsEventTrigger() &&
+       RuntimeEnabledFeatures::CompositorEventTriggerEnabled()) ||
+      (IsTimelineTrigger() &&
+       RuntimeEnabledFeatures::CompositorTimelineTriggerEnabled());
+
+  if (!compositing_supported) {
+    return;
+  }
+
+  if (BehaviorMap().empty()) {
+    DestroyCompositorTrigger();
+  } else if (!compositor_trigger_) {
+    // TODO(crbug.com/451238244): Currently, the code always creates cc
+    // triggers. So, we might be creating cc triggers that do not do anything.
+    // We should tie creating a cc trigger to whether there is at least one
+    // compositable animation attached, perhaps in addAnimation.
+    CreateCompositorTrigger();
+  }
+
+  // TODO(crbug.com/451238244): if (compositor_trigger_) { Update cc animations.
+  // }
 }
 
 void AnimationTrigger::Trace(Visitor* visitor) const {
