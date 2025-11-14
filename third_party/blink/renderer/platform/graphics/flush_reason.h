@@ -39,26 +39,20 @@ enum class FlushReason {
   // This inhibits vector printing.
   kGetImageData = 6,
 
-  // A paint op was recorded that referenced a volatile source image and
-  // therefore the recording needed to be flush immediately before the
-  // source image contents could be overwritten. For example, a video frame.
-  // This inhibits vector printing.
-  kVolatileSourceImage = 7,
-
   // The canvas element dispatched a frame to the compositor
   // This inhibits vector printing.
-  kCanvasPushFrame = 8,
+  kCanvasPushFrame = 7,
 
   // The canvas element dispatched a frame to the compositor while printing
   // was in progress.
   // This does not prevent vector printing as long as the current frame is
   // clear.
-  kCanvasPushFrameWhilePrinting = 9,
+  kCanvasPushFrameWhilePrinting = 8,
 
   // The canvas is being printed.
-  kPrinting = 10,
+  kPrinting = 9,
 
-  kOther = 11,
+  kOther = 10,
 
   kMaxValue = kOther,
 };

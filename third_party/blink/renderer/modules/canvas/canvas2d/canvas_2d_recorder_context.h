@@ -875,7 +875,7 @@ void Canvas2DRecorderContext::DrawInternal(
     // This happens if draw_func called flush() on the PaintCanvas. The flush
     // cannot be performed inside the scope of draw_func because it would break
     // the logic of CompositedDraw.
-    FlushCanvas(FlushReason::kVolatileSourceImage);
+    FlushCanvas(FlushReason::kOther);
   }
 }
 
