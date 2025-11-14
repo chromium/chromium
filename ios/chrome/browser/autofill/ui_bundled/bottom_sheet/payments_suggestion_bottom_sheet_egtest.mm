@@ -595,7 +595,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 
   // Close the context menu.
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
       performAction:grey_tap()];
 
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -786,7 +786,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 
   // Close the context menu.
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
       performAction:grey_tap()];
 
   // Try to reopen the bottom sheet.
