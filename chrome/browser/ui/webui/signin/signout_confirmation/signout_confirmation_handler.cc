@@ -60,8 +60,10 @@ std::string ComputeDialogSubtitle(
       return l10n_util::GetStringUTF8(
           IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_NO_UNSYNCED_DATA_BODY);
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedData:
-      return l10n_util::GetStringUTF8(
-          IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_UNSYNCED_BODY);
+      CHECK_GT(unsynced_data_count, 0u);
+      return l10n_util::GetPluralStringFUTF8(
+          IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_UNSYNCED_BODY,
+          unsynced_data_count);
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
       CHECK_GT(unsynced_data_count, 0u);
       return l10n_util::GetPluralStringFUTF8(

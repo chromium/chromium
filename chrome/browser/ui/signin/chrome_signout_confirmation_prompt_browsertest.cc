@@ -71,7 +71,8 @@ class ChromeSignoutConfirmationPromptPixelTest
       case ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData:
         return "NoUnsyncedData";
       case ChromeSignoutConfirmationPromptVariant::kUnsyncedData:
-        return "UnsyncedData";
+        return base::StringPrintf("UnsyncedData_%zu_UnsyncedItems",
+                                  unsynced_data_count);
       case ChromeSignoutConfirmationPromptVariant::
           kUnsyncedDataWithReauthButton:
         return base::StringPrintf(
@@ -102,7 +103,9 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData,
                         0U),
         std::make_tuple(ChromeSignoutConfirmationPromptVariant::kUnsyncedData,
-                        0U),
+                        1U),
+        std::make_tuple(ChromeSignoutConfirmationPromptVariant::kUnsyncedData,
+                        2U),
         std::make_tuple(ChromeSignoutConfirmationPromptVariant::
                             kUnsyncedDataWithReauthButton,
                         1U),
@@ -166,7 +169,9 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData,
                         0U),
         std::make_tuple(ChromeSignoutConfirmationPromptVariant::kUnsyncedData,
-                        0U),
+                        1U),
+        std::make_tuple(ChromeSignoutConfirmationPromptVariant::kUnsyncedData,
+                        2U),
         std::make_tuple(ChromeSignoutConfirmationPromptVariant::
                             kUnsyncedDataWithReauthButton,
                         1U),
