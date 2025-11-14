@@ -100,19 +100,22 @@ class NavigationAttachmentsViewBinder {
         } else if (propertyKey == NavigationAttachmentsProperties.POPUP_TAB_PICKER_CLICKED) {
             view.popup.mTabButton.setOnClickListener(
                     v -> model.get(NavigationAttachmentsProperties.POPUP_TAB_PICKER_CLICKED).run());
-        } else if (propertyKey == NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE) {
-            view.popup.mAddCurrentTab.setVisibility(
-                    model.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE)
-                            ? View.VISIBLE
-                            : View.GONE);
         } else if (propertyKey == NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_CLICKED) {
             view.popup.mAddCurrentTab.setOnClickListener(
                     v ->
                             model.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_CLICKED)
                                     .run());
+        } else if (propertyKey == NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_ENABLED) {
+            view.popup.mAddCurrentTab.setEnabled(
+                    model.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_ENABLED));
         } else if (propertyKey == NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_FAVICON) {
             updateForCurrentTabFavicon(
                     model.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_FAVICON), view);
+        } else if (propertyKey == NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE) {
+            view.popup.mAddCurrentTab.setVisibility(
+                    model.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE)
+                            ? View.VISIBLE
+                            : View.GONE);
         } else if (propertyKey == NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON) {
             updateModeSelectorVisibility(model, view);
         }
@@ -227,6 +230,7 @@ class NavigationAttachmentsViewBinder {
         cs.applyTo(views.parentView);
     }
 
+    // TODO(https://crbug.com/460150759): Update to correctly tint for being disabled.
     private static void updateForCurrentTabFavicon(
             Bitmap favicon, NavigationAttachmentsViewHolder viewHolder) {
         Context context = viewHolder.parentView.getContext();

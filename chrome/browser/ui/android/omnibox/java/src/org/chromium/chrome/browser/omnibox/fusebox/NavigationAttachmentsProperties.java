@@ -57,6 +57,13 @@ class NavigationAttachmentsProperties {
             new WritableObjectPropertyKey<>();
 
     /**
+     * Whether the current tab button is enabled or disabled. Being disabled still leaves it
+     * visible, but with a greyed out color and not interactable.
+     */
+    public static final WritableBooleanPropertyKey CURRENT_TAB_BUTTON_ENABLED =
+            new WritableBooleanPropertyKey();
+
+    /**
      * The favicon of the underlying tab which this button would add. Can be null, in which case a
      * fallback will be used instead.
      */
@@ -126,6 +133,7 @@ class NavigationAttachmentsProperties {
         BUTTON_ADD_CLICKED,
         COMPACT_UI,
         CURRENT_TAB_BUTTON_CLICKED,
+        CURRENT_TAB_BUTTON_ENABLED,
         CURRENT_TAB_BUTTON_FAVICON,
         CURRENT_TAB_BUTTON_VISIBLE,
         POPUP_AI_MODE_CLICKED,

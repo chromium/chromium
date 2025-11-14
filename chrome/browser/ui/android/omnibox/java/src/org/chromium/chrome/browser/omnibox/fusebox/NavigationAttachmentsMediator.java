@@ -87,10 +87,17 @@ public class NavigationAttachmentsMediator {
         mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
         mComposeBoxQueryControllerBridge = composeBoxQueryControllerBridge;
 
+        // TODO(https://crbug.com/460529475): Create a destroy method to remove this observer.
         mAutocompleteRequestTypeSupplier.addObserver(
-                (type) ->
-                        mModel.set(
-                                NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE, type));
+                (type) -> {
+                    mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE, type);
+                    boolean tabInputsEnabled = type != AutocompleteRequestType.IMAGE_GENERATION;
+                    mModel.set(
+                            NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_ENABLED,
+                            tabInputsEnabled);
+                    // TODO(https://www.crbug.com/456274957): Also set enabled on select tabs
+                    // button.
+                });
 
         mModel.set(
                 NavigationAttachmentsProperties.BUTTON_ADD_CLICKED, this::onToggleAttachmentsPopup);

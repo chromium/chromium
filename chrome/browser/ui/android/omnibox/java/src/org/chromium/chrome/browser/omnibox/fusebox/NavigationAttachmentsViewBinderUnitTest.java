@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.omnibox.fusebox;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -382,5 +384,13 @@ public class NavigationAttachmentsViewBinderUnitTest {
         assertEquals(View.VISIBLE, mPopup.mRequestTypeDivider.getVisibility());
         assertEquals(View.VISIBLE, mPopup.mAiModeButton.getVisibility());
         assertEquals(View.VISIBLE, mPopup.mCreateImageButton.getVisibility());
+    }
+
+    @Test
+    public void testCurrentTabButtonEnabled() {
+        mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_ENABLED, true);
+        assertTrue(mViewHolder.popup.mAddCurrentTab.isEnabled());
+        mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_ENABLED, false);
+        assertFalse(mViewHolder.popup.mAddCurrentTab.isEnabled());
     }
 }

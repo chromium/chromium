@@ -45,6 +45,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.android.controller.ActivityController;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -318,6 +319,27 @@ public class NavigationAttachmentsMediatorUnitTest {
         assertEquals(
                 AutocompleteRequestType.IMAGE_GENERATION,
                 (int) mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE));
+    }
+
+    @Test
+    public void activateImageGeneration_disablesCurrentTabInput() {
+        doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
+        doReturn("Title1").when(mTab1).getTitle();
+        doReturn(new GURL("https://www.google.com")).when(mTab1).getUrl();
+        doReturn(true).when(mTab1).isInitialized();
+        doReturn(100L).when(mTab1).getTimestampMillis();
+
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
+        ShadowLooper.idleMainLooper();
+
+        mModel.get(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED).run();
+        assertTrue(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE));
+        assertTrue(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_ENABLED));
+
+        mModel.get(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_CLICKED).run();
+        mModel.get(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED).run();
+        assertTrue(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE));
+        assertFalse(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_ENABLED));
     }
 
     @Test
