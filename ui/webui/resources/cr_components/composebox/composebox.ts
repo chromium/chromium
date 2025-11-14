@@ -931,6 +931,8 @@ export class ComposeboxElement extends I18nMixinLit
       this.submitEnabled_ = false;
       this.$.input.blur();
     }
+
+    this.fire('composebox-submit');
   }
 
   /**
