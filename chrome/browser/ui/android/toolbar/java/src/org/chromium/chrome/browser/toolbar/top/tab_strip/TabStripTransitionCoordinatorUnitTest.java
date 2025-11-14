@@ -40,7 +40,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -98,7 +97,6 @@ public class TabStripTransitionCoordinatorUnitTest {
     private final TabObscuringHandler mTabObscuringHandler = new TabObscuringHandler();
     private TestHandler mTestHandler;
     private TestDelegate mDelegate;
-    private OneshotSupplierImpl<TabStripTransitionDelegate> mDelegateSupplier;
     private int mReservedTopPadding;
 
     // Test variables
@@ -1117,8 +1115,6 @@ public class TabStripTransitionCoordinatorUnitTest {
         }
 
         mDelegate = new TestDelegate();
-        mDelegateSupplier = new OneshotSupplierImpl<>();
-        mDelegateSupplier.set(mDelegate);
         mTestHandler = new TestHandler();
         mCoordinator =
                 new TabStripTransitionCoordinator(
@@ -1128,7 +1124,7 @@ public class TabStripTransitionCoordinatorUnitTest {
                         TEST_TAB_STRIP_HEIGHT,
                         mTabObscuringHandler,
                         mDesktopWindowStateManager,
-                        mDelegateSupplier,
+                        mDelegate,
                         mTestHandler);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
     }

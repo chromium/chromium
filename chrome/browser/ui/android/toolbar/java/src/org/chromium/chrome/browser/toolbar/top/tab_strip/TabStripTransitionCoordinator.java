@@ -14,7 +14,6 @@ import android.view.View.OnLayoutChangeListener;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -113,7 +112,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
     private final HeightTransitionHandler mHeightTransitionHandler;
     private final FadeTransitionHandler mFadeTransitionHandler;
 
-    private final OneshotSupplier<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier;
+    private final TabStripTransitionDelegate mTabStripTransitionDelegate;
 
     /**
      * Create the coordinator to manage transitions to show / hide the tab strip.
@@ -137,13 +136,13 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
             int tabStripHeightFromResource,
             TabObscuringHandler tabObscuringHandler,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier,
+            TabStripTransitionDelegate tabStripTransitionDelegate,
             TabStripTransitionHandler tabStripTransitionHandler) {
         mControlContainer = controlContainer;
         mTabStripHeightFromResource = tabStripHeightFromResource;
         mDesktopWindowStateManager = desktopWindowStateManager;
         mHandler = new Handler(Looper.getMainLooper());
-        mTabStripTransitionDelegateSupplier = tabStripTransitionDelegateSupplier;
+        mTabStripTransitionDelegate = tabStripTransitionDelegate;
         mHeightTransitionHandler =
                 new HeightTransitionHandler(
                         browserControlsVisibilityManager,
@@ -153,10 +152,10 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
                         mCallbackController,
                         mHandler,
                         tabObscuringHandler,
-                        tabStripTransitionDelegateSupplier,
+                        tabStripTransitionDelegate,
                         tabStripTransitionHandler);
         mFadeTransitionHandler =
-                new FadeTransitionHandler(tabStripTransitionDelegateSupplier, mCallbackController);
+                new FadeTransitionHandler(tabStripTransitionDelegate, mCallbackController);
 
         mTabStripReservedTopPadding =
                 controlContainerView()
@@ -170,8 +169,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
                 };
         controlContainerView().addOnLayoutChangeListener(mOnLayoutChangedListener);
 
-        mTabStripTransitionDelegateSupplier.runSyncOrOnAvailable(
-                (unused) -> updateTabStripTransitionThreshold());
+        updateTabStripTransitionThreshold();
 
         AppHeaderState appHeaderState = null;
         if (mDesktopWindowStateManager != null) {
@@ -380,8 +378,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
     }
 
     private boolean isTabStripHiddenByFadeTransition() {
-        return mTabStripTransitionDelegateSupplier.get() != null
-                && mTabStripTransitionDelegateSupplier.get().isHiddenByFadeTransition();
+        return mTabStripTransitionDelegate.isHiddenByFadeTransition();
     }
 
     private int calculateTopPadding() {

@@ -380,18 +380,23 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
 
         int tabStripHeightResource = mToolbarLayout.getTabStripHeightFromResource();
 
-        mTabStripTransitionCoordinator =
-                new TabStripTransitionCoordinator(
-                        browserControlsVisibilityManager,
-                        mControlContainer,
-                        mToolbarLayout,
-                        tabStripHeightResource,
-                        mTabObscuringHandler,
-                        mDesktopWindowStateManager,
-                        mTabStripTransitionDelegateSupplier,
-                        tabStripTransitionHandler);
-        mToolbarLayout.getContext().registerComponentCallbacks(mTabStripTransitionCoordinator);
-        mToolbarLayout.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);
+        mTabStripTransitionDelegateSupplier.runSyncOrOnAvailable(
+                (tabStripTransitionDelegate) -> {
+                    mTabStripTransitionCoordinator =
+                            new TabStripTransitionCoordinator(
+                                    browserControlsVisibilityManager,
+                                    mControlContainer,
+                                    mToolbarLayout,
+                                    tabStripHeightResource,
+                                    mTabObscuringHandler,
+                                    mDesktopWindowStateManager,
+                                    tabStripTransitionDelegate,
+                                    tabStripTransitionHandler);
+                    mToolbarLayout
+                            .getContext()
+                            .registerComponentCallbacks(mTabStripTransitionCoordinator);
+                    mToolbarLayout.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);
+                });
     }
 
     /** Returns the color of the hairline drawn underneath the toolbar. */
