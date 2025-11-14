@@ -3389,6 +3389,27 @@
             ]
         }
     ],
+    "AutomatedPasswordChangeStudyV3": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CheckVisibilityInChangePasswordFormWaiter",
+                        "DisableFillingOnPageLoadForLeakedCredentials",
+                        "DownloadModelForPasswordChange",
+                        "StopLoginCheckOnFailedLogin"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutomaticUsbDetach": [
         {
             "platforms": [
