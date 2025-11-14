@@ -660,6 +660,16 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         (),
     ),
     BanRule(
+        '\brand\b',
+        (
+            'Use base/rand_util.h instead of rand(). The result of rand() is',
+            'based on a global random seed, which can be fully deterministic,',
+            'instead of random, if called at a specific time during startup.',
+        ),
+        True,
+        (),
+    ),
+    BanRule(
         '\bstd::aligned_(storage|union)\b',
         ('std::aligned_storage and std::aligned_union are deprecated in',
          'C++23. Use an aligned char array instead.'),
