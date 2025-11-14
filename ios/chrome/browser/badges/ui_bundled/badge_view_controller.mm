@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/badges/ui_bundled/badge_view_visibility_delegate.h"
 #import "ios/chrome/browser/infobars/model/badge_state.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/common/material_timing.h"
@@ -111,9 +112,13 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
                     animated:NO];
       self.displayedBadge = newButton;
     }
-    // Disable button if banner is being displayed.
-    [self.displayedBadge
-        setEnabled:!(displayedBadgeItem.badgeState & BadgeStatePresented)];
+    if (IsProactiveSuggestionsFrameworkEnabled()) {
+      [self.displayedBadge setEnabled:YES];
+    } else {
+      // Disable button if banner is being displayed.
+      [self.displayedBadge
+          setEnabled:!(displayedBadgeItem.badgeState & BadgeStatePresented)];
+    }
   } else {
     self.displayedBadge = nil;
   }
