@@ -21,7 +21,7 @@ export function getHtml(this: OmniboxPopupAppElement) {
   `;
 
   return html`<!--_html_template_start_-->
-${this.searchboxLayoutMode_ ? html`
+${this.searchboxLayoutMode_.startsWith('Tall') ? html`
 <!-- WebUI Omnibox popup w/ "Add Context" button -->
 <div class="dropdownContainer">
   <contextual-entrypoint-and-carousel id="context"

@@ -24,6 +24,7 @@ build_webui("build") {
     "omnibox_popup.ts",
   ]
   css_files = [
+    "aim_app.css",
     "app.css",
     "full_app.css",
   ]

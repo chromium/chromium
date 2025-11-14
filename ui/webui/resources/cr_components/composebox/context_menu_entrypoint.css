@@ -32,7 +32,7 @@
 }
 
 #entrypoint:not([disabled]) {
-  --cr-icon-button-fill-color: var(--cr-button-text-color);
+  --cr-icon-button-fill-color: var(--composebox-context-menu-entrypoint-button-color, --cr-button-text-color);
 }
 
 #description {

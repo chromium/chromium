@@ -45,7 +45,7 @@ std::string AddContextButtonVariantToSearchboxLayoutMode(
     case AddContextButtonVariant::kAboveResults:
       return "TallTopContext";
     case AddContextButtonVariant::kInline:
-      return "";
+      return "Compact";
   }
 
   return "";
