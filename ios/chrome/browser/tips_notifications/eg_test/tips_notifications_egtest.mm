@@ -193,7 +193,8 @@ void MaybeDismissNotification() {
 }
 
 // Tests triggering and interacting with each of the Tips notifications.
-- (void)testTriggerNotifications {
+// TODO(crbug.com/455768805): Test is flaky.
+- (void)FLAKY_testTriggerNotifications {
   // TODO(crbug.com/455768805): Re-enable the test.
   if (@available(iOS 26.1, *)) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
