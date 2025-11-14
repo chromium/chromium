@@ -558,9 +558,13 @@ public class BookmarkBarCoordinator
     @Override
     public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
         // When fullscreen mode is entered, we need to hide the scene layer and Android widgets.
-        mIsInFullscreenMode = true;
-        updateSceneLayerVisibility();
-        updateAndroidWidgetVisibility();
+        // However, if LockTopControls is enabled, we never remove the bookmark bar.
+        if (!ChromeFeatureList.sLockTopControlsOnLargeTablets.isEnabled()
+                && !ChromeFeatureList.sLockTopControlsOnLargeTabletsV2.isEnabled()) {
+            mIsInFullscreenMode = true;
+            updateSceneLayerVisibility();
+            updateAndroidWidgetVisibility();
+        }
     }
 
     @Override
@@ -568,6 +572,13 @@ public class BookmarkBarCoordinator
         // When fullscreen mode is exited, we need to make the scene layer visible again, if needed.
         // It is possible that the bookmarks bar was turned off while in fullscreen mode, so we
         // don't force this to true, but use the current state instead. Same for Android widgets.
+
+        // We should never get into the fullscreen mode state while LockTopControls is enabled.
+        if (ChromeFeatureList.sLockTopControlsOnLargeTablets.isEnabled()
+                || ChromeFeatureList.sLockTopControlsOnLargeTabletsV2.isEnabled()) {
+            assert !mIsInFullscreenMode : "Should not be in fullscreen mode with LockTopControls";
+        }
+
         mIsInFullscreenMode = false;
         updateSceneLayerVisibility();
         updateAndroidWidgetVisibility();
