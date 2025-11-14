@@ -47,7 +47,11 @@ export default [
       'eslint-plugin-lit': eslintPluginLit,
     },
     rules: {
+      'eslint-plugin-lit/binding-positions': 'error',
+      'eslint-plugin-lit/no-duplicate-template-bindings': 'error',
+      'eslint-plugin-lit/no-invalid-escape-sequences': 'error',
       'eslint-plugin-lit/no-invalid-html': 'error',
+      'eslint-plugin-lit/no-private-properties': ['error', {'private': '_$'}],
     },
   },
 ];
