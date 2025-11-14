@@ -211,25 +211,33 @@ TEST_F(GlicActorTaskIconManagerTest, NoDuplicatedTaskNudgeStateUpdates) {
   EXPECT_CALL(
       mock_subscriber,
       OnStateChanged(AllOf(Field(&ActorTaskNudgeState::text,
-                                 ActorTaskNudgeState::Text::kCompleteTasks))));
+                                 ActorTaskNudgeState::Text::kNeedsAttention))));
+  // Should only be one call for multiple tasks.
+  EXPECT_CALL(mock_subscriber,
+              OnStateChanged(AllOf(Field(
+                  &ActorTaskNudgeState::text,
+                  ActorTaskNudgeState::Text::kMultipleTasksNeedAttention))));
 
   TaskId task_id_1 = actor_service()->CreateTaskForTesting();
-  actor_service()->StopTask(task_id_1,
-                            actor::ActorTask::StoppedReason::kTaskComplete);
-  manager()->OnActorTaskStopped(task_id_1, actor::ActorTask::State::kFinished,
-                                /*task_title=*/"");
+  actor_service()->GetTask(task_id_1)->Pause(/*from_actor=*/true);
+  manager()->UpdateTaskListBubble(task_id_1);
   manager()->UpdateTaskNudge();
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
-            ActorTaskNudgeState::Text::kCompleteTasks);
+            ActorTaskNudgeState::Text::kNeedsAttention);
 
   TaskId task_id_2 = actor_service()->CreateTaskForTesting();
-  actor_service()->StopTask(task_id_2,
-                            actor::ActorTask::StoppedReason::kTaskComplete);
-  manager()->OnActorTaskStopped(task_id_2, actor::ActorTask::State::kFinished,
-                                /*task_title=*/"");
+  actor_service()->GetTask(task_id_2)->Pause(/*from_actor=*/true);
+  manager()->UpdateTaskListBubble(task_id_2);
   manager()->UpdateTaskNudge();
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
-            ActorTaskNudgeState::Text::kCompleteTasks);
+            ActorTaskNudgeState::Text::kMultipleTasksNeedAttention);
+
+  TaskId task_id_3 = actor_service()->CreateTaskForTesting();
+  actor_service()->GetTask(task_id_3)->Pause(/*from_actor=*/true);
+  manager()->UpdateTaskListBubble(task_id_3);
+  manager()->UpdateTaskNudge();
+  EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
+            ActorTaskNudgeState::Text::kMultipleTasksNeedAttention);
 }
 
 TEST_F(GlicActorTaskIconManagerTest,
@@ -257,6 +265,8 @@ TEST_F(GlicActorTaskIconManagerTest,
 
 TEST_F(GlicActorTaskIconManagerTest,
        RedesignDisabled_NudgeShowsDefaultTextOnComplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kGlicActorUiNudgeRedesign);
   MockTaskNudgeStateChangeSubscriber mock_subscriber;
   base::CallbackListSubscription subscription =
       manager()->RegisterTaskNudgeStateChange(base::BindRepeating(
