@@ -81,12 +81,18 @@ int SqliteSandboxedVfsDelegate::DeleteFile(const base::FilePath& file_path,
                                            bool /*sync_dir*/) {
   base::AutoLock lock(files_map_lock_);
 
-  // Sandboxed processes are not capable of deleting files. This completely
-  // prevents databases using SqliteSandboxedVfsDelegate from using
-  // `sql::Database::Delete()`.
+  // Sandboxed processes are not capable of deleting files, so deletion is
+  // simulated by truncating the file to zero. This operation is not permitted
+  // if the file is currently open.
   auto it = sandboxed_files_map_.find(file_path);
   if (it != sandboxed_files_map_.end()) {
-    return SQLITE_IOERR_DELETE;
+    if (it->second->IsValid()) {
+      return SQLITE_IOERR_DELETE;
+    }
+    if (!it->second->GetFile().SetLength(0)) {
+      return SQLITE_IOERR_DELETE;
+    }
+    return SQLITE_OK;
   }
 
   return SQLITE_NOTFOUND;
