@@ -470,6 +470,48 @@ TEST_F(ActorUiTabControllerTest, SetScrimBackgroundOnHoverChanges) {
   subscriptions.clear();
 }
 
+TEST_F(ActorUiTabControllerTest, SetScrimBackgroundOnFocusChanges) {
+  int callback_count = 0;
+  auto* mock_handoff_button_controller =
+      tab_controller_factory()->handoff_button_controller();
+
+  std::vector<base::ScopedClosureRunner> subscriptions;
+
+  ON_CALL(*mock_handoff_button_controller, IsHovering())
+      .WillByDefault(Return(false));
+  ON_CALL(*mock_handoff_button_controller, IsFocused())
+      .WillByDefault(Return(false));
+
+  subscriptions.push_back(
+      tab_controller()->RegisterActorOverlayBackgroundChange(
+          base::BindLambdaForTesting([&callback_count](bool is_visible) {
+            callback_count++;
+            EXPECT_TRUE(is_visible);
+          })));
+
+  ON_CALL(*mock_handoff_button_controller, IsFocused())
+      .WillByDefault(Return(true));
+  tab_controller()->OnHandoffButtonFocusStatusChanged();
+  Debounce();
+  EXPECT_EQ(callback_count, 1);
+
+  subscriptions.clear();
+  callback_count = 0;
+
+  subscriptions.push_back(
+      tab_controller()->RegisterActorOverlayBackgroundChange(
+          base::BindLambdaForTesting([&callback_count](bool is_visible) {
+            callback_count++;
+            EXPECT_FALSE(is_visible);
+          })));
+
+  ON_CALL(*mock_handoff_button_controller, IsFocused())
+      .WillByDefault(Return(false));
+  tab_controller()->OnHandoffButtonFocusStatusChanged();
+  Debounce();
+  EXPECT_EQ(callback_count, 1);
+}
+
 TEST_F(ActorUiTabControllerTest, From_RecordsHistogramWhenTabDoesNotExist) {
   base::HistogramTester histogram_tester;
   ActorUiTabControllerInterface::From(nullptr);

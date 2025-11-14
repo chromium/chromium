@@ -9,6 +9,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
+#include "chrome/browser/actor/resources/grit/actor_common_resources.h"
 #include "chrome/browser/actor/ui/mocks/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
@@ -20,6 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/widget.h"
@@ -196,6 +198,8 @@ TEST_F(HandoffButtonControllerTest, ButtonTextUpdatesWhenOwnershipChanges) {
   EXPECT_TRUE(future1.Wait());
   EXPECT_EQ(button_->GetText(),
             l10n_util::GetStringUTF16(IDS_TAKE_OVER_TASK_LABEL));
+  EXPECT_EQ(button_->GetViewAccessibility().GetCachedDescription(),
+            l10n_util::GetStringUTF16(IDS_TAKE_OVER_TASK_A11Y_LABEL));
   EXPECT_EQ(1, controller_->update_bounds_call_count());
   EXPECT_EQ(1, controller_->update_visibility_call_count());
 
@@ -205,6 +209,8 @@ TEST_F(HandoffButtonControllerTest, ButtonTextUpdatesWhenOwnershipChanges) {
   EXPECT_TRUE(future2.Wait());
   EXPECT_EQ(button_->GetText(),
             l10n_util::GetStringUTF16(IDS_GIVE_TASK_BACK_LABEL));
+  EXPECT_EQ(button_->GetViewAccessibility().GetCachedDescription(),
+            l10n_util::GetStringUTF16(IDS_GIVE_TASK_BACK_A11Y_LABEL));
   EXPECT_EQ(2, controller_->update_bounds_call_count());
   EXPECT_EQ(2, controller_->update_visibility_call_count());
 }

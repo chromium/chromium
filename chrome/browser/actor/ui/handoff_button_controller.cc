@@ -9,6 +9,7 @@
 #include "cc/paint/paint_shader.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
+#include "chrome/browser/actor/resources/grit/actor_common_resources.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
@@ -223,18 +224,21 @@ void HandoffButtonController::UpdateState(const HandoffButtonState& state,
   ownership_ = state.controller;
 
   std::u16string text;
+  std::u16string a11y_text;
   ImageModel icon;
   // TODO(crbug.com/454932877): Clean up kClient state changes if button removal
   // for kClient state is finalized.
   switch (state.controller) {
     case kActor:
       text = l10n_util::GetStringUTF16(IDS_TAKE_OVER_TASK_LABEL);
+      a11y_text = l10n_util::GetStringUTF16(IDS_TAKE_OVER_TASK_A11Y_LABEL);
       icon = ImageModel::FromVectorIcon(vector_icons::kPauseIcon,
                                         ::ui::kColorLabelForeground,
                                         kHandoffButtonIconSize);
       break;
     case kClient:
       text = l10n_util::GetStringUTF16(IDS_GIVE_TASK_BACK_LABEL);
+      a11y_text = l10n_util::GetStringUTF16(IDS_GIVE_TASK_BACK_A11Y_LABEL);
       icon = ImageModel::FromVectorIcon(vector_icons::kPlayArrowIcon,
                                         ::ui::kColorLabelForeground,
                                         kHandoffButtonIconSize);
@@ -243,10 +247,11 @@ void HandoffButtonController::UpdateState(const HandoffButtonState& state,
 
   // If the widget doesn't exist, create it with the correct initial state.
   if (!widget_) {
-    CreateAndShowButton(text, icon);
+    CreateAndShowButton(text, a11y_text, icon);
   } else if (button_view_) {
     // If it already exists, update its content.
     button_view_->SetText(text);
+    button_view_->SetAccessibleDescription(a11y_text);
     button_view_->SetImageModel(views::Button::STATE_NORMAL, icon);
     UpdateBounds();
   }
@@ -255,8 +260,10 @@ void HandoffButtonController::UpdateState(const HandoffButtonState& state,
   std::move(callback).Run();
 }
 
-void HandoffButtonController::CreateAndShowButton(const std::u16string& text,
-                                                  const ImageModel& icon) {
+void HandoffButtonController::CreateAndShowButton(
+    const std::u16string& text,
+    const std::u16string& a11y_text,
+    const ImageModel& icon) {
   CHECK(!widget_);
 
   auto* tab_dialog_manager = GetTabDialogManager();
@@ -267,6 +274,7 @@ void HandoffButtonController::CreateAndShowButton(const std::u16string& text,
                           weak_ptr_factory_.GetWeakPtr()),
       text);
   button_view_ = button_view.get();
+  button_view_->SetAccessibleDescription(a11y_text);
   button_view_->SetEnabledTextColors(::ui::kColorLabelForeground);
   button_view_->SetImageModel(views::Button::STATE_NORMAL, icon);
   button_view_->SetProperty(views::kElementIdentifierKey,
@@ -275,6 +283,7 @@ void HandoffButtonController::CreateAndShowButton(const std::u16string& text,
   button_view_->SetBorder(views::CreatePaddedBorder(
       button_view_->CreateDefaultBorder(),
       kHandoffButtonContentPadding - gfx::Insets(kBackgroundInset)));
+  view_observer_.Observe(button_view_.get());
 
   auto widget_delegate = std::make_unique<views::WidgetDelegate>();
   widget_delegate->SetContentsView(std::move(button_view));
@@ -366,6 +375,7 @@ gfx::Rect HandoffButtonController::GetHandoffButtonBounds(
 
 void HandoffButtonController::OnWidgetDestroying(
     views::Widget::ClosedReason reason) {
+  view_observer_.Reset();
   button_view_ = nullptr;
   widget_.reset();
   delegate_.reset();
@@ -426,6 +436,20 @@ ActorUiTabControllerInterface* HandoffButtonController::GetTabController() {
 
 bool HandoffButtonController::IsHovering() {
   return is_hovering_;
+}
+
+void HandoffButtonController::OnViewFocused(views::View* observed_view) {
+  is_focused_ = true;
+  GetTabController()->OnHandoffButtonFocusStatusChanged();
+}
+
+void HandoffButtonController::OnViewBlurred(views::View* observed_view) {
+  is_focused_ = false;
+  GetTabController()->OnHandoffButtonFocusStatusChanged();
+}
+
+bool HandoffButtonController::IsFocused() {
+  return is_focused_;
 }
 
 }  // namespace actor::ui

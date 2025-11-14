@@ -12,6 +12,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/view_class_properties.h"
 
@@ -19,6 +20,9 @@ ActorOverlayWebView::ActorOverlayWebView(BrowserWindowInterface* browser)
     : browser_(browser) {
   // Required to create a new web contents if one doesn't exist.
   SetBrowserContext(browser->GetProfile());
+  SetVisible(false);
+  SetFocusBehavior(views::View::FocusBehavior::NEVER);
+  GetViewAccessibility().SetIsIgnored(true);
 }
 
 ActorOverlayWebView::~ActorOverlayWebView() {

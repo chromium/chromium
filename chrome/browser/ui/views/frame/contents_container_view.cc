@@ -115,7 +115,6 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
     auto actor_overlay_web_view =
         std::make_unique<ActorOverlayWebView>(browser_view->browser());
     actor_overlay_web_view->SetID(VIEW_ID_ACTOR_OVERLAY);
-    actor_overlay_web_view->SetVisible(false);
     actor_overlay_web_view_ = AddChildView(std::move(actor_overlay_web_view));
   }
 

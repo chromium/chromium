@@ -90,6 +90,9 @@ class ActorUiTabControllerInterface {
   // Called when the hover status changes on the handoff button.
   virtual void OnHandoffButtonHoverStatusChanged() = 0;
 
+  // Called when the focus status changes on the handoff button.
+  virtual void OnHandoffButtonFocusStatusChanged() = 0;
+
   // Returns whether the tab should show the actor tab indicator.
   virtual bool ShouldShowActorTabIndicator() = 0;
 

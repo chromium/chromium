@@ -46,6 +46,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   void SetActorTaskResume() override;
   void OnOverlayHoverStatusChanged(bool is_hovering) override;
   void OnHandoffButtonHoverStatusChanged() override;
+  void OnHandoffButtonFocusStatusChanged() override;
   UiTabState GetCurrentUiTabState() const override;
   bool ShouldShowActorTabIndicator() override;
 

@@ -49,6 +49,7 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
               (override));
 
   MOCK_METHOD(void, OnHandoffButtonHoverStatusChanged, (), (override));
+  MOCK_METHOD(void, OnHandoffButtonFocusStatusChanged, (), (override));
 
   MOCK_METHOD(bool, ShouldShowActorTabIndicator, (), (override));
   using ActorTabIndicatorStateChangedCallback =

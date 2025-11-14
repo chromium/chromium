@@ -340,7 +340,8 @@ void ActorUiTabController::SetActorTaskResume() {
 // controller side and handle it on the ui component side.
 void ActorUiTabController::UpdateScrimBackground() {
   bool should_show_scrim_background =
-      is_overlay_hovered_ || handoff_button_controller_->IsHovering();
+      is_overlay_hovered_ || handoff_button_controller_->IsHovering() ||
+      handoff_button_controller_->IsFocused();
   if (should_show_scrim_background_ == should_show_scrim_background) {
     return;
   }
@@ -373,6 +374,10 @@ void ActorUiTabController::UnregisterActorOverlayBackgroundChange() {
 
 void ActorUiTabController::UnregisterActorTabIndicatorStateChange() {
   on_actor_tab_indicator_changed_callback_.Reset();
+}
+
+void ActorUiTabController::OnHandoffButtonFocusStatusChanged() {
+  update_scrim_background_debounce_timer_.Reset();
 }
 
 base::WeakPtr<ActorUiTabControllerInterface>

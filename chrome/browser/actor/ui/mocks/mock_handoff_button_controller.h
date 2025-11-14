@@ -23,6 +23,7 @@ class MockHandoffButtonController : public HandoffButtonController {
                base::OnceClosure callback),
               (override));
   MOCK_METHOD(bool, IsHovering, (), (override));
+  MOCK_METHOD(bool, IsFocused, (), (override));
 };
 
 }  // namespace actor::ui

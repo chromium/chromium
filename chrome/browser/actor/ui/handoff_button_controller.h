@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -52,10 +53,10 @@ class HandoffButtonWidget : public views::Widget {
   HoverCallback hover_callback_;
 };
 
-class HandoffButtonController {
+class HandoffButtonController : public views::ViewObserver {
  public:
   explicit HandoffButtonController(tabs::TabInterface& tab_interface);
-  virtual ~HandoffButtonController();
+  ~HandoffButtonController() override;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHandoffButtonElementId);
 
@@ -67,12 +68,17 @@ class HandoffButtonController {
                            base::OnceClosure callback);
   // Returns true if the mouse is currently hovering over the handoff button.
   virtual bool IsHovering();
+  // Returns true if the Handoff Button View is focused.
+  virtual bool IsFocused();
 
  protected:
   void OnButtonPressed();
   void ShouldShowButton(bool& show);
   gfx::Rect GetHandoffButtonBounds(views::Widget* widget);
   void UpdateButtonHoverStatus(bool is_hovered);
+  // views::ViewObserver:
+  void OnViewFocused(views::View* observed_view) override;
+  void OnViewBlurred(views::View* observed_view) override;
 
   std::unique_ptr<views::WidgetDelegate> delegate_ = nullptr;
   std::unique_ptr<HandoffButtonWidget> widget_ = nullptr;
@@ -80,6 +86,7 @@ class HandoffButtonController {
 
  private:
   void CreateAndShowButton(const std::u16string& text,
+                           const std::u16string& a11y_text,
                            const ::ui::ImageModel& icon);
   virtual void CloseButton(views::Widget::ClosedReason reason);
   virtual ActorUiTabControllerInterface* GetTabController();
@@ -91,6 +98,9 @@ class HandoffButtonController {
 
   bool is_visible_ = false;
   bool is_hovering_ = false;
+  bool is_focused_ = false;
+  base::ScopedObservation<views::View, views::ViewObserver> view_observer_{
+      this};
   HandoffButtonState::ControlOwnership ownership_ =
       HandoffButtonState::ControlOwnership::kActor;
   const raw_ref<tabs::TabInterface> tab_interface_;
