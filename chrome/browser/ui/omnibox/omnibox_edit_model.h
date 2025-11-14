@@ -249,7 +249,10 @@ class OmniboxEditModel {
   // `via_keyboard` is set to `true` if AI Mode was invoked via keyboard event
   // and is set to `false` if AI Mode was invoked via mouse / gesture event.
   // Virtual for testing.
-  virtual void OpenAiMode(bool via_keyboard);
+  // `via_context_menu` is used to differentiate between users that open
+  // the popup via the AI mode button vs context menu and allow for the popup
+  // to open rather than navigate to the Google AI page when context is added.
+  virtual void OpenAiMode(bool via_keyboard, bool via_context_menu);
 
   // Returns true if the popup is open and is in in AI-Mode.
   bool PopupInAiMode() const;

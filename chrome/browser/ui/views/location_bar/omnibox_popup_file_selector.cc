@@ -149,7 +149,7 @@ void OmniboxPopupFileSelector::OnFileDataReady(
   UpdateSearchboxContextData(file_token, mime_type, image_data_url,
                              file_data->name, file_data->mime_type);
 
-  edit_model_->OpenAiMode(false);
+  edit_model_->OpenAiMode(false, /*via_context_menu=*/true);
 }
 
 void OmniboxPopupFileSelector::UpdateSearchboxContextData(
