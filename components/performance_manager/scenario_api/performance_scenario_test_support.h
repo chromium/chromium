@@ -93,12 +93,16 @@ class PerformanceScenarioTestHelper {
       ScenarioScope scope) const;
 
   // Updates the LoadingScenario for the given `scope`, and notifies all
-  // observers.
-  void SetLoadingScenario(ScenarioScope scope, LoadingScenario scenario);
+  // observers if `notify` is true.
+  void SetLoadingScenario(ScenarioScope scope,
+                          LoadingScenario scenario,
+                          bool notify = true);
 
   // Updates the InputScenario for the given `scope`, and notifies all
-  // observers.
-  void SetInputScenario(ScenarioScope scope, InputScenario scenario);
+  // observers if `notify` is true.
+  void SetInputScenario(ScenarioScope scope,
+                        InputScenario scenario,
+                        bool notify = true);
 
  private:
   PerformanceScenarioTestHelper(

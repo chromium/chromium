@@ -258,6 +258,8 @@ source_set("unit_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/performance_manager/scenario_api",
+    "//components/performance_manager/scenario_api:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:test_support",

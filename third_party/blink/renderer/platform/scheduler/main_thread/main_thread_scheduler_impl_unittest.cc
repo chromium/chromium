@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 
+#include <atomic>
 #include <memory>
 #include <string>
 #include <utility>
@@ -27,6 +28,9 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/performance_manager/scenario_api/performance_scenario_observer.h"
+#include "components/performance_manager/scenario_api/performance_scenario_test_support.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -3731,6 +3735,263 @@ TEST_F(MainThreadSchedulerImplTest, UrgentMessageAndCompositorPriority) {
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(run_order, testing::ElementsAre("PD1", "C1", "CM", "D1", "D2",
                                               "T1", "T2", "C2", "C3"));
+}
+
+class MainThreadSchedulerPerformanceScenarioTest
+    : public MainThreadSchedulerImplTest {
+ protected:
+  // Convenience aliases
+  using PerformanceScenarioObserverList =
+      performance_scenarios::PerformanceScenarioObserverList;
+  using PerformanceScenarioTestHelper =
+      performance_scenarios::PerformanceScenarioTestHelper;
+
+  using PerformanceScenarioObserver =
+      performance_scenarios::PerformanceScenarioObserver;
+  using MatchingScenarioObserver =
+      performance_scenarios::MatchingScenarioObserver;
+
+  using ScenarioScope = performance_scenarios::ScenarioScope;
+  using ScenarioPattern = performance_scenarios::ScenarioPattern;
+  using LoadingScenario = performance_scenarios::LoadingScenario;
+  using InputScenario = performance_scenarios::InputScenario;
+
+  class MockPerformanceScenarioObserver : public PerformanceScenarioObserver {
+   public:
+    MockPerformanceScenarioObserver() {
+      PerformanceScenarioObserverList::GetForScope(
+          ScenarioScope::kCurrentProcess)
+          ->AddObserver(this);
+    }
+
+    ~MockPerformanceScenarioObserver() override {
+      PerformanceScenarioObserverList::GetForScope(
+          ScenarioScope::kCurrentProcess)
+          ->RemoveObserver(this);
+    }
+
+    MOCK_METHOD(void,
+                OnLoadingScenarioChanged,
+                (ScenarioScope scope,
+                 LoadingScenario old_scenario,
+                 LoadingScenario new_scenario),
+                (override));
+    MOCK_METHOD(void,
+                OnInputScenarioChanged,
+                (ScenarioScope scope,
+                 InputScenario old_scenario,
+                 InputScenario new_scenario),
+                (override));
+  };
+  using StrictMockPerformanceScenarioObserver =
+      ::testing::StrictMock<MockPerformanceScenarioObserver>;
+
+  class MockMatchingScenarioObserver : public MatchingScenarioObserver {
+   public:
+    explicit MockMatchingScenarioObserver(ScenarioPattern pattern)
+        : MatchingScenarioObserver(pattern) {
+      PerformanceScenarioObserverList::GetForScope(
+          ScenarioScope::kCurrentProcess)
+          ->AddMatchingObserver(this);
+    }
+
+    ~MockMatchingScenarioObserver() override {
+      PerformanceScenarioObserverList::GetForScope(
+          ScenarioScope::kCurrentProcess)
+          ->RemoveMatchingObserver(this);
+    }
+
+    MOCK_METHOD(void,
+                OnScenarioMatchChanged,
+                (ScenarioScope scope, bool matches_pattern),
+                (override));
+  };
+  using StrictMockMatchingScenarioObserver =
+      ::testing::StrictMock<MockMatchingScenarioObserver>;
+
+  void SetUp() override {
+    MainThreadSchedulerImplTest::SetUp();
+
+    // Ensure scenarios start in a known state.
+    ASSERT_EQ(performance_scenarios::GetLoadingScenario(
+                  ScenarioScope::kCurrentProcess)
+                  ->load(std::memory_order_relaxed),
+              LoadingScenario::kNoPageLoading);
+    ASSERT_EQ(
+        performance_scenarios::GetInputScenario(ScenarioScope::kCurrentProcess)
+            ->load(std::memory_order_relaxed),
+        InputScenario::kNoInput);
+    ASSERT_TRUE(performance_scenarios::CurrentScenariosMatch(
+        ScenarioScope::kCurrentProcess,
+        performance_scenarios::kDefaultIdleScenarios));
+  }
+
+  void SetLoadingScenario(LoadingScenario scenario) {
+    // Don't notify from the test helper. MainThreadSchedulerImpl should notice
+    // the change and notify observers.
+    performance_scenario_helper_->SetLoadingScenario(
+        ScenarioScope::kCurrentProcess, scenario,
+        /*notify=*/false);
+  }
+
+  void SetInputScenario(InputScenario scenario) {
+    // Don't notify from the test helper. MainThreadSchedulerImpl should notice
+    // the change and notify observers.
+    performance_scenario_helper_->SetInputScenario(
+        ScenarioScope::kCurrentProcess, scenario,
+        /*notify=*/false);
+  }
+
+ private:
+  std::unique_ptr<PerformanceScenarioTestHelper> performance_scenario_helper_ =
+      PerformanceScenarioTestHelper::Create();
+};
+
+TEST_F(MainThreadSchedulerPerformanceScenarioTest, NoChange) {
+  StrictMockPerformanceScenarioObserver mock_scenario_observer;
+  StrictMockMatchingScenarioObserver mock_matching_observer(
+      performance_scenarios::kDefaultIdleScenarios);
+
+  // Posting a task without updating any scenarios shouldn't notify observers.
+  Vector<String> run_order;
+  PostTestTasks(&run_order, "D1");
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(MainThreadSchedulerPerformanceScenarioTest, LoadingScenario) {
+  StrictMockPerformanceScenarioObserver mock_scenario_observer;
+  StrictMockMatchingScenarioObserver mock_matching_observer(
+      performance_scenarios::kDefaultIdleScenarios);
+
+  // kVisiblePageLoading doesn't match the "idle" scenario.
+  EXPECT_CALL(mock_scenario_observer,
+              OnLoadingScenarioChanged(ScenarioScope::kCurrentProcess,
+                                       LoadingScenario::kNoPageLoading,
+                                       LoadingScenario::kVisiblePageLoading));
+  EXPECT_CALL(mock_matching_observer,
+              OnScenarioMatchChanged(ScenarioScope::kCurrentProcess, false));
+
+  SetLoadingScenario(LoadingScenario::kVisiblePageLoading);
+
+  // Observers should be notified when the next task is processed.
+  Vector<String> run_order;
+  PostTestTasks(&run_order, "D1");
+  base::RunLoop().RunUntilIdle();
+  ::testing::Mock::VerifyAndClearExpectations(&mock_scenario_observer);
+  ::testing::Mock::VerifyAndClearExpectations(&mock_matching_observer);
+
+  // kFocusedPageLoading also doesn't match the "idle" scenario so the matching
+  // observer shouldn't be notified again.
+  EXPECT_CALL(mock_scenario_observer,
+              OnLoadingScenarioChanged(ScenarioScope::kCurrentProcess,
+                                       LoadingScenario::kVisiblePageLoading,
+                                       LoadingScenario::kFocusedPageLoading));
+
+  SetLoadingScenario(LoadingScenario::kFocusedPageLoading);
+
+  // Observers should be notified when the next task is processed.
+  PostTestTasks(&run_order, "D1");
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(MainThreadSchedulerPerformanceScenarioTest, InputScenario) {
+  StrictMockPerformanceScenarioObserver mock_scenario_observer;
+  StrictMockMatchingScenarioObserver mock_matching_observer(
+      performance_scenarios::kDefaultIdleScenarios);
+
+  // Any input doesn't match the "idle" scenario.
+  EXPECT_CALL(
+      mock_scenario_observer,
+      OnInputScenarioChanged(ScenarioScope::kCurrentProcess,
+                             InputScenario::kNoInput, InputScenario::kScroll));
+  EXPECT_CALL(mock_matching_observer,
+              OnScenarioMatchChanged(ScenarioScope::kCurrentProcess, false));
+
+  SetInputScenario(InputScenario::kScroll);
+
+  // Observers should be notified when the next task is processed.
+  Vector<String> run_order;
+  PostTestTasks(&run_order, "D1");
+  base::RunLoop().RunUntilIdle();
+  ::testing::Mock::VerifyAndClearExpectations(&mock_scenario_observer);
+  ::testing::Mock::VerifyAndClearExpectations(&mock_matching_observer);
+
+  // Returning to kNoInput matches the "idle" scenario again.
+  EXPECT_CALL(
+      mock_scenario_observer,
+      OnInputScenarioChanged(ScenarioScope::kCurrentProcess,
+                             InputScenario::kScroll, InputScenario::kNoInput));
+  EXPECT_CALL(mock_matching_observer,
+              OnScenarioMatchChanged(ScenarioScope::kCurrentProcess, true));
+
+  SetInputScenario(InputScenario::kNoInput);
+
+  // Observers should be notified when the next task is processed.
+  PostTestTasks(&run_order, "D1");
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(MainThreadSchedulerPerformanceScenarioTest, MultipleScenarios) {
+  StrictMockPerformanceScenarioObserver mock_scenario_observer;
+
+  StrictMockMatchingScenarioObserver mock_idle_observer(
+      performance_scenarios::kDefaultIdleScenarios);
+
+  StrictMockMatchingScenarioObserver mock_scroll_while_loading_observer(
+      performance_scenarios::ScenarioPattern{
+          .loading = {LoadingScenario::kFocusedPageLoading},
+          .input = {InputScenario::kScroll}});
+
+  // Make multiple updates between tasks. Only the final notification of each
+  // type should be sent.
+  EXPECT_CALL(mock_scenario_observer,
+              OnLoadingScenarioChanged(ScenarioScope::kCurrentProcess,
+                                       LoadingScenario::kNoPageLoading,
+                                       LoadingScenario::kVisiblePageLoading));
+  EXPECT_CALL(
+      mock_scenario_observer,
+      OnInputScenarioChanged(ScenarioScope::kCurrentProcess,
+                             InputScenario::kNoInput, InputScenario::kScroll));
+  EXPECT_CALL(mock_idle_observer,
+              OnScenarioMatchChanged(ScenarioScope::kCurrentProcess, false));
+
+  SetLoadingScenario(LoadingScenario::kVisiblePageLoading);
+  // The state no longer matches kDefaultIdleScenarios.
+  SetInputScenario(InputScenario::kTap);
+  SetLoadingScenario(LoadingScenario::kBackgroundPageLoading);
+  SetInputScenario(InputScenario::kNoInput);
+  // The state now matches kDefaultIdleScenarios again.
+  SetLoadingScenario(LoadingScenario::kFocusedPageLoading);
+  // The state no longer matches kDefaultIdleScenarios.
+  SetInputScenario(InputScenario::kScroll);
+  // The state now matches the `scroll_while_loading` pattern.
+  SetLoadingScenario(LoadingScenario::kVisiblePageLoading);
+  // The state no longer matches the `scroll_while_loading` pattern.
+
+  // Observers should be notified when the next task is processed.
+  Vector<String> run_order;
+  PostTestTasks(&run_order, "D1");
+  base::RunLoop().RunUntilIdle();
+  ::testing::Mock::VerifyAndClearExpectations(&mock_scenario_observer);
+  ::testing::Mock::VerifyAndClearExpectations(&mock_idle_observer);
+  ::testing::Mock::VerifyAndClearExpectations(
+      &mock_scroll_while_loading_observer);
+
+  // Changing to kFocusedPageLoading should now notify
+  // `mock_scroll_while_loading_observer`. `mock_idle_observer` isn't notified
+  // again since it didn't change.
+  EXPECT_CALL(mock_scenario_observer,
+              OnLoadingScenarioChanged(ScenarioScope::kCurrentProcess,
+                                       LoadingScenario::kVisiblePageLoading,
+                                       LoadingScenario::kFocusedPageLoading));
+  EXPECT_CALL(mock_scroll_while_loading_observer,
+              OnScenarioMatchChanged(ScenarioScope::kCurrentProcess, true));
+
+  SetLoadingScenario(LoadingScenario::kFocusedPageLoading);
+
+  // Observers should be notified when the next task is processed.
+  PostTestTasks(&run_order, "D1");
+  base::RunLoop().RunUntilIdle();
 }
 
 class DeferRendererTasksAfterInputTest

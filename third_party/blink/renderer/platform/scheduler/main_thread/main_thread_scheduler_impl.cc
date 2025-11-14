@@ -32,6 +32,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
+#include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "third_party/blink/public/common/features.h"
@@ -2360,6 +2361,13 @@ void MainThreadSchedulerImpl::OnTaskStarted(
       queue ? std::optional<TaskPriority>(queue->GetQueuePriority())
             : std::nullopt;
 
+  // Check if the performance scenario has changed. NotifyAllScopes only posts
+  // tasks to notify observers if there's been a change.
+  performance_scenarios::PerformanceScenarioObserverList::NotifyAllScopes(
+      FROM_HERE);
+
+  // TODO(crbug.com/406587000): Convert this to a PerformanceScenario observer
+  // instead of hard-coding it.
   if (scheduling_settings().input_scenario_priority_boost_enabled) {
     // Check if the input scenario has changed and update the main thread
     // priority boost accordingly.

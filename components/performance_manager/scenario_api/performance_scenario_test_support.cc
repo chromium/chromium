@@ -71,24 +71,29 @@ PerformanceScenarioTestHelper::GetReadOnlyScenarioRegion(
   return ScenarioStateForScope(scope).DuplicateReadOnlyRegion();
 }
 
-void PerformanceScenarioTestHelper::SetLoadingScenario(
-    ScenarioScope scope,
-    LoadingScenario scenario) {
+void PerformanceScenarioTestHelper::SetLoadingScenario(ScenarioScope scope,
+                                                       LoadingScenario scenario,
+                                                       bool notify) {
   ScenarioStateForScope(scope).WritableRef().loading.store(
       scenario, std::memory_order_relaxed);
-  if (auto observer_list =
-          PerformanceScenarioObserverList::GetForScope(scope)) {
-    observer_list->NotifyIfScenarioChanged();
+  if (notify) {
+    if (auto observer_list =
+            PerformanceScenarioObserverList::GetForScope(scope)) {
+      observer_list->NotifyIfScenarioChanged();
+    }
   }
 }
 
 void PerformanceScenarioTestHelper::SetInputScenario(ScenarioScope scope,
-                                                     InputScenario scenario) {
+                                                     InputScenario scenario,
+                                                     bool notify) {
   ScenarioStateForScope(scope).WritableRef().input.store(
       scenario, std::memory_order_relaxed);
-  if (auto observer_list =
-          PerformanceScenarioObserverList::GetForScope(scope)) {
-    observer_list->NotifyIfScenarioChanged();
+  if (notify) {
+    if (auto observer_list =
+            PerformanceScenarioObserverList::GetForScope(scope)) {
+      observer_list->NotifyIfScenarioChanged();
+    }
   }
 }
 
