@@ -1742,6 +1742,8 @@ source_set("fuzztest_utils") {
   testonly = true
 
   sources = [
+    "testing/fuzztest_utils/aria_domains.cc",
+    "testing/fuzztest_utils/aria_domains.h",
     "testing/fuzztest_utils/common_domains.cc",
     "testing/fuzztest_utils/common_domains.h",
     "testing/fuzztest_utils/css_domains.cc",

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
@@ -58,6 +59,7 @@ void DomScenarioRunner::RunTest(const DomScenario& input) {
   CreateInitialDOM(input, root, created_elements);
   ApplyModifications(root, input.node_specs, created_elements);
   GetDocument().body()->RemoveChildren();
+  GetDocument().head()->RemoveChildren();
 }
 
 void DomScenarioRunner::CreateInitialDOM(
@@ -65,6 +67,13 @@ void DomScenarioRunner::CreateInitialDOM(
     Element*& root,
     HeapVector<Member<Element>>& created_elements) {
   Document& document = GetDocument();
+
+  if (!input.stylesheet.empty()) {
+    Element* style = document.CreateRawElement(
+        html_names::TagToQualifiedName(html_names::HTMLTag::kStyle));
+    style->setTextContent(AtomicString::FromUTF8(input.stylesheet));
+    document.head()->appendChild(style);
+  }
 
   // If root tag is body, use the document body, otherwise create and append
   // the root element to the body.
@@ -247,6 +256,10 @@ void DomScenarioRunner::LogIfEnabled(const std::string& message) {
 
 std::string DomScenarioRunner::GetDOMTreeAsString() {
   std::string result;
+  if (GetDocument().head() && GetDocument().head()->hasChildren()) {
+    SerializeNode(GetDocument().head(), result, 0);
+    base::StrAppend(&result, {"\n"});
+  }
   SerializeNode(GetDocument().body(), result, 0);
   return result;
 }
@@ -269,13 +282,21 @@ void DomScenarioRunner::SerializeNode(Node* node,
 
     // Children.
     bool has_children = false;
+    bool is_style_element = element->tagName() == "STYLE";
     for (Node* child = element->firstChild(); child;
          child = child->nextSibling()) {
       if (!has_children) {
         base::StrAppend(&result, {"\n"});
         has_children = true;
       }
-      SerializeNode(child, result, indent + 1);
+      if (is_style_element && DynamicTo<Text>(child)) {
+        String css_text = DynamicTo<Text>(child)->data();
+        css_text = StrCat({"    ", css_text});
+        css_text.Replace("} ", "}\n    ");
+        base::StrAppend(&result, {css_text.Utf8()});
+      } else {
+        SerializeNode(child, result, indent + 1);
+      }
       base::StrAppend(&result, {"\n"});
     }
 

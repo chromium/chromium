@@ -13,6 +13,7 @@ functions, as well as support for other specifications, are encouraged.
 - **`mathml_domains.h/cc`** - MathML tag and attribute generators
 - **`svg_domains.h/cc`** - SVG tag and attribute generators
 - **`css_domains.h/cc`** - CSS property and value generators
+- **`aria_domains.h/cc`** - ARIA attribute and value generators
 - **`common_domains.h/cc`** - Shared utilities for domain composition
 
 ### DomScenario Framework
@@ -22,7 +23,8 @@ functions, as well as support for other specifications, are encouraged.
   state, and modified state. Each node has a 1:1 mapping between initial and
   modified states.
 - **`DomScenario`** - Represents a complete test case containing a root element
-  tag and a vector of `NodeSpecification` objects.
+  tag, a vector of `NodeSpecification` objects, and an optional stylesheet
+  injected as a `<style>` element in the document head.
 - **`DomScenarioDomainSpecification`** - Interface that defines domain-specific
   fuzzing parameters. Used by `AnyDomScenarioForSpec()` to generate appropriate
   `NodeSpecification` objects. Implementations must specify:
@@ -32,6 +34,8 @@ functions, as well as support for other specifications, are encouraged.
   - `AnyText()` - the pool of possible text content
   - `GetMaxDomNodes()`, `GetMaxAttributesPerNode()` - tree size limits
   - `GetRootElementTag()` - root element type
+  - `AnyStylesheet()` (optional) - the pool of possible stylesheets (defaults
+    to empty string)
 - **`AnyDomScenarioForSpec()`** - Generates FuzzTest domains from specifications
 - **`DomScenarioRunner`** - Base class that executes `DomScenario` test cases
   by creating initial DOM, applying modifications, and calling

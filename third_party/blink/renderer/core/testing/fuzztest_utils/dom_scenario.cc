@@ -37,6 +37,9 @@ std::string DomScenarioToString(const DomScenario& scenario) {
   base::StrAppend(&out, {"\n---------- DomScenario ----------\n"});
   base::StrAppend(
       &out, {"Root Element: ", scenario.root_tag.ToString().Utf8(), "\n"});
+  if (!scenario.stylesheet.empty()) {
+    base::StrAppend(&out, {"Stylesheet: ", scenario.stylesheet, "\n"});
+  }
 
   base::StrAppend(
       &out, {"Nodes (", base::ToString(scenario.node_specs.size()), "):\n"});
@@ -142,7 +145,8 @@ fuzztest::Domain<DomScenario> AnyDomScenarioForSpec(
         return fuzztest::StructOf<DomScenario>(
             spec->GetRootElementTag(),
             fuzztest::VectorOf(AnyNodeSpecification(spec, num_nodes))
-                .WithSize(num_nodes));
+                .WithSize(num_nodes),
+            spec->AnyStylesheet());
       },
       fuzztest::InRange(1, spec->GetMaxDomNodes()));
 }

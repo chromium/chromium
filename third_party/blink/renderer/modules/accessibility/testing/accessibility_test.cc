@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
 
+#include "base/strings/strcat.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -64,26 +65,38 @@ AXObject* AccessibilityTest::GetAXObjectByElementId(const char* id,
   return GetAXObjectCache().Get(element);
 }
 
-std::string AccessibilityTest::PrintAXTree() const {
-  std::ostringstream stream;
-  PrintAXTreeHelper(stream, GetAXRootObject(), 0);
-  return stream.str();
+// static
+std::string AccessibilityTest::PrintAXTree(Document& document) {
+  auto ax_context =
+      std::make_unique<AXContext>(document, ui::kAXModeDefaultForTests);
+
+  DCHECK(document.View());
+  document.View()->UpdateAllLifecyclePhasesForTest();
+  auto* ax_object_cache =
+      To<AXObjectCacheImpl>(document.ExistingAXObjectCache());
+  DCHECK(ax_object_cache);
+
+  ax_object_cache->UpdateAXForAllDocuments();
+  AXObject* root = ax_object_cache->Root();
+
+  std::string out;
+  PrintAXTreeHelper(out, root, 0);
+  return out;
 }
 
-std::ostringstream& AccessibilityTest::PrintAXTreeHelper(
-    std::ostringstream& stream,
-    const AXObject* root,
-    size_t level) const {
+// static
+void AccessibilityTest::PrintAXTreeHelper(std::string& out,
+                                          const AXObject* root,
+                                          size_t level) {
   if (!root)
-    return stream;
+    return;
 
-  stream << std::string(level * 2, '+');
-  stream << *root << std::endl;
+  base::StrAppend(&out,
+                  {std::string(level * 2, '+'), root->ToString().Utf8(), "\n"});
   for (const AXObject* child : root->ChildrenIncludingIgnored()) {
     DCHECK(child);
-    PrintAXTreeHelper(stream, child, level + 1);
+    PrintAXTreeHelper(out, child, level + 1);
   }
-  return stream;
 }
 
 }  // namespace blink

@@ -6,8 +6,10 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace blink {
@@ -57,4 +59,15 @@ fuzztest::Domain<std::string> AnyPlausibleIdRefValue() {
       [](const std::string& num) { return base::StrCat({"id_", num}); },
       AnyPositiveIntegerString());
 }
+
+fuzztest::Domain<std::string> AnyPlausibleIdRefListValue() {
+  return fuzztest::Map(
+      [](base::span<const std::string> ids) {
+        return base::JoinString(ids, " ");
+      },
+      fuzztest::VectorOf(AnyPlausibleIdRefValue())
+          .WithMinSize(1)
+          .WithMaxSize(3));
+}
+
 }  // namespace blink

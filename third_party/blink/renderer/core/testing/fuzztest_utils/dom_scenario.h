@@ -45,6 +45,7 @@ struct NodeSpecification {
 struct DomScenario {
   QualifiedName root_tag;
   std::vector<NodeSpecification> node_specs;
+  std::string stylesheet;
   std::string ToString() const;
 };
 
@@ -61,6 +62,12 @@ class DomScenarioDomainSpecification {
   virtual int GetMaxDomNodes() = 0;
   virtual int GetMaxAttributesPerNode() = 0;
   virtual fuzztest::Domain<QualifiedName> GetRootElementTag() = 0;
+
+  // Optional stylesheet - if not overridden, generates empty stylesheets.
+  // The stylesheet will be injected as a <style> element in the document head.
+  virtual fuzztest::Domain<std::string> AnyStylesheet() {
+    return fuzztest::Just(std::string(""));
+  }
 };
 
 // Domain building functions

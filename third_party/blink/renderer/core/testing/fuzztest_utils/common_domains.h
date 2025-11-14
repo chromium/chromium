@@ -32,6 +32,11 @@ fuzztest::Domain<std::string> AnyColorValue();
 // If the test assigns IDs to elements in this format, it can cover both
 // matching and non-matching idrefs.
 fuzztest::Domain<std::string> AnyPlausibleIdRefValue();
+
+// Generates a space-separated list of 1-3 ID references, e.g. "id_1 id_3 id_7"
+// using `AnyPlausibleIdRefValue()`.
+fuzztest::Domain<std::string> AnyPlausibleIdRefListValue();
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_FUZZTEST_UTILS_COMMON_DOMAINS_H_
