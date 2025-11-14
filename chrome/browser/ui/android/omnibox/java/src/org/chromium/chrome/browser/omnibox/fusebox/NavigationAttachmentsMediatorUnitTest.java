@@ -22,11 +22,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -47,6 +48,7 @@ import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -61,6 +63,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.util.List;
+import java.util.function.Function;
 
 /** Unit tests for {@link NavigationAttachmentsMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -76,6 +79,7 @@ public class NavigationAttachmentsMediatorUnitTest {
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private WebContents mWebContents;
+    @Mock private Function<Tab, @Nullable Bitmap> mTabFaviconFactory;
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
 
@@ -118,7 +122,8 @@ public class NavigationAttachmentsMediatorUnitTest {
                                 mTabModelSelectorSupplier,
                                 mComposeBoxQueryControllerBridge));
         Clipboard.setInstanceForTesting(mClipboard);
-        OmniboxResourceProvider.setTabFaviconFactory((any) -> mBitmap);
+        OmniboxResourceProvider.setTabFaviconFactory(mTabFaviconFactory);
+        doReturn(mBitmap).when(mTabFaviconFactory).apply(any());
 
         // Start with no init calls.
         clearInvocations(mComposeBoxQueryControllerBridge);
@@ -217,13 +222,15 @@ public class NavigationAttachmentsMediatorUnitTest {
         doReturn(true).when(mTab2).isFrozen();
         doReturn(89L).when(mTab2).getTimestampMillis();
         doReturn(false).when(mPopup).isShowing();
-        mMediator.onToggleAttachmentsPopup();
 
+        mMediator.onToggleAttachmentsPopup();
         assertTrue(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE));
-        assertTrue(
-                mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_THUMBNAIL)
-                        instanceof BitmapDrawable);
-        assertNull(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_TINT));
+        assertNonNull(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_FAVICON));
+
+        doReturn(null).when(mTabFaviconFactory).apply(any());
+        mMediator.onToggleAttachmentsPopup();
+        assertTrue(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE));
+        assertNull(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_FAVICON));
 
         doReturn(mWebContents).when(mTab1).getWebContents();
         doReturn("token").when(mComposeBoxQueryControllerBridge).addTabContext(mTab1);

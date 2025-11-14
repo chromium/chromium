@@ -5,14 +5,16 @@
 package org.chromium.chrome.browser.omnibox.fusebox;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +39,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -289,11 +292,17 @@ public class NavigationAttachmentsViewBinderUnitTest {
         mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE, true);
         assertEquals(View.VISIBLE, mPopup.mAddCurrentTab.getVisibility());
 
-        Drawable drawable = spy(new ColorDrawable(Color.RED));
-        mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_THUMBNAIL, drawable);
-        // Verifying via getCompoundDrawables is hard because it requires manipulating the view to
-        // resolve its visibility, layout direction, and drawables. This lets us check indirectly.
-        verify(drawable).setCallback(mPopup.mAddCurrentTab);
+        assertNull(mPopup.mAddCurrentTab.getCompoundDrawables()[0]);
+
+        Bitmap favicon = UiUtils.createBitmap(/* size= */ 1, Color.RED);
+        mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_FAVICON, favicon);
+        Drawable faviconDrawable = mPopup.mAddCurrentTab.getCompoundDrawablesRelative()[0];
+        assertNotNull(faviconDrawable);
+
+        mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_FAVICON, null);
+        Drawable fallbackDrawable = mPopup.mAddCurrentTab.getCompoundDrawablesRelative()[0];
+        assertNotNull(fallbackDrawable);
+        assertNotEquals(fallbackDrawable, faviconDrawable);
     }
 
     @Test

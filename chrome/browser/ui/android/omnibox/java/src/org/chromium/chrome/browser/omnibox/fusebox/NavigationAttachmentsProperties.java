@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
-import android.content.res.ColorStateList;
-import android.graphics.drawable.Drawable;
+import android.graphics.Bitmap;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -56,12 +56,11 @@ class NavigationAttachmentsProperties {
     public static final WritableObjectPropertyKey<Runnable> CURRENT_TAB_BUTTON_CLICKED =
             new WritableObjectPropertyKey<>();
 
-    /** Thumbnail for the add current tab button */
-    public static final WritableObjectPropertyKey<Drawable> CURRENT_TAB_BUTTON_THUMBNAIL =
-            new WritableObjectPropertyKey<>();
-
-    /** Tint for the add current tab button */
-    public static final WritableObjectPropertyKey<ColorStateList> CURRENT_TAB_BUTTON_TINT =
+    /**
+     * The favicon of the underlying tab which this button would add. Can be null, in which case a
+     * fallback will be used instead.
+     */
+    public static final WritableObjectPropertyKey<@Nullable Bitmap> CURRENT_TAB_BUTTON_FAVICON =
             new WritableObjectPropertyKey<>();
 
     /** Whether the current tab button is visible. */
@@ -127,8 +126,7 @@ class NavigationAttachmentsProperties {
         BUTTON_ADD_CLICKED,
         COMPACT_UI,
         CURRENT_TAB_BUTTON_CLICKED,
-        CURRENT_TAB_BUTTON_THUMBNAIL,
-        CURRENT_TAB_BUTTON_TINT,
+        CURRENT_TAB_BUTTON_FAVICON,
         CURRENT_TAB_BUTTON_VISIBLE,
         POPUP_AI_MODE_CLICKED,
         POPUP_CAMERA_CLICKED,

@@ -16,12 +16,10 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 
-import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -68,7 +66,6 @@ public class NavigationAttachmentsMediator {
     private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
     private final ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
-    private final @Px int mPopupItemIconSizePx;
 
     NavigationAttachmentsMediator(
             Context context,
@@ -89,8 +86,6 @@ public class NavigationAttachmentsMediator {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
         mComposeBoxQueryControllerBridge = composeBoxQueryControllerBridge;
-        mPopupItemIconSizePx =
-                mContext.getResources().getDimensionPixelSize(R.dimen.fusebox_popup_item_icon_size);
 
         mAutocompleteRequestTypeSupplier.addObserver(
                 (type) ->
@@ -257,26 +252,9 @@ public class NavigationAttachmentsMediator {
             mModel.set(
                     NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_CLICKED,
                     () -> onAddCurrentTab(currentTab));
-            Drawable drawable;
-            var favicon = OmniboxResourceProvider.getFaviconBitmapForTab(currentTab);
-            if (favicon != null) {
-                var bitmap =
-                        Bitmap.createScaledBitmap(
-                                favicon,
-                                mPopupItemIconSizePx,
-                                mPopupItemIconSizePx,
-                                /* filter= */ true);
-                drawable = new BitmapDrawable(mContext.getResources(), bitmap);
-                drawable.setBounds(0, 0, mPopupItemIconSizePx, mPopupItemIconSizePx);
-                mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_TINT, null);
-            } else {
-                drawable = assumeNonNull(mContext.getDrawable(R.drawable.ic_globe_24dp));
-                mModel.set(
-                        NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_TINT,
-                        mContext.getColorStateList(R.color.default_icon_color_tint_list));
-            }
-
-            mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_THUMBNAIL, drawable);
+            mModel.set(
+                    NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_FAVICON,
+                    OmniboxResourceProvider.getFaviconBitmapForTab(currentTab));
         } else {
             mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE, false);
         }

@@ -4,9 +4,18 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
-import android.content.res.Resources;
-import android.view.View;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.widget.Button;
+
+import androidx.annotation.Px;
 import androidx.constraintlayout.widget.ConstraintSet;
 
 import org.chromium.build.annotations.NullMarked;
@@ -101,15 +110,9 @@ class NavigationAttachmentsViewBinder {
                     v ->
                             model.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_CLICKED)
                                     .run());
-        } else if (propertyKey == NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_THUMBNAIL) {
-            view.popup.mAddCurrentTab.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    model.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_THUMBNAIL),
-                    null,
-                    null,
-                    null);
-        } else if (propertyKey == NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_TINT) {
-            view.popup.mAddCurrentTab.setCompoundDrawableTintList(
-                    model.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_TINT));
+        } else if (propertyKey == NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_FAVICON) {
+            updateForCurrentTabFavicon(
+                    model.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_FAVICON), view);
         } else if (propertyKey == NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON) {
             updateModeSelectorVisibility(model, view);
         }
@@ -222,5 +225,30 @@ class NavigationAttachmentsViewBinder {
         }
 
         cs.applyTo(views.parentView);
+    }
+
+    private static void updateForCurrentTabFavicon(
+            Bitmap favicon, NavigationAttachmentsViewHolder viewHolder) {
+        Context context = viewHolder.parentView.getContext();
+        Resources res = context.getResources();
+        Button addCurrentTabButton = viewHolder.popup.mAddCurrentTab;
+        final Drawable drawable;
+        final ColorStateList tint;
+        if (favicon != null) {
+            @Px int iconSizePx = res.getDimensionPixelSize(R.dimen.fusebox_popup_item_icon_size);
+            Bitmap bitmap =
+                    Bitmap.createScaledBitmap(favicon, iconSizePx, iconSizePx, /* filter= */ true);
+            drawable = new BitmapDrawable(res, bitmap);
+            drawable.setBounds(
+                    /* left= */ 0, /* top= */ 0, /* right= */ iconSizePx, /* bottom= */ iconSizePx);
+            tint = null;
+        } else {
+            drawable = assumeNonNull(context.getDrawable(R.drawable.ic_globe_24dp));
+            tint = context.getColorStateList(R.color.default_icon_color_tint_list);
+        }
+
+        addCurrentTabButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                drawable, /* top= */ null, /* end= */ null, /* bottom= */ null);
+        addCurrentTabButton.setCompoundDrawableTintList(tint);
     }
 }
