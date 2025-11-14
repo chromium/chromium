@@ -211,7 +211,7 @@ public class MultiWindowUtils implements ActivityStateListener {
             return TabWindowManager.MAX_SELECTORS_S;
         }
 
-        if (DeviceInfo.isDesktop() || DeviceInfo.isXr()) {
+        if (DeviceInfo.isDesktop()) {
             return TabWindowManager.MAX_SELECTORS;
         }
 

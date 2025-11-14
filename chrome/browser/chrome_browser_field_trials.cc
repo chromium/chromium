@@ -151,11 +151,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // low-memory scenarios.
   feature_overrides.EnableFeature(chrome::android::kChangeUnfocusedPriority);
 
-  // Enable by default for desktop platforms, pending a tablet rollout using the
-  // same flag.
-  // TODO(crbug.com/368058472): Remove when tablet rollout is complete.
-  feature_overrides.EnableFeature(chrome::android::kDisableInstanceLimit);
-
   // Enables media capture (tab+window+screen sharing).
   // TODO(crbug.com/352187279): Remove when tablet rollout is complete.
   feature_overrides.EnableFeature(kAndroidMediaPicker);

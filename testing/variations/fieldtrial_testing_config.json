@@ -8879,25 +8879,6 @@
             ]
         }
     ],
-    "DisableInstanceLimitWithV2Switcher": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "max_instance_limit": "20"
-                    },
-                    "enable_features": [
-                        "DisableInstanceLimit",
-                        "InstanceSwitcherV2"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableMemoryReclaimerInBackground": [
         {
             "platforms": [

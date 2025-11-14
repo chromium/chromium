@@ -43,7 +43,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -144,8 +143,6 @@ public class MultiWindowUtilsUnitTest {
     private static final String URL_3 = "url3";
     private static final GURL NTP_GURL = new GURL(UrlConstants.NTP_URL);
     private static final GURL TEST_GURL = new GURL("https://youtube.com/");
-    private static final String XR_DEVICE = "XrDevice";
-    private static final String DESKTOP_DEVICE = "DesktopDevice";
 
     private MultiWindowUtils mUtils;
     private boolean mIsInMultiWindowMode;
@@ -1108,17 +1105,6 @@ public class MultiWindowUtilsUnitTest {
         assertEquals(
                 "Instance limit on low-memory device is incorrect.",
                 5,
-                MultiWindowUtils.getMaxInstances());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
-    public void testMaxInstances_XrDevice() {
-        DeviceInfo.setIsXrForTesting(true);
-        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
-        assertEquals(
-                "Instance limit on XR device is incorrect.",
-                1000,
                 MultiWindowUtils.getMaxInstances());
     }
 
