@@ -5,7 +5,6 @@
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -30,10 +29,6 @@
 #include "services/tracing/public/mojom/tracing_service.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "components/tracing/common/etw_system_data_source_win.h"
-#endif
-
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // As per 'gn help check':
 /*
@@ -48,10 +43,6 @@
 
 namespace tracing {
 namespace {
-
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kWindowsSystemTracingInBrowser, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 PerfettoTracedProcess* g_instance = nullptr;
 bool g_system_consumer_enabled_for_testing = false;
@@ -370,14 +361,6 @@ void PerfettoTracedProcess::SetupClientLibrary(
   // SystemMetricsSampler will be started when enabling
   // kSystemMetricsSourceName.
   tracing::SystemMetricsSampler::Register(/*system_wide=*/enable_consumer);
-  if (enable_consumer) {
-#if BUILDFLAG(IS_WIN)
-    // Etw Data Source only needs to be installed in the browser process.
-    if (base::FeatureList::IsEnabled(kWindowsSystemTracingInBrowser)) {
-      tracing::EtwSystemDataSource::Register();
-    }
-#endif
-  }
   TrackNameRecorder::GetInstance();
   CustomEventRecorder::GetInstance();
 }
