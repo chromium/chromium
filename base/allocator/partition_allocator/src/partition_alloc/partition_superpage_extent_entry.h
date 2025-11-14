@@ -68,11 +68,19 @@ SuperPagesBeginFromExtent(const PartitionSuperPageExtentEntry* extent) {
   return base::bits::AlignDown(extent_as_uintptr, kSuperPageAlignment);
 }
 
-// Returns the end of the last super page in the range of consecutive super
+// Returns the base of the first super page in the range of consecutive super
 // pages.
 //
 // CAUTION! |extent| must point to the extent of the first super page in the
 // range of consecutive super pages.
+uintptr_t SuperPagesBeginFromExtent(
+    const PartitionSuperPageExtentEntry* extent);
+
+// Returns the end of the last super page in the range of consecutive
+// super pages.
+//
+// CAUTION! |extent| must point to the extent of the first super page in
+// the range of consecutive super pages.
 PA_ALWAYS_INLINE uintptr_t
 SuperPagesEndFromExtent(const PartitionSuperPageExtentEntry* extent) {
   return SuperPagesBeginFromExtent(extent) +

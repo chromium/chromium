@@ -14,6 +14,7 @@
 
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/slot_start.h"
 
 // Pool-offset encoding has better security characteristics, but requires
 // contiguous pool hence limited to 64-bit systems.
@@ -75,8 +76,8 @@ class FreelistEntry {
     return entry;
   }
   PA_ALWAYS_INLINE static FreelistEntry* EmplaceAndInitNull(
-      uintptr_t slot_start) {
-    return EmplaceAndInitNull(SlotStartAddr2Ptr(slot_start));
+      UntaggedSlotStart slot_start) {
+    return EmplaceAndInitNull(slot_start.Tag().ToObject());
   }
 
   // Emplaces the freelist entry at the beginning of the given slot span, and
@@ -87,10 +88,10 @@ class FreelistEntry {
   // super page, as thread-cache spans may chain slots across super pages.
   template <typename... Args>
   PA_ALWAYS_INLINE static FreelistEntry* EmplaceAndInitForThreadCache(
-      uintptr_t slot_start,
+      UntaggedSlotStart slot_start,
       FreelistEntry* next,
       Args&&... args) {
-    auto* entry = new (SlotStartAddr2Ptr(slot_start))
+    auto* entry = new (slot_start.Tag().ToObject())
         FreelistEntry(next, std::forward<Args>(args)...);
     return entry;
   }
@@ -105,7 +106,7 @@ class FreelistEntry {
                                                      void* next,
                                                      Args&&... args,
                                                      bool make_shadow_match) {
-    new (SlotStartAddr2Ptr(slot_start))
+    new (UntaggedSlotStart::Unchecked(slot_start).Tag().ToObject())
         FreelistEntry(next, std::forward<Args>(args)..., make_shadow_match);
   }
 
@@ -151,8 +152,9 @@ class FreelistEntry {
     // Regular freelists always point to an entry within the same super page.
     //
     // This is most likely a PartitionAlloc bug if this triggers.
-    if (entry && (SlotStartPtr2Addr(this) & kSuperPageBaseMask) !=
-                     (SlotStartPtr2Addr(entry) & kSuperPageBaseMask))
+    if (entry &&
+        (SlotStart::Unchecked(this).Untag().value() & kSuperPageBaseMask) !=
+            (SlotStart::Unchecked(entry).Untag().value() & kSuperPageBaseMask))
         [[unlikely]] {
       FreelistCorruptionDetected(0);
     }
@@ -172,7 +174,7 @@ class FreelistEntry {
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
     shadow_ = 0;
 #endif
-    return SlotStartPtr2Addr(this);
+    return SlotStart::Unchecked(this).Untag().value();
   }
 
   PA_ALWAYS_INLINE constexpr bool IsEncodedNextPtrZero() const {
@@ -225,8 +227,8 @@ class FreelistEntry {
     //   same slot span, but that'd be too expensive to check here).
     // - `next` is marked as free in the free slot bitmap (if present).
 
-    const uintptr_t here_address = SlotStartPtr2Addr(here);
-    const uintptr_t next_address = SlotStartPtr2Addr(next);
+    const uintptr_t here_address = SlotStart::Unchecked(here).Untag().value();
+    const uintptr_t next_address = SlotStart::Unchecked(next).Untag().value();
 
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
     bool shadow_ptr_ok = here->encoded_next_.Inverted() == here->shadow_;

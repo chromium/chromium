@@ -268,8 +268,4 @@ constexpr bool kUseFewerMemoryRegions =
 static_assert(__cplusplus >= 202002L,
               "PartitionAlloc targets C++20 or higher.");
 
-// Named pass-through that determines whether or not PA should generally
-// enforce that `SlotStart` instances are in fact slot starts.
-#define PA_CONFIG_ENFORCE_SLOT_STARTS() PA_BUILDFLAG(DCHECKS_ARE_ON)
-
 #endif  // PARTITION_ALLOC_PARTITION_ALLOC_CONFIG_H_
