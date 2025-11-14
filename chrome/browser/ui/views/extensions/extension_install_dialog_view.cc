@@ -57,9 +57,11 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -222,15 +224,14 @@ void ShowExtensionInstallDialogImpl(
 // A custom view for the justification section of the extension info. It
 // contains a text field into which users can enter their justification for
 // requesting an extension.
-class ExtensionJustificationView : public views::View {
+class ExtensionJustificationView : public views::BoxLayoutView {
   METADATA_HEADER(ExtensionJustificationView, views::View)
 
  public:
   explicit ExtensionJustificationView(views::TextfieldController* controller) {
-    SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-        ChromeLayoutProvider::Get()->GetDistanceMetric(
-            views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+    SetOrientation(views::BoxLayout::Orientation::kVertical);
+    SetBetweenChildSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
+        views::DISTANCE_RELATED_CONTROL_VERTICAL));
 
     justification_field_label_ = AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(
@@ -309,7 +310,9 @@ class ExtensionJustificationView : public views::View {
   raw_ptr<views::Label> justification_text_length_;
 };
 
-BEGIN_VIEW_BUILDER(/* No Export */, ExtensionJustificationView, views::View)
+BEGIN_VIEW_BUILDER(/* No Export */,
+                   ExtensionJustificationView,
+                   views::BoxLayoutView)
 END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(/* No Export */, ExtensionJustificationView)
@@ -673,41 +676,40 @@ void ExtensionInstallDialogView::CreateContents() {
       gfx::Insets::TLBR(content_insets.top(), 0, content_insets.bottom(), 0));
 
   auto extension_info_container =
-      views::Builder<views::View>().SetLayoutManager(
-          std::make_unique<views::BoxLayout>(
-              views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-              provider->GetDistanceMetric(
-                  views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetInsideBorderInsets(gfx::Insets::TLBR(0, content_insets.left(), 0,
+                                                   content_insets.right()))
+          .SetBetweenChildSpacing(provider->GetDistanceMetric(
+              views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
 
   if (has_permissions) {
-    extension_info_container.AddChildren(
-        // Permissions header.
-        views::Builder<views::Label>()
-            .SetText(prompt_->GetPermissionsHeading())
-            .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
-            .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-            .SetMultiLine(true),
-        // Permissions content.
-        views::Builder<ExtensionPermissionsView>(
-            std::make_unique<ExtensionPermissionsView>(
-                prompt_->GetPermissions())));
+    extension_info_container.AddChild(
+        views::Builder<views::BoxLayoutView>()
+            .SetOrientation(views::BoxLayout::Orientation::kVertical)
+            .SetBetweenChildSpacing(provider->GetDistanceMetric(
+                views::DISTANCE_RELATED_CONTROL_VERTICAL))
+            .AddChildren(
+                // Permissions header.
+                views::Builder<views::Label>()
+                    .SetText(prompt_->GetPermissionsHeading())
+                    .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                    .SetMultiLine(true),
+                // Permissions content.
+                views::Builder<ExtensionPermissionsView>(
+                    std::make_unique<ExtensionPermissionsView>(
+                        prompt_->GetPermissions()))));
   }
 
   if (requires_justification) {
     auto justification_view =
         std::make_unique<ExtensionJustificationView>(this);
     justification_view_ = justification_view.get();
-    extension_info_container.AddChildren(
+    extension_info_container.AddChild(
         views::Builder<ExtensionJustificationView>(
             std::move(justification_view)));
   }
-
-  auto scroll_view_contents =
-      views::Builder<views::FlexLayoutView>()
-          .SetOrientation(views::LayoutOrientation::kVertical)
-          .SetInteriorMargin(gfx::Insets::TLBR(0, content_insets.left(), 0,
-                                               content_insets.right()))
-          .AddChild(extension_info_container);
 
   auto scroll_view =
       views::Builder<views::ScrollView>()
@@ -716,10 +718,9 @@ void ExtensionInstallDialogView::CreateContents() {
           .ClipHeightTo(0,
                         provider->GetDistanceMetric(
                             views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT))
-          .SetContents(scroll_view_contents)
+          .SetContents(extension_info_container)
           .Build();
   scroll_view_ = scroll_view.get();
-
   AddChildView(std::move(scroll_view));
 }
 
