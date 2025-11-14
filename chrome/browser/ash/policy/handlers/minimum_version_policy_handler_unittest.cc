@@ -54,7 +54,7 @@ class MinimumVersionPolicyHandlerTest
     : public testing::Test,
       public MinimumVersionPolicyHandler::Delegate {
  public:
-  MinimumVersionPolicyHandlerTest();
+  MinimumVersionPolicyHandlerTest() = default;
 
   void SetUp() override;
   void TearDown() override;
@@ -100,10 +100,6 @@ class MinimumVersionPolicyHandlerTest
   std::unique_ptr<base::Version> current_version_;
   std::unique_ptr<MinimumVersionPolicyHandler> minimum_version_policy_handler_;
 };
-
-MinimumVersionPolicyHandlerTest::MinimumVersionPolicyHandlerTest() {
-  feature_list_.InitAndEnableFeature(ash::features::kMinimumChromeVersion);
-}
 
 void MinimumVersionPolicyHandlerTest::SetUp() {
   fake_update_engine_client_ = ash::UpdateEngineClient::InitializeFakeForTest();

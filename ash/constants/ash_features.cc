@@ -1332,12 +1332,6 @@ const base::FeatureParam<MantisModel> kMediaAppImageMantisModelParams{
     &kMediaAppImageMantisModel, "mantis_model", MantisModel::V2,
     &mantis_model_options};
 
-// Controls whether to enable the requirement of a minimum chrome version on the
-// device through the policy DeviceMinimumVersion. If the requirement is
-// not met and the warning time in the policy has expired, the user is
-// restricted from using the session.
-BASE_FEATURE(kMinimumChromeVersion, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables to split left and right modifiers in settings.
 BASE_FEATURE(kModifierSplit, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -3038,10 +3032,6 @@ bool IsProductivityLauncherImageSearchEnabled() {
 
 bool IsMacAddressRandomizationEnabled() {
   return base::FeatureList::IsEnabled(kMacAddressRandomization);
-}
-
-bool IsMinimumChromeVersionEnabled() {
-  return base::FeatureList::IsEnabled(kMinimumChromeVersion);
 }
 
 bool IsMultiCalendarSupportEnabled() {

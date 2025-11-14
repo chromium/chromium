@@ -617,7 +617,6 @@ BASE_DECLARE_FEATURE(kMediaAppImageMantisRemoveBackground);
 enum class MantisModel { V1, V2 };
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<MantisModel> kMediaAppImageMantisModelParams;
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kMinimumChromeVersion);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kModifierSplit);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kMouseImposterCheck);
@@ -1220,7 +1219,6 @@ bool IsLockScreenHideSensitiveNotificationsSupported();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLockScreenNotificationsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsMacAddressRandomizationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldMigrateOwnerKeyToPrivateSlot();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsMinimumChromeVersionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsMultiCalendarSupportEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNearbyPresenceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationLimitEnabled();

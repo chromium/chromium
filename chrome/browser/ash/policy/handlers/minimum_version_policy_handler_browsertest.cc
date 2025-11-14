@@ -111,7 +111,7 @@ MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
 
 class MinimumVersionPolicyTestBase : public ash::LoginManagerTest {
  public:
-  MinimumVersionPolicyTestBase();
+  MinimumVersionPolicyTestBase() = default;
 
   ~MinimumVersionPolicyTestBase() override = default;
 
@@ -144,10 +144,6 @@ class MinimumVersionPolicyTestBase : public ash::LoginManagerTest {
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   std::optional<base::test::ScopedChromeOSVersionInfo> version_info_;
 };
-
-MinimumVersionPolicyTestBase::MinimumVersionPolicyTestBase() {
-  feature_list_.InitAndEnableFeature(ash::features::kMinimumChromeVersion);
-}
 
 void MinimumVersionPolicyTestBase::SetMinimumChromeVersionPolicy(
     const base::Value::Dict& value) {

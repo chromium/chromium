@@ -218,8 +218,7 @@ void MinimumVersionPolicyHandler::OnPolicyChanged() {
       cros_settings_->PrepareTrustedValues(
           base::BindOnce(&MinimumVersionPolicyHandler::OnPolicyChanged,
                          weak_factory_.GetWeakPtr()));
-  if (status != ash::CrosSettingsProvider::TRUSTED || !IsPolicyApplicable() ||
-      !ash::features::IsMinimumChromeVersionEnabled()) {
+  if (status != ash::CrosSettingsProvider::TRUSTED || !IsPolicyApplicable()) {
     VLOG(1) << "Ignore policy change - policy is not applicable or settings "
                "are not trusted.";
     return;
