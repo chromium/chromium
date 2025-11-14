@@ -2138,9 +2138,11 @@ HistoryLastVisitResult HistoryBackend::GetLastVisitToHost(
     base::Time end_time,
     VisitQuery404sPolicy policy_for_404_visits) {
   base::Time last_visit;
+  GURL last_visited_url;
   return {db_ && db_->GetLastVisitToHost(host, begin_time, end_time,
-                                         policy_for_404_visits, &last_visit),
-          last_visit};
+                                         policy_for_404_visits, &last_visit,
+                                         &last_visited_url),
+          last_visit, last_visited_url};
 }
 
 HistoryLastVisitResult HistoryBackend::GetLastVisitToOrigin(
@@ -2149,9 +2151,11 @@ HistoryLastVisitResult HistoryBackend::GetLastVisitToOrigin(
     base::Time end_time,
     VisitQuery404sPolicy policy_for_404_visits) {
   base::Time last_visit;
+  GURL last_visited_url;
   return {db_ && db_->GetLastVisitToOrigin(origin, begin_time, end_time,
-                                           policy_for_404_visits, &last_visit),
-          last_visit};
+                                           policy_for_404_visits, &last_visit,
+                                           &last_visited_url),
+          last_visit, last_visited_url};
 }
 
 DailyVisitsResult HistoryBackend::GetDailyVisitsToOrigin(
@@ -3799,6 +3803,16 @@ bool HistoryBackend::ClearAllMainHistory(const URLRows& kept_urls) {
 std::vector<GURL> HistoryBackend::GetCachedRecentRedirectsForPage(
     const GURL& page_url) {
   return GetCachedRecentRedirects(page_url);
+}
+
+std::optional<GURL> HistoryBackend::GetMostRecentlyVisitedURLForOrigin(
+    const url::Origin& origin) {
+  HistoryLastVisitResult result =
+      GetLastVisitToOrigin(origin, base::Time(), base::Time::Now(),
+                           VisitQuery404sPolicy::kInclude404s);
+  return result.success && result.last_visited_url.is_valid()
+             ? std::make_optional(result.last_visited_url)
+             : std::nullopt;
 }
 
 bool HistoryBackend::ProcessSetFaviconsResult(

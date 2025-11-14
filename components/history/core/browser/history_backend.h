@@ -434,7 +434,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       base::Time end_time,
       VisitQuery404sPolicy policy_for_404_visits);
 
-  // Favicon -------------------------------------------------------------------
+  // Favicons ------------------------------------------------------------------
 
   std::vector<favicon_base::FaviconRawBitmapResult> GetFavicon(
       const GURL& icon_url,
@@ -1027,6 +1027,15 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // `icon_url` may be mapped to hundreds of page URLs.
   void SendFaviconChangedNotificationForIconURL(const GURL& icon_url);
 
+  // favicon::FaviconBackendDelegate
+  std::vector<GURL> GetCachedRecentRedirectsForPage(
+      const GURL& page_url) override;
+  std::optional<GURL> GetMostRecentlyVisitedURLForOrigin(
+      const url::Origin& origin) override;
+
+  bool ProcessSetFaviconsResult(const favicon::SetFaviconsResult& result,
+                                const GURL& icon_url);
+
   // Generic stuff -------------------------------------------------------------
 
   // Processes the next scheduled HistoryDBTask, scheduling this method
@@ -1066,13 +1075,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   //
   // The IDs of the URLs may change.
   bool ClearAllMainHistory(const URLRows& kept_urls);
-
-  // favicon::FaviconBackendDelegate
-  std::vector<GURL> GetCachedRecentRedirectsForPage(
-      const GURL& page_url) override;
-
-  bool ProcessSetFaviconsResult(const favicon::SetFaviconsResult& result,
-                                const GURL& icon_url);
 
   // Implementation of DeleteAllForeignVisits(): Since there may be many (1000s)
   // of foreign visits, the deletion is implemented in multiple small batches to

@@ -10,6 +10,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/favicon/core/favicon_backend_delegate.h"
 #include "components/favicon/core/favicon_database.h"
@@ -72,7 +73,16 @@ class FaviconBackendTest : public testing::Test, public FaviconBackendDelegate {
     return {page_url};
   }
 
+  std::optional<GURL> GetMostRecentlyVisitedURLForOrigin(
+      const url::Origin& origin) override {
+    return most_recently_visited_url_for_origin_;
+  }
+
  protected:
+  void SetMostRecentlyVisitedURLForOrigin(const GURL& url) {
+    most_recently_visited_url_for_origin_ = url;
+  }
+
   void SetFavicons(const base::flat_set<GURL>& page_urls,
                    favicon_base::IconType icon_type,
                    const GURL& icon_url,
@@ -166,6 +176,8 @@ class FaviconBackendTest : public testing::Test, public FaviconBackendDelegate {
   std::unique_ptr<FaviconBackend> backend_;
   // Used in GetCachedRecentRedirectsForPage().
   RedirectCache recent_redirects_{8};
+  // Used in GetMostRecentlyVisitedURLForOrigin().
+  std::optional<GURL> most_recently_visited_url_for_origin_;
 
  private:
   base::ScopedTempDir temp_dir_;
@@ -1292,6 +1304,33 @@ TEST_F(FaviconBackendTest, GetFaviconsForUrlFallbackToHost) {
     histogram_tester.ExpectBucketCount("Favicons.FallbackToHostSuccess", true,
                                        0);
   }
+}
+
+// Test that GetFaviconsForUrl() behaves correctly when the origin fallback
+// feature is enabled.
+TEST_F(FaviconBackendTest, GetFaviconsForUrlFallbackToOrigin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kUseLastVisitedFallbackURLFavicon);
+
+  const GURL page_url_http("http://www.google.com/maps");
+  const GURL page_url_https("https://www.google.com/");
+  const GURL icon_url("https://www.google.com/icon.png");
+
+  SetFavicons({page_url_https}, IconType::kFavicon, icon_url,
+              {gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE)});
+  SetMostRecentlyVisitedURLForOrigin(page_url_https);
+
+  base::HistogramTester histogram_tester;
+  // Test that querying for the http URL with `fallback_to_host`=true returns
+  // the favicon associated with the https URL.
+  std::vector<favicon_base::FaviconRawBitmapResult> bitmap_results_out =
+      backend_->GetFaviconsForUrl(page_url_http,
+                                  {IconType::kFavicon, IconType::kTouchIcon},
+                                  {kSmallEdgeSize}, true);
+
+  ASSERT_EQ(1u, bitmap_results_out.size());
+  EXPECT_EQ(icon_url, bitmap_results_out[0].icon_url);
+  histogram_tester.ExpectBucketCount("Favicons.FallbackToHostSuccess", true, 1);
 }
 
 // Test that when GetFaviconsForUrl() is called with multiple icon types that

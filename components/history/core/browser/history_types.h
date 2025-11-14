@@ -692,11 +692,13 @@ enum DomainMetricType : DomainMetricBitmaskType {
 struct HistoryLastVisitResult {
   // Indicates whether the call was successful or not. This can happen if there
   // are internal database errors or the query was called with invalid
-  // arguments. `success` will be true and `last_visit` will be null if
-  // the host was never visited before. `last_visit` will always be null if
-  // `success` is false.
+  // arguments. `success` will be true and both `last_visit` and
+  // `last_visited_url` will be null if the host was never visited before.
+  // `last_visit` and `last_visited_url` will always be null if `success` is
+  // false.
   bool success = false;
   base::Time last_visit;
+  GURL last_visited_url;
 };
 
 // DailyVisitsResult contains the result of counting visits to a host over a

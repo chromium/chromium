@@ -26373,6 +26373,25 @@
             ]
         }
     ],
+    "UseLastVisitedFallbackURLFavicon": [
+        {
+            "platforms": [
+                "android",
+                "linux",
+                "mac",
+                "windows",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseLastVisitedFallbackURLFavicon"
+                    ]
+                }
+            ]
+        }
+    ],
     "UsePersistentCacheForCodeCache": [
         {
             "platforms": [

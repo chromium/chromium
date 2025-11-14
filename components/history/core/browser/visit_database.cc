@@ -1065,7 +1065,8 @@ bool VisitDatabase::GetLastVisitToHost(
     base::Time begin_time,
     base::Time end_time,
     VisitQuery404sPolicy policy_for_404_visits,
-    base::Time* last_visit) {
+    base::Time* last_visit,
+    GURL* last_visited_url) {
   const GURL http("http://" + host);
   const GURL https("https://" + host);
   if (!http.is_valid() || !https.is_valid()) {
@@ -1082,7 +1083,7 @@ bool VisitDatabase::GetLastVisitToHost(
     case VisitQuery404sPolicy::kInclude404s:
       statement.Assign(GetDB().GetCachedStatement(
           SQL_FROM_HERE,
-          "SELECT v.visit_time,v.transition "
+          "SELECT v.visit_time,v.transition,u.url "
           "FROM visits v INNER JOIN urls u ON v.url=u.id "
           "WHERE "
           "  ( (u.url>=? AND u.url<?) OR "
@@ -1095,7 +1096,7 @@ bool VisitDatabase::GetLastVisitToHost(
     case VisitQuery404sPolicy::kExclude404s:
       statement.Assign(GetDB().GetCachedStatement(
           SQL_FROM_HERE,
-          "SELECT v.visit_time,v.transition "
+          "SELECT v.visit_time,v.transition,u.url "
           "FROM visits v INNER JOIN urls u ON v.url=u.id "
           "LEFT OUTER JOIN context_annotations ca ON v.id=ca.visit_id "
           "WHERE "
@@ -1123,6 +1124,7 @@ bool VisitDatabase::GetLastVisitToHost(
     if (ui::PageTransitionIsMainFrame(
             PageTransitionFromIntWithFallback(statement.ColumnInt(1)))) {
       *last_visit = statement.ColumnTime(0);
+      *last_visited_url = GURL(statement.ColumnStringView(2));
       return true;
     }
   }
@@ -1130,6 +1132,7 @@ bool VisitDatabase::GetLastVisitToHost(
   // visited in the given time range. Zero the time result and report the
   // success of the statement.
   *last_visit = base::Time();
+  *last_visited_url = GURL();
   return statement.Succeeded();
 }
 
@@ -1138,7 +1141,8 @@ bool VisitDatabase::GetLastVisitToOrigin(
     base::Time begin_time,
     base::Time end_time,
     VisitQuery404sPolicy policy_for_404_visits,
-    base::Time* last_visit) {
+    base::Time* last_visit,
+    GURL* last_visited_url) {
   if (origin.opaque() || !(origin.scheme() == url::kHttpScheme ||
                            origin.scheme() == url::kHttpsScheme)) {
     return false;
@@ -1152,7 +1156,7 @@ bool VisitDatabase::GetLastVisitToOrigin(
     case VisitQuery404sPolicy::kInclude404s:
       statement.Assign(GetDB().GetCachedStatement(
           SQL_FROM_HERE,
-          "SELECT v.visit_time "
+          "SELECT v.visit_time,u.url "
           "FROM visits v INNER JOIN urls u ON v.url=u.id "
           "WHERE "
           "  u.url>=? AND u.url<? AND "
@@ -1163,7 +1167,7 @@ bool VisitDatabase::GetLastVisitToOrigin(
     case VisitQuery404sPolicy::kExclude404s:
       statement.Assign(GetDB().GetCachedStatement(
           SQL_FROM_HERE,
-          "SELECT v.visit_time "
+          "SELECT v.visit_time,u.url "
           "FROM visits v INNER JOIN urls u ON v.url=u.id "
           "LEFT OUTER JOIN context_annotations ca ON v.id=ca.visit_id "
           "WHERE "
@@ -1184,10 +1188,12 @@ bool VisitDatabase::GetLastVisitToOrigin(
     // visited in the given time range. Zero the time result and report the
     // success of the statement.
     *last_visit = base::Time();
+    *last_visited_url = GURL();
     return statement.Succeeded();
   }
 
   *last_visit = statement.ColumnTime(0);
+  *last_visited_url = GURL(statement.ColumnStringView(1));
   return true;
 }
 

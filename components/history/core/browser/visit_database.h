@@ -246,23 +246,26 @@ class VisitDatabase {
                        VisitQuery404sPolicy policy_for_404_visits,
                        int* count);
 
-  // Gets the last time any webpage on the given host was visited within the
-  // time range [`begin_time`, `end_time`). If the given host has not been
-  // visited in the given time range, this will return true and `last_visit`
-  // will be set to base::Time(). False will be returned if the host is not a
-  // valid HTTP or HTTPS url or for other database errors.
+  // Gets the time and the URL of the most recently visited webpage on the given
+  // host within the time range [`begin_time`, `end_time`). If the given host
+  // has not been visited in the given time range, this will return true and
+  // `last_visit` will be set to base::Time() and `last_visited_url` will be
+  // set to `GURL()`. False will be returned if the host is not a valid HTTP or
+  // HTTPS url or for other database errors.
   bool GetLastVisitToHost(const std::string& host,
                           base::Time begin_time,
                           base::Time end_time,
                           VisitQuery404sPolicy policy_for_404_visits,
-                          base::Time* last_visit);
+                          base::Time* last_visit,
+                          GURL* last_visited_url);
 
   // Same as the above, but for the given origin instead of host.
   bool GetLastVisitToOrigin(const url::Origin& origin,
                             base::Time begin_time,
                             base::Time end_time,
                             VisitQuery404sPolicy policy_for_404_visits,
-                            base::Time* last_visit);
+                            base::Time* last_visit,
+                            GURL* last_visited_url);
 
   // Gets counts for total visits and days visited for pages matching `origin`.
   // Counts only user-visible visits. Counts or ignores visits with an HTTP

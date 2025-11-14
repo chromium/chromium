@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/favicon/core/favicon_types.h"
@@ -24,6 +25,12 @@ class FilePath;
 }
 
 namespace favicon {
+
+// This is only used when falling back during favicon lookup for a page URL.
+// If enabled, this will use the icon of the most recently visited URL for the
+// origin instead of always picking the the favicon for the URL for the origin
+// which comes first in alphabetical order.
+BASE_DECLARE_FEATURE(kUseLastVisitedFallbackURLFavicon);
 
 // The favicon sizes that will be tracked in the histograms. This should be kept
 // in sync with the variants here:
