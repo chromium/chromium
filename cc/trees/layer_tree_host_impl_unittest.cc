@@ -281,7 +281,7 @@ class LayerTreeHostImplTestBase : public testing::Test,
   }
   void OnDrawForLayerTreeFrameSink(bool resourceless_software_draw,
                                    bool skip_draw) override {
-    std::unique_ptr<TestFrameData> frame(new TestFrameData);
+    std::unique_ptr<TestFrameData> frame = std::make_unique<TestFrameData>();
     EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(frame.get()));
     last_on_draw_render_passes_.clear();
     viz::CompositorRenderPass::CopyAllForTest(frame->render_passes,
@@ -694,7 +694,7 @@ class LayerTreeHostImplTestBase : public testing::Test,
     scroll_state_data.is_scrollbar_interaction =
         type == ui::ScrollInputType::kScrollbar;
     std::unique_ptr<ScrollState> scroll_state(
-        new ScrollState(scroll_state_data));
+        std::make_unique<ScrollState>(scroll_state_data));
     return scroll_state;
   }
 
@@ -3665,7 +3665,7 @@ class IncompleteRecordingLayer : public LayerImpl {
   static std::unique_ptr<IncompleteRecordingLayer> Create(
       LayerTreeImpl* tree_impl,
       int id) {
-    return base::WrapUnique(new IncompleteRecordingLayer(tree_impl, id));
+    return std::make_unique<IncompleteRecordingLayer>(tree_impl, id);
   }
   IncompleteRecordingLayer(LayerTreeImpl* layer_tree_impl, int id)
       : LayerImpl(layer_tree_impl, id) {}
@@ -12218,7 +12218,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
   latency_info.set_trace_id(5);
   latency_info.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT);
   std::unique_ptr<SwapPromise> swap_promise(
-      new LatencyInfoSwapPromise(latency_info));
+      std::make_unique<LatencyInfoSwapPromise>(latency_info));
   host_impl_->active_tree()->QueuePinnedSwapPromise(std::move(swap_promise));
 
   host_impl_->SetFullViewportDamage();

@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -2458,7 +2459,7 @@ void PropertyTrees::ResetAllChangeTracking() {
 
 std::unique_ptr<base::trace_event::TracedValue> PropertyTrees::AsTracedValue()
     const {
-  auto value = base::WrapUnique(new base::trace_event::TracedValue);
+  auto value = std::make_unique<base::trace_event::TracedValue>();
   AsValueInto(value.get());
   return value;
 }

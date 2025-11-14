@@ -4,8 +4,9 @@
 
 #include "cc/resources/ui_resource_request.h"
 
+#include <memory>
+
 #include "base/check_op.h"
-#include "base/memory/ptr_util.h"
 
 namespace cc {
 
@@ -28,7 +29,7 @@ UIResourceRequest& UIResourceRequest::operator=(
   type_ = request.type_;
   id_ = request.id_;
   if (request.bitmap_) {
-    bitmap_ = base::WrapUnique(new UIResourceBitmap(*request.bitmap_.get()));
+    bitmap_ = std::make_unique<UIResourceBitmap>(*request.bitmap_.get());
   } else {
     bitmap_ = nullptr;
   }

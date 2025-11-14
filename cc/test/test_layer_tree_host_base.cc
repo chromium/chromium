@@ -4,9 +4,9 @@
 
 #include "cc/test/test_layer_tree_host_base.h"
 
+#include <memory>
 #include <utility>
 
-#include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/fake_raster_source.h"
@@ -60,7 +60,7 @@ std::unique_ptr<FakeLayerTreeHostImpl> TestLayerTreeHostBase::CreateHostImpl(
 
 std::unique_ptr<TaskGraphRunner>
 TestLayerTreeHostBase::CreateTaskGraphRunner() {
-  return base::WrapUnique(new TestTaskGraphRunner);
+  return std::make_unique<TestTaskGraphRunner>();
 }
 
 void TestLayerTreeHostBase::InitializeFrameSink() {
