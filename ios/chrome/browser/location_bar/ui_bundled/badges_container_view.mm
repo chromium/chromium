@@ -361,6 +361,7 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
   }
   if (IsProactiveSuggestionsFrameworkEnabled()) {
     [self updateBackgroundVisibility];
+    [self updateTapOverlayButtonVisibility];
   }
 }
 
@@ -437,6 +438,24 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
     }
   }
   return NO;
+}
+
+// Updates the tap overlay button visibility.
+- (void)updateTapOverlayButtonVisibility {
+  if ([self hasVisibleBadges]) {
+    _tapOverlayButton.hidden = NO;
+    return;
+  }
+
+  switch (_placeholderType) {
+    // Placeholder views that don't open AI Hub.
+    case LocationBarPlaceholderType::kNone:
+    case LocationBarPlaceholderType::kDefaultSearchEngineIcon:
+      _tapOverlayButton.hidden = YES;
+      break;
+    default:
+      _tapOverlayButton.hidden = NO;
+  }
 }
 
 @end

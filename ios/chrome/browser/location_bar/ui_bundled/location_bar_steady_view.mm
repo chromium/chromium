@@ -492,8 +492,8 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 - (void)setPlaceholderView:(UIView*)placeholderView
                       type:(LocationBarPlaceholderType)placeholderType {
   if (_badgesContainerView.placeholderView != placeholderView) {
-    _badgesContainerView.placeholderView = placeholderView;
     _badgesContainerView.placeholderType = placeholderType;
+    _badgesContainerView.placeholderView = placeholderView;
   }
   [self updateAccessibility];
 }
