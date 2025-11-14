@@ -80,6 +80,8 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr {
       mojo::PendingRemote<font_data_service::mojom::FontDataService>
           font_data_service);
 
+  size_t GetMappedFilesCountForTesting() const;
+
  private:
   font_data_service::mojom::FontDataService& GetRemoteFontDataService() const;
 
@@ -144,7 +146,18 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr {
       mapped_regions_;
 
   // Cache of the memory mapped files to ensure the mapping lives.
-  mutable std::list<std::unique_ptr<base::MemoryMappedFile>> mapped_files_;
+  // The key is an ID received from the renderer along with the handle that
+  // uniquely identifies the font file. If 2 matching requests resolve to fonts
+  // that are contained within the same file, the renderer would receive 2
+  // different handles to the underlying file but each of those requests would
+  // receive the same ID. This is used to ensure we reuse an already mapped
+  // file if possible rather than creating a new one for each match that
+  // resolves to the same file on disk. It's crucial that a mapped file from
+  // this map is never unmapped or replaced, as we have already given out
+  // typeface objects that reference them which can be used for the entire
+  // lifetime of the renderer process.
+  mutable std::map<uint64_t, std::unique_ptr<base::MemoryMappedFile>>
+      mapped_files_ GUARDED_BY(lock_);
 
   // A cache of all the font family names that could be returned by
   // onGetFamilyName. When populated, this has the same amount of elements as
