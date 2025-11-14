@@ -24,14 +24,44 @@ void TrustedVaultClientBackend::RemoveObserver(
       observer);
 }
 
+TrustedVaultClientBackend::CancelDialogCallback
+TrustedVaultClientBackend::Reauthentication(
+    id<SystemIdentity> identity,
+    trusted_vault::SecurityDomainId security_domain_id,
+    UIViewController* presenting_view_controller,
+    CompletionBlock completion) {
+  // The only caller is the overloaded `Reauthentication` method below.
+  // The internal implementation either overloads this method or the method
+  // below, which would then no longer call this method. Thus, this code can
+  // never be reached.
+  NOTREACHED();
+}
+
+TrustedVaultClientBackend::CancelDialogCallback
+TrustedVaultClientBackend::Reauthentication(
+    id<SystemIdentity> identity,
+    trusted_vault::SecurityDomainId security_domain_id,
+    trusted_vault::TrustedVaultUserActionTriggerForUMA trigger,
+    UIViewController* presenting_view_controller,
+    CompletionBlock completion) {
+  return Reauthentication(identity, security_domain_id,
+                          presenting_view_controller, completion);
+}
+
 void TrustedVaultClientBackend::NotifyKeysChanged(
     trusted_vault::SecurityDomainId security_domain_id) {
+  NotifyKeysChangedWithTrigger(security_domain_id, std::nullopt);
+}
+
+void TrustedVaultClientBackend::NotifyKeysChangedWithTrigger(
+    trusted_vault::SecurityDomainId security_domain_id,
+    std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger) {
   auto it = observer_lists_per_security_domain_id_.find(security_domain_id);
   if (it == observer_lists_per_security_domain_id_.end()) {
     return;
   }
   for (Observer& observer : it->second) {
-    observer.OnTrustedVaultKeysChanged(std::nullopt);
+    observer.OnTrustedVaultKeysChanged(trigger);
   }
 }
 

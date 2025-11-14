@@ -78,6 +78,17 @@ class TrustedVaultClientBackend : public KeyedService {
       trusted_vault::SecurityDomainId security_domain_id,
       base::OnceCallback<void(bool)> completion) = 0;
 
+  // TODO(crbug.com/458664467): Remove this `Reauthentication` overload and make
+  // the one below pure virtual again. This is the old version that's still
+  // overridden in internal code. It's not called directly anymore, but only by
+  // the default implementation of the overload below. This avoids breaking the
+  // internal implementation (which can't be changed in the same CL).
+  virtual CancelDialogCallback Reauthentication(
+      id<SystemIdentity> identity,
+      trusted_vault::SecurityDomainId security_domain_id,
+      UIViewController* presenting_view_controller,
+      CompletionBlock completion);
+
   // Presents the trusted vault key reauthentication UI for `identity` for the
   // purpose of extending the set of keys returned via FetchKeys(). Once the
   // reauth is done and the UI is dismissed, `completion` is called.
@@ -85,8 +96,9 @@ class TrustedVaultClientBackend : public KeyedService {
   virtual CancelDialogCallback Reauthentication(
       id<SystemIdentity> identity,
       trusted_vault::SecurityDomainId security_domain_id,
+      trusted_vault::TrustedVaultUserActionTriggerForUMA trigger,
       UIViewController* presenting_view_controller,
-      CompletionBlock completion) = 0;
+      CompletionBlock completion);
 
   // Presents the trusted vault key reauthentication UI for `identity` for the
   // purpose of improving recoverability as returned via
@@ -124,7 +136,17 @@ class TrustedVaultClientBackend : public KeyedService {
 
  protected:
   // Functions to notify observers.
+  // TODO(crbug.com/458664467): Add `trigger` parameter to match the signature
+  // of `NotifyKeysChangedWithTrigger()` once internal callers stop calling this
+  // method.
   void NotifyKeysChanged(trusted_vault::SecurityDomainId security_domain_id);
+
+  // TODO(crbug.com/458664467): Remove once internal clients are migrated to
+  // `NotifyKeysChanged()` after the `trigger` parameter was added there.
+  void NotifyKeysChangedWithTrigger(
+      trusted_vault::SecurityDomainId security_domain_id,
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+          trigger);
 
   void NotifyRecoverabilityChanged(
       trusted_vault::SecurityDomainId security_domain_id);
