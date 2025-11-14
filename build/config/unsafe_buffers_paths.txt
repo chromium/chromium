@@ -30,5 +30,4 @@ $../../
 +third_party/liburlpattern/
 -tools/
 -ui/gl/  # Unsafe generated files.
--url/third_party/
 -v8/

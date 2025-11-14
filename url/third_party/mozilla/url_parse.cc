@@ -79,7 +79,7 @@ int FindNextAuthorityTerminator(const CHAR* spec,
                                 int spec_len,
                                 ParserMode parser_mode) {
   for (int i = start_offset; i < spec_len; i++) {
-    if (IsAuthorityTerminator(spec[i], parser_mode)) {
+    if (IsAuthorityTerminator(UNSAFE_TODO(spec[i]), parser_mode)) {
       return i;
     }
   }
@@ -94,8 +94,10 @@ void ParseUserInfo(const CHAR* spec,
   // Find the first colon in the user section, which separates the username and
   // password.
   int colon_offset = 0;
-  while (colon_offset < user.len && spec[user.begin + colon_offset] != ':')
+  while (colon_offset < user.len &&
+         UNSAFE_TODO(spec[user.begin + colon_offset]) != ':') {
     colon_offset++;
+  }
 
   if (colon_offset < user.len) {
     // Found separator: <username>:<password>
@@ -126,12 +128,13 @@ void ParseServerInfo(const CHAR* spec,
   //
   // Our IPv6 address canonicalization code requires both brackets to exist,
   // but the ability to locate an incomplete address can still be useful.
-  int ipv6_terminator = spec[serverinfo.begin] == '[' ? serverinfo.end() : -1;
+  int ipv6_terminator =
+      UNSAFE_TODO(spec[serverinfo.begin]) == '[' ? serverinfo.end() : -1;
   int colon = -1;
 
   // Find the last right-bracket, and the last colon.
   for (int i = serverinfo.begin; i < serverinfo.end(); i++) {
-    switch (spec[i]) {
+    switch (UNSAFE_TODO(spec[i])) {
       case ']':
         ipv6_terminator = i;
         break;
@@ -213,13 +216,13 @@ inline void FindQueryAndRefParts(const CHAR* spec,
                                  int* ref_separator) {
   if constexpr (sizeof(*spec) == 1) {
     // memchr is much faster than any scalar code we can write.
-    const CHAR* ptr = spec + path.begin;
+    const CHAR* ptr = UNSAFE_TODO(spec + path.begin);
     const CHAR* first_hash =
-        reinterpret_cast<const CHAR*>(memchr(ptr, '#', path.len));
+        reinterpret_cast<const CHAR*>(UNSAFE_TODO(memchr(ptr, '#', path.len)));
     size_t len_before_fragment =
         first_hash == nullptr ? path.len : first_hash - ptr;
-    const CHAR* first_question =
-        reinterpret_cast<const CHAR*>(memchr(ptr, '?', len_before_fragment));
+    const CHAR* first_question = reinterpret_cast<const CHAR*>(
+        UNSAFE_TODO(memchr(ptr, '?', len_before_fragment)));
     if (first_hash != nullptr) {
       *ref_separator = first_hash - spec;
     }
@@ -229,7 +232,7 @@ inline void FindQueryAndRefParts(const CHAR* spec,
   } else {
     int path_end = path.begin + path.len;
     for (int i = path.begin; i < path_end; i++) {
-      switch (spec[i]) {
+      switch (UNSAFE_TODO(spec[i])) {
         case '?':
           // Only match the query string if it precedes the reference fragment
           // and when we haven't found one already.
@@ -724,12 +727,12 @@ int DoParsePort(std::basic_string_view<CHAR> spec, const Component& component) {
       // Invalid port digit, fail.
       return PORT_INVALID;
     }
-    digits[i] = static_cast<char>(ch);
+    UNSAFE_TODO(digits[i]) = static_cast<char>(ch);
   }
 
   // Null-terminate the string and convert to integer. Since we guarantee
   // only digits, atoi's lack of error handling is OK.
-  digits[digits_comp.len] = 0;
+  UNSAFE_TODO(digits[digits_comp.len]) = 0;
   int port = atoi(digits);
   if (port > 65535)
     return PORT_INVALID;  // Out of range.
