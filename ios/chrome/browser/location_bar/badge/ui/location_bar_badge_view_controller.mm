@@ -244,11 +244,11 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
 
 - (void)setContextualPanelItemType:
     (std::optional<ContextualPanelItemType>)itemType {
-  // No-op.
+  [self.visibilityDelegate setContextualPanelItemType:itemType];
 }
 
 - (void)setContextualPanelCurrentlyAnimating:(BOOL)animating {
-  // No-op.
+  [self.visibilityDelegate setContextualPanelCurrentlyAnimating:animating];
 }
 
 #pragma mark - Private

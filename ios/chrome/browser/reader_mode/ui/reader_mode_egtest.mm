@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/badges/ui_bundled/badge_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
+#import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
@@ -368,13 +369,16 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
+  // TODO(crbug.com/457880049): Clean up when feature is enabled by default.
+  NSString* imageViewIdentifier =
+      [ChromeEarlGrey isAskGeminiChipEnabled]
+          ? kLocationBarBadgeImageViewIdentifier
+          : @"ContextualPanelEntrypointImageViewAXID";
   // Open Reader Mode UI.
   [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:
-          grey_accessibilityID(@"ContextualPanelEntrypointImageViewAXID")];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   @"ContextualPanelEntrypointImageViewAXID")]
+      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityID(
+                                                       imageViewIdentifier)];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(imageViewIdentifier)]
       performAction:grey_tap()];
 
   [ChromeEarlGrey
@@ -1152,10 +1156,13 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
+  // TODO(crbug.com/457880049): Clean up when feature is enabled by default.
+  NSString* imageViewIdentifier =
+      [ChromeEarlGrey isAskGeminiChipEnabled]
+          ? kLocationBarBadgeImageViewIdentifier
+          : @"ContextualPanelEntrypointImageViewAXID";
   // Tap on the contextual panel entrypoint.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   @"ContextualPanelEntrypointImageViewAXID")]
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(imageViewIdentifier)]
       performAction:grey_tap()];
 
   // Reader mode and the incognito badge should be visible.

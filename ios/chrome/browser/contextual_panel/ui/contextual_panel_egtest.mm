@@ -5,6 +5,8 @@
 #import "base/strings/stringprintf.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -35,6 +37,12 @@ std::unique_ptr<net::test_server::HttpResponse> GetLongResponseForFullscreen(
 
 // Returns the Contextual Panel's entrypoint view GREY matcher.
 id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
+  // TODO(crbug.com/457880049): Clean up when feature is enabled by default.
+  if ([ChromeEarlGrey isAskGeminiChipEnabled]) {
+    return grey_allOf(
+        grey_accessibilityID(kLocationBarBadgeImageViewIdentifier),
+        grey_interactable(), nil);
+  }
   return grey_allOf(
       grey_accessibilityID(@"ContextualPanelEntrypointImageViewAXID"),
       grey_interactable(), nil);
@@ -80,6 +88,8 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 
   config.features_enabled_and_params.push_back(
       {kContextualPanelForceShowEntrypoint, {}});
+  config.features_enabled_and_params.push_back({kPageActionMenu, {}});
+  config.features_enabled_and_params.push_back({kAskGeminiChip, {}});
 
   if ([self isRunningTest:@selector(testOpenContextualPanelFromNormalIPH)] ||
       [self isRunningTest:@selector(testOpenContextualPanelFromRichIPH)] ||
@@ -322,21 +332,21 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
 
   // Wait for large chip entrypoint to appear.
+  // TODO(crbug.com/457880049): Clean up when feature is enabled by default.
+  NSString* entryPointLabel = [ChromeEarlGrey isAskGeminiChipEnabled]
+                                  ? kLocationBarBadgeLabelIdentifier
+                                  : @"ContextualPanelEntrypointLabelAXID";
   [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:
-          grey_accessibilityID(@"ContextualPanelEntrypointLabelAXID")];
+      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityID(
+                                                       entryPointLabel)];
 
   // Side swipe on the entrypoint.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   @"ContextualPanelEntrypointLabelAXID")]
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(entryPointLabel)]
       performAction:grey_swipeSlowInDirectionWithStartPoint(kGREYDirectionLeft,
                                                             0.9, 0.5)];
 
   // Check that the entrypoint is now back to default size.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   @"ContextualPanelEntrypointLabelAXID")]
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(entryPointLabel)]
       assertWithMatcher:grey_notVisible()];
 }
 
