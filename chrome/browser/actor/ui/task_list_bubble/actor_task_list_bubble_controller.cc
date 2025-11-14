@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble.h"
@@ -70,8 +71,14 @@ ActorTaskListBubbleController::CreateRowButtonParamsForTaskState(
   };
 }
 
-void ActorTaskListBubbleController::OnStateUpdate(
-    const actor::TaskId& task_id) {
+void ActorTaskListBubbleController::OnStateUpdate(actor::TaskId task_id) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ActorTaskListBubbleController::OnStateUpdateImpl,
+                     weak_ptr_factory_.GetWeakPtr(), task_id));
+}
+
+void ActorTaskListBubbleController::OnStateUpdateImpl(actor::TaskId task_id) {
   if (auto* browser_view = BrowserElementsViews::From(browser_)) {
     TabStripActionContainer* tab_strip_action_container =
         browser_view->GetViewAs<TabStripActionContainer>(

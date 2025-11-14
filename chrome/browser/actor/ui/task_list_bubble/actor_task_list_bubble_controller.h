@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/buildflags.h"
@@ -45,7 +46,7 @@ class ActorTaskListBubbleController : public views::WidgetObserver {
 
 #if BUILDFLAG(ENABLE_GLIC)
   void ShowBubble(views::View* anchor_view);
-  void OnStateUpdate(const actor::TaskId& task_id);
+  void OnStateUpdate(actor::TaskId task_id);
 #endif
 
   void OnWidgetDestroyed(views::Widget* widget) override;
@@ -61,6 +62,7 @@ class ActorTaskListBubbleController : public views::WidgetObserver {
 #if BUILDFLAG(ENABLE_GLIC)
   ActorTaskListBubbleRowButtonParams CreateRowButtonParamsForTaskState(
       tabs::ActorTaskListBubbleRowState task_state);
+  void OnStateUpdateImpl(actor::TaskId task_id);
 
   std::vector<base::CallbackListSubscription>
       bubble_state_change_callback_subscription_;
@@ -71,6 +73,8 @@ class ActorTaskListBubbleController : public views::WidgetObserver {
 
   ui::ScopedUnownedUserData<ActorTaskListBubbleController>
       scoped_unowned_user_data_;
+
+  base::WeakPtrFactory<ActorTaskListBubbleController> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_ACTOR_UI_TASK_LIST_BUBBLE_ACTOR_TASK_LIST_BUBBLE_CONTROLLER_H_

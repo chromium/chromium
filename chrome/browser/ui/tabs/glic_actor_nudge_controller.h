@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class Profile;
@@ -33,7 +34,7 @@ class GlicActorNudgeController {
   DECLARE_USER_DATA(GlicActorNudgeController);
   static GlicActorNudgeController* From(BrowserWindowInterface* browser);
 
-  void OnStateUpdate(const ActorTaskNudgeState& actor_task_nudge_state);
+  void OnStateUpdate(ActorTaskNudgeState actor_task_nudge_state);
 
   // TODO(crbug.com/446871477): Add to actor/resources/common_resources post
   // M143.
@@ -42,6 +43,8 @@ class GlicActorNudgeController {
   }
 
  private:
+  void OnStateUpdateImpl(ActorTaskNudgeState actor_task_nudge_state);
+
   // Subscribe to updates from the GlicActorTaskIconManager.
   void RegisterActorNudgeStateCallback();
 
@@ -61,6 +64,8 @@ class GlicActorNudgeController {
       actor_nudge_state_change_callback_subscription_;
 
   ::ui::ScopedUnownedUserData<GlicActorNudgeController> scoped_data_holder_;
+
+  base::WeakPtrFactory<GlicActorNudgeController> weak_ptr_factory_{this};
 };
 
 }  // namespace tabs

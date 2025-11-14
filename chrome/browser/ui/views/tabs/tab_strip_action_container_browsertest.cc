@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_policy_checker.h"
@@ -69,7 +70,9 @@
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 namespace {
+using base::test::RunUntil;
 using testing::SizeIs;
+
 }  // namespace
 
 class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
@@ -714,8 +717,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
       tabs::ActorTaskNudgeState::Text::kNeedsAttention;
   actor_nudge_controller->OnStateUpdate(actor_task_nudge_state);
 
+  EXPECT_TRUE(RunUntil([&]() { return GlicActorTaskIcon()->GetVisible(); }));
   EXPECT_TRUE(GlicActorButtonContainer()->GetVisible());
-  EXPECT_TRUE(GlicActorTaskIcon()->GetVisible());
   EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
 
   base::UserActionTester user_action_tester;
@@ -755,13 +758,14 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
       tabs::ActorTaskNudgeState::Text::kNeedsAttention;
   actor_nudge_controller->OnStateUpdate(actor_task_nudge_state);
 
-  ASSERT_TRUE(tab_strip_action_container()
-                  ->animation_session_for_testing()
-                  ->expansion_animation()
-                  ->IsShowing());
-
+  ASSERT_TRUE(RunUntil([&]() {
+    return tab_strip_action_container()
+        ->animation_session_for_testing()
+        ->expansion_animation()
+        ->IsShowing();
+  }));
+  EXPECT_TRUE(RunUntil([&]() { return GlicActorTaskIcon()->GetVisible(); }));
   EXPECT_TRUE(GlicActorButtonContainer()->GetVisible());
-  EXPECT_TRUE(GlicActorTaskIcon()->GetVisible());
   EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
   EXPECT_EQ(GlicActorTaskIcon()->GetText(),
             l10n_util::GetStringUTF16(IDR_ACTOR_CHECK_TASK_NUDGE_LABEL));
@@ -771,6 +775,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   actor_task_nudge_state.text = tabs::ActorTaskNudgeState::Text::kDefault;
   actor_nudge_controller->OnStateUpdate(actor_task_nudge_state);
 
+  EXPECT_TRUE(RunUntil([&]() { return !GlicActorTaskIcon()->GetVisible(); }));
   EXPECT_EQ(GlicActorTaskIcon()->GetText(), std::u16string());
   EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
   EXPECT_FALSE(GlicActorTaskIcon()->GetIsShowingNudge());
@@ -785,13 +790,15 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
       tabs::ActorTaskNudgeState::Text::kNeedsAttention;
   actor_nudge_controller->OnStateUpdate(actor_task_nudge_state);
 
-  ASSERT_TRUE(tab_strip_action_container()
-                  ->animation_session_for_testing()
-                  ->expansion_animation()
-                  ->IsShowing());
+  ASSERT_TRUE(RunUntil([&]() {
+    return tab_strip_action_container()
+        ->animation_session_for_testing()
+        ->expansion_animation()
+        ->IsShowing();
+  }));
 
+  EXPECT_TRUE(RunUntil([&]() { return GlicActorTaskIcon()->GetVisible(); }));
   EXPECT_TRUE(GlicActorButtonContainer()->GetVisible());
-  EXPECT_TRUE(GlicActorTaskIcon()->GetVisible());
   EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
   EXPECT_EQ(GlicActorTaskIcon()->GetText(),
             l10n_util::GetStringUTF16(IDR_ACTOR_CHECK_TASK_NUDGE_LABEL));
@@ -801,6 +808,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   actor_task_nudge_state.text = tabs::ActorTaskNudgeState::Text::kDefault;
   actor_nudge_controller->OnStateUpdate(actor_task_nudge_state);
 
+  EXPECT_TRUE(RunUntil([&]() { return !GlicActorTaskIcon()->GetVisible(); }));
   EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
   // Check that GlicButton was removed from the GlicActorButtonContainer.
   ASSERT_THAT(GlicActorButtonContainer()->children(), SizeIs(1));
@@ -823,13 +831,15 @@ IN_PROC_BROWSER_TEST_F(
       tabs::ActorTaskNudgeState::Text::kNeedsAttention;
   actor_nudge_controller->OnStateUpdate(actor_task_nudge_state);
 
-  ASSERT_TRUE(tab_strip_action_container()
-                  ->animation_session_for_testing()
-                  ->expansion_animation()
-                  ->IsShowing());
+  ASSERT_TRUE(RunUntil([&]() {
+    return tab_strip_action_container()
+        ->animation_session_for_testing()
+        ->expansion_animation()
+        ->IsShowing();
+  }));
 
+  EXPECT_TRUE(RunUntil([&]() { return GlicActorTaskIcon()->GetVisible(); }));
   EXPECT_TRUE(GlicActorButtonContainer()->GetVisible());
-  EXPECT_TRUE(GlicActorTaskIcon()->GetVisible());
   EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
   EXPECT_EQ(GlicActorTaskIcon()->GetText(),
             l10n_util::GetStringUTF16(IDR_ACTOR_CHECK_TASK_NUDGE_LABEL));
@@ -840,7 +850,7 @@ IN_PROC_BROWSER_TEST_F(
       tabs::ActorTaskNudgeState::Text::kMultipleTasksNeedAttention;
   actor_nudge_controller->OnStateUpdate(actor_task_nudge_state);
 
-  EXPECT_TRUE(GlicActorButtonContainer()->GetVisible());
+  EXPECT_TRUE(RunUntil([&]() { return GlicActorTaskIcon()->GetVisible(); }));
   EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
   // TODO(crbug.com/431015299): Replace with finalized strings when ready.
   EXPECT_EQ(GlicActorTaskIcon()->GetText(),

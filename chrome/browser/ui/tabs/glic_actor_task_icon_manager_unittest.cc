@@ -41,12 +41,12 @@ class MockTaskNudgeStateChangeSubscriber {
  public:
   MOCK_METHOD(void,
               OnStateChanged,
-              (const ActorTaskNudgeState& actor_task_nudge_state));
+              (ActorTaskNudgeState actor_task_nudge_state));
 };
 
 class MockTaskListBubbleChangeSubscriber {
  public:
-  MOCK_METHOD(void, OnStateChanged, (const actor::TaskId& task_id));
+  MOCK_METHOD(void, OnStateChanged, (actor::TaskId task_id));
 };
 
 class GlicActorTaskIconManagerTest : public testing::Test {
