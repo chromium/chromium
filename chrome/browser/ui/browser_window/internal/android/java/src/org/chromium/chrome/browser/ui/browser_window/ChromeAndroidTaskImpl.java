@@ -484,6 +484,10 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public void show() {
+        if (Boolean.TRUE.equals(mPendingActionManager.isActiveFuture(mState.get()))) {
+            return;
+        }
+
         if (mState.get() == State.PENDING_CREATE) {
             mPendingActionManager.requestAction(PendingAction.SHOW);
             return;
@@ -994,9 +998,11 @@ final class ChromeAndroidTaskImpl
     @GuardedBy("mActivityScopedObjectsLock")
     private void showInternalLocked() {
         var activityWindowAndroid = getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
-        var activity =
-                activityWindowAndroid != null ? activityWindowAndroid.getActivity().get() : null;
+        if (activityWindowAndroid == null) return;
+        var activity = activityWindowAndroid.getActivity().get();
         if (activity == null) return;
+        // No-op if already active.
+        if (isActiveInternalLocked(activityWindowAndroid)) return;
         // Activate the Task if it's already visible.
         if (isVisibleInternalLocked(activityWindowAndroid)) {
             ActivityManager activityManager =

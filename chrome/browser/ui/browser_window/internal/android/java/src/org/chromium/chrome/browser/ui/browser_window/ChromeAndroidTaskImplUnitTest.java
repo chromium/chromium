@@ -1130,6 +1130,42 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    public void show_whenPendingUpdate_ignoresRedundantCall() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
+        when(mockWindowAndroid.isTopResumedActivity()).thenReturn(false);
+        var mockActivity = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity;
+        var mockActivityManager =
+                (ActivityManager) mockActivity.getSystemService(Context.ACTIVITY_SERVICE);
+        assertTrue("Set up task to be visible", chromeAndroidTask.isVisible());
+        assertFalse("Set up task to be inactive", chromeAndroidTask.isActive());
+
+        // Act.
+        chromeAndroidTask.show();
+        assertEquals(
+                "Show should be pending after #show is triggered",
+                true,
+                chromeAndroidTask
+                        .getPendingActionManagerForTesting()
+                        .isActiveFuture(chromeAndroidTask.getState()));
+        assertTrue("isActive is true while pending", chromeAndroidTask.isActive());
+
+        chromeAndroidTask.show();
+
+        // Assert
+        verify(
+                        mockActivityManager,
+                        times(1).description("Redundant calls to #show should be ignored"))
+                .moveTaskToFront(anyInt(), anyInt());
+    }
+
+    @Test
     public void showInactive_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
         var task =
