@@ -1232,6 +1232,7 @@ void PDFiumEngine::SetCaretBrowsingEnabled(bool enabled) {
 
   if (!caret_) {
     caret_ = std::make_unique<PdfCaret>(this);
+    caret_->SetVisible(has_focus_);
   }
 
   // TODO(crbug.com/427778119): Set caret blink interval.

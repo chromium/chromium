@@ -3033,14 +3033,20 @@ class PDFiumEngineCaretTest : public PDFiumDrawSelectionTestBase {
     PDFiumDrawSelectionTestBase::TearDown();
   }
 
+  [[nodiscard]] PDFiumEngine* CreateEngine(
+      const base::FilePath::CharType* test_filename) {
+    engine_ = InitializeEngine(&client_, test_filename);
+    return engine_.get();
+  }
+
   [[nodiscard]] PDFiumEngine* CreateEngineWithCaret(
       const base::FilePath::CharType* test_filename) {
     engine_ = InitializeEngine(&client_, test_filename);
     if (engine_) {
       // Plugin size chosen so all pages of the document are visible.
       engine_->PluginSizeUpdated({1024, 4096});
-      engine_->SetCaretBrowsingEnabled(true);
       engine_->UpdateFocus(true);
+      engine_->SetCaretBrowsingEnabled(true);
     }
     return engine_.get();
   }
@@ -3059,6 +3065,23 @@ class PDFiumEngineCaretTest : public PDFiumDrawSelectionTestBase {
   std::unique_ptr<PDFiumEngine> engine_;
   NiceMock<MockTestClient> client_;
 };
+
+TEST_P(PDFiumEngineCaretTest, InitializeCaretWithoutFocus) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kHelloWorldExpectedVisiblePageSize);
+
+  // Engine does not have focus, so enabling caret browsing still draws blank.
+  engine->SetCaretBrowsingEnabled(true);
+
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kHelloWorldExpectedVisiblePageSize);
+}
 
 TEST_P(PDFiumEngineCaretTest, SetCaretBrowsingEnabled) {
   PDFiumEngine* engine =
