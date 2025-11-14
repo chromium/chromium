@@ -1,0 +1,39 @@
+From a8eb3fbf3254e398869694d3ffb7314a1576099c Mon Sep 17 00:00:00 2001
+From: Alexander Cooper <alcooper@chromium.org>
+Date: Thu, 13 Nov 2025 15:36:18 -0800
+Subject: [PATCH 2/2] Customize AndroidManifest.xml.in
+
+---
+ .../src_overrides/src/loader/AndroidManifest.xml.in      | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
+
+diff --git a/third_party/openxr/src_overrides/src/loader/AndroidManifest.xml.in b/third_party/openxr/src_overrides/src/loader/AndroidManifest.xml.in
+index 8ca373fa25ea3..9a1b354328f26 100644
+--- a/third_party/openxr/src_overrides/src/loader/AndroidManifest.xml.in
++++ b/third_party/openxr/src_overrides/src/loader/AndroidManifest.xml.in
+@@ -1,15 +1,9 @@
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+-  package="org.khronos.openxr.openxr_loader_for_android"
+-  android:versionCode="1"
+-  android:versionName="${OPENXR_FULL_VERSION}${OPENXR_ANDROID_VERSION_SUFFIX}">
++  package="org.khronos.openxr.openxr_loader_for_android">
+   <!--
+   Copyright (c) 2020-2025 The Khronos Group Inc.
+   SPDX-License-Identifier: Apache-2.0 OR MIT
+   -->
+-
+-  <!-- If this is not included as a minimum, the manifest merger assumes we target an ancient SDK and adds permissions. -->
+-  <uses-sdk android:minSdkVersion="${ANDROID_PLATFORM}" android:targetSdkVersion="${ANDROID_PLATFORM}" />
+-
+   <uses-permission android:name="org.khronos.openxr.permission.OPENXR" />
+   <uses-permission android:name="org.khronos.openxr.permission.OPENXR_SYSTEM" />
+ 
+@@ -25,5 +19,4 @@
+       <action android:name="org.khronos.openxr.OpenXRApiLayerService" />
+     </intent>
+   </queries>
+-
+ </manifest>
+-- 
+2.52.0.rc1.455.g30608eb744-goog
+

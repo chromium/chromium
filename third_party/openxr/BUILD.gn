@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 import("//device/vr/buildflags/buildflags.gni")
 
 declare_args() {
@@ -189,6 +193,15 @@ if (enable_openxr) {
     # Missing includes are fixed upstream
     # TODO(crbug.com/440183782): Remove this once a release contains the fix
     use_libcxx_modules = false
+  }
+
+  if (is_android) {
+    java_group("openxr_manifest_java") {
+      if (allow_openxr_content_providers) {
+        mergeable_android_manifests =
+            [ "src_overrides/src/loader/AndroidManifest.xml.in" ]
+      }
+    }
   }
 
   config("config") {

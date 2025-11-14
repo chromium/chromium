@@ -130,6 +130,10 @@ android_library("xr_java") {
 
   public_deps = []
 
+  if (enable_openxr) {
+    public_deps += [ "//third_party/openxr:openxr_manifest_java" ]
+  }
+
   # Contains the interfaces that are present if any runtimes are enabled.
   # These are essentially the implementations of the above, interfaces those
   # classes need to talk to, or other common classes that more than one runtime
