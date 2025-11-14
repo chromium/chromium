@@ -147,6 +147,11 @@ VisibilityInfo ComputeVisibilityInfo(const LayoutObject* target,
           mojom::blink::FrameOcclusionState::kGuaranteedNotOccluded) {
     return {false, kInvalidDOMNodeId};
   }
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+      IsA<Element>(target->GetNode()) &&
+      To<Element>(target->GetNode())->IsInCanvasSubtree()) {
+    return {false, kInvalidDOMNodeId};
+  }
   if (target->HasDistortingVisualEffects())
     return {false, kInvalidDOMNodeId};
   // TODO(layout-dev): This should hit-test the intersection rect, not the
