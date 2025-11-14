@@ -184,7 +184,7 @@ void FilteringNetworkManager::OnNetworksChanged() {
   std::vector<std::unique_ptr<webrtc::Network>> copied_networks;
   copied_networks.reserve(networks.size());
   for (const webrtc::Network* network : networks) {
-    auto copied_network = std::make_unique<webrtc::Network>(*network);
+    std::unique_ptr<webrtc::Network> copied_network = network->Clone();
     copied_network->set_default_local_address_provider(this);
     copied_network->set_mdns_responder_provider(this);
     copied_networks.push_back(std::move(copied_network));
