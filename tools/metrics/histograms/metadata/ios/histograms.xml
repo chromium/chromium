@@ -4961,6 +4961,17 @@ chromium-metrics-reviews@google.com.
   <token key="Promo" variants="PromosManagerPromo"/>
 </histogram>
 
+<histogram name="IOS.PromoStyleSheet.Outcome" enum="PromoStyleSheetAction"
+    expires_after="2026-12-01">
+  <owner>pabouchard@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the outcome of user interactions with the promo style sheet. This
+    includes clicks on the primary, secondary, or tertiary action buttons, as
+    well as dismissing the alert.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PushNotification.APNSDeviceRegistration"
     enum="BooleanSuccess" expires_after="2026-02-22">
   <owner>danieltwhite@google.com</owner>

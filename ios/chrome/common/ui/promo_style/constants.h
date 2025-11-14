@@ -44,4 +44,15 @@ extern const CGFloat kActionsBottomMarginWithSafeArea;
 // Margin below action buttons in the FRE, when the screen has no a safe area.
 extern const CGFloat kActionsBottomMarginWithoutSafeArea;
 
+// Enum actions for the IOS.PromoStyleSheet.Outcome histogram.
+// LINT.IfChange(PromoStyleSheetAction)
+enum class PromoStyleSheetAction {
+  kPrimaryButtonTapped = 1,
+  kSecondaryButtonTapped = 2,
+  kTertiaryButtonTapped = 3,
+  kDismissButtonTapped = 4,
+  kMaxValue = kDismissButtonTapped,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:PromoStyleSheetAction)
+
 #endif  // IOS_CHROME_COMMON_UI_PROMO_STYLE_CONSTANTS_H_

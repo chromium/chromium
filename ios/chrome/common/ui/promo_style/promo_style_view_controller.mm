@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/i18n/rtl.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/task/thread_pool.h"
 #import "base/time/time.h"
@@ -1315,6 +1316,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
                  respondsToSelector:@selector(didTapPrimaryActionButton)]) {
     [self.delegate didTapPrimaryActionButton];
   }
+  base::UmaHistogramEnumeration("IOS.PromoStyleSheet.Outcome",
+                                PromoStyleSheetAction::kPrimaryButtonTapped);
 }
 
 - (void)didTapSecondaryActionButton {
@@ -1322,6 +1325,9 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   if ([self.delegate
           respondsToSelector:@selector(didTapSecondaryActionButton)]) {
     [self.delegate didTapSecondaryActionButton];
+    base::UmaHistogramEnumeration(
+        "IOS.PromoStyleSheet.Outcome",
+        PromoStyleSheetAction::kSecondaryButtonTapped);
   }
 }
 
@@ -1330,6 +1336,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   if ([self.delegate
           respondsToSelector:@selector(didTapTertiaryActionButton)]) {
     [self.delegate didTapTertiaryActionButton];
+    base::UmaHistogramEnumeration("IOS.PromoStyleSheet.Outcome",
+                                  PromoStyleSheetAction::kTertiaryButtonTapped);
   }
 }
 
@@ -1346,6 +1354,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   CHECK(self.shouldShowDismissButton);
   if ([self.delegate respondsToSelector:@selector(didTapDismissButton)]) {
     [self.delegate didTapDismissButton];
+    base::UmaHistogramEnumeration("IOS.PromoStyleSheet.Outcome",
+                                  PromoStyleSheetAction::kDismissButtonTapped);
   }
 }
 

@@ -1691,6 +1691,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:ProfileNotificationRequestCreationFailureReason) -->
 
+<!-- LINT.IfChange(PromoStyleSheetAction) -->
+
+<enum name="PromoStyleSheetAction">
+  <int value="1" label="Primary Button"/>
+  <int value="2" label="Secondary Button"/>
+  <int value="3" label="Tertiary Button"/>
+  <int value="4" label="Dismiss Button"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/common/ui/promo_style/constants.h:PromoStyleSheetAction) -->
+
 <enum name="PromoWithInstructionsAction">
   <int value="0" label="Close"/>
   <int value="1" label="Open Instructions"/>
