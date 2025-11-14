@@ -26,7 +26,6 @@
 #include "base/time/time.h"
 #include "google_apis/gcm/base/encryptor.h"
 #include "google_apis/gcm/base/gcm_constants.h"
-#include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/base/mcs_message.h"
 #include "google_apis/gcm/base/mcs_util.h"
 #include "google_apis/gcm/protocol/mcs.pb.h"
@@ -1013,14 +1012,7 @@ bool GCMStoreImpl::Backend::LoadIncomingMessages(
         expired_incoming_messages.push_back(std::move(persistent_id));
       }
     } else {
-      if (base::FeatureList::IsEnabled(
-              features::kGCMDeleteIncomingMessagesWithoutTTL)) {
-        // No expiration time can be found from |data|. The messeage should be
-        // added with the legacy non-TTL path. Treat it as expired.
-        expired_incoming_messages.push_back(std::move(data));
-      } else {
-        incoming_messages->push_back(std::move(data));
-      }
+      incoming_messages->push_back(std::move(data));
     }
   }
   if (!expired_incoming_messages.empty()) {

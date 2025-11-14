@@ -7,9 +7,6 @@
 namespace gcm {
 namespace features {
 
-BASE_FEATURE(kGCMDeleteIncomingMessagesWithoutTTL,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kGCMAvoidConnectionWhenNetworkUnavailable,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
