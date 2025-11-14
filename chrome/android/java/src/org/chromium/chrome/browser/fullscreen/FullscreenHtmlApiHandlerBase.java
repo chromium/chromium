@@ -660,6 +660,7 @@ public abstract class FullscreenHtmlApiHandlerBase
         updateMultiTouchZoomSupport(true);
     }
 
+    @SuppressWarnings("NewApi")
     private void returnFromTargetScreenIfNeeded() {
         if (mTabInFullscreen != null) {
             Pair<Long, Rect> homeAttrs =
@@ -669,8 +670,19 @@ public abstract class FullscreenHtmlApiHandlerBase
 
             if (homeAttrs != null) {
                 if (!isWindowMoveAvailable()) return;
-                maybeExitActivityFullscreenMode(null);
-                tryToMoveTaskTo(homeAttrs.first, homeAttrs.second);
+                // Exiting fullscreen requires window to be focused. When exiting fullscreen as the
+                // result of action in another window, e.g. closing Presenter Notes window in
+                // Slides, window is not focused, as the last action was performed on another
+                // display. To allow fullscreen exit in that scenario, we are moving window to the
+                // front.
+                ensureTaskMovedToFront();
+                maybeExitActivityFullscreenMode(
+                        new OutcomeReceiver<@Nullable Void, Throwable>() {
+                            @Override
+                            public void onResult(@Nullable Void unused) {
+                                tryToMoveTaskTo(homeAttrs.first, homeAttrs.second);
+                            }
+                        });
             }
         }
     }
