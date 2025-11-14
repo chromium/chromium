@@ -1039,7 +1039,8 @@ void FocusFakebox() {
 
 // Verifies that tapping an autocomplete suggestion in the omnibox successfully
 // completes the user's query.
-- (void)testTapBehaviors {
+// TODO(crbug.com/455132352): Test is flaky.
+- (void)FLAKY_testTapBehaviors {
   // Disable all autocomplete providers except the history url provider.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   omnibox::DisableAutocompleteProviders(config, 524279);
