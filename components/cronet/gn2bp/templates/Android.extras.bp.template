@@ -165,11 +165,13 @@ java_defaults {
         "framework-connectivity-t.stubs.module_lib",
         "framework-location.stubs.module_lib",
         "framework-mediaprovider.stubs.module_lib",
-        "framework-network-security-config.stubs.module_lib",
         "framework-statsd.stubs.module_lib",
         "framework-wifi.stubs.module_lib",
         "framework-sdkextensions.stubs.module_lib",
-    ],
+    ] + select(release_flag("RELEASE_CONSCRYPT_NSC"), {
+        true: ["framework-conscrypt-nsc.stubs"],
+        default: ["framework-network-security-config.stubs.module_lib"],
+    }),
     visibility: [
         "//external/cronet:__subpackages__",
     ],
