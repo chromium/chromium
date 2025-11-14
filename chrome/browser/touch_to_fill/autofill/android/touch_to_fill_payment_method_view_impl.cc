@@ -64,13 +64,11 @@ CreateJavaBnplIssuerContextFromNative(
     const autofill::TouchToFillPaymentMethodViewController& controller,
     const autofill::payments::BnplIssuerContext& bnpl_issuer_context,
     const std::string& app_locale) {
-  // Android uses the `LightModeImageId` for both light and dark modes.
-  const std::pair<autofill::BnplIssuer::LightModeImageId,
-                  autofill::BnplIssuer::DarkModeImageId>
-      image_ids = GetBnplIssuerIconIds(
-          bnpl_issuer_context.issuer.issuer_id(),
-          /*issuer_linked=*/bnpl_issuer_context.issuer.payment_instrument()
-              .has_value());
+  // `light_mode_image_id` is used for both light and dark modes on Android.
+  const auto& [light_mode_image_id, _] = GetBnplIssuerIconIds(
+      bnpl_issuer_context.issuer.issuer_id(),
+      /*issuer_linked=*/bnpl_issuer_context.issuer.payment_instrument()
+          .has_value());
 
   const std::u16string selection_text =
       autofill::payments::GetBnplIssuerSelectionOptionText(
@@ -78,7 +76,7 @@ CreateJavaBnplIssuerContextFromNative(
           {bnpl_issuer_context});
 
   return autofill::Java_BnplIssuerContext_Constructor(
-      env, controller.GetJavaResourceId(image_ids.first.value()),
+      env, controller.GetJavaResourceId(light_mode_image_id.value()),
       std::string(
           ConvertToBnplIssuerIdString(bnpl_issuer_context.issuer.issuer_id())),
       bnpl_issuer_context.issuer.GetDisplayName(), selection_text,
