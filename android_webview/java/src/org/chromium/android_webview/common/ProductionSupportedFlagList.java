@@ -1143,5 +1143,20 @@ public final class ProductionSupportedFlagList {
                 "When enabled, TYPE_ANNOUNCE events will no longer be sent from Chrome."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
+
+        // Features for PerfCombined2025_WebView study
+        Flag.baseFeature("AsyncSetCookie"),
+        Flag.baseFeature("ReducePPMs"),
+        Flag.baseFeature("GCOnArrayBufferAllocationFailure"),
+        Flag.baseFeature("RemoveCancelledScriptedIdleTasks"),
+        Flag.baseFeature("SlimDirectReceiverIpc"),
+        Flag.baseFeature("FastPathNoRaster"),
+        Flag.baseFeature("MemoryCacheChangeStrongReferencePruneDelay"),
+        Flag.baseFeature("MemoryCacheStrongReference"),
+        Flag.baseFeature("ReleaseResourceStrongReferencesOnMemoryPressure"),
+        Flag.baseFeature("ReleaseResourceDecodedDataOnMemoryPressure"),
+        Flag.baseFeature("SuppressMemoryListeners"),
+        Flag.baseFeature("SuppressMemoryMonitor"),
+        Flag.baseFeature("CompressParkableStrings"),
     };
 }
