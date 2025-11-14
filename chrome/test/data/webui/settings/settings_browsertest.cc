@@ -6,6 +6,8 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/config/coverage/buildflags.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -556,6 +558,9 @@ class SettingsGlicSubPageWebActuationToggleTest : public SettingsBrowserTest {
     SettingsBrowserTest::SetUpOnMainThread();
     GetProfile()->GetPrefs()->SetBoolean(
         glic::prefs::kGlicUserEnabledActuationOnWeb, false);
+    actor::ActorKeyedService::Get(browser()->profile())
+        ->GetPolicyChecker()
+        .SetActOnWebForTesting(true);
   }
 
  private:

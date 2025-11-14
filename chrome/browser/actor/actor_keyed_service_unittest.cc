@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/actor/actor_features.h"
+#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
@@ -53,8 +54,10 @@ class ActorKeyedServiceTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     profile_ = testing_profile_manager()->CreateTestingProfile("profile");
-    ActorKeyedService::Get(profile())->SetActorUiStateManagerForTesting(
-        BuildUiStateManagerMock());
+    auto* actor_service = ActorKeyedService::Get(profile());
+    ASSERT_TRUE(actor_service);
+    actor_service->GetPolicyChecker().SetActOnWebForTesting(true);
+    actor_service->SetActorUiStateManagerForTesting(BuildUiStateManagerMock());
   }
 
   TestingProfileManager* testing_profile_manager() {

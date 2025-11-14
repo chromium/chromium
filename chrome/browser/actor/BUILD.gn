@@ -155,6 +155,7 @@ source_set("impl") {
     "//chrome/browser/page_content_annotations:fetcher",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/signin",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/browser_window",
