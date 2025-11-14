@@ -896,6 +896,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 MediaFeatures.MEDIA_CODEC_BLOCK_MODEL,
                 "Controls use of MediaCodec's LinearBlock mode."),
+        Flag.baseFeature(
+                MediaFeatures.SURFACE_INPUT_FOR_ANDROID_VEA,
+                "Enables the use of a Surface (ANativeWindow) as the input for the "
+                        + "NdkVideoEncodeAccelerator on Android."),
         Flag.baseFeature(BlinkFeatures.FETCH_LATER_API, "Enables FetchLater API."),
         Flag.baseFeature(
                 ContentFeatures.WEB_PAYMENTS,
