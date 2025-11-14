@@ -14,6 +14,10 @@
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/render_process_host.h"
 
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#include "chrome/browser/printing/print_preview_dialog_controller.h"
+#endif
+
 using content::WebContents;
 
 // static
@@ -26,9 +30,19 @@ void DevToolsWindow::ToggleDevToolsWindow(BrowserWindowInterface* browser,
     return;
   }
 
-  ToggleDevToolsWindow(browser->GetTabStripModel()->GetActiveWebContents(),
-                       nullptr, action.type() == DevToolsToggleAction::kInspect,
-                       action, "", opened_by);
+  auto* web_contents = browser->GetTabStripModel()->GetActiveWebContents();
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+  auto* print_preview_web_contents =
+      printing::PrintPreviewDialogController::GetInstance()
+          ->GetPrintPreviewForContents(web_contents);
+  if (print_preview_web_contents) {
+    web_contents = print_preview_web_contents;
+  }
+#endif
+
+  ToggleDevToolsWindow(web_contents, nullptr,
+                       action.type() == DevToolsToggleAction::kInspect, action,
+                       "", opened_by);
 }
 
 // static
