@@ -45,11 +45,8 @@ class DOMFileSystem;
 class DraggedIsolatedFileSystemImpl final
     : public GarbageCollected<DraggedIsolatedFileSystemImpl>,
       public DraggedIsolatedFileSystem,
-      public Supplement<DataObject> {
+      public GarbageCollectedMixin {
  public:
-  static constexpr auto kSupplementIndex =
-      DataObject::Supplements::kDraggedIsolatedFileSystemImpl;
-
   static DOMFileSystem* GetDOMFileSystem(DataObject* host,
                                          ExecutionContext*,
                                          const DataObjectItem&);
@@ -63,6 +60,7 @@ class DraggedIsolatedFileSystemImpl final
   static void PrepareForDataObject(DataObject*);
 
  private:
+  Member<DataObject> data_object_;
   HeapHashMap<String, Member<DOMFileSystem>> filesystems_;
 };
 
