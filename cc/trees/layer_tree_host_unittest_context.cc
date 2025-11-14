@@ -80,15 +80,15 @@ class LayerTreeHostContextTest : public LayerTreeTest {
 
   void LoseContext() {
     // CreateDisplayLayerTreeFrameSink happens on a different thread, so lock
-    // gl_ to make sure we don't set it to null after recreating it
+    // raster_ to make sure we don't set it to null after recreating it
     // there.
-    base::AutoLock lock(gl_lock_);
+    base::AutoLock lock(raster_lock_);
     // For sanity-checking tests, they should only call this when the
     // context is not lost.
-    CHECK(gl_);
-    gl_->LoseContextCHROMIUM(GL_GUILTY_CONTEXT_RESET_ARB,
-                             GL_INNOCENT_CONTEXT_RESET_ARB);
-    gl_ = nullptr;
+    CHECK(raster_);
+    raster_->LoseContextCHROMIUM(GL_GUILTY_CONTEXT_RESET_ARB,
+                                 GL_INNOCENT_CONTEXT_RESET_ARB);
+    raster_ = nullptr;
   }
 
   std::unique_ptr<TestLayerTreeFrameSink> CreateLayerTreeFrameSink(
@@ -97,21 +97,19 @@ class LayerTreeHostContextTest : public LayerTreeTest {
       scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider)
       override {
-    base::AutoLock lock(gl_lock_);
+    base::AutoLock lock(raster_lock_);
 
-    auto gl_owned = std::make_unique<viz::TestGLES2Interface>();
+    auto provider = viz::TestContextProvider::CreateRaster();
+    raster_ = provider->RasterInterface();
 
-    gl_ = gl_owned.get();
-
-    auto provider = viz::TestContextProvider::Create(std::move(gl_owned));
     if (times_to_fail_create_) {
       --times_to_fail_create_;
       ExpectCreateToFail();
-      gl_->LoseContextCHROMIUM(GL_GUILTY_CONTEXT_RESET_ARB,
-                               GL_INNOCENT_CONTEXT_RESET_ARB);
+      raster_->LoseContextCHROMIUM(GL_GUILTY_CONTEXT_RESET_ARB,
+                                   GL_INNOCENT_CONTEXT_RESET_ARB);
       // Clear pointers immediately when we're intentionally failing creation
       // to prevent dangling pointer errors when the context is destroyed.
-      gl_ = nullptr;
+      raster_ = nullptr;
       sii_ = nullptr;
     } else {
       sii_ = provider->SharedImageInterface();
@@ -168,20 +166,20 @@ class LayerTreeHostContextTest : public LayerTreeTest {
   void ExpectCreateToFail() { ++times_to_expect_create_failed_; }
 
   // Clear raw_ptr members before LayerTreeFrameSink destruction to prevent
-  // dangling pointers. The gl_ and sii_ pointers refer to objects owned by
+  // dangling pointers. The raster_ and sii_ pointers refer to objects owned by
   // the LayerTreeFrameSink's context provider which gets destroyed when the
   // LayerTreeFrameSink is released.
   void ClearContextPointers() {
-    base::AutoLock lock(gl_lock_);
-    gl_ = nullptr;
+    base::AutoLock lock(raster_lock_);
+    raster_ = nullptr;
     sii_ = nullptr;
   }
 
  protected:
-  // Protects use of gl_ so LoseContext and
+  // Protects use of raster_ so LoseContext and
   // CreateDisplayLayerTreeFrameSink can both use it on different threads.
-  base::Lock gl_lock_;
-  raw_ptr<viz::TestGLES2Interface> gl_ = nullptr;
+  base::Lock raster_lock_;
+  raw_ptr<gpu::raster::RasterInterface> raster_ = nullptr;
   raw_ptr<gpu::TestSharedImageInterface> sii_ = nullptr;
 
   int times_to_fail_create_;
