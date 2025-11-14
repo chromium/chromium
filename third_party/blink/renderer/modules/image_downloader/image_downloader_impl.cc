@@ -143,12 +143,8 @@ void FilterAndResizeImagesForMaximalSize(
 namespace blink {
 
 // static
-const unsigned ImageDownloaderImpl::kSupplementIndex =
-    static_cast<unsigned>(LocalFrame::Supplements::kImageDownloaderImpl);
-
-// static
 ImageDownloaderImpl* ImageDownloaderImpl::From(LocalFrame& frame) {
-  return Supplement<LocalFrame>::From<ImageDownloaderImpl>(frame);
+  return frame.GetImageDownloaderImpl();
 }
 
 // static
@@ -157,13 +153,13 @@ void ImageDownloaderImpl::ProvideTo(LocalFrame& frame) {
     return;
   }
 
-  Supplement<LocalFrame>::ProvideTo(
-      frame, MakeGarbageCollected<ImageDownloaderImpl>(frame));
+  frame.SetImageDownloaderImpl(
+      MakeGarbageCollected<ImageDownloaderImpl>(frame));
 }
 
 ImageDownloaderImpl::ImageDownloaderImpl(LocalFrame& frame)
-    : Supplement<LocalFrame>(frame),
-      ExecutionContextLifecycleObserver(frame.DomWindow()),
+    : ExecutionContextLifecycleObserver(frame.DomWindow()),
+      local_frame_(frame),
       receiver_(this, frame.DomWindow()) {
   frame.GetInterfaceRegistry()->AddInterface(BindRepeating(
       &ImageDownloaderImpl::CreateMojoService, WrapWeakPersistent(this)));
@@ -174,7 +170,7 @@ ImageDownloaderImpl::~ImageDownloaderImpl() {}
 void ImageDownloaderImpl::CreateMojoService(
     mojo::PendingReceiver<mojom::blink::ImageDownloader> receiver) {
   receiver_.Bind(std::move(receiver),
-                 GetSupplementable()->GetTaskRunner(TaskType::kNetworking));
+                 local_frame_->GetTaskRunner(TaskType::kNetworking));
   receiver_.set_disconnect_handler(
       BindOnce(&ImageDownloaderImpl::Dispose, WrapWeakPersistent(this)));
 }
@@ -217,7 +213,7 @@ void ImageDownloaderImpl::DownloadImageFromAxNode(
     uint32_t max_bitmap_size,
     bool bypass_cache,
     DownloadImageCallback callback) {
-  LocalFrame* frame = GetSupplementable();
+  LocalFrame* frame = local_frame_;
   CHECK(frame);
   auto* document = frame->GetDocument();
   CHECK(document);
@@ -284,7 +280,7 @@ void ImageDownloaderImpl::FetchImage(const KURL& image_url,
   // Create an image resource fetcher and assign it with a call back object.
   image_fetchers_.push_back(
       std::make_unique<MultiResolutionImageResourceFetcher>(
-          image_url, GetSupplementable(), is_favicon,
+          image_url, local_frame_, is_favicon,
           bypass_cache ? blink::mojom::FetchCacheMode::kBypassCache
                        : blink::mojom::FetchCacheMode::kDefault,
           blink::BindOnce(&ImageDownloaderImpl::DidFetchImage,
@@ -321,7 +317,7 @@ void ImageDownloaderImpl::DidFetchImage(
 
 void ImageDownloaderImpl::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
-  Supplement<LocalFrame>::Trace(visitor);
+  visitor->Trace(local_frame_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

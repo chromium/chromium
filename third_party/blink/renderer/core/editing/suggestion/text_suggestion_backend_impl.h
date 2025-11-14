@@ -22,9 +22,8 @@ class LocalFrame;
 class CORE_EXPORT TextSuggestionBackendImpl final
     : public GarbageCollected<TextSuggestionBackendImpl>,
       public mojom::blink::TextSuggestionBackend,
-      public Supplement<LocalFrame> {
+      public GarbageCollectedMixin {
  public:
-  static const unsigned kSupplementIndex;
   static TextSuggestionBackendImpl* From(LocalFrame&);
   static void Bind(LocalFrame*,
                    mojo::PendingReceiver<mojom::blink::TextSuggestionBackend>);
@@ -49,6 +48,7 @@ class CORE_EXPORT TextSuggestionBackendImpl final
   void SuggestionMenuTimeoutCallback(int32_t max_number_of_suggestions) final;
 
  private:
+  Member<LocalFrame> local_frame_;
   HeapMojoReceiver<mojom::blink::TextSuggestionBackend,
                    TextSuggestionBackendImpl,
                    HeapMojoWrapperMode::kForceWithoutContextObserver>
