@@ -448,10 +448,6 @@ search-animated-glow {
   padding-top: var(--cr-searchbox-dropdown-padding-top);
 }
 
-:host([ntp-realbox-next-enabled][dropdown-is-visible]) {
-  --cr-searchbox-border-radius: 24px;
-}
-
 :host([ntp-realbox-next-enabled][dropdown-is-visible]),
 :host([ntp-realbox-next-enabled]:not([context-files-count_="0"])) {
   box-shadow: none;
@@ -615,4 +611,15 @@ search-animated-glow {
 :host([searchbox-layout-mode="Compact"]) {
   /* Used in search-animated-glow-element. */
   --search-animated-glow-drag-drop-placeholder-top: 16px;
+}
+
+:host([ntp-realbox-next-enabled][is-dragging-file]) {
+  --cr-searchbox-compose-button-z-index: 99;
+}
+
+:host([ntp-realbox-next-enabled][is-dragging-file]) input,
+:host([ntp-realbox-next-enabled][is-dragging-file]) cr-searchbox-icon,
+:host([ntp-realbox-next-enabled][is-dragging-file]) .searchbox-icon-button-container,
+:host([ntp-realbox-next-enabled][is-dragging-file]) .searchbox-icon-button {
+  opacity: 0;
 }
