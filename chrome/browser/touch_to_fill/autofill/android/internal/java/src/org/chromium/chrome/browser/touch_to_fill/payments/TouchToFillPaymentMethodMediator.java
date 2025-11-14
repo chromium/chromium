@@ -274,8 +274,12 @@ class TouchToFillPaymentMethodMediator {
             "Autofill.TouchToFill.LoyaltyCard.NumberOfAffiliatedLoyaltyCardsShown";
 
     @VisibleForTesting
-    static final String TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_ISSUER_SELECTED =
-            "Autofill.TouchToFill.Bnpl.SelectIssuerScreen.IssuerSelected";
+    static final String TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_LINKED_ISSUER_SELECTED =
+            "Autofill.TouchToFill.Bnpl.SelectIssuerScreen.LinkedIssuerSelected";
+
+    @VisibleForTesting
+    static final String TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_UNLINKED_ISSUER_SELECTED =
+            "Autofill.TouchToFill.Bnpl.SelectIssuerScreen.UnlinkedIssuerSelected";
 
     // LINT.IfChange
     private static final String WALLET_LINK_TEXT = "wallet.google.com";
@@ -895,7 +899,7 @@ class TouchToFillPaymentMethodMediator {
         mDelegate.bnplSuggestionSelected(suggestion.getPaymentsPayload().getExtractedAmount());
     }
 
-    private void onAcceptedBnplIssuer(String issuerId) {
+    private void onAcceptedBnplIssuer(String issuerId, boolean isLinked) {
         if (!mInputProtector.shouldInputBeProcessed()) {
             return;
         }
@@ -905,7 +909,9 @@ class TouchToFillPaymentMethodMediator {
         @BnplIssuer Integer issuer = getEnumFromBnplIssuerId(issuerId);
         if (issuer != null) {
             RecordHistogram.recordEnumeratedHistogram(
-                    TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_ISSUER_SELECTED,
+                    isLinked
+                            ? TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_LINKED_ISSUER_SELECTED
+                            : TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_UNLINKED_ISSUER_SELECTED,
                     issuer,
                     BnplIssuer.MAX_VALUE);
         }
@@ -1002,7 +1008,10 @@ class TouchToFillPaymentMethodMediator {
                         .with(ISSUER_LINKED, issuerContext.isLinked())
                         .with(
                                 ON_ISSUER_CLICK_ACTION,
-                                () -> this.onAcceptedBnplIssuer(issuerContext.getIssuerId()))
+                                () ->
+                                        this.onAcceptedBnplIssuer(
+                                                issuerContext.getIssuerId(),
+                                                issuerContext.isLinked()))
                         .with(APPLY_ISSUER_DEACTIVATED_STYLE, !issuerContext.isEligible());
         return bnplIssuerModelBuilder.build();
     }

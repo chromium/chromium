@@ -24,7 +24,8 @@ import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCred
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createVirtualCreditCard;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_AFFILIATED_LOYALTY_CARDS_SCREEN_INDEX_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_ALL_LOYALTY_CARDS_SCREEN_INDEX_SELECTED;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_ISSUER_SELECTED;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_LINKED_ISSUER_SELECTED;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_UNLINKED_ISSUER_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_CREDIT_CARD_INDEX_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_CREDIT_CARD_OUTCOME_HISTOGRAM;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_IBAN_INDEX_SELECTED;
@@ -1062,17 +1063,10 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     }
 
     @Test
-    public void testSelectBnplIssuerRecordsHistogram() {
+    public void testSelectLinkedBnplIssuerRecordsHistogram() {
         mCoordinator
                 .getMediatorForTesting()
-                .showBnplIssuers(
-                        List.of(
-                                BNPL_ISSUER_CONTEXT_AFFIRM_LINKED,
-                                BNPL_ISSUER_CONTEXT_KLARNA_LINKED,
-                                BNPL_ISSUER_CONTEXT_ZIP_LINKED));
-        HistogramWatcher issuerSelectedHistogram =
-                HistogramWatcher.newSingleRecordWatcher(
-                        TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_ISSUER_SELECTED, BnplIssuer.KLARNA);
+                .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_KLARNA_LINKED));
         Optional<PropertyModel> klarnaIssuer =
                 getBnplIssuerContextModel(
                         mTouchToFillPaymentMethodModel.get(SHEET_ITEMS),
@@ -1083,7 +1077,41 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         verify(mDelegateMock)
                 .onBnplIssuerSuggestionSelected(BNPL_ISSUER_CONTEXT_KLARNA_LINKED.getIssuerId());
-        issuerSelectedHistogram.assertExpected();
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_LINKED_ISSUER_SELECTED,
+                        BnplIssuer.KLARNA));
+        assertTrue(
+                RecordHistogram.getHistogramSamplesForTesting(
+                                TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_UNLINKED_ISSUER_SELECTED)
+                        .isEmpty());
+    }
+
+    @Test
+    public void testSelectUnlinkedBnplIssuerRecordsHistogram() {
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_KLARNA_UNLINKED));
+        Optional<PropertyModel> klarnaIssuer =
+                getBnplIssuerContextModel(
+                        mTouchToFillPaymentMethodModel.get(SHEET_ITEMS),
+                        BNPL_ISSUER_CONTEXT_KLARNA_UNLINKED);
+        assertTrue(klarnaIssuer.isPresent());
+        mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
+        klarnaIssuer.get().get(ON_ISSUER_CLICK_ACTION).run();
+
+        verify(mDelegateMock)
+                .onBnplIssuerSuggestionSelected(BNPL_ISSUER_CONTEXT_KLARNA_UNLINKED.getIssuerId());
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_UNLINKED_ISSUER_SELECTED,
+                        BnplIssuer.KLARNA));
+        assertTrue(
+                RecordHistogram.getHistogramSamplesForTesting(
+                                TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_LINKED_ISSUER_SELECTED)
+                        .isEmpty());
     }
 
     @Test
@@ -1105,7 +1133,11 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 .onBnplIssuerSuggestionSelected(UNKNOWN_BNPL_ISSUER_CONTEXT.getIssuerId());
         assertTrue(
                 RecordHistogram.getHistogramSamplesForTesting(
-                                TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_ISSUER_SELECTED)
+                                TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_LINKED_ISSUER_SELECTED)
+                        .isEmpty());
+        assertTrue(
+                RecordHistogram.getHistogramSamplesForTesting(
+                                TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_UNLINKED_ISSUER_SELECTED)
                         .isEmpty());
     }
 
