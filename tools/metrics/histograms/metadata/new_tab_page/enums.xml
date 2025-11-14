@@ -625,6 +625,7 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Open Glic settings"/>
   <int value="18" label="Prewarm Glic FRE"/>
   <int value="19" label="Open Split View"/>
+  <int value="20" label="Open Autofill Settings"/>
 </enum>
 
 <!-- LINT.ThenChange(//ui/webui/resources/js/browser_command/browser_command.mojom:Command) -->
