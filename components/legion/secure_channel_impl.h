@@ -34,20 +34,10 @@ class SecureChannelImpl : public SecureChannel {
   SecureChannelImpl& operator=(const SecureChannelImpl&) = delete;
 
   // SecureChannel:
-  void Write(Request request, OnResponseReceivedCallback callback) override;
+  void SetResponseCallback(ResponseCallback callback) override;
+  bool Write(Request request) override;
 
  private:
- struct PendingRequest {
-    PendingRequest(Request request, OnResponseReceivedCallback callback);
-    ~PendingRequest();
-
-    PendingRequest(PendingRequest&&);
-    PendingRequest& operator=(PendingRequest&&);
-
-    Request request;
-    OnResponseReceivedCallback callback;
-  };
-
  // Stages of the secure channel establishment and write process.
   enum class State {
     kUninitialized,
@@ -58,10 +48,10 @@ class SecureChannelImpl : public SecureChannel {
   };
 
   // Helper function to handle state transitions and errors.
-  void FailAllPendingRequests(ErrorCode error_code);
-  void ResetState();
+  void FailAllRequests(ErrorCode error_code);
+  void FailAllRequestsAndSetPermanentFailure(ErrorCode error_code);
   void StartSessionEstablishment();
-  void ProcessNextRequest();
+  void ProcessPendingRequests();
 
   // Helpers to send and receive data that is converted to proto messages.
   void Send(const oak::session::v1::SessionRequest& request);
@@ -79,9 +69,9 @@ class SecureChannelImpl : public SecureChannel {
   std::unique_ptr<AttestationHandler> attestation_handler_;
 
   State state_ = State::kUninitialized;
-  bool request_in_flight_ = false;
 
-  std::deque<PendingRequest> pending_requests_;
+  ResponseCallback response_callback_;
+  std::deque<Request> pending_requests_;
 
   base::WeakPtrFactory<SecureChannelImpl> weak_factory_{this};
 };

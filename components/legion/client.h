@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "components/legion/legion_common.h"
@@ -76,13 +77,24 @@ class Client {
          proto::FeatureName feature_name);
 
   // Sends a request over the secure channel.
-  void SendRequest(
-      BinaryEncodedProtoRequest request,
-      base::OnceCallback<void(base::expected<BinaryEncodedProtoResponse, ErrorCode>)> callback);
+  void SendRequest(int32_t request_id,
+                   BinaryEncodedProtoRequest request,
+                   OnRequestCompletedCallback callback);
+
+  // Handles responses from the secure channel.
+  void OnResponseReceived(
+      base::expected<BinaryEncodedProtoResponse, ErrorCode> result);
+
+  // Fails all pending requests with the given error code.
+  void FailAllPendingRequests(ErrorCode error_code);
 
   std::unique_ptr<SecureChannel> secure_channel_;
   proto::FeatureName feature_name_;
   int32_t next_request_id_{1};
+
+  // Callbacks for requests that have been sent to the secure channel but have
+  // not yet received a response.
+  base::flat_map<int32_t, OnRequestCompletedCallback> pending_requests_;
 };
 
 }  // namespace legion

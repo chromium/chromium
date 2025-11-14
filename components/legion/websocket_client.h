@@ -43,8 +43,8 @@ class WebSocketClient : public Transport,
   ~WebSocketClient() override;
 
   // Transport:
-  void Send(const oak::session::v1::SessionRequest& request,
-            ResponseCallback callback) override;
+  void SetResponseCallback(ResponseCallback callback) override;
+  void Send(const oak::session::v1::SessionRequest& request) override;
 
  private:
   enum class State {

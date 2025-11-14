@@ -32,17 +32,17 @@ class Transport {
   };
 
   // Callback for when a response is received for a request.
-  using ResponseCallback = base::OnceCallback<void(
+  using ResponseCallback = base::RepeatingCallback<void(
       base::expected<oak::session::v1::SessionResponse, TransportError>)>;
 
   virtual ~Transport() = default;
 
+  // Sets a callback that will be invoked for each response from the server.
+  virtual void SetResponseCallback(ResponseCallback callback) = 0;
+
   // Asynchronously sends data to the server.
   // The transport implementation will handle connection management.
-  // The provided `callback` will be invoked with the corresponding response
-  // from the server. Only one request can be in-flight at a time.
-  virtual void Send(const oak::session::v1::SessionRequest& request,
-                    ResponseCallback callback) = 0;
+  virtual void Send(const oak::session::v1::SessionRequest& request) = 0;
 };
 
 }  // namespace legion

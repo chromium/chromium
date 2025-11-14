@@ -44,7 +44,6 @@ void OnGenerateContentRequestCompleted(
 }
 
 void OnRequestSent(
-    int32_t request_id,
     Client::OnGenerateContentRequestCompletedCallback cb,
     base::expected<Client::BinaryEncodedProtoResponse, ErrorCode> result) {
   if (!result.has_value()) {
@@ -56,13 +55,6 @@ void OnRequestSent(
   if (!legion_response.ParseFromArray(result->data(), result->size())) {
     LOG(ERROR) << "Failed to parse LegionResponse";
     std::move(cb).Run(base::unexpected(ErrorCode::kResponseParseError));
-    return;
-  }
-
-  if (legion_response.request_id() != request_id) {
-    LOG(ERROR) << "Response request_id (" << legion_response.request_id()
-               << ") does not match request's id (" << request_id << ")";
-    std::move(cb).Run(base::unexpected(ErrorCode::kError));
     return;
   }
 
@@ -119,20 +111,26 @@ Client::Client(std::unique_ptr<SecureChannel> secure_channel,
                proto::FeatureName feature_name)
     : secure_channel_(std::move(secure_channel)), feature_name_(feature_name) {
   CHECK(secure_channel_);
+  secure_channel_->SetResponseCallback(
+      base::BindRepeating(&Client::OnResponseReceived, base::Unretained(this)));
 }
 
 Client::~Client() = default;
 
-void Client::SendRequest(
-    BinaryEncodedProtoRequest request,
-    base::OnceCallback<
-        void(base::expected<BinaryEncodedProtoResponse, ErrorCode>)> callback) {
+void Client::SendRequest(int32_t request_id,
+                         BinaryEncodedProtoRequest request,
+                         OnRequestCompletedCallback callback) {
   DVLOG(1) << "SendRequest started.";
 
   DVLOG(1) << "Calling SecureChannelClient to execute the request.";
-  // The SecureChannel is responsible for using the underlying
-  // transport (WebSocketClient) to communicate with the service.
-  secure_channel_->Write(std::move(request), std::move(callback));
+  if (secure_channel_->Write(std::move(request))) {
+    auto [it, inserted] =
+        pending_requests_.emplace(request_id, std::move(callback));
+    CHECK(inserted);
+  } else {
+    // The channel is in a permanent failure state.
+    std::move(callback).Run(base::unexpected(ErrorCode::kError));
+  }
 }
 
 void Client::SendTextRequest(const std::string& text,
@@ -166,10 +164,50 @@ void Client::SendGenerateContentRequest(
       serialized_request.begin(), serialized_request.end());
 
   auto response_parsing_callback =
-      base::BindOnce(&OnRequestSent, request_id, std::move(callback));
+      base::BindOnce(&OnRequestSent, std::move(callback));
 
-  SendRequest(std::move(binary_encoded_proto_request),
+  SendRequest(request_id, std::move(binary_encoded_proto_request),
               std::move(response_parsing_callback));
+}
+
+void Client::FailAllPendingRequests(ErrorCode error_code) {
+  auto pending_requests = std::move(pending_requests_);
+  for (auto& entry : pending_requests) {
+    std::move(entry.second).Run(base::unexpected(error_code));
+  }
+}
+
+void Client::OnResponseReceived(
+    base::expected<BinaryEncodedProtoResponse, ErrorCode> result) {
+  if (!result.has_value()) {
+    // The secure channel is broken. Fail all pending requests.
+    FailAllPendingRequests(result.error());
+    return;
+  }
+
+  proto::LegionResponse legion_response;
+  if (!legion_response.ParseFromArray(result->data(), result->size())) {
+    LOG(ERROR) << "Failed to parse LegionResponse";
+    // This is a protocol error. We don't know which request this response was
+    // for, so we fail all of them.
+    FailAllPendingRequests(ErrorCode::kResponseParseError);
+    return;
+  }
+
+  auto it = pending_requests_.find(legion_response.request_id());
+  if (it == pending_requests_.end()) {
+    DLOG(ERROR) << "Received response for unknown request_id: "
+                << legion_response.request_id();
+    // This could be a response to a request that has already timed out and was
+    // removed from the pending list. In this case we should just ignore it and
+    // not cancel other pending requests.
+    return;
+  }
+
+  auto callback = std::move(it->second);
+  pending_requests_.erase(it);
+
+  std::move(callback).Run(std::move(result));
 }
 
 }  // namespace legion

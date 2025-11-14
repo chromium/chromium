@@ -18,13 +18,17 @@ namespace legion {
 // and using the WebSocketClient for transport.
 class SecureChannel {
  public:
-  using OnResponseReceivedCallback =
-      base::OnceCallback<void(base::expected<Response, ErrorCode>)>;
+  using ResponseCallback =
+      base::RepeatingCallback<void(base::expected<Response, ErrorCode>)>;
 
   virtual ~SecureChannel() = default;
 
+  // Sets a callback that will be invoked for each response from the server.
+  virtual void SetResponseCallback(ResponseCallback callback) = 0;
+
   // Asynchronously performs the operation over the secure channel.
-  virtual void Write(Request request, OnResponseReceivedCallback callback) = 0;
+  // Returns false if the channel is in a permanent failure state.
+  virtual bool Write(Request request) = 0;
 };
 
 }  // namespace legion
