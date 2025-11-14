@@ -11,6 +11,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -18,6 +19,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view_utils.h"
 
@@ -41,31 +44,15 @@ void VerifyAccountChooserViewHeader(views::View* header_view,
   ASSERT_TRUE(subtitle_label);
 }
 
-void VerifyAccountChooserViewFooter(
-    views::View* footer_view,
-    std::u16string expected_use_other_account_button_text,
-    std::u16string expected_cancel_button_text,
-    std::u16string expected_save_button_text) {
-  std::vector<raw_ptr<views::View, VectorExperimental>> footer_view_children =
-      footer_view->children();
-  ASSERT_EQ(footer_view_children.size(), 3u);
-  // Use other account button.
-  views::MdTextButton* use_other_account_button =
-      static_cast<views::MdTextButton*>(
-          footer_view_children.front()->children().front());
-  ASSERT_TRUE(use_other_account_button);
-  EXPECT_EQ(use_other_account_button->GetText(),
-            expected_use_other_account_button_text);
-  // Cancel button.
-  views::MdTextButton* cancel_button =
-      static_cast<views::MdTextButton*>(footer_view_children.at(1));
-  ASSERT_TRUE(cancel_button);
-  EXPECT_EQ(cancel_button->GetText(), expected_cancel_button_text);
-  // Save button.
-  views::MdTextButton* save_button =
-      static_cast<views::MdTextButton*>(footer_view_children.at(2));
-  ASSERT_TRUE(save_button);
-  EXPECT_EQ(save_button->GetText(), expected_save_button_text);
+void VerifyAccountChooserViewFooter(views::View* footer_view) {
+  ui::ElementContext context =
+      views::ElementTrackerViews::GetContextForView(footer_view);
+  EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+      AccountChooserView::kAddAccountButtonId, context));
+  EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+      AccountChooserView::kCancelButtonId, context));
+  EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+      AccountChooserView::kSaveButtonId, context));
 }
 
 void TestSingleAccount(AccountChooserView* account_chooser_view,
@@ -89,11 +76,7 @@ void TestSingleAccount(AccountChooserView* account_chooser_view,
       body_view_children.at(1)->children().front(), account));
 
   // check footer contents
-  VerifyAccountChooserViewFooter(
-      children.at(2),
-      l10n_util::GetStringUTF16(IDS_ACCOUNT_CHOOSER_ADD_ACCOUNT),
-      l10n_util::GetStringUTF16(IDS_CANCEL),
-      l10n_util::GetStringUTF16(IDS_SAVE));
+  VerifyAccountChooserViewFooter(children.at(2));
 }
 
 void TestMultiAccount(AccountChooserView* account_chooser_view,
@@ -114,11 +97,7 @@ void TestMultiAccount(AccountChooserView* account_chooser_view,
   EXPECT_TRUE(views::IsViewClass<views::ScrollView>(children.at(1)));
 
   // check footer contents
-  VerifyAccountChooserViewFooter(
-      children.at(2),
-      l10n_util::GetStringUTF16(IDS_ACCOUNT_CHOOSER_ADD_ACCOUNT),
-      l10n_util::GetStringUTF16(IDS_CANCEL),
-      l10n_util::GetStringUTF16(IDS_SAVE));
+  VerifyAccountChooserViewFooter(children.at(2));
 }
 
 class AccountChooserViewTest : public views::ViewsTestBase {

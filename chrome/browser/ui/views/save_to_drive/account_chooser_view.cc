@@ -24,6 +24,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -181,7 +182,6 @@ std::unique_ptr<views::View> AccountChooserView::CreateFooterView() {
   cancel_button->SetStyle(ui::ButtonStyle::kTonal);
   cancel_button->SetAppearDisabledInInactiveWidget(true);
   cancel_button->SetFocusBehavior(FocusBehavior::ALWAYS);
-  footer->AddChildView(std::move(cancel_button));
 
   // Add the "Save" button.
   auto save_button = std::make_unique<views::MdTextButton>(
@@ -193,7 +193,16 @@ std::unique_ptr<views::View> AccountChooserView::CreateFooterView() {
   save_button->SetStyle(ui::ButtonStyle::kProminent);
   save_button->SetAppearDisabledInInactiveWidget(true);
   save_button->SetFocusBehavior(FocusBehavior::ALWAYS);
-  footer->AddChildView(std::move(save_button));
+
+  if (views::PlatformStyle::kIsOkButtonLeading) {
+    // Primary button goes on the left.
+    footer->AddChildView(std::move(save_button));
+    footer->AddChildView(std::move(cancel_button));
+  } else {
+    // Primary button goes on the right.
+    footer->AddChildView(std::move(cancel_button));
+    footer->AddChildView(std::move(save_button));
+  }
 
   return footer;
 }
