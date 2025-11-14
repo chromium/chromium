@@ -61,4 +61,35 @@ optimization_guide::proto::
   }
 }
 
+optimization_guide::proto::
+    ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome
+    OutcomeEnumToProtoType(AttemptLoginOutcomeMqls outcome) {
+  switch (outcome) {
+    case AttemptLoginOutcomeMqls::kUnspecified:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_UNSPECIFIED;
+    case AttemptLoginOutcomeMqls::kSuccess:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS;
+    case AttemptLoginOutcomeMqls::kNoSignInForm:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_NO_SIGN_IN_FORM;
+    case AttemptLoginOutcomeMqls::kInvalidCredential:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_INVALID_CREDENTIAL;
+    case AttemptLoginOutcomeMqls::kNoFillableFields:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_NO_FILLABLE_FIELDS;
+    case AttemptLoginOutcomeMqls::kDisallowedOrigin:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_DISALLOWED_ORIGIN;
+    case AttemptLoginOutcomeMqls::kReauthRequired:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_REAUTH_REQUIRED;
+    case AttemptLoginOutcomeMqls::kReauthFailed:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_REAUTH_FAILED;
+  };
+}
+
 }  // namespace actor_login
