@@ -20,7 +20,7 @@ ActorLoginQualityLogger::ActorLoginQualityLogger() {
   variations::VariationsService* variation_service =
       g_browser_process->variations_service();
   if (variation_service) {
-    log_data_.set_location(
+    log_data_.mutable_actor_login()->mutable_quality()->set_location(
         base::ToUpperASCII(variation_service->GetLatestCountry()));
   }
 }
@@ -32,14 +32,14 @@ void ActorLoginQualityLogger::SetDomainAndLanguage(
     const GURL& url) {
   // This should only be set once per log entry, by the first
   // request.
-  if (log_data_.has_domain()) {
+  if (log_data_.mutable_actor_login()->mutable_quality()->has_domain()) {
     return;
   }
-  log_data_.set_domain(
+  log_data_.mutable_actor_login()->mutable_quality()->set_domain(
       affiliations::GetExtendedTopLevelDomain(url,
                                               /*psl_extensions=*/{}));
   if (translate_manager) {
-    log_data_.set_language(
+    log_data_.mutable_actor_login()->mutable_quality()->set_language(
         translate_manager->GetLanguageState()->source_language());
   }
 }
@@ -47,14 +47,19 @@ void ActorLoginQualityLogger::SetDomainAndLanguage(
 void ActorLoginQualityLogger::SetGetCredentialsDetails(
     optimization_guide::proto::ActorLoginQuality_GetCredentialsDetails
         get_credentials_details) {
-  log_data_.mutable_get_credentials_details()->CopyFrom(
-      get_credentials_details);
+  log_data_.mutable_actor_login()
+      ->mutable_quality()
+      ->mutable_get_credentials_details()
+      ->CopyFrom(get_credentials_details);
 }
 
 void ActorLoginQualityLogger::AddAttemptLoginDetails(
     optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails
         attempt_login_details) {
-  log_data_.add_attempt_login_details()->CopyFrom(attempt_login_details);
+  log_data_.mutable_actor_login()
+      ->mutable_quality()
+      ->add_attempt_login_details()
+      ->CopyFrom(attempt_login_details);
 }
 
 void ActorLoginQualityLogger::UploadFinalLog(
@@ -63,16 +68,10 @@ void ActorLoginQualityLogger::UploadFinalLog(
     return;
   }
 
-  // TODO(crbug.com/434178974): Here, the log entry proto should be merged
-  // with `log_data_request`, which will record values throughout the entire
-  // login flow. To be updated when `actor_login` feature is synced in Chrome.
-  optimization_guide::proto::LogAiDataRequest log_data_request;
-
   auto new_log_entry =
       std::make_unique<optimization_guide::ModelQualityLogEntry>(
           mqls_uploader->GetWeakPtr());
-  new_log_entry->log_ai_data_request()->MergeFrom(log_data_request);
-
+  new_log_entry->log_ai_data_request()->MergeFrom(log_data_);
   optimization_guide::ModelQualityLogEntry::Upload(std::move(new_log_entry));
 }
 
