@@ -488,7 +488,7 @@ void BrowsingHistoryHandler::TurnOnHistorySync() {
 #if !BUILDFLAG(IS_CHROMEOS)
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   if (browser) {
-    signin_ui_util::TriggerSignInForHistorySyncOptIn(
+    signin_ui_util::SignInAndEnableHistorySync(
         browser, profile_, signin_metrics::AccessPoint::kRecentTabs);
   }
 #else

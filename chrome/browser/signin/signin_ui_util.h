@@ -30,13 +30,15 @@ class IdentityManager;
 // services and construct messages suitable for showing in UI.
 namespace signin_ui_util {
 
-// Triggers the sign in flow for history sync opt-in.
-// This will open the sign in tab or just sign in the user to Chrome (if they
-// are already signed into Web), and enable history sync once the sign in was
-// completed.
-void TriggerSignInForHistorySyncOptIn(Browser* browser,
-                                      Profile* profile,
-                                      signin_metrics::AccessPoint access_point);
+// Enables history sync for the primary account.
+// If the user is already signed in, the history datatype is enabled
+// immediately. If an account is signed in to Web, the user is also signed in to
+// Chrome. If the user needs to reauth, history sync is enabled immediately, and
+// a reauth tab is opened. If the user is not signed in to Web, a sign in tab is
+// opened, and history sync is enabled once the sign in was completed.
+void SignInAndEnableHistorySync(Browser* browser,
+                                Profile* profile,
+                                signin_metrics::AccessPoint access_point);
 
 class SigninUiDelegate;
 

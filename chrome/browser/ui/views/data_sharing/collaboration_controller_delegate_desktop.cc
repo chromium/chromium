@@ -460,8 +460,8 @@ void CollaborationControllerDelegateDesktop::
   // `status.signin_status`. We cannot currently use `status.signin_status`, as
   // it may not update in time after `SignInFromSingleAccountPromo` sets the
   // primary account.
-  signin_ui_util::TriggerSignInForHistorySyncOptIn(
-      browser_, browser_->profile(), access_point_);
+  signin_ui_util::SignInAndEnableHistorySync(browser_, browser_->profile(),
+                                             access_point_);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

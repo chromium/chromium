@@ -5,6 +5,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
+#include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -661,31 +662,25 @@ IN_PROC_BROWSER_TEST_F(
 
   ShowAndAcceptDialog(collaboration::SigninStatus::kSignedInPaused);
 
-  EXPECT_TRUE(SigninPromoTabHelper::GetForWebContents(
-                  *browser()->tab_strip_model()->GetActiveWebContents())
-                  ->IsInitializedForTesting());
-
-  EXPECT_FALSE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kHistory));
-  EXPECT_FALSE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kTabs));
-  EXPECT_FALSE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kSavedTabGroups));
-
-  // Resolving the error should also enable history sync.
-  identity_manager()->GetAccountsMutator()->AddOrUpdateAccount(
-      info.gaia, info.email, "dummy_refresh_token",
-      /*is_under_advanced_protection=*/false,
-      signin_metrics::AccessPoint::kCollaborationJoinTabGroup,
-      signin_metrics::SourceForRefreshTokenOperation::
-          kDiceResponseHandler_Signin);
-
+  // History sync should be enabled immediately, before the reauth is
+  // completed.
   EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kHistory));
   EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kTabs));
   EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kSavedTabGroups));
+
+  // A reauth tab is expected to be shown.
+  content::WebContents* reauth_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(reauth_tab);
+  DiceTabHelper* dice_tab_helper = DiceTabHelper::FromWebContents(reauth_tab);
+  ASSERT_TRUE(dice_tab_helper);
+  EXPECT_EQ(dice_tab_helper->signin_access_point(),
+            signin_metrics::AccessPoint::kCollaborationJoinTabGroup);
+  EXPECT_EQ(dice_tab_helper->signin_reason(),
+            signin_metrics::Reason::kReauthentication);
 
   // Signin metrics - nothing should be recorded for reauth.
   histogram_tester.ExpectTotalCount("Signin.SignIn.Offered", 0);

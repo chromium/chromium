@@ -1577,8 +1577,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithSyncOptinScreen,
   // Open the signin tab from the tabs history page (reuses the previous sign
   // in tab with an updated entry point).
   access_point = signin_metrics::AccessPoint::kRecentTabs;
-  signin_ui_util::TriggerSignInForHistorySyncOptIn(
-      browser(), browser()->profile(), access_point);
+  signin_ui_util::SignInAndEnableHistorySync(browser(), browser()->profile(),
+                                             access_point);
   // Receive token.
   SendRefreshTokenResponse();
 

@@ -647,22 +647,24 @@ void RecordProfileMenuClick(const Profile& profile) {
   }
 }
 
-void TriggerSignInForHistorySyncOptIn(Browser* browser,
-                                     Profile* profile,
-                                     signin_metrics::AccessPoint access_point) {
+void SignInAndEnableHistorySync(Browser* browser,
+                                Profile* profile,
+                                signin_metrics::AccessPoint access_point) {
 #if !BUILDFLAG(IS_CHROMEOS)
-  // Try to sign in or open a sign in tab if user input is needed. If the user
-  // is already signed in, this is a no-op.
-  signin_ui_util::SignInFromSingleAccountPromo(
-      profile,
-      signin_ui_util::GetSingleAccountForPromos(
-          IdentityManagerFactory::GetForProfile(profile)),
-      access_point);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
   if (!sync_service) {
     return;
   }
+
+  // Try to sign in or open a sign in tab if user input is needed. If the user
+  // is already signed in, this is a no-op. If the user is in auth error state,
+  // this opens a reauth tab.
+  const AccountInfo account_for_promos =
+      signin_ui_util::GetSingleAccountForPromos(
+          IdentityManagerFactory::GetForProfile(profile));
+  signin_ui_util::SignInFromSingleAccountPromo(profile, account_for_promos,
+                                               access_point);
 
   // It is safe to pass a pointer to the sync service here because the callback
   // is then owned by a tab helper, which is guaranteed to be destroyed before
@@ -672,14 +674,16 @@ void TriggerSignInForHistorySyncOptIn(Browser* browser,
 
   switch (signin_util::GetSignedInState(
       IdentityManagerFactory::GetForProfile(profile))) {
-    // If the sign in was already successful, enable history sync directly.
+    case signin_util::SignedInState::kSignInPending:
     case signin_util::SignedInState::kSignedIn:
+      // If the sign in was already successful, enable history sync directly. In
+      // case of kSignInPending, the datatype is enabled immediately before the
+      // reauth completes.
       std::move(enable_history_sync).Run();
       return;
     // These states require a sign in tab to be displayed. A tab helper attached
     // to the tab will take care of turning on history sync once signed in.
     case signin_util::SignedInState::kSignedOut:
-    case signin_util::SignedInState::kSignInPending:
     case signin_util::SignedInState::kSyncPaused:
       break;
     case signin_util::SignedInState::kSyncing:
