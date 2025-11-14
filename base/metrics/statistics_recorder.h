@@ -198,6 +198,11 @@ class BASE_EXPORT StatisticsRecorder {
   // histograms held in persistent storage are included. Histograms with flags
   // that intersect with |exclude_flags| are excluded.
   //
+  // The default value of the |exclude_flags| parameter is set to exclude all
+  // PUMA histograms as a safety measure. This is because PUMA uses a different
+  // system for uploading metrics than UMA, and we need to ensure PUMA
+  // histograms don't break any existing code and vice-versa.
+  //
   // The order of returned histograms is not guaranteed.
   //
   // Ownership of the individual histograms remains with the StatisticsRecorder.
@@ -205,7 +210,8 @@ class BASE_EXPORT StatisticsRecorder {
   // This method is thread safe.
   static Histograms GetHistograms(
       bool include_persistent = true,
-      int32_t exclude_flags = HistogramBase::Flags::kNoFlags)
+      int32_t exclude_flags =
+          HistogramBase::Flags::kPumaRcTargetedHistogramFlag)
       LOCKS_EXCLUDED(GetLock());
 
   // Gets BucketRanges used by all histograms registered. The order of returned

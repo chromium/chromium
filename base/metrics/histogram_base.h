@@ -130,6 +130,10 @@ class BASE_EXPORT HistogramBase {
     // MemoryAllocator, and that loaded into the Histogram module before this
     // histogram is created.
     kIsPersistent = 0x40,
+
+    // Indicates that the histogram should be collected by PUMA, and its type is
+    // PUMA for Regional Capabilities.
+    kPumaRcTargetedHistogramFlag = 0x80,
   };
 
   // Histogram data inconsistency types.
