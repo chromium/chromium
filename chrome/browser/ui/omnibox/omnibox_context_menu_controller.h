@@ -15,7 +15,6 @@
 #include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 
-class BrowserWindowInterface;
 class FaviconService;
 
 namespace favicon_base {
@@ -26,12 +25,19 @@ namespace ui {
 class ImageModel;
 }  // namespace ui
 
+namespace content {
+class WebContents;
+}  // namespace content
+
+class OmniboxPopupFileSelector;
+
 // OmniboxContextMenuController creates and manages state for the context menu
 // shown for the omnibox.
 class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
  public:
   explicit OmniboxContextMenuController(
-      BrowserWindowInterface* browser_window_interface);
+      content::WebContents* web_contents,
+      OmniboxPopupFileSelector* file_selector);
 
   OmniboxContextMenuController(const OmniboxContextMenuController&) = delete;
   OmniboxContextMenuController& operator=(const OmniboxContextMenuController&) =
@@ -75,11 +81,14 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   bool IsValidTab(GURL url);
 
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
-  raw_ptr<BrowserWindowInterface> browser_window_interface_;
+  base::WeakPtr<content::WebContents> web_contents_;
+  base::WeakPtr<OmniboxPopupFileSelector> file_selector_;
+
   // Needed for using FaviconService.
   base::CancelableTaskTracker cancelable_task_tracker_;
   raw_ptr<FaviconService> favicon_service_;
   int next_command_id_ = 0;
+
   base::WeakPtrFactory<OmniboxContextMenuController> weak_ptr_factory_{this};
 };
 

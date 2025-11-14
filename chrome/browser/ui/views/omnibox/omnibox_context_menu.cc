@@ -17,12 +17,13 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
 
-OmniboxContextMenu::OmniboxContextMenu(
-    views::Widget* parent_widget,
-    BrowserWindowInterface* browser_window_interface)
+OmniboxContextMenu::OmniboxContextMenu(views::Widget* parent_widget,
+                                       content::WebContents* web_contents,
+                                       OmniboxPopupFileSelector* file_selector)
     : parent_widget_(parent_widget),
-      controller_(std::make_unique<OmniboxContextMenuController>(
-          browser_window_interface)) {
+      controller_(
+          std::make_unique<OmniboxContextMenuController>(web_contents,
+                                                         file_selector)) {
   std::unique_ptr<views::MenuItemView> menu =
       std::make_unique<views::MenuItemView>(this);
   menu_ = menu.get();

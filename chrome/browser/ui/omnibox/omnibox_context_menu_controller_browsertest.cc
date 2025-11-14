@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -31,7 +32,13 @@ class OmniboxContextMenuControllerBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
                        AddRecentTabsToMenu) {
-  OmniboxContextMenuController base_controller(browser());
+  // TODO(crbug.com/458463536): Use proper web contents for the
+  // omnibox_webui_popup.
+  auto omnibox_popup_file_selector =
+      std::make_unique<OmniboxPopupFileSelector>();
+  OmniboxContextMenuController base_controller(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      omnibox_popup_file_selector.get());
   ui::SimpleMenuModel* model = base_controller.menu_model();
 
   // The 1 separator and 4 static items.
@@ -44,7 +51,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   GURL url2(embedded_test_server()->GetURL("/title2.html"));
   ASSERT_TRUE(AddTabAtIndex(1, url2, ui::PAGE_TRANSITION_TYPED));
 
-  OmniboxContextMenuController controller(browser());
+  OmniboxContextMenuController controller(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      omnibox_popup_file_selector.get());
   model = controller.menu_model();
 
   // The model should have 9 items, one for each tab,

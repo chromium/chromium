@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -18,8 +19,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/omnibox_popup_resources.h"
@@ -45,8 +48,10 @@ struct TabInfo {
 }  // namespace
 
 OmniboxContextMenuController::OmniboxContextMenuController(
-    BrowserWindowInterface* browser_window_interface)
-    : browser_window_interface_(browser_window_interface) {
+    content::WebContents* web_contents,
+    OmniboxPopupFileSelector* file_selector)
+    : web_contents_(web_contents->GetWeakPtr()),
+      file_selector_(file_selector->GetWeakPtr()) {
   menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
   next_command_id_ = kMinOmniboxContextMenuRecentTabsCommandId;
   BuildMenu();
@@ -84,7 +89,9 @@ void OmniboxContextMenuController::AddRecentTabItems() {
   std::vector<TabInfo> tabs;
 
   // Iterate through the tab strip model.
-  auto* tab_strip_model = browser_window_interface_->GetTabStripModel();
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_.get());
+  auto* tab_strip_model = browser_window_interface->GetTabStripModel();
   AddTitleWithStringId(IDS_NTP_COMPOSE_MOST_RECENT_TABS);
   for (int i = 0; i < tab_strip_model->count(); i++) {
     tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(i);
@@ -159,7 +166,9 @@ void OmniboxContextMenuController::AddStaticItems() {
 void OmniboxContextMenuController::AddTabFavicon(int command_id,
                                                  const GURL& url,
                                                  const std::u16string& label) {
-  Profile* profile = browser_window_interface_->GetProfile();
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_.get());
+  Profile* profile = browser_window_interface->GetProfile();
   if (!profile) {
     return;
   }
@@ -201,12 +210,26 @@ void OmniboxContextMenuController::AddTitleWithStringId(int localization_id) {
   menu_model_->AddTitleWithStringId(localization_id);
 }
 
-void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {}
-
 bool OmniboxContextMenuController::IsValidTab(GURL url) {
   // Skip tabs that are still loading, and skip webui.
   return url.is_valid() && !url.is_empty() &&
          !url.SchemeIs(content::kChromeUIScheme) &&
          !url.SchemeIs(content::kChromeUIUntrustedScheme) &&
          !url.IsAboutBlank();
+}
+
+void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
+  switch (id) {
+    case IDC_OMNIBOX_CONTEXT_ADD_IMAGE: {
+      file_selector_->OpenFileUploadDialog(web_contents_.get(),
+                                           /*is_image=*/true);
+      break;
+    }
+    case IDC_OMNIBOX_CONTEXT_ADD_FILE:
+      file_selector_->OpenFileUploadDialog(web_contents_.get(),
+                                           /*is_image=*/false);
+      break;
+    default:
+      NOTREACHED();
+  }
 }
