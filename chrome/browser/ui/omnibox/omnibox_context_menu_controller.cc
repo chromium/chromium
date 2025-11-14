@@ -319,9 +319,7 @@ void OmniboxContextMenuController::UpdateSearchboxContext(
       if (auto* webui_controller = webui->GetController()) {
         auto* omnibox_popup_ui = webui_controller->GetAs<OmniboxPopupUI>();
         if (omnibox_popup_ui && omnibox_popup_ui->popup_aim_handler()) {
-          // TODO (crbug.com/460471173): Clean this up and create a method
-          // or other clearly supported way to update context.
-          omnibox_popup_ui->popup_aim_handler()->OnShow(std::move(context));
+          omnibox_popup_ui->popup_aim_handler()->AddContext(std::move(context));
         }
       }
     }

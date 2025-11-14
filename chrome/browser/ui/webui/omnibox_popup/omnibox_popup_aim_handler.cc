@@ -10,6 +10,23 @@
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 
+namespace {
+
+searchbox::mojom::SearchContextStubPtr ToSearchContext(
+    std::unique_ptr<SearchboxContextData::Context> context) {
+  if (!context) {
+    return nullptr;
+  }
+
+  auto search_context = searchbox::mojom::SearchContextStub::New();
+  search_context->input = context->text;
+  search_context->attachments = std::move(context->file_infos);
+  search_context->tool_mode = context->mode;
+  return search_context;
+}
+
+}  // namespace
+
 OmniboxPopupAimHandler::OmniboxPopupAimHandler(
     mojo::PendingReceiver<omnibox_popup_aim::mojom::PageHandler> receiver,
     mojo::PendingRemote<omnibox_popup_aim::mojom::Page> page,
@@ -22,17 +39,7 @@ OmniboxPopupAimHandler::~OmniboxPopupAimHandler() = default;
 
 void OmniboxPopupAimHandler::OnShow(
     std::unique_ptr<SearchboxContextData::Context> context) {
-  if (!context) {
-    page_->OnShow(nullptr);
-    return;
-  }
-
-  auto search_context = searchbox::mojom::SearchContextStub::New();
-  search_context->input = context->text;
-  search_context->attachments = std::move(context->file_infos);
-  search_context->tool_mode = context->mode;
-
-  page_->OnShow(std::move(search_context));
+  page_->OnShow(ToSearchContext(std::move(context)));
 }
 
 void OmniboxPopupAimHandler::OnClose() {
@@ -49,6 +56,15 @@ void OmniboxPopupAimHandler::OnClosedCallback(const std::string& input) {
   if (aim_popup_content) {
     aim_popup_content->OnClosedWithInput(input);
   }
+}
+
+void OmniboxPopupAimHandler::AddContext(
+    std::unique_ptr<SearchboxContextData::Context> context) {
+  auto search_context = ToSearchContext(std::move(context));
+  if (!search_context) {
+    return;
+  }
+  page_->AddContext(std::move(search_context));
 }
 
 void OmniboxPopupAimHandler::Close() {

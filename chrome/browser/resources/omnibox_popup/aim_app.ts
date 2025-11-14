@@ -54,6 +54,7 @@ export class OmniboxAimAppElement extends CrLitElement implements Page {
 
     this.callbackRouter_.onShow.addListener(this.onShow_.bind(this));
     this.callbackRouter_.onClose.addListener(this.onClose_.bind(this));
+    this.callbackRouter_.addContext.addListener(this.addContext_.bind(this));
   }
 
   override connectedCallback() {
@@ -97,6 +98,13 @@ export class OmniboxAimAppElement extends CrLitElement implements Page {
     const composebox = this.shadowRoot.querySelector('cr-composebox');
     assert(composebox);
     composebox.playGlowAnimation();
+    composebox.setSearchContext(context);
+    composebox.focusInput();
+  }
+
+  private addContext_(context: SearchContextStub) {
+    const composebox = this.shadowRoot.querySelector('cr-composebox');
+    assert(composebox);
     composebox.setSearchContext(context);
     composebox.focusInput();
   }
