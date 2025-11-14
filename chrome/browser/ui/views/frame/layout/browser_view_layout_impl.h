@@ -54,9 +54,6 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
   // rendering bugs.
   void DoPostLayoutVisualAdjustments();
 
-  // Returns whether the top contents separator should go in the top container.
-  bool ContentsSeparatorInTopContainer() const;
-
   // Returns the minimum size of all toolbar-height content except the toolbar-
   // height side panel.
   gfx::Size GetMinimumMainAreaSize() const;
@@ -67,6 +64,15 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
   // Returns the type of tabstrip present.
   enum class TabStripType { kNone, kWebUi, kVertical, kHorizontal };
   TabStripType GetTabStripType() const;
+
+  // Returns the type of top separator.
+  enum class TopSeparatorType {
+    kNone,
+    kLoadingBar,
+    kTopContainer,
+    kMultiContents
+  };
+  TopSeparatorType GetTopSeparatorType() const;
 
   // BrowserViewLayout overrides:
   gfx::Point GetDialogPosition(const gfx::Size& dialog_size) const override;

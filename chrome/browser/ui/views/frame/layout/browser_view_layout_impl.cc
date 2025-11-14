@@ -44,6 +44,12 @@ namespace {
 // are open and prevents zero or negative contents sizes.
 static constexpr int kContentsContainerMinimumWidth = 200;
 
+// Loading bar is thicker than a separator, but instead of moving the bottom of
+// the top container down, it starts above where the separator would go.
+static constexpr int kLoadingBarHeight = 3;
+static constexpr int kLoadingBarOffset =
+    kLoadingBarHeight - views::Separator::kThickness;
+
 // Shorthand for validating both `child` and `parent` and checking that one is
 // parented to the other. Ignores child visibility.
 bool IsParentedTo(const views::View* child, const views::View* parent) {
@@ -268,11 +274,20 @@ void BrowserViewLayoutImpl::DoPostLayoutVisualAdjustments() {
   apply_bottom_paint_allowance(views().top_container);
 }
 
-bool BrowserViewLayoutImpl::ContentsSeparatorInTopContainer() const {
+BrowserViewLayoutImpl::TopSeparatorType
+BrowserViewLayoutImpl::GetTopSeparatorType() const {
+  if (!delegate().IsToolbarVisible() && !delegate().IsBookmarkBarVisible()) {
+    return TopSeparatorType::kNone;
+  }
+
+  if (IsParentedTo(views().loading_bar, views().top_container)) {
+    return TopSeparatorType::kLoadingBar;
+  }
+
   // If there is no multi-contents view, there's nowhere else to put the
   // separator, so it goes in the top container.
   if (!views().multi_contents_view) {
-    return true;
+    return TopSeparatorType::kTopContainer;
   }
 
   // In immersive mode, when the top container is visually separate, the
@@ -291,16 +306,16 @@ bool BrowserViewLayoutImpl::ContentsSeparatorInTopContainer() const {
   }
 #endif
   if (top_container_is_visually_separate) {
-    return true;
+    return TopSeparatorType::kTopContainer;
   }
 
   // If the infobar is visible, the separator has to go in the top container.
   if (IsInfobarVisible()) {
-    return true;
+    return TopSeparatorType::kTopContainer;
   }
 
   // The separator should go in the multi contents view instead.
-  return false;
+  return TopSeparatorType::kMultiContents;
 }
 
 std::pair<gfx::Size, gfx::Size> BrowserViewLayoutImpl::GetMinimumTabStripSize()
@@ -818,24 +833,33 @@ gfx::Rect BrowserViewLayoutImpl::CalculateTopContainerLayout(
     SetTop(params, bookmarks_bounds.bottom());
   }
 
-  // The top separator may need to be shown in the top container or the
-  // multi-contents view. It is shown when the toolbar or bookmarks are present
-  // in the top container.
-  const bool show_top_separator = toolbar_visible || bookmarks_visible;
-  const bool separator_in_top_container =
-      show_top_separator && ContentsSeparatorInTopContainer();
+  // There are multiple different ways the top separator can render.
+  const TopSeparatorType top_separator_type = GetTopSeparatorType();
 
-  // Maybe show the separator in the multi-contents view. If this happens, it
-  // does not appear in the top container.
+  // Lay out the loading bar when present.
+  if (IsParentedTo(views().loading_bar, views().top_container)) {
+    gfx::Rect loading_bar_bounds;
+    if (top_separator_type == TopSeparatorType::kLoadingBar) {
+      loading_bar_bounds =
+          gfx::Rect(params.visual_client_area.x(),
+                    params.visual_client_area.y() - kLoadingBarOffset,
+                    params.visual_client_area.width(), kLoadingBarHeight);
+      SetTop(params, loading_bar_bounds.bottom());
+    }
+    layout.AddChild(views().loading_bar, loading_bar_bounds,
+                    top_separator_type == TopSeparatorType::kLoadingBar);
+  }
+
+  // Maybe show the separator in the multi-contents view.
   if (views().multi_contents_view) {
     views().multi_contents_view->SetShouldShowTopSeparator(
-        show_top_separator && !separator_in_top_container);
+        top_separator_type == TopSeparatorType::kMultiContents);
   }
 
   // Maybe show the separator in the top container.
   if (IsParentedTo(views().top_container_separator, views().top_container)) {
     gfx::Rect separator_bounds;
-    if (separator_in_top_container) {
+    if (top_separator_type == TopSeparatorType::kTopContainer) {
       separator_bounds = gfx::Rect(
           params.visual_client_area.x(), params.visual_client_area.y(),
           params.visual_client_area.width(),
@@ -843,7 +867,7 @@ gfx::Rect BrowserViewLayoutImpl::CalculateTopContainerLayout(
       SetTop(params, separator_bounds.bottom());
     }
     layout.AddChild(views().top_container_separator, separator_bounds,
-                    separator_in_top_container);
+                    top_separator_type == TopSeparatorType::kTopContainer);
   }
 
   // In certain circumstances, the top container bounds require adjustment.
