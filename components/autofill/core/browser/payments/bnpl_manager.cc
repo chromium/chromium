@@ -15,6 +15,7 @@
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -26,6 +27,7 @@
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
+#include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_strategy.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/constants.h"
@@ -118,15 +120,24 @@ void BnplManager::OnDidAcceptBnplSuggestion(
   switch (payments_autofill_client()
               .GetBnplStrategy()
               ->GetNextActionOnBnplSuggestionAcceptance()) {
-    case kShowSelectBnplIssuerUi:
+    case kShowSelectBnplIssuerUi: {
       CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
           .ShowSelectBnplIssuerUi(
               GetSortedBnplIssuerContext(), ongoing_flow_state_->app_locale,
               base::BindOnce(&BnplManager::OnIssuerSelected,
                              weak_factory_.GetWeakPtr()),
-              base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
+              base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()),
+              HasSeenAmountExtractionAiTerms());
+
+      if (HasSeenAmountExtractionAiTerms() &&
+          base::FeatureList::IsEnabled(
+              features::kAutofillEnableAiBasedAmountExtraction)) {
+        browser_autofill_manager_->GetAmountExtractionManager()
+            .TriggerCheckoutAmountExtractionWithAi();
+      }
       break;
-    case kCheckAmountExtractionBeforeContinuingFlow:
+    }
+    case kCheckAmountExtractionBeforeContinuingFlow: {
       base::OnceClosure cancel_callback;
 #if BUILDFLAG(IS_ANDROID)
       cancel_callback =
@@ -144,7 +155,7 @@ void BnplManager::OnDidAcceptBnplSuggestion(
                 GetSortedBnplIssuerContext(), ongoing_flow_state_->app_locale,
                 base::BindOnce(&BnplManager::OnIssuerSelected,
                                weak_factory_.GetWeakPtr()),
-                std::move(cancel_callback));
+                std::move(cancel_callback), HasSeenAmountExtractionAiTerms());
       } else {
         // We can only enter this branch if the user selected the BNPL chip
         // before amount extraction returned. If amount extraction had already
@@ -157,6 +168,7 @@ void BnplManager::OnDidAcceptBnplSuggestion(
                                                    weak_factory_.GetWeakPtr()));
       }
       break;
+    }
   }
 
   browser_autofill_manager_->GetCreditCardFormEventLogger()
@@ -261,6 +273,19 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
       NOTIMPLEMENTED();
       break;
   }
+}
+
+bool BnplManager::AcceptTosActionRequired() const {
+  return ongoing_flow_state_->issuer.payment_instrument().has_value() &&
+         base::Contains(ongoing_flow_state_->issuer.payment_instrument()
+                            ->action_required(),
+                        PaymentInstrument::ActionRequired::kAcceptTos);
+}
+
+bool BnplManager::HasSeenAmountExtractionAiTerms() const {
+  return payments_autofill_client()
+      .GetPaymentsDataManager()
+      .IsAutofillAmountExtractionAiTermsSeenPrefEnabled();
 }
 
 void BnplManager::FetchVcnDetails(GURL url) {
@@ -778,7 +803,6 @@ std::vector<BnplIssuerContext> BnplManager::GetSortedBnplIssuerContext() {
             price_range =
                 issuer.GetEligiblePriceRangeForCurrency(/*currency=*/"USD");
         CHECK(price_range.has_value());
-        CHECK(ongoing_flow_state_->final_checkout_amount);
 
         BnplIssuerEligibilityForPage eligibility;
 
@@ -786,6 +810,12 @@ std::vector<BnplIssuerContext> BnplManager::GetSortedBnplIssuerContext() {
                 issuer.issuer_id(), merchant_url)) {
           eligibility = BnplIssuerEligibilityForPage::
               kNotEligibleIssuerDoesNotSupportMerchant;
+        } else if (!ongoing_flow_state_->final_checkout_amount) {
+          // The only case this code gets hit is `BnplManager` needs to build
+          // the issuer view before the LLM call returns a valid checkout
+          // amount.
+          eligibility = BnplIssuerEligibilityForPage::
+              kTemporarilyEligibleCheckoutAmountNotYetKnown;
         } else if (ongoing_flow_state_->final_checkout_amount <
                    price_range->price_lower_bound) {
           eligibility =
@@ -836,12 +866,5 @@ void BnplManager::OnTouchToFillIssuerSelectionCancelled() {
   Reset();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-bool BnplManager::AcceptTosActionRequired() const {
-  return ongoing_flow_state_->issuer.payment_instrument().has_value() &&
-         base::Contains(ongoing_flow_state_->issuer.payment_instrument()
-                            ->action_required(),
-                        PaymentInstrument::ActionRequired::kAcceptTos);
-}
 
 }  // namespace autofill::payments

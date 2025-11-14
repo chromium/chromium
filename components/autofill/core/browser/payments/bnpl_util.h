@@ -30,7 +30,8 @@ enum class BnplIssuerEligibilityForPage {
   kNotEligibleIssuerDoesNotSupportMerchant = 2,
   kNotEligibleCheckoutAmountTooLow = 3,
   kNotEligibleCheckoutAmountTooHigh = 4,
-  kMaxValue = kNotEligibleCheckoutAmountTooHigh
+  kTemporarilyEligibleCheckoutAmountNotYetKnown = 5,
+  kMaxValue = kTemporarilyEligibleCheckoutAmountNotYetKnown
 };
 
 // A struct containing a BNPL issuer and the context necessary to display it.

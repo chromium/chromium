@@ -150,12 +150,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableAiBasedAmountExtraction)) {
-    registry->RegisterBooleanPref(
-        kAutofillAmountExtractionAiTermsSeen, false,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  }
+  registry->RegisterBooleanPref(
+      kAutofillAmountExtractionAiTermsSeen, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForHomeAndWork)) {

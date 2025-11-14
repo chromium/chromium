@@ -249,7 +249,7 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Gets the amount extraction manager owned by `this`. This will be used for
   // flows that require amount extraction from the page.
-  payments::AmountExtractionManager& GetAmountExtractionManager();
+  virtual payments::AmountExtractionManager& GetAmountExtractionManager();
 
   // Handles post-filling logic of `form`, like notifying observers and logging
   // form metrics.

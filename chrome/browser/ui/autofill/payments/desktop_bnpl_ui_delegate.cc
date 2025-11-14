@@ -27,7 +27,8 @@ void DesktopBnplUiDelegate::ShowSelectBnplIssuerUi(
     std::vector<BnplIssuerContext> bnpl_issuer_context,
     std::string app_locale,
     base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
-    base::OnceClosure cancel_callback) {
+    base::OnceClosure cancel_callback,
+    bool has_seen_ai_terms) {
   select_bnpl_issuer_dialog_controller_ =
       std::make_unique<SelectBnplIssuerDialogControllerImpl>(
           client_->GetPaymentsAutofillClient());
@@ -35,7 +36,7 @@ void DesktopBnplUiDelegate::ShowSelectBnplIssuerUi(
       base::BindOnce(&CreateAndShowBnplIssuerSelectionDialog,
                      select_bnpl_issuer_dialog_controller_->GetWeakPtr(),
                      base::Unretained(&client_->GetWebContents()),
-                     /*has_seen_ai_terms=*/false),
+                     has_seen_ai_terms),
       std::move(bnpl_issuer_context), std::move(app_locale),
       std::move(selected_issuer_callback), std::move(cancel_callback));
 }

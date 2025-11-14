@@ -585,6 +585,8 @@ std::vector<Suggestion> GetCreditCardFooterSuggestions(
     bool with_gpay_logo) {
   std::vector<Suggestion> footer_suggestions;
 
+  // TODO(crbug.com/444684996): Add another check to not show BNPL chip anymore
+  // for this transaction if the previous amount extraction is timeout.
   if (should_show_bnpl_suggestion) {
     if (base::FeatureList::IsEnabled(
             features::

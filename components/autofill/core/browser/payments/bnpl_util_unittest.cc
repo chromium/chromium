@@ -168,6 +168,12 @@ TEST_F(BnplUtilTest, IsEligible_ReturnsTrueForEligibleIssuers) {
   BnplIssuerContext issuer_context(test::GetTestLinkedBnplIssuer(),
                                    BnplIssuerEligibilityForPage::kIsEligible);
   EXPECT_TRUE(issuer_context.IsEligible());
+
+  BnplIssuerContext issuer_context_temporarily_eligible(
+      test::GetTestLinkedBnplIssuer(),
+      BnplIssuerEligibilityForPage::
+          kTemporarilyEligibleCheckoutAmountNotYetKnown);
+  EXPECT_TRUE(issuer_context_temporarily_eligible.IsEligible());
 }
 
 TEST_F(BnplUtilTest, IsEligible_ReturnsFalseForIneligibleIssuers) {

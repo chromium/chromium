@@ -32,7 +32,8 @@ class BnplUiDelegate {
       std::vector<BnplIssuerContext> bnpl_issuer_context,
       std::string app_locale,
       base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
-      base::OnceClosure cancel_callback) = 0;
+      base::OnceClosure cancel_callback,
+      bool has_seen_ai_terms) = 0;
 
   // Dismisses the BNPL issuer selection UI or hides the progress UI depending
   // on the platform.

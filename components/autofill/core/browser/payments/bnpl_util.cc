@@ -48,6 +48,8 @@ bool BnplIssuerContext::IsEligible() const {
     case BnplIssuerEligibilityForPage::kUndefined:
       NOTREACHED();
     case BnplIssuerEligibilityForPage::kIsEligible:
+    case BnplIssuerEligibilityForPage::
+        kTemporarilyEligibleCheckoutAmountNotYetKnown:
       return true;
     case BnplIssuerEligibilityForPage::kNotEligibleIssuerDoesNotSupportMerchant:
     case BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow:
@@ -115,6 +117,8 @@ std::u16string GetBnplIssuerSelectionOptionText(
     case BnplIssuerEligibilityForPage::kUndefined:
       NOTREACHED();
     case BnplIssuerEligibilityForPage::kIsEligible:
+    case BnplIssuerEligibilityForPage::
+        kTemporarilyEligibleCheckoutAmountNotYetKnown:
       switch (issuer_id) {
         case BnplIssuer::IssuerId::kBnplAffirm:
         case BnplIssuer::IssuerId::kBnplAfterpay:

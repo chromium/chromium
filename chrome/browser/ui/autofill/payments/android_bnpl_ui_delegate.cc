@@ -28,7 +28,8 @@ void AndroidBnplUiDelegate::ShowSelectBnplIssuerUi(
     std::vector<BnplIssuerContext> bnpl_issuer_context,
     std::string app_locale,
     base::OnceCallback<void(autofill::BnplIssuer)> selected_issuer_callback,
-    base::OnceClosure cancel_callback) {
+    base::OnceClosure cancel_callback,
+    bool has_seen_ai_terms) {
   client_->ShowTouchToFillBnplIssuers(bnpl_issuer_context, app_locale,
                                       std::move(selected_issuer_callback),
                                       std::move(cancel_callback));

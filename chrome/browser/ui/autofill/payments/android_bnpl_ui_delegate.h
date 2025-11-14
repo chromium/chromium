@@ -39,7 +39,8 @@ class AndroidBnplUiDelegate : public BnplUiDelegate {
       std::vector<BnplIssuerContext> bnpl_issuer_context,
       std::string app_locale,
       base::OnceCallback<void(autofill::BnplIssuer)> selected_issuer_callback,
-      base::OnceClosure cancel_callback) override;
+      base::OnceClosure cancel_callback,
+      bool has_seen_ai_terms) override;
   void RemoveSelectBnplIssuerOrProgressUi() override;
   void ShowBnplTosUi(BnplTosModel bnpl_tos_model,
                      base::OnceClosure accept_callback,

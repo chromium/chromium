@@ -151,6 +151,9 @@ class BnplManager {
     OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback;
   };
 
+  // Returns true if the user has seen the amount extraction AI terms.
+  bool HasSeenAmountExtractionAiTerms() const;
+
   // This function makes the appropriate call to the payments server to fetch
   // the VCN details for the BNPL issuer selected in the BNPL manager. `url` is
   // the last URL navigated to inside of the pop-up, and will contain
@@ -274,6 +277,8 @@ class BnplManager {
   // Return all BNPL Issuer contexts including eligibility in order of:
   // eligible + linked, eligible + unlinked, uneligible + linked,
   // uneligible + unlinked.
+  // TODO(crbug.com/444684996): Add the handling logic for the case where the
+  // checkout amount is missing.
   std::vector<BnplIssuerContext> GetSortedBnplIssuerContext();
 
 #if BUILDFLAG(IS_ANDROID)

@@ -51,7 +51,8 @@ class DesktopBnplUiDelegateBrowserTest
         GetDesktopBnplUiDelegate()->ShowSelectBnplIssuerUi(
             {BnplIssuerContext(test::GetTestUnlinkedBnplIssuer(),
                                BnplIssuerEligibilityForPage::kIsEligible)},
-            /*app_locale=*/"en-US", base::DoNothing(), base::DoNothing());
+            /*app_locale=*/"en-US", base::DoNothing(), base::DoNothing(),
+            /*has_seen_ai_terms=*/false);
         break;
       }
       case DialogEnum::kBnplTos: {
