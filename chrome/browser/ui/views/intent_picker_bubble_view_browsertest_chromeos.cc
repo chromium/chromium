@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -798,7 +799,8 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTestChromeOSParameterized,
   remember_selection_checkbox()->SetChecked(true);
   ASSERT_TRUE(intent_picker_bubble());
   intent_picker_bubble()->AcceptDialog();
-  WaitForAppService();
+
+  apps_util::PreferredAppUpdateWaiter(profile(), app_id).Wait();
 
   // Navigate to the same site again, and verify the app is automatically
   // launched.

@@ -4,22 +4,49 @@
 
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
 
+#include "base/check_deref.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/profiles/profile.h"
 
 namespace apps_util {
 
 PreferredAppUpdateWaiter::PreferredAppUpdateWaiter(
     apps::PreferredAppsListHandle& handle,
     std::string app_id,
-    bool is_preferred_app)
+    bool is_preferred_app,
+    base::RunLoop::Type run_loop_type)
     : waiting_app_id_(std::move(app_id)),
       waiting_is_preferred_app_(is_preferred_app),
-      preferred_apps_(handle) {
+      preferred_apps_(handle),
+      run_loop_(run_loop_type) {
   observation_.Observe(&handle);
 }
+
+PreferredAppUpdateWaiter::PreferredAppUpdateWaiter(
+    apps::AppServiceProxyBase* proxy,
+    std::string app_id,
+    bool is_preferred_app,
+    base::RunLoop::Type run_loop_type)
+    : PreferredAppUpdateWaiter(CHECK_DEREF(proxy).PreferredAppsList(),
+                               app_id,
+                               is_preferred_app,
+                               run_loop_type) {}
+
+PreferredAppUpdateWaiter::PreferredAppUpdateWaiter(
+    Profile* profile,
+    std::string app_id,
+    bool is_preferred_app,
+    base::RunLoop::Type run_loop_type)
+    : PreferredAppUpdateWaiter(
+          // The CHECK_DEREF above will catch cases that this returns null.
+          apps::AppServiceProxyFactory::GetForProfile(profile),
+          app_id,
+          is_preferred_app,
+          run_loop_type) {}
 
 PreferredAppUpdateWaiter::~PreferredAppUpdateWaiter() = default;
 

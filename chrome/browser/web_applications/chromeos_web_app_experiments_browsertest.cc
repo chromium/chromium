@@ -152,6 +152,8 @@ class ChromeOsWebAppExperimentsBrowserTest
         browser(), embedded_test_server()->GetURL(
                        "/web_apps/get_manifest.html?theme_color.json"));
     apps::AppReadinessWaiter(profile(), app_id_).Await();
+
+    apps_util::PreferredAppUpdateWaiter(profile(), app_id_).Wait();
   }
   void TearDownOnMainThread() override {
     WebAppNavigationBrowserTest::TearDownOnMainThread();
