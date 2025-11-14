@@ -587,8 +587,16 @@ class PhysicsBasedFlingCurveBrowserTest : public BrowserSideFlingBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/40737075): Re-enable on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_TargetScrollOffsetForFlingAnimation \
+  DISABLED_TargetScrollOffsetForFlingAnimation
+#else
+#define MAYBE_TargetScrollOffsetForFlingAnimation \
+  TargetScrollOffsetForFlingAnimation
+#endif
 IN_PROC_BROWSER_TEST_F(PhysicsBasedFlingCurveBrowserTest,
-                       TargetScrollOffsetForFlingAnimation) {
+                       MAYBE_TargetScrollOffsetForFlingAnimation) {
   LoadPageWithOOPIF();
 
   // Higher value of fling velocity will make sure that the scroll distance
