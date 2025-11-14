@@ -650,7 +650,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
 
   // Action Chips LoadTimeData
   bool show_action_chips =
-      aim_eligibility_service && aim_eligibility_service->IsAimEligible() &&
+      aim_eligibility_service &&
+      aim_eligibility_service->IsDeepSearchEligible() &&
+      aim_eligibility_service->IsCreateImagesEligible() &&
       profile->GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible);
   source->AddBoolean("actionChipsEnabled", show_action_chips);
   source->AddBoolean(
