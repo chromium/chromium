@@ -1,0 +1,39 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.metrics";
+
+package private_metrics;
+
+import "private_metrics/system_profiles/coarse_system_profile.proto";
+
+// System profile for PUMA for Regional Capabilities. All fields in this proto
+// should be populated by the client before sending the report.
+//
+// Next tag: 6
+message RcCoarseSystemProfile {
+  optional Platform platform = 1;
+
+  // The possible channels for an installation, from least to most stable.
+  enum Channel {
+    CHANNEL_UNKNOWN = 0;  // Unknown channel -- perhaps an unofficial build?
+    CHANNEL_CANARY = 1;
+    CHANNEL_DEV = 2;
+    CHANNEL_BETA = 3;
+    CHANNEL_STABLE = 4;
+  }
+
+  optional Channel channel = 2;
+  optional int32 milestone = 3;
+  optional bool is_extended_stable_channel = 4;
+
+  // Profile country ID as reported by
+  // RegionalCapabilitiesService::GetCountryId().
+  //
+  // See <go/chrome-regionalcapabilities/country-determination#rcaps-country>.
+  optional int32 profile_country_id = 5;
+}

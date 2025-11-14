@@ -9,7 +9,7 @@ option java_package = "org.chromium.components.metrics";
 
 package private_metrics;
 
-import "private_metrics/system_profiles/csrr_coarse_system_profile.proto";
+import "private_metrics/system_profiles/rc_coarse_system_profile.proto";
 import "private_metrics/system_profiles/search_system_profile.proto";
 import "histogram_event.proto";
 
@@ -21,22 +21,12 @@ message PrivateUserMetrics {
   // client ids.
   optional fixed64 client_id = 1;
 
-  // A list of metric events.
-  // A client can send multiple events.
-  repeated PrivateMetricEvent private_metric_events = 2;
+  // A list of histogram events which is the actual metric data being reported
+  repeated metrics.HistogramEventProto histogram_events = 2;
 
   // Only one system profile type can be set.
   oneof system_profile {
-    CsrrCoarseSystemProfile csrr_profile = 3;
+    RcCoarseSystemProfile rc_profile = 3;
     SearchSystemProfile search_profile = 4;
   }
-}
-
-// A PrivateMetricEvent contains a list of histogram_events which
-// is the actual metric data being reported. This outer type is defined for
-// flexibility for future expansion.
-// Next tag: 2
-message PrivateMetricEvent {
-  // The metric data being reported.
-  repeated metrics.HistogramEventProto histogram_events = 1;
 }

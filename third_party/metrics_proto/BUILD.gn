@@ -31,7 +31,7 @@ _proto_files = [
   "private_metrics/private_metrics.proto",
   "private_metrics/private_user_metrics.proto",
   "private_metrics/system_profiles/coarse_system_profile.proto",
-  "private_metrics/system_profiles/csrr_coarse_system_profile.proto",
+  "private_metrics/system_profiles/rc_coarse_system_profile.proto",
   "private_metrics/system_profiles/search_system_profile.proto",
   "reporting_info.proto",
   "sampled_profile.proto",

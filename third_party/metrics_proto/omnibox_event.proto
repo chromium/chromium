@@ -229,6 +229,15 @@ message OmniboxEventProto {
     // The composebox in the Lens side panel.
     LENS_SIDE_PANEL_COMPOSEBOX = 32;
 
+    // The omnibox composebox in the NTP.
+    NTP_OMNIBOX_COMPOSEBOX = 33;
+
+    // The omnibox composebox in the SRP.
+    SRP_OMNIBOX_COMPOSEBOX = 34;
+
+    // The omnibox composebox on Web.
+    OTHER_OMNIBOX_COMPOSEBOX = 35;
+
     // When adding new classifications, please update the `OmniboxPageContext`
     // variants listed in chromium's
     // tools/metrics/histograms/metadata/omnibox/histograms.xml and also
