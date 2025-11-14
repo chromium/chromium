@@ -725,7 +725,7 @@ constexpr base::FeatureParam<int> kMinimumTypedCharactersToInvokeAimShortcut(
 // <- Aim shortcut for typed state
 
 #if BUILDFLAG(IS_ANDROID)
-// Omnibox Improvement for Large Form Factors
+// Omnibox Improvement for Large Form Factors -->
 
 inline constexpr base::FeatureParam<bool>
     kOmniboxImprovementForLFFSwitchToTabChip{
@@ -741,6 +741,10 @@ inline constexpr base::FeatureParam<bool>
         &omnibox::kOmniboxImprovementForLFF, "persist_editing_state", false};
 
 // <-- Omnibox Improvement for Large Form Factors
+// Fusebox -->
+inline constexpr base::FeatureParam<bool> kOmniboxMultimodalInputMultiContext{
+    &omnibox::kOmniboxMultimodalInput, "multi_context", false};
+// <-- Fusebox
 #endif
 
 // New params should be inserted above this comment. They should be ordered

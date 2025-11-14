@@ -2066,6 +2066,18 @@ const FeatureEntry::FeatureParam kOmniboxAimDedicatedModeButtonWithHint[] = {
     {"show_try_aimode_hint_in_mode_button", "true"}};
 const FeatureEntry::FeatureParam kOmniboxAimCompactFusebox[] = {
     {"compact_fusebox", "true"}};
+const FeatureEntry::FeatureParam kOmniboxAimMultiContext[] = {
+    {"multi_context", "true"}};
+const FeatureEntry::FeatureParam kOmniboxAimMultiContextDedicatedModeButton[] =
+    {{"multi_context", "true"}, {"show_dedicated_mode_button", "true"}};
+const FeatureEntry::FeatureParam
+    kOmniboxAimMultiContextDedicatedModeButtonWithHint[] = {
+        {"multi_context", "true"},
+        {"show_dedicated_mode_button", "true"},
+        {"show_try_aimode_hint_in_mode_button", "true"}};
+const FeatureEntry::FeatureParam kOmniboxAimMultiContextCompactFusebox[] = {
+    {"multi_context", "true"},
+    {"compact_fusebox", "true"}};
 
 const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
     {"Dedicated Button", kOmniboxAimDedicatedModeButton,
@@ -2074,6 +2086,14 @@ const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
      std::size(kOmniboxAimDedicatedModeButtonWithHint), nullptr},
     {"Compact", kOmniboxAimCompactFusebox, std::size(kOmniboxAimCompactFusebox),
      nullptr},
+    {"MC (Multi context)", kOmniboxAimMultiContext,
+     std::size(kOmniboxAimMultiContext), nullptr},
+    {"MC Dedicated Button", kOmniboxAimMultiContextDedicatedModeButton,
+     std::size(kOmniboxAimDedicatedModeButton), nullptr},
+    {"MC Button with Hint", kOmniboxAimMultiContextDedicatedModeButtonWithHint,
+     std::size(kOmniboxAimMultiContextDedicatedModeButtonWithHint), nullptr},
+    {"MC Compact", kOmniboxAimMultiContextCompactFusebox,
+     std::size(kOmniboxAimMultiContextCompactFusebox), nullptr},
 };
 
 const FeatureEntry::FeatureParam kOmniboxImprovementForLFFVariationsAll[] = {
