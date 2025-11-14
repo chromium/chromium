@@ -9883,3 +9883,6 @@ crbug.com/444447168 [ Mac15-arm64 ] virtual/webnn-service-on-cpu/external/wpt/we
 crbug.com/40516274 [ Mac ] virtual/gpu-rasterization/images/color-profile-reflection.html [ Failure Pass Timeout ]
 crbug.com/40516274 [ Win ] virtual/gpu-rasterization/images/color-profile-reflection.html [ Failure Pass Timeout ]
 crbug.com/40516274 [ Win11-arm64 ] images/color-profile-reflection.html [ Failure Pass ]
+
+# Gardener 2025-11-14
+crbug.com/460545299 [ Mac ] webaudio/codec-tests/webm/webm-decode.html [ Failure Pass ]
