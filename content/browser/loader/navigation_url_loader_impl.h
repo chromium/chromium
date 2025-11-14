@@ -62,7 +62,6 @@ class SignedExchangeRequestHandler;
 class StoragePartition;
 class StoragePartitionImpl;
 class WebContents;
-struct WebPluginInfo;
 
 class CONTENT_EXPORT NavigationURLLoaderImpl
     : public NavigationURLLoader,
@@ -216,11 +215,9 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
           additional_throttles);
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-  void CheckPluginAndContinueOnReceiveResponse(
+  void CheckPluginAndCallOnReceiveResponse(
       network::mojom::URLResponseHeadPtr head,
-      network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
-      bool is_download_if_not_handled_by_plugin,
-      const std::vector<WebPluginInfo>& plugins);
+      network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints);
 #endif
 
   void CallOnReceivedResponse(
