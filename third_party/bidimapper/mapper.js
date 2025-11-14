@@ -8438,7 +8438,7 @@
                 return false;
             }
             if (dataType === "response"  &&
-                request.bytesReceived > collector.maxEncodedDataSize) {
+                request.encodedResponseBodySize > collector.maxEncodedDataSize) {
                 this.#logger?.(LogType.debug, `Request's ${request.id} response is too big for the collector ${collectorId}`);
                 return false;
             }
@@ -8538,7 +8538,10 @@
         #request = {};
         #requestOverrides;
         #responseOverrides;
-        #response = {};
+        #response = {
+            decodedSize: 0,
+            encodedSize: 0,
+        };
         #eventManager;
         #networkStorage;
         #cdpTarget;
@@ -8759,6 +8762,8 @@
         }
         handleRedirect(event) {
             this.#response.hasExtraInfo = false;
+            this.#response.decodedSize = 0;
+            this.#response.encodedSize = 0;
             this.#response.info = event.redirectResponse;
             this.#emitEventsIfReady({
                 wasRedirected: true,
@@ -8767,7 +8772,7 @@
         #emitEventsIfReady(options = {}) {
             const requestExtraInfoCompleted =
             options.wasRedirected ||
-                options.hasFailed ||
+                Boolean(this.#response.loadingFailed) ||
                 this.#isDataUrl() ||
                 Boolean(this.#request.extraInfo) ||
                 this.#servedFromCache ||
@@ -8794,9 +8799,12 @@
             }
             const responseInterceptionCompleted = !responseInterceptionExpected ||
                 (responseInterceptionExpected && Boolean(this.#response.paused));
+            const loadingFinished = Boolean(this.#response.loadingFailed) ||
+                Boolean(this.#response.loadingFinished);
             if (Boolean(this.#response.info) &&
                 responseExtraInfoCompleted &&
-                responseInterceptionCompleted) {
+                responseInterceptionCompleted &&
+                (loadingFinished || options.wasRedirected)) {
                 this.#emitEvent(this.#getResponseReceivedEvent.bind(this));
                 this.#networkStorage.disposeRequest(this.id);
             }
@@ -8830,10 +8838,17 @@
             this.#servedFromCache = true;
             this.#emitEventsIfReady();
         }
+        onLoadingFinishedEvent(event) {
+            this.#response.loadingFinished = event;
+            this.#emitEventsIfReady();
+        }
+        onDataReceivedEvent(event) {
+            this.#response.decodedSize += event.dataLength;
+            this.#response.encodedSize += event.encodedDataLength;
+        }
         onLoadingFailedEvent(event) {
-            this.#emitEventsIfReady({
-                hasFailed: true,
-            });
+            this.#response.loadingFailed = event;
+            this.#emitEventsIfReady();
             this.#emitEvent(() => {
                 return {
                     method: Network$2.EventNames.FetchError,
@@ -9089,11 +9104,11 @@
                     this.#servedFromCache,
                 headers: this.#responseOverrides?.headers ?? headers,
                 mimeType: this.#response.info?.mimeType || '',
-                bytesReceived: this.bytesReceived,
+                bytesReceived: this.encodedResponseBodySize,
                 headersSize: computeHeadersSize(headers),
-                bodySize: 0,
+                bodySize: this.encodedResponseBodySize,
                 content: {
-                    size: 0,
+                    size: this.#response.decodedSize ?? 0,
                 },
                 ...(authChallenges ? { authChallenges } : {}),
             };
@@ -9102,8 +9117,11 @@
                 'goog:securityDetails': this.#response.info?.securityDetails,
             };
         }
-        get bytesReceived() {
-            return this.#response.info?.encodedDataLength || 0;
+        get encodedResponseBodySize() {
+            return (this.#response.loadingFinished?.encodedDataLength ??
+                this.#response.info?.encodedDataLength ??
+                this.#response.encodedSize ??
+                0);
         }
         #getRequestData() {
             const headers = this.#requestHeaders;
@@ -9338,14 +9356,6 @@
                     },
                 ],
                 [
-                    'Network.loadingFailed',
-                    (params) => {
-                        const request = this.#getOrCreateNetworkRequest(params.requestId, cdpTarget);
-                        request.updateCdpTarget(cdpTarget);
-                        request.onLoadingFailedEvent(params);
-                    },
-                ],
-                [
                     'Fetch.requestPaused',
                     (event) => {
                         const request = this.#getOrCreateNetworkRequest(
@@ -9368,13 +9378,25 @@
                 [
                     'Network.dataReceived',
                     (params) => {
-                        this.getRequestById(params.requestId)?.updateCdpTarget(cdpTarget);
+                        const request = this.getRequestById(params.requestId);
+                        request?.updateCdpTarget(cdpTarget);
+                        request?.onDataReceivedEvent(params);
+                    },
+                ],
+                [
+                    'Network.loadingFailed',
+                    (params) => {
+                        const request = this.#getOrCreateNetworkRequest(params.requestId, cdpTarget);
+                        request.updateCdpTarget(cdpTarget);
+                        request.onLoadingFailedEvent(params);
                     },
                 ],
                 [
                     'Network.loadingFinished',
                     (params) => {
-                        this.getRequestById(params.requestId)?.updateCdpTarget(cdpTarget);
+                        const request = this.getRequestById(params.requestId);
+                        request?.updateCdpTarget(cdpTarget);
+                        request?.onLoadingFinishedEvent(params);
                     },
                 ],
             ];
