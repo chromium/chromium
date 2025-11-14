@@ -49,7 +49,6 @@ CC_BASE_EXPORT extern const char kShowSurfaceDamageRects[];
 CC_BASE_EXPORT extern const char kUIShowSurfaceDamageRects[];
 CC_BASE_EXPORT extern const char kShowScreenSpaceRects[];
 CC_BASE_EXPORT extern const char kUIShowScreenSpaceRects[];
-CC_BASE_EXPORT extern const char kHighlightNonLCDTextLayers[];
 #if DCHECK_IS_ON()
 CC_BASE_EXPORT extern const char kLogOnUIDoubleBackgroundBlur[];
 #endif

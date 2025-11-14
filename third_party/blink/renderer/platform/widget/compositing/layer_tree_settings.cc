@@ -404,8 +404,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
       cmd.HasSwitch(::switches::kShowSurfaceDamageRects);
   settings.initial_debug_state.show_screen_space_rects =
       cmd.HasSwitch(::switches::kShowScreenSpaceRects);
-  settings.initial_debug_state.highlight_non_lcd_text_layers =
-      cmd.HasSwitch(::switches::kHighlightNonLCDTextLayers);
 
   settings.initial_debug_state.SetRecordRenderingStats(
       cmd.HasSwitch(::switches::kEnableGpuBenchmarking));

@@ -328,18 +328,6 @@ void PictureLayerImpl::AppendQuadsSpecialization(
     }
   }
 
-  if (layer_tree_impl()->debug_state().highlight_non_lcd_text_layers) {
-    SkColor4f color =
-        DebugColors::NonLCDTextHighlightColor(lcd_text_disallowed_reason());
-    if (color != SkColors::kTransparent &&
-        GetRasterSource()->GetDisplayItemList()->AreaOfDrawText(
-            gfx::Rect(bounds()))) {
-      render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>()->SetNew(
-          shared_quad_state, debug_border_rect, debug_border_rect, color,
-          append_quads_data);
-    }
-  }
-
   // Keep track of the tilings that were used so that tilings that are
   // unused can be considered for removal.
   last_append_quads_tilings_.clear();

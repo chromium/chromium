@@ -743,7 +743,6 @@ TEST_F(LayerContextImplDebugStateTest, UpdateDebugState) {
   debug_state2.show_layer_animation_bounds_rects = true;
   debug_state2.slow_down_raster_scale_factor = 2;
   debug_state2.rasterize_only_visible_content = true;
-  debug_state2.highlight_non_lcd_text_layers = true;
   debug_state2.SetRecordRenderingStats(true);
   update2->debug_state = debug_state2;
   EXPECT_TRUE(

@@ -99,10 +99,6 @@ const char kUIShowSurfaceDamageRects[] = "ui-show-surface-damage-rects";
 const char kShowScreenSpaceRects[] = "show-screenspace-rects";
 const char kUIShowScreenSpaceRects[] = "ui-show-screenspace-rects";
 
-// Highlights layers that can't use lcd text. Layers containing no text won't
-// be highlighted. See DebugColors::NonLCDTextHighlightColor() for the colors.
-const char kHighlightNonLCDTextLayers[] = "highlight-non-lcd-text-layers";
-
 // Allows scaling clipped images in GpuImageDecodeCache. Note that this may
 // cause color-bleeding.
 // TODO(crbug.com/40160880): Remove this workaround flag once the underlying
