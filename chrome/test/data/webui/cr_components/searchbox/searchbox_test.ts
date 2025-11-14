@@ -3113,49 +3113,6 @@ suite('NewTabPageRealboxTest', () => {
       await microtasksFinished();
     });
 
-    test('hides recent tab chip when searchbox is not focused', async () => {
-      const tabInfo = {
-        tabId: 1,
-        title: 'Sample Tab',
-        url: {url: 'https://example.com'},
-        showInRecentTabChip: true,
-        lastActive: {internalValue: 0n},
-      };
-      testProxy.handler.setResultFor(
-          'getRecentTabs', Promise.resolve({tabs: [tabInfo]}));
-      realbox = await createAndAppendRealbox();
-      await microtasksFinished();
-
-      realbox.$.input.blur();
-      await microtasksFinished();
-
-      const recentTabChip =
-          realbox.shadowRoot.querySelector<HTMLElement>('#recentTabChip');
-      assertTrue(
-          recentTabChip === null,
-          'recent tab chip should be hidden when not focused');
-    });
-    test('updates focused state on focus in and out', async () => {
-      realbox.$.input.focus();
-      await microtasksFinished();
-      assertTrue(
-          realbox.$.context.parentFocused,
-          'parentFocus should be true when input is focused.');
-
-      realbox.$.input.blur();
-      await microtasksFinished();
-      assertFalse(
-          realbox.$.context.parentFocused,
-          'parentFocus should be false when input is not focused.');
-
-      realbox.$.input.focus();
-      await microtasksFinished();
-      assertTrue(
-          realbox.$.context.parentFocused,
-          'parentFocus should be true when input is focused after having been' +
-              ' blurred.');
-    });
-
     test('pasting files adds them to contextual entrypoint', async () => {
       loadTimeData.overrideValues({composeboxFileMaxCount: 2});
       realbox = await createAndAppendRealbox({ntpRealboxNextEnabled: true});

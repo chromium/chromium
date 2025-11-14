@@ -87,22 +87,6 @@ suite('RecentTabChipTest', function() {
     assertTrue(event.detail.delayUpload);
   });
 
-  test('is disabled when inputsDisabled is true', async () => {
-    recentTabChip.inputsDisabled = true;
-    await microtasksFinished();
-
-    const button = getButton();
-    assertTrue(button.hasAttribute('disabled'));
-  });
-
-  test('is not disabled when inputsDisabled is false', async () => {
-    recentTabChip.inputsDisabled = false;
-    await microtasksFinished();
-
-    const button = getButton();
-    assertFalse(button.hasAttribute('disabled'));
-  });
-
   test('has correct text and title', () => {
     const button = getButton();
     const buttonText = button.querySelector('.recent-tab-button-text');

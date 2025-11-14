@@ -34,12 +34,10 @@ export class RecentTabChipElement extends RecentTabChipBase {
       // =========================================================================
       // Public properties
       // =========================================================================
-      inputsDisabled: {type: Boolean},
       recentTab: {type: Object},
     };
   }
 
-  accessor inputsDisabled: boolean = false;
   accessor recentTab: TabInfo|undefined = undefined;
 
   private delayTabUploads_: boolean =
@@ -48,7 +46,6 @@ export class RecentTabChipElement extends RecentTabChipBase {
   protected addTabContext_(e: Event) {
     e.stopPropagation();
     assert(this.recentTab);
-    assert(!this.inputsDisabled);
 
     this.fire('add-tab-context', {
       id: this.recentTab.tabId,

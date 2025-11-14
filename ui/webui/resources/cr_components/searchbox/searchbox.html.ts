@@ -71,8 +71,7 @@ ${this.ntpRealboxNextEnabled ? html`
           @get-tab-preview="${this.getTabPreview_}"
           ?show-dropdown="${this.dropdownIsVisible}"
           ?show-voice-search="${this.shouldShowVoiceSearch_}"
-          searchbox-layout-mode="${this.searchboxLayoutMode}"
-          .parentFocused="${this.inputFocused_}">
+          searchbox-layout-mode="${this.searchboxLayoutMode}">
         <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
             exportparts="dropdown-content"
             role="listbox" .result="${this.result_}"
