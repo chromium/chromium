@@ -192,8 +192,7 @@ void TabStripControlButton::UpdateIcon() {
 
 void TabStripControlButton::UpdateInkDrop() {
   const auto* const color_provider = GetColorProvider();
-
-  if (!color_provider) {
+  if (!color_provider || !IsWidgetAlive()) {
     return;
   }
 
@@ -203,7 +202,7 @@ void TabStripControlButton::UpdateInkDrop() {
 
 void TabStripControlButton::UpdateColors() {
   const auto* const color_provider = GetColorProvider();
-  if (!color_provider) {
+  if (!color_provider || !IsWidgetAlive()) {
     return;
   }
 
@@ -216,8 +215,7 @@ void TabStripControlButton::UpdateColors() {
 
 void TabStripControlButton::UpdateBackground() {
   const auto* const color_provider = GetColorProvider();
-
-  if (!color_provider) {
+  if (!color_provider || !IsWidgetAlive()) {
     return;
   }
 
@@ -333,6 +331,11 @@ void TabStripControlButton::SetFlatEdgeFactor(float factor) {
 void TabStripControlButton::AnimateToStateForTesting(
     views::InkDropState state) {
   views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(state);
+}
+
+bool TabStripControlButton::IsWidgetAlive() const {
+  const views::Widget* widget = GetWidget();
+  return widget && !widget->IsClosed();
 }
 
 BEGIN_METADATA(TabStripControlButton)
