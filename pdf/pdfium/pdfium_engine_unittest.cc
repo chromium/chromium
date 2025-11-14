@@ -3033,7 +3033,7 @@ class PDFiumEngineCaretTest : public PDFiumDrawSelectionTestBase {
     PDFiumDrawSelectionTestBase::TearDown();
   }
 
-  [[nodiscard]] PDFiumEngine* CreateEngine(
+  [[nodiscard]] PDFiumEngine* CreateEngineWithCaret(
       const base::FilePath::CharType* test_filename) {
     engine_ = InitializeEngine(&client_, test_filename);
     if (engine_) {
@@ -3061,7 +3061,8 @@ class PDFiumEngineCaretTest : public PDFiumDrawSelectionTestBase {
 };
 
 TEST_P(PDFiumEngineCaretTest, SetCaretBrowsingEnabled) {
-  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
   DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
@@ -3080,7 +3081,8 @@ TEST_P(PDFiumEngineCaretTest, SetCaretBrowsingEnabled) {
 
 TEST_P(PDFiumEngineCaretTest,
        SetCaretBrowsingEnabledSetsCaretAtFirstVisibleTextRun) {
-  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("link_annots.pdf"));
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("link_annots.pdf"));
   ASSERT_TRUE(engine);
 
   // Starts at first text run.
@@ -3135,7 +3137,8 @@ TEST_P(PDFiumEngineCaretTest,
 }
 
 TEST_P(PDFiumEngineCaretTest, UpdateFocus) {
-  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
   DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
@@ -3153,7 +3156,8 @@ TEST_P(PDFiumEngineCaretTest, UpdateFocus) {
 }
 
 TEST_P(PDFiumEngineCaretTest, DrawOnGeometryChange) {
-  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
   engine->ScrolledToXPosition(20);
@@ -3168,7 +3172,8 @@ TEST_P(PDFiumEngineCaretTest, DrawOnGeometryChange) {
 }
 
 TEST_P(PDFiumEngineCaretTest, TextClick) {
-  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
   // The "b" in "Goodbye, world!".
@@ -3188,7 +3193,7 @@ TEST_P(PDFiumEngineCaretTest, TextClick) {
 
 TEST_P(PDFiumEngineCaretTest, TextClickSyntheticWhitespace) {
   PDFiumEngine* engine =
-      CreateEngine(FILE_PATH_LITERAL("text_synthetic_whitespace.pdf"));
+      CreateEngineWithCaret(FILE_PATH_LITERAL("text_synthetic_whitespace.pdf"));
   ASSERT_TRUE(engine);
 
   // The synthetic whitespace with an empty screen rect.
@@ -3200,7 +3205,7 @@ TEST_P(PDFiumEngineCaretTest, TextClickSyntheticWhitespace) {
 }
 
 TEST_P(PDFiumEngineCaretTest, TextClickMultiPage) {
-  PDFiumEngine* engine = CreateEngine(
+  PDFiumEngine* engine = CreateEngineWithCaret(
       FILE_PATH_LITERAL("multi_page_hello_world_with_empty_page.pdf"));
   ASSERT_TRUE(engine);
 
@@ -3220,7 +3225,8 @@ TEST_P(PDFiumEngineCaretTest, TextClickMultiPage) {
 }
 
 TEST_P(PDFiumEngineCaretTest, TextSelectAndMove) {
-  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
   engine->OnTextOrLinkAreaClick(kHelloWorldStartPosition, /*click_count=*/1);
@@ -3243,7 +3249,8 @@ TEST_P(PDFiumEngineCaretTest, TextSelectAndMove) {
 }
 
 TEST_P(PDFiumEngineCaretTest, TextSelectAndBack) {
-  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
   engine->OnTextOrLinkAreaClick(kHelloWorldStartPosition, /*click_count=*/1);
@@ -3259,7 +3266,8 @@ TEST_P(PDFiumEngineCaretTest, TextSelectAndBack) {
 }
 
 TEST_P(PDFiumEngineCaretTest, SelectAll) {
-  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
   DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
@@ -3276,7 +3284,7 @@ TEST_P(PDFiumEngineCaretTest, SelectAll) {
 
 TEST_P(PDFiumEngineCaretTest, FormFocus) {
   PDFiumEngine* engine =
-      CreateEngine(FILE_PATH_LITERAL("annotation_form_fields.pdf"));
+      CreateEngineWithCaret(FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
 
   // Focus onto a form field page element.
@@ -3316,7 +3324,7 @@ TEST_P(PDFiumEngineCaretTest, FormFocus) {
 
 TEST_P(PDFiumEngineCaretTest, FormFieldLoseFocusGainFocus) {
   PDFiumEngine* engine =
-      CreateEngine(FILE_PATH_LITERAL("annotation_form_fields.pdf"));
+      CreateEngineWithCaret(FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
 
   // Focus onto a form field page element.
@@ -3343,7 +3351,8 @@ TEST_P(PDFiumEngineCaretTest, FormFieldLoseFocusGainFocus) {
 }
 
 TEST_P(PDFiumEngineCaretTest, ScrollToChar) {
-  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
   // Already visible.
