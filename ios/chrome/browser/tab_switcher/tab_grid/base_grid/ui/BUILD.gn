@@ -14,6 +14,7 @@ source_set("ui") {
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/commerce/ui_bundled:price_card",
+    "//ios/chrome/browser/drag_and_drop/model",
     "//ios/chrome/browser/menu/ui_bundled:menu_action_type",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/public/commands",

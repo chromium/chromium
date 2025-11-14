@@ -19,6 +19,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_data_source.h"
 #import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_item.h"
+#import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
@@ -926,13 +927,20 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
         initWithDropOperation:UIDropOperationForbidden
                        intent:UICollectionViewDropIntentUnspecified];
   }
-
+  UIDragItem* dragItem = session.localDragSession.items.firstObject;
   CGPoint locationInCollectionView = [session locationInView:collectionView];
   NSIndexPath* destinationItemIndexPath =
       [collectionView indexPathForItemAtPoint:locationInCollectionView];
   NSIndexPath* draggedItemIndexPath = [self.diffableDataSource
       indexPathForItemIdentifier:_draggedItemIdentifier];
-  if (IsTabGridDragAndDropEnabled() && destinationItemIndexPath &&
+  BOOL isSharedGroup = NO;
+  if ([dragItem.localObject isKindOfClass:[TabGroupInfo class]]) {
+    TabGroupInfo* tabGroupInfo =
+        static_cast<TabGroupInfo*>(dragItem.localObject);
+    isSharedGroup = [self.dragDropHandler isGroupShared:tabGroupInfo];
+  }
+  if (IsTabGridDragAndDropEnabled() && !isSharedGroup &&
+      destinationItemIndexPath &&
       draggedItemIndexPath != destinationItemIndexPath) {
     // If the drag goes into a different cell's frame, either highlight or allow
     // for reorder depending on location.
@@ -960,14 +968,8 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
           initWithDropOperation:UIDropOperationCopy
                          intent:
                              UICollectionViewDropIntentInsertIntoDestinationIndexPath];
-    } else {
-      [self clearCurrentlyHighlightedCell];
-      return [[UICollectionViewDropProposal alloc]
-          initWithDropOperation:UIDropOperationMove
-                         intent:
-                             UICollectionViewDropIntentInsertAtDestinationIndexPath];
     }
-  } else {
+  }
     if (IsTabGridDragAndDropEnabled()) {
       [self clearCurrentlyHighlightedCell];
     }
@@ -981,7 +983,6 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
         initWithDropOperation:dropOperation
                        intent:
                            UICollectionViewDropIntentInsertAtDestinationIndexPath];
-  }
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
@@ -1012,7 +1013,10 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
     }
     _isGroupBeingCreatedFromDragAndDrop = YES;
     TabInfo* tabInfo = static_cast<TabInfo*>(dropItem.dragItem.localObject);
-    if ([destinationCell isKindOfClass:[GroupGridCell class]]) {
+    if (sourceItem.tabGroupItem) {
+      [self.mutator mergeGroup:sourceItem.tabGroupItem
+           intoDestinationItem:destinationItem];
+    } else if ([destinationCell isKindOfClass:[GroupGridCell class]]) {
       [self.mutator addDroppedTab:tabInfo
                        sourceItem:sourceItem
                           toGroup:destinationItem.tabGroupItem.tabGroup];

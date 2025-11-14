@@ -511,4 +511,9 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   // No-op
 }
 
+- (void)mergeGroup:(TabGroupItem*)droppedGroup
+    intoDestinationItem:(GridItemIdentifier*)destinationItem {
+  // No-op
+}
+
 @end
