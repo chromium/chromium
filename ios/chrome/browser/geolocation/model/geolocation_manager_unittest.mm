@@ -105,7 +105,8 @@ TEST_F(GeolocationManagerTest, FLAKY_LocationUpdatesOnCreation) {
 
 // Tests that GeolocationManager caches its value correctly and prefers to
 // return recent authorization status values over the cached status.
-TEST_F(GeolocationManagerTest, GeolocationManagerCache) {
+// TODO(crbug.com/460738390): Test is flaky.
+TEST_F(GeolocationManagerTest, FLAKY_GeolocationManagerCache) {
   ASSERT_FALSE(authorization_status_cache_util::GetAuthorizationStatus());
 
   // Create GeolocationManager so that it will update the cached value.
