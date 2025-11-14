@@ -189,6 +189,14 @@ void XRRenderState::UpdateLayersBackend(
   layer_manager->SetEnabledCompositionLayers(std::move(ids));
 }
 
+void XRRenderState::MaybeDispatchRedrawEvents() {
+  if (layers_) {
+    for (XRLayer* layer : *layers_) {
+      layer->MaybeDispatchRedrawEvent();
+    }
+  }
+}
+
 void XRRenderState::Trace(Visitor* visitor) const {
   visitor->Trace(base_layer_);
   visitor->Trace(layers_);

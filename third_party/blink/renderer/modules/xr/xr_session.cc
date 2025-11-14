@@ -2219,6 +2219,11 @@ void XRSession::OnFrame(double timestamp,
         layers_enabled_ ? nullptr : render_state_->GetFirstLayer(),
         std::move(shared_images));
 
+    // Dispatch the "redraw" event for layers that should be updated.
+    if (layers_enabled_) {
+      render_state_->MaybeDispatchRedrawEvents();
+    }
+
     // Don't allow frames to be processed if the session's visibility state is
     // "hidden".
     if (visibility_state_ == XRVisibilityState::HIDDEN) {

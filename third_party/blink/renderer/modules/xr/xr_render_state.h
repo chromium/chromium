@@ -60,6 +60,8 @@ class XRRenderState : public ScriptWrappable {
   void OnFrameEnd();
   // Calls OnResize for each active layer.
   void OnResize();
+  // Dispatch "redraw" event for each active layer if needed.
+  void MaybeDispatchRedrawEvents();
 
   // Only used when removing an outputContext from the session because it was
   // bound to a different session.

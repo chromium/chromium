@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_layer.h"
 
 #include "third_party/blink/renderer/modules/event_target_modules.h"
+#include "third_party/blink/renderer/modules/xr/xr_layer_event.h"
 #include "third_party/blink/renderer/modules/xr/xr_layer_shared_image_manager.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 
@@ -65,8 +66,26 @@ bool XRLayer::needsRedraw() const {
   return needs_redraw_ && HasSharedImage();
 }
 
-void XRLayer::SetNeedsRedraw(bool needsRedraw) {
-  needs_redraw_ = needsRedraw;
+void XRLayer::SetNeedsRedraw(bool needs_redraw) {
+  if (needs_redraw && !needs_redraw_) {
+    should_dispatch_redraw_event_ = true;
+  }
+  needs_redraw_ = needs_redraw;
+}
+
+void XRLayer::MaybeDispatchRedrawEvent() {
+  if (should_dispatch_redraw_event_) {
+    should_dispatch_redraw_event_ = false;
+    // Do not dispatch the "redraw" event if the backend failed to allocate
+    // a shared image for the layer.
+    if (IsRedrawEventSupported() && needsRedraw()) {
+      DispatchEvent(*XRLayerEvent::Create(event_type_names::kRedraw, this));
+    }
+  }
+}
+
+bool XRLayer::IsRedrawEventSupported() const {
+  return false;
 }
 
 void XRLayer::Trace(Visitor* visitor) const {

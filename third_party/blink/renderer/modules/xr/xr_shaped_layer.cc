@@ -51,6 +51,10 @@ void XRShapedLayer::UpdateLayerBackend() {
   }
 }
 
+bool XRShapedLayer::IsRedrawEventSupported() const {
+  return true;
+}
+
 void XRShapedLayer::Trace(Visitor* visitor) const {
   visitor->Trace(xr_space_);
   XRCompositionLayer::Trace(visitor);

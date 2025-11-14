@@ -54,6 +54,7 @@ class XRLayer : public EventTarget {
 
   void SetNeedsRedraw(bool needsRedraw);
   bool needsRedraw() const;
+  void MaybeDispatchRedrawEvent();
 
   // Mojom backend.
   void CreateLayerBackend();
@@ -65,6 +66,7 @@ class XRLayer : public EventTarget {
   void Trace(Visitor*) const override;
 
  protected:
+  virtual bool IsRedrawEventSupported() const;
   virtual device::mojom::blink::XRCompositionLayerDataPtr CreateLayerData()
       const = 0;
 
@@ -78,6 +80,7 @@ class XRLayer : public EventTarget {
 
   bool is_backend_active_{false};
   bool needs_redraw_{false};
+  bool should_dispatch_redraw_event_{false};
 };
 
 }  // namespace blink

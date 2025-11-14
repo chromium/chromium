@@ -34,6 +34,7 @@ class XRShapedLayer : public XRCompositionLayer {
   void Trace(Visitor*) const override;
 
  protected:
+  bool IsRedrawEventSupported() const override;
   void UpdateLayerBackend() override;
   device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin()
       const override;
