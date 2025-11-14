@@ -117,11 +117,7 @@ class OtpFormEventLoggerIntegrationTest
   }
 
   FormData CreateOtpForm() {
-    FormData form = test::GetFormData({.fields = {{.role = ONE_TIME_CODE}}});
-    form.set_url(GURL("https://example.test/"));
-    form.set_main_frame_origin(
-        url::Origin::Create(GURL("https://example.test/")));
-    return form;
+    return test::GetFormData({.fields = {{.role = ONE_TIME_CODE}}});
   }
 
   static std::string CreateMockedServerResponseString(const FormData form) {

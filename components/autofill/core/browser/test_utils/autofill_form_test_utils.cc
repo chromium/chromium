@@ -16,6 +16,8 @@ namespace autofill::test {
 
 using ::testing::ElementsAre;
 
+constexpr absl::string_view kDefaultTestOrigin = "https://example.test/";
+
 testing::Message DescribeFormData(const FormData& form_data) {
   testing::Message result;
   result << "Form contains " << form_data.fields().size() << " fields:\n";
@@ -193,6 +195,8 @@ FormData GetFormData(const FormDescription& d) {
   f.set_renderer_id(d.renderer_id.value_or(MakeFormRendererId()));
   if (d.main_frame_origin) {
     f.set_main_frame_origin(*d.main_frame_origin);
+  } else {
+    f.set_main_frame_origin(url::Origin::Create(GURL(kDefaultTestOrigin)));
   }
   f.set_fields(base::ToVector(d.fields, [&f](const FieldDescription& dd) {
     FormFieldData ff = GetFormFieldData(dd);
