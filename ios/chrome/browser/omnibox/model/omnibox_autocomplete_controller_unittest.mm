@@ -125,7 +125,8 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
 
     controller_ = [[TestOmniboxAutocompleteController alloc]
         initWithOmniboxClient:omnibox_client_.get()
-             omniboxTextModel:omnibox_text_model_.get()];
+             omniboxTextModel:omnibox_text_model_.get()
+          presentationContext:OmniboxPresentationContext::kLocationBar];
     controller_.delegate = controller_delegate_;
     [controller_ setAutocompleteController:std::move(autocomplete)];
 

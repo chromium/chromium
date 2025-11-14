@@ -184,7 +184,8 @@
 
   _omniboxAutocompleteController = [[OmniboxAutocompleteController alloc]
       initWithOmniboxClient:_client.get()
-           omniboxTextModel:_omniboxTextModel.get()];
+           omniboxTextModel:_omniboxTextModel.get()
+        presentationContext:_presentationContext];
 
   _omniboxMetricsRecorder =
       [[OmniboxMetricsRecorder alloc] initWithClient:_client.get()

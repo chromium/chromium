@@ -72,7 +72,8 @@ class OmniboxTextControllerTest : public PlatformTest {
 
     omnibox_autocomplete_controller_ = [[OmniboxAutocompleteController alloc]
         initWithOmniboxClient:omnibox_client_.get()
-             omniboxTextModel:omnibox_text_model_.get()];
+             omniboxTextModel:omnibox_text_model_.get()
+          presentationContext:OmniboxPresentationContext::kLocationBar];
 
     omnibox_text_controller_ = [[TestOmniboxTextController alloc]
         initWithOmniboxClient:omnibox_client_.get()

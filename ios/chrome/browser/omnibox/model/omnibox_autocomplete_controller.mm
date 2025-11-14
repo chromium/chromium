@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "third_party/omnibox_proto/groups.pb.h"
 #import "ui/gfx/image/image.h"
 #import "url/gurl.h"
@@ -67,14 +68,19 @@ using base::UserMetricsAction;
   PrefBackedBoolean* _bottomOmniboxEnabled;
   /// Preferred omnibox position, logged in omnibox logs.
   metrics::OmniboxEventProto::OmniboxPosition _preferredOmniboxPosition;
+  /// Where the omnibox is presented from.
+  OmniboxPresentationContext _omniboxPresentationContext;
 }
 
 - (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient
-                     omniboxTextModel:(OmniboxTextModel*)omniboxTextModel {
+                     omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
+                  presentationContext:
+                      (OmniboxPresentationContext)presentationContext {
   self = [super init];
   if (self) {
     _omniboxClient = omniboxClient;
     _omniboxTextModel = omniboxTextModel;
+    _omniboxPresentationContext = presentationContext;
 
     _autocompleteController = std::make_unique<AutocompleteController>(
         _omniboxClient->CreateAutocompleteProviderClient(),
@@ -725,9 +731,17 @@ using base::UserMetricsAction;
   }
 
   if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB) {
-    base::AutoReset<bool> tmp(&_omniboxTextModel->in_revert, true);
-    [self.omniboxTextController
-            revertAll];  // Revert the box to its unedited state.
+    // Skip the revert here to avoid changing the size of the multiline omnibox
+    // when accepting input, changes will be reverted at endEditing
+    // (crbug.com/458055336).
+    BOOL skipRevert =
+        IsMultilineBrowserOmniboxEnabled() &&
+        _omniboxPresentationContext == OmniboxPresentationContext::kLocationBar;
+    if (!skipRevert) {
+      base::AutoReset<bool> tmp(&_omniboxTextModel->in_revert, true);
+      [self.omniboxTextController
+              revertAll];  // Revert the box to its unedited state.
+    }
   }
 
   if (!action) {
