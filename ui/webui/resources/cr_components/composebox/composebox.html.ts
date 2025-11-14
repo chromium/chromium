@@ -31,7 +31,7 @@ export function getHtml(this: ComposeboxElement) {
       animation-state="${this.animationState}"
       entrypoint-name="${this.entrypointName}">
   </search-animated-glow>
-  <ntp-error-scrim id="errorScrim"
+  <ntp-error-scrim id="errorScrim" part="error-scrim"
     ?compact-mode="${this.searchboxLayoutMode === 'Compact' &&
                      this.contextFilesSize_ === 0}"
     @error-scrim-visibility-changed="${this.onErrorScrimVisibilityChanged_}">
