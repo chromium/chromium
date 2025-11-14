@@ -6,7 +6,6 @@
 
 
 
-import codecs
 import os
 import re
 
@@ -93,7 +92,7 @@ class ProtoChecker(object):
 
     dependee_status = results.DependeeStatus(filepath)
     last_import = 0
-    with codecs.open(filepath, encoding='utf-8') as f:
+    with open(filepath, encoding='utf-8') as f:
       for line_num, line in enumerate(f):
         line = line.strip()
 

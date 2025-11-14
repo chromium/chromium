@@ -5,7 +5,6 @@
 """Checks Java files for illegal imports."""
 
 
-import codecs
 import concurrent.futures
 import os
 import re
@@ -53,7 +52,7 @@ class JavaChecker(object):
     """Get the full class name of a file with package name."""
     if not os.path.isfile(filepath):
       return None
-    with codecs.open(filepath, encoding='utf-8') as f:
+    with open(filepath, encoding='utf-8') as f:
       short_class_name, _ = os.path.splitext(os.path.basename(filepath))
       for line in f:
         for package in re.findall(r'^package\s+([\w\.]+);', line):
@@ -184,7 +183,7 @@ class JavaChecker(object):
       print('Checking: ' + filepath)
 
     dependee_status = results.DependeeStatus(filepath)
-    with codecs.open(filepath, encoding='utf-8') as f:
+    with open(filepath, encoding='utf-8') as f:
       for line in f:
         is_import, violation = self.CheckLine(rules, line, filepath)
         if violation:

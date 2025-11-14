@@ -6,7 +6,6 @@
 
 
 
-import codecs
 import os
 import re
 
@@ -94,7 +93,7 @@ class CppChecker(object):
     if dir_path.startswith(os.path.join('third_party', 'unrar') + os.sep):
         encoding = 'latin-1'
 
-    with codecs.open(filepath, encoding=encoding) as f:
+    with open(filepath, encoding=encoding) as f:
       in_if0 = 0
       for line_num, line in enumerate(f):
         line = line.strip()
