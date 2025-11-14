@@ -4,87 +4,15 @@
 
 #import "ios/chrome/browser/safari_data_import/model/ios_safari_data_import_client.h"
 
-#import "base/notreached.h"
-#import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/import/import_results.h"
-#import "components/url_formatter/elide_url.h"
-#import "components/url_formatter/url_fixer.h"
 #import "ios/chrome/browser/data_import/public/import_data_item.h"
 #import "ios/chrome/browser/data_import/public/import_data_item_consumer.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
-#import "ios/chrome/browser/shared/ui/util/url_with_title.h"
-#import "url/gurl.h"
 
 namespace {
 
-using password_manager::ImportEntry;
-using password_manager::ImportResults;
-using user_data_importer::ImportPreparationError;
-
-// Converts password_manager::ImportEntry::Status to PasswordImportStatus.
-PasswordImportStatus GetPasswordImportStatusFromImportEntryStatus(
-    password_manager::ImportEntry::Status status) {
-  switch (status) {
-    case ImportEntry::Status::NONE:
-      return PasswordImportStatus::kNone;
-    case ImportEntry::Status::UNKNOWN_ERROR:
-      return PasswordImportStatus::kUnknownError;
-    case ImportEntry::Status::MISSING_PASSWORD:
-      return PasswordImportStatus::kMissingPassword;
-    case ImportEntry::Status::MISSING_URL:
-      return PasswordImportStatus::kMissingURL;
-    case ImportEntry::Status::INVALID_URL:
-      return PasswordImportStatus::kInvalidURL;
-    case ImportEntry::Status::LONG_URL:
-      return PasswordImportStatus::kLongUrl;
-    case ImportEntry::Status::LONG_PASSWORD:
-      return PasswordImportStatus::kLongPassword;
-    case ImportEntry::Status::LONG_USERNAME:
-      return PasswordImportStatus::kLongUsername;
-    case ImportEntry::Status::CONFLICT_PROFILE:
-      return PasswordImportStatus::kConflictProfile;
-    case ImportEntry::Status::CONFLICT_ACCOUNT:
-      return PasswordImportStatus::kConflictAccount;
-    case ImportEntry::Status::LONG_NOTE:
-      return PasswordImportStatus::kLongNote;
-    case ImportEntry::Status::LONG_CONCATENATED_NOTE:
-      return PasswordImportStatus::kLongConcatenatedNote;
-    case ImportEntry::Status::VALID:
-      return PasswordImportStatus::kValid;
-  }
-  NOTREACHED();
-}
-
-// URL and its formatted string representation.
-URLWithTitle* GetURLWithTitleForURLString(std::string url_string) {
-  GURL url = url_formatter::FixupURL(url_string, std::string());
-  if (url.is_empty()) {
-    return nil;
-  }
-  NSString* title = base::SysUTF16ToNSString(
-      url_formatter::
-          FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
-              url));
-  return [[URLWithTitle alloc] initWithURL:url title:title];
-}
-
-// Converts `ImportResults` to a list of `PasswordImportItem`s.
-NSArray<PasswordImportItem*>* GetPasswordImportItemsFromImportResults(
-    const ImportResults& results) {
-  NSMutableArray* password_items = [NSMutableArray array];
-  for (const ImportEntry& entry : results.displayed_entries) {
-    if (entry.url.empty() && entry.username.empty()) {
-      continue;
-    }
-    PasswordImportItem* item = [[PasswordImportItem alloc]
-        initWithURL:GetURLWithTitleForURLString(entry.url)
-           username:base::SysUTF8ToNSString(entry.username)
-           password:base::SysUTF8ToNSString(entry.password)
-             status:GetPasswordImportStatusFromImportEntryStatus(entry.status)];
-    [password_items addObject:item];
-  }
-  return password_items;
-}
+using ::password_manager::ImportResults;
+using ::user_data_importer::ImportPreparationError;
 
 void HandleCountOrErrorResult(id<ImportDataItemConsumer> consumer,
                               ImportDataItemType type,
@@ -159,7 +87,8 @@ void IOSSafariDataImportClient::OnPasswordsReady(
   ImportDataItemImportStatus status = ImportDataItemImportStatus::kReady;
   if (result.has_value()) {
     const ImportResults& results = result.value();
-    conflicting_passwords_ = GetPasswordImportItemsFromImportResults(results);
+    conflicting_passwords_ =
+        [PasswordImportItem passwordImportItemsFromImportResults:results];
     count = results.number_to_import + results.displayed_entries.size();
   } else if (result.error() == ImportPreparationError::kBlockedByPolicy) {
     status = ImportDataItemImportStatus::kBlockedByPolicy;
@@ -195,7 +124,8 @@ void IOSSafariDataImportClient::OnHistoryImported(size_t count) {
 void IOSSafariDataImportClient::OnPasswordsImported(
     const password_manager::ImportResults& results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  invalid_passwords_ = GetPasswordImportItemsFromImportResults(results);
+  invalid_passwords_ =
+      [PasswordImportItem passwordImportItemsFromImportResults:results];
   ImportDataItem* item =
       [[ImportDataItem alloc] initWithType:ImportDataItemType::kPasswords
                                     status:ImportDataItemImportStatus::kImported

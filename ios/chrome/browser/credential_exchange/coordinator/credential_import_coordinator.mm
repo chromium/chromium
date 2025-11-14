@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_mediator.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_import_view_controller.h"
+#import "ios/chrome/browser/data_import/public/password_import_item.h"
+#import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_resolution_view_controller.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
@@ -103,6 +105,22 @@
                                       completion:nil];
 }
 
+- (void)showConflictResolutionScreenWithPasswords:
+    (NSArray<PasswordImportItem*>*)passwords {
+  // Wraps the conflict resolution view in a navigation controller to display
+  // navigation bar and toolbar.
+  DataImportCredentialConflictResolutionViewController*
+      conflictResolutionViewController =
+          [[DataImportCredentialConflictResolutionViewController alloc]
+              initWithPasswordConflicts:passwords];
+  conflictResolutionViewController.mutator = _mediator;
+  UINavigationController* wrapper = [[UINavigationController alloc]
+      initWithRootViewController:conflictResolutionViewController];
+  wrapper.toolbarHidden = NO;
+  wrapper.modalInPresentation = YES;
+  [self presentViewController:wrapper];
+}
+
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
@@ -187,6 +205,18 @@
 
   [_mediator
       startImportingCredentialsWithSecurityDomainSecrets:securityDomainSecrets];
+}
+
+// Presents `viewController` and returns `YES` if no other view controller is
+// being presented. Returns `NO` otherwise.
+- (BOOL)presentViewController:(UIViewController*)viewController {
+  if (_viewController.presentedViewController) {
+    return NO;
+  }
+  [_viewController presentViewController:viewController
+                                animated:YES
+                              completion:nil];
+  return YES;
 }
 
 @end

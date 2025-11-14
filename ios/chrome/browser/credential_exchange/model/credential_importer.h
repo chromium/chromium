@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <vector>
+
 #import "ios/chrome/browser/credential_exchange/model/credential_import_manager_swift.h"
 
 namespace webauthn {
@@ -18,12 +20,18 @@ struct ImportResults;
 class SavedPasswordsPresenter;
 }  // namespace password_manager
 
+@class PasswordImportItem;
+
 // Delegate for CredentialImporter.
 @protocol CredentialImporterDelegate <NSObject>
 
 // Displays the initial import screen with counts of received credentials.
 - (void)showImportScreenWithPasswordCount:(NSInteger)passwordCount
                              passkeyCount:(NSInteger)passkeyCount;
+
+// Displays the conflict resolution screen with conflicting `passwords`.
+- (void)showConflictResolutionScreenWithPasswords:
+    (NSArray<PasswordImportItem*>*)passwords;
 
 // Updates the status of the password import in the UI.
 - (void)onPasswordsImported:(const password_manager::ImportResults&)results;
@@ -57,8 +65,10 @@ class SavedPasswordsPresenter;
 // Triggers storing data for all supported credential types in the user's
 // account. This should be called after conflicts with existing credential data
 // stored in the user's account were resolved for all credential types or
-// immediately after identifying no conflicts.
-- (void)finishImport;
+// immediately after identifying no conflicts. `selectedPasswordIds` contains
+// ids of conflicting passwords that should be imported (if any).
+- (void)finishImportWithSelectedPasswordIds:
+    (const std::vector<int>&)selectedPasswordIds;
 
 @end
 

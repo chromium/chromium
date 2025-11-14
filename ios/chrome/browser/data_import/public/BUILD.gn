@@ -13,7 +13,12 @@ source_set("public") {
     "password_import_item.mm",
     "password_import_item_favicon_data_source.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/password_manager/core/browser/import:importer",
+    "//components/url_formatter",
+    "//ios/chrome/browser/shared/ui/util:url_with_title",
+  ]
   frameworks = [ "Foundation.framework" ]
 }
 

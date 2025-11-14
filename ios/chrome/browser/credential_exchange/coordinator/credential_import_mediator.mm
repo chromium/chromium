@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/credential_exchange/model/credential_importer.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_import_consumer.h"
 #import "ios/chrome/browser/data_import/public/import_data_item.h"
+#import "ios/chrome/browser/data_import/public/password_import_item.h"
 
 @interface CredentialImportMediator () <CredentialImporterDelegate>
 @end
@@ -87,6 +88,12 @@
   [_delegate showImportScreen];
 }
 
+- (void)showConflictResolutionScreenWithPasswords:
+    (NSArray<PasswordImportItem*>*)passwords {
+  CHECK_GT(passwords.count, 0ul);
+  [_delegate showConflictResolutionScreenWithPasswords:passwords];
+}
+
 - (void)onPasswordsImported:(const password_manager::ImportResults&)results {
   // TODO(crbug.com/450982128): Handle displaying errors.
   [_consumer
@@ -94,6 +101,16 @@
                             initWithType:ImportDataItemType::kPasswords
                                   status:ImportDataItemImportStatus::kImported
                                    count:results.number_imported]];
+}
+
+#pragma mark - DataImportCredentialConflictMutator
+
+- (void)continueToImportPasswords:(NSArray<NSNumber*>*)passwordIdentifiers {
+  std::vector<int> selectedPasswordIds;
+  for (NSNumber* identifier in passwordIdentifiers) {
+    selectedPasswordIds.push_back([identifier intValue]);
+  }
+  [_credentialImporter finishImportWithSelectedPasswordIds:selectedPasswordIds];
 }
 
 @end

@@ -13,6 +13,10 @@
 @protocol PasswordImportItemFaviconDataSource;
 @class URLWithTitle;
 
+namespace password_manager {
+struct ImportResults;
+}  // namespace password_manager
+
 /// Matches password_manager::ImportEntry::Status.
 /// Needs to be kept in sync with PasswordManagerImportEntryStatus in
 /// tools/metrics/histograms/enums.xml
@@ -69,6 +73,10 @@ enum class PasswordImportStatus {
 /// `-loadFaviconWithUIUpdateHandler` and retrieve the value in the completion
 /// handler.
 @property(nonatomic, strong) FaviconAttributes* faviconAttributes;
+
+/// Converts `ImportResults` to a list of `PasswordImportItem`s.
++ (NSArray<PasswordImportItem*>*)passwordImportItemsFromImportResults:
+    (const password_manager::ImportResults&)results;
 
 /// Initialization.
 - (instancetype)initWithURL:(URLWithTitle*)url
