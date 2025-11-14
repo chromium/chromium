@@ -214,7 +214,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 (item) -> openInstance(item.instanceId, item.taskId),
                 (item) -> {
                     RecordUserAction.record("MobileMenuWindowManagerCloseInstance");
-                    closeInstance(item.instanceId, CloseWindowAppSource.WINDOW_MANAGER);
+                    closeWindow(item.instanceId, CloseWindowAppSource.WINDOW_MANAGER);
                     if (getCurrentInstanceId() != item.instanceId) {
                         // Initiate synced tab groups cleanup only if the closed instance is not the
                         // current one. If after closure of the current, second to last instance, a
@@ -604,7 +604,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             if (ChromeFeatureList.sDisableInstanceLimit.isEnabled()
                     && isOlderThanSixMonths(readLastAccessedTime(i))
                     && type != InstanceInfo.Type.CURRENT) {
-                closeInstance(i, CloseWindowAppSource.RETENTION_PERIOD_EXPIRATION);
+                closeWindow(i, CloseWindowAppSource.RETENTION_PERIOD_EXPIRATION);
                 continue;
             }
             result.add(
@@ -1346,15 +1346,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         IntentUtils.safeStartActivity(context, intent);
     }
 
-    /**
-     * Close a given task/activity instance. This will permanently delete the instance's persisted
-     * data including tab state.
-     *
-     * @param instanceId ID of the activity instance.
-     * @param source The {@link CloseWindowAppSource} that reflects the source of instance closure.
-     */
-    @VisibleForTesting
-    protected void closeInstance(int instanceId, @CloseWindowAppSource int source) {
+    @Override
+    public void closeWindow(int instanceId, @CloseWindowAppSource int source) {
         removeInstanceInfo(instanceId, source);
         TabModelSelector selector =
                 TabWindowManagerSingleton.getInstance().getTabModelSelectorById(instanceId);
@@ -1665,7 +1658,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             // ones left so as to close if it is empty.
             if (selector != null && selector.getTotalTabCount() == 0) {
                 Log.i(TAG, "Closing empty Chrome instance as no tabs exist.");
-                closeInstance(instanceId, CloseWindowAppSource.NO_TABS_IN_WINDOW);
+                closeWindow(instanceId, CloseWindowAppSource.NO_TABS_IN_WINDOW);
                 return true;
             }
         }

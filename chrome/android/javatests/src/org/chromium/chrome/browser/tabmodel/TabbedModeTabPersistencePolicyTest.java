@@ -270,7 +270,7 @@ public class TabbedModeTabPersistencePolicyTest {
         //
         // We remove the tabs to simulate that they weren't cleaned up and the instance is not
         // running. A running instance would have had its tabs closed in
-        // MultiInstanceManagerApi31#closeInstance already. Failing to do so will throw an
+        // MultiInstanceManagerApi31#closeWindow already. Failing to do so will throw an
         // IllegalStateException.
         buildTestTabModelSelector(
                 new int[] {3, 5, 7}, new int[] {11, 13, 17}, /* removeTabs= */ false);

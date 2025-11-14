@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.messages.MessageDispatcher;
@@ -57,8 +56,10 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /** Integration tests for {@link MultiInstanceManagerApi31}. */
 @DoNotBatch(reason = "This class tests creating, destroying and managing multiple windows.")
@@ -76,13 +77,13 @@ public class MultiInstanceManagerApi31Test {
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    private WebPageStation mPage;
     private ModalDialogManager mModalDialogManager;
     private MultiInstanceManagerApi31 mMultiInstanceManager;
+    private final Set<ChromeTabbedActivity> mExtraActivities = new HashSet<>();
 
     @Before
     public void setup() throws InterruptedException {
-        mPage = mActivityTestRule.startOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         mModalDialogManager = mActivityTestRule.getActivity().getModalDialogManager();
         mMultiInstanceManager =
                 (MultiInstanceManagerApi31)
@@ -95,6 +96,12 @@ public class MultiInstanceManagerApi31Test {
                 .removeKey(ChromePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN);
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED);
+        for (ChromeTabbedActivity activity : mExtraActivities) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () ->
+                            mMultiInstanceManager.closeWindow(
+                                    activity.getWindowIdForTesting(), CloseWindowAppSource.OTHER));
+        }
     }
 
     // Initial state: max limit = 4, active tasks = 4, inactive tasks = 0.
@@ -125,26 +132,8 @@ public class MultiInstanceManagerApi31Test {
         mActivityTestRule.waitForActivityCompletelyLoaded();
 
         verifyInstanceState(/* expectedActiveInstances= */ 2, /* expectedTotalInstances= */ 4);
-        waitForInstanceRestorationMessage();
-
-        // Cleanup activities.
-        mActivityTestRule.getActivityTestRule().setActivity(firstActivity);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    var multiInstanceManager =
-                            (MultiInstanceManagerApi31)
-                                    mActivityTestRule
-                                            .getActivity()
-                                            .getMultiInstanceMangerForTesting();
-                    multiInstanceManager.closeInstance(
-                            otherActivities[0].getWindowIdForTesting(),
-                            otherActivities[0].getTaskId());
-                    multiInstanceManager.closeInstance(
-                            otherActivities[1].getWindowIdForTesting(),
-                            otherActivities[1].getTaskId());
-                    multiInstanceManager.closeInstance(
-                            newActivity.getWindowIdForTesting(), CloseWindowAppSource.OTHER);
-                });
+        waitForMessage(
+                newActivity, MessageIdentifier.MULTI_INSTANCE_RESTORATION_ON_DOWNGRADED_LIMIT);
     }
 
     // Initial state: max limit = 3, active tasks = 2, inactive tasks = 1.
@@ -176,34 +165,18 @@ public class MultiInstanceManagerApi31Test {
         otherActivities[0].finishAndRemoveTask();
         var newActivity =
                 createNewWindow(otherActivities[0], otherActivities[0].getWindowIdForTesting());
-        mActivityTestRule.getActivityTestRule().setActivity(newActivity);
 
         verifyInstanceState(/* expectedActiveInstances= */ 2, /* expectedTotalInstances= */ 3);
-        waitForInstanceRestorationMessage();
-
-        // Cleanup activities.
-        mActivityTestRule.getActivityTestRule().setActivity(firstActivity);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    var multiInstanceManager =
-                            (MultiInstanceManagerApi31)
-                                    mActivityTestRule
-                                            .getActivity()
-                                            .getMultiInstanceMangerForTesting();
-                    multiInstanceManager.closeInstance(
-                            otherActivities[0].getWindowIdForTesting(), CloseWindowAppSource.OTHER);
-                    multiInstanceManager.closeInstance(
-                            newActivity.getWindowIdForTesting(), CloseWindowAppSource.OTHER);
-                });
+        waitForMessage(
+                newActivity, MessageIdentifier.MULTI_INSTANCE_RESTORATION_ON_DOWNGRADED_LIMIT);
     }
 
     @Test
     @SmallTest
     public void moveTabsToOtherWindow_multipleWindowsOpen() {
-        ChromeTabbedActivity newWindow =
-                createNewWindow(mActivityTestRule.getActivity(), /* instanceId= */ 2);
-        List<Tab> tabs = new ArrayList<>();
         var activity = mActivityTestRule.getActivity();
+        createNewWindow(activity, /* instanceId= */ 2);
+        List<Tab> tabs = new ArrayList<>();
         var activeTab = ThreadUtils.runOnUiThreadBlocking(activity::getActivityTab);
         tabs.add(activeTab);
 
@@ -213,11 +186,6 @@ public class MultiInstanceManagerApi31Test {
                             tabs, MultiInstanceManager.NewWindowAppSource.MENU);
                 });
         assertTrue("Target selector dialog should be visible", mModalDialogManager.isShowing());
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mMultiInstanceManager.closeInstance(
-                            newWindow.getWindowIdForTesting(), newWindow.getTaskId());
-                });
     }
 
     @Test
@@ -231,24 +199,17 @@ public class MultiInstanceManagerApi31Test {
         tabs.add(activeTab);
 
         verifyInstanceState(/* expectedActiveInstances= */ 1, /* expectedTotalInstances= */ 1);
-        ChromeTabbedActivity newWindow =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeTabbedActivity.class,
-                        Stage.RESUMED,
-                        () ->
-                                mMultiInstanceManager.moveTabsToOtherWindow(
-                                        tabs,
-                                        MultiInstanceManager.NewWindowAppSource.WINDOW_MANAGER));
+        ApplicationTestUtils.waitForActivityWithClass(
+                ChromeTabbedActivity.class,
+                Stage.RESUMED,
+                () ->
+                        mMultiInstanceManager.moveTabsToOtherWindow(
+                                tabs, MultiInstanceManager.NewWindowAppSource.WINDOW_MANAGER));
         assertFalse(
                 "Target selector dialog should not be visible with only one window open",
                 mModalDialogManager.isShowing());
         // A new instance should be created because of the new window opened.
         verifyInstanceState(/* expectedActiveInstances= */ 2, /* expectedTotalInstances= */ 2);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mMultiInstanceManager.closeInstance(
-                            newWindow.getWindowIdForTesting(), newWindow.getTaskId());
-                });
     }
 
     @Test
@@ -257,32 +218,25 @@ public class MultiInstanceManagerApi31Test {
         verifyInstanceState(/* expectedActiveInstances= */ 1, /* expectedTotalInstances= */ 1);
         TabGroupMetadata tabGroupMetadata = getTabGroupMetaData();
 
-        ChromeTabbedActivity newWindow =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeTabbedActivity.class,
-                        Stage.RESUMED,
-                        () ->
-                                mMultiInstanceManager.moveTabGroupToOtherWindow(
-                                        tabGroupMetadata,
-                                        MultiInstanceManager.NewWindowAppSource.WINDOW_MANAGER));
+        ApplicationTestUtils.waitForActivityWithClass(
+                ChromeTabbedActivity.class,
+                Stage.RESUMED,
+                () ->
+                        mMultiInstanceManager.moveTabGroupToOtherWindow(
+                                tabGroupMetadata,
+                                MultiInstanceManager.NewWindowAppSource.WINDOW_MANAGER));
         assertFalse(
                 "Target selector dialog should not be visible with only one window open",
                 mModalDialogManager.isShowing());
 
         // A new instance should be created because of the new window opened.
         verifyInstanceState(/* expectedActiveInstances= */ 2, /* expectedTotalInstances= */ 2);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mMultiInstanceManager.closeInstance(
-                            newWindow.getWindowIdForTesting(), newWindow.getTaskId());
-                });
     }
 
     @Test
     @SmallTest
     public void moveTabGroupToOtherWindow_multipleWindowsOpen() {
-        ChromeTabbedActivity newWindow =
-                createNewWindow(mActivityTestRule.getActivity(), /* instanceId= */ 2);
+        createNewWindow(mActivityTestRule.getActivity(), /* instanceId= */ 2);
         TabGroupMetadata tabGroupMetadata = getTabGroupMetaData();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -292,18 +246,12 @@ public class MultiInstanceManagerApi31Test {
                             MultiInstanceManager.NewWindowAppSource.WINDOW_MANAGER);
                 });
         assertTrue("Target selector dialog should be visible", mModalDialogManager.isShowing());
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mMultiInstanceManager.closeInstance(
-                            newWindow.getWindowIdForTesting(), newWindow.getTaskId());
-                });
     }
 
     @Test
     @SmallTest
     public void openUrlInSelectedWindow_multipleWindowsOpen() {
-        ChromeTabbedActivity newWindow =
-                createNewWindow(mActivityTestRule.getActivity(), /* instanceId= */ 2);
+        createNewWindow(mActivityTestRule.getActivity(), /* instanceId= */ 2);
         LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -311,11 +259,6 @@ public class MultiInstanceManagerApi31Test {
                         mMultiInstanceManager.openUrlInSelectedWindow(
                                 urlParams, /* parentTabId= */ 1, /* preferNew= */ false));
         assertTrue("Target selector dialog should be visible", mModalDialogManager.isShowing());
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mMultiInstanceManager.closeInstance(
-                            newWindow.getWindowIdForTesting(), newWindow.getTaskId());
-                });
     }
 
     @Test
@@ -324,23 +267,17 @@ public class MultiInstanceManagerApi31Test {
         LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
         verifyInstanceState(/* expectedActiveInstances= */ 1, /* expectedTotalInstances= */ 1);
 
-        ChromeTabbedActivity newWindow =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeTabbedActivity.class,
-                        Stage.RESUMED,
-                        () ->
-                                mMultiInstanceManager.openUrlInSelectedWindow(
-                                        urlParams, /* parentTabId= */ 1, /* preferNew= */ false));
+        ApplicationTestUtils.waitForActivityWithClass(
+                ChromeTabbedActivity.class,
+                Stage.RESUMED,
+                () ->
+                        mMultiInstanceManager.openUrlInSelectedWindow(
+                                urlParams, /* parentTabId= */ 1, /* preferNew= */ false));
         assertFalse(
                 "Target selector dialog should not be visible", mModalDialogManager.isShowing());
 
         // A new instance should be created because of the new window opened.
         verifyInstanceState(/* expectedActiveInstances= */ 2, /* expectedTotalInstances= */ 2);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mMultiInstanceManager.closeInstance(
-                            newWindow.getWindowIdForTesting(), newWindow.getTaskId());
-                });
     }
 
     @Test
@@ -359,22 +296,12 @@ public class MultiInstanceManagerApi31Test {
                         () ->
                                 mMultiInstanceManager.openUrlInSelectedWindow(
                                         urlParams, /* parentTabId= */ 1, /* preferNew= */ true));
+        mExtraActivities.add(newWindow);
         assertFalse(
                 "Target selector dialog should not be visible", mModalDialogManager.isShowing());
 
         // A new instance should be created because of the new window opened.
         verifyInstanceState(/* expectedActiveInstances= */ 4, /* expectedTotalInstances= */ 4);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mMultiInstanceManager.closeInstance(
-                            otherActivities[0].getWindowIdForTesting(),
-                            otherActivities[0].getTaskId());
-                    mMultiInstanceManager.closeInstance(
-                            otherActivities[1].getWindowIdForTesting(),
-                            otherActivities[1].getTaskId());
-                    mMultiInstanceManager.closeInstance(
-                            newWindow.getWindowIdForTesting(), newWindow.getTaskId());
-                });
     }
 
     @Test
@@ -382,8 +309,7 @@ public class MultiInstanceManagerApi31Test {
     public void openUrlInSelectedWindow_openInNewWindow_reachInstanceLimit() {
         MultiWindowUtils.setMaxInstancesForTesting(5);
         ChromeTabbedActivity firstActivity = mActivityTestRule.getActivity();
-        ChromeTabbedActivity[] otherActivities =
-                createNewWindows(firstActivity, /* numWindows= */ 4);
+        createNewWindows(firstActivity, /* numWindows= */ 4);
         verifyInstanceState(/* expectedActiveInstances= */ 5, /* expectedTotalInstances= */ 5);
 
         LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
@@ -397,22 +323,7 @@ public class MultiInstanceManagerApi31Test {
         // Instance creation limit message should be shown and new instance should not be created.
         mActivityTestRule.waitForActivityCompletelyLoaded();
         verifyInstanceState(/* expectedActiveInstances= */ 5, /* expectedTotalInstances= */ 5);
-        waitForInstanceCreationLimitMessage();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mMultiInstanceManager.closeInstance(
-                            otherActivities[0].getWindowIdForTesting(),
-                            otherActivities[0].getTaskId());
-                    mMultiInstanceManager.closeInstance(
-                            otherActivities[1].getWindowIdForTesting(),
-                            otherActivities[1].getTaskId());
-                    mMultiInstanceManager.closeInstance(
-                            otherActivities[2].getWindowIdForTesting(),
-                            otherActivities[2].getTaskId());
-                    mMultiInstanceManager.closeInstance(
-                            otherActivities[3].getWindowIdForTesting(),
-                            otherActivities[3].getTaskId());
-                });
+        waitForMessage(firstActivity, MessageIdentifier.MULTI_INSTANCE_CREATION_LIMIT);
     }
 
     private ChromeTabbedActivity[] createNewWindows(Context context, int numWindows) {
@@ -444,6 +355,7 @@ public class MultiInstanceManagerApi31Test {
                                 notNullValue()));
         Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab());
         ChromeTabUtils.loadUrlOnUiThread(tab, UrlConstants.GOOGLE_URL);
+        mExtraActivities.add(activity);
         return activity;
     }
 
@@ -463,39 +375,18 @@ public class MultiInstanceManagerApi31Test {
                 });
     }
 
-    private void waitForInstanceRestorationMessage() {
+    private void waitForMessage(
+            ChromeTabbedActivity activity, @MessageIdentifier int messageIdentifier) {
         CriteriaHelper.pollUiThread(
                 () -> {
                     MessageDispatcher messageDispatcher =
                             ThreadUtils.runOnUiThreadBlocking(
                                     () ->
                                             MessageDispatcherProvider.from(
-                                                    mActivityTestRule
-                                                            .getActivity()
-                                                            .getWindowAndroid()));
+                                                    activity.getWindowAndroid()));
                     List<MessageStateHandler> messages =
                             MessagesTestHelper.getEnqueuedMessages(
-                                    messageDispatcher,
-                                    MessageIdentifier
-                                            .MULTI_INSTANCE_RESTORATION_ON_DOWNGRADED_LIMIT);
-                    return !messages.isEmpty();
-                });
-    }
-
-    private void waitForInstanceCreationLimitMessage() {
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    MessageDispatcher messageDispatcher =
-                            ThreadUtils.runOnUiThreadBlocking(
-                                    () ->
-                                            MessageDispatcherProvider.from(
-                                                    mActivityTestRule
-                                                            .getActivity()
-                                                            .getWindowAndroid()));
-                    List<MessageStateHandler> messages =
-                            MessagesTestHelper.getEnqueuedMessages(
-                                    messageDispatcher,
-                                    MessageIdentifier.MULTI_INSTANCE_CREATION_LIMIT);
+                                    messageDispatcher, messageIdentifier);
                     return !messages.isEmpty();
                 });
     }

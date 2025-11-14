@@ -539,7 +539,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 INVALID_WINDOW_ID, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[index]));
 
         // Activity ID 1 gets removed from memory.
-        closeInstanceOnly(mActivityPool[1], 1);
+        softCloseInstance(mActivityPool[1], 1);
 
         // We allocated max number of instances already. Activity Id 1 is was removed but
         // remains mapped to a task still alive. No more new allocation is possible.
@@ -559,7 +559,7 @@ public class MultiInstanceManagerApi31UnitTest {
             assertEquals(index, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[index]));
         }
 
-        closeInstanceOnly(mActivityPool[1], 1);
+        softCloseInstance(mActivityPool[1], 1);
 
         // New instance is assigned the instance ID 1 again when the associated task is
         // brought foreground and attempts to recreate the activity.
@@ -751,7 +751,7 @@ public class MultiInstanceManagerApi31UnitTest {
         mFakeTimeTestRule.advanceMillis(MultiInstanceManagerApi31.SIX_MONTHS_MS + 5000000);
         // Closing the two other instances that are not managing the current activity.
         assertEquals(1, mMultiInstanceManager.getInstanceInfo().size());
-        verify(mMultiInstanceManager, times(2)).closeInstance(anyInt(), anyInt());
+        verify(mMultiInstanceManager, times(2)).closeWindow(anyInt(), anyInt());
     }
 
     @Test
@@ -768,11 +768,11 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
 
         // Activity destroyed in the background due to memory constraint has no impact either.
-        closeInstanceOnly(mActivityTask57, TASK_ID_57);
+        softCloseInstance(mActivityTask57, TASK_ID_57);
         assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
 
         // Closing an instance removes the entry.
-        mMultiInstanceManager.closeInstance(1, CloseWindowAppSource.OTHER);
+        mMultiInstanceManager.closeWindow(1, CloseWindowAppSource.OTHER);
         assertEquals(2, mMultiInstanceManager.getInstanceInfo().size());
     }
 
@@ -1333,7 +1333,7 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     // Simulate only an activity gets destroyed, leaving everything intact.
-    private void closeInstanceOnly(Activity activity, int ignored) {
+    private void softCloseInstance(Activity activity, int ignored) {
         destroyActivity(activity);
     }
 
@@ -1821,7 +1821,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1));
 
         verify(mMultiInstanceManager, times(1))
-                .closeInstance(anyInt(), eq(CloseWindowAppSource.NO_TABS_IN_WINDOW));
+                .closeWindow(anyInt(), eq(CloseWindowAppSource.NO_TABS_IN_WINDOW));
     }
 
     @Test
@@ -1840,7 +1840,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1));
 
         verify(mMultiInstanceManager, times(1))
-                .closeInstance(anyInt(), eq(CloseWindowAppSource.NO_TABS_IN_WINDOW));
+                .closeWindow(anyInt(), eq(CloseWindowAppSource.NO_TABS_IN_WINDOW));
     }
 
     @Test

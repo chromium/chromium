@@ -353,6 +353,15 @@ public abstract class MultiInstanceManager {
     }
 
     /**
+     * Close the window associated with a given task / activity. This will permanently and
+     * irreversibly delete persisted instance and tab state data.
+     *
+     * @param instanceId ID of the activity instance.
+     * @param source The {@link CloseWindowAppSource} that reflects the source of instance closure.
+     */
+    public void closeWindow(int instanceId, @CloseWindowAppSource int source) {}
+
+    /**
      * Intended to be called on initialization. If there's only one window at the moment that has
      * tabs stored for it, we then know that any tabs and groups that sync knows of are not in other
      * windows, and their local ids should be cleared out.
