@@ -79,7 +79,11 @@ class PasskeyUpgradeRequestController
                                    Delegate* delegate);
 
  private:
-  enum class EnclaveState;
+  enum class EnclaveState {
+    kUnknown,
+    kReady,
+    kError,
+  };
 
   // password_manager::PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
@@ -105,7 +109,7 @@ class PasskeyUpgradeRequestController
   const content::GlobalRenderFrameHostId frame_host_id_;
 
   const raw_ptr<EnclaveManager> enclave_manager_;
-  EnclaveState enclave_state_;
+  EnclaveState enclave_state_ = EnclaveState::kUnknown;
   bool pending_request_ = false;
 
   std::string rp_id_;

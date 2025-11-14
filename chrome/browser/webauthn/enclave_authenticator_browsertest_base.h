@@ -56,6 +56,7 @@ namespace webauthn {
 class PasskeyModel;
 }  // namespace webauthn
 
+class EnclaveManager;
 class IdentityTestEnvironmentProfileAdaptor;
 class SyncServiceImplHarness;
 struct TempDir;
@@ -87,6 +88,7 @@ class EnclaveAuthenticatorTestBase : public SyncTest {
 
   signin::IdentityTestEnvironment* identity_test_env();
   webauthn::PasskeyModel* passkey_model();
+  EnclaveManager& enclave_manager();
 
   void EnableUVKeySupport(bool fake_hardware_backing = false);
   bool IsUVPAA();
