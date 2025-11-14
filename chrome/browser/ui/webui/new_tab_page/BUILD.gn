@@ -18,6 +18,7 @@ mojom("mojo_bindings") {
     "//components/omnibox/browser:mojo_bindings",
     "//skia/public/mojom",
     "//ui/webui/resources/cr_components/color_change_listener:mojom",
+    "//ui/webui/resources/cr_components/composebox:mojo_bindings",
     "//ui/webui/resources/cr_components/most_visited:mojom",
     "//url/mojom:url_mojom_gurl",
   ]
