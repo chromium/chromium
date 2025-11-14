@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/app_mode/test/network_state_mixin.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -136,12 +137,12 @@ IN_PROC_BROWSER_TEST_P(KioskTest, CanOpenA11ySettings) {
 IN_PROC_BROWSER_TEST_P(KioskTest, ExitsIfOnlySettingsWindowRemainsOpen) {
   Browser& settings = CHECK_DEREF(OpenA11ySettings(
       CHECK_DEREF(user_manager::UserManager::Get()->GetActiveUser())));
-  EXPECT_GT(BrowserList::GetInstance()->size(), 0u);
+  EXPECT_GT(chrome::GetTotalBrowserCount(), 0u);
 
   // Close the app window and verify the settings browser gets closed too.
   CloseAppWindow(AutoLaunchKioskApp());
   ASSERT_TRUE(TestBrowserClosedWaiter(&settings).WaitUntilClosed());
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 0u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 0u);
 
   auto& session = CHECK_DEREF(KioskController::Get().GetKioskSystemSession());
   EXPECT_TRUE(session.is_shutting_down());

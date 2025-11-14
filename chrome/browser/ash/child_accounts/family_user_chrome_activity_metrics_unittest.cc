@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -189,7 +190,7 @@ TEST_F(FamilyUserChromeActivityMetricsTest, Basic) {
   params.window = another_browser_window.release();
   auto another_browser = Browser::DeprecatedCreateOwnedForTesting(params);
 
-  EXPECT_EQ(2U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
 
   PushChromeAppInstance(another_browser->window()->GetNativeWindow(),
                         apps::InstanceState::kActive);
@@ -244,7 +245,7 @@ TEST_F(FamilyUserChromeActivityMetricsTest,
   PushChromeAppInstance(test_browser_->window()->GetNativeWindow(),
                         apps::InstanceState::kDestroyed);
   test_browser_.reset();
-  EXPECT_EQ(0U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(0U, chrome::GetTotalBrowserCount());
   DestroyFamilyUserChromeActivityMetrics();
 
   histogram_tester.ExpectTotalCount(

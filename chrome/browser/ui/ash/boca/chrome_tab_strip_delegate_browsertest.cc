@@ -10,6 +10,7 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -104,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTabStripDelegateBrowserTest, GetTabListForWindow) {
 
 IN_PROC_BROWSER_TEST_F(ChromeTabStripDelegateBrowserTest,
                        GetTabListForSWANonEmptyWindow) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Create browser 1 and navigate to url1 and then url2
   CreateBrowser({GURL(kTabUrl1), GURL(kTabUrl2)}, /*active_url_index=*/1);
@@ -117,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTabStripDelegateBrowserTest,
   chrome::AddTabAt(swa_browser->GetBrowserForMigrationOnly(), GURL(kTabUrl3),
                    /*index=*/0,
                    /*foreground=*/false);
-  EXPECT_EQ(3u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
 
   auto tab_list = delegate()->GetTabsListForWindow(
       swa_browser->GetWindow()->GetNativeWindow());

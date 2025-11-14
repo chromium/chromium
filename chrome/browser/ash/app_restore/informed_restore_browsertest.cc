@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -133,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, MAYBE_PRE_LaunchBrowsers) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   CreateBrowser(profile);
   CreateBrowser(profile);
-  EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
   // Immediate save to full restore file to bypass the 2.5 second throttle.
   AppLaunchInfoSaveWaiter::Wait();
@@ -168,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, MAYBE_LaunchBrowsers) {
   test::BrowsersWaiter waiter(/*expected_count=*/2);
   test::Click(restore_button, /*flag=*/0);
   waiter.Wait();
-  EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
   histogram_tester_.ExpectBucketCount("Apps.FullRestoreWindowCount2", 2, 1);
   histogram_tester_.ExpectUniqueSample("Ash.FirstWebContentsProfile.Recorded",
@@ -184,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_LaunchSWA) {
   test::InstallSystemAppsForTesting(profile);
   test::CreateSystemWebApp(profile, SystemWebAppType::FILE_MANAGER);
   test::CreateSystemWebApp(profile, SystemWebAppType::SETTINGS);
-  EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
   // Immediate save to full restore file to bypass the 2.5 second throttle.
   AppLaunchInfoSaveWaiter::Wait();
@@ -235,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_LaunchBrowsersToDesks) {
   Browser* browser1 = CreateBrowser(profile);
   Browser* browser2 = CreateBrowser(profile);
   Browser* browser3 = CreateBrowser(profile);
-  EXPECT_EQ(3u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
 
   // Add two desks for a total of three. The browsers were all created on the
   // active desk.
@@ -306,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_DISABLED_WindowStates) {
   Browser* browser_fullscreened = CreateBrowser(profile);
   Browser* browser_floated = CreateBrowser(profile);
   Browser* browser_snapped = CreateBrowser(profile);
-  EXPECT_EQ(5u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(5u, chrome::GetTotalBrowserCount());
 
   WindowState::Get(browser_maximized->window()->GetNativeWindow())->Maximize();
 
@@ -396,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_ClickCancelButton) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   CreateBrowser(profile);
   CreateBrowser(profile);
-  EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
   // Immediate save to full restore file to bypass the 2.5 second throttle.
   AppLaunchInfoSaveWaiter::Wait();
@@ -424,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_TabInfoWithinLimit) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   Browser* browser = CreateBrowser(ProfileManager::GetActiveUserProfile());
-  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Create four more urls in addition to the default "about:blank" tab. That
   // tab will be last in the tab strip.
@@ -475,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_TabInfoOutsideLimit) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   Browser* browser = CreateBrowser(ProfileManager::GetActiveUserProfile());
-  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Create six more urls in addition to the default "about:blank" tab. That tab
   // will be last in the tab strip.
@@ -588,7 +589,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_Update) {
   // Need at least one window for restore data.
   Profile* profile = ProfileManager::GetActiveUserProfile();
   CreateBrowser(profile);
-  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Prepare for the main test body by setting the version to one that will be
   // less.
@@ -612,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, Update) {
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_ReenterInformedRestoreSession) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
   CreateBrowser(ProfileManager::GetActiveUserProfile());
-  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Immediate save to full restore file to bypass the 2.5 second throttle.
   AppLaunchInfoSaveWaiter::Wait();
@@ -731,7 +732,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreOnboardingTest, PRE_Onboarding) {
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   CreateBrowser(profile);
-  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Immediate save to full restore file to bypass the 2.5 second throttle.
   AppLaunchInfoSaveWaiter::Wait();
@@ -759,7 +760,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreOnboardingTest, Onboarding) {
   test::BrowsersWaiter waiter(/*expected_count=*/1);
   test::Click(restore_button, /*flag=*/0);
   waiter.Wait();
-  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Attempt to show the dialog again. Since we've already shown it, we
   // don't show it again.
@@ -780,7 +781,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreOnboardingTest, PRE_Sanitized) {
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   CreateBrowser(profile);
-  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Immediate save to full restore file to bypass the 2.5 second throttle.
   AppLaunchInfoSaveWaiter::Wait();

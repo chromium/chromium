@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -174,7 +175,7 @@ TEST_F(DemoModeIdleHandlerTest, CloseAllBrowsers) {
       Browser::CreateParams(profile(), /*user_gesture=*/true));
   std::unique_ptr<Browser> browser_2 = CreateBrowserWithTestWindowForParams(
       Browser::CreateParams(profile(), /*user_gesture=*/true));
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2U);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2U);
 
   // Trigger close all browsers by being idle for
   // `kReLuanchDemoAppIdleDuration`.

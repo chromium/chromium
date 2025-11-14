@@ -36,6 +36,7 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -343,7 +344,7 @@ void CloseAppWindow(const KioskApp& app) {
     }
     case KioskAppType::kWebApp:
     case KioskAppType::kIsolatedWebApp: {
-      EXPECT_GE(BrowserList::GetInstance()->size(), 1u);
+      EXPECT_GE(chrome::GetTotalBrowserCount(), 1u);
       BrowserWindowInterface* web_app_browser = nullptr;
       // TODO(crbug.com/444072535): Picking a Browser from the global browser
       // list is flaky and very test dependent. This should be updated to

@@ -16,6 +16,7 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -86,7 +87,7 @@ class KioskTroubleshootingToolsTest : public MixinBasedInProcessBrowserTest {
   }
 
   void ExpectOpenBrowser(chromeos::KioskBrowserWindowType window_type) const {
-    EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+    EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
     histogram.ExpectBucketCount(chromeos::kKioskNewBrowserWindowHistogram,
                                 window_type, 1);
     histogram.ExpectTotalCount(chromeos::kKioskNewBrowserWindowHistogram, 1);
@@ -94,7 +95,7 @@ class KioskTroubleshootingToolsTest : public MixinBasedInProcessBrowserTest {
 
   void ExpectOnlyKioskAppOpen() const {
     // The initial browser should exist in the web kiosk session.
-    ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
+    ASSERT_EQ(chrome::GetTotalBrowserCount(), 1u);
     BrowserWindowInterface* const kiosk_browser = browser();
     ASSERT_EQ(kiosk_browser->GetTabStripModel()->count(), 1);
     content::WebContents* const contents =
@@ -245,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
   EmulateOpenNewWindowShortcutPressed();
   EXPECT_FALSE(DidKioskCloseNewWindow());
 
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 3u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 3u);
   histogram.ExpectBucketCount(
       chromeos::kKioskNewBrowserWindowHistogram,
       chromeos::KioskBrowserWindowType::kOpenedDevToolsBrowser, 1);

@@ -2670,7 +2670,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest,
 
   // Close all windows via the menu item.
   CloseBrowserWindow(browser(), menu1.get(), ash::MENU_CLOSE);
-  EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
 
   // Check if "Close" is removed from the context menu.
   std::unique_ptr<ShelfContextMenu> menu2 = CreateBrowserItemContextMenu();

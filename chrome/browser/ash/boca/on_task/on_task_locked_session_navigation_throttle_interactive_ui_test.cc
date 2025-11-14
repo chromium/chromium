@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
@@ -777,11 +778,11 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
       LockedSessionWindowTrackerFactory::GetInstance()->GetForBrowserContext(
           profile());
   ASSERT_TRUE(window_tracker->CanOpenNewPopup());
-  const size_t original_browser_count = BrowserList::GetInstance()->size();
+  const size_t original_browser_count = chrome::GetTotalBrowserCount();
   Browser* const popup_browser = Browser::Create(Browser::CreateParams(
       Browser::TYPE_APP_POPUP, profile(), /*user_gesture=*/true));
   content::RunAllTasksUntilIdle();
-  ASSERT_EQ(BrowserList::GetInstance()->size(), original_browser_count + 1);
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), original_browser_count + 1);
   EXPECT_FALSE(window_tracker->CanOpenNewPopup());
 
   TestBrowserClosedWaiter popup_closed_waiter(popup_browser);
@@ -791,7 +792,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   ui_test_utils::NavigateToURL(&navigate_params);
   ASSERT_TRUE(popup_closed_waiter.WaitUntilClosed());
-  EXPECT_EQ(BrowserList::GetInstance()->size(), original_browser_count);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), original_browser_count);
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
@@ -839,7 +840,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
         return false;
       }));
 
-  const size_t original_browser_count = BrowserList::GetInstance()->size();
+  const size_t original_browser_count = chrome::GetTotalBrowserCount();
   auto* const window_tracker =
       LockedSessionWindowTrackerFactory::GetInstance()->GetForBrowserContext(
           profile());
@@ -857,7 +858,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
 
   ui_test_utils::BrowserActivationWaiter popup_activation_waiter(popup_browser);
   popup_activation_waiter.WaitForActivation();
-  ASSERT_EQ(BrowserList::GetInstance()->size(), original_browser_count + 1);
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), original_browser_count + 1);
   EXPECT_FALSE(window_tracker->CanOpenNewPopup());
   ASSERT_TRUE(window_tracker->oauth_in_progress());
 
@@ -927,7 +928,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
         return false;
       }));
 
-  const size_t original_browser_count = BrowserList::GetInstance()->size();
+  const size_t original_browser_count = chrome::GetTotalBrowserCount();
   NavigateParams navigate_params(
       boca_app_browser,
       embedded_test_server()->GetURL(kTabUrlRedirectHost,
@@ -941,7 +942,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
 
   ui_test_utils::BrowserActivationWaiter popup_activation_waiter(popup_browser);
   popup_activation_waiter.WaitForActivation();
-  ASSERT_EQ(BrowserList::GetInstance()->size(), original_browser_count + 1);
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), original_browser_count + 1);
   EXPECT_FALSE(window_tracker->CanOpenNewPopup());
 
   // The oauth popup in reality should close once the login flow is complete.

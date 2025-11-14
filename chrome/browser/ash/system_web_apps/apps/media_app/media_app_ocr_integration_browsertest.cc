@@ -62,8 +62,8 @@ class MediaAppOcrIntegrationTest : public ash::SystemWebAppIntegrationTest {
 
 // Waits for the number of active Browsers in the test process to reach `count`.
 void WaitForBrowserCount(size_t count) {
-  EXPECT_LE(BrowserList::GetInstance()->size(), count) << "Too many browsers";
-  while (BrowserList::GetInstance()->size() < count) {
+  EXPECT_LE(chrome::GetTotalBrowserCount(), count) << "Too many browsers";
+  while (chrome::GetTotalBrowserCount() < count) {
     ui_test_utils::WaitForBrowserToOpen();
   }
 }

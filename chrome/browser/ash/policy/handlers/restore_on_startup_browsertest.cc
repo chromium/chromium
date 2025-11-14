@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/policy/login/login_policy_test_base.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -57,7 +58,7 @@ void RestoreOnStartupTest::GetPolicySettings(
 }
 
 void RestoreOnStartupTest::VerifyStartUpURLs() {
-  ASSERT_EQ(1U, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1U, chrome::GetTotalBrowserCount());
   const BrowserWindowInterface* const browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   ASSERT_TRUE(browser);

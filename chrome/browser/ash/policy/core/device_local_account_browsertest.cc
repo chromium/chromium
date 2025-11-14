@@ -104,6 +104,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -1079,7 +1080,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, StartSession) {
   WaitForSessionStart();
 
   // Check that the startup pages specified in policy were opened.
-  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
   BrowserWindowInterface* const browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   ASSERT_TRUE(browser);
@@ -2941,7 +2942,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountUkmTest, PRE_ReportUkmOnShutdown) {
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
 
   // A browser is opened by default in MGS.
-  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   // Delete all UKM to check metrics reported during the shutdown.
   ukm_test_helper.PurgeData();
@@ -2974,7 +2975,7 @@ class AmbientAuthenticationManagedGuestSessionTest
     int policy_value = device_local_account_policy_.payload()
                            .ambientauthenticationinprivatemodesenabled()
                            .value();
-    EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+    EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
     Profile* const regular_profile =
         GetLastActiveBrowserWindowInterfaceWithAnyProfile()->GetProfile();
     Profile* const incognito_profile =
