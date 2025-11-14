@@ -78,26 +78,6 @@ Config::Config() {
         internal::kJourneysImages, "JourneysImagesCover", images_cover);
   }
 
-  // The `kOmniboxAction` feature and child params.
-  {
-    omnibox_action = base::FeatureList::IsEnabled(internal::kOmniboxAction);
-
-    omnibox_action_with_pedals = base::GetFieldTrialParamByFeatureAsBool(
-        internal::kOmniboxAction, "omnibox_action_with_pedals",
-        omnibox_action_with_pedals);
-
-    omnibox_action_on_navigation_intents =
-        base::GetFieldTrialParamByFeatureAsBool(
-            internal::kOmniboxAction, "omnibox_action_on_navigation_intents",
-            omnibox_action_on_navigation_intents);
-
-    omnibox_action_navigation_intent_score_threshold =
-        base::GetFieldTrialParamByFeatureAsInt(
-            internal::kOmniboxAction,
-            "omnibox_action_on_navigation_intent_score_threshold",
-            omnibox_action_navigation_intent_score_threshold);
-  }
-
   // The `kOmniboxHistoryClusterProvider` feature and child params.
   {
     omnibox_history_cluster_provider =

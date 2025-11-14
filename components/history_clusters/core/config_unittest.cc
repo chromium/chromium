@@ -53,12 +53,11 @@ TEST(HistoryClustersConfigTest, LocaleOrLanguageAllowlist) {
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
       {{
-           internal::kJourneys,
-           // Test that we're tolerant of spaces, colons, whole locales, as well
-           // as primary language subcodes.
-           {{"JourneysLocaleOrLanguageAllowlist", "en, fr:de:zh-TW"}},
-       },
-       {internal::kOmniboxAction, {}}},
+          internal::kJourneys,
+          // Test that we're tolerant of spaces, colons, whole locales, as well
+          // as primary language subcodes.
+          {{"JourneysLocaleOrLanguageAllowlist", "en, fr:de:zh-TW"}},
+      }},
       {});
 
   const struct {

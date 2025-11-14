@@ -10,15 +10,12 @@
 #include "components/omnibox/browser/actions/omnibox_action.h"
 
 struct AutocompleteMatch;
-class AutocompleteResult;
 
 namespace gfx {
 struct VectorIcon;
 }
 
 namespace history_clusters {
-
-class HistoryClustersService;
 
 // Helper for `TopRelevance()` to look at a subset of matches.
 enum class TopRelevanceFilter : int {
@@ -43,6 +40,7 @@ bool IsNavigationIntent(int top_search_relevance,
 GURL GetFullJourneysUrlForQuery(const std::string& query);
 
 // Made public for testing.
+// TODO(crbug.com/356236364): Investigate and remove.
 class HistoryClustersAction : public OmniboxAction {
  public:
   HistoryClustersAction(
@@ -66,12 +64,6 @@ class HistoryClustersAction : public OmniboxAction {
   // Used to open journeys in side panel with relevant clusters
   std::string query_;
 };
-
-// If the feature is enabled, attaches any necessary History Clusters actions
-// onto any relevant matches in `result`.
-void AttachHistoryClustersActions(
-    history_clusters::HistoryClustersService* service,
-    AutocompleteResult& result);
 
 }  // namespace history_clusters
 

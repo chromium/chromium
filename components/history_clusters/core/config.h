@@ -91,32 +91,10 @@ struct Config {
   // and unclustered visits from 1/10.
   size_t persist_clusters_recluster_window_days = 0;
 
-  // The `kOmniboxAction` feature and child params.
-
-  // Enables the Journeys Omnibox Action chip. `kJourneys` must also be enabled
-  // for this to take effect.
-  bool omnibox_action = false;
-
-  // If enabled, allows the Omnibox Action chip to appear when the suggestions
-  // contain pedals. Does nothing if `omnibox_action` is disabled.
-  bool omnibox_action_with_pedals = false;
-
-  // If `omnibox_action_on_navigation_intents` is false, this threshold
-  // helps determine when the user is intending to perform a navigation.
-  int omnibox_action_navigation_intent_score_threshold = 1300;
-
-  // If enabled, allows the Omnibox Action chip to appear when it's likely the
-  // user is intending to perform a navigation. This does not affect which
-  // suggestions are allowed to display the chip. Does nothing if
-  // `omnibox_action` is disabled.
-  bool omnibox_action_on_navigation_intents = false;
-
   // The `kOmniboxHistoryClusterProvider` feature and child params.
 
   // Enables `HistoryClusterProvider` to surface Journeys as a suggestion row
-  // instead of an action chip. Enabling this won't actually disable
-  // `omnibox_action_with_pedals`, but for user experiments, the intent is to
-  // only have 1 enabled.
+  // instead of an action chip.
   bool omnibox_history_cluster_provider = false;
 
   // If `omnibox_history_cluster_provider` is enabled, hides its suggestions but

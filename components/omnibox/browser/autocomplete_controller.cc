@@ -1770,12 +1770,6 @@ void AutocompleteController::AttachActions() {
 
     internal_result_.AttachPedalsToMatches(input_, *provider_client_);
 
-#if !BUILDFLAG(IS_IOS)
-    // HistoryClusters is not enabled on iOS.
-    AttachHistoryClustersActions(provider_client_->GetHistoryClustersService(),
-                                 internal_result_);
-#endif
-
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
     internal_result_.AttachAimAction(template_url_service_,
                                      provider_client_.get());

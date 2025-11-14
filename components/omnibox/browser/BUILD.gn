@@ -948,10 +948,7 @@ source_set("unit_tests") {
   }
 
   if (!is_ios) {
-    sources += [
-      "actions/history_clusters_action_unittest.cc",
-      "history_cluster_provider_unittest.cc",
-    ]
+    sources += [ "history_cluster_provider_unittest.cc" ]
     deps += [ "//ui/base/clipboard:clipboard_test_support" ]
   }
 
