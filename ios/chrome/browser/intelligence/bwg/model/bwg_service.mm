@@ -142,6 +142,10 @@ void BwgService::CheckGeminiEnterpriseEligibility() {
     return;
   }
 
+  if (IsGeminiEligibilityAblationEnabled()) {
+    return;
+  }
+
   eligibility_weak_ptr_factory_.InvalidateWeakPtrs();
 
   ios::provider::CheckGeminiEligibility(

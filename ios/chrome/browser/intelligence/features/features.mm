@@ -139,6 +139,9 @@ bool IsPageContextAnchorTagsEnabled() {
 BASE_FEATURE(kGeminiForManagedAccounts, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiAvailableForManagedAccounts() {
+  if (IsGeminiEligibilityAblationEnabled()) {
+    return false;
+  }
   return base::FeatureList::IsEnabled(kGeminiForManagedAccounts);
 }
 
@@ -249,3 +252,9 @@ bool IsGeminiOnboardingCardsEnabled() {
 }
 
 BASE_FEATURE(kPageContextExtractorRefactored, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGeminiEligibilityAblation, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiEligibilityAblationEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiEligibilityAblation);
+}

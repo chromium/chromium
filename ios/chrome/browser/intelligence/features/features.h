@@ -200,4 +200,8 @@ bool IsGeminiOnboardingCardsEnabled();
 // Acts as a killswitch where the feature is enabled by default.
 BASE_DECLARE_FEATURE(kPageContextExtractorRefactored);
 
+// Feature flag for enabling the Gemini eligibility ablation experiment.
+BASE_DECLARE_FEATURE(kGeminiEligibilityAblation);
+bool IsGeminiEligibilityAblationEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
