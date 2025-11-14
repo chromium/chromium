@@ -21,6 +21,9 @@ CGRect UpdateDesiredFrame(CGRect desired_frame,
 // user-provided.
 @interface HomeCustomizationImageView : UIView
 
+// The current image displayed in the view.
+@property(nonatomic, readonly) UIImage* image;
+
 // Sets the image to be displayed by this view, along with the framing
 // coordinates, if available, to use to position the image.
 - (void)setImage:(UIImage*)image

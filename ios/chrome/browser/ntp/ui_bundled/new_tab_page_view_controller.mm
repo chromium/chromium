@@ -64,6 +64,9 @@ const CGFloat kQuickActionSpacingTop = 3.0;
 const CGFloat kQuickActionSpacingBottom = 19.0;
 const CGFloat kSpaceBetweenModules = 14.0;
 
+// Duration of animation to, from, and between different background images.
+const CGFloat kBackgroundImageAnimationDuration = 0.2;
+
 }  // namespace
 
 @interface NewTabPageViewController () <UICollectionViewDelegate,
@@ -1748,9 +1751,22 @@ const CGFloat kSpaceBetweenModules = 14.0;
 
 // Updates the background image view's state based on the current data.
 - (void)updateBackgroundImageView {
-  [_backgroundImageView setImage:_backgroundImage
-              framingCoordinates:_framingCoordinates];
-  _backgroundImageView.hidden = !_backgroundImage;
+  if (!_backgroundImageView.image && !_backgroundImage) {
+    return;
+  }
+
+  __weak HomeCustomizationImageView* view = _backgroundImageView;
+  __weak UIImage* image = _backgroundImage;
+  __weak HomeCustomizationFramingCoordinates* framingCoordinates =
+      _framingCoordinates;
+
+  [UIView transitionWithView:view
+                    duration:kBackgroundImageAnimationDuration
+                     options:UIViewAnimationOptionTransitionCrossDissolve
+                  animations:^{
+                    [view setImage:image framingCoordinates:framingCoordinates];
+                  }
+                  completion:nil];
 }
 
 // Returns if the given size represents a landscape orientation on an iPhone or

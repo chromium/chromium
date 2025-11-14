@@ -110,6 +110,10 @@ CGRect UpdateDesiredFrame(CGRect desired_frame,
   [self updateImagePosition];
 }
 
+- (UIImage*)image {
+  return _imageView.image;
+}
+
 #pragma mark - View Initialization
 
 // Configures the image view and adds it to the scroll view.
