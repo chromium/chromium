@@ -30,6 +30,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/views/border.h"
 
 namespace ash {
 

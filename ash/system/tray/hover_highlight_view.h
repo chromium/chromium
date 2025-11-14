@@ -13,10 +13,10 @@
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 
 namespace views {
-class Border;
 class ImageView;
 class Label;
 }  // namespace views

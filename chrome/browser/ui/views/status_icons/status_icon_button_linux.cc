@@ -21,6 +21,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/views/border.h"
 
 namespace {
 

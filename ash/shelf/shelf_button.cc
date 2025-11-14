@@ -15,6 +15,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
 namespace ash {

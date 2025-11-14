@@ -30,6 +30,7 @@
 #include "ui/views/border.h"
 #include "ui/views/bubble/tooltip_icon.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"

@@ -14,6 +14,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_class_properties.h"
 
