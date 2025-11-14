@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/dns/dns_config_watcher_mac.h"
 
 #include <dlfcn.h>
@@ -101,11 +96,12 @@ bool DnsConfigWatcher::CheckDnsConfig(bool& out_unhandled_options) {
   // DnsClient can't handle domain-specific unscoped resolvers.
   unsigned num_resolvers = 0;
   for (int i = 0; i < dns_config->n_resolver; ++i) {
-    dns_resolver_t* resolver = dns_config->resolver[i];
+    dns_resolver_t* resolver = UNSAFE_TODO(dns_config->resolver[i]);
     if (!resolver->n_nameserver)
       continue;
-    if (resolver->options && !strcmp(resolver->options, "mdns"))
+    if (resolver->options && !UNSAFE_TODO(strcmp(resolver->options, "mdns"))) {
       continue;
+    }
     ++num_resolvers;
   }
 

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef NET_TRAFFIC_ANNOTATION_NETWORK_TRAFFIC_ANNOTATION_H_
 #define NET_TRAFFIC_ANNOTATION_NETWORK_TRAFFIC_ANNOTATION_H_
 
 #include <cstdint>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 
@@ -27,7 +23,7 @@ consteval int32_t ComputeAnnotationHash(const char (&str)[N]) {
   uint32_t ret = 0;
   // - 1 to not include NUL
   for (size_t i = 0; i < N - 1; ++i) {
-    ret = (ret * 31u + static_cast<uint32_t>(str[i])) % 138003713u;
+    ret = (ret * 31u + static_cast<uint32_t>(UNSAFE_TODO(str[i]))) % 138003713u;
   }
   return static_cast<int32_t>(ret);
 }

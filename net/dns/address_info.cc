@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/dns/address_info.h"
 
 #include <memory>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/sys_byteorder.h"
@@ -132,10 +128,11 @@ bool AddressInfo::IsAllLocalhostOfOneFamily() const {
       case AF_INET6: {
         const struct sockaddr_in6* addr_in6 =
             reinterpret_cast<struct sockaddr_in6*>(ai->ai_addr);
-        if (IN6_IS_ADDR_LOOPBACK(&addr_in6->sin6_addr))
+        if (UNSAFE_TODO(IN6_IS_ADDR_LOOPBACK(&addr_in6->sin6_addr))) {
           saw_v6_localhost = true;
-        else
+        } else {
           return false;
+        }
         break;
       }
       default:

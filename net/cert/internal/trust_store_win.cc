@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/374320451): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/cert/internal/trust_store_win.h"
 
 #include <algorithm>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/hash/sha1.h"
@@ -75,7 +71,7 @@ bool IsCertTrustedForServerAuth(PCCERT_CONTEXT cert) {
 
   std::vector<BYTE> usage_bytes(usage_size);
   CERT_ENHKEY_USAGE* usage =
-      reinterpret_cast<CERT_ENHKEY_USAGE*>(usage_bytes.data());
+      UNSAFE_TODO(reinterpret_cast<CERT_ENHKEY_USAGE*>(usage_bytes.data()));
   if (!CertGetEnhancedKeyUsage(cert, 0, usage, &usage_size)) {
     return false;
   }

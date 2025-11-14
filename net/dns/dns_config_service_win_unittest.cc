@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/dns/dns_config_service_win.h"
 
 #include <optional>
@@ -14,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/free_deleter.h"
 #include "base/test/gmock_expected_support.h"
 #include "net/base/ip_address.h"
@@ -61,9 +57,10 @@ std::unique_ptr<IP_ADAPTER_ADDRESSES, base::FreeDeleter> CreateAdapterAddresses(
     const AdapterInfo* infos) {
   size_t num_adapters = 0;
   size_t num_addresses = 0;
-  for (size_t i = 0; infos[i].if_type; ++i) {
+  for (size_t i = 0; UNSAFE_TODO(infos[i]).if_type; ++i) {
     ++num_adapters;
-    for (size_t j = 0; !infos[i].dns_server_addresses[j].empty(); ++j) {
+    for (size_t j = 0; !UNSAFE_TODO(infos[i].dns_server_addresses[j]).empty();
+         ++j) {
       ++num_addresses;
     }
   }
@@ -74,36 +71,39 @@ std::unique_ptr<IP_ADAPTER_ADDRESSES, base::FreeDeleter> CreateAdapterAddresses(
   std::unique_ptr<IP_ADAPTER_ADDRESSES, base::FreeDeleter> heap(
       static_cast<IP_ADAPTER_ADDRESSES*>(malloc(heap_size)));
   CHECK(heap.get());
-  memset(heap.get(), 0, heap_size);
+  UNSAFE_TODO(memset(heap.get(), 0, heap_size));
 
   IP_ADAPTER_ADDRESSES* adapters = heap.get();
   IP_ADAPTER_DNS_SERVER_ADDRESS* addresses =
-      reinterpret_cast<IP_ADAPTER_DNS_SERVER_ADDRESS*>(adapters + num_adapters);
-  struct sockaddr_storage* storage =
-      reinterpret_cast<struct sockaddr_storage*>(addresses + num_addresses);
+      reinterpret_cast<IP_ADAPTER_DNS_SERVER_ADDRESS*>(
+          UNSAFE_TODO(adapters + num_adapters));
+  struct sockaddr_storage* storage = reinterpret_cast<struct sockaddr_storage*>(
+      UNSAFE_TODO(addresses + num_addresses));
 
   for (size_t i = 0; i < num_adapters; ++i) {
-    const AdapterInfo& info = infos[i];
-    IP_ADAPTER_ADDRESSES* adapter = adapters + i;
+    const AdapterInfo& info = UNSAFE_TODO(infos[i]);
+    IP_ADAPTER_ADDRESSES* adapter = UNSAFE_TODO(adapters + i);
     if (i + 1 < num_adapters)
-      adapter->Next = adapter + 1;
+      adapter->Next = UNSAFE_TODO(adapter + 1);
     adapter->IfType = info.if_type;
     adapter->OperStatus = info.oper_status;
     adapter->DnsSuffix = const_cast<PWCHAR>(info.dns_suffix);
     IP_ADAPTER_DNS_SERVER_ADDRESS* address = nullptr;
-    for (size_t j = 0; !info.dns_server_addresses[j].empty(); ++j) {
+    for (size_t j = 0; !UNSAFE_TODO(info.dns_server_addresses[j]).empty();
+         ++j) {
       --num_addresses;
       if (j == 0) {
-        address = adapter->FirstDnsServerAddress = addresses + num_addresses;
+        address = adapter->FirstDnsServerAddress =
+            UNSAFE_TODO(addresses + num_addresses);
       } else {
         // Note that |address| is moving backwards.
-        address = address->Next = address - 1;
+        address = address->Next = UNSAFE_TODO(address - 1);
       }
       IPAddress ip;
-      CHECK(ip.AssignFromIPLiteral(info.dns_server_addresses[j]));
-      IPEndPoint ipe = IPEndPoint(ip, info.ports[j]);
+      CHECK(ip.AssignFromIPLiteral(UNSAFE_TODO(info.dns_server_addresses[j])));
+      IPEndPoint ipe = IPEndPoint(ip, UNSAFE_TODO(info.ports[j]));
       address->Address.lpSockaddr =
-          reinterpret_cast<LPSOCKADDR>(storage + num_addresses);
+          reinterpret_cast<LPSOCKADDR>(UNSAFE_TODO(storage + num_addresses));
       socklen_t length = sizeof(struct sockaddr_storage);
       CHECK(ipe.ToSockAddr(address->Address.lpSockaddr, &length));
       address->Address.iSockaddrLength = static_cast<int>(length);
@@ -175,10 +175,11 @@ TEST(DnsConfigServiceWinTest, ConvertAdapterAddresses) {
     settings.addresses = CreateAdapterAddresses(t.input_adapters);
     // Default settings for the rest.
     std::vector<IPEndPoint> expected_nameservers;
-    for (size_t j = 0; !t.expected_nameservers[j].empty(); ++j) {
+    for (size_t j = 0; !UNSAFE_TODO(t.expected_nameservers[j]).empty(); ++j) {
       IPAddress ip;
-      ASSERT_TRUE(ip.AssignFromIPLiteral(t.expected_nameservers[j]));
-      uint16_t port = t.expected_ports[j];
+      ASSERT_TRUE(
+          ip.AssignFromIPLiteral(UNSAFE_TODO(t.expected_nameservers[j])));
+      uint16_t port = UNSAFE_TODO(t.expected_ports[j]);
       if (!port)
         port = dns_protocol::kDefaultPort;
       expected_nameservers.push_back(IPEndPoint(ip, port));
