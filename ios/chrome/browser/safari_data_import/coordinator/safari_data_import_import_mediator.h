@@ -34,8 +34,7 @@ class PrefService;
 /// Mediator for the safari data import screen. Handles stages of importing a
 /// .zip file generated from Safari data to Chrome.
 @interface SafariDataImportImportMediator
-    : NSObject <SafariDataImportPasswordConflictMutator,
-                UIDocumentPickerDelegate>
+    : NSObject <DataImportCredentialConflictMutator, UIDocumentPickerDelegate>
 
 /// Email address of the user. `nil` if not logged in.
 @property(nonatomic, readonly) NSString* email;

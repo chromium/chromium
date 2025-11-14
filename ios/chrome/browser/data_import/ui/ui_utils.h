@@ -9,7 +9,7 @@
 
 /// Get separator inset for table views in the workflow based on whether they
 /// are in multi-selection mode (radio-button in the leading edge), which does
-/// not change for Safai data import cells.
-UIEdgeInsets GetSafariDataImportSeparatorInset(BOOL multiSelectionMode);
+/// not change for data import cells.
+UIEdgeInsets GetDataImportSeparatorInset(BOOL multiSelectionMode);
 
 #endif  // IOS_CHROME_BROWSER_DATA_IMPORT_UI_UI_UTILS_H_

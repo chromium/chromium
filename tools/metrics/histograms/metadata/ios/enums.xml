@@ -41,6 +41,17 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Not In Fullscreen"/>
 </enum>
 
+<!-- LINT.IfChange(DataImportCredentialConflictScreenAction) -->
+
+<enum name="DataImportCredentialConflictScreenAction">
+  <int value="0" label="Cancel"/>
+  <int value="1" label="Deselect All"/>
+  <int value="2" label="Select All"/>
+  <int value="3" label="Continue"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/data_import/public/metrics.h:DataImportCredentialConflictScreenAction) -->
+
 <enum name="DesktopIOSPromoAction">
   <int value="0" label="Dismissed"/>
   <int value="1" label="ExplicitlyClosed"/>
@@ -1953,17 +1964,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/safari_data_import/public/metrics.h:SafariDataImportExportEducationAction) -->
-
-<!-- LINT.IfChange(SafariDataImportPasswordConflictScreenAction) -->
-
-<enum name="SafariDataImportPasswordConflictScreenAction">
-  <int value="0" label="Cancel"/>
-  <int value="1" label="Deselect All"/>
-  <int value="2" label="Select All"/>
-  <int value="3" label="Continue"/>
-</enum>
-
-<!-- LINT.ThenChange(/ios/chrome/browser/data_import/public/metrics.h:SafariDataImportPasswordConflictScreenAction) -->
 
 <!-- LINT.IfChange(SafariDataImportStage) -->
 

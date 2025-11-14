@@ -18,15 +18,15 @@
 
 namespace {
 /// The identifier for the only section in the table.
-NSString* const kSafariDataInvalidPasswordSection =
-    @"kSafariDataInvalidPasswordSection";
+NSString* const kDataImportInvalidPasswordSection =
+    @"kDataImportInvalidPasswordSection";
 }  // namespace
 
-@interface SafariDataInvalidPasswordsViewController () <UITableViewDelegate>
+@interface DataImportInvalidPasswordsViewController () <UITableViewDelegate>
 
 @end
 
-@implementation SafariDataInvalidPasswordsViewController {
+@implementation DataImportInvalidPasswordsViewController {
   /// List of invalid passwords.
   NSArray<PasswordImportItem*>* _invalidPasswords;
   /// The data source painting each cell in the table from `_invalidPasswords`.
@@ -62,7 +62,7 @@ NSString* const kSafariDataInvalidPasswordSection =
   self.tableView.delegate = self;
   self.tableView.allowsSelection = NO;
   self.tableView.separatorInset =
-      GetSafariDataImportSeparatorInset(/*multiSelectionMode=*/NO);
+      GetDataImportSeparatorInset(/*multiSelectionMode=*/NO);
   /// Register cells.
   RegisterTableViewCell<UITableViewCell>(self.tableView);
   RegisterTableViewHeaderFooter<TableViewAttributedStringHeaderFooterView>(
@@ -147,13 +147,13 @@ NSString* const kSafariDataInvalidPasswordSection =
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
   [snapshot
-      appendSectionsWithIdentifiers:@[ kSafariDataInvalidPasswordSection ]];
+      appendSectionsWithIdentifiers:@[ kDataImportInvalidPasswordSection ]];
   NSMutableArray* indicesForPasswordConflicts = [NSMutableArray array];
   for (NSUInteger i = 0; i < _invalidPasswords.count; i++) {
     [indicesForPasswordConflicts addObject:@(i)];
   }
   [snapshot appendItemsWithIdentifiers:indicesForPasswordConflicts
-             intoSectionWithIdentifier:kSafariDataInvalidPasswordSection];
+             intoSectionWithIdentifier:kDataImportInvalidPasswordSection];
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 

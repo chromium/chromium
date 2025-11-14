@@ -9,15 +9,15 @@
 
 @class PasswordImportItem;
 @protocol DataImportImportStageTransitionHandler;
-@protocol SafariDataImportPasswordConflictMutator;
+@protocol DataImportCredentialConflictMutator;
 
-/// View controller listing password conflicts introduced by Safari data import
-/// and allowing the user to resolve them.
-@interface SafariDataImportPasswordConflictResolutionViewController
+/// View controller listing credential conflicts introduced by data import and
+/// allowing the user to resolve them.
+@interface DataImportCredentialConflictResolutionViewController
     : ChromeTableViewController
 
 /// Mutator object to handle conflict resolution decision.
-@property(nonatomic, weak) id<SafariDataImportPasswordConflictMutator> mutator;
+@property(nonatomic, weak) id<DataImportCredentialConflictMutator> mutator;
 
 - (instancetype)initWithPasswordConflicts:
     (NSArray<PasswordImportItem*>*)passwords NS_DESIGNATED_INITIALIZER;

@@ -9,8 +9,8 @@
 
 @class PasswordImportItem;
 
-/// A protocol for the mediator to handle password import conflicts.
-@protocol SafariDataImportPasswordConflictMutator
+/// A protocol for the mediator to handle credential import conflicts.
+@protocol DataImportCredentialConflictMutator
 
 /// Continues to import the given passwords with identifiers.
 - (void)continueToImportPasswords:(NSArray<NSNumber*>*)passwordIdentifiers;

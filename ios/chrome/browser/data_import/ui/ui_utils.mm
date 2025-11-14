@@ -4,6 +4,6 @@
 
 #import "ios/chrome/browser/data_import/ui/ui_utils.h"
 
-UIEdgeInsets GetSafariDataImportSeparatorInset(BOOL multiSelectionMode) {
+UIEdgeInsets GetDataImportSeparatorInset(BOOL multiSelectionMode) {
   return UIEdgeInsetsMake(0, multiSelectionMode ? 102 : 60, 0, 0);
 }

@@ -283,8 +283,8 @@ constexpr NSInteger kExpectedItemsCount = 4;
   NSArray<PasswordImportItem*>* invalidPasswords =
       self.mediator.invalidPasswords;
   CHECK_GT(invalidPasswords.count, 0u);
-  SafariDataInvalidPasswordsViewController* invalidPasswordsViewController =
-      [[SafariDataInvalidPasswordsViewController alloc]
+  DataImportInvalidPasswordsViewController* invalidPasswordsViewController =
+      [[DataImportInvalidPasswordsViewController alloc]
           initWithInvalidPasswords:invalidPasswords];
   [self presentViewController:
             [[UINavigationController alloc]
@@ -325,9 +325,9 @@ constexpr NSInteger kExpectedItemsCount = 4;
   }
   /// Wraps the password conflict view in a navigation controller to display
   /// navigation bar and toolbar.
-  SafariDataImportPasswordConflictResolutionViewController*
+  DataImportCredentialConflictResolutionViewController*
       conflictResolutionViewController =
-          [[SafariDataImportPasswordConflictResolutionViewController alloc]
+          [[DataImportCredentialConflictResolutionViewController alloc]
               initWithPasswordConflicts:passwordConflicts];
   conflictResolutionViewController.mutator = self.mediator;
   UINavigationController* wrapper = [[UINavigationController alloc]

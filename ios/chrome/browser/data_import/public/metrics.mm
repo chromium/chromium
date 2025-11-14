@@ -6,8 +6,8 @@
 
 #import "base/metrics/histogram_functions.h"
 
-void RecordSafariDataImportDismissPasswordConflictScreen(
-    SafariDataImportPasswordConflictScreenAction action) {
+void RecordDataImportDismissCredentialConflictScreen(
+    DataImportCredentialConflictScreenAction action) {
   base::UmaHistogramEnumeration(
       "IOS.SafariImport.Import.PasswordConflictsScreenAction", action);
 }

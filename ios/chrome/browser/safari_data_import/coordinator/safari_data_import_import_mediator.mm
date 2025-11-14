@@ -162,7 +162,7 @@
   return YES;
 }
 
-#pragma mark - SafariDataImportPasswordConflictMutator
+#pragma mark - PasswordConflictMutator
 
 - (void)continueToImportPasswords:(NSArray<NSNumber*>*)passwordIdentifiers {
   std::vector<int> selected_password_ids;

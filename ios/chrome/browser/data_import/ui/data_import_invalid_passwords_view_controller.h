@@ -9,9 +9,8 @@
 
 @class PasswordImportItem;
 
-/// View controller listing password conflicts introduced by Safari data import
-/// and allowing the user to resolve them.
-@interface SafariDataInvalidPasswordsViewController : ChromeTableViewController
+/// View controller listing password errors encountered during data import.
+@interface DataImportInvalidPasswordsViewController : ChromeTableViewController
 
 - (instancetype)initWithInvalidPasswords:
     (NSArray<PasswordImportItem*>*)passwords NS_DESIGNATED_INITIALIZER;

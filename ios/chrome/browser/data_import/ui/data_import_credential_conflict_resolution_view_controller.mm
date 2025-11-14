@@ -9,9 +9,9 @@
 #import "ios/chrome/browser/data_import/public/accessibility_utils.h"
 #import "ios/chrome/browser/data_import/public/metrics.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
+#import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_mutator.h"
 #import "ios/chrome/browser/data_import/ui/data_import_import_stage_transition_handler.h"
 #import "ios/chrome/browser/data_import/ui/password_import_item_cell_content_configuration.h"
-#import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_mutator.h"
 #import "ios/chrome/browser/data_import/ui/ui_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_utils.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -24,16 +24,16 @@
 
 namespace {
 /// The identifier for the only section in the table.
-NSString* const kSafariDataImportPasswordConflictResolutionSection =
-    @"SafariDataImportPasswordConflictResolutionSection";
+NSString* const kDataImportCredentialConflictResolutionSection =
+    @"DataImportCredentialConflictResolutionSection";
 }  // namespace
 
-@interface SafariDataImportPasswordConflictResolutionViewController () <
+@interface DataImportCredentialConflictResolutionViewController () <
     UITableViewDelegate>
 
 @end
 
-@implementation SafariDataImportPasswordConflictResolutionViewController {
+@implementation DataImportCredentialConflictResolutionViewController {
   /// List of password conflicts.
   NSArray<PasswordImportItem*>* _passwordConflicts;
   /// List of NSNumber representation of boolean values indicating the password
@@ -71,7 +71,7 @@ NSString* const kSafariDataImportPasswordConflictResolutionSection =
   [self setupBarButtons];
   /// Sets up table view properties.
   self.tableView.separatorInset =
-      GetSafariDataImportSeparatorInset(/*multiSelectionMode=*/YES);
+      GetDataImportSeparatorInset(/*multiSelectionMode=*/YES);
   self.tableView.accessibilityIdentifier =
       GetPasswordConflictResolutionTableViewAccessibilityIdentifier();
   self.tableView.delegate = self;
@@ -123,15 +123,15 @@ NSString* const kSafariDataImportPasswordConflictResolutionSection =
 #pragma mark - Button selectors
 
 - (void)didTapCancelButton {
-  RecordSafariDataImportDismissPasswordConflictScreen(
-      SafariDataImportPasswordConflictScreenAction::kCancel);
+  RecordDataImportDismissCredentialConflictScreen(
+      DataImportCredentialConflictScreenAction::kCancel);
   [self.presentingViewController dismissViewControllerAnimated:YES
                                                     completion:nil];
 }
 
 - (void)didTapContinueButton {
-  RecordSafariDataImportDismissPasswordConflictScreen(
-      SafariDataImportPasswordConflictScreenAction::kContinue);
+  RecordDataImportDismissCredentialConflictScreen(
+      DataImportCredentialConflictScreenAction::kContinue);
   NSMutableArray<NSNumber*>* passwordIdentifiers = [NSMutableArray array];
   for (NSIndexPath* indexPath in [self.tableView indexPathsForSelectedRows]) {
     [passwordIdentifiers
@@ -155,9 +155,9 @@ NSString* const kSafariDataImportPasswordConflictResolutionSection =
                             scrollPosition:UITableViewScrollPositionNone];
     }
   }
-  RecordSafariDataImportDismissPasswordConflictScreen(
-      deselect ? SafariDataImportPasswordConflictScreenAction::kDeselectAll
-               : SafariDataImportPasswordConflictScreenAction::kSelectAll);
+  RecordDataImportDismissCredentialConflictScreen(
+      deselect ? DataImportCredentialConflictScreenAction::kDeselectAll
+               : DataImportCredentialConflictScreenAction::kSelectAll);
   [self updateSelectionButton];
 }
 
@@ -276,7 +276,7 @@ NSString* const kSafariDataImportPasswordConflictResolutionSection =
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
   [snapshot appendSectionsWithIdentifiers:@[
-    kSafariDataImportPasswordConflictResolutionSection
+    kDataImportCredentialConflictResolutionSection
   ]];
   NSMutableArray* indicesForPasswordConflicts = [NSMutableArray array];
   for (NSUInteger i = 0; i < _passwordConflicts.count; i++) {
@@ -284,7 +284,7 @@ NSString* const kSafariDataImportPasswordConflictResolutionSection =
   }
   [snapshot appendItemsWithIdentifiers:indicesForPasswordConflicts
              intoSectionWithIdentifier:
-                 kSafariDataImportPasswordConflictResolutionSection];
+                 kDataImportCredentialConflictResolutionSection];
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
