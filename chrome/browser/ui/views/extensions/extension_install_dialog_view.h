@@ -25,6 +25,7 @@
 
 class PictureInPictureInputProtector;
 class Profile;
+class ExtensionJustificationView;
 
 // Modal dialog that shows when the user attempts to install an extension. Also
 // shown if the extension is already installed but needs additional permissions.
@@ -76,9 +77,6 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   bool ShouldAllowKeyEventsDuringInputProtectionForTesting() const;
 
  private:
-  // Forward-declaration.
-  class ExtensionJustificationView;
-
   void CloseDialog();
 
   // extensions::ExtensionRegistryObserver:
