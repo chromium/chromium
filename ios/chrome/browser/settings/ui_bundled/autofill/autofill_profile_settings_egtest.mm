@@ -227,7 +227,8 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 }
 
 // Test that the page for viewing Autofill profile details is accessible.
-- (void)testAccessibilityOnAutofillProfileViewPage {
+// TODO(crbug.com/413107639): Test is flaky.
+- (void)FLAKY_testAccessibilityOnAutofillProfileViewPage {
   [AutofillAppInterface saveExampleProfile];
   [self openEditProfile:kProfileLabel];
 
