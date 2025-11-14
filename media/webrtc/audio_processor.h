@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -185,12 +186,12 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   // to the highest observed value of num_preferred_channels as long as it does
   // not exceed the number of channels of the output format.
   // Called on the capture thread.
-  std::optional<double> ProcessData(const float* const* process_ptrs,
+  std::optional<double> ProcessData(base::span<const float* const> process_ptrs,
                                     int process_frames,
                                     base::TimeDelta capture_delay,
                                     double volume,
                                     int num_preferred_channels,
-                                    float* const* output_ptrs);
+                                    AudioProcessorCaptureBus* output_bus);
 
   // Used as callback from |playout_fifo_| in OnPlayoutData().
   // Called on the playout thread.
