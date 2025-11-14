@@ -100,14 +100,14 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         .files="${Array.from(this.files_.values())}"
         @delete-file="${this.onDeleteFile_}">
       </cr-composebox-file-carousel> ` : ''}
-    ${this.submitButtonShown && this.searchboxLayoutMode === 'Compact' ?
+    ${this.submitButtonShown && (this.searchboxLayoutMode === 'Compact' || this.searchboxLayoutMode === 'TallBottomContext') ?
       html`<slot name="submit-button"></slot>` :
       ''}
   </div>
   ${this.searchboxLayoutMode === 'TallTopContext' ? contextMenu : ''}
   ${this.showDropdown && (this.showFileCarousel_ ||
     this.searchboxLayoutMode === 'TallTopContext' ||
-    (this.submitButtonShown && this.searchboxLayoutMode === 'Compact')) ? html`
+    this.submitButtonShown) ? html`
   <div class="carousel-divider" part="carousel-divider"></div>` : ''}
   <!-- Suggestions are slotted in from the parent component. -->
   <slot id="dropdownMatches"></slot>

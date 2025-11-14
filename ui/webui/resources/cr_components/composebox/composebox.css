@@ -396,7 +396,6 @@ search-animated-glow {
 }
 
 :host(:not([show-submit_])) #submitContainer,
-:host([searchbox-layout-mode="TallBottomContext"]) #submitContainer,
 :host([show-submit_]:not([submit-enabled_])) #submitContainer{
   display: none;
 }
@@ -546,9 +545,13 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
   --cr-icon-button-size: 36px;
 }
 
+:host([ntp-realbox-next-enabled]) #submitOverlay {
+  position: relative;
+}
+
 :host(:not([ntp-realbox-next-enabled])) contextual-entrypoint-and-carousel::part(voice-icon),
 :host([searchbox-layout-mode='TallBottomContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
-  bottom: 10px;
+  bottom: 12px;
   inset-inline-end: 14px;
   position: absolute;
 }
@@ -584,7 +587,8 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
   margin-inline-start: auto;
 }
 
-:host([ntp-realbox-next-enabled][searchbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(carousel-container) {
+:host([ntp-realbox-next-enabled][searchbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(carousel-container),
+:host([ntp-realbox-next-enabled][searchbox-layout-mode='TallBottomContext']) contextual-entrypoint-and-carousel::part(carousel-container) {
   align-items: flex-end;
   display: flex;
   flex-direction: row;
@@ -598,11 +602,46 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
 
 :host([show-submit_][submit-enabled_][searchbox-layout-mode='Compact'][context-files-size_="0"]) #submitContainer {
   bottom: 0px;
-  padding-top: 14px;
+  padding-top: 18px;
 }
 
 :host([show-submit_][submit-enabled_][searchbox-layout-mode='Compact']:not([context-files-size_="0"])) #submitContainer {
-  bottom: 20px;
+  bottom: 16px;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext']) #submitContainer {
+  inset-inline-end: 12px;
+  position: absolute;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext']:not([show-dropdown_])) #submitContainer {
+  bottom: 12px;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext'][show-dropdown_]) #submitContainer {
+  top: 60px;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext'][show-dropdown_][context-files-size_="0"]) contextual-entrypoint-and-carousel::part(carousel-divider) {
+  --contextual-entrypoint-and-carousel-carousel-divider-margin-top: 50px;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='Compact'][show-dropdown_][context-files-size_="0"]) contextual-entrypoint-and-carousel::part(carousel-divider) {
+  --contextual-entrypoint-and-carousel-carousel-divider-margin-top: 12px;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext'][show-dropdown_]:not([context-files-size_="0"])) contextual-entrypoint-and-carousel::part(carousel-divider),
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='Compact'][show-dropdown_]:not([context-files-size_="0"])) contextual-entrypoint-and-carousel::part(carousel-divider) {
+  --contextual-entrypoint-and-carousel-carousel-divider-margin-top: 8px;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
+  inset-inline-end: calc(var(--cr-icon-button-size) + 18px);
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext'][show-dropdown_]) contextual-entrypoint-and-carousel::part(voice-icon) {
+  bottom: unset;
+  top: 60px;
 }
 
 :host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
