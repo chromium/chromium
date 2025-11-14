@@ -1281,7 +1281,8 @@ void RenderThreadImpl::SetProcessState(
             features::kIsolatesPriorityBestEffortWhenHidden)) {
       blink::WebV8Features::SetIsolatePriority(
           base::Process::Priority::kBestEffort);
-    } else {
+    } else if (!process_priority_.has_value() ||
+               *process_priority_ != process_priority) {
       blink::WebV8Features::SetIsolatePriority(process_priority);
     }
   }
