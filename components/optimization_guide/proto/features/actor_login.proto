@@ -55,11 +55,17 @@ message ActorLoginQuality {
       // components/autofill/core/common/signatures.cc for more details.
       int64 signature = 1 [features = { field_presence: EXPLICIT }];
 
-      // Field id attribute value.
-      string id = 2 [features = { field_presence: EXPLICIT }];
+      // Deprecated: This is not logged anymore.
+      string id = 2 [
+        deprecated = true,
+        features = { field_presence: EXPLICIT }
+      ];
 
-      // Field name attribute value.
-      string name = 3 [features = { field_presence: EXPLICIT }];
+      // Deprecated: This is not logged anymore.
+      string name = 3 [
+        deprecated = true,
+        features = { field_presence: EXPLICIT }
+      ];
 
       // The type of the field.
       FieldType field_type = 4 [features = { field_presence: EXPLICIT }];

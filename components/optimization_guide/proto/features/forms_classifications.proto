@@ -71,7 +71,7 @@ message AutofillAiTypeResponse {
   repeated FieldTypeResponse field_responses = 1;
 }
 
-// Next ID: 8
+// Next ID: 9
 message FieldTypeResponse {
   // The (zero-based) index of the field among those passed in the request that
   // this prediction refers to.
@@ -93,6 +93,13 @@ message FieldTypeResponse {
   // All predicted types for the field, including the one in `field_type`.
   // This is the field that should be used for all new multi-type logic.
   repeated int32 all_field_types = 7;
+
+  // When `include_reasoning` in the request is set to true, this field contains
+  // the model's internal representation of the predicted types, before
+  // mapping them to Autofill FieldTypes. It provides a way to return
+  // predictions for types that are not supported by Autofill yet. This is
+  // useful when analysing whether adding some new type provide value.
+  repeated string internal_predicted_types = 8;
 
   reserved 1, 6;
 }

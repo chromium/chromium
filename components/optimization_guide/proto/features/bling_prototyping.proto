@@ -8,6 +8,8 @@ package optimization_guide.proto;
 
 import "components/optimization_guide/proto/features/common_quality_data.proto";
 
+import "components/optimization_guide/proto/model_quality_metadata.proto";
+
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.features.proto";
 
@@ -19,13 +21,16 @@ option java_outer_classname = "BlingPrototypingProto";
 // http://go/chrome-mqls-onboarding (Google-internal link), and then changes will
 // be synced with Chrome automatically.
 
-// Next ID: 3
+// Next ID: 4
 message BlingPrototypingLoggingData {
   // The feature request.
   BlingPrototypingRequest request = 1 [features = { field_presence: EXPLICIT }];
 
   // The feature response.
   BlingPrototypingResponse response = 2 [features = { field_presence: EXPLICIT }];
+
+  // Internal logging information from the model execution.
+  ModelExecutionInfo model_execution_info = 3 [features = { field_presence: EXPLICIT }];
 }
 
 // The request to execute a prototyping prompt in Bling.
