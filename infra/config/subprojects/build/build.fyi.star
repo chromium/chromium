@@ -22,6 +22,9 @@ ci.defaults.set(
     build_numbers = True,
     contact_team_email = "chrome-build-team@google.com",
     execution_timeout = 10 * time.hour,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
     priority = ci_constants.DEFAULT_FYI_PRIORITY,
     service_account = ci_constants.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci_constants.DEFAULT_SHADOW_SERVICE_ACCOUNT,

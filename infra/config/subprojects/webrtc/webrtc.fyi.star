@@ -95,6 +95,9 @@ defaults.set(
     build_numbers = True,
     contact_team_email = "webrtc-infra@google.com",
     execution_timeout = 3 * time.hour,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
     service_account = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = siso.remote_jobs.DEFAULT,

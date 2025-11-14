@@ -63,6 +63,9 @@ defaults.set(
     build_numbers = True,
     contact_team_email = "webrtc-infra@google.com",
     execution_timeout = 3 * time.hour,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
     properties = {
         "perf_dashboard_machine_group": "ChromiumWebRTC",
     },
