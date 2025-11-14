@@ -832,16 +832,22 @@
   </message>
 
   <!-- Titles -->
-   <message name="IDS_AUTOFILL_AI_NATIONAL_IDS_TITLE" desc="The title of a chip referring to national ids(IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ENTITY_NAME) on Your saved info settings page.">
+  <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSES_TITLE" desc="The title of a chip referring to drivers licenses (IDS_AUTOFILL_AI_DRIVERS_LICENSE_ENTITY_NAME) on Your saved info settings page.">
+    Driver's licenses
+  </message>
+   <message name="IDS_AUTOFILL_AI_NATIONAL_IDS_TITLE" desc="The title of a chip referring to national ids (IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ENTITY_NAME) on Your saved info settings page.">
     Identity cards
   </message>
-  <message name="IDS_AUTOFILL_AI_VEHICLES_TITLE" desc="The title of a chip referring to vehicles(IDS_AUTOFILL_AI_VEHICLE_ENTITY_NAME) on Your saved info settings page.">
+  <message name="IDS_AUTOFILL_AI_PASSPORTS_TITLE" desc="The title of a chip referring to passports (IDS_AUTOFILL_AI_PASSPORT_ENTITY_NAME) on Your saved info settings page.">
+    Passports
+  </message>
+  <message name="IDS_AUTOFILL_AI_VEHICLES_TITLE" desc="The title of a chip referring to vehicles (IDS_AUTOFILL_AI_VEHICLE_ENTITY_NAME) on Your saved info settings page.">
     Vehicles
   </message>
-    <message name="IDS_AUTOFILL_AI_TRAVEL_INFO_TITLE" desc="The title of a chip referring to travel info(IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ENTITY_NAME and IDS_AUTOFILL_AI_REDRESS_NUMBER_ENTITY_NAME) on Your saved info settings page.">
+    <message name="IDS_AUTOFILL_AI_TRAVEL_INFO_TITLE" desc="The title of a chip referring to travel info (IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ENTITY_NAME and IDS_AUTOFILL_AI_REDRESS_NUMBER_ENTITY_NAME) on Your saved info settings page.">
     Travel info
   </message>
-  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATIONS_TITLE" desc="The title of a chip referring to flights(IDS_AUTOFILL_AI_FLIGHT_RESERVATION_ENTITY_NAME) on Your saved info settings page.">
+  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATIONS_TITLE" desc="The title of a chip referring to flights (IDS_AUTOFILL_AI_FLIGHT_RESERVATION_ENTITY_NAME) on Your saved info settings page.">
     Flight reservations
   </message>
 
