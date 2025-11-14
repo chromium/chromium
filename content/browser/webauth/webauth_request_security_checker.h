@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WEBAUTH_WEBAUTH_REQUEST_SECURITY_CHECKER_H_
 #define CONTENT_BROWSER_WEBAUTH_WEBAUTH_REQUEST_SECURITY_CHECKER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -72,12 +73,11 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
         const url::Origin& caller_origin,
         base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback);
 
-    void OnFetchComplete(std::unique_ptr<std::string> body);
+    void OnFetchComplete(std::optional<std::string> body);
 
     const url::Origin caller_origin_;
     base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback_;
     std::unique_ptr<network::SimpleURLLoader> loader_;
-    std::unique_ptr<std::string> json_;
 
     base::WeakPtrFactory<RemoteValidation> weak_factory_{this};
   };

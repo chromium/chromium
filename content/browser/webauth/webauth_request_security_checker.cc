@@ -4,6 +4,8 @@
 
 #include "content/browser/webauth/webauth_request_security_checker.h"
 
+#include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/json/json_reader.h"
@@ -221,7 +223,7 @@ WebAuthRequestSecurityChecker::RemoteValidation::RemoteValidation(
 // OnFetchComplete is called when the `.well-known/webauthn` for an
 // RP ID has finished downloading.
 void WebAuthRequestSecurityChecker::RemoteValidation::OnFetchComplete(
-    std::unique_ptr<std::string> body) {
+    std::optional<std::string> body) {
   if (!body) {
     std::move(callback_).Run(blink::mojom::AuthenticatorStatus::
                                  BAD_RELYING_PARTY_ID_ATTEMPTED_FETCH);
@@ -234,9 +236,7 @@ void WebAuthRequestSecurityChecker::RemoteValidation::OnFetchComplete(
     return;
   }
 
-  json_ = std::move(body);
-
-  std::move(callback_).Run(ValidateWellKnownJSON(caller_origin_, *json_));
+  std::move(callback_).Run(ValidateWellKnownJSON(caller_origin_, *body));
 }
 
 WebAuthRequestSecurityChecker::WebAuthRequestSecurityChecker(
