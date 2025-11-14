@@ -4,9 +4,6 @@
 
 source_set("public") {
   sources = [
-    "password_import_item.h",
-    "password_import_item.mm",
-    "password_import_item_favicon_data_source.h",
     "safari_data_import_entry_point.h",
     "safari_data_import_stage.h",
     "safari_data_import_ui_handler.h",

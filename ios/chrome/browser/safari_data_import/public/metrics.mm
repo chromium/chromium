@@ -48,12 +48,6 @@ void RecordSafariDataImportFailure(bool alert_displayed) {
                             alert_displayed);
 }
 
-void RecordSafariDataImportDismissPasswordConflictScreen(
-    SafariDataImportPasswordConflictScreenAction action) {
-  base::UmaHistogramEnumeration(
-      "IOS.SafariImport.Import.PasswordConflictsScreenAction", action);
-}
-
 void RecordSafariDataImportInvalidPasswordDisplay() {
   base::UmaHistogramBoolean("IOS.SafariImport.Import.InvalidPasswords.Display",
                             true);

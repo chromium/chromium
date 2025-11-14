@@ -10,7 +10,7 @@
 #import <memory>
 
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
-#import "ios/chrome/browser/safari_data_import/ui/safari_data_import_password_conflict_mutator.h"
+#import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_mutator.h"
 
 namespace autofill {
 class PaymentsDataManager;

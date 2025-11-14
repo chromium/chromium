@@ -20,7 +20,3 @@ UIFontTextStyle GetSafariDataImportTitleLabelFontTextStyle(
   }
   return UIFontTextStyleTitle2;
 }
-
-UIEdgeInsets GetSafariDataImportSeparatorInset(BOOL multiSelectionMode) {
-  return UIEdgeInsetsMake(0, multiSelectionMode ? 102 : 60, 0, 0);
-}

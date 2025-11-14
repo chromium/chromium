@@ -9,7 +9,22 @@ source_set("public") {
     "import_data_item.h",
     "import_data_item.mm",
     "import_data_item_consumer.h",
+    "password_import_item.h",
+    "password_import_item.mm",
+    "password_import_item_favicon_data_source.h",
   ]
   deps = [ "//base" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("metrics") {
+  sources = [
+    "metrics.h",
+    "metrics.mm",
+  ]
+  deps = [
+    ":public",
+    "//base",
+  ]
   frameworks = [ "Foundation.framework" ]
 }

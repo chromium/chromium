@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/safari_data_import/ui/safari_data_invalid_passwords_view_controller.h"
+#import "ios/chrome/browser/data_import/ui/data_import_invalid_passwords_view_controller.h"
 
 #import "base/check_op.h"
-#import "ios/chrome/browser/safari_data_import/public/password_import_item.h"
-#import "ios/chrome/browser/safari_data_import/public/ui_utils.h"
-#import "ios/chrome/browser/safari_data_import/public/utils.h"
-#import "ios/chrome/browser/safari_data_import/ui/password_import_item_cell_content_configuration.h"
+#import "ios/chrome/browser/data_import/public/accessibility_utils.h"
+#import "ios/chrome/browser/data_import/public/password_import_item.h"
+#import "ios/chrome/browser/data_import/ui/password_import_item_cell_content_configuration.h"
+#import "ios/chrome/browser/data_import/ui/ui_utils.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

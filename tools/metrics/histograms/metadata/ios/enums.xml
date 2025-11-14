@@ -1963,7 +1963,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Continue"/>
 </enum>
 
-<!-- LINT.ThenChange(/ios/chrome/browser/safari_data_import/public/metrics.h:SafariDataImportPasswordConflictScreenAction) -->
+<!-- LINT.ThenChange(/ios/chrome/browser/data_import/public/metrics.h:SafariDataImportPasswordConflictScreenAction) -->
 
 <!-- LINT.IfChange(SafariDataImportStage) -->
 
