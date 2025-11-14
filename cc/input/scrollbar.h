@@ -6,6 +6,7 @@
 #define CC_INPUT_SCROLLBAR_H_
 
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/paint/paint_canvas.h"
 #include "ui/gfx/geometry/point.h"
