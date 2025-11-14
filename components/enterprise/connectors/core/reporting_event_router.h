@@ -202,6 +202,8 @@ class ReportingEventRouter : public KeyedService {
  private:
   FRIEND_TEST_ALL_PREFIXES(ReportingEventRouterTest,
                            TestOnDataControlsSensitiveDataEvent);
+  FRIEND_TEST_ALL_PREFIXES(IOSReportingEventRouterTest,
+                           TestOnDataControlsSensitiveDataEvent);
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   // Helper function to help bridge between public Data Controls reporting
