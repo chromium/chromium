@@ -154,6 +154,20 @@ void OAuthMultiloginResult::TryParseFailedAccountsFromValue(
   }
 }
 
+std::vector<const OAuthMultiloginResult::DeviceBoundSession*>
+OAuthMultiloginResult::GetDeviceBoundSessionsToRegister() const {
+  std::vector<const OAuthMultiloginResult::DeviceBoundSession*>
+      bound_sessions_to_register;
+  for (const OAuthMultiloginResult::DeviceBoundSession& bound_session :
+       device_bound_sessions_) {
+    if (bound_session.is_device_bound &&
+        bound_session.register_session_payload.has_value()) {
+      bound_sessions_to_register.push_back(&bound_session);
+    }
+  }
+  return bound_sessions_to_register;
+}
+
 void OAuthMultiloginResult::TryParseCookiesFromValue(
     const base::Value::Dict& json_value,
     const CookieDecryptor& cookie_decryptor) {

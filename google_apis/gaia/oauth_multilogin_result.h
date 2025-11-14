@@ -149,6 +149,14 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuthMultiloginResult {
     return device_bound_sessions_;
   }
 
+  // Returns the list of bound sessions from the response that need to be
+  // registered.
+  //
+  // Returning a vector of pointers to avoid copying. The output vector is
+  // guaranteed to contain pointers to the `device_bound_sessions` elements.
+  std::vector<const DeviceBoundSession*> GetDeviceBoundSessionsToRegister()
+      const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(OAuthMultiloginResultTest, TryParseCookiesFromValue);
   FRIEND_TEST_ALL_PREFIXES(OAuthMultiloginResultTest,

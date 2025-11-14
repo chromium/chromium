@@ -29,26 +29,6 @@ GURL ConvertDeviceBoundSessionDomainToUrl(
   }
 }
 
-// Returns the list of bound sessions that need to be registered.
-//
-// Returning a vector of pointers to avoid copying the registration payload. The
-// output vector is guaranteed to contain pointers to the input vector elements.
-std::vector<const OAuthMultiloginResult::DeviceBoundSession*>
-GetBoundSessionsToRegister(
-    const std::vector<OAuthMultiloginResult::DeviceBoundSession>&
-        bound_sessions) {
-  std::vector<const OAuthMultiloginResult::DeviceBoundSession*>
-      bound_sessions_to_register;
-  for (const OAuthMultiloginResult::DeviceBoundSession& device_bound_session :
-       bound_sessions) {
-    if (device_bound_session.is_device_bound &&
-        device_bound_session.register_session_payload.has_value()) {
-      bound_sessions_to_register.push_back(&device_bound_session);
-    }
-  }
-  return bound_sessions_to_register;
-}
-
 }  // namespace
 
 BoundSessionOAuthMultiLoginDelegateImpl::
@@ -99,8 +79,7 @@ std::vector<bound_session_credentials::BoundSessionParams>
 BoundSessionOAuthMultiLoginDelegateImpl::CreateBoundSessionsParams(
     const OAuthMultiloginResult& result) {
   std::vector<const OAuthMultiloginResult::DeviceBoundSession*>
-      sessions_to_register =
-          GetBoundSessionsToRegister(result.device_bound_sessions());
+      sessions_to_register = result.GetDeviceBoundSessionsToRegister();
   if (sessions_to_register.empty()) {
     return {};
   }
