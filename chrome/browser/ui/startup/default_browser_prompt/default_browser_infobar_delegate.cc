@@ -146,6 +146,7 @@ bool DefaultBrowserInfoBarDelegate::Accept() {
     // the second operation less likely to happen.
     browser_util::PinAppToTaskbar(
         ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+        browser_util::PinAppToTaskbarChannel::kDefaultBrowserInfoBar,
         base::BindOnce(&PinToTaskbarResult));
 #else
     NOTREACHED();

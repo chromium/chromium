@@ -102,6 +102,7 @@ void PinInfoBarController::OnIsDefaultBrowserResult(
   // Check if Chrome can be pinned to the taskbar.
   browser_util::ShouldOfferToPin(
       ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+      browser_util::PinAppToTaskbarChannel::kPinToTaskbarInfoBar,
       base::BindOnce(&PinInfoBarController::OnShouldOfferToPinResult,
                      weak_factory_.GetWeakPtr(), std::move(done_callback)));
 #elif BUILDFLAG(IS_MAC)

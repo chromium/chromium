@@ -96,6 +96,7 @@ bool DefaultBrowserPromptManager::MaybeShowPrompt() {
     // global singleton.
     browser_util::ShouldOfferToPin(
         ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+        browser_util::PinAppToTaskbarChannel::kDefaultBrowserInfoBar,
         base::BindOnce(&DefaultBrowserPromptManager::OnCanPinToTaskbarResult,
                        base::Unretained(this)));
     return true;

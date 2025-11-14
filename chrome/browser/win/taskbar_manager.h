@@ -13,6 +13,17 @@ namespace browser_util {
 
 using PinResultCallback = base::OnceCallback<void(bool)>;
 
+// LINT.IfChange(PinAppToTaskbarChannel)
+enum class PinAppToTaskbarChannel {
+  kDefaultBrowserInfoBar,
+  kPinToTaskbarInfoBar,
+  kFirstRunExperience,
+  kSettingsPage,
+  kPinWebApp,
+  kMaxValue = kPinWebApp,
+};
+// LINT.ThenChange(//chrome/browser/win/taskbar_manager.cc:PinAppToTaskbarChannel)
+
 // Functions to pin an icon for a Chrome window to the Windows taskbar, and to
 // check if Chrome should offer to pin. These functions do most of their work on
 // a background thread, but have to finish the work on the UI thread.
@@ -22,6 +33,7 @@ using PinResultCallback = base::OnceCallback<void(bool)>;
 // currently pinned to the taskbar, false otherwise. There must be a shortcut
 // with `app_user_model_id` in the start menu for pinning to be supported.
 void ShouldOfferToPin(const std::wstring& app_user_model_id,
+                      PinAppToTaskbarChannel channel,
                       PinResultCallback callback);
 
 // Pins a Chrome window to the taskbar. `app_user_model_id` is the AUMI for
@@ -31,6 +43,7 @@ void ShouldOfferToPin(const std::wstring& app_user_model_id,
 // It uses the Windows TaskbarManager method `RequestPinCurrentAppAsync`, which
 // will confirm that the user wishes to pin the window to the taskbar.
 void PinAppToTaskbar(const std::wstring& app_user_model_id,
+                     PinAppToTaskbarChannel channel,
                      PinResultCallback callback);
 
 // These values are persisted to logs. Entries should not be renumbered and
