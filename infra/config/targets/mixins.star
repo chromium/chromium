@@ -1358,6 +1358,16 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "ios_beta_test_pool",
+    generate_pyl_entry = False,
+    swarming = targets.swarming(
+        dimensions = {
+            "pool": "chromium.tests.iosbeta",
+        },
+    ),
+)
+
+targets.mixin(
     name = "ios_custom_webkit",
     generate_pyl_entry = False,
     args = [
