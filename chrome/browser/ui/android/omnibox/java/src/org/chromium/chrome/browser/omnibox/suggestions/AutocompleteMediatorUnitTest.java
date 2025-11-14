@@ -53,9 +53,11 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCallback;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.fusebox.NavigationAttachmentsCoordinator;
@@ -1681,5 +1683,53 @@ public class AutocompleteMediatorUnitTest {
 
         verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
         assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url2.getSpec());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(
+            ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":disable_zero_suggest/true")
+    public void
+            onTextChanged_cachedZpsNotInvoked_whenOmniboxAutofocusOnIncognitoNtpAllowed_withoutZeroSuggest() {
+        NewTabPageDelegate ntpDelegate = mock(NewTabPageDelegate.class);
+        doReturn(ntpDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
+        mMediator
+                .getAutocompleteInputForTesting()
+                .setPageClassification(PageClassification.ANDROID_SEARCH_WIDGET_VALUE);
+
+        doReturn(mAutocompleteResult)
+                .when(mMockCachedZeroSuggestionsManager)
+                .readFromCache(anyInt());
+
+        // Cached suggestions should be suppressed when on an Incognito NTP with autofocus enabled
+        // and zero suggest disabled.
+        doReturn(true).when(ntpDelegate).isIncognitoNewTabPageCurrentlyVisible();
+        mMediator.onTextChanged("", /* isOnFocusContext= */ false);
+        verify(mMockCachedZeroSuggestionsManager, never()).readFromCache(anyInt());
+
+        // When not on an Incognito NTP, cached suggestions should be shown.
+        doReturn(false).when(ntpDelegate).isIncognitoNewTabPageCurrentlyVisible();
+        mMediator.onTextChanged("", /* isOnFocusContext= */ false);
+        verify(mMockCachedZeroSuggestionsManager, times(1)).readFromCache(anyInt());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(
+            ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":disable_zero_suggest/false")
+    public void
+            onTextChanged_cachedZpsShown_whenOmniboxAutofocusOnIncognitoNtpAllowed_withZeroSuggest() {
+        mMediator
+                .getAutocompleteInputForTesting()
+                .setPageClassification(PageClassification.ANDROID_SEARCH_WIDGET_VALUE);
+        doReturn(mAutocompleteResult)
+                .when(mMockCachedZeroSuggestionsManager)
+                .readFromCache(anyInt());
+
+        // When the feature is enabled and zero suggest should be enabled,
+        // cached suggestions should be shown, and the Incognito NTP check should be skipped.
+        mMediator.onTextChanged("", /* isOnFocusContext= */ false);
+        verify(mMockCachedZeroSuggestionsManager, times(1)).readFromCache(anyInt());
+        verify(mLocationBarDataProvider, never()).getNewTabPageDelegate();
     }
 }

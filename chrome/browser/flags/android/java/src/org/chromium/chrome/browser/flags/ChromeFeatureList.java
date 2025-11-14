@@ -1834,6 +1834,10 @@ public abstract class ChromeFeatureList {
             sOmniboxAutofocusOnIncognitoNtpWithPrediction =
                     sOmniboxAutofocusOnIncognitoNtp.newBooleanParam("with_prediction", false);
 
+    public static final MutableBooleanParamWithSafeDefault
+            sOmniboxAutofocusOnIncognitoNtpNoZeroSuggest =
+                    sOmniboxAutofocusOnIncognitoNtp.newBooleanParam("disable_zero_suggest", false);
+
     public static final MutableBooleanParamWithSafeDefault sShowNewTabAnimationsLogs =
             sShowNewTabAnimations.newBooleanParam("logs", false);
 

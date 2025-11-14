@@ -364,6 +364,15 @@ class AutocompleteMediator
      * <p>Note: the only supported page context right now is the ANDROID_SEARCH_WIDGET.
      */
     void startCachedZeroSuggest() {
+        // Do not show cached zero suggest results when omnibox autofocus feature enabled and
+        // Incognito NTP visible.
+        boolean disableZps =
+                ChromeFeatureList.sOmniboxAutofocusOnIncognitoNtpNoZeroSuggest.getValue();
+
+        if (disableZps && isOmniboxAutofocusOnIncognitoNtpActive()) {
+            return;
+        }
+
         maybeServeCachedResult();
         postAutocompleteRequest(this::startZeroSuggest, SCHEDULE_FOR_IMMEDIATE_EXECUTION);
     }
@@ -434,10 +443,7 @@ class AutocompleteMediator
 
             // Do not attach IME observer when omnibox autofocus feature enabled and Incognito NTP
             // visible.
-            if (!ChromeFeatureList.sOmniboxAutofocusOnIncognitoNtp.isEnabled()
-                    || !mDataProvider
-                            .getNewTabPageDelegate()
-                            .isIncognitoNewTabPageCurrentlyVisible()) {
+            if (!isOmniboxAutofocusOnIncognitoNtpActive()) {
                 mDeferredIMEWindowInsetApplicationCallback.attach(mWindowAndroid);
             }
 
@@ -1591,5 +1597,16 @@ class AutocompleteMediator
         // This is a best-effort action and may not always work (e.g. if Chrome gets killed or
         // swiped away before we manage to retrieve and persist the information).
         mAutocomplete.startZeroSuggest(input);
+    }
+
+    /**
+     * Returns whether the Omnibox Autofocus on Incognito NTP feature is enabled and the Incognito
+     * NTP is currently visible.
+     *
+     * @return True if the feature is enabled and Incognito NTP is visible, false otherwise.
+     */
+    private boolean isOmniboxAutofocusOnIncognitoNtpActive() {
+        return ChromeFeatureList.sOmniboxAutofocusOnIncognitoNtp.isEnabled()
+                && mDataProvider.getNewTabPageDelegate().isIncognitoNewTabPageCurrentlyVisible();
     }
 }
