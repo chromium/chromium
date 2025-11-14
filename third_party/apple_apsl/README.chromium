@@ -1,6 +1,7 @@
 Name: Darwin configd
 URL: https://github.com/apple-oss-distributions/configd
-Version: 453.19
+Version: 1061.0.2
+Revision: ec7c204acf07ba74de84d990ece345f42eb8f258
 Update Mechanism: Manual
 Security Critical: yes
 Shipped: yes
@@ -10,12 +11,13 @@ License File: LICENSE
 One file is excerpted here:
 
 dnsinfo.h from:
-https://github.com/apple-oss-distributions/configd/blob/rel/configd-453/dnsinfo/dnsinfo.h
+https://github.com/apple-oss-distributions/configd/blob/rel/configd-1351/dnsinfo/dnsinfo.h
 
 Description:
-Provides dns_config_t which is used by /net/dns/dns_config_service_posix.cc to
+Provides dns_config_t which is used by /net/dns/dns_config_watcher_mac.cc to
 obtain system DNS configuration on macOS. This private header is also used by
 Apple's open source mDNSResponder.
 
 Local Modifications:
-- Removed Availability.h and the corresponding macros.
+- Removed the inclusion of <os/availability.h> and the usage of the macros found
+  therein.
