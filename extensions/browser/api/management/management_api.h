@@ -125,7 +125,7 @@ class ManagementSetEnabledFunction : public ExtensionFunction {
  private:
   // Called when supervised extension approval flow is completed.
   void OnSupervisedExtensionApprovalDone(
-      SupervisedUserExtensionsDelegate::ExtensionApprovalResult result);
+      SupervisedExtensionApprovalResult result);
 
   // Verifies if `extension` has supported requirements. When requirements are
   // checked, finishes the enable checks if there are any errors. Otherwise,

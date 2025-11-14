@@ -90,8 +90,7 @@ void ParentAccessExtensionApprovalsManager::ShowParentAccessDialog(
           &ParentAccessExtensionApprovalsManager::OnParentAccessDialogClosed,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback1)));
   if (show_error != ash::ParentAccessDialogProvider::ShowError::kNone) {
-    std::move(callback2).Run(
-        SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kFailed);
+    std::move(callback2).Run(SupervisedExtensionApprovalResult::kFailed);
   }
 }
 
@@ -100,27 +99,23 @@ void ParentAccessExtensionApprovalsManager::OnParentAccessDialogClosed(
     std::unique_ptr<ash::ParentAccessDialog::Result> result) {
   switch (result->status) {
     case ash::ParentAccessDialog::Result::Status::kApproved:
-      std::move(callback).Run(
-          SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kApproved);
+      std::move(callback).Run(SupervisedExtensionApprovalResult::kApproved);
       return;
 
     case ash::ParentAccessDialog::Result::Status::kDeclined:
     case ash::ParentAccessDialog::Result::Status::kCanceled:
-      std::move(callback).Run(
-          SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kCanceled);
+      std::move(callback).Run(SupervisedExtensionApprovalResult::kCanceled);
       return;
 
     case ash::ParentAccessDialog::Result::Status::kError:
-      std::move(callback).Run(
-          SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kFailed);
+      std::move(callback).Run(SupervisedExtensionApprovalResult::kFailed);
       return;
 
     case ash::ParentAccessDialog::Result::Status::kDisabled:
       SupervisedUserExtensionsMetricsRecorder::RecordEnablementUmaMetrics(
           SupervisedUserExtensionsMetricsRecorder::EnablementState::
               kFailedToEnable);
-      std::move(callback).Run(
-          SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kBlocked);
+      std::move(callback).Run(SupervisedExtensionApprovalResult::kBlocked);
       return;
   }
 }

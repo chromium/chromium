@@ -704,11 +704,11 @@ bool ManagementSetEnabledFunction::IsSupervisedExtensionApprovalFlowRequired(
 }
 
 void ManagementSetEnabledFunction::OnSupervisedExtensionApprovalDone(
-    SupervisedUserExtensionsDelegate::ExtensionApprovalResult result) {
+    SupervisedExtensionApprovalResult result) {
   // TODO(crbug.com/1320442): Investigate whether ENABLE_SUPERVISED_USERS can
   // be ported to //extensions.
   switch (result) {
-    case SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kApproved: {
+    case SupervisedExtensionApprovalResult::kApproved: {
       // Grant parent approval.
       extensions::SupervisedUserExtensionsDelegate*
           supervised_user_extensions_delegate =
@@ -731,17 +731,17 @@ void ManagementSetEnabledFunction::OnSupervisedExtensionApprovalDone(
       break;
     }
 
-    case SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kCanceled: {
+    case SupervisedExtensionApprovalResult::kCanceled: {
       Respond(Error(keys::kUserDidNotReEnableError));
       break;
     }
 
-    case SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kFailed: {
+    case SupervisedExtensionApprovalResult::kFailed: {
       Respond(Error(keys::kParentPermissionFailedError));
       break;
     }
 
-    case SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kBlocked: {
+    case SupervisedExtensionApprovalResult::kBlocked: {
       Respond(Error(keys::kUserCantModifyError, extension_id_));
       break;
     }

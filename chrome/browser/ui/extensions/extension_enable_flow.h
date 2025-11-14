@@ -80,8 +80,7 @@ class ExtensionEnableFlow : public extensions::LoadErrorReporter::Observer,
 
   // Called when the extension approval flow is complete.
   void OnExtensionApprovalDone(
-      extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalResult
-          result);
+      extensions::SupervisedExtensionApprovalResult result);
 
   // Starts/stops observing extension load notifications.
   void StartObserving();

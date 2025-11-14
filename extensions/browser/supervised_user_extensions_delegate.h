@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_SUPERVISED_USER_EXTENSIONS_DELEGATE_H_
 
 #include "base/functional/callback.h"
+#include "extensions/browser/supervised_extension_approval_result.h"
 #include "extensions/common/extension.h"
 
 namespace content {
@@ -22,16 +23,8 @@ namespace extensions {
 // stub implementations so it can be used in test code.
 class SupervisedUserExtensionsDelegate {
  public:
-  // Result of the extension approval flow.
-  enum class ExtensionApprovalResult {
-    kApproved,  // Extension installation was approved.
-    kCanceled,  // Extension approval flow was canceled.
-    kFailed,    // Extension approval failed due to an error.
-    kBlocked,   // Extension installation has been blocked by a parent.
-  };
-
   using ExtensionApprovalDoneCallback =
-      base::OnceCallback<void(ExtensionApprovalResult)>;
+      base::OnceCallback<void(SupervisedExtensionApprovalResult)>;
 
   SupervisedUserExtensionsDelegate() = default;
   virtual ~SupervisedUserExtensionsDelegate() = default;

@@ -590,24 +590,23 @@ void WebstorePrivateBeginInstallWithManifest3Function::RequestExtensionApproval(
   // TODO(crbug.com/410616937): Support supervised user install controls on
   // desktop Android.
   NOTIMPLEMENTED() << "Supervised user checks not yet supported on Android.";
-  OnExtensionApprovalDone(
-      SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kApproved);
+  OnExtensionApprovalDone(SupervisedExtensionApprovalResult::kApproved);
 #endif
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::OnExtensionApprovalDone(
-    SupervisedUserExtensionsDelegate::ExtensionApprovalResult result) {
+    SupervisedExtensionApprovalResult result) {
   switch (result) {
-    case SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kApproved:
+    case SupervisedExtensionApprovalResult::kApproved:
       OnExtensionApprovalApproved();
       break;
-    case SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kCanceled:
+    case SupervisedExtensionApprovalResult::kCanceled:
       OnExtensionApprovalCanceled();
       break;
-    case SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kFailed:
+    case SupervisedExtensionApprovalResult::kFailed:
       OnExtensionApprovalFailed();
       break;
-    case SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kBlocked:
+    case SupervisedExtensionApprovalResult::kBlocked:
       OnExtensionApprovalBlocked();
       break;
   }

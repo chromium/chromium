@@ -158,22 +158,17 @@ void ExtensionEnableFlow::CreatePrompt() {
 }
 
 void ExtensionEnableFlow::OnExtensionApprovalDone(
-    extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalResult
-        result) {
+    extensions::SupervisedExtensionApprovalResult result) {
   switch (result) {
-    case extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalResult::
-        kApproved:
+    case extensions::SupervisedExtensionApprovalResult::kApproved:
       EnableExtension();
       break;
-    case extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalResult::
-        kCanceled:
+    case extensions::SupervisedExtensionApprovalResult::kCanceled:
       delegate_->ExtensionEnableFlowAborted(
           /*user_initiated=*/true);  // |delegate_| may delete us.
       break;
-    case extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalResult::
-        kFailed:
-    case extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalResult::
-        kBlocked:
+    case extensions::SupervisedExtensionApprovalResult::kFailed:
+    case extensions::SupervisedExtensionApprovalResult::kBlocked:
       delegate_->ExtensionEnableFlowAborted(
           /*user_initiated=*/false);  // |delegate_| may delete us.
       break;

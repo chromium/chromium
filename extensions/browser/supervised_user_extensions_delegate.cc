@@ -29,7 +29,8 @@ void SupervisedUserExtensionsDelegate::RequestToAddExtensionOrShowError(
     const gfx::ImageSkia& icon,
     ExtensionApprovalDoneCallback extension_approval_callback) {
   NOTIMPLEMENTED();
-  std::move(extension_approval_callback).Run(ExtensionApprovalResult::kBlocked);
+  std::move(extension_approval_callback)
+      .Run(SupervisedExtensionApprovalResult::kBlocked);
 }
 
 void SupervisedUserExtensionsDelegate::RequestToEnableExtensionOrShowError(
@@ -37,7 +38,8 @@ void SupervisedUserExtensionsDelegate::RequestToEnableExtensionOrShowError(
     content::WebContents* web_contents,
     ExtensionApprovalDoneCallback extension_approval_callback) {
   NOTIMPLEMENTED();
-  std::move(extension_approval_callback).Run(ExtensionApprovalResult::kBlocked);
+  std::move(extension_approval_callback)
+      .Run(SupervisedExtensionApprovalResult::kBlocked);
 }
 
 bool SupervisedUserExtensionsDelegate::CanInstallExtensions() const {

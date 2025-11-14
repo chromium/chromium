@@ -103,8 +103,7 @@ class WebstorePrivateBeginInstallWithManifest3Function
   void RequestExtensionApproval(content::WebContents* web_contents);
 
   // Handles the result of the extension approval flow.
-  void OnExtensionApprovalDone(
-      SupervisedUserExtensionsDelegate::ExtensionApprovalResult result);
+  void OnExtensionApprovalDone(SupervisedExtensionApprovalResult result);
 
   void OnExtensionApprovalApproved();
 
