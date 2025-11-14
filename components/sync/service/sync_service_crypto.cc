@@ -749,6 +749,13 @@ void SyncServiceCrypto::GetIsRecoverabilityDegradedCompleted(
     return;
   }
 
+  if (!initial_trusted_vault_recoverability_logged_to_uma_) {
+    initial_trusted_vault_recoverability_logged_to_uma_ = true;
+    RecordTrustedVaultHistogramBooleanWithMigrationSuffix(
+        "Sync.TrustedVaultRecoverabilityDegradedOnStartup",
+        is_recoverability_degraded, state_.engine->GetDetailedStatus());
+  }
+
   // Transition from non-degraded to degraded recoverability.
   if (is_recoverability_degraded &&
       state_.required_user_action == RequiredUserAction::kNone) {
@@ -763,15 +770,6 @@ void SyncServiceCrypto::GetIsRecoverabilityDegradedCompleted(
           RequiredUserAction::kTrustedVaultRecoverabilityDegraded) {
     UpdateRequiredUserActionAndNotify(RequiredUserAction::kNone);
     delegate_->CryptoStateChanged();
-  }
-
-  if (!initial_trusted_vault_recoverability_logged_to_uma_) {
-    DCHECK(state_.engine);
-
-    initial_trusted_vault_recoverability_logged_to_uma_ = true;
-    RecordTrustedVaultHistogramBooleanWithMigrationSuffix(
-        "Sync.TrustedVaultRecoverabilityDegradedOnStartup",
-        is_recoverability_degraded, state_.engine->GetDetailedStatus());
   }
 }
 
