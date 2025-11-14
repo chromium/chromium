@@ -139,6 +139,12 @@ PATH_CONTEXT = {
             'archive_name': None,
             'archive_extract_dir': 'android-arm64'
         },
+        'android-desktop-x64': {
+            'binary_name': None,
+            'listing_platform_dir': 'desktop-x86_64/',
+            'archive_name': None,
+            'archive_extract_dir': 'android-desktop-x64'
+        },
         'android-x86': {
             'binary_name': None,
             'listing_platform_dir': 'x86/',
@@ -932,7 +938,7 @@ class ReleaseBuild(ArchiveBuild):
     final_list = []
     for batch in (build_numbers[i:i + batch_size]
                   for i in range(0, len(build_numbers), batch_size)):
-      sys.stdout.write('\rFetching revisions at marker %s' % batch[0])
+      sys.stdout.write('\rFetching revisions at marker %s\n' % batch[0])
       sys.stdout.flush()
       # List the files that exists with listing_platform_dir and archive_name.
       # Gsutil could fail because some of the path not exists. It's safe to
@@ -1449,6 +1455,27 @@ class AndroidTrichromeReleaseBuild(AndroidTrichromeMixin, AndroidReleaseBuild):
     InstallOnAndroid(self.device, download['trichrome'])
 
 
+class AndroidDesktopTrichromeReleaseBuild(AndroidTrichromeReleaseBuild):
+
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+
+  def _get_apk_filename(self, *args, **kwargs):
+    apk_filename = super()._get_apk_filename(*args, **kwargs)
+    # android-desktop release APKs have a different naming scheme:
+    # http://shortn/_LC4UqvdoeC.
+    return apk_filename.replace('Google64', 'GoogleDesktop64')
+
+  def _get_library_filename(self, prefer_64bit=True):
+    if self.apk == 'chrome':
+      raise BisectException('chrome debug build is not supported for %s' %
+                            self.platform)
+    library_filename = super()._get_library_filename(prefer_64bit)
+    # android-desktop release APKs have a different naming scheme:
+    # http://shortn/_LC4UqvdoeC.
+    return library_filename.replace('Google64', 'GoogleDesktop64')
+
+
 class AndroidTrichromeOfficialBuild(AndroidTrichromeMixin, OfficialBuild):
 
   def __init__(self, options):
@@ -1619,6 +1646,8 @@ def create_archive_build(options):
   if options.build_type == 'release':
     if options.archive == 'android-arm64-high':
       return AndroidTrichromeReleaseBuild(options)
+    elif options.archive == 'android-desktop-x64':
+      return AndroidDesktopTrichromeReleaseBuild(options)
     elif options.archive.startswith('android'):
       return AndroidReleaseBuild(options)
     elif options.archive.startswith('linux'):
