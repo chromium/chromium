@@ -1222,11 +1222,6 @@ TEST_P(UmaPageLoadMetricsObserverTest, NormalizedResponsivenessMetrics) {
         // actual value.
         testing::ElementsAre(base::Bucket(metric.second, 1)));
   }
-
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::
-          kHistogramUserInteractionLatencyHighPercentile2MaxEventDurationIncognito,
-      0);
 }
 
 TEST_P(UmaPageLoadMetricsObserverTest, FirstInputDelayAndTimestamp) {
@@ -1893,32 +1888,4 @@ TEST_P(UmaPageLoadMetricsObserverIncognitoTest,
   NavigateAndCommit(GURL(kDefaultTestUrl2));
 
   TestAllFramesLCP(4780, LargestContentTextOrImage::kText, true);
-}
-
-TEST_P(UmaPageLoadMetricsObserverIncognitoTest,
-       UserInteractionLatencyIncognito) {
-  page_load_metrics::mojom::InputTiming input_timing;
-  auto& user_interaction_latencies = input_timing.user_interaction_latencies;
-  base::TimeTicks current_time = base::TimeTicks::Now();
-  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(50), 0, current_time + base::Milliseconds(1000)));
-  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(100), 1, current_time + base::Milliseconds(2000)));
-  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(150), 2, current_time + base::Milliseconds(3000)));
-  NavigateAndCommit(GURL(kDefaultTestUrl));
-  tester()->SimulateInputTimingUpdate(input_timing);
-  // Navigate again to force histogram recording.
-  NavigateAndCommit(GURL(kDefaultTestUrl2));
-
-  for (
-      auto histogram :
-      {internal::
-           kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration,
-       internal::
-           kHistogramUserInteractionLatencyHighPercentile2MaxEventDurationIncognito}) {
-    tester()->histogram_tester().ExpectTotalCount(histogram, 1);
-    EXPECT_THAT(tester()->histogram_tester().GetAllSamples(histogram),
-                testing::ElementsAre(base::Bucket(146, 1)));
-  }
 }

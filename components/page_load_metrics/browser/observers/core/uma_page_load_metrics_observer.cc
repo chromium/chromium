@@ -144,10 +144,6 @@ const char kHistogramNumInteractions[] =
 const char kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration[] =
     "PageLoad.InteractiveTiming.UserInteractionLatency.HighPercentile2."
     "MaxEventDuration";
-const char
-    kHistogramUserInteractionLatencyHighPercentile2MaxEventDurationIncognito[] =
-        "PageLoad.InteractiveTiming.UserInteractionLatency.HighPercentile2."
-        "MaxEventDuration.Incognito";
 const char kHistogramInpOffset[] = "PageLoad.InteractiveTiming.INPOffset";
 const char kHistogramInpTime[] = "PageLoad.InteractiveTiming.INPTime";
 const char kHistogramWorstUserInteractionLatencyMaxEventDuration[] =
@@ -1013,14 +1009,6 @@ void UmaPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
   UmaHistogramCustomTimes(
       internal::kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration,
       inp->interaction_latency, base::Milliseconds(1), base::Seconds(60), 50);
-
-  if (is_incognito_) {
-    UmaHistogramCustomTimes(
-        internal::
-            kHistogramUserInteractionLatencyHighPercentile2MaxEventDurationIncognito,
-        inp->interaction_latency, base::Milliseconds(1), base::Seconds(60), 50);
-  }
-
   base::TimeDelta interaction_time =
       inp->interaction_time - GetDelegate().GetNavigationStart();
   UmaHistogramCustomTimes(internal::kHistogramInpTime, interaction_time,

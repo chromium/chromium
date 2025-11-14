@@ -54,8 +54,7 @@ void PageLoadMetricsEmbedderBase::RegisterCommonObservers(
   tracker->AddObserver(std::make_unique<UseCounterPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<EarlyHintsPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<FencedFramesPageLoadMetricsObserver>());
-  tracker->AddObserver(
-      std::make_unique<PrerenderPageLoadMetricsObserver>(is_incognito));
+  tracker->AddObserver(std::make_unique<PrerenderPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<SameOriginPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<CrossOriginPageLoadMetricsObserver>());
   if (base::FeatureList::IsEnabled(network::features::kSharedStorageAPI)) {
