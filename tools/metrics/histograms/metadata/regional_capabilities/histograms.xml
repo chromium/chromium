@@ -126,8 +126,8 @@ chromium-metrics-reviews@google.com.
     we are determining the profile to be eligible for a search engine choice
     screen. This is recorded every time the dynamic eligibility state is being
     checked, which might be as often as every page navigation on desktop, or app
-    warm open on iOS. If a profile was deemed ineligible a profile load time (as
-    recorded by the RegionalCapabilities.FunnelStage.Eligibility histogram),
+    warm open on iOS. If a profile was deemed ineligible at profile load time
+    (as recorded by the RegionalCapabilities.FunnelStage.Eligibility histogram),
     this histogram will not be recorded.
   </summary>
 </histogram>
