@@ -93,6 +93,101 @@ std::vector<gfx::Rect> getHitBoxesForElement(blink::WebElement& element) {
   return rects;
 }
 
+void DispatchMouseUp(
+    WebMouseEvent mouse_up,
+    const ResolvedTarget& target,
+    base::WeakPtr<ToolBase> tool,
+    base::OnceCallback<void(mojom::ActionResultPtr)> on_complete) {
+  if (!tool) {
+    std::move(on_complete)
+        .Run(MakeResult(mojom::ActionResultCode::kExecutorDestroyed,
+                        /*requires_page_stabilization=*/true,
+                        "Tool destroyed before mouse up."));
+    return;
+  }
+  WebWidget* widget = target.GetWidget(*tool);
+  if (!widget) {
+    std::move(on_complete)
+        .Run(MakeResult(mojom::ActionResultCode::kFrameWentAway,
+                        /*requires_page_stabilization=*/false,
+                        "No widget when dispatching mouse up"));
+    return;
+  }
+
+  mouse_up.SetTimeStamp(ui::EventTimeForNow());
+  WebInputEventResult result = widget->HandleInputEvent(
+      WebCoalescedInputEvent(std::move(mouse_up), ui::LatencyInfo()));
+  if (result == WebInputEventResult::kHandledSuppressed) {
+    std::move(on_complete)
+        .Run(MakeResult(mojom::ActionResultCode::kClickSuppressed,
+                        /*requires_page_stabilization=*/true));
+    return;
+  }
+  std::move(on_complete).Run(MakeOkResult());
+}
+
+void DispatchClick(
+    WebMouseEvent::Button button,
+    int count,
+    const ResolvedTarget& target,
+    base::WeakPtr<ToolBase> tool,
+    base::OnceCallback<void(mojom::ActionResultPtr)> on_complete) {
+  if (!tool) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(on_complete),
+                       MakeResult(mojom::ActionResultCode::kExecutorDestroyed,
+                                  /*requires_page_stabilization=*/true,
+                                  "Tool destroyed before click.")));
+    return;
+  }
+
+  WebWidget* widget = target.GetWidget(*tool);
+  if (!widget) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(on_complete),
+                       MakeResult(mojom::ActionResultCode::kFrameWentAway,
+                                  /*requires_page_stabilization=*/true,
+                                  "No widget when dispatching mouse down")));
+    return;
+  }
+
+  WebMouseEvent mouse_down(WebInputEvent::Type::kMouseDown,
+                           WebInputEvent::kNoModifiers, ui::EventTimeForNow());
+  mouse_down.button = button;
+  mouse_down.click_count = count;
+  mouse_down.SetPositionInWidget(target.widget_point);
+  // TODO(crbug.com/402082828): Find a way to set screen position.
+  //   const gfx::Rect offset =
+  //     render_frame_host_->GetRenderWidgetHost()->GetView()->GetViewBounds();
+  //   mouse_event_.SetPositionInScreen(point.x() + offset.x(),
+  //                                    point.y() + offset.y());
+
+  WebMouseEvent mouse_up = mouse_down;
+  WebInputEventResult result = widget->HandleInputEvent(
+      WebCoalescedInputEvent(mouse_down, ui::LatencyInfo()));
+
+  if (result == WebInputEventResult::kHandledSuppressed) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(on_complete),
+                       MakeResult(mojom::ActionResultCode::kClickSuppressed,
+                                  /*requires_page_stabilization=*/true)));
+    return;
+  }
+
+  mouse_up.SetType(WebInputEvent::Type::kMouseUp);
+
+  const base::TimeDelta delay = features::kGlicActorClickDelay.Get();
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&DispatchMouseUp, std::move(mouse_up), target,
+                     std::move(tool), std::move(on_complete)),
+      delay);
+}
+
 }  // namespace
 
 InteractionPointRefiner::InteractionPointRefiner(const blink::WebNode& node) {
@@ -306,73 +401,32 @@ void CreateAndDispatchClick(
         base::BindOnce(std::move(on_complete),
                        MakeResult(mojom::ActionResultCode::kFrameWentAway,
                                   /*requires_page_stabilization=*/true,
-                                  "No widget when dispatching mouse down")));
+                                  "No widget when dispatching mouse move")));
     return;
   }
 
-  WebMouseEvent mouse_down(WebInputEvent::Type::kMouseDown,
-                           WebInputEvent::kNoModifiers, ui::EventTimeForNow());
-  mouse_down.button = button;
-  mouse_down.click_count = count;
-  mouse_down.SetPositionInWidget(target.widget_point);
-  // TODO(crbug.com/402082828): Find a way to set screen position.
-  //   const gfx::Rect offset =
-  //     render_frame_host_->GetRenderWidgetHost()->GetView()->GetViewBounds();
-  //   mouse_event_.SetPositionInScreen(point.x() + offset.x(),
-  //                                    point.y() + offset.y());
+  if (base::FeatureList::IsEnabled(features::kGlicActorMoveBeforeClick)) {
+    blink::WebMouseEvent mouse_move(blink::WebInputEvent::Type::kMouseMove,
+                                    blink::WebInputEvent::kNoModifiers,
+                                    ui::EventTimeForNow());
+    // No button for move
+    mouse_move.button = blink::WebMouseEvent::Button::kNoButton;
+    mouse_move.SetPositionInWidget(target.widget_point);
 
-  WebMouseEvent mouse_up = mouse_down;
-  WebInputEventResult result = widget->HandleInputEvent(
-      WebCoalescedInputEvent(mouse_down, ui::LatencyInfo()));
+    // Mouse move is considered optional, so we don't check this result.
+    widget->HandleInputEvent(
+        blink::WebCoalescedInputEvent(mouse_move, ui::LatencyInfo()));
 
-  if (result == WebInputEventResult::kHandledSuppressed) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+    base::TimeDelta delay = features::kGlicActorMoveBeforeClickDelay.Get();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(std::move(on_complete),
-                       MakeResult(mojom::ActionResultCode::kClickSuppressed,
-                                  /*requires_page_stabilization=*/false)));
-    return;
+        base::BindOnce(&DispatchClick, button, count, target, std::move(tool),
+                       std::move(on_complete)),
+        delay);
+  } else {
+    DispatchClick(button, count, target, std::move(tool),
+                  std::move(on_complete));
   }
-
-  mouse_up.SetType(WebInputEvent::Type::kMouseUp);
-
-  const base::TimeDelta delay = features::kGlicActorClickDelay.Get();
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](blink::WebMouseEvent mouse_up, ResolvedTarget target,
-             base::WeakPtr<ToolBase> tool,
-             base::OnceCallback<void(mojom::ActionResultPtr)> on_complete) {
-            if (!tool) {
-              std::move(on_complete)
-                  .Run(MakeResult(mojom::ActionResultCode::kExecutorDestroyed,
-                                  /*requires_page_stabilization=*/true,
-                                  "Tool destroyed before mouse up."));
-              return;
-            }
-            WebWidget* widget = target.GetWidget(*tool);
-            if (!widget) {
-              std::move(on_complete)
-                  .Run(MakeResult(mojom::ActionResultCode::kFrameWentAway,
-                                  /*requires_page_stabilization=*/false,
-                                  "No widget when dispatching mouse up"));
-              return;
-            }
-
-            mouse_up.SetTimeStamp(ui::EventTimeForNow());
-            WebInputEventResult result = widget->HandleInputEvent(
-                WebCoalescedInputEvent(std::move(mouse_up), ui::LatencyInfo()));
-            if (result == WebInputEventResult::kHandledSuppressed) {
-              std::move(on_complete)
-                  .Run(MakeResult(mojom::ActionResultCode::kClickSuppressed,
-                                  /*requires_page_stabilization=*/true));
-              return;
-            }
-            std::move(on_complete).Run(MakeOkResult());
-          },
-          std::move(mouse_up), target, std::move(tool), std::move(on_complete)),
-      delay);
 }
 
 std::string NodeToDebugSring(const blink::WebNode& node) {

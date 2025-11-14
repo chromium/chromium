@@ -73,8 +73,10 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolBrowserTest, ClickTool_SentToElement) {
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
-    EXPECT_EQ("mousedown[BODY#],mouseup[BODY#],click[BODY#]",
-              EvalJs(web_contents(), "mouse_event_log.join(',')"));
+    EXPECT_THAT(
+        EvalJs(web_contents(), "mouse_event_log.join(',')").ExtractString(),
+        testing::EndsWith(
+            "mousemove[BODY#],mousedown[BODY#],mouseup[BODY#],click[BODY#]"));
   }
 
   ASSERT_TRUE(ExecJs(web_contents(), "mouse_event_log = []"));
@@ -90,10 +92,11 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolBrowserTest, ClickTool_SentToElement) {
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
-    EXPECT_EQ(
-        "mousedown[BUTTON#clickable],mouseup[BUTTON#clickable],click[BUTTON#"
-        "clickable]",
-        EvalJs(web_contents(), "mouse_event_log.join(',')"));
+    EXPECT_THAT(
+        EvalJs(web_contents(), "mouse_event_log.join(',')").ExtractString(),
+        testing::EndsWith(
+            "mousemove[BUTTON#clickable],mousedown[BUTTON#clickable],"
+            "mouseup[BUTTON#clickable],click[BUTTON#clickable]"));
 
     // Ensure the button's event handler was invoked.
     EXPECT_EQ(true, EvalJs(web_contents(), "button_clicked"));
@@ -115,8 +118,10 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolBrowserTest,
   // The node id doesn't exist so the tool will return false.
   ExpectErrorResult(result_fail, mojom::ActionResultCode::kInvalidDomNodeId);
 
-  // The page should not have received any events.
-  EXPECT_EQ("", EvalJs(web_contents(), "mouse_event_log.join(',')"));
+  // The page should not have received any click events.
+  EXPECT_THAT(
+      EvalJs(web_contents(), "mouse_event_log.join(',')").ExtractString(),
+      testing::Not(testing::HasSubstr("mousedown")));
 }
 
 // Sending a click to a disabled element should fail without dispatching events.
@@ -134,8 +139,10 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolBrowserTest, ClickTool_DisabledElement) {
   actor_task().Act(ToRequestList(action), result_fail.GetCallback());
   ExpectErrorResult(result_fail, mojom::ActionResultCode::kElementDisabled);
 
-  // The page should not have received any events.
-  EXPECT_EQ("", EvalJs(web_contents(), "mouse_event_log.join(',')"));
+  // The page should not have received any click events.
+  EXPECT_THAT(
+      EvalJs(web_contents(), "mouse_event_log.join(',')").ExtractString(),
+      testing::Not(testing::HasSubstr("mousedown")));
 }
 
 // Sending a click to an element that's not in the viewport should cause it to
@@ -161,11 +168,11 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolBrowserTest, ClickTool_OffscreenElement) {
   // Page is now scrolled.
   ASSERT_GT(EvalJs(web_contents(), "window.scrollY"), 0);
   // The page should not have received any events.
-  EXPECT_EQ(
-      "mousedown[BUTTON#offscreen],"
-      "mouseup[BUTTON#offscreen],"
-      "click[BUTTON#offscreen]",
-      EvalJs(web_contents(), "mouse_event_log.join(',')"));
+  EXPECT_THAT(
+      EvalJs(web_contents(), "mouse_event_log.join(',')").ExtractString(),
+      testing::EndsWith(
+          "mousemove[BUTTON#offscreen],mousedown[BUTTON#offscreen],"
+          "mouseup[BUTTON#offscreen],click[BUTTON#offscreen]"));
 }
 
 // Ensure clicks can be sent to elements that are only partially onscreen.
@@ -207,8 +214,10 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolBrowserTest, ClickTool_SentToCoordinate) {
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
-    EXPECT_EQ("mousedown[HTML#],mouseup[HTML#],click[HTML#]",
-              EvalJs(web_contents(), "mouse_event_log.join(',')"));
+    EXPECT_THAT(
+        EvalJs(web_contents(), "mouse_event_log.join(',')").ExtractString(),
+        testing::EndsWith(
+            "mousemove[HTML#],mousedown[HTML#],mouseup[HTML#],click[HTML#]"));
   }
 
   ASSERT_TRUE(ExecJs(web_contents(), "mouse_event_log = []"));
@@ -223,10 +232,11 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolBrowserTest, ClickTool_SentToCoordinate) {
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
-    EXPECT_EQ(
-        "mousedown[BUTTON#clickable],mouseup[BUTTON#clickable],click[BUTTON#"
-        "clickable]",
-        EvalJs(web_contents(), "mouse_event_log.join(',')"));
+    EXPECT_THAT(
+        EvalJs(web_contents(), "mouse_event_log.join(',')").ExtractString(),
+        testing::EndsWith(
+            "mousemove[BUTTON#clickable],mousedown[BUTTON#clickable],"
+            "mouseup[BUTTON#clickable],click[BUTTON#clickable]"));
 
     // Ensure the button's event handler was invoked.
     EXPECT_EQ(true, EvalJs(web_contents(), "button_clicked"));
@@ -251,8 +261,10 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolBrowserTest,
     ExpectErrorResult(result_fail,
                       mojom::ActionResultCode::kCoordinatesOutOfBounds);
 
-    // The page should not have received any events.
-    EXPECT_EQ("", EvalJs(web_contents(), "mouse_event_log.join(',')"));
+    // The page should not have received any click events.
+    EXPECT_THAT(
+        EvalJs(web_contents(), "mouse_event_log.join(',')").ExtractString(),
+        testing::Not(testing::HasSubstr("mousedown")));
   }
 
   // Send a click to a positive coordinate offscreen.
@@ -265,8 +277,10 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolBrowserTest,
     actor_task().Act(ToRequestList(action), result_fail.GetCallback());
     ExpectErrorResult(result_fail,
                       mojom::ActionResultCode::kCoordinatesOutOfBounds);
-    // The page should not have received any events.
-    EXPECT_EQ("", EvalJs(web_contents(), "mouse_event_log.join(',')"));
+    // The page should not have received any click events.
+    EXPECT_THAT(
+        EvalJs(web_contents(), "mouse_event_log.join(',')").ExtractString(),
+        testing::Not(testing::HasSubstr("mousedown")));
   }
 }
 
@@ -290,10 +304,11 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolBrowserTest,
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
-    EXPECT_EQ(
-        "mousedown[BUTTON#offscreen],mouseup[BUTTON#offscreen],click[BUTTON#"
-        "offscreen]",
-        EvalJs(web_contents(), "mouse_event_log.join(',')"));
+    EXPECT_THAT(
+        EvalJs(web_contents(), "mouse_event_log.join(',')").ExtractString(),
+        testing::EndsWith(
+            "mousemove[BUTTON#offscreen],mousedown[BUTTON#offscreen],"
+            "mouseup[BUTTON#offscreen],click[BUTTON#offscreen]"));
 
     // Ensure the button's event handler was invoked.
     EXPECT_EQ(true, EvalJs(web_contents(), "offscreen_button_clicked"));
@@ -370,10 +385,18 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolBrowserTest, ClickTool_Delay) {
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  const double mousedown_timestamp =
-      EvalJs(main_frame(), "mouse_event_timestamps[0]").ExtractDouble();
-  const double mouseup_timestamp =
-      EvalJs(main_frame(), "mouse_event_timestamps[1]").ExtractDouble();
+  const double mousedown_timestamp = EvalJs(main_frame(), R"(
+        let index = mouse_event_log.findIndex(
+          (entry) => entry.startsWith('mousedown'));
+        mouse_event_timestamps[index]
+      )")
+                                         .ExtractDouble();
+  const double mouseup_timestamp = EvalJs(main_frame(), R"(
+        let index = mouse_event_log.findIndex(
+          (entry) => entry.startsWith('mouseup'));
+        mouse_event_timestamps[index]
+      )")
+                                       .ExtractDouble();
   const base::TimeDelta delta =
       base::Milliseconds(mouseup_timestamp - mousedown_timestamp);
 
