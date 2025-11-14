@@ -41,12 +41,12 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ON_ISSUER_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.BNPL_TOS_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.DESCRIPTION_TEXT;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.APPLY_LINK_DEACTIVATED_STYLE;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.HIDE_OPTIONS_LINK_TEXT;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.ON_LINK_CLICK_CALLBACK;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.TERMS_TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_BACK_BUTTON_ENABLED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_ON_BACK_BUTTON_CLICKED;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.APPLY_LINK_DEACTIVATED_STYLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.HIDE_OPTIONS_LINK_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.ON_LINK_CLICK_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.TERMS_TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ITEM_COLLECTION_INFO;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.IS_ENABLED;
@@ -78,8 +78,8 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ALL_LOYALTY_CARDS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_ISSUER;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_FOOTER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_HEADER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_TERMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_TOS_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ERROR_DESCRIPTION;
@@ -155,8 +155,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillResourceProvider;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.AllLoyaltyCardsItemProperties;
-import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties;
+import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ErrorDescriptionProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties;
@@ -1830,7 +1830,7 @@ public class TouchToFillPaymentMethodViewTest {
 
     @Test
     @MediumTest
-    public void testBnplSelectionProgressFooterLinkDisabled() {
+    public void testBnplSelectionProgressTermsLinkDisabled() {
         Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
@@ -1838,8 +1838,8 @@ public class TouchToFillPaymentMethodViewTest {
                             .get(SHEET_ITEMS)
                             .add(
                                     new ListItem(
-                                            BNPL_SELECTION_PROGRESS_FOOTER,
-                                            createBnplSelectionProgressFooterModel(
+                                            BNPL_SELECTION_PROGRESS_TERMS,
+                                            createBnplSelectionProgressTermsModel(
                                                     /* termsTextId= */ R.string
                                                             .autofill_bnpl_issuer_bottom_sheet_terms_label,
                                                     /* hideOptionsLinkText= */ getString(
@@ -1857,22 +1857,24 @@ public class TouchToFillPaymentMethodViewTest {
                 termsLabel.getText().toString(),
                 is(getString(R.string.autofill_bnpl_issuer_bottom_sheet_terms_label)));
 
-        TextView footerLabel =
-                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_footer_label);
+        TextView openPaymentSettingsLabel =
+                mTouchToFillPaymentMethodView
+                        .getContentView()
+                        .findViewById(R.id.bnpl_open_payment_settings_label);
         assertThat(
-                footerLabel.getText().toString(),
+                openPaymentSettingsLabel.getText().toString(),
                 is("To hide pay later options, go to payment settings"));
-        SpannableString spannableString = (SpannableString) footerLabel.getText();
+        SpannableString spannableString = (SpannableString) openPaymentSettingsLabel.getText();
         ClickableSpan[] spans =
                 spannableString.getSpans(0, spannableString.length(), ClickableSpan.class);
         assertThat(spans.length, is(1));
-        spans[0].onClick(footerLabel);
+        spans[0].onClick(openPaymentSettingsLabel);
         verify(actionCallback, never()).run();
     }
 
     @Test
     @MediumTest
-    public void testBnplSelectionProgressFooterLinkEnabled() {
+    public void testBnplSelectionProgressTermsLinkEnabled() {
         Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
@@ -1880,8 +1882,8 @@ public class TouchToFillPaymentMethodViewTest {
                             .get(SHEET_ITEMS)
                             .add(
                                     new ListItem(
-                                            BNPL_SELECTION_PROGRESS_FOOTER,
-                                            createBnplSelectionProgressFooterModel(
+                                            BNPL_SELECTION_PROGRESS_TERMS,
+                                            createBnplSelectionProgressTermsModel(
                                                     /* termsTextId= */ R.string
                                                             .autofill_bnpl_issuer_bottom_sheet_terms_label,
                                                     /* hideOptionsLinkText= */ getString(
@@ -1899,16 +1901,18 @@ public class TouchToFillPaymentMethodViewTest {
                 termsLabel.getText().toString(),
                 is(getString(R.string.autofill_bnpl_issuer_bottom_sheet_terms_label)));
 
-        TextView footerLabel =
-                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_footer_label);
+        TextView openPaymentSettingsLabel =
+                mTouchToFillPaymentMethodView
+                        .getContentView()
+                        .findViewById(R.id.bnpl_open_payment_settings_label);
         assertThat(
-                footerLabel.getText().toString(),
+                openPaymentSettingsLabel.getText().toString(),
                 is("To hide pay later options, go to payment settings"));
-        SpannableString spannableString = (SpannableString) footerLabel.getText();
+        SpannableString spannableString = (SpannableString) openPaymentSettingsLabel.getText();
         ClickableSpan[] spans =
                 spannableString.getSpans(0, spannableString.length(), ClickableSpan.class);
         assertThat(spans.length, is(1));
-        spans[0].onClick(footerLabel);
+        spans[0].onClick(openPaymentSettingsLabel);
         waitForEvent(actionCallback).run();
     }
 
@@ -2074,12 +2078,12 @@ public class TouchToFillPaymentMethodViewTest {
                 .build();
     }
 
-    private static PropertyModel createBnplSelectionProgressFooterModel(
+    private static PropertyModel createBnplSelectionProgressTermsModel(
             @StringRes int termsTextId,
             String hideOptionsLinkText,
             Runnable onLinkClickCallback,
             boolean isLinkEnabled) {
-        return new PropertyModel.Builder(BnplSelectionProgressFooterProperties.ALL_KEYS)
+        return new PropertyModel.Builder(BnplSelectionProgressTermsProperties.ALL_KEYS)
                 .with(TERMS_TEXT_ID, termsTextId)
                 .with(HIDE_OPTIONS_LINK_TEXT, hideOptionsLinkText)
                 .with(ON_LINK_CLICK_CALLBACK, (view) -> onLinkClickCallback.run())

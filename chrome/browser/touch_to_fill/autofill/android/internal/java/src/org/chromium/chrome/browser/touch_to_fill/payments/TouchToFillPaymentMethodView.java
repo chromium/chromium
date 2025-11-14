@@ -62,7 +62,7 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
                 case ItemType.PROGRESS_ICON:
                 case ItemType.BNPL_SELECTION_PROGRESS_HEADER:
                 case ItemType.ERROR_DESCRIPTION:
-                case ItemType.BNPL_SELECTION_PROGRESS_FOOTER:
+                case ItemType.BNPL_SELECTION_PROGRESS_TERMS:
                 case ItemType.TOS_FOOTER:
                 case ItemType.TEXT_BUTTON:
                 case ItemType.BNPL_TOS_TEXT:
@@ -202,7 +202,6 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
     @Override
     protected Set<Integer> footerItemTypes() {
         return Set.of(
-                TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_FOOTER,
                 TouchToFillPaymentMethodProperties.ItemType.TOS_FOOTER,
                 TouchToFillPaymentMethodProperties.ItemType.FOOTER);
     }

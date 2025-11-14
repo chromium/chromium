@@ -127,8 +127,8 @@ class TouchToFillPaymentMethodProperties {
         // A section contains texts shown on BNPL ToS screen.
         int BNPL_TOS_TEXT = 14;
 
-        // The footer at the bottom of the BNPL selection and progress screens.
-        int BNPL_SELECTION_PROGRESS_FOOTER = 15;
+        // The terms at the bottom of the BNPL selection and progress screens.
+        int BNPL_SELECTION_PROGRESS_TERMS = 15;
 
         // A section contains legal messages shown in the screen footer.
         int TOS_FOOTER = 16;
@@ -418,10 +418,10 @@ class TouchToFillPaymentMethodProperties {
     }
 
     /**
-     * Properties defined here reflect the visible state of the BNPL footer for selection and
+     * Properties defined here reflect the visible state of the BNPL terms for selection and
      * progress screen in the TouchToFill sheet for payments.
      */
-    static class BnplSelectionProgressFooterProperties {
+    static class BnplSelectionProgressTermsProperties {
         static final PropertyModel.ReadableIntPropertyKey TERMS_TEXT_ID =
                 new PropertyModel.ReadableIntPropertyKey("terms_text_id");
         static final PropertyModel.ReadableObjectPropertyKey<String> HIDE_OPTIONS_LINK_TEXT =
@@ -437,7 +437,7 @@ class TouchToFillPaymentMethodProperties {
             APPLY_LINK_DEACTIVATED_STYLE
         };
 
-        private BnplSelectionProgressFooterProperties() {}
+        private BnplSelectionProgressTermsProperties() {}
     }
 
     /** Properties defined here reflect the visible state of the footer showing legal messages. */

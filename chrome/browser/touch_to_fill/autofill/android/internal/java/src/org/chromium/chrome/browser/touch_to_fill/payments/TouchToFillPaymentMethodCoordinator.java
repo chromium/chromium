@@ -13,8 +13,8 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ALL_LOYALTY_CARDS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_ISSUER;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_FOOTER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_HEADER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_TERMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_TOS_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ERROR_DESCRIPTION;
@@ -229,9 +229,9 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 TouchToFillPaymentMethodViewBinder::createBnplIssuerTosItemView,
                 TouchToFillPaymentMethodViewBinder::bindBnplIssuerTosItemView);
         adapter.registerType(
-                BNPL_SELECTION_PROGRESS_FOOTER,
-                TouchToFillPaymentMethodViewBinder::createBnplSelectionProgressFooterItemView,
-                TouchToFillPaymentMethodViewBinder::bindBnplSelectionProgressFooterView);
+                BNPL_SELECTION_PROGRESS_TERMS,
+                TouchToFillPaymentMethodViewBinder::createBnplSelectionProgressTermsItemView,
+                TouchToFillPaymentMethodViewBinder::bindBnplSelectionProgressTermsView);
         adapter.registerType(
                 TOS_FOOTER,
                 TouchToFillPaymentMethodViewBinder::createLegalMessageItemView,
