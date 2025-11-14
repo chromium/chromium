@@ -18,8 +18,8 @@
 ++++++[panel] name='Circle (From first use element's title)' tag:use
 ++++++[panel] name='Circle (From second use element's title)' tag:use
 ++++[document frame] class:name-symbol-title tag:svg
-++++++[panel] name='Rectangle Symbol (From symbol's title)' id:myRect tag:svg
-++++++[panel] name='Rectangle Symbol (From symbol's title)' id:myRect tag:svg
+++++++[panel] name='Rectangle Symbol (From symbol's title)' id:myRect tag:symbol
+++++++[panel] name='Rectangle Symbol (From symbol's title)' id:myRect tag:symbol
 ++++[document frame] class:description-aria-describedby tag:svg
 ++++++[link] name='Link (from title)' description='Link (from aria-describedby)' description-from:aria-describedby tag:a
 ++++[document frame] class:description-aria-description tag:svg
@@ -37,5 +37,5 @@
 ++++++[panel] name='Circle 1' description='Circle (From first use element's title)' description-from:tooltip tag:use
 ++++++[panel] name='Circle 2' description='Circle (From second use element's title)' description-from:tooltip tag:use
 ++++[document frame] class:desc-symbol-desc tag:svg
-++++++[panel] description='Rectangle Symbol (From symbol's desc)' description-from:svg-desc-element id:myRect2 tag:svg
-++++++[panel] description='Rectangle Symbol (From symbol's desc)' description-from:svg-desc-element id:myRect2 tag:svg
+++++++[panel] description='Rectangle Symbol (From symbol's desc)' description-from:svg-desc-element id:myRect2 tag:symbol
+++++++[panel] description='Rectangle Symbol (From symbol's desc)' description-from:svg-desc-element id:myRect2 tag:symbol

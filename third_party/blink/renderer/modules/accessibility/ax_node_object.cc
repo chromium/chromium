@@ -921,8 +921,13 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     // title child of a symbol) may participate in the text alternative
     // computation where it is instantiated by the use element.
     // https://svgwg.org/svg2-draft/struct.html#SymbolElement
-    if (Traversal<SVGSymbolElement>::FirstAncestorOrSelf(*node))
-      return kIgnoreObject;
+    if (SVGSymbolElement* symbol =
+            Traversal<SVGSymbolElement>::FirstAncestorOrSelf(*node)) {
+      // Should not be ignored if the <symbol> is the root of a <use> instance.
+      if (!symbol->InUseShadowTree() || !IsAtShadowBoundary(symbol)) {
+        return kIgnoreObject;
+      }
+    }
 
     // Include non-empty SVG root as clients may want to treat it as an image.
     if (IsA<SVGSVGElement>(node) && GetLayoutObject() &&
@@ -2215,6 +2220,11 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
       // See https://github.com/w3c/svg-aam/issues/18.
       return GetLayoutObject()->IsSVGRoot() ? ax::mojom::blink::Role::kSvgRoot
                                             : ax::mojom::blink::Role::kGroup;
+    }
+    if (IsA<SVGSymbolElement>(node)) {
+      if (GetLayoutObject()->IsSVGViewportContainer()) {
+        return ax::mojom::blink::Role::kGroup;
+      }
     }
     if (GetLayoutObject()->IsSVGShape()) {
       return ax::mojom::blink::Role::kGraphicsSymbol;
