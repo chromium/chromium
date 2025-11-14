@@ -46,7 +46,8 @@ class BoundSessionRegistrationFetcherImpl
     kRequiredFieldMissing = 5,
     kInvalidSessionParams = 6,
     kRequiredCredentialFieldMissing = 7,
-    kMaxValue = kRequiredCredentialFieldMissing
+    kUnexpectedParserError = 8,
+    kMaxValue = kUnexpectedParserError
   };
 
   BoundSessionRegistrationFetcherImpl(

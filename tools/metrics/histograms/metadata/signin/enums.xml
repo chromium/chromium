@@ -304,6 +304,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Required field missing"/>
   <int value="6" label="Invalid session parameters"/>
   <int value="7" label="Required credential field missing"/>
+  <int value="8" label="Unexpected parser error"/>
 </enum>
 
 <!-- LINT.IfChange(BoundSessionParamsReadError) -->
@@ -781,6 +782,12 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Invalid domain"/>
   <int value="2" label="Register payload required field missing"/>
   <int value="3" label="Register payload required credential field missing"/>
+  <int value="4" label="Register payload malformed refresh initiator"/>
+  <int value="5"
+      label="Register payload malformed session scope specification"/>
+  <int value="6" label="Register payload required scope field missing"/>
+  <int value="7" label="Register payload invalid scope type"/>
+  <int value="8" label="Register payload invalid credential type"/>
 </enum>
 
 <!-- LINT.ThenChange(//google_apis/gaia/oauth_multilogin_result.h:OAuthMultiloginDeviceBoundSessionParsingError) -->

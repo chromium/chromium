@@ -44,15 +44,19 @@ enum class MultiloginMode {
   MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER
 };
 
-// Mode determining the cookie binding mode for a multilogin request. This does
-// not have any effect if none of the tokens used in the request are bound.
-//
-// This parameter is only going to be used during a gradual feature rollout.
-// TODO(crbug.com/452551212): remove this parameter after the full launch.
-enum class MultiloginCookieBindingMode {
-  kDisabled,
-  kEnabledUnenforced,
-  kEnabledEnforced
+struct MultiloginCookieBindingParams {
+  // Mode determining the cookie binding mode for a multilogin request. This
+  // does not have any effect if none of the tokens used in the request are
+  // bound.
+  //
+  // This parameter is only going to be used during a gradual feature rollout.
+  // TODO(crbug.com/452551212): remove this parameter after the full launch.
+  enum class Mode { kDisabled, kEnabledUnenforced, kEnabledEnforced };
+
+  Mode mode = Mode::kDisabled;
+  // Indicates whether the bound session credentials from the server response
+  // should be parsed according to the standard format.
+  bool standard_device_bound_session_credentials = false;
 };
 
 // Specifies the "source" parameter for Gaia calls.
@@ -140,8 +144,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
       const std::string& external_cc_result,
       OAuthMultiloginResult::CookieDecryptor cookie_decryptor =
           base::NullCallback(),
-      gaia::MultiloginCookieBindingMode cookie_binding_mode =
-          gaia::MultiloginCookieBindingMode::kDisabled);
+      gaia::MultiloginCookieBindingParams cookie_binding_params = {});
 
   // Starts a request to list the accounts in the GAIA cookie.
   void StartListAccounts();
@@ -286,6 +289,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
 
   // Only populated in Multilogin requests.
   OAuthMultiloginResult::CookieDecryptor oauth_multilogin_cookie_decryptor_;
+  bool standard_device_bound_session_credentials_ = false;
 
   bool fetch_pending_ = false;
 

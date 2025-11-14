@@ -163,6 +163,7 @@ BoundSessionParams CreateBoundSessionsParamsFromRegistrationPayload(
     const GURL& request_url,
     const GURL& site,
     std::string_view wrapped_key) {
+  CHECK(!payload.parsed_for_dbsc_standard);
   BoundSessionParams params;
   if (!site.is_valid()) {
     return BoundSessionParams();

@@ -403,7 +403,7 @@ TEST_F(GaiaAuthFetcherTest, MultiloginEnableOamlCookieBindingUnenforced) {
   auth.StartOAuthMultilogin(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER, accounts,
       "cc_result", base::NullCallback(),
-      gaia::MultiloginCookieBindingMode::kEnabledUnenforced);
+      {.mode = gaia::MultiloginCookieBindingParams::Mode::kEnabledUnenforced});
 
   ASSERT_THAT(received_requests_, SizeIs(1));
   const network::ResourceRequest& request = received_requests_.at(0);
@@ -426,7 +426,7 @@ TEST_F(GaiaAuthFetcherTest, MultiloginEnableOamlCookieBindingEnforced) {
   auth.StartOAuthMultilogin(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER, accounts,
       "cc_result", base::NullCallback(),
-      gaia::MultiloginCookieBindingMode::kEnabledEnforced);
+      {.mode = gaia::MultiloginCookieBindingParams::Mode::kEnabledEnforced});
 
   ASSERT_THAT(received_requests_, SizeIs(1));
   const network::ResourceRequest& request = received_requests_.at(0);
@@ -854,4 +854,62 @@ TEST_F(GaiaAuthFetcherTest, ReAuthTokenCredentialNotSet) {
       google_apis::GetOmitCredentialsModeForGaiaRequests(),
       TRAFFIC_ANNOTATION_FOR_TESTS);
   auth.TestOnURLLoadCompleteInternal(net::OK, net::HTTP_FORBIDDEN, data);
+}
+
+TEST_F(GaiaAuthFetcherTest,
+       MultiloginResponseWithStandardDeviceBoundSessionCredentials) {
+  MockGaiaConsumer consumer;
+  EXPECT_CALL(
+      consumer,
+      OnOAuthMultiloginFinished(AllOf(
+          Property(&OAuthMultiloginResult::status,
+                   Eq(OAuthMultiloginResponseStatus::kOk)),
+          Property(&OAuthMultiloginResult::device_bound_sessions, SizeIs(1)))));
+
+  TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
+  auth.StartOAuthMultilogin(
+      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
+      /*accounts=*/{},
+      /*external_cc_result=*/"",
+      /*cookie_decryptor=*/base::NullCallback(),
+      /*cookie_binding_params=*/
+      {.standard_device_bound_session_credentials = true});
+
+  ASSERT_TRUE(auth.HasPendingFetch());
+
+  auth.TestOnURLLoadCompleteInternal(net::OK, net::HTTP_OK,
+                                     R"()]}'
+        {
+          "status": "OK",
+          "cookies":[],
+          "device_bound_session_info": [
+            {
+              "domain": "GOOGLE_COM",
+              "is_device_bound": true,
+              "register_session_payload": {
+                "session_identifier": "id",
+                "refresh_url": "/RotateBoundCookies",
+                "scope": {
+                  "origin": "https://google.com",
+                  "include_site": true,
+                  "scope_specification" : [
+                    {
+                      "type": "include",
+                      "domain": ".google.com",
+                      "path": "/"
+                    }
+                  ]
+                },
+                "credentials": [{
+                  "type": "cookie",
+                  "name": "__Secure-1PSIDTS",
+                  "attributes": "Domain=.google.com; Path=/; Secure"
+                }]
+              }
+            }
+          ]
+        }
+      )");
+
+  EXPECT_FALSE(auth.HasPendingFetch());
 }

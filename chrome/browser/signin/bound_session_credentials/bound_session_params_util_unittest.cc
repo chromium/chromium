@@ -64,6 +64,18 @@ void UpdateAllDomains(BoundSessionParams& params, const std::string& domain) {
   refresh_url = refresh_url.ReplaceComponents(replacements);
   params.set_refresh_url(refresh_url.spec());
 }
+
+RegisterBoundSessionPayload::Credential
+CreateRegisterBoundSessionPayloadCredential(std::string_view name,
+                                            std::string_view domain,
+                                            std::string_view path) {
+  RegisterBoundSessionPayload::Credential credential;
+  credential.name = name;
+  credential.scope = RegisterBoundSessionPayload::Scope{
+      .domain = std::string(domain), .path = std::string(path)};
+  return credential;
+}
+
 }  // namespace
 
 TEST(BoundSessionParamsUtilTest, Timestamp) {
@@ -397,13 +409,12 @@ TEST(CreateBoundSessionsParamsFromRegistrationPayloadTest, Valid) {
   RegisterBoundSessionPayload payload;
   payload.session_id = "test_session_id";
   payload.refresh_url = "/rotate";
-  payload.credentials = {RegisterBoundSessionPayload::Credential{
-                             .name = "test_cookie_name_1",
-                             .scope = {.domain = ".google.com", .path = "/"}},
-                         RegisterBoundSessionPayload::Credential{
-                             .name = "test_cookie_name_2",
-                             .scope = {.domain = ".google.com", .path = "/"}}};
-
+  payload.credentials = {CreateRegisterBoundSessionPayloadCredential(
+                             /*name=*/"test_cookie_name_1",
+                             /*domain=*/".google.com", /*path=*/"/"),
+                         CreateRegisterBoundSessionPayloadCredential(
+                             /*name=*/"test_cookie_name_2",
+                             /*domain=*/".google.com", /*path=*/"/")};
   const BoundSessionParams params =
       CreateBoundSessionsParamsFromRegistrationPayload(
           payload, /*request_url=*/GURL("https://example.google.com/request"),
@@ -427,12 +438,12 @@ TEST(CreateBoundSessionsParamsFromRegistrationPayloadTest, InvalidSite) {
   RegisterBoundSessionPayload payload;
   payload.session_id = "test_session_id";
   payload.refresh_url = "/rotate";
-  payload.credentials = {RegisterBoundSessionPayload::Credential{
-                             .name = "test_cookie_name_1",
-                             .scope = {.domain = ".google.com", .path = "/"}},
-                         RegisterBoundSessionPayload::Credential{
-                             .name = "test_cookie_name_2",
-                             .scope = {.domain = ".google.com", .path = "/"}}};
+  payload.credentials = {CreateRegisterBoundSessionPayloadCredential(
+                             /*name=*/"test_cookie_name_1",
+                             /*domain=*/".google.com", /*path=*/"/"),
+                         CreateRegisterBoundSessionPayloadCredential(
+                             /*name=*/"test_cookie_name_2",
+                             /*domain=*/".google.com", /*path=*/"/")};
 
   const BoundSessionParams params =
       CreateBoundSessionsParamsFromRegistrationPayload(
@@ -446,12 +457,12 @@ TEST(CreateBoundSessionsParamsFromRegistrationPayloadTest, InvalidRequestUrl) {
   RegisterBoundSessionPayload payload;
   payload.session_id = "test_session_id";
   payload.refresh_url = "/rotate";
-  payload.credentials = {RegisterBoundSessionPayload::Credential{
-                             .name = "test_cookie_name_1",
-                             .scope = {.domain = ".google.com", .path = "/"}},
-                         RegisterBoundSessionPayload::Credential{
-                             .name = "test_cookie_name_2",
-                             .scope = {.domain = ".google.com", .path = "/"}}};
+  payload.credentials = {CreateRegisterBoundSessionPayloadCredential(
+                             /*name=*/"test_cookie_name_1",
+                             /*domain=*/".google.com", /*path=*/"/"),
+                         CreateRegisterBoundSessionPayloadCredential(
+                             /*name=*/"test_cookie_name_2",
+                             /*domain=*/".google.com", /*path=*/"/")};
 
   const BoundSessionParams params =
       CreateBoundSessionsParamsFromRegistrationPayload(

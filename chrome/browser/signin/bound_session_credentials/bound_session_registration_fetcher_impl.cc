@@ -263,15 +263,24 @@ BoundSessionRegistrationFetcherImpl::ParseJsonResponse(
 
   const base::expected<RegisterBoundSessionPayload,
                        RegisterBoundSessionPayload::ParserError>
-      payload = RegisterBoundSessionPayload::ParseFromJson(*maybe_root);
+      payload = RegisterBoundSessionPayload::ParseFromJson(
+          *maybe_root, /*parse_for_dbsc_standard=*/false);
   if (!payload.has_value()) {
     switch (payload.error()) {
       case RegisterBoundSessionPayload::ParserError::kRequiredFieldMissing:
         return base::unexpected(RegistrationError::kRequiredFieldMissing);
       case RegisterBoundSessionPayload::ParserError::
           kRequiredCredentialFieldMissing:
+      case RegisterBoundSessionPayload::ParserError::kRequiredScopeFieldMissing:
         return base::unexpected(
             RegistrationError::kRequiredCredentialFieldMissing);
+      case RegisterBoundSessionPayload::ParserError::
+          kMalformedSessionScopeSpecification:
+      case RegisterBoundSessionPayload::ParserError::kInvalidScopeType:
+      case RegisterBoundSessionPayload::ParserError::kInvalidCredentialType:
+      case RegisterBoundSessionPayload::ParserError::kMalformedRefreshInitiator:
+        // Those errors are not expected for DBSC prototype session(s) format.
+        return base::unexpected(RegistrationError::kUnexpectedParserError);
     }
   }
 

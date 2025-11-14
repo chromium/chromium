@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_fetcher.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_response.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -177,22 +178,26 @@ void OAuthMultiloginHelper::StartFetchingMultiLogin() {
 
   gaia_auth_fetcher_ = partition_delegate_->CreateGaiaAuthFetcherForPartition(
       this, gaia_source_);
-  gaia::MultiloginCookieBindingMode cookie_binding_mode =
-      gaia::MultiloginCookieBindingMode::kDisabled;
+  gaia::MultiloginCookieBindingParams cookie_binding_params;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (base::FeatureList::IsEnabled(
           switches::kEnableOAuthMultiloginCookiesBinding) &&
       base::FeatureList::IsEnabled(
           switches::kEnableOAuthMultiloginCookiesBindingServerExperiment)) {
-    cookie_binding_mode =
+    cookie_binding_params.mode =
         switches::kOAuthMultiloginCookieBindingEnforced.Get()
-            ? gaia::MultiloginCookieBindingMode::kEnabledEnforced
-            : gaia::MultiloginCookieBindingMode::kEnabledUnenforced;
+            ? gaia::MultiloginCookieBindingParams::Mode::kEnabledEnforced
+            : gaia::MultiloginCookieBindingParams::Mode::kEnabledUnenforced;
   }
+  cookie_binding_params.standard_device_bound_session_credentials =
+      base::FeatureList::IsEnabled(
+          safe_browsing::kGoogleStandardDeviceBoundSessionCredentials) &&
+      base::FeatureList::IsEnabled(
+          switches::kEnableOAuthMultiloginStandardCookiesBinding);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   gaia_auth_fetcher_->StartOAuthMultilogin(
       mode_, multilogin_credentials, external_cc_result_, std::move(decryptor),
-      cookie_binding_mode);
+      cookie_binding_params);
 }
 
 void OAuthMultiloginHelper::OnOAuthMultiloginFinished(
