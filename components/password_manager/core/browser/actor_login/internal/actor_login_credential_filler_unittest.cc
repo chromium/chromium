@@ -2619,6 +2619,7 @@ TEST_P(ActorLoginCredentialFillerTest, DoesntFillIfReauthFails) {
   // Set up the device authenticator and pretend that reauth before
   // filling is required.
   base::test::TestFuture<LoginStatusResultOrError> future;
+  ON_CALL(mock_is_task_in_focus_, Run).WillByDefault(Return(true));
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
@@ -2679,6 +2680,7 @@ TEST_P(ActorLoginCredentialFillerTest, ReturnsErrorIfFormWentAwayDuringReauth) {
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
+  ON_CALL(mock_is_task_in_focus_, Run).WillByDefault(Return(true));
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
       mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
