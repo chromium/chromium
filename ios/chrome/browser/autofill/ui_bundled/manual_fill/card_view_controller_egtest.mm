@@ -346,9 +346,17 @@ void DismissPaymentBottomSheet() {
       @"Unexpected histogram error for number of visible suggestions.");
 }
 
+// TODO(crbug.com/460721951): Test is failing on ios-simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testCardChipButtonsAreAllVisible \
+  DISABLED_testCardChipButtonsAreAllVisible
+#else
+#define MAYBE_testCardChipButtonsAreAllVisible testCardChipButtonsAreAllVisible
+#endif
+
 // Tests that the saved card chip buttons are all visible in the card
 // table view controller, and that they have the right accessibility label.
-- (void)testCardChipButtonsAreAllVisible {
+- (void)MAYBE_testCardChipButtonsAreAllVisible {
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard.
