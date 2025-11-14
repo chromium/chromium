@@ -54,11 +54,12 @@
 #endif
 
 
-using base::ASCIIToUTF16;
-using testing::NiceMock;
-
 namespace autofill {
 namespace {
+
+using ::base::ASCIIToUTF16;
+using ::testing::IsEmpty;
+using ::testing::NiceMock;
 
 using PaymentsRpcCardType =
     payments::PaymentsAutofillClient::PaymentsRpcCardType;
@@ -226,6 +227,7 @@ TEST_P(CreditCardAccessManagerAuthFlowTest, FetchServerCardCVCNetworkError) {
 
   EXPECT_TRUE(
       GetRealPanForCVCAuth(PaymentsRpcResult::kNetworkError, std::string()));
+  EXPECT_THAT(accessor().number(), IsEmpty());
 }
 
 // Ensures that FetchCreditCard() returns a failure upon a negative response
@@ -241,6 +243,7 @@ TEST_P(CreditCardAccessManagerAuthFlowTest,
 
   EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kPermanentFailure,
                                    std::string()));
+  EXPECT_THAT(accessor().number(), IsEmpty());
 }
 
 // Ensures that a "try again" response from payments does not end the flow.
