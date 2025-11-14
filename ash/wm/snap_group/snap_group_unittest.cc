@@ -3623,6 +3623,37 @@ TEST_F(SnapGroupTest, Shutdown) {
   ASSERT_TRUE(w2.release());
 }
 
+// Regression test for crbug.com/452678875.
+// Tests that closing one window in a snap group and immediately creating a new
+// window does not cause a crash. This scenario can trigger a race condition
+// where the divider is being torn down and recreated immediately, while the
+// window that is being destroyed is still observed, leading to a CHECK failure
+// in `SplitViewDivider::CreateDividerWidget`.
+TEST_F(SnapGroupTest, NoCrashDuringSnapGroupShutdown) {
+  std::unique_ptr<aura::Window> w1 = CreateAppWindow();
+  std::unique_ptr<aura::Window> w2 = CreateAppWindow();
+
+  TRACE_CALL(SnapWindowsSideBySide(kGrouped, w1.get(), w2.get()));
+  EXPECT_TRUE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  auto* snap_group =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w1.get());
+  SplitViewDivider* divider = snap_group->snap_group_divider();
+  EXPECT_EQ(2u, divider->observed_windows().size());
+
+  auto* desk_container = desks_util::GetActiveDeskContainerForRoot(
+      Shell::Get()->GetPrimaryRootWindow());
+  EXPECT_THAT(desk_container->children(),
+              ElementsAre(w1.get(), w2.get(), divider->GetDividerWindow()));
+
+  views::Widget::GetWidgetForNativeView(divider->GetDividerWindow())
+      ->CloseNow();
+  wm::ActivateWindow(w1.get());
+  EXPECT_THAT(desk_container->children(), ElementsAre(w2.get(), w1.get()));
+  w1.reset();
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupPhantomBoundsTest:
 

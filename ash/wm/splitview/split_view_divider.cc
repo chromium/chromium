@@ -575,7 +575,7 @@ void SplitViewDivider::RefreshDividerState(bool observed_windows_changed) {
   // Stacking order is refreshed only if the widget has just been created or the
   // observed windows have changed.
   bool refresh_stacking_order = observed_windows_changed;
-  if (!divider_widget_) {
+  if (!divider_widget_ && target_visibility_) {
     CreateDividerWidget(divider_position_);
     refresh_stacking_order = true;
   }
@@ -595,6 +595,8 @@ void SplitViewDivider::RefreshDividerState(bool observed_windows_changed) {
       refresh_stacking_order = true;
     }
   } else if (update_visibility) {
+    // At this point divider_widget_ is guaranteed to exist, see
+    // GetActualTargetVisibility().
     divider_widget_->Hide();
     // Else no need to refresh the stacking order if the divider is hidden.
     refresh_stacking_order = false;
