@@ -349,7 +349,9 @@ class TabStripModel {
   // necessary once non-normal browser windows do not use Browser, TabStripModel
   // or TabModel.
   std::unique_ptr<content::WebContents> DetachWebContentsAtForInsertion(
-      int index);
+      int index,
+      TabStripModelChange::RemoveReason reason =
+          TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip);
 
   // Detaches the WebContents at the specified index and immediately deletes it.
   void DetachAndDeleteWebContentsAt(int index);

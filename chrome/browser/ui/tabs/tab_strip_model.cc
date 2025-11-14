@@ -380,10 +380,11 @@ std::unique_ptr<tabs::TabModel> TabStripModel::DetachTabAtForInsertion(
 }
 
 std::unique_ptr<content::WebContents>
-TabStripModel::DetachWebContentsAtForInsertion(int index) {
-  auto dt = DetachTabWithReasonAt(
-      index, TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip,
-      tabs::TabInterface::DetachReason::kDelete);
+TabStripModel::DetachWebContentsAtForInsertion(
+    int index,
+    TabStripModelChange::RemoveReason reason) {
+  auto dt = DetachTabWithReasonAt(index, reason,
+                                  tabs::TabInterface::DetachReason::kDelete);
   return tabs::TabModel::DestroyAndTakeWebContents(std::move(dt->tab));
 }
 

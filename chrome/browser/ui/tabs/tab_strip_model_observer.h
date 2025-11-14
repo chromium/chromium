@@ -61,7 +61,10 @@ class TabStripModelChange {
     kDeleted,
 
     // Tab got detached from a TabStrip and inserted into another TabStrip.
-    kInsertedIntoOtherTabStrip
+    kInsertedIntoOtherTabStrip,
+
+    // Insert the WebContents into side panel.
+    kInsertedIntoSidePanel
   };
 
   struct RemovedTab {

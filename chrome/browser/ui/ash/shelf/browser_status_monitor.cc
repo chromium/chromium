@@ -281,6 +281,7 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
     for (const auto& contents : remove->contents) {
       switch (contents.remove_reason) {
         case TabStripModelChange::RemoveReason::kDeleted:
+        case TabStripModelChange::RemoveReason::kInsertedIntoSidePanel:
 #if DCHECK_IS_ON()
           DCHECK(!base::Contains(tabs_in_transit_, contents.contents));
 #endif
