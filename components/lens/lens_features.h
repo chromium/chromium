@@ -707,6 +707,10 @@ extern bool ShowContextualSearchboxGhostLoaderLoadingState();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern base::TimeDelta GetLensSearchboxAutocompleteTimeout();
 
+// The timeout for receiving suggestions in the Lens composebox.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern base::TimeDelta GetLensAimSuggestionTimeout();
+
 // The list of source languages supported by Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetLensOverlayTranslateSourceLanguages();
@@ -1038,8 +1042,7 @@ extern bool IsLensOverlayOptimizationFilterEnabled();
 // Flag to control the type of suggestions for Lens Aim.
 // Access this value using: kLensAimSuggestionsType.Get()
 COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<LensAimSuggestionsType>
-    kLensAimSuggestionsType;
+extern const base::FeatureParam<LensAimSuggestionsType> kLensAimSuggestionsType;
 
 // String constants for LensAimSuggestionsType. These are used in the
 // Field Trial configuration.
@@ -1049,8 +1052,7 @@ inline constexpr char kLensAimSuggestionsTypeMultimodal[] = "Multimodal";
 
 // Returns the string representation of LensAimSuggestionsType for
 // logging/telemetry.
-std::string_view LensAimSuggestionModeToString(
-    LensAimSuggestionsType type);
+std::string_view LensAimSuggestionModeToString(LensAimSuggestionsType type);
 
 // Returns the number of AIM suggestions to show.
 COMPONENT_EXPORT(LENS_FEATURES)

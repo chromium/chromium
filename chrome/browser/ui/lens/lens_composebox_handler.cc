@@ -131,7 +131,8 @@ LensComposeboxHandler::LensComposeboxHandler(
               std::make_unique<LensComposeboxOmniboxClient>(
                   profile,
                   web_contents,
-                  /*lens_composebox_controller=*/parent_controller))),
+                  /*lens_composebox_controller=*/parent_controller),
+              lens::features::GetLensAimSuggestionTimeout())),
       lens_composebox_controller_(parent_controller),
       page_{std::move(pending_page)},
       handler_(this, std::move(pending_handler)) {
