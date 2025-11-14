@@ -99,6 +99,7 @@ build_webui("build_overlay") {
     "overlay_border_glow.css",
   ]
 
+  ts_tsconfig_base = "tsconfig_base.json"
   ts_deps = [
     "//chrome/browser/resources/lens/shared:build_ts",
     "//third_party/lit/v3_0:build_ts",

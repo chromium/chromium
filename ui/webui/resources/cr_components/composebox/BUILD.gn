@@ -24,6 +24,8 @@ build_webui("build") {
     "common.ts",
     "composebox.html.ts",
     "composebox.ts",
+    "composebox_voice_search.ts",
+    "composebox_voice_search.html.ts",
     "composebox_tool_chip.html.ts",
     "composebox_tool_chip.ts",
     "composebox_dropdown.html.ts",
@@ -48,6 +50,7 @@ build_webui("build") {
   ]
   css_files = [
     "composebox.css",
+    "composebox_voice_search.css",
     "composebox_tool_chip.css",
     "composebox_dropdown.css",
     "composebox_match.css",
@@ -71,6 +74,7 @@ build_webui("build") {
   ]
 
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/composebox"
+  ts_tsconfig_base = "tsconfig_base.json"
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
   ts_deps = [

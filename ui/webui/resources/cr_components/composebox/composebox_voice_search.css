@@ -1,0 +1,53 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 136px;
+  display: flex;
+}
+
+#container {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  border-radius: var(--expanded-border-radius);
+  background-color: var(--cr-composebox-background-color);
+  box-shadow: var(--cr-searchbox-shadow);
+}
+
+#input {
+  background-color: transparent;
+  border: none;
+  box-sizing: border-box;
+  color: var(--color-composebox-font-light);
+  flex-grow: 1;
+  font-family: inherit;
+  font-size: var(--cr-composebox-font-size, 18px);
+  line-height: 24px;
+  outline: none;
+  padding: 20px 56px 20px 20px;
+  resize: none;
+  width: 100%;
+}
+
+#closeButton {
+  --cr-icon-button-fill-color:
+      var(--color-composebox-cancel-button-light);
+  /* SVG is size 20 with 5px of padding so actual size is 10px */
+  --cr-icon-button-icon-size: 20px;
+  position: absolute;
+  top: 10px;
+  inset-inline-end: 16px;
+}

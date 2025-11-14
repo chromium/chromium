@@ -62,6 +62,7 @@ export function getHtml(this: ComposeboxElement) {
           .tabSuggestions="${this.tabSuggestions_}"
           entrypoint-name="Composebox"
           @add-tab-context="${this.addTabContext_}"
+          @open-voice-search="${this.openAimVoiceSearch_}"
           @add-file-context="${this.addFileContext_}"
           @delete-context="${this.deleteContext_}"
           @on-file-validation-error="${this.onFileValidationError_}"
@@ -131,6 +132,10 @@ export function getHtml(this: ComposeboxElement) {
       </cr-icon-button>
     </div>
   </div>
+  <cr-composebox-voice-search id="voiceSearch"
+      @on-voice-search-cancel="${this.onVoiceSearchClose_}"
+      @on-voice-search-final-result="${this.onVoiceSearchSubmit_}">
+  </cr-composebox-voice-search>
   ${this.shouldShowSuggestionActivityLink_() ? html`
     <div id="suggestionActivity">
       <localized-link
