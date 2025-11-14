@@ -17,31 +17,25 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/tools/page_stability_test_util.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/test/base/chrome_test_utils.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace actor {
 
@@ -49,21 +43,14 @@ namespace {
 
 using ::base::test::ScopedFeatureList;
 using ::base::test::TestFuture;
-using ::content::EvalJs;
 using ::content::ExecJs;
 using ::content::JsReplace;
 using ::content::NavigationThrottle;
 using ::content::NavigationThrottleRegistry;
-using ::content::RenderFrameHost;
 using ::content::TestNavigationManager;
 using ::content::TestNavigationThrottle;
 using ::content::TestNavigationThrottleInserter;
-using ::content::WebContents;
 using optimization_guide::proto::ClickAction;
-
-// Note: this file doesn't actually exist, the response is manually provided by
-// tests.
-const char* kFetchPath = "/fetchtarget.html";
 
 std::string DescribePaintStabilityMode(
     ::features::ActorPaintStabilityMode paint_monitor_mode) {
@@ -84,14 +71,9 @@ std::string DescribePaintStabilityMode(
 
 // Tests for the PageStabilityMonitor's functionality of delaying renderer-tool
 // completion until the page is ready for an observation.
-class ActorPageStabilityTestBase : public InProcessBrowserTest {
+class ActorPageStabilityTestBase : public PageStabilityTest {
  public:
-  ActorPageStabilityTestBase() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                              features::kGlicActor},
-        /*disabled_features=*/{features::kGlicWarming});
-  }
+  ActorPageStabilityTestBase() = default;
   ActorPageStabilityTestBase(const ActorPageStabilityTestBase&) = delete;
   ActorPageStabilityTestBase& operator=(const ActorPageStabilityTestBase&) =
       delete;
@@ -99,14 +81,8 @@ class ActorPageStabilityTestBase : public InProcessBrowserTest {
   ~ActorPageStabilityTestBase() override = default;
 
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    fetch_response_ =
-        std::make_unique<net::test_server::ControllableHttpResponse>(
-            embedded_test_server(), kFetchPath);
+    PageStabilityTest::SetUpOnMainThread();
 
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
-    ASSERT_TRUE(embedded_https_test_server().Start());
     auto execution_engine =
         std::make_unique<ExecutionEngine>(browser()->profile());
     auto event_dispatcher = ui::NewUiEventDispatcher(
@@ -127,26 +103,6 @@ class ActorPageStabilityTestBase : public InProcessBrowserTest {
     actor_keyed_service()->ResetForTesting();
   }
 
-  void Sleep(base::TimeDelta delta) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), delta);
-    run_loop.Run();
-  }
-
-  WebContents* web_contents() {
-    return chrome_test_utils::GetActiveWebContents(this);
-  }
-
-  RenderFrameHost* main_frame() {
-    return web_contents()->GetPrimaryMainFrame();
-  }
-
-  std::string GetOutputText() {
-    return EvalJs(web_contents(), "document.getElementById('output').innerText")
-        .ExtractString();
-  }
-
   ActorKeyedService* actor_keyed_service() {
     return ActorKeyedService::Get(browser()->profile());
   }
@@ -156,47 +112,17 @@ class ActorPageStabilityTestBase : public InProcessBrowserTest {
     return *actor_keyed_service()->GetTask(task_id_);
   }
 
-  net::test_server::ControllableHttpResponse& fetch_response() {
-    return *fetch_response_;
-  }
-
-  void Respond(std::string_view text) {
-    fetch_response_->Send(net::HTTP_OK, /*content_type=*/"text/html",
-                          /*content=*/"",
-                          /*cookies=*/{}, /*extra_headers=*/{});
-    fetch_response_->Send(std::string(text));
-    fetch_response_->Done();
-  }
-
   mojo::Remote<mojom::PageStabilityMonitor> CreatePageStabilityMonitor(
       features::ActorPaintStabilityMode paint_stability_mode) {
-    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
-        chrome_render_frame;
-    main_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
-        &chrome_render_frame);
-
     // TODO(bokan): Once paint stability ships, the param should be replaced by
     // a new one since some tools will continue to not support it.
     bool use_paint_stability =
         paint_stability_mode != features::ActorPaintStabilityMode::kDisabled;
-
-    mojo::Remote<mojom::PageStabilityMonitor> monitor_remote;
-    chrome_render_frame->CreatePageStabilityMonitor(
-        monitor_remote.BindNewPipeAndPassReceiver(), actor::TaskId(),
-        use_paint_stability);
-
-    // Ensure the monitor is created in the renderer before returning it.
-    monitor_remote.FlushForTesting();
-
-    return monitor_remote;
+    return PageStabilityTest::CreatePageStabilityMonitor(use_paint_stability);
   }
 
  protected:
   TaskId task_id_;
-
- private:
-  std::unique_ptr<net::test_server::ControllableHttpResponse> fetch_response_;
-  ScopedFeatureList scoped_feature_list_;
 };
 
 class ActorPageStabilityTimeoutTest : public ActorPageStabilityTestBase,
@@ -210,21 +136,17 @@ class ActorPageStabilityTimeoutTest : public ActorPageStabilityTestBase,
     // Make the paint timeouts high enough that the timeout applies, to
     // simulate not reaching paint stability.
     std::string paint_timeout = absl::StrFormat("%dms", kTimeoutInMs);
-    timeout_scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{features::kGlic, {}},
-         {features::kTabstripComboButton, {}},
-         {features::kGlicActor,
-          {{"glic-actor-page-stability-timeout", timeout},
-           // Do not use min wait.
-           {"glic-actor-page-stability-min-wait", "0ms"},
-           {::features::kActorPaintStabilityMode.name,
-            ::features::kActorPaintStabilityMode.GetName(GetParam())},
-           {::features::kActorPaintStabilityIntialPaintTimeout.name,
-            paint_timeout},
-           {::features::kActorPaintStabilitySubsequentPaintTimeout.name,
-            paint_timeout}}}},
-        /*disabled_features=*/{features::kGlicWarming});
+    timeout_scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActor,
+        {{"glic-actor-page-stability-timeout", timeout},
+         // Do not use min wait.
+         {"glic-actor-page-stability-min-wait", "0ms"},
+         {::features::kActorPaintStabilityMode.name,
+          ::features::kActorPaintStabilityMode.GetName(GetParam())},
+         {::features::kActorPaintStabilityIntialPaintTimeout.name,
+          paint_timeout},
+         {::features::kActorPaintStabilitySubsequentPaintTimeout.name,
+          paint_timeout}});
   }
   ActorPageStabilityTimeoutTest(const ActorPageStabilityTimeoutTest&) = delete;
   ActorPageStabilityTimeoutTest& operator=(
@@ -239,9 +161,8 @@ class ActorPageStabilityTimeoutTest : public ActorPageStabilityTestBase,
 // Ensure that if a network request runs long, the stability monitor will
 // eventually timeout.
 IN_PROC_BROWSER_TEST_P(ActorPageStabilityTimeoutTest, NetworkTimeout) {
-  const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
-  const GURL url_fetch = embedded_test_server()->GetURL(kFetchPath);
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   ASSERT_EQ(GetOutputText(), "INITIAL");
 
@@ -264,9 +185,8 @@ IN_PROC_BROWSER_TEST_P(ActorPageStabilityTimeoutTest, NetworkTimeout) {
 // Ensure that if the main thread never becomes idle the stability monitor will
 // eventually timeout.
 IN_PROC_BROWSER_TEST_P(ActorPageStabilityTimeoutTest, BusyMainThread) {
-  const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
-  const GURL url_fetch = embedded_test_server()->GetURL(kFetchPath);
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   std::optional<int> button_id = GetDOMNodeId(*main_frame(), "#btnWorkForever");
   ASSERT_TRUE(button_id);
@@ -347,14 +267,12 @@ class ActorPageStabilityNavigationTypesTest
     allowlist_params["allowlist_only"] = "true";
 
     page_tools_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlic, {}},
-                              {features::kTabstripComboButton, {}},
-                              {features::kGlicActor,
+        /*enabled_features=*/{{features::kGlicActor,
                                {{::features::kActorPaintStabilityMode.name,
                                  ::features::kActorPaintStabilityMode.GetName(
                                      std::get<2>(GetParam()))}}},
                               {kGlicActionAllowlist, allowlist_params}},
-        /*disabled_features=*/{features::kGlicWarming});
+        /*disabled_features=*/{});
   }
 
   NavigationType NavigationTypeParam() const { return std::get<1>(GetParam()); }
@@ -475,16 +393,12 @@ class ActorGeneralPageStabilityTest : public ActorPageStabilityTestBase,
                                           ::features::ActorPaintStabilityMode> {
  public:
   ActorGeneralPageStabilityTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{::features::kGlicActor,
-          {{::features::kActorPaintStabilityMode.name,
-            ::features::kActorPaintStabilityMode.GetName(GetParam())},
-           // Effectively disable the timeout to prevent flakes.
-           {"glic-actor-page-stability-timeout", "30000ms"}}},
-         {features::kGlic, {}},
-         {features::kTabstripComboButton, {}}},
-        /*disabled_features=*/{features::kGlicWarming});
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        ::features::kGlicActor,
+        {{::features::kActorPaintStabilityMode.name,
+          ::features::kActorPaintStabilityMode.GetName(GetParam())},
+         // Effectively disable the timeout to prevent flakes.
+         {"glic-actor-page-stability-timeout", "30000ms"}});
   }
 
   mojo::Remote<mojom::PageStabilityMonitor> CreatePageStabilityMonitor() {
@@ -508,8 +422,6 @@ class ActorGeneralPageStabilityTest : public ActorPageStabilityTestBase,
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -524,16 +436,14 @@ INSTANTIATE_TEST_SUITE_P(
 // Ensure the page isn't considered stable until after a network fetch is
 // resolved.
 IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest, WaitOnNetworkFetch) {
-  const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
-  const GURL url_fetch = embedded_test_server()->GetURL(kFetchPath);
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   mojo::Remote<mojom::PageStabilityMonitor> monitor =
       CreatePageStabilityMonitor();
 
   ASSERT_EQ(GetOutputText(), "INITIAL");
-  ASSERT_TRUE(ExecJs(web_contents(), "window.doFetch(() => {})"));
-  fetch_response().WaitForRequest();
+  InitiateNetworkRequest();
 
   TestFuture<void> result;
   monitor->NotifyWhenStable(/*observation_delay=*/base::TimeDelta(),
@@ -556,9 +466,8 @@ IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest, WaitOnNetworkFetch) {
 
 // Ensure the page isn't considered stable while the main thread is busy.
 IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest, WaitOnMainThread) {
-  const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
-  const GURL url_fetch = embedded_test_server()->GetURL(kFetchPath);
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   ASSERT_EQ(GetOutputText(), "INITIAL");
 
@@ -592,9 +501,8 @@ IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
       web_contents(), content::BackForwardCache::DisableForTestingReason::
                           TEST_REQUIRES_NO_CACHING);
 
-  const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
-  const GURL url2 = embedded_test_server()->GetURL("/actor/blank.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   mojo::Remote<mojom::PageStabilityMonitor> monitor =
       CreatePageStabilityMonitor();
@@ -607,8 +515,9 @@ IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
   monitor.set_disconnect_handler(result.GetCallback());
 
   // Navigate away and finish the navigation.
-  TestNavigationManager manager(web_contents(), url2);
-  ASSERT_TRUE(ExecJs(web_contents(), JsReplace("window.location = $1", url2)));
+  const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
+  TestNavigationManager manager(web_contents(), url);
+  ASSERT_TRUE(ExecJs(web_contents(), JsReplace("window.location = $1", url)));
   ASSERT_TRUE(manager.WaitForNavigationFinished());
 
   monitor->NotifyWhenStable(/*observation_delay=*/base::TimeDelta(),
@@ -620,9 +529,8 @@ IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
 // that either the remote is disconnected or the NotifyWhenStable callback is
 // executed.
 IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest, NavigationBeforeNotify) {
-  const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
-  const GURL url2 = embedded_test_server()->GetURL("/actor/blank.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   mojo::Remote<mojom::PageStabilityMonitor> monitor =
       CreatePageStabilityMonitor();
@@ -635,8 +543,9 @@ IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest, NavigationBeforeNotify) {
   monitor.set_disconnect_handler(result.GetCallback());
 
   // Navigate away and finish the navigation.
-  TestNavigationManager manager(web_contents(), url2);
-  ASSERT_TRUE(ExecJs(web_contents(), JsReplace("window.location = $1", url2)));
+  const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
+  TestNavigationManager manager(web_contents(), url);
+  ASSERT_TRUE(ExecJs(web_contents(), JsReplace("window.location = $1", url)));
   ASSERT_TRUE(manager.WaitForNavigationFinished());
 
   monitor->NotifyWhenStable(/*observation_delay=*/base::TimeDelta(),
@@ -648,27 +557,25 @@ IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest, NavigationBeforeNotify) {
 // that the monitor continues watching for page stability.
 IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
                        FailNavigationBeforeNotify) {
-  const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
-  const GURL url2 = embedded_test_server()->GetURL("/actor/blank.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   mojo::Remote<mojom::PageStabilityMonitor> monitor =
       CreatePageStabilityMonitor();
 
   // Start and cancel a navigation before querying the monitor.
   {
-    TestNavigationManager manager(web_contents(), url2);
+    const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
+    TestNavigationManager manager(web_contents(), url);
     auto scoped_navigation_canceler = ScopedCancelAllIncomingNavigations();
-    ASSERT_TRUE(
-        ExecJs(web_contents(), JsReplace("window.location = $1", url2)));
+    ASSERT_TRUE(ExecJs(web_contents(), JsReplace("window.location = $1", url)));
     ASSERT_TRUE(manager.WaitForNavigationFinished());
     ASSERT_FALSE(manager.was_committed());
   }
 
   // Initiate a network fetch.
   ASSERT_EQ(GetOutputText(), "INITIAL");
-  ASSERT_TRUE(ExecJs(web_contents(), "window.doFetch(() => {})"));
-  fetch_response().WaitForRequest();
+  InitiateNetworkRequest();
 
   // Start waiting on the monitor.
   TestFuture<void> result;
@@ -694,9 +601,8 @@ IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
 // that the monitor continues watching for page stability.
 IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
                        FailNavigationAfterNotify) {
-  const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
-  const GURL url2 = embedded_test_server()->GetURL("/actor/blank.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   mojo::Remote<mojom::PageStabilityMonitor> monitor =
       CreatePageStabilityMonitor();
@@ -704,8 +610,9 @@ IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
   // Start a navigation but don't let it proceed to cancelation yet, it's
   // deferred for now.
   auto scoped_navigation_canceler = ScopedCancelAllIncomingNavigations();
-  TestNavigationManager manager(web_contents(), url2);
-  ASSERT_TRUE(ExecJs(web_contents(), JsReplace("window.location = $1", url2)));
+  const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
+  TestNavigationManager manager(web_contents(), url);
+  ASSERT_TRUE(ExecJs(web_contents(), JsReplace("window.location = $1", url)));
   ASSERT_TRUE(manager.WaitForFirstYieldAfterDidStartNavigation());
 
   // Start waiting for the monitor. Sleep to ensure the monitor is waiting on
@@ -739,9 +646,8 @@ IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
 // cause the monitor to immediately complete.
 IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
                        NavigationDuringStartDelay) {
-  const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
-  const GURL url2 = embedded_test_server()->GetURL("/actor/blank.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   mojo::Remote<mojom::PageStabilityMonitor> monitor =
       CreatePageStabilityMonitor();
@@ -752,8 +658,9 @@ IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
   monitor->NotifyWhenStable(/*observation_delay=*/base::Seconds(300),
                             result.GetCallback());
 
-  TestNavigationManager manager(web_contents(), url2);
-  ASSERT_TRUE(ExecJs(web_contents(), JsReplace("window.location = $1", url2)));
+  const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
+  TestNavigationManager manager(web_contents(), url);
+  ASSERT_TRUE(ExecJs(web_contents(), JsReplace("window.location = $1", url)));
   ASSERT_TRUE(manager.WaitForNavigationFinished());
 
   EXPECT_TRUE(result.Wait());
@@ -764,17 +671,15 @@ IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
 // immediately complete.
 IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
                        NavigationDuringMonitoring) {
-  const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
-  const GURL url2 = embedded_test_server()->GetURL("/actor/blank.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   mojo::Remote<mojom::PageStabilityMonitor> monitor =
       CreatePageStabilityMonitor();
 
   // Start a network request to block the monitor from completing.
   ASSERT_EQ(GetOutputText(), "INITIAL");
-  ASSERT_TRUE(ExecJs(web_contents(), "window.doFetch(() => {})"));
-  fetch_response().WaitForRequest();
+  InitiateNetworkRequest();
 
   // Wait for stability.
   TestFuture<void> result;
@@ -786,8 +691,9 @@ IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
   EXPECT_FALSE(result.IsReady());
 
   // Navigating away should cause the monitor to complete.
-  TestNavigationManager manager(web_contents(), url2);
-  ASSERT_TRUE(ExecJs(web_contents(), JsReplace("window.location = $1", url2)));
+  const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
+  TestNavigationManager manager(web_contents(), url);
+  ASSERT_TRUE(ExecJs(web_contents(), JsReplace("window.location = $1", url)));
   ASSERT_TRUE(manager.WaitForNavigationFinished());
 
   EXPECT_TRUE(result.Wait());
@@ -818,8 +724,8 @@ class ActorPageStabilityMinWaitTest : public ActorPageStabilityTestBase,
 };
 
 IN_PROC_BROWSER_TEST_P(ActorPageStabilityMinWaitTest, MinWaitTimeRespected) {
-  const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   base::ElapsedTimer timer;
 

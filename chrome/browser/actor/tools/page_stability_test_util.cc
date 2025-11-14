@@ -74,7 +74,7 @@ RenderFrameHost* PageStabilityTest::main_frame() {
   return web_contents()->GetPrimaryMainFrame();
 }
 
-GURL PageStabilityTest::GetPageURL() {
+GURL PageStabilityTest::GetPageStabilityTestURL() {
   return embedded_test_server()->GetURL("/actor/page_stability.html");
 }
 
@@ -102,7 +102,7 @@ void PageStabilityTest::Respond(std::string_view text) {
 }
 
 mojo::Remote<mojom::PageStabilityMonitor>
-PageStabilityTest::CreatePageStabilityMonitor() {
+PageStabilityTest::CreatePageStabilityMonitor(bool supports_paint_stability) {
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
   main_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
       &chrome_render_frame);
@@ -110,7 +110,7 @@ PageStabilityTest::CreatePageStabilityMonitor() {
   mojo::Remote<mojom::PageStabilityMonitor> monitor_remote;
   chrome_render_frame->CreatePageStabilityMonitor(
       monitor_remote.BindNewPipeAndPassReceiver(), actor::TaskId(),
-      /*supports_paint_stability=*/true);
+      supports_paint_stability);
 
   // Ensure the monitor is created in the renderer before returning it.
   monitor_remote.FlushForTesting();

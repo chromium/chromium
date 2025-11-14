@@ -49,7 +49,7 @@ class PageStabilityTest : public InProcessBrowserTest {
   content::WebContents* web_contents();
   content::RenderFrameHost* main_frame();
 
-  GURL GetPageURL();
+  GURL GetPageStabilityTestURL();
 
   std::string GetOutputText();
 
@@ -59,7 +59,8 @@ class PageStabilityTest : public InProcessBrowserTest {
 
   void Respond(std::string_view text);
 
-  mojo::Remote<mojom::PageStabilityMonitor> CreatePageStabilityMonitor();
+  mojo::Remote<mojom::PageStabilityMonitor> CreatePageStabilityMonitor(
+      bool supports_paint_stability = true);
 
  private:
   std::unique_ptr<net::test_server::ControllableHttpResponse> fetch_response_;

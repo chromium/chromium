@@ -48,7 +48,8 @@ class PageStabilityMetricsTest : public PageStabilityTest {
 IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, NetworkAndMainThreadIdle) {
   base::HistogramTester histogram_tester;
 
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetPageURL()));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   mojo::Remote<mojom::PageStabilityMonitor> monitor =
       CreatePageStabilityMonitor();
@@ -81,7 +82,8 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, NetworkAndMainThreadIdle) {
 IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Paint) {
   base::HistogramTester histogram_tester;
 
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetPageURL()));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   mojo::Remote<mojom::PageStabilityMonitor> monitor =
       CreatePageStabilityMonitor();
@@ -114,7 +116,8 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Paint) {
 IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Timeout) {
   base::HistogramTester histogram_tester;
 
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetPageURL()));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   mojo::Remote<mojom::PageStabilityMonitor> monitor =
       CreatePageStabilityMonitor();
@@ -140,7 +143,8 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, Timeout) {
 IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, RenderFrameGoingAway) {
   base::HistogramTester histogram_tester;
 
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetPageURL()));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   mojo::Remote<mojom::PageStabilityMonitor> monitor =
       CreatePageStabilityMonitor();
@@ -177,7 +181,8 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, RenderFrameGoingAway) {
 IN_PROC_BROWSER_TEST_F(PageStabilityMetricsTest, MojoDisconnected) {
   base::HistogramTester histogram_tester;
 
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetPageURL()));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   mojo::Remote<mojom::PageStabilityMonitor> monitor =
       CreatePageStabilityMonitor();
@@ -228,7 +233,8 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsMinWaitTest,
                        NetworkAndMainThreadIdleDelayed) {
   base::HistogramTester histogram_tester;
 
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetPageURL()));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   mojo::Remote<mojom::PageStabilityMonitor> monitor =
       CreatePageStabilityMonitor();
@@ -260,7 +266,8 @@ IN_PROC_BROWSER_TEST_F(PageStabilityMetricsMinWaitTest,
 IN_PROC_BROWSER_TEST_F(PageStabilityMetricsMinWaitTest, PaintDelayed) {
   base::HistogramTester histogram_tester;
 
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetPageURL()));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   mojo::Remote<mojom::PageStabilityMonitor> monitor =
       CreatePageStabilityMonitor();

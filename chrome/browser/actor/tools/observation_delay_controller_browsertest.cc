@@ -16,20 +16,17 @@
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/aggregated_journal.h"
-#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/actor/tools/page_stability_test_util.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
@@ -42,7 +39,6 @@ namespace {
 using ::base::test::ScopedFeatureList;
 using ::base::test::TestFuture;
 using ::content::BeginNavigateToURLFromRenderer;
-using ::content::EvalJs;
 using ::content::RenderFrameHost;
 using ::content::TestNavigationManager;
 using ::content::WebContents;
@@ -53,9 +49,6 @@ using State = ::actor::ObservationDelayController::State;
 std::string_view ToString(State state) {
   return ObservationDelayController::StateToString(state);
 }
-
-const char* kFetchPath = "/fetchtarget.html";
-const char* kTestPage = "/actor/observation_delay.html";
 
 // Helper to start a navigation in the main frame to a page that reaches
 // DOMContentLoaded in the main frame but doesn't reach the load event until
@@ -171,9 +164,7 @@ class TestObservationDelayController : public ObservationDelayController {
   base::OnceClosure quit_closure_;
 };
 
-// TODO(bokan) - Factor out into a common test harness with
-// page_stability_browsertest.cc
-class ObservationDelayControllerTestBase : public InProcessBrowserTest {
+class ObservationDelayControllerTestBase : public PageStabilityTest {
  public:
   ObservationDelayControllerTestBase() = default;
   ObservationDelayControllerTestBase(
@@ -182,25 +173,6 @@ class ObservationDelayControllerTestBase : public InProcessBrowserTest {
       const ObservationDelayControllerTestBase&) = delete;
 
   ~ObservationDelayControllerTestBase() override = default;
-
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    fetch_response_ =
-        std::make_unique<net::test_server::ControllableHttpResponse>(
-            embedded_test_server(), kFetchPath);
-
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
-    ASSERT_TRUE(embedded_https_test_server().Start());
-  }
-
-  // Pause execution for the specified amount of time.
-  void Sleep(base::TimeDelta delta) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), delta);
-    run_loop.Run();
-  }
 
   // Sleep long enough to verify that a state we're in is steady. This is, of
   // course, non difinitive but in practice should shake out any cases where the
@@ -213,34 +185,9 @@ class ObservationDelayControllerTestBase : public InProcessBrowserTest {
     run_loop.Run();
   }
 
-  WebContents* web_contents() {
-    return chrome_test_utils::GetActiveWebContents(this);
-  }
-
-  RenderFrameHost* main_frame() {
-    return web_contents()->GetPrimaryMainFrame();
-  }
-
   TabInterface* active_tab() { return chrome_test_utils::GetActiveTab(this); }
 
-  std::string GetOutputText() {
-    return EvalJs(web_contents(), "document.getElementById('output').innerText")
-        .ExtractString();
-  }
-
-  net::test_server::ControllableHttpResponse& fetch_response() {
-    return *fetch_response_;
-  }
-
   actor::AggregatedJournal& journal() { return journal_; }
-
-  void RespondToFetchRequest(std::string_view text) {
-    fetch_response_->Send(net::HTTP_OK, /*content_type=*/"text/html",
-                          /*content=*/"",
-                          /*cookies=*/{}, /*extra_headers=*/{});
-    fetch_response_->Send(std::string(text));
-    fetch_response_->Done();
-  }
 
   ObservationDelayController::PageStabilityConfig PageStabilityConfig() const {
     // Use default values.
@@ -251,12 +198,11 @@ class ObservationDelayControllerTestBase : public InProcessBrowserTest {
     // Perform a same-document navigation. The page has a navigation handler
     // that will initiate a fetch from this event.  This works via the
     // navigation handler on the harness' test page.
-    CHECK_EQ(web_contents()->GetURL(),
-             embedded_test_server()->GetURL(kTestPage));
+    CHECK_EQ(web_contents()->GetURL(), GetPageStabilityTestURL());
     CHECK_EQ(GetOutputText(), "INITIAL");
 
     const GURL hash_navigation_to_initiate_fetch =
-        embedded_test_server()->GetURL("/actor/observation_delay.html#fetch");
+        embedded_test_server()->GetURL("/actor/page_stability.html#fetch");
 
     bool navigate_result = content::NavigateToURL(
         web_contents(), hash_navigation_to_initiate_fetch);
@@ -287,9 +233,6 @@ class ObservationDelayControllerTestBase : public InProcessBrowserTest {
  private:
   actor::AggregatedJournal journal_;
   std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_entry_;
-
-  std::unique_ptr<net::test_server::ControllableHttpResponse> fetch_response_;
-
   std::unique_ptr<ObservationDelayController> controller_;
 };
 
@@ -297,17 +240,12 @@ class ObservationDelayControllerTest
     : public ObservationDelayControllerTestBase {
  public:
   ObservationDelayControllerTest() {
-    // GlicActor is actually unneeded but enabled solely to set params.
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{features::kGlicActor,
-          {// Effectively disable the timeout to prevent flakes.
-           {features::kGlicActorPageStabilityTimeout.name, "30000ms"},
-           // Use small LCP delay.
-           {features::kActorObservationDelayLcp.name, "100ms"}}},
-         {features::kGlic, {}},
-         {features::kTabstripComboButton, {}}},
-        /*disabled_features=*/{features::kGlicWarming});
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActor,
+        {// Effectively disable the timeout to prevent flakes.
+         {features::kGlicActorPageStabilityTimeout.name, "30000ms"},
+         // Use small LCP delay.
+         {features::kActorObservationDelayLcp.name, "100ms"}});
   }
   ~ObservationDelayControllerTest() override = default;
 
@@ -324,10 +262,8 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
       web_contents(), content::BackForwardCache::DisableForTestingReason::
                           TEST_REQUIRES_NO_CACHING);
 
-  const GURL url = embedded_test_server()->GetURL(kTestPage);
-  const GURL url2 = embedded_test_server()->GetURL("/actor/blank.html");
-
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   TestObservationDelayController controller(*main_frame(), actor::TaskId(),
                                             journal(), PageStabilityConfig());
@@ -340,8 +276,9 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
   controller.Wait(*active_tab(), result.GetCallback());
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
 
-  TestNavigationManager manager(web_contents(), url2);
-  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents(), url2));
+  const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
+  TestNavigationManager manager(web_contents(), url);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents(), url));
 
   // Stop before committing the navigation. The observer should remain waiting
   // on page stability.
@@ -360,8 +297,8 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
 
 IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
                        UsePageStabilityForSameDocumentNavigation) {
-  const GURL url = embedded_test_server()->GetURL(kTestPage);
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   TestObservationDelayController controller(*main_frame(), actor::TaskId(),
                                             journal(), PageStabilityConfig());
@@ -377,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
   EXPECT_FALSE(result.IsReady());
 
-  RespondToFetchRequest("TEST COMPLETE");
+  Respond("TEST COMPLETE");
 
   ASSERT_TRUE(controller.WaitForState(State::kWaitForLoadCompletion));
   ASSERT_TRUE(controller.WaitForState(State::kWaitForVisualStateUpdate));
@@ -392,10 +329,9 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest, LoadAfterStability) {
   content::DisableBackForwardCacheForTesting(
       web_contents(), content::BackForwardCache::DisableForTestingReason::
                           TEST_REQUIRES_NO_CACHING);
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/observation_delay.html");
 
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   TestObservationDelayController controller(*main_frame(), actor::TaskId(),
                                             journal(), PageStabilityConfig());
@@ -437,10 +373,8 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest, LoadAfterStability) {
 // infrastructure.
 IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
                        BackgroundTabWhileWaitingForStability) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/observation_delay.html");
-
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
   TestObservationDelayController controller(*main_frame(), actor::TaskId(),
                                             journal(), PageStabilityConfig());
@@ -482,17 +416,13 @@ class ObservationDelayControllerLcpTest
   static constexpr int kLcpDelayInMs = 3000;
   ObservationDelayControllerLcpTest() {
     std::string lcp_delay = absl::StrFormat("%dms", kLcpDelayInMs);
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{features::kGlicActor,
-          {// Effectively disable the timeout to prevent flakes.
-           {features::kGlicActorPageStabilityTimeout.name, "30000ms"},
-           // Do not use min wait
-           {features::kGlicActorPageStabilityMinWait.name, "0ms"},
-           {features::kActorObservationDelayLcp.name, lcp_delay}}},
-         {features::kGlic, {}},
-         {features::kTabstripComboButton, {}}},
-        /*disabled_features=*/{features::kGlicWarming});
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActor,
+        {// Effectively disable the timeout to prevent flakes.
+         {features::kGlicActorPageStabilityTimeout.name, "30000ms"},
+         // Do not use min wait
+         {features::kGlicActorPageStabilityMinWait.name, "0ms"},
+         {features::kActorObservationDelayLcp.name, lcp_delay}});
   }
   ~ObservationDelayControllerLcpTest() override = default;
 
