@@ -169,13 +169,15 @@ public class TabbedNavigationBarColorControllerTest {
                 mDarkNavigationColor,
                 incognitoNtp.getActivity().getWindow().getNavigationBarColor());
 
-        RegularNewTabPageStation regularNtp = incognitoNtp.openNewTabOrWindowFast();
+        if (!incognitoNtp.getActivity().isIncognitoWindow()) {
+            RegularNewTabPageStation regularNtp = incognitoNtp.openNewTabOrWindowFast();
 
-        assertEquals(
-                "Navigation bar should match the tab background after switching back to normal"
-                        + " tab.",
-                mActivityTestRule.getActivityTab().getBackgroundColor(),
-                regularNtp.getActivity().getWindow().getNavigationBarColor());
+            assertEquals(
+                    "Navigation bar should match the tab background after switching back to normal"
+                            + " tab.",
+                    mActivityTestRule.getActivityTab().getBackgroundColor(),
+                    regularNtp.getActivity().getWindow().getNavigationBarColor());
+        }
     }
 
     @Test

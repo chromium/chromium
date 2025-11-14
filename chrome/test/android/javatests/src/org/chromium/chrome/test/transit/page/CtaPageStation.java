@@ -233,21 +233,41 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
     }
 
     /** Move to next tab by swiping the toolbar left. */
-    public <T extends CtaPageStation> T swipeToolbarToNextTab(Builder<T> destinationBuilder) {
-        return swipeToolbar(destinationBuilder, /* directionRight= */ false);
+    public TripBuilder swipeToolbarToNextTabTo() {
+        return swipeToolbarTo(/* directionRight= */ false);
     }
 
     /** Move to previous tab by swiping the toolbar right. */
-    public <T extends CtaPageStation> T swipeToolbarToPreviousTab(Builder<T> destinationBuilder) {
-        return swipeToolbar(destinationBuilder, /* directionRight= */ true);
+    public TripBuilder swipeToolbarToPreviousTabTo() {
+        return swipeToolbarTo(/* directionRight= */ true);
     }
 
-    public <T extends CtaPageStation> T swipeToolbar(
-            Builder<T> destinationBuilder, boolean directionRight) {
+    /** Move to previous tab by swiping the toolbar right. */
+    public WebPageStation swipeToolbarToPreviousTab(WebPageStation pageStation) {
+        return pageStation
+                .swipeToolbarToPreviousTabTo()
+                .arriveAt(
+                        WebPageStation.newBuilder()
+                                .initFrom(pageStation)
+                                .initSelectingExistingTab()
+                                .build());
+    }
+
+    /** Move to next tab by swiping the toolbar left. */
+    public WebPageStation swipeToolbarToNextTab(WebPageStation pageStation) {
+        return pageStation
+                .swipeToolbarToNextTabTo()
+                .arriveAt(
+                        WebPageStation.newBuilder()
+                                .initFrom(pageStation)
+                                .initSelectingExistingTab()
+                                .build());
+    }
+
+    public TripBuilder swipeToolbarTo(boolean directionRight) {
         ToolbarSwipeCoordinates coords =
                 new ToolbarSwipeCoordinates(toolbarElement.value(), directionRight);
 
-        T destination = destinationBuilder.initFrom(this).initSelectingExistingTab().build();
         return runTo(
                         () ->
                                 TouchCommon.performDrag(
@@ -258,12 +278,7 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
                                         coords.mY,
                                         ToolbarSwipeCoordinates.STEP_COUNT,
                                         500))
-                .arriveAt(destination);
-    }
-
-    /** Start moving to next tab by swiping the toolbar left, but do not finish the swipe. */
-    public SwipingToTabFacility swipeToolbarToNextTabPartial() {
-        return swipeToolbarPartial(/* directionRight= */ false);
+                .withPossiblyAlreadyFulfilled();
     }
 
     /** Start moving to previous tab by swiping the toolbar right, but do not finish the swipe. */
