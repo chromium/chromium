@@ -95,17 +95,18 @@ BASE_FEATURE(kBuiltInAIEagerInit, base::FEATURE_DISABLED_BY_DEFAULT);
 blink::mojom::ModelAvailabilityCheckResult
 ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
     optimization_guide::OnDeviceModelEligibilityReason
-        on_device_model_eligibility_reason,
-    bool is_downloading) {
+        on_device_model_eligibility_reason) {
   auto availability = optimization_guide::AvailabilityFromEligibilityReason(
       on_device_model_eligibility_reason);
   if (availability ==
       optimization_guide::mojom::ModelUnavailableReason::kPendingAssets) {
-    if (is_downloading) {
-      return blink::mojom::ModelAvailabilityCheckResult::kDownloading;
-    }
+    return blink::mojom::ModelAvailabilityCheckResult::kDownloading;
+  }
+  if (availability ==
+      optimization_guide::mojom::ModelUnavailableReason::kPendingUsage) {
     return blink::mojom::ModelAvailabilityCheckResult::kDownloadable;
   }
+
   switch (on_device_model_eligibility_reason) {
     case optimization_guide::OnDeviceModelEligibilityReason::kUnknown:
       return blink::mojom::ModelAvailabilityCheckResult::kUnavailableUnknown;
@@ -159,10 +160,8 @@ ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
         kModelToBeInstalled:
     case optimization_guide::OnDeviceModelEligibilityReason::
         kNoOnDeviceFeatureUsed:
-      if (is_downloading) {
-        return blink::mojom::ModelAvailabilityCheckResult::kDownloading;
-      }
-      return blink::mojom::ModelAvailabilityCheckResult::kDownloadable;
+      // Shouldn't reach here since it's handled by checking `availability`.
+      NOTREACHED();
     case optimization_guide::OnDeviceModelEligibilityReason::
         kDeprecatedModelNotAvailable:
     case optimization_guide::OnDeviceModelEligibilityReason::kSuccess:
@@ -863,16 +862,9 @@ void AIManager::FinishCanCreateSession(
   // the reason.
   if (eligibility !=
       optimization_guide::OnDeviceModelEligibilityReason::kSuccess) {
-    // If context_bound_object_set_ size or model_download_progress_manager_
-    // reporters are non-zero, it implies that a download is pending.
-    // TODO(crbug.com/444320307): Make this more robust by actually checking
-    // opt-guide download status.
-    bool is_downloading =
-        model_download_progress_manager_.GetNumberOfReporters() >= 1 ||
-        context_bound_object_set_.GetSize() >= 1;
     std::move(callback).Run(
         ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
-            eligibility, is_downloading));
+            eligibility));
     return;
   }
 

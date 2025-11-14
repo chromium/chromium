@@ -297,10 +297,26 @@ OnDeviceModelServiceController::GetSolution(ModelBasedCapabilityKey feature) {
     return base::unexpected(
         OnDeviceModelEligibilityReason::kFeatureExecutionNotEnabled);
   }
+  auto error =
+      GetBaseModelError(feature, on_device_component_state_manager_.get());
+
+  if (error != OnDeviceModelEligibilityReason::kModelToBeInstalled) {
+    // Device eligibility not determined yet or device ineligible takes
+    // precedence over feature usage.
+    return base::unexpected(error);
+  }
+
+  // Checks usage for feature before checking (eligible) model status, so that
+  // kPendingUsage is returned if the feature is not requested but the model was
+  // available for a different feature.
+  if (!usage_tracker_->WasOnDeviceEligibleFeatureRecentlyUsed(feature)) {
+    return base::unexpected(
+        OnDeviceModelEligibilityReason::kNoOnDeviceFeatureUsed);
+  }
 
   if (!base_model_controller_->model_metadata()) {
     return base::unexpected(
-        GetBaseModelError(feature, on_device_component_state_manager_.get()));
+        OnDeviceModelEligibilityReason::kModelToBeInstalled);
   }
 
   // Check feature config.
