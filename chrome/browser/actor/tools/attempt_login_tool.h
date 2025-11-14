@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/actor/tools/tool.h"
+#include "chrome/browser/password_manager/actor_login/actor_login_quality_logger.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
 #include "components/tabs/public/tab_interface.h"
@@ -71,6 +72,9 @@ class AttemptLoginTool : public Tool {
   std::vector<base::CancelableTaskTracker> favicon_requests_tracker_;
 
   tabs::TabHandle tab_handle_;
+
+  // Helper class which uploads the model quality log for each filling.
+  ActorLoginQualityLogger quality_logger_;
 
   // Set on invocation. Used to check if the document changed during credential
   // selection.
