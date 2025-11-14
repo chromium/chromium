@@ -27,6 +27,11 @@ class TwoClientOsPreferencesSyncTest : public SyncTest {
 
   // Needed for AwaitQuiescence().
   bool TestUsesSelfNotifications() override { return true; }
+
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, E2E_ENABLED(Sanity)) {
