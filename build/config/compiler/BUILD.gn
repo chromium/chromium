@@ -2267,6 +2267,10 @@ config("default_warnings") {
       # should always be added for clang builds.
       cflags += [ "-Wexit-time-destructors" ]
     }
+
+    if (disable_unknown_warning_option) {
+      cflags += [ "-Wno-unknown-warning-option" ]
+    }
   }
 
   # TODO(crbug.com/354162568): Clean up and enable.

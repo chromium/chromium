@@ -48,6 +48,9 @@ declare_args() {
   # With GCC, warnings in no-Chromium code are always not treated as errors.
   treat_warnings_as_errors = true
 
+  # Ignore unknown warning flags when using an older Clang version.
+  disable_unknown_warning_option = false
+
   # How clang should report warnings, either false to report in the usual
   # manner, or true to add source range information to the diagnostics in
   # a form suitable for subsequent processing with scripts. With GCC, or
