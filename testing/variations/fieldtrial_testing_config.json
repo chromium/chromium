@@ -19517,6 +19517,64 @@
             ]
         }
     ],
+    "Prerender2WarmUpCompositorForBookmarkBar": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "Prerender2WarmUpCompositorForBookmarkBar"
+                    ]
+                }
+            ]
+        }
+    ],
+    "Prerender2WarmUpCompositorForNewTabPage": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "Prerender2WarmUpCompositorForNewTabPage"
+                    ]
+                }
+            ]
+        }
+    ],
+    "Prerender2WarmUpCompositorForSpeculationRules": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "Prerender2WarmUpCompositorForImmediate",
+                        "Prerender2WarmUpCompositorForNonImmediate"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrerenderSiteInstanceProcessPerDSE": [
         {
             "platforms": [
