@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_TAB_STORAGE_LOADED_DATA_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/tab/payload.h"
@@ -27,7 +30,8 @@ class StorageLoadedData {
   StorageLoadedData(
       std::vector<LoadedTabState> loaded_tabs,
       std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups,
-      std::unique_ptr<RestoreIdAssociator> associator);
+      std::unique_ptr<RestoreIdAssociator> associator,
+      std::optional<int> active_tab_index);
   ~StorageLoadedData();
 
   StorageLoadedData(const StorageLoadedData&) = delete;
@@ -39,12 +43,13 @@ class StorageLoadedData {
   RestoreIdAssociator* GetNodeAssociator() const;
   std::vector<LoadedTabState>& GetLoadedTabs();
   std::vector<std::unique_ptr<TabGroupCollectionData>>& GetLoadedGroups();
+  std::optional<int> GetActiveTabIndex() const;
 
  private:
   std::vector<LoadedTabState> loaded_tabs_;
   std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups_;
-
   std::unique_ptr<RestoreIdAssociator> node_associator_;
+  std::optional<int> active_tab_index_;
 };
 
 }  // namespace tabs

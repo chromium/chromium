@@ -10,6 +10,7 @@
 #include "base/token.h"
 #include "chrome/browser/tab/payload.h"
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
+#include "chrome/browser/tab/protocol/tab_strip_collection_state.pb.h"
 #include "chrome/browser/tab/restore_id_associator.h"
 #include "chrome/browser/tab/restore_id_associator_builder.h"
 #include "chrome/browser/tab/storage_package.h"
@@ -84,15 +85,18 @@ constexpr int kMaxTreeHeight = 5;
 // so there is no risk of stack overflow from recursing.
 void SortTabsInOrder(
     int current_node_storage_id,
+    std::optional<int> active_tab_storage_id,
     const absl::flat_hash_map<int, std::vector<int>>& children_map,
     absl::flat_hash_map<int, LoadedTabState>& loaded_tabs_map,
     std::vector<LoadedTabState>& sorted_tabs,
+    std::optional<int>& active_tab_index,
     int depth = 0) {
   DCHECK_LE(depth, kMaxTreeHeight) << "Tree is too tall, possible cycle?";
   const auto it = children_map.find(current_node_storage_id);
   if (it != children_map.end()) {
     for (const int child_id : it->second) {
-      SortTabsInOrder(child_id, children_map, loaded_tabs_map, sorted_tabs,
+      SortTabsInOrder(child_id, active_tab_storage_id, children_map,
+                      loaded_tabs_map, sorted_tabs, active_tab_index,
                       depth + 1);
     }
   } else {
@@ -101,6 +105,10 @@ void SortTabsInOrder(
     // collections that are missing their child tabs. Also consider emitting
     // a metric for this.
     if (tab_it != loaded_tabs_map.end()) {
+      if (active_tab_storage_id.has_value() &&
+          active_tab_storage_id.value() == current_node_storage_id) {
+        active_tab_index = sorted_tabs.size();
+      }
       sorted_tabs.emplace_back(std::move(tab_it->second));
       loaded_tabs_map.erase(tab_it);
     }
@@ -236,11 +244,12 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
     std::move(callback).Run(std::make_unique<StorageLoadedData>(
         std::vector<LoadedTabState>(),
         std::vector<std::unique_ptr<TabGroupCollectionData>>(),
-        builder->BuildAssociator()));
+        builder->BuildAssociator(), std::nullopt));
     return;
   }
 
   std::optional<int> root_storage_id;
+  std::optional<int> active_tab_storage_id;
   absl::flat_hash_map<int, LoadedTabState> loaded_tabs_map;
   absl::flat_hash_map<int, std::vector<int>> children_map;
   std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups;
@@ -264,6 +273,12 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
         DCHECK(!root_storage_id.has_value())
             << "Multiple root nodes for window tag in the database.";
         root_storage_id = entry.id;
+        tabs_pb::TabStripCollectionState tab_strip_state;
+        if (tab_strip_state.ParseFromString(entry.payload)) {
+          if (tab_strip_state.has_active_tab_storage_id()) {
+            active_tab_storage_id = tab_strip_state.active_tab_storage_id();
+          }
+        }
       }
       tabs_pb::Children children;
       if (children.ParseFromString(entry.children)) {
@@ -286,15 +301,19 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
 
   std::vector<LoadedTabState> loaded_tabs;
   loaded_tabs.reserve(loaded_tabs_map.size());
+  std::optional<int> active_tab_index;
 
   // TODO(crbug.com/460490530): Change this to a DCHECK once we've worked out
   // why this is sometimes not present.
   if (root_storage_id.has_value()) {
-    SortTabsInOrder(root_storage_id.value(), children_map, loaded_tabs_map,
-                    loaded_tabs);
+    SortTabsInOrder(root_storage_id.value(), active_tab_storage_id,
+                    children_map, loaded_tabs_map, loaded_tabs,
+                    active_tab_index);
   } else {
-    // Temporarily fallback to just loading the tabs in a random order.
-    for (auto& [unused, tab] : loaded_tabs_map) {
+    // Temporarily fallback to just loading the tabs in a random order. It is
+    // not possible to determine the `active_tab_index` as
+    // `active_tab_storage_id` is not set if `root_storage_id` is not set.
+    for (auto& [storage_id, tab] : loaded_tabs_map) {
       loaded_tabs.emplace_back(std::move(tab));
     }
   }
@@ -305,7 +324,7 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
 
   auto loaded_data = std::make_unique<StorageLoadedData>(
       std::move(loaded_tabs), std::move(loaded_groups),
-      builder->BuildAssociator());
+      builder->BuildAssociator(), active_tab_index);
   std::move(callback).Run(std::move(loaded_data));
 }
 

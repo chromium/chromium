@@ -126,7 +126,8 @@ StorageLoadedDataAndroid::StorageLoadedDataAndroid(
   base::android::ScopedJavaLocalRef<jobjectArray> loaded_groups =
       CreateGroupCollectionData(env, data_->GetLoadedGroups());
   j_object_ = Java_StorageLoadedData_createData(
-      env, reinterpret_cast<intptr_t>(this), loaded_tab_states, loaded_groups);
+      env, reinterpret_cast<intptr_t>(this), loaded_tab_states, loaded_groups,
+      data_->GetActiveTabIndex().value_or(-1));
 }
 
 StorageLoadedDataAndroid::~StorageLoadedDataAndroid() = default;

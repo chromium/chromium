@@ -45,12 +45,17 @@ public class StorageLoadedData implements Destroyable {
     private long mNativePtr;
     private final LoadedTabState[] mLoadedTabStates;
     private final TabGroupCollectionData[] mGroupsData;
+    private final int mActiveTabIndex;
 
     private StorageLoadedData(
-            long nativePtr, LoadedTabState[] loadedTabStates, TabGroupCollectionData[] groupsData) {
+            long nativePtr,
+            LoadedTabState[] loadedTabStates,
+            TabGroupCollectionData[] groupsData,
+            int activeTabIndex) {
         mNativePtr = nativePtr;
         mLoadedTabStates = loadedTabStates;
         mGroupsData = groupsData;
+        mActiveTabIndex = activeTabIndex;
     }
 
     @Override
@@ -76,8 +81,11 @@ public class StorageLoadedData implements Destroyable {
 
     @CalledByNative
     public static StorageLoadedData createData(
-            long nativePtr, LoadedTabState[] loadedTabStates, TabGroupCollectionData[] groups) {
-        return new StorageLoadedData(nativePtr, loadedTabStates, groups);
+            long nativePtr,
+            LoadedTabState[] loadedTabStates,
+            TabGroupCollectionData[] groups,
+            int activeTabIndex) {
+        return new StorageLoadedData(nativePtr, loadedTabStates, groups, activeTabIndex);
     }
 
     @CalledByNative
@@ -135,6 +143,11 @@ public class StorageLoadedData implements Destroyable {
     /** Returns the data for the tab groups. */
     public TabGroupCollectionData[] getGroupsData() {
         return mGroupsData;
+    }
+
+    /** Returns the index of the active tab or -1 if one is not set. */
+    public int getActiveTabIndex() {
+        return mActiveTabIndex;
     }
 
     @NativeMethods

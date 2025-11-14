@@ -9,10 +9,12 @@ namespace tabs {
 StorageLoadedData::StorageLoadedData(
     std::vector<LoadedTabState> loaded_tabs,
     std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups,
-    std::unique_ptr<RestoreIdAssociator> node_associator)
+    std::unique_ptr<RestoreIdAssociator> node_associator,
+    std::optional<int> active_tab_index)
     : loaded_tabs_(std::move(loaded_tabs)),
       loaded_groups_(std::move(loaded_groups)),
-      node_associator_(std::move(node_associator)) {}
+      node_associator_(std::move(node_associator)),
+      active_tab_index_(active_tab_index) {}
 StorageLoadedData::~StorageLoadedData() = default;
 
 StorageLoadedData::StorageLoadedData(StorageLoadedData&&) = default;
@@ -29,6 +31,10 @@ std::vector<LoadedTabState>& StorageLoadedData::GetLoadedTabs() {
 std::vector<std::unique_ptr<TabGroupCollectionData>>&
 StorageLoadedData::GetLoadedGroups() {
   return loaded_groups_;
+}
+
+std::optional<int> StorageLoadedData::GetActiveTabIndex() const {
+  return active_tab_index_;
 }
 
 }  // namespace tabs
