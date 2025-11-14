@@ -89,6 +89,7 @@ class SigninViewControllerDelegate {
   static SigninViewControllerDelegate* CreateSignoutConfirmationDelegate(
       Browser* browser,
       ChromeSignoutConfirmationPromptVariant variant,
+      size_t unsynced_data_count,
       SignoutConfirmationCallback callback);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

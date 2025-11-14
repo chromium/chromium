@@ -723,6 +723,11 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account_id);
   bool sign_out_immediately = unsynced_datatypes.empty() && needs_reauth;
+  const size_t unsynced_data_count =
+      std::accumulate(unsynced_datatypes.begin(), unsynced_datatypes.end(), 0,
+                      [](size_t current_sum, const auto& pair) {
+                        return current_sum + pair.second;
+                      });
 
   // Do not show the dialog to users with implicit signin.
   if (!profile_->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin)) {
@@ -745,7 +750,7 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
 
   ChromeSignoutConfirmationPromptVariant prompt_variant =
       ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData;
-  if (!unsynced_datatypes.empty()) {
+  if (unsynced_data_count > 0) {
     prompt_variant =
         needs_reauth ? ChromeSignoutConfirmationPromptVariant::
                            kUnsyncedDataWithReauthButton
@@ -778,7 +783,8 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
       break;
   }
 
-  ShowSignoutConfirmationPrompt(prompt_variant, std::move(callback));
+  ShowSignoutConfirmationPrompt(prompt_variant, unsynced_data_count,
+                                std::move(callback));
 }
 
 void SigninViewController::ShowChromeSigninDialogForExtensions(
@@ -844,12 +850,13 @@ void SigninViewController::ShowChromeSigninDialogForExtensions(
 
 void SigninViewController::ShowSignoutConfirmationPrompt(
     ChromeSignoutConfirmationPromptVariant prompt_variant,
+    size_t unsynced_data_count,
     SignoutConfirmationCallback callback) {
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateSignoutConfirmationDelegate(
           browser_->GetBrowserForMigrationOnly(), prompt_variant,
-          std::move(callback)),
+          unsynced_data_count, std::move(callback)),
       GetOnModalDialogClosedCallback());
 }
 

@@ -210,6 +210,7 @@ std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateSignoutConfirmationWebView(
     Browser* browser,
     ChromeSignoutConfirmationPromptVariant variant,
+    size_t unsynced_data_count,
     SignoutConfirmationCallback callback) {
   // Set an initial height of 0 since the actual dialog's height will be set
   // dynamically based on its contents, so the initial height does not matter.
@@ -226,7 +227,8 @@ SigninViewControllerDelegateViews::CreateSignoutConfirmationWebView(
                                       ->GetController()
                                       ->GetAs<SignoutConfirmationUI>();
   DCHECK(web_ui);
-  web_ui->Initialize(browser, variant, std::move(callback));
+  web_ui->Initialize(browser, variant, unsynced_data_count,
+                     std::move(callback));
   return web_view;
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -589,12 +591,13 @@ SigninViewControllerDelegate*
 SigninViewControllerDelegate::CreateSignoutConfirmationDelegate(
     Browser* browser,
     ChromeSignoutConfirmationPromptVariant variant,
+    size_t unsynced_data_count,
     SignoutConfirmationCallback callback) {
   // Don't have the native view animate resizes since the dialog contains WebUI
   // elements that animate on resize.
   return new SigninViewControllerDelegateViews(
       SigninViewControllerDelegateViews::CreateSignoutConfirmationWebView(
-          browser, variant, std::move(callback)),
+          browser, variant, unsynced_data_count, std::move(callback)),
       browser, ui::mojom::ModalType::kWindow, true, false,
       /*animate_on_resize=*/false);
 }

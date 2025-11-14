@@ -49,6 +49,7 @@ class SignoutConfirmationUI
   // Prepares the information to be given to the handler once ready.
   void Initialize(Browser* browser,
                   ChromeSignoutConfirmationPromptVariant variant,
+                  size_t unsynced_data_count,
                   SignoutConfirmationCallback callback);
 
   void BindInterface(
@@ -86,6 +87,7 @@ class SignoutConfirmationUI
   void OnMojoHandlersReady(
       Browser* browser,
       ChromeSignoutConfirmationPromptVariant variant,
+      size_t unsynced_data_count,
       SignoutConfirmationCallback callback,
       mojo::PendingRemote<signout_confirmation::mojom::Page> page,
       mojo::PendingReceiver<signout_confirmation::mojom::PageHandler> receiver);
