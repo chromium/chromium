@@ -237,7 +237,8 @@ void TapDoneButtonOnInfobarModal() {
 // Tests that when microphone permission is granted, the user could see a banner
 // notification and then toggle microphone permission through the infobar modal
 // through the location bar badge.
-- (void)testAllowAndBlockMicrophonePermission {
+// TODO(crbug.com/460744137): Test is flaky.
+- (void)FLAKY_testAllowAndBlockMicrophonePermission {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey
       loadURL:self.testServer->GetURL("/permissions/microphone_only.html")];
