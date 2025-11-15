@@ -8133,7 +8133,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "DefaultBrowserPromoAndroid2"
+                        "DefaultBrowserPromoAndroid2",
+                        "EducationalTipDefaultBrowserPromoCard"
                     ]
                 }
             ]

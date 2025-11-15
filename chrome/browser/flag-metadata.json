@@ -1779,7 +1779,7 @@
   {
     "name": "clank-default-browser-promo2",
     "owners": [ "eirage@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "clear-instance-info-when-closed-intentionally",

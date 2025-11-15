@@ -920,7 +920,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sEdgeToEdgeUseBackupNavbarInsets =
             newCachedFlag(EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS, true);
     public static final CachedFlag sEducationalTipDefaultBrowserPromoCard =
-            newCachedFlag(EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_CARD, false);
+            newCachedFlag(EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_CARD, false, true);
     public static final CachedFlag sEducationalTipModule =
             newCachedFlag(EDUCATIONAL_TIP_MODULE, true);
     public static final CachedFlag sEnableExclusiveAccessManager =
