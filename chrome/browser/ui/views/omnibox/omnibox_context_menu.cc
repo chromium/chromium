@@ -79,6 +79,10 @@ bool OmniboxContextMenu::IsCommandEnabled(int command_id) const {
   return command_id != ui::MenuModel::kTitleId;
 }
 
+bool OmniboxContextMenu::IsCommandVisible(int command_id) const {
+  return controller_->IsCommandIdVisible(command_id);
+}
+
 void OmniboxContextMenu::OnIconChanged(int command_id) {
   const std::optional<size_t> index =
       controller_->menu_model()->GetIndexOfCommandId(command_id);

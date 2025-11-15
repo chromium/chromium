@@ -58,6 +58,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   ui::SimpleMenuModel* menu_model() { return menu_model_.get(); }
 
   void ExecuteCommand(int command_id, int event_flags) override;
+  bool IsCommandIdVisible(int command_id) const override;
   void AddTabContext(const TabInfo& tab_info);
   void UpdateSearchboxContext(
       std::optional<TabInfo> tab_info,
