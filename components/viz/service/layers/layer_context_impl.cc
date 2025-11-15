@@ -1875,12 +1875,6 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   layers.set_painted_device_scale_factor(update->painted_device_scale_factor);
   layers.SetDisplayColorSpaces(update->display_color_spaces);
 
-  if (!(update->top_controls_shown_ratio >= 0 &&
-        update->top_controls_shown_ratio <= 1 &&
-        update->bottom_controls_shown_ratio >= 0 &&
-        update->bottom_controls_shown_ratio <= 1)) {
-    return base::unexpected("Invalid top/bottom controls shown ratios");
-  }
   host_impl_->SetCurrentBrowserControlsShownRatio(
       update->top_controls_shown_ratio, update->bottom_controls_shown_ratio);
 

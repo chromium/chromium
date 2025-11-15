@@ -576,23 +576,23 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateTopControlsShownRatio) {
       layer_context_impl_->DoUpdateDisplayTree(std::move(update4)).has_value());
   EXPECT_EQ(active_tree->CurrentTopControlsShownRatio(), kRatio3);
 
-  // Update with invalid ratio < 0 should fail.
+  // Update with invalid ratio < 0 should succeeed.
   const float kRatio5 = -0.1;
   auto update5 = CreateDefaultUpdate();
   update5->top_controls_shown_ratio = kRatio5;
   auto result5 = layer_context_impl_->DoUpdateDisplayTree(std::move(update5));
-  ASSERT_FALSE(result5.has_value());
-  EXPECT_EQ(result5.error(), "Invalid top/bottom controls shown ratios");
-  EXPECT_EQ(active_tree->CurrentTopControlsShownRatio(), kRatio3);
+  ASSERT_TRUE(result5.has_value());
+  // Value gets clamped.
+  EXPECT_EQ(active_tree->CurrentTopControlsShownRatio(), 0.f);
 
-  // Update with invalid ratio > 1 should fail.
+  // Update with invalid ratio > 1 should succeed.
   const float kRatio6 = 1.1;
   auto update6 = CreateDefaultUpdate();
   update6->top_controls_shown_ratio = kRatio6;
   auto result6 = layer_context_impl_->DoUpdateDisplayTree(std::move(update6));
-  ASSERT_FALSE(result6.has_value());
-  EXPECT_EQ(result6.error(), "Invalid top/bottom controls shown ratios");
-  EXPECT_EQ(active_tree->CurrentTopControlsShownRatio(), kRatio3);
+  ASSERT_TRUE(result6.has_value());
+  // Value gets clamped.
+  EXPECT_EQ(active_tree->CurrentTopControlsShownRatio(), 1.f);
 }
 
 TEST_F(LayerContextImplLayerTreePropertiesTest,
@@ -622,23 +622,23 @@ TEST_F(LayerContextImplLayerTreePropertiesTest,
       layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
   EXPECT_EQ(active_tree->CurrentBottomControlsShownRatio(), kRatio2);
 
-  // Update with invalid ratio < 0 should fail.
+  // Update with invalid ratio < 0 should succeed.
   const float kRatio4 = -0.1;
   auto update4 = CreateDefaultUpdate();
   update4->bottom_controls_shown_ratio = kRatio4;
   auto result4 = layer_context_impl_->DoUpdateDisplayTree(std::move(update4));
-  ASSERT_FALSE(result4.has_value());
-  EXPECT_EQ(result4.error(), "Invalid top/bottom controls shown ratios");
-  EXPECT_EQ(active_tree->CurrentBottomControlsShownRatio(), kRatio2);
+  ASSERT_TRUE(result4.has_value());
+  // Value gets clamped.
+  EXPECT_EQ(active_tree->CurrentBottomControlsShownRatio(), 0.f);
 
-  // Update with invalid ratio > 1 should fail.
+  // Update with invalid ratio > 1 should succeed.
   const float kRatio5 = 1.1;
   auto update5 = CreateDefaultUpdate();
   update5->bottom_controls_shown_ratio = kRatio5;
   auto result5 = layer_context_impl_->DoUpdateDisplayTree(std::move(update5));
-  ASSERT_FALSE(result5.has_value());
-  EXPECT_EQ(result5.error(), "Invalid top/bottom controls shown ratios");
-  EXPECT_EQ(active_tree->CurrentBottomControlsShownRatio(), kRatio2);
+  ASSERT_TRUE(result5.has_value());
+  // Balue gets clamped.
+  EXPECT_EQ(active_tree->CurrentBottomControlsShownRatio(), 1.f);
 }
 
 TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateSelection) {
