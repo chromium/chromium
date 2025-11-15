@@ -22,7 +22,6 @@
 #include "url/gurl.h"
 
 class Profile;
-class OmniboxController;
 
 class TopChromeWebUIController;
 
@@ -80,16 +79,6 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
                    std::map<std::string, std::string> additional_params);
 
   omnibox::ChromeAimToolsAndModels GetAimToolMode() override;
-
- protected:
-  ComposeboxHandler(
-      mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
-      mojo::PendingRemote<composebox::mojom::Page> pending_page,
-      mojo::PendingReceiver<searchbox::mojom::PageHandler>
-          pending_searchbox_handler,
-      Profile* profile,
-      content::WebContents* web_contents,
-      std::unique_ptr<OmniboxController> omnibox_controller);
 
  private:
   // The tool mode for the composebox, if any. These tool modes are disjoint

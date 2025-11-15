@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/strings/string_util.h"
-#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/gfx/image/image.h"
 
 bool OmniboxClient::CurrentPageExists() const {
@@ -60,11 +59,6 @@ bool OmniboxClient::ShouldDefaultTypedNavigationsToHttps() const {
 
 int OmniboxClient::GetHttpsPortForTesting() const {
   return 0;
-}
-
-metrics::OmniboxEventProto::PageClassification
-OmniboxClient::GetOmniboxComposeboxPageClassification() const {
-  return metrics::OmniboxEventProto::INVALID_SPEC;
 }
 
 bool OmniboxClient::IsUsingFakeHttpsForHttpsUpgradeTesting() const {
