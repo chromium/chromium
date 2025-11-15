@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom-forward.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/google/core/common/google_util.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/clipboard_types.h"
@@ -74,6 +75,21 @@ TabInfoPtr CreateTabInfo(const TabIdGenerator& tab_id_generator,
   return tab_info;
 }
 
+/**
+ * Helper method to check if a tab is invalid for the Recent Tab Action Chip:
+ * - Google Search Results Page (SRP) or AIM SRP
+ * - Invalid URL
+ * - About Blank
+ * - Chrome internal page
+ * - Chrome untrusted internal page
+ */
+bool IsInvalidMostRecentTab(content::WebContents& contents) {
+  const GURL& url = contents.GetLastCommittedURL();
+  return google_util::IsGoogleSearchUrl(url) || !url.is_valid() ||
+         url.IsAboutBlank() || url.SchemeIs(content::kChromeUIScheme) ||
+         url.SchemeIs(content::kChromeUIUntrustedScheme);
+}
+
 TabInterface* FindMostRecentTab(content::WebUI& web_ui) {
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_ui.GetWebContents());
@@ -92,10 +108,7 @@ TabInterface* FindMostRecentTab(content::WebUI& web_ui) {
     }
     // TabInterface::GetContents returns a non-nullptr according to its comment.
     content::WebContents& contents = *tab->GetContents();
-    if (contents.GetLastCommittedURL().SchemeIs(content::kChromeUIScheme)) {
-      continue;
-    }
-    if (contents.GetLastCommittedURL().IsAboutBlank()) {
+    if (IsInvalidMostRecentTab(contents)) {
       continue;
     }
     const base::Time last_active = contents.GetLastActiveTime();
