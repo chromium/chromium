@@ -550,6 +550,7 @@ void Host::RequestToShowCredentialSelectionDialog(
 void Host::RequestToShowUserConfirmationDialog(
     actor::TaskId task_id,
     const url::Origin& navigation_origin,
+    bool for_blocklisted_origin,
     actor::ActorTaskDelegate::UserConfirmationDialogCallback callback) {
   if (!IsReady()) {
     std::move(callback).Run(
@@ -559,7 +560,7 @@ void Host::RequestToShowUserConfirmationDialog(
     return;
   }
   handler_info_->web_client->RequestToShowUserConfirmationDialog(
-      task_id, navigation_origin, std::move(callback));
+      task_id, navigation_origin, for_blocklisted_origin, std::move(callback));
 }
 
 void Host::RequestToConfirmNavigation(

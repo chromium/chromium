@@ -163,6 +163,7 @@ class MockActorTaskDelegate : public ActorTaskDelegate {
               RequestToShowUserConfirmationDialog,
               (TaskId task_id,
                const url::Origin& navigation_origin,
+               bool for_blocklisted_origin,
                UserConfirmationDialogCallback callback),
               (override));
 

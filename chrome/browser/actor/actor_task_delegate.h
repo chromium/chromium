@@ -39,6 +39,7 @@ class ActorTaskDelegate {
   virtual void RequestToShowUserConfirmationDialog(
       TaskId task_id,
       const url::Origin& navigation_origin,
+      bool for_blocklisted_origin,
       UserConfirmationDialogCallback callback) = 0;
 
   using NavigationConfirmationCallback =

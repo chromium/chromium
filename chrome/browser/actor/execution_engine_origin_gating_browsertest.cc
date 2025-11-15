@@ -40,9 +40,7 @@ constexpr char kHandleUserConfirmationDialogTempl[] =
             },
           });
           // Resolve the promise with the request data to be verified.
-          resolve({
-            navigationOrigin: request.navigationOrigin,
-          });
+          resolve(request);
         }
       );
     });
@@ -63,9 +61,7 @@ constexpr char kHandleNavigationConfirmationTempl[] =
                 },
               });
               // Resolve the promise with the request data to be verified.
-              resolve({
-                navigationOrigin: request.navigationOrigin,
-              });
+              resolve(request);
             }
           );
     });
@@ -280,8 +276,11 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                               content::JsReplace("setLink($1);", second_url)));
 
   ClickTarget("#link", mojom::ActionResultCode::kOk);
-  auto expected_request = base::Value::Dict().Set(
-      "navigationOrigin", url::Origin::Create(second_url).GetDebugString());
+  auto expected_request =
+      base::Value::Dict()
+          .Set("navigationOrigin",
+               url::Origin::Create(second_url).GetDebugString())
+          .Set("taskId", actor_task().id().value());
   RunTestSequence(VerifyNavigationConfirmationRequest(expected_request));
 
   // The first navigation should log that gating was not applied. The second
@@ -326,8 +325,11 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                               content::JsReplace("setLink($1);", second_url)));
 
   ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
-  auto expected_request = base::Value::Dict().Set(
-      "navigationOrigin", url::Origin::Create(second_url).GetDebugString());
+  auto expected_request =
+      base::Value::Dict()
+          .Set("navigationOrigin",
+               url::Origin::Create(second_url).GetDebugString())
+          .Set("taskId", actor_task().id().value());
   RunTestSequence(VerifyNavigationConfirmationRequest(expected_request));
 
   // Should log that permission was *denied* once.
@@ -356,8 +358,11 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                               content::JsReplace("setLink($1);", blocked_url)));
 
   ClickTarget("#link", mojom::ActionResultCode::kOk);
-  auto expected_request = base::Value::Dict().Set(
-      "navigationOrigin", url::Origin::Create(blocked_url).GetDebugString());
+  auto expected_request =
+      base::Value::Dict()
+          .Set("navigationOrigin",
+               url::Origin::Create(blocked_url).GetDebugString())
+          .Set("forBlocklistedOrigin", true);
   RunTestSequence(VerifyUserConfirmationDialogRequest(expected_request));
 
   // The first navigation should log that gating was not applied. The second
@@ -400,8 +405,11 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                               content::JsReplace("setLink($1);", blocked_url)));
 
   ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
-  auto expected_request = base::Value::Dict().Set(
-      "navigationOrigin", url::Origin::Create(blocked_url).GetDebugString());
+  auto expected_request =
+      base::Value::Dict()
+          .Set("navigationOrigin",
+               url::Origin::Create(blocked_url).GetDebugString())
+          .Set("forBlocklistedOrigin", true);
   RunTestSequence(VerifyUserConfirmationDialogRequest(expected_request));
 
   // Should log that permission was *denied* once.
@@ -534,9 +542,12 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                    result.GetCallback());
   ExpectOkResult(result);
 
-  VerifyUserConfirmationDialogRequest(base::Value::Dict().Set(
-      "navigationOrigin",
-      url::Origin::Create(blocked_origin_url).GetDebugString()));
+  auto expected_request =
+      base::Value::Dict()
+          .Set("navigationOrigin",
+               url::Origin::Create(blocked_origin_url).GetDebugString())
+          .Set("forBlocklistedOrigin", true);
+  VerifyUserConfirmationDialogRequest(expected_request);
 
   // Trigger ExecutionEngine destructor for metrics.
   actor_keyed_service().ResetForTesting();
@@ -1044,6 +1055,13 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
                               content::JsReplace("setLink($1);", second_url)));
   ClickTarget("#link", mojom::ActionResultCode::kOk);
 
+  auto expected_request =
+      base::Value::Dict()
+          .Set("navigationOrigin",
+               url::Origin::Create(second_url).GetDebugString())
+          .Set("forBlocklistedOrigin", false);
+  VerifyUserConfirmationDialogRequest(expected_request);
+
   // Trigger ExecutionEngine destructor for metrics.
   actor_keyed_service().ResetForTesting();
 
@@ -1198,9 +1216,12 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineSiteGatingBrowserTest,
   ASSERT_TRUE(content::ExecJs(
       web_contents(), content::JsReplace("setLink($1);", confirmlist_url)));
   ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
-  VerifyUserConfirmationDialogRequest(base::Value::Dict().Set(
-      "navigationOrigin",
-      url::Origin::Create(confirmlist_url).GetDebugString()));
+  auto expected_request =
+      base::Value::Dict()
+          .Set("navigationOrigin",
+               url::Origin::Create(confirmlist_url).GetDebugString())
+          .Set("forBlocklistedOrigin", true);
+  VerifyUserConfirmationDialogRequest(expected_request);
 
   // Should log that permission was *denied* once.
   histogram_tester_for_init_.ExpectBucketCount(

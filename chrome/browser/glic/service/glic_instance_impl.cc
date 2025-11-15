@@ -1059,9 +1059,10 @@ void GlicInstanceImpl::RequestToShowCredentialSelectionDialog(
 void GlicInstanceImpl::RequestToShowUserConfirmationDialog(
     actor::TaskId task_id,
     const url::Origin& navigation_origin,
+    bool for_blocklisted_origin,
     actor::ActorTaskDelegate::UserConfirmationDialogCallback callback) {
-  host_.RequestToShowUserConfirmationDialog(task_id, navigation_origin,
-                                            std::move(callback));
+  host_.RequestToShowUserConfirmationDialog(
+      task_id, navigation_origin, for_blocklisted_origin, std::move(callback));
 }
 
 void GlicInstanceImpl::RequestToConfirmNavigation(

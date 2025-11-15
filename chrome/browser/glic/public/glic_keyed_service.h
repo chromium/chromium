@@ -326,6 +326,7 @@ class GlicKeyedService : public KeyedService,
   void RequestToShowUserConfirmationDialog(
       actor::TaskId task_id,
       const url::Origin& navigation_origin,
+      bool for_blocklisted_origin,
       actor::ActorTaskDelegate::UserConfirmationDialogCallback callback)
       override;
   void RequestToConfirmNavigation(

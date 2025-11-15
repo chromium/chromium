@@ -150,8 +150,9 @@ struct SelectAutofillSuggestionsDialogResponse {
 
 // Contains information about the confirmation request
 // that also encodes what type of request is being sent.
-union UserConfirmationDialogPayload {
+struct UserConfirmationDialogPayload {
   url.mojom.Origin navigation_origin;
+  bool for_blocklisted_origin;
 };
 
 struct UserConfirmationDialogRequest {
