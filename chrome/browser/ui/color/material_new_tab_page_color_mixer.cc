@@ -115,8 +115,13 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageLink] = {ui::kColorSysPrimary};
   mixer[kColorNewTabPageLogo] = {ui::kColorSysPrimary};
 
-  mixer[kColorNewTabPageMostVisitedTileBackground] = {
-      ui::kColorSysSurfaceVariant};
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpNextFeatures)) {
+    mixer[kColorNewTabPageMostVisitedTileBackground] = {
+        ui::kColorSysBaseContainer};
+  } else {
+    mixer[kColorNewTabPageMostVisitedTileBackground] = {
+        ui::kColorSysSurfaceVariant};
+  }
   mixer[kColorNewTabPageMostVisitedForeground] = {ui::kColorSysOnSurfaceSubtle};
 
   mixer[kColorNewTabPageHistoryClustersModuleItemBackground] = {
