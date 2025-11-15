@@ -26,6 +26,8 @@ constexpr float kNtpElementLuminosityChangeForDarkBackgroundParam = 0.2f;
 
 constexpr SkColor kColorSysSurface3_Light = SkColorSetRGB(0xEF, 0xF3, 0xFA);
 constexpr SkColor kColorSysSurface_Light = SkColorSetRGB(0xFF, 0xFF, 0xFF);
+constexpr SkColor kColorGemSysColorPrimary_Light =
+    SkColorSetRGB(0x0B, 0x57, 0xD0);
 
 constexpr SkColor kColorSysStateHoverOnSubtle_Light = SkColorSetARGB(0x0F, 0x1F, 0x1F, 0x1F);
 
@@ -309,6 +311,8 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
       SkColorSetRGB(0x0B, 0x50, 0xD0)};
   mixer[kColorComposeboxSuggestionActivity] = {
       ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorComposeboxTabSelectorButtonSelected] = {
+      kColorGemSysColorPrimary_Light};
   mixer[kColorComposeboxTypeAhead] = {
       ui::SetAlpha({ui::kColorRefNeutral10}, 0x60)};
   mixer[kColorComposeboxTypeAheadChip] = {

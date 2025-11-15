@@ -105,6 +105,10 @@
   width: 100%;
 }
 
+:host([enable-multi-tab-selection_]) .dropdown-item {
+  width: 320px;
+}
+
 .dropdown-item:hover {
   background-color: var(--cr-hover-background-color);
 }
@@ -135,4 +139,22 @@
 #createImage {
   --iron-icon-height: 16px;
   --iron-icon-width: 16px;
+}
+
+.multi-tab-icon {
+  --iron-icon-height: 10px;
+  --iron-icon-width: 10px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: 2px;
+}
+
+#multi-tab-add {
+  border: 1px solid;
+}
+
+#multi-tab-check {
+  --iron-icon-fill-color: white;
+  background-color: var(--color-composebox-tab-selector-button-selected);
 }

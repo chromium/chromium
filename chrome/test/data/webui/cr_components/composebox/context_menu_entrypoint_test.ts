@@ -148,7 +148,7 @@ suite('ContextMenuEntrypoint', () => {
         lastActive: {internalValue: BigInt(2)},
       },
     ];
-    entrypoint.disabledTabIds = new Set([2]);
+    entrypoint.disabledTabIds = new Map([[2, '2']]);
     await microtasksFinished();
     assertTrue(entrypoint.$.menu.open);
 
@@ -534,9 +534,96 @@ suite('ContextMenuEntrypoint', () => {
     assertFalse(tab2.disabled);
 
     // Disabled via disabledTabIds.
-    entrypoint.disabledTabIds = new Set([1]);
+    entrypoint.disabledTabIds = new Map([[1, '1']]);
     await microtasksFinished();
     assertTrue(tab1.disabled);
     assertFalse(tab2.disabled);
+  });
+
+  test(
+      'multi-tab enabled allows selection/deselection of tabs', async () => {
+        loadTimeData.overrideValues({
+          composeboxContextMenuEnableMultiTabSelection: true,
+        });
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        entrypoint = document.createElement(
+            'cr-composebox-context-menu-entrypoint');
+        document.body.appendChild(entrypoint);
+        await microtasksFinished();
+
+        await openContextMenuWithSuggestions(createTabInfo(2));
+        let tabSelectors =
+            entrypoint.shadowRoot.querySelectorAll<HTMLElement>(
+                '.multi-tab-icon');
+        assertEquals(2, tabSelectors.length);
+        assertEquals('cr:add', tabSelectors[0]!.getAttribute('icon'));
+        assertEquals('cr:add', tabSelectors[1]!.getAttribute('icon'));
+
+        // Act by adding tab 1 as context.
+        entrypoint.disabledTabIds = new Map([[1, '1']]);
+        await microtasksFinished();
+
+        // Assert tab 1 is selected and tab 2 is not.
+        tabSelectors =
+            entrypoint.shadowRoot.querySelectorAll<HTMLElement>(
+                '.multi-tab-icon');
+        assertEquals(2, tabSelectors.length);
+        assertEquals('cr:check', tabSelectors[0]!.getAttribute('icon'));
+        assertEquals('cr:add', tabSelectors[1]!.getAttribute('icon'));
+      });
+
+  test('multi-tab enabled does not close context menu', async () => {
+    loadTimeData.overrideValues({
+      composeboxContextMenuEnableMultiTabSelection: true,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    entrypoint = document.createElement(
+        'cr-composebox-context-menu-entrypoint');
+    document.body.appendChild(entrypoint);
+    await microtasksFinished();
+
+    await openContextMenuWithSuggestions(createTabInfo(1));
+    const tabItems = entrypoint.shadowRoot.querySelectorAll<HTMLButtonElement>(
+        '.suggestion-container .dropdown-item');
+    assertEquals(1, tabItems.length);
+    const tab = tabItems[0]!;
+
+    // Act by clicking on tab to initiate upload flow.
+    const whenTabContextAdded = eventToPromise('add-tab-context', entrypoint);
+    tab.click();
+    await whenTabContextAdded;
+
+    // Assert context menu is still open.
+    assertTrue(entrypoint.$.menu.open);
+  });
+
+  test('multi-tab enabled deletes context on second click', async () => {
+    loadTimeData.overrideValues({
+      composeboxContextMenuEnableMultiTabSelection: true,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    entrypoint = document.createElement(
+        'cr-composebox-context-menu-entrypoint');
+    document.body.appendChild(entrypoint);
+    await microtasksFinished();
+
+    await openContextMenuWithSuggestions(createTabInfo(1));
+    const tabItems = entrypoint.shadowRoot.querySelectorAll<HTMLButtonElement>(
+        '.suggestion-container .dropdown-item');
+    assertEquals(1, tabItems.length);
+    const tab = tabItems[0]!;
+
+    // Add tab to disabled tabs to simulate it being added as context.
+    entrypoint.disabledTabIds = new Map([[1, '1']]);
+    await microtasksFinished();
+
+    // Act by clicking on tab to initiate delete flow.
+    const whenTabContextAdded =
+        eventToPromise('delete-tab-context', entrypoint);
+    tab.click();
+    await whenTabContextAdded;
+
+    // Assert context menu is still open.
+    assertTrue(entrypoint.$.menu.open);
   });
 });

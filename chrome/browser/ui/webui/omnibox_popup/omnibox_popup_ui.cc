@@ -97,6 +97,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                      !searchbox_layout_mode.empty());
   source->AddBoolean("composeboxShowContextMenuTabPreviews",
                      ntp_composebox::kShowContextMenuTabPreviews.Get());
+  source->AddBoolean("composeboxContextMenuEnableMultiTabSelection",
+                     ntp_composebox::kContextMenuEnableMultiTabSelection.Get());
   source->AddBoolean("composeboxShowZps",
                      ntp_composebox::kShowComposeboxZps.Get());
   source->AddBoolean("composeboxShowTypedSuggest",
