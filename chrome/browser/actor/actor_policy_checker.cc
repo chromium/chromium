@@ -104,6 +104,9 @@ bool IsAccountEligibleForActuation(Profile& profile,
   // by two different Google API endpoints. Both are checked for completeness.
 
   bool is_enterprise_account_data_protected = false;
+  // Ensure that assumptions about when we do or do not update the cached user
+  // status are not broken.
+  // LINT.IfChange(GlicCachedUserStatusScope)
   if (base::FeatureList::IsEnabled(features::kGlicUserStatusCheck)) {
     std::optional<glic::CachedUserStatus> cached_user_status =
         glic::GlicUserStatusFetcher::GetCachedUserStatus(&profile);
@@ -111,11 +114,13 @@ bool IsAccountEligibleForActuation(Profile& profile,
       is_enterprise_account_data_protected =
           cached_user_status->is_enterprise_account_data_protected;
     } else {
-      // Fail-closed - if the user status is not cached, we assume the user
-      // is not signed-in, thus no capability.
-      return false;
+      // NOTE: Do not return false as a fail-closed here. CachedUserStatus is
+      // only fetched when `is_managed` of
+      // GlicUserStatusFetcher::UpdateUserStatus is true. Returning false means
+      // gating all the non-enterprise accounts from actuation.
     }
   }
+  // LINT.ThenChange(//chrome/browser/glic/glic_user_status_fetcher.cc:GlicCachedUserStatusScope)
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(&profile);
