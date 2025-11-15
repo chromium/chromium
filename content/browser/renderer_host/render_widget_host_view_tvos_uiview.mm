@@ -280,55 +280,65 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
   }
 }
 
-// Generates four-directional events when buttons on the clickpad ring are
-// pressed.
-- (void)pressesBegan:(NSSet<UIPress*>*)presses
-           withEvent:(UIPressesEvent*)event {
+// Returns YES if events are handled. Otherwise, NO to allow the event
+// to propagate to `super`.
+- (BOOL)handlePresses:(NSSet<UIPress*>*)presses
+             withType:(blink::WebInputEvent::Type)type {
+  // If any of `presses` is not handled, set `needToHandleInFramework`.
+  BOOL needToHandleInFramework = NO;
   for (UIPress* press in presses) {
     RemoteButton button = remoteButtonFromPressType(press.type);
     if (button == kNone) {
       // Since UIPress has key information from the physical keyboard,
       // NativeWebKeyboardEvent is built with it in `sendKeyboardEvent`.
-      [self sendKeyboardEvent:press
-                    eventType:blink::WebInputEvent::Type::kKeyDown];
+      needToHandleInFramework |= ![self sendKeyboardEvent:press eventType:type];
       continue;
     }
-    [self sendKeyEventWithRemoteButton:button
-                             eventType:blink::WebInputEvent::Type::kKeyDown];
+    needToHandleInFramework |= ![self sendKeyEventWithRemoteButton:button
+                                                         eventType:type];
+    if (press.type == UIPressTypeMenu) {
+      // Pass `UIPressTypeMenu` to the framework to manage app suspension.
+      needToHandleInFramework = YES;
+    }
   }
-  [super pressesBegan:presses withEvent:event];
+  return !needToHandleInFramework;
+}
+
+- (void)pressesBegan:(NSSet<UIPress*>*)presses
+           withEvent:(UIPressesEvent*)event {
+  BOOL handled = [self handlePresses:presses
+                            withType:blink::WebInputEvent::Type::kKeyDown];
+  if (!handled) {
+    [super pressesBegan:presses withEvent:event];
+  }
 }
 
 - (void)pressesEnded:(NSSet<UIPress*>*)presses
            withEvent:(UIPressesEvent*)event {
-  for (UIPress* press in presses) {
-    RemoteButton button = remoteButtonFromPressType(press.type);
-    if (button == kNone) {
-      // Since UIPress has key information from the physical keyboard,
-      // NativeWebKeyboardEvent is built with it in `sendKeyboardEvent`.
-      [self sendKeyboardEvent:press
-                    eventType:blink::WebInputEvent::Type::kKeyUp];
-      continue;
-    }
-    [self sendKeyEventWithRemoteButton:button
-                             eventType:blink::WebInputEvent::Type::kKeyUp];
+  BOOL handled = [self handlePresses:presses
+                            withType:blink::WebInputEvent::Type::kKeyUp];
+  if (!handled) {
+    [super pressesEnded:presses withEvent:event];
   }
-  [super pressesEnded:presses withEvent:event];
 }
 
 // Helper method to send the keyboard event.
-- (void)sendKeyboardEvent:(UIPress*)press
+- (BOOL)sendKeyboardEvent:(UIPress*)press
                 eventType:(blink::WebInputEvent::Type)type {
   input::NativeWebKeyboardEvent native_event =
       input::NativeWebKeyboardEvent(base::apple::OwnedUIPress(press));
   if (!blink::WebInputEvent::IsKeyboardEventType(native_event.GetType())) {
-    return;
+    return NO;
+  }
+  if (native_event.dom_code == static_cast<uint32_t>(ui::DomCode::NONE)) {
+    return NO;
   }
   _view->SendKeyEvent(native_event);
+  return YES;
 }
 
 // Helper method to generate WebKeyboardEvent with RemoteButton.
-- (void)sendKeyEventWithRemoteButton:(RemoteButton)remoteButton
+- (BOOL)sendKeyEventWithRemoteButton:(RemoteButton)remoteButton
                            eventType:(blink::WebInputEvent::Type)type {
   blink::WebKeyboardEvent event(type, blink::WebInputEvent::kNoModifiers,
                                 ui::EventTimeForNow());
@@ -373,11 +383,12 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
       event.windows_key_code = ui::VKEY_ESCAPE;
       break;
     case kNone:
-      return;
+      return NO;
   }
 
   _view->SendKeyEvent(
       input::NativeWebKeyboardEvent(event, _view->GetNativeView()));
+  return YES;
 }
 
 - (void)showKeyboard:(const ui::mojom::TextInputState&)state {
