@@ -117,6 +117,8 @@ class TabStripControlButton : public views::LabelButton,
   void UpdateBackground();
   void UpdateInkDrop();
 
+  bool IsWidgetAlive() const;
+
   // Optional icon for the label button.
   raw_ref<const gfx::VectorIcon> icon_;
 
