@@ -400,12 +400,11 @@ export class MostVisitedElement extends MostVisitedElementBase {
         canShowShowMore ? this.maxTilesBeforeShowMore_ + 1 : shortcutCount;
     const totalTileCount = visibleShortcutCount + (canShowAdd ? 1 : 0) +
         (canShowShowMore || canShowShowLess ? 1 : 0);
-    const tileCount = Math.min(this.maxTiles_, totalTileCount);
-    const columnCount = tileCount <= this.maxVisibleColumnCount_ ?
-        tileCount :
+    const columnCount = totalTileCount <= this.maxVisibleColumnCount_ ?
+        totalTileCount :
         Math.min(
             this.maxVisibleColumnCount_,
-            Math.ceil(tileCount / (this.singleRow ? 1 : 2)));
+            Math.ceil(totalTileCount / (this.singleRow ? 1 : 2)));
     return columnCount || 3;
   }
 
