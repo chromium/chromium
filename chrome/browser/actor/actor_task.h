@@ -232,10 +232,18 @@ class ActorTask {
                              content::WebContents* old_contents,
                              content::WebContents* new_contents);
 
-  void OnFinishedAct(ActCallback callback,
-                     mojom::ActionResultPtr result,
-                     std::optional<size_t> index_of_failed_action,
-                     std::vector<ActionResultWithLatencyInfo> action_results);
+  static void OnFinishedAct(
+      base::WeakPtr<ActorTask> actor_task,
+      ActCallback callback,
+      mojom::ActionResultPtr result,
+      std::optional<size_t> index_of_failed_action,
+      std::vector<ActionResultWithLatencyInfo> action_results);
+  void OnFinishedActImpl(
+      ActCallback callback,
+      mojom::ActionResultPtr result,
+      std::optional<size_t> index_of_failed_action,
+      std::vector<ActionResultWithLatencyInfo> action_results);
+
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
 

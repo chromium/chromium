@@ -71,8 +71,15 @@ void GlicActorTaskManager::PerformActionsFinished(
           .Add("result_code", base::ToString(result_code))
           .Build());
 
-  // Task is checked when calling PerformActions and it doesn't go away.
-  CHECK(task);
+  // Task has disappeared, clear the current task id.
+  if (!task) {
+    current_task_id_ = actor::TaskId();
+    optimization_guide::proto::ActionsResult response =
+        actor::BuildErrorActionsResult(
+            actor::mojom::ActionResultCode::kTaskWentAway, std::nullopt);
+    std::move(callback).Run(mojo_base::ProtoWrapper(response));
+    return;
+  }
 
   // The callback doesn't need any weak semantics since all it does is wrap the
   // result and pass it to the mojo callback. If `this` is destroyed the mojo
