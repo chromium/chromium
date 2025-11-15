@@ -38,6 +38,10 @@ OmniboxContextMenu::OmniboxContextMenu(views::Widget* parent_widget,
   }
 }
 
+int OmniboxContextMenu::GetMaxWidthForMenu(views::MenuItemView* menu) {
+  return 400;
+}
+
 OmniboxContextMenu::~OmniboxContextMenu() {
   if (controller_ && controller_->menu_model()) {
     controller_->menu_model()->SetMenuModelDelegate(nullptr);
