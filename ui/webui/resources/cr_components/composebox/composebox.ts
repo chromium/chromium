@@ -884,13 +884,16 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   setSearchContext(context: SearchContextStub|null) {
-    if (!context) {
-      return;
+    if (context) {
+      if (context.input.length > 0) {
+        this.input_ = context.input;
+      }
+      this.$.context.setStateFromSearchContext(context);
     }
-    if (context.input.length > 0) {
-      this.input_ = context.input;
+    // Query for ZPS even if there's no context.
+    if (this.showZps) {
+      this.queryAutocomplete(/* clearMatches= */ false);
     }
-    this.$.context.setStateFromSearchContext(context);
   }
 
   private closeComposebox_() {
