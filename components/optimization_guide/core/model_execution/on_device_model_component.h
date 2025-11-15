@@ -42,8 +42,6 @@ namespace optimization_guide {
 inline constexpr std::string_view kOnDeviceModelCrxId =
     "fklghjjljmnfjoepjmlobpekiapffcja";
 
-class OnDeviceModelComponentState;
-
 enum class ModelBasedCapabilityKey;
 class UsageTracker;
 
@@ -106,6 +104,31 @@ struct OnDeviceBaseModelSpec {
   std::string model_version;
   // The selected performance hint for this device and base model.
   proto::OnDeviceModelPerformanceHint selected_performance_hint;
+};
+
+// State of the on-device model component.
+class OnDeviceModelComponentState {
+ public:
+  OnDeviceModelComponentState(base::FilePath install_dir,
+                              base::Version component_version,
+                              OnDeviceBaseModelSpec model_spec);
+  OnDeviceModelComponentState(const OnDeviceModelComponentState&);
+  ~OnDeviceModelComponentState();
+
+  const base::FilePath& GetInstallDirectory() const { return install_dir_; }
+  const base::Version& GetComponentVersion() const {
+    return component_version_;
+  }
+  const OnDeviceBaseModelSpec& GetBaseModelSpec() const { return model_spec_; }
+
+ private:
+  friend class OnDeviceModelAdaptationLoaderTest;
+
+  friend class OnDeviceModelComponentStateManager;
+
+  base::FilePath install_dir_;
+  base::Version component_version_;
+  OnDeviceBaseModelSpec model_spec_;
 };
 
 // The attributes selected when registering an on-device model component.
@@ -227,34 +250,14 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
   static bool VerifyInstallation(const base::FilePath& install_dir,
                                  const base::Value::Dict& manifest);
 
-  // Should be called whenever the device performance class changes.
-  void OnPerformanceClassAvailable();
-
   // Returns the current state. Null if the component is not available.
   const OnDeviceModelComponentState* GetState();
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
-  // Functions called by the component installer:
-
-  // Called when the on-device component has been uninstalled.
-  void UninstallComplete();
-
-  // Creates the on-device component state, only called after VerifyInstallation
-  // returns true.
-  void SetReady(const base::Version& version,
-                const base::FilePath& install_dir,
-                const base::Value::Dict& manifest);
-
-  // Called after the installer is successfully registered.
-  void InstallerRegistered();
-
-  // Returns true if the installer is registered.
-  bool IsInstallerRegistered();
-
   // Returns the current OnDeviceModelStatus.
   OnDeviceModelStatus GetOnDeviceModelStatus();
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Exposed internal state for chrome://on-device-internals
   struct DebugState {
@@ -270,46 +273,45 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
     return GetDebugState();
   }
 
-  PerformanceClassifier& performance_classifier() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return *performance_classifier_;
-  }
+  // Functions called by the component installer:
+
+  // Creates the on-device component state, only called after VerifyInstallation
+  // returns true.
+  void SetReady(const base::Version& version,
+                const base::FilePath& install_dir,
+                const base::Value::Dict& manifest);
+
+  // Called after the installer is successfully registered.
+  void InstallerRegistered();
+
+  // Called when the on-device component has been uninstalled.
+  void UninstallComplete();
 
   base::WeakPtr<OnDeviceModelComponentStateManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
-  base::SafeRef<OnDeviceModelComponentStateManager> GetSafeRef() {
-    return weak_ptr_factory_.GetSafeRef();
-  }
 
  private:
-  enum class OnDeviceRegistrationDecision {
-    // The component should be installed.
-    kInstall,
-    // The component should not be installed, and should be removed.
-    kUninstall,
-    // The component should not be installed, and does not need removed.
-    kDoNotInstall,
-  };
-
-  RegistrationCriteria ComputeRegistrationCriteria(
-      base::ByteCount disk_space_free_bytes);
-
   DebugState GetDebugState();
 
-  // Installs the component installer if it needs installed.
-  void BeginUpdateRegistration();
-  // Continuation of `UpdateRegistration()` after async work.
-  void CompleteUpdateRegistration(
-      std::optional<base::ByteCount> disk_space_free);
+  // Should be called whenever the device performance class changes.
+  void OnPerformanceClassAvailable();
+
+  void OnGenAILocalFoundationalModelEnterprisePolicyChanged();
 
   // UsageTracker::Observer:
   void OnDeviceEligibleFeatureUsed(ModelBasedCapabilityKey feature) override;
 
+  // Installs the component installer if it needs installed.
+  void BeginUpdateRegistration();
+  RegistrationCriteria ComputeRegistrationCriteria(
+      base::ByteCount disk_space_free_bytes);
+  // Continuation of `UpdateRegistration()` after async work.
+  void CompleteUpdateRegistration(
+      std::optional<base::ByteCount> disk_space_free);
+
   // Uninstalls the component.
   void UninstallComponent();
-
-  void OnGenAILocalFoundationalModelEnterprisePolicyChanged();
 
   void NotifyStateChanged();
 
@@ -338,31 +340,6 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
 
   base::WeakPtrFactory<OnDeviceModelComponentStateManager> weak_ptr_factory_{
       this};
-};
-
-// State of the on-device model component.
-class OnDeviceModelComponentState {
- public:
-  OnDeviceModelComponentState(base::FilePath install_dir,
-                              base::Version component_version,
-                              OnDeviceBaseModelSpec model_spec);
-  OnDeviceModelComponentState(const OnDeviceModelComponentState&);
-  ~OnDeviceModelComponentState();
-
-  const base::FilePath& GetInstallDirectory() const { return install_dir_; }
-  const base::Version& GetComponentVersion() const {
-    return component_version_;
-  }
-  const OnDeviceBaseModelSpec& GetBaseModelSpec() const { return model_spec_; }
-
- private:
-  friend class OnDeviceModelAdaptationLoaderTest;
-
-  friend class OnDeviceModelComponentStateManager;
-
-  base::FilePath install_dir_;
-  base::Version component_version_;
-  OnDeviceBaseModelSpec model_spec_;
 };
 
 }  // namespace optimization_guide
