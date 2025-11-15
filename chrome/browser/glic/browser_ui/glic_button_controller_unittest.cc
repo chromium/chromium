@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -99,7 +100,8 @@ class GlicButtonControllerTest : public testing::Test {
     glic_button_controller_ = std::make_unique<GlicButtonController>(
         profile_, *mock_browser_window_interface_,
         &mock_glic_controller_delegate_, mock_glic_service_.get());
-    ForceSigninAndModelExecutionCapability(profile_);
+
+    glic_test_env_.SetupProfile(profile());
   }
 
   void TearDown() override {
@@ -119,6 +121,7 @@ class GlicButtonControllerTest : public testing::Test {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  GlicUnitTestEnvironment glic_test_env_;
   content::BrowserTaskEnvironment task_environment;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   raw_ptr<Profile> profile_ = nullptr;

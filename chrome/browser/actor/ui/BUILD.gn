@@ -276,6 +276,9 @@ source_set("interactive_ui_tests") {
   ]
 
   if (enable_glic) {
-    deps += [ "//chrome/browser/glic" ]
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic/test_support",
+    ]
   }
 }

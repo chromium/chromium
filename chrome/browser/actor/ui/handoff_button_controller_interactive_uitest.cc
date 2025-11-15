@@ -35,6 +35,7 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #endif
 
@@ -65,10 +66,6 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
 #if BUILDFLAG(ENABLE_GLIC)
             {features::kGlicURLConfig,
              {{features::kGlicGuestURL.name, "about:blank"}}},
-            // Enable kGlic and kTabstripComboButton to allow glic service to be
-            // created for testing.
-            {features::kGlic, {}},
-            {features::kTabstripComboButton, {}},
 #endif
             {features::kGlicActor, {}},
             {features::kGlicHandoffButtonHiddenClientControl, {}},
@@ -132,6 +129,9 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
 
  protected:
   TaskId task_id_;
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicTestEnvironment glic_test_env_;
+#endif
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -256,18 +256,17 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
       browser()->GetFeatures().side_panel_coordinator();
   coordinator->SetNoDelaysForTesting(true);
   StartActingOnTab();
-  RunTestSequence(
-      ClearOmniboxFocus(), EnsureNotPresent(kSidePanelElementId),
-      EnsureNotPresent(kGlicViewElementId),
-      InAnyContext(
-          WaitForShow(HandoffButtonController::kHandoffButtonElementId)),
-      InAnyContext(
-          CheckViewProperty(HandoffButtonController::kHandoffButtonElementId,
-                            &views::LabelButton::GetText, TAKE_OVER_TASK_TEXT)),
-      InAnyContext(
-          PressButton(HandoffButtonController::kHandoffButtonElementId)),
-      InAnyContext(WaitForShow(kSidePanelElementId)),
-      InAnyContext(WaitForShow(kGlicViewElementId)));
+  RunTestSequence(ClearOmniboxFocus(), EnsureNotPresent(kSidePanelElementId),
+                  EnsureNotPresent(kGlicViewElementId),
+                  InAnyContext(WaitForShow(
+                      HandoffButtonController::kHandoffButtonElementId)),
+                  InAnyContext(CheckViewProperty(
+                      HandoffButtonController::kHandoffButtonElementId,
+                      &views::LabelButton::GetText, TAKE_OVER_TASK_TEXT)),
+                  InAnyContext(PressButton(
+                      HandoffButtonController::kHandoffButtonElementId)),
+                  InAnyContext(WaitForShow(kSidePanelElementId)),
+                  InAnyContext(WaitForShow(kGlicViewElementId)));
 }
 #endif
 

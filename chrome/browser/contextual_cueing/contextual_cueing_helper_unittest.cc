@@ -11,6 +11,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/mock_contextual_cueing_service.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -55,8 +56,7 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
  public:
   ContextualCueingHelperTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton, kContextualCueing},
-        {contextual_cueing::kGlicZeroStateSuggestions});
+        {kContextualCueing}, {contextual_cueing::kGlicZeroStateSuggestions});
   }
 
   void SetUp() override {
@@ -68,6 +68,8 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
 
     // Bypass glic eligibility check.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kGlicDev);
+
+    glic_test_env_.SetupProfile(profile());
   }
 
   void TearDown() override {
@@ -89,6 +91,7 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
+  glic::GlicUnitTestEnvironment glic_test_env_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -105,8 +108,7 @@ class ContextualCueingHelperResponseCodeTest
       public testing::WithParamInterface<bool> {
  public:
   ContextualCueingHelperResponseCodeTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kGlic, features::kTabstripComboButton, kContextualCueing};
+    std::vector<base::test::FeatureRef> enabled_features = {kContextualCueing};
     std::vector<base::test::FeatureRef> disabled_features = {
         contextual_cueing::kGlicZeroStateSuggestions};
 

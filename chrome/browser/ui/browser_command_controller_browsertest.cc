@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -656,19 +657,13 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestCompare,
 class BrowserCommandControllerBrowserTestGlic
     : public BrowserCommandControllerBrowserTest {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton}, {});
-    BrowserCommandControllerBrowserTest::SetUp();
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Bypass glic eligibility check.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kGlicDev);
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  glic::GlicTestEnvironment glic_test_environment_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,

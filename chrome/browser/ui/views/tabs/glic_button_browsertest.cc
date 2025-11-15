@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,16 +35,10 @@ namespace {
 
 class GlicButtonTest : public InProcessBrowserTest {
  public:
-  GlicButtonTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                              features::kGlicRollout},
-        /*disabled_features=*/{});
-  }
+  GlicButtonTest() = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    glic::ForceSigninAndModelExecutionCapability(browser()->profile());
   }
 
  protected:
@@ -71,7 +66,7 @@ class GlicButtonTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  GlicTestEnvironment glic_test_env_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicButtonTest, ContextMenuPinned) {

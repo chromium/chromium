@@ -32,6 +32,7 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
@@ -53,11 +54,7 @@ class SettingsBrowserTest : public WebUIMochaBrowserTest {
  protected:
   SettingsBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {
-#if BUILDFLAG(ENABLE_GLIC)
-            features::kGlic, features::kTabstripComboButton,
-#endif
-            privacy_sandbox::kFingerprintingProtectionUx},
+        {privacy_sandbox::kFingerprintingProtectionUx},
         /*disabled_features=*/
         {
 #if BUILDFLAG(ENABLE_GLIC)
@@ -69,6 +66,10 @@ class SettingsBrowserTest : public WebUIMochaBrowserTest {
   }
 
  private:
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicTestEnvironment glic_test_environment_{
+      {.force_signin_and_model_execution_capability = false }};
+#endif
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

@@ -42,6 +42,23 @@ struct GlicTestEnvironmentConfig {
   std::optional<prefs::FreStatus> fre_status = prefs::FreStatus::kCompleted;
 };
 
+namespace internal {
+class GlicTestEnvironmentShared {
+ public:
+  GlicTestEnvironmentShared(
+      std::vector<base::test::FeatureRef> enabled_features,
+      std::vector<base::test::FeatureRef> disabled_features);
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList country_and_locale_feature_list_;
+};
+
+}  // namespace internal
+
+std::vector<base::test::FeatureRef> GetDefaultEnabledGlicTestFeatures();
+std::vector<base::test::FeatureRef> GetDefaultDisabledGlicTestFeatures();
+
 // Overrides some glic functionality to allow tests that depend on glic to run.
 // This should be created on the main thread.
 // If possible, use InteractiveGlicTest instead of this directly!
@@ -55,10 +72,9 @@ class GlicTestEnvironment : public ProfileObserver {
   explicit GlicTestEnvironment(
       const GlicTestEnvironmentConfig& config = {},
       std::vector<base::test::FeatureRef> enabled_features =
-          {features::kGlic, features::kTabstripComboButton,
-           features::kGlicRollout},
-      std::vector<base::test::FeatureRef> disabled_features = {
-          features::kGlicWarming, features::kGlicFreWarming});
+          GetDefaultEnabledGlicTestFeatures(),
+      std::vector<base::test::FeatureRef> disabled_features =
+          GetDefaultDisabledGlicTestFeatures());
 
   ~GlicTestEnvironment() override;
 
@@ -88,6 +104,7 @@ class GlicTestEnvironment : public ProfileObserver {
   std::vector<
       std::unique_ptr<base::ScopedObservation<Profile, ProfileObserver>>>
       profile_observations_;
+  internal::GlicTestEnvironmentShared shared_;
 };
 
 // Note: This constructs the GlicKeyedService, if it's not already created,
@@ -102,6 +119,7 @@ class GlicTestEnvironmentService : public KeyedService {
   // Convenience functions.
   void SetFRECompletion(prefs::FreStatus fre_status);
   GlicKeyedService* GetService();
+  void SetModelExecutionCapability(bool enabled);
 
   // Glic syncs sign-in cookies to the webview before showing the window. By
   // default, this class replaces this step with an immediately fake success.
@@ -114,6 +132,20 @@ class GlicTestEnvironmentService : public KeyedService {
   // Null during teardown.
   base::WeakPtr<internal::TestCookieSynchronizer> cookie_synchronizer_;
   base::WeakPtr<internal::TestCookieSynchronizer> fre_cookie_synchronizer_;
+};
+
+// For testing Glic in unit tests.
+class GlicUnitTestEnvironment {
+ public:
+  explicit GlicUnitTestEnvironment(
+      const GlicTestEnvironmentConfig& config = {});
+  ~GlicUnitTestEnvironment();
+
+  void SetupProfile(Profile* profile);
+
+ private:
+  GlicTestEnvironmentConfig config_;
+  internal::GlicTestEnvironmentShared shared_;
 };
 
 }  // namespace glic
