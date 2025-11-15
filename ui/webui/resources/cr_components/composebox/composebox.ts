@@ -209,6 +209,8 @@ export class ComposeboxElement extends I18nMixinLit
   protected dragAndDropHandler: DragAndDropHandler;
   private showTypedSuggest_: boolean =
       loadTimeData.getBoolean('composeboxShowTypedSuggest');
+  private showTypedSuggestWithContext_: boolean =
+      loadTimeData.getBoolean('composeboxShowTypedSuggestWithContext');
   private showZps: boolean = loadTimeData.getBoolean('composeboxShowZps');
   private browserProxy: ComposeboxProxyImpl = ComposeboxProxyImpl.getInstance();
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
@@ -420,11 +422,15 @@ export class ComposeboxElement extends I18nMixinLit
     }
 
     if (this.showTypedSuggest_ && this.input_.trim()) {
-      // Do not show the dropdown for multiline input, if context is present, or
-      // if only the verbatim match is present (we always expect a verbatim
+      // If context is present, but not enabled, continue to avoid showing the
+      // dropdown.
+      if (!this.showTypedSuggestWithContext_ && this.contextFilesSize_ > 0) {
+        return false;
+      }
+      // Do not show the dropdown for multiline input or if only the verbatim
+      // match is present (we always expect a verbatim
       // match for typed suggest, so we ensure the length of the matches is >1).
-      if (this.$.input.scrollHeight <= 48 && this.contextFilesSize_ === 0 &&
-          this.result_?.matches.length > 1) {
+      if (this.$.input.scrollHeight <= 48 && this.result_?.matches.length > 1) {
         return true;
       }
     }

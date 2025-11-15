@@ -57,6 +57,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddInteger("composeboxFileMaxCount", 0);
   // Disable typed suggest.
   source->AddBoolean("composeboxShowTypedSuggest", false);
+  source->AddBoolean("composeboxShowTypedSuggestWithContext", false);
   // Disable ZPS.
   source->AddBoolean("composeboxShowZps", false);
   // Disable image context suggestions.
