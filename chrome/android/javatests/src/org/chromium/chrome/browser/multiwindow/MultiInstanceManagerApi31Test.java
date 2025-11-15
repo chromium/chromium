@@ -32,8 +32,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
@@ -114,7 +117,8 @@ public class MultiInstanceManagerApi31Test {
 
         ChromeTabbedActivity firstActivity = mActivityTestRule.getActivity();
         ChromeTabbedActivity[] otherActivities =
-                createNewWindows(firstActivity, /* numWindows= */ 3);
+                createNewWindows(
+                        firstActivity, /* numWindows= */ 3, /* addIncognitoExtras= */ false);
         ThreadUtils.runOnUiThreadBlocking(() -> firstActivity.onTopResumedActivityChanged(true));
 
         // Check initial state of instances.
@@ -127,7 +131,10 @@ public class MultiInstanceManagerApi31Test {
         // should trigger instance limit downgrade actions.
         otherActivities[2].finishAndRemoveTask();
         var newActivity =
-                createNewWindow(firstActivity, otherActivities[2].getWindowIdForTesting());
+                createNewWindow(
+                        firstActivity,
+                        otherActivities[2].getWindowIdForTesting(),
+                        /* addIncognitoExtras= */ false);
         mActivityTestRule.getActivityTestRule().setActivity(newActivity);
         mActivityTestRule.waitForActivityCompletelyLoaded();
 
@@ -146,7 +153,8 @@ public class MultiInstanceManagerApi31Test {
 
         ChromeTabbedActivity firstActivity = mActivityTestRule.getActivity();
         ChromeTabbedActivity[] otherActivities =
-                createNewWindows(firstActivity, /* numWindows= */ 2);
+                createNewWindows(
+                        firstActivity, /* numWindows= */ 2, /* addIncognitoExtras= */ false);
         ThreadUtils.runOnUiThreadBlocking(() -> firstActivity.onTopResumedActivityChanged(true));
 
         // Check initial state of instances.
@@ -164,7 +172,10 @@ public class MultiInstanceManagerApi31Test {
         // Simulate relaunch of an active instance after the instance limit downgrade.
         otherActivities[0].finishAndRemoveTask();
         var newActivity =
-                createNewWindow(otherActivities[0], otherActivities[0].getWindowIdForTesting());
+                createNewWindow(
+                        otherActivities[0],
+                        otherActivities[0].getWindowIdForTesting(),
+                        /* addIncognitoExtras= */ false);
 
         verifyInstanceState(/* expectedActiveInstances= */ 2, /* expectedTotalInstances= */ 3);
         waitForMessage(
@@ -175,7 +186,10 @@ public class MultiInstanceManagerApi31Test {
     @SmallTest
     public void moveTabsToOtherWindow_multipleWindowsOpen() {
         var activity = mActivityTestRule.getActivity();
-        createNewWindow(activity, /* instanceId= */ 2);
+        createNewWindow(
+                mActivityTestRule.getActivity(),
+                /* instanceId= */ 2,
+                /* addIncognitoExtras= */ false);
         List<Tab> tabs = new ArrayList<>();
         var activeTab = ThreadUtils.runOnUiThreadBlocking(activity::getActivityTab);
         tabs.add(activeTab);
@@ -236,9 +250,11 @@ public class MultiInstanceManagerApi31Test {
     @Test
     @SmallTest
     public void moveTabGroupToOtherWindow_multipleWindowsOpen() {
-        createNewWindow(mActivityTestRule.getActivity(), /* instanceId= */ 2);
+        createNewWindow(
+                mActivityTestRule.getActivity(),
+                /* instanceId= */ 2,
+                /* addIncognitoExtras= */ false);
         TabGroupMetadata tabGroupMetadata = getTabGroupMetaData();
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMultiInstanceManager.moveTabGroupToOtherWindow(
@@ -250,20 +266,26 @@ public class MultiInstanceManagerApi31Test {
 
     @Test
     @SmallTest
-    public void openUrlInSelectedWindow_multipleWindowsOpen() {
-        createNewWindow(mActivityTestRule.getActivity(), /* instanceId= */ 2);
+    public void openUrlInOtherWindow_multipleWindowsOpen() {
+        createNewWindow(
+                mActivityTestRule.getActivity(),
+                /* instanceId= */ 2,
+                /* addIncognitoExtras= */ false);
         LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
-
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        mMultiInstanceManager.openUrlInSelectedWindow(
-                                urlParams, /* parentTabId= */ 1, /* preferNew= */ false));
+                () -> {
+                    mMultiInstanceManager.openUrlInOtherWindow(
+                            urlParams,
+                            /* parentTabId= */ 1,
+                            /* preferNew= */ false,
+                            PersistedInstanceType.ACTIVE);
+                });
         assertTrue("Target selector dialog should be visible", mModalDialogManager.isShowing());
     }
 
     @Test
     @SmallTest
-    public void openUrlInSelectedWindow_singleWindowOpen() {
+    public void openUrlInOtherWindow_singleWindowOpen() {
         LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
         verifyInstanceState(/* expectedActiveInstances= */ 1, /* expectedTotalInstances= */ 1);
 
@@ -271,8 +293,11 @@ public class MultiInstanceManagerApi31Test {
                 ChromeTabbedActivity.class,
                 Stage.RESUMED,
                 () ->
-                        mMultiInstanceManager.openUrlInSelectedWindow(
-                                urlParams, /* parentTabId= */ 1, /* preferNew= */ false));
+                        mMultiInstanceManager.openUrlInOtherWindow(
+                                urlParams,
+                                /* parentTabId= */ 1,
+                                /* preferNew= */ false,
+                                PersistedInstanceType.ACTIVE));
         assertFalse(
                 "Target selector dialog should not be visible", mModalDialogManager.isShowing());
 
@@ -282,21 +307,21 @@ public class MultiInstanceManagerApi31Test {
 
     @Test
     @SmallTest
-    public void openUrlInSelectedWindow_openInNewWindow_preferNew() {
+    public void openUrlInOtherWindow_openInNewWindow_preferNew() {
         LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
         ChromeTabbedActivity firstActivity = mActivityTestRule.getActivity();
-        ChromeTabbedActivity[] otherActivities =
-                createNewWindows(firstActivity, /* numWindows= */ 2);
+        createNewWindows(firstActivity, /* numWindows= */ 2, /* addIncognitoExtras= */ false);
         verifyInstanceState(/* expectedActiveInstances= */ 3, /* expectedTotalInstances= */ 3);
 
-        ChromeTabbedActivity newWindow =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeTabbedActivity.class,
-                        Stage.RESUMED,
-                        () ->
-                                mMultiInstanceManager.openUrlInSelectedWindow(
-                                        urlParams, /* parentTabId= */ 1, /* preferNew= */ true));
-        mExtraActivities.add(newWindow);
+        ApplicationTestUtils.waitForActivityWithClass(
+                ChromeTabbedActivity.class,
+                Stage.RESUMED,
+                () ->
+                        mMultiInstanceManager.openUrlInOtherWindow(
+                                urlParams,
+                                /* parentTabId= */ 1,
+                                /* preferNew= */ true,
+                                PersistedInstanceType.ACTIVE));
         assertFalse(
                 "Target selector dialog should not be visible", mModalDialogManager.isShowing());
 
@@ -306,17 +331,19 @@ public class MultiInstanceManagerApi31Test {
 
     @Test
     @SmallTest
-    public void openUrlInSelectedWindow_openInNewWindow_reachInstanceLimit() {
+    public void openUrlInOtherWindow_openInNewWindow_reachInstanceLimit() {
         MultiWindowUtils.setMaxInstancesForTesting(5);
         ChromeTabbedActivity firstActivity = mActivityTestRule.getActivity();
-        createNewWindows(firstActivity, /* numWindows= */ 4);
+        createNewWindows(firstActivity, /* numWindows= */ 4, /* addIncognitoExtras= */ false);
         verifyInstanceState(/* expectedActiveInstances= */ 5, /* expectedTotalInstances= */ 5);
-
         LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        mMultiInstanceManager.openUrlInSelectedWindow(
-                                urlParams, /* parentTabId= */ 1, /* preferNew= */ true));
+                        mMultiInstanceManager.openUrlInOtherWindow(
+                                urlParams,
+                                /* parentTabId= */ 1,
+                                /* preferNew= */ true,
+                                PersistedInstanceType.ACTIVE));
         assertFalse(
                 "Target selector dialog should not be visible", mModalDialogManager.isShowing());
 
@@ -326,15 +353,73 @@ public class MultiInstanceManagerApi31Test {
         waitForMessage(firstActivity, MessageIdentifier.MULTI_INSTANCE_CREATION_LIMIT);
     }
 
-    private ChromeTabbedActivity[] createNewWindows(Context context, int numWindows) {
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT
+    })
+    public void
+            openUrlInOtherIncognitoWindow_withoutActiveIncognitoWindows_opensNewIncognitoWindow() {
+        createNewWindows(
+                mActivityTestRule.getActivity(),
+                /* numWindows= */ 2,
+                /* addIncognitoExtras= */ false);
+        LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
+
+        ChromeTabbedActivity newWindow =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.RESUMED,
+                        () ->
+                                mMultiInstanceManager.openUrlInOtherWindow(
+                                        urlParams,
+                                        /* parentTabId= */ 1,
+                                        /* preferNew= */ false,
+                                        PersistedInstanceType.ACTIVE
+                                                | PersistedInstanceType.OFF_THE_RECORD));
+
+        assertFalse(
+                "Target selector dialog should not be visible", mModalDialogManager.isShowing());
+        assertTrue("New window should be incognito", newWindow.isIncognitoWindow());
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT
+    })
+    public void
+            openUrlInOtherIncognitoWindow_withActiveIncognitoWindows_showsTargetSelectorDialog() {
+        createNewWindows(
+                mActivityTestRule.getActivity(),
+                /* numWindows= */ 2,
+                /* addIncognitoExtras= */ true);
+        LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMultiInstanceManager.openUrlInOtherWindow(
+                            urlParams,
+                            /* parentTabId= */ 1,
+                            /* preferNew= */ false,
+                            PersistedInstanceType.ACTIVE | PersistedInstanceType.OFF_THE_RECORD);
+                });
+        assertTrue("Target selector dialog should be visible", mModalDialogManager.isShowing());
+    }
+
+    private ChromeTabbedActivity[] createNewWindows(
+            Context context, int numWindows, boolean addIncognitoExtras) {
         ChromeTabbedActivity[] activities = new ChromeTabbedActivity[numWindows];
         for (int i = 0; i < numWindows; i++) {
-            activities[i] = createNewWindow(context, /* instanceId= */ -1);
+            activities[i] = createNewWindow(context, /* instanceId= */ -1, addIncognitoExtras);
         }
         return activities;
     }
 
-    private ChromeTabbedActivity createNewWindow(Context context, int instanceId) {
+    private ChromeTabbedActivity createNewWindow(
+            Context context, int instanceId, boolean addIncognitoExtras) {
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
                         context,
@@ -342,6 +427,10 @@ public class MultiInstanceManagerApi31Test {
                         /* preferNew= */ true,
                         /* openAdjacently= */ false,
                         /* addTrustedIntentExtras= */ true);
+        if (addIncognitoExtras) {
+            intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
+            intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, true);
+        }
         ChromeTabbedActivity activity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         ChromeTabbedActivity.class,

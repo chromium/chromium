@@ -84,13 +84,14 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
                 mHost.loadUrl(loadUrlParams, true);
                 break;
             case WindowOpenDisposition.NEW_WINDOW:
-                // If there is only one window, launch in a new window.
-                if (IncognitoUtils.shouldOpenIncognitoAsWindow()
-                        && MultiWindowUtils.getInstanceCountWithFallback(
-                                        PersistedInstanceType.ACTIVE)
-                                > 1) {
-                    mMultiInstanceManager.openUrlInSelectedWindow(
-                            loadUrlParams, mHost.getParentId(), /* preferNew= */ false);
+                // TODO(crbug.com/435490901): Update native page context menu to handle incognito
+                // windows.
+                if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+                    mMultiInstanceManager.openUrlInOtherWindow(
+                            loadUrlParams,
+                            mHost.getParentId(),
+                            /* preferNew= */ false,
+                            PersistedInstanceType.ACTIVE);
                 } else {
                     openUrlInNewWindow(loadUrlParams);
                 }
