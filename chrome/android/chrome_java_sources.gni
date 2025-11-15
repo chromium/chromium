@@ -1160,7 +1160,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tasks/HomeSurfaceTracker.java",
   "java/src/org/chromium/chrome/browser/tasks/ReturnToChromeUtil.java",
   "java/src/org/chromium/chrome/browser/toolbar/AppThemeColorProvider.java",
-  "java/src/org/chromium/chrome/browser/toolbar/TabStripTopControlLayer.java",
   "java/src/org/chromium/chrome/browser/toolbar/ToolbarButtonInProductHelpController.java",
   "java/src/org/chromium/chrome/browser/toolbar/ToolbarIphController.java",
   "java/src/org/chromium/chrome/browser/toolbar/ToolbarManager.java",

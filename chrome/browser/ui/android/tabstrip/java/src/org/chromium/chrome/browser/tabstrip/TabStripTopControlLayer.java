@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar;
+package org.chromium.chrome.browser.tabstrip;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
@@ -17,7 +17,7 @@ import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoord
  * during tab strip height transition.
  */
 @NullMarked
-class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
+public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
         implements TopControlLayer, TabStripTransitionHandler {
 
     public TabStripTopControlLayer(int tabStripHeight) {

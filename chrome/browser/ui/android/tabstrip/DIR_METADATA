@@ -1,0 +1,6 @@
+os: ANDROID
+buganizer_public: {
+  #  "UI>Browser>Mobile>TabStrip"
+  component_id: 1457555
+}
+team_email: "clank-large-form-factors@google.com"
