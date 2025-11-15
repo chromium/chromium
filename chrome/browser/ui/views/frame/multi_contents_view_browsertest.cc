@@ -141,6 +141,76 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
+                       HandleDropTargetViewLinkDrop_PinnedWithStartDropTarget) {
+  browser()->tab_strip_model()->SetTabPinned(0, true);
+
+  ui::OSExchangeData data;
+  const GURL kDropUrl("http://www.chromium.org/");
+  data.SetURL(kDropUrl, u"Chromium");
+  gfx::PointF point = {10, 10};
+  ui::DropTargetEvent event(data, point, point, ui::DragDropTypes::DRAG_LINK);
+
+  drop_target_view()->Show(MultiContentsDropTargetView::DropSide::START,
+                           MultiContentsDropTargetView::DropTargetState::kFull,
+                           MultiContentsDropTargetView::DragType::kLink);
+  auto drop_cb = drop_target_view()->GetDropCallback(event);
+  EXPECT_FALSE(multi_contents_view()->IsInSplitView());
+
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(event, output_drag_op,
+                         /*drag_image_layer_owner=*/nullptr);
+
+  EXPECT_TRUE(multi_contents_view()->IsInSplitView());
+
+  // After the drop, a new tab should be created in the split view. The original
+  // tab is at index 0, the new tab from the drop is at index 1. Both tabs
+  // should be pinned.
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(kDropUrl,
+            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
+  EXPECT_EQ(GURL(url::kAboutBlankURL),
+            browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+  EXPECT_TRUE(browser()->tab_strip_model()->GetTabAtIndex(0)->IsPinned());
+  EXPECT_TRUE(browser()->tab_strip_model()->GetTabAtIndex(1)->IsPinned());
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
+                       HandleDropTargetViewLinkDrop_GroupedWithEndDropTarget) {
+  browser()->tab_strip_model()->AddToNewGroup({0});
+
+  ui::OSExchangeData data;
+  const GURL kDropUrl("http://www.chromium.org/");
+  data.SetURL(kDropUrl, u"Chromium");
+  gfx::PointF point = {10, 10};
+  ui::DropTargetEvent event(data, point, point, ui::DragDropTypes::DRAG_LINK);
+
+  drop_target_view()->Show(MultiContentsDropTargetView::DropSide::END,
+                           MultiContentsDropTargetView::DropTargetState::kFull,
+                           MultiContentsDropTargetView::DragType::kLink);
+  auto drop_cb = drop_target_view()->GetDropCallback(event);
+  EXPECT_FALSE(multi_contents_view()->IsInSplitView());
+
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(event, output_drag_op,
+                         /*drag_image_layer_owner=*/nullptr);
+
+  EXPECT_TRUE(multi_contents_view()->IsInSplitView());
+
+  // After the drop, a new tab should be created in the split view. The original
+  // tab is at index 0, the new tab from the drop is at index 1. Both tabs
+  // should be in a group.
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(GURL(url::kAboutBlankURL),
+            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
+  EXPECT_EQ(kDropUrl,
+            browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+  EXPECT_TRUE(
+      browser()->tab_strip_model()->GetTabAtIndex(0)->GetGroup().has_value());
+  EXPECT_TRUE(
+      browser()->tab_strip_model()->GetTabAtIndex(1)->GetGroup().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
                        HandleDropTargetViewLinkDrop_BlockJavascriptUrl) {
   ui::OSExchangeData data;
   const GURL kDropUrl("javascript:alert(1)");
