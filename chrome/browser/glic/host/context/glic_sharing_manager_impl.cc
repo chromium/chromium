@@ -21,6 +21,13 @@
 
 namespace glic {
 
+bool IsGlicTabContextEnabled(PrefService* pref_service) {
+  if (base::FeatureList::IsEnabled(features::kGlicDefaultTabContextSetting)) {
+    return true;
+  }
+  return pref_service->GetBoolean(glic::prefs::kGlicTabContextEnabled);
+}
+
 namespace {
 GlicGetContextResult TransformFetcherResult(
     base::expected<glic::mojom::GetContextResultPtr,
@@ -229,8 +236,7 @@ void GlicSharingManagerImpl::GetContextFromTab(
   }
 
   const bool is_pinned = pinned_tab_manager()->IsTabPinned(tab_handle);
-  if (!is_pinned &&
-      !profile_->GetPrefs()->GetBoolean(prefs::kGlicTabContextEnabled)) {
+  if (!is_pinned && !IsGlicTabContextEnabled(profile_->GetPrefs())) {
     std::move(callback).Run(base::unexpected(GlicGetContextError{
         GlicGetContextFromTabError::
             kPermissionDeniedContextPermissionNotEnabled,

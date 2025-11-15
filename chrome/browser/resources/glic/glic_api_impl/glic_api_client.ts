@@ -440,6 +440,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private permissionStateTabContext =
       ObservableValueImpl.withNoValue<boolean>();
   defaultTabContextPermission = ObservableValueImpl.withNoValue<boolean>();
+  private enableDefaultTabContextSettingFeature = false;
   private permissionStateOsLocation =
       ObservableValueImpl.withNoValue<boolean>();
   closedCaptioningState = ObservableValueImpl.withNoValue<boolean>();
@@ -523,10 +524,17 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         state.microphonePermissionEnabled);
     this.permissionStateLocation.assignAndSignal(
         state.locationPermissionEnabled);
-    this.permissionStateTabContext.assignAndSignal(
-        state.tabContextPermissionEnabled);
+    if (state.enableDefaultTabContextSettingFeature) {
+      this.permissionStateTabContext.assignAndSignal(
+          state.defaultTabContextSettingEnabled);
+    } else {
+      this.permissionStateTabContext.assignAndSignal(
+          state.tabContextPermissionEnabled);
+    }
     this.defaultTabContextPermission.assignAndSignal(
         state.defaultTabContextSettingEnabled);
+    this.enableDefaultTabContextSettingFeature =
+        state.enableDefaultTabContextSettingFeature;
     this.permissionStateOsLocation.assignAndSignal(
         state.osLocationPermissionEnabled);
     this.canAttachPanelValue.assignAndSignal(state.canAttach);
@@ -970,6 +978,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   }
 
   setTabContextPermissionState(enabled: boolean): Promise<void> {
+    if (this.enableDefaultTabContextSettingFeature) {
+      this.permissionStateTabContext.assignAndSignal(enabled);
+      return Promise.resolve();
+    }
     return this.sender.requestWithResponse(
         'glicBrowserSetTabContextPermissionState', {enabled});
   }

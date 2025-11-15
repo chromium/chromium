@@ -273,7 +273,7 @@ class GlicApiTestWithOneTab : public GlicApiTest {
         /*enabled_features=*/
         {features::kGlicClosedCaptioning},
         /*disabled_features=*/
-        {});
+        {features::kGlicDefaultTabContextSetting});
   }
 
   void SetUpOnMainThread() override {
