@@ -11,6 +11,7 @@
 #include <variant>
 
 #include "base/callback_list.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -86,14 +87,18 @@ class EnclaveAuthenticatorTestBase : public SyncTest {
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
-  signin::IdentityTestEnvironment* identity_test_env();
-  webauthn::PasskeyModel* passkey_model();
+  signin::IdentityTestEnvironment& identity_test_env();
+  webauthn::PasskeyModel& passkey_model();
   EnclaveManager& enclave_manager();
 
   void EnableUVKeySupport(bool fake_hardware_backing = false);
   bool IsUVPAA();
   void SetBiometricsEnabled(bool enabled);
   void AddTestPasskeyToModel();
+  void SimulateTrustedVaultKeyRetrieval();
+  void SimulateTrustedVaultKeyRetrieval(
+      base::span<const uint8_t> trusted_vault_key,
+      int trusted_vault_key_version);
 
   // Convenience methods for setting up the mock trusted vault connection:
   void SetMockVaultConnectionOnRequestDelegate(

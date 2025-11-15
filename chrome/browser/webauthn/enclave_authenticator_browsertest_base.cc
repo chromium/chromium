@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -184,7 +185,7 @@ void EnclaveAuthenticatorTestBase::SetUpOnMainThread() {
   identity_test_env_adaptor_ =
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
           browser()->profile());
-  identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
+  identity_test_env().SetAutomaticIssueOfAccessTokens(true);
 
   sync_harness_ = SyncServiceImplHarness::Create(
       browser()->profile(), SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
@@ -211,14 +212,14 @@ void EnclaveAuthenticatorTestBase::TearDownOnMainThread() {
   SyncTest::TearDownOnMainThread();
 }
 
-signin::IdentityTestEnvironment*
+signin::IdentityTestEnvironment&
 EnclaveAuthenticatorTestBase::identity_test_env() {
-  return identity_test_env_adaptor_->identity_test_env();
+  return CHECK_DEREF(identity_test_env_adaptor_->identity_test_env());
 }
 
-webauthn::PasskeyModel* EnclaveAuthenticatorTestBase::passkey_model() {
-  return PasskeyModelFactory::GetInstance()->GetForProfile(
-      browser()->profile());
+webauthn::PasskeyModel& EnclaveAuthenticatorTestBase::passkey_model() {
+  return CHECK_DEREF(
+      PasskeyModelFactory::GetInstance()->GetForProfile(browser()->profile()));
 }
 
 EnclaveManager& EnclaveAuthenticatorTestBase::enclave_manager() {
@@ -263,7 +264,18 @@ void EnclaveAuthenticatorTestBase::SetBiometricsEnabled(bool enabled) {
 void EnclaveAuthenticatorTestBase::AddTestPasskeyToModel() {
   sync_pb::WebauthnCredentialSpecifics passkey;
   CHECK(passkey.ParseFromArray(kTestProtobuf, sizeof(kTestProtobuf)));
-  passkey_model()->AddNewPasskeyForTesting(passkey);
+  passkey_model().AddNewPasskeyForTesting(passkey);
+}
+
+void EnclaveAuthenticatorTestBase::SimulateTrustedVaultKeyRetrieval(
+    base::span<const uint8_t> trusted_vault_key,
+    int trusted_vault_key_version) {
+  enclave_manager().StoreKeys(kSyncGaiaId, {base::ToVector(trusted_vault_key)},
+                              trusted_vault_key_version);
+}
+
+void EnclaveAuthenticatorTestBase::SimulateTrustedVaultKeyRetrieval() {
+  SimulateTrustedVaultKeyRetrieval(kSecurityDomainSecret, kSecretVersion);
 }
 
 void EnclaveAuthenticatorTestBase::SetMockVaultConnectionOnRequestDelegate(
@@ -337,11 +349,7 @@ void EnclaveAuthenticatorTestBase::SimulateSuccessfulGpmPinCreation(
 
   {
     auto store_keys_lock = enclave_manager().GetStoreKeysLock();
-    enclave_manager().StoreKeys(
-        kSyncGaiaId,
-        {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
-                              std::end(kSecurityDomainSecret))},
-        /*last_key_version=*/0);
+    SimulateTrustedVaultKeyRetrieval(kSecurityDomainSecret, /*version=*/0);
   }
 
   base::test::TestFuture<bool> add_device_future;
