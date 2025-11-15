@@ -17,18 +17,7 @@
   --text-input-inline-start-spacing: 16px;
   --text-input-max-height: 190px;
   --expanded-border-radius: 26px;
-  --brand-gradient: conic-gradient(
-    rgba(52, 168, 82, 0) 0deg,
-    rgba(52, 168, 82, 1) 38.9738deg,
-    rgba(255, 211, 20, 1) 62.3678deg,
-    rgba(255, 70, 65, 1) 87.0062deg,
-    rgba(49, 134, 255, 1) 107.428deg,
-    rgba(49, 134, 255, 0.5) 204.48deg,
-    rgba(49, 134, 255, 0) 308.88deg,
-    rgba(52, 168, 82, 0) 360deg
-  );
   --standard-curve: cubic-bezier(0.4, 0, 0.2, 1);
-  --gradient-curve: cubic-bezier(0.2, 0, 0, 1);
   --emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
   --emphasized-curve: linear(
     0,
@@ -73,15 +62,6 @@
     0.998 86.4%,
     1
   );
-
-  --start-angle-open: 30deg;
-  --end-angle-open: 245deg;
-  --start-angle-submit: 200deg;
-  --end-angle-submit: 330deg;
-
-  --glow-stroke-width: 2px;
-
-  --glif-rotation-duration: 1000ms;
 
   --icon-entry-transition: opacity var(--expand-ease-out-duration) linear 800ms;
   --icon-exit-transition: opacity var(--collapse-ease-in-duration)
@@ -129,7 +109,7 @@
   font-weight: 400;
 }
 
-:host([expanded_]) {
+:host([expanding_]) {
   border-radius: var(--expanded-border-radius);
 }
 
@@ -149,40 +129,13 @@
   display: none;
 }
 
-:host([is-dragging-file_])::before {
-  /*  TODO(crbug.com/454730356): change color and add border */
-  background: linear-gradient(
-    90deg,
-    rgba(255, 240, 230, 0.8),
-    rgba(230, 240, 255, 0.8)
-  ), white;
-  border-radius: var(--expanded-border-radius);
-  content: '';
-  inset: 0;
-  position: absolute;
-  z-index: 2;
-  pointer-events: none;
-}
-
 :host([is-dragging-file_]) #composebox * {
   pointer-events: none;
 }
 
-#dragDropPlaceholder {
-  display: none;
-  position: absolute;
-  top: 21px;
-  left: 20px;
+search-animated-glow {
   pointer-events: none;
-}
-
-:host([searchbox-layout-mode='Compact']) #dragDropPlaceholder {
-  top: 16px;
-}
-
-:host([is-dragging-file_]) #dragDropPlaceholder {
-  display: block;
-  z-index: 3;
+  z-index: 1;
 }
 
 :host([is-collapsible]) #composebox {
@@ -195,24 +148,24 @@
 }
 
 :host(:not([is-collapsible])) #composebox {
-  /* If the composebox is not expandable, meaning expanded_ is always true,
+  /* If the composebox is not expandable, meaning expanding_ is always true,
    * then the above transition will never be triggered. Instead, manually
    * start the animation so it expands as soon as it is rendered */
   height: 60px;
 }
 
-:host([expanded_]) #composebox {
+:host([expanding_]) #composebox {
   height: calc-size(auto, size);
   max-height: 422px;
   transition-duration: var(--expand-duration);
 }
 
-:host([is-collapsible][expanded_]) #composebox {
+:host([is-collapsible][expanding_]) #composebox {
   min-height: 136px;
   max-height: 254px;
 }
 
-:host([is-collapsible][expanded_][show-file-carousel_][carousel-on-top_]) #composebox {
+:host([is-collapsible][expanding_][show-file-carousel_][carousel-on-top_]) #composebox {
   min-height: calc(136px + 52px);
 }
 
@@ -276,11 +229,6 @@
   width: 100%;
 }
 
-#composebox.is-dragging-file #input {
-  position: relative;
-  z-index: 3;
-}
-
 :host(:not[ntp-realbox-next-enabled]) #input {
   transition: padding var(--height-expand-duration) var(--standard-curve);
 }
@@ -338,12 +286,12 @@
   padding: 6px 8px;
 }
 
-:host([expanded_]) #input,
-:host([expanded_]) #smartCompose {
+:host([expanding_]) #input,
+:host([expanding_]) #smartCompose {
   --text-input-top-spacing: 12px;
 }
 
-:host([expanded_][is-collapsible]) #input {
+:host([expanding_][is-collapsible]) #input {
   --text-input-top-spacing: 24px;
 }
 
@@ -361,7 +309,7 @@
   display: none;
 }
 
-:host([expanded_][show-dropdown_]) cr-composebox-dropdown {
+:host([expanding_][show-dropdown_]) cr-composebox-dropdown {
   padding-bottom: 8px;
 }
 
@@ -397,7 +345,7 @@
   top: 10px;
 }
 
-:host([expanded_][is-collapsible]) #cancelIcon {
+:host([expanding_][is-collapsible]) #cancelIcon {
   top: 16px;
 }
 
@@ -434,7 +382,7 @@
   outline-offset: 2px;
 }
 
-:host([expanded_]) #lensIcon {
+:host([expanding_]) #lensIcon {
   animation: fade-out-in var(--lens-icon-animation-duration) linear;
   inset-inline-end: 68px;
   top: auto;
@@ -470,7 +418,7 @@
   height: var(--cr-icon-button-size);
   position: absolute;
   width: var(--cr-icon-button-size);
-  z-index: 1;
+  z-index: 2;
 }
 
 :host([show-submit_][submit-enabled_]:not([ntp-realbox-next-enabled])) #submitContainer:hover #submitOverlay {
@@ -504,7 +452,7 @@
   transition: var(--icon-exit-transition);
 }
 
-:host([expanded_]) .icon-fade {
+:host([expanding_]) .icon-fade {
   opacity: 1;
   transition: var(--icon-entry-transition);
 }
@@ -513,174 +461,6 @@
   :host,
   .action-icon {
     border: solid var(--color-composebox-outline-hcm);
-  }
-}
-
-.gradient {
-  border-radius: inherit;
-  contain: paint;
-  inset: 0;
-  position: absolute;
-}
-
-.gradient.gradient-outer-glow {
-  animation: blur-open var(--glif-rotation-duration)
-    var(--standard-curve);
-}
-
-@keyframes blur-open {
-  17% {
-    filter: blur(30px);
-    opacity: 17.5%
-  }
-}
-
-.gradient:before {
-  aspect-ratio: 1 / 1;
-  background: var(--brand-gradient);
-  border-radius: 50%;
-  contain: paint;
-  content: '';
-  height: auto; /* Controlled by aspect-ratio */
-  left: 50%;
-  position: absolute;
-  rotate: 0deg;
-  scale: 1 0.6;
-  top: 50%;
-  translate: -50% -50%;
-  opacity: 0;
-  /* The gradient is 135% wide to ensure it fills passed the entire container. */
-  width: 135%;
-}
-
-:host([expanded_]) .gradient:before {
-  animation: gradient-spin-expand var(--glif-rotation-duration)
-    var(--gradient-curve) forwards;
-}
-
-@keyframes gradient-spin-expand {
-  0% {
-    opacity: 0;
-    transform: rotate(var(--start-angle-open));
-  }
-  17% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: rotate(var(--end-angle-open));
-  }
-}
-
-:host([submitting_]) .gradient:before,
-:host([submitting_]) .gradient.gradient-outer-glow:before {
-  animation: gradient-spin-submit var(--glif-rotation-duration)
-    var(--gradient-curve) forwards;
-}
-
-:host([submitting_]) .gradient.gradient-outer-glow {
-  animation: blur-close var(--glif-rotation-duration)
-    var(--gradient-curve);
-}
-
-@keyframes blur-close {
-  17% {
-    filter: blur(30px);
-    opacity: 17.5%;
-  }
-}
-
-@keyframes gradient-spin-submit {
-  0% {
-    opacity: 0;
-    transform: rotate(var(--start-angle-submit));
-  }
-  17% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: rotate(var(--end-angle-submit));
-  }
-}
-
-.background {
-  animation: gradient-border-width var(--glif-rotation-duration)
-    var(--standard-curve);
-  border: 0 solid transparent;
-  border-radius: inherit;
-  contain: paint;
-  inset: 0;
-  position: absolute;
-}
-
-@keyframes gradient-border-width {
-  0% {
-    border-width: 0;
-  }
-  17% {
-    border-width: var(--glow-stroke-width);
-  }
-  100% {
-    border-width: 0;
-  }
-}
-
-.background:before {
-  background: var(--cr-composebox-background-color);
-  border-radius: inherit;
-  content: '';
-  contain: paint;
-  inset: 0;
-  position: absolute;
-  filter: blur(0);
-}
-
-:host([expanded_]) .background:before {
-  animation: plate-background-blur-on-expand var(--glif-rotation-duration)
-      var(--standard-curve);
-}
-
-:host([expanded_][is-collapsible]) .background:before {
-  animation: color-pulse-on-expand var(--expand-duration) var(--standard-curve);
-}
-
-@keyframes plate-background-blur-on-expand {
-  0% {
-    filter: blur(0);
-  }
-  17% {
-    filter: blur(2px);
-  }
-  100% {
-    filter: blur(0);
-  }
-}
-
-@keyframes color-pulse-on-expand {
-    40% {
-        background: var(--color-composebox-scrim-background);
-    }
-    58% {
-        background: var(--color-composebox-scrim-background);
-    }
-}
-
-:host([expanded_]) .background,
-:host([submitting_]) .background {
-  animation: gradient-border-width-close var(--glif-rotation-duration)
-    var(--standard-curve);
-}
-
-@keyframes gradient-border-width-close {
-  0% {
-    border-width: 0;
-  }
-  17% {
-    border-width: var(--glow-stroke-width);
-  }
-  100% {
-    border-width: 0;
   }
 }
 
@@ -695,7 +475,7 @@
   transform: translate(-50%);
 }
 
-:host([expanded_][show-file-carousel_][carousel-on-top_]) #inputContainer {
+:host([expanding_][show-file-carousel_][carousel-on-top_]) #inputContainer {
   padding-top: 60px;
   --text-input-max-height: 130px;
 }
@@ -746,7 +526,7 @@
   margin-top: -48px;
 }
 
-:host([expanded_][show-dropdown_][ntp-realbox-next-enabled][searchbox-layout-mode="Compact"]) cr-composebox-dropdown {
+:host([expanding_][show-dropdown_][ntp-realbox-next-enabled][searchbox-layout-mode="Compact"]) cr-composebox-dropdown {
   padding-bottom: 0;
   padding-top: 8px;
 }
@@ -797,4 +577,9 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
 
 :host(:not([in-voice-search-mode_])) cr-composebox-voice-search {
   display: none;
+}
+
+:host([realbox-layout-mode="Compact"]) {
+  /* Used in search-animated-glow-element. */
+  --search-animated-glow-drag-drop-placeholder-top: 16px;
 }

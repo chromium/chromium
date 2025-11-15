@@ -2017,7 +2017,7 @@ suite('NewTabPageComposeboxTest', () => {
       });
 
 
-  test('isCollapsible attribute sets expanded state when true', async () => {
+  test('isCollapsible attribute sets expanding state when true', async () => {
     createComposeboxElement();
     const collapsibleBox = composeboxElement;
     (collapsibleBox as any).isCollapsible = true;
@@ -2028,20 +2028,20 @@ suite('NewTabPageComposeboxTest', () => {
     collapsibleBox.$.composebox.dispatchEvent(new FocusEvent('focusin'));
     await collapsibleBox.updateComplete;
     assertTrue(
-        collapsibleBox.hasAttribute('expanded_'),
+        collapsibleBox.hasAttribute('expanding_'),
         'Collapsible should be expanded initially due to focus event');
 
     collapsibleBox.$.composebox.dispatchEvent(
         new FocusEvent('focusout', {relatedTarget: document.body}));
     await collapsibleBox.updateComplete;
     assertFalse(
-        collapsibleBox.hasAttribute('expanded_'),
+        collapsibleBox.hasAttribute('expanding_'),
         'Collapsible should collapse on blur without text');
 
     collapsibleBox.$.composebox.dispatchEvent(new FocusEvent('focusin'));
     await collapsibleBox.updateComplete;
     assertTrue(
-        collapsibleBox.hasAttribute('expanded_'),
+        collapsibleBox.hasAttribute('expanding_'),
         'Collapsible should expand on focus');
 
     // Set text and re-test blur logic
@@ -2053,7 +2053,7 @@ suite('NewTabPageComposeboxTest', () => {
         new FocusEvent('focusout', {relatedTarget: document.body}));
     await collapsibleBox.updateComplete;
     assertTrue(
-        collapsibleBox.hasAttribute('expanded_'),
+        collapsibleBox.hasAttribute('expanding_'),
         'Collapsible should stay expanded on blur with text');
   });
 
@@ -2065,7 +2065,7 @@ suite('NewTabPageComposeboxTest', () => {
     composeboxElement.$.composebox.dispatchEvent(new FocusEvent('focusin'));
     await composeboxElement.updateComplete;
     assertTrue(
-        composeboxElement.hasAttribute('expanded_'),
+        composeboxElement.hasAttribute('expanding_'),
         'Collapsible should be expanded initially due to focus event');
 
     // Initially, carousel is not shown.
@@ -2092,7 +2092,7 @@ suite('NewTabPageComposeboxTest', () => {
         new FocusEvent('focusout', {relatedTarget: document.body}));
     await composeboxElement.updateComplete;
     assertTrue(
-        composeboxElement.hasAttribute('expanded_'),
+        composeboxElement.hasAttribute('expanding_'),
         'Collapsible should remain expanded on blur with file');
 
     // Delete the thumbnail.
@@ -2110,7 +2110,7 @@ suite('NewTabPageComposeboxTest', () => {
     composeboxElement.$.composebox.dispatchEvent(new FocusEvent('focusin'));
     await composeboxElement.updateComplete;
     assertTrue(
-        composeboxElement.hasAttribute('expanded_'),
+        composeboxElement.hasAttribute('expanding_'),
         'Collapsible should still expand when focused in');
 
     // Blur the composebox again.
@@ -2118,7 +2118,7 @@ suite('NewTabPageComposeboxTest', () => {
         new FocusEvent('focusout', {relatedTarget: document.body}));
     await composeboxElement.updateComplete;
     assertFalse(
-        composeboxElement.hasAttribute('expanded_'),
+        composeboxElement.hasAttribute('expanding_'),
         'Collapsible should collapse on blur with no file');
   });
 
@@ -2135,7 +2135,7 @@ suite('NewTabPageComposeboxTest', () => {
     await collapsibleBox.updateComplete;
 
     assertTrue(
-        collapsibleBox.hasAttribute('expanded_'),
+        collapsibleBox.hasAttribute('expanding_'),
         'Non-collapsible should be expanded');
   });
 
@@ -2151,7 +2151,7 @@ suite('NewTabPageComposeboxTest', () => {
     collapsibleInput.dispatchEvent(new Event('input'));
     await collapsibleBox.updateComplete;
     assertTrue(
-        collapsibleBox.hasAttribute('expanded_'),
+        collapsibleBox.hasAttribute('expanding_'),
         'Collapsible should be expanded before submit');
 
     // Mock an autocomplete result to allow submission.
@@ -2186,7 +2186,7 @@ suite('NewTabPageComposeboxTest', () => {
     await collapsibleBox.updateComplete;
 
     assertTrue(
-        collapsibleBox.hasAttribute('expanded_'),
+        collapsibleBox.hasAttribute('expanding_'),
         'Non-collapsible should be expanded');
   });
 

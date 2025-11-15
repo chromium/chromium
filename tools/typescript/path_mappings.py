@@ -36,6 +36,7 @@ def _add_ui_webui_resources_mappings(path_mappings, root_gen_dir):
       "cr_components/page_image_service",
       "cr_components/searchbox",
       "cr_components/composebox",
+      "cr_components/search",
       "cr_components/settings_prefs",
       "cr_components/theme_color_picker",
   ]
