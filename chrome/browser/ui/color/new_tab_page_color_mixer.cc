@@ -31,6 +31,9 @@ constexpr SkColor kColorGemSysColorPrimary_Light =
 constexpr SkColor kColorSysStateHoverOnSubtle_Light = SkColorSetARGB(0x0F, 0x1F, 0x1F, 0x1F);
 constexpr SkColor kColorSysTonalOutline_Light = SkColorSetRGB(0xA8, 0xC7, 0xFA);
 
+constexpr SkColor kColorSysOnSurfaceSubtle_Light =
+    SkColorSetRGB(0x47, 0x47, 0x47);
+
 ui::ColorTransform GetContrastingColorTransform(
     ui::ColorTransform input_transform,
     std::optional<float> luminosity_change = std::nullopt) {
@@ -358,6 +361,12 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
       SkColorSetARGB(0x99, 0x00, 0x00, 0x00)};
   mixer[kColorComposeboxFileCarouselDivider] = {
       SkColorSetRGB(0xD3, 0xE3, 0xFD)};
+  mixer[kColorComposeboxFileCarouselRemoveButton] = {kColorSysSurface_Light};
+  mixer[kColorComposeboxFileCarouselUrl] = {kColorSysOnSurfaceSubtle_Light};
+  mixer[kColorComposeboxFileCarouselRemoveGradientStart] = {
+      SkColorSetRGB(0xF0, 0xF4, 0xF9)};
+  mixer[kColorComposeboxFileCarouselRemoveGradientEnd] = {
+      SkColorSetARGB(0x00, 0xF0, 0xF4, 0xF9)};
   mixer[kColorComposeboxContextEntrypointTextDisabled] = {
       SkColorSetARGB(0x60, 0x1F, 0x1F, 0x1F)};
   mixer[kColorComposeboxContextEntrypointHoverBackground] = {
