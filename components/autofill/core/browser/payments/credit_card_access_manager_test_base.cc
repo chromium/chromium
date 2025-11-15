@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/sync/test/test_sync_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #include "components/autofill/core/browser/payments/test_credit_card_fido_authenticator.h"
@@ -36,6 +37,10 @@
 
 namespace autofill {
 namespace {
+
+using ::testing::InSequence;
+using ::testing::Ref;
+
 using PaymentsRpcCardType =
     payments::PaymentsAutofillClient::PaymentsRpcCardType;
 using PaymentsRpcResult =
@@ -528,6 +533,18 @@ void CreditCardAccessManagerTestBase::FetchCreditCard(const CreditCard* card) {
   credit_card_access_manager().FetchCreditCard(
       card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
                            accessor().GetWeakPtr()));
+}
+
+void CreditCardAccessManagerTestBase::ExpectCardRetrievalSuccess(
+    CreditCard card_to_fetch,
+    CreditCard retrieved_card,
+    MockCreditCardAccessManagerObserver& observer) {
+  InSequence s;
+  EXPECT_CALL(observer, OnCreditCardFetchStarted(
+                            Ref(credit_card_access_manager()), card_to_fetch));
+  EXPECT_CALL(observer, OnCreditCardFetchSucceeded(
+                            Ref(credit_card_access_manager()), retrieved_card));
+  EXPECT_CALL(observer, OnCreditCardFetchFailed).Times(0);
 }
 
 }  // namespace autofill

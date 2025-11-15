@@ -114,6 +114,14 @@ CreditCardAccessManager::~CreditCardAccessManager() {
   }
 }
 
+void CreditCardAccessManager::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void CreditCardAccessManager::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void CreditCardAccessManager::UpdateCreditCardFormEventLogger() {
   size_t server_record_type_count = 0;
   size_t local_record_type_count = 0;
@@ -344,6 +352,7 @@ void CreditCardAccessManager::FetchCreditCard(
   }
 
   // Get the card's record type to correctly handle its fetching.
+  observers_.Notify(&Observer::OnCreditCardFetchStarted, *this, *card);
   CreditCard::RecordType record_type = card->record_type();
   on_credit_card_fetched_callback_ = std::move(on_credit_card_fetched);
 
@@ -1605,12 +1614,17 @@ void CreditCardAccessManager::Reset() {
 #endif
   unmask_details_ = payments::UnmaskDetails();
   selected_challenge_option_ = nullptr;
-  risk_based_authentication_response_ =
-      CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse();
+  risk_based_authentication_response_ = {};
   ready_to_start_authentication_.Reset();
   can_fetch_unmask_details_ = true;
-  card_.reset();
   unmask_details_request_in_progress_ = false;
+
+  // If the success callback was never called, then there must have been an
+  // error.
+  if (std::exchange(on_credit_card_fetched_callback_, {})) {
+    observers_.Notify(&Observer::OnCreditCardFetchFailed, *this, card_.get());
+  }
+  card_.reset();
 }
 
 void CreditCardAccessManager::HandleFidoOptInStatusChange() {
@@ -1788,7 +1802,10 @@ void CreditCardAccessManager::OnCreditCardFetched(
   auto& context = form_data_importer->fetched_payments_data_context();
   context.fetched_card_instrument_id = card.instrument_id();
   context.card_was_fetched_from_cache = card_was_fetched_from_cache;
-  std::move(on_credit_card_fetched_callback_).Run(card);
+  if (on_credit_card_fetched_callback_) {
+    std::move(on_credit_card_fetched_callback_).Run(card);
+  }
+  observers_.Notify(&Observer::OnCreditCardFetchSucceeded, *this, card);
 }
 
 }  // namespace autofill

@@ -539,6 +539,11 @@ CreditCard WithCvc(CreditCard credit_card, std::u16string cvc) {
   return credit_card;
 }
 
+CreditCard AsFullServerCard(CreditCard card) {
+  card.set_record_type(CreditCard::RecordType::kFullServerCard);
+  return card;
+}
+
 CreditCardCloudTokenData GetCreditCardCloudTokenData1() {
   CreditCardCloudTokenData data;
   data.masked_card_id = "data1_id";

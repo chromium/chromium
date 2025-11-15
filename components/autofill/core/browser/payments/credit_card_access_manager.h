@@ -15,6 +15,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -86,6 +88,26 @@ class CreditCardAccessManager
       public CreditCardOtpAuthenticator::Requester,
       public CreditCardRiskBasedAuthenticator::Requester {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Signals that `ccam` has begun fetching the full information for `card`.
+    virtual void OnCreditCardFetchStarted(const CreditCardAccessManager& ccam,
+                                          const CreditCard& card) {}
+
+    // Signals that fetching the credit card information for `card` succeeded.
+    // Called after the requester of the fetch was notified.
+    virtual void OnCreditCardFetchSucceeded(const CreditCardAccessManager& ccam,
+                                            const CreditCard& card) {}
+
+    // Signals that fetching the credit card information for `card` failed.
+    //
+    // Important: Note that this event is not yet called in every call path -
+    // do not rely on it.
+    // TODO(crbug.com/460035068): Ensure that all call paths call CCAM::Reset().
+    virtual void OnCreditCardFetchFailed(const CreditCardAccessManager& ccam,
+                                         const CreditCard* card) {}
+  };
+
   using OnCreditCardFetchedCallback =
       base::OnceCallback<void(const CreditCard&)>;
   using OtpAuthenticationResponse =
@@ -99,6 +121,10 @@ class CreditCardAccessManager
   CreditCardAccessManager& operator=(const CreditCardAccessManager&) = delete;
 
   ~CreditCardAccessManager() override;
+
+  void AddObserver(Observer* observer);
+
+  void RemoveObserver(Observer* observer);
 
   // Logs information about current credit card data.
   void UpdateCreditCardFormEventLogger();
@@ -455,6 +481,9 @@ class CreditCardAccessManager
   // Cached data of cards which have been unmasked. This is cleared upon page
   // navigation. Map key is the card's server_id.
   std::unordered_map<std::string, CachedServerCardInfo> unmasked_card_cache_;
+
+  // Observers for this `CreditCardAccessManager`.
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<CreditCardAccessManager> weak_ptr_factory_{this};
 };

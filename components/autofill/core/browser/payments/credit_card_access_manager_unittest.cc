@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/payments/credit_card_access_manager_test_base.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
+#include "components/autofill/core/browser/payments/mock_credit_card_access_manager_observer.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_payments_window_manager.h"
@@ -57,15 +58,18 @@
 namespace autofill {
 namespace {
 
+using autofill_metrics::CreditCardFormEventLogger;
 using ::base::ASCIIToUTF16;
+using test::AsFullServerCard;
+using ::testing::_;
+using ::testing::InSequence;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
+using ::testing::Ref;
 
 using PaymentsRpcCardType =
     payments::PaymentsAutofillClient::PaymentsRpcCardType;
 using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
-
-using autofill_metrics::CreditCardFormEventLogger;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 std::string BytesToBase64(const std::vector<uint8_t>& bytes) {
@@ -142,9 +146,13 @@ TEST_F(CreditCardAccessManagerTest, FetchLocalCardSuccess) {
   CreateLocalCard(kTestGUID, kTestNumber);
   const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
-
   PrepareToFetchCreditCardAndWaitForCallbacks();
+
+  NiceMock<MockCreditCardAccessManagerObserver> observer;
+  ExpectCardRetrievalSuccess(*card, *card, observer);
+  credit_card_access_manager().AddObserver(&observer);
   FetchCreditCard(card);
+  credit_card_access_manager().RemoveObserver(&observer);
 
   EXPECT_EQ(kTestNumber16, accessor().number());
   EXPECT_EQ(kTestCvc16, accessor().cvc());
@@ -189,8 +197,12 @@ TEST_P(CreditCardAccessManagerAuthFlowTest, FetchServerCardCVCSuccess) {
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   base::HistogramTester histogram_tester;
   std::string flow_events_histogram_name = "Autofill.BetterAuth.FlowEvents.Cvc";
-
   PrepareToFetchCreditCardAndWaitForCallbacks();
+
+  NiceMock<MockCreditCardAccessManagerObserver> observer;
+  ExpectCardRetrievalSuccess(*card, AsFullServerCard(*card), observer);
+
+  credit_card_access_manager().AddObserver(&observer);
   FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
 
   histogram_tester.ExpectUniqueSample(
@@ -198,6 +210,7 @@ TEST_P(CreditCardAccessManagerAuthFlowTest, FetchServerCardCVCSuccess) {
       CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptShown, 1);
 
   EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kSuccess, kTestNumber));
+  credit_card_access_manager().RemoveObserver(&observer);
   EXPECT_EQ(kTestNumber16, accessor().number());
   EXPECT_EQ(kTestCvc16, accessor().cvc());
 
@@ -261,7 +274,6 @@ TEST_P(CreditCardAccessManagerAuthFlowTest, FetchServerCardCVCTryAgainFailure) {
   EXPECT_EQ(kTestNumber16, accessor().number());
   EXPECT_EQ(kTestCvc16, accessor().cvc());
 }
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 // Ensures that FetchCreditCard() returns the full PAN upon a successful
 // WebAuthn verification and response from payments.

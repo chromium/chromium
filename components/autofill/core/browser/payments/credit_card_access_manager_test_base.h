@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
+#include "components/autofill/core/browser/payments/mock_credit_card_access_manager_observer.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
@@ -218,6 +219,13 @@ class CreditCardAccessManagerTestBase
   void PrepareToFetchCreditCardAndWaitForCallbacks();
 
   void FetchCreditCard(const CreditCard* card);
+
+  // Sets the expectation that `observer` witnesses a fetch card request for
+  // `card_to_fetch`, which succeeds by retrieving it as `retrieved_card`.
+  void ExpectCardRetrievalSuccess(
+      CreditCard card_to_fetch,
+      CreditCard retrieved_card,
+      MockCreditCardAccessManagerObserver& observer);
 
  private:
   base::test::TaskEnvironment task_environment_;
