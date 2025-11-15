@@ -1279,3 +1279,50 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   EXPECT_TRUE(observer_called);
   observer_called = false;
 }
+
+// Ensures that calling methods for stale extensions does not cause crashes.
+IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
+                       NoCrashForStaleExtensions) {
+  Init();
+  const std::string id =
+      CreateAndAddExtension("extension", extensions::ActionInfo::Type::kPage)
+          ->id();
+
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  // Create ExtensionActionViewModel that is not associated with the
+  // lifetime of the view.
+  auto action = ExtensionActionViewModel::Create(
+      id, browser(), std::make_unique<FakeExtensionActionPlatformDelegate>());
+
+  extension_registrar()->DisableExtension(
+      id, {extensions::disable_reason::DISABLE_USER_ACTION});
+
+  // GetId() must return a consistent value.
+  EXPECT_EQ(id, action->GetId());
+
+  // Other getters may return undefined values, but never crash.
+  // We expect specific values here, even though they're not in the contract.
+  EXPECT_TRUE(action->GetIcon(web_contents, gfx::Size(12, 12)).IsEmpty());
+  EXPECT_EQ(std::u16string(), action->GetActionName());
+  EXPECT_EQ(std::u16string(), action->GetActionTitle(web_contents));
+  EXPECT_EQ(std::u16string(), action->GetAccessibleName(web_contents));
+  EXPECT_EQ(std::u16string(), action->GetTooltip(web_contents));
+  HoverCardState state = action->GetHoverCardState(web_contents);
+  EXPECT_EQ(HoverCardState::SiteAccess::kExtensionDoesNotWantAccess,
+            state.site_access);
+  EXPECT_EQ(HoverCardState::AdminPolicy::kNone, state.policy);
+  EXPECT_EQ(SiteInteraction::kNone, action->GetSiteInteraction(web_contents));
+  EXPECT_EQ(false, action->IsEnabled(web_contents));
+  EXPECT_EQ(false, action->IsShowingPopup());
+  EXPECT_EQ(gfx::NativeView(), action->GetPopupNativeView());
+  EXPECT_EQ(nullptr,
+            action->GetContextMenu(extensions::ExtensionContextMenuModel::
+                                       ContextMenuSource::kToolbarAction));
+
+  // Calling action methods do not cause crashes.
+  action->HidePopup();
+  action->ExecuteUserAction(
+      ExtensionActionViewModel::InvocationSource::kToolbarButton);
+  action->TriggerPopupForAPI(base::DoNothing());
+}
