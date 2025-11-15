@@ -256,6 +256,9 @@ class AutocompleteInput {
         return SearchTermsData::RequestSource::LENS_OVERLAY;
       case metrics::OmniboxEventProto::NTP_COMPOSEBOX:
       case metrics::OmniboxEventProto::LENS_SIDE_PANEL_COMPOSEBOX:
+      case metrics::OmniboxEventProto::NTP_OMNIBOX_COMPOSEBOX:
+      case metrics::OmniboxEventProto::SRP_OMNIBOX_COMPOSEBOX:
+      case metrics::OmniboxEventProto::OTHER_OMNIBOX_COMPOSEBOX:
         return SearchTermsData::RequestSource::NTP_COMPOSEBOX;
       default:
         return SearchTermsData::RequestSource::SEARCHBOX;

@@ -109,14 +109,29 @@ ComposeboxHandler::ComposeboxHandler(
         pending_searchbox_handler,
     Profile* profile,
     content::WebContents* web_contents)
-    : ContextualSearchboxHandler(
+    : ComposeboxHandler(
+          std::move(pending_handler),
+          std::move(pending_page),
           std::move(pending_searchbox_handler),
           profile,
           web_contents,
           std::make_unique<OmniboxController>(
               std::make_unique<ComposeboxOmniboxClient>(profile,
                                                         web_contents,
-                                                        this))),
+                                                        this))) {}
+
+ComposeboxHandler::ComposeboxHandler(
+    mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
+    mojo::PendingRemote<composebox::mojom::Page> pending_page,
+    mojo::PendingReceiver<searchbox::mojom::PageHandler>
+        pending_searchbox_handler,
+    Profile* profile,
+    content::WebContents* web_contents,
+    std::unique_ptr<OmniboxController> omnibox_controller)
+    : ContextualSearchboxHandler(std::move(pending_searchbox_handler),
+                                 profile,
+                                 web_contents,
+                                 std::move(omnibox_controller)),
       web_contents_(web_contents),
       page_{std::move(pending_page)},
       handler_(this, std::move(pending_handler)) {

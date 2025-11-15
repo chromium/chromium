@@ -318,6 +318,9 @@ GURL RemoteSuggestionsService::EndpointUrl(
     }
     case metrics::OmniboxEventProto::NTP_REALBOX:
     case metrics::OmniboxEventProto::NTP_COMPOSEBOX:
+    case metrics::OmniboxEventProto::NTP_OMNIBOX_COMPOSEBOX:
+    case metrics::OmniboxEventProto::SRP_OMNIBOX_COMPOSEBOX:
+    case metrics::OmniboxEventProto::OTHER_OMNIBOX_COMPOSEBOX:
       if (search_terms_args.lens_overlay_suggest_inputs.has_value()) {
         url = net::AppendOrReplaceQueryParameter(url, "client",
                                                  "chrome-contextual");

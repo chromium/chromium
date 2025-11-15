@@ -37,4 +37,13 @@ enum ChromeAimEntryPoint {
 
   // AIM is entered from the omnibox search entrypoint on Chrome iOS.
   IOS_CHROME_OMNIBOX_SEARCH_ENTRY_POINT = 62;
+
+  // AIM is entered from the composebox in Omnibox on NTP.
+  DESKTOP_CHROME_NTP_OMNIBOX_COMPOSEBOX_ENTRY_POINT = 109;
+
+  // AIM is entered from the composebox in Omnibox on SRP.
+  DESKTOP_CHROME_SRP_OMNIBOX_COMPOSEBOX_ENTRY_POINT = 110;
+
+  // AIM is entered from the composebox in Omnibox on Web.
+  DESKTOP_CHROME_OTHER_OMNIBOX_COMPOSEBOX_ENTRY_POINT = 111;
 }
