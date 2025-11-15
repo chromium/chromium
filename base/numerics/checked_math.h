@@ -53,6 +53,46 @@ class CheckedNumeric {
            IsValueInRangeForNumericType<Dst>(state_.value());
   }
 
+  // Returns true if all the following are true:
+  // - `this` is valid
+  // - the underlying value can be represented by the type of
+  //   `predicate`'s single parameter.
+  // - `predicate(underlying_value)` evaluates to true
+  //
+  // `predicate` must take a single argument of arithmetic by value and return
+  // a `bool`.
+  //
+  // Example:
+  //   CheckedNumeric<int> zero;
+  //   if (zero.IsValidAnd([] (int x) { return x == 0; })) { ... }
+  template <typename Predicate>
+    requires(std::is_arithmetic_v<ExtractPredicateParamType<Predicate>>)
+  constexpr bool IsValidAnd(Predicate&& predicate) const {
+    using Dst = ExtractPredicateParamType<Predicate>;
+    return IsValid<Dst>() &&
+           std::forward<Predicate>(predicate)(static_cast<Dst>(state_.value()));
+  }
+
+  // Returns true if any of the following are true:
+  // - `this` is invalid
+  // - the underlying value cannot be represented by the type of
+  //   `predicate`'s single parameter.
+  // - `predicate` evaluates to true
+  //
+  // `predicate` must take a single argument of arithmetic by value and return
+  // a `bool`.
+  //
+  // Example:
+  //   CheckedNumeric<int> out_of_range = std::numeric_limits<int>::max();
+  //   if (out_of_range.IsInvalidOr([] (int x) { return x > 1024; })) { ... }
+  template <typename Predicate>
+    requires(std::is_arithmetic_v<ExtractPredicateParamType<Predicate>>)
+  constexpr bool IsInvalidOr(Predicate&& predicate) const {
+    using Dst = ExtractPredicateParamType<Predicate>;
+    return !IsValid<Dst>() ||
+           std::forward<Predicate>(predicate)(static_cast<Dst>(state_.value()));
+  }
+
   // AssignIfValid(Dst) - Assigns the underlying value if it is currently valid
   // and is within the range supported by the destination type. Returns true if
   // successful and false otherwise.

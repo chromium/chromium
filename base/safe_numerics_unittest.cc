@@ -1652,6 +1652,407 @@ TEST(SafeNumerics, CompoundNumericOperations) {
   EXPECT_FALSE(too_large.IsValid());
 }
 
+static bool* did_call_predicate = nullptr;
+
+class ScopedPredicateCallObserver {
+ public:
+  ScopedPredicateCallObserver() { did_call_predicate = &did_call_; }
+  ~ScopedPredicateCallObserver() { did_call_predicate = nullptr; }
+
+  bool did_call() const { return did_call_; }
+
+ private:
+  bool did_call_ = false;
+};
+
+static bool IntGreaterThanZero(int value) {
+  *did_call_predicate = true;
+  return value > 0;
+}
+
+static bool IntLessThanZero(int value) {
+  *did_call_predicate = true;
+  return value < 0;
+}
+
+static bool Int64GreaterThanZero(int64_t value) {
+  *did_call_predicate = true;
+  return value > 0;
+}
+
+static bool Int64LessThanZero(int64_t value) {
+  *did_call_predicate = true;
+  return value < 0;
+}
+
+static bool Int16GreaterThanZero(int16_t value) {
+  *did_call_predicate = true;
+  return value > 0;
+}
+
+static bool Int16LessThanZero(int16_t value) {
+  *did_call_predicate = true;
+  return value < 0;
+}
+
+TEST(SafeNumerics, IsValidAnd) {
+  {
+    const CheckedNumeric<int> invalid =
+        CheckAdd(std::numeric_limits<int>::max(), 1);
+
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_FALSE(invalid.IsValidAnd(IntGreaterThanZero));
+      EXPECT_FALSE(observer.did_call());
+    }
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_FALSE(invalid.IsValidAnd(IntLessThanZero));
+      EXPECT_FALSE(observer.did_call());
+    }
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_FALSE(invalid.IsValidAnd(Int64GreaterThanZero));
+      EXPECT_FALSE(observer.did_call());
+    }
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_FALSE(invalid.IsValidAnd(Int64LessThanZero));
+      EXPECT_FALSE(observer.did_call());
+    }
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_FALSE(invalid.IsValidAnd(Int16GreaterThanZero));
+      EXPECT_FALSE(observer.did_call());
+    }
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_FALSE(invalid.IsValidAnd(Int16LessThanZero));
+      EXPECT_FALSE(observer.did_call());
+    }
+
+    {
+      bool did_call = false;
+      EXPECT_FALSE(invalid.IsValidAnd([&](int x) {
+        did_call = true;
+        return x > 0;
+      }));
+      EXPECT_FALSE(did_call);
+    }
+    {
+      bool did_call = false;
+      EXPECT_FALSE(invalid.IsValidAnd([&](int x) {
+        did_call = true;
+        return x < 0;
+      }));
+      EXPECT_FALSE(did_call);
+    }
+    {
+      bool did_call = false;
+      EXPECT_FALSE(invalid.IsValidAnd([&](int64_t x) {
+        did_call = true;
+        return x > 0;
+      }));
+      EXPECT_FALSE(did_call);
+    }
+    {
+      bool did_call = false;
+      EXPECT_FALSE(invalid.IsValidAnd([&](int64_t x) {
+        did_call = true;
+        return x < 0;
+      }));
+      EXPECT_FALSE(did_call);
+    }
+    {
+      bool did_call = false;
+      EXPECT_FALSE(invalid.IsValidAnd([&](int16_t x) {
+        did_call = true;
+        return x > 0;
+      }));
+      EXPECT_FALSE(did_call);
+    }
+    {
+      bool did_call = false;
+      EXPECT_FALSE(invalid.IsValidAnd([&](int16_t x) {
+        did_call = true;
+        return x < 0;
+      }));
+      EXPECT_FALSE(did_call);
+    }
+  }
+
+  {
+    const CheckedNumeric<int> value = std::numeric_limits<int>::max();
+
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_TRUE(value.IsValidAnd(IntGreaterThanZero));
+      EXPECT_TRUE(observer.did_call());
+    }
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_FALSE(value.IsValidAnd(IntLessThanZero));
+      EXPECT_TRUE(observer.did_call());
+    }
+
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_TRUE(value.IsValidAnd(Int64GreaterThanZero));
+      EXPECT_TRUE(observer.did_call());
+    }
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_FALSE(value.IsValidAnd(Int64LessThanZero));
+      EXPECT_TRUE(observer.did_call());
+    }
+
+    // Always invalid since `std::numeric_limits<int>::max()` does not fit in
+    // an `int16_t`.
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_FALSE(value.IsValidAnd(Int16GreaterThanZero));
+      EXPECT_FALSE(observer.did_call());
+    }
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_FALSE(value.IsValidAnd(Int16LessThanZero));
+      EXPECT_FALSE(observer.did_call());
+    }
+
+    {
+      bool did_call = false;
+      EXPECT_TRUE(value.IsValidAnd([&](int x) {
+        did_call = true;
+        return x > 0;
+      }));
+      EXPECT_TRUE(did_call);
+    }
+    {
+      bool did_call = false;
+      EXPECT_FALSE(value.IsValidAnd([&](int x) {
+        did_call = true;
+        return x < 0;
+      }));
+      EXPECT_TRUE(did_call);
+    }
+
+    {
+      bool did_call = false;
+      EXPECT_TRUE(value.IsValidAnd([&](int64_t x) {
+        did_call = true;
+        return x > 0;
+      }));
+      EXPECT_TRUE(did_call);
+    }
+    {
+      bool did_call = false;
+      EXPECT_FALSE(value.IsValidAnd([&](int64_t x) {
+        did_call = true;
+        return x < 0;
+      }));
+      EXPECT_TRUE(did_call);
+    }
+
+    // Always invalid since `std::numeric_limits<int>::max()` does not fit in
+    // an `int16_t`.
+    {
+      bool did_call = false;
+      EXPECT_FALSE(value.IsValidAnd([&](int16_t x) {
+        did_call = true;
+        return x > 0;
+      }));
+      EXPECT_FALSE(did_call);
+    }
+    {
+      bool did_call = false;
+      EXPECT_FALSE(value.IsValidAnd([&](int16_t x) {
+        did_call = true;
+        return x < 0;
+      }));
+      EXPECT_FALSE(did_call);
+    }
+  }
+}
+
+TEST(SafeNumerics, IsInvalidOr) {
+  {
+    const CheckedNumeric<int> invalid =
+        CheckAdd(std::numeric_limits<int>::max(), 1);
+
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_TRUE(invalid.IsInvalidOr(IntGreaterThanZero));
+      EXPECT_FALSE(observer.did_call());
+    }
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_TRUE(invalid.IsInvalidOr(IntLessThanZero));
+      EXPECT_FALSE(observer.did_call());
+    }
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_TRUE(invalid.IsInvalidOr(Int64GreaterThanZero));
+      EXPECT_FALSE(observer.did_call());
+    }
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_TRUE(invalid.IsInvalidOr(Int64LessThanZero));
+      EXPECT_FALSE(observer.did_call());
+    }
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_TRUE(invalid.IsInvalidOr(Int16GreaterThanZero));
+      EXPECT_FALSE(observer.did_call());
+    }
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_TRUE(invalid.IsInvalidOr(Int16LessThanZero));
+      EXPECT_FALSE(observer.did_call());
+    }
+
+    {
+      bool did_call = false;
+      EXPECT_TRUE(invalid.IsInvalidOr([&](int x) {
+        did_call = true;
+        return x > 0;
+      }));
+      EXPECT_FALSE(did_call);
+    }
+    {
+      bool did_call = false;
+      EXPECT_TRUE(invalid.IsInvalidOr([&](int x) {
+        did_call = true;
+        return x < 0;
+      }));
+      EXPECT_FALSE(did_call);
+    }
+    {
+      bool did_call = false;
+      EXPECT_TRUE(invalid.IsInvalidOr([&](int64_t x) {
+        did_call = true;
+        return x > 0;
+      }));
+      EXPECT_FALSE(did_call);
+    }
+    {
+      bool did_call = false;
+      EXPECT_TRUE(invalid.IsInvalidOr([&](int64_t x) {
+        did_call = true;
+        return x < 0;
+      }));
+      EXPECT_FALSE(did_call);
+    }
+    {
+      bool did_call = false;
+      EXPECT_TRUE(invalid.IsInvalidOr([&](int16_t x) {
+        did_call = true;
+        return x > 0;
+      }));
+      EXPECT_FALSE(did_call);
+    }
+    {
+      bool did_call = false;
+      EXPECT_TRUE(invalid.IsInvalidOr([&](int16_t x) {
+        did_call = true;
+        return x < 0;
+      }));
+      EXPECT_FALSE(did_call);
+    }
+  }
+
+  {
+    const CheckedNumeric<int> value = std::numeric_limits<int>::max();
+
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_TRUE(value.IsInvalidOr(IntGreaterThanZero));
+      EXPECT_TRUE(observer.did_call());
+    }
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_FALSE(value.IsInvalidOr(IntLessThanZero));
+      EXPECT_TRUE(observer.did_call());
+    }
+
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_TRUE(value.IsInvalidOr(Int64GreaterThanZero));
+      EXPECT_TRUE(observer.did_call());
+    }
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_FALSE(value.IsInvalidOr(Int64LessThanZero));
+      EXPECT_TRUE(observer.did_call());
+    }
+
+    // Always invalid since `std::numeric_limits<int>::max()` does not fit in
+    // an `int16_t`.
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_TRUE(value.IsInvalidOr(Int16GreaterThanZero));
+      EXPECT_FALSE(observer.did_call());
+    }
+    {
+      ScopedPredicateCallObserver observer;
+      EXPECT_TRUE(value.IsInvalidOr(Int16LessThanZero));
+      EXPECT_FALSE(observer.did_call());
+    }
+
+    {
+      bool did_call = false;
+      EXPECT_TRUE(value.IsInvalidOr([&](int x) {
+        did_call = true;
+        return x > 0;
+      }));
+      EXPECT_TRUE(did_call);
+    }
+    {
+      bool did_call = false;
+      EXPECT_FALSE(value.IsInvalidOr([&](int x) {
+        did_call = true;
+        return x < 0;
+      }));
+      EXPECT_TRUE(did_call);
+    }
+
+    {
+      bool did_call = false;
+      EXPECT_TRUE(value.IsInvalidOr([&](int64_t x) {
+        did_call = true;
+        return x > 0;
+      }));
+      EXPECT_TRUE(did_call);
+    }
+    {
+      bool did_call = false;
+      EXPECT_FALSE(value.IsInvalidOr([&](int64_t x) {
+        did_call = true;
+        return x < 0;
+      }));
+      EXPECT_TRUE(did_call);
+    }
+
+    // Always invalid since `std::numeric_limits<int>::max()` does not fit in
+    // an `int16_t`.
+    {
+      bool did_call = false;
+      EXPECT_TRUE(value.IsInvalidOr([&](int16_t x) {
+        did_call = true;
+        return x > 0;
+      }));
+      EXPECT_FALSE(did_call);
+    }
+    {
+      bool did_call = false;
+      EXPECT_TRUE(value.IsInvalidOr([&](int16_t x) {
+        did_call = true;
+        return x < 0;
+      }));
+      EXPECT_FALSE(did_call);
+    }
+  }
+}
+
 TEST(SafeNumerics, TemplatedSafeMath) {
   // CheckMul and friends can be confusing, as they change behavior depending on
   // where the template is specified.
