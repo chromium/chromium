@@ -544,7 +544,7 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
 }
 
 :host(:not([ntp-realbox-next-enabled])) contextual-entrypoint-and-carousel::part(voice-icon),
-:host([realbox-layout-mode='TallBottomContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
+:host([searchbox-layout-mode='TallBottomContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
   bottom: 10px;
   inset-inline-end: 14px;
   position: absolute;
@@ -554,7 +554,7 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
   inset-inline-end: calc(var(--cr-icon-button-size) + 18px);
 }
 
-:host([realbox-layout-mode='TallTopContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
+:host([searchbox-layout-mode='TallTopContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
   margin-inline-end: 14px;
   margin-inline-start: auto;
   position: static;
