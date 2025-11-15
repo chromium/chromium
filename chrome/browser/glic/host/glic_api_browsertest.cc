@@ -306,6 +306,8 @@ class GlicApiTestWithDefaultTabContextEnabled : public GlicApiTestWithOneTab {
                                    {});
   }
 
+  void SetUpOnMainThread() override { GlicApiTest::SetUpOnMainThread(); }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -641,10 +643,31 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithDefaultTabContextDisabled,
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithDefaultTabContextEnabled,
                        testGetDefaultTabContextPermissionState) {
   // Default kGlicDefaultTabContextEnabled value is true.
+  NavigateTabAndOpenGlic();
   ExecuteJsTest();
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kGlicDefaultTabContextEnabled, false);
   ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithDefaultTabContextEnabled, testPinOnBind) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Pin on bind is a multi-instance behavior";
+  }
+  NavigateTabAndOpenGlic();
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithDefaultTabContextEnabled,
+                       testNoPinOnBindWhenSettingOff) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Pin on bind is a multi-instance behavior";
+  }
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kGlicDefaultTabContextEnabled, false);
+
+  NavigateTabAndOpenGlic();
+  ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebActuationSettingDisabled,
