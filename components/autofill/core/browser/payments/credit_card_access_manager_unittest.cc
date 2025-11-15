@@ -65,6 +65,7 @@ using ::testing::_;
 using ::testing::InSequence;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
+using ::testing::Pointee;
 using ::testing::Ref;
 
 using PaymentsRpcCardType =
@@ -235,11 +236,16 @@ TEST_P(CreditCardAccessManagerAuthFlowTest, FetchServerCardCVCNetworkError) {
   const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
+  NiceMock<MockCreditCardAccessManagerObserver> observer;
+  ExpectCardRetrievalFailure(*card, observer);
+
+  credit_card_access_manager().AddObserver(&observer);
   PrepareToFetchCreditCardAndWaitForCallbacks();
   FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
-
   EXPECT_TRUE(
       GetRealPanForCVCAuth(PaymentsRpcResult::kNetworkError, std::string()));
+  credit_card_access_manager().RemoveObserver(&observer);
+
   EXPECT_THAT(accessor().number(), IsEmpty());
 }
 
@@ -251,11 +257,16 @@ TEST_P(CreditCardAccessManagerAuthFlowTest,
   const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
+  NiceMock<MockCreditCardAccessManagerObserver> observer;
+  ExpectCardRetrievalFailure(*card, observer);
+
+  credit_card_access_manager().AddObserver(&observer);
   PrepareToFetchCreditCardAndWaitForCallbacks();
   FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
-
   EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kPermanentFailure,
                                    std::string()));
+  credit_card_access_manager().RemoveObserver(&observer);
+
   EXPECT_THAT(accessor().number(), IsEmpty());
 }
 
@@ -265,12 +276,17 @@ TEST_P(CreditCardAccessManagerAuthFlowTest, FetchServerCardCVCTryAgainFailure) {
   const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
+  NiceMock<MockCreditCardAccessManagerObserver> observer;
+  ExpectCardRetrievalSuccess(*card, AsFullServerCard(*card), observer);
+
+  credit_card_access_manager().AddObserver(&observer);
   FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
 
   EXPECT_TRUE(
       GetRealPanForCVCAuth(PaymentsRpcResult::kTryAgainFailure, std::string()));
-
   EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kSuccess, kTestNumber));
+  credit_card_access_manager().RemoveObserver(&observer);
+
   EXPECT_EQ(kTestNumber16, accessor().number());
   EXPECT_EQ(kTestCvc16, accessor().cvc());
 }

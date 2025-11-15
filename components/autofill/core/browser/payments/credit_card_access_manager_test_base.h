@@ -221,7 +221,13 @@ class CreditCardAccessManagerTestBase
   void FetchCreditCard(const CreditCard* card);
 
   // Sets the expectation that `observer` witnesses a fetch card request for
-  // `card_to_fetch`, which succeeds by retrieving it as `retrieved_card`.
+  // `card_to_fetch` that fails.
+  void ExpectCardRetrievalFailure(
+      CreditCard card_to_fetch,
+      MockCreditCardAccessManagerObserver& observer);
+
+  // Sets the expectation that `observer` witnesses a fetch card request for
+  // `card_to_fetch`, which succeeds in the retrieval of `retrieved_card`.
   void ExpectCardRetrievalSuccess(
       CreditCard card_to_fetch,
       CreditCard retrieved_card,

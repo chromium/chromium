@@ -792,11 +792,12 @@ void CreditCardAccessManager::OnCvcAuthenticationComplete(
   }
 
   HandleFidoOptInStatusChange();
-  // TODO(crbug.com/40197696): Add Reset() to this function after cleaning up
-  // the FIDO opt-in status change. This should not have any negative impact now
-  // except for readability and cleanness. The result of
-  // ShouldOfferFidoOptInDialog() and |opt_in_intention_| are to some extent
-  // duplicate. We should be able to combine them into one function.
+  // TODO(crbug.com/40197696): The result of ShouldOfferFidoOptInDialog() and
+  // `opt_in_intention_` are to some extent duplicate. We should be able to
+  // combine them into one function.
+  if (!response.did_succeed) {
+    Reset();
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)

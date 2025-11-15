@@ -39,6 +39,7 @@ namespace autofill {
 namespace {
 
 using ::testing::InSequence;
+using ::testing::Pointee;
 using ::testing::Ref;
 
 using PaymentsRpcCardType =
@@ -533,6 +534,18 @@ void CreditCardAccessManagerTestBase::FetchCreditCard(const CreditCard* card) {
   credit_card_access_manager().FetchCreditCard(
       card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
                            accessor().GetWeakPtr()));
+}
+
+void CreditCardAccessManagerTestBase::ExpectCardRetrievalFailure(
+    CreditCard card_to_fetch,
+    MockCreditCardAccessManagerObserver& observer) {
+  InSequence s;
+  EXPECT_CALL(observer, OnCreditCardFetchStarted(
+                            Ref(credit_card_access_manager()), card_to_fetch));
+  EXPECT_CALL(observer, OnCreditCardFetchSucceeded).Times(0);
+  EXPECT_CALL(observer,
+              OnCreditCardFetchFailed(Ref(credit_card_access_manager()),
+                                      Pointee(card_to_fetch)));
 }
 
 void CreditCardAccessManagerTestBase::ExpectCardRetrievalSuccess(
