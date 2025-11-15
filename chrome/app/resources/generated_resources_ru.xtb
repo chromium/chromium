@@ -53,7 +53,7 @@
 <translation id="1031362278801463162">Загрузка данных для предварительного просмотра</translation>
 <translation id="1032605640136438169">Просим вас ознакомиться с изменениями.</translation>
 <translation id="103279545524624934">Чтобы запускать Android-приложения, освободите пространство на диске.</translation>
-<translation id="1033060461778467949">Добавить вкладку в режим Split View</translation>
+<translation id="1033060461778467949">Перенести вкладку в режим параллельного просмотра</translation>
 <translation id="1033780634303702874">Доступ к последовательным устройствам</translation>
 <translation id="1034484273907870301">Панель с уменьшенными изображениями вкладок в режиме планшета</translation>
 <translation id="1035289631433631911">Инструмент "Перенос контента"</translation>
@@ -200,7 +200,7 @@
 <translation id="1129348283834595293">Киберпанк</translation>
 <translation id="1129420403709586868">Просмотр фотографий и медиафайлов с телефона</translation>
 <translation id="1129850422003387628">Управление приложениями</translation>
-<translation id="1130116586186908674">Разделить экран</translation>
+<translation id="1130116586186908674">Открыть параллельный просмотр</translation>
 <translation id="1130430615924359526">{0,plural, =1{Закрыть окно в режиме инкогнито}one{Закрыть # окно в режиме инкогнито}few{Закрыть # окна в режиме инкогнито}many{Закрыть # окон в режиме инкогнито}other{Закрыть # окна в режиме инкогнито}}</translation>
 <translation id="113050636487300043">Укажите имя и установите цветовую тему, чтобы отличать свой профиль от других.</translation>
 <translation id="1130589222747246278">"<ph name="WINDOW_TITLE" />" – элемент группы "<ph name="GROUP_NAME" />"</translation>
@@ -433,7 +433,7 @@
 <translation id="1277020343994096713">Создайте PIN-код, который отличается от текущего.</translation>
 <translation id="1277597051786235230">&amp;Искать "<ph name="SEARCH_TERMS" />" в <ph name="SEARCH_ENGINE" /> на новой вкладке</translation>
 <translation id="127849925363482083">Чтобы закрыть закрепленную вкладку, нажмите <ph name="SHORTCUT_TEXT" /> ещё раз.</translation>
-<translation id="1278542245784398460">Нажмите правой кнопкой мыши на эту вкладку и выберите "Добавить вкладку в режиме Split View".</translation>
+<translation id="1278542245784398460">Нажмите правой кнопкой мыши на эту вкладку и выберите "Добавить вкладку для параллельного просмотра".</translation>
 <translation id="1278859221870828664">Ознакомьтесь с условиями предоставления приложений и сервисов Google Play</translation>
 <translation id="1279024913354609713">Не разрешать</translation>
 <translation id="127946606521051357">Устройство поблизости делится контентом</translation>
@@ -741,7 +741,7 @@
 <translation id="1501480321619201731">Удалить группу</translation>
 <translation id="1503556098270577657">Вы вошли в аккаунт <ph name="USER_EMAIL" /> с помощью телефона Android.</translation>
 <translation id="150411034776756821">Удалить <ph name="SITE" /></translation>
-<translation id="1504253885059472207">Закрепить режим Split View</translation>
+<translation id="1504253885059472207">Закрепить параллельный просмотр</translation>
 <translation id="1504551620756424144">В Windows общие папки находятся здесь: <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">экспортировать пароли</translation>
 <translation id="1505654899813338756">Вы можете объединять вкладки в группы, чтобы хранить связанные страницы вместе и синхронизировать их между устройствами.</translation>
@@ -885,7 +885,7 @@
 <translation id="1597806446183714225">Улучшает качество звука: голоса будут звучать естественно и четко</translation>
 <translation id="1598163867407640634">Вход на сайт <ph name="SITE_ETLD_PLUS_ONE" /> с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">Функция обновления отключена администратором.</translation>
-<translation id="1598293830962835699">Быстро включайте режим Split View, когда это нужно.</translation>
+<translation id="1598293830962835699">Быстро включайте параллельный просмотр, когда это нужно.</translation>
 <translation id="1600857548979126453">Доступ к работе отладчика страниц</translation>
 <translation id="1601481906560916994">Исключить сайт</translation>
 <translation id="1601560923496285236">Применить</translation>
@@ -3958,7 +3958,7 @@
 <translation id="371300529209814631">Назад/Вперед</translation>
 <translation id="3713047097299026954">На электронном ключе нет учетных данных.</translation>
 <translation id="3713091615825314967">Автоматическое обновление включено</translation>
-<translation id="3713673533020367620">Открыть вкладку в режиме разделения экрана</translation>
+<translation id="3713673533020367620">Открыть вкладку для параллельного просмотра</translation>
 <translation id="371370241367527062">Фронтальный микрофон</translation>
 <translation id="3714195043138862580">Демонстрационное устройство было деинициализировано.</translation>
 <translation id="37143699183660101">Стабильность указателя</translation>
@@ -4090,7 +4090,7 @@
 <translation id="3792973596468118484">Расширений: <ph name="NUM_EXTENSIONS" /></translation>
 <translation id="3794792524918736965">Включите Windows Hello</translation>
 <translation id="379509625511193653">Отключено</translation>
-<translation id="3795436270513738622">Открыть ссылку в режиме разделения экрана</translation>
+<translation id="3795436270513738622">Открыть ссылку для параллельного просмотра</translation>
 <translation id="3796215473395753611">Alt + Стрелка вверх</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, нажмите клавишу со стрелкой вправо, чтобы прослушать голос</translation>
 <translation id="3796648294839530037">Избранные сети:</translation>
@@ -4189,7 +4189,7 @@
 <translation id="3847319713229060696">Помочь сделать интернет безопасным для всех</translation>
 <translation id="3847734730889093333"><ph name="RATE" />x</translation>
 <translation id="3848547754896969219">Открыть в режиме &amp;инкогнито</translation>
-<translation id="3848688783623004960">Открыть в режиме разделения экрана</translation>
+<translation id="3848688783623004960">Открыть для параллельного просмотра</translation>
 <translation id="3850172593216628215">Обновлений системы безопасности больше не будет. Сэкономьте от 50 долларов США при покупке нового Chromebook</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3850989673553106152">Пароль изменен</translation>
@@ -4270,7 +4270,7 @@
 <translation id="3903187154317825986">Встроенная клавиатура</translation>
 <translation id="3903696968689283281">Информация о владельцах Wi-Fi Direct:</translation>
 <translation id="3904326018476041253">Сервисы геолокации</translation>
-<translation id="3904572359926093799">Маркер изменения размера частей разделенного экрана (можно перетаскивать)</translation>
+<translation id="3904572359926093799">Маркер изменения размера вкладок для параллельного просмотра (можно перетаскивать)</translation>
 <translation id="3905761538810670789">Восстановить приложение</translation>
 <translation id="3906096710440765802">Чтобы пароли, закладки и другие данные были доступны на любом вашем устройстве, войдите в Chrome.</translation>
 <translation id="3908501907586732282">Включить расширение</translation>
@@ -4848,7 +4848,7 @@
 <translation id="4310139701823742692">Неверный формат файла PPD. Исправьте проблему и повторите попытку.</translation>
 <translation id="4310496734563057511">Если устройством пользуется кто-то ещё, включите Windows Hello, чтобы только вы могли получать доступ к своим сохраненным паролям.</translation>
 <translation id="431076611119798497">&amp;Подробнее</translation>
-<translation id="431127643228811252">В режиме Split View проще выполнять несколько задач сразу</translation>
+<translation id="431127643228811252">С параллельным просмотром проще выполнять несколько задач сразу</translation>
 <translation id="4311284648179069796">Чтение и изменение запрещены</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 аккаунт Google}one{<ph name="EXTRA_ACCOUNTS" /> аккаунт Google}few{<ph name="EXTRA_ACCOUNTS" /> аккаунта Google}many{<ph name="EXTRA_ACCOUNTS" /> аккаунтов Google}other{<ph name="EXTRA_ACCOUNTS" /> аккаунта Google}}</translation>
 <translation id="4312866146174492540">Блокировать (по умолчанию)</translation>
@@ -6151,7 +6151,7 @@
     Это устройство показывается как "<ph name="DEVICE_TYPE" />"…</translation>
 <translation id="5238301240406177137">Сохранить в аккаунте</translation>
 <translation id="523862956770478816">Разрешения на доступ к сайтам</translation>
-<translation id="5240247138804326767">Упорядочить разделенный экран</translation>
+<translation id="5240247138804326767">Упорядочить параллельный просмотр</translation>
 <translation id="5240931875940563122">Войти с помощью телефона Android</translation>
 <translation id="5241689948221696942">Для некоторых товаров есть сравнительные таблицы, в которых собраны отзывы из интернета.</translation>
 <translation id="5242724311594467048">Включить приложение "<ph name="EXTENSION_NAME" />"?</translation>
@@ -7447,7 +7447,7 @@
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6169040057125497443">Проверьте микрофон.</translation>
 <translation id="6169967265765719844">Вы можете управлять разрешениями для игр и приложений, установленных через Steam, <ph name="LINK_BEGIN" />в настройках этой платформы<ph name="LINK_END" />.</translation>
-<translation id="6170313103929479668">Упорядочить разделенный экран</translation>
+<translation id="6170313103929479668">Упорядочить параллельный просмотр</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
 <translation id="6170498031581934115">Не удалось включить отладку с ADB. Перейдите в настройки и повторите попытку.</translation>
 <translation id="6170675927290506430">Открыть настройки уведомлений</translation>
@@ -7569,7 +7569,7 @@
 <translation id="6248988683584659830">Поиск настроек</translation>
 <translation id="6249200942125593849">Настройки специальных возможностей</translation>
 <translation id="6250186368828697007">Во время демонстрации экрана содержимое уведомлений скрыто.</translation>
-<translation id="6250887692313997958">Выберите, какую вкладку добавить в режим Split View</translation>
+<translation id="6250887692313997958">Выберите вкладку для параллельного просмотра</translation>
 <translation id="6251870443722440887">GDI-дескрипторы</translation>
 <translation id="6251924700383757765">Политика конфиденциальности</translation>
 <translation id="625369703868467034">Состояние сети</translation>
@@ -8426,7 +8426,7 @@
 <translation id="6841186874966388268">Ошибки</translation>
 <translation id="6842135459748401207">Только устройства, на которых выполнен вход в аккаунт <ph name="USER_EMAIL" /></translation>
 <translation id="6842136130964845393">Чтобы всегда иметь доступ к сохраненным паролям, подтвердите свою личность.</translation>
-<translation id="6842670680297285750">Перейти в режим Split View с текущей вкладкой</translation>
+<translation id="6842670680297285750">Открыть параллельный просмотр с текущей вкладкой</translation>
 <translation id="6842749380892715807">Текущие списки сайтов XML скачаны <ph name="LAST_DATE_DOWNLOAD" />.</translation>
 <translation id="6842868554183332230">Данные об использовании устройства нужны сайтам, чтобы показывать в приложениях для обмена сообщениями, что вы находитесь онлайн.</translation>
 <translation id="6843264316370513305">Отладка сети</translation>
@@ -8555,7 +8555,7 @@
 <translation id="6931690462168617033">Сила нажатия</translation>
 <translation id="6933321725007230600">Включить &amp;синхронизацию</translation>
 <translation id="693459579445775904">Чтобы сэкономить место на диске, голосовые пакеты доступны всем пользователям.</translation>
-<translation id="6934597021412437058">Теперь в режиме Split View вы можете сравнивать две страницы, делать несколько дел сразу и решать другие задачи.</translation>
+<translation id="6934597021412437058">Теперь вы можете сравнивать две страницы, делать несколько дел одновременно и многое другое – используйте параллельный просмотр.</translation>
 <translation id="6935031746833428401">Подробнее об управлении устройствами</translation>
 <translation id="6935286146439255109">Отсутствует лоток для бумаги</translation>
 <translation id="6938386202199793006">У вас 1 сохраненный принтер.</translation>
@@ -9445,7 +9445,7 @@
 <translation id="7566118625369982896">Управление ссылками на приложение в Google Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Создать сочетание клавиш</translation>
-<translation id="7567100268516475532">Добавить вкладку в режим Split View</translation>
+<translation id="7567100268516475532">Перенести вкладку в режим параллельного просмотра</translation>
 <translation id="7568014768212280234">Ваша группа вкладок заполнена. Новые участники не смогут присоединиться по ссылке.</translation>
 <translation id="7568759527730933493">Поиск IP-адресов сайтов в DNS (системе доменных имен) будет выполняться через защищенное подключение. Для этого используется управляемый поставщик услуг: <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Для некоторых доменов, настроенных администратором, защищенные подключения не используются.</translation>
 <translation id="756876171895853918">Настроить аватар</translation>
@@ -9472,7 +9472,7 @@
 <translation id="7586498138629385861">Браузер будет продолжать работать, пока вы не закроете приложения Chrome.</translation>
 <translation id="7587806318633605613">История подсказок</translation>
 <translation id="7588381637439911806">Создать новую группу</translation>
-<translation id="7589448773774086276">Перейти в режим Split View с текущей вкладкой</translation>
+<translation id="7589448773774086276">Открыть параллельный просмотр с текущей вкладкой</translation>
 <translation id="7589461650300748890">Осторожно!</translation>
 <translation id="7590883480672980941">Настройки ввода</translation>
 <translation id="7592060599656252486">Озвучивать некоторые</translation>
@@ -10436,7 +10436,7 @@
 <translation id="8230134520748321204">Сохранить пароль для <ph name="ORIGIN" />?</translation>
 <translation id="8230326817897075865">Удалить <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">Запретить сайтам показывать изображения</translation>
-<translation id="8231438895476693774">Добавить вкладку в режиме Split View</translation>
+<translation id="8231438895476693774">Добавить вкладку для параллельного просмотра</translation>
 <translation id="823226567613548870">удалить ваши данные из сервиса "<ph name="BRAND" />"</translation>
 <translation id="8233028084277069927">Открыть</translation>
 <translation id="8234795456569844941">Чтобы нашим разработчикам было проще решить проблему, опишите, что произошло перед появлением сообщения об ошибке в профиле:</translation>
@@ -10449,7 +10449,7 @@
 <translation id="8239932336306009582">Запрещено показывать уведомления</translation>
 <translation id="8241040075392580210">Тучка</translation>
 <translation id="8241338426526905580">Сертификатов нет.</translation>
-<translation id="8241650983304689286">Добавить вкладку в режиме Split View</translation>
+<translation id="8241650983304689286">Добавить вкладку для параллельного просмотра</translation>
 <translation id="8241806945692107836">Определение конфигурации устройства…</translation>
 <translation id="8241868517363889229">Просмотр и изменение закладок</translation>
 <translation id="8242273718576931540">Ваше устройство не может подключиться к этой сети. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -10927,7 +10927,7 @@
 <translation id="8569673829373920831"><ph name="APP_NAME" />: подробнее</translation>
 <translation id="8569682776816196752">Места назначения не найдены</translation>
 <translation id="8571213806525832805">Последние 4 недели</translation>
-<translation id="8571323456914890254">Открыть в режиме разделения экрана</translation>
+<translation id="8571323456914890254">Открыть для параллельного просмотра</translation>
 <translation id="8571687764447439720">Добавить билет Kerberos</translation>
 <translation id="8572052284359771939">Чтобы проверять сайты на безопасность, отправляет их URL вместе с небольшими образцами контента страниц и скачанных файлов, а также сведения об использовании расширений и информацию о системе на сервер Google Безопасного просмотра.</translation>
 <translation id="8573111744706778015">Ввод "ươ" с помощью "uo7"</translation>
@@ -10955,7 +10955,7 @@
 <translation id="859246725979739260">Этому сайту запрещено получать информацию о том, где вы находитесь.</translation>
 <translation id="8593450223647418235">Если не завершить настройку, вы не сможете открывать файлы в Microsoft 365.</translation>
 <translation id="8593686980889923154">Приложение "<ph name="APP_NAME" />" на устройстве <ph name="DEVICE_TYPE" /> заблокировано</translation>
-<translation id="8594912907680633924">Открыть ссылку в режиме разделения экрана</translation>
+<translation id="8594912907680633924">Открыть ссылку для параллельного просмотра</translation>
 <translation id="8596400097994526901">Другие действия для поисковой системы "<ph name="SEARCH_ENGINE_NAME" />"</translation>
 <translation id="8596540852772265699">Пользовательские файлы</translation>
 <translation id="8597845839771543242">Формат свойств:</translation>
@@ -11759,7 +11759,7 @@
 <translation id="9113240369465613386">Только нечетные страницы</translation>
 <translation id="9113469270512809735">Показать или скрыть недавно закрытые элементы</translation>
 <translation id="9113529408970052045">Генератор текстов может открываться автоматически, когда в поле на сайте можно написать короткий текст</translation>
-<translation id="9114210796909453187">Добавьте вкладку в режим Split View</translation>
+<translation id="9114210796909453187">Добавьте вкладку для параллельного просмотра</translation>
 <translation id="9114663181201435112">Удобный вход</translation>
 <translation id="9115675100829699941">&amp;Закладки</translation>
 <translation id="9116366756388192417">Выбрать тему</translation>
@@ -11850,7 +11850,7 @@
 <translation id="9173063514323762371">Скрыть панель закладок</translation>
 <translation id="917350715406657904">Время, установленное родителями для приложения "<ph name="APP_NAME" />", истекло. Лимит на завтра: <ph name="TIME_LIMIT" />.</translation>
 <translation id="9174401638287877180">Отправка данных об использовании и диагностике. Помогите сделать Android ещё лучше – разрешите автоматически отправлять в Google диагностическую информацию, данные об использовании приложений и самого устройства. Эти данные не будут использоваться для того, чтобы установить личность ребенка. Они помогут нам повысить стабильность приложений и внести другие улучшения. Некоторые агрегированные данные пригодятся партнерам Google, например разработчикам Android. Если у ребенка включена запись дополнительной истории приложений и веб-поиска, эта информация может сохраняться в его аккаунте.</translation>
-<translation id="9174854240439014335">Разрешить перетаскивание к левому или правому краю окна в режиме Split View</translation>
+<translation id="9174854240439014335">Разрешить перетаскивание к левому или правому краю окна при параллельном просмотре</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" />: подключено устройство Bluetooth</translation>
 <translation id="9177859716483578738">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваши данные (<ph name="FIELDS_STRING" />). Ознакомьтесь с <ph name="BEGIN_LINK" />политикой конфиденциальности<ph name="END_LINK" /> сайта.</translation>
 <translation id="9178061802301856367">Удаление учетных данных</translation>

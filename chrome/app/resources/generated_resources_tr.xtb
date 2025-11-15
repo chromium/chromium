@@ -8403,7 +8403,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Sekme kaldırılıp grup silinsin mi?}=1{Sekmeler kaldırılıp grup silinsin mi?}other{Sekmeler kaldırılıp gruplar silinsin mi?}}</translation>
 <translation id="6833479554815567477">Sekme, <ph name="GROUP_NAME" /> adlı gruptan kaldırıldı - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Dengeli (önerilen)</translation>
-<translation id="6835624277262316125">İş adresiniz, Google hizmetlerinde işlerinizi halletmenize yardımcı olabilir. Örneğin, Google Haritalar'da daha alakalı arama sonuçları ve yol tarifleri alabilirsiniz. Adresinizi <ph name="BEGIN_LINK" />Google Hesabınızda (<ph name="USERNAME" />)<ph name="END_LINK" /> düzenleyebilir veya silebilirsiniz.</translation>
+<translation id="6835624277262316125">İş adresiniz, Google hizmetlerinde işlerinizi halletmenize yardımcı olabilir. Örneğin, daha alakalı Arama sonuçları ve Google Haritalar'da daha doğru yol tarifleri alabilirsiniz. Adresinizi <ph name="BEGIN_LINK" />Google Hesabınızda (<ph name="USERNAME" />)<ph name="END_LINK" /> düzenleyebilir veya silebilirsiniz.</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> cihazınızı güncellemek için lütfen İnternet'e bağlanın.</translation>
 <translation id="6838992358006915573">Büyüteç, ChromeVox odağını takip eder</translation>
 <translation id="6839916869147598086">Oturum açma değişti</translation>
@@ -9770,7 +9770,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
     Yakındaki cihazlar <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> olarak görebilir...</translation>
 <translation id="7786889348652477777">&amp;Uygulamayı Yeniden Yükle</translation>
 <translation id="7787308148023287649">Başka bir ekranda görüntüle</translation>
-<translation id="7789895198197042595">Ev adresiniz, Google hizmetlerinde işlerinizi halletmenize yardımcı olabilir. Örneğin, Google Haritalar'da daha alakalı arama sonuçları ve yol tarifleri alabilirsiniz. Adresinizi <ph name="BEGIN_LINK" />Google Hesabınızda (<ph name="USERNAME" />)<ph name="END_LINK" /> düzenleyebilir veya silebilirsiniz.</translation>
+<translation id="7789895198197042595">Ev adresiniz, Google hizmetlerinde işlerinizi halletmenize yardımcı olabilir. Örneğin, daha alakalı Arama sonuçları ve Google Haritalar'da daha doğru yol tarifleri alabilirsiniz. Adresinizi <ph name="BEGIN_LINK" />Google Hesabınızda (<ph name="USERNAME" />)<ph name="END_LINK" /> düzenleyebilir veya silebilirsiniz.</translation>
 <translation id="7791269138074599214">Giriş yöntemi</translation>
 <translation id="7791429245559955092">Bu uygulama, şu anda kullandığınız Chrome profilinize yüklenecek</translation>
 <translation id="7791436592012979144">Ters kaydırma etkinleştirildi</translation>
@@ -11895,7 +11895,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="930991362911221750"><ph name="APP_NAME" /> uygulamasının bu sekmeyi görmesine izin verilsin mi?</translation>
 <translation id="931273044114601262">Bu sitede izin veriliyor</translation>
 <translation id="93140074055951850">Android uygulamaları durduruldu</translation>
-<translation id="932327136139879170">Ana Sayfa</translation>
+<translation id="932327136139879170">Ev</translation>
 <translation id="932508678520956232">Yazdırma başlatılamadı.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Bu dosya güvenlik kontrolü için çok büyük. 50 MB'a kadar olan dosyaları yükleyebilirsiniz.}other{Bu dosyaların bazıları güvenlik kontrolü için çok büyük. 50 MB'a kadar olan dosyaları yükleyebilirsiniz.}}</translation>
 <translation id="93343527085570547">Yasal nedenlerle içerik değişikliği talebinde bulunmak için <ph name="BEGIN_LINK1" />Yasal Yardım sayfasına<ph name="END_LINK1" /> gidin. Bazı hesap ve sistem bilgileri Google'a gönderilebilir. Bize verdiğiniz bilgileri, <ph name="BEGIN_LINK2" />Gizlilik Politikası<ph name="END_LINK2" /> ve <ph name="BEGIN_LINK3" />Hizmet Şartları<ph name="END_LINK3" />'na tabi olarak hizmetlerimizi iyileştirmek ve teknik sorunları gidermek için kullanırız.</translation>

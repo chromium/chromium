@@ -57,7 +57,7 @@
 <translation id="1204075260022434100">{count,plural, =1{Закладка сохранена в папке "{title}" в вашем аккаунте {email}.}one{{count} закладка сохранена в папке "{title}" в вашем аккаунте {email}.}few{{count} закладки сохранено в папке "{title}" в вашем аккаунте {email}.}many{{count} закладок сохранено в папке "{title}" в вашем аккаунте {email}.}other{{count} закладки сохранено в папке "{title}" в вашем аккаунте {email}.}}</translation>
 <translation id="120431140543679678">Подписаться</translation>
 <translation id="1207493287814084192">17:30</translation>
-<translation id="1217294226280635614">Режим Split View</translation>
+<translation id="1217294226280635614">Параллельный просмотр</translation>
 <translation id="1219674500290482172">Не удалось подключиться к Интернету.</translation>
 <translation id="1223498995510244364">Обобщить</translation>
 <translation id="1227113644794103810">Неактивные вкладки</translation>
@@ -210,7 +210,7 @@
 <translation id="17906873777101817">Предл. сохр. пароли и ключи доступа</translation>
 <translation id="1794893174442046596">Группа вкладок</translation>
 <translation id="1807893857950749072">Включить уведомления об изменении цены</translation>
-<translation id="1809929083618343438">Выбранные данные будут удалены из Chrome, но не из аккаунта Google</translation>
+<translation id="1809929083618343438">Выбранные данные будут удалены из Chrome, но не из аккаунта Google.</translation>
 <translation id="1810976980198522421">Отмена</translation>
 <translation id="1815941218935345331">Код доступа</translation>
 <translation id="1818687879307252150">{count,plural, =0{Нет раскрытых паролей}=1{{count} раскрытый пароль}one{{count} раскрытый пароль}few{{count} раскрытых пароля}many{{count} раскрытых паролей}other{{count} раскрытого пароля}}</translation>
@@ -1580,7 +1580,7 @@
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Перейти в настройки</translation>
 <translation id="7007970306646738803">Выберите, что делать с имеющимися данными о работе в браузере, например вкладками, историей и паролями.</translation>
-<translation id="7015418667643980944">Режим Split View</translation>
+<translation id="7015418667643980944">Параллельный просмотр</translation>
 <translation id="7016070607649558507">У вас есть простой пароль. Устраните проблему.</translation>
 <translation id="7016958933495968912">Параметры рекомендаций</translation>
 <translation id="7029809446516969842">Пароли</translation>
@@ -1691,7 +1691,7 @@
 <translation id="7486006552035434095">Синхронизируйте устройства</translation>
 <translation id="7491131399623468277">Открыть настройки</translation>
 <translation id="7498234416455752244">Продолжить редактирование</translation>
-<translation id="7500244509706269886">Заполнить автоматически</translation>
+<translation id="7500244509706269886">Заполнить форму</translation>
 <translation id="750493650310597496">Закладки не выбраны</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Чтобы закреплять вкладки инкогнито, настройте Touch ID, Face ID или код доступа.</translation>

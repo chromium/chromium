@@ -1419,7 +1419,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1956167375087861299">Nie mogą używać identyfikatorów do odtwarzania treści chronionych</translation>
 <translation id="1956390763342388273">Spowoduje to przesłanie wszystkich plików z folderu „<ph name="FOLDER_PATH" />”. Zdecyduj się na ten krok tylko, jeśli ufasz witrynie.</translation>
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{Sprawdzono 1 rozszerzenie}few{Sprawdzono {NUM_EXTENSIONS} rozszerzenia}many{Sprawdzono {NUM_EXTENSIONS} rozszerzeń}other{Sprawdzono {NUM_EXTENSIONS} rozszerzenia}}</translation>
-<translation id="1957426642613794386">Twoje zapisane informacje</translation>
+<translation id="1957426642613794386">Twoje zapisane dane</translation>
 <translation id="1959421829481337178">Wpisz kod aktywacyjny podany przez operatora.</translation>
 <translation id="1960211333621141174">Klif</translation>
 <translation id="1962356719152496092">Dostosuj skrót klawiszowy tutaj</translation>

@@ -29,7 +29,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kartica}one{<ph name="TABS_COUNT_MANY" /> kartica}few{<ph name="TABS_COUNT_MANY" /> kartice}other{<ph name="TABS_COUNT_MANY" /> kartica}}</translation>
 <translation id="1909810060368225529">Obavijest: promjene ove dijeljene grupe kartica vidljive su svima. Svi mogu unositi promjene u vaše dijeljene grupe kartica</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Prikvači karticu}one{Prikvači kartice}few{Prikvači kartice}other{Prikvači kartice}}</translation>
-<translation id="1982637982196732906">Premještanje u neaktivni odjeljak</translation>
+<translation id="1982637982196732906">Premjesti u odjeljak Neaktivno</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Označite <ph name="TABS_COUNT_ONE" /> odabranu karticu}one{Označite <ph name="TABS_COUNT_MANY" /> odabranu karticu}few{Označite <ph name="TABS_COUNT_MANY" /> odabrane kartice}other{Označite <ph name="TABS_COUNT_MANY" /> odabranih kartica}}</translation>
 <translation id="2055057176188061528">Odaberite grupu kartica ili izradite novu grupu kartica</translation>
 <translation id="2074527029802029717">Odvoji karticu</translation>

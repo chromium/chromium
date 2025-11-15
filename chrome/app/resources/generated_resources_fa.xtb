@@ -1287,7 +1287,7 @@
 <translation id="1865769994591826607">‏فقط اتصالات same-site</translation>
 <translation id="186594096341696655">کاهش نرخ</translation>
 <translation id="186612162884103683">«<ph name="EXTENSION" />» می‌تواند تصاویر، ویدئوها و فایل‌های صوتی را از مکان‌های انتخاب شده  بخوانید یا بنویسید.</translation>
-<translation id="1866589962721094893">‏به برنامه‌های Android امکان داده می‌شود دستگاه‌های USB را در این Chromebook کنترل کنند. هربار دستگاه USB را وصل کنید، اجازه درخواست خواهد شد. هرکدام از برنامه‌های Android به‌صورت جداگانه اجازه‌های جانبی درخواست خواهند کرد.</translation>
+<translation id="1866589962721094893">‏به برنامه‌های Android امکان داده می‌شود دستگاه‌های USB را در این Chromebook کنترل کنند. هربار دستگاه USB را وصل کنید، اجازه درخواست خواهد شد. هرکدام از برنامه‌های Android به‌صورت جداگانه اجازه‌های اضافی درخواست خواهند کرد.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> آماده تکمیل نصب است</translation>
 <translation id="1868553836791672080">‏بررسی گذرواژه در Chromium دردسترس نیست</translation>
 <translation id="1868617395637139709">‏از مکان برای سرویس‌ها و برنامه‌های Android استفاده کنید.</translation>
@@ -1938,7 +1938,7 @@
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />توجه:<ph name="END_BOLD" /> سیستم درطول پردازش بازراه‌اندازی می‌شود.</translation>
-<translation id="23030561267973084">«<ph name="EXTENSION_NAME" />» اجازه‌های جانبی درخواست کرده است.</translation>
+<translation id="23030561267973084">«<ph name="EXTENSION_NAME" />» اجازه‌های اضافی درخواست کرده است.</translation>
 <translation id="2304820083631266885">سیاره</translation>
 <translation id="2306794767168143227">ذخیره در <ph name="BRAND" /> در این دستگاه</translation>
 <translation id="2307553512430195144">‏اگر موافقت کنید، «دستیار Google» در حالت آماده‌به‌کار منتظر می‌ماند تا گفته شدن «Ok Google» را تشخیص دهد و می‌تواند تشخیص دهد که <ph name="SUPERVISED_USER_NAME" /> درحال صحبت کردن با Voice Match است.
@@ -8667,7 +8667,7 @@
 <translation id="7004499039102548441">زبانه‌های جدید</translation>
 <translation id="7004562620237466965">فقط کشف رمز</translation>
 <translation id="7004969808832734860">تا <ph name="DISCOUNT_UP_TO_AMOUNT" /> تخفیف</translation>
-<translation id="7005496624875927304">اجازه‌های جانبی</translation>
+<translation id="7005496624875927304">اجازه‌های اضافی</translation>
 <translation id="7005812687360380971">عدم موفقیت</translation>
 <translation id="7005848115657603926">محدوده صفحه معتبر نیست، از <ph name="EXAMPLE_PAGE_RANGE" /> استفاده کنید</translation>
 <translation id="7006438259896942210">این حساب (<ph name="USER_EMAIL_ADDRESS" />) را <ph name="PROFILE_NAME" /> مدیریت می‌کند</translation>
