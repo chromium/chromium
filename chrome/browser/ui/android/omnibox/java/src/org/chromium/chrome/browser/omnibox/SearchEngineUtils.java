@@ -248,6 +248,8 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
                 switch (type) {
                     case AutocompleteRequestType.AI_MODE ->
                             R.string.omnibox_empty_hint_with_dse_name_for_ai_mode;
+                    case AutocompleteRequestType.IMAGE_GENERATION ->
+                            R.string.omnibox_empty_hint_for_image_generation;
                     default -> R.string.omnibox_empty_hint_with_dse_name;
                 };
 
