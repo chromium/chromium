@@ -135,6 +135,7 @@ suite('ActionChipsMostRecentTab', () => {
 
   test('Most recent tab info is found on return', async () => {
     const fakeTab: TabInfo = {
+      tabId: 1,
       title: 'Test Title',
       url: {url: 'https://example.com/test'},
       lastActiveTime: {internalValue: BigInt(12345)},

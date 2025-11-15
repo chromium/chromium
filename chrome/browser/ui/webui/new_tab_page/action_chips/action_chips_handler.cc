@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 #include "url/mojom/url.mojom.h"
@@ -31,6 +32,7 @@ void ActionChipsHandler::GetMostRecentTab(GetMostRecentTabCallback callback) {
     return;
   }
   auto tab_info = action_chips::mojom::TabInfo::New();
+  tab_info->tab_id = sessions::SessionTabHelper::IdForTab(contents).id();
   tab_info->title = base::UTF16ToUTF8(contents->GetTitle());
   tab_info->url = contents->GetLastCommittedURL();
   tab_info->last_active_time = contents->GetLastActiveTime();

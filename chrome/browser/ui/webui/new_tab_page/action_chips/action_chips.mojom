@@ -9,6 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 
 // Information about a tab to be sent to the WebUI.
 struct TabInfo {
+  int32 tab_id;
   string title;
   url.mojom.Url url;
   mojo_base.mojom.Time last_active_time;
