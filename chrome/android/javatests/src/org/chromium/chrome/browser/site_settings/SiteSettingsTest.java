@@ -244,6 +244,9 @@ public class SiteSettingsTest {
                     };
     private static final String[] CLEAR_BROWSING_DATA_LINK =
             new String[] {"clear_browsing_data_link", "clear_browsing_divider"};
+
+    private static final String[] CLEAR_BROWSING_DATA_LINK_WITH_CONTAINMENT =
+            new String[] {"clear_browsing_data_link"};
     private static final String[] ANTI_ABUSE_PREF_KEYS = {
         "anti_abuse_when_on_header",
         "anti_abuse_when_on_section_one",
@@ -1389,8 +1392,18 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
     public void testOnlyExpectedPreferencesAllSites() {
         checkPreferencesForCategory(SiteSettingsCategory.Type.ALL_SITES, CLEAR_BROWSING_DATA_LINK);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
+    public void testOnlyExpectedPreferencesAllSites_ContainmentEnabled() {
+        checkPreferencesForCategory(
+                SiteSettingsCategory.Type.ALL_SITES, CLEAR_BROWSING_DATA_LINK_WITH_CONTAINMENT);
     }
 
     @Test
