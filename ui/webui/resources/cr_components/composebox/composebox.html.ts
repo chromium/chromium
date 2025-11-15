@@ -95,6 +95,7 @@ export function getHtml(this: ComposeboxElement) {
         <cr-composebox-dropdown
             id="matches"
             part="dropdown"
+            exportparts="match-text-container"
             role="listbox"
             .result="${this.result_}"
             .selectedMatchIndex="${this.selectedMatchIndex_}"
