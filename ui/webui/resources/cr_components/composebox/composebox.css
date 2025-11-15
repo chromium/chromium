@@ -425,7 +425,7 @@ search-animated-glow {
 }
 
 :host([show-submit_][submit-enabled_]) #submitContainer:hover #submitOverlay {
-  background-color: var(--color-composebox-submit-button-hover);
+  background-color: var(--cr-composebox-submit-button-hover-color, var(--color-composebox-submit-button-hover));
 }
 
 #submitIcon {

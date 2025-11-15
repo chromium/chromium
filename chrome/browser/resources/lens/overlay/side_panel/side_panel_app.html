@@ -17,6 +17,7 @@
   /* Light mode not on AIM results */
   :host(:not([is-on-aim-results]):not([dark-mode])) {
     --cr-composebox-background-color: #f3f5f6;
+    --cr-composebox-submit-button-hover-color: #e9ebf01a;
     --color-composebox-cancel-button: #0a0a0a;
     --color-composebox-font: #0a0a0a;
     --color-composebox-hover: #e9ebf0;
@@ -29,6 +30,7 @@
   /* Light mode on AIM results */
   :host([is-on-aim-results]:not([dark-mode])) {
     --cr-composebox-background-color: #f3f5f6;
+    --cr-composebox-submit-button-hover-color: #e9ebf01a;
     --color-composebox-cancel-button: #0a0a0a;
     --color-composebox-font: #0a0a0a;
     --color-composebox-hover: #e9ebf0;
@@ -41,6 +43,7 @@
   /* Dark mode not on AIM results */
   :host(:not([is-on-aim-results])[dark-mode]) {
     --cr-composebox-background-color: #28292a;
+    --cr-composebox-submit-button-hover-color: #3e3f431a;
     --color-composebox-cancel-button: #bfbfbf;
     --color-composebox-hover: #3e3f43;
     --color-composebox-input-icon: var(--color-searchbox-results-icon);
@@ -55,6 +58,7 @@
   /* Dark mode on AIM results */
   :host([is-on-aim-results][dark-mode]) {
     --cr-composebox-background-color: #1d1e26;
+    --cr-composebox-submit-button-hover-color: #3e3f431a;
     --color-composebox-font: #e6e8f0;
     --color-composebox-hover: #3e3f43;
     --color-composebox-input-icon: var(--color-searchbox-results-icon);
