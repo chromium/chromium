@@ -63,7 +63,7 @@ class OmniboxPopupPresenterBase {
   void EnsureWidgetCreated();
 
   // Called when the widget has just been destroyed.
-  virtual void WidgetDestroyed() = 0;
+  virtual void WidgetDestroyed() {}
 
   // Returns whether or not the popup should include the location bar cutout.
   virtual bool ShouldShowLocationBarCutout() const;
