@@ -73,11 +73,25 @@ export class OmniboxAimAppElement extends CrLitElement implements Page {
 
     this.eventTracker_.add(
         composebox, 'composebox-submit', this.onComposeboxSubmit_.bind(this));
+
+    this.setupLocalizedLinkListener();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+  }
+
+  // As links do not navigate in the omnibox as they do in normal
+  // web ui pages, set up a listener to open the link in the current
+  // tab.
+  private setupLocalizedLinkListener() {
+    const link = this.shadowRoot?.querySelector('cr-composebox')
+                     ?.shadowRoot?.querySelector('localized-link')
+                     ?.shadowRoot?.querySelector('#container a');
+    if (link) {
+      link.addEventListener('click', this.onLinkClick_);
+    }
   }
 
   protected onContextualEntryPointClicked_(
@@ -124,6 +138,12 @@ export class OmniboxAimAppElement extends CrLitElement implements Page {
     assert(composebox);
     composebox.clearAllInputs();
   }
+
+  private onLinkClick_ = (e: Event) => {
+    e.preventDefault();
+    const href = (e.currentTarget as HTMLAnchorElement).href;
+    this.pageHandler_.navigateCurrentTab({url: href});
+  };
 }
 
 declare global {

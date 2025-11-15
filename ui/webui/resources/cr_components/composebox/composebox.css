@@ -468,12 +468,13 @@ search-animated-glow {
 }
 
 #suggestionActivity {
+  bottom: var(--cr-composebox-suggestion-activity-bottom, 0);
   color: var(--color-composebox-suggestion-activity);
   font-size: 12px;
   font-weight: 400;
   left: 50%;
   line-height: 18px;
-  margin-top: 20px;
+  margin-top: var(--cr-composebox-suggestion-activity-margin-top, 20px);
   position: absolute;
   transform: translate(-50%);
 }

@@ -51,6 +51,8 @@ cr-composebox {
   --composebox-context-menu-entrypoint-button-color: var(--color-omnibox-composebox-primary-action);
   --cr-composebox-outline-hcm: none;
   --cr-composebox-submit-button-margin-inline-start: auto;
+  --cr-composebox-suggestion-activity-bottom: 10px;
+  --cr-composebox-suggestion-activity-margin-top: 0;
 
   position: relative;
 }
