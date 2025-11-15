@@ -294,7 +294,7 @@ public class SensitiveContentTest {
         HistogramWatcher histogramWatcherForTrueBucket =
                 HistogramWatcher.newSingleRecordWatcher(histogram, /* value= */ true);
         // Open the first incognito tab.
-        CtaPageStation page = mPage.openNewIncognitoTabFast();
+        CtaPageStation page = mPage.openNewIncognitoTabOrWindowFast();
         // Open the second incognito tab.
         page = page.openNewIncognitoTabFast();
         final Tab secondIncognitoTab = page.loadedTabElement.value();
@@ -358,7 +358,7 @@ public class SensitiveContentTest {
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testIncognitoTabSwitcherBecomesSensitiveWithTabGroups() {
         // Open the first incognito tab.
-        CtaPageStation page = mPage.openNewIncognitoTabFast();
+        CtaPageStation page = mPage.openNewIncognitoTabOrWindowFast();
         final Tab firstIncognitoTab = page.loadedTabElement.value();
         // Open the second incognito tab.
         page = page.openNewIncognitoTabFast();

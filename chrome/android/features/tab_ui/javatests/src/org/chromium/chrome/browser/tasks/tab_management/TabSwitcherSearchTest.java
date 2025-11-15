@@ -327,7 +327,7 @@ public class TabSwitcherSearchTest {
     @MediumTest
     public void testSearchActivityBackButton_Incognito() {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
-        mPage.openNewIncognitoTabFast()
+        mPage.openNewIncognitoTabOrWindowFast()
                 .openIncognitoTabSwitcher()
                 .openTabSwitcherSearch()
                 .pressBackToIncognitoTabSwitcher(cta);
