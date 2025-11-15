@@ -128,6 +128,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
+      recentTabForChip_: {type: Object},
       recentTabInContext_: {type: Boolean},
       carouselOnTop_: {type: Boolean},
     };
@@ -160,19 +161,16 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   protected accessor showFileCarousel_: boolean = false;
   protected accessor inDeepSearchMode_: boolean = false;
   protected accessor inCreateImageMode_: boolean = false;
+  protected accessor recentTabForChip_: TabInfo|null = null;
   protected accessor recentTabInContext_: boolean = false;
-
-  private hasTabSuggestions_(): boolean {
-    return this.tabSuggestions?.length > 0;
-  }
 
   protected get inToolMode_(): boolean {
     return this.inDeepSearchMode_ || this.inCreateImageMode_;
   }
 
   protected get shouldShowRecentTabChip_(): boolean {
-    return this.parentFocused && this.showRecentTabChip_ &&
-        this.hasTabSuggestions_() && !this.recentTabInContext_ &&
+    return !!this.recentTabForChip_ && this.parentFocused &&
+        this.showRecentTabChip_ && !this.recentTabInContext_ &&
         !this.inToolMode_;
   }
 
@@ -213,6 +211,11 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     if (changedPrivateProperties.has('files_') ||
         changedProperties.has('tabSuggestions')) {
       this.recentTabInContext_ = this.computeRecentTabInContext_();
+    }
+
+    if (changedProperties.has('tabSuggestions')) {
+      this.recentTabForChip_ =
+          this.tabSuggestions.find(tab => tab.showInRecentTabChip) || null;
     }
   }
 

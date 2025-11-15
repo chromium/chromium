@@ -3118,6 +3118,7 @@ suite('NewTabPageRealboxTest', () => {
         tabId: 1,
         title: 'Sample Tab',
         url: {url: 'https://example.com'},
+        showInRecentTabChip: true,
         lastActive: {internalValue: 0n},
       };
       testProxy.handler.setResultFor(
@@ -3321,12 +3322,14 @@ suite('NewTabPageRealboxTabsTest', () => {
         tabId: 1,
         title: 'Sample Tab 1',
         url: {url: 'https://example.com/1'},
+        showInRecentTabChip: true,
         lastActive: {internalValue: BigInt(1)},
       },
       {
         tabId: 2,
         title: 'Sample Tab 2',
         url: {url: 'https://example.com/2'},
+        showInRecentTabChip: true,
         lastActive: {internalValue: BigInt(2)},
       },
     ];
