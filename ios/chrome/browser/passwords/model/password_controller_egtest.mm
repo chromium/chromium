@@ -127,26 +127,39 @@ void TypeText(NSString* nsText) {
   }
 }
 
-// Types `text` on an input field with `fieldID`.
-void TypeTextOnField(NSString* text, const std::string& fieldID) {
+// Waits for the bottom sheet and then re-opens the keyboard from there.
+void WaitForBottomSheetAndOpenKeyboard(NSString* username) {
+  id<GREYMatcher> buttonMatcher =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD);
   [ChromeEarlGrey
-      evaluateJavaScriptForSideEffect:
-          [NSString stringWithFormat:@"document.getElementById('%@').focus();",
-                                     base::SysUTF8ToNSString(fieldID)]];
-  TypeText(text);
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(username)];
+  [[EarlGrey selectElementWithMatcher:buttonMatcher] performAction:grey_tap()];
+  [ChromeEarlGrey waitForKeyboardToAppear];
+}
 
-  // Wait for the current input field to contain the `text` (i.e. typing from
-  // SimulatePhysicalKeyboardEvent finished) before proceeding to next step.
-  [ChromeEarlGrey
-      waitForJavaScriptCondition:
-          [NSString stringWithFormat:
-                        @"document.getElementById('%@').value.includes('%@');",
-                        base::SysUTF8ToNSString(fieldID), text]];
+// Types `text` on an input field with `fieldID`. Dismisses the credential
+// bottom sheet if `dismissBottomSheet` is true.
+void TypeTextOnField(NSString* text,
+                     const std::string& fieldID,
+                     bool dismissBottomSheet = false) {
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(fieldID)];
+  if (dismissBottomSheet) {
+    WaitForBottomSheetAndOpenKeyboard(text);
+  }
+  TypeText(text);
 }
 
 // Types the username and password on the UFF forms.
-void TypeUsernameAndPasswordOnUFF(NSString* username, NSString* password) {
-  TypeTextOnField(username, "single_un");
+void TypeUsernameAndPasswordOnUFF(NSString* username,
+                                  NSString* password,
+                                  bool dismissBottomSheetOnUsername = false) {
+  // Type username and dismiss the bottom sheet because it is the first login
+  // field to be focused on, which triggers the credential bottom sheet. Once
+  // dismissed the bottom sheet isn't shown again when focusing on other login
+  // fields, as long as the page isn't reloaded.
+  TypeTextOnField(username, "single_un", dismissBottomSheetOnUsername);
   TypeTextOnField(password, "single_pw");
 }
 
@@ -795,7 +808,8 @@ void LoginOnUff() {
   [self loadUFFLoginPage];
 
   // Type username and password in their respective fields.
-  TypeUsernameAndPasswordOnUFF(usernameValue, passwordValue);
+  TypeUsernameAndPasswordOnUFF(usernameValue, passwordValue,
+                               /*dismissBottomSheetOnUsername=*/true);
 
   LoginOnUff();
 
@@ -830,7 +844,8 @@ void LoginOnUff() {
   // Simulate login.
   TypeTextOnField(@"test-username@test-domain.com", kFormUsername);
   TypeTextOnField(@"test-password", kFormPassword);
-  [ChromeEarlGrey tapWebStateElementWithID:@"submit_button"];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("submit_button")];
 
   // Wait for report to upload.
   [self waitForEnterpriseReports:1];
