@@ -157,6 +157,14 @@ class MetaBuildWrapper:
                         default=[],
                         action='append',
                         dest='isolate_map_files')
+      subp.add_argument('--allow-dup-isolate-entry',
+                        action='store_true',
+                        help='Allow duplicated isolate entries from isolate '
+                        'map files. In the case of duplicates, the entry from '
+                        'the last specified isolate map file will be used. '
+                        'This flag should only be used during a migration from '
+                        'multiple isolate map files to a single '
+                        'starlark-generated isolate map file.')
       subp.add_argument('-n', '--dryrun', action='store_true',
                         help='Do a dry run (i.e., do nothing, just print '
                              'the commands that will run)')
@@ -1049,11 +1057,11 @@ class MetaBuildWrapper:
     for isolate_map in self.args.isolate_map_files:
       try:
         isolate_map = ast.literal_eval(self.ReadFile(isolate_map))
-        duplicates = set(isolate_map).intersection(isolate_maps)
-        if duplicates:
-          raise MBErr(
-              'Duplicate targets in isolate map files: %s.' %
-              ', '.join(duplicates))
+        if not self.args.allow_dup_isolate_entry:
+          duplicates = set(isolate_map).intersection(isolate_maps)
+          if duplicates:
+            raise MBErr('Duplicate targets in isolate map files: %s.' %
+                        ', '.join(duplicates))
         isolate_maps.update(isolate_map)
       except SyntaxError as e:
         raise MBErr('Failed to parse isolate map file "%s": %s' %
