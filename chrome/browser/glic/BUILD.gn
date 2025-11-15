@@ -347,6 +347,7 @@ source_set("unit_tests") {
     "host/guest_util_unittest.cc",
     "public/glic_enabling_unittest.cc",
     "service/glic_instance_coordinator_metrics_unittest.cc",
+    "service/glic_instance_metrics_unittest.cc",
     "service/glic_metrics_session_manager_unittest.cc",
     "widget/glic_panel_hotkey_delegate_unittest.cc",
     "widget/local_hotkey_manager_unittest.cc",
@@ -371,6 +372,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/live_caption",
     "//components/live_caption:constants",
+    "//components/tabs:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
