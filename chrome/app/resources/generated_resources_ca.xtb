@@ -8105,6 +8105,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6619990499523117484">Confirma el teu PIN</translation>
 <translation id="6620000730890558421">Mantén les pestanyes ordenades amb la IA</translation>
 <translation id="6620254580880484313">Nom del contenidor</translation>
+<translation id="6621282332208609777">Pregunta a Google o escriu un URL</translation>
 <translation id="6621391692573306628">Per enviar aquesta pestanya a un altre dispositiu, inicia la sessió a Chrome als dos dispositius</translation>
 <translation id="6622980291894852883">Continua bloquejant les imatges</translation>
 <translation id="6624036901798307345">En mode de tauleta, toca el botó de la barra d'eines corresponent al comptador de pestanyes per obrir la nova barra de pestanyes en què es mostra una miniatura de cada pestanya.</translation>
@@ -9528,6 +9529,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7620616707541471029">Selecciona un compte per continuar</translation>
 <translation id="7621382409404463535">El sistema no ha pogut desar la configuració del dispositiu.</translation>
 <translation id="7621595347123595643">No podràs recuperar les dades locals si oblides la contrasenya o el PIN.</translation>
+<translation id="7621863462266622331">Quan es comparteixen pestanyes, el contingut, el contingut multimèdia i els URL de les pàgines s'envien a Google</translation>
 <translation id="7622114377921274169">S'està carregant.</translation>
 <translation id="7622768823216805500">Els llocs web solen instal·lar gestors de pagament per a funcions de compra com ara una tramitació més senzilla</translation>
 <translation id="7622966771025050155">Canvia a la pestanya capturada</translation>
@@ -11745,6 +11747,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="909554839118732438">Tanca les finestres d'incògnit</translation>
 <translation id="9095819602391364796">No permetis que els llocs web controlin i reprogramin els teus dispositius MIDI</translation>
 <translation id="9096053102600371572">Desplaçament controlat <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Compara les opcions</translation>
 <translation id="9096776523567481218">no està instal·lada localment</translation>
 <translation id="9098860402274800697">Suprimeix Google Play i les aplicacions d'Android</translation>
 <translation id="9099220545925418560">Segons el teu historial de navegació. Aquesta opció de configuració està desactivada.</translation>

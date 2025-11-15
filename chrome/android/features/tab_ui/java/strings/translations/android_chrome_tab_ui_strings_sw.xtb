@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Orodha ya kikundi cha vichupo imefungwa</translation>
 <translation id="3194464645767632461">ukadiriaji</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Weka kichupo <ph name="TABS_COUNT_ONE" /> kwenye kikundi}other{Weka vichupo <ph name="TABS_COUNT_MANY" /> kwenye kikundi}}</translation>
+<translation id="3293080634164207409">Weka vichupo</translation>
 <translation id="3328308545011660196">Pendekezo: Vichupo <ph name="NUMBER_OF_TABS" /> vinaonekana kuwa vinahusiana. Ungependa kuvipanga pamoja?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Baada ya kutotumiwa kwa siku 1}other{Baada ya kutotumiwa kwa siku <ph name="DAY_COUNT_MANY" />}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{Kichupo <ph name="ONE_ADDED" /> kipya}other{Vichupo <ph name="MANY_ADDED" /> vipya}}</translation>

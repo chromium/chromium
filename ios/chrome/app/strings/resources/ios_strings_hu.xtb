@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
+<translation id="1004825134262590729">{count,plural, =1{{count} azonosítókulcs}other{{count} azonosítókulcs}}</translation>
 <translation id="1005023885865154304">Nyissa meg a Jelszavak automatikus kitöltése beállításait</translation>
 <translation id="1005230401424685968">ÉÉÉÉ</translation>
 <translation id="1013952917065545813">Ide visszatérve újra megnyithatja a nemrég bezárt lapokat</translation>
@@ -2212,5 +2213,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="984275831282074731">Fizetési módok</translation>
 <translation id="985379595344853742">Összes inkognitó lap bezárása</translation>
 <translation id="988141524645182168">Egyéb eszközök</translation>
+<translation id="995174784802614337">{count,plural, =1{{count} azonosítókulcs importálva}other{{count} azonosítókulcs importálva}}</translation>
 <translation id="999768147936949692">Jelenleg csak a családtagokkal oszthat meg jelszavakat. <ph name="BEGIN_LINK" />Hívja meg családtagjait<ph name="END_LINK" />, hogy csatlakozzanak a csoportjához, és hozzon ki még többet a termékekből és az előfizetésekből a Google-on.</translation>
 </translationbundle>

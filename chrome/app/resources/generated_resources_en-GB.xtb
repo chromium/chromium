@@ -8124,6 +8124,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6619990499523117484">Confirm your PIN</translation>
 <translation id="6620000730890558421">Keep your tabs tidy with AI</translation>
 <translation id="6620254580880484313">Container name</translation>
+<translation id="6621282332208609777">Ask Google or type a URL</translation>
 <translation id="6621391692573306628">To send this tab to another device, sign in to Chrome on both devices</translation>
 <translation id="6622980291894852883">Continue blocking images</translation>
 <translation id="6624036901798307345">In tablet mode, tap on the tab counter toolbar button to open the new tab strip that shows thumbnails of each tab.</translation>
@@ -9547,6 +9548,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7620616707541471029">Choose an account to continue</translation>
 <translation id="7621382409404463535">The system failed to save device configuration.</translation>
 <translation id="7621595347123595643">You will not be able to recover local data if you forget your password or PIN.</translation>
+<translation id="7621863462266622331">When tabs are shared, their page contents, media and URLs are sent to Google</translation>
 <translation id="7622114377921274169">Charging.</translation>
 <translation id="7622768823216805500">Sites usually install payment handlers for shopping features like easier checkout</translation>
 <translation id="7622966771025050155">Switch to captured tab</translation>
@@ -11763,6 +11765,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="909554839118732438">Close Incognito</translation>
 <translation id="9095819602391364796">Don't allow sites to control and reprogramme your MIDI devices</translation>
 <translation id="9096053102600371572">Controlled scrolling <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Compare options</translation>
 <translation id="9096776523567481218">not locally installed</translation>
 <translation id="9098860402274800697">Remove Google Play and Android apps</translation>
 <translation id="9099220545925418560">Based on your browsing history. This setting is off.</translation>

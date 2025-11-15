@@ -2944,6 +2944,7 @@
 <translation id="5813753398265398978">物理学</translation>
 <translation id="5817918615728894473">配对</translation>
 <translation id="5820625124144807242">查看订单后，您必须登录或创建“<ph name="BNPL_ISSUER_NAME" />”账号。此账号将自动与 Google Pay 关联。</translation>
+<translation id="5820751560028604030">本地下载已被阻止</translation>
 <translation id="5826507051599432481">公用名 (CN)</translation>
 <translation id="5830698870816298009">使用和移动摄像头</translation>
 <translation id="5831217499016131155">Google 电子钱包</translation>
@@ -3871,7 +3872,7 @@
 <translation id="7346048084945669753">有无关联：</translation>
 <translation id="7346062987309535530">餐具</translation>
 <translation id="7346081071264046066">“兴奋地答应出席婚礼”</translation>
-<translation id="7347640536700429009">卡上的姓名无效</translation>
+<translation id="7347640536700429009">持卡人姓名无效</translation>
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7353601530677266744">命令行</translation>
 <translation id="7359588939039777303">广告已被拦截。</translation>
@@ -4704,7 +4705,7 @@
 <translation id="8694684557210599098">添加车辆</translation>
 <translation id="8695996513186494922">要比较标签页吗？</translation>
 <translation id="8698428283892912525">Chrome 内置的安全功能可在您浏览网页时为您提供保护，例如 Google 安全浏览功能近期在您尝试访问的网站上<ph name="BEGIN_LINK" />发现了有害软件<ph name="END_LINK" />。</translation>
-<translation id="869891660844655955">截止日期</translation>
+<translation id="869891660844655955">失效日期</translation>
 <translation id="8699041776323235191">HID 设备</translation>
 <translation id="8699985386408839112">Kaku 1 信封</translation>
 <translation id="8702965365666568344">固定胶带</translation>

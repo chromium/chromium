@@ -73,6 +73,7 @@
 <translation id="311432875115153175">タブグループのリストを閉じました</translation>
 <translation id="3194464645767632461">評価</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブをグループに追加}other{<ph name="TABS_COUNT_MANY" /> 個のタブをグループに追加}}</translation>
+<translation id="3293080634164207409">タブを追加</translation>
 <translation id="3328308545011660196">おすすめ: <ph name="NUMBER_OF_TABS" /> 個のタブは関連しているようです。グループ化しますか？</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{アクティブでない状態で 1 日経過}other{アクティブでない状態で <ph name="DAY_COUNT_MANY" /> 日経過}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> 個の新しいタブ}other{<ph name="MANY_ADDED" /> 個の新しいタブ}}</translation>

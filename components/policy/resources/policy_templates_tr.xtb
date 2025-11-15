@@ -3401,6 +3401,11 @@ Politikanın ayarlanmadan bırakılması, yüksek düzey modunda Her zaman açı
       Bu ayarı devre dışı bırakır veya hiç yapılandırmazsanız, varsayılan olarak yeni satır içi oturum açma akışı kullanılır. Kullanıcılar yine de "web tabanlı oturum açmayı etkinleştir" komut satırı işaretini kullanarak eski web tabanlı oturum açma akışını etkinleştirebilirler.
 
       Satır içi oturum açma özelliği, gelecekte tüm TOA oturum açma akışlarını tam olarak desteklediğinde bu deneysel ayar kaldırılacaktır.</translation>
+<translation id="3435229811562571593">Yerel yazı tipleri izninin otomatik olarak reddedileceği siteleri belirten site URL kalıplarının yer aldığı bir liste oluşturur. Bu durumda sitelerin, yerel yazı tipleriyle ilgili bilgileri görme imkanı kısıtlanmış olur.
+
+      Geçerli site URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir. Bu politika, yalnızca kaynağa göre eşleşir. Dolayısıyla, URL kalıbındaki yollar yok sayılır.
+
+      Bu politikanın ayarlanmadığı siteler için, ayarlanmışsa <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> politikası geçerli olur. Aksi takdirde ilgili izin, tarayıcının varsayılan ayarına uyarak kullanıcıların site bazında bu izni belirlemesine imkan verir.</translation>
 <translation id="3435796032110614169">Yazdırma işleri geçmişinin silinmesine izin ver</translation>
 <translation id="3436217793443508863">Pil gücüyle çalışırken, ekran kilitlenmeden önce kullanıcı girişi olmadan geçecek süre (milisaniye olarak)</translation>
 <translation id="3437391374720747482">CNSA 2.0 gereksinimlerini karşılayan anahtar değişimi yöntemlerini tercih edin</translation>
@@ -4481,6 +4486,17 @@ Desteği sonlandırıldı: Kargo Takibi özelliği M132 sürümünden itibaren d
       Bu politikanın yürürlüğe girmesi için ek kurulum gerekir. Daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting adresini ziyaret edin.</translation>
 <translation id="4189872355465413041">Sistem uygulamaları</translation>
 <translation id="4190316993598857632">Yer işareti düzenlemeyi etkinleştir</translation>
+<translation id="4190920373466996241">Direct Sockets API, TCP ve UDP kullanarak rastgele uç noktalarla iletişime izin verir.
+Ayrıntılar için lütfen https://github.com/WICG/direct-sockets adresini inceleyin.
+
+Bu politikayı ayarlamak, Direct Sockets API'yi kullanarak iletişim kurmasına izin verilmeyen sitelerin belirtildiği URL kalıplarının listesini oluşturmanıza olanak tanır.
+Geçerli kalıplar, yalıtılmış web uygulamalarıyla sınırlıdır.
+
+Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur.
+
+URL kalıpları, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> ile çakışmamalıdır. Bir URL her ikisiyle de eşleşirse politikaların ikisinin de diğeri üzerinde önceliği olmaz.
+
+Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="4192388905594723944">Uzaktan erişim istemci kimlik doğrulama jetonunu doğrulama URL'si</translation>
 <translation id="4195119404667420672">SpeculationRules önceden getirme işlemi, ServiceWorker tarafından kontrol edilen URL'lere gönderilebilir.</translation>
 <translation id="4195698007674066525">Şifre girişi için varsayılan ayar sayısal klavye olsun</translation>
@@ -9793,6 +9809,16 @@ Bu politika "Profili, Okul olarak etiketle (1)" değerine ayarlanırsa "Okul" et
 
 Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa oluşturulan Kerberos SPN'ine bağlantı noktası dahil edilmez.</translation>
 <translation id="7877924399554599110">Kullanıcı bulut politikalarının, makine düzeyinde politikalarla birleştirilmesini sağlar</translation>
+<translation id="7879142313118107127"><ph name="REQUEST_FULLSCREEN_API_NAME" /> web API, güvenlik nedenleriyle önceki kullanıcı hareketinin ("geçici etkinleştirme") çağrılmasını zorunlu kılar ve çağrılmadığı takdirde başarısız olur. Kullanıcının kişisel ayarları doğrultusunda, <ph name="AUTOMATIC_FULLSCREEN_HELP_URL" /> adresinde açıklandığı üzere önceki kullanıcı hareketi olmasa da belirli kaynakların bu API'yi çağırmasına izin verilebilir.
+
+Bu politika, kullanıcının kişisel ayarlarını geçersiz kılar ve eşleşen kaynakların önceki kullanıcı hareketi olmadan API'yi çağırmasına izin verir.
+
+Geçerli URL kalıpları hakkında ayrıntılı bilgi için
+https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz.
+Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
+
+Hem engellenen hem de izin verilen politika kalıplarıyla eşleşen kaynaklar engellenir.
+Politika veya kullanıcı ayarları tarafından belirtilmeyen kaynakların bu API'yi çağırması için kullanıcı hareketinin olması gerekir.</translation>
 <translation id="7881421274383404138">Bu politika ayarlanırsa kurumsal yazıcılar yapılandırılır. Biçimi, <ph name="PRINTERS_POLICY_NAME" /> sözlüğü ile aynı olmakla birlikte izin verilenler veya engellenenler listelerine eklenecek her yazıcı için gerekli ek <ph name="ID_FIELD" /> veya <ph name="GUID_FIELD" /> alanlarını içerir. Dosya biçimi JSON olup boyutu 5 MB'tan büyük olamaz. Yaklaşık 21.000 yazıcı içeren bir dosya, 5 MB boyutunda olur. Şifreleme karma değeri, indirmenin bütünlüğünü doğrulamaya yardımcı olur. URL veya karma değer değiştiğinde dosya indirilir, önbelleğe alınır ve yeniden indirilir. <ph name="PRODUCT_OS_NAME" />, yazıcı yapılandırmalarına ait dosyayı indirerek <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> ve <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> ile birlikte yazıcıları kullanılabilir hale getirir.
 
       Bu politika, kullanıcıların yazıcıları her cihazda özel olarak yapılandırıp yapılandıramayacağını etkilemez. Kullanıcıların bireysel olarak yazıcıların yapılandırması konusunda tamamlayıcı olacak şekilde tasarlanmıştır.
@@ -9921,6 +9947,15 @@ Bu politika, geçici olarak tasarlanmıştır ve gelecekte kaldırılacaktır.</
           Bu ayar etkinleştirilirse, bu makine, bir güvenlik duvarıyla ayrılmış olsalar bile uzak ana makineleri keşfedebilir ve bunlara bağlanabilir.
 
           Bu ayar devre dışı bırakılırsa ve giden UDP bağlantılarına güvenlik duvarı tarafından filtre uygulanıyorsa, bu makine yalnızca yerel ağ içindeki ana makinelere bağlanabilir.</translation>
+<translation id="7975777377454336782">Bu politika, üçüncü taraf depolama bölümlendirmesinin (çapraz kaynak iFrame depolamasını bölümlendirme) devre dışı bırakılması gereken üst düzey kaynakların belirtildiği bir URL kalıpları listesi oluşturmanıza olanak tanır.
+
+Bu politika ayarlanmadan bırakılır veya üst düzey bir kaynak, URL kalıplarından biriyle eşleşmezse <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> geçerli olur.
+
+Geçerli kalıplar hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz. Burada listelediğiniz kalıpların URL değil kaynak olarak değerlendirildiğini, bu yüzden bir yol belirtmemeniz gerektiğini unutmayın.
+
+Üçüncü taraf depolama bölümlendirmesi hakkında ayrıntılı bilgi için https://developers.google.com/privacy-sandbox/cookies/storage-partitioning adresine göz atabilirsiniz.
+
+Bu API, Chrome 145'te kaldırılacağından bunun yerine requestStorageAccess yönteminin kullanılması önerilir: https://developer.mozilla.org/tr/docs/Web/API/Document/requestStorageAccess. Geri bildirimlerinizi https://crbug.com/425248669 adresinden gönderebilirsiniz.</translation>
 <translation id="7976103461034266553">Politika Etkin değerine ayarlandığında 0 ms'lik bir zaman aşımına sahip JavaScript setTimeout(), 1 ms'ye sabitlenmez.
           Politika Devre Dışı değerine ayarlandığında 0 ms'lik bir zaman aşımına sahip JavaScript setTimeout(), 1 ms'ye sabitlenir.
           Politika ayarlanmadan bırakılırsa setTimeout() fonksiyon zaman aşımı için tarayıcının varsayılan davranışını kullanın.
@@ -10531,6 +10566,13 @@ Bu politika ayarlanmadan bırakılırsa veya 0 değerine ayarlanırsa tanımlana
 <translation id="8400225642589806131">Bu politika <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_ENABLED" /> (1 değeri) olarak ayarlanırsa <ph name="PRODUCT_NAME" />, yönetilen bir tarayıcı oturumu için cihaz yönetim sunucusundan istemci sertifikası ister. Bu sertifika, örneğin mTLS bağlantılarında kullanılabilir.
 
 Bu politika <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_DISABLED" /> (0 değeri) olarak ayarlanırsa veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, istemci sertifikası istemez. Bir tarayıcının yönetilen istemci sertifikasının temel hazırlığı daha önce yapılmışsa bu politikanın daha önce etkinleştirilmesi nedeniyle sertifika silinmez ancak mTLS bağlantılarında kullanılamaz ve süresi dolduğunda yenilenmez.</translation>
+<translation id="8401567123761348600">Politikayı ayarlamak, hareket ve ışık sensörleri gibi sensörlere erişebilen siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
+
+      Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
+
+      Aynı URL kalıbı hem bu politikada hem de <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" /> politikasında yer alıyorsa ikincisine öncelik verilir ve hareket ya da ışık sensörlerine erişim engellenir.
+
+      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
 <translation id="8402079500086185021">PDF dosyalarını her zaman harici olarak aç</translation>
 <translation id="8402357110539568621">Sanal klavye erişilebilirlik özelliğini etkinleştirin.
 

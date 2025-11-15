@@ -1661,6 +1661,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Já tem palavras-passe para estas contas no Gestor de Palavras-passe da Google. Se optar por importar uma das palavras-passe abaixo, esta substitui a palavra-passe existente.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> por cento transferido</translation>
+<translation id="7345061034321640811">Importação não permitida</translation>
 <translation id="7352651011704765696">Algo correu mal</translation>
 <translation id="7363349185727752629">Um guia das suas escolhas de privacidade</translation>
 <translation id="7364796246159120393">Escolher ficheiro</translation>
@@ -2202,6 +2203,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="952704832371081537">Cancelar</translation>
 <translation id="95332591904104970">Apps Associadas</translation>
 <translation id="954667170699278022">Lista de leitura</translation>
+<translation id="956066588046842680">A importação destes dados não é permitida pela política da sua organização.</translation>
 <translation id="956218893102219091">Use a sua localização exata para ver os resultados do Gemini mais precisos, em vez de uma localização estimada com base no seu endereço IP. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Eliminar dados de navegação</translation>
 <translation id="963102227019621224">Atividade da Web e de apps</translation>

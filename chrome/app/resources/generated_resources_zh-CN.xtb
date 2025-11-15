@@ -8095,6 +8095,7 @@
 <translation id="6619990499523117484">确认您的 PIN 码</translation>
 <translation id="6620000730890558421">借助 AI 技术整理标签页</translation>
 <translation id="6620254580880484313">容器名称</translation>
+<translation id="6621282332208609777">询问 Google 或输入网址</translation>
 <translation id="6621391692573306628">若要将此标签页发送到另一设备，请在这两部设备上都登录 Chrome</translation>
 <translation id="6622980291894852883">继续拦截图片</translation>
 <translation id="6624036901798307345">在平板电脑模式下，只需点按工具栏中的标签页计数器按钮，即可打开会显示每个标签页的缩略图的新标签页栏。</translation>
@@ -9518,6 +9519,7 @@
 <translation id="7620616707541471029">选择账号以继续</translation>
 <translation id="7621382409404463535">系统未能保存设备配置。</translation>
 <translation id="7621595347123595643">如果忘记了密码或 PIN 码，您将无法恢复本地数据。</translation>
+<translation id="7621863462266622331">分享标签页时，系统会将标签页的网页内容、媒体和网址发送给 Google</translation>
 <translation id="7622114377921274169">正在充电。</translation>
 <translation id="7622768823216805500">网站通常会安装付款处理程序以实现购物功能（例如更轻松的结算）</translation>
 <translation id="7622966771025050155">切换到被录屏的标签页</translation>
@@ -10863,6 +10865,7 @@
 <translation id="8517759303731677493">修改…</translation>
 <translation id="8518809011298357036">关闭顶部视图</translation>
 <translation id="8518942514525208851">隐藏脏话</translation>
+<translation id="8520238089740349550">失败 - 本地下载已被阻止</translation>
 <translation id="8523493869875972733">保留更改</translation>
 <translation id="8523849605371521713">按政策添加</translation>
 <translation id="8524594273111932386">搜索键 + 向下键</translation>
@@ -11120,7 +11123,7 @@
 <translation id="8698269656364382265">要返回到上一个屏幕，请从屏幕左侧向右侧滑动。</translation>
 <translation id="8698432579173128320">备份到 Google 云端硬盘。您随时可以轻松地恢复数据或更换设备。备份内容包含应用数据。备份内容将上传到 Google 平台并使用您的 Google 账号密码进行加密。<ph name="BEGIN_LINK1" />详细了解备份<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">应用菜单</translation>
-<translation id="869891660844655955">截止日期</translation>
+<translation id="869891660844655955">失效日期</translation>
 <translation id="8699188901396699995">“<ph name="PRINTER_NAME" />”的 PPD</translation>
 <translation id="8699296325072357994">密码页面中的内容和相关信息会发送给 Google，并由人工审核员审核。您的密码已加密，不会向任何人显示。<ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700066369485012242">请告诉我们您允许在此网站上使用第三方 Cookie 的原因</translation>
@@ -11734,6 +11737,7 @@
 <translation id="909554839118732438">关闭无痕模式</translation>
 <translation id="9095819602391364796">不允许网站控制您的 MIDI 设备以及为其重新编程</translation>
 <translation id="9096053102600371572">受控滚动 <ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">比较选项</translation>
 <translation id="9096776523567481218">未在本地安装</translation>
 <translation id="9098860402274800697">移除 Google Play 和 Android 应用</translation>
 <translation id="9099220545925418560">根据您的浏览记录。此设置已关闭。</translation>

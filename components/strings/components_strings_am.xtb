@@ -4297,6 +4297,7 @@
 <translation id="7987087088851949178">አሁን ይግዙ፣ በኋላ ይክፈሉ ሰጪዎች በሙሉ ከፍታ በመከፈት ለክፍያ በትርፍ ሰዓት ይገኛሉ።</translation>
 <translation id="799149739215780103">ጠርዝ</translation>
 <translation id="7992044431894087211">ከ <ph name="APPLICATION_TITLE" /> ጋር የማያ ገፅ መጋራት ከቆመበት ቀጥሏል</translation>
+<translation id="799384093520583425">ድርጅትዎ በዚህ ገፅ ላይ የDevTools አጠቃቀምን አግዷል</translation>
 <translation id="7995512525968007366">አልተጠቀሰም</translation>
 <translation id="7997855386298213183">የተጋሩ ትሮች</translation>
 <translation id="8001912761979890298">ይህ አገልጋይ ለድር ትራፊክ ምሥጠራ በChromium ወይም በእርስዎ የሥርዓት ውቅረት ተዓማኒነት የሌለው የደኅንነት የዕውቅና ማረጋገጫ እየተጠቀመ ስለሆነ <ph name="DOMAIN" /> መሆኑን ማረጋገጥ አልቻለም። ይህ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል። <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />የዕውቅና ማረጋገጫን ይመልከቱ<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4842,6 +4843,7 @@
 <translation id="8922013791253848639">ሁልጊዜ በዚህ ጣቢያ ላይ ማስታወቂያዎችን አሳይ</translation>
 <translation id="8922734931659847428">እርስዎ የሚጎበኟቸው <ph name="BEGIN_LINK" />የቆዩ የቴክኖሎጂ ክስተቶች<ph name="END_LINK" /> የሚከሰቱባቸው ገፆች ዩአርኤሎች የተወሰነ ዝርዝር</translation>
 <translation id="892588693504540538">ከላይ ቀኝ በኩል ብሳ</translation>
+<translation id="8926082624786998759">DevTools በዚህ ገፅ ላይ አይፈቀድም</translation>
 <translation id="8926389886865778422">ደግመው አይጠይቁ</translation>
 <translation id="8926400492587758246">በዝቅተኛ ወርሃዊ ክፍያዎች ይክፈሉ</translation>
 <translation id="8932102934695377596">የእርስዎ ሰዓት ወደ ኋላ ቀርቷል</translation>

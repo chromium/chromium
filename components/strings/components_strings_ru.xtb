@@ -428,6 +428,7 @@
 <translation id="1689333818294560261">Название</translation>
 <translation id="1692622044604477956">Кино- и театральные афиши</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Как вы можете управлять своими данными.<ph name="END_BOLD" /> Chrome автоматически удаляет темы, добавленные более четырех недель назад. По мере посещения сайтов тема может снова появиться в списке. В настройках Chrome можно в любое время запретить браузеру делиться определенными темами с сайтами или полностью отключить темы рекламы.</translation>
+<translation id="1697808683313379647">Чтобы предлагать эти варианты, Google использует информацию со страницы оформления покупки и другие данные.</translation>
 <translation id="1699651774646344471">Теперь можно использовать адреса из аккаунта Google</translation>
 <translation id="1700542542921501212">Пользуйтесь <ph name="SEARCH_ENGINE_NAME" /> для поиска информации в интернете.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -2306,7 +2307,7 @@
 <translation id="4754461935447132332">Запрещено для незащищенных сайтов</translation>
 <translation id="4756388243121344051">&amp;История</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757740693289347881">Код недействителен.</translation>
+<translation id="4757740693289347881">Недопустимый код.</translation>
 <translation id="4757993714154412917">Вы только что ввели пароль на поддельном сайте. Чтобы защитить свои аккаунты, проверьте сохраненные пароли в браузере Chromium.</translation>
 <translation id="4758311279753947758">Добавить контактные данные</translation>
 <translation id="4761326898079498987">Подробнее</translation>
@@ -3001,7 +3002,7 @@
 <translation id="5915189366813702112">Гибкие условия работы</translation>
 <translation id="59174027418879706">Включено</translation>
 <translation id="5918373444239520146">Гаджеты и портативные электронные устройства</translation>
-<translation id="5918847752193018339">Данные о CVC-кодах помогают быстрее оформлять покупки. <ph name="LINK_BEGIN" />Удалить сохраненные защитные коды<ph name="LINK_END" /></translation>
+<translation id="5918847752193018339">Сохраняя CVC-коды, вы сможете быстрее оплачивать покупки. <ph name="LINK_BEGIN" />Удалить сохраненные защитные коды<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{Используется 1 файл cookie}one{Используется # файл cookie}few{Используется # файла cookie}many{Используется # файлов cookie}other{Используется # файла cookie}}</translation>
 <translation id="5921185718311485855">Включено</translation>
@@ -3702,6 +3703,7 @@
 <translation id="7031646650991750659">Приложения, установленные из Google Play.</translation>
 <translation id="7035705295266423040">Банку нужно убедиться, что это действительно вы</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы перейти в настройки конфиденциальности аккаунта Google.</translation>
+<translation id="7042465939346919737">Чтобы предлагать эти варианты, Google использует информацию со страницы оформления покупки и другие данные. Чтобы скрыть варианты оплаты в рассрочку, перейдите в <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="7042616127917168121">Уточнить запрос</translation>
 <translation id="7043552168914147882">Разделитель</translation>
 <translation id="7044081119134178347">Дано разовое разрешение на доступ к камере</translation>

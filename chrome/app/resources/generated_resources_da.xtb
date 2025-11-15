@@ -1054,6 +1054,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1699807488537653303">Ret adgangskodefejl</translation>
 <translation id="1700201317341192482">Fjern dit virtuelle kort</translation>
 <translation id="1700517974991662022">Besøgt</translation>
+<translation id="1701367827913789499">Læs komfortabelt med minimale forstyrrelser ved hjælp af knappen Læsetilstand på værktøjslinjen</translation>
 <translation id="1703331064825191675">Glem aldrig dine adgangskoder igen</translation>
 <translation id="1703666494654169921">Tillad ikke, at websites bruger virtual reality-enheder eller -data</translation>
 <translation id="1704097193565924901">Anvend stort begyndelsesbogstav</translation>
@@ -2973,6 +2974,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3008272652534848354">Nulstil tilladelser</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi i dag for at downloade en opdatering. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).}one{<ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi og downloader en opdatering, før fristen udløber. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).}other{<ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi og downloader en opdatering, før fristen udløber. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).}}</translation>
 <translation id="3008923556848076408">Gemini fortsætter med at arbejde på din opgave</translation>
+<translation id="3008926075262837186">Læs komfortabelt med minimale forstyrrelser</translation>
 <translation id="3009178788565917040">Output</translation>
 <translation id="3009352964623081324">Søgetasten+O efterfulgt af S. Brug til at installere, administrere og tilpasse stemmer.</translation>
 <translation id="3009779501245596802">Indekserede databaser</translation>
@@ -8128,6 +8130,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6619990499523117484">Bekræft din pinkode</translation>
 <translation id="6620000730890558421">Hold styr på dine faner ved hjælp af AI</translation>
 <translation id="6620254580880484313">Containernavn</translation>
+<translation id="6621282332208609777">Spørg Google, eller angiv en webadresse</translation>
 <translation id="6621391692573306628">Hvis du vil sende denne fane til en anden enhed, skal du logge ind på Chrome på begge enheder</translation>
 <translation id="6622980291894852883">Fortsæt blokering af billeder</translation>
 <translation id="6624036901798307345">I tablettilstand skal du trykke på knappen til faneoptælling på værktøjslinjen for at åbne den nye fanelinje, der viser miniaturebilleder af hver fane.</translation>
@@ -9551,6 +9554,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7620616707541471029">Vælg en konto for at fortsætte</translation>
 <translation id="7621382409404463535">Systemet kunne ikke gemme enhedskonfigurationen.</translation>
 <translation id="7621595347123595643">Du kan ikke gendanne lokale data, hvis du glemmer din adgangskode eller pinkode.</translation>
+<translation id="7621863462266622331">Når faner deles, sendes deres sideindhold, medier og webadresser til Google</translation>
 <translation id="7622114377921274169">Oplader.</translation>
 <translation id="7622768823216805500">Websites installerer normalt betalingshandlere til shoppingformål såsom nemmere betaling</translation>
 <translation id="7622966771025050155">Skift til den registrerede fane</translation>
@@ -11769,6 +11773,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="909554839118732438">Luk inkognitovinduer</translation>
 <translation id="9095819602391364796">Tillad ikke, at websites styrer og omprogrammerer dine MIDI-enheder</translation>
 <translation id="9096053102600371572">Kontrolleret rulning <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Sammenlign valgmuligheder</translation>
 <translation id="9096776523567481218">ikke installeret lokalt</translation>
 <translation id="9098860402274800697">Fjern Google Play- og Android-apps</translation>
 <translation id="9099220545925418560">Baseret på din browserhistorik. Denne indstilling er deaktiveret.</translation>

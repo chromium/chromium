@@ -73,6 +73,7 @@
 <translation id="311432875115153175">ടാബ് ഗ്രൂപ്പ് ലിസ്‌റ്റ് അടച്ചു</translation>
 <translation id="3194464645767632461">റേറ്റിംഗ്</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{ഗ്രൂപ്പിലേക്ക് <ph name="TABS_COUNT_ONE" /> ടാബ് ചേർക്കുക}other{ഗ്രൂപ്പിലേക്ക് <ph name="TABS_COUNT_MANY" /> ടാബുകൾ ചേർക്കുക}}</translation>
+<translation id="3293080634164207409">ടാബുകൾ ചേർക്കുക</translation>
 <translation id="3328308545011660196">നിർദ്ദേശം: <ph name="NUMBER_OF_TABS" /> ടാബുകൾ സമാനമാണെന്ന് തോന്നുന്നു. അവ ഗ്രൂപ്പ് ചെയ്യണോ?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{ഒരു ദിവസത്തിന് ശേഷം നിഷ്‌ക്രിയമായി}other{<ph name="DAY_COUNT_MANY" /> ദിവസത്തിന് ശേഷം നിഷ്‌ക്രിയമായി}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{പുതിയ <ph name="ONE_ADDED" /> ടാബ്}other{പുതിയ <ph name="MANY_ADDED" /> ടാബുകൾ}}</translation>

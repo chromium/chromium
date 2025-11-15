@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Listen over fanegrupper er lukket</translation>
 <translation id="3194464645767632461">bedømmelse</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Føj <ph name="TABS_COUNT_ONE" /> fane til gruppen}one{Føj <ph name="TABS_COUNT_MANY" /> fane til gruppen}other{Føj <ph name="TABS_COUNT_MANY" /> faner til gruppen}}</translation>
+<translation id="3293080634164207409">Tilføj faner</translation>
 <translation id="3328308545011660196">Forslag: <ph name="NUMBER_OF_TABS" /> faner ser ud til at være relateret. Vil du gruppere dem?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Efter 1 dag med inaktivitet}one{Efter <ph name="DAY_COUNT_MANY" /> dag med inaktivitet}other{Efter <ph name="DAY_COUNT_MANY" /> dage med inaktivitet}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ny fane}one{<ph name="MANY_ADDED" /> ny fane}other{<ph name="MANY_ADDED" /> nye faner}}</translation>

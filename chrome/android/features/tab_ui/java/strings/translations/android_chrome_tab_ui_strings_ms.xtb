@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Senarai kumpulan tab ditutup</translation>
 <translation id="3194464645767632461">rating</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Tambahkan <ph name="TABS_COUNT_ONE" /> tab pada kumpulan}other{Tambahkan <ph name="TABS_COUNT_MANY" /> tab pada kumpulan}}</translation>
+<translation id="3293080634164207409">Tambahkan tab</translation>
 <translation id="3328308545011660196">Cadangan: <ph name="NUMBER_OF_TABS" /> tab kelihatan berkaitan. Himpunkan semua tab itu?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Selepas tidak aktif selama 1 hari}other{Selepas tidak aktif selama <ph name="DAY_COUNT_MANY" /> hari}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab baharu}other{<ph name="MANY_ADDED" /> tab baharu}}</translation>

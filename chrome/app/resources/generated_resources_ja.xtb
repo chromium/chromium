@@ -1051,6 +1051,7 @@
 <translation id="1699807488537653303">パスワード エラーを修正する</translation>
 <translation id="1700201317341192482">仮想カードを削除</translation>
 <translation id="1700517974991662022">アクセス済み</translation>
+<translation id="1701367827913789499">ツールバーのリーディング モード ボタンを使用すると、気が散る要因を減らして読みやすくします</translation>
 <translation id="1703331064825191675">パスワードを気にする必要はありません</translation>
 <translation id="1703666494654169921">サイトにバーチャル リアリティ デバイスとデータの使用を許可しない</translation>
 <translation id="1704097193565924901">大文字にする</translation>
@@ -2953,6 +2954,7 @@
 <translation id="3008272652534848354">権限をリセット</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> が、Wi-Fi に接続して、今日中にアップデートをダウンロードするよう求めています。Wi-Fi に接続しない場合、従量制接続でダウンロードします（通信料が発生することがあります）。}other{<ph name="MANAGER" /> が、Wi-Fi に接続して、期限までにアップデートをダウンロードするよう求めています。Wi-Fi に接続しない場合、従量制接続でダウンロードします（通信料が発生することがあります）。}}</translation>
 <translation id="3008923556848076408">Gemini はタスクの処理を続行します</translation>
+<translation id="3008926075262837186">気が散る要因を減らして読みやすくします</translation>
 <translation id="3009178788565917040">出力</translation>
 <translation id="3009352964623081324">検索+O の後、S キーを押します。音声のインストール、管理、カスタマイズを行います。</translation>
 <translation id="3009779501245596802">Indexed Database</translation>

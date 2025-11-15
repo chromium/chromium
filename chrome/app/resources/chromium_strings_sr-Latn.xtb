@@ -524,6 +524,7 @@ Neke funkcije će možda biti nedostupne. Navedite drugi direktorijum profila i
 <translation id="705851970750939768">Ažuriraj Chromium</translation>
 <translation id="7067091210845072982">Ako slika nema koristan opis, Chromium će probati da vam ga pruži. Slike se šalju Google-u radi pravljenja opisa.</translation>
 <translation id="7141270731789036260">Prilagodite Chrome for Testing</translation>
+<translation id="7147227333672430807">Možete da koristite Chromium svaki put kada kliknete na linkove u porukama, dokumentima i drugim aplikacijama</translation>
 <translation id="7163519456498498587">Ukloni dodatak <ph name="EXTENSION_NAME" /> iz Chromium-a</translation>
 <translation id="7173822816570314652">Organizacija briše Chromium podatke kada se ne koriste <ph name="TIMEOUT_DURATION" />. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja.</translation>
 <translation id="718435575166326686">Chromium-u treba dozvola za kameru za ovaj sajt</translation>
@@ -639,6 +640,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="8471947159125090285">Da biste koristili i čuvali Chromium podatke na Google nalogu, potvrdite svoj identitet</translation>
 <translation id="8482493977473846331">Prikazuje upite za prijavljivanje u Chromium</translation>
 <translation id="8493179195440786826">Chromium je zastareo</translation>
+<translation id="850264194101621529">Hvala vam što ste odabrali Chromium kao podrazumevani pregledač.</translation>
 <translation id="8522801943730206384">Chromium može da proverava lozinke kada ih sačuvate</translation>
 <translation id="8555465886620020932">Greška u usluzi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Možete da zakačite pretragu slika radi jednostavnog pristupa; kliknite na dugme Zakači u vrhu bočne table</translation>
@@ -648,6 +650,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="8586442755830160949">Autorska prava <ph name="YEAR" />. Autori Chromium-a. Sva prava zadržana.</translation>
 <translation id="8601359445272098721">Novo. Možete da prevodite i tekst i slike na ekranu tako što ćete izabrati dugme „Prevedi ekran“</translation>
 <translation id="8619360774459241877">Pokreće se Chromium...</translation>
+<translation id="8624541899164515475">Podešavanja, otvaraju se na novoj kartici.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing ne može da se postavi za podrazumevani pregledač.</translation>
 <translation id="8677922833187616101">Uvek prikazuj prečicu za Google AI režim</translation>
 <translation id="8697124171261953979">Kontroliše i stranicu koja se prikazuje kada pokrenete Chromium ili pretražujete iz omniboksa.</translation>

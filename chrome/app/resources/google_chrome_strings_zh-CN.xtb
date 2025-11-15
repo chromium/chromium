@@ -483,6 +483,7 @@
 <translation id="6417690341895039567">{COUNT,plural, =1{您的组织会在 Chrome 闲置 1 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}other{您的组织会在 Chrome 闲置 # 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}}</translation>
 <translation id="6418662306461808273">要切换到现有的 Chrome 个人资料吗？</translation>
 <translation id="6426623519983252346">下次打开 Chrome iOS 时，您会看到试用<ph name="FEATURE_NAME" />的提示。</translation>
+<translation id="6434035853014503219">感谢您选择 Chrome 作为默认浏览器！</translation>
 <translation id="6473905796280459355">前往“关于 Chrome”页面</translation>
 <translation id="6481963882741794338">关联 Chrome 和其他 Google 服务，以便获得个性化体验和实现其他用途</translation>
 <translation id="648319183876919572">“增强型安全浏览”功能有助于保护您免受危险的网站及下载内容的侵害</translation>
@@ -580,6 +581,7 @@
 <translation id="756809126120519699">已清除 Chrome 数据</translation>
 <translation id="7572537927358445944">已关闭 • Chrome 无法验证此扩展程序的来源</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安装程序</translation>
+<translation id="7596160425942761210">您可随时使用 Chrome 打开您在消息、文档和其他应用内点击的链接</translation>
 <translation id="7602868996817972616">向 Google 询问此页面</translation>
 <translation id="760353356052806707">您计算机上的其他程序擅自安装了一个可能会更改 Chrome 工作方式的应用。
 

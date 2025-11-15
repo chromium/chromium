@@ -521,6 +521,7 @@
 <translation id="705851970750939768">更新 Chromium</translation>
 <translation id="7067091210845072982">如果图片缺少有用的说明，则 Chromium 会尝试为您提供一条说明。为便于创建说明，系统会将图片发送给 Google。</translation>
 <translation id="7141270731789036260">自定义 Chrome for Testing</translation>
+<translation id="7147227333672430807">您可随时使用 Chromium 打开您在消息、文档和其他应用内点击的链接</translation>
 <translation id="7163519456498498587">从 Chromium 中移除“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="7173822816570314652">贵组织会在 Chromium 闲置 <ph name="TIMEOUT_DURATION" />后删除 Chromium 数据，其中可能包括历史记录、自动填充和下载内容。</translation>
 <translation id="718435575166326686">Chromium 需要为此网站授予摄像头权限</translation>
@@ -636,6 +637,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8471947159125090285">如要使用 Chromium 数据并将其保存在您的 Google 账号中，请验证是您本人在操作</translation>
 <translation id="8482493977473846331">显示登录 Chromium 的提示</translation>
 <translation id="8493179195440786826">Chromium版本太旧</translation>
+<translation id="850264194101621529">感谢您选择将 Chromium 设为默认浏览器！</translation>
 <translation id="8522801943730206384">您需要先保存密码，然后才能使用 Chromium 的密码检查功能</translation>
 <translation id="8555465886620020932">发生了服务错误：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8556420416730706394">您可以固定图片搜索功能以方便访问，点击侧边栏顶部的“固定”按钮即可</translation>

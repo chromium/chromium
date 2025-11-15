@@ -73,6 +73,7 @@
 <translation id="311432875115153175">பக்கக் குழுவின் பட்டியல் மூடப்பட்டது</translation>
 <translation id="3194464645767632461">ரேட்டிங்</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> பக்கத்தைக் குழுவில் சேர்க்கும்}other{<ph name="TABS_COUNT_MANY" /> பக்கங்களைக் குழுவில் சேர்க்கும்}}</translation>
+<translation id="3293080634164207409">பக்கங்களைச் சேருங்கள்</translation>
 <translation id="3328308545011660196">பரிந்துரை: <ph name="NUMBER_OF_TABS" /> தாவல்கள் தொடர்புடையவையாகத் தெரிகின்றன. அவற்றைக் குழுவாக்கவா?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 நாளுக்குப் பின் செயலற்றதாகும்}other{<ph name="DAY_COUNT_MANY" /> நாட்களுக்குப் பின் செயலற்றதாகும்}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> புதிய பக்கம்}other{<ph name="MANY_ADDED" /> புதிய பக்கங்கள்}}</translation>

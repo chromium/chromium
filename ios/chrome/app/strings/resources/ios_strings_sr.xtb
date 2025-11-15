@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
+<translation id="1004825134262590729">{count,plural, =1{{count} приступни кључ}one{{count} приступни кључ}few{{count} приступна кључа}other{{count} приступних кључева}}</translation>
 <translation id="1005023885865154304">Отворите подешавања за аутоматско попуњавање лозинки</translation>
 <translation id="1005230401424685968">ГГГГ</translation>
 <translation id="1013952917065545813">Можете да се вратите овде да бисте поново отворили картице које сте недавно затворили</translation>
@@ -1660,6 +1661,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Већ имате лозинке за ове налоге у Google менаџеру лозинки. Ако одлучите да увезете неку од лозинки у наставку, она ће заменити постојећу.</translation>
 <translation id="7336264872878993241">Проценат преузимања: <ph name="PERCENT" /></translation>
+<translation id="7345061034321640811">Увоз није дозвољен</translation>
 <translation id="7352651011704765696">Дошло је до грешке</translation>
 <translation id="7363349185727752629">Водич за изборе у вези са приватношћу</translation>
 <translation id="7364796246159120393">Одабери фајл</translation>
@@ -2201,6 +2203,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="952704832371081537">Откажи</translation>
 <translation id="95332591904104970">Повезане апликације</translation>
 <translation id="954667170699278022">Листа за читање</translation>
+<translation id="956066588046842680">Смернице организације не дозвољавају увоз ових података.</translation>
 <translation id="956218893102219091">Користите прецизну локацију да бисте добијали најтачније Gemini резултате, уместо приближне локације засноване на IP адреси. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Избриши податке прегледања</translation>
 <translation id="963102227019621224">Активности на вебу и у апликацијама</translation>
@@ -2212,5 +2215,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="984275831282074731">Начини плаћања</translation>
 <translation id="985379595344853742">Затвори све картице без архивирања</translation>
 <translation id="988141524645182168">Други уређаји</translation>
+<translation id="995174784802614337">{count,plural, =1{Увезен је {count} приступни кључ}one{Увезен је {count} приступни кључ}few{Увезена су {count} приступна кључа}other{Увезено је {count} приступних кључева}}</translation>
 <translation id="999768147936949692">За сада лозинке можете да делите само са члановима породице. <ph name="BEGIN_LINK" />Позовите чланове породице<ph name="END_LINK" /> да се придруже групи и користите производе и претплате широм Google-а на бољи начин.</translation>
 </translationbundle>

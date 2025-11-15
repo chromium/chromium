@@ -8115,6 +8115,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6619990499523117484">Potvrďte kód PIN</translation>
 <translation id="6620000730890558421">Majte vo svojich kartách poriadok s pomocou umelej inteligencie</translation>
 <translation id="6620254580880484313">Názov kontajnera</translation>
+<translation id="6621282332208609777">Opýtajte sa Googlu alebo napíšte webovú adresu</translation>
 <translation id="6621391692573306628">Ak chcete túto kartu odoslať do iného zariadenia, prihláste v oboch zariadeniach do Chromu</translation>
 <translation id="6622980291894852883">Pokračovať v blokovaní obrázkov</translation>
 <translation id="6624036901798307345">V režime tabletu klepnite na paneli s nástrojmi na tlačidlo počítadla kariet a otvorte tak nový panel kariet s miniatúrami všetkých kariet.</translation>
@@ -9537,6 +9538,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7620616707541471029">Ak chcete pokračovať, vyberte účet</translation>
 <translation id="7621382409404463535">Systém nedokázal uložiť konfiguráciu zariadenia.</translation>
 <translation id="7621595347123595643">Ak zabudnete heslo alebo PIN, nebudete môcť obnoviť miestne údaje.</translation>
+<translation id="7621863462266622331">Pri zdieľaní kariet sa obsah ich stránok, médiá a webové adresy odosielajú Googlu</translation>
 <translation id="7622114377921274169">Nabíja sa.</translation>
 <translation id="7622768823216805500">Weby zvyčajne inštalujú obslužné nástroje platieb, aby mohli poskytovať nákupné funkcie, ako je ľahšie platenie</translation>
 <translation id="7622966771025050155">Prepnúť na zaznamenanú kartu</translation>
@@ -10882,6 +10884,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8517759303731677493">Upraviť…</translation>
 <translation id="8518809011298357036">Zavrieť horné zobrazenie</translation>
 <translation id="8518942514525208851">Skrývať vulgarizmy</translation>
+<translation id="8520238089740349550">Nepodarilo sa – miestne sťahovanie bolo zablokované</translation>
 <translation id="8523493869875972733">Zachovať zmeny</translation>
 <translation id="8523849605371521713">Pridané pravidlom</translation>
 <translation id="8524594273111932386">kláves vyhľadávania + šípka nadol</translation>
@@ -11755,6 +11758,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="909554839118732438">Zavrieť režim inkognito</translation>
 <translation id="9095819602391364796">Nepovoliť webom ovládať a preprogramovávať zariadenia MIDI</translation>
 <translation id="9096053102600371572">Kontrolované posúvanie <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Porovnajte možnosti</translation>
 <translation id="9096776523567481218">nie je nainštalovaná miestne</translation>
 <translation id="9098860402274800697">Odstrániť aplikáciu Google Play a aplikácie pre Android</translation>
 <translation id="9099220545925418560">Založené na vašej histórii prehliadania. Toto nastavenie je vypnuté.</translation>

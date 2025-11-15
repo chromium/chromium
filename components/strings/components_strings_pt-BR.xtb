@@ -267,7 +267,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> para permitir o pareamento</translation>
 <translation id="1421484961346698724">Conta excluída</translation>
 <translation id="14222610277930434">Você visita com frequência</translation>
-<translation id="1422795627423046860">Data inválida</translation>
+<translation id="1422795627423046860">A data é inválida</translation>
 <translation id="1422930527989633628">Pode pedir para descobrir dispositivos Bluetooth por perto</translation>
 <translation id="142559998533702194">Falha no upload</translation>
 <translation id="1426410128494586442">Sim</translation>
@@ -3001,7 +3001,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5915189366813702112">Condições flexíveis de trabalho</translation>
 <translation id="59174027418879706">Ativado</translation>
 <translation id="5918373444239520146">Gadgets e aparelhos eletrônicos portáteis</translation>
-<translation id="5918847752193018339">Finalize as compras mais rapidamente quando seus CVCs estiverem salvos. <ph name="LINK_BEGIN" />Excluir os códigos de segurança salvos<ph name="LINK_END" /></translation>
+<translation id="5918847752193018339">Finalize suas compras mais rápido ao salvar os CVCs. <ph name="LINK_BEGIN" />Excluir os códigos de segurança salvos<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 em uso}one{# em uso}other{# em uso}}</translation>
 <translation id="5921185718311485855">ativado</translation>

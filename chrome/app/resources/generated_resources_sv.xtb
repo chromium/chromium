@@ -8124,6 +8124,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6619990499523117484">Bekräfta pinkoden</translation>
 <translation id="6620000730890558421">Håll ordning med AI</translation>
 <translation id="6620254580880484313">Behållarnamn</translation>
+<translation id="6621282332208609777">Fråga Google eller ange en webbadress</translation>
 <translation id="6621391692573306628">Om du vill skicka den här fliken till en annan enhet loggar du in i Chrome på båda enheterna</translation>
 <translation id="6622980291894852883">Fortsätt att blockera bilder</translation>
 <translation id="6624036901798307345">Öppna det nya flikhuvudet med miniatyrer av alla flikar genom att trycka på flikräknaren i verktygsfältet i surfplatteläge.</translation>
@@ -9547,6 +9548,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7620616707541471029">Välj ett konto för att fortsätta</translation>
 <translation id="7621382409404463535">Det gick inte att spara enhetskonfigurationen.</translation>
 <translation id="7621595347123595643">Du kan inte återställa lokal data om du glömmer lösenordet eller pinkoden.</translation>
+<translation id="7621863462266622331">När flikar delas skickas deras sidinnehåll, media och webbadresser till Google</translation>
 <translation id="7622114377921274169">Laddas.</translation>
 <translation id="7622768823216805500">Att installera betalningshanterare brukar kunna behövas till exempel för att förenkla hanteringen i kassan på webbplatsen</translation>
 <translation id="7622966771025050155">Byt till inspelad flik</translation>
@@ -11763,6 +11765,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="909554839118732438">Stäng inkognitoläget</translation>
 <translation id="9095819602391364796">Tillåt inte webbplatser att styra eller omprogrammera dina MIDI-enheter</translation>
 <translation id="9096053102600371572">Kontrollerad scrollning <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Jämför alternativ</translation>
 <translation id="9096776523567481218">inte installerad lokalt</translation>
 <translation id="9098860402274800697">Ta bort Google Play och Android-appar</translation>
 <translation id="9099220545925418560">Baserat på din webbhistorik. Inställningen är inaktiverad.</translation>

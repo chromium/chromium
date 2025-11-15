@@ -8115,6 +8115,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6619990499523117484">Kinnitage PIN-kood</translation>
 <translation id="6620000730890558421">Vahelehed korda AI abil</translation>
 <translation id="6620254580880484313">Konteineri nimi</translation>
+<translation id="6621282332208609777">Küsige Google'ilt või sisestage URL.</translation>
 <translation id="6621391692573306628">Selle vahelehe saatmiseks teise seadmesse logige mõlemas seadmes Chrome'i sisse</translation>
 <translation id="6622980291894852883">Jätka piltide blokeerimist</translation>
 <translation id="6624036901798307345">Puudutage tahvelarvuti režiimis vahelehtede loenduri tööriistariba nuppu, et avada uus vahelehtede riba, mis näitab iga vahelehe pisipilte.</translation>
@@ -9538,6 +9539,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7620616707541471029">Valige jätkamiseks konto</translation>
 <translation id="7621382409404463535">Süsteemil ei õnnestunud seadme seadistust salvestada.</translation>
 <translation id="7621595347123595643">Te ei saa kohalikke andmeid taastada, kui parooli või PIN-koodi unustate.</translation>
+<translation id="7621863462266622331">Vahelehtede jagamisel saadetakse nende lehtede sisu, meedia ja URL-id Google'ile.</translation>
 <translation id="7622114377921274169">Laadimine.</translation>
 <translation id="7622768823216805500">Saidid installivad maksetöötlejaid tavaliselt ostufunktsioonide jaoks, näiteks hõlpsamaks maksmiseks</translation>
 <translation id="7622966771025050155">Lülitu jäädvustatud vahelehele</translation>
@@ -11754,6 +11756,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="909554839118732438">Sule inkognito aknad</translation>
 <translation id="9095819602391364796">Ära luba saitidel MIDI-seadmeid juhtida ega ümber programmeerida</translation>
 <translation id="9096053102600371572">Kontrollitud kerimine <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Võrrelge valikuid.</translation>
 <translation id="9096776523567481218">pole kohapeal paigaldatud</translation>
 <translation id="9098860402274800697">Google Play ja Androidi rakenduste eemaldamine</translation>
 <translation id="9099220545925418560">Põhinevad teie sirvimisajalool. See seade on välja lülitatud.</translation>

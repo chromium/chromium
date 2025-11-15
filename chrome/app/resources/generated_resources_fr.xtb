@@ -8111,6 +8111,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6619990499523117484">Confirmez votre code.</translation>
 <translation id="6620000730890558421">Organisez vos onglets avec l'aide de l'IA</translation>
 <translation id="6620254580880484313">Nom du conteneur</translation>
+<translation id="6621282332208609777">Posez une question à Google ou saisissez une URL</translation>
 <translation id="6621391692573306628">Pour envoyer cet onglet sur un autre appareil, connectez-vous à Chrome sur cet autre appareil et celui-ci</translation>
 <translation id="6622980291894852883">Continuer à bloquer les images</translation>
 <translation id="6624036901798307345">En mode tablette, appuyez sur le bouton de la barre d'outils du compteur d'onglets pour ouvrir la nouvelle barre d'onglets qui affiche une vignette de chaque onglet.</translation>
@@ -9534,6 +9535,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7620616707541471029">Sélectionnez un compte pour continuer</translation>
 <translation id="7621382409404463535">Échec de l'enregistrement de la configuration de l'appareil.</translation>
 <translation id="7621595347123595643">Vous ne pourrez pas récupérer de données locales si vous oubliez votre mot de passe ou votre code.</translation>
+<translation id="7621863462266622331">Lorsque des onglets sont partagés, le contenu de leurs pages, leur contenu multimédia et leurs URL sont envoyés à Google</translation>
 <translation id="7622114377921274169">En charge.</translation>
 <translation id="7622768823216805500">Les sites installent généralement des gestionnaires de paiement pour proposer certaines fonctionnalités d'achat, comme un règlement plus simple</translation>
 <translation id="7622966771025050155">Ouvrir l'onglet capturé</translation>
@@ -11751,6 +11753,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="909554839118732438">Fermer les fenêtres de navigation privée</translation>
 <translation id="9095819602391364796">Ne pas autoriser les sites à contrôler et à reprogrammer vos appareils MIDI</translation>
 <translation id="9096053102600371572">Défilement contrôlé <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Comparez des options</translation>
 <translation id="9096776523567481218">pas installé localement</translation>
 <translation id="9098860402274800697">Supprimer les applications Google Play et Android</translation>
 <translation id="9099220545925418560">D'après votre historique de navigation. Ce paramètre est désactivé.</translation>

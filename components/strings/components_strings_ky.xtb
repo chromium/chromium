@@ -428,6 +428,7 @@
 <translation id="1689333818294560261">Ылакап ат</translation>
 <translation id="1692622044604477956">Тасмалар жана театралдык спектаклдер</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Маалыматыңызды кантип тескей аласыз:<ph name="END_BOLD" /> Chrome 4 аптадан ашуун убакыт мурун пайда болгон темаларды автоматтык түрдө жок кылып турат. Серептөөнү улантсаңыз, тема кайрадан тизмеде пайда болушу мүмкүн. Ошондой эле, Chrome параметрлеринен каалаган убакта жарнама темаларын өчүрүп жана Chrome'го сайттар менен белгилүү бир темаларды бөлүшүүгө тыюу сала аласыз.</translation>
+<translation id="1697808683313379647">Бул варианттарды сунуштоо үчүн Google төлөө бетинен алынган маалыматты жана башка тиешелүү нерселерди колдонот.</translation>
 <translation id="1699651774646344471">Эми Google аккаунтуңуздагы даректерди колдоно аласыз</translation>
 <translation id="1700542542921501212"><ph name="SEARCH_ENGINE_NAME" /> аркылуу Интернеттен керектүү нерсени издей аласыз.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -3701,6 +3702,7 @@
 <translation id="7031646650991750659">Кайсы Google Play колдонмолорун орнотуп алдыңыз</translation>
 <translation id="7035705295266423040">Банкыңыз өзүңүздү текшергени жатат</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google аккаунтуңуздун купуялык параметрлерин башкаруу үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
+<translation id="7042465939346919737">Бул варианттарды сунуштоо үчүн Google төлөө бетинен алынган маалыматты жана башка тиешелүү нерселерди колдонот. Кийинчерээк төлөө варианттарын жашыруу үчүн <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> бөлүмүнө өтүңүз</translation>
 <translation id="7042616127917168121">Натыйжаларды өркүндөтүү</translation>
 <translation id="7043552168914147882">Бөлгүч</translation>
 <translation id="7044081119134178347">Камераны колдонууга бул жолу уруксат берилди</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="km">
+<translation id="1004825134262590729">{count,plural, =1{កូដសម្ងាត់ {count}}other{កូដសម្ងាត់ {count}}}</translation>
 <translation id="1005023885865154304">បើក​ការកំណត់​ការបំពេញ​ពាក្យសម្ងាត់ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">អ្នកអាច​ត្រឡប់មកត្រង់នេះវិញ ដើម្បីបើកផ្ទាំង​ដែលអ្នកទើបតែបិទ​ម្ដងទៀត</translation>
@@ -2212,5 +2213,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="984275831282074731">វិធី​បង់ប្រាក់</translation>
 <translation id="985379595344853742">បិទ​ផ្ទាំងឯកជន​ទាំងអស់</translation>
 <translation id="988141524645182168">ឧបករណ៍ផ្សេងទៀត</translation>
+<translation id="995174784802614337">{count,plural, =1{បាននាំចូល​កូដសម្ងាត់ {count}}other{បាននាំចូល​កូដសម្ងាត់ {count}}}</translation>
 <translation id="999768147936949692">ឥឡូវនេះ អ្នកអាច​ត្រឹមតែ​ចែករំលែក​ពាក្យសម្ងាត់​ជាមួយ​សមាជិក​គ្រួសារ​ប៉ុណ្ណោះ។ <ph name="BEGIN_LINK" />អញ្ជើញ​សមាជិក​គ្រួសារ<ph name="END_LINK" />ឱ្យចូលរួមក្រុម​របស់អ្នក ហើយទទួលបាន​កាន់តែច្រើនពី​ផលិតផល និង​ការជាវរបស់អ្នក​នៅលើ Google។</translation>
 </translationbundle>

@@ -8114,6 +8114,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6619990499523117484">Confirmez votre NIP</translation>
 <translation id="6620000730890558421">Garder vos onglets en ordre grâce à l'IA</translation>
 <translation id="6620254580880484313">Nom du conteneur</translation>
+<translation id="6621282332208609777">Demandez à Google ou entrez une URL</translation>
 <translation id="6621391692573306628">Pour envoyer cet onglet vers un autre appareil, connectez-vous à Chrome sur les deux appareils</translation>
 <translation id="6622980291894852883">Continuer à bloquer les images</translation>
 <translation id="6624036901798307345">En mode tablette, touchez le bouton de la barre d'outils du compteur d'onglets pour ouvrir la nouvelle bande d'onglets qui affiche les miniatures de chaque onglet.</translation>
@@ -9536,6 +9537,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7620616707541471029">Sélectionnez un compte pour continuer</translation>
 <translation id="7621382409404463535">Le système n'a pas réussi à enregistrer la configuration de l'appareil.</translation>
 <translation id="7621595347123595643">Vous ne pourrez pas récupérer les données locales si vous oubliez votre mot de passe ou votre NIP.</translation>
+<translation id="7621863462266622331">Lorsque des onglets sont partagés, leur contenu, leur contenu multimédia et leurs URL sont envoyés à Google.</translation>
 <translation id="7622114377921274169">Charge en cours…</translation>
 <translation id="7622768823216805500">Les sites font généralement appel à des modules de traitement des paiements pour proposer certaines fonctionnalités d'achat, comme un paiement simplifié</translation>
 <translation id="7622966771025050155">Passer à l'onglet capturé</translation>
@@ -10880,6 +10882,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8517759303731677493">Modifier…</translation>
 <translation id="8518809011298357036">Fermer l'affichage du haut</translation>
 <translation id="8518942514525208851">Masquer les grossièretés</translation>
+<translation id="8520238089740349550">Échec – Téléchargement local bloqué</translation>
 <translation id="8523493869875972733">Conserver les modifications</translation>
 <translation id="8523849605371521713">Ajoutée par une règle</translation>
 <translation id="8524594273111932386">rechercher+flèche vers le bas</translation>
@@ -11751,6 +11754,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="909554839118732438">Fermer les fenêtres de navigation privée</translation>
 <translation id="9095819602391364796">N'autorisez pas les sites à contrôler ni à reprogrammer vos appareils MIDI</translation>
 <translation id="9096053102600371572">Défilement contrôlé <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Comparez les options</translation>
 <translation id="9096776523567481218">non installé localement</translation>
 <translation id="9098860402274800697">Retirer les applications Google Play et Android</translation>
 <translation id="9099220545925418560">En fonction de votre historique de navigation. Ce paramètre est désactivé.</translation>

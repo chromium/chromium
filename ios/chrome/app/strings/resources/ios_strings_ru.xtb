@@ -1661,6 +1661,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Пароли для этих аккаунтов уже сохранены в Google Менеджере паролей. Если вы импортируете один из паролей ниже, существующий будет заменен.</translation>
 <translation id="7336264872878993241">Скачивается: <ph name="PERCENT" />%</translation>
+<translation id="7345061034321640811">Импорт запрещен</translation>
 <translation id="7352651011704765696">Ошибка</translation>
 <translation id="7363349185727752629">Все о настройках конфиденциальности</translation>
 <translation id="7364796246159120393">Выберите файл</translation>
@@ -2202,6 +2203,7 @@
 <translation id="952704832371081537">Отмена</translation>
 <translation id="95332591904104970">Подключенные приложения</translation>
 <translation id="954667170699278022">Список для чтения</translation>
+<translation id="956066588046842680">Импорт этих данных запрещен правилами вашей организации.</translation>
 <translation id="956218893102219091">Используйте точное местоположение вместо приблизительного на основе IP-адреса, чтобы получать более подходящие результаты от Gemini. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Удалить данные браузера</translation>
 <translation id="963102227019621224">История приложений и веб-поиска</translation>

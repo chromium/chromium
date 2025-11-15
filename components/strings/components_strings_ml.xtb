@@ -428,6 +428,7 @@
 <translation id="1689333818294560261">വിളിപ്പേര്</translation>
 <translation id="1692622044604477956">സിനിമാ വിവരങ്ങളും തിയറ്റർ പ്രദർശന സമയങ്ങളും</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />നിങ്ങളുടെ ഡാറ്റ എങ്ങനെ മാനേജ് ചെയ്യാം:<ph name="END_BOLD" /> 4 ആഴ്ചയിലധികം പഴക്കമുള്ള വിഷയങ്ങൾ Chrome സ്വയമേവ ഇല്ലാതാക്കുന്നു. നിങ്ങൾ തുടർന്നും ബ്രൗസ് ചെയ്യുന്നതനുസരിച്ച്, ഒരു വിഷയം ലിസ്റ്റിൽ വീണ്ടും ദൃശ്യമാകാം. Chrome ക്രമീകരണത്തിൽ ഏത് സമയത്തും, Chrome സൈറ്റുകളുമായി പങ്കിടരുത് എന്ന് നിങ്ങൾ ആഗ്രഹിക്കുന്ന വിഷയങ്ങൾ ബ്ലോക്ക് ചെയ്യാനും പരസ്യ വിഷയങ്ങൾ ഓഫാക്കാനും നിങ്ങൾക്കാകും.</translation>
+<translation id="1697808683313379647">ഈ ഓപ്ഷനുകൾ നൽകാൻ ചെക്ക്ഔട്ട് പേജിൽ നിന്നുള്ള വിവരങ്ങളും പ്രസക്തമായ മറ്റ് ഡാറ്റയും Google ഉപയോഗിക്കുന്നു.</translation>
 <translation id="1699651774646344471">നിങ്ങൾക്ക് ഇപ്പോൾ നിങ്ങളുടെ Google Account-ൽ നിന്നുള്ള വിലാസങ്ങൾ ഉപയോഗിക്കാം</translation>
 <translation id="1700542542921501212">വെബിൽ തിരയാൻ നിങ്ങൾക്ക് <ph name="SEARCH_ENGINE_NAME" /> ഉപയോഗിക്കാം.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -3702,6 +3703,7 @@
 <translation id="7031646650991750659">ഏതൊക്കെ Google Play ആപ്പുകൾ നിങ്ങൾ ഇൻസ്റ്റാൾ ചെയ്‍തിട്ടുണ്ട് എന്നത്</translation>
 <translation id="7035705295266423040">ഇത് നിങ്ങൾ തന്നെയാണെന്ന് ബാങ്കിന് പരിശോധിച്ചുറപ്പിക്കേണ്ടതുണ്ട്</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Google Account സ്വകാര്യതാ ക്രമീകരണം മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
+<translation id="7042465939346919737">ഈ ഓപ്ഷനുകൾ നൽകാൻ ചെക്ക്ഔട്ട് പേജിൽ നിന്നുള്ള വിവരങ്ങളും പ്രസക്തമായ മറ്റ് ഡാറ്റയും Google ഉപയോഗിക്കുന്നു. 'പിന്നീട് പേ ചെയ്യുക' ഓപ്ഷനുകൾ മറയ്ക്കാൻ, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> എന്നതിലേക്ക് പോകുക</translation>
 <translation id="7042616127917168121">ഫലങ്ങൾ പരിഷ്‌കരിക്കുക</translation>
 <translation id="7043552168914147882">ടാബ് സ്റ്റോക്ക്</translation>
 <translation id="7044081119134178347">ഇപ്പോൾ മാത്രം ക്യാമറ അനുവദിച്ചിരിക്കുന്നു</translation>

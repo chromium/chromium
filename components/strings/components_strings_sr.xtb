@@ -428,6 +428,7 @@
 <translation id="1689333818294560261">Надимак</translation>
 <translation id="1692622044604477956">Листе филмова и репертоари биоскопа</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Како можете да управљате подацима:<ph name="END_BOLD" /> Chrome аутоматски брише теме старије од 4 недеље. Када наставите да прегледате, тема ће се можда поново појавити на листи. Можете и да блокирате теме које не желите да Chrome дели са сајтовима и да искључите теме огласа у било ком тренутку у подешавањима Chrome-а.</translation>
+<translation id="1697808683313379647">Google користи информације са странице за плаћање и друге релевантне податке да би нудио ове опције.</translation>
 <translation id="1699651774646344471">Сада можете да користите адресе са Google налога</translation>
 <translation id="1700542542921501212">За претрагу веба можете да користите <ph name="SEARCH_ENGINE_NAME" />.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -2948,6 +2949,7 @@
 <translation id="5813753398265398978">Физика</translation>
 <translation id="5817918615728894473">Упари</translation>
 <translation id="5820625124144807242">Када прегледате поруџбину, морате да се пријавите на <ph name="BNPL_ISSUER_NAME" /> налог или да га отворите. Тај налог ће се аутоматски повезати са Google Pay-ом.</translation>
+<translation id="5820751560028604030">Локално преузимање је блокирано</translation>
 <translation id="5826507051599432481">Опште име (CN)</translation>
 <translation id="5830698870816298009">коришћење и кретање камере</translation>
 <translation id="5831217499016131155">Google новчаник</translation>
@@ -3701,6 +3703,7 @@
 <translation id="7031646650991750659">Google Play које апликације сте инсталирали</translation>
 <translation id="7035705295266423040">Банка жели да потврди да сте то ви</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали подешавањима приватности Google налога</translation>
+<translation id="7042465939346919737">Google користи информације са странице за плаћање и друге релевантне податке да би нудио ове опције. Да бисте сакрили опције за плаћање касније, идите на <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Прецизирајте резултате</translation>
 <translation id="7043552168914147882">Залиха папира</translation>
 <translation id="7044081119134178347">Камера је дозвољена овај пут</translation>

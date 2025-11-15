@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Lista grupe kartica je zatvorena</translation>
 <translation id="3194464645767632461">ocena</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Dodajte <ph name="TABS_COUNT_ONE" /> karticu u grupu}one{Dodajte <ph name="TABS_COUNT_MANY" /> karticu u grupu}few{Dodajte <ph name="TABS_COUNT_MANY" /> kartice u grupu}other{Dodajte <ph name="TABS_COUNT_MANY" /> kartica u grupu}}</translation>
+<translation id="3293080634164207409">Dodajte kartice</translation>
 <translation id="3328308545011660196">Predlog: Kartice (<ph name="NUMBER_OF_TABS" />) deluju povezano. Želite li da ih grupišete?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Posle 1 dana neaktivnosti}one{Posle <ph name="DAY_COUNT_MANY" /> dana neaktivnosti}few{Posle <ph name="DAY_COUNT_MANY" /> dana neaktivnosti}other{Posle <ph name="DAY_COUNT_MANY" /> dana neaktivnosti}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nova kartica}one{<ph name="MANY_ADDED" /> nova kartica}few{<ph name="MANY_ADDED" /> nove kartice}other{<ph name="MANY_ADDED" /> novih kartica}}</translation>

@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Список групп вкладок закрыт</translation>
 <translation id="3194464645767632461">оценка</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Добавить в группу <ph name="TABS_COUNT_ONE" /> вкладку}one{Добавить в группу <ph name="TABS_COUNT_MANY" /> вкладку}few{Добавить в группу <ph name="TABS_COUNT_MANY" /> вкладки}many{Добавить в группу <ph name="TABS_COUNT_MANY" /> вкладок}other{Добавить в группу <ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
+<translation id="3293080634164207409">Добавить вкладки</translation>
 <translation id="3328308545011660196">Подсказка: обнаружены похожие вкладки (<ph name="NUMBER_OF_TABS" />). Сгруппировать их?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Через 1 день без активности}one{Через <ph name="DAY_COUNT_MANY" /> день без активности}few{Через <ph name="DAY_COUNT_MANY" /> дня без активности}many{Через <ph name="DAY_COUNT_MANY" /> дней без активности}other{Через <ph name="DAY_COUNT_MANY" /> дня без активности}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> новая вкладка}one{<ph name="MANY_ADDED" /> новая вкладка}few{<ph name="MANY_ADDED" /> новые вкладки}many{<ph name="MANY_ADDED" /> новых вкладок}other{<ph name="MANY_ADDED" /> новой вкладки}}</translation>

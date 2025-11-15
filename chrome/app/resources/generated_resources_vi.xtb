@@ -10677,7 +10677,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8370294614544004647">Chuyển sang chế độ ngủ khi gập máy tính</translation>
 <translation id="8370419414641876532">Nhấp vào "Mật khẩu và tự động điền"</translation>
 <translation id="8371695176452482769">Nói ngay bây giờ</translation>
-<translation id="8371925839118813971">{NUM_TABS,plural, =1{Bật âm thanh trang web}other{Bật âm thanh các trang web}}</translation>
+<translation id="8371925839118813971">{NUM_TABS,plural, =1{Tắt âm thanh trang web}other{Tắt âm thanh các trang web}}</translation>
 <translation id="8372441176515901959">Loại bỏ yêu cầu</translation>
 <translation id="8372678064309688510">Địa chỉ của bạn đã được lưu</translation>
 <translation id="8373652277231415614">Thư mục do Crostini chia sẻ</translation>

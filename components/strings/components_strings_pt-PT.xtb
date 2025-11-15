@@ -428,6 +428,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1689333818294560261">Alcunha</translation>
 <translation id="1692622044604477956">Listagens de filmes e espetáculos de teatro</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Como pode gerir os seus dados:<ph name="END_BOLD" /> o Chrome elimina automaticamente os tópicos com mais de 4 semanas. À medida que navega, um tópico pode voltar a ser apresentado na lista. Também pode bloquear tópicos que não quer que o Chrome partilhe com sites e desativar os tópicos de anúncios em qualquer altura nas definições do Chrome.</translation>
+<translation id="1697808683313379647">A Google usa informações da página de pagamento e outros dados relevantes para oferecer estas opções.</translation>
 <translation id="1699651774646344471">Já pode usar moradas da sua Conta Google</translation>
 <translation id="1700542542921501212">Pode usar o motor de pesquisa <ph name="SEARCH_ENGINE_NAME" /> para pesquisar na Web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -3703,6 +3704,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7031646650991750659">As apps do Google Play que instalou.</translation>
 <translation id="7035705295266423040">O seu banco quer validar a sua identidade</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para gerir as definições de privacidade da sua Conta Google</translation>
+<translation id="7042465939346919737">A Google usa informações da página de pagamento e outros dados relevantes para oferecer estas opções. Para ocultar as opções para pagar depois, aceda às <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Refinar resultados</translation>
 <translation id="7043552168914147882">Separadores</translation>
 <translation id="7044081119134178347">Câmara permitida desta vez</translation>
