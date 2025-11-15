@@ -545,6 +545,7 @@ ci.thin_tester(
             "x86-64",
             "win11-any",
             "isolate_profile_data",
+            "retry_only_failed_tests",
         ],
         per_test_modifications = {
             "blink_web_tests": targets.mixin(
@@ -704,6 +705,7 @@ ci.thin_tester(
         ],
         mixins = [
             "win-arm64",
+            "retry_only_failed_tests",
         ],
         per_test_modifications = {
             "browser_tests": targets.mixin(
