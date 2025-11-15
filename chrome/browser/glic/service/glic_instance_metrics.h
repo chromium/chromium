@@ -240,6 +240,10 @@ class GlicInstanceMetrics {
   void OnResponseStarted();
   void OnResponseStopped(mojom::ResponseStopCause cause);
   void OnTurnCompleted(mojom::WebClientModel model, base::TimeDelta duration);
+
+  void OnUserResizeStarted(const gfx::Size& start_size);
+  void OnUserResizeEnded(const gfx::Size& end_size);
+
   void OnReaction(mojom::MetricUserInputReactionType reaction_type);
 
   // Records the number of tabs attached as context for a Glic response.
