@@ -1,0 +1,15 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_FAKE_TAB_ID_GENERATOR_H_
+#define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_FAKE_TAB_ID_GENERATOR_H_
+
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
+
+class FakeTabIdGenerator : public TabIdGenerator {
+ public:
+  SessionID GenerateTabId(content::WebContents* contents) const override;
+};
+
+#endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_FAKE_TAB_ID_GENERATOR_H_

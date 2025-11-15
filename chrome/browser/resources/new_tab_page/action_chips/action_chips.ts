@@ -6,7 +6,7 @@ import {FileUploadStatus} from 'chrome://resources/cr_components/composebox/comp
 import {ComposeboxMode} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {ActionChip, ActionChipsHandlerInterface, TabInfo} from '../action_chips.mojom-webui.js';
+import type {ActionChip, ActionChipsHandlerInterface} from '../action_chips.mojom-webui.js';
 import {ChipType} from '../action_chips.mojom-webui.js';
 
 import {getCss} from './action_chips.css.js';
@@ -54,13 +54,11 @@ export class ActionChipsElement extends CrLitElement {
 
   static override get properties() {
     return {
-      mostRecentTab_: {type: Object, state: true},
       actionChips_: {type: Array, state: true},
     };
   }
 
   private handler: ActionChipsHandlerInterface;
-  private accessor mostRecentTab_: TabInfo|null = null;
   protected accessor actionChips_: ActionChip[] = [];
 
   override render() {
@@ -99,9 +97,6 @@ export class ActionChipsElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.handler.getMostRecentTab().then((result) => {
-      this.mostRecentTab_ = result ? result.tab : null;
-    });
     this.handler.getActionChips().then(
         (result: {actionChips: ActionChip[]}) => {
           this.actionChips_ = result.actionChips;
@@ -114,10 +109,6 @@ export class ActionChipsElement extends CrLitElement {
   override firstUpdated() {
     recordShown(ActionChipsType.CREATE_IMAGE);
     recordShown(ActionChipsType.DEEP_SEARCH);
-  }
-
-  get mostRecentTab(): TabInfo|null {
-    return this.mostRecentTab_;
   }
 
   protected onCreateImageClick_() {

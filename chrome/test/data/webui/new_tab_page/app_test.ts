@@ -1942,8 +1942,6 @@ suite('NewTabPageAppTest', () => {
           ActionChipsHandlerRemote,
           mock => ActionChipsApiProxyImpl.setInstance({getHandler: () => mock}),
       );
-      actionChipshandler.setResultFor(
-          'getMostRecentTab', Promise.resolve({tab: null}));
       actionChipshandler.setResultFor('getActionChips', Promise.resolve({
         actionChips: [
           {

@@ -28,14 +28,12 @@ struct ActionChip {
   string title;
   string suggestion;
   ChipType type;
+  // the tab associated with this chip.
+  TabInfo? tab;
 };
 
 // Interface for the browser-side handler.
 interface ActionChipsHandler {
-  // Gets the most recently accessed tab across all browser windows
-  // for the current profile.
-  GetMostRecentTab() => (TabInfo? tab);
-
   // Retrieves the information needed for action chips.
   GetActionChips() => (array<ActionChip> action_chips);
 };
