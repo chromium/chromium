@@ -105,9 +105,7 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
   }
   task_id_to_creation_url_[task.GetTaskId()] = stripped_query_url;
 
-    GURL ui_url(chrome::kChromeUIContextualTasksURL);
-  ui_url = net::AppendQueryParameter(ui_url, kTaskQueryParam,
-                                     task.GetTaskId().AsLowercaseString());
+  GURL ui_url = GetContextualTaskUrlForTask(task.GetTaskId());
 
   content::WebContents* contextual_task_web_contents = nullptr;
   if (!is_to_new_tab) {
@@ -271,6 +269,14 @@ bool ContextualTasksUiService::HandleNavigation(
 
   // Allow anything else.
   return false;
+}
+
+GURL ContextualTasksUiService::GetContextualTaskUrlForTask(
+    const base::Uuid& task_id) {
+  GURL url(chrome::kChromeUIContextualTasksURL);
+  url = net::AppendQueryParameter(url, kTaskQueryParam,
+                                  task_id.AsLowercaseString());
+  return url;
 }
 
 GURL ContextualTasksUiService::GetInitialUrlForTask(const base::Uuid& uuid) {

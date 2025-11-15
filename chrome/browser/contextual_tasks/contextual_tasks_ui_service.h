@@ -73,6 +73,9 @@ class ContextualTasksUiService : public KeyedService {
                                 content::WebContents* source_contents,
                                 bool is_to_new_tab);
 
+  // Returns the contextual_task UI for a task.
+  virtual GURL GetContextualTaskUrlForTask(const base::Uuid& task_id);
+
   // Returns the URL that a task was created for. Once this is retrieved, the
   // entry is removed from the cache.
   virtual GURL GetInitialUrlForTask(const base::Uuid& uuid);

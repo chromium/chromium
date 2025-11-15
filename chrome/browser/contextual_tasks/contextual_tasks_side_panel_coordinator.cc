@@ -37,14 +37,15 @@ namespace {
 inline constexpr int kSidePanelPreferredDefaultWidth = 440;
 
 std::unique_ptr<content::WebContents> CreateWebContents(
-    BrowserWindowInterface* browser_window) {
+    BrowserWindowInterface* browser_window,
+    GURL url) {
   content::WebContents::CreateParams create_params(
       browser_window->GetProfile());
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(create_params);
-  web_contents->GetController().LoadURL(
-      GURL(chrome::kChromeUIContextualTasksURL), content::Referrer(),
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+  web_contents->GetController().LoadURL(url, content::Referrer(),
+                                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                        std::string());
   webui::SetBrowserWindowInterface(web_contents.get(), browser_window);
   return web_contents;
 }
@@ -322,7 +323,9 @@ content::WebContents* ContextualTasksSidePanelCoordinator::
   WebContentsCacheItem* item = FindWebContentsCacheItem(task_id);
   if (!item) {
     auto new_item = std::make_unique<WebContentsCacheItem>(
-        CreateWebContents(browser_window_), task_id,
+        CreateWebContents(browser_window_,
+                          ui_service_->GetContextualTaskUrlForTask(task_id)),
+        task_id,
         /*is_open=*/true);
     task_id_to_web_contents_cache_.push_back(std::move(new_item));
     item = task_id_to_web_contents_cache_.back().get();
