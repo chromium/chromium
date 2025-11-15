@@ -21,6 +21,7 @@ generate_grd("build_grdp") {
     "drop_down_arrow_black.svg",
     "drop_down_arrow_gray.svg",
     "drop_down_arrow_white.svg",
+    "eclipse_wave_blurred_rect.png",
     "error.svg",
     "error_yellow900.svg",
     "extension.svg",

@@ -8,14 +8,12 @@
  * #scheme=relative
  * #include=cr-icons-lit
  * #css_wrapper_metadata_end */
-
 :host {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  min-height: 136px;
-  display: flex;
+  --color-composebox-voice-search-font: rgba(71, 71, 71, 1);
+  /* Set these variables since cr-icons take their margin
+  from these; else negative default. */
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
 }
 
 #container {
@@ -56,12 +54,14 @@
 #input,
 #error-container {
   box-sizing: border-box;
-  color: var(--color-composebox-font-light);
+  color: var(--color-composebox-voice-search-font);
   flex-grow: 1;
   font-family: inherit;
-  font-size: var(--cr-composebox-font-size, 18px);
+  font-size: 18px;
   line-height: 24px;
-  padding: 20px 56px 20px 20px;
+  /* 11px + container padding = 18 px. Parent can set var if needed. */
+  padding: var(--composebox-voice-search-top-padding, 11px)
+      134px 0px 20px;
   width: 100%;
 }
 
@@ -73,9 +73,12 @@
 #closeButton {
   --cr-icon-button-fill-color:
       var(--color-composebox-cancel-button-light);
-  /* SVG is size 20 with 5px of padding so actual size is 10px */
   --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-size: 36px;
+  inset-inline-end: 12px;
+  margin-inline-start: 16px;
   position: absolute;
-  top: 10px;
-  inset-inline-end: 16px;
+  top: var(--composebox-cancel-button-top, 12px);
+  /* Uses the same transitions as the submit button so they are in sync. */
+  transition: var(--submit-enabled-transition);
 }

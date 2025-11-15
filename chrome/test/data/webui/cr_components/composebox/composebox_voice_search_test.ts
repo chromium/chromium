@@ -135,10 +135,14 @@ suite('Composebox voice search', () => {
         const voiceSearchButton = getVoiceSearchButton(composeboxElement);
         voiceSearchButton!.click();
         await microtasksFinished();
+
+        // Wait for transitions
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
         // Clicking the voice search button should start speech recognition.
         assertTrue(mockSpeechRecognition.voiceSearchInProgress);
-        assertStyle(composeboxElement.$.composebox, 'display', 'none');
-        assertStyle(composeboxElement.$.voiceSearch, 'display', 'flex');
+        assertStyle(composeboxElement.$.composebox, 'opacity', '0');
+        assertStyle(composeboxElement.$.voiceSearch, 'display', 'inline');
       });
 
   test('on result updates the searchbox input', async () => {
@@ -199,6 +203,9 @@ suite('Composebox voice search', () => {
     const [callback] = await windowProxy.whenCalled('setTimeout');
     callback();
     await microtasksFinished();
+
+    // Wait for transitions
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Assert.
     assertFalse(mockSpeechRecognition.voiceSearchInProgress);
@@ -271,6 +278,9 @@ suite('Composebox voice search', () => {
         mockSpeechRecognition.onend!();
         await microtasksFinished();
 
+        // Wait for transitions
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
         // Assert.
         assertEquals(searchboxHandler.getCallCount('submitQuery'), 0);
         assertStyle(composeboxElement.$.composebox, 'display', 'flex');
@@ -295,11 +305,14 @@ suite('Composebox voice search', () => {
         voiceSearchElement.shadowRoot.querySelector<HTMLTextAreaElement>(
             '#input');
 
+    // Wait for transitions
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
     assertTrue(!!errorContainer);
     assertFalse(errorContainer.hidden);
     assertTrue(inputElement!.hidden);
-    assertStyle(composeboxElement.$.composebox, 'display', 'none');
-    assertStyle(composeboxElement.$.voiceSearch, 'display', 'flex');
+    assertStyle(composeboxElement.$.composebox, 'opacity', '0');
+    assertStyle(composeboxElement.$.voiceSearch, 'display', 'inline');
   });
 
   test('on error closes voice search for other errors', async () => {
@@ -320,7 +333,8 @@ suite('Composebox voice search', () => {
     const inputElement =
         voiceSearchElement.shadowRoot.querySelector<HTMLTextAreaElement>(
             '#input');
-
+    // Wait for transitions
+    await new Promise(resolve => setTimeout(resolve, 1000));
     // The error container should be hidden because it's not a NOT_ALLOWED
     // error, and the voice search should close.
     assertTrue(errorContainer!.hidden);
