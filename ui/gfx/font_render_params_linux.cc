@@ -28,6 +28,12 @@
 #include "ui/linux/linux_ui.h"
 #endif
 
+// Define this for builds in which older FontConfig headers are included.
+// Available since FontConfig 2.15.
+#ifndef FC_FONT_WRAPPER
+#define FC_FONT_WRAPPER         "fontwrapper"
+#endif
+
 namespace gfx {
 
 namespace {
@@ -128,6 +134,9 @@ bool QueryFontconfig(const FontRenderParamsQuery& query,
   CHECK(query_pattern);
 
   FcPatternAddBool(query_pattern.get(), FC_SCALABLE, FcTrue);
+
+  FcPatternAddString(query_pattern.get(), FC_FONT_WRAPPER,
+                     reinterpret_cast<const FcChar8*>("SFNT"));
 
   for (auto it = query.families.begin(); it != query.families.end(); ++it) {
     FcPatternAddString(query_pattern.get(), FC_FAMILY,
