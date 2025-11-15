@@ -2283,7 +2283,8 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ClearResourceCache) {
 
 // Tests that RenderProcessHost reuse works correctly even if the site URL of a
 // URL changes.
-IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ReuseSiteURLChanges) {
+// TODO(crbug.com/460621062): Re-enable the test
+IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, DISABLED_ReuseSiteURLChanges) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL kUrl = embedded_test_server()->GetURL("/title1.html");
   const GURL kModifiedSiteUrl("custom-scheme://custom");

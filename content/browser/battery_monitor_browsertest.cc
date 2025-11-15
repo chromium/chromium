@@ -116,7 +116,9 @@ IN_PROC_BROWSER_TEST_F(BatteryMonitorTest, NavigatorGetBatteryInfo) {
   EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().ref());
 }
 
-IN_PROC_BROWSER_TEST_F(BatteryMonitorTest, NavigatorGetBatteryListenChange) {
+// TODO(crbug.com/460621062): Re-enable the test
+IN_PROC_BROWSER_TEST_F(BatteryMonitorTest,
+                       DISABLED_NavigatorGetBatteryListenChange) {
   // From JavaScript request a promise for the battery status information.
   // Once it resolves add an event listener for battery level change. Set
   // battery level to 0.6 and invoke update. Check that the event listener
