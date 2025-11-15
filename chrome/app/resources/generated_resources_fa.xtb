@@ -614,6 +614,7 @@
 <translation id="1414648216875402825">شما نسخه ناپایداری از <ph name="PRODUCT_NAME" /> را به‌روزرسانی می‌کنید که حاوی قابلیت‌های در حال توسعه است. خرابی‌ها و اشکال‌های غیرمنتظره‌ای رخ خواهد داد. لطفاُ با احتیاط ادامه دهید.</translation>
 <translation id="1415708812149920388">دسترسی برای خواندن محتوای بریده‌دان امکان‌پذیر نیست</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (شناسه برنامه افزودنی «<ph name="EXTENSION_ID" />») در این نوع جلسه مجاز نیست.</translation>
+<translation id="141720836055413739">بارگذاری ممکن نیست.  قالب فایل دیگری را امتحان کنید.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{برداشتن برنامه}one{برداشتن برنامه}other{برداشتن برنامه‌ها}}</translation>
 <translation id="1417497355604638350">ارسال عیب‌یابی و داده‌های استفاده.</translation>
 <translation id="1418552618736477642">اعلان‌ها و برنامه‌ها</translation>
@@ -1296,7 +1297,7 @@
 <translation id="1865769994591826607">‏فقط اتصالات same-site</translation>
 <translation id="186594096341696655">کاهش نرخ</translation>
 <translation id="186612162884103683">«<ph name="EXTENSION" />» می‌تواند تصاویر، ویدئوها و فایل‌های صوتی را از مکان‌های انتخاب شده  بخوانید یا بنویسید.</translation>
-<translation id="1866589962721094893">‏به برنامه‌های Android امکان داده می‌شود دستگاه‌های USB را در این Chromebook کنترل کنند. هربار دستگاه USB را وصل کنید، اجازه درخواست خواهد شد. هرکدام از برنامه‌های Android به‌صورت جداگانه اجازه‌های جانبی درخواست خواهند کرد.</translation>
+<translation id="1866589962721094893">‏به برنامه‌های Android امکان داده می‌شود دستگاه‌های USB را در این Chromebook کنترل کنند. هربار دستگاه USB را وصل کنید، اجازه درخواست خواهد شد. هرکدام از برنامه‌های Android به‌صورت جداگانه اجازه‌های اضافی درخواست خواهند کرد.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> آماده تکمیل نصب است</translation>
 <translation id="1868553836791672080">‏بررسی گذرواژه در Chromium دردسترس نیست</translation>
 <translation id="1868617395637139709">‏از مکان برای سرویس‌ها و برنامه‌های Android استفاده کنید.</translation>
@@ -1947,7 +1948,7 @@
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />توجه:<ph name="END_BOLD" /> سیستم درطول پردازش بازراه‌اندازی می‌شود.</translation>
-<translation id="23030561267973084">«<ph name="EXTENSION_NAME" />» اجازه‌های جانبی درخواست کرده است.</translation>
+<translation id="23030561267973084">«<ph name="EXTENSION_NAME" />» اجازه‌های اضافی درخواست کرده است.</translation>
 <translation id="2304820083631266885">سیاره</translation>
 <translation id="2306794767168143227">ذخیره در <ph name="BRAND" /> در این دستگاه</translation>
 <translation id="2308798336967462263">این کلیدها پشتیبانی نمی‌شوند: جهش، تبدیل، کنترل، گریز، کلید قفل تبدیل، میزان صدا</translation>
@@ -4276,6 +4277,7 @@
 <translation id="3898768766145818464">پخش یا مکث ویدیو</translation>
 <translation id="389901847090970821">انتخاب صفحه‌کلید</translation>
 <translation id="3899457911440165602">خطایی در حذف کردن گواهینامه پیش آمد</translation>
+<translation id="3900568190483700096">تا <ph name="FILE_LIMIT" /> فایل برای استفاده همراه با سؤالتان بارگذاری کنید</translation>
 <translation id="3900966090527141178">صادر کردن گذرواژه‌ها</translation>
 <translation id="3903187154317825986">صفحه‌کلید داخلی</translation>
 <translation id="3903696968689283281">‏اطلاعات مالکان Wi-Fi Direct:</translation>
@@ -8685,7 +8687,7 @@
 <translation id="7004499039102548441">زبانه‌های جدید</translation>
 <translation id="7004562620237466965">فقط کشف رمز</translation>
 <translation id="7004969808832734860">تا <ph name="DISCOUNT_UP_TO_AMOUNT" /> تخفیف</translation>
-<translation id="7005496624875927304">اجازه‌های جانبی</translation>
+<translation id="7005496624875927304">اجازه‌های اضافی</translation>
 <translation id="7005812687360380971">عدم موفقیت</translation>
 <translation id="7005848115657603926">محدوده صفحه معتبر نیست، از <ph name="EXAMPLE_PAGE_RANGE" /> استفاده کنید</translation>
 <translation id="7006438259896942210">این حساب (<ph name="USER_EMAIL_ADDRESS" />) را <ph name="PROFILE_NAME" /> مدیریت می‌کند</translation>
@@ -11835,6 +11837,7 @@
 <translation id="9140050311673642960">می‌توانید چیز جدیدی را عمیق‌تر بررسی کنید</translation>
 <translation id="9140067245205650184">از پرچم‌گذاری پیشتیبانی‌نشده ویژگی <ph name="BAD_FLAG" /> استفاده می‌کنید. ثبات و امنیت صدمه می‌بینند.</translation>
 <translation id="914031120300235526">نمی‌توان قفل نمایه را باز کرد</translation>
+<translation id="9142221601471715336">فایل‌هایتان را اینجا رها کنید</translation>
 <translation id="9142637293078737510">نام مستعار تصویر</translation>
 <translation id="9143298529634201539">پیشنهاد حذف شود؟</translation>
 <translation id="9143922477019434797">محافظت از گذرواژه‌ها</translation>

@@ -613,6 +613,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1414648216875402825">Garatzen ari diren eginbideak dituen <ph name="PRODUCT_NAME" /> sistemaren bertsio ezegonkor batera eguneratzen ari zara. Hutsegiteak eta ustekabeko erroreak gertatuko dira. Ibil zaitez kontuz.</translation>
 <translation id="1415708812149920388">Arbeleko edukia irakurtzeko sarbidea ukatu da</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (luzapenaren identifikatzailea: "<ph name="EXTENSION_ID" />") luzapena ez dago onartuta mota honetako saioetan.</translation>
+<translation id="141720836055413739">Ezin da kargatu.  Erabili beste fitxategi-formatu bat.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Kendu aplikazioa}other{Kendu aplikazioak}}</translation>
 <translation id="1417497355604638350">Bidali diagnostiko- eta erabilera-datuak.</translation>
 <translation id="1418552618736477642">Jakinarazpenak eta aplikazioak</translation>
@@ -4264,6 +4265,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3898768766145818464">Erreproduzitu edo pausatu bideoa</translation>
 <translation id="389901847090970821">Hautatu teklatua</translation>
 <translation id="3899457911440165602">Errore bat gertatu da ziurtagiria ezabatzean</translation>
+<translation id="3900568190483700096">Kargatu gehienez <ph name="FILE_LIMIT" /> fitxategi galderarekin erabiltzeko</translation>
 <translation id="3900966090527141178">Esportatu pasahitzak</translation>
 <translation id="3903187154317825986">Teklatu integratua</translation>
 <translation id="3903696968689283281">WiFi Direct-en jabeen informazioa:</translation>
@@ -11812,6 +11814,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9140050311673642960">Sakondu gai berri batean</translation>
 <translation id="9140067245205650184">Onartzen ez den gaitasun-etengailu bat darabilzu: <ph name="BAD_FLAG" />. Egonkortasunak eta segurtasunak okerrera egingo dute.</translation>
 <translation id="914031120300235526">Ezin da desblokeatu profila</translation>
+<translation id="9142221601471715336">Jaregin fitxategiak hemen</translation>
 <translation id="9142637293078737510">Irudiaren aliasa</translation>
 <translation id="9143298529634201539">Kendu egin nahi duzu iradokizuna?</translation>
 <translation id="9143922477019434797">Babestu pasahitzak</translation>

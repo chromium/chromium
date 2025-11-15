@@ -613,6 +613,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1414648216875402825">Estás actualizando unha versión inestable de <ph name="PRODUCT_NAME" /> que contén funcións que están en desenvolvemento. Produciranse fallos e erros inesperados. Utiliza esta versión con precaución.</translation>
 <translation id="1415708812149920388">Rexeitouse o acceso de lectura ao portapapeis</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (o ID da extensión "<ph name="EXTENSION_ID" />") non se permite neste tipo de sesión.</translation>
+<translation id="141720836055413739">Non se puido cargar o ficheiro.  Proba cun formato diferente.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Quitar aplicación}other{Quitar aplicacións}}</translation>
 <translation id="1417497355604638350">Enviar datos de uso e de diagnóstico.</translation>
 <translation id="1418552618736477642">Notificacións e aplicacións</translation>
@@ -4268,6 +4269,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3898768766145818464">Reproducir ou pór vídeo en pausa</translation>
 <translation id="389901847090970821">Selecciona un teclado</translation>
 <translation id="3899457911440165602">Produciuse un erro ao eliminar o certificado</translation>
+<translation id="3900568190483700096">Carga <ph name="FILE_LIMIT" /> ficheiros como máximo para usalos coa túa pregunta</translation>
 <translation id="3900966090527141178">Exportar contrasinais</translation>
 <translation id="3903187154317825986">Teclado integrado</translation>
 <translation id="3903696968689283281">Información das persoas propietarias de Wi-Fi Direct:</translation>
@@ -11819,6 +11821,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9140050311673642960">Afonda en algo novo</translation>
 <translation id="9140067245205650184">Estás utilizando unha marca de función non compatible: <ph name="BAD_FLAG" />. A estabilidade e a seguranza veranse afectadas.</translation>
 <translation id="914031120300235526">Non se pode desbloquear o perfil</translation>
+<translation id="9142221601471715336">Solta os ficheiros aquí</translation>
 <translation id="9142637293078737510">Alias da imaxe</translation>
 <translation id="9143298529634201539">Queres quitar a suxestión?</translation>
 <translation id="9143922477019434797">Protexe os teus contrasinais</translation>

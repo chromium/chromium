@@ -613,6 +613,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1414648216875402825">Jy dateer tans na 'n onstabiele weergawe van <ph name="PRODUCT_NAME" /> op wat kenmerke bevat wat tans besig is. Omvalle en onverwagte lêerfoute sal opduik. Gaan met omsigtigheid voort.</translation>
 <translation id="1415708812149920388">Knipbord-leestoegang is geweier</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (uitbreiding-ID "<ph name="EXTENSION_ID" />") word nie in hierdie tipe sessie toegelaat nie.</translation>
+<translation id="141720836055413739">Kan nie oplaai nie.  Probeer ’n ander lêerformaat.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Verwyder app}other{Verwyder apps}}</translation>
 <translation id="1417497355604638350">Stuur diagnostiese en gebruiksdata.</translation>
 <translation id="1418552618736477642">Kennisgewings en programme</translation>
@@ -4279,6 +4280,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3898768766145818464">Speel of onderbreek video</translation>
 <translation id="389901847090970821">Kies sleutelbord</translation>
 <translation id="3899457911440165602">Kon nie sertifikaat uitvee nie</translation>
+<translation id="3900568190483700096">Laai tot <ph name="FILE_LIMIT" /> lêers op om saam met jou vraag te gebruik</translation>
 <translation id="3900966090527141178">Voer wagwoorde uit</translation>
 <translation id="3903187154317825986">Ingeboude sleutelbord</translation>
 <translation id="3903696968689283281">Wi-fi-direk se eienaarinligting:</translation>
@@ -11834,6 +11836,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="9140050311673642960">Doen ’n diepgaande ondersoek van iets nuuts</translation>
 <translation id="9140067245205650184">Jy gebruik tans 'n ongesteunde kenmerkvlag: <ph name="BAD_FLAG" />. Stabiliteit en sekuriteit sal daaronder ly.</translation>
 <translation id="914031120300235526">Kan nie die profiel ontsluit nie</translation>
+<translation id="9142221601471715336">Laat los jou lêers hier</translation>
 <translation id="9142637293078737510">Prentalias</translation>
 <translation id="9143298529634201539">Verwyder voorstel?</translation>
 <translation id="9143922477019434797">Beskerm jou wagwoorde</translation>

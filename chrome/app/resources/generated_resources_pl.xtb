@@ -615,6 +615,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1414648216875402825">Aktualizujesz <ph name="PRODUCT_NAME" /> do niestabilnej wersji zawierającej funkcje, nad którymi wciąż pracujemy. Będą występować awarie i nieoczekiwane błędy. Zachowaj ostrożność.</translation>
 <translation id="1415708812149920388">Brak uprawnień do odczytu zawartości schowka</translation>
 <translation id="1415990189994829608">Rozszerzenie <ph name="EXTENSION_NAME" /> (identyfikator rozszerzenia „<ph name="EXTENSION_ID" />”) jest niedozwolone w tym typie sesji.</translation>
+<translation id="141720836055413739">Nie udało się przesłać.  Spróbuj użyć innego formatu pliku.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Usuń aplikację}few{Usuń aplikacje}many{Usuń aplikacje}other{Usuń aplikacje}}</translation>
 <translation id="1417497355604638350">Wysyłaj dane diagnostyczne i dane o korzystaniu.</translation>
 <translation id="1418552618736477642">Powiadomienia i aplikacje</translation>
@@ -1426,7 +1427,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1956167375087861299">Nie mogą używać identyfikatorów do odtwarzania treści chronionych</translation>
 <translation id="1956390763342388273">Spowoduje to przesłanie wszystkich plików z folderu „<ph name="FOLDER_PATH" />”. Zdecyduj się na ten krok tylko, jeśli ufasz witrynie.</translation>
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{Sprawdzono 1 rozszerzenie}few{Sprawdzono {NUM_EXTENSIONS} rozszerzenia}many{Sprawdzono {NUM_EXTENSIONS} rozszerzeń}other{Sprawdzono {NUM_EXTENSIONS} rozszerzenia}}</translation>
-<translation id="1957426642613794386">Twoje zapisane informacje</translation>
+<translation id="1957426642613794386">Twoje zapisane dane</translation>
 <translation id="1959421829481337178">Wpisz kod aktywacyjny podany przez operatora.</translation>
 <translation id="1960211333621141174">Klif</translation>
 <translation id="1962356719152496092">Dostosuj skrót klawiszowy tutaj</translation>
@@ -4246,6 +4247,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3898768766145818464">Odtwarzanie lub wstrzymywanie filmu</translation>
 <translation id="389901847090970821">Wybierz klawiaturę</translation>
 <translation id="3899457911440165602">Podczas usuwania certyfikatu wystąpił błąd</translation>
+<translation id="3900568190483700096">Prześlij maksymalnie <ph name="FILE_LIMIT" /> plików, które chcesz wykorzystać w pytaniu</translation>
 <translation id="3900966090527141178">Eksportuj hasła</translation>
 <translation id="3903187154317825986">Klawiatura wbudowana</translation>
 <translation id="3903696968689283281">Informacje o właścicielach Wi-Fi Direct:</translation>
@@ -11795,6 +11797,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9140050311673642960">Zgłębiaj nowe tematy</translation>
 <translation id="9140067245205650184">Korzystasz z nieobsługiwanej flagi funkcji: <ph name="BAD_FLAG" />. Ma to negatywny wpływ na stabilność i zabezpieczenia.</translation>
 <translation id="914031120300235526">Nie udało się odblokować profilu</translation>
+<translation id="9142221601471715336">Upuść pliki tutaj</translation>
 <translation id="9142637293078737510">Alias obrazu</translation>
 <translation id="9143298529634201539">Usunąć sugestię?</translation>
 <translation id="9143922477019434797">Chroń swoje hasła</translation>

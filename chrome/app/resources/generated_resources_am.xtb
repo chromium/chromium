@@ -614,6 +614,7 @@
 <translation id="1414648216875402825">በሂደት ላይ ያሉ ባህሪያትን የያዘ ያልተረጋጋ ወደሆነ የ<ph name="PRODUCT_NAME" /> ስሪት እያዘመኑ ነው። ብልሽቶች እና ያልተጠበቁ ሳንካዎች ያጋጥማሉ። እባክዎ በጥንቃቄ ይቀጥሉ።</translation>
 <translation id="1415708812149920388">የቅንጥብ ሰሌዳ መዳረሻ ተከልክሏል</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (የቅጥያ መታወቂያ «<ph name="EXTENSION_ID" />») በዚህ የክፍለ-ጊዜ ዓይነት ላይ አይፈቀድም።</translation>
+<translation id="141720836055413739">መስቀል አልተቻለም።  የተለየ የፋይል ቅርጸት ይሞክሩ።</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{መተግበሪያ አስወግድ}one{መተግበሪያዎችን አስወግድ}other{መተግበሪያዎችን አስወግድ}}</translation>
 <translation id="1417497355604638350">የምርመራ እና የአጠቃቀም ውሂብ ይላኩ።</translation>
 <translation id="1418552618736477642">ማሳወቂያዎች እና መተግበሪያዎች</translation>
@@ -4275,6 +4276,7 @@
 <translation id="3898768766145818464">ቪዲዮን አጫውት ወይም ባለበት አቁም</translation>
 <translation id="389901847090970821">የቁልፍ ሰሌዳን ይምረጡ</translation>
 <translation id="3899457911440165602">የእውቅና ማረጋገጫን በመሰረዝ ላይ ስህተት</translation>
+<translation id="3900568190483700096">ከጥያቄዎ ጋር ለመጠቀም እስከ <ph name="FILE_LIMIT" /> ፋይሎችን ይስቀሉ</translation>
 <translation id="3900966090527141178">የይለፍ ቃላትን ወደ ውጭ ይላኩ</translation>
 <translation id="3903187154317825986">አብሮገነብ ቁልፍሰሌዳ</translation>
 <translation id="3903696968689283281">የWiFi Direct ባለቤቶች መረጃ፦</translation>
@@ -11837,6 +11839,7 @@ nil</translation>
 <translation id="9140050311673642960">ወደ አዲስ ነገር በጥልቀት ይግቡ</translation>
 <translation id="9140067245205650184">የማይደገፍ የባህሪ ጥቆማን እየተጠቀሙ ነው፦ <ph name="BAD_FLAG" />። እርጋታ እና ደህንነት ችግር ይደርስባቸዋል።</translation>
 <translation id="914031120300235526">መገለጫውን መክፈት አልተቻለም</translation>
+<translation id="9142221601471715336">ፋይሎችዎን እዚህ ጣል ያድርጉ</translation>
 <translation id="9142637293078737510">የምስል ተለዋጭ ስም</translation>
 <translation id="9143298529634201539">የአስተያየት ጥቆማ ይወገድ?</translation>
 <translation id="9143922477019434797">የእርስዎን የይለፍ ቃላት ይጠብቁ</translation>

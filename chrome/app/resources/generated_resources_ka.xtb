@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">თქვენ ანახლებთ <ph name="PRODUCT_NAME" />-ის არასტაბილურ ვერსიას, რომელიც შეიცავს პროგრესში მყოფ ფუნქციებს. ავარიები და მოულოდნელი შეცდომები მოხდება. გთხოვთ იმოქმედოთ სიფრთხილით.</translation>
 <translation id="1415708812149920388">გაცვლის ბუფერზე წვდომა უარყოფილია</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (გაფართოების ID „<ph name="EXTENSION_ID" />“) არ არის ნებადართული ამ ტიპის სესიაში.</translation>
+<translation id="141720836055413739">ატვირთვა ვერ ხერხდება.  ცადეთ სხვა ფაილის ფორმატი.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{აპის ამოშლა}other{აპების ამოშლა}}</translation>
 <translation id="1417497355604638350">დიაგნოსტიკური და გამოყენების მონაცემების გაგზავნა.</translation>
 <translation id="1418552618736477642">შეტყობინებები და აპები</translation>
@@ -4266,6 +4267,7 @@
 <translation id="3898768766145818464">ვიდეოს დაკვრა ან დაპაუზება</translation>
 <translation id="389901847090970821">აირჩიეთ კლავიატურა</translation>
 <translation id="3899457911440165602">სერტიფიკატის წაშლის შეცდომა</translation>
+<translation id="3900568190483700096">ატვირთეთ მაქსიმუმ <ph name="FILE_LIMIT" /> ფაილი თქვენს შეკითხვასთან დაკავშირებით</translation>
 <translation id="3900966090527141178">პაროლების ექსპორტი</translation>
 <translation id="3903187154317825986">ჩაშენებული კლავიატურა</translation>
 <translation id="3903696968689283281">Wi-Fi Direct მფლობელების ინფორმაცია:</translation>
@@ -11819,6 +11821,7 @@
 <translation id="9140050311673642960">ჩაუღრმავდით რაიმე ახალს</translation>
 <translation id="9140067245205650184">თქვენ იყენებთ მხარდაუჭერელი ფუნქციის ალამს: <ph name="BAD_FLAG" />. ეს იქონიებს უარყოფით გავლენას სტაბილურობასა და უსაფრთხოებაზე.</translation>
 <translation id="914031120300235526">პროფილის განბლოკვა ვერ მოხერხდა</translation>
+<translation id="9142221601471715336">ჩააგდეთ თქვენი ფაილები აქ</translation>
 <translation id="9142637293078737510">სურათების მეტსახელები</translation>
 <translation id="9143298529634201539">გსურთ შემოთავაზების ამოშლა?</translation>
 <translation id="9143922477019434797">დაიცავით თქვენი პაროლები</translation>

@@ -615,6 +615,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1414648216875402825">Provádíte upgrade na nestabilní verzi systému <ph name="PRODUCT_NAME" />, která obsahuje funkce ve fázi vývoje. Bude docházet k selháním a neočekávaným chybám. Pokračujte s nejvyšší opatrností.</translation>
 <translation id="1415708812149920388">Byl odmítnut přístup ke čtení obsahu schránky</translation>
 <translation id="1415990189994829608">Rozšíření <ph name="EXTENSION_NAME" /> (ID <ph name="EXTENSION_ID" />) není pro tento typ návštěvy povoleno.</translation>
+<translation id="141720836055413739">Soubor nelze nahrát.  Zkuste jiný formát souboru.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Odstranit aplikaci}few{Odstranit aplikace}many{Odstranit aplikace}other{Odstranit aplikace}}</translation>
 <translation id="1417497355604638350">Odesílat diagnostické údaje a údaje o využití.</translation>
 <translation id="1418552618736477642">Oznámení a aplikace</translation>
@@ -4266,6 +4267,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3898768766145818464">Přehrát nebo pozastavit video</translation>
 <translation id="389901847090970821">Vybrat klávesnici</translation>
 <translation id="3899457911440165602">Chyba při mazání certifikátu</translation>
+<translation id="3900568190483700096">Nahrajte soubory, které chcete s otázkou použít (až <ph name="FILE_LIMIT" />)</translation>
 <translation id="3900966090527141178">Export hesel</translation>
 <translation id="3903187154317825986">Vestavěná klávesnice</translation>
 <translation id="3903696968689283281">Informace o vlastnících WiFi Direct:</translation>
@@ -11820,6 +11822,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9140050311673642960">Ponořte se do něčeho nového</translation>
 <translation id="9140067245205650184">Používáte nepodporovaný příznak funkce: <ph name="BAD_FLAG" />. Bude to mít negativní vliv na stabilitu a zabezpečení.</translation>
 <translation id="914031120300235526">Profil nelze odemknout</translation>
+<translation id="9142221601471715336">Sem přetáhněte soubory</translation>
 <translation id="9142637293078737510">Alias obrazu</translation>
 <translation id="9143298529634201539">Odstranit návrh?</translation>
 <translation id="9143922477019434797">Chraňte svá hesla</translation>

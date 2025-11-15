@@ -3857,7 +3857,7 @@
 <translation id="7346048084945669753">有无关联：</translation>
 <translation id="7346062987309535530">餐具</translation>
 <translation id="7346081071264046066">“兴奋地答应出席婚礼”</translation>
-<translation id="7347640536700429009">卡上的姓名无效</translation>
+<translation id="7347640536700429009">持卡人姓名无效</translation>
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7353601530677266744">命令行</translation>
 <translation id="7359588939039777303">广告已被拦截。</translation>
@@ -4683,7 +4683,7 @@
 <translation id="8694684557210599098">添加车辆</translation>
 <translation id="8695996513186494922">要比较标签页吗？</translation>
 <translation id="8698428283892912525">Chrome 内置的安全功能可在您浏览网页时为您提供保护，例如 Google 安全浏览功能近期在您尝试访问的网站上<ph name="BEGIN_LINK" />发现了有害软件<ph name="END_LINK" />。</translation>
-<translation id="869891660844655955">截止日期</translation>
+<translation id="869891660844655955">失效日期</translation>
 <translation id="8699041776323235191">HID 设备</translation>
 <translation id="8699985386408839112">Kaku 1 信封</translation>
 <translation id="8702965365666568344">固定胶带</translation>
@@ -4837,7 +4837,7 @@
 <translation id="8968766641738584599">保存银行卡</translation>
 <translation id="8970887620466824814">出了点问题。</translation>
 <translation id="8971063699422889582">服务器的证书已过期。</translation>
-<translation id="8975012916872825179">包括电话号码、电子邮件地址和送货地址等信息</translation>
+<translation id="8975012916872825179">包括电话号码、邮箱和配送地址等信息</translation>
 <translation id="8975263830901772334">已打印的文件的名称</translation>
 <translation id="8982884016487650216">PDF 已加载完毕</translation>
 <translation id="8983369100812962543">现在，您可以调整应用大小</translation>

@@ -613,6 +613,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1414648216875402825"><ph name="PRODUCT_NAME" />’ning beqaror versiyasiga yangilanmoqdasiz, unda yakunlanmagan xususiyatlar bor. Qotib qolishlar va kamchiliklar uchraydi. Ehtiyotkorlik bilan davom eting.</translation>
 <translation id="1415708812149920388">Klipborddan o‘qishga ruxsat berilmagan</translation>
 <translation id="1415990189994829608">“<ph name="EXTENSION_NAME" />” (identifikatori: <ph name="EXTENSION_ID" />) kengaytmasidan bu turdagi seanslarda foydalanish taqiqlanadi</translation>
+<translation id="141720836055413739">Yuklash imkonsiz.  Boshqa fayl formatini sinang.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Ilovani olib tashlash}other{Ilovalarni olib tashlash}}</translation>
 <translation id="1417497355604638350">Diagnostika. va foydalanish statistikasini yuborish</translation>
 <translation id="1418552618736477642">Bildirishnomalar va ilovalar</translation>
@@ -4266,6 +4267,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3898768766145818464">Video ijrosi yoki pauza</translation>
 <translation id="389901847090970821">Klaviaturani tanlang</translation>
 <translation id="3899457911440165602">Sertifikatni oʻchirishda xato</translation>
+<translation id="3900568190483700096">Savolga biriktirish uchun <ph name="FILE_LIMIT" /> tagacha fayl yuklang</translation>
 <translation id="3900966090527141178">Parollarni eksport qilish</translation>
 <translation id="3903187154317825986">Ichki klaviatura</translation>
 <translation id="3903696968689283281">WiFi Direct egalari axboroti:</translation>
@@ -11819,6 +11821,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="9140050311673642960">Yangi narsalarni chuqur oʻrganing</translation>
 <translation id="9140067245205650184">Siz mos kelmaydigan bayroqcha funksiyasidan foydalanyapsiz: <ph name="BAD_FLAG" />. Barqarorlik va xavfsizlikka zarar yetishi mumkin.</translation>
 <translation id="914031120300235526">Profil qulfdan chiqarilmadi</translation>
+<translation id="9142221601471715336">Fayllarni shu yerga tashlang</translation>
 <translation id="9142637293078737510">Rasm nomi</translation>
 <translation id="9143298529634201539">Taklif olib tashlansinmi?</translation>
 <translation id="9143922477019434797">Parollarni himoyalang</translation>

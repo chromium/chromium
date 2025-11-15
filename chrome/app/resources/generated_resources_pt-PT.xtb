@@ -613,6 +613,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1414648216875402825">Está a atualizar para uma versão instável do <ph name="PRODUCT_NAME" /> que contém funcionalidades que estão em curso. Ocorrerão falhas e erros inesperados. Prossiga com cuidado.</translation>
 <translation id="1415708812149920388">Acesso de leitura à área de transferência negado</translation>
 <translation id="1415990189994829608">A extensão <ph name="EXTENSION_NAME" /> (ID da extensão "<ph name="EXTENSION_ID" />") não é permitida neste tipo de sessão.</translation>
+<translation id="141720836055413739">Não é possível carregar.  Experimente um formato de ficheiro diferente.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Remover app}other{Remover apps}}</translation>
 <translation id="1417497355604638350">Envie dados de diagnóstico e utilização.</translation>
 <translation id="1418552618736477642">Notificações e apps</translation>
@@ -4267,6 +4268,7 @@ Quer pará-lo?</translation>
 <translation id="3898768766145818464">Reproduzir ou pausar vídeo</translation>
 <translation id="389901847090970821">Selecionar teclado</translation>
 <translation id="3899457911440165602">Erro ao eliminar o certificado</translation>
+<translation id="3900568190483700096">Carregue até <ph name="FILE_LIMIT" /> ficheiros para usar com a sua pergunta</translation>
 <translation id="3900966090527141178">Exportar palavras-passe</translation>
 <translation id="3903187154317825986">Teclado incorporado</translation>
 <translation id="3903696968689283281">Informações dos proprietários do Wi-Fi Direct:</translation>
@@ -11824,6 +11826,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="9140050311673642960">Aprofunde algo novo</translation>
 <translation id="9140067245205650184">Está a utilizar um sinalizador de funcionalidade não suportado: <ph name="BAD_FLAG" />. A estabilidade e a segurança serão afetadas.</translation>
 <translation id="914031120300235526">Não é possível desbloquear o perfil</translation>
+<translation id="9142221601471715336">Largue os ficheiros aqui</translation>
 <translation id="9142637293078737510">Alias da imagem</translation>
 <translation id="9143298529634201539">Remover a sugestão?</translation>
 <translation id="9143922477019434797">Proteja as suas palavras-passe</translation>

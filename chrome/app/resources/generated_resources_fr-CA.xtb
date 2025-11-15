@@ -614,6 +614,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1414648216875402825">Vous passez à une version instable de <ph name="PRODUCT_NAME" /> qui contient des fonctionnalités en cours de développement. Des plantages et des bogues inattendus peuvent se produire. Nous vous recommandons d'agir avec précaution.</translation>
 <translation id="1415708812149920388">Accès en lecture au presse-papiers refusé</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (identifiant d'extension « <ph name="EXTENSION_ID" /> ») n'est pas autorisé dans ce type de session.</translation>
+<translation id="141720836055413739">Téléversement impossible.  Essayez un autre format de fichier.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Retirer l'application}one{Retirer l'application}other{Retirer les applications}}</translation>
 <translation id="1417497355604638350">Envoyer des données d'utilisation et de diagnostic.</translation>
 <translation id="1418552618736477642">Notifications et applications</translation>
@@ -4269,6 +4270,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="3898768766145818464">Lire ou mettre en pause la vidéo</translation>
 <translation id="389901847090970821">Sélectionner un clavier</translation>
 <translation id="3899457911440165602">Erreur lors de la suppression du certificat</translation>
+<translation id="3900568190483700096">Téléversez jusqu'à <ph name="FILE_LIMIT" /> fichiers à utiliser avec votre question</translation>
 <translation id="3900966090527141178">Exporter les mots de passe</translation>
 <translation id="3903187154317825986">Clavier intégré</translation>
 <translation id="3903696968689283281">Informations sur les propriétaires Wi-Fi direct :</translation>
@@ -11823,6 +11825,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="9140050311673642960">Explorez en détail quelque chose de nouveau</translation>
 <translation id="9140067245205650184">Vous utilisez un indicateur de fonctionnalité non pris en charge : <ph name="BAD_FLAG" />, ce qui va nuire à la stabilité et à la sécurité.</translation>
 <translation id="914031120300235526">Impossible de déverrouiller le profil</translation>
+<translation id="9142221601471715336">Déposez vos fichiers ici</translation>
 <translation id="9142637293078737510">Alias d'image</translation>
 <translation id="9143298529634201539">Supprimer la suggestion?</translation>
 <translation id="9143922477019434797">Protéger vos mots de passe</translation>

@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">คุณกำลังอัปเดตไปเป็น <ph name="PRODUCT_NAME" /> ในเวอร์ชันที่ไม่เสถียร ซึ่งมีฟีเจอร์ที่ยังอยู่ระหว่างดำเนินการ จะมีข้อขัดข้องและข้อบกพร่องที่ไม่คาดคิดเกิดขึ้น โปรดดำเนินการต่อด้วยความระมัดระวัง</translation>
 <translation id="1415708812149920388">การเข้าถึงการอ่านคลิปบอร์ดถูกปฏิเสธ</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (รหัสส่วนขยาย "<ph name="EXTENSION_ID" />") ไม่ได้รับอนุญาตในเซสชันประเภทนี้</translation>
+<translation id="141720836055413739">อัปโหลดไม่ได้  ลองใช้รูปแบบไฟล์อื่น</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{นำแอปออก}other{นำแอปออก}}</translation>
 <translation id="1417497355604638350">ส่งข้อมูลการวินิจฉัยและการใช้งาน</translation>
 <translation id="1418552618736477642">การแจ้งเตือนและแอป</translation>
@@ -4264,6 +4265,7 @@
 <translation id="3898768766145818464">เล่นหรือหยุดวิดีโอชั่วคราว</translation>
 <translation id="389901847090970821">เลือกแป้นพิมพ์</translation>
 <translation id="3899457911440165602">เกิดข้อผิดพลาดในการลบใบรับรอง</translation>
+<translation id="3900568190483700096">อัปโหลดไฟล์ได้สูงสุด <ph name="FILE_LIMIT" /> ไฟล์เพื่อใช้กับคำถาม</translation>
 <translation id="3900966090527141178">ส่งออกรหัสผ่าน</translation>
 <translation id="3903187154317825986">แป้นพิมพ์ในตัว</translation>
 <translation id="3903696968689283281">ข้อมูลเจ้าของ Wi-Fi Direct:</translation>
@@ -11814,6 +11816,7 @@
 <translation id="9140050311673642960">เจาะลึกสิ่งใหม่ๆ</translation>
 <translation id="9140067245205650184">คุณใช้แฟล็กฟีเจอร์ที่ระบบไม่สนับสนุน: <ph name="BAD_FLAG" /> ซึ่งจะส่งผลต่อความเสถียรและความปลอดภัย</translation>
 <translation id="914031120300235526">ปลดล็อกโปรไฟล์ไม่ได้</translation>
+<translation id="9142221601471715336">วางไฟล์ที่นี่</translation>
 <translation id="9142637293078737510">ชื่อแทนอิมเมจ</translation>
 <translation id="9143298529634201539">นำคำแนะนำออกไหม</translation>
 <translation id="9143922477019434797">ปกป้องรหัสผ่านของคุณ</translation>

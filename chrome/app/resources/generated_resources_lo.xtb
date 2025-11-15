@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">ທ່ານກໍາລັງອັບເດດເປັນ <ph name="PRODUCT_NAME" /> ລຸ້ນບໍ່ໝັ້ນທ່ຽງ ເຊິ່ງມີຄຸນສົມບັດທີ່ດໍາເນີນການຢູ່. ການຂັດຂ້ອງ ແລະບັນຫາທີ່ບໍ່ຄາດຄິດໄວ້ຈະເກີດຂຶ້ນ. ກະລຸນາດໍາເນີນການຕໍ່ດ້ວຍຄວາມລະມັດລະວັງ.</translation>
 <translation id="1415708812149920388">ການເຂົ້າອ່ານຄລິບບອດຖືກປະຕິເສດ</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_ID" />") ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ຢູ່ໃນຊ່ວງ​ເວລາ​​ເຂົ້າ​ໃຊ້ປະເພດນີ້.</translation>
+<translation id="141720836055413739">ບໍ່ສາມາດອັບໂຫຼດໄດ້.  ລອງໃຊ້ນາມສະກຸນໄຟລ໌ອື່ນ.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{ລຶບແອັບອອກ}other{ລຶບແອັບອອກ}}</translation>
 <translation id="1417497355604638350">ສົ່ງຂໍ້ມູນການວິນິໄສ ແລະ ການນຳໃຊ້.</translation>
 <translation id="1418552618736477642">ການແຈ້ງເຕືອນ ແລະ ແອັບ</translation>
@@ -4278,6 +4279,7 @@
 <translation id="3898768766145818464">ຫຼິ້ນ ຫຼື ຢຸດວິດີໂອຊົ່ວຄາວ</translation>
 <translation id="389901847090970821">ເລືອກແປ້ນພິມ</translation>
 <translation id="3899457911440165602">ເກີດຂໍ້ຜິດພາດໃນການລຶບໃບຮັບຮອງ</translation>
+<translation id="3900568190483700096">ອັບໂຫຼດສູງສຸດ <ph name="FILE_LIMIT" /> ໄຟລ໌ເພື່ອໃຊ້ກັບຄຳຖາມຂອງທ່ານ</translation>
 <translation id="3900966090527141178">ສົ່ງລະຫັດຜ່ານອອກ</translation>
 <translation id="3903187154317825986">ແປ້ນພິມໃນຕົວ</translation>
 <translation id="3903696968689283281">ຂໍ້ມູນເຈົ້າຂອງ Wi-Fi Direct:</translation>
@@ -11830,6 +11832,7 @@
 <translation id="9140050311673642960">ເຈາະເລິກສິ່ງໃໝ່ໆ</translation>
 <translation id="9140067245205650184">ທ່ານກຳລັງໃຊ້ທຸງຄຸນສົມບັດທີ່ບໍ່ຮອງຮັບ: <ph name="BAD_FLAG" />. ຄວາມສະຖຽນ ແລະ ຄວາມປອດໄພຈະໄດ້ຮັບຜົນກະທົບ.</translation>
 <translation id="914031120300235526">ບໍ່ສາມາດປົດລັອກໂປຣໄຟລ໌ໄດ້</translation>
+<translation id="9142221601471715336">ວາງໄຟລ໌ຂອງທ່ານບ່ອນນີ້</translation>
 <translation id="9142637293078737510">ນາມແຝງເວັບໄຊ</translation>
 <translation id="9143298529634201539">ລຶບການແນະນຳອອກບໍ?</translation>
 <translation id="9143922477019434797">ປົກປ້ອງລະຫັດຜ່ານຂອງທ່ານ</translation>

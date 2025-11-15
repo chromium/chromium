@@ -613,6 +613,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1414648216875402825"><ph name="PRODUCT_NAME" /> məhsulunun inkişafda olan qeyri-stabil versiyasını güncəlləşdirirsiniz. Gözlənilməyən xətalar ola bilər. Diqqətli olun.</translation>
 <translation id="1415708812149920388">Buferdəki kontenti oxumaq üçün giriş rədd edildi</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> ("<ph name="EXTENSION_ID" />") identifikasiyalı artırmaya bu tip sessiyada icazə verilmir.</translation>
+<translation id="141720836055413739">Yükləmək olmur.  Fərqli fayl formatı sınayın.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Tətbiqi silin}other{Tətbiqləri silin}}</translation>
 <translation id="1417497355604638350">Diaqnostika və istifadə datasını göndərin.</translation>
 <translation id="1418552618736477642">Bildirişlər və tətbiqlər</translation>
@@ -4269,6 +4270,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3898768766145818464">Videonu oxudun və ya durdurun</translation>
 <translation id="389901847090970821">Klaviatura seçin</translation>
 <translation id="3899457911440165602">Sertifikatı silərkən xəta baş verdi</translation>
+<translation id="3900568190483700096">Sualınızda istifadə etmək üçün maksimum <ph name="FILE_LIMIT" /> fayl yükləyin</translation>
 <translation id="3900966090527141178">Parolları eskport edin</translation>
 <translation id="3903187154317825986">Quraşdırılmış klaviatura</translation>
 <translation id="3903696968689283281">WiFi Direct sahib məlumatı:</translation>
@@ -11817,6 +11819,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="9140050311673642960">Yeni bir mövzuya dərindən nəzər salın</translation>
 <translation id="9140067245205650184">Dəstəklənməyən funksiya bayrağından istifadə edirsiniz: <ph name="BAD_FLAG" />. Stabillik və təhlükəsizlik zərər görəcək.</translation>
 <translation id="914031120300235526">Profil kilidini açmaq olmur</translation>
+<translation id="9142221601471715336">Faylları bura buraxın</translation>
 <translation id="9142637293078737510">Şəkil Ləqəbi</translation>
 <translation id="9143298529634201539">Təklif silinsin?</translation>
 <translation id="9143922477019434797">Parollarınızı qoruyun</translation>

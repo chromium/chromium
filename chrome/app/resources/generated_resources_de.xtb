@@ -613,6 +613,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1414648216875402825">Du aktualisierst auf eine instabile Version von <ph name="PRODUCT_NAME" />. Diese enthält Funktionen, die sich noch in der Entwicklung befinden. Es können Abstürze und unerwartete Fehler auftreten. Es ist daher besondere Vorsicht geboten.</translation>
 <translation id="1415708812149920388">Lesezugriff auf Zwischenablage verweigert</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (Erweiterungs-ID "<ph name="EXTENSION_ID" />") ist bei diesem Sitzungstyp nicht zulässig.</translation>
+<translation id="141720836055413739">Fehler beim Upload.  Versuche es mit einem anderen Dateiformat.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{App entfernen}other{Apps entfernen}}</translation>
 <translation id="1417497355604638350">Diagnose- und Nutzungsdaten senden.</translation>
 <translation id="1418552618736477642">Benachrichtigungen und Apps</translation>
@@ -4261,6 +4262,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3898768766145818464">Video abspielen oder pausieren</translation>
 <translation id="389901847090970821">Tastatur auswählen</translation>
 <translation id="3899457911440165602">Fehler beim Löschen des Zertifikats</translation>
+<translation id="3900568190483700096">Lade maximal <ph name="FILE_LIMIT" /> Dateien hoch, die du für deine Frage verwenden möchtest</translation>
 <translation id="3900966090527141178">Passwörter exportieren</translation>
 <translation id="3903187154317825986">Integrierte Tastatur</translation>
 <translation id="3903696968689283281">Informationen für Wi-Fi Direct-Inhaber:</translation>
@@ -11812,6 +11814,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9140050311673642960">Tief in etwas Neues eintauchen</translation>
 <translation id="9140067245205650184">Du verwendest eine nicht unterstützte Funktionsmarkierung: <ph name="BAD_FLAG" />. Dadurch werden Stabilität und Sicherheit beeinträchtigt.</translation>
 <translation id="914031120300235526">Profil kann nicht entsperrt werden</translation>
+<translation id="9142221601471715336">Dateien hier ablegen</translation>
 <translation id="9142637293078737510">Image-Alias</translation>
 <translation id="9143298529634201539">Vorschlag entfernen?</translation>
 <translation id="9143922477019434797">Passwörter schützen</translation>

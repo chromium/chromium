@@ -613,6 +613,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1414648216875402825">Bạn đang cập nhật lên phiên bản không chính thức <ph name="PRODUCT_NAME" /> chứa các tính năng hiện trong quá trình thử nghiệm. Các sự cố và lỗi không mong muốn sẽ xảy ra. Hãy thận trọng khi tiếp tục.</translation>
 <translation id="1415708812149920388">Đã từ chối quyền truy cập đọc bảng nhớ tạm</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID tiện ích "<ph name="EXTENSION_ID" />") không được cho phép trong loại phiên này.</translation>
+<translation id="141720836055413739">Không tải lên được.  Hãy thử một định dạng tệp khác.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Xóa Ứng dụng}other{Xóa các Ứng dụng}}</translation>
 <translation id="1417497355604638350">Gửi dữ liệu chẩn đoán và dữ liệu sử dụng.</translation>
 <translation id="1418552618736477642">Thông báo và ứng dụng</translation>
@@ -4279,6 +4280,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3898768766145818464">Phát hoặc tạm dừng video</translation>
 <translation id="389901847090970821">Chọn bàn phím</translation>
 <translation id="3899457911440165602">Lỗi khi xoá chứng chỉ</translation>
+<translation id="3900568190483700096">Tải tối đa <ph name="FILE_LIMIT" /> tệp lên để dùng cho câu hỏi của bạn</translation>
 <translation id="3900966090527141178">Xuất mật khẩu</translation>
 <translation id="3903187154317825986">Bàn phím tích hợp</translation>
 <translation id="3903696968689283281">Thông tin về chủ sở hữu trực tiếp của Wi-Fi:</translation>
@@ -10674,7 +10676,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8370294614544004647">Chuyển sang chế độ ngủ khi gập máy tính</translation>
 <translation id="8370419414641876532">Nhấp vào "Mật khẩu và tự động điền"</translation>
 <translation id="8371695176452482769">Nói ngay bây giờ</translation>
-<translation id="8371925839118813971">{NUM_TABS,plural, =1{Bật âm thanh trang web}other{Bật âm thanh các trang web}}</translation>
+<translation id="8371925839118813971">{NUM_TABS,plural, =1{Tắt âm thanh trang web}other{Tắt âm thanh các trang web}}</translation>
 <translation id="8372441176515901959">Loại bỏ yêu cầu</translation>
 <translation id="8372678064309688510">Địa chỉ của bạn đã được lưu</translation>
 <translation id="8373652277231415614">Thư mục do Crostini chia sẻ</translation>
@@ -11837,6 +11839,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="9140050311673642960">Tìm hiểu sâu về một điều mới mẻ</translation>
 <translation id="9140067245205650184">Bạn đang sử dụng cờ của tính năng không được hỗ trợ: <ph name="BAD_FLAG" />. Độ ổn định và tính bảo mật sẽ bị ảnh hưởng.</translation>
 <translation id="914031120300235526">Không thể mở khoá hồ sơ</translation>
+<translation id="9142221601471715336">Thả tệp vào đây</translation>
 <translation id="9142637293078737510">Bí danh hình ảnh</translation>
 <translation id="9143298529634201539">Xóa đề xuất?</translation>
 <translation id="9143922477019434797">Bảo vệ mật khẩu</translation>

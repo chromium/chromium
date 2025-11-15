@@ -185,7 +185,7 @@
 <translation id="1118738876271697201">系统未能确定设备型号或序列号。</translation>
 <translation id="111897705806685148">使用另一部设备中的通行密钥</translation>
 <translation id="1119447706177454957">内部错误</translation>
-<translation id="1122068467107743258">工作</translation>
+<translation id="1122068467107743258">工作单位</translation>
 <translation id="1122198203221319518">工具(&amp;T)</translation>
 <translation id="1122242684574577509">身份验证失败。请点击此处访问当前所用 Wi-Fi 网络（“<ph name="NETWORK_ID" />”）的登录页面。</translation>
 <translation id="1122587596907914265">风格独特的壁纸</translation>
@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">您即将更新到 <ph name="PRODUCT_NAME" />的不稳定版本，其中含有尚处于开发阶段的功能。系统可能会出现崩溃和意外错误。继续操作前，请三思。</translation>
 <translation id="1415708812149920388">已被禁止读取剪贴板</translation>
 <translation id="1415990189994829608">这类会话不允许使用“<ph name="EXTENSION_NAME" />”（扩展程序 ID 为“<ph name="EXTENSION_ID" />”）。</translation>
+<translation id="141720836055413739">无法上传，请尝试其他文件格式。</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{移除应用}other{移除应用}}</translation>
 <translation id="1417497355604638350">发送诊断数据和使用情况数据。</translation>
 <translation id="1418552618736477642">通知和应用</translation>
@@ -4256,6 +4257,7 @@
 <translation id="3898768766145818464">播放或暂停视频</translation>
 <translation id="389901847090970821">选择键盘</translation>
 <translation id="3899457911440165602">删除证书时出错</translation>
+<translation id="3900568190483700096">提问时最多可上传 <ph name="FILE_LIMIT" /> 个文件</translation>
 <translation id="3900966090527141178">导出密码</translation>
 <translation id="3903187154317825986">内置键盘</translation>
 <translation id="3903696968689283281">Wi-Fi 直连所有者信息：</translation>
@@ -11118,7 +11120,7 @@
 <translation id="8698269656364382265">要返回到上一个屏幕，请从屏幕左侧向右侧滑动。</translation>
 <translation id="8698432579173128320">备份到 Google 云端硬盘。您随时可以轻松地恢复数据或更换设备。备份内容包含应用数据。备份内容将上传到 Google 平台并使用您的 Google 账号密码进行加密。<ph name="BEGIN_LINK1" />详细了解备份<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">应用菜单</translation>
-<translation id="869891660844655955">截止日期</translation>
+<translation id="869891660844655955">失效日期</translation>
 <translation id="8699188901396699995">“<ph name="PRINTER_NAME" />”的 PPD</translation>
 <translation id="8699296325072357994">密码页面中的内容和相关信息会发送给 Google，并由人工审核员审核。您的密码已加密，不会向任何人显示。<ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700066369485012242">请告诉我们您允许在此网站上使用第三方 Cookie 的原因</translation>
@@ -11806,6 +11808,7 @@
 <translation id="9140050311673642960">深入探索新事物</translation>
 <translation id="9140067245205650184">您使用的是不受支持的功能标记：<ph name="BAD_FLAG" />。稳定性和安全性会有所下降。</translation>
 <translation id="914031120300235526">无法解锁该个人资料</translation>
+<translation id="9142221601471715336">请将文件拖放到此处</translation>
 <translation id="9142637293078737510">映像别名</translation>
 <translation id="9143298529634201539">要移除推荐内容吗？</translation>
 <translation id="9143922477019434797">保护您的密码</translation>
@@ -11914,7 +11917,7 @@
 <translation id="930991362911221750">允许“<ph name="APP_NAME" />”查看此标签页？</translation>
 <translation id="931273044114601262">允许在此网站上使用</translation>
 <translation id="93140074055951850">Android 应用被停止了</translation>
-<translation id="932327136139879170">首页</translation>
+<translation id="932327136139879170">家</translation>
 <translation id="932508678520956232">无法开始打印。</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{这个文件太大，无法进行安全检查。您只能上传不超过 50 MB 的文件。}other{这些文件中的部分文件太大，无法进行安全检查。您只能上传不超过 50 MB 的文件。}}</translation>
 <translation id="93343527085570547">如要依法提出内容更改请求，请前往<ph name="BEGIN_LINK1" />法律帮助页面<ph name="END_LINK1" />。系统可能会将部分账号和系统信息发送给 Google。我们会根据<ph name="BEGIN_LINK2" />隐私权政策<ph name="END_LINK2" />和<ph name="BEGIN_LINK3" />服务条款<ph name="END_LINK3" />使用您提供的信息，以解决技术问题并改进服务。</translation>

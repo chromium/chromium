@@ -613,6 +613,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1414648216875402825">Unasasisha kwenda toleo lisilo imara la <ph name="PRODUCT_NAME" /> ambalo lina vipengele ambavyo vinaendelea kuundwa. Hitilafu zisizotarajiwa na kuacha kufanya kazi kutatokea. Tafadhali endelea kwa tahadhari.</translation>
 <translation id="1415708812149920388">Haina idhini ya kusoma ubao wa kunakili</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (Kitambulisho cha kiendelezi "<ph name="EXTENSION_ID" />") hakiruhusiwi kwa kipindi cha aina hii.</translation>
+<translation id="141720836055413739">Imeshindwa kupakia.  Jaribu aina tofauti ya faili.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Ondoa programu}other{Ondoa programu}}</translation>
 <translation id="1417497355604638350">Tuma data ya matumizi na uchunguzi</translation>
 <translation id="1418552618736477642">Arifa na programu</translation>
@@ -4276,6 +4277,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3898768766145818464">Cheza au usitishe video</translation>
 <translation id="389901847090970821">Chagua kibodi</translation>
 <translation id="3899457911440165602">Hitilafu wakati wa kufuta cheti</translation>
+<translation id="3900568190483700096">Pakia hadi faili <ph name="FILE_LIMIT" /> ili utumie kwenye swali lako</translation>
 <translation id="3900966090527141178">Hamisha manenosiri</translation>
 <translation id="3903187154317825986">Kibodi iliyojumuishwa</translation>
 <translation id="3903696968689283281">Maelezo ya Seva Zinazounganisha Wi-Fi Direct:</translation>
@@ -11830,6 +11832,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="9140050311673642960">Gundua kitu kipya</translation>
 <translation id="9140067245205650184">Unatumia kitia alama cha kipengele kisichoruhusiwa: <ph name="BAD_FLAG" />. Uthabiti na usalama utaathirika.</translation>
 <translation id="914031120300235526">Imeshindwa kufungua wasifu</translation>
+<translation id="9142221601471715336">Dondosha faili zako hapa</translation>
 <translation id="9142637293078737510">Picha Mbadala</translation>
 <translation id="9143298529634201539">Ungependa kuondoa pendekezo?</translation>
 <translation id="9143922477019434797">Linda manenosiri yako</translation>

@@ -613,6 +613,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1414648216875402825">Stai per passare a una versione non stabile di <ph name="PRODUCT_NAME" /> che contiene funzioni ancora in fase di sviluppo. Si verificheranno arresti anomali e bug imprevisti. Procedi con cautela.</translation>
 <translation id="1415708812149920388">Accesso alla lettura degli appunti negato</translation>
 <translation id="1415990189994829608">L'estensione <ph name="EXTENSION_NAME" /> (ID estensione "<ph name="EXTENSION_ID" />") non è consentita in questo tipo di sessione.</translation>
+<translation id="141720836055413739">Caricamento non riuscito.  Prova con un formato file diverso.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Rimuovi app}other{Rimuovi app}}</translation>
 <translation id="1417497355604638350">Invia dati diagnostici e sull'utilizzo.</translation>
 <translation id="1418552618736477642">Notifiche e app</translation>
@@ -2658,7 +2659,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2799162042226656283">Il tuo Chrome</translation>
 <translation id="2799223571221894425">Riavvia</translation>
 <translation id="2800760947029405028">Carica un'immagine</translation>
-<translation id="2800996978423439835">Utilizza i tuoi Preferiti e altri dati su tutti i tuoi dispositivi</translation>
+<translation id="2800996978423439835">Trova i preferiti e altri dati su tutti i tuoi dispositivi</translation>
 <translation id="2801134910297796778">Accesso eseguito a <ph name="EMAIL" /></translation>
 <translation id="2801954693771979815">Dimensioni schermo</translation>
 <translation id="2802557211515765772">Nessuna stampante gestita disponibile.</translation>
@@ -4266,6 +4267,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3898768766145818464">Riproduci o metti in pausa il video</translation>
 <translation id="389901847090970821">Seleziona la tastiera</translation>
 <translation id="3899457911440165602">Errore durante l'eliminazione del certificato</translation>
+<translation id="3900568190483700096">Carica fino a <ph name="FILE_LIMIT" /> file da utilizzare con la tua domanda</translation>
 <translation id="3900966090527141178">Esporta password</translation>
 <translation id="3903187154317825986">Tastiera incorporata</translation>
 <translation id="3903696968689283281">Informazioni proprietari WiFi Direct:</translation>
@@ -11818,6 +11820,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9140050311673642960">Approfondisci qualcosa di nuovo</translation>
 <translation id="9140067245205650184">Stai utilizzando un flag di funzione non supportato: <ph name="BAD_FLAG" />. Stabilità e sicurezza ne risentiranno.</translation>
 <translation id="914031120300235526">Impossibile sbloccare il profilo</translation>
+<translation id="9142221601471715336">Trascina qui i file</translation>
 <translation id="9142637293078737510">Alias immagine</translation>
 <translation id="9143298529634201539">Rimuovere il suggerimento?</translation>
 <translation id="9143922477019434797">Proteggi le tue password</translation>

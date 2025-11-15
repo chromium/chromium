@@ -614,6 +614,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1414648216875402825">Você está atualizando para uma versão instável do <ph name="PRODUCT_NAME" /> que contém recursos que estão em fase de teste. Falhas e erros inesperados ocorrerão. Continue com cautela.</translation>
 <translation id="1415708812149920388">Acesso de leitura para a área de transferência negado</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID de extensão "<ph name="EXTENSION_ID" />") não é permitido neste tipo de sessão.</translation>
+<translation id="141720836055413739">Não foi possível fazer upload.  Tente usar outro formato de arquivo.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Remover app}one{Remover app}other{Remover apps}}</translation>
 <translation id="1417497355604638350">Enviar dados de uso e diagnóstico.</translation>
 <translation id="1418552618736477642">Notificações e apps</translation>
@@ -4280,6 +4281,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3898768766145818464">Iniciar ou pausar vídeo</translation>
 <translation id="389901847090970821">Selecionar teclado</translation>
 <translation id="3899457911440165602">Erro ao excluir o certificado</translation>
+<translation id="3900568190483700096">Faça upload de até <ph name="FILE_LIMIT" /> arquivos para usar com sua pergunta</translation>
 <translation id="3900966090527141178">Exportar senhas</translation>
 <translation id="3903187154317825986">Teclado integrado</translation>
 <translation id="3903696968689283281">Informações dos proprietários do Wi-Fi Direct:</translation>
@@ -8440,7 +8442,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Remover guia e excluir grupo?}=1{Remover guia e excluir grupo?}one{Remover guia e excluir grupo?}other{Remover guias e excluir grupo?}}</translation>
 <translation id="6833479554815567477">A guia foi removida do grupo <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Equilibrada (recomendado)</translation>
-<translation id="6835624277262316125">Seu endereço de trabalho pode ajudar você a realizar ações nos Serviços do Google, como receber resultados da Pesquisa e rotas do Google Maps mais relevantes. É possível editar ou excluir seu endereço na sua <ph name="BEGIN_LINK" />Conta do Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
+<translation id="6835624277262316125">Seu endereço do trabalho deixa os Serviços do Google, como receber resultados da Pesquisa e rotas do Google Maps, mais úteis e relevantes. Ele pode ser editado ou excluído na sua <ph name="BEGIN_LINK" />Conta do Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="6835762382653651563">Conecte-se à Internet para atualizar seu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838992358006915573">A lupa segue o foco do ChromeVox</translation>
 <translation id="6839916869147598086">O login mudou</translation>
@@ -9816,7 +9818,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
     Visível para dispositivos por perto, como o <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="7786889348652477777">&amp;Recarregar aplicativo</translation>
 <translation id="7787308148023287649">Exibir em outra tela</translation>
-<translation id="7789895198197042595">Seu endereço de casa pode ajudar você a realizar ações nos Serviços do Google, como receber resultados da Pesquisa e rotas do Google Maps mais relevantes. É possível editar ou excluir seu endereço na sua <ph name="BEGIN_LINK" />Conta do Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
+<translation id="7789895198197042595">Seu endereço de casa deixa os Serviços do Google, como receber resultados da Pesquisa e rotas do Google Maps, mais úteis e relevantes. Ele pode ser editado ou excluído na sua <ph name="BEGIN_LINK" />Conta do Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="7791269138074599214">Método de entrada</translation>
 <translation id="7791429245559955092">Esse app será instalado no perfil do Chrome usado no momento</translation>
 <translation id="7791436592012979144">Rolagem reversa ativada</translation>
@@ -11840,6 +11842,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9140050311673642960">Saiba mais sobre algo novo</translation>
 <translation id="9140067245205650184">Sinalizador de recurso incompatível usado: <ph name="BAD_FLAG" />. Estabilidade e segurança afetadas.</translation>
 <translation id="914031120300235526">Não é possível desbloquear o perfil</translation>
+<translation id="9142221601471715336">Solte seus arquivos aqui</translation>
 <translation id="9142637293078737510">Alias de imagem</translation>
 <translation id="9143298529634201539">Remover sugestão?</translation>
 <translation id="9143922477019434797">Proteger senhas</translation>

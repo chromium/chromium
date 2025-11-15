@@ -615,6 +615,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1414648216875402825">Ažurirate na nestabilnu verziju usluge <ph name="PRODUCT_NAME" /> koja sadrži značajke na kojima se još radi. Dolazit će do rušenja i neočekivanih programskih pogrešaka. Budite oprezni.</translation>
 <translation id="1415708812149920388">Odbijen pristup za čitanje međuspreminka</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID proširenja "<ph name="EXTENSION_ID" />") nije dopušten u ovoj vrsti sesije.</translation>
+<translation id="141720836055413739">Prijenos nije moguć.  Pokušajte s drugim formatom datoteke.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Ukloni aplikaciju}one{Ukloni aplikacije}few{Ukloni aplikacije}other{Ukloni aplikacije}}</translation>
 <translation id="1417497355604638350">Pošaljite dijagnostičke podatke i podatke o upotrebi.</translation>
 <translation id="1418552618736477642">Obavijesti i aplikacije</translation>
@@ -4268,6 +4269,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3898768766145818464">Pokrenite ili zaustavite videozapis</translation>
 <translation id="389901847090970821">Odaberite tipkovnicu</translation>
 <translation id="3899457911440165602">Pogreška pri brisanju certifikata</translation>
+<translation id="3900568190483700096">Prenesite najviše ovoliko datoteka za upotrebu s pitanjem: <ph name="FILE_LIMIT" /></translation>
 <translation id="3900966090527141178">Izvoz zaporki</translation>
 <translation id="3903187154317825986">Ugrađena tipkovnica</translation>
 <translation id="3903696968689283281">Informacije o vlasnicima izravnog Wi-Fija:</translation>
@@ -11825,6 +11827,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="9140050311673642960">Uronite u nešto novo</translation>
 <translation id="9140067245205650184">Upotrebljavate nepodržanu oznaku značajke: <ph name="BAD_FLAG" />. Ugrožena je stabilnost i sigurnost.</translation>
 <translation id="914031120300235526">Profil se ne može otključati</translation>
+<translation id="9142221601471715336">Ispustite datoteke ovdje</translation>
 <translation id="9142637293078737510">Alias slike</translation>
 <translation id="9143298529634201539">Želite li ukloniti prijedlog?</translation>
 <translation id="9143922477019434797">Zaštita zaporki</translation>

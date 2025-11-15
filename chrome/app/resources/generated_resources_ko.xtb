@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">개발 중인 기능을 포함하는 <ph name="PRODUCT_NAME" />의 불안정한 버전으로 업데이트합니다. 기기가 비정상 종료되거나 예기치 않은 버그가 발생할 수 있습니다. 주의해서 진행하시기 바랍니다.</translation>
 <translation id="1415708812149920388">클립 보드 읽기 액세스 거부됨</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" />(확장 프로그램 ID '<ph name="EXTENSION_ID" />')은(는) 이 세션 유형에서 허용되지 않습니다.</translation>
+<translation id="141720836055413739">업로드할 수 없습니다.  다른 파일 형식을 사용해 보세요.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{앱 삭제}other{앱 삭제}}</translation>
 <translation id="1417497355604638350">진단 및 사용 데이터 전송.</translation>
 <translation id="1418552618736477642">알림 및 앱</translation>
@@ -4281,6 +4282,7 @@
 <translation id="3898768766145818464">동영상 재생 또는 일시중지</translation>
 <translation id="389901847090970821">키보드 선택</translation>
 <translation id="3899457911440165602">인증서를 삭제하는 중에 오류가 발생했습니다</translation>
+<translation id="3900568190483700096">질문과 함께 사용할 최대 <ph name="FILE_LIMIT" />개의 파일을 업로드하세요.</translation>
 <translation id="3900966090527141178">비밀번호 내보내기</translation>
 <translation id="3903187154317825986">내장 키보드</translation>
 <translation id="3903696968689283281">Wi-Fi Direct 소유자 정보:</translation>
@@ -11836,6 +11838,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9140050311673642960">새로운 주제에 대해 자세히 알아보세요</translation>
 <translation id="9140067245205650184">지원되지 않는 기능 플래그(<ph name="BAD_FLAG" />)를 사용 중이므로 안정성과 보안에 문제가 발생합니다.</translation>
 <translation id="914031120300235526">프로필을 잠금 해제할 수 없음</translation>
+<translation id="9142221601471715336">여기에 파일을 드롭하세요</translation>
 <translation id="9142637293078737510">이미지 별칭</translation>
 <translation id="9143298529634201539">추천을 삭제하시겠습니까?</translation>
 <translation id="9143922477019434797">비밀번호 보호</translation>

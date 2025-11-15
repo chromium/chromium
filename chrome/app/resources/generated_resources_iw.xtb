@@ -615,6 +615,7 @@
 <translation id="1414648216875402825">עדכנת לגרסה לא יציבה של <ph name="PRODUCT_NAME" /> המכילה תכונות שנמצאות בתהליך. ייתכנו קריסות מחשב ובאגים לא צפויים. יש להמשיך בזהירות.</translation>
 <translation id="1415708812149920388">גישת הקריאה אל הלוח נדחתה</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (מזהה תוסף "<ph name="EXTENSION_ID" />") אסור בסוג ההפעלה הזה.</translation>
+<translation id="141720836055413739">לא ניתן להעלות את הקובץ.  כדאי לנסות פורמט קובץ אחר.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{הסרת האפליקציה}one{הסרת האפליקציות}two{הסרת האפליקציות}other{הסרת האפליקציות}}</translation>
 <translation id="1417497355604638350">שליחה של נתוני אבחון ונתוני שימוש במכשיר.</translation>
 <translation id="1418552618736477642">התראות ואפליקציות</translation>
@@ -4278,6 +4279,7 @@
 <translation id="3898768766145818464">הפעלה או השהיה של הסרטון</translation>
 <translation id="389901847090970821">בחירת מקלדת</translation>
 <translation id="3899457911440165602">אירעה שגיאה במחיקת האישור</translation>
+<translation id="3900568190483700096">אפשר להעלות עד <ph name="FILE_LIMIT" /> קבצים כדי להשתמש בהם בשאלה</translation>
 <translation id="3900966090527141178">ייצוא סיסמאות</translation>
 <translation id="3903187154317825986">מקלדת מובנית</translation>
 <translation id="3903696968689283281">‏פרטי הבעלים של Wi-Fi ישיר:</translation>
@@ -11843,6 +11845,7 @@
 <translation id="9140050311673642960">הגיע הזמן להתעמק במשהו חדש</translation>
 <translation id="9140067245205650184">נעשה שימוש בתכונה ניסיונית שאינה נתמכת: <ph name="BAD_FLAG" />. היציבות והאבטחה ייפגעו.</translation>
 <translation id="914031120300235526">לא ניתן לבטל את הנעילה של הפרופיל</translation>
+<translation id="9142221601471715336">אפשר לשחרר את הקבצים כאן</translation>
 <translation id="9142637293078737510">הכינוי של קובץ האימג'</translation>
 <translation id="9143298529634201539">האם להסיר את ההצעה?</translation>
 <translation id="9143922477019434797">הגנה על הסיסמאות</translation>

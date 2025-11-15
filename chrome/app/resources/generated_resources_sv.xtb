@@ -613,6 +613,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1414648216875402825">Du uppdaterar till en instabil version av <ph name="PRODUCT_NAME" /> som innehåller funktioner som inte är klara. Du kommer att råka ut för kraschar och oväntade buggar. Var försiktig.</translation>
 <translation id="1415708812149920388">Läsbehörighet till Urklipp nekades</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (tilläggs-id <ph name="EXTENSION_ID" />) får inte användas i den här typen av session.</translation>
+<translation id="141720836055413739">Det gick inte att ladda upp.  Testa med ett annat filformat.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Ta bort appen}other{Ta bort appar}}</translation>
 <translation id="1417497355604638350">Skicka diagnostik- och användningsdata.</translation>
 <translation id="1418552618736477642">Aviseringar och appar</translation>
@@ -4279,6 +4280,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3898768766145818464">Spela upp eller pausa video</translation>
 <translation id="389901847090970821">Välj tangentbord</translation>
 <translation id="3899457911440165602">Fel vid radering av certifikatet</translation>
+<translation id="3900568190483700096">Ladda upp upp till <ph name="FILE_LIMIT" /> filer som du vill använda med din fråga</translation>
 <translation id="3900966090527141178">Exportera lösenord</translation>
 <translation id="3903187154317825986">Inbyggt tangentbord</translation>
 <translation id="3903696968689283281">Information om WiFi Direct-ägare:</translation>
@@ -11835,6 +11837,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="9140050311673642960">Fördjupa dig i något nytt</translation>
 <translation id="9140067245205650184">Du använder en funktionsflagga som inte stöds: <ph name="BAD_FLAG" />. Detta påverkar stabilitet och säkerhet negativt.</translation>
 <translation id="914031120300235526">Det går inte att låsa upp profilen</translation>
+<translation id="9142221601471715336">Släpp dina filer här</translation>
 <translation id="9142637293078737510">Alias för bild</translation>
 <translation id="9143298529634201539">Vill du ta bort förslaget?</translation>
 <translation id="9143922477019434797">Skydda dina lösenord</translation>

@@ -613,6 +613,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1414648216875402825">Vas a actualizar a una versión inestable de <ph name="PRODUCT_NAME" /> que incluye funciones que están en desarrollo. Se producirán fallos y errores inesperados. Utiliza esta versión con precaución.</translation>
 <translation id="1415708812149920388">Se ha denegado el acceso de lectura al portapapeles</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID de extensión "<ph name="EXTENSION_ID" />") no se puede utilizar en este tipo de sesión.</translation>
+<translation id="141720836055413739">No se puede subir.  Prueba con otro formato de archivo.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Quitar aplicación}other{Quitar aplicaciones}}</translation>
 <translation id="1417497355604638350">Envía datos de diagnóstico y uso.</translation>
 <translation id="1418552618736477642">Notificaciones y aplicaciones</translation>
@@ -4267,6 +4268,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3898768766145818464">Reproducir o pausar vídeo</translation>
 <translation id="389901847090970821">Seleccionar teclado</translation>
 <translation id="3899457911440165602">No se ha podido eliminar el certificado</translation>
+<translation id="3900568190483700096">Sube hasta <ph name="FILE_LIMIT" /> archivos para usarlos con tu pregunta</translation>
 <translation id="3900966090527141178">Exportar contraseñas</translation>
 <translation id="3903187154317825986">Teclado integrado</translation>
 <translation id="3903696968689283281">Información de propietarios de Wi-Fi Direct:</translation>
@@ -11820,6 +11822,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="9140050311673642960">Profundiza en algo nuevo</translation>
 <translation id="9140067245205650184">Estás usando una marca de función no admitida (<ph name="BAD_FLAG" />), lo que afectará a la estabilidad y la seguridad.</translation>
 <translation id="914031120300235526">No se puede desbloquear el perfil</translation>
+<translation id="9142221601471715336">Suelta los archivos aquí</translation>
 <translation id="9142637293078737510">Alias de imagen</translation>
 <translation id="9143298529634201539">¿Eliminar la sugerencia?</translation>
 <translation id="9143922477019434797">Protege tus contraseñas</translation>

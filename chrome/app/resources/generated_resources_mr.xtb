@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">तुम्ही <ph name="PRODUCT_NAME" /> च्या अस्थिर आवृत्तीवर अपडेट करत आहात ज्यात प्रगतीपथावर असलेली वैशिष्ट्ये आहेत. क्रॅश आणि अनपेक्षित दोष आढळतील. कृपया सावधगिरीसह पुढे जा.</translation>
 <translation id="1415708812149920388">क्लिपबोर्डचा रीड अ‍ॅक्सेस नाकारला</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> ("<ph name="EXTENSION_ID" />" एक्स्टेंशन ID) या प्रकारच्या सेशनमध्ये अनुमती नाही.</translation>
+<translation id="141720836055413739">अपलोड करू शकत नाही.  वेगळा फाइल फॉरमॅट वापरून पहा.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{ॲप काढून टाका}other{ॲप्‍स काढून टाका}}</translation>
 <translation id="1417497355604638350">निदान आणि वापर डेटा पाठवा.</translation>
 <translation id="1418552618736477642">सूचना आणि अ‍ॅप्स</translation>
@@ -4279,6 +4280,7 @@
 <translation id="3898768766145818464">व्हिडिओ प्ले करा किंवा थांबवा</translation>
 <translation id="389901847090970821">कीबोर्ड निवडा</translation>
 <translation id="3899457911440165602">सर्टिफिकेट हटवताना एरर आली</translation>
+<translation id="3900568190483700096">तुमच्या प्रश्नासोबत वापरण्यासाठी कमाल <ph name="FILE_LIMIT" /> फाइल अपलोड करा</translation>
 <translation id="3900966090527141178">पासवर्ड एक्सपोर्ट करा</translation>
 <translation id="3903187154317825986">बिल्ट-इन कीबोर्ड</translation>
 <translation id="3903696968689283281">वायफाय डिरेक्ट च्या मालकांसंबंधित माहिती:</translation>
@@ -11837,6 +11839,7 @@ I feel - विटांची इमारत</translation>
 <translation id="9140050311673642960">काहीतरी नवीन तपशीलवार जाणून घ्या</translation>
 <translation id="9140067245205650184">तुम्ही एक सपोर्ट नसलेला वैशिष्ट्य फ्लॅग वापरत आहात: <ph name="BAD_FLAG" />. स्थिरता आणि सुरक्षा प्रभावित होईल.</translation>
 <translation id="914031120300235526">प्रोफाइल अनलॉक करू शकत नाही</translation>
+<translation id="9142221601471715336">तुमच्या फाइल इथे ड्रॉप करा</translation>
 <translation id="9142637293078737510">इमेजचे उपनाव</translation>
 <translation id="9143298529634201539">सूचना काढून टाकायची का?</translation>
 <translation id="9143922477019434797">तुमचे पासवर्ड संरक्षित करा</translation>

@@ -613,6 +613,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1414648216875402825">Esteu a punt de passar a una versió inestable de <ph name="PRODUCT_NAME" /> que conté funcions en curs. Es produiran bloqueigs i errors inesperats. Continueu amb precaució.</translation>
 <translation id="1415708812149920388">S'ha denegat l'accés de lectura al porta-retalls</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (amb identificador d'extensió "<ph name="EXTENSION_ID" />") no es permet en aquest tipus de sessions.</translation>
+<translation id="141720836055413739">No es pot penjar.  Prova un altre format de fitxer.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Suprimeix l'aplicació}other{Suprimeix les aplicacions}}</translation>
 <translation id="1417497355604638350">Envia dades de diagnòstic i d'ús.</translation>
 <translation id="1418552618736477642">Notificacions i aplicacions</translation>
@@ -4264,6 +4265,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3898768766145818464">Reprodueix o posa en pausa el vídeo</translation>
 <translation id="389901847090970821">Selecciona el teclat</translation>
 <translation id="3899457911440165602">Error en suprimir el certificat</translation>
+<translation id="3900568190483700096">Penja fins a <ph name="FILE_LIMIT" /> fitxers per utilitzar-los amb la teva pregunta</translation>
 <translation id="3900966090527141178">Exporta les contrasenyes</translation>
 <translation id="3903187154317825986">Teclat integrat</translation>
 <translation id="3903696968689283281">Informació dels propietaris directes de la Wi-Fi:</translation>
@@ -11817,6 +11819,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9140050311673642960">Endinsa't en alguna cosa nova</translation>
 <translation id="9140067245205650184">Utilitzes una marca de funció que no és compatible: <ph name="BAD_FLAG" />. Se'n ressentiran l'estabilitat i la seguretat.</translation>
 <translation id="914031120300235526">No es pot desbloquejar el perfil</translation>
+<translation id="9142221601471715336">Deixa anar els fitxers aquí</translation>
 <translation id="9142637293078737510">Àlies de la imatge</translation>
 <translation id="9143298529634201539">Vols suprimir el suggeriment?</translation>
 <translation id="9143922477019434797">Protegeix les teves contrasenyes</translation>

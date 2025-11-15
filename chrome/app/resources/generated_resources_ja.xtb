@@ -185,7 +185,7 @@
 <translation id="1118738876271697201">デバイスの機種またはシリアル番号を特定できませんでした。</translation>
 <translation id="111897705806685148">別のデバイスのパスキーを使用</translation>
 <translation id="1119447706177454957">内部エラー</translation>
-<translation id="1122068467107743258">仕事</translation>
+<translation id="1122068467107743258">職場</translation>
 <translation id="1122198203221319518">ツール(&amp;T)</translation>
 <translation id="1122242684574577509">認証できませんでした。クリックして、ご利用の Wi-Fi ネットワーク（<ph name="NETWORK_ID" />）のログインページにアクセスしてください。</translation>
 <translation id="1122587596907914265">ユニークな壁紙にカスタマイズ</translation>
@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">アップデートしようとしているバージョンの <ph name="PRODUCT_NAME" /> には開発中の機能が含まれており、不安定です。クラッシュや予期しないバグが発生します。続行する場合は十分にご注意ください。</translation>
 <translation id="1415708812149920388">クリップボードの読み取りアクセスが拒否されました</translation>
 <translation id="1415990189994829608">このタイプのセッションでは、<ph name="EXTENSION_NAME" />（拡張機能 ID「<ph name="EXTENSION_ID" />」）は使用できません。</translation>
+<translation id="141720836055413739">アップロードできません。別のファイル形式をお試しください。</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{アプリを削除}other{アプリを削除}}</translation>
 <translation id="1417497355604638350">診断データと使用状況データを送信します。</translation>
 <translation id="1418552618736477642">通知とアプリ</translation>
@@ -4258,6 +4259,7 @@
 <translation id="3898768766145818464">動画を再生、一時停止</translation>
 <translation id="389901847090970821">キーボードを選択</translation>
 <translation id="3899457911440165602">証明書の削除エラー</translation>
+<translation id="3900568190483700096">質問で使用するファイルを <ph name="FILE_LIMIT" /> 個までアップロードできます</translation>
 <translation id="3900966090527141178">パスワードをエクスポート</translation>
 <translation id="3903187154317825986">デバイス内蔵キーボード</translation>
 <translation id="3903696968689283281">Wi-Fi Direct 所有者情報:</translation>
@@ -11804,6 +11806,7 @@
 <translation id="9140050311673642960">新しいことを深く掘り下げます</translation>
 <translation id="9140067245205650184">サポートされていない機能フラグ <ph name="BAD_FLAG" /> が使用されています。これにより、安全性とセキュリティが損なわれます。</translation>
 <translation id="914031120300235526">プロフィールのロックを解除できません</translation>
+<translation id="9142221601471715336">ここにファイルをドロップ</translation>
 <translation id="9142637293078737510">イメージ エイリアス</translation>
 <translation id="9143298529634201539">候補を削除しますか？</translation>
 <translation id="9143922477019434797">パスワードを保護する</translation>
@@ -11912,7 +11915,7 @@
 <translation id="930991362911221750">このタブの表示を <ph name="APP_NAME" /> に許可しますか？</translation>
 <translation id="931273044114601262">このサイトで許可されています</translation>
 <translation id="93140074055951850">Android アプリを停止しました</translation>
-<translation id="932327136139879170">ホーム</translation>
+<translation id="932327136139879170">自宅</translation>
 <translation id="932508678520956232">印刷を開始できませんでした。</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{このファイルはセキュリティ チェックには大きすぎます。アップロードできるファイルの最大サイズは 50 MB です。}other{一部のファイルがセキュリティ チェックには大きすぎます。アップロードできるファイルの最大サイズは 50 MB です。}}</translation>
 <translation id="93343527085570547">法的な理由でコンテンツの変更をリクエストするには、<ph name="BEGIN_LINK1" />法的な問題に関するヘルプページ<ph name="END_LINK1" />にアクセスしてください。リクエストの際、アカウントとシステムに関する情報の一部が Google に送信される場合があります。Google は受け取った情報を、Google の<ph name="BEGIN_LINK2" />プライバシー ポリシー<ph name="END_LINK2" />と<ph name="BEGIN_LINK3" />利用規約<ph name="END_LINK3" />に従って、技術的な問題への対処やサービスの改善に使用します。</translation>

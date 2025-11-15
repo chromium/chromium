@@ -614,6 +614,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="1414648216875402825">Ubuyekezela kunguqulo engazinzile ye-<ph name="PRODUCT_NAME" /> equkethe izici eziqhubekayo. Ukuphahlazeka namaphutha angalindelekile kuzovela. Sicela uqhubeke ngokuqaphela.</translation>
 <translation id="1415708812149920388">Ukufinyelela ukufunda kubhodi lokunamathisela kunqatshelwe</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (I-ID yesandiso se-"<ph name="EXTENSION_ID" />") ayivunyelwe kule nhlobo yeseshini.</translation>
+<translation id="141720836055413739">Awukwazi ukulayisha.  Zama ifomethi yefayela ehlukile.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Susa i-app}one{Susa ama-app}other{Susa ama-app}}</translation>
 <translation id="1417497355604638350">Thumela idatha yokuxilonga neyokusetshenziswa.</translation>
 <translation id="1418552618736477642">Izaziso nama-app</translation>
@@ -4280,6 +4281,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3898768766145818464">Dlala noma misa kancane ividiyo</translation>
 <translation id="389901847090970821">Khetha ikhibhodi</translation>
 <translation id="3899457911440165602">Iphutha lokusula isitifiketi</translation>
+<translation id="3900568190483700096">Layisha amafayela angafika kwangu-<ph name="FILE_LIMIT" /> ukuze uwasebenzise nombuzo wakho</translation>
 <translation id="3900966090527141178">Thumela amaphasiwedi</translation>
 <translation id="3903187154317825986">Ikhibhodi eyakhelwe ngaphakathi</translation>
 <translation id="3903696968689283281">Ulwazi Lomnikazi Oqondile lwe-WiFi:</translation>
@@ -11837,6 +11839,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="9140050311673642960">Ngena ujule kokuthile okusha</translation>
 <translation id="9140067245205650184">Usebenzisa umaka wesici ongasekelwa: <ph name="BAD_FLAG" />. Ukuqina nokuphepha kuzobabucayi.</translation>
 <translation id="914031120300235526">Ayikwazi ukuvula iphrofayela</translation>
+<translation id="9142221601471715336">Dedela amafayela akho lapha</translation>
 <translation id="9142637293078737510">Isithombe Sesibizo</translation>
 <translation id="9143298529634201539">Susa isiphakamiso?</translation>
 <translation id="9143922477019434797">Vikela amaphasiwedi akho</translation>

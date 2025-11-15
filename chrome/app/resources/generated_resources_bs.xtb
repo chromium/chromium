@@ -615,6 +615,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1414648216875402825">Upravo ažurirate <ph name="PRODUCT_NAME" /> na nestabilnu verziju koja sadrži funkcije trenutno u upotrebi. Doći će do padova softvera i neočekivanih grešaka. Budite pažljivi.</translation>
 <translation id="1415708812149920388">Pristup čitanju međumemorije je odbijen</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID ekstenzije "<ph name="EXTENSION_ID" />") nije dozvoljen u ovoj vrsti sesije.</translation>
+<translation id="141720836055413739">Nije moguće otpremiti.  Pokušajte s drugim formatom fajla.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Ukloni aplikaciju}one{Ukloni aplikacije}few{Ukloni aplikacije}other{Ukloni aplikacije}}</translation>
 <translation id="1417497355604638350">Pošaljite dijagnostiku i podatke o korištenju.</translation>
 <translation id="1418552618736477642">Obavještenja i aplikacije</translation>
@@ -4278,6 +4279,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3898768766145818464">Reproduciranje ili pauziranje videozapisa</translation>
 <translation id="389901847090970821">Odaberite tastaturu</translation>
 <translation id="3899457911440165602">Došlo je do greške prilikom brisanja certifikata</translation>
+<translation id="3900568190483700096">Otpremite do <ph name="FILE_LIMIT" /> fajl(ov)a koje ćete koristiti s pitanjem</translation>
 <translation id="3900966090527141178">Izvezite lozinke</translation>
 <translation id="3903187154317825986">Ugrađena tastatura</translation>
 <translation id="3903696968689283281">Informacije o vlasnicima WiFi Directa:</translation>
@@ -11840,6 +11842,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="9140050311673642960">Detaljno istražite nešto novo</translation>
 <translation id="9140067245205650184">Koristite nepodržanu oznaku za funkciju: <ph name="BAD_FLAG" />. Ovo će uticati na stabilnost i sigurnost.</translation>
 <translation id="914031120300235526">Nije moguće otključati profil</translation>
+<translation id="9142221601471715336">Ispustite fajlove ovdje</translation>
 <translation id="9142637293078737510">Pseudonim za sliku</translation>
 <translation id="9143298529634201539">Ukloniti prijedlog?</translation>
 <translation id="9143922477019434797">Zaštitite svoje lozinke</translation>

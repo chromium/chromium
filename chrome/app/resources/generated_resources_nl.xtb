@@ -613,6 +613,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1414648216875402825">Je voert een upgrade uit naar een instabiele versie van <ph name="PRODUCT_NAME" />, die opties bevat die nog in ontwikkeling zijn. Crashes en onverwachte fouten zullen optreden. Ga voorzichtig te werk.</translation>
 <translation id="1415708812149920388">Leestoegang voor klembord geweigerd</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (extensie-ID '<ph name="EXTENSION_ID" />') is niet toegestaan in dit type sessie.</translation>
+<translation id="141720836055413739">Kan niet uploaden.  Probeer een andere bestandsindeling.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{App verwijderen}other{Apps verwijderen}}</translation>
 <translation id="1417497355604638350">Diagnostische en gebruiksgegevens sturen</translation>
 <translation id="1418552618736477642">Meldingen en apps</translation>
@@ -4264,6 +4265,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3898768766145818464">Video afspelen of onderbreken</translation>
 <translation id="389901847090970821">Toetsenbord selecteren</translation>
 <translation id="3899457911440165602">Fout bij verwijderen van certificaat</translation>
+<translation id="3900568190483700096">Upload maximaal <ph name="FILE_LIMIT" /> bestanden om te gebruiken bij je vraag</translation>
 <translation id="3900966090527141178">Wachtwoorden exporteren</translation>
 <translation id="3903187154317825986">Geïntegreerd toetsenbord</translation>
 <translation id="3903696968689283281">Informatie over Wifi Direct-eigenaren:</translation>
@@ -11814,6 +11816,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9140050311673642960">Duik diep in iets nieuws</translation>
 <translation id="9140067245205650184">Je gebruikt een niet-ondersteunde functiemarkering: <ph name="BAD_FLAG" />. De stabiliteit en beveiliging zullen hieronder lijden.</translation>
 <translation id="914031120300235526">Kan het profiel niet ontgrendelen</translation>
+<translation id="9142221601471715336">Sleep je bestanden hierheen</translation>
 <translation id="9142637293078737510">Afbeeldingsalias</translation>
 <translation id="9143298529634201539">Suggestie verwijderen?</translation>
 <translation id="9143922477019434797">Bescherm je wachtwoorden</translation>

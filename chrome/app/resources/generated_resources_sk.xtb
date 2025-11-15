@@ -615,6 +615,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1414648216875402825">Chystáte sa vykonať aktualizáciu na nestabilnú verziu prehliadača <ph name="PRODUCT_NAME" />, ktorá obsahuje funkcie vo vývoji. Bude dochádzať ku zlyhaniam a neočakávaným chybám. Postupujte opatrne.</translation>
 <translation id="1415708812149920388">Bol zakázaný prístup k čítaniu obsahu schránky</translation>
 <translation id="1415990189994829608">Rozšírenie <ph name="EXTENSION_NAME" /> (ID rozšírenia <ph name="EXTENSION_ID" />) nie je v tomto type relácie povolené.</translation>
+<translation id="141720836055413739">Nedá sa nahrať.  Skúste iný formát súboru.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Odstrániť aplikáciu}few{Odstrániť aplikácie}many{Odstrániť aplikácie}other{Odstrániť aplikácie}}</translation>
 <translation id="1417497355604638350">Odosielajte diagnostiky a údaje o využití.</translation>
 <translation id="1418552618736477642">Upozornenia a aplikácie</translation>
@@ -4268,6 +4269,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3898768766145818464">Prehrať alebo pozastaviť video</translation>
 <translation id="389901847090970821">Výber klávesnice</translation>
 <translation id="3899457911440165602">Pri odstraňovaní certifikátu sa vyskytla chyba</translation>
+<translation id="3900568190483700096">Nahrajte najviac <ph name="FILE_LIMIT" /> súb., ktoré chcete použiť s otázkou</translation>
 <translation id="3900966090527141178">Exportovanie hesiel</translation>
 <translation id="3903187154317825986">Vstavaná klávesnica</translation>
 <translation id="3903696968689283281">Informácie o vlastníkoch siete Wi‐Fi Direct:</translation>
@@ -11827,6 +11829,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="9140050311673642960">Ponorte sa do niečoho nového</translation>
 <translation id="9140067245205650184">Používate nepodporovaný príznak funkcie: <ph name="BAD_FLAG" />. Prejaví sa to na nižšej stabilite a horšom zabezpečení</translation>
 <translation id="914031120300235526">Profil sa nepodarilo odomknúť</translation>
+<translation id="9142221601471715336">Tu presuňte súbory</translation>
 <translation id="9142637293078737510">Alias obrázka</translation>
 <translation id="9143298529634201539">Chcete odstrániť návrh?</translation>
 <translation id="9143922477019434797">Chráňte si heslá</translation>

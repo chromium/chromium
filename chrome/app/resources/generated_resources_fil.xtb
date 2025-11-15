@@ -614,6 +614,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1414648216875402825">Iyong ina-update ang isang hindi matatag na bersyon ng <ph name="PRODUCT_NAME" /> na naglalaman ng mga tampok na kasalukuyang isinasagawa. Magkakaroon ng mga pag-crash at hindi inaasahang mga bug. Mangyaring magpatuloy nang may pag-iingat.</translation>
 <translation id="1415708812149920388">Tinanggihan ang read access sa clipboard</translation>
 <translation id="1415990189994829608">Ang <ph name="EXTENSION_NAME" /> (extension ID "<ph name="EXTENSION_ID" />") ay hindi pinapayagan sa ganitong uri ng session.</translation>
+<translation id="141720836055413739">Hindi ma-upload.  Sumubok ng ibang format ng file.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Alisin ang app}one{Mag-alis ng mga app}other{Mag-alis ng mga app}}</translation>
 <translation id="1417497355604638350">Ipadala ang data ng diagnostics at paggamit</translation>
 <translation id="1418552618736477642">Mga notification at app</translation>
@@ -4280,6 +4281,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3898768766145818464">I-play o i-pause ang video</translation>
 <translation id="389901847090970821">Pumili ng keyboard</translation>
 <translation id="3899457911440165602">Nagka-error sa pag-delete ng certificate</translation>
+<translation id="3900568190483700096">Mag-upload ng hanggang <ph name="FILE_LIMIT" /> (na) file na gagamitin sa iyong tanong</translation>
 <translation id="3900966090527141178">I-export ang mga password</translation>
 <translation id="3903187154317825986">Built-in na Keyboard</translation>
 <translation id="3903696968689283281">Impormasyon ng Mga Direktang May-ari ng WiFi:</translation>
@@ -11841,6 +11843,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9140050311673642960">Alamin ang mga detalye ng isang bagong bagay</translation>
 <translation id="9140067245205650184">Gumagamit ka ng hindi sinusuportahang flag ng feature: <ph name="BAD_FLAG" />. Mababawasan ang stability at seguridad.</translation>
 <translation id="914031120300235526">Hindi ma-unlock ang profile</translation>
+<translation id="9142221601471715336">I-drop ang iyong mga file dito</translation>
 <translation id="9142637293078737510">Image Alias</translation>
 <translation id="9143298529634201539">Alisin ang suhestyon?</translation>
 <translation id="9143922477019434797">Protektahan ang iyong mga password</translation>

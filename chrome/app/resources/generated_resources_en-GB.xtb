@@ -613,6 +613,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1414648216875402825">You are updating to an unstable version of <ph name="PRODUCT_NAME" /> which contains features that are in progress. Crashes and unexpected bugs will occur. Please proceed with caution.</translation>
 <translation id="1415708812149920388">Clipboard read access denied</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (extension ID "<ph name="EXTENSION_ID" />") is not allowed in this type of session.</translation>
+<translation id="141720836055413739">Can't upload.  Try a different file format.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Remove app}other{Remove apps}}</translation>
 <translation id="1417497355604638350">Send diagnostic and usage data.</translation>
 <translation id="1418552618736477642">Notifications and apps</translation>
@@ -4279,6 +4280,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3898768766145818464">Play or pause video</translation>
 <translation id="389901847090970821">Select keyboard</translation>
 <translation id="3899457911440165602">Error deleting certificate</translation>
+<translation id="3900568190483700096">Upload up to <ph name="FILE_LIMIT" /> files to use with your question</translation>
 <translation id="3900966090527141178">Export passwords</translation>
 <translation id="3903187154317825986">Built-in keyboard</translation>
 <translation id="3903696968689283281">Wi-Fi direct owners info:</translation>
@@ -11835,6 +11837,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="9140050311673642960">Dive deep into something new</translation>
 <translation id="9140067245205650184">You are using an unsupported feature flag: <ph name="BAD_FLAG" />. Stability and security will suffer.</translation>
 <translation id="914031120300235526">Can't unlock the profile</translation>
+<translation id="9142221601471715336">Drop your files here</translation>
 <translation id="9142637293078737510">Image alias</translation>
 <translation id="9143298529634201539">Remove suggestion?</translation>
 <translation id="9143922477019434797">Protect your passwords</translation>

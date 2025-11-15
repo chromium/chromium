@@ -613,6 +613,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1414648216875402825">Du er i ferd med å oppdatere en ustabil versjon av <ph name="PRODUCT_NAME" />, som inneholder funksjoner som er under utvikling. Kræsjing og uventede feil kan oppstå. Fortsett med forsiktighet.</translation>
 <translation id="1415708812149920388">Lesetilgang til utklippstavlen er avvist</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (utvidelses-ID «<ph name="EXTENSION_ID" />») tillates ikke i denne typen økt.</translation>
+<translation id="141720836055413739">Kan ikke laste opp.  Prøv et annet filformat.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Fjern appen}other{Fjern appene}}</translation>
 <translation id="1417497355604638350">Send diagnostikk og bruksdata.</translation>
 <translation id="1418552618736477642">Varsler og apper</translation>
@@ -4273,6 +4274,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3898768766145818464">Spill av videoen eller sett den på pause</translation>
 <translation id="389901847090970821">Velg tastatur</translation>
 <translation id="3899457911440165602">Feil ved sletting av sertifikatet</translation>
+<translation id="3900568190483700096">Last opp opptil <ph name="FILE_LIMIT" /> filer som skal brukes med spørsmålet ditt</translation>
 <translation id="3900966090527141178">Eksportér passord</translation>
 <translation id="3903187154317825986">Innebygd tastatur</translation>
 <translation id="3903696968689283281">Informasjon om Wifi Direct-eiere:</translation>
@@ -11824,6 +11826,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9140050311673642960">Fordyp deg i noe nytt</translation>
 <translation id="9140067245205650184">Du bruker et funksjonsflagg som ikke støttes: <ph name="BAD_FLAG" />. Dette reduserer stabiliteten og sikkerheten.</translation>
 <translation id="914031120300235526">Kan ikke låse opp profilen</translation>
+<translation id="9142221601471715336">Slipp filene her</translation>
 <translation id="9142637293078737510">Avbildningsalias</translation>
 <translation id="9143298529634201539">Vil du fjerne forslaget?</translation>
 <translation id="9143922477019434797">Beskytt passordene dine</translation>

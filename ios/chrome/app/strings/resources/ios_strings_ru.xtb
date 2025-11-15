@@ -213,7 +213,7 @@
 <translation id="17906873777101817">Предл. сохр. пароли и ключи доступа</translation>
 <translation id="1794893174442046596">Группа вкладок</translation>
 <translation id="1807893857950749072">Включить уведомления об изменении цены</translation>
-<translation id="1809929083618343438">Выбранные данные будут удалены из Chrome, но не из аккаунта Google</translation>
+<translation id="1809929083618343438">Выбранные данные будут удалены из Chrome, но не из аккаунта Google.</translation>
 <translation id="1810976980198522421">Отмена</translation>
 <translation id="1815941218935345331">Код доступа</translation>
 <translation id="1818687879307252150">{count,plural, =0{Нет раскрытых паролей}=1{{count} раскрытый пароль}one{{count} раскрытый пароль}few{{count} раскрытых пароля}many{{count} раскрытых паролей}other{{count} раскрытого пароля}}</translation>
@@ -1704,7 +1704,7 @@
 <translation id="7491131399623468277">Открыть настройки</translation>
 <translation id="7491161827858509164">Чтобы посмотреть ранее скачанные файлы, откройте приложение <ph name="BEGIN_LINK" />Файлы<ph name="END_LINK" />.</translation>
 <translation id="7498234416455752244">Продолжить редактирование</translation>
-<translation id="7500244509706269886">Заполнить автоматически</translation>
+<translation id="7500244509706269886">Заполнить форму</translation>
 <translation id="750493650310597496">Закладки не выбраны</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Чтобы закреплять вкладки инкогнито, настройте Touch ID, Face ID или код доступа.</translation>

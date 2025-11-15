@@ -617,6 +617,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1414648216875402825">Rydych yn diweddaru i fersiwn ansefydlog o <ph name="PRODUCT_NAME" /> sy'n cynnwys nodweddion sydd ar y gweill. Bydd toriadau a bygiau annisgwyl yn digwydd. Parhewch yn ofalus.</translation>
 <translation id="1415708812149920388">Gwrthodwyd mynediad darllen y clipfwrdd</translation>
 <translation id="1415990189994829608">Ni chaniateir <ph name="EXTENSION_NAME" /> (rhif adnabod yr estyniad "<ph name="EXTENSION_ID" />") yn y math hwn o sesiwn.</translation>
+<translation id="141720836055413739">Methu ag uwchlwytho.  Rhowch gynnig ar fformat ffeil gwahanol.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Tynnu ap}zero{Tynnu apiau}two{Tynnu apiau}few{Tynnu apiau}many{Tynnu apiau}other{Tynnu apiau}}</translation>
 <translation id="1417497355604638350">Anfon data diagnosteg a data defnydd.</translation>
 <translation id="1418552618736477642">Hysbysiadau ac apiau</translation>
@@ -4282,6 +4283,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3898768766145818464">Chwarae neu seibio'r fideo</translation>
 <translation id="389901847090970821">Dewis bysellfwrdd</translation>
 <translation id="3899457911440165602">Gwall wrth ddileu tystysgrif</translation>
+<translation id="3900568190483700096">Uwchlwythwch hyd at <ph name="FILE_LIMIT" /> ffeil i'w defnyddio gyda'ch cwestiwn</translation>
 <translation id="3900966090527141178">Allforio cyfrineiriau</translation>
 <translation id="3903187154317825986">Bysellfwrdd Integredig</translation>
 <translation id="3903696968689283281">Gwybodaeth Perchnogion WiFi Uniongyrchol:</translation>
@@ -11848,6 +11850,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="9140050311673642960">Plymiwch yn ddwfn i rywbeth newydd</translation>
 <translation id="9140067245205650184">Rydych yn defnyddio baner nodwedd na chefnogir: <ph name="BAD_FLAG" />. Bydd sefydlogrwydd a diogelwch yn waeth.</translation>
 <translation id="914031120300235526">Methu â datgloi'r proffil</translation>
+<translation id="9142221601471715336">Gollyngwch eich ffeiliau yma</translation>
 <translation id="9142637293078737510">Alias Llun</translation>
 <translation id="9143298529634201539">Tynnu'r awgrym?</translation>
 <translation id="9143922477019434797">Diogelwch eich cyfrineiriau</translation>

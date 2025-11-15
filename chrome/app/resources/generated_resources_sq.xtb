@@ -613,6 +613,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1414648216875402825">Po e përditëson me një version të paqëndrueshëm të <ph name="PRODUCT_NAME" /> që përmban funksione që janë në progres. Do të ndodhin ndërprerje aksidentale dhe gabime të papritura. Vazhdo me kujdes.</translation>
 <translation id="1415708812149920388">Qasja për leximin e kujtesës së fragmenteve u refuzua</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID-ja e shtesës "<ph name="EXTENSION_ID" />") nuk lejohet në këtë lloj seance.</translation>
+<translation id="141720836055413739">Nuk mund të ngarkohet.  Provo një format tjetër skedari.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Hiq aplikacionin}other{Hiq aplikacionet}}</translation>
 <translation id="1417497355604638350">Dërgo të dhënat e përdorimit dhe të dhënat diagnostikuese.</translation>
 <translation id="1418552618736477642">Njoftimet dhe aplikacionet</translation>
@@ -4262,6 +4263,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3898768766145818464">Luaj ose vendose në pauzë videon</translation>
 <translation id="389901847090970821">Zgjidh tastierën</translation>
 <translation id="3899457911440165602">Gabim gjatë fshirjes së certifikatave</translation>
+<translation id="3900568190483700096">Ngarko deri në <ph name="FILE_LIMIT" /> skedarë për t'i përdorur me pyetjen tënde</translation>
 <translation id="3900966090527141178">Eksporto fjalëkalimet</translation>
 <translation id="3903187154317825986">Tastiera e integruar</translation>
 <translation id="3903696968689283281">Informacionet e zotëruesve të Wi-Fi Direct:</translation>
@@ -11814,6 +11816,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9140050311673642960">Zhytu më thellë në diçka të re</translation>
 <translation id="9140067245205650184">Po përdor një raportim të pambështetur të funksionit: <ph name="BAD_FLAG" />. Do të preket qëndrueshmëria dhe siguria.</translation>
 <translation id="914031120300235526">Profili nuk mund të shkyçet</translation>
+<translation id="9142221601471715336">Lëshoji skedarët e tu këtu</translation>
 <translation id="9142637293078737510">Pseudonimi i imazhit</translation>
 <translation id="9143298529634201539">Të hiqet sugjerimi?</translation>
 <translation id="9143922477019434797">Mbro fjalëkalimet e tua</translation>

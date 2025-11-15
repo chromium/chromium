@@ -614,6 +614,7 @@
 <translation id="1414648216875402825">તમે <ph name="PRODUCT_NAME" />ના કામચલાઉ વર્ઝનમાં અપડેટ કરી રહ્યા છો, જે હજી વિકસી રહેલી સુવિધાઓ ધરાવે છે. ક્રેશ અને અનપેક્ષિત બગ આવશે. કૃપા કરીને સાવધાનીથી આગળ વધો.</translation>
 <translation id="1415708812149920388">ક્લિપબોર્ડ વાંચવાનો ઍક્સેસ નકારેલ છે</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (એક્સ્ટેન્શન ID "<ph name="EXTENSION_ID" />") ને આ પ્રકારના સત્રમાં મંજૂરી નથી.</translation>
+<translation id="141720836055413739">અપલોડ કરી શકતા નથી.  ફાઇલનું કોઈ અલગ ફૉર્મેટ અજમાવી જુઓ.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{ઍપ કાઢી નાખો}one{ઍપ કાઢી નાખો}other{ઍપ કાઢી નાખો}}</translation>
 <translation id="1417497355604638350">ડાયગ્નોસ્ટિક અને વપરાશનો ડેટા મોકલો.</translation>
 <translation id="1418552618736477642">નોટિફિકેશન અને ઍપ</translation>
@@ -4265,6 +4266,7 @@
 <translation id="3898768766145818464">વીડિયો ચલાવો અથવા થોભાવો</translation>
 <translation id="389901847090970821">કીબોર્ડ પસંદ કરો</translation>
 <translation id="3899457911440165602">સર્ટિફિકેટ ડિલીટ કરવામાં ભૂલ આવી</translation>
+<translation id="3900568190483700096">તમારા પ્રશ્ન સાથે ઉપયોગમાં લેવા માટે વધુમાં વધુ <ph name="FILE_LIMIT" /> ફાઇલ અપલોડ કરો</translation>
 <translation id="3900966090527141178">પાસવર્ડની નિકાસ કરો</translation>
 <translation id="3903187154317825986">બિલ્ટ-ઇન કીબોર્ડ</translation>
 <translation id="3903696968689283281">WiFi Directના માલિકોની માહિતી:</translation>
@@ -11821,6 +11823,7 @@ USB ડિવાઇસ</translation>
 <translation id="9140050311673642960">કંઈક નવું જાણો</translation>
 <translation id="9140067245205650184">તમે અસમર્થિત સુવિધા ફ્લૅગનો ઉપયોગ કરી રહ્યા છો: <ph name="BAD_FLAG" />. સ્થિરતા તથા સુરક્ષા જોખમાશે.</translation>
 <translation id="914031120300235526">પ્રોફાઇલ અનલૉક કરી શકાતી નથી</translation>
+<translation id="9142221601471715336">તમારી ફાઇલો અહીં ડ્રૉપ કરો</translation>
 <translation id="9142637293078737510">છબીનું ઉપનામ</translation>
 <translation id="9143298529634201539">સૂચન કાઢી નાખીએ?</translation>
 <translation id="9143922477019434797">તમારા પાસવર્ડને સુરક્ષિત કરો</translation>

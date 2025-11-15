@@ -616,6 +616,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1414648216875402825">Atnaujinate į nestabilią „<ph name="PRODUCT_NAME" />“ versiją, kuri apima vis dar kuriamas funkcijas. Bus strigčių ir netikėtų trikčių. Būkite atsargūs.</translation>
 <translation id="1415708812149920388">Iškarpinės skaitymo prieiga atmesta</translation>
 <translation id="1415990189994829608">„<ph name="EXTENSION_NAME" />“ (plėtinio ID „<ph name="EXTENSION_ID" />“) neleidžiamas vykstant šio tipo seansui.</translation>
+<translation id="141720836055413739">Nepavyko įkelti.  Išbandykite kitą failo formatą.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Pašalinti programą}one{Pašalinti programas}few{Pašalinti programas}many{Pašalinti programas}other{Pašalinti programas}}</translation>
 <translation id="1417497355604638350">Siųskite diagnostikos ir naudojimo duomenis.</translation>
 <translation id="1418552618736477642">Pranešimai ir programos</translation>
@@ -4282,6 +4283,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3898768766145818464">Leisti arba pristabdyti vaizdo įrašą</translation>
 <translation id="389901847090970821">Pasirinkti klaviatūrą</translation>
 <translation id="3899457911440165602">Ištrinant sertifikatą įvyko klaida</translation>
+<translation id="3900568190483700096">Įkelkite daugiausia tiek su klausimu norimų naudoti failų: <ph name="FILE_LIMIT" /></translation>
 <translation id="3900966090527141178">Eksportuokite slaptažodžius</translation>
 <translation id="3903187154317825986">Įtaisytoji klaviatūra</translation>
 <translation id="3903696968689283281">„Wi-Fi Direct“ savininkų informacija:</translation>
@@ -11848,6 +11850,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="9140050311673642960">Išsamiai analizuokite ką nors naujo</translation>
 <translation id="9140067245205650184">Naudojate nepalaikomą funkcijos žymą: „<ph name="BAD_FLAG" />“. Tai neigiamai paveiks stabilumą ir saugą.</translation>
 <translation id="914031120300235526">Nepavyko atrakinti profilio</translation>
+<translation id="9142221601471715336">Nuvilkite failus čia</translation>
 <translation id="9142637293078737510">Vaizdo alternatyvusis pavadinimas</translation>
 <translation id="9143298529634201539">Pašalinti pasiūlymą?</translation>
 <translation id="9143922477019434797">Apsaugokite slaptažodžius</translation>

@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">آپ <ph name="PRODUCT_NAME" /> کے ایک ناپائیدار ورژن میں اپ ڈیٹ کر رہے ہیں جس میں ایسی خصوصیات شامل ہیں جو جاری ہیں۔ کریشز اور غیر متوقع بگز پیش آئیں گے۔ براہ کرم احتیاط سے آگے بڑھیں۔</translation>
 <translation id="1415708812149920388">کلپ بورڈ پڑھنے کی رسائی مسترد کر دی گئی</translation>
 <translation id="1415990189994829608">‏اس قسم کے سیشن میں <ph name="EXTENSION_NAME" /> (ایکسٹینشن ‎ID "<ph name="EXTENSION_ID" />‎") کی اجازت نہیں ہے۔</translation>
+<translation id="141720836055413739">اپ لوڈ نہیں کر سکتے۔  فائل کا مختلف فارمیٹ آزمائیں۔</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{ایپ ہٹائیں}other{ایپس ہٹائیں}}</translation>
 <translation id="1417497355604638350">ڈائیگناسٹک اور استعمال کا ڈیٹا بھیجیں</translation>
 <translation id="1418552618736477642">اطلاعات اور ایپس</translation>
@@ -4266,6 +4267,7 @@
 <translation id="3898768766145818464">ویڈیو چلائیں یا موقوف کریں</translation>
 <translation id="389901847090970821">کی بورڈ منتخب کریں</translation>
 <translation id="3899457911440165602">سرٹیفیکیٹ حذف کرنے میں خرابی</translation>
+<translation id="3900568190483700096">اپنے سوال کے ساتھ استعمال کرنے کے لیے <ph name="FILE_LIMIT" /> فائلز تک اپ لوڈ کریں</translation>
 <translation id="3900966090527141178">پاس ورڈز برآمد کریں</translation>
 <translation id="3903187154317825986">پہلے سے شامل کی بورڈ</translation>
 <translation id="3903696968689283281">‏WiFi ڈائریکٹ کے مالکان کی معلومات:</translation>
@@ -11817,6 +11819,7 @@
 <translation id="9140050311673642960">کچھ نیا دریافت کریں</translation>
 <translation id="9140067245205650184">آپ خصوصیت کا ایک غیر تعاون یافتہ پرچم استعمال کر رہے ہیں: <ph name="BAD_FLAG" />۔ استحکام اور سیکیورٹی متاثر ہوگی۔</translation>
 <translation id="914031120300235526">پروفائل کو غیر مقفل نہیں کیا جا سکتا</translation>
+<translation id="9142221601471715336">اپنی فائلز یہاں ڈراپ کریں</translation>
 <translation id="9142637293078737510">تصویر کا عرفی نام</translation>
 <translation id="9143298529634201539">تجویز ہٹائیں؟</translation>
 <translation id="9143922477019434797">اپنے پاس ورڈز کی حفاظت کریں</translation>

@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">Актуализирате до нестабилна версия на <ph name="PRODUCT_NAME" />, съдържаща функции, по които се работи. Ще има сривове и неочаквани програмни дефекти. Моля, действайте внимателно.</translation>
 <translation id="1415708812149920388">Отказан е достъп за четене на съдържанието на буферната памет</translation>
 <translation id="1415990189994829608">Разширението <ph name="EXTENSION_NAME" /> (с идентификационен номер „<ph name="EXTENSION_ID" />“) не е разрешено в този тип сесия.</translation>
+<translation id="141720836055413739">Качването не е възможно.  Опитайте с друг файлов формат.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Премахване на приложението}other{Премахване на приложенията}}</translation>
 <translation id="1417497355604638350">Изпращане на диагностична информация и данни за употребата.</translation>
 <translation id="1418552618736477642">Известия и приложения</translation>
@@ -4276,6 +4277,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3898768766145818464">Пускане или поставяне на видеоклипа на пауза</translation>
 <translation id="389901847090970821">Изберете клавиатура</translation>
 <translation id="3899457911440165602">Грешка при изтриването на сертификата</translation>
+<translation id="3900568190483700096">Качете до <ph name="FILE_LIMIT" /> файла, които да използвате с въпроса си</translation>
 <translation id="3900966090527141178">Експортиране на паролите</translation>
 <translation id="3903187154317825986">Вградена клавиатура</translation>
 <translation id="3903696968689283281">Информация за собствениците в Wi-Fi Direct:</translation>
@@ -11833,6 +11835,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9140050311673642960">Разгледайте подробно нещо ново</translation>
 <translation id="9140067245205650184">Използвате неподдържан флаг за функция: <ph name="BAD_FLAG" />. Стабилността и сигурността ще пострадат.</translation>
 <translation id="914031120300235526">Потребителският профил не може да се отключи</translation>
+<translation id="9142221601471715336">Преместете файловете си тук</translation>
 <translation id="9142637293078737510">Псевдоним на образа</translation>
 <translation id="9143298529634201539">Да се премахне ли предложението?</translation>
 <translation id="9143922477019434797">Защитете паролите си</translation>

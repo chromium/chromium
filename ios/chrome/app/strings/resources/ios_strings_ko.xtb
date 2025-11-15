@@ -213,7 +213,7 @@
 <translation id="17906873777101817">비밀번호 및 패스키 저장 여부 확인</translation>
 <translation id="1794893174442046596">탭 그룹</translation>
 <translation id="1807893857950749072">가격 추적 알림 허용…</translation>
-<translation id="1809929083618343438">선택한 정보가 Chrome에서 삭제되지만, 이 정보가 Google 계정에서 삭제되지는 않습니다</translation>
+<translation id="1809929083618343438">선택한 정보가 Chrome에서 삭제되지만 Google 계정에서는 삭제되지 않습니다</translation>
 <translation id="1810976980198522421">취소</translation>
 <translation id="1815941218935345331">비밀번호</translation>
 <translation id="1818687879307252150">{count,plural, =0{유출된 비밀번호 없음}=1{유출된 비밀번호 {count}개}other{유출된 비밀번호 {count}개}}</translation>
@@ -546,7 +546,7 @@
 <translation id="3081338492074632642">저장하려는 비밀번호가 <ph name="WEBSITE" />의 비밀번호와 일치하는지 확인하세요.</translation>
 <translation id="3087734570205094154">맨 아래</translation>
 <translation id="309710370695886264">재사용된 비밀번호가 1개 있습니다. 안전을 위해 지금 문제를 해결하세요.</translation>
-<translation id="3099402981545350675">이 기기에 저장된 주소가 삭제됩니다. 또한 선택한 정보가 Chrome에서 삭제되지만, 이 정보가 Google 계정에서 삭제되지는 않습니다</translation>
+<translation id="3099402981545350675">이 기기에 저장된 주소가 삭제됩니다. 또한 선택한 정보가 Chrome에서 삭제되지만 Google 계정에서는 삭제되지 않습니다.</translation>
 <translation id="3106258548858559536">읽기 모드 사용 중지</translation>
 <translation id="3106690631878101882">번역 숨기기</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" />의 비밀번호를 삭제하시겠습니까?</translation>

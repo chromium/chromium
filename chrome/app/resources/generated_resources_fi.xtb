@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">Olet päivittämässä tuotteen <ph name="PRODUCT_NAME" /> epävakaaseen versioon, jossa on vasta kehitysvaiheessa olevia ominaisuuksia. Ohjelman kaatumisia ja odottamattomia virheitä on odotettavissa. Jatka omalla vastuullasi.</translation>
 <translation id="1415708812149920388">Leikepöydän lukuoikeus evätty</translation>
 <translation id="1415990189994829608">Laajennusta <ph name="EXTENSION_NAME" /> (laajennustunnus <ph name="EXTENSION_ID" />) ei sallita tämäntyyppisessä ístunnossa.</translation>
+<translation id="141720836055413739">Ei voi ladata.  Kokeile toista tiedostomuotoa.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Poista sovellus}other{Poista sovellukset}}</translation>
 <translation id="1417497355604638350">Lähetä diagnostiikka- ja käyttödataa.</translation>
 <translation id="1418552618736477642">Ilmoitukset ja sovellukset</translation>
@@ -4278,6 +4279,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3898768766145818464">Katso video tai keskeytä se</translation>
 <translation id="389901847090970821">Valitse näppäimistö</translation>
 <translation id="3899457911440165602">Virhe poistettaessa varmennetta</translation>
+<translation id="3900568190483700096">Lataa enintään <ph name="FILE_LIMIT" /> tiedostoa, joita haluat käyttää kysymyksessä</translation>
 <translation id="3900966090527141178">Vie salasanat</translation>
 <translation id="3903187154317825986">Sisäänrakennettu näppäimistö</translation>
 <translation id="3903696968689283281">Wi-Fi Direct ‑omistajien tiedot:</translation>
@@ -11831,6 +11833,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="9140050311673642960">Tutustu uuteen aiheeseen</translation>
 <translation id="9140067245205650184">Käytät ominaisuusmerkintää, jota ei tueta: <ph name="BAD_FLAG" />. Vakaus ja suojaus kärsivät.</translation>
 <translation id="914031120300235526">Profiilin lukitusta ei voi avata</translation>
+<translation id="9142221601471715336">Pudota tiedostot tähän</translation>
 <translation id="9142637293078737510">Kuvan alias</translation>
 <translation id="9143298529634201539">Poistetaanko ehdotus?</translation>
 <translation id="9143922477019434797">Suojaa salasanasi</translation>

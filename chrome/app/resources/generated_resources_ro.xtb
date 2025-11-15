@@ -614,6 +614,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1414648216875402825">Faceți actualizarea la o versiune <ph name="PRODUCT_NAME" /> instabilă. Aceasta conține funcții nefinalizate. Vor apărea blocări și erori neașteptate. Continuați cu atenție.</translation>
 <translation id="1415708812149920388">Accesul de citire la clipboard este interzis</translation>
 <translation id="1415990189994829608">Extensia <ph name="EXTENSION_NAME" /> (cu ID-ul „<ph name="EXTENSION_ID" />”) nu este permisă în acest tip de sesiune.</translation>
+<translation id="141720836055413739">Încărcarea nu a reușit.  Încearcă alt format de fișier.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Elimină aplicația}few{Elimină aplicații}other{Elimină aplicații}}</translation>
 <translation id="1417497355604638350">Trimite date de diagnosticare și de utilizare.</translation>
 <translation id="1418552618736477642">Notificările și aplicațiile</translation>
@@ -4266,6 +4267,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3898768766145818464">Redă sau întrerupe videoclipul</translation>
 <translation id="389901847090970821">Selectează tastatura</translation>
 <translation id="3899457911440165602">Eroare la ștergerea certificatului</translation>
+<translation id="3900568190483700096">Încarcă până la <ph name="FILE_LIMIT" /> fișiere pe care să le folosești cu întrebarea ta</translation>
 <translation id="3900966090527141178">Exportă parolele</translation>
 <translation id="3903187154317825986">Tastatură integrată</translation>
 <translation id="3903696968689283281">Informații despre proprietarii Wi-Fi Direct:</translation>
@@ -11823,6 +11825,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="9140050311673642960">Explorează ceva nou</translation>
 <translation id="9140067245205650184">Folosești un semnalizator de funcție neacceptat: <ph name="BAD_FLAG" />. Stabilitatea și securitatea vor fi afectate.</translation>
 <translation id="914031120300235526">Nu poți debloca profilul</translation>
+<translation id="9142221601471715336">Plasează fișierele aici</translation>
 <translation id="9142637293078737510">Alias imagine</translation>
 <translation id="9143298529634201539">Elimini sugestia?</translation>
 <translation id="9143922477019434797">Protejează-ți parolele</translation>

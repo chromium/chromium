@@ -615,6 +615,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1414648216875402825">Jūs atjaunināt uz nestabilu <ph name="PRODUCT_NAME" /> versiju, kurā ietvertas funkcijas, kas vēl tiek izstrādātas. Radīsies avārijas un neparedzētas kļūdas. Rīkojieties apdomīgi!</translation>
 <translation id="1415708812149920388">Liegta piekļuve starpliktuves satura lasīšanai</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (paplašinājuma ID “<ph name="EXTENSION_ID" />”) nav atļauts šāda veida sesijā.</translation>
+<translation id="141720836055413739">Nevar augšupielādēt.  Izmēģiniet citu faila formātu.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Noņemt lietotni}zero{Noņemt lietotnes}one{Noņemt lietotnes}other{Noņemt lietotnes}}</translation>
 <translation id="1417497355604638350">Sūtīt diagnostikas un lietojuma datus</translation>
 <translation id="1418552618736477642">Paziņojumi un lietotnes</translation>
@@ -4266,6 +4267,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3898768766145818464">Atskaņot videoklipu vai pārtraukt tā atskaņošanu</translation>
 <translation id="389901847090970821">Tastatūras atlasīšana</translation>
 <translation id="3899457911440165602">Dzēšot sertifikātu, radās kļūda</translation>
+<translation id="3900568190483700096">Augšupielādējiet ne vairāk kā <ph name="FILE_LIMIT" /> failus, ko izmantot kopā ar jautājumu.</translation>
 <translation id="3900966090527141178">Paroļu eksportēšana</translation>
 <translation id="3903187154317825986">Iebūvētā tastatūra</translation>
 <translation id="3903696968689283281">Informācija par Wi-Fi Direct īpašniekiem</translation>
@@ -11824,6 +11826,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9140050311673642960">Varat padziļināti izzināt jaunu tēmu</translation>
 <translation id="9140067245205650184">Jūs izmantojat neatbalstītu funkcijas karodziņu: <ph name="BAD_FLAG" />. Tas negatīvi ietekmē darbības stabilitāti un drošību.</translation>
 <translation id="914031120300235526">Nevar atbloķēt profilu</translation>
+<translation id="9142221601471715336">Nometiet failus šeit</translation>
 <translation id="9142637293078737510">Attēla aizstājvārds</translation>
 <translation id="9143298529634201539">Vai noņemt ieteikumu?</translation>
 <translation id="9143922477019434797">Aizsargājiet savas paroles</translation>
