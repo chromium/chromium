@@ -9067,6 +9067,7 @@
                 {
                     "name": "Sql",
                     "params": {
+                        "SqlDiskCacheLoadIndexOnInit": "true",
                         "SqlDiskCacheShardCount": "3",
                         "SqlDiskCacheSynchronousOff": "true",
                         "backend": "sql"
