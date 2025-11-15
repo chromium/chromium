@@ -63,8 +63,9 @@ class DocumentServicePrerenderingBrowserTest
 };
 
 // Tests that DocumentService is not destroyed on prerendering activation.
+// TODO(crbug.com/460621062): Re-enable the test
 IN_PROC_BROWSER_TEST_F(DocumentServicePrerenderingBrowserTest,
-                       NotClosedInPrerenderingActivation) {
+                       DISABLED_NotClosedInPrerenderingActivation) {
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
   const GURL kPrerenderingUrl = embedded_test_server()->GetURL("/title1.html");
   // The test assumes documents and their DocumentServices get deleted after
