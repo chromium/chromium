@@ -97,6 +97,8 @@ class ContextualSearchMetricsRecorder {
                                 lens::MimeType file_type,
                                 FileUploadStatus file_status);
 
+  std::string GetMetricsSuffix() const { return metrics_suffix_; }
+
  private:
   // Called when the session starts to correctly track session
   // durations.

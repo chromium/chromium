@@ -35,6 +35,20 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram
+    name="ContextualSearch.AddedTabContextRecencyRanking.{ContextualSearchSource}"
+    units="rank" expires_after="2026-06-10">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks the relative recency ranking (0-indexed) of a tab across its window
+    when a tab is added as context through the composebox context menu. This
+    metric is recorded regardless of whether or not a query was issued with the
+    tab.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
     name="ContextualSearch.File.Size.{ContextualSearchFileTypes}.{ContextualSearchSource}"
     units="bytes" expires_after="2026-03-29">
   <owner>hujasonx@google.com</owner>
