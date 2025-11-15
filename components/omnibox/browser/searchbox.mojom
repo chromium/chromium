@@ -116,6 +116,43 @@ enum ToolMode {
 };
 // LINT.ThenChange(//ui/webui/resources/cr_components/composebox/contextual_entrypoint_and_carousel.ts:ComposeboxMode)
 
+// Represents a file attachment who's upload was started browser-side (currently
+// an image or PDF only). The stub name is intended to indicate that usage of
+// this struct is being iterated on and usage must currently be flagged with
+// `MojomWorkInProgress`.
+struct FileAttachmentStub {
+  // The unique identifier of the file.
+  mojo_base.mojom.UnguessableToken uuid;
+  // The name of the file.
+  string name;
+  // The mime type of the file.
+  string mime_type;
+  // The data URL of the file if it is an image.
+  string? image_data_url;
+};
+
+// Represents a tab attachment chosen browser-side and communicated to WebUI.
+// The stub name is intended to indicate that usage of
+// this struct is being iterated on and usage must currently be flagged with
+// `MojomWorkInProgress`.
+struct TabAttachmentStub {
+  // The unique identifier of the tab.
+  int32 tab_id;
+  // The title of the tab.
+  string title;
+  // The URL of the tab.
+  url.mojom.Url url;
+};
+
+// Represents a single attachment to the search context, either a file or a tab.
+// The stub name is intended to indicate that usage of
+// this struct is being iterated on and usage must currently be flagged with
+// `MojomWorkInProgress`.
+union SearchContextAttachmentStub {
+  FileAttachmentStub file_attachment;
+  TabAttachmentStub tab_attachment;
+};
+
 // Information about a contextual input.
 struct SelectedFileInfo {
   // Name of the file.
