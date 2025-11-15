@@ -28,6 +28,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/embedder_support/switches.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -641,6 +642,53 @@ class MessagingApiTestWithPageUrlLoad
  private:
   GURL url_;
 };
+
+class MessagingSerializationApiTest : public MessagingApiTestWithPageUrlLoad {
+ public:
+  MessagingSerializationApiTest() {
+    // This feature treats some messaging response failures differently so let's
+    // force it on to have consistent response behavior.
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that various objects can be JSON serialized to/from v8 for one-time and
+// long-lived messaging APIs. It tests both the `runtime` and `tabs` APIs by
+// sending messages from a content script to the extension background and then
+// vice versa.
+IN_PROC_BROWSER_TEST_F(MessagingSerializationApiTest, JSONSerialization) {
+  // Waiters that confirm the background test can run.
+  // `content_script_ready_for_background_tests` confirms the message listeners
+  // are ready to receive messages from the background test.
+  // `worker_background_ready_to_run_tests` is used to pause the background
+  // tests from running until we can provide the tab's (content script's) ID to
+  // the backgrounds tests so that they have a tab target to send messages to.
+  ExtensionTestMessageListener content_script_ready_for_background_tests(
+      "content-message-handlers-registered");
+  ExtensionTestMessageListener worker_background_waiting_to_run_tests(
+      "background-script-evaluated", ReplyBehavior::kWillReply);
+
+  // This first runs the `runtime` API tests sending messages from a content
+  // script to the extension's background.
+  EXPECT_TRUE(RunMessagingTest("messaging/serialization")) << message_;
+
+  // After the above tests have finished the below runs the `tab` API tests
+  // sending messages from the extension's background to the content script in a
+  // tab (opened during `RunMessagingTest()`).
+  ASSERT_TRUE(content_script_ready_for_background_tests.WaitUntilSatisfied());
+  ASSERT_TRUE(worker_background_waiting_to_run_tests.WaitUntilSatisfied());
+  content::WebContents* tab = GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  int tab_id = ExtensionTabUtil::GetTabId(tab);
+  SetCustomArg(base::NumberToString(tab_id));
+  ResultCatcher result_catcher;
+  worker_background_waiting_to_run_tests.Reply("start background tests");
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
 
 class OnMessagePromiseReturnMessagingApiTest
     : public MessagingApiTestWithPageUrlLoad {
