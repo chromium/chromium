@@ -406,11 +406,48 @@ cr-progress {
   height: 20px;
 }
 
+#fre-app-container #freLoadingPanel .header {
+  position: static;
+  display: flex;
+  justify-content: space-between;
+}
+
+#fre-app-container #freLoadingPanel .container {
+  padding: 16px;
+}
+
+#fre-app-container #freLoadingPanel .title {
+  display: block;
+  width: 70px;
+  height: 20px;
+  border-radius: 12px;
+}
+
 #fre-app-container .a {
   width: 90px;
   height: 45px;
   border-radius: 48px;
   align-self: flex-start;
+  margin-bottom: 16px;
+}
+
+#fre-app-container .b {
+  height: 56px;
+  margin-bottom: 16px;
+}
+
+#fre-app-container .c {
+  height: 118px;
+}
+
+#fre-app-container .e {
+  height: 94px;
+  margin-bottom: 16px;
+}
+
+#fre-app-container .f {
+  height: 32px;
+  margin-bottom: 12px;
 }
 
 #panelContainer #fre-app-container .g {

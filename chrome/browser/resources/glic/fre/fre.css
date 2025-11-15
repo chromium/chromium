@@ -156,6 +156,10 @@ body {
   justify-content: center;
 }
 
+#fre-app-container .title {
+  display: none;
+}
+
 #fre-app-container .a {
   width: 90px;
   height: 45px;
