@@ -433,6 +433,12 @@ bool ContextMenuController::ShouldShowContextMenuFromTouch(
 
 bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
                                             const PhysicalOffset& point,
+                                            WebMenuSourceType source_type) {
+  return ShowContextMenu(frame, point, source_type, nullptr);
+}
+
+bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
+                                            const PhysicalOffset& point,
                                             WebMenuSourceType source_type,
                                             const MouseEvent* mouse_event) {
   // Displaying the context menu in this function is a big hack as we don't
