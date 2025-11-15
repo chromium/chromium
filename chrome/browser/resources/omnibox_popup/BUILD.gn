@@ -27,6 +27,7 @@ build_webui("build") {
     "aim_app.css",
     "app.css",
     "full_app.css",
+    "shared_vars.css",
   ]
   ts_composite = true
   ts_deps = [
