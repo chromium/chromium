@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import './icons.html.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_progress/cr_progress.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';

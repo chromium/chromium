@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 import './ink_brush_selector.js';
+import './ink_color_selector.js';
 import './ink_size_selector.js';
 import './viewer_bottom_toolbar_dropdown.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './ink_color_selector.js';
+import './text_alignment_selector.js';
+import './text_styles_selector.js';
+import './viewer_bottom_toolbar_dropdown.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';

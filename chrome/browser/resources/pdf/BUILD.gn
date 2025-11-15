@@ -217,6 +217,8 @@ build_webui("build") {
   extra_grdp_files = [ "$target_gen_dir/internal_plugin_resources.grdp" ]
   grd_resource_path_prefix = "pdf"
 
+  eslint_enable_web_component_missing_deps = true
+
   # Optimization parameters
   webui_context_type = "trusted_only"
   optimize = optimize_webui
