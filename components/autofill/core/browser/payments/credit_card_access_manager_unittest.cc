@@ -61,6 +61,8 @@ namespace {
 using autofill_metrics::CreditCardFormEventLogger;
 using ::base::ASCIIToUTF16;
 using test::AsFullServerCard;
+using test::AsVirtualCard;
+using test::WithCvc;
 using ::testing::_;
 using ::testing::InSequence;
 using ::testing::IsEmpty;
@@ -350,7 +352,7 @@ TEST_P(CreditCardAccessManagerAuthFlowTest, FetchServerCardFIDOSuccess) {
 TEST_P(CreditCardAccessManagerAuthFlowTest, LogCvcFillingFIDOSuccess) {
   base::HistogramTester histogram_tester;
 
-  CreditCard server_card = test::WithCvc(test::GetMaskedServerCard());
+  CreditCard server_card = WithCvc(test::GetMaskedServerCard());
   personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
   const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByInstrumentId(
@@ -411,7 +413,7 @@ TEST_P(CreditCardAccessManagerAuthFlowTest, DoNotLogCvcFillingFIDOSuccess) {
 TEST_F(CreditCardAccessManagerTest,
        LogCvcFillingWithoutInteractiveAuthentication) {
   base::HistogramTester histogram_tester;
-  CreditCard local_card = test::WithCvc(test::GetCreditCard());
+  CreditCard local_card = WithCvc(test::GetCreditCard());
   personal_data().payments_data_manager().AddCreditCard(local_card);
   const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(
@@ -1697,8 +1699,7 @@ TEST_F(CreditCardAccessManagerTest, FetchCreditCardUsesUnmaskedCardCache) {
       *personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
   // Mock out that the card has become unmasked and cached.
-  CreditCard unmasked_card = masked_card;
-  unmasked_card.set_record_type(CreditCard::RecordType::kFullServerCard);
+  CreditCard unmasked_card = AsFullServerCard(masked_card);
   credit_card_access_manager().CacheUnmaskedCardInfo(unmasked_card, kTestCvc16);
 
   // Now fetch the masked credit card - this should use the cached unmasked
@@ -1716,15 +1717,15 @@ TEST_F(CreditCardAccessManagerTest, FetchCreditCardUsesUnmaskedCardCache) {
       autofill_metrics::ServerCardUnmaskResult::kLocalCacheHit, 2);
 
   // Create a virtual card.
-  CreditCard virtual_card = CreditCard();
+  CreditCard virtual_card;
   test::SetCreditCardInfo(&virtual_card, "Elvis Presley", kTestNumber,
                           test::NextMonth().c_str(), test::NextYear().c_str(),
                           "1");
-  virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  virtual_card = AsVirtualCard(virtual_card);
   credit_card_access_manager().CacheUnmaskedCardInfo(virtual_card, kTestCvc16);
 
   // Mocks that user selects the virtual card option of the masked card.
-  masked_card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  masked_card = AsVirtualCard(masked_card);
   FetchCreditCard(&masked_card);
 
   histogram_tester.ExpectUniqueSample(
@@ -1736,12 +1737,10 @@ TEST_F(CreditCardAccessManagerTest, GetCachedUnmaskedCards) {
   // Assert that there are no cards cached initially.
   EXPECT_EQ(0U, credit_card_access_manager().GetCachedUnmaskedCards().size());
 
-  const CreditCard* masked_server_card =
-      CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
+  CreditCard unmasked_card = AsFullServerCard(
+      *CreateServerCard(kTestGUID, kTestNumber, kTestServerId));
   CreateServerCard(kTestGUID2, kTestNumber2, kTestServerId2);
   // Add a card to the cache.
-  CreditCard unmasked_card = *masked_server_card;
-  unmasked_card.set_record_type(CreditCard::RecordType::kFullServerCard);
   credit_card_access_manager().CacheUnmaskedCardInfo(unmasked_card, kTestCvc16);
 
   // Verify that only the card added to the cache is returned.
@@ -1751,12 +1750,10 @@ TEST_F(CreditCardAccessManagerTest, GetCachedUnmaskedCards) {
 }
 
 TEST_F(CreditCardAccessManagerTest, IsCardPresentInUnmaskedCache) {
-  const CreditCard* masked_server_card =
-      CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
+  CreditCard unmasked_card = AsFullServerCard(
+      *CreateServerCard(kTestGUID, kTestNumber, kTestServerId));
   CreateServerCard(kTestGUID2, kTestNumber2, kTestServerId2);
   // Add a card to the cache.
-  CreditCard unmasked_card = *masked_server_card;
-  unmasked_card.set_record_type(CreditCard::RecordType::kFullServerCard);
   credit_card_access_manager().CacheUnmaskedCardInfo(unmasked_card, kTestCvc16);
 
   // Verify that only one card is present in the cache.
@@ -1768,10 +1765,8 @@ TEST_F(CreditCardAccessManagerTest, IsCardPresentInUnmaskedCache) {
 }
 
 TEST_F(CreditCardAccessManagerTest, IsVirtualCardPresentInUnmaskedCache) {
-  const CreditCard* masked_server_card =
-      CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
-  CreditCard virtual_card = *masked_server_card;
-  virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  CreditCard virtual_card =
+      AsVirtualCard(*CreateServerCard(kTestGUID, kTestNumber, kTestServerId));
 
   // Add the virtual card to the cache.
   credit_card_access_manager().CacheUnmaskedCardInfo(virtual_card, kTestCvc16);
@@ -1791,10 +1786,15 @@ TEST_F(CreditCardAccessManagerTest,
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  const CreditCard* masked_server_card =
-      CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
-  CreditCard server_card = *masked_server_card;
-  server_card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  CreditCard server_card =
+      AsVirtualCard(*CreateServerCard(kTestGUID, kTestNumber, kTestServerId));
+  CreditCard virtual_card = AsVirtualCard(
+      *personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID));
+  virtual_card.set_cvc(u"321");
+
+  NiceMock<MockCreditCardAccessManagerObserver> observer;
+  ExpectCardRetrievalSuccess(server_card, virtual_card, observer);
+  credit_card_access_manager().AddObserver(&observer);
 
   FetchCreditCard(&server_card);
 
@@ -1805,17 +1805,13 @@ TEST_F(CreditCardAccessManagerTest,
                   .GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
 
-  const CreditCard* virtual_card_enrolled_regular_card =
-      personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
-  CreditCard virtual_card = *virtual_card_enrolled_regular_card;
-  virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
-  virtual_card.set_cvc(u"321");
   credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
       CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
           .with_result(CreditCardRiskBasedAuthenticator::
                            RiskBasedAuthenticationResponse::Result::
                                kNoAuthenticationRequired)
           .with_card(virtual_card));
+  credit_card_access_manager().RemoveObserver(&observer);
 
   // Ensure the accessor received the correct response.
   EXPECT_EQ(accessor().number(), u"4234567890123456");
@@ -1920,10 +1916,8 @@ TEST_F(CreditCardAccessManagerTest,
 TEST_F(CreditCardAccessManagerTest,
        RiskBasedVirtualCardUnmasking_Only3dsChallengeReturned) {
   base::HistogramTester histogram_tester;
-  const CreditCard* masked_server_card =
-      CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
-  CreditCard virtual_card = *masked_server_card;
-  virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  CreditCard virtual_card =
+      AsVirtualCard(*CreateServerCard(kTestGUID, kTestNumber, kTestServerId));
   FetchCreditCard(&virtual_card);
 
   EXPECT_CALL(*static_cast<payments::MockPaymentsWindowManager*>(
@@ -1931,7 +1925,6 @@ TEST_F(CreditCardAccessManagerTest,
                       .GetPaymentsAutofillClient()
                       ->GetPaymentsWindowManager()),
               InitVcn3dsAuthentication)
-      .Times(1)
       .WillOnce([&](payments::PaymentsWindowManager::Vcn3dsContext context) {
         EXPECT_EQ(context.context_token, "fake_context_token");
         EXPECT_EQ(context.card, virtual_card);
@@ -2166,6 +2159,11 @@ TEST_F(
   // Set up the test.
   base::HistogramTester histogram_tester;
   CreditCard card = test::GetVirtualCard();
+
+  NiceMock<MockCreditCardAccessManagerObserver> observer;
+  ExpectCardRetrievalFailure(card, observer);
+
+  credit_card_access_manager().AddObserver(&observer);
   FetchCreditCard(&card);
   payments::PaymentsWindowManager::Vcn3dsAuthenticationResponse response;
   response.result = payments::PaymentsWindowManager::
@@ -2174,6 +2172,7 @@ TEST_F(
   // Mock the VCN 3DS authentication response.
   test_api(credit_card_access_manager())
       .OnVcn3dsAuthenticationComplete(response);
+  credit_card_access_manager().RemoveObserver(&observer);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Result.ThreeDomainSecure",
@@ -2238,7 +2237,7 @@ TEST_F(CreditCardAccessManagerTest,
   // Mock FIDO authentication completed.
   CreditCardFidoAuthenticator::FidoAuthenticationResponse fido_response;
   fido_response.did_succeed = true;
-  CreditCard card = test::WithCvc(test::GetVirtualCard(), u"234");
+  CreditCard card = WithCvc(test::GetVirtualCard(), u"234");
   fido_response.card = &card;
   test_api(credit_card_access_manager())
       .OnFIDOAuthenticationComplete(fido_response);
@@ -2390,10 +2389,8 @@ TEST_F(
     CreditCardAccessManagerTest,
     RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoOnly_FidoNotOptedIn) {
   base::HistogramTester histogram_tester;
-  const CreditCard* masked_server_card =
-      CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
-  CreditCard virtual_card = *masked_server_card;
-  virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  CreditCard virtual_card =
+      AsVirtualCard(*CreateServerCard(kTestGUID, kTestNumber, kTestServerId));
   // TODO(crbug.com/40197696): Switch to SetUserVerifiable after moving all
   // is_user_veriable_ related logic from CreditCardAccessManager to
   // CreditCardFidoAuthenticator.
@@ -2438,10 +2435,8 @@ TEST_F(
 TEST_F(CreditCardAccessManagerTest,
        RiskBasedVirtualCardUnmasking_Failure_NoOptionReturned) {
   base::HistogramTester histogram_tester;
-  const CreditCard* masked_server_card =
-      CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
-  CreditCard virtual_card = *masked_server_card;
-  virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  CreditCard virtual_card =
+      AsVirtualCard(*CreateServerCard(kTestGUID, kTestNumber, kTestServerId));
   // TODO(crbug.com/40197696): Switch to SetUserVerifiable after moving all
   // |is_user_verifiable_| related logic from CreditCardAccessManager to
   // CreditCardFidoAuthenticator.
@@ -2449,7 +2444,10 @@ TEST_F(CreditCardAccessManagerTest,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   fido_authenticator().set_is_user_opted_in(true);
 #endif
+  NiceMock<MockCreditCardAccessManagerObserver> observer;
+  ExpectCardRetrievalFailure(virtual_card, observer);
 
+  credit_card_access_manager().AddObserver(&observer);
   FetchCreditCard(&virtual_card);
 
   // This checks risk-based authentication flow is successfully invoked,
@@ -2470,6 +2468,7 @@ TEST_F(CreditCardAccessManagerTest,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(fido_authenticator().authenticate_invoked());
 #endif
+  credit_card_access_manager().RemoveObserver(&observer);
 
   // Expect the metrics are logged correctly.
   histogram_tester.ExpectUniqueSample(
@@ -2480,14 +2479,12 @@ TEST_F(CreditCardAccessManagerTest,
 }
 
 // Ensures that the virtual card risk-based unmasking response is handled
-// correctly if there is virtual card retrieval error.
+// correctly if there is a virtual card retrieval error.
 TEST_F(CreditCardAccessManagerTest,
        RiskBasedVirtualCardUnmasking_Failure_VirtualCardRetrievalError) {
   base::HistogramTester histogram_tester;
-  const CreditCard* masked_server_card =
-      CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
-  CreditCard virtual_card = *masked_server_card;
-  virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  CreditCard virtual_card =
+      AsVirtualCard(*CreateServerCard(kTestGUID, kTestNumber, kTestServerId));
   // TODO(crbug.com/40197696): Switch to SetUserVerifiable after moving all
   // is_user_veriable_ related logic from CreditCardAccessManager to
   // CreditCardFidoAuthenticator.
@@ -2495,7 +2492,10 @@ TEST_F(CreditCardAccessManagerTest,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   fido_authenticator().set_is_user_opted_in(true);
 #endif
+  NiceMock<MockCreditCardAccessManagerObserver> observer;
+  ExpectCardRetrievalFailure(virtual_card, observer);
 
+  credit_card_access_manager().AddObserver(&observer);
   FetchCreditCard(&virtual_card);
 
   // This checks risk-based authentication flow is successfully invoked,
@@ -2519,6 +2519,7 @@ TEST_F(CreditCardAccessManagerTest,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(fido_authenticator().authenticate_invoked());
 #endif
+  credit_card_access_manager().RemoveObserver(&observer);
 
   // Expect the metrics are logged correctly.
   histogram_tester.ExpectUniqueSample(
@@ -2531,10 +2532,12 @@ TEST_F(CreditCardAccessManagerTest,
 TEST_F(CreditCardAccessManagerTest,
        RiskBasedVirtualCardUnmasking_Failure_MerchantOptedOut) {
   base::HistogramTester histogram_tester;
-  const CreditCard* masked_server_card =
-      CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
-  CreditCard virtual_card = *masked_server_card;
-  virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  CreditCard virtual_card =
+      AsVirtualCard(*CreateServerCard(kTestGUID, kTestNumber, kTestServerId));
+  NiceMock<MockCreditCardAccessManagerObserver> observer;
+  ExpectCardRetrievalFailure(virtual_card, observer);
+
+  credit_card_access_manager().AddObserver(&observer);
   FetchCreditCard(&virtual_card);
 
   AutofillErrorDialogContext autofill_error_dialog_context;
@@ -2549,6 +2552,7 @@ TEST_F(CreditCardAccessManagerTest,
       RiskBasedAuthenticationResponse::Result::kVirtualCardRetrievalError;
   credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
       response);
+  credit_card_access_manager().RemoveObserver(&observer);
 
   EXPECT_TRUE(autofill_client()
                   .GetPaymentsAutofillClient()
@@ -2570,10 +2574,8 @@ TEST_F(CreditCardAccessManagerTest,
 TEST_F(CreditCardAccessManagerTest,
        RiskBasedVirtualCardUnmasking_FlowCancelled) {
   base::HistogramTester histogram_tester;
-  const CreditCard* masked_server_card =
-      CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
-  CreditCard virtual_card = *masked_server_card;
-  virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  CreditCard virtual_card =
+      AsVirtualCard(*CreateServerCard(kTestGUID, kTestNumber, kTestServerId));
   // TODO(crbug.com/40197696): Switch to SetUserVerifiable after moving all
   // is_user_veriable_ related logic from CreditCardAccessManager to
   // CreditCardFidoAuthenticator.
@@ -2581,7 +2583,10 @@ TEST_F(CreditCardAccessManagerTest,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   fido_authenticator().set_is_user_opted_in(true);
 #endif
+  NiceMock<MockCreditCardAccessManagerObserver> observer;
+  ExpectCardRetrievalFailure(virtual_card, observer);
 
+  credit_card_access_manager().AddObserver(&observer);
   FetchCreditCard(&virtual_card);
 
   // This checks risk-based authentication flow is successfully invoked,
@@ -2592,6 +2597,7 @@ TEST_F(CreditCardAccessManagerTest,
                   ->risk_based_authentication_invoked());
   // Mock that the flow was cancelled by the user.
   test_api(credit_card_access_manager()).OnVirtualCardUnmaskCancelled();
+  credit_card_access_manager().RemoveObserver(&observer);
 
   EXPECT_FALSE(otp_authenticator().on_challenge_option_selected_invoked());
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)

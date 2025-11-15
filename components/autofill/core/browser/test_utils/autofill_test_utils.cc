@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <iterator>
 #include <string>
+#include <utility>
 #include <variant>
 
 #include "base/hash/hash.h"
@@ -535,13 +536,18 @@ CreditCard GetRandomCreditCard(CreditCard::RecordType record_type) {
 }
 
 CreditCard WithCvc(CreditCard credit_card, std::u16string cvc) {
-  credit_card.set_cvc(cvc);
+  credit_card.set_cvc(std::move(cvc));
   return credit_card;
 }
 
-CreditCard AsFullServerCard(CreditCard card) {
-  card.set_record_type(CreditCard::RecordType::kFullServerCard);
-  return card;
+CreditCard AsFullServerCard(CreditCard credit_card) {
+  credit_card.set_record_type(CreditCard::RecordType::kFullServerCard);
+  return credit_card;
+}
+
+CreditCard AsVirtualCard(CreditCard credit_card) {
+  credit_card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  return credit_card;
 }
 
 CreditCardCloudTokenData GetCreditCardCloudTokenData1() {

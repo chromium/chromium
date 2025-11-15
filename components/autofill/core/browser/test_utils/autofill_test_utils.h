@@ -193,6 +193,9 @@ CreditCard WithCvc(CreditCard credit_card, std::u16string cvc = u"123");
 // Returns a `credit_card` with its record type set to full server card.
 CreditCard AsFullServerCard(CreditCard credit_card);
 
+// Returns a `credit_card` with its record type set to virtual card.
+CreditCard AsVirtualCard(CreditCard credit_card);
+
 // Returns a credit card cloud token data full of dummy info.
 CreditCardCloudTokenData GetCreditCardCloudTokenData1();
 
