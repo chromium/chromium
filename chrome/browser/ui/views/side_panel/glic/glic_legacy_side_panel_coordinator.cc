@@ -43,7 +43,7 @@ GlicLegacySidePanelCoordinator::GlicLegacySidePanelCoordinator(Browser* browser)
           GlicKeyedServiceFactory::GetGlicKeyedService(browser->GetProfile())),
       glic_action_(
           GetGlicActionItem(browser->GetActions()->root_action_item())) {
-  DCHECK(!GlicEnabling::IsMultiInstanceEnabledByFlags());
+  DCHECK(!GlicEnabling::IsMultiInstanceEnabled());
 
   on_glic_enabled_changed_subscription_ =
       glic_service_->enabling().RegisterAllowedChanged(base::BindRepeating(

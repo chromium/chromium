@@ -84,11 +84,10 @@ Profile* GlicProfileManager::GetProfileForLaunch() const {
   // If the glic window is currently showing detached use that profile. When
   // GlicMultiInstance is enabled, this profile is the one where a detached
   // instance was most recently used.
-  if (!GlicEnabling::IsMultiInstanceEnabledByFlags() && last_active_glic_ &&
+  if (!GlicEnabling::IsMultiInstanceEnabled() && last_active_glic_ &&
       last_active_glic_->IsWindowDetached()) {
     return last_active_glic_->profile();
-  } else if (GlicEnabling::IsMultiInstanceEnabledByFlags() &&
-             current_detached_glic_) {
+  } else if (GlicEnabling::IsMultiInstanceEnabled() && current_detached_glic_) {
     return current_detached_glic_->profile();
   }
 
@@ -168,7 +167,7 @@ void GlicProfileManager::OnLoadingClientForService(GlicKeyedService* glic) {
   }
 
   if (last_loaded_glic_ && last_loaded_glic_.get() != glic &&
-      !GlicEnabling::IsMultiInstanceEnabledByFlags()) {
+      !GlicEnabling::IsMultiInstanceEnabled()) {
     last_loaded_glic_->CloseAndShutdown();
   }
 

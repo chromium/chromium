@@ -70,6 +70,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       ui::Command::AcceleratorToString(
           LocalHotkeyManager::GetDefaultAccelerator(
               LocalHotkeyManager::Hotkey::kFocusToggle)));
+  registry->RegisterBooleanPref(
+      prefs::kGlicMultiInstanceEnabledBySubscriptionTier, false);
 }
 
 }  // namespace glic::prefs

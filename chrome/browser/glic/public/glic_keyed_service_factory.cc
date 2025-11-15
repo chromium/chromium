@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 
@@ -37,6 +38,8 @@ GlicKeyedServiceFactory::GlicKeyedServiceFactory()
   DependsOn(ThemeServiceFactory::GetInstance());
   DependsOn(contextual_cueing::ContextualCueingServiceFactory::GetInstance());
   DependsOn(actor::ActorKeyedServiceFactory::GetInstance());
+  DependsOn(subscription_eligibility::SubscriptionEligibilityServiceFactory::
+                GetInstance());
 }
 
 GlicKeyedServiceFactory::~GlicKeyedServiceFactory() = default;

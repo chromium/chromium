@@ -107,6 +107,21 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // and the account is non-enterprise (or for glic dev).
   static bool IsShareImageEnabledForProfile(Profile* profile);
 
+  // Whether the required feature flags for multi-instance are enabled, or
+  // multi-instance should be enabled due to subscription tier.
+  static bool IsMultiInstanceEnabled();
+
+  // Whether the result of
+  // `GetAndUpdateEligibilityForGlicMultiInstanceTieredRollout` was true the
+  // first time this function was called during the current run of Chrome.
+  static bool IsEligibleForGlicMultiInstanceTieredRolloutThisRun();
+
+  // Whether any loaded profile is, or has ever been, of a subscription tier
+  // that should enable multi-instance. `additional_profile` may be provided by
+  // the caller in case it has not been fully loaded.
+  static bool GetAndUpdateEligibilityForGlicMultiInstanceTieredRollout(
+      Profile* additional_profile);
+
   struct ProfileEnablement {
     // These conditions are checked first and may prevent following checks from
     // occurring.
