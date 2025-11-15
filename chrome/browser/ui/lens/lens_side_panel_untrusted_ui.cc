@@ -191,6 +191,9 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean("composeboxShowRecentTabChip", false);
   // Enable submit button.
   html_source->AddBoolean("composeboxShowSubmit", true);
+  // Enables a fix that causes no flickering when transitioning between ZPS and
+  // typed suggestions.
+  html_source->AddBoolean("composeboxNoFlickerSuggestionsFix", true);
 
   // Add strings for post message communication with the remote UI.
   lens::ClientToAimMessage handshake_ping;

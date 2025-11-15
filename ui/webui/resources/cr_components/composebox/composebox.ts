@@ -169,6 +169,8 @@ export class ComposeboxElement extends I18nMixinLit
   accessor isDraggingFile: boolean = false;
   accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
   accessor entrypointName: string = '';
+  protected composeboxNoFlickerSuggestionsFix_: boolean =
+      loadTimeData.getBoolean('composeboxNoFlickerSuggestionsFix');
   // If isCollapsible is set to true, the composebox will be a pill shape until
   // it gets focused, at which point it will expand. If false, defaults to the
   // expanded state.
@@ -223,6 +225,10 @@ export class ComposeboxElement extends I18nMixinLit
       loadTimeData.getBoolean('composeboxContextDragAndDropEnabled');
   protected accessor inVoiceSearchMode_: boolean = false;
   private selectedMatch_: AutocompleteMatch|null = null;
+  // Whether the composebox is actively waiting for an autocomplete response. If
+  // this is false, that means at least one response has been received (even if
+  // the response was empty or had an error).
+  private haveReceivedAutcompleteResponse_: boolean = false;
 
   constructor() {
     super();
@@ -724,9 +730,19 @@ export class ComposeboxElement extends I18nMixinLit
     this.input_ = inputElement.value;
     // `clearMatches` is true if input is empty stop any in progress providers
     // before requerying for on-focus (zero-suggest) inputs. The searchbox
-    // doesn't allow zero-suggest requests to be made while the ACController is
-    // not done.
-    this.queryAutocomplete(/* clearMatches= */ this.input_ === '');
+    // doesn't allow zero-suggest requests to be made while the ACController
+    // is not done.
+    if (this.composeboxNoFlickerSuggestionsFix_) {
+      // If the composebox no flickering fix is enabled, stop the ACController
+      // from querying for suggestions when the input is empty, but don't clear
+      // the matches so the dropdown doesn't close.
+      if (this.input_ === '') {
+        this.searchboxHandler_.stopAutocomplete(/*clearResult=*/ true);
+      }
+      this.queryAutocomplete(/* clearMatches= */ false);
+    } else {
+      this.queryAutocomplete(/* clearMatches= */ this.input_ === '');
+    }
   }
 
   protected onKeydown_(e: KeyboardEvent) {
@@ -985,6 +1001,26 @@ export class ComposeboxElement extends I18nMixinLit
         this.lastQueriedInput_.trimStart() !== result.input) {
       return;
     }
+
+    // The first autcomplete response for ZPS contains no matches, since
+    // composebox doesn't support ZPS from local providers (ex. history
+    // suggestion). Similarly, since composebox doesn't support local providers,
+    // typed suggest first response returns a single verbatim match, which
+    // doesn't show in the dropdown. To prevent closing the dropdown before the
+    // actual response from the suggest server is received, ignore the first
+    // response. Only do this if the no flicker fix is enabled. This is guarded
+    // because its not confirmed that the ACController will always return two
+    // responses for a single query.
+    // TODO(crbug.com/460888279): This is a temporary, merge safe fix. Ideally,
+    // the ACController is not sending multiple responses for a single query,
+    // especially when the matches is empty. Remove this logic once a long term
+    // fix is found.
+    if (this.composeboxNoFlickerSuggestionsFix_ && this.showTypedSuggest_ &&
+        !this.haveReceivedAutcompleteResponse_) {
+      this.haveReceivedAutcompleteResponse_ = true;
+      return;
+    }
+    this.haveReceivedAutcompleteResponse_ = true;
     this.result_ = result;
     const hasMatches = this.result_.matches.length > 0;
     const firstMatch = hasMatches ? this.result_.matches[0] : null;
@@ -1095,6 +1131,7 @@ export class ComposeboxElement extends I18nMixinLit
       this.clearAutocompleteMatches();
     }
     this.lastQueriedInput_ = this.input_;
+    this.haveReceivedAutcompleteResponse_ = false;
     this.searchboxHandler_.queryAutocomplete(this.input_, false);
   }
 

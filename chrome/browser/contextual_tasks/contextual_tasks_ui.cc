@@ -98,6 +98,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddString("composeboxAttachmentFileTypes", "");
   source->AddInteger("composeboxFileMaxSize", 0);
   source->AddInteger("composeboxFileMaxCount", 0);
+  source->AddBoolean("composeboxNoFlickerSuggestionsFix", false);
   // Enable typed suggest.
   source->AddBoolean("composeboxShowTypedSuggest", true);
   source->AddBoolean("composeboxShowTypedSuggestWithContext", false);
