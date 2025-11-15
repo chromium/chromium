@@ -110,7 +110,6 @@ class WebView;
 class LensSearchController;
 class PrefService;
 class Profile;
-class SidePanelCoordinator;
 enum class SidePanelEntryHideReason;
 
 extern void* kLensOverlayPreselectionWidgetIdentifier;
@@ -180,10 +179,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
     // Showing an overlay without results.
     kOverlay,
 
-    // TODO(crbug.com/450638028): Remove this state and only keep kOverlay.
-    // Showing an overlay with results.
-    kOverlayAndResults,
-
     // The UI is hidden, but the lens session is still active (e.g. side panel
     // is showing results). This differs from kBackground, where the tab is
     // inactive.
@@ -215,11 +210,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Returns the dynamic color palette identifier based on the screenshot.
   lens::PaletteId color_palette() {
     return initialization_data_->color_palette_;
-  }
-
-  // Returns the results side panel coordinator
-  lens::LensOverlaySidePanelCoordinator* results_side_panel_coordinator() {
-    return results_side_panel_coordinator_.get();
   }
 
   // When a tab is in the background, the WebContents may be discarded to save
@@ -750,6 +740,9 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Returns true if the searchbox is a CONTEXTUAL_SEARCHBOX.
   bool IsContextualSearchbox();
 
+  // Returns true if the Lens results side panel is showing.
+  bool IsResultsSidePanelShowing();
+
   // Called when the UI needs to create the view to show in the overlay.
   raw_ptr<views::View> CreateViewForOverlay();
 
@@ -1153,21 +1146,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Requests are only made if the WebUI has not already cached the languages
   // and none of the update cache conditions are met.
   std::unique_ptr<lens::LensOverlayLanguagesController> languages_controller_;
-
-  // General side panel coordinator responsible for all side panel interactions.
-  // Separate from the results_side_panel_coordinator because this controls
-  // interactions to other side panels as well, not just our results. The
-  // side_panel_coordinator lives with the browser view, so it should outlive
-  // this class. Therefore, if the controller is not in the kOff state, this can
-  // be assumed to be non-null.
-  raw_ptr<SidePanelCoordinator> side_panel_coordinator_ = nullptr;
-
-  // TODO(crbug.com/450336818): Remove this field and use the
-  // LensSearchController to get the side panel coordinator.
-  // Side panel coordinator for the side panel coordinator that controls the
-  // results side panel. Guaranteed to exist if the overlay is not `kOff`.
-  raw_ptr<lens::LensOverlaySidePanelCoordinator>
-      results_side_panel_coordinator_;
 
   // Layer delegate that handles blurring the background behind the WebUI.
   std::unique_ptr<lens::LensOverlayBlurLayerDelegate>

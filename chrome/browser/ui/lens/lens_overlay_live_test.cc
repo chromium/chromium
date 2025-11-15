@@ -186,6 +186,11 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
     return signin::test::sync_service(browser());
   }
 
+  bool IsLensOverlaySidePanelShowing() {
+    return browser()->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kLensOverlayResults));
+  }
+
   signin::test::SignInFunctions sign_in_functions =
       signin::test::SignInFunctions(
           base::BindLambdaForTesting(
@@ -261,10 +266,7 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
 
     // Expect the Lens Overlay results panel to open.
     ASSERT_TRUE(base::test::RunUntil(
-        [&]() { return controller->state() == State::kOverlayAndResults; }));
-    auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
-    ASSERT_TRUE(coordinator->IsSidePanelEntryShowing(
-        SidePanelEntryKey(SidePanelEntryId::kLensOverlayResults)));
+        [&]() { return IsLensOverlaySidePanelShowing(); }));
 
     // Wait for the panel to finish loading.
     EXPECT_TRUE(content::WaitForLoadStop(
@@ -447,15 +449,10 @@ class LensOverlayTranslateLiveTest : public LensOverlayLiveTest {
     // for the overlay to compute their bounding boxes for highlighted lines.
     // For this reason, keep clicking on the line until the side panel actually
     // opens.
-    auto* controller = browser()
-                           ->tab_strip_model()
-                           ->GetActiveTab()
-                           ->GetTabFeatures()
-                           ->lens_overlay_controller();
     ASSERT_TRUE(base::test::RunUntil([&]() {
       EvalJs(content::JsReplace(kFindAndClickDivWithClassScript,
                                 kDivTranslatedLineClass));
-      return controller->state() == State::kOverlayAndResults;
+      return IsLensOverlaySidePanelShowing();
     }));
   }
 
