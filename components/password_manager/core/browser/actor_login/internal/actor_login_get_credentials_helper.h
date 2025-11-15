@@ -7,6 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
@@ -17,7 +19,7 @@ namespace password_manager {
 class PasswordManagerClient;
 class PasswordManagerInterface;
 class PasswordFormManager;
-}
+}  // namespace password_manager
 
 namespace actor_login {
 
@@ -48,18 +50,30 @@ class ActorLoginGetCredentialsHelper
   // password_manager::FormFetcher::Consumer:
   void OnFetchCompleted() override;
 
+  // Populates data into `get_credentials_logs_` at the end of credential
+  // fetching.
+  void BuildGetCredentialsOutcome(const std::vector<Credential>& result);
+
   url::Origin request_origin_;
+
   CredentialsOrErrorReply callback_;
+
   raw_ptr<password_manager::PasswordManagerInterface> password_manager_ =
       nullptr;
 
-  // Safe to access from everywhere apart from the destructor.
   raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
+
+  // Logs entry to be given to `mqls_logger` when the request ends.
+  optimization_guide::proto::ActorLoginQuality_GetCredentialsDetails
+      get_credentials_logs_;
 
   // Helper class that sends MQLS logs about full actor login attempt
   // (GetCredentials + AttemptLogin). Owned by AttemptLoginTool.
   // TODO(crbug.com/460025687): Use raw_ptr instead.
   base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger_;
+
+  // Used to compute the request duration.
+  base::TimeTicks start_time_;
 
   // Helper object for finding login forms.
   std::unique_ptr<ActorLoginFormFinder> login_form_finder_;
@@ -67,9 +81,10 @@ class ActorLoginGetCredentialsHelper
   std::unique_ptr<password_manager::FormFetcher> owned_form_fetcher_;
   // The form fetcher from which credentials will be retrieved. If a
   // `PasswordFormManager` for a sign-in form already exists, this will be a
-  // non-owning pointer to its `FormFetcher`. Otherwise, this class will own the
-  // `FormFetcher` via `owned_form_fetcher_`.
+  // non-owning pointer to its `FormFetcher`. Otherwise, this class will own
+  // the `FormFetcher` via `owned_form_fetcher_`.
   raw_ptr<password_manager::FormFetcher> form_fetcher_ = nullptr;
+
   bool immediately_available_to_login_ = false;
   base::WeakPtrFactory<ActorLoginGetCredentialsHelper> weak_ptr_factory_{this};
 };

@@ -9,8 +9,25 @@
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
+#include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+
+using GetCredentialsDetails =
+    optimization_guide::proto::ActorLoginQuality_GetCredentialsDetails;
+
+// Expect two protos to be equal if they are serialized into the same strings.
+MATCHER_P(ProtoEquals, expected_message, "") {
+  std::string expected_serialized, actual_serialized;
+  expected_message.SerializeToString(&expected_serialized);
+  arg.SerializeToString(&actual_serialized);
+  return expected_serialized == actual_serialized;
+}
+
+}  // namespace
 
 class ActorLoginQualityLoggerTest : public testing::Test {
  public:
@@ -44,4 +61,22 @@ TEST_F(ActorLoginQualityLoggerTest, UploadFinalLogHandlesNull) {
   logger.UploadFinalLog(nullptr);
   // No log is available because the service is null.
   EXPECT_TRUE(logs_uploader_->uploaded_logs().empty());
+}
+
+TEST_F(ActorLoginQualityLoggerTest, SetsGetCredentialsDetails) {
+  ActorLoginQualityLogger logger;
+
+  GetCredentialsDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_GetCredentialsOutcome_NO_SIGN_IN_FORM);
+  expected_details.set_permission_details(
+      optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_PermissionDetails_HAS_PERMANENT_PERMISSION);
+  expected_details.set_getting_credentials_time_ms(5);
+  logger.SetGetCredentialsDetails(expected_details);
+
+  GetCredentialsDetails get_credentials_details =
+      logger.get_log_data().get_credentials_details();
+  EXPECT_THAT(get_credentials_details, ProtoEquals(expected_details));
 }

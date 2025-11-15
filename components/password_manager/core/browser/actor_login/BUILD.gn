@@ -17,6 +17,7 @@ source_set("common") {
 
   deps = [
     "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//url",
   ]
 }

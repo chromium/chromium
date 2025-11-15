@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 
@@ -24,13 +25,21 @@ class ActorLoginQualityLogger
   ActorLoginQualityLogger& operator=(const ActorLoginQualityLogger&) = delete;
 
   // actor_login::ActorLoginQualityLoggerInterface:
+  void SetGetCredentialsDetails(
+      optimization_guide::proto::ActorLoginQuality_GetCredentialsDetails
+          get_credentials_details) override;
   void UploadFinalLog(optimization_guide::ModelQualityLogsUploaderService*
                           mqls_uploader) const override;
 
+#if defined(UNIT_TEST)
+  const optimization_guide::proto::ActorLoginQuality& get_log_data() {
+    return log_data_;
+  }
+#endif  // defined(UNIT_TEST)
   base::WeakPtr<ActorLoginQualityLogger> AsWeakPtr();
 
  private:
-  optimization_guide::proto::LogAiDataRequest log_data_;
+  optimization_guide::proto::ActorLoginQuality log_data_;
   base::WeakPtrFactory<ActorLoginQualityLogger> weak_ptr_factory_{this};
 };
 

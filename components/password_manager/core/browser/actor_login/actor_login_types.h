@@ -12,6 +12,7 @@
 #include "base/types/expected.h"
 #include "base/types/id_type.h"
 #include "base/types/strong_alias.h"
+#include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -121,6 +122,29 @@ using LoginStatusResultOrError =
     base::expected<LoginStatusResult, ActorLoginError>;
 using LoginStatusResultOrErrorReply =
     base::OnceCallback<void(LoginStatusResultOrError)>;
+
+// C++ enum copy of `GetCredentialsOutcome` in `actor_login.proto`.
+enum class GetCredentialsOutcomeMqls {
+  kUnspecified,
+  kNoCredentials,
+  kSignInFormExists,
+  kNoSignInForm,
+  kFillingNotAllowed,
+};
+
+optimization_guide::proto::
+    ActorLoginQuality_GetCredentialsDetails_GetCredentialsOutcome
+    OutcomeEnumToProtoType(GetCredentialsOutcomeMqls outcome);
+
+enum class PermissionDetailsMqls {
+  kUnknown,
+  kHasPermanentPermission,
+  kNoPermanentPermission,
+};
+
+optimization_guide::proto::
+    ActorLoginQuality_GetCredentialsDetails_PermissionDetails
+    PermissionEnumToProtoType(PermissionDetailsMqls permission);
 
 }  // namespace actor_login
 
