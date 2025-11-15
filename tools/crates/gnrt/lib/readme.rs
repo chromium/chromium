@@ -265,26 +265,37 @@ impl<'a> TryFrom<&'a spdx::LicenseReq> for LicenseKind {
 
 static LICENSE_KIND_TO_LICENSE_FILES: LazyLock<HashMap<LicenseKind, Vec<String>>> =
     LazyLock::new(|| {
-        const PREFIX: &str = "LICENSE";
+        const PREFIXES: [&str; 2] = [
+            // Most common spelling.
+            "LICENSE",
+            // British English spelling (e.g. found in the `pad-0.1.6` crate).
+            "LICENCE",
+        ];
         const EXTENSIONS: [&str; 3] = ["", ".md", ".txt"];
 
         // This block generates a map with the most common license file types, in order
         // of priority.
         let mut map = HashMap::new();
         for kind in LicenseKind::iter() {
-            // The suffix for the license file name is taken from the Display
-            // implementation. E.g. "Apache-2.0" becomes "APACHE"
-            let license_suffix = kind.as_ref().split("-").next().unwrap().to_uppercase();
+            let license_name_suffix = {
+                // `license_kind_name` is taken from the Display
+                // implementation. E.g. "Apache-2.0" becomes "-APACHE"
+                let license_kind_name = kind.as_ref().split("-").next().unwrap().to_uppercase();
+                // Prepend `-` so this can be used as an optional suffix.
+                format!("-{license_kind_name}")
+            };
+            // More specific `license_name_suffix` is prioritized and listed first.
+            let suffixes: [&str; 2] = [&license_name_suffix, ""];
 
             let mut license_files = vec![];
-            // License types with the license-specific suffix are higher priority.
-            for ext in EXTENSIONS {
-                license_files.push(format!("{PREFIX}-{license_suffix}{ext}"));
+            for suffix in suffixes {
+                for prefix in PREFIXES {
+                    for extension in EXTENSIONS {
+                        license_files.push(format!("{prefix}{suffix}{extension}"));
+                    }
+                }
             }
-            // License types that are common to all licenses are lower priority.
-            for ext in EXTENSIONS {
-                license_files.push(format!("{PREFIX}{ext}"));
-            }
+
             map.insert(kind, license_files);
         }
 
@@ -444,9 +455,15 @@ mod test {
                     "LICENSE-APACHE",
                     "LICENSE-APACHE.md",
                     "LICENSE-APACHE.txt",
+                    "LICENCE-APACHE",
+                    "LICENCE-APACHE.md",
+                    "LICENCE-APACHE.txt",
                     "LICENSE",
                     "LICENSE.md",
                     "LICENSE.txt",
+                    "LICENCE",
+                    "LICENCE.md",
+                    "LICENCE.txt",
                 ],
             ),
             (
@@ -455,9 +472,15 @@ mod test {
                     "LICENSE-MIT",
                     "LICENSE-MIT.md",
                     "LICENSE-MIT.txt",
+                    "LICENCE-MIT",
+                    "LICENCE-MIT.md",
+                    "LICENCE-MIT.txt",
                     "LICENSE",
                     "LICENSE.md",
                     "LICENSE.txt",
+                    "LICENCE",
+                    "LICENCE.md",
+                    "LICENCE.txt",
                 ],
             ),
         ];
