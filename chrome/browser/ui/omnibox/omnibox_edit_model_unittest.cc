@@ -513,6 +513,17 @@ TEST_F(OmniboxEditModelTest,
 
 class OmniboxEditModelPopupTest : public ::testing::Test {
  public:
+  class TestObserver : public OmniboxEditModel::Observer {
+   public:
+    MOCK_METHOD(void,
+                OnSelectionChanged,
+                (OmniboxPopupSelection, OmniboxPopupSelection),
+                (override));
+    MOCK_METHOD(void, OnMatchIconUpdated, (size_t), (override));
+    MOCK_METHOD(void, OnContentsChanged, (), (override));
+    MOCK_METHOD(void, OnKeywordStateChanged, (bool), (override));
+  };
+
   OmniboxEditModelPopupTest() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     // `kExperimentalOmniboxLabs` feature flag has to be enabled
@@ -1646,4 +1657,33 @@ TEST_F(OmniboxEditModelPopupTest,
   ASSERT_TRUE(match_with_bitmap_bitmap);
   gfx::test::CheckColors(expected_bitmap.getColor(0, 0),
                          match_with_bitmap_bitmap->getColor(0, 0));
+}
+
+TEST_F(OmniboxEditModelPopupTest, KeywordStateObserver) {
+  TestObserver observer;
+  model()->AddObserver(&observer);
+
+  // Entering keyword mode should notify observers.
+  EXPECT_CALL(observer, OnKeywordStateChanged(true));
+  model()->SetKeyword(u"keyword");
+  model()->SetIsKeywordHint(false);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Leaving keyword mode should notify observers.
+  EXPECT_CALL(observer, OnKeywordStateChanged(false));
+  model()->SetKeyword(u"");
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Setting hint state should notify if it changes keyword selected state.
+  model()->SetKeyword(u"keyword");
+  EXPECT_CALL(observer, OnKeywordStateChanged(false));
+  model()->SetIsKeywordHint(true);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Setting hint state should not notify if it doesn't change selected state.
+  EXPECT_CALL(observer, OnKeywordStateChanged(testing::_)).Times(0);
+  model()->SetIsKeywordHint(true);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  model()->RemoveObserver(&observer);
 }

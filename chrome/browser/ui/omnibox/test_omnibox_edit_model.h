@@ -19,6 +19,9 @@ class TestOmniboxEditModel : public OmniboxEditModel {
   TestOmniboxEditModel(const TestOmniboxEditModel&) = delete;
   TestOmniboxEditModel& operator=(const TestOmniboxEditModel&) = delete;
 
+  using OmniboxEditModel::SetIsKeywordHint;
+  using OmniboxEditModel::SetKeyword;
+
   // OmniboxEditModel:
   AutocompleteMatch CurrentMatchAndAlternateNavUrl(
       GURL* alternate_nav_url) const override;

@@ -365,6 +365,9 @@ interface Page {
   UpdateSelection(
       OmniboxPopupSelection old_selection, OmniboxPopupSelection selection);
 
+  // Called when the keyword mode state changes.
+  SetKeywordSelected(bool is_keyword_selected);
+
   // Called to set searchbox input.
   SetInputText(string input);
 

@@ -115,6 +115,10 @@ void WebuiOmniboxHandler::OnResultChanged(AutocompleteController* controller,
   SearchboxHandler::OnResultChanged(controller, default_match_changed);
 }
 
+void WebuiOmniboxHandler::OnKeywordStateChanged(bool is_keyword_selected) {
+  page_->SetKeywordSelected(is_keyword_selected);
+}
+
 void WebuiOmniboxHandler::OnSelectionChanged(
     OmniboxPopupSelection old_selection,
     OmniboxPopupSelection selection) {

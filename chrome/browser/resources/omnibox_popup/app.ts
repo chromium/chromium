@@ -83,8 +83,11 @@ export class OmniboxPopupAppElement extends I18nMixinLit
         reflect: true,
       },
 
+      isInKeywordMode_: {type: Boolean},
+
       result_: {type: Object},
       searchboxLayoutMode_: {type: String},
+      showContextEntrypoint_: {type: Boolean},
     };
   }
 
@@ -92,13 +95,16 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       canShowSecondarySideMediaQueryList.matches;
   accessor hasSecondarySide: boolean = false;
   accessor isDebug: boolean = false;
+  protected accessor isInKeywordMode_: boolean = false;
   protected accessor hasVisibleMatches_: boolean = false;
   protected accessor result_: AutocompleteResult|null = null;
   protected accessor searchboxLayoutMode_: string =
       loadTimeData.getString('searchboxLayoutMode');
+  protected accessor showContextEntrypoint_: boolean = false;
 
   private callbackRouter_: PageCallbackRouter;
   private autocompleteResultChangedListenerId_: number|null = null;
+  private keywordSelectedListenerId_: number|null = null;
   private selectionChangedListenerId_: number|null = null;
   private eventTracker_ = new EventTracker();
   private pageHandler_: PageHandlerInterface;
@@ -119,6 +125,11 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     this.selectionChangedListenerId_ =
         this.callbackRouter_.updateSelection.addListener(
             this.onUpdateSelection_.bind(this));
+    this.keywordSelectedListenerId_ =
+        this.callbackRouter_.setKeywordSelected.addListener(
+            (isKeywordSelected: boolean) => {
+              this.isInKeywordMode_ = isKeywordSelected;
+            });
     canShowSecondarySideMediaQueryList.addEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
 
@@ -138,6 +149,8 @@ export class OmniboxPopupAppElement extends I18nMixinLit
         this.autocompleteResultChangedListenerId_);
     assert(this.selectionChangedListenerId_);
     this.callbackRouter_.removeListener(this.selectionChangedListenerId_);
+    assert(this.keywordSelectedListenerId_);
+    this.callbackRouter_.removeListener(this.keywordSelectedListenerId_);
     canShowSecondarySideMediaQueryList.removeEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
   }
@@ -152,6 +165,16 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       this.hasVisibleMatches_ =
           this.result_?.matches.some(match => !match.isHidden) ?? false;
     }
+
+    if (changedPrivateProperties.has('searchboxLayoutMode_') ||
+        changedPrivateProperties.has('isInKeywordMode_')) {
+      this.showContextEntrypoint_ = this.computeShowContextEntrypoint_();
+    }
+  }
+
+  private computeShowContextEntrypoint_(): boolean {
+    const isTallSearchbox = this.searchboxLayoutMode_.startsWith('Tall');
+    return isTallSearchbox && !this.isInKeywordMode_;
   }
 
   private onCanShowSecondarySideChanged_(e: MediaQueryListEvent) {
