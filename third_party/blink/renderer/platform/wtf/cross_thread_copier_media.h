@@ -44,6 +44,8 @@ struct AudioGlitchInfo;
 struct CaptureVersion;
 class VideoFrame;
 struct VideoCaptureFeedback;
+struct VideoCaptureFormat;
+struct VideoCaptureParams;
 struct VideoTransformation;
 }  // namespace media
 
@@ -51,6 +53,26 @@ namespace blink {
 
 class VideoTrackAdapterSettings;
 struct MediaStreamVideoSourceCallbacks;
+struct VideoCaptureCallbacks;
+
+template <>
+struct CrossThreadCopier<media::VideoCaptureFormat>
+    : public CrossThreadCopierPassThrough<media::VideoCaptureFormat> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<blink::Vector<media::VideoCaptureFormat>>
+    : public CrossThreadCopierPassThrough<
+          blink::Vector<media::VideoCaptureFormat>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<media::VideoCaptureParams>
+    : public CrossThreadCopierByValuePassThrough<media::VideoCaptureParams> {
+  STATIC_ONLY(CrossThreadCopier);
+};
 
 template <>
 struct CrossThreadCopier<LocalFrameToken>
@@ -118,6 +140,20 @@ struct CrossThreadCopier<
     base::OnceCallback<void(scoped_refptr<media::VideoFrame>)>>
     : public CrossThreadCopierByValuePassThrough<
           base::OnceCallback<void(scoped_refptr<media::VideoFrame>)>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<VideoCaptureCallbacks>
+    : public CrossThreadCopierPassThrough<VideoCaptureCallbacks> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<
+    base::OnceCallback<void(const blink::Vector<media::VideoCaptureFormat>&)>>
+    : public CrossThreadCopierByValuePassThrough<base::OnceCallback<void(
+          const blink::Vector<media::VideoCaptureFormat>&)>> {
   STATIC_ONLY(CrossThreadCopier);
 };
 

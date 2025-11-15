@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -108,9 +109,9 @@ class IdleDelayedTaskHelper : public base::SingleThreadTaskRunner {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     ThreadScheduler::Current()->PostDelayedIdleTask(
         from_here, delay,
-        base::BindOnce([](base::OnceClosure task,
-                          base::TimeTicks deadline) { std::move(task).Run(); },
-                       std::move(task)));
+        blink::BindOnce([](base::OnceClosure task,
+                           base::TimeTicks deadline) { std::move(task).Run(); },
+                        std::move(task)));
     return true;
   }
 

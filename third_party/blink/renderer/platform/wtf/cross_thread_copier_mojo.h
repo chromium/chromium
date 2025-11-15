@@ -95,6 +95,12 @@ struct CrossThreadCopier<mojo::ScopedDataPipeConsumerHandle>
   STATIC_ONLY(CrossThreadCopier);
 };
 
+template <typename T>
+struct CrossThreadCopier<mojo::StructPtr<T>>
+    : public CrossThreadCopierByValuePassThrough<mojo::StructPtr<T>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_MOJO_H_

@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_url.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -79,13 +80,6 @@ struct CrossThreadCopier<network::mojom::URLResponseHeadPtr> {
   STATIC_ONLY(CrossThreadCopier);
   using Type = network::mojom::URLResponseHeadPtr;
   static Type Copy(Type&& value) { return std::move(value); }
-};
-
-template <>
-struct CrossThreadCopier<network::URLLoaderCompletionStatus>
-    : public CrossThreadCopierByValuePassThrough<
-          network::URLLoaderCompletionStatus> {
-  STATIC_ONLY(CrossThreadCopier);
 };
 
 template <>

@@ -5,20 +5,25 @@
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 
 #include "base/byte_count.h"
-#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "net/base/ip_endpoint.h"
 #include "net/url_request/redirect_info.h"
-#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/url_loader_completion_status.mojom-blink.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/loader/record_load_histograms.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info_notifier.mojom.h"
+#include "third_party/blink/public/mojom/loader/resource_load_info_notifier.mojom-blink.h"
 #include "third_party/blink/public/platform/weak_wrapper_resource_load_info_notifier.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_url.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -52,10 +57,11 @@ void ResourceLoadInfoNotifierWrapper::NotifyUpdateUserGestureCarryoverInfo() {
     }
     return;
   }
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&mojom::ResourceLoadInfoNotifier::
-                                    NotifyUpdateUserGestureCarryoverInfo,
-                                weak_wrapper_resource_load_info_notifier_));
+  PostCrossThreadTask(
+      *task_runner_, FROM_HERE,
+      CrossThreadBindOnce(&mojom::ResourceLoadInfoNotifier::
+                              NotifyUpdateUserGestureCarryoverInfo,
+                          weak_wrapper_resource_load_info_notifier_));
 }
 #endif
 
@@ -151,9 +157,9 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceResponseReceived(
     response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         response_head->headers->raw_headers());
   }
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
+  PostCrossThreadTask(
+      *task_runner_, FROM_HERE,
+      CrossThreadBindOnce(
           &mojom::ResourceLoadInfoNotifier::NotifyResourceResponseReceived,
           weak_wrapper_resource_load_info_notifier_,
           resource_load_info_->request_id,
@@ -173,9 +179,9 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceTransferSizeUpdated(
     }
     return;
   }
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
+  PostCrossThreadTask(
+      *task_runner_, FROM_HERE,
+      CrossThreadBindOnce(
           &mojom::ResourceLoadInfoNotifier::NotifyResourceTransferSizeUpdated,
           weak_wrapper_resource_load_info_notifier_,
           resource_load_info_->request_id, transfer_size_diff));
@@ -202,9 +208,9 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceLoadCompleted(
     }
     return;
   }
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
+  PostCrossThreadTask(
+      *task_runner_, FROM_HERE,
+      CrossThreadBindOnce(
           &mojom::ResourceLoadInfoNotifier::NotifyResourceLoadCompleted,
           weak_wrapper_resource_load_info_notifier_,
           std::move(resource_load_info_), status));
@@ -223,9 +229,9 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceLoadCanceled(
     }
     return;
   }
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
+  PostCrossThreadTask(
+      *task_runner_, FROM_HERE,
+      CrossThreadBindOnce(
           &mojom::ResourceLoadInfoNotifier::NotifyResourceLoadCanceled,
           weak_wrapper_resource_load_info_notifier_,
           resource_load_info_->request_id));

@@ -22,7 +22,6 @@
 
 #include <algorithm>
 
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -35,6 +34,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/video_capture/video_capture_impl.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -114,8 +114,8 @@ base::OnceClosure WebVideoCaptureImplManager::UseDevice(
   if (it->is_individually_suspended)
     Resume(id);
 
-  return base::BindOnce(&WebVideoCaptureImplManager::UnrefDevice,
-                        weak_factory_.GetWeakPtr(), id);
+  return blink::BindOnce(&WebVideoCaptureImplManager::UnrefDevice,
+                         weak_factory_.GetWeakPtr(), id);
 }
 
 base::OnceClosure WebVideoCaptureImplManager::StartCapture(
@@ -130,12 +130,13 @@ base::OnceClosure WebVideoCaptureImplManager::StartCapture(
   // This ID is used to identify a client of VideoCaptureImpl.
   const int client_id = ++next_client_id_;
 
-  Platform::Current()->GetIOTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VideoCaptureImpl::StartCapture, it->impl->GetWeakPtr(),
-                     client_id, params, std::move(video_capture_callbacks)));
-  return base::BindOnce(&WebVideoCaptureImplManager::StopCapture,
-                        weak_factory_.GetWeakPtr(), client_id, id);
+  PostCrossThreadTask(
+      *Platform::Current()->GetIOTaskRunner(), FROM_HERE,
+      blink::CrossThreadBindOnce(&VideoCaptureImpl::StartCapture,
+                                 it->impl->GetWeakPtr(), client_id, params,
+                                 std::move(video_capture_callbacks)));
+  return blink::BindOnce(&WebVideoCaptureImplManager::StopCapture,
+                         weak_factory_.GetWeakPtr(), client_id, id);
 }
 
 void WebVideoCaptureImplManager::RequestRefreshFrame(
@@ -144,9 +145,10 @@ void WebVideoCaptureImplManager::RequestRefreshFrame(
   const auto it = std::ranges::find(devices_, id, &DeviceEntry::session_id);
   if (it == devices_.end())
     return;
-  Platform::Current()->GetIOTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&VideoCaptureImpl::RequestRefreshFrame,
-                                it->impl->GetWeakPtr()));
+  PostCrossThreadTask(
+      *Platform::Current()->GetIOTaskRunner(), FROM_HERE,
+      blink::CrossThreadBindOnce(&VideoCaptureImpl::RequestRefreshFrame,
+                                 it->impl->GetWeakPtr()));
 }
 
 void WebVideoCaptureImplManager::Suspend(
@@ -162,9 +164,10 @@ void WebVideoCaptureImplManager::Suspend(
   it->is_individually_suspended = true;
   if (is_suspending_all_)
     return;  // Device should already be suspended.
-  Platform::Current()->GetIOTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&VideoCaptureImpl::SuspendCapture,
-                                it->impl->GetWeakPtr(), true));
+  PostCrossThreadTask(
+      *Platform::Current()->GetIOTaskRunner(), FROM_HERE,
+      blink::CrossThreadBindOnce(&VideoCaptureImpl::SuspendCapture,
+                                 it->impl->GetWeakPtr(), true));
 }
 
 void WebVideoCaptureImplManager::Resume(
@@ -178,9 +181,10 @@ void WebVideoCaptureImplManager::Resume(
   it->is_individually_suspended = false;
   if (is_suspending_all_)
     return;  // Device must remain suspended until all are resumed.
-  Platform::Current()->GetIOTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&VideoCaptureImpl::SuspendCapture,
-                                it->impl->GetWeakPtr(), false));
+  PostCrossThreadTask(
+      *Platform::Current()->GetIOTaskRunner(), FROM_HERE,
+      blink::CrossThreadBindOnce(&VideoCaptureImpl::SuspendCapture,
+                                 it->impl->GetWeakPtr(), false));
 }
 
 void WebVideoCaptureImplManager::GetDeviceSupportedFormats(
@@ -190,11 +194,11 @@ void WebVideoCaptureImplManager::GetDeviceSupportedFormats(
   const auto it = std::ranges::find(devices_, id, &DeviceEntry::session_id);
   if (it == devices_.end())
     return;
-  Platform::Current()->GetIOTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
+  PostCrossThreadTask(
+      *Platform::Current()->GetIOTaskRunner(), FROM_HERE,
+      blink::CrossThreadBindOnce(
           &VideoCaptureImpl::GetDeviceSupportedFormats, it->impl->GetWeakPtr(),
-          base::BindOnce(&MediaCallbackCaller, std::move(callback))));
+          blink::BindOnce(&MediaCallbackCaller, std::move(callback))));
 }
 
 void WebVideoCaptureImplManager::GetDeviceFormatsInUse(
@@ -204,11 +208,11 @@ void WebVideoCaptureImplManager::GetDeviceFormatsInUse(
   const auto it = std::ranges::find(devices_, id, &DeviceEntry::session_id);
   if (it == devices_.end())
     return;
-  Platform::Current()->GetIOTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
+  PostCrossThreadTask(
+      *Platform::Current()->GetIOTaskRunner(), FROM_HERE,
+      blink::CrossThreadBindOnce(
           &VideoCaptureImpl::GetDeviceFormatsInUse, it->impl->GetWeakPtr(),
-          base::BindOnce(&MediaCallbackCaller, std::move(callback))));
+          blink::BindOnce(&MediaCallbackCaller, std::move(callback))));
 }
 
 std::unique_ptr<VideoCaptureImpl>
@@ -226,9 +230,10 @@ void WebVideoCaptureImplManager::StopCapture(
   const auto it = std::ranges::find(devices_, id, &DeviceEntry::session_id);
   if (it == devices_.end())
     return;
-  Platform::Current()->GetIOTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&VideoCaptureImpl::StopCapture,
-                                it->impl->GetWeakPtr(), client_id));
+  PostCrossThreadTask(
+      *Platform::Current()->GetIOTaskRunner(), FROM_HERE,
+      blink::CrossThreadBindOnce(&VideoCaptureImpl::StopCapture,
+                                 it->impl->GetWeakPtr(), client_id));
 }
 
 void WebVideoCaptureImplManager::UnrefDevice(
@@ -261,9 +266,10 @@ void WebVideoCaptureImplManager::SuspendDevices(
       return;
     if (it->is_individually_suspended)
       continue;  // Either: 1) Already suspended; or 2) Should not be resumed.
-    Platform::Current()->GetIOTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(&VideoCaptureImpl::SuspendCapture,
-                                  it->impl->GetWeakPtr(), suspend));
+    PostCrossThreadTask(
+        *Platform::Current()->GetIOTaskRunner().get(), FROM_HERE,
+        blink::CrossThreadBindOnce(&VideoCaptureImpl::SuspendCapture,
+                                   it->impl->GetWeakPtr(), suspend));
   }
 }
 
