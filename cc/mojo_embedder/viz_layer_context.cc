@@ -98,6 +98,9 @@ void ComputePropertyTreeNodeUpdate(
           new_node.node_and_ancestors_are_flat &&
       old_node->node_or_ancestors_will_change_transform ==
           new_node.node_or_ancestors_will_change_transform &&
+      // Since |transform_changed| is transient, we only need to check for it's
+      // current state instead of comparing to old one.
+      !new_node.transform_changed() &&
       old_node->visible_frame_element_id == new_node.visible_frame_element_id) {
     return;
   }
@@ -135,6 +138,7 @@ void ComputePropertyTreeNodeUpdate(
   wire->delegates_to_parent_for_backface =
       new_node.delegates_to_parent_for_backface;
   wire->will_change_transform = new_node.will_change_transform;
+  wire->transform_changed = new_node.transform_changed();
   wire->maximum_animation_scale = new_node.maximum_animation_scale;
   wire->node_and_ancestors_are_animated_or_invertible =
       new_node.node_and_ancestors_are_animated_or_invertible;
@@ -222,6 +226,9 @@ void ComputePropertyTreeNodeUpdate(
       old_node->has_potential_opacity_animation ==
           new_node.has_potential_opacity_animation &&
       old_node->has_masking_child == new_node.has_masking_child &&
+      // Since |effect_changed| is transient, we only need to check for it's
+      // current state instead of comparing to old one.
+      !new_node.effect_changed &&
       old_node->subtree_has_copy_request == new_node.subtree_has_copy_request &&
       old_node->is_fast_rounded_corner == new_node.is_fast_rounded_corner &&
       old_node->node_or_ancestor_has_fast_rounded_corner ==
@@ -279,6 +286,7 @@ void ComputePropertyTreeNodeUpdate(
       new_node.has_potential_backdrop_filter_animation;
   wire->has_potential_opacity_animation =
       new_node.has_potential_opacity_animation;
+  wire->effect_changed = new_node.effect_changed;
   wire->subtree_has_copy_request = new_node.subtree_has_copy_request;
   wire->is_fast_rounded_corner = new_node.is_fast_rounded_corner;
   wire->may_have_backdrop_effect = new_node.may_have_backdrop_effect;

@@ -286,7 +286,14 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
       wire.node_or_ancestors_will_change_transform;
 
   node.visible_frame_element_id = wire.visible_frame_element_id;
-  node.SetTransformChanged(cc::DamageReason::kUntracked);
+
+  // Note that we only set |transform_changed| to true and never to false since
+  // Viz might not have got a change to run and use it via
+  // CalculateRenderProperties(). It should only be cleared in
+  // ResetAllChangeTracking() which happens at the end of every frame.
+  if (wire.transform_changed) {
+    node.SetTransformChanged(cc::DamageReason::kUntracked);
+  }
   if (!node.SetDamageReasonsForDeserialization(
           cc::DamageReasonSet::FromEnumBitmask(wire.damage_reasons_bit_mask))) {
     // This error case shouldn't be reachable, since
@@ -355,7 +362,14 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
     trees.effect_tree_mutable().SetElementIdForNodeId(node.id, node.element_id);
   }
   node.opacity = wire.opacity;
-  node.effect_changed = true;
+
+  // Note that we only set |effect_changed| to true and never to false since Viz
+  // might not have got a change to run and use it via
+  // CalculateRenderProperties(). It should only be cleared in
+  // ResetAllChangeTracking() which happens at the end of every frame.
+  if (wire.effect_changed) {
+    node.effect_changed = true;
+  }
   node.render_surface_reason = wire.render_surface_reason;
   node.surface_contents_scale = wire.surface_contents_scale;
   node.subtree_capture_id = wire.subtree_capture_id;

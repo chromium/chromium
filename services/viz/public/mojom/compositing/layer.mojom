@@ -556,6 +556,10 @@ struct EffectNode {
   // of exact timeline) opacity animation.
   bool has_potential_opacity_animation;
 
+  // Whether this node's effect has been changed since the last
+  // frame. Needed in order to compute damage rect.
+  bool effect_changed;
+
   // If set, the node's subtree has a copy request and the layer should
   // not be skipped for draw property computation.
   // TODO(crbug.com/406652614): Compute subtree_has_copy_request in

@@ -187,8 +187,6 @@ struct CC_EXPORT EffectNode {
 
   // Whether this node's effect has been changed since the last
   // frame. Needed in order to compute damage rect.
-  // This property is set automatically for TreesInViz and is not synced from
-  // clients.
   bool effect_changed : 1 = false;
 
   // If set, the node's subtree has a copy request and the layer should
