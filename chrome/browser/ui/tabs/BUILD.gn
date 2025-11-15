@@ -362,6 +362,7 @@ if (!is_android) {
       ]
 
       public_deps += [
+        "//chrome/browser/actor",
         "//chrome/browser/actor:types",
         "//chrome/browser/glic",
         "//chrome/browser/glic:mojo_bindings",
@@ -393,7 +394,10 @@ if (!is_android) {
         "glic_actor_task_icon_manager_factory.cc",
       ]
 
-      deps += [ "//chrome/browser/glic" ]
+      deps += [
+        "//chrome/browser/actor/ui/task_list_bubble:controller",
+        "//chrome/browser/glic",
+      ]
     }
   }
 

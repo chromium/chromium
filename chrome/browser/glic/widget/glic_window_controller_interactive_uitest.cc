@@ -168,50 +168,6 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ButtonTogglesGlicWindow) {
                   CheckControllerWidgetMode(GlicWindowMode::kDetached));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TaskIconTogglesGlicWindow) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
-  StartTaskAndShowActorTaskIcon();
-  RunTestSequence(ObserveState(test::internal::kFloatyViewState, GetHost()),
-                  OpenGlicFloatingWindow(),
-                  PressButton(kGlicActorTaskIconElementId),
-                  WaitForState(test::internal::kFloatyViewState,
-                               mojom::CurrentView::kActuation),
-
-                  CheckControllerWidgetMode(GlicWindowMode::kDetached),
-                  PressButton(kGlicActorTaskIconElementId), WaitForGlicClose(),
-                  CheckControllerHasWidget(false));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    GlicWindowControllerUiTest,
-    GlicButtonAndTaskIconButtonTogglesConversationAndActuationView) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
-  StartTaskAndShowActorTaskIcon();
-  RunTestSequence(ObserveState(test::internal::kFloatyViewState, GetHost()),
-                  OpenGlicFloatingWindow(),
-                  PressButton(kGlicActorTaskIconElementId),
-                  WaitForState(test::internal::kFloatyViewState,
-                               mojom::CurrentView::kActuation),
-
-                  CheckControllerWidgetMode(GlicWindowMode::kDetached),
-                  PressButton(kGlicButtonElementId),
-                  WaitForState(test::internal::kFloatyViewState,
-                               mojom::CurrentView::kConversation),
-
-                  CheckControllerWidgetMode(GlicWindowMode::kDetached),
-                  PressButton(kGlicActorTaskIconElementId),
-                  WaitForState(test::internal::kFloatyViewState,
-                               mojom::CurrentView::kActuation),
-
-                  CheckControllerWidgetMode(GlicWindowMode::kDetached));
-}
-
 constexpr char kActivateSurfaceIncompatibilityNotice[] =
     "Programmatic window activation does not work on the Weston reference "
     "implementation of Wayland used on Linux testbots. It also doesn't work "
