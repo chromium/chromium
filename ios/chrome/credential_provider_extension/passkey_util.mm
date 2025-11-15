@@ -318,7 +318,12 @@ PasskeyAssertionOutput PerformPasskeyAssertion(
 BOOL ShouldPerformUserVerificationForPreference(
     ASAuthorizationPublicKeyCredentialUserVerificationPreference
         user_verification_preference_string,
-    BOOL is_biometric_authentication_enabled) {
+    BOOL is_biometric_authentication_enabled,
+    BOOL is_conditional_create) {
+  if (is_conditional_create) {
+    return NO;
+  }
+
   UserVerificationPreference user_verification_preference =
       UserVerificationPreferenceFromString(user_verification_preference_string);
 

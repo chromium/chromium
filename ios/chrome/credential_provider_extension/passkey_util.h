@@ -80,11 +80,13 @@ PasskeyAssertionOutput PerformPasskeyAssertion(
 
 // Returns whether or not the user should be asked to re-authenticate depending
 // on the provided `user_verification_preference_string` and whether biometric
-// authentication is enabled for the device.
+// authentication is enabled for the device. If the request is a conditional
+// create, then the user verification should not be performed.
 BOOL ShouldPerformUserVerificationForPreference(
     ASAuthorizationPublicKeyCredentialUserVerificationPreference
         user_verification_preference_string,
-    BOOL is_biometric_authentication_enabled);
+    BOOL is_biometric_authentication_enabled,
+    BOOL is_conditional_create);
 
 // Saves a passkey credential to the user defaults credential store. This
 // credential store will be read by Chrome if it is currently running, or the

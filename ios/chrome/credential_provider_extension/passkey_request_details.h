@@ -19,7 +19,8 @@
     isBiometricAuthenticationEnabled:(BOOL)isBiometricAuthenticationEnabled;
 
 - (instancetype)initWithRequest:(id<ASCredentialRequest>)credentialRequest
-    isBiometricAuthenticationEnabled:(BOOL)isBiometricAuthenticationEnabled;
+    isBiometricAuthenticationEnabled:(BOOL)isBiometricAuthenticationEnabled
+                 isConditionalCreate:(BOOL)isConditionalCreate;
 
 - (instancetype)init NS_UNAVAILABLE;
 
