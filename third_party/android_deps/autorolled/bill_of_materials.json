@@ -1622,7 +1622,7 @@
     {
         "name": "okio-jvm",
         "group": "com.squareup.okio",
-        "version": "3.16.2"
+        "version": "3.16.3"
     },
     {
         "name": "wire-runtime",
