@@ -432,7 +432,7 @@ export class SearchboxElement extends SearchboxElementBase {
   private accessor useWebkitSearchIcons_: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected showVoiceSearchInExpandedRealbox: boolean =
-      loadTimeData.getBoolean('expandedSearchboxShowVoiceSearch');
+      loadTimeData.getBoolean('expandedSearchboxShowVoiceSearch') ?? false;
 
   protected get shouldShowVoiceSearch_(): boolean {
     return this.dropdownIsVisible && this.showVoiceSearchInExpandedRealbox;
