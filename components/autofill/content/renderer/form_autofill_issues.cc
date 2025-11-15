@@ -8,6 +8,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -112,7 +113,7 @@ int GetShadowHostDOMNodeId(const WebFormControlElement& element) {
 }
 
 void MaybeAppendDuplicateIdForInputDevtoolsIssue(
-    const std::vector<WebFormControlElement>& elements,
+    base::span<const WebFormControlElement> elements,
     std::vector<FormIssue>& form_issues) {
   const WebString& id_attr = GetWebString<kId>();
 
@@ -220,9 +221,8 @@ void MaybeAppendInputAssignedAutocompleteValueToIdOrNameAttributesDevtoolsIssue(
   }
 }
 
-void AppendFormIssuesInternal(
-    const std::vector<WebFormControlElement>& elements,
-    std::vector<FormIssue>& form_issues) {
+void AppendFormIssuesInternal(base::span<const WebFormControlElement> elements,
+                              std::vector<FormIssue>& form_issues) {
   if (elements.size() == 0) {
     return;
   }
@@ -255,7 +255,7 @@ void AppendFormIssuesInternal(
 // and returns a vector that is the union of `form_issues` and the new issues
 // found.
 std::vector<FormIssue> GetFormIssues(
-    const std::vector<blink::WebFormControlElement>& control_elements,
+    base::span<const WebFormControlElement> control_elements,
     std::vector<FormIssue> form_issues) {
   AppendFormIssuesInternal(control_elements, form_issues);
   return form_issues;
@@ -265,8 +265,8 @@ std::vector<FormIssue> GetFormIssues(
 // be called after label extraction. Similar to `GetFormIssues` it returns
 // a vector that is the union of `form_issues` and the new issues found.
 std::vector<FormIssue> CheckForLabelsWithIncorrectForAttribute(
-    const blink::WebDocument& document,
-    const std::vector<FormFieldData>& fields,
+    const WebDocument& document,
+    base::span<const FormFieldData> fields,
     std::vector<FormIssue> form_issues) {
   const WebString& for_attr = GetWebString<kFor>();
   const WebString& label_attr = GetWebString<kLabel>();
@@ -308,7 +308,7 @@ std::vector<FormIssue> CheckForLabelsWithIncorrectForAttribute(
 
 }  // namespace
 
-void MaybeEmitFormIssuesToDevtools(blink::WebLocalFrame& web_local_frame,
+void MaybeEmitFormIssuesToDevtools(WebLocalFrame& web_local_frame,
                                    base::span<const FormData> forms) {
   // Only log the issues if devtools is connected.
   if (!web_local_frame.IsInspectorConnected()) {
@@ -343,14 +343,14 @@ void MaybeEmitFormIssuesToDevtools(blink::WebLocalFrame& web_local_frame,
 }
 
 std::vector<FormIssue> GetFormIssuesForTesting(  // IN-TEST
-    const std::vector<blink::WebFormControlElement>& control_elements,
+    const std::vector<WebFormControlElement>& control_elements,
     std::vector<FormIssue> form_issues) {
   return GetFormIssues(control_elements, form_issues);
 }
 
 std::vector<FormIssue>
 CheckForLabelsWithIncorrectForAttributeForTesting(  // IN-TEST
-    const blink::WebDocument& document,
+    const WebDocument& document,
     const std::vector<FormFieldData>& fields,
     std::vector<FormIssue> form_issues) {
   return CheckForLabelsWithIncorrectForAttribute(document, fields, form_issues);
