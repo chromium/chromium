@@ -46,6 +46,8 @@ struct ActorTaskNudgeState {
     kDefault,
     // `Needs attention` text.
     kNeedsAttention,
+    // `Multiple tasks need attention` text.
+    kMultipleTasksNeedAttention,
     // `Complete Tasks` text.
     kCompleteTasks,
   };

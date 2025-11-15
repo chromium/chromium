@@ -172,7 +172,9 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
     if (!paused_or_yielded_actor_tasks.empty() &&
         !actor_task_list_bubble_rows_.empty()) {
       current_actor_task_nudge_state_.text =
-          ActorTaskNudgeState::Text::kNeedsAttention;
+          actor_task_list_bubble_rows_.size() > 1u
+              ? ActorTaskNudgeState::Text::kMultipleTasksNeedAttention
+              : ActorTaskNudgeState::Text::kNeedsAttention;
     } else {
       // If no tasks needing attention, hide the nudge.
       current_actor_task_nudge_state_.text =
