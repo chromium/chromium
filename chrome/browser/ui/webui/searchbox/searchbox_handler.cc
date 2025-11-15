@@ -369,7 +369,6 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       {"removeToolChipAriaLabel", IDS_COMPOSE_REMOVE_TOOL_CHIP_A11Y_LABEL},
       {"composeFileTypesAllowedError",
        IDS_NTP_COMPOSE_FILE_TYPE_NOT_ALLOWED_ERROR},
-      {"composeboxDragAndDropHint", IDS_NTP_COMPOSE_DRAG_AND_DROP_HINT},
       {"listening", IDS_NEW_TAB_VOICE_LISTENING},
   };
   source->AddLocalizedStrings(kStrings);
@@ -409,11 +408,14 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                      ntp_features::kNtpRealboxCr23SteadyStateShadow.Get());
 
   auto composebox_config = ntp_composebox::FeatureConfig::Get().config;
+  source->AddString("composeboxDragAndDropHint",
+                    l10n_util::GetPluralStringFUTF16(
+                        IDS_NTP_COMPOSE_DRAG_AND_DROP_HINT,
+                        composebox_config.composebox().max_num_files()));
   source->AddString("maxFilesReachedError",
-                    l10n_util::GetStringFUTF16(
+                    l10n_util::GetPluralStringFUTF16(
                         IDS_NTP_COMPOSE_MAX_FILES_REACHED_ERROR,
-                        base::NumberToString16(
-                            composebox_config.composebox().max_num_files())));
+                        composebox_config.composebox().max_num_files()));
   source->AddBoolean(
       "searchboxShowComposeAnimation",
       profile->GetPrefs()->GetInteger(
