@@ -438,7 +438,7 @@ search-animated-glow {
 }
 
 #submitIcon {
-  --cr-icon-button-fill-color: white;
+  --cr-icon-button-fill-color: var(--color-composebox-submit-button-icon, white);
   --cr-icon-button-icon-size: 16px;
   background-color: var(--color-composebox-submit-button-background);
   bottom: 0;
