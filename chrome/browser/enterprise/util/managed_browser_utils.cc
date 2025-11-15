@@ -427,8 +427,9 @@ bool CanShowEnterpriseBadgingForNTPFooter(Profile* profile) {
 BrowserManagementNoticeState GetManagementNoticeStateForNTPFooter(
     Profile* profile) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (!policy::ManagementServiceFactory::GetForProfile(profile)
-           ->IsBrowserManaged() ||
+  auto* management_service =
+      policy::ManagementServiceFactory::GetForProfile(profile);
+  if (!management_service->IsBrowserManaged() ||
       !g_browser_process->local_state()->GetBoolean(
           prefs::kNTPFooterManagementNoticeEnabled)) {
     return BrowserManagementNoticeState::kNotApplicable;
@@ -444,6 +445,13 @@ BrowserManagementNoticeState GetManagementNoticeStateForNTPFooter(
   if (has_custom_badging &&
       base::FeatureList::IsEnabled(features::kNTPFooterBadgingPolicies)) {
     return BrowserManagementNoticeState::kEnabledByPolicy;
+  }
+
+  if (management_service->GetManagementAuthorityTrustworthiness() <=
+          policy::ManagementAuthorityTrustworthiness::LOW &&
+      !base::FeatureList::IsEnabled(
+          features::kEnterpriseBadgingForLocalManagemenetNtpFooter)) {
+    return BrowserManagementNoticeState::kNotApplicable;
   }
 
   if (base::FeatureList::IsEnabled(features::kEnterpriseBadgingForNtpFooter)) {

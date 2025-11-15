@@ -411,10 +411,17 @@ BASE_FEATURE(kToolbarHeightSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
 // a badge in the profile menu.
 BASE_FEATURE(kEnterpriseProfileBadgingForMenu,
              base::FEATURE_ENABLED_BY_DEFAULT);
-// Enables enterprise badging for managed bnpwser on the new tab page footer.
+
+// Enables enterprise badging for managed browsers on the new tab page footer.
 // On managed browsers, a building icon and "Managed by <domain>" string will be
 // shown in the footer, unless the icon and label are customized by the admin.
 BASE_FEATURE(kEnterpriseBadgingForNtpFooter, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables enterprise badging for managed browsers with local management only on
+// the new tab page footer. On managed browsers, a building icon and "Managed by
+// your organization" string will be shown in the footer.
+BASE_FEATURE(kEnterpriseBadgingForLocalManagemenetNtpFooter,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the management notice in the NTP footer if the custom policies are
 // set. This acts as a kill switch for "EnterpriseCustomLabelForBrowser" and
