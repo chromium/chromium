@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_GLIC_FRE_GLIC_FRE_CONTROLLER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/glic/fre/glic_fre.mojom.h"
@@ -35,6 +37,7 @@ class Widget;
 namespace glic {
 
 class GlicFreDialogView;
+class GlicFrePageHandler;
 
 // This enum is used to record the reason for the FRE error state.
 // These values are persisted to logs.
@@ -113,7 +116,8 @@ class GlicFreController {
 
   // Closes the FRE dialog and immediately opens a glic window attached to
   // the same browser.
-  void AcceptFre();
+  // |handler| is the specific PageHandler that triggered the acceptance.
+  void AcceptFre(GlicFrePageHandler* handler);
 
   // Rejects the FRE dialog.
   void RejectFre();
@@ -155,8 +159,6 @@ class GlicFreController {
 
   void UpdateFreWidgetSize(const gfx::Size& new_size);
 
-  void LogWebUiLoadComplete();
-
   AuthController& GetAuthControllerForTesting() { return auth_controller_; }
 
   Profile* profile() { return profile_; }
@@ -168,6 +170,27 @@ class GlicFreController {
   void SetIsShowingDialogForTesting(bool is_showing) {
     is_showing_dialog_for_testing_ = is_showing;
   }
+
+  void RecordFrameworkStartTime();
+
+  struct InitTimestamps {
+    base::TimeTicks open_start_time;
+    base::TimeTicks framework_start_time;
+  };
+
+  // Registers a new PageHandler. Called when a new FRE UI instance is created.
+  // Returns the start time of the request to show the FRE.
+  InitTimestamps RegisterPageHandler(GlicFrePageHandler* handler);
+
+  // Unregisters a PageHandler. Called when an FRE UI instance is destroyed.
+  void UnregisterPageHandler(GlicFrePageHandler* handler);
+
+  // Called when the user opens the FRE in dialog or sidepanel. This sets the
+  // value of `pending_open_start_time_`.
+  void MarkFreStartAttempt();
+
+  // Logs when the FRE in sidepanel is shown.
+  void MarkSidepanelFreShown();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(GlicFreControllerTest,
@@ -183,8 +206,6 @@ class GlicFreController {
                                    tabs::TabInterface::DetachReason reason);
 
   void CreateView();
-
-  void RecordMetricsIfDialogIsShowingAndReady();
 
   raw_ptr<Profile> const profile_;
   std::unique_ptr<views::Widget> fre_widget_;
@@ -207,29 +228,21 @@ class GlicFreController {
   base::RepeatingCallbackList<void(mojom::FreWebUiState)>
       webui_state_callback_list_;
 
-  // Tracks elapsed time between the request for the FRE to show to the time it
-  // is fully loaded and showing.
-  std::optional<base::ElapsedTimer> presentation_timer_;
+  // Used to track the total time this specific FRE instance has been open. This
+  // value is set when the FRE is toggled on.
+  std::optional<base::TimeTicks> pending_open_start_time_;
 
-  // Tracks the total time the FRE is open.
-  std::optional<base::ElapsedTimer> open_timer_;
-
-  // Tracks the total time since the FRE completed loading and has entered the
-  // Ready state.
-  std::optional<base::ElapsedTimer> interaction_timer_;
-
-  // Tracks elapsed time between the start of the WebUI framework loading and
-  // the moment it's fully loaded. This ends right before the web client begins loading.
-  std::optional<base::ElapsedTimer> webui_framework_load_timer_;
-
-  // Tracks elapsed time between the start of the web client loading and the
-  // moment it's fully loaded.
-  std::optional<base::ElapsedTimer> web_client_load_timer_;
-
-  // True if the user has accepted the FRE.
-  bool accepted_ = false;
+  // Used to track the time between the start of the WebUI framework loading and
+  // the moment it's fully loaded. This is logged before the WebUI controller is
+  // created.
+  std::optional<base::TimeTicks> pending_framework_start_time_;
 
   std::optional<bool> is_showing_dialog_for_testing_;
+
+  // List of active PageHandlers (one per FRE UI instance).
+  // Safe because GlicFrePageHandler explicitly calls UnregisterPageHandler in
+  // its destructor, ensuring pointers are removed before invalidation.
+  std::vector<raw_ptr<GlicFrePageHandler>> handlers_;
 
   base::WeakPtrFactory<GlicFreController> weak_ptr_factory_{this};
 };

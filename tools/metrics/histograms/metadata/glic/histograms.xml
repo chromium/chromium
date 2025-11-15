@@ -1947,6 +1947,101 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.UnifiedFre.InteractionTime.Accepted" units="ms"
+    expires_after="2026-08-03">
+  <owner>michelleabreo@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the time elapsed between an instance of a sidepanel FRE being fully
+    loaded (the Ready state) and the user clicking the accept/continue button.
+    This is logged when the user accepts the FRE.
+  </summary>
+</histogram>
+
+<histogram name="Glic.UnifiedFre.InteractionTime.Dismissed" units="ms"
+    expires_after="2026-08-03">
+  <owner>michelleabreo@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the time elapsed between an instance of a sidepanel FRE being fully
+    loaded (the Ready state) and the user dismissing the panel through an
+    indirect action (e.g., closing the tab, pressing Esc, clicking the glic
+    entrypoint toggle).
+  </summary>
+</histogram>
+
+<histogram name="Glic.UnifiedFre.InteractionTime.NoThanks" units="ms"
+    expires_after="2026-08-03">
+  <owner>michelleabreo@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the time elapsed between an instance of a sidepanel FRE being fully
+    loaded (the Ready state) and the user explicitly clicking the No thanks
+    button. This is logged when the user rejects the FRE.
+  </summary>
+</histogram>
+
+<histogram name="Glic.UnifiedFre.TotalTime.Accepted" units="ms"
+    expires_after="2026-08-03">
+  <owner>michelleabreo@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the time elapsed from when an instance of a sidepanel FRE is first
+    opened until the user accepts it.
+  </summary>
+</histogram>
+
+<histogram name="Glic.UnifiedFre.TotalTime.AcceptedByOtherInstance" units="ms"
+    expires_after="2026-08-03">
+  <owner>michelleabreo@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the time elapsed from when an instance of a sidepanel FRE is first
+    opened until the user accepts it in another instance.
+  </summary>
+</histogram>
+
+<histogram name="Glic.UnifiedFre.TotalTime.Dismissed" units="ms"
+    expires_after="2026-08-03">
+  <owner>michelleabreo@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the time elapsed from when an instance of a sidepanel FRE is first
+    opened until it is dismissed by the user (e.g. closing the tab).
+  </summary>
+</histogram>
+
+<histogram name="Glic.UnifiedFre.TotalTime.NoThanks" units="ms"
+    expires_after="2026-08-03">
+  <owner>michelleabreo@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the time elapsed from when an instance of a sidepanel FRE is first
+    opened until the user clicks the No Thanks button.
+  </summary>
+</histogram>
+
+<histogram name="Glic.UnifiedFre.WebClientLoadTime" units="ms"
+    expires_after="2026-08-03">
+  <owner>michelleabreo@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the time from when the sidepanel Glic FRE WebUI begins loading the
+    remote content until the WebUI reports itself as fully loaded and ready.
+  </summary>
+</histogram>
+
+<histogram name="Glic.UnifiedFre.WebUiFrameworkLoadTime" units="ms"
+    expires_after="2026-08-03">
+  <owner>michelleabreo@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the time from when the Glic FRE in sidepanel is visible until the
+    local WebUI framework has loaded and is ready to load the remote web
+    content.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Usage.Hotkey" enum="GlicHotkeyUsage"
     expires_after="2026-03-22">
   <owner>erikchen@chromium.org</owner>

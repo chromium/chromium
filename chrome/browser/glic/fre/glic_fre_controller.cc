@@ -14,12 +14,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
+#include "chrome/browser/glic/fre/glic_fre_page_handler.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/auth_controller.h"
@@ -75,28 +77,9 @@ GlicFreController::GlicFreController(Profile* profile,
 GlicFreController::~GlicFreController() = default;
 
 void GlicFreController::WebUiStateChanged(mojom::FreWebUiState new_state) {
-  if (webui_state_ == new_state) {
-    return;
-  }
-
-  if (new_state == mojom::FreWebUiState::kReady) {
-    base::RecordAction(base::UserMetricsAction("Glic.Fre.LoadSuccess"));
-    interaction_timer_.emplace();
-  }
-
   // UI State has changed
   webui_state_ = new_state;
   webui_state_callback_list_.Notify(webui_state_);
-
-  // It is possible for the FRE to open directly in an error state. In this
-  // case, we should not record the FRE load time metric if the content is
-  // loaded at a later point.
-  if (new_state == mojom::FreWebUiState::kError ||
-      new_state == mojom::FreWebUiState::kOffline) {
-    presentation_timer_.reset();
-  }
-
-  RecordMetricsIfDialogIsShowingAndReady();
 }
 
 base::CallbackListSubscription GlicFreController::AddWebUiStateChangedCallback(
@@ -148,9 +131,6 @@ void GlicFreController::OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
 void GlicFreController::ShowFreDialog(Browser* browser,
                                       mojom::InvocationSource source) {
   CHECK(CanShowFreDialog(browser));
-
-  presentation_timer_.emplace();
-  open_timer_.emplace();
   profile_->GetPrefs()->SetInteger(
       prefs::kGlicCompletedFre,
       static_cast<int>(prefs::FreStatus::kIncomplete));
@@ -164,7 +144,6 @@ void GlicFreController::ShowFreDialog(Browser* browser,
     // record the FRE load time metric.
     base::RecordAction(
         base::UserMetricsAction("Glic.Fre.CheckAuthBeforeShowSync"));
-    presentation_timer_.reset();
   }
 }
 
@@ -217,11 +196,20 @@ void GlicFreController::ShowFreDialogAfterAuthCheck(
   base::UmaHistogramEnumeration("Glic.FRE.InvocationSource", source);
   base::UmaHistogramMediumTimes("Glic.Fre.WidgetCreationTime",
                                 widget_creation_timer.Elapsed());
-  webui_framework_load_timer_.emplace();
+  RecordFrameworkStartTime();
   auth_controller_.OnGlicWindowOpened();
+}
 
-  // Recording the load latency time when FRE contents were preloaded.
-  RecordMetricsIfDialogIsShowingAndReady();
+void GlicFreController::MarkFreStartAttempt() {
+  pending_open_start_time_ = base::TimeTicks::Now();
+}
+
+void GlicFreController::MarkSidepanelFreShown() {
+  base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown"));
+}
+
+void GlicFreController::RecordFrameworkStartTime() {
+  pending_framework_start_time_ = base::TimeTicks::Now();
 }
 
 void GlicFreController::DismissFreIfOpenOnActiveTab(Browser* browser) {
@@ -238,18 +226,12 @@ void GlicFreController::DismissFreIfOpenOnActiveTab(Browser* browser) {
   }
 }
 
-void GlicFreController::AcceptFre() {
-  accepted_ = true;
-  if (open_timer_) {
-    base::UmaHistogramMediumTimes("Glic.Fre.TotalTime.Accepted",
-                                  open_timer_->Elapsed());
-    open_timer_.reset();
-  }
-
-  if (interaction_timer_) {
-    base::UmaHistogramTimes("Glic.Fre.InteractionTime.Accepted",
-                            interaction_timer_->Elapsed());
-    interaction_timer_.reset();
+void GlicFreController::AcceptFre(GlicFrePageHandler* handler) {
+  // Notify other handlers that they lost the race.
+  for (GlicFrePageHandler* other_handler : handlers_) {
+    if (other_handler != handler) {
+      other_handler->OnAcceptedByOtherInstance();
+    }
   }
   base::RecordAction(base::UserMetricsAction("Glic.Fre.Accept"));
   // Update FRE related preferences.
@@ -282,16 +264,6 @@ void GlicFreController::AcceptFre() {
 
 void GlicFreController::RejectFre() {
   base::RecordAction(base::UserMetricsAction("Glic.Fre.NoThanks"));
-  if (open_timer_) {
-    base::UmaHistogramMediumTimes("Glic.Fre.TotalTime.NoThanks",
-                                  open_timer_->Elapsed());
-    open_timer_.reset();
-  }
-  if (interaction_timer_) {
-    base::UmaHistogramTimes("Glic.Fre.InteractionTime.NoThanks",
-                            interaction_timer_->Elapsed());
-    interaction_timer_.reset();
-  }
   CloseWithReason(views::Widget::ClosedReason::kCancelButtonClicked);
 }
 
@@ -316,17 +288,6 @@ void GlicFreController::CloseWithReason(views::Widget::ClosedReason reason) {
 }
 
 void GlicFreController::DismissFre(mojom::FreWebUiState panel) {
-  if (open_timer_ && !accepted_) {
-    base::UmaHistogramMediumTimes("Glic.Fre.TotalTime.Dismissed",
-                                  open_timer_->Elapsed());
-    open_timer_.reset();
-  }
-
-  if (interaction_timer_ && !accepted_) {
-    base::UmaHistogramTimes("Glic.Fre.InteractionTime.Dismissed",
-                            interaction_timer_->Elapsed());
-    interaction_timer_.reset();
-  }
   if (IsShowingDialog()) {
     switch (panel) {
       case mojom::FreWebUiState::kError:
@@ -374,9 +335,6 @@ void GlicFreController::DismissFre(mojom::FreWebUiState panel) {
     fre_widget_.reset();
     tab_showing_modal_ = nullptr;
     will_detach_subscription_ = {};
-    presentation_timer_.reset();
-    webui_framework_load_timer_.reset();
-    web_client_load_timer_.reset();
   }
   fre_view_.reset();
 }
@@ -585,31 +543,6 @@ void GlicFreController::CreateView() {
   GlicProfileManager::GetInstance()->OnLoadingClientForService(service);
 }
 
-void GlicFreController::RecordMetricsIfDialogIsShowingAndReady() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!!fre_widget_ && webui_state_ == mojom::FreWebUiState::kReady &&
-      presentation_timer_ && web_client_load_timer_) {
-    base::UmaHistogramMediumTimes("Glic.Fre.WebClientLoadTime",
-                                  web_client_load_timer_->Elapsed());
-    base::UmaHistogramMediumTimes("Glic.FrePresentationTime",
-                                  presentation_timer_->Elapsed());
-    presentation_timer_.reset();
-    web_client_load_timer_.reset();
-  }
-}
-
-void GlicFreController::LogWebUiLoadComplete() {
-  if (webui_framework_load_timer_) {
-    base::UmaHistogramMediumTimes("Glic.Fre.WebUiFrameworkLoadTime",
-                                  webui_framework_load_timer_->Elapsed());
-    webui_framework_load_timer_.reset();
-
-    // The FRE webclient begins loading as soon as the web ui is loaded
-    // successfully.
-    web_client_load_timer_.emplace();
-  }
-}
-
 bool GlicFreController::IsShowingDialog() const {
   if (is_showing_dialog_for_testing_.has_value()) {
     return is_showing_dialog_for_testing_.value();
@@ -633,6 +566,26 @@ void GlicFreController::UpdateFreWidgetSize(const gfx::Size& new_size) {
   }
 
   fre_widget_->SetSize(new_size);
+}
+
+GlicFreController::InitTimestamps GlicFreController::RegisterPageHandler(
+    GlicFrePageHandler* handler) {
+  handlers_.push_back(handler);
+
+  InitTimestamps timestamps;
+  timestamps.open_start_time =
+      pending_open_start_time_.value_or(base::TimeTicks());
+  timestamps.framework_start_time =
+      pending_framework_start_time_.value_or(base::TimeTicks());
+
+  pending_open_start_time_.reset();
+  pending_framework_start_time_.reset();
+
+  return timestamps;
+}
+
+void GlicFreController::UnregisterPageHandler(GlicFrePageHandler* handler) {
+  std::erase(handlers_, handler);
 }
 
 }  // namespace glic

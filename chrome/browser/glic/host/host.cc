@@ -10,6 +10,7 @@
 #include "base/containers/to_vector.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
+#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
@@ -121,6 +122,7 @@ void Host::Reload() {
 
 void Host::CreateContents(bool initially_hidden) {
   if (!contents_) {
+    glic_service().fre_controller().RecordFrameworkStartTime();
     contents_ = std::make_unique<WebUIContentsContainer>(
         profile_, &glic_service().window_controller(), initially_hidden);
     glic::GlicProfileManager::GetInstance()->OnLoadingClientForService(

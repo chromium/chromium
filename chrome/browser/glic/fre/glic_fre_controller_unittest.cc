@@ -72,11 +72,23 @@ TEST_F(GlicFreControllerTest, AcceptFre) {
   g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                false);
   PrefService* const profile_pref_service = profile()->GetPrefs();
-  glic_fre_controller().AcceptFre();
+  glic_fre_controller().AcceptFre(/*handler=*/nullptr);
   EXPECT_EQ(profile_pref_service->GetInteger(prefs::kGlicCompletedFre),
             static_cast<int>(prefs::FreStatus::kCompleted));
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 1);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.NoThanks"), 0);
+}
+
+TEST_F(GlicFreControllerTest, RejectFre) {
+  base::UserActionTester tester;
+  g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                               false);
+  PrefService* const profile_pref_service = profile()->GetPrefs();
+  glic_fre_controller().RejectFre();
+  EXPECT_EQ(profile_pref_service->GetInteger(prefs::kGlicCompletedFre),
+            static_cast<int>(prefs::FreStatus::kNotStarted));
+  EXPECT_EQ(tester.GetActionCount("Glic.Fre.NoThanks"), 1);
+  EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
 }
 
 TEST_F(GlicFreControllerTest, DismissUninitialized) {

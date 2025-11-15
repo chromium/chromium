@@ -8,6 +8,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/time/time.h"
+#include "chrome/browser/glic/fre/glic_fre_page_handler.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
@@ -25,6 +26,17 @@
 
 namespace glic {
 namespace {
+
+// Fake handler to allow testing multi-handler coordination.
+class FakeGlicFrePageHandler : public GlicFrePageHandler {
+ public:
+  FakeGlicFrePageHandler(bool is_unified,
+                         content::WebContents* web_contents,
+                         GlicFreController& controller)
+      : GlicFrePageHandler(is_unified, web_contents, {}) {}
+
+  void SimulateAccept() { AcceptFre(); }
+};
 
 class GlicFreControllerBrowserTest : public NonInteractiveGlicTest {
  public:
@@ -282,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest, FreAcceptance) {
   WaitForFreShow();
 
   // Accept the FRE and confirm it closed and the glic panel opened.
-  glic_fre_controller().AcceptFre();
+  glic_fre_controller().AcceptFre(/*handler=*/nullptr);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.Accept"), 1);
   WaitForFreClose();
   WaitForGlicPanelShow();
@@ -358,6 +370,36 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest, FreRejection) {
       "Glic.Fre.WidgetClosedReason2",
       /*sample=*/glic::GlicFreWidgetClosedReason::kCancelButtonClicked,
       /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
+                       FreAcceptanceClosesOtherHandlers) {
+  // Open two tabs so there are valid WebContents for the handlers.
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+  content::WebContents* wc1 = browser()->tab_strip_model()->GetWebContentsAt(0);
+  content::WebContents* wc2 = browser()->tab_strip_model()->GetWebContentsAt(1);
+  // Show FRE (initializes controller state) in 2 tabs and create 2 page
+  // handlers.
+  glic_service()->ToggleUI(browser(), true,
+                           mojom::InvocationSource::kTopChromeButton);
+  FakeGlicFrePageHandler handler1(/*is_unified=*/true, wc1,
+                                  glic_fre_controller());
+  glic_service()->ToggleUI(browser(), true,
+                           mojom::InvocationSource::kTopChromeButton);
+  FakeGlicFrePageHandler handler2(/*is_unified=*/true, wc2,
+                                  glic_fre_controller());
+
+  // Handler 1 accepts.
+  handler1.SimulateAccept();
+
+  // Verify that a sample was recorded in each histogram, regardless of its
+  // value.
+  histogram_tester_.ExpectTotalCount("Glic.UnifiedFre.TotalTime.Accepted", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.UnifiedFre.TotalTime.AcceptedByOtherInstance", 1);
+  // Ensure no generic dismissal was logged.
+  histogram_tester_.ExpectTotalCount("Glic.Fre.TotalTime.Dismissed", 0);
+  histogram_tester_.ExpectTotalCount("Glic.UnifiedFre.TotalTime.Dismissed", 0);
 }
 
 }  // namespace
