@@ -137,6 +137,27 @@ int GetDeduplicationProviderPreferenceScore(
   return it != kProviderPrefMap.end() ? it->second : 0;
 }
 
+int GetOrderForActionType(scoped_refptr<OmniboxAction> action) {
+  // Sort: Call -> Directions -> Reviews -> Tab Switch.
+  auto* action_in_suggest = OmniboxActionInSuggest::FromAction(action.get());
+  if (action_in_suggest == nullptr) {
+    return 0;
+  }
+  switch (action_in_suggest->Type()) {
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL:
+      return 1;
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS:
+      return 2;
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS:
+      return 3;
+    case omnibox::
+        SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH:
+      return 4;
+    default:
+      return 0;
+  }
+}
+
 }  // namespace
 
 template <typename... Args>
@@ -1777,30 +1798,10 @@ void AutocompleteMatch::FilterAndSortActionsInSuggest() {
     return;
   }
 
-  // Sort: Call -> Directions -> Reviews, or Reviews -> Directions -> Call.
-  auto less_comparator = [](auto k1, auto k2) -> bool {
-    bool is_less_ascending =
-        (k1 == omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL) ||
-        (k2 == omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS);
-    return is_less_ascending;
-  };
-  std::multimap<omnibox::SuggestTemplateInfo_TemplateAction_ActionType,
-                scoped_refptr<OmniboxAction>, decltype(less_comparator)>
-      actions_in_suggest_to_reinsert(less_comparator);
-
-  // Collect all Actions in Suggest.
-  std::erase_if(actions, [&actions_in_suggest_to_reinsert](
-                             const scoped_refptr<OmniboxAction>& action) {
-    auto* ais = OmniboxActionInSuggest::FromAction(action.get());
-    if (ais != nullptr) {
-      actions_in_suggest_to_reinsert.emplace(ais->Type(), action);
-    }
-    return ais != nullptr;
-  });
-
-  for (const auto& pair : actions_in_suggest_to_reinsert) {
-    actions.emplace_back(std::move(pair.second));
-  }
+  std::stable_sort(
+      actions.begin(), actions.end(), [](const auto& a1, const auto& a2) {
+        return GetOrderForActionType(a1) < GetOrderForActionType(a2);
+      });
 }
 
 bool AutocompleteMatch::IsTrivialAutocompletion() const {
