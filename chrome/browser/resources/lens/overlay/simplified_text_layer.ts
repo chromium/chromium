@@ -608,6 +608,14 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     const selection = findWordsInRegion(
         this.fullTextResponse.receivedWords, this.selectedRegion,
         this.selectionOverlayRect);
+
+    // If no words were found in the region, return early.
+    if (selection.startIndex === -1 || selection.endIndex === -1) {
+      this.highlightedLines = [];
+      this.hideHighlightedLines = true;
+      return;
+    }
+
     this.highlightedLines = createHighlightedLines(
         this.fullTextResponse, selection.startIndex, selection.endIndex);
     this.hideHighlightedLines = false;
