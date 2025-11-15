@@ -40,11 +40,13 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.extensions.ContextMenuSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridgeJni;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge;
@@ -68,6 +70,7 @@ public class ExtensionsMenuMediatorTest {
     private static final int TAB1_ID = 111;
     private static final int TAB2_ID = 222;
     private static final long ACTION_CONTEXT_MENU_BRIDGE_POINTER = 10000L;
+    private static final long BROWSER_WINDOW_POINTER = 1000L;
 
     private static final Bitmap ICON_RED = createSimpleIcon(Color.RED);
     private static final Bitmap ICON_BLUE = createSimpleIcon(Color.BLUE);
@@ -79,6 +82,7 @@ public class ExtensionsMenuMediatorTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private ChromeAndroidTask mTask;
     @Mock private Profile mProfile;
     @Mock private Runnable mDataReadyCallback;
     @Mock private Callback<Boolean> mOnExtensionsSupportedCallback;
@@ -96,6 +100,7 @@ public class ExtensionsMenuMediatorTest {
     private ProfileModel mProfileModel;
     private MockTab mTab1;
     private MockTab mTab2;
+    private OneshotSupplierImpl<ChromeAndroidTask> mTaskSupplier;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
     private ObservableSupplierImpl<Tab> mCurrentTabSupplier;
     private ModelList mModels;
@@ -110,9 +115,12 @@ public class ExtensionsMenuMediatorTest {
         mProfileModel.putAction(
                 "b", new ActionData.Builder().setTitle("title of b").setIcon(ICON_GREEN).build());
 
+        // Mock AndroidChromeTask.
+        when(mTask.getOrCreateNativeBrowserWindowPtr()).thenReturn(BROWSER_WINDOW_POINTER);
+
         // Mock {@link ExtensionActionContextMenuBridge}.
         ExtensionActionContextMenuBridgeJni.setInstanceForTesting(mActionContextMenuBridgeJniMock);
-        when(mActionContextMenuBridgeJniMock.init(any(), any(), any(), anyInt()))
+        when(mActionContextMenuBridgeJniMock.init(anyLong(), any(), any(), anyInt()))
                 .thenReturn(ACTION_CONTEXT_MENU_BRIDGE_POINTER);
         when(mActionContextMenuBridgeJniMock.getMenuModelBridge(anyLong()))
                 .thenReturn(mMenuModelBridge);
@@ -123,6 +131,8 @@ public class ExtensionsMenuMediatorTest {
         mTab2 = new MockTab(TAB2_ID, mProfile);
         mTab1.setWebContentsOverrideForTesting(mWebContents);
         mTab2.setWebContentsOverrideForTesting(mWebContents);
+        mTaskSupplier = new OneshotSupplierImpl<>();
+        mTaskSupplier.set(mTask);
         mProfileSupplier = new ObservableSupplierImpl<>();
         mCurrentTabSupplier = new ObservableSupplierImpl<>();
         mModels = new ModelList();
@@ -130,6 +140,7 @@ public class ExtensionsMenuMediatorTest {
         mMediator =
                 new ExtensionsMenuMediator(
                         ApplicationProvider.getApplicationContext(),
+                        mTaskSupplier,
                         mProfileSupplier,
                         mCurrentTabSupplier,
                         mModels,
@@ -293,7 +304,11 @@ public class ExtensionsMenuMediatorTest {
         listener.onClick(mockButton);
 
         verify(mActionContextMenuBridgeJniMock)
-                .init(eq(mProfile), eq("a"), eq(mWebContents), eq(ContextMenuSource.MENU_ITEM));
+                .init(
+                        eq(BROWSER_WINDOW_POINTER),
+                        eq("a"),
+                        eq(mWebContents),
+                        eq(ContextMenuSource.MENU_ITEM));
 
         verify(mockButton).showMenu();
 

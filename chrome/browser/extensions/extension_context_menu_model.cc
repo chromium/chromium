@@ -339,7 +339,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionContextMenuModel,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionContextMenuModel,
                                       kPageAccessRunOnAllSitesSubmenuItem);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 ExtensionContextMenuModel::ExtensionContextMenuModel(
     const Extension* extension,
     BrowserWindowInterface* browser,
@@ -357,24 +356,6 @@ ExtensionContextMenuModel::ExtensionContextMenuModel(
       source_(source) {
   Init(extension, can_show_icon_in_toolbar);
 }
-#else
-ExtensionContextMenuModel::ExtensionContextMenuModel(
-    const Extension* extension,
-    Profile* profile,
-    content::WebContents* web_contents,
-    bool is_pinned,
-    bool can_show_icon_in_toolbar,
-    ContextMenuSource source)
-    : SimpleMenuModel(this),
-      extension_id_(extension->id()),
-      is_component_(Manifest::IsComponentLocation(extension->location())),
-      web_contents_(web_contents),
-      profile_(profile),
-      is_pinned_(is_pinned),
-      source_(source) {
-  Init(extension, can_show_icon_in_toolbar);
-}
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 void ExtensionContextMenuModel::Init(const Extension* extension,
                                      bool can_show_icon_in_toolbar) {
@@ -1066,13 +1047,7 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
 }
 
 content::WebContents* ExtensionContextMenuModel::GetActiveWebContents() const {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   return TabListInterface::From(browser_)->GetActiveTab()->GetContents();
-#else
-  // TODO(crbug.com/448879321): Use the web contents from the browser window
-  // interface for Android.
-  return web_contents_;
-#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)

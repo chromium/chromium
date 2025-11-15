@@ -29,12 +29,14 @@ import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.ProfileModel;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridgeRule;
@@ -51,11 +53,14 @@ public class ExtensionsMenuCoordinatorTest {
 
     private Activity mContext;
 
-    private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
+    private final OneshotSupplierImpl<ChromeAndroidTask> mTaskSupplier =
+            new OneshotSupplierImpl<>();
     private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
     private ListMenuButton mExtensionsMenuButton;
     private MaterialDivider mExtensionsMenuTabSwitcherDivider;
     @Mock private TabCreator mTabCreator;
+    @Mock private ChromeAndroidTask mTask;
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
     @Mock private Tab mAnotherTab;
@@ -80,6 +85,8 @@ public class ExtensionsMenuCoordinatorTest {
         mExtensionsMenuTabSwitcherDivider = new MaterialDivider(activity);
         activity.setContentView(mExtensionsMenuButton);
 
+        mTaskSupplier.set(mTask);
+
         mProfileModel = mBridge.getOrCreateProfileModel(mProfile);
         mProfileModel.setInitialized(true);
 
@@ -94,6 +101,7 @@ public class ExtensionsMenuCoordinatorTest {
                         mExtensionsMenuButton,
                         mExtensionsMenuTabSwitcherDivider,
                         mThemeColorProvider,
+                        mTaskSupplier,
                         mProfileSupplier,
                         mCurrentTabSupplier,
                         mTabCreator);
@@ -115,6 +123,7 @@ public class ExtensionsMenuCoordinatorTest {
                         mExtensionsMenuButton,
                         mExtensionsMenuTabSwitcherDivider,
                         mThemeColorProvider,
+                        mTaskSupplier,
                         mProfileSupplier,
                         mCurrentTabSupplier,
                         mTabCreator);

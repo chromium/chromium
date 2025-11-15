@@ -125,21 +125,12 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   // prefs::kExtensionsUIDeveloperMode is enabled then a menu item
   // will be shown for "Inspect Popup" which, when selected, will cause
   // ShowPopupForDevToolsWindow() to be called on `delegate`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   ExtensionContextMenuModel(const Extension* extension,
                             BrowserWindowInterface* browser,
                             bool is_pinned,
                             PopupDelegate* delegate,
                             bool can_show_icon_in_toolbar,
                             ContextMenuSource source);
-#else
-  ExtensionContextMenuModel(const Extension* extension,
-                            Profile* profile,
-                            content::WebContents* web_contents,
-                            bool is_pinned,
-                            bool can_show_icon_in_toolbar,
-                            ContextMenuSource source);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   ExtensionContextMenuModel(const ExtensionContextMenuModel&) = delete;
   ExtensionContextMenuModel& operator=(const ExtensionContextMenuModel&) =
@@ -209,11 +200,7 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   // it has one, otherwise NULL).
   raw_ptr<ExtensionAction, DanglingUntriaged> extension_action_;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   const raw_ptr<BrowserWindowInterface> browser_;
-#else
-  raw_ptr<content::WebContents> web_contents_;
-#endif
 
   raw_ptr<Profile> profile_;
 

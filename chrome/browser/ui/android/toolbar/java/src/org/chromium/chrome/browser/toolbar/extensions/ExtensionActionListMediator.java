@@ -129,20 +129,24 @@ class ExtensionActionListMediator implements Destroyable {
     }
 
     private void onContextClick(ListMenuButton buttonView, String actionId) {
+        ChromeAndroidTask task = mTaskSupplier.get();
+        if (task == null) {
+            return;
+        }
+
         Tab currentTab = mExtensionActionsUpdateHelper.getCurrentTab();
         if (currentTab == null) {
             return;
         }
 
         WebContents webContents = currentTab.getWebContents();
-        Profile profile = mExtensionActionsUpdateHelper.getProfile();
-        if (webContents == null || profile == null) {
+        if (webContents == null) {
             return;
         }
 
         ExtensionActionContextMenuBridge bridge =
                 new ExtensionActionContextMenuBridge(
-                        profile, actionId, webContents, ContextMenuSource.TOOLBAR_ACTION);
+                        task, actionId, webContents, ContextMenuSource.TOOLBAR_ACTION);
 
         ExtensionActionContextMenuUtils.showContextMenu(
                 mContext, buttonView, bridge, MenuBuilderHelper.getRectProvider(buttonView), null);

@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "ui/menus/android/menu_model_bridge.h"
 
+class BrowserWindowInterface;
+
 namespace extensions {
 // This class is responsible for managing `ExtensionContextMenuModel` and
 // `MenuModelBridge`, both of which are needed to display the context menu on
@@ -31,7 +33,7 @@ class ExtensionActionContextMenuBridge {
   // WebContents currently on display. `context_menu_source` indicates whether
   // the context menu was opened from the toolbar or inside the extensions menu.
   ExtensionActionContextMenuBridge(
-      Profile* profile,
+      BrowserWindowInterface* browser,
       const ToolbarActionsModel::ActionId& action_id,
       content::WebContents* web_contents,
       ExtensionContextMenuModel::ContextMenuSource context_menu_source);

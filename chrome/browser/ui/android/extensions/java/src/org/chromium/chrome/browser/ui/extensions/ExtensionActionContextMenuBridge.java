@@ -13,7 +13,7 @@ import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.extensions.ContextMenuSource;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -34,13 +34,17 @@ public class ExtensionActionContextMenuBridge implements Destroyable {
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
 
     public ExtensionActionContextMenuBridge(
-            Profile profile,
+            ChromeAndroidTask task,
             String actionId,
             WebContents webContents,
             @ContextMenuSource int contextMenuSource) {
         mNativeExtensionActionContextMenuBridge =
                 ExtensionActionContextMenuBridgeJni.get()
-                        .init(profile, actionId, webContents, contextMenuSource);
+                        .init(
+                                task.getOrCreateNativeBrowserWindowPtr(),
+                                actionId,
+                                webContents,
+                                contextMenuSource);
     }
 
     /** Returns the {@link ModelList} of the content of the toolbar action's context menu. */
@@ -69,7 +73,7 @@ public class ExtensionActionContextMenuBridge implements Destroyable {
     @NativeMethods
     public interface Native {
         long init(
-                @JniType("Profile*") Profile profile,
+                long androidBrowserWindowPtr,
                 @JniType("std::string") String actionId,
                 @JniType("content::WebContents*") WebContents webContents,
                 @JniType("ExtensionContextMenuModel::ContextMenuSource") int contextMenuSource);

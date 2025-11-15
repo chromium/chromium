@@ -68,6 +68,7 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
                         container.findViewById(R.id.extensions_menu_button),
                         container.findViewById(R.id.extensions_divider),
                         themeColorProvider,
+                        taskSupplier,
                         profileSupplier,
                         currentTabSupplier,
                         tabCreator);

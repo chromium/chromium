@@ -12,11 +12,13 @@ import android.view.View;
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.extensions.ContextMenuSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
@@ -35,6 +37,7 @@ import org.chromium.ui.widget.RectProvider;
 class ExtensionsMenuMediator implements Destroyable {
     private final ActionsUpdateDelegate mActionsUpdateDelegate = new ActionsUpdateDelegate();
     private final Context mContext;
+    private final OneshotSupplier<ChromeAndroidTask> mTaskSupplier;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Runnable mOnUpdateFinishedRunnable;
     private final Callback<Boolean> mOnExtensionsAvailableCallback;
@@ -46,12 +49,14 @@ class ExtensionsMenuMediator implements Destroyable {
 
     public ExtensionsMenuMediator(
             Context context,
+            OneshotSupplier<ChromeAndroidTask> taskSupplier,
             ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<Tab> currentTabSupplier,
             ModelList extensionModels,
             Runnable onUpdateFinishedRunnable,
             Callback<Boolean> onExtensionsAvailableCallback,
             View rootView) {
+        mTaskSupplier = taskSupplier;
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addObserver(mProfileUpdatedCallback);
 
@@ -116,20 +121,24 @@ class ExtensionsMenuMediator implements Destroyable {
     }
 
     private void onPrimaryClick(ListMenuButton buttonView, String actionId) {
+        ChromeAndroidTask task = mTaskSupplier.get();
+        if (task == null) {
+            return;
+        }
+
         Tab currentTab = mExtensionActionsUpdateHelper.getCurrentTab();
         if (currentTab == null) {
             return;
         }
 
         WebContents webContents = currentTab.getWebContents();
-        Profile profile = mExtensionActionsUpdateHelper.getProfile();
-        if (webContents == null || profile == null) {
+        if (webContents == null) {
             return;
         }
 
         ExtensionActionContextMenuBridge bridge =
                 new ExtensionActionContextMenuBridge(
-                        profile, actionId, webContents, ContextMenuSource.MENU_ITEM);
+                        task, actionId, webContents, ContextMenuSource.MENU_ITEM);
 
         ExtensionActionContextMenuUtils.showContextMenu(
                 mContext,

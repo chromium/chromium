@@ -8,6 +8,7 @@
 #include "base/android/jni_string.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
@@ -25,10 +26,11 @@ using extensions::ExtensionRegistry;
 namespace extensions {
 
 ExtensionActionContextMenuBridge::ExtensionActionContextMenuBridge(
-    Profile* profile,
+    BrowserWindowInterface* browser,
     const ToolbarActionsModel::ActionId& action_id,
     content::WebContents* web_contents,
     ExtensionContextMenuModel::ContextMenuSource context_menu_source) {
+  Profile* profile = browser->GetProfile();
   auto* registry = extensions::ExtensionRegistry::Get(profile);
   scoped_refptr<const extensions::Extension> extension =
       registry->enabled_extensions().GetByID(action_id);
@@ -38,7 +40,7 @@ ExtensionActionContextMenuBridge::ExtensionActionContextMenuBridge(
       ToolbarActionsModel::Get(profile)->IsActionPinned(extension->id());
 
   extension_context_menu_model_ = std::make_unique<ExtensionContextMenuModel>(
-      extension.get(), profile, web_contents, is_pinned,
+      extension.get(), browser, is_pinned, /* delegate= */ nullptr,
       /* can_show_icon_in_toolbar= */ true, context_menu_source);
 
   menu_model_bridge_ = std::make_unique<ui::MenuModelBridge>(
@@ -58,12 +60,14 @@ void ExtensionActionContextMenuBridge::Destroy(JNIEnv* env) {
 
 static jlong JNI_ExtensionActionContextMenuBridge_Init(
     JNIEnv* env,
-    Profile* profile,
+    jlong browser_window_interface_ptr,
     ToolbarActionsModel::ActionId& action_id,
     content::WebContents* web_contents,
     ExtensionContextMenuModel::ContextMenuSource context_menu_source) {
+  BrowserWindowInterface* browser =
+      reinterpret_cast<BrowserWindowInterface*>(browser_window_interface_ptr);
   auto* bridge = new ExtensionActionContextMenuBridge(
-      profile, action_id, web_contents, context_menu_source);
+      browser, action_id, web_contents, context_menu_source);
   // The bridge is owned by the Java object and will be destroyed when
   // ExtensionActionContextMenuBridge.destroy() is called.
   return reinterpret_cast<jlong>(bridge);
