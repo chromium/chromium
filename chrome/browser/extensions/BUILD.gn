@@ -492,6 +492,7 @@ source_set("extensions") {
   allow_circular_includes_from = [
     # TODO(crbug.com/40161499): Remove this circular dependency.
     "//chrome/browser/devtools",
+    "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/supervised_user",
@@ -858,7 +859,6 @@ source_set("extensions") {
       "//chrome/browser/media/webrtc",
 
       "//chrome/browser/feedback",
-      "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/views/toolbar",
     ]
 

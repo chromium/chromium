@@ -24,7 +24,6 @@
 #include "chrome/browser/extensions/extension_view_host_factory.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_action_platform_delegate.h"
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
@@ -638,8 +637,8 @@ void ExtensionActionViewModel::TriggerPopup(PopupShowAction show_action,
   const GURL popup_url = extension_action_->GetPopupUrl(tab_id);
 
   std::unique_ptr<extensions::ExtensionViewHost> host =
-      extensions::ExtensionViewHostFactory::CreatePopupHost(
-          popup_url, browser_->GetBrowserForMigrationOnly());
+      extensions::ExtensionViewHostFactory::CreatePopupHost(popup_url,
+                                                            browser_);
   // Creating a host should never fail in this case, since the extension is
   // valid and has a valid popup URL.
   CHECK(host);

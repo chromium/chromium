@@ -22,6 +22,7 @@ source_set("extensions") {
     sources += [
       "controlled_home_dialog_controller.h",
       "controlled_home_dialog_controller_interface.h",
+      "extension_action_view_model.h",
       "extension_dialog_utils.h",
       "extension_install_ui.h",
       "extensions_dialogs.h",
@@ -40,7 +41,9 @@ source_set("extensions") {
       sources += [ "extension_install_ui_desktop.h" ]
     }
     public_deps += [
+      ":extension_popup_types",
       "//base",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_list_interface",
       "//chrome/browser/ui/toolbar",
       "//extensions/browser",
@@ -57,7 +60,6 @@ source_set("extensions") {
       "app_launch_params.h",
       "application_launch.h",
       "extension_action_platform_delegate.h",
-      "extension_action_view_model.h",
       "extension_enable_flow.h",
       "extension_installed_bubble_model.h",
       "extension_installed_waiter.h",
@@ -75,7 +77,6 @@ source_set("extensions") {
     ]
 
     public_deps += [
-      ":extension_popup_types",
       "//base",
       "//chrome/browser/apps/app_service:constants",
       "//chrome/browser/ui:browser_list",
@@ -108,6 +109,7 @@ source_set("impl") {
     sources += [
       "controlled_home_dialog.cc",
       "controlled_home_dialog_controller.cc",
+      "extension_action_view_model.cc",
       "extension_install_blocked_dialog.cc",
       "extension_install_friction_dialog.cc",
       "extension_install_ui.cc",
@@ -123,6 +125,7 @@ source_set("impl") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_list_interface",
       "//chrome/browser/ui/toolbar",
+      "//components/sessions",
       "//components/tabs:public",
       "//components/vector_icons",
     ]
@@ -163,7 +166,6 @@ source_set("impl") {
     sources += [
       "app_launch_params.cc",
       "application_launch.cc",
-      "extension_action_view_model.cc",
       "extension_enable_flow.cc",
       "extension_installed_bubble_model.cc",
       "extension_installed_waiter.cc",
