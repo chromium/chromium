@@ -191,6 +191,8 @@ source_set("impl") {
     "service/glic_instance_metrics.h",
     "service/glic_metrics_session_manager.cc",
     "service/glic_metrics_session_manager.h",
+    "service/glic_state_tracker.cc",
+    "service/glic_state_tracker.h",
     "service/glic_tab_creation_observer.cc",
     "service/glic_tab_creation_observer.h",
     "service/glic_ui_embedder.h",
