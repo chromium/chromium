@@ -47,6 +47,7 @@ build_webui("build") {
     "file_thumbnail.ts",
     "file_thumbnail.html.ts",
     "icons.html.ts",
+    "window_proxy.ts",
   ]
   css_files = [
     "composebox.css",

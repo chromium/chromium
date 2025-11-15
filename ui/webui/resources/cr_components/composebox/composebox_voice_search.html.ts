@@ -9,8 +9,8 @@ import type {ComposeboxVoiceSearchElement} from './composebox_voice_search.js';
 export function getHtml(this: ComposeboxVoiceSearchElement) {
   return html`
     <div id="container">
-      <textarea id="input" .value="${this.transcript_}" placeholder="${
-      this.listeningPlaceholder_}"></textarea>
+      <textarea id="input" .value="${this.finalResult_}" placeholder="${
+          this.listeningPlaceholder_}"></textarea>
       <cr-icon-button id="closeButton" class="icon-clear"
           title="Close" @click="${this.onCloseClick_}">
       </cr-icon-button>

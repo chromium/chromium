@@ -261,12 +261,12 @@ const base::FeatureParam<bool> kShowSubmit(&kNtpComposebox, "ShowSubmit", true);
 
 const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox(&kNtpComposebox,
                                                 "ShowVoiceSearchInSteadyComposebox",
-                                                false);
+                                                true);
 
 const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox(
                                                 &kNtpComposebox,
                                                 "ShowVoiceSearchInExpandedComposebox",
-                                                false);
+                                                true);
 
 const base::FeatureParam<bool> kShowSmartCompose(&kNtpComposebox,
                                                  "ShowSmartCompose",
