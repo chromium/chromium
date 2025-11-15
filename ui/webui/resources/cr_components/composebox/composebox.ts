@@ -384,9 +384,14 @@ export class ComposeboxElement extends I18nMixinLit
     this.animationState = GlowAnimationState.NONE;
     // Wait for the style change for NONE to commit. This ensures the browser
     // detects a state change when we switch to EXPANDING.
-    requestAnimationFrame(() => {
-      this.animationState = GlowAnimationState.EXPANDING;
-    });
+
+    // If the composebox is not submittable or it is already expanded, do not
+    // trigger the animation.
+    if(this.expanding_ && !this.submitEnabled_) {
+      requestAnimationFrame(() => {
+        this.animationState = GlowAnimationState.EXPANDING;
+      });
+    }
   }
 
   setText(text: string) {
