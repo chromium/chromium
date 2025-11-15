@@ -31,6 +31,12 @@
       var(--color-composebox-context-entrypoint-hover-background);
 }
 
+@media (forced-colors: active) {
+  #recentTabButton {
+    --cr-button-text-color: Highlight;
+  }
+}
+
 .favicon {
   border-radius: 100px;
   height: 16px;
