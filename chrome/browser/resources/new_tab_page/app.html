@@ -54,7 +54,8 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         searchbox-layout-mode="${this.realboxLayoutMode_}"
         ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
         ?cycling-placeholders="${this.searchboxCyclingPlaceholders_}"
-        @searchbox-input-focus-changed="${this.onInputFocusChanged_}">
+        @searchbox-input-focus-changed="${this.onInputFocusChanged_}"
+        ?ntp-next-features-enabled="${this.ntpNextFeaturesEnabled_}">
     </cr-searchbox>
     ${this.showComposebox_ ? html`
       <cr-composebox id="composebox"

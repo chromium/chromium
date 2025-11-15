@@ -10,12 +10,174 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --button-height: 36px;
   --cr-focus-outline-color: var(--color-searchbox-results-icon-focused-outline);
+  --duration: 1800ms;
+  --fulfillment-background: #fff;
+  --glif-gradient: conic-gradient(
+    #3186ff00 0deg,
+    #34a853ff 43deg,
+    #ffd314ff 65deg,
+    #ff4641ff 105deg,
+    #3186ffff 144deg,
+    #3186ffff 150deg,
+    #3186ff00 250deg
+  );
+  --gradient-width: 2px;
+  --input-background: #fff;
+  --input-foreground: #0a0a0a;
+  --standard-curve: cubic-bezier(0.4, 0, 0.2, 1);
+  --text-animation-curve: cubic-bezier(0.38, 0.72, 0.00, 1.00);
+}
+
+.glow-container {
+  display: inline-block;
+  height: var(--button-height);
+  margin-left: 2px;
+  position: relative;
+  width: var(--button-height);
+}
+
+.glow-container.tall {
+  margin-left: 4px;
+}
+
+cr-button#entrypoint.ai-mode-button {
+  width: max-content;
+}
+
+@keyframes slide-in {
+  to {
+    transform: translateX(0px);
+  }
+}
+
+@keyframes fade-in {
+  to {
+    opacity: 1;
+  }
+}
+
+:host([ntp-next-features-enabled]) #description {
+  animation: slide-in 1000ms 820ms var(--text-animation-curve) forwards,
+    fade-in 850ms 970ms var(--text-animation-curve) forwards;
+  opacity: 0;
+  transform: translateX(-12px);
+}
+
+#entrypoint.ai-mode-button {
+  position: relative;
+  z-index: 5;
+}
+
+.aim-c {
+  border-radius: 100%;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.aim-gradient-outer-blur,
+.aim-gradient-solid {
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+}
+
+.aim-gradient-outer-blur:before,
+.aim-gradient-solid:before {
+  background: var(--glif-gradient);
+  bottom: 0;
+  content: '';
+  height: 200%;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  scale: 2 2;
+  top: -50%;
+  transform: rotate(var(--rotation, 0deg));
+}
+
+.aim-gradient-outer-blur {
+  filter: blur(2px);
+  opacity: 0.35;
+  transform: translate3d(0px, 0px, 0px);
+}
+
+.dark .aim-gradient-outer-blur {
+  filter: blur(3px);
+  opacity: 0.7;
+}
+
+:host([ntp-next-features-enabled]) .play .aim-gradient-outer-blur:before,
+:host([ntp-next-features-enabled]) .play .aim-gradient-solid:before {
+  animation: opacity-fade var(--duration) linear backwards,
+    rotate-gradient var(--duration) var(--standard-curve) backwards;
+}
+
+@keyframes opacity-fade {
+  00% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes rotate-gradient {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(540deg);
+  }
+}
+
+.aim-background {
+  background-color: var(--input-background);
+  clip-path: inset(0 0 0 0 round calc(var(--button-height) * 2));
+  filter: blur(4px);
+  inset: var(--gradient-width);
+  position: absolute;
+}
+
+:host([ntp-next-features-enabled]) body .play .aim-background {
+  animation: background-fade var(--duration) linear backwards;
+}
+
+@keyframes background-fade {
+  0% {
+    background: var(--input-background);
+  }
+  30% {
+    background: var(--fulfillment-background);
+  }
+  50% {
+    background: var(--fulfillment-background);
+  }
+  100% {
+    background: var(--input-background);
+  }
 }
 
 @media (forced-colors: active) {
   #entrypoint {
     background-color: ButtonText;
+  }
+}
+
+@keyframes hover-background-delay {
+  to {
+    --cr-hover-background-color:
+      var(--color-composebox-context-entrypoint-hover-background);
   }
 }
 
@@ -26,9 +188,14 @@
   --cr-hover-background-color:
       var(--color-composebox-context-entrypoint-hover-background);
   --cr-icon-button-margin-start: 6px;
-  --icon-block-padding-small: 10px;
+  --icon-block-padding-small: 8px;
   border: initial;
   gap: 4px;
+}
+
+:host([ntp-next-features-enabled]) #entrypoint {
+  --cr-hover-background-color: transparent;
+  animation: hover-background-delay 0ms 1850ms linear forwards;
 }
 
 #entrypoint:not([disabled]) {
