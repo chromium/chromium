@@ -12,7 +12,7 @@ export function getHtml(this: ComposeboxElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
   <search-animated-glow
-      animation-state="${this.animationState_}">
+      animation-state="${this.animationState}">
   </search-animated-glow>
   <ntp-error-scrim id="errorScrim"
     ?compact-mode="${this.searchboxLayoutMode === 'Compact' &&
@@ -22,10 +22,10 @@ export function getHtml(this: ComposeboxElement) {
   <div id="composebox" @keydown="${this.onKeydown_}"
       @focusin="${this.handleComposeboxFocusIn_}"
       @focusout="${this.handleComposeboxFocusOut_}"
-      @dragenter="${this.handleDragEnter_}"
-      @dragover="${this.handleDragOver_}"
-      @drop="${this.handleDrop_}"
-      @dragleave="${this.handleDragLeave_}"
+      @dragenter="${this.dragAndDropHandler.handleDragEnter}"
+      @dragover="${this.dragAndDropHandler.handleDragOver}"
+      @dragleave="${this.dragAndDropHandler.handleDragLeave}"
+      @drop="${this.dragAndDropHandler.handleDrop}"
       @paste="${this.onPaste_}">
     <div id="inputContainer" part="input-container">
       <div id="textContainer" part="text-container">

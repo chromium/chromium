@@ -14,6 +14,8 @@ import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
+import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
+import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
@@ -55,7 +57,7 @@ export interface ComposeboxElement {
 }
 
 export class ComposeboxElement extends I18nMixinLit
-(CrLitElement) {
+(CrLitElement) implements DragAndDropHost {
   static get is() {
     return 'cr-composebox';
   }
@@ -98,7 +100,7 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
-      animationState_: {
+      animationState: {
         reflect: true,
         state: true,
         type: String,
@@ -124,7 +126,7 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
-      isDraggingFile_: {
+      isDraggingFile: {
         reflect: true,
         type: Boolean,
       },
@@ -165,6 +167,8 @@ export class ComposeboxElement extends I18nMixinLit
   accessor ntpRealboxNextEnabled: boolean = false;
   accessor searchboxLayoutMode: string = '';
   accessor carouselOnTop_: boolean = false;
+  accessor isDraggingFile: boolean = false;
+  accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
   // If isCollapsible is set to true, the composebox will be a pill shape until
   // it gets focused, at which point it will expand. If false, defaults to the
   // expanded state.
@@ -191,20 +195,18 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor showFileCarousel_: boolean = false;
   protected accessor inCreateImageMode_: boolean = false;
   protected accessor inDeepSearchMode_: boolean = false;
-  protected accessor isDraggingFile_: boolean = false;
   protected accessor showContextMenuDescription_: boolean = true;
   protected accessor lensButtonDisabled_: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor errorScrimVisible_: boolean = false;
   protected accessor contextFilesSize_: number = 0;
   protected accessor delayTabUpload: boolean = false;
-  protected accessor animationState_: GlowAnimationState =
-      GlowAnimationState.NONE;
   protected lastQueriedInput_: string = '';
   protected showVoiceSearchInSteadyComposebox_: boolean =
       loadTimeData.getBoolean('steadyComposeboxShowVoiceSearch');
   protected showVoiceSearchInExpandedComposebox_: boolean =
       loadTimeData.getBoolean('expandedComposeboxShowVoiceSearch');
+  protected dragAndDropHandler: DragAndDropHandler;
   private showTypedSuggest_: boolean =
       loadTimeData.getBoolean('composeboxShowTypedSuggest');
   private showZps: boolean = loadTimeData.getBoolean('composeboxShowZps');
@@ -227,6 +229,8 @@ export class ComposeboxElement extends I18nMixinLit
     this.searchboxCallbackRouter_ =
         ComposeboxProxyImpl.getInstance().searchboxCallbackRouter;
     this.searchboxHandler_ = ComposeboxProxyImpl.getInstance().searchboxHandler;
+    this.dragAndDropHandler =
+        new DragAndDropHandler(this, this.dragAndDropEnabled_);
   }
 
   override connectedCallback() {
@@ -234,8 +238,8 @@ export class ComposeboxElement extends I18nMixinLit
 
     // Set the initial expanded state based on the inputted property.
     this.expanding_ = !this.isCollapsible;
-    this.animationState_ = this.isCollapsible ? GlowAnimationState.NONE :
-                                                GlowAnimationState.EXPANDING;
+    this.animationState = this.isCollapsible ? GlowAnimationState.NONE :
+                                               GlowAnimationState.EXPANDING;
 
     this.searchboxListenerIds = [
       this.searchboxCallbackRouter_.autocompleteResultChanged.addListener(
@@ -344,6 +348,12 @@ export class ComposeboxElement extends I18nMixinLit
         this.$.input.style.height = 'unset';
       }
     }
+  }
+
+  /* Used by drag/drop host interface so the
+  drag and drop handler can access addDroppedFiles(). */
+  getDropTarget() {
+    return this.$.context;
   }
 
   focusInput() {
@@ -616,54 +626,6 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
-  protected handleDragEnter_(e: DragEvent) {
-    if (!this.dragAndDropEnabled_) {
-      return;
-    }
-    e.preventDefault();
-    if (this.isDraggingFile_) {
-      return;
-    }
-    this.isDraggingFile_ = true;
-    this.animationState_ = GlowAnimationState.DRAGGING;
-  }
-
-  protected handleDragOver_(e: DragEvent) {
-    if (!this.dragAndDropEnabled_) {
-      return;
-    }
-    e.preventDefault();
-  }
-
-  protected handleDrop_(e: DragEvent) {
-    if (!this.dragAndDropEnabled_) {
-      return;
-    }
-    e.preventDefault();
-    const files = e.dataTransfer?.files;
-    if (files && files.length > 0) {
-      this.$.context.addFiles(files);
-    }
-    this.isDraggingFile_ = false;
-    this.animationState_ = GlowAnimationState.NONE;
-  }
-
-  protected handleDragLeave_(e: DragEvent) {
-    if (!this.dragAndDropEnabled_) {
-      return;
-    }
-    e.preventDefault();
-
-    // Avoid false leave events from composebox to its children.
-    // Only consider leave events from composebox to external components.
-    const currentTarget = e.currentTarget as Node;
-    if (e.relatedTarget && currentTarget.contains(e.relatedTarget as Node)) {
-      return;
-    }
-    this.isDraggingFile_ = false;
-    this.animationState_ = GlowAnimationState.NONE;
-  }
-
   protected onLensClick_() {
     this.pageHandler_.handleLensButtonClick();
   }
@@ -895,7 +857,7 @@ export class ComposeboxElement extends I18nMixinLit
 
     if (this.isCollapsible) {
       this.expanding_ = false;
-      this.animationState_ = GlowAnimationState.NONE;
+      this.animationState = GlowAnimationState.NONE;
       this.$.input.blur();
     }
   }
@@ -929,7 +891,7 @@ export class ComposeboxElement extends I18nMixinLit
           e.ctrlKey, e.metaKey, e.shiftKey);
     }
 
-    this.animationState_ = GlowAnimationState.SUBMITTING;
+    this.animationState = GlowAnimationState.SUBMITTING;
 
     // If the composebox is expandable, collapse it and clear the input after
     // submitting.

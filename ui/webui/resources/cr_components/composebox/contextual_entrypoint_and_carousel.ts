@@ -401,10 +401,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
       if (!file.type.includes('pdf') && !file.type.includes('image')) {
         this.fire('on-file-validation-error', {
-           errorMessage:
-      // TODO(crbug.com/454730356): replace with translatable string that includes
-      // pdf and not just image.
-                this.i18n('composeboxFileUploadImageProcessingError'),
+          errorMessage:
+              // TODO(crbug.com/454730356): replace with translatable string
+              // that includes pdf and not just image.
+              this.i18n('composeboxFileUploadImageProcessingError'),
         });
         return;
       }

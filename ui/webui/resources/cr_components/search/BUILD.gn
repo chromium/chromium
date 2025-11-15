@@ -12,6 +12,8 @@ build_webui("build") {
     "animated_glow.ts",
     "animated_glow.html.ts",
     "constants.ts",
+    "drag_drop_handler.ts",
+    "drag_drop_host.ts",
   ]
   css_files = [ "animated_glow.css" ]
 
