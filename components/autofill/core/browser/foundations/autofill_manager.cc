@@ -417,7 +417,9 @@ void AutofillManager::OnFocusOnFormField(const FormData& form,
 }
 
 void AutofillManager::OnFocusOnNonFormField() {
+  NotifyObservers(&Observer::OnBeforeFocusOnNonFormField);
   OnFocusOnNonFormFieldImpl();
+  NotifyObservers(&Observer::OnAfterFocusOnNonFormField);
 }
 
 void AutofillManager::OnDidEndTextFieldEditing() {

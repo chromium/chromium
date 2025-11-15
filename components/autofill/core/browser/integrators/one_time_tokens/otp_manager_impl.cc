@@ -98,6 +98,28 @@ void OtpManagerImpl::OnFieldTypesDetermined(
   GetRecentOtpsAndRenewSubscription();
 }
 
+// This is a workaround to prevent the Keyboard Accessory from popping up when
+// an OTP arrives and the keyboard is hidden.
+// TODO(crbug.com/451991285): Remove this method once we switch to using
+// observers instead of delaying the callback.
+void OtpManagerImpl::OnBeforeFocusOnFormField(AutofillManager& manager,
+                                              FormGlobalId form,
+                                              FieldGlobalId field) {
+  if (!last_pending_get_suggestions_callback_.is_null()) {
+    std::move(last_pending_get_suggestions_callback_).Run({});
+  }
+}
+
+// This is a workaround to prevent the Keyboard Accessory from popping up when
+// an OTP arrives and the keyboard is hidden.
+// TODO(crbug.com/451991285): Remove this method once we switch to using
+// observers instead of delaying the callback.
+void OtpManagerImpl::OnBeforeFocusOnNonFormField(AutofillManager& manager) {
+  if (!last_pending_get_suggestions_callback_.is_null()) {
+    std::move(last_pending_get_suggestions_callback_).Run({});
+  }
+}
+
 void OtpManagerImpl::OnOneTimeTokenReceived(
     OneTimeTokenSource backend_type,
     std::variant<OneTimeToken, OneTimeTokenRetrievalError> token_or_error) {

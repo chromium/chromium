@@ -108,6 +108,12 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
               (override));
 
   MOCK_METHOD(void,
+              OnBeforeFocusOnNonFormField,
+              (AutofillManager&),
+              (override));
+  MOCK_METHOD(void, OnAfterFocusOnNonFormField, (AutofillManager&), (override));
+
+  MOCK_METHOD(void,
               OnBeforeJavaScriptChangedAutofilledValue,
               (AutofillManager&, FormGlobalId, FieldGlobalId),
               (override));
