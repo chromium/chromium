@@ -4,15 +4,48 @@
 
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 
+#include "base/base64.h"
+#include "base/containers/span.h"
+#include "base/files/file_util.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/unguessable_token.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "components/contextual_search/contextual_search_context_controller.h"
+#include "components/contextual_search/contextual_search_types.h"
+#include "components/lens/contextual_input.h"
+#include "components/lens/lens_bitmap_processing.h"
+#include "components/lens/lens_overlay_mime_type.h"
+#include "components/omnibox/browser/searchbox.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/mime_util.h"
 #include "ui/base/base_window.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
+#include "ui/shell_dialogs/selected_file_info.h"
+
+namespace {
+
+std::optional<lens::ImageEncodingOptions> CreateImageEncodingOptions() {
+  auto image_upload_config =
+      ntp_composebox::FeatureConfig::Get().config.composebox().image_upload();
+  return lens::ImageEncodingOptions{
+      .enable_webp_encoding = image_upload_config.enable_webp_encoding(),
+      .max_size = image_upload_config.downscale_max_image_size(),
+      .max_height = image_upload_config.downscale_max_image_height(),
+      .max_width = image_upload_config.downscale_max_image_width(),
+      .compression_quality = image_upload_config.image_compression_quality()};
+}
+
+}  // namespace
 
 OmniboxPopupFileSelector::OmniboxPopupFileSelector() = default;
 
@@ -20,7 +53,12 @@ OmniboxPopupFileSelector::~OmniboxPopupFileSelector() = default;
 
 void OmniboxPopupFileSelector::OpenFileUploadDialog(
     content::WebContents* web_contents,
-    bool is_image) {
+    bool is_image,
+    contextual_search::ContextualSearchContextController* query_controller,
+    OmniboxEditModel* edit_model) {
+  web_contents_ = web_contents;
+  query_controller_ = query_controller;
+  edit_model_ = edit_model;
   file_dialog_ = ui::SelectFileDialog::Create(
       this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
 
@@ -32,7 +70,6 @@ void OmniboxPopupFileSelector::OpenFileUploadDialog(
     std::vector<base::FilePath::StringType> extensions;
     net::GetExtensionsForMimeType("image/*", &extensions);
     file_types.extensions.push_back(extensions);
-    ;
   } else {
     file_types.extensions = {{FILE_PATH_LITERAL("pdf")}};
   }
@@ -44,7 +81,111 @@ void OmniboxPopupFileSelector::OpenFileUploadDialog(
                            gfx::NativeWindow());
 }
 
+std::string ReadFileAndProcess(const base::FilePath& local_path) {
+  std::string file_bytes;
+
+  if (!base::ReadFileToString(local_path, &file_bytes)) {
+    LOG(ERROR) << "Failed to read file from path: "
+               << local_path.AsUTF8Unsafe();
+    return std::string();
+  }
+
+  return file_bytes;
+}
+
 void OmniboxPopupFileSelector::FileSelected(const ui::SelectedFileInfo& file,
-                                            int index) {}
+                                            int index) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&ReadFileAndProcess, file.path()),
+      base::BindOnce(&OmniboxPopupFileSelector::OnFileDataReady,
+                     weak_factory_.GetWeakPtr(), file.path()));
+  file_dialog_.reset();
+}
 
 void OmniboxPopupFileSelector::FileSelectionCanceled() {}
+
+void OmniboxPopupFileSelector::OnFileDataReady(base::FilePath file_path,
+                                               std::string file_bytes) {
+  if (!query_controller_) {
+    return;
+  }
+
+  base::UnguessableToken file_token = base::UnguessableToken::Create();
+
+  std::string mime_string;
+  net::GetMimeTypeFromExtension(file_path.Extension().substr(1), &mime_string);
+  lens::MimeType mime_type;
+  std::optional<lens::ImageEncodingOptions> image_options = std::nullopt;
+  if (mime_string.find("pdf") != std::string::npos) {
+    mime_type = lens::MimeType::kPdf;
+  } else if (mime_string.find("image") != std::string::npos) {
+    mime_type = lens::MimeType::kImage;
+    image_options = CreateImageEncodingOptions();
+  } else {
+    NOTREACHED();
+  }
+
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->primary_content_type = mime_type;
+
+  base::span<const uint8_t> file_data_span =
+      base::as_bytes(base::span(file_bytes));
+  std::vector<uint8_t> file_data_vector(file_data_span.begin(),
+                                        file_data_span.end());
+  input_data->context_input->push_back(
+      lens::ContextualInput(std::move(file_data_vector), mime_type));
+
+  query_controller_->StartFileUploadFlow(file_token, std::move(input_data),
+                                         std::move(image_options));
+
+  std::string image_data_url;
+  if (mime_type == lens::MimeType::kImage) {
+    image_data_url =
+        "data:" + mime_string + ";base64," + base::Base64Encode(file_bytes);
+  }
+
+  UpdateSearchboxContextData(file_token, file_path, mime_type, image_data_url);
+
+  edit_model_->OpenAiMode(false);
+}
+
+void OmniboxPopupFileSelector::UpdateSearchboxContextData(
+    base::UnguessableToken file_token,
+    base::FilePath file_path,
+    lens::MimeType mime_type,
+    const std::string& image_data_url) {
+  auto file_attachment = searchbox::mojom::FileAttachmentStub::New();
+  file_attachment->uuid = file_token;
+  file_attachment->name = file_path.BaseName().AsUTF8Unsafe();
+
+  std::string mime_type_string;
+  net::GetMimeTypeFromExtension(file_path.Extension().substr(1),
+                                &mime_type_string);
+  file_attachment->mime_type = mime_type_string;
+
+  if (mime_type == lens::MimeType::kImage) {
+    file_attachment->image_data_url = image_data_url;
+  }
+
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_);
+  if (!browser_window_interface) {
+    return;
+  }
+  SearchboxContextData* searchbox_context_data =
+      browser_window_interface->GetFeatures().searchbox_context_data();
+  if (!searchbox_context_data) {
+    return;
+  }
+  auto context = searchbox_context_data->TakePendingContext();
+  if (!context) {
+    context = std::make_unique<SearchboxContextData::Context>();
+  }
+  context->file_infos.push_back(
+      searchbox::mojom::SearchContextAttachmentStub::NewFileAttachment(
+          std::move(file_attachment)));
+  searchbox_context_data->SetPendingContext(std::move(context));
+}

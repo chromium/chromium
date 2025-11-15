@@ -12,6 +12,20 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace contextual_search {
+class ContextualSearchContextController;
+}  // namespace contextual_search
+
+namespace lens {
+enum class MimeType;
+}  // namespace lens
+
+namespace base {
+class UnguessableToken;
+}
+
+class OmniboxEditModel;
+
 class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
  public:
   OmniboxPopupFileSelector();
@@ -19,11 +33,22 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
   OmniboxPopupFileSelector& operator=(const OmniboxPopupFileSelector&) = delete;
   ~OmniboxPopupFileSelector() override;
 
-  void OpenFileUploadDialog(content::WebContents* web_contents, bool is_image);
-
   base::WeakPtr<OmniboxPopupFileSelector> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
+
+  void OpenFileUploadDialog(
+      content::WebContents* web_contents,
+      bool is_image,
+      contextual_search::ContextualSearchContextController* query_controller,
+      OmniboxEditModel* edit_model);
+
+  void OnFileDataReady(base::FilePath file_path, std::string file_bytes);
+
+  void UpdateSearchboxContextData(base::UnguessableToken file_token,
+                                  base::FilePath file_path,
+                                  lens::MimeType mime_type,
+                                  const std::string& image_data_url);
 
   // ui::SelectFileDialog::Listener:
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
@@ -31,6 +56,11 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
 
  private:
   scoped_refptr<ui::SelectFileDialog> file_dialog_;
+  raw_ptr<contextual_search::ContextualSearchContextController>
+      query_controller_;
+  std::string file_info_type_;
+  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<OmniboxEditModel> edit_model_;
 
   base::WeakPtrFactory<OmniboxPopupFileSelector> weak_factory_{this};
 };

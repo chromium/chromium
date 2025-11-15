@@ -16,6 +16,8 @@
 #include "url/gurl.h"
 
 class FaviconService;
+class OmniboxPopupFileSelector;
+class OmniboxEditModel;
 
 namespace favicon_base {
 struct FaviconImageResult;
@@ -29,15 +31,18 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-class OmniboxPopupFileSelector;
+namespace contextual_search {
+class ContextualSearchContextController;
+}
 
 // OmniboxContextMenuController creates and manages state for the context menu
 // shown for the omnibox.
 class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
  public:
-  explicit OmniboxContextMenuController(
-      content::WebContents* web_contents,
-      OmniboxPopupFileSelector* file_selector);
+  explicit OmniboxContextMenuController(content::WebContents* web_contents,
+                                        OmniboxPopupFileSelector* file_selector,
+                                        content::WebContents* aim_web_contents,
+                                        OmniboxEditModel* edit_model);
 
   OmniboxContextMenuController(const OmniboxContextMenuController&) = delete;
   OmniboxContextMenuController& operator=(const OmniboxContextMenuController&) =
@@ -83,6 +88,9 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   base::WeakPtr<content::WebContents> web_contents_;
   base::WeakPtr<OmniboxPopupFileSelector> file_selector_;
+  raw_ptr<contextual_search::ContextualSearchContextController>
+      query_controller_;
+  raw_ptr<OmniboxEditModel> edit_model_;
 
   // Needed for using FaviconService.
   base::CancelableTaskTracker cancelable_task_tracker_;

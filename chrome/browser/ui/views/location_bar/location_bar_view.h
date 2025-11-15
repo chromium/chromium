@@ -307,6 +307,10 @@ class LocationBarView
     return omnibox_popup_file_selector_.get();
   }
 
+  OmniboxPopupAimPresenter* GetOmniboxPopupAimPresenter() const {
+    return omnibox_popup_aim_presenter_.get();
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SecurityIndicatorTest, CheckIndicatorText);
   FRIEND_TEST_ALL_PREFIXES(TouchLocationBarViewBrowserTest,

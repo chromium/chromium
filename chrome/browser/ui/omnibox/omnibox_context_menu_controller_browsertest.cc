@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
       std::make_unique<OmniboxPopupFileSelector>();
   OmniboxContextMenuController base_controller(
       browser()->tab_strip_model()->GetActiveWebContents(),
-      omnibox_popup_file_selector.get());
+      omnibox_popup_file_selector.get(), nullptr, nullptr);
   ui::SimpleMenuModel* model = base_controller.menu_model();
 
   // The 1 separator and 4 static items.
@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
 
   OmniboxContextMenuController controller(
       browser()->tab_strip_model()->GetActiveWebContents(),
-      omnibox_popup_file_selector.get());
+      omnibox_popup_file_selector.get(), nullptr, nullptr);
   model = controller.menu_model();
 
   // The model should have 9 items, one for each tab,

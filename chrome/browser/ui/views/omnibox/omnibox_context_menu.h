@@ -22,6 +22,7 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+class OmniboxEditModel;
 class OmniboxPopupFileSelector;
 
 class OmniboxContextMenu : public views::MenuDelegate,
@@ -29,7 +30,9 @@ class OmniboxContextMenu : public views::MenuDelegate,
  public:
   explicit OmniboxContextMenu(views::Widget* parent_widget,
                               content::WebContents* web_contents,
-                              OmniboxPopupFileSelector* file_selector);
+                              OmniboxPopupFileSelector* file_selector,
+                              content::WebContents* aim_web_contents,
+                              OmniboxEditModel* edit_model);
 
   ~OmniboxContextMenu() override;
 
