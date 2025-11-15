@@ -44,14 +44,16 @@ AiModePageActionIconView::AiModePageActionIconView(
                          "AiMode",
                          kActionAiMode),
       browser_(browser) {
-  CHECK(browser_);
   image_container_view()->SetFlipCanvasOnPaintForRTLUI(false);
 
-  pref_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_registrar_->Init(browser_->GetProfile()->GetPrefs());
-  pref_registrar_->Add(omnibox::kShowAiModeOmniboxButton,
-                       base::BindRepeating(&AiModePageActionIconView::Update,
-                                           base::Unretained(this)));
+  // browser_ can be null in tests.
+  if (browser_) {
+    pref_registrar_ = std::make_unique<PrefChangeRegistrar>();
+    pref_registrar_->Init(browser_->GetProfile()->GetPrefs());
+    pref_registrar_->Add(omnibox::kShowAiModeOmniboxButton,
+                         base::BindRepeating(&AiModePageActionIconView::Update,
+                                             base::Unretained(this)));
+  }
 
   SetProperty(views::kElementIdentifierKey, kAiModePageActionIconElementId);
 
@@ -114,6 +116,11 @@ void AiModePageActionIconView::ExecuteWithKeyboardSourceForTesting() {
 }
 
 void AiModePageActionIconView::UpdateImpl() {
+  // browser_ can be null in tests.
+  if (!browser_) {
+    return;
+  }
+
   Profile* profile = browser_->GetProfile();
   bool enabled =
       profile->GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton);
