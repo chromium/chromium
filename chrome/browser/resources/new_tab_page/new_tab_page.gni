@@ -24,17 +24,16 @@ all_ts_files = [
                ] + modules_ts_files + ntp_promo_ts_files + action_chips_ts_files
 
 # Files holding a Polymer element definition and have an equivalent .html file.
-all_web_component_files =
-    [
-      "app.ts",
-      "doodle_share_dialog.ts",
-      "iframe.ts",
-      "lens_form.ts",
-      "lens_upload_dialog.ts",
-      "logo.ts",
-      "middle_slot_promo.ts",
-      "voice_search_overlay.ts",
-    ] + modules_web_component_files + action_chips_web_component_files
+all_web_component_files = [
+                            "app.ts",
+                            "doodle_share_dialog.ts",
+                            "iframe.ts",
+                            "lens_form.ts",
+                            "lens_upload_dialog.ts",
+                            "logo.ts",
+                            "middle_slot_promo.ts",
+                            "voice_search_overlay.ts",
+                          ] + modules_web_component_files
 
 all_css_files =
     [

@@ -1,15 +1,13 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {FileUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {ComposeboxMode} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {ActionChipsHandlerInterface, TabInfo} from '../action_chips.mojom-webui.js';
+import type {ActionChip, ActionChipsHandlerInterface, TabInfo} from '../action_chips.mojom-webui.js';
+import {ChipType} from '../action_chips.mojom-webui.js';
 
 import {getCss} from './action_chips.css.js';
 import {getHtml} from './action_chips.html.js';
@@ -54,18 +52,45 @@ export class ActionChipsElement extends CrLitElement {
     return getCss();
   }
 
-  override render() {
-    return getHtml.bind(this)();
-  }
-
   static override get properties() {
     return {
       mostRecentTab_: {type: Object, state: true},
+      actionChips_: {type: Array, state: true},
     };
   }
 
   private handler: ActionChipsHandlerInterface;
-  protected accessor mostRecentTab_: TabInfo|null = null;
+  private accessor mostRecentTab_: TabInfo|null = null;
+  protected accessor actionChips_: ActionChip[] = [];
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+
+  protected getAdditionalIconClasses_(chip: ActionChip): string {
+    switch (chip.type) {
+      case ChipType.kImage:
+        return 'banana';
+      case ChipType.kDeepSearch:
+        return 'deep-search';
+      default:
+        return '';
+    }
+  }
+
+  protected getId(chip: ActionChip): string|null {
+    switch (chip.type) {
+      case ChipType.kImage:
+        return 'nano-banana';
+      case ChipType.kDeepSearch:
+        return 'deep-search';
+      case ChipType.kRecentTab:
+        return 'tab-context';
+      default:
+        return null;
+    }
+  }
 
   constructor() {
     super();
@@ -77,6 +102,10 @@ export class ActionChipsElement extends CrLitElement {
     this.handler.getMostRecentTab().then((result) => {
       this.mostRecentTab_ = result ? result.tab : null;
     });
+    this.handler.getActionChips().then(
+        (result: {actionChips: ActionChip[]}) => {
+          this.actionChips_ = result.actionChips;
+        });
   }
 
   // TODO (crbug.com/453650248): Move the impression metrics logging to the
@@ -118,6 +147,22 @@ export class ActionChipsElement extends CrLitElement {
       isDeletable: true,
     };
     this.onActionChipClick_('', [fakeRecentTabInfo], ComposeboxMode.DEFAULT);
+  }
+
+  protected handleClick_(chip: ActionChip): void {
+    switch (chip.type) {
+      case ChipType.kImage:
+        this.onCreateImageClick_();
+        break;
+      case ChipType.kDeepSearch:
+        this.onDeepSearchClick_();
+        break;
+      case ChipType.kRecentTab:
+        this.onTabContextClick_();
+        break;
+      default:
+        // Do nothing yet...
+    }
   }
 
   private onActionChipClick_(

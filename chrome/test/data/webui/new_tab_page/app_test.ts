@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ActionChipsHandlerRemote} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
+import {ActionChipsHandlerRemote, ChipType} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
 import type {CustomizeButtonsDocumentRemote} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
 import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, SidePanelOpenTrigger} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
 import {CustomizeChromeSection} from 'chrome://new-tab-page/customize_chrome.mojom-webui.js';
@@ -1944,6 +1944,28 @@ suite('NewTabPageAppTest', () => {
       );
       actionChipshandler.setResultFor(
           'getMostRecentTab', Promise.resolve({tab: null}));
+      actionChipshandler.setResultFor('getActionChips', Promise.resolve({
+        actionChips: [
+          {
+            title: 'TabContext',
+            suggestion: 'tab-suggestion',
+            type: ChipType.kRecentTab,
+            tab: null,
+          },
+          {
+            title: 'Nano Banana',
+            suggestion: 'image-suggestion',
+            type: ChipType.kImage,
+            tab: null,
+          },
+          {
+            title: 'DeepSearch',
+            suggestion: 'ds-suggestion',
+            type: ChipType.kDeepSearch,
+            tab: null,
+          },
+        ],
+      }));
     });
 
     // Testing Action Chips visibility on initial flag load values.

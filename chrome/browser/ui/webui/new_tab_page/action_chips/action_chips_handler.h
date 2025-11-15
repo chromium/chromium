@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_ACTION_CHIPS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_ACTION_CHIPS_HANDLER_H_
 
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom-forward.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "content/public/browser/web_contents.h"
@@ -31,6 +33,10 @@ class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler {
 
   // action_chips::mojom::ActionChipsHandler:
   void GetMostRecentTab(GetMostRecentTabCallback callback) override;
+
+  void GetActionChips(
+      base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>
+          callback) override;
 
  private:
   // Helper function to find the most recent WebContents.
