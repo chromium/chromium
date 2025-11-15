@@ -509,6 +509,10 @@ void ExecutionEngine::OnPromptUserToConfirmNavigationDecision(
 void ExecutionEngine::UserTakeover(
     mojom::ActionResultCode takeover_response_code,
     base::OnceCallback<void(bool)> callback) {
+  if (takeover_response_code == mojom::ActionResultCode::kFilePickerTriggered) {
+    base::UmaHistogramBoolean("Actor.Download.SaveAsDialogTriggered", true);
+  }
+
   CancelOngoingActions(takeover_response_code);
 
   // Cancel any existing user takeover callback
