@@ -126,7 +126,7 @@ void RenderProcessHostTaskProvider::DeleteTask(
   tasks_by_rph_id_.erase(itr);
 }
 
-void RenderProcessHostTaskProvider::OnRenderProcessHostCreated(
+void RenderProcessHostTaskProvider::OnRenderProcessLaunched(
     content::RenderProcessHost* host) {
   if (is_updating_) {
     CreateTask(host);
