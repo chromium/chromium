@@ -22,7 +22,7 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
-#include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
@@ -113,9 +113,7 @@ class CreditCardAccessManager
   using OtpAuthenticationResponse =
       CreditCardOtpAuthenticator::OtpAuthenticationResponse;
 
-  CreditCardAccessManager(AutofillManager* manager,
-                          autofill_metrics::CreditCardFormEventLogger*
-                              credit_card_form_event_logger);
+  explicit CreditCardAccessManager(BrowserAutofillManager* manager);
 
   CreditCardAccessManager(const CreditCardAccessManager&) = delete;
   CreditCardAccessManager& operator=(const CreditCardAccessManager&) = delete;
@@ -195,6 +193,10 @@ class CreditCardAccessManager
   AutofillClient& autofill_client() { return manager_->client(); }
 
   const AutofillClient& autofill_client() const { return manager_->client(); }
+
+  autofill_metrics::CreditCardFormEventLogger& form_event_logger() {
+    return manager_->GetCreditCardFormEventLogger();
+  }
 
   payments::PaymentsAutofillClient& payments_autofill_client() {
     return *autofill_client().GetPaymentsAutofillClient();
@@ -409,10 +411,7 @@ class CreditCardAccessManager
   bool is_authentication_in_progress_ = false;
 
   // The owning AutofillManager.
-  const raw_ref<AutofillManager> manager_;
-
-  // For logging metrics.
-  const raw_ptr<autofill_metrics::CreditCardFormEventLogger> form_event_logger_;
+  const raw_ref<BrowserAutofillManager> manager_;
 
   // Timestamp used for preflight call metrics.
   std::optional<base::TimeTicks> preflight_call_timestamp_;

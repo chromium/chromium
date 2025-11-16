@@ -810,8 +810,8 @@ base::WeakPtr<AutofillManager> BrowserAutofillManager::GetWeakPtr() {
 
 CreditCardAccessManager& BrowserAutofillManager::GetCreditCardAccessManager() {
   if (!credit_card_access_manager_) {
-    credit_card_access_manager_ = std::make_unique<CreditCardAccessManager>(
-        this, &metrics_->credit_card_form_event_logger);
+    credit_card_access_manager_ =
+        std::make_unique<CreditCardAccessManager>(this);
   }
   return *credit_card_access_manager_;
 }
@@ -2586,8 +2586,6 @@ void BrowserAutofillManager::Reset() {
   amount_extraction_manager_.reset();
   bnpl_manager_.reset();
 
-  // The order below is relevant:
-  // `credit_card_access_manager_` has a reference to `metrics_`.
   credit_card_access_manager_.reset();
   // Forget stored data (e.g. active subscriptions and pending callbacks) after
   // a navigation.

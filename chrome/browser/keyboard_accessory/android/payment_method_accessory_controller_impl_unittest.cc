@@ -101,7 +101,7 @@ class PaymentMethodAccessoryControllerTestBase
 
     test_api(autofill_manager())
         .set_credit_card_access_manager(
-            std::make_unique<TestAccessManager>(&autofill_manager(), nullptr));
+            std::make_unique<TestAccessManager>(&autofill_manager()));
     PaymentMethodAccessoryControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_mf_controller_.AsWeakPtr(), &paydm(),
         &valuables_data_manager(), &autofill_manager(), &autofill_driver());

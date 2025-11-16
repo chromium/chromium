@@ -57,10 +57,6 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
         .form_interactions_flow_id_for_test();
   }
 
-  autofill_metrics::CreditCardFormEventLogger* credit_card_form_event_logger() {
-    return &manager_->metrics_->credit_card_form_event_logger;
-  }
-
   autofill_metrics::OtpFormEventLogger* get_otp_form_event_logger() {
     return &manager_->metrics_->otp_form_event_logger;
   }

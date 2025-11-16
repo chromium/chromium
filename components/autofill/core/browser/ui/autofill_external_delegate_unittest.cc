@@ -266,8 +266,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
   explicit MockBrowserAutofillManager(AutofillDriver* driver)
       : TestBrowserAutofillManager(driver) {
     test_api(*this).set_credit_card_access_manager(
-        std::make_unique<TestCreditCardAccessManager>(
-            this, test_api(*this).credit_card_form_event_logger()));
+        std::make_unique<TestCreditCardAccessManager>(this));
     test_api(*this).set_bnpl_manager(
         std::make_unique<testing::NiceMock<MockBnplManager>>(this));
   }

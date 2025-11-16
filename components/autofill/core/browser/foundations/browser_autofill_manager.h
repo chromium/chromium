@@ -79,12 +79,6 @@ class FormData;
 class FormFieldData;
 struct SuggestionsContext;
 
-namespace autofill_metrics {
-
-class CreditCardFormEventLogger;
-
-}  // namespace autofill_metrics
-
 namespace payments {
 class AmountExtractionManager;
 class BnplManager;
@@ -344,6 +338,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id) const;
 
+  // This reference is not stable over the lifetime of BrowserAutofillManager.
   virtual autofill_metrics::CreditCardFormEventLogger&
   GetCreditCardFormEventLogger();
 

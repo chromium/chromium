@@ -55,8 +55,7 @@ MockPaymentsAutofillClient::~MockPaymentsAutofillClient() = default;
 
 MockCreditCardAccessManager::MockCreditCardAccessManager(
     BrowserAutofillManager* bam)
-    : CreditCardAccessManager(bam,
-                              test_api(*bam).credit_card_form_event_logger()) {
+    : CreditCardAccessManager(bam) {
   ON_CALL(*this, FetchCreditCard)
       .WillByDefault(
           [this](const CreditCard* card, OnCreditCardFetchedCallback cb) {

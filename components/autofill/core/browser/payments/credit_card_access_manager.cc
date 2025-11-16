@@ -98,9 +98,8 @@ bool IsEligibleForCardInfoRetrievalAuthentication(
 }  // namespace
 
 CreditCardAccessManager::CreditCardAccessManager(
-    AutofillManager* manager,
-    autofill_metrics::CreditCardFormEventLogger* form_event_logger)
-    : manager_(CHECK_DEREF(manager)), form_event_logger_(form_event_logger) {}
+    BrowserAutofillManager* manager)
+    : manager_(CHECK_DEREF(manager)) {}
 
 CreditCardAccessManager::~CreditCardAccessManager() {
   // This clears the record type of the most recently autofilled card with no
@@ -133,8 +132,8 @@ void CreditCardAccessManager::UpdateCreditCardFormEventLogger() {
       server_record_type_count++;
     }
   }
-  form_event_logger_->set_server_record_type_count(server_record_type_count);
-  form_event_logger_->set_local_record_type_count(local_record_type_count);
+  form_event_logger().set_server_record_type_count(server_record_type_count);
+  form_event_logger().set_local_record_type_count(local_record_type_count);
 }
 
 bool CreditCardAccessManager::UnmaskedCardCacheIsEmpty() {
@@ -244,7 +243,7 @@ void CreditCardAccessManager::LogMetricsAndFillFormForServerUnmaskFlows(
   switch (unmask_auth_flow_type) {
     case UnmaskAuthFlowType::kCvcThenFido:
     case UnmaskAuthFlowType::kFido:
-      form_event_logger_->LogCardUnmaskAuthenticationPromptCompleted(
+      form_event_logger().LogCardUnmaskAuthenticationPromptCompleted(
           unmask_auth_flow_type_);
       if (card_->record_type() == CreditCard::RecordType::kVirtualCard) {
         flow_type = ServerCardUnmaskFlowType::kFidoOnly;
@@ -595,7 +594,7 @@ void CreditCardAccessManager::Authenticate(
   ready_to_start_authentication_.Reset();
   unmask_details_request_in_progress_ = false;
 
-  form_event_logger_->LogCardUnmaskAuthenticationPromptShown(
+  form_event_logger().LogCardUnmaskAuthenticationPromptShown(
       unmask_auth_flow_type_);
 
   // If FIDO auth was suggested, log which authentication method was
@@ -755,7 +754,7 @@ void CreditCardAccessManager::OnCvcAuthenticationComplete(
   // LogMetricsAndFillFormForServerUnmaskFlows().
   if (response.did_succeed &&
       unmask_auth_flow_type_ != UnmaskAuthFlowType::kCvcThenFido) {
-    form_event_logger_->LogCardUnmaskAuthenticationPromptCompleted(
+    form_event_logger().LogCardUnmaskAuthenticationPromptCompleted(
         unmask_auth_flow_type_);
   }
 
@@ -904,7 +903,7 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
 void CreditCardAccessManager::OnFidoAuthorizationComplete(bool did_succeed) {
   if (did_succeed) {
     OnCreditCardFetched(*card_, /*card_was_fetched_from_cache=*/false);
-    form_event_logger_->LogCardUnmaskAuthenticationPromptCompleted(
+    form_event_logger().LogCardUnmaskAuthenticationPromptCompleted(
         unmask_auth_flow_type_);
   }
   Reset();
@@ -1781,7 +1780,7 @@ void CreditCardAccessManager::OnVcn3dsAuthenticationComplete(
         ServerCardUnmaskResult::kAuthenticationUnmasked,
         PaymentsRpcCardType::kVirtualCard,
         ServerCardUnmaskFlowType::kThreeDomainSecure);
-    form_event_logger_->LogCardUnmaskAuthenticationPromptCompleted(
+    form_event_logger().LogCardUnmaskAuthenticationPromptCompleted(
         unmask_auth_flow_type_);
   } else {
     autofill_metrics::LogServerCardUnmaskResult(
