@@ -20,24 +20,10 @@ import {ActionChipsApiProxyImpl} from './action_chips_proxy.js';
  * should not be renumbered, removed or reused.
  */
 
-// LINT.IfChange(ActionChipsType)
-export enum ActionChipsType {
-  CREATE_IMAGE = 0,
-  DEEP_SEARCH = 1,
-  MAX_VALUE = DEEP_SEARCH,
-}
-// LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:ActionChipsType)
-
 // Records a click metric for the given action chip type.
-function recordClick(element: ActionChipsType) {
+function recordClick(chipType: ChipType) {
   chrome.metricsPrivate.recordEnumerationValue(
-      'NewTabPage.ActionChips.Click', element, ActionChipsType.MAX_VALUE + 1);
-}
-
-// Records an impression metric for the given action chip type.
-function recordShown(element: ActionChipsType) {
-  chrome.metricsPrivate.recordEnumerationValue(
-      'NewTabPage.ActionChips.Shown', element, ActionChipsType.MAX_VALUE + 1);
+      'NewTabPage.ActionChips.Click', chipType, ChipType.MAX_VALUE + 1);
 }
 
 /**
@@ -106,27 +92,20 @@ export class ActionChipsElement extends CrLitElement {
         });
   }
 
-  // TODO (crbug.com/453650248): Move the impression metrics logging to the
-  // handler logic once the changes are merged in. Right now we are only
-  // statically showing these two chips.
-  override firstUpdated() {
-    recordShown(ActionChipsType.CREATE_IMAGE);
-    recordShown(ActionChipsType.DEEP_SEARCH);
-  }
-
   protected onCreateImageClick_() {
-    recordClick(ActionChipsType.CREATE_IMAGE);
+    recordClick(ChipType.kImage);
     this.onActionChipClick_(
         'Create an image ', [], ComposeboxMode.CREATE_IMAGE);
   }
 
   protected onDeepSearchClick_() {
-    recordClick(ActionChipsType.DEEP_SEARCH);
+    recordClick(ChipType.kDeepSearch);
     this.onActionChipClick_(
         'Help me research ', [], ComposeboxMode.DEEP_SEARCH);
   }
 
   protected onTabContextClick_(tab: TabInfo) {
+    recordClick(ChipType.kRecentTab);
     const recentTabInfo: TabUpload = {
       tabId: tab.tabId,
       url: tab.url,

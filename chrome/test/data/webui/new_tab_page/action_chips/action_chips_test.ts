@@ -6,7 +6,7 @@ import 'chrome://new-tab-page/lazy_load.js';
 
 import {ActionChipsHandlerRemote, ChipType} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
 import type {ActionChip, TabInfo} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
-import {ActionChipsApiProxyImpl, ActionChipsType} from 'chrome://new-tab-page/lazy_load.js';
+import {ActionChipsApiProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import type {ActionChipsElement} from 'chrome://new-tab-page/lazy_load.js';
 import type {TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -34,7 +34,12 @@ suite('NewTabPageActionChipsTest', () => {
           type: ChipType.kRecentTab,
           title: 'Example Tab',
           suggestion: 'Ask about this tab',
-          tab: null,
+          tab: {
+            tabId: 1,
+            url: {url: 'https://example.com/test'},
+            title: 'Example Tab',
+            lastActiveTime: {internalValue: BigInt(12345)},
+          },
         },
         {
           type: ChipType.kImage,
@@ -153,17 +158,9 @@ suite('NewTabPageActionChipsTest', () => {
       // Assert.
       await whenActionChipClicked;
 
-      assertEquals(2, metrics.count('NewTabPage.ActionChips.Shown'));
-      assertEquals(
-          1,
-          metrics.count(
-              'NewTabPage.ActionChips.Shown', ActionChipsType.CREATE_IMAGE));
-
       assertEquals(1, metrics.count('NewTabPage.ActionChips.Click'));
       assertEquals(
-          1,
-          metrics.count(
-              'NewTabPage.ActionChips.Click', ActionChipsType.CREATE_IMAGE));
+          1, metrics.count('NewTabPage.ActionChips.Click', ChipType.kImage));
     });
 
     test('deep search chip triggers chip click event', async () => {
@@ -178,17 +175,28 @@ suite('NewTabPageActionChipsTest', () => {
       // Assert.
       await whenActionChipClicked;
 
-      assertEquals(2, metrics.count('NewTabPage.ActionChips.Shown'));
+      assertEquals(1, metrics.count('NewTabPage.ActionChips.Click'));
       assertEquals(
           1,
-          metrics.count(
-              'NewTabPage.ActionChips.Shown', ActionChipsType.DEEP_SEARCH));
+          metrics.count('NewTabPage.ActionChips.Click', ChipType.kDeepSearch));
+    });
+
+    test('tab context chip triggers chip click event', async () => {
+      // Setup.
+      const recentTabChip =
+          chips.shadowRoot.querySelector<HTMLButtonElement>('#tab-context');
+      assertTrue(!!recentTabChip);
+      const whenActionChipClicked =
+          eventToPromise('action-chip-click', document.body);
+      recentTabChip.click();
+
+      // Assert.
+      await whenActionChipClicked;
 
       assertEquals(1, metrics.count('NewTabPage.ActionChips.Click'));
       assertEquals(
           1,
-          metrics.count(
-              'NewTabPage.ActionChips.Click', ActionChipsType.DEEP_SEARCH));
+          metrics.count('NewTabPage.ActionChips.Click', ChipType.kRecentTab));
     });
   });
 

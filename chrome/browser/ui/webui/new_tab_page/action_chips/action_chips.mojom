@@ -15,13 +15,19 @@ struct TabInfo {
   mojo_base.mojom.Time last_active_time;
 };
 
-// The types of action chips in NTP.
+/**
+ * The types of action chips in NTP. This enum must match the numbering for
+ * ChipType in enums.xml. These values are persisted to logs. Entries
+ * should not be renumbered, removed or reused.
+ */
+// LINT.IfChange(ChipType)
 enum ChipType {
-  kRecentTab,
-  kDeepSearch,
-  kImage,
-  kDeepDive
+  kImage = 0,
+  kDeepSearch = 1,
+  kRecentTab = 2,
+  kDeepDive = 3,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:ChipType)
 
 // The information representing a single action chip.
 struct ActionChip {

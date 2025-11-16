@@ -26,15 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<!-- LINT.IfChange(ActionChipsType) -->
-
-<enum name="ActionChipsType">
-  <int value="0" label="Create Image Chip"/>
-  <int value="1" label="Deep Search Chip"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/resources/new_tab_page/action_chips/action_chips.ts:ActionChipsType) -->
-
 <enum name="AimToolState">
   <int value="0" label="AIM Tool Disabled"/>
   <int value="1" label="AIM Tool Enabled"/>
@@ -44,6 +35,17 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Downloaded from network"/>
   <int value="1" label="HTTP cache hit"/>
 </enum>
+
+<!-- LINT.IfChange(ChipType) -->
+
+<enum name="ChipType">
+  <int value="0" label="Create Image Chip"/>
+  <int value="1" label="Deep Search Chip"/>
+  <int value="2" label="Recent Tab Chip"/>
+  <int value="3" label="Deep Dive Chip"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom:ChipType) -->
 
 <enum name="ComposeboxFileValidationError">
   <int value="0" label="No error"/>

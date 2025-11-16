@@ -106,14 +106,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.ActionChips.Click" enum="ActionChipsType"
+<histogram name="NewTabPage.ActionChips.Click" enum="ChipType"
     expires_after="2026-05-01">
   <owner>giannich@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>Logged when any Action Chips was clicked by the user.</summary>
 </histogram>
 
-<histogram name="NewTabPage.ActionChips.Shown" enum="ActionChipsType"
+<histogram name="NewTabPage.ActionChips.Shown" enum="ChipType"
     expires_after="2026-05-01">
   <owner>giannich@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
