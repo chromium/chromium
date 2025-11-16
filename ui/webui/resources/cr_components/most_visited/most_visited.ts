@@ -391,11 +391,16 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
   private computeColumnCount_(): number {
     const shortcutCount = this.tiles_ ? this.tiles_.length : 0;
-    const canShowAdd = this.maxTiles_ > shortcutCount;
-    const tileCount = Math.min(
-        this.maxTiles_,
-        shortcutCount + (canShowAdd ? 1 : 0) +
-            (this.showShowMore_ || this.showShowLess_ ? 1 : 0));
+    const canShowAdd = this.expandableTilesEnabled ?
+        this.showAdd_ :
+        this.maxTiles_ > shortcutCount;
+    const canShowShowMore = this.expandableTilesEnabled && this.showShowMore_;
+    const canShowShowLess = this.expandableTilesEnabled && this.showShowLess_;
+    const visibleShortcutCount =
+        canShowShowMore ? this.maxTilesBeforeShowMore_ + 1 : shortcutCount;
+    const totalTileCount = visibleShortcutCount + (canShowAdd ? 1 : 0) +
+        (canShowShowMore || canShowShowLess ? 1 : 0);
+    const tileCount = Math.min(this.maxTiles_, totalTileCount);
     const columnCount = tileCount <= this.maxVisibleColumnCount_ ?
         tileCount :
         Math.min(
@@ -410,8 +415,12 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
 
     if (this.reflowOnOverflow && this.tiles_) {
+      const visibleShortcutCount =
+          this.expandableTilesEnabled && this.showShowMore_ ?
+          this.maxTilesBeforeShowMore_ + 1 :
+          this.tiles_.length;
       return Math.ceil(
-          (this.tiles_.length + (this.showAdd_ ? 1 : 0) +
+          (visibleShortcutCount + (this.showAdd_ ? 1 : 0) +
            (this.showShowMore_ || this.showShowLess_ ? 1 : 0)) /
           this.columnCount_);
     }
