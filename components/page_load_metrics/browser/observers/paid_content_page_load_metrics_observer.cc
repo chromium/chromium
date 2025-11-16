@@ -4,7 +4,9 @@
 
 #include "components/page_load_metrics/browser/observers/paid_content_page_load_metrics_observer.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -25,6 +27,10 @@ PaidContentPageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
     bool started_in_foreground) {
+  if (!base::FeatureList::IsEnabled(
+          page_load_metrics::features::kPaidContentMetricsObserver)) {
+    return STOP_OBSERVING;
+  }
   if (!navigation_handle->IsInPrimaryMainFrame()) {
     return STOP_OBSERVING;
   }
