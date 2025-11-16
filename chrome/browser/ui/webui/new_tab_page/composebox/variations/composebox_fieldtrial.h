@@ -125,6 +125,14 @@ namespace ntp_realbox {
 // the feature.
 BASE_DECLARE_FEATURE(kNtpRealboxNext);
 
+enum class PlaceholderText {
+  ASK_OR_TYPE = 0,
+  ASK = 1,
+};
+
+// The placeholder text to show on the search input.
+extern const base::FeatureParam<PlaceholderText> kSteadyPlaceholder;
+
 // Whether to show a series of cycling placeholder texts on the search input UI.
 extern const base::FeatureParam<bool> kCyclingPlaceholders;
 

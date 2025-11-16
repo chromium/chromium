@@ -77,11 +77,7 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
   placeholder_config->add_placeholders(
       omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_PLAN);
   placeholder_config->add_placeholders(
-      omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_COMPARE);
-  placeholder_config->add_placeholders(
       omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_RESEARCH);
-  placeholder_config->add_placeholders(
-      omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_TEACH);
   placeholder_config->add_placeholders(
       omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_WRITE);
 
@@ -336,6 +332,18 @@ bool IsNtpRealboxNextEnabled(Profile* profile) {
 }
 
 BASE_FEATURE(kNtpRealboxNext, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<PlaceholderText>::Option kSteadyPlaceholderOptions[] =
+    {
+        {PlaceholderText::ASK_OR_TYPE, "AskOrType"},
+        {PlaceholderText::ASK, "Ask"},
+};
+
+const base::FeatureParam<PlaceholderText> kSteadyPlaceholder(
+    &kNtpRealboxNext,
+    "SteadyPlaceholder",
+    PlaceholderText::ASK_OR_TYPE,
+    &kSteadyPlaceholderOptions);
 
 const base::FeatureParam<bool> kCyclingPlaceholders(&kNtpRealboxNext,
                                                     "CyclingPlaceholders",
