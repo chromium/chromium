@@ -15,6 +15,18 @@
   --ntp-chips-container-width: 449px;
 }
 
+@keyframes chips-slide {
+  to {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes chips-fade-in {
+  to {
+    opacity: 1;
+  }
+}
+
 .action-chips-wrapper {
   margin-bottom: 62px;
   margin-top: 8px;
@@ -50,10 +62,30 @@
   gap: 12px;
   height: 56px;
   isolation: isolate;
+  opacity: 0;
   overflow: hidden;
   padding: 8px 14px;
   position: relative;
+  transform: translateY(-56px);
   width: 240px;
+}
+
+.action-chips-container .action-chip:nth-child(1) {
+  animation:
+    chips-slide 250ms 250ms cubic-bezier(0.075, 0.82, 0.165, 1) forwards,
+    chips-fade-in 200ms 250ms ease-in forwards;
+}
+
+.action-chips-container .action-chip:nth-child(2) {
+  animation:
+    chips-slide 250ms 300ms cubic-bezier(0.075, 0.82, 0.165, 1) forwards,
+    chips-fade-in 200ms 300ms ease-in forwards;
+}
+
+.action-chips-container .action-chip:nth-child(3) {
+  animation:
+    chips-slide 250ms 350ms cubic-bezier(0.075, 0.82, 0.165, 1) forwards,
+    chips-fade-in 200ms 350ms ease-in forwards;
 }
 
 .action-chip:hover {
