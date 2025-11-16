@@ -285,10 +285,6 @@
     width: 100%;
   }
 
-  /* Hide the gradient fog when the dropdown is visible. */
-  #composeboxContainer:has(#composebox[show-dropdown_][expanding_])::before {
-    display: none;
-  }
 
   /* Show the composebox when enabled and not on the error page.
    * Disabling when the error page is visible is a temporary fix since the
@@ -344,8 +340,8 @@
     position: absolute;
   }
 
-  :host([enable-lens-aim-suggestions])
-    #composeboxContainer:has(cr-composebox[show-dropdown_][expanding_]) {
+  :host([enable-lens-aim-suggestions][is-composebox-focused])
+    #composeboxContainer:has(#composebox[show-dropdown_]) {
     background-color: var(--search-background-color);
     pointer-events: auto;
     inset-block-start: var(--aim-header-height);
