@@ -774,7 +774,7 @@ void LensSearchController::OnOverlayHidden(
 
   // Since the side panel is open and the overlay has smoothly faded out, hide
   // the overlay to restore state to the live page.
-  lens_overlay_controller_->HideOverlayAndMaybeSetHiddenState();
+  lens_overlay_controller_->HideOverlayAndSetHiddenState();
   lens_overlay_controller_->ClearAllSelections();
   // Any pending visual selection that had not yet been submitted should be
   // cleared whenever the overlay is hidden.
@@ -895,6 +895,16 @@ void LensSearchController::TabWillEnterBackground(tabs::TabInterface* tab) {
 
   // Ignore the event if the overlay is already backgrounded.
   if (state_ == State::kBackground) {
+    return;
+  }
+
+  // TODO(crbug.com/459478871): If the overlay is in an initializing state, then
+  // the entire Lens session is closed as there is no way to currently recover
+  // from this state. In the future, the side panel should remain open and the
+  // overlay should close.
+  if (lens_overlay_controller_->IsOverlayInitializing()) {
+    CloseLensSync(
+        lens::LensOverlayDismissalSource::kTabBackgroundedWhileInitializing);
     return;
   }
 

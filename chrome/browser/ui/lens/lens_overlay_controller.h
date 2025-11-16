@@ -191,6 +191,16 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
 
     // Will be kOff soon.
     kClosing,
+
+    // The UI is in the process of being shown after being hidden. Will
+    // transition to kOverlay unless interrupted by the overlay becoming
+    // hidden from a tab switch or other similar process. In these cases, the
+    // overlay will transition to kHidden and will need to be reshown again.
+    kIsReshowing,
+
+    // In the process of fading out before being completely hidden. Will
+    // transition to kHidden.
+    kHiding,
   };
   State state() { return state_; }
 
@@ -220,6 +230,9 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Returns whether visual searches should be fulfilled by AIM rather than
   // load immediately in the results panel.
   bool use_aim_for_visual_search() { return use_aim_for_visual_search_; }
+
+  // Returns whether the overlay is in screenshot state.
+  bool is_screenshot_state() { return state_ == State::kScreenshot; }
 
   // Returns invocation time since epoch. Used to set up html source for metric
   // logging.
@@ -417,6 +430,8 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
     return initialization_data_->significant_region_boxes_;
   }
 
+  State backgrounded_state_for_testing() { return backgrounded_state_; }
+
   views::Widget* get_preselection_widget_for_testing() {
     return preselection_widget_.get();
   }
@@ -557,11 +572,11 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   void HandlePageContentUploadProgress(uint64_t position, uint64_t total);
 
   // Hides the overlay view and restores input to the tab contents web view.
+  // This does not change any overlay state.
   void HideOverlay();
 
-  // Hides the overlay, but also sets the state to kHidden if the
-  // side panel is bound.
-  void HideOverlayAndMaybeSetHiddenState();
+  // Hides the overlay, but also sets the state to kHidden.
+  void HideOverlayAndSetHiddenState();
 
   // Should only be called when the overlay is in kHidden state. This will
   // reshow the overlay using the current viewport screenshot and page context
