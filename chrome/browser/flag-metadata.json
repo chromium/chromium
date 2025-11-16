@@ -9302,7 +9302,7 @@
   {
     "name": "tab-scrolling-button-position",
     "owners": [ "top-chrome-desktop-ui@google.com", "dpenning@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": -1
   },
   {
     "name": "tab-search-position-setting",
