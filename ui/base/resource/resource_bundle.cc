@@ -123,7 +123,7 @@ bool HasBrotliHeader(std::string_view data) {
                 "Magic number should be 2 bytes long");
   return data.size() >= ResourceBundle::kBrotliHeaderSize &&
          data_bytes[0] == ResourceBundle::kBrotliConst[0] &&
-         (data_bytes.subspan(1u)[0]) == ResourceBundle::kBrotliConst[1];
+         data_bytes[1] == ResourceBundle::kBrotliConst[1];
 }
 
 // Returns the uncompressed size of Brotli compressed |input| from header.
@@ -137,8 +137,7 @@ size_t GetBrotliDecompressSize(std::string_view input) {
   size_t bytes_size = ResourceBundle::kBrotliHeaderSize -
                       std::size(ResourceBundle::kBrotliConst);
   for (size_t i = 0; i < bytes_size; i++) {
-    uncompress_size |= static_cast<uint64_t>((raw_input.subspan(i)[0]))
-                       << (i * 8);
+    uncompress_size |= static_cast<uint64_t>(raw_input[i]) << (i * 8);
   }
   return static_cast<size_t>(uncompress_size);
 }
@@ -168,8 +167,7 @@ bool BrotliDecompress(std::string_view input, OutputBufferType output) {
   raw_input = raw_input.subspan(ResourceBundle::kBrotliHeaderSize);
 
   return BrotliDecoderDecompress(
-             input.size() - ResourceBundle::kBrotliHeaderSize, raw_input.data(),
-             &decompress_size,
+             raw_input.size(), raw_input.data(), &decompress_size,
              GetBufferForWriting(output, decompress_size).data()) ==
          BROTLI_DECODER_RESULT_SUCCESS;
 }
