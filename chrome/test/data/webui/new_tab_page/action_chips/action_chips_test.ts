@@ -5,9 +5,10 @@
 import 'chrome://new-tab-page/lazy_load.js';
 
 import {ActionChipsHandlerRemote, ChipType} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
-import type {ActionChip} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
+import type {ActionChip, TabInfo} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
 import {ActionChipsApiProxyImpl, ActionChipsType} from 'chrome://new-tab-page/lazy_load.js';
 import type {ActionChipsElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -74,18 +75,40 @@ suite('NewTabPageActionChipsTest', () => {
     assertTrue(!!actionChipsContainer);
   });
 
-  test('recent tab chip triggers chip click event', async () => {
-    // Setup.
-    await initializeChips({});
+  test('clicking recent tab chip creates correct TabUpload file', async () => {
+    const fakeTab: TabInfo = {
+      tabId: 1,
+      title: 'Test Title',
+      url: {url: 'https://example.com/test'},
+      lastActiveTime: {internalValue: BigInt(12345)},
+    };
+    await initializeChips({
+      actionChips: [
+        {
+          type: ChipType.kRecentTab,
+          title: 'Example Tab',
+          suggestion: 'Ask about this tab',
+          tab: fakeTab,
+        },
+      ],
+    });
+
     const recentTabChip =
         chips.shadowRoot.querySelector<HTMLButtonElement>('#tab-context');
     assertTrue(!!recentTabChip);
     const whenActionChipClicked =
         eventToPromise('action-chip-click', document.body);
     recentTabChip.click();
+    const event = await whenActionChipClicked;
+    const expectedTab: TabUpload = {
+      tabId: fakeTab.tabId,
+      url: fakeTab.url,
+      title: fakeTab.title,
+    };
 
-    // Assert.
-    await whenActionChipClicked;
+    assertTrue(!!event.detail.contextFiles);
+    assertEquals(1, event.detail.contextFiles.length);
+    assertDeepEquals(expectedTab, event.detail.contextFiles[0]);
   });
 
   test('recent tab chip renders favicon', async () => {

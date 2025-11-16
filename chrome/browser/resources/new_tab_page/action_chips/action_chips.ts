@@ -5,7 +5,7 @@ import type {ContextualUpload, TabUpload} from 'chrome://resources/cr_components
 import {ComposeboxMode} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {ActionChip, ActionChipsHandlerInterface} from '../action_chips.mojom-webui.js';
+import type {ActionChip, ActionChipsHandlerInterface, TabInfo} from '../action_chips.mojom-webui.js';
 import {ChipType} from '../action_chips.mojom-webui.js';
 
 import {getCss} from './action_chips.css.js';
@@ -122,14 +122,13 @@ export class ActionChipsElement extends CrLitElement {
         'Help me research ', [], ComposeboxMode.DEEP_SEARCH);
   }
 
-  protected onTabContextClick_() {
-    // TODO(crbug.com/458092548): Convert tab info to TabUpload.
-    const fakeRecentTabInfo: TabUpload = {
-      tabId: 1,
-      url: {url: 'https://www.wikipedia.com'},
-      title: 'Wikipedia',
+  protected onTabContextClick_(tab: TabInfo) {
+    const recentTabInfo: TabUpload = {
+      tabId: tab.tabId,
+      url: tab.url,
+      title: tab.title,
     };
-    this.onActionChipClick_('', [fakeRecentTabInfo], ComposeboxMode.DEFAULT);
+    this.onActionChipClick_('', [recentTabInfo], ComposeboxMode.DEFAULT);
   }
 
   protected handleClick_(chip: ActionChip): void {
@@ -141,7 +140,7 @@ export class ActionChipsElement extends CrLitElement {
         this.onDeepSearchClick_();
         break;
       case ChipType.kRecentTab:
-        this.onTabContextClick_();
+        this.onTabContextClick_(chip.tab!);
         break;
       default:
         // Do nothing yet...
