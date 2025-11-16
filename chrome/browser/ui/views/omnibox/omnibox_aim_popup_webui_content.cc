@@ -6,6 +6,8 @@
 
 #include <string_view>
 
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -34,11 +37,16 @@ OmniboxAimPopupWebUIContent::OmniboxAimPopupWebUIContent(
 OmniboxAimPopupWebUIContent::~OmniboxAimPopupWebUIContent() = default;
 
 void OmniboxAimPopupWebUIContent::ShowUI() {
+  auto* web_contents = contents_wrapper()->web_contents();
+  auto* browser_window = webui::GetBrowserWindowInterface(web_contents);
+  auto* context_data = browser_window->GetFeatures().searchbox_context_data();
+
   auto* webui_controller = contents_wrapper()->GetWebUIController();
   if (webui_controller) {
     auto* omnibox_popup_ui = webui_controller->GetAs<OmniboxPopupUI>();
     if (omnibox_popup_ui && omnibox_popup_ui->popup_aim_handler()) {
-      omnibox_popup_ui->popup_aim_handler()->OnShow();
+      auto context = context_data->TakePendingContext();
+      omnibox_popup_ui->popup_aim_handler()->OnShow(std::move(context));
     }
   }
 }

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_OMNIBOX_POPUP_OMNIBOX_POPUP_AIM_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_OMNIBOX_POPUP_OMNIBOX_POPUP_AIM_HANDLER_H_
 
+#include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup_aim.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -28,10 +29,10 @@ class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
   // omnibox_popup_aim::mojom::PageHandler:
   void Close() override;
 
-  // Forwards an OnShow() call to the page. This call is intended to be used
-  // to notify the page that the widget in which the AIM popup view is embedded
-  // in has appeared.
-  void OnShow();
+  // Forwards an OnShow() call to the page with the given `context`. This call
+  // is intended to be used to notify the page that the widget in which the AIM
+  // popup view is embedded in has appeared.
+  void OnShow(std::unique_ptr<SearchboxContextData::Context> context);
 
   // Forwards an OnClose() call to the page. This call is intended to be used
   // to notify the page that the widget in which the AIM popup view is embedded

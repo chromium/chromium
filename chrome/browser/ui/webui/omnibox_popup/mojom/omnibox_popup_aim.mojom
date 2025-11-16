@@ -4,6 +4,9 @@
 
 module omnibox_popup_aim.mojom;
 
+import "components/omnibox/browser/searchbox.mojom";
+import "mojo/public/mojom/base/work_in_progress.mojom";
+
 // The browser-side handler for the Omnibox AIM Popup.
 interface PageHandlerFactory {
   // Creates and binds a new PageHandler to handle calls from the WebUI page.
@@ -25,7 +28,9 @@ interface Page {
   // methods are used to fill in the gap.
 
   // Called when the widget in which the AIM popup view is embedded in appears.
-  OnShow();
+  // `context` is the searchbox context that should be set on the composebox.
+  [RuntimeFeature=mojo_base.mojom.kMojomWorkInProgress]
+  OnShow(searchbox.mojom.SearchContextStub? context);
 
   // Called when the widget in which the AIM popup view is embedded in closes.
   OnClose();

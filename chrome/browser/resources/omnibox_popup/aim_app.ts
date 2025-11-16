@@ -11,7 +11,7 @@ import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PageHandlerInterface as SearchboxPageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {PageHandlerInterface as SearchboxPageHandlerInterface, SearchContextStub} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {getCss} from './aim_app.css.js';
 import {getHtml} from './aim_app.html.js';
@@ -90,12 +90,16 @@ export class OmniboxAimAppElement extends CrLitElement implements Page {
     this.pageHandler_.close();
   }
 
-  private onShow_() {
-    // TODO(crbug.com/457860153): Notify composebox that the popup is shown.
+  private onShow_(context: SearchContextStub|null) {
+    const composebox = this.shadowRoot.querySelector('cr-composebox');
+    assert(composebox);
+    composebox.setSearchContext(context);
   }
 
   private onClose_() {
-    // TODO(crbug.com/457860153): Notify composebox that the popup is closed.
+    const composebox = this.shadowRoot.querySelector('cr-composebox');
+    assert(composebox);
+    composebox.clearAllInputs();
   }
 }
 
