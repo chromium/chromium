@@ -579,7 +579,7 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
   display: none;
 }
 
-:host([realbox-layout-mode="Compact"]) {
+:host([searchbox-layout-mode="Compact"]) {
   /* Used in search-animated-glow-element. */
   --search-animated-glow-drag-drop-placeholder-top: 16px;
 }

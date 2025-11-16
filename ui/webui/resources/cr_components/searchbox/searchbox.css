@@ -378,6 +378,13 @@ cr-searchbox-icon {
   inset-inline-start: 16px;
 }
 
+search-animated-glow {
+  --search-animated-glow-background-z-index: 103;
+  --search-animated-glow-drag-drop-placeholder-z-index: 104;
+  --search-animated-glow-gradient-after-z-index: 101;
+  --search-animated-glow-gradient-z-index: 102;
+}
+
 :host([ntp-realbox-next-enabled]) input::placeholder {
   font-size: 18px;
   color: var(--color-composebox-type-ahead);
@@ -603,4 +610,9 @@ cr-searchbox-icon {
   margin-inline-end: calc(var(--cr-compose-button-width));
   margin-inline-start: auto;
   z-index: 100;
+}
+
+:host([searchbox-layout-mode="Compact"]) {
+  /* Used in search-animated-glow-element. */
+  --search-animated-glow-drag-drop-placeholder-top: 16px;
 }

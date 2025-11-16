@@ -102,7 +102,6 @@ export class ComposeboxElement extends I18nMixinLit
       },
       animationState: {
         reflect: true,
-        state: true,
         type: String,
       },
       enableImageContextualSuggestions_: {

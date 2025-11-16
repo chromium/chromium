@@ -8,6 +8,7 @@ import './searchbox_icon.js';
 import './searchbox_thumbnail.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import '//resources/cr_components/composebox/error_scrim.js';
+import '//resources/cr_components/search/animated_glow.js';
 
 import type {ComposeboxFile} from '//resources/cr_components/composebox/common.js';
 import type {ContextualEntrypointAndCarouselElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
@@ -27,6 +28,9 @@ import {SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mo
 import {FileUploadStatus} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
+import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
+import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
+import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
 
 import {getCss} from './searchbox.css.js';
 import {getHtml} from './searchbox.html.js';
@@ -182,7 +186,8 @@ export interface SearchboxElement {
 const SearchboxElementBase = I18nMixinLit(WebUiListenerMixinLit(CrLitElement));
 
 /** A real search box that behaves just like the Omnibox. */
-export class SearchboxElement extends SearchboxElementBase {
+export class SearchboxElement extends SearchboxElementBase implements
+    DragAndDropHost {
   static get is() {
     return 'cr-searchbox';
   }
@@ -382,6 +387,14 @@ export class SearchboxElement extends SearchboxElementBase {
         reflect: true,
       },
       tabSuggestions_: {type: Array},
+      isDraggingFile: {
+        reflect: true,
+        type: Boolean,
+      },
+      animationState: {
+        reflect: true,
+        type: String,
+      },
     };
   }
 
@@ -407,6 +420,8 @@ export class SearchboxElement extends SearchboxElementBase {
   accessor composeButtonEnabled: boolean = false;
   accessor showThumbnail: boolean = false;
   accessor placeholderText: string = '';
+  accessor isDraggingFile: boolean = false;
+  accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
   protected accessor inputAriaLive_: string = '';
   protected accessor inputFocused_: boolean = false;
   private accessor isLensSearchbox_: boolean =
@@ -440,6 +455,9 @@ export class SearchboxElement extends SearchboxElementBase {
 
   private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;
+  protected dragAndDropHandler: DragAndDropHandler;
+  private dragAndDropEnabled_: boolean =
+      loadTimeData.getBoolean('dragAndDropEnabled');
   private autocompleteResultChangedListenerId_: number|null = null;
   private inputTextChangedListenerId_: number|null = null;
   private thumbnailChangedListenerId_: number|null = null;
@@ -452,6 +470,8 @@ export class SearchboxElement extends SearchboxElementBase {
 
     this.pageHandler_ = SearchboxBrowserProxy.getInstance().handler;
     this.callbackRouter_ = SearchboxBrowserProxy.getInstance().callbackRouter;
+    this.dragAndDropHandler =
+        new DragAndDropHandler(this, this.dragAndDropEnabled_);
   }
 
   override async connectedCallback() {
@@ -545,6 +565,10 @@ export class SearchboxElement extends SearchboxElementBase {
 
   getSuggestionsElement(): SearchboxDropdownElement {
     return this.$.matches;
+  }
+
+  getDropTarget() {
+    return this.$.context;
   }
 
   isInputEmpty(): boolean {

@@ -9,6 +9,10 @@
 
 :host {
   --search-animated-glow-background: rgb(255, 255, 255);
+  --search-animated-glow-background-z-index: 3;
+  --search-animated-glow-drag-drop-placeholder-z-index: 4;
+  --search-animated-glow-gradient-after-z-index: 1;
+  --search-animated-glow-gradient-z-index: 2;
   --search-animated-glow-brand-gradient: conic-gradient(
     rgba(52, 168, 82, 0) 0deg,
     rgba(52, 168, 82, 1) 38.9738deg,
@@ -56,7 +60,7 @@
 :host([animation-state='dragging']) #dragDropPlaceholder {
   display: block;
   opacity: 1;
-  z-index: 4;
+  z-index: var(--search-animated-glow-drag-drop-placeholder-z-index, 4);
 }
 
 .gradient, .double-gradient {
@@ -112,7 +116,7 @@
 
 :host([animation-state='dragging']) .gradient, .double-gradient {
   pointer-events: none;
-  z-index: 2;
+  z-index: var(--search-animated-glow-gradient-z-index, 2);
 }
 
 :host([animation-state='dragging']) .gradient::before,
@@ -121,7 +125,7 @@
   filter: blur(20px);
   opacity: 1;
   scale: 1 0.8;
-  z-index: 2;
+  z-index: var(--search-animated-glow-gradient-z-index, 2);
 }
 
 :host([animation-state='submitting']) .gradient::before,
@@ -146,7 +150,7 @@
   pointer-events: none;
   position: absolute;
   transition: opacity 500ms;
-  z-index: 1;
+  z-index: var(--search-animated-glow-gradient-after-z-index, 1);
 }
 
 :host([animation-state='dragging']) .gradient::after {
@@ -280,7 +284,7 @@
   animation: none;
   border-width: 2px;
   pointer-events: none;
-  z-index: 3;
+  z-index: var(--search-animated-glow-background-z-index, 3);
 }
 
 :host([animation-state='expanding']) .background,
@@ -293,7 +297,7 @@
   animation: none;
   background-color: rgba(240, 242, 245);
   filter: blur(28px);
-  z-index: 3;
+  z-index: var(--search-animated-glow-background-z-index, 3);
 }
 
 @keyframes gradient-border-width-close {
