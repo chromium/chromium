@@ -5,7 +5,8 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #scheme=relative
- * #import=./shared_vars.css.js
+ * #import=./omnibox_popup_shared_style.css.js
+ * #include=omnibox-popup-shared-style
  * #css_wrapper_metadata_end */
 
 :host {

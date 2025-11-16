@@ -3,10 +3,11 @@
  * found in the LICENSE file. */
 
 /* #css_wrapper_metadata_start
- * #type=vars
+ * #type=style-lit
+ * #scheme=relative
  * #css_wrapper_metadata_end */
 
-html {
+:host {
   --color-searchbox-results-background-hovered: var(--color-omnibox-results-background-hovered);
   --color-searchbox-results-focus-indicator: var(--color-omnibox-results-focus-indicator);
   --color-searchbox-results-foreground: var(--color-omnibox-text);
