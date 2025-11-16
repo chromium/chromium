@@ -19,7 +19,10 @@ build_webui("build") {
 
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/search"
   ts_composite = true
-  ts_deps = [ "//third_party/lit/v3_0:build_ts" ]
+  ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/js:build_ts",
+  ]
   webui_context_type = "relative"
   generate_grdp = true
   grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
