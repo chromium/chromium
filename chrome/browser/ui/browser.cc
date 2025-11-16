@@ -3824,6 +3824,10 @@ void Browser::UpdateBookmarkBarState(BookmarkBarStateChangeReason reason) {
 }
 
 bool Browser::ShouldShowBookmarkBar() const {
+  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("bookmark-bar-ntp") == "never") {
+    return false;
+  }
+
   if (profile_->IsGuestSession()) {
     return false;
   }
