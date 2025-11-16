@@ -13,6 +13,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "components/omnibox/browser/searchbox.mojom.h"
 #include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 
@@ -100,6 +101,8 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   void OnGetTabPageContext(
       const base::UnguessableToken& context_token,
       std::unique_ptr<lens::ContextualInputData> page_content_data);
+
+  void UpdateSearchboxContextToolMode(searchbox::mojom::ToolMode tool_mode);
 
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   base::WeakPtr<content::WebContents> web_contents_;
