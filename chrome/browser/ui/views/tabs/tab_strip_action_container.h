@@ -258,8 +258,8 @@ class TabStripActionContainer : public views::View,
   // Timer for hiding tab_strip_nudge_button_ after show.
   base::OneShotTimer hide_tab_strip_nudge_timer_;
 
-  // When locked, the container is unable to change its expanded state. Changes
-  // will be staged until after this is unlocked.
+  // When locked, the container is unable to change its expanded state.
+  // Changes will be staged until after this is unlocked.
   LockedExpansionMode locked_expansion_mode_ = LockedExpansionMode::kNone;
 
   base::ScopedObservation<TabOrganizationService, TabOrganizationObserver>

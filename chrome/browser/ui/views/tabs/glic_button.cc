@@ -67,6 +67,10 @@ constexpr ui::ColorId kBackgroundWhenGlicOpenInactive =
     ui::kColorSysStateDisabledContainer;
 
 constexpr int kIconSize = 16;
+// TODO(crbug.com/460400955): Move this constant to a shared location.
+// This should mirror the tween used for TabStripNudgeAnimationSession.
+constexpr gfx::Tween::Type kSlidingTextTween =
+    gfx::Tween::Type::ACCEL_20_DECEL_100;
 
 bool EntrypointVariationsEnabled() {
   return base::FeatureList::IsEnabled(features::kGlicEntrypointVariations);
@@ -236,6 +240,34 @@ void GlicButton::SetNudgeLabel(std::string label) {
   pending_text_ = base::UTF8ToUTF16(label);
 }
 
+void GlicButton::ShowDefaultLabel() {
+  is_animating_text_ = true;
+  StartSlidingTextAnimation(/*show=*/true);
+
+  const base::TimeDelta kLabelFadeOutDuration = DurationMs(17);
+  const base::TimeDelta kNudgeFadeInStart = DurationMs(50);
+  const base::TimeDelta kNudgeFadeInDuration = DurationMs(50);
+  views::AnimationBuilder()
+      .OnEnded(base::BindOnce(&GlicButton::ApplyTextAndFadeIn,
+                              weak_ptr_factory_.GetWeakPtr(),
+                              std::make_optional(GetLabelText()),
+                              /*delay=*/DurationMs(0), kNudgeFadeInDuration))
+      .Once()
+      .At(kNudgeFadeInStart - kLabelFadeOutDuration)
+      .SetOpacity(label(), 0)
+      .SetDuration(kLabelFadeOutDuration);
+}
+
+void GlicButton::SuppressLabel() {
+  StartSlidingTextAnimation(/*show=*/false);
+
+  label()->SetPaintToLayer();
+  label()->layer()->SetFillsBoundsOpaquely(false);
+  label()->layer()->SetOpacity(0.0f);
+  ApplyTextAndFadeIn(std::make_optional<std::u16string>(u""), DurationMs(0),
+                     DurationMs(0));
+}
+
 void GlicButton::RestoreDefaultLabel() {
   if (!EntrypointVariationsEnabled()) {
     return SetText(GetLabelText());
@@ -312,6 +344,13 @@ gfx::Size GlicButton::CalculatePreferredSize(
           views::SizeBounds(current_preferred_width, available_size.height()))
           .height();
 
+  if (is_animating_text_) {
+    const int min_target_width = 41;
+    const int width =
+        std::lerp(min_target_width, default_label_width_, GetWidthFactor());
+    return gfx::Size(width, height);
+  }
+
   // Get collapsed and expanded widths, which are set when the show animation
   // starts.
   const int collapsed_width =
@@ -357,6 +396,7 @@ void GlicButton::AddedToWidget() {
   }
 
   TabStripNudgeButton::AddedToWidget();
+  default_label_width_ = GetLayoutManager()->GetPreferredSize(this).width();
 }
 
 void GlicButton::SetDropToAttachIndicator(bool indicate) {
@@ -434,6 +474,7 @@ void GlicButton::AnimationEnded(const gfx::Animation* animation) {
 
     expansion_animation_done_callback_.Run();
   }
+  is_animating_text_ = false;
 }
 
 void GlicButton::AnimationCanceled(const gfx::Animation* animation) {
@@ -663,6 +704,24 @@ int GlicButton::CalculateExpandedWidth() {
     new_width += kLabelRightMargin;
   }
   return new_width;
+}
+
+void GlicButton::StartSlidingTextAnimation(bool show) {
+  // Button width animation updates width_factor_, used in
+  // CalculatePreferredSize().
+  if (!expansion_animation_) {
+    expansion_animation_ = std::make_unique<gfx::SlideAnimation>(this);
+  }
+
+  expansion_animation_->SetTweenType(kSlidingTextTween);
+
+  if (show) {
+    expansion_animation_->SetSlideDuration(DurationMs(500));
+    expansion_animation_->Show();
+  } else {
+    expansion_animation_->SetSlideDuration(DurationMs(250));
+    expansion_animation_->Hide();
+  }
 }
 
 void GlicButton::StartExpansionAnimations(

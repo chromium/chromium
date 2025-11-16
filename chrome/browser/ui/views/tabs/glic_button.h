@@ -45,6 +45,17 @@ class GlicButton : public TabStripNudgeButton,
 
   static GlicButton* FromBrowser(BrowserWindowInterface* browser);
 
+  // These functions below work together to hide the nudge label on the static
+  // button when another nudge occupies the display space.
+  // TODO(crbug.com/460400955): This is a temporary fix for 143, ideally a
+  // third state should be added where the label is hidden for m144 and
+  // these functions should be removed.
+  //
+  // Suppresses the default label on the glic button with a hide animation.
+  void SuppressLabel();
+  // Shows the default label on the glic button with a show animation.
+  void ShowDefaultLabel();
+
   void SetNudgeLabel(std::string label);
   void RestoreDefaultLabel();
   void SetGlicPanelIsOpen(bool open);
@@ -135,6 +146,7 @@ class GlicButton : public TabStripNudgeButton,
                                 base::TimeDelta overall_duration,
                                 base::TimeDelta close_button_fade_start,
                                 base::TimeDelta close_button_fade_duration);
+  void StartSlidingTextAnimation(bool show);
   int CalculateExpandedWidth();
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -202,6 +214,12 @@ class GlicButton : public TabStripNudgeButton,
   const ui::ImageModel icon_for_highlight_;
 
   bool glic_panel_is_open_ = false;
+  // If this flag is set, the default label on the static button is in the
+  // process of being shown.
+  // TODO(crbug.com/460400955): This is a temporary fix for 143, this code
+  // should be refactored to use the new solution in 144.
+  bool is_animating_text_ = false;
+  int default_label_width_ = 0;
 
   base::WeakPtrFactory<GlicButton> weak_ptr_factory_{this};
 };
