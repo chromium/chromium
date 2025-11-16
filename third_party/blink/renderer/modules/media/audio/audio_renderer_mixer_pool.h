@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_MIXER_POOL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_MIXER_POOL_H_
 
-#include <string>
+#include <string_view>
 
+#include "base/memory/scoped_refptr.h"
 #include "media/base/audio_latency.h"
 #include "media/base/output_device_info.h"
 #include "third_party/blink/public/common/tokens/tokens.h"

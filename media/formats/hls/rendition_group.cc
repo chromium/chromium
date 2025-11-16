@@ -7,6 +7,7 @@
 #include <optional>
 #include <variant>
 
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/pass_key.h"
 #include "media/formats/hls/parse_status.h"

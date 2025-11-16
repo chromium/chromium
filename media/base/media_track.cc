@@ -4,6 +4,8 @@
 
 #include "media/base/media_track.h"
 
+#include "base/notreached.h"
+
 namespace media {
 
 MediaTrack::~MediaTrack() = default;

@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "media/formats/hls/rendition.h"
 #include "media/formats/hls/types.h"
 #include "url/gurl.h"
