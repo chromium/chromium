@@ -96,10 +96,12 @@ export class OmniboxAimAppElement extends CrLitElement implements Page {
     composebox.setSearchContext(context);
   }
 
-  private onClose_() {
+  private onClose_(): Promise<{input: string}> {
     const composebox = this.shadowRoot.querySelector('cr-composebox');
     assert(composebox);
+    const input = composebox.getInputText();
     composebox.clearAllInputs();
+    return Promise.resolve({input});
   }
 }
 

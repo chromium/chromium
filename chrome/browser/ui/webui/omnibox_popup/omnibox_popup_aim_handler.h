@@ -40,6 +40,8 @@ class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
   void OnClose();
 
  private:
+  void OnClosedCallback(const std::string& input);
+
   mojo::Receiver<omnibox_popup_aim::mojom::PageHandler> receiver_;
   mojo::Remote<omnibox_popup_aim::mojom::Page> page_;
   raw_ptr<OmniboxPopupUI> omnibox_popup_ui_;

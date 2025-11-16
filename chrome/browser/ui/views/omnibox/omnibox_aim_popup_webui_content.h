@@ -30,6 +30,10 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   // WebUIContentsWrapper::Host:
   void CloseUI() override;
   void ShowUI() override;
+
+  // Called when the popup is closed with a non-empty input value that should
+  // persist in the omnibox.
+  void OnClosedWithInput(const std::string& input);
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

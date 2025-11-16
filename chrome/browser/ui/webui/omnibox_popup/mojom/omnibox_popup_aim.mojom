@@ -16,7 +16,8 @@ interface PageHandlerFactory {
 
 // The browser-side handler for the Omnibox AIM Popup.
 interface PageHandler {
-  // Notifies the handler to close the popup.
+  // Notifies the handler to close the popup, note that not every close action
+  // goes through this path as C++/Views code is responsible for presentation.
   Close();
 };
 
@@ -29,9 +30,9 @@ interface Page {
 
   // Called when the widget in which the AIM popup view is embedded in appears.
   // `context` is the searchbox context that should be set on the composebox.
-  [RuntimeFeature=mojo_base.mojom.kMojomWorkInProgress]
   OnShow(searchbox.mojom.SearchContextStub? context);
 
   // Called when the widget in which the AIM popup view is embedded in closes.
-  OnClose();
+  // The page is expected to return the input text via the callback.
+  OnClose() => (string input);
 };

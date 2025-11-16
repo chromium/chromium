@@ -65,5 +65,9 @@ void OmniboxAimPopupWebUIContent::CloseUI() {
   }
 }
 
+void OmniboxAimPopupWebUIContent::OnClosedWithInput(const std::string& input) {
+  location_bar_view()->GetOmniboxView()->SetUserText(base::UTF8ToUTF16(input));
+}
+
 BEGIN_METADATA(OmniboxAimPopupWebUIContent)
 END_METADATA
