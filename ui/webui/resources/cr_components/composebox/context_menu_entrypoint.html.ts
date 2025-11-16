@@ -9,7 +9,7 @@ import type {ContextMenuEntrypointElement} from './context_menu_entrypoint.js';
 export function getHtml(this: ContextMenuEntrypointElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-    ${this.showContextMenuDescription ? html`
+    ${this.ntpNextFeaturesEnabled ? (this.showContextMenuDescription ? html`
     <div id="glowWrapper" class="glow-container tall">
     <cr-button id="entrypoint"
         class="ai-mode-button"
@@ -23,7 +23,7 @@ export function getHtml(this: ContextMenuEntrypointElement) {
       <div class="aim-gradient-solid aim-c"></div>
       <div class="aim-background aim-c"></div>
     </div>
-    `: html`
+    ` : html`
       <div id="glowWrapper" class="glow-container">
         <cr-icon-button id="entrypoint"
             class="ai-mode-button"
@@ -37,7 +37,23 @@ export function getHtml(this: ContextMenuEntrypointElement) {
         <div class="aim-gradient-solid aim-c"></div>
         <div class="aim-background aim-c"></div>
       </div>
-    `}
+    `) : (this.showContextMenuDescription ? html`
+    <cr-button id="entrypoint"
+        @click="${this.onEntrypointClick_}"
+        ?disabled="${this.inputsDisabled}"
+        title="${this.i18n('addContextTitle')}">
+      <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"></cr-icon>
+      <span id="description">${this.i18n('addContext')}</span>
+    </cr-button>
+    ` : html`
+      <cr-icon-button id="entrypoint"
+          part="context-menu-entrypoint-icon"
+          iron-icon="cr:add"
+          @click="${this.onEntrypointClick_}"
+          ?disabled="${this.inputsDisabled}"
+          title="${this.i18n('addContextTitle')}">
+      </cr-icon-button>
+    `)}
 
   <cr-action-menu id="menu" role-description="${this.i18n('menu')}">
     ${this.tabSuggestions?.length > 0 ? html`

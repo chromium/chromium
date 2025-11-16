@@ -10,7 +10,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --composebox-context-menu-entrypoint-button-color: var(--color-omnibox-composebox-primary-action);
+  --composebox-context-menu-entrypoint-button-color: var(--color-sys-primary);
   --cr-composebox-custom-font-size: var(--omnibox-font-size);
   --cr-composebox-expanded-border-radius: 16px;
   --cr-composebox-input-bottom-spacing: 8px;
@@ -41,7 +41,7 @@ cr-composebox {
   --color-composebox-pdf-chip-icon: var(--color-omnibox-text-subtle);
   --color-composebox-recent-tab-chip-outline: unset; /* Omnibox has no recent tab chip. */
   --color-composebox-scrim-background: unset; /* No scrim. */
-  --color-composebox-submit-button-background: var(--color-omnibox-composebox-submit-button-background);
+  --color-composebox-submit-button-background: var(--color-sys-primary);
   --color-composebox-submit-button-icon: var(--color-omnibox-composebox-submit-button-icon);
   --color-composebox-submit-button-hover: var(--color-omnibox-action-icon-hover);
   --color-composebox-suggestion-activity: unset; /* No activity suggestion disclaimer. */
@@ -49,11 +49,15 @@ cr-composebox {
   --color-composebox-type-ahead-chip: var(--color-omnibox-composebox-foreground-disabled);
   --color-composebox-upload-button: var(--omnibox-results-chip-background);
   --color-composebox-upload-button-disabled: var(--color-omnibox-composebox-foreground-disabled);
-  --composebox-context-menu-entrypoint-button-color: var(--color-omnibox-composebox-primary-action);
   --cr-composebox-outline-hcm: none;
   --cr-composebox-submit-button-margin-inline-start: auto;
   --cr-composebox-suggestion-activity-bottom: 10px;
   --cr-composebox-suggestion-activity-margin-top: 0;
 
   position: relative;
+}
+
+cr-composebox[searchbox-layout-mode="Compact"]::part(context-menu-entrypoint-icon) {
+  --cr-icon-button-size: 28px;
+  top: 14px;
 }

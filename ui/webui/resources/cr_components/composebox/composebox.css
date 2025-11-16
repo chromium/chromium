@@ -447,6 +447,11 @@ search-animated-glow {
   transition: var(--submit-enabled-transition);
 }
 
+#submitContainer:focus-visible {
+  outline: none;
+}
+
+#submitContainer:focus-visible #submitIcon,
 #submitIcon:focus-visible:focus {
   box-shadow: none;
   outline: 2px solid var(--color-searchbox-results-icon-focused-outline);
