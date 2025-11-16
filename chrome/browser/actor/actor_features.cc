@@ -66,6 +66,11 @@ BASE_FEATURE_PARAM(bool,
                    &kGlicCrossOriginNavigationGating,
                    "gate_on_site_not_origin",
                    false);
+BASE_FEATURE_PARAM(bool,
+                   kGlicIncludeHardcodedBlockListEntries,
+                   &kGlicCrossOriginNavigationGating,
+                   "include_hardcoded_block_list_entries",
+                   true);
 
 BASE_FEATURE(kGlicEnableAutoLoginDialogs, base::FEATURE_ENABLED_BY_DEFAULT);
 

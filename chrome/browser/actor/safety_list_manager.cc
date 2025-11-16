@@ -7,9 +7,11 @@
 #include <optional>
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/safety_list.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 
@@ -20,6 +22,18 @@ namespace {
 constexpr std::string_view kAllowedFieldName = "navigation_allowed";
 constexpr std::string_view kBlockedFieldName = "navigation_blocked";
 
+void MaybeAppendHardcodedPatterns(SafetyList::Patterns& patterns) {
+  if (base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating) &&
+      kGlicIncludeHardcodedBlockListEntries.Get()) {
+    patterns.emplace_back(
+        ContentSettingsPattern::FromString("*"),
+        ContentSettingsPattern::FromString("[*.]googleplex.com"));
+    patterns.emplace_back(
+        ContentSettingsPattern::FromString("*"),
+        ContentSettingsPattern::FromString("[*.]corp.google.com"));
+  }
+}
+
 }  // namespace
 
 // static
@@ -28,7 +42,11 @@ SafetyListManager* SafetyListManager::GetInstance() {
   return instance.get();
 }
 
-SafetyListManager::SafetyListManager() = default;
+SafetyListManager::SafetyListManager() {
+  SafetyList::Patterns patterns;
+  MaybeAppendHardcodedPatterns(patterns);
+  blocked_ = SafetyList(std::move(patterns));
+}
 SafetyListManager::~SafetyListManager() = default;
 
 void SafetyListManager::ParseSafetyLists(std::string_view json_string) {
@@ -49,7 +67,10 @@ void SafetyListManager::ParseSafetyLists(std::string_view json_string) {
   }
 
   if (base::Value::List* blocked = json_dict->FindList(kBlockedFieldName)) {
-    blocked_ = SafetyList::ParsePatternListFromJson(*blocked);
+    SafetyList parsed_blocked = SafetyList::ParsePatternListFromJson(*blocked);
+    SafetyList::Patterns patterns = parsed_blocked.patterns();
+    MaybeAppendHardcodedPatterns(patterns);
+    blocked_ = SafetyList(std::move(patterns));
   }
 }
 

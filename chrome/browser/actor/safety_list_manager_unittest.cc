@@ -4,49 +4,93 @@
 
 #include "chrome/browser/actor/safety_list_manager.h"
 
+#include <cstddef>
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace actor {
 namespace {
 
-class SafetyListManagerTest : public ::testing::Test {
+class SafetyListManagerTest : public ::testing::Test,
+                              public ::testing::WithParamInterface<bool> {
  public:
-  SafetyListManagerTest() = default;
+  SafetyListManagerTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {
+            {kGlicCrossOriginNavigationGating,
+             {{
+                 {"include_hardcoded_block_list_entries",
+                  initialize_hardcoded_blocklist() ? "true" : "false"},
+             }}},
+        },
+        /*disabled_features=*/{});
+    manager_.emplace();
+  }
 
  protected:
-  SafetyListManager& manager() { return manager_; }
+  SafetyListManager& manager() { return *manager_; }
+
+  bool initialize_hardcoded_blocklist() { return GetParam(); }
+  size_t EmptyOrOnlyHardcodedBlocklist() {
+    return initialize_hardcoded_blocklist() ? 2u : 0u;
+  }
 
  private:
-  SafetyListManager manager_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  // `manager_` is made optional to delay its construction until after
+  // `scoped_feature_list_` has been initialized. This ensures that the Finch
+  // feature flags are correctly set when `SafetyListManager`'s constructor
+  // is called.
+  std::optional<SafetyListManager> manager_;
 };
 
-TEST_F(SafetyListManagerTest, ParseSafetyLists_MalformedJson) {
+TEST_P(SafetyListManagerTest, InitializeWithHardcodedLists) {
+  // The constructor should have already loaded the hardcoded lists.
+  EXPECT_EQ(manager().get_allowed_list().size(), 0u);
+
+  const SafetyList& blocked_list = manager().get_blocked_list();
+  EXPECT_EQ(blocked_list.size(), EmptyOrOnlyHardcodedBlocklist());
+
+  if (initialize_hardcoded_blocklist()) {
+    EXPECT_TRUE(blocked_list.ContainsUrlPair(
+        GURL("https://anything.com"), GURL("https://www.googleplex.com")));
+    EXPECT_TRUE(blocked_list.ContainsUrlPair(GURL("https://anything.com"),
+                                             GURL("https://corp.google.com")));
+  }
+}
+
+TEST_P(SafetyListManagerTest, ParseSafetyLists_MalformedJson) {
   manager().ParseSafetyLists(R"json(not a json)json");
   EXPECT_EQ(manager().get_allowed_list().size(), 0u);
-  EXPECT_EQ(manager().get_blocked_list().size(), 0u);
+  EXPECT_EQ(manager().get_blocked_list().size(),
+            EmptyOrOnlyHardcodedBlocklist());
 }
 
-TEST_F(SafetyListManagerTest, ParseSafetyLists_NotADictionary) {
+TEST_P(SafetyListManagerTest, ParseSafetyLists_NotADictionary) {
   manager().ParseSafetyLists(R"json("[]")json");
   EXPECT_EQ(manager().get_allowed_list().size(), 0u);
-  EXPECT_EQ(manager().get_blocked_list().size(), 0u);
+  EXPECT_EQ(manager().get_blocked_list().size(),
+            EmptyOrOnlyHardcodedBlocklist());
 }
 
-TEST_F(SafetyListManagerTest, ParseSafetyLists_EmptyLists) {
+TEST_P(SafetyListManagerTest, ParseSafetyLists_EmptyLists) {
   manager().ParseSafetyLists(
       R"json({ "navigation_allowed": [], "navigation_blocked": [] })json");
   EXPECT_EQ(manager().get_allowed_list().size(), 0u);
-  EXPECT_EQ(manager().get_blocked_list().size(), 0u);
+  EXPECT_EQ(manager().get_blocked_list().size(),
+            EmptyOrOnlyHardcodedBlocklist());
   EXPECT_FALSE(manager().get_allowed_list().ContainsUrlPair(
       GURL("https://a.com"), GURL("https://b.com")));
   EXPECT_FALSE(manager().get_blocked_list().ContainsUrlPair(
       GURL("https://a.com"), GURL("https://b.com")));
 }
 
-TEST_F(SafetyListManagerTest, ParseSafetyLists_ListWithInvalidEntries) {
+TEST_P(SafetyListManagerTest, ParseSafetyLists_ListWithInvalidEntries) {
   manager().ParseSafetyLists(R"json(
     {
       "navigation_allowed": [
@@ -59,10 +103,11 @@ TEST_F(SafetyListManagerTest, ParseSafetyLists_ListWithInvalidEntries) {
     }
   )json");
   EXPECT_EQ(manager().get_allowed_list().size(), 0u);
-  EXPECT_EQ(manager().get_blocked_list().size(), 0u);
+  EXPECT_EQ(manager().get_blocked_list().size(),
+            EmptyOrOnlyHardcodedBlocklist());
 }
 
-TEST_F(SafetyListManagerTest, ParseSafetyLists_InvalidPatterns) {
+TEST_P(SafetyListManagerTest, ParseSafetyLists_InvalidPatterns) {
   manager().ParseSafetyLists(R"json(
     {
       "navigation_allowed": [
@@ -72,10 +117,11 @@ TEST_F(SafetyListManagerTest, ParseSafetyLists_InvalidPatterns) {
     }
   )json");
   EXPECT_EQ(manager().get_allowed_list().size(), 0u);
-  EXPECT_EQ(manager().get_blocked_list().size(), 0u);
+  EXPECT_EQ(manager().get_blocked_list().size(),
+            EmptyOrOnlyHardcodedBlocklist());
 }
 
-TEST_F(SafetyListManagerTest, ParseSafetyLists_ValidPatterns) {
+TEST_P(SafetyListManagerTest, ParseSafetyLists_ValidPatterns) {
   manager().ParseSafetyLists(R"json(
     {
       "navigation_allowed": [
@@ -103,10 +149,48 @@ TEST_F(SafetyListManagerTest, ParseSafetyLists_ValidPatterns) {
                                            GURL("http://localhost")));
 
   const SafetyList& blocked_list = manager().get_blocked_list();
-  EXPECT_EQ(blocked_list.size(), 1u);
+  EXPECT_EQ(blocked_list.size(), initialize_hardcoded_blocklist() ? 3u : 1u);
   EXPECT_TRUE(blocked_list.ContainsUrlPair(GURL("https://blocked.com"),
                                            GURL("https://not-allowed.com")));
 }
+
+TEST_P(SafetyListManagerTest, ParseBlockLists_MultipleParses) {
+  manager().ParseSafetyLists(R"json(
+    {
+      "navigation_blocked": [
+        { "from": "[*.]google.com", "to": "youtube.com" },
+        { "from": "foo.com", "to": "[*.]bar.com" }
+      ]
+    }
+  )json");
+  SafetyList blocked_list = manager().get_blocked_list();
+  EXPECT_EQ(blocked_list.size(), initialize_hardcoded_blocklist() ? 4u : 2u);
+  EXPECT_TRUE(blocked_list.ContainsUrlPair(GURL("https://www.google.com"),
+                                           GURL("https://youtube.com")));
+  EXPECT_TRUE(blocked_list.ContainsUrlPair(GURL("http://foo.com"),
+                                           GURL("https://sub.bar.com")));
+
+  manager().ParseSafetyLists(R"json(
+    {
+      "navigation_blocked": [
+        { "from": "[*.]yahoo.com", "to": "vimeo.com" },
+        { "from": "bar.com", "to": "[*.]foo.com" }
+      ]
+    }
+  )json");
+  blocked_list = manager().get_blocked_list();
+  EXPECT_EQ(blocked_list.size(), initialize_hardcoded_blocklist() ? 4u : 2u);
+  EXPECT_FALSE(blocked_list.ContainsUrlPair(GURL("https://www.google.com"),
+                                            GURL("https://youtube.com")));
+  EXPECT_FALSE(blocked_list.ContainsUrlPair(GURL("http://foo.com"),
+                                            GURL("https://sub.bar.com")));
+  EXPECT_TRUE(blocked_list.ContainsUrlPair(GURL("https://www.yahoo.com"),
+                                           GURL("https://vimeo.com")));
+  EXPECT_TRUE(blocked_list.ContainsUrlPair(GURL("http://bar.com"),
+                                           GURL("https://sub.foo.com")));
+}
+
+INSTANTIATE_TEST_SUITE_P(All, SafetyListManagerTest, testing::Bool());
 
 }  // namespace
 }  // namespace actor
