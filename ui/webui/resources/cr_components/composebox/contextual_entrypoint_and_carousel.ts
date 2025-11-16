@@ -133,6 +133,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       recentTabForChip_: {type: Object},
       recentTabInContext_: {type: Boolean},
       carouselOnTop_: {type: Boolean},
+      submitButtonShown: {type: Boolean},
     };
   }
 
@@ -165,6 +166,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   protected accessor inCreateImageMode_: boolean = false;
   protected accessor recentTabForChip_: TabInfo|null = null;
   protected accessor recentTabInContext_: boolean = false;
+  protected accessor submitButtonShown: boolean = false;
 
   protected get inToolMode_(): boolean {
     return this.inDeepSearchMode_ || this.inCreateImageMode_;

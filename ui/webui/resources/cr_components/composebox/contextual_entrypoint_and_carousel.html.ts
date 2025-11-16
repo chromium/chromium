@@ -80,6 +80,10 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       this.searchboxLayoutMode === 'TallTopContext' && this.showVoiceSearch ?
           voiceSearchButton :
           ''}
+          ${
+      this.searchboxLayoutMode === 'TallTopContext' && this.submitButtonShown ?
+          html`<slot name="submit-button"></slot>` :
+          ''}
       </div>
   `;
 

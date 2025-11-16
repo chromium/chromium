@@ -393,7 +393,8 @@ search-animated-glow {
 }
 
 :host(:not([show-submit_])) #submitContainer,
-:host([ntp-realbox-next-enabled]) #submitContainer,
+:host([searchbox-layout-mode="Compact"]) #submitContainer,
+:host([searchbox-layout-mode="TallBottomContext"]) #submitContainer,
 :host([show-submit_]:not([submit-enabled_])) #submitContainer{
   display: none;
 }
@@ -408,7 +409,7 @@ search-animated-glow {
   width: var(--cr-icon-button-size);
 }
 
-:host([show-submit_][submit-enabled_]:not([ntp-realbox-next-enabled])) #submitContainer {
+:host([show-submit_][submit-enabled_]) #submitContainer {
   cursor: pointer;
 }
 
@@ -421,7 +422,7 @@ search-animated-glow {
   z-index: 2;
 }
 
-:host([show-submit_][submit-enabled_]:not([ntp-realbox-next-enabled])) #submitContainer:hover #submitOverlay {
+:host([show-submit_][submit-enabled_]) #submitContainer:hover #submitOverlay {
   background-color: var(--color-searchbox-results-background-hovered);
 }
 
@@ -441,7 +442,7 @@ search-animated-glow {
   outline-offset: 2px;
 }
 
-:host([show-submit_][submit-enabled_]:not([ntp-realbox-next-enabled])) #submitIcon {
+:host([show-submit_][submit-enabled_]) #submitIcon {
   display: block;
   opacity: 100%; /* For Lens side panel. */
 }
@@ -558,6 +559,22 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
   margin-inline-end: 14px;
   margin-inline-start: auto;
   position: static;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='TallTopContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
+  margin-inline-end: 0px;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='TallTopContext']) #submitContainer {
+  margin-inline-end: 12px;
+  margin-inline-start: 4px;
+  position: static;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='TallTopContext']) #submitIcon {
+  margin-inline-end: 12px;
+  margin-inline-start: 0px;
+  position: relative;
 }
 
 :host([searchbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(voice-icon) {
