@@ -23,6 +23,9 @@
 namespace ash {
 
 class MallUrlTest : public testing::Test {
+ public:
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
 };
@@ -30,9 +33,8 @@ class MallUrlTest : public testing::Test {
 TEST_F(MallUrlTest, GetMallLaunchUrl) {
   TestingProfile profile;
 
-  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider;
-  fake_statistics_provider.SetMachineStatistic(ash::system::kHardwareClassKey,
-                                               "SHIBA D0G-F4N-C1UB");
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kHardwareClassKey,
+                                                "SHIBA D0G-F4N-C1UB");
 
   base::test::TestFuture<apps::DeviceInfo> device_info;
   apps::DeviceInfoManager* manager =

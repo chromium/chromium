@@ -766,11 +766,11 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
   }
 
  protected:
-  std::unique_ptr<policy::MockCloudPolicyClient> client_;
-  signin::IdentityTestEnvironment identity_test_environment_;
 #if BUILDFLAG(IS_CHROMEOS)
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #endif
+  std::unique_ptr<policy::MockCloudPolicyClient> client_;
+  signin::IdentityTestEnvironment identity_test_environment_;
 };
 
 class DeepScanningReportingSourceTypeTest

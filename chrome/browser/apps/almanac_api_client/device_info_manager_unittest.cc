@@ -38,11 +38,11 @@ class DeviceInfoManagerTest : public testing::Test {
   }
 
  private:
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 
   std::unique_ptr<DeviceInfoManager> device_info_manager_;
-  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
 TEST_F(DeviceInfoManagerTest, CheckDeviceInfo) {

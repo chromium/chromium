@@ -50,11 +50,11 @@ class PromiseAppAlmanacConnectorTest : public testing::Test {
   }
 
  private:
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<Profile> profile_;
   std::unique_ptr<network::TestURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<PromiseAppAlmanacConnector> connector_;
-  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
 TEST_F(PromiseAppAlmanacConnectorTest, GetPromiseAppInfoRequest) {

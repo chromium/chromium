@@ -150,6 +150,7 @@ class PromiseAppServiceTest : public testing::Test,
   }
 
  private:
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> wait_run_loop_;
   std::unique_ptr<Profile> profile_;
@@ -159,7 +160,6 @@ class PromiseAppServiceTest : public testing::Test,
   base::ScopedObservation<PromiseAppRegistryCache,
                           PromiseAppRegistryCache::Observer>
       obs_{this};
-  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::HistogramTester histogram_tester_;
 
