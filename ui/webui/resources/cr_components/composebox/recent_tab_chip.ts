@@ -7,6 +7,7 @@ import './composebox_tab_favicon.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
@@ -41,6 +42,9 @@ export class RecentTabChipElement extends RecentTabChipBase {
   accessor inputsDisabled: boolean = false;
   accessor recentTab: TabInfo|undefined = undefined;
 
+  private delayTabUploads_: boolean =
+      loadTimeData.getBoolean('addTabUploadDelayOnRecentTabChipClick');
+
   protected addTabContext_(e: Event) {
     e.stopPropagation();
     assert(this.recentTab);
@@ -50,6 +54,7 @@ export class RecentTabChipElement extends RecentTabChipBase {
       id: this.recentTab.tabId,
       title: this.recentTab.title,
       url: this.recentTab.url,
+      delayUpload: this.delayTabUploads_,
     });
   }
 }

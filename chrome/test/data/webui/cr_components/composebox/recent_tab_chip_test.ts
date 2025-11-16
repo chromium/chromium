@@ -6,6 +6,7 @@ import 'chrome://new-tab-page/strings.m.js';
 import 'chrome://resources/cr_components/composebox/recent_tab_chip.js';
 
 import type {RecentTabChipElement} from 'chrome://resources/cr_components/composebox/recent_tab_chip.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -22,6 +23,9 @@ suite('RecentTabChipTest', function() {
   };
 
   setup(async () => {
+    loadTimeData.overrideValues({
+      addTabUploadDelayOnRecentTabChipClick: false,
+    });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     recentTabChip = document.createElement('composebox-recent-tab-chip');
     document.body.appendChild(recentTabChip);
@@ -58,6 +62,29 @@ suite('RecentTabChipTest', function() {
     assertEquals(MOCK_TAB_INFO.tabId, event.detail.id);
     assertEquals(MOCK_TAB_INFO.title, event.detail.title);
     assertEquals(MOCK_TAB_INFO.url, event.detail.url);
+    assertFalse(event.detail.delayUpload);
+  });
+
+  test('delayUploads is true when flag is enabled', async () => {
+    loadTimeData.overrideValues({
+      addTabUploadDelayOnRecentTabChipClick: true,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    recentTabChip = document.createElement('composebox-recent-tab-chip');
+    document.body.appendChild(recentTabChip);
+    recentTabChip.recentTab = MOCK_TAB_INFO;
+    await microtasksFinished();
+
+    const eventPromise = eventToPromise('add-tab-context', recentTabChip);
+    const button = getButton();
+    button.click();
+
+    const event = await eventPromise;
+    assertTrue(event !== null);
+    assertEquals(MOCK_TAB_INFO.tabId, event.detail.id);
+    assertEquals(MOCK_TAB_INFO.title, event.detail.title);
+    assertEquals(MOCK_TAB_INFO.url, event.detail.url);
+    assertTrue(event.detail.delayUpload);
   });
 
   test('is disabled when inputsDisabled is true', async () => {

@@ -1938,6 +1938,7 @@ suite('NewTabPageAppTest', () => {
         ntpNextFeaturesEnabled: true,
         ntpRealboxNextEnabled: true,
         actionChipsEnabled: true,
+        addTabUploadDelayOnActionChipClick: true,
       });
       const actionChipshandler = installMock(
           ActionChipsHandlerRemote,

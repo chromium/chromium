@@ -643,12 +643,18 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
 
   source->AddBoolean("expandedComposeboxShowVoiceSearch",
                      ntp_composebox::kShowVoiceSearchInExpandedComposebox.Get());
+  source->AddBoolean(
+      "addTabUploadDelayOnRecentTabChipClick",
+      ntp_composebox::kAddTabUploadDelayOnRecentTabChipClick.Get());
 
   // Action Chips LoadTimeData
   bool show_action_chips =
       aim_eligibility_service && aim_eligibility_service->IsAimEligible() &&
       profile->GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible);
   source->AddBoolean("actionChipsEnabled", show_action_chips);
+  source->AddBoolean(
+      "addTabUploadDelayOnActionChipClick",
+      ntp_features::kAddTabUploadDelayOnActionChipClick.Get());
 
   // User education browser promos.
   int browser_promo_limit = 0;

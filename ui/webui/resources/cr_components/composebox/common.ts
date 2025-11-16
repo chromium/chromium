@@ -27,6 +27,7 @@ export interface TabUpload {
   tabId: number;
   url: Url;
   title: string;
+  delayUpload: boolean;
 }
 
 export type ContextualUpload = TabUpload|FileUpload;

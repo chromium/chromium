@@ -1072,13 +1072,14 @@ export class SearchboxElement extends SearchboxElementBase implements
   }
 
   protected addTabContext_(e: CustomEvent<{
-      id: number, title: string, url: Url,
+      id: number, title: string, url: Url, delayUpload: boolean,
       onContextAdded: (file: ComposeboxFile) => void,
   }>) {
     const attachment: TabUpload = {
       tabId: e.detail.id,
       url: e.detail.url,
       title: e.detail.title,
+      delayUpload: e.detail.delayUpload,
     };
     this.openComposebox_([attachment]);
   }

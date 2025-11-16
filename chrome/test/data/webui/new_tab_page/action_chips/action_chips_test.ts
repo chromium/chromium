@@ -9,6 +9,7 @@ import type {ActionChip, TabInfo} from 'chrome://new-tab-page/action_chips.mojom
 import {ActionChipsApiProxyImpl, ActionChipsType} from 'chrome://new-tab-page/lazy_load.js';
 import type {ActionChipsElement} from 'chrome://new-tab-page/lazy_load.js';
 import type {TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -53,6 +54,9 @@ suite('NewTabPageActionChipsTest', () => {
     handler.setResultFor(
         'getActionChips', Promise.resolve({actionChips: options.actionChips}));
 
+    loadTimeData.overrideValues({
+      addTabUploadDelayOnActionChipClick: true,
+    });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     chips = document.createElement('ntp-action-chips');
     document.body.append(chips);
@@ -104,6 +108,7 @@ suite('NewTabPageActionChipsTest', () => {
       tabId: fakeTab.tabId,
       url: fakeTab.url,
       title: fakeTab.title,
+      delayUpload: true,
     };
 
     assertTrue(!!event.detail.contextFiles);

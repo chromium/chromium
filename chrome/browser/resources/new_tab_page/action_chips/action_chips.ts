@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 import type {ContextualUpload, TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import {ComposeboxMode} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ActionChip, ActionChipsHandlerInterface, TabInfo} from '../action_chips.mojom-webui.js';
@@ -59,6 +60,9 @@ export class ActionChipsElement extends CrLitElement {
 
   private handler: ActionChipsHandlerInterface;
   protected accessor actionChips_: ActionChip[] = [];
+
+  private delayTabUploads_: boolean =
+      loadTimeData.getBoolean('addTabUploadDelayOnActionChipClick');
 
   override render() {
     return getHtml.bind(this)();
@@ -127,6 +131,7 @@ export class ActionChipsElement extends CrLitElement {
       tabId: tab.tabId,
       url: tab.url,
       title: tab.title,
+      delayUpload: this.delayTabUploads_,
     };
     this.onActionChipClick_('', [recentTabInfo], ComposeboxMode.DEFAULT);
   }

@@ -252,6 +252,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
             id: file.tabId,
             title: file.title,
             url: file.url,
+            delayUpload: file.delayUpload,
           },
         }));
       } else {
@@ -440,14 +441,16 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     });
   }
 
-  protected addTabContext_(
-      e: CustomEvent<{id: number, title: string, url: Url}>) {
+  protected addTabContext_(e: CustomEvent<{
+      id: number, title: string, url: Url, delayUpload: boolean,
+  }>) {
     e.stopPropagation();
 
     this.fire('add-tab-context', {
       id: e.detail.id,
       title: e.detail.title,
       url: e.detail.url,
+      delayUpload: e.detail.delayUpload,
       onContextAdded: (file: ComposeboxFile) => {
         this.files_ = new Map([...this.files_.entries(), [file.uuid, file]]);
         this.addedTabsIds_ = new Map(

@@ -62,8 +62,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
           @composebox-initialized="${this.onComposeboxInitialized_}"
           @close-composebox="${this.closeComposebox_}"
           @composebox-input-focus-changed="${this.onInputFocusChanged_}"
-          searchbox-layout-mode="${this.realboxLayoutMode_}"
-          .delayTabUpload="${this.delayTabUpload}">
+          searchbox-layout-mode="${this.realboxLayoutMode_}">
       </cr-composebox>
     ` : ''}
     ${this.showLensUploadDialog_ ? html`
@@ -75,7 +74,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
   ${this.lazyRender_
     && this.ntpNextFeaturesEnabled_ && this.isActionChipsVisible_ ? html`
     <ntp-action-chips
-        @action-chip-click="${this.onActionChipClick_}">
+        @action-chip-click="${this.openComposebox_}">
     </ntp-action-chips>
   ` : ''}
   ${this.lazyRender_ ? html`

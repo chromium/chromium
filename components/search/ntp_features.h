@@ -253,6 +253,10 @@ extern const base::FeatureParam<int> kNtpNextMaxMVTilesBeforeShowMoreParam;
 // text instead of real suggestions.
 extern const base::FeatureParam<bool> kNtpNextShowStaticTextParam;
 
+// Parameter determining if the tab upload should be delayed when tab context is
+// added from an action chip.
+extern const base::FeatureParam<bool> kAddTabUploadDelayOnActionChipClick;
+
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();
 
