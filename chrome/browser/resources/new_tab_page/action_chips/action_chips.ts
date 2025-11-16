@@ -1,8 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
-import {FileUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import type {ContextualUpload, TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import {ComposeboxMode} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -124,18 +123,11 @@ export class ActionChipsElement extends CrLitElement {
   }
 
   protected onTabContextClick_() {
-    // TODO(crbug.com/458092548): Convert tab info to ComposeboxFile.
-    const fakeRecentTabInfo: ComposeboxFile = {
-      uuid: '',
-      objectUrl: 'https://www.wikipedia.com',
-      dataUrl: null,
-      name: 'Wikipedia',
-      type: 'tab',
-      status: FileUploadStatus.kNotUploaded,
-      url: {url: 'https://www.wikipedia.com'},
-      file: null,
+    // TODO(crbug.com/458092548): Convert tab info to TabUpload.
+    const fakeRecentTabInfo: TabUpload = {
       tabId: 1,
-      isDeletable: true,
+      url: {url: 'https://www.wikipedia.com'},
+      title: 'Wikipedia',
     };
     this.onActionChipClick_('', [fakeRecentTabInfo], ComposeboxMode.DEFAULT);
   }
@@ -157,7 +149,7 @@ export class ActionChipsElement extends CrLitElement {
   }
 
   private onActionChipClick_(
-      query: string, contextFiles: ComposeboxFile[], mode: ComposeboxMode) {
+      query: string, contextFiles: ContextualUpload[], mode: ComposeboxMode) {
     this.fire('action-chip-click', {searchboxText: query, contextFiles, mode});
   }
 }

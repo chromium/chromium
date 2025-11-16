@@ -30,7 +30,7 @@ import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import type {ComposeboxFile} from './common.js';
+import type {ComposeboxFile, ContextualUpload} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
@@ -383,7 +383,7 @@ export class ComposeboxElement extends I18nMixinLit
     return this.smartComposeInlineHint_;
   }
 
-  protected initializeState_(text: string = '', files: ComposeboxFile[] = [],
+  protected initializeState_(text: string = '', files: ContextualUpload[] = [],
                              mode: ComposeboxMode = ComposeboxMode.DEFAULT) {
     if (text) {
       this.input_ = text;
@@ -510,7 +510,6 @@ export class ComposeboxElement extends I18nMixinLit
         type: file.type,
         status: FileUploadStatus.kNotUploaded,
         url: null,
-        file: file,
         tabId: null,
         isDeletable: true,
       };
@@ -533,7 +532,6 @@ export class ComposeboxElement extends I18nMixinLit
       status: fileInfo.imageDataUrl ? FileUploadStatus.kUploadSuccessful :
                                       FileUploadStatus.kNotUploaded,
       url: null,
-      file: null,
       tabId: null,
       isDeletable: fileInfo.isDeletable,
     };
@@ -559,7 +557,6 @@ export class ComposeboxElement extends I18nMixinLit
       type: 'tab',
       status: FileUploadStatus.kNotUploaded,
       url: e.detail.url,
-      file: null,
       tabId: e.detail.id,
       isDeletable: true,
     };

@@ -13,7 +13,7 @@ import 'chrome://resources/cr_components/composebox/composebox.js';
 
 import type {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
+import type {ContextualUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {ComposeboxMode} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
@@ -409,7 +409,7 @@ export class AppElement extends AppElementBase {
   private backgroundImageLoadStartEpoch_: number = 0;
   private backgroundImageLoadStart_: number = 0;
   private showWebstoreToastListenerId_: number|null = null;
-  private pendingComposeboxContextFiles_: ComposeboxFile[] = [];
+  private pendingComposeboxContextFiles_: ContextualUpload[] = [];
   private pendingComposeboxText_: string = '';
   private pendingComposeboxMode_: ComposeboxMode = ComposeboxMode.DEFAULT;
 
@@ -800,7 +800,7 @@ export class AppElement extends AppElementBase {
 
   protected onComposeboxInitialized_(e: CustomEvent<{
     initializeComposeboxState:
-        (text: string, files: ComposeboxFile[], mode: ComposeboxMode) => void,
+        (text: string, files: ContextualUpload[], mode: ComposeboxMode) => void,
   }>) {
     e.detail.initializeComposeboxState(
         this.pendingComposeboxText_, this.pendingComposeboxContextFiles_,
@@ -812,7 +812,7 @@ export class AppElement extends AppElementBase {
 
   protected openComposebox_(e: CustomEvent<{
     searchboxText: string,
-    contextFiles: ComposeboxFile[],
+    contextFiles: ContextualUpload[],
     mode: ComposeboxMode,
   }>) {
     if (e.detail.searchboxText) {
@@ -933,7 +933,7 @@ export class AppElement extends AppElementBase {
 
   protected onActionChipClick_(e: CustomEvent<{
     searchboxText: string,
-    contextFiles: ComposeboxFile[],
+    contextFiles: ContextualUpload[],
     mode: ComposeboxMode,
   }>) {
     if (e.detail.contextFiles.length === 1) {

@@ -15,7 +15,18 @@ export interface ComposeboxFile {
   type: string;
   status: FileUploadStatus;
   url: Url|null;
-  file: File|null;
   tabId: number|null;
   isDeletable: boolean;
 }
+
+export interface FileUpload {
+  file: File;
+}
+
+export interface TabUpload {
+  tabId: number;
+  url: Url;
+  title: string;
+}
+
+export type ContextualUpload = TabUpload|FileUpload;

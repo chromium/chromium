@@ -473,7 +473,7 @@ suite('NewTabPageRealboxTest', () => {
     const event = await whenOpenComposeBox;
     assertEquals(event.detail.contextFiles.length, 1);
     assertEquals(event.detail.contextFiles[0].tabId, 1);
-    assertEquals(event.detail.contextFiles[0].name, 'title');
+    assertEquals(event.detail.contextFiles[0].title, 'title');
   });
 
   test('clicking deep search button opens composebox', async () => {

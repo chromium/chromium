@@ -10,7 +10,7 @@ import '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.
 import '//resources/cr_components/composebox/error_scrim.js';
 import '//resources/cr_components/search/animated_glow.js';
 
-import type {ComposeboxFile} from '//resources/cr_components/composebox/common.js';
+import type {ComposeboxFile, ContextualUpload, FileUpload, TabUpload} from '//resources/cr_components/composebox/common.js';
 import type {ContextualEntrypointAndCarouselElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import {ComposeboxMode} from '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import type {ErrorScrimElement} from '//resources/cr_components/composebox/error_scrim.js';
@@ -25,7 +25,6 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {FileUploadStatus} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
@@ -1062,40 +1061,24 @@ export class SearchboxElement extends SearchboxElementBase implements
       files: File[],
       onContextAdded: (files: Map<UnguessableToken, ComposeboxFile>) => void,
   }>) {
-    const composeboxFiles: ComposeboxFile[] = [];
+    const uploads: ContextualUpload[] = [];
     for (const file of e.detail.files) {
-      const attachment: ComposeboxFile = {
-        uuid: 'fake-uuid',
-        name: file.name,
-        dataUrl: null,
-        objectUrl: file.type.includes('image') ? URL.createObjectURL(file) : null,
-        type: file.type,
-        status: FileUploadStatus.kNotUploaded,
-        url: null,
+      const attachment: FileUpload = {
         file: file,
-        tabId: null,
-        isDeletable: true,
       };
-      composeboxFiles.push(attachment);
+      uploads.push(attachment);
     }
-    this.openComposebox_(composeboxFiles);
+    this.openComposebox_(uploads);
   }
 
   protected addTabContext_(e: CustomEvent<{
       id: number, title: string, url: Url,
       onContextAdded: (file: ComposeboxFile) => void,
   }>) {
-    const attachment: ComposeboxFile = {
-      uuid: 'fake-uuid',
-      name: e.detail.title,
-      dataUrl: null,
-      objectUrl: null,
-      type: 'tab',
-      status: FileUploadStatus.kNotUploaded,
-      url: e.detail.url,
-      file: null,
+    const attachment: TabUpload = {
       tabId: e.detail.id,
-      isDeletable: true,
+      url: e.detail.url,
+      title: e.detail.title,
     };
     this.openComposebox_([attachment]);
   }
@@ -1160,12 +1143,12 @@ export class SearchboxElement extends SearchboxElementBase implements
   }
 
   protected openComposebox_(
-      files: ComposeboxFile[] = [],
+      uploads: ContextualUpload[] = [],
       mode: ComposeboxMode = ComposeboxMode.DEFAULT) {
     this.dispatchEvent(new CustomEvent('open-composebox', {
       detail: {
         searchboxText: this.$.input.value,
-        contextFiles: files,
+        contextFiles: uploads,
         mode: mode,
       },
       bubbles: true,
