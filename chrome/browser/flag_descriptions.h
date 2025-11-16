@@ -2695,6 +2695,12 @@ inline constexpr char kLensAimSuggestionsDescription[] =
     "Enables suggestions in the Lens composebox. This will have an effect "
     "only when the Lens search AIM M3 flag is also enabled.";
 
+inline constexpr char kLensAimSuggestionsGradientBackgroundName[] =
+    "Lens AIM M3 Side Panel Suggestions Gradient Background";
+inline constexpr char kLensAimSuggestionsGradientBackgroundDescription[] =
+    "Enables a gradient background for the Lens composebox dropdown that does "
+    "not cover the entire side panel.";
+
 inline constexpr char kLensSearchReinvocationAffordanceName[] =
     "Lens search reinvocation affordance";
 inline constexpr char kLensSearchReinvocationAffordanceDescription[] =

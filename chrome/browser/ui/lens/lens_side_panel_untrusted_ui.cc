@@ -127,6 +127,9 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
       lens::features::IsLensSidePanelWebviewResultsEnabled());
   html_source->AddBoolean("enableLensAimSuggestions",
                           lens::features::GetAimSuggestionsEnabled());
+  html_source->AddBoolean(
+      "enableLensAimSuggestionsGradientBackground",
+      lens::features::GetAimSuggestionsGradientBackgroundEnabled());
 
   // Aim M3 flags
   const bool aim_enabled = lens::IsAimM3Enabled(Profile::FromWebUI(web_ui));

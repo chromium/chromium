@@ -107,6 +107,12 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableLensAimSuggestions'),
       },
+      enableLensAimSuggestionsGradientBackground: {
+        reflectToAttribute: true,
+        type: Boolean,
+        value: () => loadTimeData.getBoolean(
+            'enableLensAimSuggestionsGradientBackground'),
+      },
       enableCsbMotionTweaks: {
         reflectToAttribute: true,
         type: Boolean,
@@ -229,6 +235,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         type: Number,
         value: 0,
       },
+      composeboxDropdownHeight_: {
+        type: Number,
+        value: 0,
+      },
       isOverlayShowing: {
         type: Boolean,
         value: true,
@@ -282,6 +292,9 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   // Whether the webview results container is enabled via feature flag.
   declare private enableWebviewResults: boolean;
   declare private enableLensAimSuggestions: boolean;
+  // Whether the gradient background for AIM suggestions is enabled via feature
+  // flag.
+  declare private enableLensAimSuggestionsGradientBackground: boolean;
   declare private isErrorPageVisible: boolean;
   // Whether the results iframe is currently loading. This needs to be done via
   // browser because the iframe is cross-origin. Default true since the side
@@ -320,11 +333,13 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   // Whether the results in the iframe are currently on the AIM UI.
   declare private isOnAimResults: boolean;
   declare private composeboxHeight_: number;
+  declare private composeboxDropdownHeight_: number;
   // Whether the visual selection overlay is currently showing.
   declare private isOverlayShowing: boolean;
   private eventTracker_: EventTracker = new EventTracker();
   // Watches for changes in the height of the composebox.
   private composeboxResizeObserver_: ResizeObserver|null = null;
+  private composeboxDropdownResizeObserver_: ResizeObserver|null = null;
   private searchboxBoundingClientRectObserver: ResizeObserver =
       new ResizeObserver(this.onSearchboxBoundsChanged.bind(this));
 
@@ -410,7 +425,13 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
       this.composeboxResizeObserver_ = new ResizeObserver(() => {
         this.composeboxHeight_ = composebox.offsetHeight;
       });
+      this.composeboxDropdownResizeObserver_ = new ResizeObserver(() => {
+        this.composeboxDropdownHeight_ =
+            composebox.getMatchesElement().offsetHeight;
+      });
       this.composeboxResizeObserver_.observe(composebox);
+      this.composeboxDropdownResizeObserver_.observe(
+          composebox.getMatchesElement());
     }
   }
 
@@ -428,6 +449,11 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     if (this.composeboxResizeObserver_) {
       this.composeboxResizeObserver_.disconnect();
       this.composeboxResizeObserver_ = null;
+    }
+
+    if (this.composeboxDropdownResizeObserver_) {
+      this.composeboxDropdownResizeObserver_.disconnect();
+      this.composeboxDropdownResizeObserver_ = null;
     }
   }
 

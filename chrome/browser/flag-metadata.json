@@ -6497,6 +6497,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "lens-aim-gradient-suggest-background",
+    "owners": [ "dianaou@google.com", "lens-chrome@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "lens-aim-suggestions",
     "owners": [ "dianaou@google.com", "lens-chrome@google.com" ],
     "expiry_milestone": 150
