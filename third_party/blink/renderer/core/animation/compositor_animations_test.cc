@@ -2782,7 +2782,7 @@ class ScopedClipPathPaintImageGenerator {
   class FakeClipPathPaintImageGenerator : public ClipPathPaintImageGenerator {
     scoped_refptr<Image> Paint(float zoom,
                                const gfx::RectF& reference_box,
-                               const gfx::SizeF& clip_area_size,
+                               const gfx::RectF& clip_area_rect,
                                const Node& node) override {
       LayoutObject* layout_object = node.GetLayoutObject();
       layout_object->GetMutableForPainting().FirstFragment().EnsureId();

@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/geometry_box_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -56,9 +57,7 @@ struct AnimationProgress {
 class ClipPathPaintWorkletInput : public PaintWorkletInput {
  public:
   ClipPathPaintWorkletInput(
-      const gfx::RectF& reference_box,
-      const gfx::SizeF& clip_area_size,
-      const gfx::PointF& reference_origin,
+      const gfx::RectF& image_area,
       int worklet_id,
       float zoom,
       Vector<SkPath> paths,
@@ -68,15 +67,17 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
       const std::optional<double>& progress,
       const SkPath static_shape,
       cc::PaintWorkletInput::PropertyKeys property_keys)
-      : PaintWorkletInput(clip_area_size, worklet_id, std::move(property_keys)),
+      : PaintWorkletInput(image_area.size(),
+                          worklet_id,
+                          std::move(property_keys)),
         paths_(std::move(paths)),
         shape_compatibilities_(std::move(shape_compatibilities)),
         offsets_(std::move(offsets)),
         timing_functions_(std::move(timing_functions)),
         progress_(progress),
         static_shape_(static_shape),
-        dx_(reference_origin.x()),
-        dy_(reference_origin.y()) {}
+        dx_(-image_area.x()),
+        dy_(-image_area.y()) {}
 
   ~ClipPathPaintWorkletInput() override = default;
 
@@ -134,6 +135,12 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
                GetAdjustedProgress(*val2.float_value);
   }
 
+  // TODO(clchambers): This is essentially the inverse translation that is
+  // applied by the serialization of the paint worklet deferred image. Rather
+  // than applying two equal but opposite translations, we could instead modify
+  // PaintOpBufferSerializer::WillSerializeNextOp to simply remove the
+  // translation, so that we paint directly in content space, similarly to main
+  // thread clip paths.
   void ApplyTranslation(cc::PaintCanvas* canvas) const {
     canvas->translate(dx_, dy_);
   }
@@ -418,23 +425,18 @@ PaintRecord ClipPathPaintDefinition::Paint(
 scoped_refptr<Image> ClipPathPaintDefinition::Paint(
     float zoom,
     const gfx::RectF& reference_box,
-    const gfx::SizeF& clip_area_size,
+    const gfx::RectF& clip_area_rect,
     const Node& node,
     int worklet_id) {
   DCHECK(node.IsElementNode());
   const Element* element = To<Element>(&node);
+  gfx::Vector2dF clip_offset =
+      gfx::Vector2dF(node.GetLayoutObject()->FirstFragment().PaintOffset());
 
   Vector<SkPath> paths;
   Vector<bool> shape_compatibilities;
-
   Vector<double> offsets;
   std::optional<double> progress;
-
-  // The passed reference box is adjusted to be relative to a large enclosing
-  // rect. To prevent floating point errors, we defer the translation to the
-  // painting stage and allow path generation to proceed with the unadjusted
-  // rect.
-  gfx::RectF reference_size = gfx::RectF(reference_box.size());
 
   Animation* animation = GetAnimationIfCompositable(element);
   // If we are here the animation must be compositable.
@@ -452,6 +454,12 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
 
   Vector<std::unique_ptr<gfx::TimingFunction>> timing_functions;
 
+  // TODO(crbug.com/459701868): The following code essentially re-implments
+  // ClipPathClipper::PathBasedClipInternal as well as
+  // CSSBasicShapeInterpolationType. There's no good reason cc clip paths need a
+  // completely divergent implementation, all we really need is to extract shape
+  // compatibility as well as handle the case where clip path is none. This
+  // class should be refactored to use the main thread machinery directly.
   std::optional<BasicShape::ShapeType> prev_type = std::nullopt;
   for (const auto& frame : *frames) {
     BasicShape* basic_shape =
@@ -465,13 +473,14 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
     }
 
     if (basic_shape) {
-      const Path path =
-          basic_shape->GetPath(reference_size, zoom, /*path_scale=*/1.f);
+      Path path = basic_shape->GetPath(reference_box, zoom, /*path_scale=*/1.f);
+      if (!clip_offset.IsZero()) {
+        path = PathBuilder(path).Translate(clip_offset).Finalize();
+      }
       paths.push_back(path.GetSkPath());
       prev_type = basic_shape->GetType();
     } else {
-      paths.push_back(SkPath::Rect(
-          SkRect::MakeWH(clip_area_size.width(), clip_area_size.height())));
+      paths.push_back(SkPath::Rect(gfx::RectFToSkRect(clip_area_rect)));
       prev_type = std::nullopt;
     }
 
@@ -500,17 +509,24 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
             element->GetLayoutObject()->StyleRef().ClipPath();
         Path path;
         switch (static_op->GetType()) {
-          case ClipPathOperation::kShape:
+          case ClipPathOperation::kShape: {
             path = To<ShapeClipPathOperation>(static_op)->GetPath(
-                reference_size, zoom, /*path_scale=*/1.f);
+                reference_box, zoom, /*path_scale=*/1.f);
+            if (!clip_offset.IsZero()) {
+              path = PathBuilder(path).Translate(clip_offset).Finalize();
+            }
             break;
-          case ClipPathOperation::kGeometryBox:
-            path = ClipPathClipper::RoundedReferenceBox(
-                       To<GeometryBoxClipPathOperation>(static_op)
-                           ->GetGeometryBox(),
-                       *element->GetLayoutObject())
-                       .GetPath();
+          }
+          case ClipPathOperation::kGeometryBox: {
+            ContouredRect box = ClipPathClipper::RoundedReferenceBox(
+                To<GeometryBoxClipPathOperation>(static_op)->GetGeometryBox(),
+                *element->GetLayoutObject());
+            if (!clip_offset.IsZero()) {
+              box.Move(clip_offset);
+            }
+            path = box.GetPath();
             break;
+          }
           case ClipPathOperation::kReference:
             // Reference clip paths are implemented with mask images, and are
             // not reducible to single SkPaths.
@@ -518,8 +534,7 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
         }
         static_path = path.GetSkPath();
       } else {
-        static_path = SkPath::Rect(
-            SkRect::MakeWH(clip_area_size.width(), clip_area_size.height()));
+        static_path = SkPath::Rect(gfx::RectFToSkRect(clip_area_rect));
       }
       break;
     }
@@ -539,12 +554,13 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
       CompositorPaintWorkletInput::NativePropertyType::kClipPath, element_id);
   scoped_refptr<ClipPathPaintWorkletInput> input =
       base::MakeRefCounted<ClipPathPaintWorkletInput>(
-          reference_size, clip_area_size, reference_box.origin(), worklet_id,
-          zoom, std::move(paths), std::move(shape_compatibilities),
-          std::move(offsets), std::move(timing_functions), progress,
-          static_path, std::move(input_property_keys));
+          clip_area_rect, worklet_id, zoom, std::move(paths),
+          std::move(shape_compatibilities), std::move(offsets),
+          std::move(timing_functions), progress, static_path,
+          std::move(input_property_keys));
 
-  return PaintWorkletDeferredImage::Create(std::move(input), clip_area_size);
+  return PaintWorkletDeferredImage::Create(std::move(input),
+                                           clip_area_rect.size());
 }
 
 // static

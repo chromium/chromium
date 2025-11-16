@@ -36,10 +36,10 @@ ClipPathPaintImageGeneratorImpl::GetAnimationBoundingRect(
 scoped_refptr<Image> ClipPathPaintImageGeneratorImpl::Paint(
     float zoom,
     const gfx::RectF& reference_box,
-    const gfx::SizeF& clip_area_size,
+    const gfx::RectF& clip_area_rect,
     const Node& node) {
   return ClipPathPaintDefinition::Paint(
-      zoom, reference_box, clip_area_size, node,
+      zoom, reference_box, clip_area_rect, node,
       clip_path_paint_definition_->GetWorkletId());
 }
 

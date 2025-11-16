@@ -42,7 +42,7 @@ class CORE_EXPORT ClipPathPaintImageGenerator
 
   virtual scoped_refptr<Image> Paint(float zoom,
                                      const gfx::RectF& reference_box,
-                                     const gfx::SizeF& clip_area_size,
+                                     const gfx::RectF& clip_area_rect,
                                      const Node&) = 0;
 };
 
