@@ -14,6 +14,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/audio/mac/audio_manager_mac.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/channel_layout.h"

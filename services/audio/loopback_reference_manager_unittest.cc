@@ -18,6 +18,7 @@
 #include "media/audio/audio_io.h"
 #include "media/audio/mock_audio_manager.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"

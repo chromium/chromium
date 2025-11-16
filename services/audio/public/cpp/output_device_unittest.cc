@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/audio/audio_output_device.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"

@@ -8,6 +8,7 @@
 #include "base/types/zip.h"
 #include "base/unguessable_token.h"
 #include "media/audio/audio_device_description.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_switches.h"

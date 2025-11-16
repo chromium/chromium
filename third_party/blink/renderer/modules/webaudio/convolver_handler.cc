@@ -8,6 +8,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
+#include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_convolver_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"

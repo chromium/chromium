@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 

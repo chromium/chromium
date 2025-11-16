@@ -7,6 +7,7 @@
 #include <inttypes.h>
 
 #include "base/synchronization/lock.h"
+#include "media/base/audio_bus.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"

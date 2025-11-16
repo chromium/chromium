@@ -27,6 +27,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_pull_fifo.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/channel_layout.h"

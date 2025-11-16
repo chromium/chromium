@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "media/audio/simple_sources.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/fake_audio_render_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"

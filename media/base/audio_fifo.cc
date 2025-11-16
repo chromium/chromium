@@ -10,6 +10,7 @@
 #include "base/numerics/safe_math.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/zip.h"
+#include "media/base/audio_bus.h"
 
 namespace media {
 

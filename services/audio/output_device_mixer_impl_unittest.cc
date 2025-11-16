@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "media/base/audio_bus.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

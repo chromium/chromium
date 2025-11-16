@@ -17,6 +17,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/thread_annotations.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/media_log.h"

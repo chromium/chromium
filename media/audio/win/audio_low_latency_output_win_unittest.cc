@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "media/audio/win/audio_low_latency_output_win.h"
 
 #include <windows.h>
@@ -36,6 +35,7 @@
 #include "media/audio/mock_audio_source_callback.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/audio/win/core_audio_util_win.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/seekable_buffer.h"

@@ -17,6 +17,7 @@
 #include "media/audio/alsa/alsa_wrapper.h"
 #include "media/audio/alsa/audio_manager_alsa.h"
 #include "media/audio/audio_manager.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 
 namespace media {

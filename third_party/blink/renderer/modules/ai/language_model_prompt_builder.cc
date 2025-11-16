@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ai/language_model_prompt_builder.h"
 
+#include "media/base/audio_bus.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"

@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/location.h"
 #include "base/test/bind.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/sample_format.h"
 #include "testing/gtest/include/gtest/gtest.h"

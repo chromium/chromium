@@ -37,6 +37,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "media/base/audio_bus.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/denormal_disabler.h"

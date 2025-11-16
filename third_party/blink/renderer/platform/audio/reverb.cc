@@ -35,6 +35,7 @@
 #include <utility>
 
 #include "build/build_config.h"
+#include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"

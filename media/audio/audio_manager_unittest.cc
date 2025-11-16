@@ -32,6 +32,7 @@
 #include "media/audio/fake_audio_manager.h"
 #include "media/audio/mock_audio_debug_recording_manager.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/base/audio_bus.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"

@@ -28,6 +28,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_sample_types.h"
 #include "media/cast/common/rtp_time.h"

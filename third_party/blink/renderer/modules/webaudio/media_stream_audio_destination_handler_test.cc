@@ -9,6 +9,7 @@
 #include "base/synchronization/lock.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "media/base/audio_bus.h"
 #include "media/base/output_device_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"

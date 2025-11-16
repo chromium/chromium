@@ -6,6 +6,7 @@
 
 #include "chromeos/services/tts/constants.h"
 #include "chromeos/services/tts/tts_test_utils.h"
+#include "media/base/audio_bus.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos {

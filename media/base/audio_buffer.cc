@@ -59,6 +59,8 @@ static base::TimeDelta CalculateDuration(int frames, double sample_rate) {
                             sample_rate);
 }
 
+AudioBufferMemoryPool::AudioBufferMemoryPool()
+    : AudioBufferMemoryPool(AudioBus::kChannelAlignment) {}
 AudioBufferMemoryPool::AudioBufferMemoryPool(int alignment)
     : alignment_(alignment) {}
 AudioBufferMemoryPool::~AudioBufferMemoryPool() = default;

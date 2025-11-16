@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "media/base/audio_buffer.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"

@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/simple_thread.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 
 namespace media {

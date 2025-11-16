@@ -42,6 +42,7 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/audio/audio_input_device.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"

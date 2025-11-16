@@ -32,6 +32,7 @@
 #include "media/audio/win/avrt_wrapper_win.h"
 #include "media/audio/win/core_audio_util_win.h"
 #include "media/base/amplitude_peak_detector.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"

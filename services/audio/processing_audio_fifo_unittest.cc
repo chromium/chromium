@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/types/zip.h"
 #include "media/audio/simple_sources.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

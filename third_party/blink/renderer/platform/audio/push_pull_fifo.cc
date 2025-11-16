@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
+#include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 

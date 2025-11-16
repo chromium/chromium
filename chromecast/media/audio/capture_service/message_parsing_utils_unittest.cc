@@ -14,6 +14,7 @@
 #include "base/big_endian.h"
 #include "chromecast/media/audio/capture_service/constants.h"
 #include "chromecast/media/audio/capture_service/packet_header.h"
+#include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromecast {

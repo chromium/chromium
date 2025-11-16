@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "media/audio/simple_sources.h"
 #include "media/base/audio_buffer.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_encoder.h"
 #include "media/base/audio_sample_types.h"

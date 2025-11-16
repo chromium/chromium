@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"

@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
+#include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"

@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_latency.h"
 #include "media/base/fake_audio_render_callback.h"
 #include "media/base/mock_audio_renderer_sink.h"

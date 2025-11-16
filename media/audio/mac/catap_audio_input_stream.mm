@@ -28,6 +28,7 @@
 #include "media/audio/mac/audio_loopback_input_mac.h"
 #include "media/audio/mac/catap_api.h"
 #include "media/audio/mac/core_audio_util_mac.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
 

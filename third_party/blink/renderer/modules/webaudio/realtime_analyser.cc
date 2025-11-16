@@ -32,6 +32,7 @@
 #include <complex>
 
 #include "base/compiler_specific.h"
+#include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"

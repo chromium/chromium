@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "media/audio/audio_manager_base.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
 

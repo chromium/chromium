@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "media/audio/audio_opus_encoder.h"
 #include "media/audio/simple_sources.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_encoder.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/converting_audio_fifo.h"

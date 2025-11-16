@@ -21,6 +21,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/types/zip.h"
+#include "media/base/audio_bus.h"
 #include "media/base/fake_audio_render_callback.h"
 #include "media/base/mock_audio_renderer_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"

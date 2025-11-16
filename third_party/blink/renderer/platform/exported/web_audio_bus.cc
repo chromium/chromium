@@ -25,6 +25,7 @@
 #include "third_party/blink/public/platform/web_audio_bus.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 
 namespace blink {

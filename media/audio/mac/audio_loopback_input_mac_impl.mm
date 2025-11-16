@@ -21,6 +21,7 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/audio/mac/audio_loopback_input_mac.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 
 using SampleCallback = base::RepeatingCallback<

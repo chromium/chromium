@@ -16,6 +16,7 @@
 #include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 
 #if BUILDFLAG(IS_MAC)

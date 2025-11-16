@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/bind_post_task.h"
 #include "media/base/audio_buffer.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_discard_helper.h"
 #include "media/base/channel_layout.h"

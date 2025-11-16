@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "media/audio/fuchsia/audio_manager_fuchsia.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
 

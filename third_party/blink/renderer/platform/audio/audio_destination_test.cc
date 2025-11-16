@@ -9,6 +9,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "media/audio/audio_features.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

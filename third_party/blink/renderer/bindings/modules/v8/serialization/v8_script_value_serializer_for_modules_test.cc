@@ -7,6 +7,7 @@
 #include "base/containers/to_vector.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "media/base/audio_bus.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink.h"

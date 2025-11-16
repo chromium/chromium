@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "media/audio/null_audio_sink.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/fake_audio_render_callback.h"
 #include "media/base/media_util.h"

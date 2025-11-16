@@ -6,6 +6,7 @@
 
 #include "base/types/zip.h"
 #include "chromeos/ash/services/recording/audio_capture_util.h"
+#include "media/base/audio_bus.h"
 
 namespace recording {
 

@@ -30,6 +30,7 @@
 #include "media/audio/mock_audio_source_callback.h"
 #include "media/audio/simple_sources.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/base/audio_bus.h"
 #include "media/base/limits.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

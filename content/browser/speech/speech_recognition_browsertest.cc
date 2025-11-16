@@ -37,6 +37,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "media/audio/audio_system.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_sample_types.h"

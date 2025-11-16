@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_encoder.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/encoder_status.h"

@@ -6,6 +6,7 @@
 #include <array>
 #include <limits>
 
+#include "media/base/audio_bus.h"
 #include "services/audio/mixing_graph.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

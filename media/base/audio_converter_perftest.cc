@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/base/audio_converter.h"
+
 #include <memory>
 
 #include "base/time/time.h"
-#include "media/base/audio_converter.h"
+#include "media/base/audio_bus.h"
 #include "media/base/fake_audio_render_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"

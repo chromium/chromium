@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 
 namespace media {

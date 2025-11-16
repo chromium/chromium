@@ -64,6 +64,7 @@ cast_source_set("unittests") {
     "//base/test:test_support",
     "//chromecast/media/audio:test_support",
     "//chromecast/net:test_support",
+    "//media",
     "//net",
     "//testing/gtest",
   ]
