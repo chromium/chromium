@@ -262,17 +262,54 @@ void OmniboxContextMenuController::AddTabContext(const TabInfo& tab_info) {
   auto token = base::UnguessableToken::Create();
   auto context_callback =
       base::BindOnce(&OmniboxContextMenuController::OnGetTabPageContext,
-                     weak_ptr_factory_.GetWeakPtr(), token);
+                     weak_ptr_factory_.GetWeakPtr(), token, tab_info);
   tab_contextualization_controller->GetPageContext(std::move(context_callback));
 }
 
 void OmniboxContextMenuController::OnGetTabPageContext(
     const base::UnguessableToken& context_token,
+    const TabInfo& tab_info,
     std::unique_ptr<lens::ContextualInputData> page_content_data) {
   query_controller_->StartFileUploadFlow(context_token,
                                          std::move(page_content_data),
                                          CreateImageEncodingOptions());
+  UpdateSearchboxContext(/*tab_info=*/tab_info, /*tool_mode=*/std::nullopt);
   edit_model_->OpenAiMode(/*via_keyboard=*/false);
+}
+
+void OmniboxContextMenuController::UpdateSearchboxContext(
+    std::optional<TabInfo> tab_info,
+    std::optional<searchbox::mojom::ToolMode> tool_mode) {
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_.get());
+  if (!browser_window_interface) {
+    return;
+  }
+  SearchboxContextData* searchbox_context_data =
+      browser_window_interface->GetFeatures().searchbox_context_data();
+  if (!searchbox_context_data) {
+    return;
+  }
+  auto context = searchbox_context_data->TakePendingContext();
+  if (!context) {
+    context = std::make_unique<SearchboxContextData::Context>();
+  }
+
+  if (tab_info) {
+    auto tab_attachment = searchbox::mojom::TabAttachmentStub::New();
+    tab_attachment->tab_id = tab_info->tab_id;
+    tab_attachment->title = base::UTF16ToUTF8(tab_info->title);
+    tab_attachment->url = tab_info->url;
+    context->file_infos.push_back(
+        searchbox::mojom::SearchContextAttachmentStub::NewTabAttachment(
+            std::move(tab_attachment)));
+  }
+
+  if (tool_mode) {
+    context->mode = *tool_mode;
+  }
+
+  searchbox_context_data->SetPendingContext(std::move(context));
 }
 
 void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
@@ -299,36 +336,19 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
                                              query_controller_, edit_model_);
         break;
       case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
-        UpdateSearchboxContextToolMode(searchbox::mojom::ToolMode::kDeepSearch);
+        UpdateSearchboxContext(
+            /*tab_info=*/std::nullopt,
+            /*tool_mode=*/searchbox::mojom::ToolMode::kDeepSearch);
         edit_model_->OpenAiMode(/*via_keyboard=*/false);
         break;
       case IDC_OMNIBOX_CONTEXT_CREATE_IMAGES:
-        UpdateSearchboxContextToolMode(
-            searchbox::mojom::ToolMode::kCreateImage);
+        UpdateSearchboxContext(
+            /*tab_info=*/std::nullopt,
+            /*tool_mode=*/searchbox::mojom::ToolMode::kCreateImage);
         edit_model_->OpenAiMode(/*via_keyboard=*/false);
         break;
       default:
         NOTREACHED();
     }
   }
-}
-
-void OmniboxContextMenuController::UpdateSearchboxContextToolMode(
-    searchbox::mojom::ToolMode tool_mode) {
-  auto* browser_window_interface =
-      webui::GetBrowserWindowInterface(web_contents_.get());
-  if (!browser_window_interface) {
-    return;
-  }
-  SearchboxContextData* searchbox_context_data =
-      browser_window_interface->GetFeatures().searchbox_context_data();
-  if (!searchbox_context_data) {
-    return;
-  }
-  auto context = searchbox_context_data->TakePendingContext();
-  if (!context) {
-    context = std::make_unique<SearchboxContextData::Context>();
-  }
-  context->mode = tool_mode;
-  searchbox_context_data->SetPendingContext(std::move(context));
 }

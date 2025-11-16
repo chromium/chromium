@@ -66,6 +66,9 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
 
   void ExecuteCommand(int command_id, int event_flags) override;
   void AddTabContext(const TabInfo& tab_info);
+  void UpdateSearchboxContext(
+      std::optional<TabInfo> tab_info,
+      std::optional<searchbox::mojom::ToolMode> tool_mode);
 
  private:
   void BuildMenu();
@@ -100,6 +103,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
 
   void OnGetTabPageContext(
       const base::UnguessableToken& context_token,
+      const TabInfo& tab_info,
       std::unique_ptr<lens::ContextualInputData> page_content_data);
 
   void UpdateSearchboxContextToolMode(searchbox::mojom::ToolMode tool_mode);
