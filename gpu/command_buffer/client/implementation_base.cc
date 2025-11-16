@@ -333,9 +333,9 @@ void ImplementationBase::SetBucketContents(uint32_t bucket_id,
       if (!buffer.valid()) {
         return;
       }
-      UNSAFE_TODO(memcpy(buffer.address(),
-                         static_cast<const int8_t*>(data) + offset,
-                         buffer.size()));
+      auto span = UNSAFE_TODO(base::span(
+          static_cast<const uint8_t*>(data) + offset, buffer.size()));
+      buffer.as_byte_span().copy_from(span);
       helper_->SetBucketData(bucket_id, offset, buffer.size(), buffer.shm_id(),
                              buffer.offset());
       offset += buffer.size();

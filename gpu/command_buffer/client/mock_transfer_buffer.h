@@ -52,8 +52,8 @@ class MockTransferBuffer : public TransferBufferInterface {
   int GetResultOffset() override;
   void Free() override;
   bool HaveBuffer() const override;
-  void* AllocUpTo(unsigned int size, unsigned int* size_allocated) override;
-  void* Alloc(unsigned int size) override;
+  base::span<uint8_t> AllocUpTo(unsigned int size) override;
+  base::span<uint8_t> Alloc(unsigned int size) override;
   RingBuffer::Offset GetOffset(void* pointer) const override;
   void DiscardBlock(void* p) override;
   void FreePendingToken(void* p, unsigned int /* token */) override;
@@ -101,7 +101,7 @@ class MockTransferBuffer : public TransferBufferInterface {
   std::array<scoped_refptr<Buffer>, kNumBuffers> buffers_;
   int actual_buffer_index_;
   int expected_buffer_index_;
-  raw_ptr<void> last_alloc_;
+  base::raw_span<uint8_t> last_alloc_;
   uint32_t expected_offset_;
   uint32_t actual_offset_;
   bool initialize_fail_;

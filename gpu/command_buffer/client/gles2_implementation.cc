@@ -4256,10 +4256,11 @@ void GLES2Implementation::GetAttachedShaders(GLuint program,
                "allocation too large");
     return;
   }
-  Result* result = static_cast<Result*>(transfer_buffer_->Alloc(checked_size));
-  if (!result) {
+  auto result_span = transfer_buffer_->Alloc(checked_size);
+  if (result_span.empty()) {
     return;
   }
+  Result* result = reinterpret_cast<Result*>(result_span.data());
   result->SetNumResults(0);
   helper_->GetAttachedShaders(program, transfer_buffer_->GetShmId(),
                               transfer_buffer_->GetOffset(result),

@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include "base/containers/circular_deque.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
@@ -54,8 +55,8 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT RingBuffer {
   //   size: the size of the memory block to allocate.
   //
   // Returns:
-  //   the pointer to the allocated memory block.
-  void* Alloc(uint32_t size);
+  //   a span representing the allocated memory block.
+  base::span<uint8_t> Alloc(const uint32_t size);
 
   // Frees a block of memory, pending the passage of a token. That memory won't
   // be re-allocated until the token has passed through the command stream.
@@ -93,11 +94,6 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT RingBuffer {
   uint32_t GetUsedSize() { return size_ - GetLargestFreeSizeNoWaiting(); }
 
   uint32_t NumUsedBlocks() const { return num_used_blocks_; }
-
-  // Gets a pointer to a memory block given the base memory and the offset.
-  void* GetPointer(RingBuffer::Offset offset) const {
-    return base_.get_at(offset);
-  }
 
   // Gets the offset to a memory block given the base memory and the address.
   RingBuffer::Offset GetOffset(void* pointer) const {
