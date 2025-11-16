@@ -485,7 +485,7 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected async addFileContext_(e: CustomEvent<{
-      files: File[], isImage: boolean,
+      files: File[],
       onContextAdded: (files: Map<UnguessableToken, ComposeboxFile>) => void,
   }>) {
     const composeboxFiles: Map<UnguessableToken, ComposeboxFile> = new Map();
@@ -507,7 +507,7 @@ export class ComposeboxElement extends I18nMixinLit
         uuid: token,
         name: file.name,
         dataUrl: null,
-        objectUrl: e.detail.isImage ? URL.createObjectURL(file) : null,
+        objectUrl: file.type.includes('image') ? URL.createObjectURL(file) : null,
         type: file.type,
         status: FileUploadStatus.kNotUploaded,
         url: null,

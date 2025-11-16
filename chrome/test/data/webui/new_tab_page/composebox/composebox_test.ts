@@ -2017,6 +2017,63 @@ suite('NewTabPageComposeboxTest', () => {
         assertFalse(pasteEvent.defaultPrevented);
       });
 
+  test(
+      'pasting mixed files is processesed correctly ',
+      async () => {
+        // Arrange.
+        loadTimeData.overrideValues({'composeboxFileMaxCount': 5});
+        createComposeboxElement();
+        let i = 0;
+        searchboxHandler.setResultMapperFor(ADD_FILE_CONTEXT_FN, () => {
+          i += 1;
+          return Promise.resolve(
+              {token: {low: BigInt(i + 1), high: BigInt(i + 2)}});
+        });
+        const pngFile = new File(['foo'], 'foo.png', {type: 'image/png'});
+        const pdfFile = new File(['foo'], 'foo.pdf', {type: 'application/pdf'});
+
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(pngFile);
+        dataTransfer.items.add(pdfFile);
+        const pasteEvent = new ClipboardEvent('paste', {
+          clipboardData: dataTransfer,
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+        });
+
+        // Act.
+        composeboxElement.$.input.dispatchEvent(pasteEvent);
+
+        //Wait for both files to be processed (addFileContext called twice).
+        await waitForAddFileCallCount(2);
+        await microtasksFinished();
+
+        // Assert.
+        // Check if the Carousel received 2 files.
+        const files = composeboxElement.$.context.$.carousel.files;
+        assertEquals(files.length, 2);
+
+        //  Check if the image was identified as an image.
+        //  (has objectUrl) and the PDF was identified as a PDF (no objectUrl).
+        const imageFile = files.find(f => f.type.includes('image'));
+        const pdfFileInCarousel = files.find(f => f.type.includes('pdf'));
+
+        // Ensure we found both.
+        assertTrue(!!imageFile);
+        assertTrue(!!pdfFileInCarousel);
+
+        // Validate the image (it must have an objectUrl for preview).
+        assertTrue(
+            !!imageFile.objectUrl,
+            'Image file should have an objectUrl for preview');
+
+        // Validate the PDF (it must have null objectUrl to show the icon).
+        assertEquals(
+            pdfFileInCarousel.objectUrl, null,
+            'PDF file should have null objectUrl');
+      });
+
 
   test('isCollapsible attribute sets expanding state when true', async () => {
     createComposeboxElement();
