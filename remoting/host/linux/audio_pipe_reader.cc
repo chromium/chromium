@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/linux/audio_pipe_reader.h"
 
 #include <fcntl.h>
@@ -17,6 +12,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
@@ -161,8 +157,8 @@ void AudioPipeReader::DoCapture() {
   data.resize(pos + bytes_to_read);
 
   while (pos < data.size()) {
-    int read_result =
-        pipe_.ReadAtCurrentPos(std::data(data) + pos, data.size() - pos);
+    int read_result = UNSAFE_TODO(
+        pipe_.ReadAtCurrentPos(std::data(data) + pos, data.size() - pos));
     if (read_result > 0) {
       pos += read_result;
     } else {

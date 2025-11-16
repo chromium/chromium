@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/win/chromoting_module.h"
 
+#include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
@@ -167,7 +163,8 @@ LONG ChromotingModule::Unlock() {
 
 HRESULT ChromotingModule::RegisterClassObjects(DWORD class_context,
                                                DWORD flags) {
-  for (ATL::_ATL_OBJMAP_ENTRY* i = classes_; i != classes_end_; ++i) {
+  for (ATL::_ATL_OBJMAP_ENTRY* i = classes_; i != classes_end_;
+       UNSAFE_TODO(++i)) {
     HRESULT result = i->RegisterClassObject(class_context, flags);
     if (FAILED(result)) {
       return result;
@@ -178,7 +175,8 @@ HRESULT ChromotingModule::RegisterClassObjects(DWORD class_context,
 }
 
 HRESULT ChromotingModule::RevokeClassObjects() {
-  for (ATL::_ATL_OBJMAP_ENTRY* i = classes_; i != classes_end_; ++i) {
+  for (ATL::_ATL_OBJMAP_ENTRY* i = classes_; i != classes_end_;
+       UNSAFE_TODO(++i)) {
     HRESULT result = i->RevokeClassObject();
     if (FAILED(result)) {
       return result;
@@ -199,7 +197,7 @@ int RdpDesktopSessionMain() {
   ATL::_ATL_OBJMAP_ENTRY rdp_client_entry[] = {
       OBJECT_ENTRY(__uuidof(RdpDesktopSession), RdpDesktopSession)};
 
-  ChromotingModule module(rdp_client_entry, rdp_client_entry + 1);
+  ChromotingModule module(rdp_client_entry, UNSAFE_TODO(rdp_client_entry + 1));
   return module.Run() ? kSuccessExitCode : kInitializationFailed;
 }
 

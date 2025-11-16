@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/win/event_trace_data.h"
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/logging_win.h"
@@ -86,18 +82,21 @@ EventTraceData EventTraceData::Create(EVENT_TRACE* event) {
     offset += bytes_to_skip;
 
     // Read the line info and move the cursor.
-    data.line = *reinterpret_cast<const int32_t*>(mof_data + offset);
+    data.line =
+        *reinterpret_cast<const int32_t*>(UNSAFE_TODO(mof_data + offset));
     offset += sizeof(int32_t);
 
     // Read the file info and move the cursor.
-    const char* file_info = reinterpret_cast<const char*>(mof_data + offset);
+    const char* file_info =
+        reinterpret_cast<const char*>(UNSAFE_TODO(mof_data + offset));
     size_t str_len = strnlen_s(file_info, event->MofLength - offset);
     base::FilePath file_path(base::UTF8ToWide(file_info));
     data.file_name = base::WideToUTF8(file_path.BaseName().value());
     offset += (str_len + 1);
 
     // Read the message and move the cursor.
-    const char* message = reinterpret_cast<const char*>(mof_data + offset);
+    const char* message =
+        reinterpret_cast<const char*>(UNSAFE_TODO(mof_data + offset));
     str_len = strnlen_s(message, event->MofLength - offset);
     data.message.assign(message);
     offset += (str_len + 1);

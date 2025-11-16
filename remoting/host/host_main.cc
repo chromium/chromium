@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 // This file implements the common entry point shared by all Chromoting Host
 // processes.
 
@@ -16,6 +11,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
@@ -92,7 +88,7 @@ const char kUsageMessage[] =
     "to a file.\n";
 
 void Usage(const base::FilePath& program_name) {
-  printf(kUsageMessage, program_name.MaybeAsASCII().c_str());
+  UNSAFE_TODO(printf(kUsageMessage, program_name.MaybeAsASCII().c_str()));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -127,7 +123,7 @@ int RunElevated() {
 
   // Launch the child process requesting elevation.
   SHELLEXECUTEINFO info;
-  memset(&info, 0, sizeof(info));
+  UNSAFE_TODO(memset(&info, 0, sizeof(info)));
   info.cbSize = sizeof(info);
   info.lpVerb = L"runas";
   info.lpFile = binary.value().c_str();

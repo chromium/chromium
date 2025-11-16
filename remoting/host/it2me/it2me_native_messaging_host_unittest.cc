@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/it2me/it2me_native_messaging_host.h"
 
 #include <cstdint>
@@ -403,16 +398,16 @@ std::optional<base::Value::Dict>
 It2MeNativeMessagingHostTest::ReadMessageFromOutputPipe() {
   while (true) {
     uint32_t length;
-    int read_result = output_read_file_.ReadAtCurrentPos(
-        reinterpret_cast<char*>(&length), sizeof(length));
+    int read_result = UNSAFE_TODO(output_read_file_.ReadAtCurrentPos(
+        reinterpret_cast<char*>(&length), sizeof(length)));
     if (read_result != sizeof(length)) {
       // The output pipe has been closed, return an empty message.
       return std::nullopt;
     }
 
     std::string message_json(length, '\0');
-    read_result =
-        output_read_file_.ReadAtCurrentPos(std::data(message_json), length);
+    read_result = UNSAFE_TODO(
+        output_read_file_.ReadAtCurrentPos(std::data(message_json), length));
     if (read_result != static_cast<int>(length)) {
       LOG(ERROR) << "Message size (" << read_result
                  << ") doesn't match the header (" << length << ").";

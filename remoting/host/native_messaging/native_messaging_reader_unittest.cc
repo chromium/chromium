@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/native_messaging/native_messaging_reader.h"
 
 #include <cstdint>
@@ -14,6 +9,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -101,7 +97,7 @@ void NativeMessagingReaderTest::WriteMessage(const std::string& message) {
 }
 
 void NativeMessagingReaderTest::WriteData(const char* data, int length) {
-  int written = write_file_.WriteAtCurrentPos(data, length);
+  int written = UNSAFE_TODO(write_file_.WriteAtCurrentPos(data, length));
   ASSERT_EQ(length, written);
 }
 

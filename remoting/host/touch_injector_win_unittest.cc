@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/touch_injector_win.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <map>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -68,7 +64,7 @@ MATCHER_P(EqualsSinglePointerTouchInfo, expected, "") {
 // Make sure that every touch point has the right flag (pointerFlags).
 MATCHER_P(EqualsPointerTouchInfoFlag, id_to_flag_map, "") {
   for (size_t i = 0; i < id_to_flag_map.size(); ++i) {
-    const POINTER_TOUCH_INFO* touch_info = arg + i;
+    const POINTER_TOUCH_INFO* touch_info = UNSAFE_TODO(arg + i);
     const uint32_t id = touch_info->pointerInfo.pointerId;
     if (!base::Contains(id_to_flag_map, id)) {
       return false;

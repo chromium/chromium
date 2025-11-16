@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/curtain_mode.h"
 
 #include <ApplicationServices/ApplicationServices.h>
@@ -16,6 +11,7 @@
 
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -52,7 +48,8 @@ bool IsRunningHeadless() {
   }
 
   for (UInt32 i = 0; i < online_display_count; i++) {
-    if (CGDisplayModelNumber(online_displays[i]) != kVirtualDisplayID) {
+    if (CGDisplayModelNumber(UNSAFE_TODO(online_displays[i])) !=
+        kVirtualDisplayID) {
       // At least one monitor is attached so the machine is not headless.
       return false;
     }

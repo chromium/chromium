@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "remoting/host/mojom/remoting_mojom_traits.h"
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "remoting/base/source_location.h"
 
 namespace mojo {
@@ -333,7 +329,7 @@ bool mojo::StructTraits<
 
   auto new_frame = std::make_unique<::webrtc::BasicDesktopFrame>(
       image_size, webrtc::FOURCC_ARGB);
-  memcpy(new_frame->data(), image_data.data(), image_data.size());
+  UNSAFE_TODO(memcpy(new_frame->data(), image_data.data(), image_data.size()));
 
   // ::webrtc::MouseCursor methods take a raw pointer *and* take ownership.
   // TODO(joedow): Update webrtc::MouseCursor to use std::unique_ptr.

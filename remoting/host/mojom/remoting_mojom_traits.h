@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef REMOTING_HOST_MOJOM_REMOTING_MOJOM_TRAITS_H_
 #define REMOTING_HOST_MOJOM_REMOTING_MOJOM_TRAITS_H_
 
@@ -17,6 +12,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/numerics/safe_conversions.h"
@@ -260,8 +256,8 @@ class StructTraits<remoting::mojom::MouseCursorDataView,
     buffer_size *= image_size.width();
     buffer_size *= image_size.height();
     CHECK_EQ(cursor.image()->pixel_format(), webrtc::FOURCC_ARGB);
-    return base::span<const uint8_t>(cursor.image()->data(),
-                                     buffer_size.ValueOrDie());
+    return UNSAFE_TODO(base::span<const uint8_t>(cursor.image()->data(),
+                                                 buffer_size.ValueOrDie()));
   }
 
   static const webrtc::DesktopVector& hotspot(

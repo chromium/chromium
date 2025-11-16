@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/setup/daemon_controller_delegate_win.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -372,8 +368,8 @@ void DaemonControllerDelegateWin::UpdateConfig(
     DaemonController::CompletionCallback done) {
   // Check for bad keys.
   for (size_t i = 0; i < std::size(kReadonlyKeys); ++i) {
-    if (updated_config.Find(kReadonlyKeys[i])) {
-      LOG(ERROR) << "Cannot update config: '" << kReadonlyKeys[i]
+    if (updated_config.Find(UNSAFE_TODO(kReadonlyKeys[i]))) {
+      LOG(ERROR) << "Cannot update config: '" << UNSAFE_TODO(kReadonlyKeys[i])
                  << "' is read only.";
       InvokeCompletionCallback(std::move(done), false);
       return;

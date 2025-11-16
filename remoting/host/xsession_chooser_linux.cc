@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include "base/compiler_specific.h"
 #include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 
@@ -260,8 +256,8 @@ std::optional<XSession> TryLoadSession(base::FilePath path) {
   if (gchar** desktop_names =
           g_key_file_get_string_list(key_file.get(), G_KEY_FILE_DESKTOP_GROUP,
                                      "DesktopNames", nullptr, nullptr)) {
-    for (std::size_t i = 0; desktop_names[i]; ++i) {
-      session.desktop_names.push_back(desktop_names[i]);
+    for (std::size_t i = 0; UNSAFE_TODO(desktop_names[i]); ++i) {
+      session.desktop_names.push_back(UNSAFE_TODO(desktop_names[i]));
     }
     g_strfreev(desktop_names);
   }

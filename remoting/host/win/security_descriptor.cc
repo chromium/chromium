@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/win/security_descriptor.h"
 
 #include <sddl.h>
@@ -14,6 +9,7 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace remoting {
@@ -27,7 +23,7 @@ ScopedSd ConvertSddlToSd(const std::string& sddl) {
   }
 
   ScopedSd sd(length);
-  memcpy(sd.get(), raw_sd, length);
+  UNSAFE_TODO(memcpy(sd.get(), raw_sd, length));
 
   LocalFree(raw_sd);
   return sd;
@@ -60,11 +56,12 @@ ScopedSid GetLogonSid(HANDLE token) {
   }
 
   for (uint32_t i = 0; i < groups->GroupCount; ++i) {
-    if ((groups->Groups[i].Attributes & SE_GROUP_LOGON_ID) ==
+    if ((UNSAFE_TODO(groups->Groups[i]).Attributes & SE_GROUP_LOGON_ID) ==
         SE_GROUP_LOGON_ID) {
-      length = GetLengthSid(groups->Groups[i].Sid);
+      length = GetLengthSid(UNSAFE_TODO(groups->Groups[i]).Sid);
       ScopedSid logon_sid(length);
-      if (!CopySid(length, logon_sid.get(), groups->Groups[i].Sid)) {
+      if (!CopySid(length, logon_sid.get(),
+                   UNSAFE_TODO(groups->Groups[i]).Sid)) {
         return ScopedSid();
       }
 

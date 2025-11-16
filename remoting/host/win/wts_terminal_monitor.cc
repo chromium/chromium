@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/win/wts_terminal_monitor.h"
 
 #include <windows.h>
@@ -15,6 +10,7 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -73,7 +69,7 @@ uint32_t WtsTerminalMonitor::LookupSessionId(const std::string& terminal_id) {
 
   absl::Cleanup wts_deleter = [session_info] { ::WTSFreeMemory(session_info); };
   for (DWORD i = 0; i < session_info_count; ++i) {
-    uint32_t session_id = session_info[i].SessionId;
+    uint32_t session_id = UNSAFE_TODO(session_info[i]).SessionId;
 
     std::string id;
     if (LookupTerminalId(session_id, &id) && terminal_id == id) {
