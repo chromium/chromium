@@ -86,6 +86,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxSmartComposeEnabled", false);
   source->AddBoolean("composeboxShowDeepSearchButton", false);
   source->AddBoolean("composeboxShowCreateImageButton", false);
+  source->AddBoolean("composeboxContextDragAndDropEnabled", false);
   source->AddBoolean("composeboxContextMenuEnableMultiTabSelection", false);
 }
 

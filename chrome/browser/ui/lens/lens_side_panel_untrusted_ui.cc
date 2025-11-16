@@ -238,7 +238,7 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean("composeboxSmartComposeEnabled", false);
   html_source->AddBoolean("composeboxShowDeepSearchButton", false);
   html_source->AddBoolean("composeboxShowCreateImageButton", false);
-  html_source->AddBoolean("dragAndDropEnabled", false);
+  html_source->AddBoolean("composeboxContextDragAndDropEnabled", false);
   html_source->AddBoolean("steadyComposeboxShowVoiceSearch", false);
   html_source->AddBoolean("expandedComposeboxShowVoiceSearch", false);
   html_source->AddBoolean("expandedSearchboxShowVoiceSearch", false);

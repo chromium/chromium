@@ -615,8 +615,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("composeboxShowTypedSuggestWithContext", false);
   source->AddBoolean("composeboxShowContextMenuDescription",
                      ntp_composebox::kShowContextMenuDescription.Get());
-  source->AddBoolean("dragAndDropEnabled",
-                     ntp_composebox::kEnableDragAndDrop.Get());
+  source->AddBoolean("composeboxContextDragAndDropEnabled",
+                     ntp_composebox::kEnableContextDragAndDrop.Get());
 
   source->AddBoolean("composeboxCloseByEscape",
                      ntp_composebox::kCloseComposeboxByEscape.Get());
