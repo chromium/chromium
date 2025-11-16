@@ -84,22 +84,22 @@ void Host::Shutdown() {
 }
 
 bool Host::IsWebContentPresentAndMatches(
-    content::RenderFrameHost* outermost_rfh) {
+    content::RenderFrameHost* render_frame_host) {
   auto* contents = webui_contents();
-  if (contents && contents->GetOuterWebContentsFrame() == outermost_rfh) {
+  if (contents && contents->GetPrimaryMainFrame() == render_frame_host) {
     return true;
   }
   auto* handler = page_handler();
   if (handler) {
-    if (handler->GetGuestMainFrame() == outermost_rfh) {
+    if (handler->GetGuestMainFrame() == render_frame_host) {
       return true;
     }
   }
   return false;
 }
 
-void Host::Close(content::RenderFrameHost* outermost_render_frame_host) {
-  if (IsWebContentPresentAndMatches(outermost_render_frame_host)) {
+void Host::Close(content::RenderFrameHost* render_frame_host) {
+  if (IsWebContentPresentAndMatches(render_frame_host)) {
     delegate_->ClosePanel();
   }
 }
