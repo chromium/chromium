@@ -100,15 +100,15 @@ class GlicActorTaskIconManager : public KeyedService {
       TaskIconStateChangeCallback callback);
 
   // Register for this callback to get task nudge state change notifications.
-  using TaskNudgeChangeCallback = base::RepeatingCallback<void(
-      const ActorTaskNudgeState& actor_task_nudge_state)>;
+  using TaskNudgeChangeCallback =
+      base::RepeatingCallback<void(ActorTaskNudgeState actor_task_nudge_state)>;
   base::CallbackListSubscription RegisterTaskNudgeStateChange(
       TaskNudgeChangeCallback callback);
 
   // Register for this callback to get task state change notifications for the
   // bubble.
   using TaskListBubbleChangeCallback =
-      base::RepeatingCallback<void(const actor::TaskId& task_id)>;
+      base::RepeatingCallback<void(actor::TaskId task_id)>;
   base::CallbackListSubscription RegisterTaskListBubbleStateChange(
       TaskListBubbleChangeCallback callback);
 
@@ -147,11 +147,11 @@ class GlicActorTaskIconManager : public KeyedService {
   TaskIconStateChangeCallbackList task_icon_state_change_callback_list_;
 
   using TaskNudgeChangeCallbackList = base::RepeatingCallbackList<void(
-      const ActorTaskNudgeState& actor_task_nudge_text)>;
+      ActorTaskNudgeState actor_task_nudge_text)>;
   TaskNudgeChangeCallbackList task_nudge_state_change_callback_list_;
 
   using TaskListBubbleChangeCallbackList =
-      base::RepeatingCallbackList<void(const actor::TaskId& task_id)>;
+      base::RepeatingCallbackList<void(actor::TaskId task_id)>;
   TaskListBubbleChangeCallbackList task_list_bubble_change_callback_list_;
 
   ActorTaskIconState current_actor_task_icon_state_;

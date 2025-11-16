@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/glic_actor_nudge_controller.h"
 
 #include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -47,7 +48,15 @@ GlicActorNudgeController* GlicActorNudgeController::From(
 }
 
 void GlicActorNudgeController::OnStateUpdate(
-    const ActorTaskNudgeState& actor_task_nudge_state) {
+    ActorTaskNudgeState actor_task_nudge_state) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GlicActorNudgeController::OnStateUpdateImpl,
+                     weak_ptr_factory_.GetWeakPtr(), actor_task_nudge_state));
+}
+
+void GlicActorNudgeController::OnStateUpdateImpl(
+    ActorTaskNudgeState actor_task_nudge_state) {
   ActorTaskListBubbleController* bubble_controller =
       ActorTaskListBubbleController::From(browser_);
   switch (actor_task_nudge_state.text) {
