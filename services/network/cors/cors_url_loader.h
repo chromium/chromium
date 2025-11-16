@@ -77,7 +77,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       mojom::URLLoaderFactory* network_loader_factory,
       URLLoaderFactory* sync_network_loader_factory,
       const OriginAccessList* origin_access_list,
-      bool allow_any_cors_exempt_header,
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
       const mojom::ClientSecurityState* factory_client_security_state,
@@ -300,8 +299,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   // Flag to specify if the CORS-enabled scheme check should be applied.
   const bool skip_cors_enabled_scheme_check_;
-
-  const bool allow_any_cors_exempt_header_;
 
   net::IsolationInfo isolation_info_;
 

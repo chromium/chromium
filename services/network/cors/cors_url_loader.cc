@@ -284,7 +284,6 @@ CorsURLLoader::CorsURLLoader(
     mojom::URLLoaderFactory* network_loader_factory,
     URLLoaderFactory* sync_network_loader_factory,
     const OriginAccessList* origin_access_list,
-    bool allow_any_cors_exempt_header,
     const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
     const mojom::ClientSecurityState* factory_client_security_state,
@@ -308,7 +307,6 @@ CorsURLLoader::CorsURLLoader(
       traffic_annotation_(traffic_annotation),
       origin_access_list_(origin_access_list),
       skip_cors_enabled_scheme_check_(skip_cors_enabled_scheme_check),
-      allow_any_cors_exempt_header_(allow_any_cors_exempt_header),
       isolation_info_(isolation_info),
       factory_client_security_state_(factory_client_security_state),
       url_loader_network_service_observer_(url_loader_network_service_observer),
@@ -458,8 +456,7 @@ void CorsURLLoader::FollowRedirect(
     request_.shared_storage_writable_eligible = false;
   }
 
-  if (!allow_any_cors_exempt_header_ &&
-      !CorsURLLoaderFactory::IsValidCorsExemptHeaders(
+  if (!CorsURLLoaderFactory::IsValidCorsExemptHeaders(
           *context_->cors_exempt_header_list(), modified_cors_exempt_headers)) {
     HandleComplete(URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
     return;

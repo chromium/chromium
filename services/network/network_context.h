@@ -217,10 +217,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return &cors_exempt_header_list_;
   }
 
-  bool allow_any_cors_exempt_header_for_browser() const {
-    return params_ && params_->allow_any_cors_exempt_header_for_browser;
-  }
-
 #if BUILDFLAG(IS_ANDROID)
   const std::vector<std::unique_ptr<base::android::ApplicationStatusListener>>&
   app_status_listeners() const {

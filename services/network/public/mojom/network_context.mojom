@@ -529,11 +529,6 @@ struct NetworkContextParams {
   // network::url_request.cors_exempt_headers.
   array<string> cors_exempt_header_list;
 
-  // If true, no checking of cors exempt headers (from the browser) are done.
-  // If false, cors_exempt_headers are checked against
-  // |cors_exempt_header_list|.
-  bool allow_any_cors_exempt_header_for_browser = false;
-
   // List of single-label hostnames that are exempted from the HSTS upgrade
   // policy.
   array<string> hsts_policy_bypass_list;
