@@ -520,6 +520,7 @@
 <translation id="705851970750939768">‏יש לעדכן את Chromium‏</translation>
 <translation id="7067091210845072982">‏אם אין לתמונה תיאור מועיל, Chromium ינסה לספק לך תיאור. כדי ליצור תיאורים, התמונות נשלחות אל Google.</translation>
 <translation id="7141270731789036260">‏התאמה אישית של Chrome for Testing</translation>
+<translation id="7147227333672430807">‏אפשר להשתמש ב-Chromium בכל פעם שלוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות</translation>
 <translation id="7163519456498498587">‏הסרה של <ph name="EXTENSION_NAME" /> מ-Chromium</translation>
 <translation id="7173822816570314652">‏לפי הגדרת הארגון, נתוני Chromium נמחקים אוטומטית כשלא משתמשים בהם במשך <ph name="TIMEOUT_DURATION" />. בין הנתונים שנמחקו: היסטוריה, מילוי אוטומטי והורדות.</translation>
 <translation id="718435575166326686">‏נדרשת הרשאת גישה למצלמה ב-Chromium עבור האתר הזה</translation>
@@ -635,6 +636,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8471947159125090285">‏כדי להשתמש בנתוני Chromium ולשמור אותם בחשבון Google, עליך לאמת את הזהות שלך</translation>
 <translation id="8482493977473846331">‏הצגת הנחיות לצורך כניסה אל Chromium</translation>
 <translation id="8493179195440786826">‏Chromium אינו מעודכן</translation>
+<translation id="850264194101621529">‏תודה שבחרת ב-Chromium כדפדפן ברירת המחדל שלך!</translation>
 <translation id="8522801943730206384">‏ל-Chromium יש אפשרות לבדוק את הסיסמאות שלך רק אם שמרת אותן</translation>
 <translation id="8555465886620020932">שגיאה בשירות: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">אפשר להצמיד את התכונה 'חיפוש תמונות' כדי לאפשר גישה נוחה: פשוט לוחצים על הכפתור 'הצמדה' בחלק העליון של החלונית הצדדית</translation>

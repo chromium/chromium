@@ -424,6 +424,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1682696192498422849">Avval eniga</translation>
 <translation id="168693727862418163">Bu parametr oʻz andozasiga mos tushmagani uchun inkor etiladi.</translation>
 <translation id="168841957122794586">Server sertifikati ishonchsiz kriptografik kalitga ega.</translation>
+<translation id="1688718429648938412">Sodiq mijoz kartasini Wallet ilovasiga saqlash</translation>
 <translation id="1689333818294560261">Nik</translation>
 <translation id="1692622044604477956">Filmlar roʻyxati va teatr tomoshalari</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Maʼlumotlaringizni qanday boshqarish mumkin:<ph name="END_BOLD" /> Chrome 4 haftadan eski mavzularni avtomatik ravishda oʻchirib tashlaydi. Takroriy tashriflar asosida mavzu roʻyxatga qayta kiritilishi mumkin. Chrome boshqa saytlarga ulashmasligi va aloqador reklamalar chiqmasligi uchun istalgan mavzuni Chrome sozlamalari orqali taqiqlash mumkin.</translation>
@@ -3655,6 +3656,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6965978654500191972">Qurilma</translation>
 <translation id="696703987787944103">Perseptsion</translation>
 <translation id="6967851206780867018">Kontent tufayli 1 ta fayl bloklandi</translation>
+<translation id="6968217325369275594">Istalgan qurilmangizda yangilanishlar olish uchun maʼlumotlaringizni saqlang. <ph name="ACCOUNT" /> hisobingiz maʼlumotlari <ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" /> xotirasida saqlanadi.</translation>
 <translation id="6970885655016700774">Mato (arxiv)</translation>
 <translation id="6971439137020188025">Google Slidesda yangi taqdimotni tez yaratish</translation>
 <translation id="6972629891077993081">HID qurilmalar</translation>

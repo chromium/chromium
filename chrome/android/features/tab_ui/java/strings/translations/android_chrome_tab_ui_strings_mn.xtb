@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Табын бүлгийн жагсаалтыг хаасан</translation>
 <translation id="3194464645767632461">үнэлгээ</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> табыг бүлэгт нэмэх}other{<ph name="TABS_COUNT_MANY" /> табыг бүлэгт нэмэх}}</translation>
+<translation id="3293080634164207409">Таб нэмэх</translation>
 <translation id="3328308545011660196">Зөвлөмж: <ph name="NUMBER_OF_TABS" /> таб холбоотой бололтой. Эдгээрийг бүлэглэх үү?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 хоног идэвхгүй байсны дараа}other{<ph name="DAY_COUNT_MANY" /> хоног идэвхгүй байсны дараа}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> шинэ таб}other{<ph name="MANY_ADDED" /> шинэ таб}}</translation>

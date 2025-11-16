@@ -425,6 +425,7 @@
 <translation id="1682696192498422849">ດ້ານຂອບສັ້ນກ່ອນ</translation>
 <translation id="168693727862418163">ກວດຮັບຮອງຄ່ານະໂຍບາຍນີ້ທຽບກັບຮູບແບບຂອງມັນບໍ່ສຳເລັດ ແລະ ຈະຖືກລະເລີຍ.</translation>
 <translation id="168841957122794586">ໃບຢັ້ງຢືນເຊີບເວີມີລະຫັດ cryptographic ທີ່ອ່ອນ.</translation>
+<translation id="1688718429648938412">ບັນທຶກບັດສະມາຊິກໃສ່ Wallet</translation>
 <translation id="1689333818294560261">ຊື່ຫຼິ້ນ</translation>
 <translation id="1692622044604477956">ລາຍຊື່ໜັງ ແລະ ເວລາສາຍໃນໂຮງໜັງ</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />ວິທີທີ່ທ່ານສາມາດຈັດການຂໍ້ມູນຂອງທ່ານ:<ph name="END_BOLD" /> Chrome ຈະລຶບຫົວຂໍ້ທີ່ເກົ່າກວ່າ 4 ອາທິດໂດຍອັດຕະໂນມັດ. ເມື່ອທ່ານເລືອກເບິ່ງໄປເລື້ອຍໆ, ຫົວຂໍ້ໃດໜຶ່ງກໍອາດກັບມາປາກົດຢູ່ໃນລາຍຊື່ອີກຄັ້ງ. ນອກຈາກນັ້ນ, ທ່ານຍັງສາມາດບລັອກຫົວຂໍ້ທີ່ບໍ່ຕ້ອງການໃຫ້ Chrome ແບ່ງປັນກັບເວັບໄຊຕ່າງໆ ແລະ ປິດຫົວຂໍ້ໂຄສະນາຕອນໃດກໍໄດ້ໃນການຕັ້ງຄ່າ Chrome.</translation>
@@ -3660,6 +3661,7 @@
 <translation id="6965978654500191972">ອຸ​ປະ​ກອນ</translation>
 <translation id="696703987787944103">Perceptual</translation>
 <translation id="6967851206780867018">1 ໄຟລ໌ຖືກບລັອກຍ້ອນເນື້ອຫາ</translation>
+<translation id="6968217325369275594">ບັນທຶກຂໍ້ມູນຂອງທ່ານເພື່ອຮັບຂໍ້ມູນອັບເດດຈາກອຸປະກອນຕ່າງໆຂອງທ່ານ. ລະບົບຈະບັນທຶກຂໍ້ມູນຂອງທ່ານໄວ້ໃນ <ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" /> ສຳລັບ <ph name="ACCOUNT" />.</translation>
 <translation id="6970885655016700774">ຜ້າ (Archival)</translation>
 <translation id="6971439137020188025">ສ້າງພຣີເຊັນເທເຊິນ Google ໃໝ່ໃນ Slides ໄດ້ຢ່າງວ່ອງໄວ</translation>
 <translation id="6972629891077993081">ອຸປະກອນ HID</translation>

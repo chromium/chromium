@@ -522,6 +522,7 @@
 <translation id="705851970750939768">Chromium-г шинэчлэх</translation>
 <translation id="7067091210845072982">Хэрэв зурагт хэрэгтэй тайлбар байхгүй бол Chromium танд тайлбар өгөхөөр оролдох болно. Тайлбар үүсгэхийн тулд зургийг Google-д илгээнэ.</translation>
 <translation id="7141270731789036260">Chrome for Testing-г өөрчлөх</translation>
+<translation id="7147227333672430807">Та мессеж, баримт бичиг болон бусад апп дахь холбоосон дээр товших бүрдээ Chromium-г ашиглах боломжтой</translation>
 <translation id="7163519456498498587"><ph name="EXTENSION_NAME" />-г Chromium-с хасах</translation>
 <translation id="7173822816570314652">Танай байгууллага Chromium-г <ph name="TIMEOUT_DURATION" />-н турш ашиглаагүй үед өгөгдлийг нь устгадаг. Үүнд түүх, автоматаар бөглөх хэсэг болон татаж авсан файлууд багтаж болно.</translation>
 <translation id="718435575166326686">Chromium-д энэ сайтад зориулж камерын зөвшөөрөл шаардлагатай</translation>
@@ -635,6 +636,7 @@
 <translation id="8471947159125090285">Google Бүртгэлдээ Chromium-н өгөгдлийг ашиглах, хадгалахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="8482493977473846331">Chromium-д нэвтрэх заавар харуулна</translation>
 <translation id="8493179195440786826">Chromium нь хуучирсан байна</translation>
+<translation id="850264194101621529">Chromium-г өгөгдмөл хөтчөөрөө сонгосонд баярлалаа!</translation>
 <translation id="8522801943730206384">Таныг нууц үгнүүдээ хадгалах үед Chromium тэдгээрийг шалгах боломжтой</translation>
 <translation id="8555465886620020932">Үйлчилгээний алдаа: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Та хялбар хандахын тулд Зурган хайлтыг бэхлэх боломжтой. Хажуугийн самбарын дээд талд байх Бэхлэх товчийг товшино уу</translation>
@@ -644,6 +646,7 @@
 <translation id="8586442755830160949">Chromium-ийн зохиогчийн эрх <ph name="YEAR" />. Бүх эрхийг хуулиар хамгаалсан.</translation>
 <translation id="8601359445272098721">Шинэ! Та "дэлгэцийг орчуулах" товчийг сонгож дэлгэц дээрх текст, зургийн аль алиныг орчуулах боломжтой</translation>
 <translation id="8619360774459241877">Chromium-г эхлүүлж байна...</translation>
+<translation id="8624541899164515475">Тохиргоо, шинэ табд нээгдэнэ.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing-г өгөгдмөл хөтчөө болгох боломжгүй.</translation>
 <translation id="8677922833187616101">Google-н ХОУ-ы горимын товчлолыг үргэлж харуулах</translation>
 <translation id="8697124171261953979">Энэ нь мөн таныг Chromium-ыг эхлүүлж байх үед эсвэл Omnibox-аас хайлт хийж буй үед гарч ирдэг хуудсыг хянаж байдаг.</translation>

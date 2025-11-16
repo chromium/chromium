@@ -73,6 +73,7 @@
 <translation id="311432875115153175">បានបិទ​បញ្ជី​ក្រុមផ្ទាំង</translation>
 <translation id="3194464645767632461">ការវាយតម្លៃដោយដាក់ផ្កាយ</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{បញ្ចូល <ph name="TABS_COUNT_ONE" /> ផ្ទាំងទៅក្រុម}other{បញ្ចូល <ph name="TABS_COUNT_MANY" /> ផ្ទាំងទៅក្រុម}}</translation>
+<translation id="3293080634164207409">បញ្ចូល​ផ្ទាំង</translation>
 <translation id="3328308545011660196">ការណែនាំ៖ ផ្ទាំង <ph name="NUMBER_OF_TABS" /> ហាក់ដូចជាពាក់ព័ន្ធគ្នា។ បញ្ចូលផ្ទាំងទាំងនេះទៅក្នុងក្រុមឬ?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{បន្ទាប់ពី​អសកម្ម​រយៈពេល 1 ថ្ងៃ}other{បន្ទាប់ពី​អសកម្ម​រយៈពេល <ph name="DAY_COUNT_MANY" /> ថ្ងៃ}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{ផ្ទាំងថ្មី <ph name="ONE_ADDED" />}other{ផ្ទាំងថ្មីៗ <ph name="MANY_ADDED" />}}</translation>

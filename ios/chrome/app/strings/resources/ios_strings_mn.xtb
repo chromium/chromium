@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
+<translation id="1004825134262590729">{count,plural, =1{{count} нэвтрэх түлхүүр}other{{count} нэвтрэх түлхүүр}}</translation>
 <translation id="1005023885865154304">Автоматаар бөглөх нууц үгний тохиргоог нээх</translation>
 <translation id="1005230401424685968">ЖЖЖЖ</translation>
 <translation id="1013952917065545813">Та саяхан хаасан табуудаа дахин нээхийн тулд энд дараа эргэн ирэх боломжтой</translation>
@@ -1660,6 +1661,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Таны эдгээр бүртгэлийн нууц үг аль хэдийн Google Нууц үгний менежерт тань байна. Хэрэв та доорх нууц үгнүүдийн аль нэгийг импортлохоор сонговол энэ нь одоо байгаа нууц үгийг солино.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> хувь татагдсан байна</translation>
+<translation id="7345061034321640811">Импортлохыг зөвшөөрдөггүй</translation>
 <translation id="7352651011704765696">Алдаа гарсан байна</translation>
 <translation id="7363349185727752629">Таны нууцлалын сонголтуудын гарын авлага</translation>
 <translation id="7364796246159120393">Файлаа сонгоно уу</translation>
@@ -2201,6 +2203,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="952704832371081537">Цуцлах</translation>
 <translation id="95332591904104970">Холбоотой апп</translation>
 <translation id="954667170699278022">Унших жагсаалт</translation>
+<translation id="956066588046842680">Энэ өгөгдлийг импортлохыг танай байгууллагын бодлогын дагуу зөвшөөрдөггүй.</translation>
 <translation id="956218893102219091">Gemini-н хамгийн үнэн зөв үр дүнг авах бол IP хаягтаа тулгуурлан тооцоолсон байршлын оронд нарийвчилсан байршлаа ашиглана уу. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Интернэтээр үзсэн өгөгдлийг устгах</translation>
 <translation id="963102227019621224">Веб, аппын үйл ажиллагаа</translation>
@@ -2212,5 +2215,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="984275831282074731">Төлбөрийн хэрэгсэл</translation>
 <translation id="985379595344853742">Бүх нууцлалтай табыг хаах</translation>
 <translation id="988141524645182168">Бусад төхөөрөмжүүд</translation>
+<translation id="995174784802614337">{count,plural, =1{{count} нэвтрэх түлхүүрийг импортолсон}other{{count} нэвтрэх түлхүүрийг импортолсон}}</translation>
 <translation id="999768147936949692">Одоогоор та нууц үгнүүдийг зөвхөн гэр бүлийн гишүүдтэй хуваалцах боломжтой. Бүлэгтээ нэгдэхийг <ph name="BEGIN_LINK" />гэр бүлийн гишүүдээ урих<ph name="END_LINK" /> болон Google дээрх бүтээгдэхүүн, захиалгуудаасаа илүү ихийг аваарай.</translation>
 </translationbundle>
