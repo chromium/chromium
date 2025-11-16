@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <functional>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -34,6 +35,8 @@
 namespace glic {
 
 namespace {
+BASE_FEATURE(kGlicAutoUnpinOnTabChangedOrigin,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // An arbitrary limit.
 const int32_t kDefaultMaxPinnedTabs = 5;
@@ -481,7 +484,9 @@ void GlicPinnedTabManager::OnTabDataChanged(tabs::TabHandle tab_handle,
 
 void GlicPinnedTabManager::OnTabChangedOrigin(tabs::TabHandle tab_handle) {
   CHECK(IsTabPinned(tab_handle));
-  if (!IsGlicWindowShowing()) {
+  if ((!GlicEnabling::IsMultiInstanceEnabledByFlags() ||
+       base::FeatureList::IsEnabled(kGlicAutoUnpinOnTabChangedOrigin)) &&
+      !IsGlicWindowShowing()) {
     UnpinTabs({tab_handle});
   }
 }
