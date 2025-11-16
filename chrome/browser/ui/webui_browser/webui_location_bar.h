@@ -29,7 +29,6 @@ class WebUILocationBar : public LocationBar {
   std::optional<bubble_anchor_util::AnchorConfiguration> GetChipAnchor()
       override;
   void OnChanged() override;
-  void OnPopupVisibilityChanged() override;
   void UpdateWithoutTabRestore() override;
   LocationBarTesting* GetLocationBarForTesting() override;
 

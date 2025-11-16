@@ -6,8 +6,6 @@
 
 #include <string_view>
 
-#include "base/callback_list.h"
-#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 
 OmniboxPopupView::OmniboxPopupView(OmniboxController* controller)
@@ -27,13 +25,4 @@ const OmniboxController* OmniboxPopupView::controller() const {
 std::u16string_view OmniboxPopupView::GetAccessibleButtonTextForResult(
     size_t line) const {
   return {};
-}
-
-base::CallbackListSubscription OmniboxPopupView::AddOpenListener(
-    base::RepeatingClosure callback) {
-  return on_popup_callbacks_.Add(std::move(callback));
-}
-
-void OmniboxPopupView::NotifyOpenListeners() {
-  on_popup_callbacks_.Notify();
 }

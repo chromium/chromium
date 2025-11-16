@@ -18,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_view.h"
@@ -103,7 +104,8 @@ class OmniboxViewPopupTest : public testing::Test {
     view_ = std::make_unique<TestOmniboxView>(omnibox_controller_.get());
 
     model()->set_popup_view(&popup_view_);
-    model()->SetPopupIsOpen(true);
+    omnibox_controller_->popup_state_manager()->SetPopupState(
+        OmniboxPopupState::kClassic);
   }
 
   TestOmniboxView* view() { return view_.get(); }

@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
@@ -86,10 +87,6 @@ class OmniboxPopupViewWebUITest : public InProcessBrowserTest {
   OmniboxEditModel* edit_model() {
     return location_bar()->GetOmniboxController()->edit_model();
   }
-  OmniboxPopupViewWebUI* popup_view() {
-    return static_cast<OmniboxPopupViewWebUI*>(
-        location_bar()->GetOmniboxPopupView());
-  }
 
   SkColor GetSelectedColor(Browser* browser) {
     return BrowserView::GetBrowserViewForBrowser(browser)
@@ -136,23 +133,29 @@ OmniboxPopupViewWebUITest::ThemeChangeWaiter::~ThemeChangeWaiter() {
 void OmniboxPopupViewWebUITest::CreatePopupForTestQuery() {
   auto* autocomplete_controller = controller()->autocomplete_controller();
   EXPECT_TRUE(autocomplete_controller->result().empty());
-  EXPECT_FALSE(popup_view()->IsOpen());
+  EXPECT_FALSE(controller()->IsPopupOpen());
 
-  // Verify that the on-shown callback is called at the correct time.
-  UNCALLED_MOCK_CALLBACK(base::RepeatingClosure, popup_callback);
-  const auto subscription = popup_view()->AddOpenListener(popup_callback.Get());
+  // Verify that the popup state manager callback is called when popup opens.
+  UNCALLED_MOCK_CALLBACK(
+      base::RepeatingCallback<void(OmniboxPopupState, OmniboxPopupState)>,
+      popup_callback);
+  const auto subscription =
+      controller()->popup_state_manager()->AddPopupStateChangedCallback(
+          popup_callback.Get());
 
-  EXPECT_CALL_IN_SCOPE(popup_callback, Run, {
-    edit_model()->SetUserText(u"foo");
-    AutocompleteInput input(
-        u"foo", metrics::OmniboxEventProto::BLANK,
-        ChromeAutocompleteSchemeClassifier(browser()->profile()));
-    input.set_omit_asynchronous_matches(true);
-    autocomplete_controller->Start(input);
+  EXPECT_CALL_IN_SCOPE(
+      popup_callback,
+      Run(OmniboxPopupState::kNone, OmniboxPopupState::kClassic), {
+        edit_model()->SetUserText(u"foo");
+        AutocompleteInput input(
+            u"foo", metrics::OmniboxEventProto::BLANK,
+            ChromeAutocompleteSchemeClassifier(browser()->profile()));
+        input.set_omit_asynchronous_matches(true);
+        autocomplete_controller->Start(input);
 
-    EXPECT_FALSE(autocomplete_controller->result().empty());
-    EXPECT_TRUE(popup_view()->IsOpen());
-  });
+        EXPECT_FALSE(autocomplete_controller->result().empty());
+        EXPECT_TRUE(controller()->IsPopupOpen());
+      });
 }
 
 void OmniboxPopupViewWebUITest::UseDefaultTheme() {
@@ -183,8 +186,9 @@ void OmniboxPopupViewWebUITest::SetUp() {
 }
 
 void OmniboxPopupViewWebUITest::WaitForHandler() {
-  auto* omnibox_popup_webui_content =
-      popup_view()->presenter_->GetWebUIContent();
+  auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
+      location_bar()->GetOmniboxPopupViewForTesting());
+  auto* omnibox_popup_webui_content = popup_view->presenter_->GetWebUIContent();
 
   auto* web_contents = omnibox_popup_webui_content->GetWebContents();
   content::WaitForLoadStop(web_contents);
@@ -235,11 +239,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest,
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest, PopupLoadsAndAcceptsCalls) {
   WaitForHandler();
-  popup_view()->presenter_->Show();
-  popup_view()->UpdatePopupAppearance();
+  auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
+      location_bar()->GetOmniboxPopupViewForTesting());
+  popup_view->presenter_->Show();
+  popup_view->UpdatePopupAppearance();
   OmniboxPopupSelection selection(OmniboxPopupSelection::kNoMatch);
-  popup_view()->ProvideButtonFocusHint(0);
-  popup_view()->presenter_->Hide();
+  popup_view->ProvideButtonFocusHint(0);
+  popup_view->presenter_->Hide();
 }
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

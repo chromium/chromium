@@ -16,8 +16,8 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
-#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -112,9 +112,9 @@ OmniboxNotOpenPrecondition::~OmniboxNotOpenPrecondition() = default;
 user_education::FeaturePromoResult
 OmniboxNotOpenPrecondition::CheckPrecondition(
     ui::UnownedTypedDataCollection&) const {
-  const OmniboxPopupView* const popup =
-      browser_view_->GetLocationBarView()->GetOmniboxPopupView();
-  return popup && popup->IsOpen()
+  return browser_view_->GetLocationBarView()
+                 ->GetOmniboxController()
+                 ->IsPopupOpen()
              ? user_education::FeaturePromoResult::kBlockedByUi
              : user_education::FeaturePromoResult::Success();
 }

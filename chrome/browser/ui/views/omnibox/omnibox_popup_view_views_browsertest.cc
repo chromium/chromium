@@ -698,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   // Check accessibility of list box while it's closed.
   widget->Close();
   waiter.Wait();
-  EXPECT_FALSE(popup_view()->IsOpen());
+  EXPECT_FALSE(controller()->IsPopupOpen());
   popup_node_data = ui::AXNodeData();
   popup_view()->GetViewAccessibility().GetAccessibleNodeData(&popup_node_data);
   EXPECT_FALSE(popup_node_data.HasState(ax::mojom::State::kExpanded));
@@ -779,7 +779,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   input.set_omit_asynchronous_matches(true);
   controller()->autocomplete_controller()->Start(input);
-  ASSERT_TRUE(popup_view()->IsOpen());
+  ASSERT_TRUE(controller()->IsPopupOpen());
 
   // Select deletable match at index 1 (input is index 0).
   edit_model()->SetPopupSelection(OmniboxPopupSelection(1));
@@ -829,7 +829,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
                        MAYBE_SpaceEntersKeywordMode) {
   CreatePopupForTestQuery();
-  EXPECT_TRUE(popup_view()->IsOpen());
+  EXPECT_TRUE(controller()->IsPopupOpen());
 
   location_bar()->GetOmniboxController()->client()->GetPrefs()->SetBoolean(
       omnibox::kKeywordSpaceTriggeringEnabled, true);
@@ -866,7 +866,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   ui::AXNodeData ax_node_data_omnibox;
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
-  EXPECT_FALSE(popup_view()->IsOpen());
+  EXPECT_FALSE(controller()->IsPopupOpen());
   EXPECT_FALSE(ax_node_data_omnibox.HasIntAttribute(
       ax::mojom::IntAttribute::kActivedescendantId));
 
@@ -894,7 +894,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   edit_model()->StartAutocomplete(false, false);
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
-  EXPECT_TRUE(popup_view()->IsOpen());
+  EXPECT_TRUE(controller()->IsPopupOpen());
   EXPECT_TRUE(ax_node_data_omnibox.HasIntAttribute(
       ax::mojom::IntAttribute::kActivedescendantId));
   // First result is selected by default.
@@ -916,7 +916,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
       AutocompleteStopReason::kClobbered);
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
-  EXPECT_FALSE(popup_view()->IsOpen());
+  EXPECT_FALSE(controller()->IsPopupOpen());
   EXPECT_FALSE(ax_node_data_omnibox.HasIntAttribute(
       ax::mojom::IntAttribute::kActivedescendantId));
 }
@@ -925,7 +925,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, AccessibleControlIds) {
   ui::AXNodeData ax_node_data_omnibox, data;
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
-  EXPECT_FALSE(popup_view()->IsOpen());
+  EXPECT_FALSE(controller()->IsPopupOpen());
   EXPECT_FALSE(ax_node_data_omnibox.HasIntListAttribute(
       ax::mojom::IntListAttribute::kControlsIds));
 
@@ -936,7 +936,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, AccessibleControlIds) {
   edit_model()->StartAutocomplete(false, false);
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
-  EXPECT_TRUE(popup_view()->IsOpen());
+  EXPECT_TRUE(controller()->IsPopupOpen());
   EXPECT_TRUE(ax_node_data_omnibox.HasIntListAttribute(
       ax::mojom::IntListAttribute::kControlsIds));
   EXPECT_THAT(ax_node_data_omnibox.GetIntListAttribute(
@@ -949,7 +949,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, AccessibleControlIds) {
       AutocompleteStopReason::kClobbered);
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
-  EXPECT_FALSE(popup_view()->IsOpen());
+  EXPECT_FALSE(controller()->IsPopupOpen());
   EXPECT_FALSE(ax_node_data_omnibox.HasIntListAttribute(
       ax::mojom::IntListAttribute::kControlsIds));
 }
@@ -1022,7 +1022,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupSuggestionGroupHeadersTest,
         ChromeAutocompleteSchemeClassifier(browser()->profile()));
     input.set_omit_asynchronous_matches(true);
     controller()->autocomplete_controller()->Start(input);
-    ASSERT_TRUE(popup_view()->IsOpen());
+    ASSERT_TRUE(controller()->IsPopupOpen());
 
     // Skip over implicit SEARCH_WHAT_YOU_TYPED suggestion at index 0.
 
@@ -1055,7 +1055,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupSuggestionGroupHeadersTest,
         ChromeAutocompleteSchemeClassifier(browser()->profile()));
     input.set_omit_asynchronous_matches(true);
     controller()->autocomplete_controller()->Start(input);
-    ASSERT_TRUE(popup_view()->IsOpen());
+    ASSERT_TRUE(controller()->IsPopupOpen());
 
     // Skip over implicit SEARCH_WHAT_YOU_TYPED suggestion at index 0.
 
@@ -1083,7 +1083,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupSuggestionGroupHeadersTest,
         ChromeAutocompleteSchemeClassifier(browser()->profile()));
     input.set_omit_asynchronous_matches(true);
     controller()->autocomplete_controller()->Start(input);
-    ASSERT_TRUE(popup_view()->IsOpen());
+    ASSERT_TRUE(controller()->IsPopupOpen());
 
     // Skip over implicit SEARCH_WHAT_YOU_TYPED suggestion at index 0.
 

@@ -25,6 +25,7 @@ class OmniboxPopupPresenter : public OmniboxPopupPresenterBase {
 
  protected:
   // OmniboxPopupPresenterBase overrides:
+  void WidgetDestroyed() override;
   bool ShouldShowLocationBarCutout() const override;
   bool ShouldReceiveFocus() const override;
 };

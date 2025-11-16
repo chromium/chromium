@@ -72,5 +72,5 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   event_generator.ClickLeftButton();
   EXPECT_TRUE(omnibox_view()->HasFocus());
   EXPECT_FALSE(omnibox_view()->GetText().empty());
-  EXPECT_FALSE(popup_view()->IsOpen());
+  EXPECT_FALSE(controller()->IsPopupOpen());
 }

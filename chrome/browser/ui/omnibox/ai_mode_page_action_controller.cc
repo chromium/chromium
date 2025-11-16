@@ -127,7 +127,7 @@ bool AiModePageActionController::ShouldShowPageAction(
       (page_classification == ::metrics::OmniboxEventProto::
                                   INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
   if (has_focus && !edit_model->user_input_in_progress() &&
-      !edit_model->PopupIsOpen() && !is_ntp) {
+      !location_bar_view.GetOmniboxController()->IsPopupOpen() && !is_ntp) {
     return false;
   }
 

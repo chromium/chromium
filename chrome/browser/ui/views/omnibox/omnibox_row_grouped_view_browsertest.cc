@@ -61,7 +61,7 @@ class OmniboxRowGroupedViewBrowserTest : public OmniboxPopupViewViewsTest {
         ChromeAutocompleteSchemeClassifier(browser()->profile()));
     input.set_omit_asynchronous_matches(true);
     controller()->autocomplete_controller()->Start(input);
-    ASSERT_TRUE(popup_view()->IsOpen());
+    ASSERT_TRUE(controller()->IsPopupOpen());
   }
 
   scoped_refptr<FakeAutocompleteProvider> provider_;

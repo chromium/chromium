@@ -247,8 +247,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, PasteAndGoDoesNotLeavePopupOpen) {
                    ->window()
                    ->GetLocationBar()
                    ->GetOmniboxController()
-                   ->edit_model()
-                   ->PopupIsOpen());
+                   ->IsPopupOpen());
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DoNotNavigateOnDrop) {
@@ -594,8 +593,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, CloseOmniboxPopupOnTextDrag) {
                   ->window()
                   ->GetLocationBar()
                   ->GetOmniboxController()
-                  ->edit_model()
-                  ->PopupIsOpen());
+                  ->IsPopupOpen());
 
   // The omnibox text should be selected.
   EXPECT_TRUE(omnibox_view->IsSelectAll());
@@ -610,8 +608,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, CloseOmniboxPopupOnTextDrag) {
                   ->window()
                   ->GetLocationBar()
                   ->GetOmniboxController()
-                  ->edit_model()
-                  ->PopupIsOpen());
+                  ->IsPopupOpen());
 
   // Simulate a mouse drag of the omnibox text, and the omnibox should close.
   ui::MouseEvent dragged(ui::EventType::kMouseDragged, point, point,
@@ -622,8 +619,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, CloseOmniboxPopupOnTextDrag) {
                    ->window()
                    ->GetLocationBar()
                    ->GetOmniboxController()
-                   ->edit_model()
-                   ->PopupIsOpen());
+                   ->IsPopupOpen());
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MaintainCursorAfterFocusCycle) {
@@ -663,8 +659,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MaintainCursorAfterFocusCycle) {
                   ->window()
                   ->GetLocationBar()
                   ->GetOmniboxController()
-                  ->edit_model()
-                  ->PopupIsOpen());
+                  ->IsPopupOpen());
 
   // TODO(krb): For some reason, we need to hit End twice to be registered.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_END, false,
@@ -681,8 +676,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MaintainCursorAfterFocusCycle) {
                    ->window()
                    ->GetLocationBar()
                    ->GetOmniboxController()
-                   ->edit_model()
-                   ->PopupIsOpen());
+                   ->IsPopupOpen());
 
   // Re-focus.
   chrome::FocusLocationBar(browser());
@@ -787,8 +781,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, FriendlyAccessibleLabel) {
                   ->window()
                   ->GetLocationBar()
                   ->GetOmniboxController()
-                  ->edit_model()
-                  ->PopupIsOpen());
+                  ->IsPopupOpen());
   OmniboxViewViews* omnibox_view_views =
       static_cast<OmniboxViewViews*>(omnibox_view);
 
@@ -862,7 +855,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AccessiblePopup) {
   OmniboxPopupView* popup_view =
       BrowserView::GetBrowserViewForBrowser(browser())
           ->GetLocationBarView()
-          ->GetOmniboxPopupView();
+          ->GetOmniboxPopupViewForTesting();
   ui::AXNodeData popup_node_data_1;
   popup_view->GetPopupAccessibleNodeData(&popup_node_data_1);
   EXPECT_FALSE(popup_node_data_1.HasState(ax::mojom::State::kExpanded));
@@ -900,8 +893,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AccessiblePopup) {
                   ->window()
                   ->GetLocationBar()
                   ->GetOmniboxController()
-                  ->edit_model()
-                  ->PopupIsOpen());
+                  ->IsPopupOpen());
   ui::AXNodeData popup_node_data_2;
   popup_view->GetPopupAccessibleNodeData(&popup_node_data_2);
   EXPECT_TRUE(popup_node_data_2.HasState(ax::mojom::State::kExpanded));
@@ -1039,8 +1031,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, AccessibleOmnibox) {
                    ->window()
                    ->GetLocationBar()
                    ->GetOmniboxController()
-                   ->edit_model()
-                   ->PopupIsOpen());
+                   ->IsPopupOpen());
 
   HWND window_handle =
       browser()->window()->GetNativeWindow()->GetHost()->GetAcceleratedWidget();
@@ -1078,8 +1069,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, AccessibleOmnibox) {
                   ->window()
                   ->GetLocationBar()
                   ->GetOmniboxController()
-                  ->edit_model()
-                  ->PopupIsOpen());
+                  ->IsPopupOpen());
 
   UiaAccessibilityEventWaiter close_waiter(info);
   // Close the popup. Another property change event is expected.
@@ -1089,8 +1079,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, AccessibleOmnibox) {
                    ->window()
                    ->GetLocationBar()
                    ->GetOmniboxController()
-                   ->edit_model()
-                   ->PopupIsOpen());
+                   ->IsPopupOpen());
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, GetSelectionAndBounds) {
@@ -1292,8 +1281,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MAYBE_HandleExternalProtocolURLs) {
                     ->window()
                     ->GetLocationBar()
                     ->GetOmniboxController()
-                    ->edit_model()
-                    ->PopupIsOpen());
+                    ->IsPopupOpen());
 
     EXPECT_NE(ExternalProtocolHandler::BLOCK,
               ExternalProtocolHandler::GetBlockState(fake_protocol, nullptr,

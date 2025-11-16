@@ -385,8 +385,7 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
   OmniboxView* const omnibox_view = location_bar->GetOmniboxView();
   ASSERT_TRUE(omnibox_view);
   browser()->window()->SetFocusToLocationBar(true);
-  ASSERT_FALSE(
-      location_bar->GetOmniboxController()->edit_model()->PopupIsOpen());
+  ASSERT_FALSE(location_bar->GetOmniboxController()->IsPopupOpen());
 
   // Even though the omnibox is focused, the toast should still show because
   // the omnibox doesn't have a popup and the user isn't interacting with the
@@ -431,14 +430,12 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
   ASSERT_TRUE(location_bar);
   OmniboxView* const omnibox_view = location_bar->GetOmniboxView();
   ASSERT_TRUE(omnibox_view);
-  ASSERT_FALSE(
-      location_bar->GetOmniboxController()->edit_model()->PopupIsOpen());
+  ASSERT_FALSE(location_bar->GetOmniboxController()->IsPopupOpen());
   omnibox_view->OnBeforePossibleChange();
   omnibox_view->SetUserText(u"hello world");
   omnibox_view->OnAfterPossibleChange(true);
 
-  ASSERT_TRUE(
-      location_bar->GetOmniboxController()->edit_model()->PopupIsOpen());
+  ASSERT_TRUE(location_bar->GetOmniboxController()->IsPopupOpen());
 
   // The toast widget should no longer be visible because there is a popup.
   EXPECT_TRUE(toast_controller->IsShowingToast());
@@ -446,8 +443,7 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
 
   // Toast widget is visible again after the omnibox is no longer focused.
   RemoveOmniboxFocus();
-  ASSERT_FALSE(
-      location_bar->GetOmniboxController()->edit_model()->PopupIsOpen());
+  ASSERT_FALSE(location_bar->GetOmniboxController()->IsPopupOpen());
   EXPECT_TRUE(toast_controller->IsShowingToast());
   EXPECT_TRUE(toast_controller->GetToastWidgetForTesting()->IsVisible());
 }

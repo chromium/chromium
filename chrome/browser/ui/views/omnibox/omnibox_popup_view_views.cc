@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_header_view.h"
@@ -341,19 +342,35 @@ void OmniboxPopupViewViews::InvalidateLine(size_t line) {
 
 void OmniboxPopupViewViews::UpdatePopupAppearance() {
   const auto* autocomplete_controller = controller()->autocomplete_controller();
-  if (autocomplete_controller->result().empty() ||
-      omnibox_view_->IsImeShowingPopup()) {
-    // No matches or the IME is showing a popup window which may overlap
-    // the omnibox popup window.  Close any existing popup.
-    if (widget_) {
-      // Check whether omnibox should be not closed according to the UI
-      // DevTools settings.
+  const bool should_be_open =
+      controller()->popup_state_manager()->popup_state() !=
+          OmniboxPopupState::kAim &&
+      !autocomplete_controller->result().empty() &&
+      !omnibox_view_->IsImeShowingPopup();
+  const bool was_open = !!widget_;
+
+  if (!should_be_open) {
+    if (was_open) {
+      // Check whether omnibox should not close per UI DevTools settings.
       if (!widget_->ShouldHandleNativeWidgetActivationChanged(false)) {
         return;
       }
       widget_->CloseAnimated();  // This will eventually delete the popup.
       widget_->RemoveObserver(&widget_observer_helper_);
       widget_.reset();
+
+      // Update the popup state manager that the classic popup is closing.
+      // Do this AFTER widget operations. `LocationBarView` is subscribed to
+      // state changes and attempts to call `UpdatePopupAppearance()` again if
+      // the widget is open.
+      // Only update the state if it's currently `kClassic`. If it's already
+      // transitioning to another state (e.g., `kAim`), don't override it.
+      if (controller()->popup_state_manager()->popup_state() ==
+          OmniboxPopupState::kClassic) {
+        controller()->popup_state_manager()->SetPopupState(
+            OmniboxPopupState::kNone);
+      }
+
       if (contextual_group_view_) {
         contextual_group_view_->OnPopupHide();
       }
@@ -368,8 +385,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
 
   // Ensure that we have an existing popup widget prior to creating the result
   // views to ensure the proper initialization of the views hierarchy.
-  bool popup_created = false;
-  if (!widget_) {
+  if (!was_open) {
     views::Widget* popup_parent = location_bar_view_->GetWidget();
 
     // If the popup is currently closed, we need to create it.
@@ -389,8 +405,6 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
     widget_->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
     widget_->SetPopupContentsView(this);
     widget_->AddObserver(&widget_observer_helper_);
-
-    popup_created = true;
   }
 
   // Update the match cached by each row, in the process of doing so make sure
@@ -445,7 +459,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
   UpdateContextualSuggestionsGroup(grouped_matches_start_index);
   widget_->SetTargetBounds(GetTargetBounds());
 
-  if (popup_created) {
+  if (!was_open) {
     widget_->ShowAnimated();
 
     // Popup is now expanded and first item will be selected.
@@ -458,8 +472,11 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
       FireAXEventsForNewActiveDescendant(result_view);
     }
 
-    NotifyOpenListeners();
+    // Update the popup state manager that the classic popup is opening.
+    controller()->popup_state_manager()->SetPopupState(
+        OmniboxPopupState::kClassic);
   }
+
   InvalidateLayout();
 }
 
@@ -597,6 +614,16 @@ void OmniboxPopupViewViews::OnWidgetDestroying(views::Widget* widget) {
     widget_ = nullptr;
   }
   UpdateAccessibleStates();
+
+  // Update the popup state manager if widget was destroyed externally, e.g., by
+  // the OS. This ensures the popup state manager stays in sync. Do this AFTER
+  // widget operations. `LocationBarView` is subscribed to state changes and
+  // attempts to call `UpdatePopupAppearance()` again if the widget is open.
+  if (controller()->popup_state_manager()->popup_state() ==
+      OmniboxPopupState::kClassic) {
+    controller()->popup_state_manager()->SetPopupState(
+        OmniboxPopupState::kNone);
+  }
 }
 
 void OmniboxPopupViewViews::OnSelectionChanged(
