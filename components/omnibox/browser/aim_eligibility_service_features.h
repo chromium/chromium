@@ -19,6 +19,9 @@ BASE_DECLARE_FEATURE(kAimServerEligibilityEnabled);
 // If enabled, uses a custom retry policy for the server request.
 BASE_DECLARE_FEATURE(kAimServerEligibilityCustomRetryPolicyEnabled);
 
+// If enabled, AIM eligibility is obtained for the primary account.
+BASE_DECLARE_FEATURE(kAimServerEligibilityForPrimaryAccountEnabled);
+
 // If enabled, notifies AIM eligibility changes.
 BASE_DECLARE_FEATURE(kAimServerEligibilityChangedNotification);
 

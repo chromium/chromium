@@ -167,6 +167,12 @@ class AimEligibilityService
   // Loads `most_recent_response_` from the prefs, if valid.
   void LoadMostRecentResponse();
 
+  // Returns the request URL or an empty GURL if a valid URL cannot be created;
+  // e.g., Google is not the default search provider.
+  GURL GetRequestUrl(RequestSource request_source,
+                     const TemplateURLService* template_url_service,
+                     signin::IdentityManager* identity_manager);
+
   // Fetch eligibility from the server.
   void StartServerEligibilityRequest(RequestSource request_source);
   void OnServerEligibilityResponse(
@@ -177,6 +183,20 @@ class AimEligibilityService
   // Returns the given histogram name sliced by the given request source.
   std::string GetHistogramNameSlicedByRequestSource(
       const std::string& name,
+      RequestSource request_source) const;
+  // Records total and sliced histograms for whether the primary account exists.
+  void LogEligibilityRequestPrimaryAccountExists(
+      bool exists,
+      RequestSource request_source) const;
+  // Records total and sliced histograms for whether the primary account was
+  // found in the cookie jar.
+  void LogEligibilityRequestPrimaryAccountInCookieJar(
+      bool in_cookie_jar,
+      RequestSource request_source) const;
+  // Records total and sliced histograms for the index of the primary account
+  // in the cookie jar, if found.
+  void LogEligibilityRequestPrimaryAccountIndex(
+      size_t session_index,
       RequestSource request_source) const;
   // Records total and sliced histograms for eligibility request status.
   void LogEligibilityRequestStatus(EligibilityRequestStatus status,

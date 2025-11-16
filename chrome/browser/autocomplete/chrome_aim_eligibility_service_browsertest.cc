@@ -14,6 +14,7 @@
 #include "base/callback_list.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -53,12 +54,17 @@
 // `request_counter` and `max_failures` parameters.
 bool OnRequest(content::URLLoaderInterceptor::RequestParams* params,
                std::optional<omnibox::AimEligibilityResponse> response,
+               base::RepeatingCallback<void(bool)> requested_handled_callback,
+               std::optional<size_t> session_index = std::nullopt,
                int* request_counter = nullptr,
                int max_failures = 0) {
   const GURL& url = params->url_request.url;
 
   if (!url.DomainIs("google.com") || url.GetPath() != "/async/folae" ||
-      url.GetQuery() != "async=_fmt:pb") {
+      url.query().find("async=_fmt:pb") == std::string::npos ||
+      (session_index &&
+       url.query().find("authuser=" + base::NumberToString(*session_index)) ==
+           std::string::npos)) {
     return false;
   }
 
@@ -75,6 +81,8 @@ bool OnRequest(content::URLLoaderInterceptor::RequestParams* params,
   content::URLLoaderInterceptor::WriteResponse(
       "HTTP/1.1 200 OK\nContent-Type: application/x-protobuf\n\n",
       response_string, params->client.get());
+
+  requested_handled_callback.Run(true);
   return true;
 }
 
@@ -123,11 +131,11 @@ class IdentityManagerObserverHelper : public signin::IdentityManager::Observer {
   }
 
   bool WaitForAccountsInCookieUpdated() {
-    return accounts_updated_future_.Wait();
+    return accounts_updated_future_.WaitAndClear();
   }
 
   bool WaitForPrimaryAccountChanged() {
-    return primary_account_changed_future_.Wait();
+    return primary_account_changed_future_.WaitAndClear();
   }
 
  private:
@@ -173,6 +181,8 @@ class ChromeAimEligibilityServiceBrowserTest
     // Needed for bots with field trial testing configs explicitly disabled.
     enabled_features.push_back(
         {omnibox::kAimServerEligibilityChangedNotification, {}});
+    enabled_features.push_back(
+        {omnibox::kAimServerEligibilityForPrimaryAccountEnabled, {}});
     enabled_features.push_back({omnibox::kAimServerEligibilityEnabled, {}});
     enabled_features.push_back(
         {omnibox::kAimServerRequestOnStartupEnabled, {}});
@@ -281,10 +291,12 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
   omnibox::AimEligibilityResponse response;
   response.set_is_eligible(is_server_eligible);
   response.set_is_pdf_upload_eligible(is_pdf_upload_eligible);
+  base::test::TestFuture<bool> request_handled_future;
   auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
       base::BindLambdaForTesting(
           [&](content::URLLoaderInterceptor::RequestParams* params) {
-            return OnRequest(params, std::make_optional(response));
+            return OnRequest(params, std::make_optional(response),
+                             request_handled_future.GetRepeatingCallback());
           }));
 
   // Test service startup.
@@ -307,8 +319,10 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
 
     // Wait for the eligibility change callback to be invoked, if applicable.
     if (is_google_dse) {
+      EXPECT_TRUE(request_handled_future.Take());
       EXPECT_TRUE(eligibility_changed_future.Wait());
     } else {
+      EXPECT_FALSE(request_handled_future.IsReady());
       EXPECT_FALSE(eligibility_changed_future.IsReady());
     }
 
@@ -332,6 +346,23 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
     if (is_google_dse) {
       // Startup sliced histograms.
       histogram_tester.ExpectTotalCount(
+          "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountExists."
+          "Startup",
+          1);
+      histogram_tester.ExpectUniqueSample(
+          "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountExists."
+          "Startup",
+          false, 1);
+      histogram_tester.ExpectTotalCount(
+          "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountInCookieJar."
+          "Startup",
+          0);
+      histogram_tester.ExpectTotalCount(
+          "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountIndex."
+          "Startup",
+          0);
+
+      histogram_tester.ExpectTotalCount(
           "Omnibox.AimEligibility.EligibilityRequestStatus.Startup", 2);
       histogram_tester.ExpectBucketCount(
           "Omnibox.AimEligibility.EligibilityRequestStatus.Startup",
@@ -354,6 +385,17 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
           is_pdf_upload_eligible, 1);
 
       // Unsliced histograms.
+      histogram_tester.ExpectTotalCount(
+          "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountExists", 1);
+      histogram_tester.ExpectUniqueSample(
+          "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountExists",
+          false, 1);
+      histogram_tester.ExpectTotalCount(
+          "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountInCookieJar",
+          0);
+      histogram_tester.ExpectTotalCount(
+          "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountIndex", 0);
+
       histogram_tester.ExpectTotalCount(
           "Omnibox.AimEligibility.EligibilityRequestStatus", 2);
       histogram_tester.ExpectBucketCount(
@@ -404,7 +446,9 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
     url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
         base::BindLambdaForTesting(
             [&](content::URLLoaderInterceptor::RequestParams* params) {
-              return OnRequest(params, std::make_optional(response));
+              return OnRequest(params, std::make_optional(response),
+                               request_handled_future.GetRepeatingCallback(),
+                               /*session_index=*/1);
             }));
 
     auto* service =
@@ -413,22 +457,32 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
     auto eligibility_subscription = service->RegisterEligibilityChangedCallback(
         eligibility_changed_future.GetRepeatingCallback());
 
-    // Simulate a change to the account in the cookie jar.
+    // Simulate a change to the accounts in the cookie jar and primary account.
     auto* identity_manager = identity_test_env()->identity_manager();
     IdentityManagerObserverHelper identity_observer(identity_manager);
-    signin::MakeAccountAvailable(
+
+    AccountInfo primary_account_info = signin::MakeAccountAvailable(
         identity_manager,
         signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
-            .WithCookie()
             .AsPrimary(signin::ConsentLevel::kSignin)
-            .Build("test@email.com"));
+            .Build("primary@email.com"));
+    AccountInfo secondary_account_info = signin::MakeAccountAvailable(
+        identity_manager,
+        signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+            .Build("secondary@email.com"));
+    signin::SetCookieAccounts(
+        identity_manager, test_url_loader_factory(),
+        {{secondary_account_info.email, secondary_account_info.gaia},
+         {primary_account_info.email, primary_account_info.gaia}});
     EXPECT_TRUE(identity_observer.WaitForAccountsInCookieUpdated());
     EXPECT_TRUE(identity_observer.WaitForPrimaryAccountChanged());
 
     // Wait for the eligibility change callback to be invoked, if applicable.
     if (is_google_dse) {
+      EXPECT_TRUE(request_handled_future.Take());
       EXPECT_TRUE(eligibility_changed_future.Wait());
     } else {
+      EXPECT_FALSE(request_handled_future.IsReady());
       EXPECT_FALSE(eligibility_changed_future.IsReady());
     }
 
@@ -450,6 +504,27 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
     // Verify histograms.
     if (is_google_dse) {
       // CookieChange sliced histograms.
+      histogram_tester.ExpectTotalCount(
+          "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountExists."
+          "CookieChange",
+          1);
+      histogram_tester.ExpectUniqueSample(
+          "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountExists."
+          "CookieChange",
+          true, 1);
+      histogram_tester.ExpectTotalCount(
+          "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountInCookieJar."
+          "CookieChange",
+          1);
+      histogram_tester.ExpectUniqueSample(
+          "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountInCookieJar."
+          "CookieChange",
+          true, 1);
+      histogram_tester.ExpectUniqueSample(
+          "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountIndex."
+          "CookieChange",
+          1, 1);
+
       histogram_tester.ExpectTotalCount(
           "Omnibox.AimEligibility.EligibilityRequestStatus.CookieChange", 2);
       histogram_tester.ExpectBucketCount(
@@ -474,6 +549,20 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
           !is_pdf_upload_eligible, 1);
 
       // Unsliced histograms.
+      histogram_tester.ExpectTotalCount(
+          "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountExists", 1);
+      histogram_tester.ExpectUniqueSample(
+          "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountExists", true,
+          1);
+      histogram_tester.ExpectTotalCount(
+          "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountInCookieJar",
+          1);
+      histogram_tester.ExpectUniqueSample(
+          "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountInCookieJar",
+          true, 1);
+      histogram_tester.ExpectUniqueSample(
+          "Omnibox.AimEligibility.EligibilityRequestPrimaryAccountIndex", 1, 1);
+
       histogram_tester.ExpectTotalCount(
           "Omnibox.AimEligibility.EligibilityRequestStatus", 2);
       histogram_tester.ExpectBucketCount(
@@ -557,7 +646,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
   auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
       base::BindLambdaForTesting(
           [&](content::URLLoaderInterceptor::RequestParams* params) {
-            return OnRequest(params, std::make_optional(response));
+            return OnRequest(params, std::make_optional(response),
+                             base::DoNothing());
           }));
 
   // Given the user is offline at startup.
@@ -605,7 +695,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
   auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
       base::BindLambdaForTesting(
           [&](content::URLLoaderInterceptor::RequestParams* params) {
-            return OnRequest(params, std::make_optional(response));
+            return OnRequest(params, std::make_optional(response),
+                             base::DoNothing());
           }));
 
   // Given the user is online at startup.
@@ -637,7 +728,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
   auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
       base::BindLambdaForTesting(
           [&](content::URLLoaderInterceptor::RequestParams* params) {
-            return OnRequest(params, std::make_optional(response));
+            return OnRequest(params, std::make_optional(response),
+                             base::DoNothing());
           }));
 
   // Given the user is offline at startup.
@@ -737,7 +829,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceRetryRequestBrowserTest,
       base::BindLambdaForTesting(
           [&](content::URLLoaderInterceptor::RequestParams* params) {
             return OnRequest(params, std::make_optional(response),
-                             &request_counter, expected_retries);
+                             base::DoNothing(), std::nullopt, &request_counter,
+                             expected_retries);
           }));
 
   // When the service is initialized.
@@ -767,7 +860,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceRetryRequestBrowserTest,
       base::BindLambdaForTesting(
           [&](content::URLLoaderInterceptor::RequestParams* params) {
             return OnRequest(params, std::make_optional(response),
-                             &request_counter, expected_retries);
+                             base::DoNothing(), std::nullopt, &request_counter,
+                             expected_retries);
           }));
 
   // When the service is initialized.
@@ -795,8 +889,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceRetryRequestBrowserTest,
   auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
       base::BindLambdaForTesting(
           [&](content::URLLoaderInterceptor::RequestParams* params) {
-            return OnRequest(params, std::nullopt, &request_counter,
-                             expected_failures);
+            return OnRequest(params, std::nullopt, base::DoNothing(),
+                             std::nullopt, &request_counter, expected_failures);
           }));
 
   // When the service is initialized.
