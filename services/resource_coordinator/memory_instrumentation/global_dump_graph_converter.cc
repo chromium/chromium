@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/notreached.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "third_party/perfetto/include/perfetto/ext/trace_processor/importers/memory_tracker/graph_processor.h"
 

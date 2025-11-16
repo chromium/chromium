@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 
 namespace base {

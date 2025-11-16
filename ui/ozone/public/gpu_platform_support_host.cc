@@ -4,6 +4,7 @@
 
 #include "ui/ozone/public/gpu_platform_support_host.h"
 
+#include "base/functional/callback.h"
 #include "base/trace_event/trace_event.h"
 
 namespace ui {

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"

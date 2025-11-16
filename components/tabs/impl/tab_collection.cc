@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/check.h"
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "components/tabs/public/supports_handles.h"
 #include "components/tabs/public/tab_collection_observer.h"

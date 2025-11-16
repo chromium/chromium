@@ -6,6 +6,7 @@
 
 #include <android/input.h>
 
+#include "base/notreached.h"
 #include "ui/events/android/events_android_utils.h"
 
 namespace ui {

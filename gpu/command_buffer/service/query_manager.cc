@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "ui/gl/gl_bindings.h"

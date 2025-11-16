@@ -16,7 +16,7 @@
 #include <string>
 
 #include "base/base_export.h"
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/threading/platform_thread.h"

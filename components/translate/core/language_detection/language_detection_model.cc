@@ -4,6 +4,7 @@
 
 #include "components/translate/core/language_detection/language_detection_model.h"
 
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"

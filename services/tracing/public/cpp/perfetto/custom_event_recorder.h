@@ -6,6 +6,7 @@
 #define SERVICES_TRACING_PUBLIC_CPP_PERFETTO_CUSTOM_EVENT_RECORDER_H_
 
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/typed_macros.h"

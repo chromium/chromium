@@ -5,6 +5,7 @@
 #include "media/base/frame_buffer_pool.h"
 
 #include "base/compiler_specific.h"
+#include "base/functional/callback.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

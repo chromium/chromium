@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/functional/function_ref.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
