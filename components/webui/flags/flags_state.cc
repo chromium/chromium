@@ -483,8 +483,8 @@ void FlagsState::SetOriginListFlag(const std::string& internal_name,
                                    const std::string& value,
                                    FlagsStorage* flags_storage) {
   const std::string new_value =
+      internal_name == "custom-ntp" ? value :
       CombineAndSanitizeOriginLists(std::string(), value);
-  internal_name == "custom-ntp" ? value :
   flags_storage->SetOriginListFlag(internal_name, new_value);
 
 #if BUILDFLAG(IS_CHROMEOS)

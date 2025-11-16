@@ -3824,9 +3824,6 @@ void Browser::UpdateBookmarkBarState(BookmarkBarStateChangeReason reason) {
 }
 
 bool Browser::ShouldShowBookmarkBar() const {
-  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("bookmark-bar-ntp") == "never") {
-    return false;
-  }
 
   if (profile_->IsGuestSession()) {
     return false;
@@ -3880,10 +3877,12 @@ bool Browser::ShouldShowBookmarkBar() const {
         tab_strip_model_->GetSplitData(split_id.value())->ListTabs();
     return std::any_of(
         split_tabs.begin(), split_tabs.end(),
-        [](const auto& tab) { return IsShowingNTP(tab->GetContents()); });
+        [](const auto& tab) { return IsShowingNTP(tab->GetContents()) && 
+         !(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("bookmark-bar-ntp") == "never"); });
   }
 
-  return IsShowingNTP(active_tab->GetContents());
+  return IsShowingNTP(active_tab->GetContents()) && 
+         !(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("bookmark-bar-ntp") == "never");
 }
 
 bool Browser::IsBrowserClosing() const {
