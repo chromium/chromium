@@ -124,6 +124,7 @@ class GlicInstanceImpl : public GlicInstance,
 
   bool IsDetached();
   bool IsActuating() const;
+  bool IsLiveMode();
 
   glic::mojom::ConversationInfoPtr GetConversationInfo() const;
 
