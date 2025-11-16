@@ -6,10 +6,12 @@ import '//resources/cr_components/composebox/composebox.js';
 import '/strings.m.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {getCss} from './aim_app.css.js';
 import {getHtml} from './aim_app.html.js';
@@ -33,10 +35,12 @@ export class OmniboxAimAppElement extends CrLitElement {
   private isDebug_: boolean =
       new URLSearchParams(window.location.search).has('debug');
   private eventTracker_ = new EventTracker();
+  private pageHandler_: PageHandlerInterface;
 
   constructor() {
     super();
     ColorChangeUpdater.forDocument().start();
+    this.pageHandler_ = SearchboxBrowserProxy.getInstance().handler;
   }
 
   override connectedCallback() {
@@ -57,6 +61,16 @@ export class OmniboxAimAppElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+  }
+
+  protected onContextualEntryPointClicked_(
+      e: CustomEvent<{x: number, y: number}>) {
+    e.preventDefault();
+    const point = {
+      x: e.detail.x,
+      y: e.detail.y,
+    };
+    this.pageHandler_.showContextMenu(point);
   }
 }
 

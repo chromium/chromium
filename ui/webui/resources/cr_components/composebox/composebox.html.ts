@@ -59,7 +59,7 @@ export function getHtml(this: ComposeboxElement) {
           class="${this.carouselOnTop_ && this.isCollapsible ? 'icon-fade' : ''}"
           exportparts="context-menu-entrypoint-icon, cr-composebox-file-carousel, upload-container, voice-icon, carousel-divider"
           .tabSuggestions="${this.tabSuggestions_}"
-          entrypoint-name="Composebox"
+          .entrypointName="${this.entrypointName ? this.entrypointName : 'Composebox'}"
           @add-tab-context="${this.addTabContext_}"
           @open-voice-search="${this.openAimVoiceSearch_}"
           @add-file-context="${this.addFileContext_}"

@@ -161,6 +161,7 @@ export class ComposeboxElement extends I18nMixinLit
         type: Boolean,
         reflect: true,
       },
+      entrypointName: {type: String},
     };
   }
 
@@ -169,6 +170,7 @@ export class ComposeboxElement extends I18nMixinLit
   accessor carouselOnTop_: boolean = false;
   accessor isDraggingFile: boolean = false;
   accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
+  accessor entrypointName: string = '';
   // If isCollapsible is set to true, the composebox will be a pill shape until
   // it gets focused, at which point it will expand. If false, defaults to the
   // expanded state.
