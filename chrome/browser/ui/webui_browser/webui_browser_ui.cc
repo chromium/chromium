@@ -102,6 +102,7 @@ WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
   source->AddLocalizedStrings(kStrings);
 
   SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
+  source->AddBoolean("expandedSearchboxShowVoiceSearch", false);
   // TODO(crbug.com/445510209): Uncomment after installing WebUIOmniboxHandler.
   // source->AddBoolean("reportMetrics", true);
   // source->AddString("charTypedToPaintMetricName",
