@@ -24,7 +24,13 @@ ActorTaskListBubbleRowButton::ActorTaskListBubbleRowButton(
                                                      ui::kColorMenuIcon,
                                                      kIconSize),
                       /*title_text=*/params.title,
-                      /*subtitle_text=*/params.subtitle) {}
+                      /*subtitle_text=*/params.subtitle) {
+  if (subtitle()) {
+    // TODO(crbug.com/460121008): Revisit when investigating a custom layout for
+    // the row button. Hovering over the subtitle should also hover the row.
+    subtitle()->SetCanProcessEventsWithinSubtree(false);
+  }
+}
 
 ActorTaskListBubbleRowButton::~ActorTaskListBubbleRowButton() = default;
 
