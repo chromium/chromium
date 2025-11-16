@@ -17,10 +17,10 @@ ${this.ntpRealboxNextEnabled ? html`
 </ntp-error-scrim>` : nothing}
 <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout_}"
     @keydown="${this.onInputWrapperKeydown_}"
-    @dragenter="${this.dragAndDropHandler.handleDragEnter}"
-    @dragover="${this.dragAndDropHandler.handleDragOver}"
-    @dragleave="${this.dragAndDropHandler.handleDragLeave}"
-    @drop="${this.dragAndDropHandler.handleDrop}">
+    @dragenter="${this.dragAndDropHandler?.handleDragEnter}"
+    @dragover="${this.dragAndDropHandler?.handleDragOver}"
+    @dragleave="${this.dragAndDropHandler?.handleDragLeave}"
+    @drop="${this.dragAndDropHandler?.handleDrop}">
   <input id="input" class="truncate" type="search" autocomplete="off"
       part="searchbox-input"
       spellcheck="false" aria-live="${this.inputAriaLive_}" role="combobox"
