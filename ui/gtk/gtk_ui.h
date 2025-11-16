@@ -94,6 +94,7 @@ class GtkUi : public ui::LinuxUiAndTheme {
   WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) override;
   int GetWindowDragThresholdPx() const override;
+  bool PrimaryPasteEnabled() const override;
   std::vector<std::string> GetCmdLineFlagsForCopy() const override;
 
   // ui::LinuxUiTheme:
@@ -123,6 +124,8 @@ class GtkUi : public ui::LinuxUiAndTheme {
   void OnCursorThemeSizeChanged(GtkSettings* settings, GtkParamSpec* param);
 
   void OnEnableAnimationsChanged(GtkSettings* settings, GtkParamSpec* param);
+
+  void OnPrimaryPasteChanged(GtkSettings* settings, GtkParamSpec* param);
 
   void OnGtkXftDpiChanged(GtkSettings* settings, GParamSpec* param);
 

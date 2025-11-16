@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "ui/linux/cursor_theme_manager_observer.h"
 #include "ui/linux/linux_ui_getter.h"
+#include "ui/linux/primary_paste_pref_observer.h"
 
 namespace ui {
 
@@ -68,6 +69,15 @@ void LinuxUi::AddCursorThemeObserver(CursorThemeManagerObserver* observer) {
 
 void LinuxUi::RemoveCursorThemeObserver(CursorThemeManagerObserver* observer) {
   cursor_theme_observer_list_.RemoveObserver(observer);
+}
+
+void LinuxUi::AddPrimaryPastePrefObserver(PrimaryPastePrefObserver* observer) {
+  primary_paste_observer_list_.AddObserver(observer);
+}
+
+void LinuxUi::RemovePrimaryPastePrefObserver(
+    PrimaryPastePrefObserver* observer) {
+  primary_paste_observer_list_.RemoveObserver(observer);
 }
 
 LinuxUi::FontSettings LinuxUi::GetDefaultFontDescription() {

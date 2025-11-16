@@ -82,6 +82,7 @@
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_delegate.h"
 #include "ui/linux/nav_button_provider.h"
+#include "ui/linux/primary_paste_pref_observer.h"
 #include "ui/linux/window_button_order_observer.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/os_settings_provider.h"
@@ -373,6 +374,8 @@ bool GtkUi::Initialize() {
           &GtkUi::OnCursorThemeSizeChanged);
   connect(settings, "notify::gtk-enable-animations",
           &GtkUi::OnEnableAnimationsChanged);
+  connect(settings, "notify::gtk-enable-primary-paste",
+          &GtkUi::OnPrimaryPasteChanged);
 
   // Listen for DPI changes, if supported.
   if (GetXftDpi() > 0) {
@@ -645,6 +648,13 @@ int GtkUi::GetWindowDragThresholdPx() const {
   return threshold;
 }
 
+bool GtkUi::PrimaryPasteEnabled() const {
+  gboolean paste_enabled = false;
+  g_object_get(gtk_settings_get_default(), "gtk-enable-primary-paste",
+               &paste_enabled, nullptr);
+  return paste_enabled;
+}
+
 bool GtkUi::PreferDarkTheme() const {
   gboolean dark = false;
   g_object_get(gtk_settings_get_default(), "gtk-application-prefer-dark-theme",
@@ -862,6 +872,11 @@ void GtkUi::OnCursorThemeSizeChanged(GtkSettings* settings,
 void GtkUi::OnEnableAnimationsChanged(GtkSettings* settings,
                                       GtkParamSpec* param) {
   gfx::Animation::UpdatePrefersReducedMotion();
+}
+
+void GtkUi::OnPrimaryPasteChanged(GtkSettings* settings, GtkParamSpec* param) {
+  primary_paste_observers().Notify(
+      &ui::PrimaryPastePrefObserver::OnPrimaryPastePrefChanged);
 }
 
 void GtkUi::OnGtkXftDpiChanged(GtkSettings* settings, GParamSpec* param) {

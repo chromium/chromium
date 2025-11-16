@@ -153,6 +153,10 @@ int FallbackLinuxUi::GetWindowDragThresholdPx() const {
   return kDefaultWindowDragThreshold;
 }
 
+bool FallbackLinuxUi::PrimaryPasteEnabled() const {
+  return true;
+}
+
 base::flat_map<std::string, std::string>
 FallbackLinuxUi::GetKeyboardLayoutMap() {
   return ui::GenerateDomKeyboardLayoutMap();

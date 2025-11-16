@@ -66,6 +66,7 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
   WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) override;
   int GetWindowDragThresholdPx() const override;
+  bool PrimaryPasteEnabled() const override;
   std::vector<std::string> GetCmdLineFlagsForCopy() const override;
 
   // ui::LinuxUiTheme:
