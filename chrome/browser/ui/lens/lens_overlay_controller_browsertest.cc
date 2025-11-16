@@ -9573,6 +9573,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
   GetLensSearchController()->OpenLensOverlayInCurrentSession();
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return IsLensResultsSidePanelShowing(); }));
+  ASSERT_TRUE(base::test::RunUntil([&]() { return controller->state() == State::kOverlay; }));
 
   // We need to flush the mojo receiver calls to make sure the screenshot was
   // passed back to the WebUI or else the region selection UI will not render.
