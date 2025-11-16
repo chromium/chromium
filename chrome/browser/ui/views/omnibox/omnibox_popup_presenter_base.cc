@@ -16,6 +16,11 @@
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/native_widget.h"
+
+namespace omnibox {
+const void* kOmniboxWebUIPopupWidgetId = &kOmniboxWebUIPopupWidgetId;
+}
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxPopupPresenterBase,
                                       kRoundedResultsFrame);
@@ -108,6 +113,9 @@ void OmniboxPopupPresenterBase::SetWebUIContent(
       &OmniboxPopupPresenterBase::OnWidgetClosed, base::Unretained(this)));
 
   widget_->Init(std::move(params));
+  widget_->SetNativeWindowProperty(
+      views::kWidgetIdentifierKey,
+      const_cast<void*>(omnibox::kOmniboxWebUIPopupWidgetId));
   auto rounded_frame = std::make_unique<RoundedOmniboxResultsFrame>(
       owned_omnibox_popup_webui_container_.release(), location_bar_view_);
   rounded_frame->SetProperty(views::kElementIdentifierKey,
