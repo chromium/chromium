@@ -788,10 +788,10 @@ deps = {
       'bucket': 'chromium-nodejs',
       'objects': [
           {
-              'object_name': 'fa98c6432de572206bc5519f85e9c96bd518b039',
-              'sha256sum': 'fb563633b5bfe2d4307075c54c6bb54664a3b5ec6bc811f5b15742720549007a',
-              'size_bytes': 50288755,
-              'generation': 1730835522207929,
+              'object_name': '13c495c7b8852692422e68653099facad6a3d425',
+              'sha256sum': 'f1becee9a78f65a094d17f9116727069aab5b235d4c9977346dbf8251a66a5db',
+              'size_bytes': 53542258,
+              'generation': 1763149321909425,
               'output_file': 'node-linux-x64.tar.gz',
           },
       ],
@@ -806,10 +806,10 @@ deps = {
       'bucket': 'chromium-nodejs',
       'objects': [
           {
-              'object_name': '4c8952a65a1ce7a2e4cff6db68f9b7454c46349f',
-              'sha256sum': 'fadb4530fbe6e35ed298848c66102a0aa7d92974789e6222c4eadee26a381e7e',
-              'size_bytes': 45672893,
-              'generation': 1730835514382259,
+              'object_name': 'aaffe24f139215b5f4246f69ef4eefbf400956be',
+              'sha256sum': '3700dbc193716375d8194de89ea95cc188e96f68323211fe121291b7b750cef9',
+              'size_bytes': 49538953,
+              'generation': 1763149314039529,
               'output_file': 'node-darwin-x64.tar.gz',
           },
       ],
@@ -820,10 +820,10 @@ deps = {
       'bucket': 'chromium-nodejs',
       'objects': [
           {
-              'object_name': '0886aa6a146cb5c213cb09b59ed1075982e4cb57',
-              'sha256sum': 'd39e2d44d58bb89740b9aca1073959fc92edbdbbe810a5e48448e331cf72c196',
-              'size_bytes': 44929037,
-              'generation': 1730835518292126,
+              'object_name': '1db2bd673e8633aa5e9450caa0e8f2c4702feb7e',
+              'sha256sum': '986782630c04122e0fee18127761e67cec0649ff9dd8c51d9e681773cec421cc',
+              'size_bytes': 48345481,
+              'generation': 1763149317950559,
               'output_file': 'node-darwin-arm64.tar.gz',
           },
       ],
@@ -834,10 +834,10 @@ deps = {
       'bucket': 'chromium-nodejs',
       'objects': [
           {
-              'object_name': '907d7e104e7389dc74cec7d32527c1db704b7f96',
-              'sha256sum': '7447c4ece014aa41fb2ff866c993c708e5a8213a00913cc2ac5049ea3ffc230d',
-              'size_bytes': 80511640,
-              'generation': 1730835526374028,
+              'object_name': '486cafc97d0ef0947aed77c0d258d1a5606455c4',
+              'sha256sum': 'f13ac3ca23248dc389507e8fe38c34489ab7edb3e6d6700eb6da6a0b7e128eaf',
+              'size_bytes': 89894400,
+              'generation': 1763149326202934,
               'output_file': 'node.exe',
           },
       ],
