@@ -40,6 +40,7 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
@@ -801,6 +802,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         Fragment mainFragment = getMainFragment();
         if (mainFragment != null && mainFragment.onOptionsItemSelected(item)) {
+            if (item.getItemId() == R.id.menu_id_targeted_help) {
+                RecordUserAction.record("Settings.MobileHelpAndFeedback");
+            }
             return true;
         }
 
@@ -815,6 +819,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             finishCurrentSettings(mainFragment);
             return true;
         } else if (item.getItemId() == R.id.menu_id_general_help) {
+            RecordUserAction.record("Settings.MobileHelpAndFeedback");
             HelpAndFeedbackLauncherImpl.getForProfile(mProfile)
                     .show(this, getString(R.string.help_context_settings), null);
             return true;

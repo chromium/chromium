@@ -39211,6 +39211,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.MobileHelpAndFeedback">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <description>
+    Reported when user clicks the question icon on the toolbar of Settings page,
+    and the Help and Feedback dialog is shown. Recorded for Android only.
+  </description>
+</action>
+
 <action name="Settings.MyAccount">
   <obsolete>Deprecated 02/2025 after sync-the-feature deprecation</obsolete>
   <owner>jlebel@chromium.org</owner>
