@@ -1092,10 +1092,12 @@ struct ContextData {
 // Part of an additional context object.
 union AdditionalContextPart {
   ContextData data;
+  // The four items below can be contained by TabContext and are deprecated.
   Screenshot screenshot;
   WebPageData web_page_data;
   AnnotatedPageData annotated_page_data;
   PdfDocumentData pdf_document_data;
+  TabContext tab_context;
 };
 
 // An additional context object.

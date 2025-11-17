@@ -89,7 +89,11 @@ enum class ShareImageResult {
   kFailedTimedOut = 4,
   kFailedNoImage = 5,
   kFailedReplacedByNewShare = 6,
-  kMaxValue = kFailedReplacedByNewShare,
+  kFailedNoTabContext = 7,
+  kFailedSawNavigation = 8,
+  kFailedDiscardedContents = 9,
+  kFailedDetachedTab = 10,
+  kMaxValue = kFailedDetachedTab,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:ShareImageResult)

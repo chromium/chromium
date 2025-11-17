@@ -1001,10 +1001,11 @@ export declare interface AnnotatedPageDataPrivate extends
 }
 
 export declare interface AdditionalContextPartPrivate extends
-    Omit<AdditionalContextPart, 'annotatedPageData'|'pdf'|'data'> {
+    Omit<AdditionalContextPart, 'annotatedPageData'|'pdf'|'data'|'tabContext'> {
   annotatedPageData?: AnnotatedPageDataPrivate;
   pdf?: PdfDocumentDataPrivate;
   data?: {mimeType: string, data: ArrayBuffer};
+  tabContext?: TabContextResultPrivate;
 }
 
 export declare interface AdditionalContextPrivate extends

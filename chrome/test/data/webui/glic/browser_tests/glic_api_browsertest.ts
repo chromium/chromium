@@ -2086,7 +2086,7 @@ class ApiTests extends ApiTestFixtureBase {
         assertTrue(context.tabId!.length > 0);
         assertDefined(context.frameUrl);
         assertTrue(context.frameUrl!.length > 0);
-        assertEquals(context.parts.length, 5);
+        assertEquals(context.parts.length, 6);
 
         const part1 = context.parts[0]!;
         assertDefined(part1.data);
@@ -2119,6 +2119,12 @@ class ApiTests extends ApiTestFixtureBase {
         const pdfText = await new Response(part5.pdf!.pdfData!).text();
         assertEquals(pdfText, 'pdf');
 
+        const part6 = context.parts[5]!;
+        assertDefined(part6.tabContext);
+        assertDefined(part6.tabContext!.tabData);
+        assertEquals(part6.tabContext!.tabData!.tabId, '1');
+        assertEquals(part6.tabContext!.tabData!.windowId, '2');
+        assertEquals(part6.tabContext!.tabData!.url, 'https://google.com/');
         resolve();
       });
     });

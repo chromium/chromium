@@ -68,10 +68,15 @@ export declare interface AdditionalContextPart {
    * to read it as a stream if the data is large.
    */
   data?: Blob;
+  /**
+   * The following four fields can be contained by `tabContext` and are
+   * deprecated
+   */
   screenshot?: Screenshot;
   webPageData?: WebPageData;
   annotatedPageData?: AnnotatedPageData;
   pdf?: PdfDocumentData;
+  tabContext?: TabContextResult;
 }
 
 /**

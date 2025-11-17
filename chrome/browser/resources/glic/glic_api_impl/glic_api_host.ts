@@ -413,6 +413,8 @@ class WebClientImpl implements WebClientInterface {
             annotatedPageDataToClient(p.annotatedPageData, extras);
       } else if (p.pdfDocumentData) {
         part.pdf = pdfDocumentDataToClient(p.pdfDocumentData, extras);
+      } else if (p.tabContext) {
+        part.tabContext = tabContextToClient(p.tabContext, extras);
       }
       return part;
     });

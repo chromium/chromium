@@ -1260,8 +1260,10 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest, GlicShareImage) {
           glic::test::kGlicContentsElementId,
           "() => { "
           "  let c = document.querySelector('#additionalContextResult');"
-          "  return !!c && c.children.length === 4 && "
-          "      c.children[1].innerText.startsWith('MIME Type: image/png');"
+          "  return !!c && c.children.length === 5 && "
+          "      c.children[1].innerText.startsWith('MIME Type: image/png') && "
+          "      c.children[4].innerText.startsWith("
+          "           'Tab Context: present');"
           "}"),
       CheckHistograms());
 }

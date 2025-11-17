@@ -54,6 +54,9 @@ client.getInitialized().then(async () => {
           if (part.annotatedPageData) {
             pre.innerText += `Annotated Page Data: present\n`;
           }
+          if (part.tabContext) {
+            pre.innerText += 'Tab Context: present\n';
+          }
           if (part.pdf) {
             pre.innerText += `PDF: present\n`;
           }
