@@ -209,46 +209,24 @@ void DoParseAuthority(std::basic_string_view<CHAR> spec,
   }
 }
 
+// This function returns a pair of the index of the query separator `?` and the
+// index of the reference separator `#`.  They are `npos` if they are not found
+// in the `spec`.
 template <typename CHAR>
-inline void FindQueryAndRefParts(const CHAR* spec,
-                                 const Component& path,
-                                 int* query_separator,
-                                 int* ref_separator) {
-  if constexpr (sizeof(*spec) == 1) {
-    // memchr is much faster than any scalar code we can write.
-    const CHAR* ptr = UNSAFE_TODO(spec + path.begin);
-    const CHAR* first_hash =
-        reinterpret_cast<const CHAR*>(UNSAFE_TODO(memchr(ptr, '#', path.len)));
-    size_t len_before_fragment =
-        first_hash == nullptr ? path.len : first_hash - ptr;
-    const CHAR* first_question = reinterpret_cast<const CHAR*>(
-        UNSAFE_TODO(memchr(ptr, '?', len_before_fragment)));
-    if (first_hash != nullptr) {
-      *ref_separator = first_hash - spec;
-    }
-    if (first_question != nullptr) {
-      *query_separator = first_question - spec;
-    }
-  } else {
-    int path_end = path.begin + path.len;
-    for (int i = path.begin; i < path_end; i++) {
-      switch (UNSAFE_TODO(spec[i])) {
-        case '?':
-          // Only match the query string if it precedes the reference fragment
-          // and when we haven't found one already.
-          if (*query_separator < 0)
-            *query_separator = i;
-          break;
-        case '#':
-          // Record the first # sign only.
-          if (*ref_separator < 0) {
-            *ref_separator = i;
-            return;
-          }
-          break;
-      }
-    }
-  }
+inline std::pair<size_t, size_t> FindQueryAndRefParts(
+    std::basic_string_view<CHAR> spec,
+    const Component& path) {
+  size_t path_begin = static_cast<size_t>(path.begin);
+  size_t path_end = path.CheckedEnd();
+  size_t ref_separator =
+      spec.substr(0, path_end).find_first_of('#', path_begin);
+  // Only match the query string if it precedes the reference fragment
+  size_t len_before_fragment =
+      ref_separator == std::basic_string_view<CHAR>::npos ? path_end
+                                                          : ref_separator;
+  size_t query_separator =
+      spec.substr(0, len_before_fragment).find_first_of('?', path_begin);
+  return {query_separator, ref_separator};
 }
 
 template <typename CHAR>
@@ -261,18 +239,19 @@ void ParsePath(std::basic_string_view<CHAR> spec,
   DCHECK(path.is_valid());
 
   // Search for first occurrence of either ? or #.
-  int query_separator = -1;  // Index of the '?'
-  int ref_separator = -1;    // Index of the '#'
-  FindQueryAndRefParts(spec.data(), path, &query_separator, &ref_separator);
+  //  query_separator: Index of the '?'
+  //  ref_separator: Index of the '#'
+  auto [query_separator, ref_separator] = FindQueryAndRefParts(spec, path);
 
   // Markers pointing to the character after each of these corresponding
   // components. The code below words from the end back to the beginning,
   // and will update these indices as it finds components that exist.
-  int file_end, query_end;
+  size_t file_end, query_end;
 
   // Ref fragment: from the # to the end of the path.
-  int path_end = path.begin + path.len;
-  if (ref_separator >= 0) {
+  size_t path_end = path.CheckedEnd();
+  constexpr size_t npos = std::basic_string_view<CHAR>::npos;
+  if (ref_separator != npos) {
     file_end = query_end = ref_separator;
     *ref = MakeRange(ref_separator + 1, path_end);
   } else {
@@ -282,15 +261,16 @@ void ParsePath(std::basic_string_view<CHAR> spec,
 
   // Query fragment: everything from the ? to the next boundary (either the end
   // of the path or the ref fragment).
-  if (query_separator >= 0) {
+  if (query_separator != npos) {
     file_end = query_separator;
     *query = MakeRange(query_separator + 1, query_end);
   } else {
     query->reset();
   }
 
-  if (file_end != path.begin) {
-    *filepath = MakeRange(path.begin, file_end);
+  size_t path_begin = static_cast<size_t>(path.begin);
+  if (file_end != path_begin) {
+    *filepath = MakeRange(path_begin, file_end);
   } else {
     // File path: treat an empty file path as no file path.
     //
