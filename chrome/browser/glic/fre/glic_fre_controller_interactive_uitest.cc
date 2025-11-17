@@ -298,6 +298,8 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, PressContinueButton) {
       }));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/460829871): Evaluate whether this is relevant on ChromeOS.
 IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
                        InvalidatedAccountSignInOnGlicFreOpenFlow) {
   auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
@@ -315,6 +317,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
                   WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
                   StopObservingState(kFreWebUiState));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
                        ShowsErrorPanelOnCookieSyncFailure) {
