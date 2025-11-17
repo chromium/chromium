@@ -50,6 +50,17 @@ void MediaStateObserver::OnAudioStateChanged(bool audible) {
   UpdateAudibleState(audible);
 }
 
+void MediaStateObserver::OnIsCapturingVideoChanged(
+    content::WebContents* web_contents,
+    bool is_capturing_video) {
+  if (web_contents != WebContentsObserver::web_contents() ||
+      is_capturing_video_ == is_capturing_video) {
+    return;
+  }
+  is_capturing_video_ = is_capturing_video;
+  UpdateMediaState();
+}
+
 void MediaStateObserver::OnIsCapturingAudioChanged(
     content::WebContents* web_contents,
     bool is_capturing_audio) {
@@ -61,14 +72,15 @@ void MediaStateObserver::OnIsCapturingAudioChanged(
   UpdateMediaState();
 }
 
-void MediaStateObserver::OnIsCapturingVideoChanged(
+void MediaStateObserver::OnIsBeingMirroredChanged(
     content::WebContents* web_contents,
-    bool is_capturing_video) {
+    bool is_being_mirrored) {
   if (web_contents != WebContentsObserver::web_contents() ||
-      is_capturing_video_ == is_capturing_video) {
+      is_being_mirrored_ == is_being_mirrored) {
     return;
   }
-  is_capturing_video_ = is_capturing_video;
+
+  is_being_mirrored_ = is_being_mirrored;
   UpdateMediaState();
 }
 
@@ -101,7 +113,9 @@ void MediaStateObserver::UpdateMediaState() {
     return;
   }
 
-  if (is_capturing_video_ || is_capturing_audio_) {
+  if (is_being_mirrored_) {
+    tab->SetMediaState(MediaState::SHARING);
+  } else if (is_capturing_video_ || is_capturing_audio_) {
     tab->SetMediaState(MediaState::RECORDING);
   } else if (is_audible_) {
     tab->SetMediaState(is_audio_muted_ ? MediaState::MUTED

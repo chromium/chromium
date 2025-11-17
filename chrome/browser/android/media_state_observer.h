@@ -44,6 +44,9 @@ class MediaStateObserver
   // Called when the audio capture state of the WebContents has changed.
   void OnIsCapturingAudioChanged(content::WebContents* web_contents,
                                  bool is_capturing_audio) override;
+  // Called when the mirroring state of the WebContents has changed.
+  void OnIsBeingMirroredChanged(content::WebContents* web_contents,
+                                bool is_being_mirrored) override;
 
  private:
   friend class content::WebContentsUserData<MediaStateObserver>;
@@ -61,6 +64,7 @@ class MediaStateObserver
   void UpdateMediaState();
 
   // Keep track of the media state.
+  bool is_being_mirrored_ = false;
   bool is_capturing_video_ = false;
   bool is_capturing_audio_ = false;
   bool is_audio_muted_ = false;
