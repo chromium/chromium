@@ -119,6 +119,11 @@ BASE_DECLARE_FEATURE(kLensSearchAimM3);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensSearchAimM3EnUs);
 
+// Enables AIM follow ups with the Lens overlay results side panel if the AIM
+// Eligibility Service indicates the user is eligible.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensSearchAimM3UseAimEligibility);
+
 // Enables the Lens button in the AIM Searchbox for reinvocation of selection
 // overlay.
 COMPONENT_EXPORT(LENS_FEATURES)

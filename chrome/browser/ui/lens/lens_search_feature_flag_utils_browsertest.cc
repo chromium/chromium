@@ -214,3 +214,100 @@ IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnUsEnabledTest,
     EXPECT_FALSE(lens::IsAimM3Enabled(browser()->profile()));
   }
 }
+
+// Test fixture for verifying en-US users are routed to the eligibility service
+// when kLensSearchAimM3EnUs is enabled.
+class LensSearchFeatureFlagsUtilsAimM3EnUsUsesEligibilityTest
+    : public LensSearchFeatureFlagsUtilsBrowserTestBase {
+ public:
+  LensSearchFeatureFlagsUtilsAimM3EnUsUsesEligibilityTest() = default;
+  ~LensSearchFeatureFlagsUtilsAimM3EnUsUsesEligibilityTest() override = default;
+
+ protected:
+  base::test::ScopedFeatureList feature_list_{
+      lens::features::kLensSearchAimM3EnUs};
+};
+
+IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnUsUsesEligibilityTest,
+                       TestIsAimM3Enabled_EnUsUsesAimEligibilityService) {
+  // Set locale to en-US.
+  ScopedBrowserLocale scoped_locale{"en-US"};
+  g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
+
+  // When the eligibility service returns eligible, IsAimM3Enabled should be
+  // true.
+  SetUpAimEligibilityService(/*is_locally_eligible=*/true,
+                             /*is_server_eligible=*/true,
+                             /*server_eligibility_enabled=*/true);
+  EXPECT_TRUE(lens::IsAimM3Enabled(browser()->profile()));
+
+  // When the eligibility service returns ineligible, IsAimM3Enabled should be
+  // false.
+  SetUpAimEligibilityService(/*is_locally_eligible=*/false,
+                             /*is_server_eligible=*/false,
+                             /*server_eligibility_enabled=*/false);
+  EXPECT_FALSE(lens::IsAimM3Enabled(browser()->profile()));
+}
+
+// Test fixture for verifying that other users follow the
+// kLensSearchAimM3UseAimEligibility flag. This is parameterized on whether the
+// flag is enabled.
+class LensSearchFeatureFlagsUtilsAimM3FollowsUseEligibilityFlagTest
+    : public LensSearchFeatureFlagsUtilsBrowserTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  LensSearchFeatureFlagsUtilsAimM3FollowsUseEligibilityFlagTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    if (ShouldUseAimEligibility()) {
+      enabled_features.push_back(
+          lens::features::kLensSearchAimM3UseAimEligibility);
+    }
+    // Also enable the main M3 feature, since that would be the state for users
+    // who would be using the eligibility service.
+    enabled_features.push_back(lens::features::kLensSearchAimM3);
+    feature_list_.InitWithFeatures(enabled_features, {});
+  }
+  ~LensSearchFeatureFlagsUtilsAimM3FollowsUseEligibilityFlagTest() override =
+      default;
+
+  bool ShouldUseAimEligibility() const { return GetParam(); }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(
+    LensSearchFeatureFlagsUtilsAimM3FollowsUseEligibilityFlagTest,
+    TestIsAimM3Enabled_OtherUsersFollowUseAimEligibilityFlag) {
+  // Set locale to something other than en-US.
+  ScopedBrowserLocale scoped_locale{"en-GB"};
+  g_browser_process->variations_service()->OverrideStoredPermanentCountry("gb");
+
+  if (ShouldUseAimEligibility()) {
+    // When the eligibility service returns eligible, IsAimM3Enabled should be
+    // true.
+    SetUpAimEligibilityService(/*is_locally_eligible=*/true,
+                               /*is_server_eligible=*/true,
+                               /*server_eligibility_enabled=*/true);
+    EXPECT_TRUE(lens::IsAimM3Enabled(browser()->profile()));
+
+    // When the eligibility service returns ineligible, IsAimM3Enabled should be
+    // false.
+    SetUpAimEligibilityService(/*is_locally_eligible=*/false,
+                               /*is_server_eligible=*/false,
+                               /*server_eligibility_enabled=*/false);
+    EXPECT_FALSE(lens::IsAimM3Enabled(browser()->profile()));
+  } else {
+    // If not using the AIM service, the result depends on kLensSearchAimM3. In
+    // this test fixture, we have it enabled.
+    SetUpAimEligibilityService(/*is_locally_eligible=*/false,
+                               /*is_server_eligible=*/false,
+                               /*server_eligibility_enabled=*/false);
+    EXPECT_TRUE(lens::IsAimM3Enabled(browser()->profile()));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LensSearchFeatureFlagsUtilsAimM3FollowsUseEligibilityFlagTest,
+    testing::Bool());
