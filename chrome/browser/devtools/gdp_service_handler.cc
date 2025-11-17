@@ -6,6 +6,7 @@
 
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "url/gurl.h"
 
 namespace {
 

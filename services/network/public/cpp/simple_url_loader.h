@@ -18,7 +18,8 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
-#include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/public/mojom/url_loader.mojom-forward.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 class GURL;
@@ -40,9 +41,6 @@ struct RedirectInfo;
 
 namespace network {
 struct ResourceRequest;
-namespace mojom {
-class URLLoaderFactory;
-}
 }  // namespace network
 
 namespace network {

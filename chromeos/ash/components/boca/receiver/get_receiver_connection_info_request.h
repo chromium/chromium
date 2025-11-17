@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/boca/boca_request.h"
 #include "google_apis/common/api_error_codes.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace boca {
 class KioskReceiverConnection;
