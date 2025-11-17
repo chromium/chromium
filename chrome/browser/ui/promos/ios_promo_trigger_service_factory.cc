@@ -37,5 +37,6 @@ IOSPromoTriggerServiceFactory::~IOSPromoTriggerServiceFactory() = default;
 std::unique_ptr<KeyedService>
 IOSPromoTriggerServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<IOSPromoTriggerService>();
+  Profile* profile = Profile::FromBrowserContext(context);
+  return std::make_unique<IOSPromoTriggerService>(profile);
 }

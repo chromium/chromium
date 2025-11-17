@@ -66,7 +66,9 @@ if (!is_android) {
       "//base",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/promos:utils",
+      "//chrome/browser/sync",
       "//components/keyed_service/core",
+      "//components/prefs",
       "//components/sharing_message",
     ]
   }
@@ -86,6 +88,7 @@ if (!is_android) {
       "//chrome/browser/promos:utils",
       "//chrome/browser/sync",
       "//chrome/test:test_support",
+      "//components/sharing_message",
       "//components/sync:test_support",
       "//components/sync_device_info",
       "//components/sync_device_info:test_support",

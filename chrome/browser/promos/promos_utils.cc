@@ -23,6 +23,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
+#include "components/sharing_message/pref_names.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 
@@ -340,6 +341,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       promos_prefs::kDesktopToiOSNtpPromoDismissed, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterDictionaryPref(
+      prefs::kIOSPromoReminder,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 

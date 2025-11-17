@@ -431,6 +431,7 @@ enum {
   kDockedMagnifierAcceleratorDialogHasBeenAccepted = 100363,
   kSelectToSpeakAcceleratorDialogHasBeenAccepted = 100364,
   kAccessibilityScreenMagnifierScale = 100365,
+  kIOSPromoReminder = 100366,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1848,6 +1849,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {promos_prefs::kDesktopToiOSLensPromoOptOut,
      {syncable_prefs_ids::kDesktopToiOSLensPromoOptOut, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kIOSPromoReminder,
+     {syncable_prefs_ids::kIOSPromoReminder, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 #if BUILDFLAG(ENABLE_GLIC)

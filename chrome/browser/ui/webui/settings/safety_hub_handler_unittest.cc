@@ -95,18 +95,25 @@ namespace {
 
 class MockIOSPromoTriggerService : public IOSPromoTriggerService {
  public:
-  MockIOSPromoTriggerService() = default;
+  explicit MockIOSPromoTriggerService(Profile* profile)
+      : IOSPromoTriggerService(profile) {}
   ~MockIOSPromoTriggerService() override = default;
 
   MOCK_METHOD(void,
               NotifyPromoShouldBeShown,
               (IOSPromoType promo_type),
               (override));
+  MOCK_METHOD(const syncer::DeviceInfo*, GetIOSDeviceToRemind, (), (override));
+  MOCK_METHOD(void,
+              SetReminderForIOSDevice,
+              (IOSPromoType promo_type, const std::string& device_guid),
+              (override));
 };
 
 std::unique_ptr<KeyedService> BuildMockIOSPromoTriggerService(
     content::BrowserContext* context) {
-  return std::make_unique<MockIOSPromoTriggerService>();
+  return std::make_unique<MockIOSPromoTriggerService>(
+      Profile::FromBrowserContext(context));
 }
 
 }  // namespace

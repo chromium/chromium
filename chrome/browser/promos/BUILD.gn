@@ -21,6 +21,7 @@ source_set("utils") {
     "//components/search",
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/public",
+    "//components/sharing_message",
     "//components/sync/base",
     "//components/sync/service",
     "//skia",
