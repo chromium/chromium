@@ -20,13 +20,11 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/desktop_media_id.h"
@@ -124,6 +122,15 @@ std::string GetAllowlistedExtensionID() {
       switches::kAllowlistedExtensionID);
 }
 
+content::WebContents* GetActiveWebContents(BrowserWindowInterface* browser) {
+  if (!browser) {
+    return nullptr;
+  }
+  tabs::TabInterface* active_tab =
+      TabListInterface::From(browser)->GetActiveTab();
+  return active_tab ? active_tab->GetContents() : nullptr;
+}
+
 }  // namespace
 
 ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
@@ -140,8 +147,7 @@ ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
     return RespondNow(Error(kFindingTabError));
   }
 
-  content::WebContents* target_contents =
-      target_browser->GetFeatures().tab_strip_model()->GetActiveWebContents();
+  content::WebContents* target_contents = GetActiveWebContents(target_browser);
   if (!target_contents) {
     return RespondNow(Error(kFindingTabError));
   }
@@ -236,8 +242,7 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
       return RespondNow(Error(kFindingTabError));
     }
 
-    target_contents =
-        target_browser->GetFeatures().tab_strip_model()->GetActiveWebContents();
+    target_contents = GetActiveWebContents(target_browser);
   }
   if (!target_contents) {
     return RespondNow(Error(kFindingTabError));

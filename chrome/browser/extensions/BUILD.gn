@@ -166,6 +166,8 @@ source_set("extensions") {
     "api/storage/sync_value_store_cache.h",
     "api/storage/syncable_settings_storage.cc",
     "api/storage/syncable_settings_storage.h",
+    "api/tab_capture/tab_capture_registry.cc",
+    "api/tab_capture/tab_capture_registry.h",
     "api/tabs/tabs_api.cc",
     "api/tabs/tabs_api.h",
     "api/tabs/tabs_constants.h",
@@ -490,6 +492,9 @@ source_set("extensions") {
   allow_circular_includes_from = [
     # TODO(crbug.com/40161499): Remove this circular dependency.
     "//chrome/browser/devtools",
+
+    # TODO(crbug.com/353284909): Remove this circular dependency.
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/toolbar",
@@ -599,6 +604,7 @@ source_set("extensions") {
     "//ui/shell_dialogs",
   ]
   public_deps = [
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/supervised_user",
     "//chrome/browser/upgrade_detector",
     "//components/safe_browsing/core/browser/db:util",
@@ -776,8 +782,6 @@ source_set("extensions") {
       "api/streams_private/streams_private_api.h",
       "api/system_private/system_private_api.cc",
       "api/system_private/system_private_api.h",
-      "api/tab_capture/tab_capture_registry.cc",
-      "api/tab_capture/tab_capture_registry.h",
       "api/tabs/tabs_event_router.cc",
       "api/tabs/tabs_event_router.h",
       "app_tab_helper.cc",
@@ -853,9 +857,6 @@ source_set("extensions") {
       # TODO(crbug.com/345487716): Remove this circular dependency.
       "//chrome/browser/ui/views/side_panel",
 
-      # TODO(crbug.com/353284909): Remove this circular dependency.
-      "//chrome/browser/media/webrtc",
-
       "//chrome/browser/feedback",
       "//chrome/browser/ui/views/toolbar",
     ]
@@ -868,7 +869,6 @@ source_set("extensions") {
     public_deps += [
       "//chrome/browser:browser_public_dependencies",
       "//chrome/browser/extensions/api:api_registration",
-      "//chrome/browser/media/webrtc",
       "//chrome/browser/task_manager",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:browser_tab_strip",

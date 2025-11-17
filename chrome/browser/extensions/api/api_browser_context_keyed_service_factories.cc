@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/api/preference/preference_api.h"
 #include "chrome/browser/extensions/api/processes/processes_api.h"
 #include "chrome/browser/extensions/api/reading_list/reading_list_event_router_factory.h"
+#include "chrome/browser/extensions/api/tab_capture/tab_capture_registry.h"
 #include "chrome/browser/extensions/api/tabs/tabs_windows_api.h"
 #include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_api.h"
 #include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_service.h"
@@ -45,7 +46,6 @@
 #include "chrome/browser/extensions/api/settings_overrides/settings_overrides_api.h"
 #include "chrome/browser/extensions/api/settings_private/settings_private_event_router_factory.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
-#include "chrome/browser/extensions/api/tab_capture/tab_capture_registry.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router_factory.h"
 #include "components/safe_browsing/buildflags.h"
 #include "extensions/browser/api/bluetooth_low_energy/bluetooth_low_energy_api.h"
@@ -96,6 +96,7 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::PreferenceAPI::GetFactoryInstance();
   extensions::ProcessesAPI::GetFactoryInstance();
   extensions::ReadingListEventRouterFactory::GetInstance();
+  extensions::TabCaptureRegistry::GetFactoryInstance();
   extensions::TabsWindowsAPI::GetFactoryInstance();
   extensions::WebAuthenticationProxyAPI::GetFactoryInstance();
   extensions::WebAuthenticationProxyRegistrarFactory::GetInstance();
@@ -137,7 +138,6 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::SettingsOverridesAPI::GetFactoryInstance();
   extensions::SidePanelService::GetFactoryInstance();
   extensions::TabGroupsEventRouterFactory::GetInstance();
-  extensions::TabCaptureRegistry::GetFactoryInstance();
 #if BUILDFLAG(IS_CHROMEOS)
   extensions::TerminalPrivateAPI::GetFactoryInstance();
   extensions::VerifyTrustApiService::GetFactoryInstance();
