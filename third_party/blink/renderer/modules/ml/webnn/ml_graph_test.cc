@@ -1281,7 +1281,6 @@ TEST_F(MLGraphTest, CreateWebNNGraphTest) {
   }
 }
 
-
 struct CastTester {
   OperandInfo<float> input;
   V8MLOperandDataType::Enum output_data_type;
@@ -1749,51 +1748,48 @@ TEST_F(MLGraphTest, MLTransposeEliminationTransformerTest) {
   }
 
   {
-    {
-      DummyExceptionStateForTesting exception_state;
-      auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
-                                             exception_state);
-      ASSERT_THAT(builder, testing::NotNull());
-      // [a] -> transpose -> [b] -> transpose -> [c] -> relu -> [d]
-      //  b and d are graph outputs.
+    DummyExceptionStateForTesting exception_state;
+    auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
+                                           exception_state);
+    ASSERT_THAT(builder, testing::NotNull());
+    // [a] -> transpose -> [b] -> transpose -> [c] -> relu -> [d]
+    //  b and d are graph outputs.
 
-      auto* a =
-          BuildInput(scope.GetScriptState(), builder, "a", {3, 4, 5},
-                     V8MLOperandDataType::Enum::kFloat32, exception_state);
-      auto* transpose_options = MLTransposeOptions::Create();
-      transpose_options->setPermutation({0, 2, 1});
-      auto* b = builder->transpose(a, transpose_options, exception_state);
-      ASSERT_THAT(b, testing::NotNull());
-      auto* transpose_options2 = MLTransposeOptions::Create();
-      transpose_options2->setPermutation({0, 2, 1});
-      auto* c = builder->transpose(b, transpose_options2, exception_state);
-      ASSERT_THAT(c, testing::NotNull());
-      auto* relu_options = MLOperatorOptions::Create();
-      auto* d = builder->relu(c, relu_options, exception_state);
-      ASSERT_THAT(d, testing::NotNull());
-      EXPECT_EQ(d->Shape(), std::vector<uint32_t>({3, 4, 5}));
-      MLNamedOperands named_outputs = {{"b", b}, {"d", d}};
+    auto* a = BuildInput(scope.GetScriptState(), builder, "a", {3, 4, 5},
+                         V8MLOperandDataType::Enum::kFloat32, exception_state);
+    auto* transpose_options = MLTransposeOptions::Create();
+    transpose_options->setPermutation({0, 2, 1});
+    auto* b = builder->transpose(a, transpose_options, exception_state);
+    ASSERT_THAT(b, testing::NotNull());
+    auto* transpose_options2 = MLTransposeOptions::Create();
+    transpose_options2->setPermutation({0, 2, 1});
+    auto* c = builder->transpose(b, transpose_options2, exception_state);
+    ASSERT_THAT(c, testing::NotNull());
+    auto* relu_options = MLOperatorOptions::Create();
+    auto* d = builder->relu(c, relu_options, exception_state);
+    ASSERT_THAT(d, testing::NotNull());
+    EXPECT_EQ(d->Shape(), std::vector<uint32_t>({3, 4, 5}));
+    MLNamedOperands named_outputs = {{"b", b}, {"d", d}};
 
-      auto* transpose_elimination_transformer =
-          MakeGarbageCollected<TransposeEliminationTransformer>(builder);
-      transpose_elimination_transformer->Transform(named_outputs);
+    auto* transpose_elimination_transformer =
+        MakeGarbageCollected<TransposeEliminationTransformer>(builder);
+    transpose_elimination_transformer->Transform(named_outputs);
 
-      // Expect no change in the graph.
-      EXPECT_EQ(b->Operator()->Inputs()[0], a);
-      EXPECT_EQ(c->Operator()->Inputs()[0], b);
-      EXPECT_EQ(d->Operator()->Inputs()[0], c);
+    // Expect no change in the graph.
+    EXPECT_EQ(b->Operator()->Inputs()[0], a);
+    EXPECT_EQ(c->Operator()->Inputs()[0], b);
+    EXPECT_EQ(d->Operator()->Inputs()[0], c);
 
-      auto [graph, error_name, error_message] =
-          BuildGraph(scope, builder, named_outputs);
-      ASSERT_THAT(graph, testing::NotNull());
-      const auto& inputs = graph->GetInputConstraints();
-      EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
-      EXPECT_EQ(*inputs.at("a"), a->Descriptor());
-      const auto& outputs = graph->GetOutputConstraints();
-      EXPECT_EQ(outputs.size(), static_cast<uint32_t>(2));
-      EXPECT_EQ(*outputs.at("b"), b->Descriptor());
-      EXPECT_EQ(*outputs.at("d"), d->Descriptor());
-    }
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, named_outputs);
+    ASSERT_THAT(graph, testing::NotNull());
+    const auto& inputs = graph->GetInputConstraints();
+    EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
+    EXPECT_EQ(*inputs.at("a"), a->Descriptor());
+    const auto& outputs = graph->GetOutputConstraints();
+    EXPECT_EQ(outputs.size(), static_cast<uint32_t>(2));
+    EXPECT_EQ(*outputs.at("b"), b->Descriptor());
+    EXPECT_EQ(*outputs.at("d"), d->Descriptor());
   }
 
   {
@@ -1954,177 +1950,175 @@ TEST_F(MLGraphTest, MLTransposeEliminationTransformerTest) {
                                            exception_state);
     ASSERT_THAT(builder, testing::NotNull());
 
-    //   input       constant
-    //        \      /
-    //         conv2d
-    //            |
-    //        transpose0
-    //           /    \
-    //     transpose1  relu
-    //        \ /
-    //        add
-    auto* input =
+    //      input0                 input1
+    //            \                 /
+    //             transpose0    transpose1
+    //      input2            \   /        \
+    //            \            \ /          \
+    //            transpose2  add0          gelu
+    //      input3          \  |  \              \
+    //            \          \ |   \              \
+    //            transpose3  add1  transpose4   transpose7
+    //                      \  |  \
+    //                       \ |   \
+    //                        add2  transpose5
+    //                         |
+    //                      transpose6
+    //                         |
+    //                       relu
+
+    auto* input0 =
         BuildInput(scope.GetScriptState(), builder, "input0", {1, 3, 1, 1},
                    V8MLOperandDataType::Enum::kFloat32, exception_state);
-    auto* constant =
-        BuildConstant(scope.GetScriptState(), builder, {1, 3, 1, 1},
-                      V8MLOperandDataType::Enum::kFloat32, exception_state);
-    auto* conv2d_options = MLConv2dOptions::Create();
-    conv2d_options->setInputLayout(V8MLInputOperandLayout::Enum::kNchw);
-    conv2d_options->setFilterLayout(V8MLConv2dFilterOperandLayout::Enum::kOihw);
-    auto* conv2d =
-        builder->conv2d(input, constant, conv2d_options, exception_state);
-    ASSERT_THAT(conv2d, testing::NotNull());
+    auto* input1 =
+        BuildInput(scope.GetScriptState(), builder, "input1", {1, 3, 1, 1},
+                   V8MLOperandDataType::Enum::kFloat32, exception_state);
+    auto* input2 =
+        BuildInput(scope.GetScriptState(), builder, "input2", {1, 3, 1, 1},
+                   V8MLOperandDataType::Enum::kFloat32, exception_state);
+    auto* input3 =
+        BuildInput(scope.GetScriptState(), builder, "input3", {1, 3, 1, 1},
+                   V8MLOperandDataType::Enum::kFloat32, exception_state);
+
     auto* transpose_options0 = MLTransposeOptions::Create();
-    transpose_options0->setPermutation({0, 2, 3, 1});
+    transpose_options0->setPermutation({0, 3, 1, 2});
     auto* transpose0 =
-        builder->transpose(conv2d, transpose_options0, exception_state);
+        builder->transpose(input0, transpose_options0, exception_state);
     ASSERT_THAT(transpose0, testing::NotNull());
+
     auto* transpose_options1 = MLTransposeOptions::Create();
     transpose_options1->setPermutation({0, 3, 1, 2});
     auto* transpose1 =
-        builder->transpose(transpose0, transpose_options1, exception_state);
+        builder->transpose(input1, transpose_options1, exception_state);
     ASSERT_THAT(transpose1, testing::NotNull());
+
+    auto* transpose_options2 = MLTransposeOptions::Create();
+    transpose_options2->setPermutation({0, 3, 1, 2});
+    auto* transpose2 =
+        builder->transpose(input2, transpose_options2, exception_state);
+    ASSERT_THAT(transpose2, testing::NotNull());
+
+    auto* transpose_options3 = MLTransposeOptions::Create();
+    transpose_options3->setPermutation({0, 3, 1, 2});
+    auto* transpose3 =
+        builder->transpose(input3, transpose_options3, exception_state);
+    ASSERT_THAT(transpose3, testing::NotNull());
+
+    auto* add_options0 = MLOperatorOptions::Create();
+    auto* add0 =
+        builder->add(transpose0, transpose1, add_options0, exception_state);
+    ASSERT_THAT(add0, testing::NotNull());
+
+    auto* add_options1 = MLOperatorOptions::Create();
+    auto* add1 = builder->add(transpose2, add0, add_options1, exception_state);
+    ASSERT_THAT(add1, testing::NotNull());
+
+    auto* add_options2 = MLOperatorOptions::Create();
+    auto* add2 = builder->add(transpose3, add1, add_options2, exception_state);
+    ASSERT_THAT(add2, testing::NotNull());
+
+    auto* gelu_options = MLOperatorOptions::Create();
+    auto* gelu = builder->gelu(transpose1, gelu_options, exception_state);
+    ASSERT_THAT(gelu, testing::NotNull());
+
+    auto* transpose_options4 = MLTransposeOptions::Create();
+    transpose_options4->setPermutation({0, 2, 3, 1});
+    auto* transpose4 =
+        builder->transpose(add0, transpose_options4, exception_state);
+    ASSERT_THAT(transpose4, testing::NotNull());
+
+    auto* transpose_options5 = MLTransposeOptions::Create();
+    transpose_options5->setPermutation({0, 2, 3, 1});
+    auto* transpose5 =
+        builder->transpose(add1, transpose_options5, exception_state);
+    ASSERT_THAT(transpose5, testing::NotNull());
+
+    auto* transpose_options6 = MLTransposeOptions::Create();
+    transpose_options6->setPermutation({0, 2, 3, 1});
+    auto* transpose6 =
+        builder->transpose(add2, transpose_options6, exception_state);
+    ASSERT_THAT(transpose6, testing::NotNull());
+
+    auto* transpose_options7 = MLTransposeOptions::Create();
+    transpose_options7->setPermutation({0, 2, 3, 1});
+    auto* transpose7 =
+        builder->transpose(gelu, transpose_options7, exception_state);
+    ASSERT_THAT(transpose7, testing::NotNull());
+
     auto* relu_options = MLOperatorOptions::Create();
-    auto* relu = builder->relu(transpose0, relu_options, exception_state);
+    auto* relu = builder->relu(transpose6, relu_options, exception_state);
     ASSERT_THAT(relu, testing::NotNull());
 
-    auto* add_options = MLOperatorOptions::Create();
-
-    auto* add =
-        builder->add(transpose1, transpose1, add_options, exception_state);
-    ASSERT_THAT(add, testing::NotNull());
-
-    MLNamedOperands named_outputs = {{"relu", relu}, {"add", add}};
+    MLNamedOperands named_outputs = {{"relu", relu},
+                                     {"transpose4", transpose4},
+                                     {"transpose5", transpose5},
+                                     {"transpose7", transpose7}};
     auto* transpose_elimination_transformer =
         MakeGarbageCollected<TransposeEliminationTransformer>(builder);
     transpose_elimination_transformer->Transform(named_outputs);
+
     // should be transformed to:
-    //   input      constant
-    //      \       /
-    //       conv2d
-    //        \ |  \
-    //        add  transpose0
-    //               \
-    //               relu
+    //
+    //    input0          input1
+    //          \         /    \
+    //  input2 add0(updated)    gelu(updated)
+    //       \  |
+    //        \ |
+    //  input3 add1(updated)
+    //       \  |
+    //        \ |
+    //         add2(updated)
+    //          |
+    //         relu
+
+    MLOperand* add2_updated = relu->Operator()->Inputs()[0];
+    MLOperand* add1_updated = add2_updated->Operator()->Inputs()[1];
+    MLOperand* add0_updated = add1_updated->Operator()->Inputs()[1];
+
+    MLOperand* gelu_updated = named_outputs[3].second;
+
+    CHECK_EQ(gelu_updated->Operator()->Kind(),
+             webnn::mojom::blink::Operation::Tag::kGelu);
+
+    EXPECT_NE(add0_updated, add0);
+    EXPECT_NE(add1_updated, add1);
+    EXPECT_NE(add2_updated, add2);
+    EXPECT_NE(gelu_updated, gelu);
+
     EXPECT_EQ(named_outputs[0].first, "relu");
-    EXPECT_EQ(named_outputs[1].first, "add");
+    EXPECT_EQ(named_outputs[1].first, "transpose4");
+    EXPECT_EQ(named_outputs[2].first, "transpose5");
+    EXPECT_EQ(named_outputs[3].first, "transpose7");
 
     EXPECT_EQ(named_outputs[0].second, relu);
-    EXPECT_EQ(named_outputs[1].second, add);
-    EXPECT_EQ(transpose0->Operator()->Inputs()[0], conv2d);
+    EXPECT_EQ(named_outputs[1].second, add0_updated);
+    EXPECT_EQ(named_outputs[2].second, add1_updated);
 
-    EXPECT_EQ(relu->Operator()->Inputs()[0], transpose0);
-    EXPECT_EQ(add->Operator()->Inputs()[0], conv2d);
-    EXPECT_EQ(add->Operator()->Inputs()[1], conv2d);
-    EXPECT_EQ(conv2d->Operator()->Inputs()[0], input);
-    EXPECT_EQ(conv2d->Operator()->Inputs()[1], constant);
+    EXPECT_EQ(relu->Operator()->Inputs()[0], add2_updated);
+    EXPECT_EQ(add2_updated->Operator()->Inputs()[0], input3);
+    EXPECT_EQ(add2_updated->Operator()->Inputs()[1], add1_updated);
+    EXPECT_EQ(add1_updated->Operator()->Inputs()[0], input2);
+    EXPECT_EQ(add1_updated->Operator()->Inputs()[1], add0_updated);
+    EXPECT_EQ(add0_updated->Operator()->Inputs()[0], input0);
+    EXPECT_EQ(add0_updated->Operator()->Inputs()[1], input1);
+    EXPECT_EQ(gelu_updated->Operator()->Inputs()[0], input1);
 
     auto [graph, error_name, error_message] =
         BuildGraph(scope, builder, named_outputs);
     ASSERT_THAT(graph, testing::NotNull());
     const auto& inputs = graph->GetInputConstraints();
-    EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
-    EXPECT_EQ(*inputs.at("input0"), input->Descriptor());
+    EXPECT_EQ(inputs.size(), static_cast<uint32_t>(4));
+    EXPECT_EQ(*inputs.at("input0"), input0->Descriptor());
+    EXPECT_EQ(*inputs.at("input1"), input1->Descriptor());
+    EXPECT_EQ(*inputs.at("input2"), input2->Descriptor());
+    EXPECT_EQ(*inputs.at("input3"), input3->Descriptor());
+
     const auto& outputs = graph->GetOutputConstraints();
-    EXPECT_EQ(outputs.size(), static_cast<uint32_t>(2));
+    EXPECT_EQ(outputs.size(), static_cast<uint32_t>(4));
     EXPECT_EQ(*outputs.at("relu"), relu->Descriptor());
-    EXPECT_EQ(*outputs.at("add"), add->Descriptor());
-  }
-
-  {
-    DummyExceptionStateForTesting exception_state;
-    auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
-                                           exception_state);
-    ASSERT_THAT(builder, testing::NotNull());
-
-    //   input     constant
-    //      \      /
-    //        conv2d
-    //          |
-    //      transpose0
-    //         /     \
-    //       relu0  relu1
-    //       /
-    // transpose1
-    //    \  /
-    //    add
-
-    auto* input =
-        BuildInput(scope.GetScriptState(), builder, "input0", {1, 3, 1, 1},
-                   V8MLOperandDataType::Enum::kFloat32, exception_state);
-    auto* constant =
-        BuildConstant(scope.GetScriptState(), builder, {1, 3, 1, 1},
-                      V8MLOperandDataType::Enum::kFloat32, exception_state);
-    auto* conv2d_options = MLConv2dOptions::Create();
-    conv2d_options->setInputLayout(V8MLInputOperandLayout::Enum::kNchw);
-    conv2d_options->setFilterLayout(V8MLConv2dFilterOperandLayout::Enum::kOihw);
-    auto* conv2d =
-        builder->conv2d(input, constant, conv2d_options, exception_state);
-    ASSERT_THAT(conv2d, testing::NotNull());
-    auto* transpose_options0 = MLTransposeOptions::Create();
-    transpose_options0->setPermutation({0, 2, 3, 1});
-    auto* transpose0 =
-        builder->transpose(conv2d, transpose_options0, exception_state);
-    ASSERT_THAT(transpose0, testing::NotNull());
-    auto* relu0_options = MLOperatorOptions::Create();
-    auto* relu0 = builder->relu(transpose0, relu0_options, exception_state);
-    ASSERT_THAT(relu0, testing::NotNull());
-    auto* transpose_options1 = MLTransposeOptions::Create();
-    transpose_options1->setPermutation({0, 3, 1, 2});
-    auto* transpose1 =
-        builder->transpose(relu0, transpose_options1, exception_state);
-    ASSERT_THAT(transpose1, testing::NotNull());
-    auto* add_options = MLOperatorOptions::Create();
-    auto* add =
-        builder->add(transpose1, transpose1, add_options, exception_state);
-    ASSERT_THAT(add, testing::NotNull());
-    auto* relu1_options = MLOperatorOptions::Create();
-    auto* relu1 = builder->relu(transpose0, relu1_options, exception_state);
-    ASSERT_THAT(relu1, testing::NotNull());
-
-    MLNamedOperands named_outputs = {{"add", add}, {"relu1", relu1}};
-    auto* transpose_elimination_transformer =
-        MakeGarbageCollected<TransposeEliminationTransformer>(builder);
-    transpose_elimination_transformer->Transform(named_outputs);
-
-    // should be transformed to:
-    //   input     constant
-    //        \      /
-    //          conv2d
-    //          |     \
-    //  updated_relu0  transpose0
-    //        \ /        \
-    //        add       relu1
-
-    // relu0 was replaced with updated_relu0 which has the updated shape.
-    MLOperand* updated_relu0 = add->Operator()->Inputs()[0];
-    EXPECT_NE(relu0, updated_relu0);
-
-    EXPECT_EQ(named_outputs[0].first, "add");
-    EXPECT_EQ(named_outputs[1].first, "relu1");
-
-    EXPECT_EQ(named_outputs[0].second, add);
-    EXPECT_EQ(named_outputs[1].second, relu1);
-
-    EXPECT_EQ(transpose0->Operator()->Inputs()[0], conv2d);
-    EXPECT_EQ(updated_relu0->Operator()->Inputs()[0], conv2d);
-    EXPECT_EQ(add->Operator()->Inputs()[0], updated_relu0);
-    EXPECT_EQ(add->Operator()->Inputs()[1], updated_relu0);
-    EXPECT_EQ(relu1->Operator()->Inputs()[0], transpose0);
-    EXPECT_EQ(conv2d->Operator()->Inputs()[0], input);
-    EXPECT_EQ(conv2d->Operator()->Inputs()[1], constant);
-
-    auto [graph, error_name, error_message] =
-        BuildGraph(scope, builder, named_outputs);
-    ASSERT_THAT(graph, testing::NotNull());
-    const auto& inputs = graph->GetInputConstraints();
-    EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
-    EXPECT_EQ(*inputs.at("input0"), input->Descriptor());
-    const auto& outputs = graph->GetOutputConstraints();
-    EXPECT_EQ(outputs.size(), static_cast<uint32_t>(2));
-    EXPECT_EQ(*outputs.at("add"), add->Descriptor());
-    EXPECT_EQ(*outputs.at("relu1"), relu1->Descriptor());
+    EXPECT_EQ(*outputs.at("transpose4"), add0_updated->Descriptor());
+    EXPECT_EQ(*outputs.at("transpose5"), add1_updated->Descriptor());
+    EXPECT_EQ(*outputs.at("transpose7"), gelu_updated->Descriptor());
   }
 }
 

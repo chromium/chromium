@@ -10,21 +10,24 @@
 
 namespace blink {
 
-// This applies a transpose elimination optimization. The algorithm traverses
-// the operation sequence, bypassing transpose agnostic operations to locate and
-// remove inverse transpose pairs.
+// This applies a transpose elimination optimization. The algorithm will match
+// subgraphs whose inputs and outputs are all transposes, and eliminate all
+// these transposes if they are valid and safe to do so.
 class MODULES_EXPORT TransposeEliminationTransformer
     : public MLGraphTransformer {
  public:
   explicit TransposeEliminationTransformer(MLGraphBuilder* graph_builder)
       : MLGraphTransformer(graph_builder) {}
   void Transform(MLNamedOperands& named_outputs) override;
+  void Trace(Visitor* visitor) const override;
 
  private:
   void HandleTranspose(
       MLOperator* transpose,
       HeapHashSet<Member<const MLOperator>>& graph_output_operators,
       MLNamedOperands& named_outputs);
+
+  HeapHashSet<Member<const MLOperator>> visited_transposes_;
 };
 
 }  // namespace blink
