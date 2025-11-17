@@ -238,6 +238,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_WEB_APP_MENU_BUTTON = "AndroidWebAppMenuButton";
     public static final String ANDROID_WINDOW_CONTROLS_OVERLAY = "AndroidWindowControlsOverlay";
     public static final String ANDROID_WINDOW_MANAGEMENT_WEB_API = "AndroidWindowManagementWebApi";
+    public static final String ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI = "AndroidWindowPopupCustomTabUi";
     public static final String ANDROID_WINDOW_POPUP_LARGE_SCREEN = "AndroidWindowPopupLargeScreen";
     public static final String ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS =
             "AndroidWindowPopupPredictFinalBounds";
@@ -796,6 +797,8 @@ public abstract class ChromeFeatureList {
                     ANDROID_WINDOW_MANAGEMENT_WEB_API,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sAndroidWindowPopupCustomTabUi =
+            newCachedFlag(ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI, false);
     public static final CachedFlag sAndroidWindowPopupLargeScreen =
             newCachedFlag(ANDROID_WINDOW_POPUP_LARGE_SCREEN, false, true);
     public static final CachedFlag sAndroidWindowPopupPredictFinalBounds =
@@ -1153,6 +1156,7 @@ public abstract class ChromeFeatureList {
                     sAndroidWebAppMenuButton,
                     sAndroidWindowControlsOverlay,
                     sAndroidWindowManagementWebApi,
+                    sAndroidWindowPopupCustomTabUi,
                     sAndroidWindowPopupLargeScreen,
                     sAndroidWindowPopupPredictFinalBounds,
                     sAndroidWindowPopupResizeAfterSpawn,

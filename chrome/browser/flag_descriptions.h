@@ -5088,6 +5088,12 @@ inline constexpr char kAndroidWindowOcclusionDescription[] =
     "Enables occlusion tracking on Android, which can save CPU and memory in "
     "multi-window environments.";
 
+inline constexpr char kAndroidWindowPopupCustomTabUiName[] =
+    "Enable new UI mode in Custom Tabs for contextual popups.";
+inline constexpr char kAndroidWindowPopupCustomTabUiDescription[] =
+    "Show the title of a tab opened in a pop-up window in caption bar of the "
+    "top-level window, if exists and has sufficient dimensions.";
+
 inline constexpr char kAndroidWindowPopupLargeScreenName[] =
     "Enable desktop-like behavior of window popup web API in desktop windowing "
     "on Android.";

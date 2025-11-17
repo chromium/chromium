@@ -8125,6 +8125,7 @@ from previous Chrome versions.
   <int value="-2106763275" label="ArcRtVcpuQuadCore:enabled"/>
   <int value="-2106575511"
       label="CompressionDictionaryTransportBackend:disabled"/>
+  <int value="-2105791506" label="AndroidWindowPopupCustomTabUi:disabled"/>
   <int value="-2105498697" label="EnableImeSandbox:disabled"/>
   <int value="-2105133782" label="GesturePropertiesDBusService:enabled"/>
   <int value="-2104950596" label="HandwritingGesture:enabled"/>
@@ -18857,6 +18858,7 @@ from previous Chrome versions.
   <int value="1651030066" label="WebAppEnableProtocolHandlers:enabled"/>
   <int value="1651141490" label="SaveEditedPDFForm:enabled"/>
   <int value="1651143136" label="BrowserControlsDebugging:enabled"/>
+  <int value="1651488964" label="AndroidWindowPopupCustomTabUi:enabled"/>
   <int value="1651829920" label="CrOSEnforceMonoAudioCapture:enabled"/>
   <int value="1652700594" label="PlatformKeysAesEncryption:disabled"/>
   <int value="1652798696"

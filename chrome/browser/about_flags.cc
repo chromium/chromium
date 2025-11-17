@@ -12094,6 +12094,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+    {"enable-android-window-popup-custom-tab-ui",
+     flag_descriptions::kAndroidWindowPopupCustomTabUiName,
+     flag_descriptions::kAndroidWindowPopupCustomTabUiDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidWindowPopupCustomTabUi)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
     {"enable-android-window-popup-large-screen",
      flag_descriptions::kAndroidWindowPopupLargeScreenName,
      flag_descriptions::kAndroidWindowPopupLargeScreenDescription, kOsAndroid,
