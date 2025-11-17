@@ -10,9 +10,10 @@ import {LegionInternalsPageHandler} from './legion_internals.mojom-webui.js';
  */
 
 export interface LegionInternalsBrowserProxy {
-  connect(url: string, apiKey: string, featureName: string): Promise<void>;
+  connect(url: string, apiKey: string): Promise<void>;
   close(): Promise<void>;
-  sendRequest(request: string): Promise<LegionResponseMojoType>;
+  sendRequest(featureName: string, request: string):
+      Promise<LegionResponseMojoType>;
 }
 
 export class LegionInternalsBrowserProxyImpl implements
@@ -23,16 +24,17 @@ export class LegionInternalsBrowserProxyImpl implements
     this.handler = handler;
   }
 
-  connect(url: string, apiKey: string, featureName: string): Promise<void> {
-    return this.handler.connect(url, apiKey, featureName);
+  connect(url: string, apiKey: string): Promise<void> {
+    return this.handler.connect(url, apiKey);
   }
 
   close(): Promise<void> {
     return this.handler.close();
   }
 
-  async sendRequest(request: string): Promise<LegionResponseMojoType> {
-    const {response} = await this.handler.sendRequest(request);
+  async sendRequest(featureName: string, request: string):
+      Promise<LegionResponseMojoType> {
+    const {response} = await this.handler.sendRequest(featureName, request);
     return response;
   }
 

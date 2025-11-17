@@ -33,10 +33,10 @@ class LegionInternalsPageHandler
   // legion_internals::mojom::LegionInternalsPageHandler:
   void Connect(const std::string& url,
                const std::string& api_key,
-               const std::string& feature_name,
                ConnectCallback callback) override;
   void Close(CloseCallback callback) override;
-  void SendRequest(const std::string& request,
+  void SendRequest(const std::string& feature_name,
+                   const std::string& request,
                    SendRequestCallback callback) override;
 
  private:

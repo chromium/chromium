@@ -61,7 +61,7 @@ class Noise {
   std::array<uint8_t, 32> chaining_key_;
   std::array<uint8_t, 32> h_;
   std::array<uint8_t, 32> symmetric_key_;
-  uint32_t symmetric_nonce_;
+  uint32_t symmetric_nonce_ = 0;
 };
 
 }  // namespace legion

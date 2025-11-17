@@ -28,13 +28,9 @@ function registerOnCreateConnectionButtonListener() {
     connectionConsole.classList.remove('hidden');
     createConnectionButton.classList.add('hidden');
 
-    proxy
-        .connect(
-            getServerURL(), getAPIKey(),
-            loadTimeData.getString('default_feature_name'))
-        .then(() => {
-          console.info('connected');
-        });
+    proxy.connect(getServerURL(), getAPIKey()).then(() => {
+      console.info('connected');
+    });
   });
 }
 
@@ -61,13 +57,12 @@ function onRequestSend() {
   consoleContainer?.appendChild(userRequestElement);
 
   // Send request to the legion client and get a response.
-  // const legionClient: LegionClient = globalThis.legionClient;
-
-  proxy.sendRequest(request).then((response) => {
-    const serverResponseElement = document.createElement('div');
-    serverResponseElement.textContent = 'Response: ' + response.response;
-    consoleContainer?.appendChild(serverResponseElement);
-  });
+  proxy.sendRequest(loadTimeData.getString('default_feature_name'), request)
+      .then((response) => {
+        const serverResponseElement = document.createElement('div');
+        serverResponseElement.textContent = 'Response: ' + response.response;
+        consoleContainer?.appendChild(serverResponseElement);
+      });
 
   // Clear the input field and refocus.
   requestInput.value = '';

@@ -44,13 +44,11 @@ class Client {
       base::expected<proto::GenerateContentResponse, ErrorCode> result)>;
 
   static std::unique_ptr<Client> Create(
-      network::mojom::NetworkContext* network_context,
-      proto::FeatureName feature_name);
+      network::mojom::NetworkContext* network_context);
 
   static std::unique_ptr<Client> CreateWithUrl(
       const GURL& url,
-      network::mojom::NetworkContext* network_context,
-      proto::FeatureName feature_name);
+      network::mojom::NetworkContext* network_context);
 
   // Takes a URL without scheme and an api_key and returns a URL.
   static GURL FormatUrl(const std::string& url, const std::string& api_key);
@@ -61,20 +59,21 @@ class Client {
   Client& operator=(const Client&) = delete;
 
   // Sends a request with a single text content.
-  void SendTextRequest(const std::string& text,
+  void SendTextRequest(proto::FeatureName feature_name,
+                       const std::string& text,
                        OnTextRequestCompletedCallback callback);
 
   // Sends a `GenerateContentRequest`. The caller is responsible for populating
   // the `request` proto, including setting the content's role to "user".
   void SendGenerateContentRequest(
+      proto::FeatureName feature_name,
       const proto::GenerateContentRequest& request,
       OnGenerateContentRequestCompletedCallback callback);
 
  private:
   friend class ClientTest;
 
-  Client(std::unique_ptr<SecureChannel> secure_channel,
-         proto::FeatureName feature_name);
+  explicit Client(std::unique_ptr<SecureChannel> secure_channel);
 
   // Sends a request over the secure channel.
   void SendRequest(int32_t request_id,
@@ -89,7 +88,6 @@ class Client {
   void FailAllPendingRequests(ErrorCode error_code);
 
   std::unique_ptr<SecureChannel> secure_channel_;
-  proto::FeatureName feature_name_;
   int32_t next_request_id_{1};
 
   // Callbacks for requests that have been sent to the secure channel but have

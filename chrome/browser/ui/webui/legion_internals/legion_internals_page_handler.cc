@@ -27,13 +27,9 @@ LegionInternalsPageHandler::~LegionInternalsPageHandler() = default;
 
 void LegionInternalsPageHandler::Connect(const std::string& url,
                                          const std::string& api_key,
-                                         const std::string& feature_name,
                                          ConnectCallback callback) {
-  legion::proto::FeatureName feature_name_proto;
-  legion::proto::FeatureName_Parse(feature_name, &feature_name_proto);
   GURL api_url = legion::Client::FormatUrl(url, api_key);
-  client_ = legion::Client::CreateWithUrl(api_url, network_context_,
-                                          feature_name_proto);
+  client_ = legion::Client::CreateWithUrl(api_url, network_context_);
   std::move(callback).Run();
 }
 
@@ -42,7 +38,8 @@ void LegionInternalsPageHandler::Close(CloseCallback callback) {
   std::move(callback).Run();
 }
 
-void LegionInternalsPageHandler::SendRequest(const std::string& request,
+void LegionInternalsPageHandler::SendRequest(const std::string& feature_name,
+                                             const std::string& request,
                                              SendRequestCallback callback) {
   if (!client_) {
     auto result = legion_internals::mojom::LegionResponse::New();
@@ -51,8 +48,16 @@ void LegionInternalsPageHandler::SendRequest(const std::string& request,
     return;
   }
 
+  legion::proto::FeatureName feature_name_proto;
+  if (!legion::proto::FeatureName_Parse(feature_name, &feature_name_proto)) {
+    auto result = legion_internals::mojom::LegionResponse::New();
+    result->error = std::string("Error: invalid feature_name: ") + feature_name;
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
   client_->SendTextRequest(
-      request,
+      feature_name_proto, request,
       base::BindOnce(
           [](SendRequestCallback callback,
              base::expected<std::string, legion::ErrorCode> response) {

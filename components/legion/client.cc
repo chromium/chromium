@@ -72,18 +72,16 @@ void OnRequestSent(
 
 // static
 std::unique_ptr<Client> Client::Create(
-    network::mojom::NetworkContext* network_context,
-    proto::FeatureName feature_name) {
+    network::mojom::NetworkContext* network_context) {
   return CreateWithUrl(
       FormatUrl(legion::kLegionUrl.Get(), legion::kLegionApiKey.Get()),
-      network_context, feature_name);
+      network_context);
 }
 
 // static
 std::unique_ptr<Client> Client::CreateWithUrl(
     const GURL& url,
-    network::mojom::NetworkContext* network_context,
-    proto::FeatureName feature_name) {
+    network::mojom::NetworkContext* network_context) {
   if (!base::FeatureList::IsEnabled(kLegion)) {
     return nullptr;
   }
@@ -99,7 +97,7 @@ std::unique_ptr<Client> Client::CreateWithUrl(
       std::move(transport), std::move(secure_session),
       std::move(attestation_handler));
 
-  return base::WrapUnique(new Client(std::move(secure_channel), feature_name));
+  return base::WrapUnique(new Client(std::move(secure_channel)));
 }
 
 // static
@@ -107,9 +105,8 @@ GURL Client::FormatUrl(const std::string& url, const std::string& api_key) {
   return GURL(base::StrCat({"wss://", url, "?key=", api_key}));
 }
 
-Client::Client(std::unique_ptr<SecureChannel> secure_channel,
-               proto::FeatureName feature_name)
-    : secure_channel_(std::move(secure_channel)), feature_name_(feature_name) {
+Client::Client(std::unique_ptr<SecureChannel> secure_channel)
+    : secure_channel_(std::move(secure_channel)) {
   CHECK(secure_channel_);
   secure_channel_->SetResponseCallback(
       base::BindRepeating(&Client::OnResponseReceived, base::Unretained(this)));
@@ -133,7 +130,8 @@ void Client::SendRequest(int32_t request_id,
   }
 }
 
-void Client::SendTextRequest(const std::string& text,
+void Client::SendTextRequest(proto::FeatureName feature_name,
+                             const std::string& text,
                              OnTextRequestCompletedCallback callback) {
   proto::GenerateContentRequest request;
   auto* content = request.add_contents();
@@ -144,17 +142,19 @@ void Client::SendTextRequest(const std::string& text,
   auto text_response_callback =
       base::BindOnce(&OnGenerateContentRequestCompleted, std::move(callback));
 
-  SendGenerateContentRequest(request, std::move(text_response_callback));
+  SendGenerateContentRequest(feature_name, request,
+                             std::move(text_response_callback));
 }
 
 void Client::SendGenerateContentRequest(
+    proto::FeatureName feature_name,
     const proto::GenerateContentRequest& request,
     OnGenerateContentRequestCompletedCallback callback) {
   int32_t request_id = next_request_id_;
   next_request_id_++;
 
   proto::LegionRequest request_proto;
-  request_proto.set_feature_name(feature_name_);
+  request_proto.set_feature_name(feature_name);
   request_proto.set_request_id(request_id);
   *request_proto.mutable_generate_content_request() = request;
 

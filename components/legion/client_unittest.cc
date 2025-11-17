@@ -97,9 +97,7 @@ class ClientTest : public ::testing::Test {
     EXPECT_CALL(*mock_secure_channel_, SetResponseCallback(_))
         .WillOnce(testing::SaveArg<0>(&response_callback_));
 
-    client_ = base::WrapUnique(
-        new Client(std::move(mock_secure_channel),
-                   proto::FeatureName::FEATURE_NAME_UNSPECIFIED));
+    client_ = base::WrapUnique(new Client(std::move(mock_secure_channel)));
   }
 
  protected:
@@ -130,7 +128,8 @@ TEST_F(ClientTest, SendTextRequestSuccess) {
   SetUpMockWrite(mock_secure_channel_, response_callback_, response_data);
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
-  client_->SendTextRequest("some text", future.GetCallback());
+  client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+                           "some text", future.GetCallback());
 
   const auto& result = future.Get();
   ASSERT_TRUE(result.has_value());
@@ -142,7 +141,8 @@ TEST_F(ClientTest, SendTextRequestWriteFails) {
   EXPECT_CALL(*mock_secure_channel_, Write(_)).WillOnce(testing::Return(false));
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
-  client_->SendTextRequest("some text", future.GetCallback());
+  client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+                           "some text", future.GetCallback());
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -172,7 +172,8 @@ TEST_F(ClientTest, IgnoresResponseWithUnknownRequestId) {
                  /*mismatch_request_id=*/true);
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
-  client_->SendTextRequest("some text", future.GetCallback());
+  client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+                           "some text", future.GetCallback());
 
   // Run all pending tasks. The response callback in the client should have been
   // called, but it should have done nothing.
@@ -199,7 +200,8 @@ TEST_P(ClientSendTextRequestSecureChannelErrorTest, SendTextRequestError) {
       });
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
-  client_->SendTextRequest("some text", future.GetCallback());
+  client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+                           "some text", future.GetCallback());
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -224,7 +226,8 @@ TEST_P(ClientSendTextRequestResponseErrorTest, SendTextRequestError) {
                  param.mismatch_request_id);
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
-  client_->SendTextRequest("some text", future.GetCallback());
+  client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+                           "some text", future.GetCallback());
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -277,8 +280,9 @@ TEST_P(ClientSendGenerateContentRequestErrorTest,
   base::test::TestFuture<
       base::expected<proto::GenerateContentResponse, ErrorCode>>
       future;
-  client_->SendGenerateContentRequest(proto::GenerateContentRequest(),
-                                      future.GetCallback());
+  client_->SendGenerateContentRequest(
+      proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
+      proto::GenerateContentRequest(), future.GetCallback());
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
