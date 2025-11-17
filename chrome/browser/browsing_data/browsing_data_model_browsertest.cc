@@ -41,7 +41,6 @@
 #include "components/browsing_data/content/shared_worker_info.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/performance_manager/public/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
@@ -535,7 +534,7 @@ class BrowsingDataModelBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::test_server::EmbeddedTestServer::TYPE_HTTPS);
-    https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_->SetCertHostnames({kTestHost, kTestHost2, kTestHost3});
     https_server_->AddDefaultHandlers(
         base::FilePath(FILE_PATH_LITERAL("content/test/data")));
     network::test::RegisterTrustTokenTestHandlers(https_test_server(),
@@ -562,7 +561,6 @@ class BrowsingDataModelBrowserTest
     RegisterClearKeyCdm(command_line);
 #endif
     // These switches are needed to run FedCM and auto-select the first account.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
     command_line->AppendSwitchASCII(switches::kUseFakeUIForFedCM, kAccountId);
   }
 
