@@ -12,6 +12,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "content/browser/renderer_host/popup_menu_helper_ios.h"
 #include "content/browser/renderer_host/render_widget_host_view_ios.h"
 #include "content/browser/web_contents/web_contents_impl.h"
