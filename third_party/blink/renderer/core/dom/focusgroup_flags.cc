@@ -516,4 +516,27 @@ ax::mojom::blink::Role FocusgroupMinimumAriaRole(const FocusgroupData& data) {
                << static_cast<int>(data.behavior);
 }
 
+ax::mojom::blink::Role FocusgroupItemMinimumAriaRole(
+    const FocusgroupData& data) {
+  switch (data.behavior) {
+    case FocusgroupBehavior::kTablist:
+      return ax::mojom::blink::Role::kTab;
+    case FocusgroupBehavior::kRadiogroup:
+      return ax::mojom::blink::Role::kRadioButton;
+    case FocusgroupBehavior::kListbox:
+      return ax::mojom::blink::Role::kListBoxOption;
+    case FocusgroupBehavior::kMenu:
+    case FocusgroupBehavior::kMenubar:
+      return ax::mojom::blink::Role::kMenuItem;
+    case FocusgroupBehavior::kToolbar:
+    case FocusgroupBehavior::kGrid:
+    case FocusgroupBehavior::kNoBehavior:
+    case FocusgroupBehavior::kOptOut:
+      return ax::mojom::blink::Role::kUnknown;  // No mapping.
+  }
+  NOTREACHED()
+      << "Unhandled FocusgroupBehavior in FocusgroupItemMinimumAriaRole: "
+      << static_cast<int>(data.behavior);
+}
+
 }  // namespace blink::focusgroup

@@ -107,6 +107,12 @@ CORE_EXPORT bool IsActualFocusgroup(const FocusgroupData& data);
 // given focusgroup flags.
 CORE_EXPORT ax::mojom::blink::Role FocusgroupMinimumAriaRole(
     const FocusgroupData& data);
+
+// Returns the implied ARIA role for an item inside a focusgroup owner whose
+// role was itself implied (i.e. generic container with no explicit role
+// attribute). Returns kUnknown if no mapping should be implied.
+CORE_EXPORT ax::mojom::blink::Role FocusgroupItemMinimumAriaRole(
+    const FocusgroupData& data);
 }  // namespace focusgroup
 
 // The "::blink" prefix is to avoid false-positive of audit_non_blink_usages.py.

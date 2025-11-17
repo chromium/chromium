@@ -173,6 +173,84 @@ TEST_F(AccessibilityTest, FocusgroupOwnerDoesNotOverrideNativeSemantics) {
   EXPECT_EQ(ax::mojom::Role::kList, fg->RoleValue());
 }
 
+TEST_F(AccessibilityTest, FocusgroupItemImpliedRoleTablist) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="fg" focusgroup="tablist">
+        <span tabindex="0" id="child">Item</span>
+      </div>)HTML");
+  const AXObject* child = GetAXObjectByElementId("child");
+  ASSERT_NE(nullptr, child);
+  EXPECT_EQ(ax::mojom::Role::kTab, child->ComputeFinalRoleForSerialization());
+}
+
+TEST_F(AccessibilityTest, FocusgroupItemImpliedRoleRadiogroup) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="fg" focusgroup="radiogroup">
+        <span tabindex="0" id="child">Item</span>
+      </div>)HTML");
+  const AXObject* child = GetAXObjectByElementId("child");
+  ASSERT_NE(nullptr, child);
+  EXPECT_EQ(ax::mojom::Role::kRadioButton,
+            child->ComputeFinalRoleForSerialization());
+}
+
+TEST_F(AccessibilityTest, FocusgroupItemImpliedRoleListbox) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="fg" focusgroup="listbox">
+        <span tabindex="0" id="child">Item</span>
+      </div>)HTML");
+  const AXObject* child = GetAXObjectByElementId("child");
+  ASSERT_NE(nullptr, child);
+  EXPECT_EQ(ax::mojom::Role::kListBoxOption,
+            child->ComputeFinalRoleForSerialization());
+}
+
+TEST_F(AccessibilityTest, FocusgroupItemImpliedRoleMenu) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="fg" focusgroup="menu">
+        <span tabindex="0" id="child">Item</span>
+      </div>)HTML");
+  const AXObject* child = GetAXObjectByElementId("child");
+  ASSERT_NE(nullptr, child);
+  EXPECT_EQ(ax::mojom::Role::kMenuItem,
+            child->ComputeFinalRoleForSerialization());
+}
+
+TEST_F(AccessibilityTest, FocusgroupItemImpliedRoleMenubar) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="fg" focusgroup="menubar">
+        <span tabindex="0" id="child">Item</span>
+      </div>)HTML");
+  const AXObject* child = GetAXObjectByElementId("child");
+  ASSERT_NE(nullptr, child);
+  EXPECT_EQ(ax::mojom::Role::kMenuItem,
+            child->ComputeFinalRoleForSerialization());
+}
+
+TEST_F(AccessibilityTest, FocusgroupItemExplicitRolePreserved) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="fg" focusgroup="tablist">
+        <span tabindex="0" id="child" role="listitem">Item</span>
+      </div>)HTML");
+  const AXObject* child = GetAXObjectByElementId("child");
+  ASSERT_NE(nullptr, child);
+  // Explicit author role should not be overridden by implied mapping.
+  EXPECT_EQ(ax::mojom::Role::kListItem,
+            child->ComputeFinalRoleForSerialization());
+}
+
+TEST_F(AccessibilityTest, FocusgroupItemNativeSemanticsPreserved) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="fg" focusgroup="radiogroup">
+        <button id="child">Button</button>
+      </div>)HTML");
+  const AXObject* child = GetAXObjectByElementId("child");
+  ASSERT_NE(nullptr, child);
+  // Native button semantics should remain, not replaced by radio.
+  EXPECT_EQ(ax::mojom::Role::kButton,
+            child->ComputeFinalRoleForSerialization());
+}
+
 TEST_F(AccessibilityTest,
        TextOffsetInFormattingContextWithCSSGeneratedContent) {
   SetBodyInnerHTML(R"HTML(
