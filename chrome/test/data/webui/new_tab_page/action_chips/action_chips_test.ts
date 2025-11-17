@@ -4,8 +4,8 @@
 
 import 'chrome://new-tab-page/lazy_load.js';
 
-import {ActionChipsHandlerRemote, ChipType} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
-import type {ActionChip, TabInfo} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
+import {ActionChipsHandlerRemote, ChipType, PageCallbackRouter} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
+import type {ActionChip, PageRemote, TabInfo} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
 import {ActionChipsApiProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import type {ActionChipsElement} from 'chrome://new-tab-page/lazy_load.js';
 import type {TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
@@ -14,13 +14,14 @@ import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/ch
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../test_support.js';
 
 suite('NewTabPageActionChipsTest', () => {
   let chips: ActionChipsElement;
   let handler: TestMock<ActionChipsHandlerRemote>;
+  let pageRemote: PageRemote;
 
   interface InitializeChipsOptions {
     actionChips: ActionChip[];
@@ -56,8 +57,10 @@ suite('NewTabPageActionChipsTest', () => {
       ],
     };
     const options = {...defaultOptions, ...providedOptions};
-    handler.setResultFor(
-        'getActionChips', Promise.resolve({actionChips: options.actionChips}));
+    handler.setResultMapperFor('startActionChipsRetrieval', () => {
+      pageRemote.onActionChipsChanged(options.actionChips);
+      pageRemote.$.flushForTesting();
+    });
 
     loadTimeData.overrideValues({
       addTabUploadDelayOnActionChipClick: true,
@@ -65,15 +68,19 @@ suite('NewTabPageActionChipsTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     chips = document.createElement('ntp-action-chips');
     document.body.append(chips);
-    await Promise.all([
-      handler.whenCalled('getActionChips'),
-    ]);
+    await handler.whenCalled('startActionChipsRetrieval');
+    await microtasksFinished();
   }
 
   setup(() => {
-    handler = installMock(
-        ActionChipsHandlerRemote,
-        mock => ActionChipsApiProxyImpl.setInstance({getHandler: () => mock}));
+    const callbackRouter = new PageCallbackRouter();
+    handler = installMock(ActionChipsHandlerRemote, (mock) => {
+      ActionChipsApiProxyImpl.setInstance({
+        getHandler: () => mock,
+        getCallbackRouter: () => callbackRouter,
+      });
+    });
+    pageRemote = callbackRouter.$.bindNewPipeAndPassRemote();
   });
 
   test('should render base chips', async () => {
@@ -200,10 +207,10 @@ suite('NewTabPageActionChipsTest', () => {
     });
   });
 
-  suite('getActionChips', () => {
+  suite('startActionChipsRetrieval', () => {
     test('Handler is called on load', async () => {
       await initializeChips({});
-      assertEquals(1, handler.getCallCount('getActionChips'));
+      assertEquals(1, handler.getCallCount('startActionChipsRetrieval'));
     });
 
     test(

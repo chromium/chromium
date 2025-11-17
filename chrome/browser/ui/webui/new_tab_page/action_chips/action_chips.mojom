@@ -40,12 +40,21 @@ struct ActionChip {
 
 // Interface for the browser-side handler.
 interface ActionChipsHandler {
-  // Retrieves the information needed for action chips.
-  GetActionChips() => (array<ActionChip> action_chips);
+  // Start retrieving the information needed for action chips.
+  // Once the retrieval is complete, Page::OnActionChipsChanged is called to
+  // notify the UI.
+  StartActionChipsRetrieval();
+};
+
+// Interface for the page-side handler receiving information from the browser.
+interface Page {
+  // Notifies the page that a new set of action chips is ready.
+  OnActionChipsChanged(array<ActionChip> action_chips);
 };
 
 // Factory to create the ActionChipsHandler.
 interface ActionChipsHandlerFactory {
   // The WebUI component calls this method when the page is first initialized.
-  CreateActionChipsHandler(pending_receiver<ActionChipsHandler> handler);
+  CreateActionChipsHandler(pending_receiver<ActionChipsHandler> handler,
+                           pending_remote<Page> page);
 };

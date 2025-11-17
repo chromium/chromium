@@ -641,8 +641,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("steadyComposeboxShowVoiceSearch",
                      ntp_composebox::kShowVoiceSearchInSteadyComposebox.Get());
 
-  source->AddBoolean("expandedComposeboxShowVoiceSearch",
-                     ntp_composebox::kShowVoiceSearchInExpandedComposebox.Get());
+  source->AddBoolean(
+      "expandedComposeboxShowVoiceSearch",
+      ntp_composebox::kShowVoiceSearchInExpandedComposebox.Get());
   source->AddBoolean(
       "addTabUploadDelayOnRecentTabChipClick",
       ntp_composebox::kAddTabUploadDelayOnRecentTabChipClick.Get());
@@ -1192,8 +1193,7 @@ void NewTabPageUI::CreatePageHandler(
 
   composebox_handler_ = std::make_unique<ComposeboxHandler>(
       std::move(pending_page_handler), std::move(pending_page),
-      std::move(pending_searchbox_handler),
-      profile_, web_contents());
+      std::move(pending_searchbox_handler), profile_, web_contents());
 
   // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.
   composebox_handler_->SetPage(std::move(pending_searchbox_page));
@@ -1216,9 +1216,11 @@ void NewTabPageUI::CreateNtpPromoHandler(
 }
 
 void NewTabPageUI::CreateActionChipsHandler(
-    mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler> handler) {
+    mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler> handler,
+    mojo::PendingRemote<action_chips::mojom::Page> page) {
   action_chips_handler_ = std::make_unique<ActionChipsHandler>(
-      std::move(handler), profile_, web_ui(), TabIdGeneratorImpl::Get());
+      std::move(handler), std::move(page), profile_, web_ui(),
+      TabIdGeneratorImpl::Get());
 }
 
 // OnColorProviderChanged can be called during the destruction process and

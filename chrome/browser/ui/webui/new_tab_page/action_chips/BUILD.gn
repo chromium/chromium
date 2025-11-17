@@ -41,6 +41,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "action_chips_handler_unittest.cc",
+    "action_chips_mojo_test_utils.cc",
+    "action_chips_mojo_test_utils.h",
     "fake_tab_id_generator.cc",
     "fake_tab_id_generator.h",
   ]

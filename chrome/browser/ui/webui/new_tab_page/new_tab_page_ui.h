@@ -300,8 +300,8 @@ class NewTabPageUI
 
   // action_chips::mojom::ActionChipsHandlerFactory:
   void CreateActionChipsHandler(
-      mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler> handler)
-      override;
+      mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler> handler,
+      mojo::PendingRemote<action_chips::mojom::Page> page) override;
 
   // NtpCustomBackgroundServiceObserver:
   void OnCustomBackgroundImageUpdated() override;

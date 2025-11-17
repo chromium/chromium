@@ -21,6 +21,7 @@
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "url/mojom/url.mojom.h"
@@ -117,19 +118,29 @@ void RecordImpressionMetrics(const std::vector<ActionChipPtr>& chips) {
 
 ActionChipsHandler::ActionChipsHandler(
     mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler> receiver,
+    mojo::PendingRemote<action_chips::mojom::Page> page,
     Profile* profile,
     content::WebUI* web_ui,
     const TabIdGenerator* tab_id_generator)
     : receiver_(this, std::move(receiver)),
+      page_(std::move(page)),
       profile_(profile),
       web_ui_(web_ui),
-      tab_id_generator_(tab_id_generator) {}
+      tab_id_generator_(tab_id_generator) {
+  content::WebContents* web_contents = web_ui_->GetWebContents();
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents);
+  // No need to call RemoveObserver later since TabStripModelObserver takes care
+  // of it in its destructor.
+  browser_window_interface->GetTabStripModel()->AddObserver(this);
+}
 
 ActionChipsHandler::~ActionChipsHandler() = default;
 
-void ActionChipsHandler::GetActionChips(
-    base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>
-        callback) {
+void ActionChipsHandler::StartActionChipsRetrieval() {
+  if (!page_.is_bound()) {
+    return;
+  }
   const TabInterface* tab = FindMostRecentTab(*web_ui_);
   std::vector<ActionChipPtr> chips;
   if (tab != nullptr) {
@@ -141,5 +152,12 @@ void ActionChipsHandler::GetActionChips(
 
   RecordImpressionMetrics(chips);
 
-  std::move(callback).Run(std::move(chips));
+  page_->OnActionChipsChanged(std::move(chips));
+}
+
+void ActionChipsHandler::OnTabStripModelChanged(
+    TabStripModel*,
+    const TabStripModelChange&,
+    const TabStripSelectionChange&) {
+  StartActionChipsRetrieval();
 }
