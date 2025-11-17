@@ -251,9 +251,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   EXPECT_EQ(9u, model->GetItemCount());
 }
 
-// TODO(https://crbug.com/459561205): flaky on ChromeOS ASAN LSAN.
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
-    defined(LEAK_SANITIZER)
+// TODO(crbug.com/460910010): Flaky, especially on CrOS ASAN LSAN and Win ASAN.
+#if defined(ADDRESS_SANITIZER) && \
+    ((BUILDFLAG(IS_CHROMEOS) && defined(LEAK_SANITIZER)) || BUILDFLAG(IS_WIN))
 #define MAYBE_ExecuteCommand DISABLED_ExecuteCommand
 #else
 #define MAYBE_ExecuteCommand ExecuteCommand
