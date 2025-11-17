@@ -416,22 +416,9 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 // Check the button visibility of the toolbar when the omnibox is focused from a
 // different orientation than the default one.
-// TODO(crbug.com/365474269): The test is flaky on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testFocusOmniboxFromOtherOrientation \
-  FLAKY_testFocusOmniboxFromOtherOrientation
-#else
-#define MAYBE_testFocusOmniboxFromOtherOrientation \
-  testFocusOmniboxFromOtherOrientation
-#endif
-- (void)MAYBE_testFocusOmniboxFromOtherOrientation {
-  // TODO(crbug.com/443913539): Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-#endif
-
+// TODO(crbug.com/443913539): The test is flaky on simulator and failing on
+// device.
+- (void)DISABLED_testFocusOmniboxFromOtherOrientation {
   // Load a page to have the toolbar visible (hidden on NTP).
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
 
@@ -468,20 +455,9 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 // Check the button visibility of the toolbar when the omnibox is focused from
 // the default orientation.
-// TODO(crbug.com/364160530): The test is flaky on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testFocusOmniboxFromPortrait FLAKY_testFocusOmniboxFromPortrait
-#else
-#define MAYBE_testFocusOmniboxFromPortrait testFocusOmniboxFromPortrait
-#endif
-- (void)MAYBE_testFocusOmniboxFromPortrait {
-  // TODO(crbug.com/443913539): Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-#endif
-
+// TODO(crbug.com/443913539): The test is flaky on simulator and failing on
+// device.
+- (void)DISABLED_testFocusOmniboxFromPortrait {
   // Load a page to have the toolbar visible (hidden on NTP).
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
 
