@@ -1,10 +1,12 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import './composebox_tool_chip.js';
 import './context_menu_entrypoint.js';
 import './file_carousel.js';
-import './recent_tab_chip.js';
 import './icons.html.js';
+import './recent_tab_chip.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
