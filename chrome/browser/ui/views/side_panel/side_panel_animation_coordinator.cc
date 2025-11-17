@@ -1,0 +1,265 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/side_panel/side_panel_animation_coordinator.h"
+
+#include <algorithm>
+#include <utility>
+
+#include "base/notreached.h"
+#include "base/time/time.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_animation_ids.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/animation/tween.h"
+
+namespace {
+
+// Returns true if the AnimationCoordinator is in an open state.
+bool IsAnimatingOpen(SidePanelAnimationCoordinator ::AnimationType type) {
+  return type != SidePanelAnimationCoordinator::AnimationType::kClose;
+}
+
+}  // namespace
+
+using AnimationSpecification =
+    SidePanelAnimationCoordinator::AnimationSpecification;
+using AnimationSequence = SidePanelAnimationCoordinator::AnimationSequence;
+
+AnimationSpecification::AnimationSpecification(
+    gfx::Tween::Type tween_type,
+    std::vector<AnimationSequence> sequences)
+    : tween_type(tween_type), sequences(sequences) {}
+AnimationSpecification::AnimationSpecification(const AnimationSpecification&) =
+    default;
+AnimationSpecification::~AnimationSpecification() = default;
+
+base::TimeDelta AnimationSpecification::GetAnimationDuration() const {
+  base::TimeDelta duration;
+  for (const AnimationSequence& sequence : sequences) {
+    duration = std::max(duration, sequence.start + sequence.duration);
+  }
+
+  return duration;
+}
+
+const AnimationSequence& AnimationSpecification::GetSequenceForAnimationId(
+    const SidePanelAnimationId& animation_id) const {
+  for (const AnimationSequence& sequence : sequences) {
+    if (sequence.animation_id == animation_id) {
+      return sequence;
+    }
+  }
+
+  NOTREACHED() << "Sequence not found";
+}
+
+bool AnimationSpecification::HasAnimationId(
+    const SidePanelAnimationId& animation_id) const {
+  for (const AnimationSequence& sequence : sequences) {
+    if (sequence.animation_id == animation_id) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool AnimationSpecification::IsSequenceRunning(
+    const SidePanelAnimationId& animation_id,
+    base::TimeDelta elapsed_time) const {
+  const AnimationSequence& sequence = GetSequenceForAnimationId(animation_id);
+  return sequence.start <= elapsed_time &&
+         sequence.start + sequence.duration >= elapsed_time;
+}
+
+SidePanelAnimationCoordinator::SidePanelAnimationCoordinator(
+    SidePanel* side_panel)
+    : views::AnimationDelegateViews(side_panel) {
+  const bool is_content_height_panel =
+      side_panel->type() == SidePanelEntry::PanelType::kContent;
+
+  animation_spec_map_ = {
+      {AnimationType::kOpen,
+       {{AnimationSpecification(
+           /*tween_type=*/is_content_height_panel
+               ? gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED
+               : gfx::Tween::Type::ACCEL_45_DECEL_88,
+           /*sequences=*/{{.animation_id = kSidePanelBoundsAnimation,
+                           .start = base::Milliseconds(0),
+                           .duration = base::Milliseconds(
+                               is_content_height_panel ? 450 : 350)}})}}},
+      {AnimationType::kClose,
+       {AnimationSpecification(
+           /*tween_type=*/is_content_height_panel
+               ? gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED
+               : gfx::Tween::Type::ACCEL_45_DECEL_88,
+           /*sequences=*/{{.animation_id = kSidePanelBoundsAnimation,
+                           .start = base::Milliseconds(0),
+                           .duration = base::Milliseconds(
+                               is_content_height_panel ? 450 : 350)}})}}};
+
+  Reset(AnimationType::kClose);
+}
+
+SidePanelAnimationCoordinator::~SidePanelAnimationCoordinator() = default;
+
+void SidePanelAnimationCoordinator::Start(AnimationType type) {
+  if (type == animation_type_ && !animation_.is_animating()) {
+    return;
+  }
+
+  animation_type_ = type;
+  animation_.SetSlideDuration(GetAnimationDuration(type));
+
+  if (IsAnimatingOpen(type)) {
+    animation_.Show();
+  } else {
+    animation_.Hide();
+  }
+}
+
+void SidePanelAnimationCoordinator::Reset(AnimationType type) {
+  animation_type_ = type;
+
+  if (IsAnimatingOpen(type)) {
+    animation_.Reset(1.0f);
+  } else {
+    animation_.Reset(0.0f);
+  }
+}
+
+void SidePanelAnimationCoordinator::AddObserver(
+    const SidePanelAnimationId& animation_id,
+    Observer* observer) {
+  animation_id_to_observer_map_[animation_id].push_back(observer);
+}
+
+void SidePanelAnimationCoordinator::RemoveObserver(
+    const SidePanelAnimationId& animation_id,
+    Observer* observer) {
+  auto it = std::ranges::remove(animation_id_to_observer_map_[animation_id],
+                                observer);
+  CHECK(it);
+}
+
+double SidePanelAnimationCoordinator::GetAnimationValueFor(
+    const SidePanelAnimationId& animation_id) {
+  if (!animation_.is_animating()) {
+    // If the overall animation is not running, return the final value directly.
+    return IsAnimatingOpen(animation_type_) ? 1.0 : 0.0;
+  }
+
+  const AnimationSpecification& specification =
+      GetAnimationSpecificationForAnimationId(animation_id);
+
+  const AnimationSequence sequence =
+      specification.GetSequenceForAnimationId(animation_id);
+
+  base::TimeDelta start_time = sequence.start;
+  base::TimeDelta duration = sequence.duration;
+  base::TimeDelta end_time = start_time + duration;
+
+  const base::TimeDelta elapsed_time = GetElapsedAnimationTime();
+
+  double progress = 0.0f;
+  if (elapsed_time <= start_time) {
+    progress = 0.0f;
+  } else if (elapsed_time >= end_time) {
+    progress = 1.0f;
+  } else {
+    progress = (elapsed_time - start_time) / duration;
+  }
+
+  progress = AdjustProgressForAnimationType(progress);
+  return gfx::Tween::CalculateValue(specification.tween_type, progress);
+}
+
+bool SidePanelAnimationCoordinator::IsClosing() {
+  return animation_.IsClosing();
+}
+
+void SidePanelAnimationCoordinator::AnimationProgressed(
+    const gfx::Animation* animation) {
+  for (auto& [animation_id, observers] : animation_id_to_observer_map_) {
+    if (!IsAnimationSequenceRunning(animation_id)) {
+      continue;
+    }
+
+    for (Observer* observer : observers) {
+      observer->OnAnimationSequenceProgressed(
+          animation_id, GetAnimationValueFor(animation_id));
+    }
+  }
+}
+
+void SidePanelAnimationCoordinator::AnimationEnded(
+    const gfx::Animation* animation) {
+  for (auto& [animation_id, observers] : animation_id_to_observer_map_) {
+    if (!IsAnimationSequenceFinished(animation_id)) {
+      continue;
+    }
+    for (Observer* observer : observers) {
+      observer->OnAnimationSequenceEnded(animation_id);
+    }
+  }
+}
+
+double SidePanelAnimationCoordinator::AdjustProgressForAnimationType(
+    double progress) const {
+  // The underlying `gfx::SlideAnimation` always provides a progress value
+  // from 0.0 to 1.0. For an 'open' animation, this is what we want (0% open
+  // to 100% open). For a 'close' animation, we want the opposite: to animate
+  // from a fully open state (1.0) to a closed state (0.0). This function
+  // inverts the progress for closing animations to achieve this.
+  return IsAnimatingOpen(animation_type_) ? progress : 1 - progress;
+}
+
+base::TimeDelta SidePanelAnimationCoordinator::GetElapsedAnimationTime() const {
+  double progress =
+      AdjustProgressForAnimationType(animation_.GetCurrentValue());
+  return animation_.GetSlideDuration() * progress;
+}
+
+base::TimeDelta SidePanelAnimationCoordinator::GetAnimationDuration(
+    AnimationType type) {
+  base::TimeDelta duration;
+  for (const AnimationSpecification& animation : animation_spec_map_[type]) {
+    duration = std::max(duration, animation.GetAnimationDuration());
+  }
+
+  return duration;
+}
+
+bool SidePanelAnimationCoordinator::IsAnimationSequenceRunning(
+    const SidePanelAnimationId& animation_id) {
+  return GetAnimationSpecificationForAnimationId(animation_id)
+      .IsSequenceRunning(animation_id, GetElapsedAnimationTime());
+}
+
+bool SidePanelAnimationCoordinator::IsAnimationSequenceFinished(
+    const SidePanelAnimationId& animation_id) {
+  const AnimationSpecification& specification =
+      GetAnimationSpecificationForAnimationId(animation_id);
+  const AnimationSequence& sequence =
+      specification.GetSequenceForAnimationId(animation_id);
+  return GetElapsedAnimationTime() >= sequence.start + sequence.duration;
+}
+
+const AnimationSpecification&
+SidePanelAnimationCoordinator::GetAnimationSpecificationForAnimationId(
+    const SidePanelAnimationId& animation_id) {
+  auto animation_it = std::ranges::find_if(
+      animation_spec_map_[animation_type_],
+      [animation_id](const AnimationSpecification& specification) {
+        return specification.HasAnimationId(animation_id);
+      });
+
+  CHECK(animation_it != animation_spec_map_[animation_type_].end())
+      << "Property not found";
+
+  return *animation_it;
+}

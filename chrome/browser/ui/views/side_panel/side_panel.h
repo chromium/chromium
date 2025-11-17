@@ -9,6 +9,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_animation_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_animation_ids.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -22,7 +24,8 @@ class BrowserView;
 
 class SidePanel : public views::AccessiblePaneView,
                   public views::ResizeAreaDelegate,
-                  public views::AnimationDelegateViews {
+                  public views::ViewObserver,
+                  public SidePanelAnimationCoordinator::Observer {
   METADATA_HEADER(SidePanel, views::AccessiblePaneView)
 
  public:
@@ -39,6 +42,10 @@ class SidePanel : public views::AccessiblePaneView,
   SidePanel(const SidePanel&) = delete;
   SidePanel& operator=(const SidePanel&) = delete;
   ~SidePanel() override;
+
+  SidePanelAnimationCoordinator* animation_coordinator() {
+    return animation_coordinator_.get();
+  }
 
   void SetPanelWidth(int width);
   bool ShouldRestrictMaxWidth() const;
@@ -115,9 +122,13 @@ class SidePanel : public views::AccessiblePaneView,
   void OnChildViewAdded(View* observed_view, View* child) override;
   void OnChildViewRemoved(View* observed_view, View* child) override;
 
-  // views::AnimationDelegateViews:
-  void AnimationProgressed(const gfx::Animation* animation) override;
-  void AnimationEnded(const gfx::Animation* animation) override;
+  // SidePanelAnimationCoordinator::AnimationObserver
+  void OnAnimationSequenceProgressed(
+      const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id,
+      double animation_value) override;
+  void OnAnimationSequenceEnded(
+      const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id)
+      override;
 
   // Timestamp of the last step in the side panel open/close animation. This is
   // used for metrics purposes.
@@ -143,8 +154,10 @@ class SidePanel : public views::AccessiblePaneView,
 
   bool animations_disabled_ = false;
 
-  // Animation controlling showing and hiding of the side panel.
-  gfx::SlideAnimation animation_{this};
+  // The animation coordinator for the side panel. This controls all of the
+  // animations that are tied to the side panel when triggering the show and
+  // hide states.
+  std::unique_ptr<SidePanelAnimationCoordinator> animation_coordinator_;
 
   // Helps to clip layer backed children to their visible bounds.
   // TODO: 344626785 - Remove this once WebView layer behavior has been fixed.

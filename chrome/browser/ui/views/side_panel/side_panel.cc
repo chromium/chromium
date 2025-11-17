@@ -18,6 +18,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_animation_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_animation_ids.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_resize_area.h"
@@ -75,11 +77,6 @@ gfx::Insets GetBorderInsets() {
   return gfx::Insets::TLBR(-kOverlapFromToolbar, border_thickness,
                            border_thickness, border_thickness);
 }
-
-constexpr base::TimeDelta kContentsHeightSidePanelAnimationDuration =
-    base::Milliseconds(450);
-constexpr base::TimeDelta kToolbarHeightSidePanelAnimationDuration =
-    base::Milliseconds(350);
 
 // This border paints the toolbar color around the side panel content and draws
 // a roundrect viewport around the side panel content. The border can have
@@ -352,8 +349,7 @@ SidePanel::SidePanel(BrowserView* browser_view,
                      SidePanelEntry::PanelType type,
                      bool has_border,
                      HorizontalAlignment horizontal_alignment)
-    : views::AnimationDelegateViews(this),
-      browser_view_(browser_view),
+    : browser_view_(browser_view),
       type_(type),
       visible_bounds_view_clipper_(
           std::make_unique<VisibleBoundsViewClipper>(this)),
@@ -379,13 +375,9 @@ SidePanel::SidePanel(BrowserView* browser_view,
       base::BindRepeating(&BrowserView::UpdateSidePanelHorizontalAlignment,
                           base::Unretained(browser_view)));
 
-  if (type_ == SidePanelEntry::PanelType::kContent) {
-    animation_.SetTweenType(gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED);
-    animation_.SetSlideDuration(kContentsHeightSidePanelAnimationDuration);
-  } else {
-    animation_.SetTweenType(gfx::Tween::Type::ACCEL_45_DECEL_88);
-    animation_.SetSlideDuration(kToolbarHeightSidePanelAnimationDuration);
-  }
+  animation_coordinator_ =
+      std::make_unique<SidePanelAnimationCoordinator>(this);
+  animation_coordinator_->AddObserver(kSidePanelBoundsAnimation, this);
 
   SetVisible(false);
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -405,7 +397,9 @@ SidePanel::SidePanel(BrowserView* browser_view,
   content_parent_view_->SetVisible(false);
 }
 
-SidePanel::~SidePanel() = default;
+SidePanel::~SidePanel() {
+  animation_coordinator_->RemoveObserver(kSidePanelBoundsAnimation, this);
+}
 
 void SidePanel::SetPanelWidth(int width) {
   // Only the width is used by BrowserViewLayout.
@@ -490,7 +484,7 @@ gfx::Size SidePanel::GetMinimumSize() const {
 }
 
 bool SidePanel::IsClosing() {
-  return animation_.IsClosing();
+  return animation_coordinator_->IsClosing();
 }
 
 void SidePanel::AddHeaderView(std::unique_ptr<views::View> view) {
@@ -549,7 +543,8 @@ void SidePanel::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 
 double SidePanel::GetAnimationValue() const {
   if (ShouldShowAnimation()) {
-    return animation_.GetCurrentValue();
+    return animation_coordinator_->GetAnimationValueFor(
+        kSidePanelBoundsAnimation);
   } else {
     return 1;
   }
@@ -601,28 +596,41 @@ void SidePanel::OnChildViewRemoved(View* observed_view, View* child) {
   }
 }
 
-void SidePanel::AnimationProgressed(const gfx::Animation* animation) {
-  base::TimeDelta step_time =
-      base::TimeTicks::Now() - last_animation_step_timestamp_;
-  last_animation_step_timestamp_ = base::TimeTicks::Now();
+void SidePanel::OnAnimationSequenceProgressed(
+    const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id,
+    double animation_value) {
+  CHECK_EQ(kSidePanelBoundsAnimation, animation_id)
+      << "Observed animation id is not handled";
+
+  const base::TimeTicks now = base::TimeTicks::Now();
+  const base::TimeDelta elapsed = now - last_animation_step_timestamp_;
+  last_animation_step_timestamp_ = now;
+
   if (!largest_animation_step_time_.has_value() ||
-      largest_animation_step_time_ < step_time) {
-    largest_animation_step_time_ = step_time;
+      elapsed > largest_animation_step_time_.value()) {
+    largest_animation_step_time_ = elapsed;
   }
+
   InvalidateLayout();
 }
 
-void SidePanel::AnimationEnded(const gfx::Animation* animation) {
-  if (animation->GetCurrentValue() == 0) {
-    SetVisible(false);
-    state_ = State::kClosed;
-  } else {
+void SidePanel::OnAnimationSequenceEnded(
+    const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id) {
+  CHECK_EQ(kSidePanelBoundsAnimation, animation_id)
+      << "Observed animation id is not handled";
+
+  if (animation_coordinator_->GetAnimationValueFor(animation_id) != 0) {
     state_ = State::kOpen;
+  } else {
+    state_ = State::kClosed;
+    SetVisible(false);
   }
+
   if (largest_animation_step_time_.has_value()) {
     SidePanelUtil::RecordSidePanelAnimationMetrics(
         type_, largest_animation_step_time_.value());
   }
+
   InvalidateLayout();
 }
 
@@ -757,16 +765,19 @@ void SidePanel::UpdateVisibility(bool should_be_open, bool animate_transition) {
       SetVisible(should_be_open);
       largest_animation_step_time_.reset();
       last_animation_step_timestamp_ = base::TimeTicks::Now();
-      animation_.Show();
+      animation_coordinator_->Start(
+          SidePanelAnimationCoordinator::AnimationType::kOpen);
     } else if (GetVisible() && !IsClosing()) {
-      largest_animation_step_time_.reset();
-      last_animation_step_timestamp_ = base::TimeTicks::Now();
-      animation_.Hide();
+      animation_coordinator_->Start(
+          SidePanelAnimationCoordinator::AnimationType::kClose);
     }
   } else {
     // Set the animation value so that it accurately reflects what state the
     // side panel should be in for layout.
-    animation_.Reset(should_be_open ? 1 : 0);
+    animation_coordinator_->Reset(
+        should_be_open ? SidePanelAnimationCoordinator::AnimationType::kOpen
+                       : SidePanelAnimationCoordinator::AnimationType::kClose);
+
     SetVisible(should_be_open);
   }
 }
