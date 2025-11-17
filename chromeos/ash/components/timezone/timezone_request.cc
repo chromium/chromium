@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <array>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -427,8 +428,8 @@ void TimeZoneRequest::Retry(bool server_error) {
 }
 
 void TimeZoneRequest::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
-  bool is_success = !!response_body;
+    std::optional<std::string> response_body) {
+  bool is_success = response_body.has_value();
   int response_code = -1;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
     response_code = url_loader_->ResponseInfo()->headers->response_code();
@@ -436,7 +437,7 @@ void TimeZoneRequest::OnSimpleLoaderComplete(
 
   std::string data;
   std::unique_ptr<TimeZoneResponseData> timezone = GetTimeZoneFromResponse(
-      is_success, response_code, is_success ? *response_body : std::string(),
+      is_success, response_code, response_body.value_or(std::string()),
       url_loader_->GetFinalURL());
   const bool server_error =
       !is_success || (response_code >= 500 && response_code < 600);

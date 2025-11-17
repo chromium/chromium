@@ -85,7 +85,7 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   void OnJsonReceived(std::unique_ptr<network::SimpleURLLoader> loader,
                       const GURL& service_url,
                       base::TimeTicks start_time,
-                      std::unique_ptr<std::string> response_body);
+                      std::optional<std::string> response_body);
   void OnResponseReady(const GURL& service_url,
                        base::TimeTicks start_time,
                        std::optional<base::Value> response);

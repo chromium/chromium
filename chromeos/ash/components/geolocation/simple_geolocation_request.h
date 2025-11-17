@@ -6,6 +6,8 @@
 #define CHROMEOS_ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
@@ -81,7 +83,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   GURL GetServiceURLForTesting() const;
 
  private:
-  void OnSimpleURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleURLLoaderComplete(std::optional<std::string> response_body);
 
   // Start new request.
   void StartRequest();

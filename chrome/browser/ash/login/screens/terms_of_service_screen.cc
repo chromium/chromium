@@ -238,7 +238,7 @@ void TermsOfServiceScreen::OnDownloadTimeout() {
 }
 
 void TermsOfServiceScreen::OnDownloaded(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   download_timer_.Stop();
 
   // Destroy the fetcher when this method returns.

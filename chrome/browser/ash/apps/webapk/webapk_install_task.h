@@ -65,7 +65,7 @@ class WebApkInstallTask {
                     web_app::IconPurpose purpose,
                     std::vector<uint8_t> data);
   void OnProtoSerialized(std::optional<std::string> serialized_proto);
-  void OnUrlLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnUrlLoaderComplete(std::optional<std::string> response_body);
   void OnInstallComplete(const std::string& package_name,
                          arc::mojom::WebApkInstallResult result);
 

@@ -1181,7 +1181,7 @@ void ChromeCaptureModeDelegate::OnDispatchCompleteForImageSearch(
     base::WeakPtr<const network::SimpleURLLoader> url_loader,
     const std::string& access_token,
     const int request_id,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   absl::Cleanup deferred_runner = [this, url_loader]() {
     uploads_in_progress_.remove_if(base::MatchesUniquePtr(url_loader.get()));
   };
@@ -1251,7 +1251,7 @@ void ChromeCaptureModeDelegate::OnDispatchCompleteForCopyText(
     base::WeakPtr<const network::SimpleURLLoader> url_loader,
     const std::string& access_token,
     const int request_id,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   absl::Cleanup deferred_runner = [this, url_loader]() {
     uploads_in_progress_.remove_if(base::MatchesUniquePtr(url_loader.get()));
   };
@@ -1278,7 +1278,7 @@ void ChromeCaptureModeDelegate::OnDispatchCompleteForCopyText(
 
   // Response body that has a form of JSON contains protection characters
   // against XSSI that have to be removed. See go/xssi.
-  std::string json_data = std::move(*response_body);
+  std::string json_data = std::move(response_body).value();
   json_data =
       json_data.substr(std::min(json_data.find('\n'), json_data.size()));
 

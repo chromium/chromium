@@ -143,7 +143,7 @@ class BackdropFetcher {
 
  private:
   // Called when the download completes.
-  void OnURLFetchComplete(std::unique_ptr<std::string> response_body) {
+  void OnURLFetchComplete(std::optional<std::string> response_body) {
     if (!response_body) {
       int response_code = -1;
       if (simple_loader_->ResponseInfo() &&

@@ -336,7 +336,7 @@ void GooglePhotosFetcher<T>::OnJsonReceived(
     std::unique_ptr<network::SimpleURLLoader> loader,
     const GURL& service_url,
     base::TimeTicks start_time,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   const int net_error = loader->NetError();
   if (net_error != net::OK || !response_body) {
     LOG(ERROR) << "Google Photos API request to " << service_url.spec()

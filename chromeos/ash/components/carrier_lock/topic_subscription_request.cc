@@ -4,6 +4,10 @@
 
 #include "chromeos/ash/components/carrier_lock/topic_subscription_request.h"
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -196,7 +200,7 @@ void TopicSubscriptionRequest::Start() {
 
 void TopicSubscriptionRequest::OnUrlLoadComplete(
     const network::SimpleURLLoader* source,
-    std::unique_ptr<std::string> body) {
+    std::optional<std::string> body) {
   if (source->NetError() != net::OK) {
     LOG(ERROR) << "Failed to fetch URL.";
     ReturnResult(Result::kConnectionError);
@@ -209,7 +213,7 @@ void TopicSubscriptionRequest::OnUrlLoadComplete(
     ReturnResult(Result::kConnectionError);
     return;
   }
-  response = std::move(*body);
+  response = std::move(body).value();
 
   // If we are able to parse a meaningful known error, let's do so. Note that
   // some errors will have HTTP_OK response code!

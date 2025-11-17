@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ASH_CAPTURE_MODE_CHROME_CAPTURE_MODE_DELEGATE_H_
 #define CHROME_BROWSER_UI_ASH_CAPTURE_MODE_CHROME_CAPTURE_MODE_DELEGATE_H_
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
@@ -205,12 +207,12 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       base::WeakPtr<const network::SimpleURLLoader> url_loader,
       const std::string& access_token,
       const int request_id,
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
   void OnDispatchCompleteForCopyText(
       base::WeakPtr<const network::SimpleURLLoader> url_loader,
       const std::string& access_token,
       const int request_id,
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
 
   // Called after the response to a /qfmetadata GET request (for text detection)
   // is received and the response body has been decoded.

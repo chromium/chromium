@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/auth/arc_background_auth_code_fetcher.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -189,7 +191,7 @@ void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
 
 void ArcBackgroundAuthCodeFetcher::OnSimpleLoaderComplete(
     signin::AccessTokenInfo token_info,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = -1;
   if (simple_url_loader_->ResponseInfo() &&
       simple_url_loader_->ResponseInfo()->headers) {

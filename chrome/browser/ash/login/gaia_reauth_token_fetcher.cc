@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/gaia_reauth_token_fetcher.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_switches.h"
@@ -103,7 +104,7 @@ void GaiaReauthTokenFetcher::Fetch() {
 }
 
 void GaiaReauthTokenFetcher::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = -1;
   if (simple_url_loader_->ResponseInfo() &&
       simple_url_loader_->ResponseInfo()->headers) {

@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/apps/webapk/webapk_install_task.h"
 
 #include <algorithm>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
@@ -445,7 +447,7 @@ void WebApkInstallTask::OnProtoSerialized(
 }
 
 void WebApkInstallTask::OnUrlLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   timer_.Stop();
 
   int response_code = -1;
