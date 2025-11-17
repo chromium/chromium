@@ -51,9 +51,8 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
   MOCK_METHOD(void, OnHandoffButtonHoverStatusChanged, (), (override));
   MOCK_METHOD(void, OnHandoffButtonFocusStatusChanged, (), (override));
 
-  MOCK_METHOD(bool, ShouldShowActorTabIndicator, (), (override));
   using ActorTabIndicatorStateChangedCallback =
-      base::RepeatingCallback<void(bool)>;
+      base::RepeatingCallback<void(TabIndicatorStatus)>;
   MOCK_METHOD(base::ScopedClosureRunner,
               RegisterActorTabIndicatorStateChangedCallback,
               (ActorTabIndicatorStateChangedCallback callback),
