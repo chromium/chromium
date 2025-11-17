@@ -90,6 +90,10 @@ class CreditCardAccessManager
  public:
   class Observer : public base::CheckedObserver {
    public:
+    // Signals that `ccam` is about to be destroyed.
+    virtual void OnCreditCardAccessManagerDestroyed(
+        CreditCardAccessManager& ccam) {}
+
     // Signals that `ccam` has begun fetching the full information for `card`.
     virtual void OnCreditCardFetchStarted(const CreditCardAccessManager& ccam,
                                           const CreditCard& card) {}

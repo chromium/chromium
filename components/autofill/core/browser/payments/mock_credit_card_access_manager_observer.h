@@ -17,6 +17,10 @@ class MockCreditCardAccessManagerObserver
   ~MockCreditCardAccessManagerObserver() override;
 
   MOCK_METHOD(void,
+              OnCreditCardAccessManagerDestroyed,
+              (CreditCardAccessManager&),
+              (override));
+  MOCK_METHOD(void,
               OnCreditCardFetchStarted,
               (const CreditCardAccessManager&, const CreditCard&),
               (override));

@@ -192,6 +192,17 @@ TEST_F(CreditCardAccessManagerTest, FetchLocalCard_UpdatesPaymentsContext) {
   EXPECT_FALSE(*context.card_was_fetched_from_cache);
 }
 
+// Tests that `CCAM::Observer::OnCreditCardAccessManagerDestroyed` is called
+// when CCAM is destroyed.
+TEST_F(CreditCardAccessManagerTest, CallsObserverOnDestruction) {
+  NiceMock<MockCreditCardAccessManagerObserver> observer;
+  EXPECT_CALL(observer, OnCreditCardAccessManagerDestroyed).WillOnce([&]() {
+    credit_card_access_manager().RemoveObserver(&observer);
+  });
+  credit_card_access_manager().AddObserver(&observer);
+  autofill_manager().Reset();
+}
+
 // Ensures that FetchCreditCard() returns the full PAN upon a successful
 // response from payments.
 TEST_P(CreditCardAccessManagerAuthFlowTest, FetchServerCardCVCSuccess) {

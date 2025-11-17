@@ -111,6 +111,9 @@ CreditCardAccessManager::~CreditCardAccessManager() {
         ->SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
             std::nullopt);
   }
+  for (Observer& observer : observers_) {
+    observer.OnCreditCardAccessManagerDestroyed(*this);
+  }
 }
 
 void CreditCardAccessManager::AddObserver(Observer* observer) {
