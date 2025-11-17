@@ -68,6 +68,10 @@ BASE_DECLARE_FEATURE(kGlicSkipAwaitVisualStateForNewTabs);
 // Enables the Paint Preview backend for taking screenshots.
 BASE_DECLARE_FEATURE(kGlicTabScreenshotPaintPreviewBackend);
 
+BASE_DECLARE_FEATURE(kGlicNavigateUsingLoadURL);
+
+BASE_DECLARE_FEATURE(kGlicNavigateWithoutUserGesture);
+
 // Enables a full page screenshot to be taken rather than only the viewport.
 extern const base::FeatureParam<bool> kFullPageScreenshot;
 

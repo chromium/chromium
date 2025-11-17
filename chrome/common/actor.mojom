@@ -255,6 +255,9 @@ enum ActionResultCode {
   // The requested URL was not valid.
   kNavigateInvalidUrl = 100,
 
+  // The navigation failed before it started.
+  kNavigateFailedToStart = 101,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////

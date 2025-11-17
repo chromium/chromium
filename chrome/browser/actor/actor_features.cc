@@ -83,6 +83,15 @@ BASE_FEATURE(kGlicSkipAwaitVisualStateForNewTabs,
 BASE_FEATURE(kGlicTabScreenshotPaintPreviewBackend,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether to use BrowserNavigator::Navigate in NavigateTool. Fix for
+// b/460113906.
+BASE_FEATURE(kGlicNavigateUsingLoadURL, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When the above NavigateWithBrowserNavigator is off, uses the legacy
+// NavigateTool path but with user gesture disabled. Also a fix for b/460113906
+// but with different risk profile.  No-op if above flag is on.
+BASE_FEATURE(kGlicNavigateWithoutUserGesture, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicSkipBeforeUnloadDialogAndNavigate,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

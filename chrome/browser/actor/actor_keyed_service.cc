@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
@@ -162,6 +163,15 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
                              ? WindowOpenDisposition::NEW_BACKGROUND_TAB
                              : WindowOpenDisposition::NEW_FOREGROUND_TAB;
     params.browser = window_for_new_tab;
+    params.window_action = NavigateParams::WindowAction::NO_ACTION;
+
+    if (initiator_tab) {
+      int initiator_index =
+          window_for_new_tab->GetTabStripModel()->GetIndexOfTab(initiator_tab);
+      if (initiator_index != TabStripModel::kNoTab) {
+        params.tabstrip_index = initiator_index + 1;
+      }
+    }
   } else {
     GetJournal().Log(
         GURL(), task_id, "CreateActorTab",
