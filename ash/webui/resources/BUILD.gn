@@ -199,7 +199,6 @@ ash_generated_grit("projector_app_untrusted_resources") {
 }
 
 # Resources automatically served by the chrome-untrusted://projector bundle, obtained via DEPS.
-# TODO(b/216523790): Split up the projector_app_bundle_resource into app_bundle and annotator_bundle.
 grit("projector_app_bundle_resources") {
   if (enable_cros_projector_app) {
     # Obtained via an internal CIPD package in src/DEPS.
