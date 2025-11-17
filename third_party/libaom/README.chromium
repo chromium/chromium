@@ -48,7 +48,7 @@ after running roll_dep.py.
 
      git commit -a --amend
 
-   Add `Bug: b:307414544` to the commit message.
+   Add `Bug: 307414544` to the commit message.
 
 4. Upload the change to Gerrit:
 

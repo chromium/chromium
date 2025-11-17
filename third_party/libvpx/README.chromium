@@ -39,7 +39,7 @@ Please follow these steps to update libvpx source code:
 
      git commit -a --amend
 
-   Add `Bug: b:308446709` to the commit message.
+   Add `Bug: 308446709` to the commit message.
 
 4. Upload the change to Gerrit:
 
