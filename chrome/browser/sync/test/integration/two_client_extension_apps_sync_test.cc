@@ -453,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
-                       E2E_ENABLED(UninstallOnWML)) {
+                       UninstallOnWML) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupClients());
 
