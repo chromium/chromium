@@ -578,8 +578,7 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
           params.visual_client_area.x(),
           // Infobar needs to get down out of the way of immersive mode elements
           // in some cases.
-          params.visual_client_area.y() +
-              delegate().GetImmersiveModeController()->GetExtraInfobarOffset(),
+          params.visual_client_area.y() + delegate().GetExtraInfobarOffset(),
           params.visual_client_area.width(),
           // This returns zero for empty infobar.
           views().infobar_container->GetPreferredSize().height());
