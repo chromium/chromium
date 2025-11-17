@@ -167,8 +167,9 @@ class PersonalizationAppTimeOfDayBrowserTest
         geolocation_url_loader_factory =
             base::MakeRefCounted<TestGeolocationUrlLoaderFactory>();
     geolocation_url_loader_factory->set_position(GetGeoposition());
-    SystemLocationProvider::GetInstance()->SetSharedUrlLoaderFactoryForTesting(
-        geolocation_url_loader_factory);
+    SystemLocationProvider::GetInstance()
+        ->GetLocationFetcherForTesting()
+        ->SetSharedUrlLoaderFactoryForTesting(geolocation_url_loader_factory);
     // Request immediate geoposition to fetch and broadcast the fixed
     // geoposition set by TestSharedUrlLoaderFactory above.
     GeolocationController::Get()->RequestImmediateGeopositionForTesting();

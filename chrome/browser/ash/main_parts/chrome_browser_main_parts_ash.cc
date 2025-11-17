@@ -1047,8 +1047,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   }
 
   // Initialize `SystemLocationProvider` for the system parts.
-  SystemLocationProvider::Initialize(
-      g_browser_process->shared_url_loader_factory());
+  SystemLocationProvider::Initialize(std::make_unique<LocationFetcher>(
+      g_browser_process->shared_url_loader_factory()));
 
   // Instantiate TImeZoneResolverManager here, so it subscribes to
   // SessionManager and profile creation notification is properly propagated.

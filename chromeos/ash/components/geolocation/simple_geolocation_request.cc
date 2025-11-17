@@ -152,7 +152,7 @@ void RecordUmaNetworkLocationRequestSource() {
 
 // Creates the request url to send to the server.
 GURL GeolocationRequestURL(const GURL& url) {
-  if (url != SystemLocationProvider::DefaultGeolocationProviderURL()) {
+  if (url != GURL(LocationFetcher::kDefaultGeolocationProviderUrl)) {
     return url;
   }
 

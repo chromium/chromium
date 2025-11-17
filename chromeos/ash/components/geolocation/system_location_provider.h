@@ -19,20 +19,12 @@
 #include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/geolocation/location_fetcher.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
-namespace network {
-class SharedURLLoaderFactory;
-}  // namespace network
-
 namespace ash {
-
-// TODO(crbug.com/460379102): Clean up when GeolocationHandler interface is
-// extracted.
-class GeolocationHandlerImpl;
-using GeolocationHandler = GeolocationHandlerImpl;
 
 // Serves as the central authority and access point for all geolocation-related
 // matters for ChromeOS system services
@@ -63,15 +55,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
 
   virtual ~SystemLocationProvider();
 
+  // Initializes the global singleton instance and injects the core location
+  // fetcher implementation.
   // NOTE: Must be called before accessing other members.
-  static void Initialize(
-      scoped_refptr<network::SharedURLLoaderFactory> factory);
+  static void Initialize(std::unique_ptr<LocationFetcher> location_fetcher);
 
   static SystemLocationProvider* GetInstance();
-
-  static GURL DefaultGeolocationProviderURL() {
-    return GURL(kGeolocationProviderUrl);
-  }
 
   GeolocationAccessLevel GetGeolocationAccessLevel() const;
   void SetGeolocationAccessLevel(
@@ -92,31 +81,23 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   // available Cellular scan data, to improve accuracy.
   //
   // If the location request is not successfully resolved within the `timeout`
-  // duration, callback is invoked with Geolocation::STATUS_TIMEOUT status.
+  // duration, callback is invoked with `Geoposition::Status::STATUS_TIMEOUT`.
   void RequestGeolocation(base::TimeDelta timeout,
                           bool use_wifi_scan,
                           bool use_cellular_scan,
                           SimpleGeolocationRequest::ResponseCallback callback,
                           ClientId client_id);
 
-  network::SharedURLLoaderFactory* GetSharedURLLoaderFactoryForTesting() {
-    return shared_url_loader_factory_.get();
+  static void DestroyForTesting();
+  LocationFetcher* GetLocationFetcherForTesting() {
+    return location_fetcher_.get();
   }
 
-  static void DestroyForTesting();
-  void SetSharedUrlLoaderFactoryForTesting(
-      scoped_refptr<network::SharedURLLoaderFactory> factory);
-  void SetGeolocationProviderUrlForTesting(const char* url);
-
  private:
-  static constexpr char kGeolocationProviderUrl[] =
-      "https://www.googleapis.com/geolocation/v1/geolocate?";
-
   // This class is a singleton.
   explicit SystemLocationProvider(
-      scoped_refptr<network::SharedURLLoaderFactory> factory);
+      std::unique_ptr<LocationFetcher> location_fetcher);
 
-  friend class TestGeolocationAPILoaderFactory;
   FRIEND_TEST_ALL_PREFIXES(SystemLocationProviderWirelessTest, CellularExists);
   FRIEND_TEST_ALL_PREFIXES(SystemLocationProviderWirelessTest, WiFiExists);
 
@@ -128,14 +109,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
       bool server_error,
       const base::TimeDelta elapsed);
 
-  // Returns `DefaultGeolocaitonProivdeURL()` for production. Can be
-  // overridden in tests.
-  std::string GetGeolocationProviderUrl() const;
-
-  void set_geolocation_handler(GeolocationHandler* geolocation_handler) {
-    geolocation_handler_ = geolocation_handler;
-  }
-
   void NotifyObservers();
 
   // Records UMA metrics related to geolocation requests, including the
@@ -144,6 +117,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   // and categorizing them into hourly buckets.
   void RecordClientIdUma(ClientId client_id);
 
+  // Responsible for coordinating and executing all Geolocation API Web Service
+  // requests.
+  std::unique_ptr<LocationFetcher> location_fetcher_;
+
   // Source of truth for the current geolocation access level.
   // Takes into consideration geolocation policies, log-in and in-session
   // geolocation prefs and is being updated on relevant events.
@@ -151,17 +128,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
       GeolocationAccessLevel::kAllowed;
 
   base::ObserverList<Observer> observer_list_;
-
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-
-  // Requests in progress.
-  // `SystemLocationProvider` owns all requests, so this vector is deleted
-  // on destroy.
-  std::vector<std::unique_ptr<SimpleGeolocationRequest>> requests_;
-
-  raw_ptr<GeolocationHandler> geolocation_handler_ = nullptr;
-
-  std::string url_for_testing_;
 
   // Stores the time of the last geolocation request for each client ID. This is
   // used to calculate the time gap between requests for metrics reporting.

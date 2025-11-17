@@ -231,8 +231,9 @@ class NightLightTest : public NoSessionAshTestBase,
 
     // `GeolocationController` uses `SystemLocationProvider` singleton
     // instance, which is initialized by `AshTestHelper`.
-    SystemLocationProvider::GetInstance()->SetSharedUrlLoaderFactoryForTesting(
-        geolocation_url_loader_factory_);
+    SystemLocationProvider::GetInstance()
+        ->GetLocationFetcherForTesting()
+        ->SetSharedUrlLoaderFactoryForTesting(geolocation_url_loader_factory_);
   }
 
   void SwitchActiveUser(const std::string& email) {

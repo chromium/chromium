@@ -76,6 +76,10 @@ bool GeolocationHandlerImpl::GetWifiAccessPoints(
   return true;
 }
 
+bool GeolocationHandlerImpl::wifi_enabled() const {
+  return wifi_enabled_;
+}
+
 bool GeolocationHandlerImpl::GetNetworkInformation(
     WifiAccessPointVector* access_points,
     CellTowerVector* cell_towers) {

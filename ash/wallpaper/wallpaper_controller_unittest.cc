@@ -1041,8 +1041,10 @@ class WallpaperControllerAutoScheduleTest : public WallpaperControllerTest,
             base::MakeRefCounted<TestGeolocationUrlLoaderFactory>();
     geolocation_url_loader_factory->SetValidPosition(
         kSanJoseGeoposition.latitude, kSanJoseGeoposition.longitude, Now());
-    SystemLocationProvider::GetInstance()->SetSharedUrlLoaderFactoryForTesting(
-        std::move(geolocation_url_loader_factory));
+    SystemLocationProvider::GetInstance()
+        ->GetLocationFetcherForTesting()
+        ->SetSharedUrlLoaderFactoryForTesting(
+            std::move(geolocation_url_loader_factory));
 
     GeopositionResponsesWaiter waiter(Shell::Get()->geolocation_controller());
     waiter.Wait();

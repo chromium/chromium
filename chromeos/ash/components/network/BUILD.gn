@@ -107,6 +107,7 @@ component("network") {
     "fake_network_state_handler.h",
     "fast_transition_observer.cc",
     "fast_transition_observer.h",
+    "geolocation_handler.h",
     "geolocation_handler_impl.cc",
     "geolocation_handler_impl.h",
     "hermes_metrics_util.cc",

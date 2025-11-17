@@ -20,4 +20,8 @@ specific_include_rules = {
     "+testing/gtest",
     "+testing/gmock",
   ],
+  "test_utils\.(cc|h)": [
+    "+testing/gtest",
+    "+services/network/test",
+  ],
 }

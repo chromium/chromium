@@ -241,6 +241,7 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
     CHECK(SystemLocationProvider::GetInstance());
     return static_cast<TestGeolocationUrlLoaderFactory*>(
         SystemLocationProvider::GetInstance()
+            ->GetLocationFetcherForTesting()
             ->GetSharedURLLoaderFactoryForTesting());
   }
 

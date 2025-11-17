@@ -111,7 +111,7 @@ NetworkHandler::NetworkHandler(std::unique_ptr<NetworkStateHandler> handler)
   prohibited_technologies_handler_.reset(new ProhibitedTechnologiesHandler());
   network_sms_handler_.reset(new NetworkSmsHandler());
   text_message_provider_.reset(new TextMessageProvider());
-  geolocation_handler_.reset(new GeolocationHandler());
+  geolocation_handler_.reset(new GeolocationHandlerImpl());
   network_3gpp_handler_.reset(new Network3gppHandler());
 
   network_login_screen_protocol_handler_observer_.reset(

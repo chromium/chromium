@@ -537,8 +537,10 @@ class WizardControllerFlowTest : public WizardControllerTest {
     WaitForOobeUI();
     wizard_controller->SetSharedURLLoaderFactoryForTesting(
         test_url_loader_factory_.GetSafeWeakWrapper());
-    SystemLocationProvider::GetInstance()->SetSharedUrlLoaderFactoryForTesting(
-        test_url_loader_factory_.GetSafeWeakWrapper());
+    SystemLocationProvider::GetInstance()
+        ->GetLocationFetcherForTesting()
+        ->SetSharedUrlLoaderFactoryForTesting(
+            test_url_loader_factory_.GetSafeWeakWrapper());
 
     // Set up the mocks for all screens.
     mock_welcome_screen_ =
@@ -697,11 +699,9 @@ class WizardControllerFlowTest : public WizardControllerTest {
 
     test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
         [&](const network::ResourceRequest& request) {
-          if (base::StartsWith(
-                  request.url.spec(),
-                  SystemLocationProvider::DefaultGeolocationProviderURL()
-                      .spec(),
-                  base::CompareCase::SENSITIVE)) {
+          if (base::StartsWith(request.url.spec(),
+                               LocationFetcher::kDefaultGeolocationProviderUrl,
+                               base::CompareCase::SENSITIVE)) {
             test_url_loader_factory_.AddResponse(request.url.spec(),
                                                  kGeolocationResponseBody);
           } else if (base::StartsWith(request.url.spec(),
@@ -2126,8 +2126,10 @@ class WizardControllerOobeResumeTest : public WizardControllerTest {
     WaitForOobeUI();
     wizard_controller->SetSharedURLLoaderFactoryForTesting(
         test_url_loader_factory_.GetSafeWeakWrapper());
-    SystemLocationProvider::GetInstance()->SetSharedUrlLoaderFactoryForTesting(
-        test_url_loader_factory_.GetSafeWeakWrapper());
+    SystemLocationProvider::GetInstance()
+        ->GetLocationFetcherForTesting()
+        ->SetSharedUrlLoaderFactoryForTesting(
+            test_url_loader_factory_.GetSafeWeakWrapper());
 
     mock_auto_enrollment_check_screen_view_ =
         std::make_unique<MockAutoEnrollmentCheckScreenView>();

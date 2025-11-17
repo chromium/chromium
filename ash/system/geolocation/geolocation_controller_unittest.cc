@@ -205,6 +205,7 @@ class GeolocationControllerTest : public NoSessionAshTestBase {
     position_ = position;
     auto* factory = static_cast<TestGeolocationUrlLoaderFactory*>(
         SystemLocationProvider::GetInstance()
+            ->GetLocationFetcherForTesting()
             ->GetSharedURLLoaderFactoryForTesting());
     factory->ClearResponses();
     factory->set_position(position_);

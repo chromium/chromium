@@ -31,10 +31,8 @@ class EnterpriseManagedMetadataStore;
 class EphemeralNetworkConfigurationHandler;
 class EphemeralNetworkPoliciesEnablementHandler;
 class ESimPolicyLoginMetricsLogger;
-// TODO(crbug.com/460379102): Clean up when GeolocationHandler interface is
-// extracted.
+class GeolocationHandler;
 class GeolocationHandlerImpl;
-using GeolocationHandler = GeolocationHandlerImpl;
 class HiddenNetworkHandler;
 class HotspotAllowedFlagHandler;
 class HotspotCapabilitiesProvider;

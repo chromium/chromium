@@ -159,8 +159,8 @@ AshTestHelper::AshTestHelper(ui::ContextFactory* context_factory)
 
   // SystemLocationProvider has to be initialized before
   // GeolocationController, which is constructed during Shell::Init().
-  SystemLocationProvider::Initialize(
-      base::MakeRefCounted<TestGeolocationUrlLoaderFactory>());
+  SystemLocationProvider::Initialize(std::make_unique<LocationFetcher>(
+      base::MakeRefCounted<TestGeolocationUrlLoaderFactory>()));
 }
 
 AshTestHelper::~AshTestHelper() {
