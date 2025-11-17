@@ -22,6 +22,10 @@
 #include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
+#endif
+
 using content::WebContents;
 
 namespace glic {
@@ -55,7 +59,12 @@ class GlicMediaIntegrationTest : public ChromeRenderViewHostTestHarness {
 
   // Get the MediaIntegration instance, after doing some work to register prefs
   GlicMediaIntegration* GetIntegration() {
-    scoped_feature_list_.emplace(media::kHeadlessLiveCaption);
+    std::vector<base::test::FeatureRef> enabled_features{
+        media::kHeadlessLiveCaption};
+#if BUILDFLAG(IS_CHROMEOS)
+    enabled_features.push_back(ash::features::kOnDeviceSpeechRecognition);
+#endif
+    scoped_feature_list_.InitWithFeatures(enabled_features, {});
     // Make sure that we have installed our LiveCaptionController before this,
     // because the integration will try to fetch it.  The test might have done
     // this earlier, however, which is also fine.
@@ -121,7 +130,7 @@ class GlicMediaIntegrationTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  std::optional<base::test::ScopedFeatureList> scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<captions::LiveCaptionController> live_caption_controller_ = nullptr;
   raw_ptr<user_prefs::PrefRegistrySyncable> pref_registry_ = nullptr;
   speech::MockSodaInstaller soda_installer_;
