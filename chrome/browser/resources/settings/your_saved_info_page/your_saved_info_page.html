@@ -45,33 +45,34 @@
 <h2 id="yourSavedInfoPageTitle" class="section-header">
   $i18n{yourSavedInfoPageTitle}
 </h2>
-<div class="card-container">
+<div class="card-container" on-data-category-click="onDataCategoryClick_"
+    on-data-chip-click="onDataChipClick_">
   <category-reference-card card-title="$i18n{localPasswordManager}"
       is-external
-      chips="[[getVisibleChips_(hierarchy_.passwordManager)]]"
-      on-click="onPasswordManagerExternalLinkClick_">
+      category-id="[[hierarchy_.passwordManager.id]]"
+      chips="[[getVisibleChips_(hierarchy_.passwordManager.chips)]]">
   </category-reference-card>
   <category-reference-card id="paymentManagerButton"
       card-title="$i18n{paymentsTitle}"
-      chips="[[getVisibleChips_(hierarchy_.payments)]]"
-      on-click="onPaymentManagerClick_">
+      category-id="[[hierarchy_.payments.id]]"
+      chips="[[getVisibleChips_(hierarchy_.payments.chips)]]">
   </category-reference-card>
   <category-reference-card id="addressesManagerButton"
       card-title="$i18n{contactInfoTitle}"
-      chips="[[getVisibleChips_(hierarchy_.contactInfo)]]"
-      on-click="onAddressesManagerClick_">
+      category-id="[[hierarchy_.contactInfo.id]]"
+      chips="[[getVisibleChips_(hierarchy_.contactInfo.chips)]]">
   </category-reference-card>
   <category-reference-card id="identityManagerButton"
       card-title="$i18n{identityDocsCardTitle}"
-      chips="[[getVisibleChips_(hierarchy_.identityDocs)]]"
-      on-click="onIdentityManagerClick_"
-      hidden$="[[!hasVisibleChips_(hierarchy_.identityDocs)]]">
+      category-id="[[hierarchy_.identityDocs.id]]"
+      chips="[[getVisibleChips_(hierarchy_.identityDocs.chips)]]"
+      hidden$="[[!hasVisibleChips_(hierarchy_.identityDocs.chips)]]">
   </category-reference-card>
   <category-reference-card id="travelManagerButton"
       card-title="$i18n{travelCardTitle}"
-      chips="[[getVisibleChips_(hierarchy_.travel)]]"
-      on-click="onTravelManagerClick_"
-      hidden$="[[!hasVisibleChips_(hierarchy_.travel)]]">
+      category-id="[[hierarchy_.travel.id]]"
+      chips="[[getVisibleChips_(hierarchy_.travel.chips)]]"
+      hidden$="[[!hasVisibleChips_(hierarchy_.travel.chips)]]">
   </category-reference-card>
 </div>
 
@@ -83,15 +84,15 @@
 <settings-section page-title="$i18n{yourSavedInfoRelatedServicesTitle}">
   <div route-path="default">
     <cr-link-row id="passwordManagerButton" label="$i18n{localPasswordManager}"
-        on-click="onPasswordManagerExternalLinkClick_"
+        on-click="onPasswordManagerRelatedServiceClick_"
         start-icon="cr20:password" external>
     </cr-link-row>
     <cr-link-row id="googleWalletButton" label="$i18n{googleWalletTitle}"
-        on-click="onGoogleWalletExternalLinkClick_"
+        on-click="onGoogleWalletRelatedServiceClick_"
         start-icon="settings20:wallet" external>
     </cr-link-row>
     <cr-link-row id="googleAccountButton" label="$i18n{googleAccount}"
-        on-click="onGoogleAccountExternalLinkClick_"
+        on-click="onGoogleAccountRelatedServiceClick_"
         start-icon="settings20:googleg" external>
     </cr-link-row>
   </div>

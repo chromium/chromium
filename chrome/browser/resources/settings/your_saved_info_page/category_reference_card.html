@@ -45,12 +45,13 @@
   }
 </style>
 
-<cr-link-row label="[[cardTitle]]" external="[[isExternal]]">
+<cr-link-row label="[[cardTitle]]" external="[[isExternal]]"
+    on-click="onDataCategoryClick_">
 </cr-link-row>
 <hr>
 <div class="chips-container">
   <template is="dom-repeat" items="[[chips]]">
-    <cr-chip>
+    <cr-chip on-click="onDataChipClick_">
       <cr-icon icon="[[item.icon]]"></cr-icon>
       <span>[[item.label]]</span>
       <span class="counter" hidden$="[[!item.count]]">

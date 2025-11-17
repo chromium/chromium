@@ -183,6 +183,23 @@ suite('YourSavedInfoPage', function() {
         getChipCount(
             loadTimeData.getString('autofillPayOverTimeSettingsLabel')));
   });
+
+  test('ClickOnChipNavigatesToLeafPage', function() {
+    const card = yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
+        `category-reference-card[card-title="${
+            loadTimeData.getString('contactInfoTitle')}"]`);
+    assertTrue(!!card);
+    const chips: HTMLElement[] =
+        Array.from(card.shadowRoot!.querySelectorAll('cr-chip'));
+    const chip: HTMLElement = chips.find(chip => {
+      const labelSpan = chip.querySelector('span:not(.counter)');
+      return labelSpan &&
+          labelSpan.textContent === loadTimeData.getString('addresses');
+    })!;
+
+    chip.click();
+    assertEquals('/addresses', Router.getInstance().currentRoute.path);
+  });
 });
 
 suite('DataChipsVisibility', function() {
@@ -351,8 +368,7 @@ suite('RelatedServices', function() {
     PasswordManagerImpl.setInstance(passwordManager);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    yourSavedInfoPage =
-        document.createElement('settings-your-saved-info-page');
+    yourSavedInfoPage = document.createElement('settings-your-saved-info-page');
     setDefaultPrefs(settingsPrefs);
     yourSavedInfoPage.prefs = settingsPrefs.prefs!;
     document.body.appendChild(yourSavedInfoPage);
@@ -375,7 +391,8 @@ suite('RelatedServices', function() {
     const relatedServicesCard =
         yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
             `settings-section[page-title="${
-                loadTimeData.getString('yourSavedInfoRelatedServicesTitle')}"]`);
+                loadTimeData.getString(
+                    'yourSavedInfoRelatedServicesTitle')}"]`);
     assertTrue(!!relatedServicesCard);
 
     assertTrue(

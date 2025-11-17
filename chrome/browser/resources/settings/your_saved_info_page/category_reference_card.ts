@@ -16,7 +16,22 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './category_reference_card.html.js';
-import type {DataChip} from './your_saved_info_page.js';
+import type {DataChip, YourSavedInfoDataCategory, YourSavedInfoDataChip} from './your_saved_info_page.js';
+
+export type DataChipClickEvent = CustomEvent<{
+  chipId: YourSavedInfoDataChip,
+}>;
+
+export type DataCategoryClickEvent = CustomEvent<{
+  categoryId: YourSavedInfoDataCategory,
+}>;
+
+declare global {
+  interface HTMLElementEventMap {
+    'data-chip-click': DataChipClickEvent;
+    'data-category-click': DataCategoryClickEvent;
+  }
+}
 
 export class CategoryReferenceCardElement extends PolymerElement {
   static get is() {
@@ -31,6 +46,8 @@ export class CategoryReferenceCardElement extends PolymerElement {
     return {
       cardTitle: String,
 
+      categoryId: Number,
+
       chips: {
         type: Array,
         value: () => [],
@@ -41,8 +58,30 @@ export class CategoryReferenceCardElement extends PolymerElement {
   }
 
   declare cardTitle: string;
+  declare categoryId: YourSavedInfoDataCategory;
   declare chips: DataChip[];
   declare isExternal: boolean;
+
+  private onDataCategoryClick_() {
+    this.dispatchEvent(new CustomEvent('data-category-click', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        categoryId: this.categoryId,
+      },
+    }));
+  }
+
+  private onDataChipClick_(event: PointerEvent&{model: {item: DataChip}}) {
+    const chip: DataChip = event.model.item;
+    this.dispatchEvent(new CustomEvent('data-chip-click', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        chipId: chip.id,
+      },
+    }));
+  }
 
   override focus() {
     this.shadowRoot!.querySelector('cr-link-row')!.focus();
