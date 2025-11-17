@@ -64,6 +64,18 @@ bool IsOriginValidForRelyingPartyId(const url::Origin& origin,
   return true;
 }
 
+// Returns a set of credential ids from a vector of credential descriptors.
+std::set<std::string> GetIdsFromDescriptors(
+    const std::vector<device::PublicKeyCredentialDescriptor>& descriptors) {
+  std::set<std::string> descriptor_ids;
+  std::transform(descriptors.begin(), descriptors.end(),
+                 std::inserter(descriptor_ids, descriptor_ids.begin()),
+                 [](const device::PublicKeyCredentialDescriptor& desc) {
+                   return std::string(desc.id.begin(), desc.id.end());
+                 });
+  return descriptor_ids;
+}
+
 }  // namespace
 
 PasskeyTabHelper::RequestParams::RequestParams()
@@ -93,6 +105,11 @@ PasskeyTabHelper::AssertionRequestParams::AssertionRequestParams(
 PasskeyTabHelper::AssertionRequestParams::AssertionRequestParams(
     PasskeyTabHelper::AssertionRequestParams&& other) = default;
 
+const std::set<std::string>
+PasskeyTabHelper::AssertionRequestParams::GetAllowCredentialIds() const {
+  return GetIdsFromDescriptors(allow_credentials_);
+}
+
 PasskeyTabHelper::AssertionRequestParams::~AssertionRequestParams() {}
 
 PasskeyTabHelper::RegistrationRequestParams::RegistrationRequestParams(
@@ -105,6 +122,11 @@ PasskeyTabHelper::RegistrationRequestParams::RegistrationRequestParams(
 
 PasskeyTabHelper::RegistrationRequestParams::RegistrationRequestParams(
     PasskeyTabHelper::RegistrationRequestParams&& other) = default;
+
+const std::set<std::string>
+PasskeyTabHelper::RegistrationRequestParams::GetExcludeCredentialIds() const {
+  return GetIdsFromDescriptors(exclude_credentials_);
+}
 
 PasskeyTabHelper::RegistrationRequestParams::~RegistrationRequestParams() {}
 
@@ -207,14 +229,7 @@ bool PasskeyTabHelper::HasExcludedPasskey(
     return false;
   }
 
-  std::set<std::string> exclude_credentials;
-  std::transform(
-      params.exclude_credentials_.begin(), params.exclude_credentials_.end(),
-      std::inserter(exclude_credentials, exclude_credentials.begin()),
-      [](const device::PublicKeyCredentialDescriptor& desc) {
-        return std::string(desc.id.begin(), desc.id.end());
-      });
-
+  std::set<std::string> exclude_credentials = params.GetExcludeCredentialIds();
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
       passkey_model_->GetPasskeysForRelyingPartyId(
           params.request_params_.rp_entity_.id);
@@ -224,6 +239,30 @@ bool PasskeyTabHelper::HasExcludedPasskey(
     }
   }
   return false;
+}
+
+std::vector<sync_pb::WebauthnCredentialSpecifics>
+PasskeyTabHelper::GetFilteredPasskeys(
+    const AssertionRequestParams& params) const {
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
+      passkey_model_->GetPasskeysForRelyingPartyId(
+          params.request_params_.rp_entity_.id);
+  if (passkeys.empty()) {
+    return passkeys;
+  }
+
+  // If the allowed credentials array is empty, then the relying party accepts
+  // any passkey credential.
+  if (params.allow_credentials_.empty()) {
+    return passkeys;
+  }
+
+  std::set<std::string> allow_credentials = params.GetAllowCredentialIds();
+  std::erase_if(passkeys, [&](sync_pb::WebauthnCredentialSpecifics cred) {
+    return !allow_credentials.contains(cred.credential_id());
+  });
+
+  return passkeys;
 }
 
 void PasskeyTabHelper::AddNewPasskey(

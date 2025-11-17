@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEBAUTHN_IOS_PASSKEY_TAB_HELPER_H_
 #define COMPONENTS_WEBAUTHN_IOS_PASSKEY_TAB_HELPER_H_
 
+#import <set>
 #import <vector>
 
 #import "base/memory/weak_ptr.h"
@@ -54,6 +55,9 @@ class PasskeyTabHelper : public web::WebStateObserver,
     AssertionRequestParams(AssertionRequestParams&& other);
     ~AssertionRequestParams();
 
+    // Returns the credential ids contained in `allow_credentials_`.
+    const std::set<std::string> GetAllowCredentialIds() const;
+
     RequestParams request_params_;
     const std::vector<device::PublicKeyCredentialDescriptor> allow_credentials_;
   };
@@ -65,6 +69,9 @@ class PasskeyTabHelper : public web::WebStateObserver,
         std::vector<device::PublicKeyCredentialDescriptor> exclude_credentials);
     RegistrationRequestParams(RegistrationRequestParams&& other);
     ~RegistrationRequestParams();
+
+    // Returns the credential ids contained in `exclude_credentials_`.
+    const std::set<std::string> GetExcludeCredentialIds() const;
 
     RequestParams request_params_;
     const device::PublicKeyCredentialUserEntity user_entity_;
@@ -105,6 +112,10 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // Returns whether the passkey model contains a passkey from the
   // exclude credentials list from the provided parameters.
   bool HasExcludedPasskey(const RegistrationRequestParams& params) const;
+
+  // Returns the list of passkeys filtered by the allowed credentials list.
+  std::vector<sync_pb::WebauthnCredentialSpecifics> GetFilteredPasskeys(
+      const AssertionRequestParams& params) const;
 
   // Adds a passkey to the passkey model while enabling the passkey creation
   // infobar to be displayed if possible.

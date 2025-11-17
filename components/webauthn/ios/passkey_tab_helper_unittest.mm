@@ -5,6 +5,8 @@
 #import "components/webauthn/ios/passkey_tab_helper.h"
 
 #import "base/base64url.h"
+#import "base/rand_util.h"
+#import "base/strings/to_string.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
@@ -26,19 +28,44 @@ std::vector<uint8_t> AsByteVector(std::string str) {
   return std::vector<uint8_t>(str.begin(), str.end());
 }
 
+// Created a test passkey using the default rp id.
+sync_pb::WebauthnCredentialSpecifics GetTestPasskey(
+    const std::string& credential_id) {
+  sync_pb::WebauthnCredentialSpecifics passkey;
+  passkey.set_rp_id(kRpId);
+  passkey.set_credential_id(credential_id);
+  passkey.set_sync_id(base::RandBytesAsString(16));
+  passkey.set_user_id(base::RandBytesAsString(16));
+  passkey.set_user_name(base::RandBytesAsString(16));
+  passkey.set_user_display_name(base::RandBytesAsString(16));
+  return passkey;
+}
+
+// Builds RequestParams using the default rp id.
+PasskeyTabHelper::RequestParams BuildRequestParams() {
+  std::string frame_id = "";
+  device::PublicKeyCredentialRpEntity rp_entity(kRpId);
+  std::vector<uint8_t> challenge;
+  return PasskeyTabHelper::RequestParams(
+      frame_id, std::move(rp_entity), std::move(challenge),
+      device::UserVerificationRequirement::kPreferred);
+}
+
 // Builds RegistrationRequestParams from an exclude credentials list.
 PasskeyTabHelper::RegistrationRequestParams BuildRegistrationRequestParams(
     const std::vector<device::PublicKeyCredentialDescriptor>&
         exclude_credentials) {
-  std::string frame_id = "";
-  device::PublicKeyCredentialRpEntity rp_entity(kRpId);
-  std::vector<uint8_t> challenge;
   device::PublicKeyCredentialUserEntity user_entity;
   return PasskeyTabHelper::RegistrationRequestParams(
-      PasskeyTabHelper::RequestParams(
-          frame_id, std::move(rp_entity), std::move(challenge),
-          device::UserVerificationRequirement::kPreferred),
-      std::move(user_entity), exclude_credentials);
+      BuildRequestParams(), std::move(user_entity), exclude_credentials);
+}
+
+// Builds AssertionRequestParams from an allow credentials list.
+PasskeyTabHelper::AssertionRequestParams BuildAssertionRequestParams(
+    const std::vector<device::PublicKeyCredentialDescriptor>&
+        allow_credentials) {
+  return PasskeyTabHelper::AssertionRequestParams(BuildRequestParams(),
+                                                  allow_credentials);
 }
 
 }  // namespace
@@ -77,6 +104,12 @@ class PasskeyTabHelperTest : public PlatformTest {
     return passkey_tab_helper()->HasExcludedPasskey(params);
   }
 
+  // Returns the list of passkeys filtered by the allowed credentials list.
+  std::vector<sync_pb::WebauthnCredentialSpecifics> GetFilteredPasskeys(
+      const PasskeyTabHelper::AssertionRequestParams& params) {
+    return passkey_tab_helper()->GetFilteredPasskeys(params);
+  }
+
   web::WebTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<webauthn::PasskeyModel> passkey_model_ =
@@ -103,9 +136,7 @@ TEST_F(PasskeyTabHelperTest, LogsEventFromCreateRequestedString) {
 }
 
 TEST_F(PasskeyTabHelperTest, LogsGetResolvedEventGpmPasskey) {
-  sync_pb::WebauthnCredentialSpecifics passkey;
-  passkey.set_credential_id(kCredentialId);
-  passkey.set_rp_id(kRpId);
+  sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
   passkey_model_->AddNewPasskeyForTesting(std::move(passkey));
 
   std::string credential_id_base64url_encoded;
@@ -160,9 +191,7 @@ TEST_F(PasskeyTabHelperTest, HasExcludedPasskey) {
       HasExcludedPasskey(BuildRegistrationRequestParams(exclude_credentials)));
 
   // Add passkey with kCredentialId.
-  sync_pb::WebauthnCredentialSpecifics passkey;
-  passkey.set_credential_id(kCredentialId);
-  passkey.set_rp_id(kRpId);
+  sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
   passkey_model_->AddNewPasskeyForTesting(std::move(passkey));
 
   // Add kCredentialId2 to exclude credentials list, expecting no match.
@@ -176,4 +205,48 @@ TEST_F(PasskeyTabHelperTest, HasExcludedPasskey) {
       {device::CredentialType::kPublicKey, AsByteVector(kCredentialId)});
   ASSERT_TRUE(
       HasExcludedPasskey(BuildRegistrationRequestParams(exclude_credentials)));
+}
+
+TEST_F(PasskeyTabHelperTest, FilterPasskeys) {
+  // Add passkey with kCredentialId.
+  sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
+  passkey_model_->AddNewPasskeyForTesting(std::move(passkey));
+
+  // Add passkey with kCredentialId2.
+  sync_pb::WebauthnCredentialSpecifics passkey2 =
+      GetTestPasskey(kCredentialId2);
+  passkey_model_->AddNewPasskeyForTesting(std::move(passkey2));
+
+  // Make sure 2 distinct passkeys were added.
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
+      passkey_model_->GetPasskeysForRelyingPartyId(kRpId);
+  EXPECT_EQ(passkeys.size(), 2u);
+
+  // Empty allow credentials list, expect no filtering.
+  std::vector<device::PublicKeyCredentialDescriptor> allow_credentials;
+  std::vector<sync_pb::WebauthnCredentialSpecifics> filtered_passkeys =
+      GetFilteredPasskeys(BuildAssertionRequestParams(allow_credentials));
+  EXPECT_EQ(filtered_passkeys.size(), 2u);
+
+  // Add kCredentialId2 to allow credentials list, expect 1 filtered passkey.
+  allow_credentials.push_back(
+      {device::CredentialType::kPublicKey, AsByteVector(kCredentialId2)});
+  filtered_passkeys =
+      GetFilteredPasskeys(BuildAssertionRequestParams(allow_credentials));
+  EXPECT_EQ(filtered_passkeys.size(), 1u);
+
+  // Add kCredentialId to allow credentials list, expect 1 filtered passkey.
+  allow_credentials.clear();
+  allow_credentials.push_back(
+      {device::CredentialType::kPublicKey, AsByteVector(kCredentialId)});
+  filtered_passkeys =
+      GetFilteredPasskeys(BuildAssertionRequestParams(allow_credentials));
+  EXPECT_EQ(filtered_passkeys.size(), 1u);
+
+  // Have both credentials in the allow credentials list, expect no filtering.
+  allow_credentials.push_back(
+      {device::CredentialType::kPublicKey, AsByteVector(kCredentialId2)});
+  filtered_passkeys =
+      GetFilteredPasskeys(BuildAssertionRequestParams(allow_credentials));
+  EXPECT_EQ(filtered_passkeys.size(), 2u);
 }
