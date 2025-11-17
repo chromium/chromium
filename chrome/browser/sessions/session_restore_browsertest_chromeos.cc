@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -184,8 +183,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
 // verifies that the fourth window is visible on all desks after being restored.
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
                        RestoreBrowserWindowsToDesks) {
-  auto* browser_list = BrowserList::GetInstance();
-  ASSERT_EQ(3u, browser_list->size());
+  ASSERT_EQ(3u, chrome::GetTotalBrowserCount());
 
   // The first, second and third browser should restore to the first, second
   // and third desk, consecutively.
@@ -231,12 +229,12 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
       Browser::CreateParams(profile(), true);
   visible_on_all_desks_browser_params.initial_visible_on_all_workspaces_state =
       true;
-  Browser* visible_on_all_desks_browser =
+  BrowserWindowInterface* visible_on_all_desks_browser =
       CreateBrowserWithParams(visible_on_all_desks_browser_params);
 
   // Ensure the visible on all desks browser has the right properties.
   auto* visible_on_all_desks_window =
-      visible_on_all_desks_browser->window()->GetNativeWindow();
+      visible_on_all_desks_browser->GetWindow()->GetNativeWindow();
   ASSERT_TRUE(visible_on_all_desks_window->GetProperty(
                   aura::client::kWindowWorkspaceKey) ==
               aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
@@ -245,8 +243,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
 
   // Check that there are two browsers, the default one and the visible on all
   // desks browser.
-  auto* browser_list = BrowserList::GetInstance();
-  ASSERT_EQ(2u, browser_list->size());
+  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
 
   TurnOnSessionRestore();
 }
@@ -256,8 +253,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
                        RestoreAllDesksBrowserWindow) {
   // There should be two browsers restored, the default browser and the all
   // desks browser.
-  auto* browser_list = BrowserList::GetInstance();
-  ASSERT_EQ(2u, browser_list->size());
+  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
 
   // Check that the visible on all desks browser is restored properly.
   BrowserWindowInterface* const visible_on_all_desks_browser =

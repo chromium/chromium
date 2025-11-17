@@ -39,7 +39,6 @@
 #include "chrome/browser/metrics/usertype_by_devicetype_metrics_provider.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/test_browser_window_aura.h"
@@ -824,12 +823,11 @@ TEST_F(AppPlatformMetricsServiceTest, BrowserWindow) {
   InstallOneApp(app_constants::kChromeAppId, AppType::kChromeApp, "Chrome",
                 Readiness::kReady, InstallSource::kSystem);
 
-  BrowserList* active_browser_list = BrowserList::GetInstance();
-  // Expect BrowserList is empty at the beginning.
-  EXPECT_EQ(0U, active_browser_list->size());
+  // Expect no Browsers at the beginning.
+  EXPECT_EQ(0U, chrome::GetTotalBrowserCount());
   std::unique_ptr<Browser> browser1 = CreateBrowserWithAuraWindow1();
 
-  EXPECT_EQ(1U, active_browser_list->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   // Set the browser window active.
   ModifyInstance(app_constants::kChromeAppId,
@@ -847,7 +845,7 @@ TEST_F(AppPlatformMetricsServiceTest, BrowserWindow) {
 
   // Test multiple browsers.
   std::unique_ptr<Browser> browser2 = CreateBrowserWithAuraWindow2();
-  EXPECT_EQ(2U, active_browser_list->size());
+  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
 
   ModifyInstance(app_constants::kChromeAppId,
                  browser2->window()->GetNativeWindow(), kActiveInstanceState);

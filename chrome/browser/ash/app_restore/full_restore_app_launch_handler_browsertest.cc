@@ -816,9 +816,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
           local_state->GetInteger(kRestoreIdPrefName));
   ASSERT_NE(0, previous_browser_id);
 
-  auto* browser_list = BrowserList::GetInstance();
   // Initially there should not be any browsers.
-  ASSERT_TRUE(browser_list->empty());
+  ASSERT_FALSE(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
   // Create Full Restore launch data before launching any browser, simulating
   // Full Restore data being saved prior to restart.
@@ -835,7 +834,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/false);
   SetShouldRestore(app_launch_handler.get());
 
-  ASSERT_EQ(1u, browser_list->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // The restored browser's bounds should be the bounds saved by Full Restore,
   // i.e. |kCurrentBounds|.

@@ -15,8 +15,8 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/cocoa/history_menu_bridge.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -117,8 +117,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
 
   // Check that there are exactly 2 browsers (regular and incognito).
-  BrowserList* active_browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(2u, active_browser_list->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
   Browser* inc_browser = chrome::FindLastActive();
   EXPECT_TRUE(inc_browser->profile()->IsIncognitoProfile());
@@ -141,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
   Profile* profile = browser()->profile();
   chrome::CloseAllBrowsers();
   ui_test_utils::WaitForBrowserToClose();
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_FALSE(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
   // Create an incognito browser.
   Browser* incognito_browser = CreateIncognitoBrowser(profile);

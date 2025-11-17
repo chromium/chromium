@@ -1061,9 +1061,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerShortcutsNotAppsBrowserTest,
                     .SaveToFile(crwebloc_file));
   }
   SendOpenUrlToAppController(net::FilePathToFileURL(crwebloc_file));
-  auto* active_browser_list = BrowserList::GetInstance();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u, active_browser_list->size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   EXPECT_TRUE(ProfilePicker::IsOpen());
   ProfilePicker::Hide();
   {
@@ -1360,8 +1359,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
   EXPECT_EQ(g_handoff_title, u"Title Of More Awesomeness");
 
   // Check that there are exactly 2 browsers.
-  BrowserList* active_browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(2u, active_browser_list->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
   // Close the second browser window (which only has 1 tab left).
   CloseBrowserSynchronously(browser2);
@@ -1379,7 +1377,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
   EXPECT_EQ(g_handoff_title, u"");
 
   // Open a new tab in the incognito window.
-  EXPECT_EQ(2u, active_browser_list->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   ui_test_utils::NavigateToURLWithDisposition(
       browser3, test_url4, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);

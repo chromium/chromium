@@ -105,7 +105,6 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -1112,8 +1111,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, FullscreenAllowed) {
   ASSERT_NO_FATAL_FAILURE(StartLogin(std::string(), std::string()));
   WaitForSessionStart();
 
-  BrowserList* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(1U, browser_list->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
   BrowserWindowInterface* const browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   ASSERT_TRUE(browser);
@@ -1632,8 +1630,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   EXPECT_EQ(1U, app_window_registry->app_windows().size());
 
   // Close the only open browser window.
-  BrowserList* const browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(1U, browser_list->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
   BrowserWindowInterface* browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   ASSERT_TRUE(browser);
@@ -1642,7 +1639,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   browser_window->Close();
   WaitForBrowserDestruction(browser->GetBrowserForMigrationOnly());
   browser_window = nullptr;
-  EXPECT_TRUE(browser_list->empty());
+  EXPECT_FALSE(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
   // Verify that the logout confirmation dialog is not showing because an app
   // window is still open.
@@ -1650,7 +1647,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
 
   // Open a browser window.
   BrowserWindowInterface* first_browser = CreateBrowser(profile);
-  EXPECT_EQ(1U, browser_list->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   // Close the app window.
   run_loop_ = std::make_unique<base::RunLoop>();
@@ -1665,7 +1662,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
 
   // Open a second browser window.
   BrowserWindowInterface* second_browser = CreateBrowser(profile);
-  EXPECT_EQ(2U, browser_list->size());
+  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
 
   // Close the first browser window.
   browser_window = first_browser->GetWindow();
@@ -1674,7 +1671,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   WaitForBrowserDestruction(first_browser->GetBrowserForMigrationOnly());
   browser_window = nullptr;
   first_browser = nullptr;
-  EXPECT_EQ(1U, browser_list->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   // Verify that the logout confirmation dialog is not showing because a browser
   // window is still open.
@@ -1687,7 +1684,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   WaitForBrowserDestruction(second_browser->GetBrowserForMigrationOnly());
   browser_window = nullptr;
   second_browser = nullptr;
-  EXPECT_TRUE(browser_list->empty());
+  EXPECT_FALSE(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
   // Verify that the logout confirmation dialog is showing.
   EXPECT_TRUE(IsLogoutConfirmationDialogShowing());
@@ -1700,7 +1697,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
 
   // Open a browser window.
   browser = CreateBrowser(profile);
-  EXPECT_EQ(1U, browser_list->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   // Close the browser window.
   browser_window = browser->GetWindow();
@@ -1709,7 +1706,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   WaitForBrowserDestruction(browser->GetBrowserForMigrationOnly());
   browser_window = nullptr;
   browser = nullptr;
-  EXPECT_TRUE(browser_list->empty());
+  EXPECT_FALSE(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
   // Verify that the logout confirmation dialog is showing again.
   EXPECT_TRUE(IsLogoutConfirmationDialogShowing());

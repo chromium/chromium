@@ -22,7 +22,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/test_browser_window_aura.h"
@@ -90,11 +89,10 @@ class FamilyUserChromeActivityMetricsTest
     extensions::ExtensionRegistrar::Get(profile())->AddComponentExtension(
         chrome.get());
 
-    BrowserList* active_browser_list = BrowserList::GetInstance();
-    // Expect BrowserList is empty at the beginning.
-    EXPECT_EQ(0U, active_browser_list->size());
+    // Expect no Browsers at the beginning.
+    EXPECT_EQ(0U, chrome::GetTotalBrowserCount());
     InitTestBrowserWithAuraWindow();
-    EXPECT_EQ(1U, active_browser_list->size());
+    EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
     // Set the app active. If the app is active, it should be started, running,
     // and visible.

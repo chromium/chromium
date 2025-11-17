@@ -544,8 +544,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_AppInfo) {
       browser_created_observer.Wait();
 
   test::CreateSystemWebApp(profile, SystemWebAppType::PRINT_MANAGEMENT);
-  auto* browser_list = BrowserList::GetInstance();
-  ASSERT_EQ(4u, browser_list->size());
+  ASSERT_EQ(4u, chrome::GetTotalBrowserCount());
 
   // Activate the Camera app so it appears at the front of the activation list.
   camera_app_browser->GetWindow()->Activate();

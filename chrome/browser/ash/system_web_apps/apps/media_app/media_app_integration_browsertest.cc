@@ -511,8 +511,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchImageMulti) {
   BrowserWindowInterface* const system_app_browser =
       browser_created_observer.Wait();
 
-  const BrowserList* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(2u, browser_list->size());  // 1 extra for the browser test browser.
+  EXPECT_EQ(
+      2u,
+      chrome::GetTotalBrowserCount());  // 1 extra for the browser test browser.
 
   content::TitleWatcher watcher(
       system_app_browser->GetTabStripModel()->GetActiveWebContents(),

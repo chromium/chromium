@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/accelerator_utils.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -158,8 +158,7 @@ KombuchaInProcessFuzzer::HandleHTTPRequest(
 void KombuchaInProcessFuzzer::CleanInProcessBrowserState() {
   WaitForClosedBrowsersToBeDestroyed();
 
-  const BrowserList* const browser_list = BrowserList::GetInstance();
-  if (browser_list->empty()) {
+  if (!GetLastActiveBrowserWindowInterfaceWithAnyProfile()) {
     // The browser process is most likely shutting down now.
     // TODO(paulsemel): should we rather try relaunching the browser process
     // (does it make a difference between just terminating this instance
@@ -168,13 +167,11 @@ void KombuchaInProcessFuzzer::CleanInProcessBrowserState() {
     return;
   }
 
-  if (browser_list->size() > 1) {
-    const BrowserList& browsers = *BrowserList::GetInstance();
-    std::vector<Browser*> extra_browsers(std::next(browsers.begin()),
-                                         browsers.end());
-    for (Browser* browser : extra_browsers) {
-      CloseBrowserSynchronously(browser);
-    }
+  if (chrome::GetTotalBrowserCount() > 1) {
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [](BrowserWindowInterface* browser) {
+          CloseBrowserSynchronously(browser);
+        });
     SetBrowser(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   }
 
