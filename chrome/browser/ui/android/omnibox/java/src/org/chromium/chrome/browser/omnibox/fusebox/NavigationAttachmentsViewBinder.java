@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -240,8 +241,10 @@ class NavigationAttachmentsViewBinder {
         Context context = viewHolder.parentView.getContext();
         Resources res = context.getResources();
         Button addCurrentTabButton = viewHolder.popup.mAddCurrentTab;
+
         final Drawable drawable;
         final ColorStateList tint;
+        final PorterDuff.Mode blendMode;
         if (favicon != null) {
             @Px int iconSizePx = res.getDimensionPixelSize(R.dimen.fusebox_popup_item_icon_size);
             Bitmap bitmap =
@@ -249,14 +252,19 @@ class NavigationAttachmentsViewBinder {
             drawable = new BitmapDrawable(res, bitmap);
             drawable.setBounds(
                     /* left= */ 0, /* top= */ 0, /* right= */ iconSizePx, /* bottom= */ iconSizePx);
-            tint = null;
+            // This will change the alpha value based on the enabled state. The rgb values will
+            // always be unaffected because the multiplied color is white.
+            tint = context.getColorStateList(R.color.default_icon_color_white_tint_list);
+            blendMode = PorterDuff.Mode.MULTIPLY;
         } else {
             drawable = assumeNonNull(context.getDrawable(R.drawable.ic_globe_24dp));
             tint = context.getColorStateList(R.color.default_icon_color_tint_list);
+            blendMode = PorterDuff.Mode.SRC_IN;
         }
 
         addCurrentTabButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 drawable, /* top= */ null, /* end= */ null, /* bottom= */ null);
         addCurrentTabButton.setCompoundDrawableTintList(tint);
+        addCurrentTabButton.setCompoundDrawableTintMode(blendMode);
     }
 }
