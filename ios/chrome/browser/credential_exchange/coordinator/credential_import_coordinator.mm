@@ -124,7 +124,13 @@
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
-  // TODO(crbug.com/450982128): Skip fetching keys with no passkeys present.
+  // If no passkeys are being imported, there is no point in fetching the
+  // security domain secret. Proceed to start the importing process.
+  if (!_mediator.importingPasskeys) {
+    [_mediator startImportingCredentialsWithSecurityDomainSecrets:nil];
+    return;
+  }
+
   bool metricsReportingEnabled =
       GetApplicationContext()->GetLocalState()->GetBoolean(
           metrics::prefs::kMetricsReportingEnabled);

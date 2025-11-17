@@ -74,6 +74,7 @@
 
 - (void)showImportScreenWithPasswordCount:(NSInteger)passwordCount
                              passkeyCount:(NSInteger)passkeyCount {
+  self.importingPasskeys = passkeyCount > 0;
   [_consumer
       setImportDataItem:[[ImportDataItem alloc]
                             initWithType:ImportDataItemType::kPasswords

@@ -39,6 +39,12 @@ class PasskeyModel;
 @interface CredentialImportMediator
     : NSObject <DataImportCredentialConflictMutator>
 
+// Consumer of this mediator.
+@property(nonatomic, weak) id<CredentialImportConsumer> consumer;
+
+// Whether passkeys are present on the import credential list.
+@property(nonatomic, assign) BOOL importingPasskeys;
+
 // `UUID` is a token received from the OS during app launch, required to be
 // passed back to the OS to receive the credential data.
 - (instancetype)initWithUUID:(NSUUID*)UUID
@@ -50,9 +56,6 @@ class PasskeyModel;
                 passkeyModel:(webauthn::PasskeyModel*)passkeyModel
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
-
-// Consumer of this mediator.
-@property(nonatomic, weak) id<CredentialImportConsumer> consumer;
 
 // Notifies the model to starts importing credentials to the user's account.
 // `securityDomainSecrets` is needed to encrypt passkeys if there are any to be
