@@ -144,7 +144,10 @@ export class ComposeboxElement extends I18nMixinLit
       },
       tabSuggestions_: {type: Array},
       errorScrimVisible_: {type: Boolean},
-      contextFilesSize_: {type: Number},
+      contextFilesSize_: {
+        type: Number,
+        reflect: true,
+      },
       searchboxLayoutMode: {
         type: String,
         reflect: true,

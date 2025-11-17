@@ -393,7 +393,6 @@ search-animated-glow {
 }
 
 :host(:not([show-submit_])) #submitContainer,
-:host([searchbox-layout-mode="Compact"]) #submitContainer,
 :host([searchbox-layout-mode="TallBottomContext"]) #submitContainer,
 :host([show-submit_]:not([submit-enabled_])) #submitContainer{
   display: none;
@@ -581,6 +580,27 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
   margin-inline-end: calc(var(--cr-icon-button-size) + 12px);
   margin-inline-start: auto;
   z-index: 100;
+}
+
+:host([ntp-realbox-next-enabled][searchbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(carousel-container) {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: row;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='Compact']) #submitContainer {
+  margin-inline-end: 0px;
+  margin-inline-start: auto;
+  position: relative;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='Compact'][context-files-size_="0"]) #submitContainer {
+  bottom: 0px;
+  padding-top: 14px;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='Compact']:not([context-files-size_="0"])) #submitContainer {
+  bottom: 20px;
 }
 
 :host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
