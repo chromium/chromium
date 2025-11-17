@@ -60,7 +60,7 @@ public class NavigateApiTest extends AwParameterizedTest {
         AwTestContainerView container =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = container.getAwContents();
-        mAwContents.getNavigationClients().add(mNavigationClient);
+        mAwContents.getNavigationClient().addListener(mNavigationClient);
 
         mOnPageLoadFinished = mContentsClient.getOnPageFinishedHelper();
 

@@ -22,7 +22,6 @@ import com.android.webview.chromium.SharedWebViewRendererClientAdapter;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwNavigationListener;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -35,7 +34,6 @@ import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationHandler;
-import java.util.List;
 import java.util.concurrent.Executor;
 
 /**
@@ -398,18 +396,24 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
                         "Support lib method called on WebView that no longer exists.");
             }
 
-            final List<AwNavigationListener> navigationClients =
-                    sharedWebViewChromium.getAwContents().getNavigationClients();
-            for (AwNavigationListener navigationClient : navigationClients) {
-                // Invocation handlers implement equals by delegating to the wrapped object.
-                if (navigationClient.getSupportLibInvocationHandler().equals(listener)) {
-                    throw new IllegalStateException(
-                            "The NavigationListener has already been added to this WebView"
-                                    + " instance.");
-                }
+            if (executor == null || listener == null) {
+                throw new NullPointerException(
+                        "Executor and WebNavigationListener shouldn't be null");
             }
-            navigationClients.add(
-                    new SupportLibWebViewNavigationListenerAdapter(listener, executor));
+
+            // SupportLibWebViewNavigationListenerAdapter implements equals by delegating to the
+            // invocation handler which delegates to the wrapped object.
+            boolean added =
+                    sharedWebViewChromium
+                            .getAwContents()
+                            .getNavigationClient()
+                            .addListener(
+                                    new SupportLibWebViewNavigationListenerAdapter(
+                                            listener, executor));
+            if (!added) {
+                throw new IllegalStateException(
+                        "The NavigationListener has already been added to this WebView instance.");
+            }
         }
     }
 
@@ -426,15 +430,14 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
                         "Support lib method called on WebView that no longer exists.");
             }
 
-            // Invocation handlers implement equals by delegating to the wrapped object.
+            // Construct a SupportLibWebViewNavigationListenerAdapter that `equals` any existing
+            // one. This is possible since `equals` doesn't take the executor into account.
             sharedWebViewChromium
                     .getAwContents()
-                    .getNavigationClients()
-                    .removeIf(
-                            awNavigationListener ->
-                                    awNavigationListener
-                                            .getSupportLibInvocationHandler()
-                                            .equals(listener));
+                    .getNavigationClient()
+                    .removeListener(
+                            new SupportLibWebViewNavigationListenerAdapter(
+                                    listener, Runnable::run));
         }
     }
 
@@ -450,12 +453,12 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
                         "Support lib method called on WebView that no longer exists.");
             }
 
-            List<AwNavigationListener> navigationClients =
-                    sharedWebViewChromium.getAwContents().getNavigationClients();
+            if (sharedWebViewChromium.getAwContents().getNavigationClient().getFirstListener()
+                    instanceof SupportLibWebViewNavigationClientAdapter navigationClient) {
+                return navigationClient.getSupportLibInvocationHandler();
+            }
 
-            return navigationClients.isEmpty()
-                    ? null
-                    : navigationClients.get(0).getSupportLibInvocationHandler();
+            return null;
         }
     }
 
@@ -471,18 +474,16 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
                 throw new IllegalStateException(
                         "Support lib method called on WebView that no longer exists.");
             }
+
             if (webViewNavigationClient == null) {
-                throw new NullPointerException("WebNavigationClient shouldn't be null");
+                throw new NullPointerException("WebViewNavigationClient shouldn't be null");
             }
 
-            List<AwNavigationListener> navigationClients =
-                    sharedWebViewChromium.getAwContents().getNavigationClients();
-
-            AwNavigationListener newClient =
-                    new SupportLibWebViewNavigationClientAdapter(webViewNavigationClient);
-
-            navigationClients.clear();
-            navigationClients.add(newClient);
+            sharedWebViewChromium
+                    .getAwContents()
+                    .getNavigationClient()
+                    .clearAndSetListener(
+                            new SupportLibWebViewNavigationClientAdapter(webViewNavigationClient));
         }
     }
 }

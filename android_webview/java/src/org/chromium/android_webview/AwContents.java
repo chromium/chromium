@@ -151,7 +151,6 @@ import java.lang.annotation.Annotation;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -381,7 +380,7 @@ public class AwContents implements SmartClipProvider {
     private WebContentsInternalsHolder mWebContentsInternalsHolder;
     private NavigationController mNavigationController;
     private final AwContentsClient mContentsClient;
-    private final List<AwNavigationListener> mNavigationClients = new ArrayList<>();
+    private final AwNavigationClient mNavigationClient = new AwNavigationClient();
     private AwWebContentsObserver mWebContentsObserver;
     private final AwContentsClientBridge mContentsClientBridge;
     private final AwWebContentsDelegateAdapter mWebContentsDelegate;
@@ -1256,10 +1255,14 @@ public class AwContents implements SmartClipProvider {
         restoreState(previousState);
     }
 
+    public AwNavigationClient getNavigationClient() {
+        return mNavigationClient;
+    }
+
     /**
-     * Transitions this {@link AwContents} to fullscreen mode and returns the
-     * {@link View} where the contents will be drawn while in fullscreen, or null
-     * if this AwContents has already been destroyed.
+     * Transitions this {@link AwContents} to fullscreen mode and returns the {@link View} where the
+     * contents will be drawn while in fullscreen, or null if this AwContents has already been
+     * destroyed.
      */
     View enterFullScreen() {
         assert !isFullScreen();
@@ -1992,6 +1995,10 @@ public class AwContents implements SmartClipProvider {
         return mWebContents;
     }
 
+    public AwWebContentsObserver getWebContentsObserverForTesting() {
+        return mWebContentsObserver;
+    }
+
     @VisibleForTesting
     public NavigationController getNavigationController() {
         return mNavigationController;
@@ -2394,7 +2401,7 @@ public class AwContents implements SmartClipProvider {
             requestVisitedHistoryFromClient();
         }
 
-        return mWebContentsObserver.getAwNavigationFor(handle);
+        return mNavigationClient.getOrUpdateAwNavigationFor(handle);
     }
 
     /** WebView.postUrl. */
@@ -3820,10 +3827,6 @@ public class AwContents implements SmartClipProvider {
 
     public int getDisplayMode() {
         return mDisplayModeController.getDisplayMode();
-    }
-
-    public List<AwNavigationListener> getNavigationClients() {
-        return mNavigationClients;
     }
 
     // --------------------------------------------------------------------------------------------

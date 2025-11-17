@@ -35,6 +35,21 @@ class SupportLibWebViewNavigationListenerAdapter implements AwNavigationListener
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj instanceof SupportLibWebViewNavigationListenerAdapter listener) {
+            return getSupportLibInvocationHandler()
+                    .equals(listener.getSupportLibInvocationHandler());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return getSupportLibInvocationHandler().hashCode();
+    }
+
+    @Override
     public /* WebViewNavigationListener */ InvocationHandler getSupportLibInvocationHandler() {
         return Proxy.getInvocationHandler(mImpl);
     }
