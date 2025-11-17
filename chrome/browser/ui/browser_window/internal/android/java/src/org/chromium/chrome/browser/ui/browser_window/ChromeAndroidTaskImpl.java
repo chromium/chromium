@@ -21,6 +21,7 @@ import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 
 import androidx.annotation.GuardedBy;
+import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.WindowInsetsAnimationCompat;
@@ -50,10 +51,12 @@ import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsAnimationListener;
 import org.chromium.ui.mojom.WindowShowState;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 
 /** Implements {@link ChromeAndroidTask}. */
 @NullMarked
@@ -67,27 +70,36 @@ final class ChromeAndroidTaskImpl
 
     /** States of this {@link ChromeAndroidTask}. */
     @VisibleForTesting
-    enum State {
+    @IntDef({
+        State.UNKNOWN,
+        State.PENDING_CREATE,
+        State.PENDING_UPDATE,
+        State.IDLE,
+        State.DESTROYING,
+        State.DESTROYED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface State {
         /** The Task is not yet initialized. */
-        UNKNOWN,
+        int UNKNOWN = 0;
 
         /** The Task is pending and not yet associated with an Activity. */
-        PENDING_CREATE,
+        int PENDING_CREATE = 1;
 
         /** The Task has a state being updated but not finished yet. */
-        PENDING_UPDATE,
+        int PENDING_UPDATE = 2;
 
         /* The Task is alive without any pending state change. */
-        IDLE,
+        int IDLE = 3;
 
         /** The Task is being destroyed, but the destruction hasn't been completed. */
-        DESTROYING,
+        int DESTROYING = 4;
 
         /** The Task has been destroyed. */
-        DESTROYED,
+        int DESTROYED = 5;
     }
 
-    private final AtomicReference<State> mState = new AtomicReference<>(State.UNKNOWN);
+    private final AtomicInteger mState = new AtomicInteger(State.UNKNOWN);
 
     private final PendingActionManager mPendingActionManager = new PendingActionManager();
 
@@ -727,7 +739,8 @@ final class ChromeAndroidTaskImpl
     }
 
     @VisibleForTesting
-    State getState() {
+    @State
+    int getState() {
         return assumeNonNull(mState.get());
     }
 

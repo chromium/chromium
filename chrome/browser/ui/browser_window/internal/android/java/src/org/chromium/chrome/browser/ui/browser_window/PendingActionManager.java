@@ -229,7 +229,7 @@ final class PendingActionManager {
         }
     }
 
-    @Nullable Boolean isActiveFuture(@Nullable State state) {
+    @Nullable Boolean isActiveFuture(@State int state) {
         synchronized (mPendingActionsLock) {
             if (state == State.PENDING_CREATE) {
                 return Boolean.TRUE.equals(mIsActiveFuture);
