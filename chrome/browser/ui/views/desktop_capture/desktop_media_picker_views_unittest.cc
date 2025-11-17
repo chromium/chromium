@@ -655,6 +655,11 @@ TEST_P(DesktopMediaPickerViewsPerTypeAndAudioTest, AcceptSpecific) {
     // For Window captures, the `window_audio_type` will be set based on
     // platform support.
     fake_id.window_audio_type = test_api_.GetWindowAudioType();
+
+    // Audio is enabled by default for window application audio capture.
+    fake_id.audio_share =
+        RequireAudio() && test_api_.GetWindowAudioType() ==
+                              DesktopMediaID::AudioType::kApplication;
   }
   media_lists_[Type()]->AddSourceByFullMediaID(fake_id);
 
@@ -925,11 +930,24 @@ TEST_P(DesktopMediaPickerViewsApplicationAudioTest, AudioCheckbox) {
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
   EXPECT_EQ(test_api_.HasAudioShareControl(), ShouldOfferScreenAudio());
   EXPECT_EQ(test_api_.IsScreenAudioOffered(), ShouldOfferScreenAudio());
+  if (ShouldOfferScreenAudio()) {
+    EXPECT_FALSE(test_api_.IsAudioSharingApprovedByUser());
+  }
   EXPECT_EQ(test_api_.GetAudioLabelText(), GetExpectedScreenAudioLabel());
 
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
   EXPECT_EQ(test_api_.HasAudioShareControl(), ShouldOfferWindowAudio());
   EXPECT_EQ(test_api_.IsWindowAudioOffered(), ShouldOfferWindowAudio());
+  // By default, the audio sharing toggle is checked for application audio,
+  // and unchecked for system audio.
+  if (ShouldOfferWindowAudio()) {
+    if (test_api_.GetWindowAudioType() ==
+        DesktopMediaID::AudioType::kApplication) {
+      EXPECT_TRUE(test_api_.IsAudioSharingApprovedByUser());
+    } else {
+      EXPECT_FALSE(test_api_.IsAudioSharingApprovedByUser());
+    }
+  }
   EXPECT_EQ(test_api_.GetAudioLabelText(), GetExpectedWindowAudioLabel());
 
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
