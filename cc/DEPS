@@ -75,6 +75,9 @@ specific_include_rules = {
   "gpu_image_decode_cache_unittest\.cc" : [
       "+gpu/skia_bindings/gl_bindings_skia_cmd_buffer.h",
   ],
+  "layer_tree_host_impl_test_base\.cc": [
+    "+components/viz/test",
+  ],
   "oop_pixeltest\.cc" : [
     "+gpu/command_buffer/client",
     "+gpu/command_buffer/common",
