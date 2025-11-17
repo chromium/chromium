@@ -307,11 +307,13 @@ public final class ChromePreferenceKeys {
     public static final String DOWNLOAD_UMA_ENTRY = "DownloadUmaEntry";
 
     /**
-     * Stores whether the educational tip default browser promo is allowed to be displayed on
-     * relaunch.
+     * Stores the timestamp of the last time any Default Browser Promo was shown to the user across
+     * any surface (New Tab Page, Settings, Messages). This is used as a fallback mechanism to
+     * enforce a cooldown period, especially in cases where the Feature Engagement Tracker might not
+     * yet be initialized, such as during early startup on the New Tab Page.
      */
-    public static final String EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_ALLOW_DISPLAY_FOR_RELAUNCH =
-            "Chrome.EducationalTip.DefaultBrowserPromoAllowDisplayForRelaunch";
+    public static final String EDUCATIONAL_TIP_LAST_DEFAULT_BROWSER_PROMO_TIMESTAMP =
+            "Chrome.EducationalTip.LastDefaultBrowserPromoTimestamp";
 
     /**
      * Indicates whether or not there are prefetched content in chrome that can be viewed offline.
@@ -1144,7 +1146,7 @@ public final class ChromePreferenceKeys {
                 DOWNLOAD_INTERSTITIAL_DOWNLOAD_PENDING_REMOVAL,
                 DSE_NEW_TAB_URL,
                 HOME_MODULES_IMPRESSION_COUNT_BEFORE_INTERACTION.pattern(),
-                EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_ALLOW_DISPLAY_FOR_RELAUNCH,
+                EDUCATIONAL_TIP_LAST_DEFAULT_BROWSER_PROMO_TIMESTAMP,
                 EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 EXTENSIONS_CHROME_PAGE_URL_OVERRIDE_ENABLED.pattern(),
                 FIRST_RUN_SKIPPED_BY_POLICY,

@@ -91,7 +91,6 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipCardProviderSignalHandlerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleBuilderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleMediatorUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleViewBinderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/HistorySyncPromoCoordinatorUnitTest.java",

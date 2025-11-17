@@ -23,11 +23,14 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -149,6 +152,32 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
 
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK))
                 .thenReturn(false);
+        inputContext =
+                EducationalTipCardProviderSignalHandler.createInputContext(
+                        ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate, mProfile, mTracker);
+        assertEquals(
+                1,
+                inputContext.getEntryValue("has_default_browser_promo_shown_in_other_surface")
+                        .floatValue,
+                0.01);
+
+        when(mTracker.isInitialized()).thenReturn(false);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(
+                        ChromePreferenceKeys.EDUCATIONAL_TIP_LAST_DEFAULT_BROWSER_PROMO_TIMESTAMP);
+        inputContext =
+                EducationalTipCardProviderSignalHandler.createInputContext(
+                        ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate, mProfile, mTracker);
+        assertEquals(
+                0,
+                inputContext.getEntryValue("has_default_browser_promo_shown_in_other_surface")
+                        .floatValue,
+                0.01);
+
+        ChromeSharedPreferences.getInstance()
+                .writeLong(
+                        ChromePreferenceKeys.EDUCATIONAL_TIP_LAST_DEFAULT_BROWSER_PROMO_TIMESTAMP,
+                        TimeUtils.currentTimeMillis());
         inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
                         ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate, mProfile, mTracker);

@@ -107,10 +107,7 @@ public class EducationalTipCardProviderSignalHandler {
                     : 1.0f;
         }
 
-        return EducationalTipModuleUtils
-                        .getDefaultBrowserPromoAllowDisplayForRelaunchFromSharedPreference()
-                ? 0.0f
-                : 1.0f;
+        return DefaultBrowserPromoUtils.hasPromoShownRecently() ? 1.0f : 0.0f;
     }
 
     /**
