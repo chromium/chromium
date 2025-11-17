@@ -6982,6 +6982,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "migrate-syncing-user-to-signed-in",
+    "owners": [ "ankushkush@google.com", "chrome-sync-client-team+flags@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "mini-origin-bar",
     "owners": [ "pnoland@chromium.org", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 147
@@ -10132,6 +10137,11 @@
     // This flag is used for in-the-field debugging of animation issues on
     // Chrome OS.
     "expiry_milestone": -1
+  },
+  {
+    "name": "undo-migration-of-syncing-user-to-signed-in",
+    "owners": [ "ankushkush@google.com", "chrome-sync-client-team+flags@google.com"],
+    "expiry_milestone": 150
   },
   {
     "name": "unexportable-key-deletion",

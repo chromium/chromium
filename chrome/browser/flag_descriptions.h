@@ -2732,6 +2732,12 @@ inline constexpr char kMediaRouterCastAllowAllIPsDescription[] =
     "Have the Media Router connect to Cast devices on all IP addresses, not "
     "just RFC1918/RFC4193 private addresses.";
 
+inline constexpr char kMigrateSyncingUserToSignedInName[] =
+    "Migrate syncing user to signed in state";
+inline constexpr char kMigrateSyncingUserToSignedInDescription[] =
+    "When enabled, a syncing user is migrated to the signed in non-syncing "
+    "state on the next browser startup.";
+
 inline constexpr char kMobilePromoOnDesktopName[] = "Mobile Promo On Desktop";
 inline constexpr char kMobilePromoOnDesktopDescription[] =
     "When enabled, shows a mobile promo on the desktop new tab page.";
@@ -4343,6 +4349,12 @@ inline constexpr char kTrackingProtection3pcdName[] =
 inline constexpr char kTrackingProtection3pcdDescription[] =
     "Enables the tracking protection UI + prefs that will be used for the 3PCD "
     "1%.";
+
+inline constexpr char kUndoMigrationOfSyncingUserToSignedInName[] =
+    "Undo the migration of syncing users to signed-in state";
+inline constexpr char kUndoMigrationOfSyncingUserToSignedInDescription[] =
+    "When enabled, reverts the migration of syncing users who were previously "
+    "migrated to the signed-in, non-syncing state.";
 
 inline constexpr char kUseSearchClickForRightClickName[] =
     "Use Search+Click for right click";
