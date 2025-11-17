@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/proxy_resolver_win/windows_system_proxy_resolver_impl.h"
 
 #include <cwchar>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -315,8 +311,8 @@ void WindowsSystemProxyResolverImpl::Request::GetProxyResultForCallback() {
   net::ProxyList proxy_list;
   for (DWORD i = 0u; i < proxy_result.cEntries; ++i) {
     net::ProxyChain proxy_chain;
-    if (GetProxyChainFromWinHttpResultEntry(proxy_result.pEntries[i],
-                                            &proxy_chain)) {
+    if (GetProxyChainFromWinHttpResultEntry(
+            UNSAFE_TODO(proxy_result.pEntries[i]), &proxy_chain)) {
       proxy_list.AddProxyChain(proxy_chain);
     }
   }

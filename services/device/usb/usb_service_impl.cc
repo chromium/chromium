@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/usb/usb_service_impl.h"
 
 #include <stdint.h>
@@ -17,6 +12,7 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -72,7 +68,7 @@ std::optional<std::vector<ScopedLibusbDeviceRef>> GetDeviceListBlocking(
   std::vector<ScopedLibusbDeviceRef> scoped_devices;
   scoped_devices.reserve(device_count);
   for (ssize_t i = 0; i < device_count; ++i)
-    scoped_devices.emplace_back(platform_devices[i], usb_context);
+    scoped_devices.emplace_back(UNSAFE_TODO(platform_devices[i]), usb_context);
 
   // Free the list but don't unref the devices because ownership has been
   // been transfered to the elements of |scoped_devices|.

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/geolocation/wifi_data_provider_win.h"
 
 #include <windows.h>
@@ -14,6 +9,7 @@
 #include <winioctl.h>
 #include <wlanapi.h>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/win/win_util.h"
 #include "services/device/geolocation/wifi_data_provider_common.h"
@@ -178,7 +174,8 @@ void WindowsWlanApi::GetAccessPointData(
 
   // Go through the list of interfaces and get the data for each.
   for (size_t i = 0; i < interface_list->dwNumberOfItems; ++i) {
-    const WLAN_INTERFACE_INFO interface_info = interface_list->InterfaceInfo[i];
+    const WLAN_INTERFACE_INFO interface_info =
+        UNSAFE_TODO(interface_list->InterfaceInfo[i]);
 
     // Skip any interface that is midway through association; the
     // WlanGetNetworkBssList function call is known to hang indefinitely
@@ -218,7 +215,7 @@ bool WindowsWlanApi::GetInterfaceDataWLAN(const HANDLE wlan_handle,
     return false;
 
   for (size_t i = 0; i < bss_list->dwNumberOfItems; ++i)
-    data->insert(GetNetworkData(bss_list->wlanBssEntries[i]));
+    data->insert(GetNetworkData(UNSAFE_TODO(bss_list->wlanBssEntries[i])));
 
   (*WlanFreeMemory_function_)(bss_list);
 
