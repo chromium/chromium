@@ -143,20 +143,33 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, DisplayNone) {
 }
 
 #if BUILDFLAG(ENABLE_GLIC)
-IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, MediaRequestAllowOnGlic) {
+// TODO(crbug.com/460836171): Enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_MediaRequestAllowOnGlic DISABLED_MediaRequestAllowOnGlic
+#else
+#define MAYBE_MediaRequestAllowOnGlic MediaRequestAllowOnGlic
+#endif
+IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, MAYBE_MediaRequestAllowOnGlic) {
   set_test_loader_host("glic");
   RunBasicTestCase("MediaRequestAllowOnGlic",
                    GetTestUrl("webview/mediarequest.html").spec());
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, MediaRequestDenyOnGlic) {
+// TODO(crbug.com/460836171): Enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_MediaRequestDenyOnGlic DISABLED_MediaRequestDenyOnGlic
+#else
+#define MAYBE_MediaRequestDenyOnGlic MediaRequestDenyOnGlic
+#endif
+IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, MAYBE_MediaRequestDenyOnGlic) {
   set_test_loader_host("glic");
   RunBasicTestCase("MediaRequestDenyOnGlic",
                    GetTestUrl("webview/mediarequest.html").spec());
 }
 
 // TODO(crbug.com/444024595): Flaky on Linux and Windows
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+// TODO(crbug.com/460836171): Enable on ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_MediaRequestAllowOnSignIn DISABLED_MediaRequestAllowOnSignIn
 #else
 #define MAYBE_MediaRequestAllowOnSignIn MediaRequestAllowOnSignIn
@@ -166,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest,
   RunBasicTestCase("MediaRequestAllowOnSignIn",
                    GetTestUrl("webview/mediarequest.html").spec());
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 // TODO(crbug.com/41400417) Flaky on CrOS trybots.
 #if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
