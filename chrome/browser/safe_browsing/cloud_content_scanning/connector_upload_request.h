@@ -10,7 +10,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
-#include "components/enterprise/connectors/core/connector_data_pipe_getter.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/connector_data_pipe_getter.h"
 #include "components/file_access/scoped_file_access.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

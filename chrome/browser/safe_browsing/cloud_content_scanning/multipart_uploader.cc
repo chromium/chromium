@@ -17,7 +17,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
-#include "components/enterprise/connectors/core/connector_data_pipe_getter.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "components/safe_browsing/core/common/features.h"

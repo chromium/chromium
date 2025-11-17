@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/connectors/core/connector_data_pipe_getter.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/connector_data_pipe_getter.h"
 
 #include <algorithm>
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/connectors/core/connector_data_pipe_getter.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/connector_data_pipe_getter.h"
 
 #include <memory>
 
@@ -262,7 +262,13 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, LargeFileAndMetadata) {
     // resumable upload.
     return;
   }
+
+// TODO(crbug.com/461531817): Remove the `is_fuchsia` build flag.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+  constexpr size_t kLargeDataSize = 50 * 1024 * 1024;
+#else
   constexpr size_t kLargeDataSize = 100 * 1024 * 1024;
+#endif
   std::string large_data = std::string(kLargeDataSize, 'a');
   std::string expected_body =
       "--boundary\r\n"

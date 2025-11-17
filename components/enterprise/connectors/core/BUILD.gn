@@ -47,13 +47,6 @@ source_set("core") {
     "service_provider_config.h",
   ]
 
-  if (enterprise_cloud_content_analysis) {
-    sources += [
-      "connector_data_pipe_getter.cc",
-      "connector_data_pipe_getter.h",
-    ]
-  }
-
   public_deps = [
     ":constants",
     "//components/download/public/common:public",
@@ -82,9 +75,6 @@ source_set("core") {
     "//components/signin/public/identity_manager",
     "//components/strings:components_strings_grit",
     "//components/url_matcher",
-    "//mojo/public/cpp/bindings",
-    "//net",
-    "//services/network/public/mojom",
     "//ui/base",
     "//ui/base/clipboard:clipboard_types",
     "//ui/gfx/range",
@@ -111,8 +101,16 @@ source_set("cloud_content_scanning") {
   sources = [
     "cloud_content_scanning/common.cc",
     "cloud_content_scanning/common.h",
+    "cloud_content_scanning/connector_data_pipe_getter.cc",
+    "cloud_content_scanning/connector_data_pipe_getter.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/enterprise/obfuscation/core:enterprise_obfuscation",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network/public/mojom",
+  ]
 }
 
 source_set("constants") {
@@ -177,10 +175,6 @@ source_set("unit_tests") {
     "service_provider_config_unittest.cc",
   ]
 
-  if (enterprise_cloud_content_analysis) {
-    sources += [ "connector_data_pipe_getter_unittest.cc" ]
-  }
-
   public_deps = [ ":core" ]
 
   deps = [
@@ -198,6 +192,23 @@ source_set("unit_tests") {
     "//net",
     "//testing/gtest",
     "//url",
+  ]
+}
+
+source_set("cloud_content_scanning_unittests") {
+  testonly = true
+
+  sources = [ "cloud_content_scanning/connector_data_pipe_getter_unittest.cc" ]
+
+  public_deps = [ ":cloud_content_scanning" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/enterprise/obfuscation/core:enterprise_obfuscation",
+    "//components/prefs",
+    "//net",
+    "//testing/gtest",
   ]
 }
 
