@@ -6,7 +6,6 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/permissions/crowd_deny_fake_safe_browsing_database_manager.h"
@@ -29,7 +28,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
-#include "components/data_sharing/public/features.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/notifications_engagement_service.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
@@ -74,11 +72,6 @@ class MockRevokedPermissionsOSNotificationDisplayManager
 
 class AbusiveNotificationPermissionsManagerTest : public ::testing::Test {
  public:
-  AbusiveNotificationPermissionsManagerTest() {
-    // TODO(b/459532129) : Remove the DataSharingJoinOnly flag from the disable list.
-    scoped_feature_list_.InitAndDisableFeature(
-        data_sharing::features::kDataSharingJoinOnly);
-  }
   void SetUp() override {
     mock_database_manager_ = new MockSafeBrowsingDatabaseManager();
     TestingProfile::Builder builder;
@@ -203,7 +196,6 @@ class AbusiveNotificationPermissionsManagerTest : public ::testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<KeyedService>
   BuildRevokedPermissionsOSNotificationDisplayManager(
       content::BrowserContext* context) {

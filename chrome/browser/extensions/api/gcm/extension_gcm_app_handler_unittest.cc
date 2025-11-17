@@ -39,7 +39,6 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/data_sharing/public/features.h"
 #include "components/gcm_driver/fake_gcm_app_handler.h"
 #include "components/gcm_driver/fake_gcm_client.h"
 #include "components/gcm_driver/fake_gcm_client_factory.h"
@@ -270,10 +269,8 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
         os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting(
             /*is_sync_for_unittests=*/true)) {
     // Allow unpacked extensions without developer mode for testing.
-    // TODO(b/459533714) : Remove the DataSharingJoinOnly flag from the disable list.
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {}, {{extensions_features::kExtensionDisableUnsupportedDeveloper,
-              data_sharing::features::kDataSharingJoinOnly}});
+    scoped_feature_list_.InitAndDisableFeature(
+        extensions_features::kExtensionDisableUnsupportedDeveloper);
   }
 
   ExtensionGCMAppHandlerTest(const ExtensionGCMAppHandlerTest&) = delete;
