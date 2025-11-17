@@ -244,6 +244,9 @@
   E_CPONLY(kColorNewTabPageButtonForeground) \
   E_CPONLY(kColorNewTabPageCartModuleDiscountChipBackground) \
   E_CPONLY(kColorNewTabPageCartModuleDiscountChipForeground) \
+  E_CPONLY(kColorNewTabPageActionChipTextBody) \
+  E_CPONLY(kColorNewTabPageActionChipTextTitle) \
+  E_CPONLY(kColorNewTabPageActionChipDeepSearchIcon) \
   E_CPONLY(kColorNewTabPageChipBackground) \
   E_CPONLY(kColorNewTabPageChipForeground) \
   E_CPONLY(kColorComposeboxBackground) \

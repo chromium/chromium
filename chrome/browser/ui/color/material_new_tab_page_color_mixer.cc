@@ -131,6 +131,16 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageHistoryClustersModuleItemBackground] = {
       ui::kColorSysBaseContainerElevated};
 
+  // Action chips colors.
+  mixer[kColorNewTabPageActionChipBackground] = {ui::kColorSysBaseContainer};
+  mixer[kColorNewTabPageActionChipBackgroundHover] = {
+      ui::kColorSysStateHoverOnSubtle};
+
+  mixer[kColorNewTabPageActionChipTextTitle] = {ui::kColorSysOnSurface};
+  mixer[kColorNewTabPageActionChipTextBody] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorNewTabPageActionChipDeepSearchIcon] = {
+      ui::kColorSysOnSurfaceSubtle};
+
   mixer[kColorNewTabPageModuleBackground] = {ui::kColorSysBaseContainer};
   mixer[kColorNewTabPageModuleIconBackground] = {ui::kColorSysNeutralContainer};
   // Styling for Doodle Share Button.
@@ -238,11 +248,6 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
     mixer[kColorSearchboxShadow] =
         ui::SetAlpha(gfx::kGoogleGrey900,
                      (dark_mode ? /* % opacity */ 0.32 : 0.1) * SK_AlphaOPAQUE);
-
-    // Action chips colors.
-    mixer[kColorNewTabPageActionChipBackground] = {ui::kColorSysBaseContainer};
-    mixer[kColorNewTabPageActionChipBackgroundHover] = {
-        ui::kColorSysStateHoverOnSubtle};
 
     // This determines weather the realbox expanded state background in dark
     // mode will match the omnibox or not.

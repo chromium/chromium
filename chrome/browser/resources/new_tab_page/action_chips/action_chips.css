@@ -50,8 +50,9 @@
 }
 
 .deep-search {
-  background-image: url(chrome://new-tab-page/icons/deep_search.svg);
+  background-color: var(--color-sys-on-surface-subtle);
   background-size: 24px;
+  -webkit-mask-image: url(chrome://new-tab-page/icons/deep_search.svg);
 }
 
 .action-chip {
@@ -129,7 +130,7 @@
 }
 
 .chip-title {
-  color: var(--ntp-theme-text-color);
+  color: var(--color-sys-on-surface);
   font-size: 14px;
   font-weight: 500;
   overflow: hidden;
@@ -140,7 +141,7 @@
 }
 
 .chip-body {
-  color: #474747;
+  color: var(--color-sys-on-surface-subtle);
   font-size: 12px;
   font-weight: 400;
 }
