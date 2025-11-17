@@ -288,7 +288,9 @@ bool HanKerning::AppendFontFeatures(const String& text,
     last_type = GetCharType(text, start, font_data);
   }
 
-  if (font_data.has_contextual_spacing && char_types_.empty()) {
+  if (font_data.has_contextual_spacing &&
+      (char_types_.empty() ||
+       RuntimeEnabledFeatures::TextSpacingTrimFallbackChwsEnabled())) {
     // The `chws` feature can handle characters in a run.
     // Compute the end edge if there are following runs.
     if (options.apply_end) [[unlikely]] {

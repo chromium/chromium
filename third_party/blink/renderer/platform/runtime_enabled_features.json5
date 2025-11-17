@@ -5125,6 +5125,12 @@
       status: "test",
     },
     {
+      // crbug.com/440947112
+      name: "TextSpacingTrimFallbackChws",
+      depends_on: ["TextSpacingTrimFallback"],
+      status: "stable",
+    },
+    {
       // crbug.com/331123676
       name: "TextSpacingTrimYuGothicUI",
       status: "stable",
