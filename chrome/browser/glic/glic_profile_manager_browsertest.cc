@@ -154,6 +154,8 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
   profile_manager->SetActiveGlic(service1);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+// Multi-profile is not supported on ChromeOS, so these tests don't apply.
 IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
                        ProfileForLaunch_WithDetachedGlic) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
@@ -209,6 +211,7 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
   EXPECT_EQ(browser()->profile(), profile_manager->GetProfileForLaunch());
 #endif
 }
+#endif  // !(BUILDFLAG(IS_CHROMEOS))
 
 class GlicProfileManagerPreloadingTest
     : public InProcessBrowserTest,
