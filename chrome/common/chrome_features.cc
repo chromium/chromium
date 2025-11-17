@@ -511,7 +511,7 @@ const base::FeatureParam<int> kGlicMultiInstanceFloatyHeight{
 // an eligible G1 subscription tier, regardless of whether `kGlicMultiInstance`
 // is enabled.
 BASE_FEATURE(kGlicEnableMultiInstanceBasedOnTier,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicDefaultToLastActiveConversation,
              base::FEATURE_DISABLED_BY_DEFAULT);
