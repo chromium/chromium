@@ -323,6 +323,12 @@ ChromeOmniboxClient::GetPageClassification(bool is_prefetch) const {
       is_prefetch);
 }
 
+metrics::OmniboxEventProto::PageClassification
+ChromeOmniboxClient::GetOmniboxComposeboxPageClassification() const {
+  return location_bar_->GetLocationBarModel()
+      ->GetOmniboxComposeboxPageClassification();
+}
+
 security_state::SecurityLevel ChromeOmniboxClient::GetSecurityLevel() const {
   return location_bar_->GetLocationBarModel()->GetSecurityLevel();
 }

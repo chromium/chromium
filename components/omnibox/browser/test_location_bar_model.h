@@ -33,6 +33,7 @@ class TestLocationBarModel : public LocationBarModel {
   net::CertStatus GetCertStatus() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
       bool is_prefetch = false) const override;
+  metrics::OmniboxEventProto::PageClassification GetOmniboxComposeboxPageClassification() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
   std::u16string GetSecureDisplayText() const override;
   std::u16string GetSecureAccessibilityText() const override;

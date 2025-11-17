@@ -81,9 +81,16 @@ bool SupportsMostVisitedSites(OEP::PageClassification classification) {
          classification == OEP::ANDROID_SHORTCUTS_WIDGET;
 }
 
+bool IsOmniboxComposebox(OEP::PageClassification classification) {
+  return classification == OEP::NTP_OMNIBOX_COMPOSEBOX ||
+         classification == OEP::SRP_OMNIBOX_COMPOSEBOX ||
+         classification == OEP::OTHER_OMNIBOX_COMPOSEBOX;
+}
+
 bool IsComposebox(OEP::PageClassification classification) {
   return classification == OEP::NTP_COMPOSEBOX ||
-         classification == OEP::LENS_SIDE_PANEL_COMPOSEBOX;
+         classification == OEP::LENS_SIDE_PANEL_COMPOSEBOX ||
+         IsOmniboxComposebox(classification);
 }
 
 bool IsNTPRealbox(OEP::PageClassification classification) {

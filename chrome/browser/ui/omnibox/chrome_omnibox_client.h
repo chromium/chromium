@@ -64,6 +64,8 @@ class ChromeOmniboxClient final : public OmniboxClient {
   GURL GetNavigationEntryURL() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
       bool is_prefetch) const override;
+  metrics::OmniboxEventProto::PageClassification
+  GetOmniboxComposeboxPageClassification() const override;
   security_state::SecurityLevel GetSecurityLevel() const override;
   net::CertStatus GetCertStatus() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;

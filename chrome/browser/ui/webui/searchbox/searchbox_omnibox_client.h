@@ -74,9 +74,9 @@ class SearchboxOmniboxClient : public OmniboxClient {
 
  protected:
   raw_ptr<Profile> profile_;
+  raw_ptr<content::WebContents> web_contents_;
 
  private:
-  raw_ptr<content::WebContents> web_contents_;
   ChromeAutocompleteSchemeClassifier scheme_classifier_;
   // This is unused, but needed for `GetVectorIcon()`.
   gfx::VectorIcon vector_icon_{nullptr, 0u, ""};

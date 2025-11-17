@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
-#include "chrome/browser/ui/webui/searchbox/composebox_handler.h"
+#include "chrome/browser/ui/webui/searchbox/omnibox_composebox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/omnibox_popup_resources.h"
@@ -219,7 +219,7 @@ void OmniboxPopupUI::CreatePageHandler(
     contextual_search_web_contents_helper->set_session_handle(
         std::move(contextual_session_handle));
 
-    composebox_handler_ = std::make_unique<ComposeboxHandler>(
+    composebox_handler_ = std::make_unique<OmniboxComposeboxHandler>(
         std::move(pending_page_handler), std::move(pending_page),
         std::move(pending_searchbox_handler), profile_,
         web_ui()->GetWebContents());
