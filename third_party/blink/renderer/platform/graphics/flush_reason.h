@@ -10,27 +10,24 @@ namespace blink {
 // Reasons for requesting that recorded PaintOps be flushed. Used in code
 // loosely related to 2d canvas rendering contexts.
 enum class FlushReason {
-  // Used in C++ unit tests
-  kTesting = 0,
-
   // Canvas contents were cleared. This makes the canvas vector printable
   // again.
-  kClear = 1,
+  kClear = 0,
 
   // The canvas element dispatched a frame to the compositor
   // This inhibits vector printing.
-  kCanvasPushFrame = 2,
+  kCanvasPushFrame = 1,
 
   // The canvas element dispatched a frame to the compositor while printing
   // was in progress.
   // This does not prevent vector printing as long as the current frame is
   // clear.
-  kCanvasPushFrameWhilePrinting = 3,
+  kCanvasPushFrameWhilePrinting = 2,
 
   // The canvas is being printed.
-  kPrinting = 4,
+  kPrinting = 3,
 
-  kOther = 5,
+  kOther = 4,
 
   kMaxValue = kOther,
 };

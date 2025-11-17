@@ -288,10 +288,10 @@ std::unique_ptr<CanvasResourceProviderSharedImage> MakeCanvasResourceProvider(
 }
 
 scoped_refptr<CanvasResource> UpdateResource(CanvasResourceProvider* provider) {
-  provider->ProduceCanvasResource(FlushReason::kTesting);
+  provider->ProduceCanvasResource(FlushReason::kOther);
   // Resource updated after draw.
   provider->Canvas().clear(SkColors::kWhite);
-  return provider->ProduceCanvasResource(FlushReason::kTesting);
+  return provider->ProduceCanvasResource(FlushReason::kOther);
 }
 
 TEST_F(CanvasResourceProviderTest,
@@ -315,7 +315,7 @@ TEST_F(CanvasResourceProviderTest,
       SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
       shared_image_usage_flags);
 
-  auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
+  auto resource = provider->ProduceCanvasResource(FlushReason::kOther);
   auto old_compositor_read_sync_token = GetSyncToken(resource.get());
 
   // NOTE: Need to ensure that this SyncToken's release count is greater than
@@ -369,10 +369,10 @@ TEST_F(CanvasResourceProviderTest,
 #endif
 
   // Same resource and sync token if we query again without updating.
-  auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
+  auto resource = provider->ProduceCanvasResource(FlushReason::kOther);
   auto sync_token = GetSyncToken(resource.get());
   ASSERT_TRUE(resource);
-  EXPECT_EQ(resource, provider->ProduceCanvasResource(FlushReason::kTesting));
+  EXPECT_EQ(resource, provider->ProduceCanvasResource(FlushReason::kOther));
   EXPECT_EQ(sync_token, GetSyncToken(resource.get()));
 
   auto new_resource = UpdateResource(provider.get());
@@ -383,7 +383,7 @@ TEST_F(CanvasResourceProviderTest,
   EnsureResourceRecycled(provider.get(), std::move(resource));
 
   provider->Canvas().clear(SkColors::kBlack);
-  auto resource_again = provider->ProduceCanvasResource(FlushReason::kTesting);
+  auto resource_again = provider->ProduceCanvasResource(FlushReason::kOther);
   EXPECT_EQ(resource_ptr, resource_again);
   EXPECT_NE(sync_token, GetSyncToken(resource_again.get()));
 }
@@ -394,7 +394,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnusedResources) {
   auto provider =
       MakeCanvasResourceProvider(RasterMode::kGPU, context_provider_wrapper_);
 
-  auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
+  auto resource = provider->ProduceCanvasResource(FlushReason::kOther);
   auto new_resource = UpdateResource(provider.get());
   ASSERT_NE(resource, new_resource);
 
@@ -425,7 +425,7 @@ TEST_F(CanvasResourceProviderTest,
   auto provider =
       MakeCanvasResourceProvider(RasterMode::kGPU, context_provider_wrapper_);
 
-  auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
+  auto resource = provider->ProduceCanvasResource(FlushReason::kOther);
   auto new_resource = UpdateResource(provider.get());
   ASSERT_NE(resource, new_resource);
   ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
@@ -446,7 +446,7 @@ TEST_F(CanvasResourceProviderTest,
   auto provider =
       MakeCanvasResourceProvider(RasterMode::kGPU, context_provider_wrapper_);
 
-  auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
+  auto resource = provider->ProduceCanvasResource(FlushReason::kOther);
   auto new_resource = UpdateResource(provider.get());
   ASSERT_NE(resource, new_resource);
   ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
@@ -506,27 +506,27 @@ TEST_F(CanvasResourceProviderTest,
   ASSERT_TRUE(provider->IsValid());
 
   // Same resource returned until the canvas is updated.
-  auto image = provider->Snapshot(FlushReason::kTesting);
+  auto image = provider->Snapshot(FlushReason::kOther);
   ASSERT_TRUE(image);
-  auto new_image = provider->Snapshot(FlushReason::kTesting);
+  auto new_image = provider->Snapshot(FlushReason::kOther);
   EXPECT_EQ(image->GetSharedImage(), new_image->GetSharedImage());
-  EXPECT_EQ(provider->ProduceCanvasResource(FlushReason::kTesting)
+  EXPECT_EQ(provider->ProduceCanvasResource(FlushReason::kOther)
                 ->GetClientSharedImage(),
             image->GetSharedImage());
 
   // Resource updated after draw.
   provider->Canvas().clear(SkColors::kWhite);
-  provider->FlushCanvas(FlushReason::kTesting);
-  new_image = provider->Snapshot(FlushReason::kTesting);
+  provider->FlushCanvas(FlushReason::kOther);
+  new_image = provider->Snapshot(FlushReason::kOther);
   EXPECT_NE(new_image->GetSharedImage(), image->GetSharedImage());
 
   // Resource recycled.
   auto original_shared_image = image->GetSharedImage();
   image.reset();
   provider->Canvas().clear(SkColors::kBlack);
-  provider->FlushCanvas(FlushReason::kTesting);
+  provider->FlushCanvas(FlushReason::kOther);
   EXPECT_EQ(original_shared_image,
-            provider->Snapshot(FlushReason::kTesting)->GetSharedImage());
+            provider->Snapshot(FlushReason::kOther)->GetSharedImage());
 }
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
@@ -687,8 +687,8 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
 
   MemoryManagedPaintCanvas& dst_canvas = dst_provider->Canvas();
 
-  PaintImage paint_image = src_provider->Snapshot(FlushReason::kTesting)
-                               ->PaintImageForCurrentFrame();
+  PaintImage paint_image =
+      src_provider->Snapshot(FlushReason::kOther)->PaintImageForCurrentFrame();
   PaintImage::ContentId src_content_id = paint_image.GetContentIdForFrame(0u);
 
   EXPECT_FALSE(dst_canvas.IsCachingImage(src_content_id));
@@ -700,7 +700,7 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
   // Modify the canvas to trigger OnFlushForImage
   src_provider->Canvas().clear(SkColors::kWhite);
   // So that all the cached draws are executed
-  src_provider->ProduceCanvasResource(FlushReason::kTesting);
+  src_provider->ProduceCanvasResource(FlushReason::kOther);
 
   // The paint canvas may have moved
   MemoryManagedPaintCanvas& new_dst_canvas = dst_provider->Canvas();
@@ -753,7 +753,7 @@ TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllReleasableOps) {
   EXPECT_TRUE(provider->Recorder().HasReleasableDrawOps());
 
   // `FlushCanvas` releases all ops, leaving the canvas clean.
-  provider->FlushCanvas(FlushReason::kTesting);
+  provider->FlushCanvas(FlushReason::kOther);
   EXPECT_FALSE(provider->Recorder().HasRecordedDrawOps());
   EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
 }
@@ -777,7 +777,7 @@ TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllOpsOutsideLayers) {
   EXPECT_TRUE(provider->Recorder().HasReleasableDrawOps());
   EXPECT_TRUE(provider->Recorder().HasSideRecording());
 
-  provider->FlushCanvas(FlushReason::kTesting);
+  provider->FlushCanvas(FlushReason::kOther);
   EXPECT_TRUE(provider->Recorder().HasRecordedDrawOps());
   EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
   EXPECT_TRUE(provider->Recorder().HasSideRecording());
@@ -792,7 +792,7 @@ TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllOpsOutsideLayers) {
   EXPECT_TRUE(provider->Recorder().HasReleasableDrawOps());
   EXPECT_FALSE(provider->Recorder().HasSideRecording());
 
-  provider->FlushCanvas(FlushReason::kTesting);
+  provider->FlushCanvas(FlushReason::kOther);
   EXPECT_FALSE(provider->Recorder().HasRecordedDrawOps());
   EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
   EXPECT_FALSE(provider->Recorder().HasSideRecording());

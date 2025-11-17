@@ -478,7 +478,7 @@ TEST_F(VideoFrameTest, VideoFrameFromGPUImageBitmap) {
       RasterMode::kGPU, gpu::SharedImageUsageSet());
 
   scoped_refptr<StaticBitmapImage> bitmap =
-      resource_provider->Snapshot(FlushReason::kTesting);
+      resource_provider->Snapshot(FlushReason::kOther);
   ASSERT_TRUE(bitmap->IsTextureBacked());
 
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(bitmap);

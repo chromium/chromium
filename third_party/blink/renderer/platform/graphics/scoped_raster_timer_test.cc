@@ -101,7 +101,7 @@ TEST_F(ScopedRasterTimerTest, UnacceleratedRasterDuration) {
 
   // Trigger a flush, which will capture a raster duration measurement.
   provider->Canvas().clear(SkColors::kBlue);
-  provider->ProduceCanvasResource(FlushReason::kTesting);
+  provider->ProduceCanvasResource(FlushReason::kOther);
   provider = nullptr;
 
   histograms.ExpectUniqueSample(
@@ -132,7 +132,7 @@ TEST_F(ScopedRasterTimerTest, AcceleratedRasterDuration) {
 
   // Trigger a flush, which will capture a raster duration measurement.
   provider->Canvas().clear(SkColors::kBlue);
-  provider->ProduceCanvasResource(FlushReason::kTesting);
+  provider->ProduceCanvasResource(FlushReason::kOther);
 
   base::HistogramTester histograms;
 

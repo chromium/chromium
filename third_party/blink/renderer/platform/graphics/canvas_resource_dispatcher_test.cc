@@ -86,7 +86,7 @@ class CanvasResourceDispatcherTest
  public:
   scoped_refptr<CanvasResource> DispatchOneFrame() {
     scoped_refptr<CanvasResource> canvas_resource =
-        resource_provider_->ProduceCanvasResource(FlushReason::kTesting);
+        resource_provider_->ProduceCanvasResource(FlushReason::kOther);
     auto canvas_resource_extra = canvas_resource;
     dispatcher_->DispatchFrame(std::move(canvas_resource), SkIRect::MakeEmpty(),
                                /*is_opaque=*/false);

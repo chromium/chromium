@@ -119,7 +119,7 @@ void OffscreenCanvasPlaceholderTest::DrawSomething() {
 
 CanvasResource* OffscreenCanvasPlaceholderTest::DispatchOneFrame() {
   scoped_refptr<CanvasResource> resource =
-      resource_provider_->ProduceCanvasResource(FlushReason::kTesting);
+      resource_provider_->ProduceCanvasResource(FlushReason::kOther);
   CanvasResource* resource_raw_ptr = resource.get();
   dispatcher_->DispatchFrame(std::move(resource), SkIRect::MakeEmpty(),
                              /*is_opaque=*/false);
