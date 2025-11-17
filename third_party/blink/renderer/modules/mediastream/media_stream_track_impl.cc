@@ -213,15 +213,14 @@ std::optional<media::mojom::DisplayCaptureSurfaceType> GetDisplayCaptureType(
   return settings.display_surface;
 }
 
-WebString GetDisplaySurfaceString(
-    media::mojom::DisplayCaptureSurfaceType value) {
+String GetDisplaySurfaceString(media::mojom::DisplayCaptureSurfaceType value) {
   switch (value) {
     case media::mojom::DisplayCaptureSurfaceType::MONITOR:
-      return WebString::FromUTF8("monitor");
+      return "monitor";
     case media::mojom::DisplayCaptureSurfaceType::WINDOW:
-      return WebString::FromUTF8("window");
+      return "window";
     case media::mojom::DisplayCaptureSurfaceType::BROWSER:
-      return WebString::FromUTF8("browser");
+      return "browser";
   }
   NOTREACHED();
 }

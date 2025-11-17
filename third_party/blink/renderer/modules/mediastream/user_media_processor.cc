@@ -1872,9 +1872,9 @@ MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
                             std::max(fallback_latency, max_latency)};
   }
 
-  capabilities.device_id = blink::WebString::FromUTF8(device.id);
+  capabilities.device_id = String::FromUTF8(device.id);
   if (device.group_id) {
-    capabilities.group_id = blink::WebString::FromUTF8(*device.group_id);
+    capabilities.group_id = String::FromUTF8(*device.group_id);
   }
 
   MediaStreamSource* source =

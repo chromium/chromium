@@ -450,8 +450,7 @@ ServiceWorkerContainer::registerServiceWorker(
                                             &web_error_message)) {
     resolver->Reject(ServiceWorkerErrorForUpdate::AsJSException(
         script_state, mojom::blink::ServiceWorkerErrorType::kType,
-        WebString::FromUTF8("Failed to register a ServiceWorker: " +
-                            web_error_message.Utf8())));
+        StrCat({"Failed to register a ServiceWorker: ", web_error_message})));
     return promise;
   }
 

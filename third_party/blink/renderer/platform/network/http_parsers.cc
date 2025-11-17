@@ -896,8 +896,8 @@ bool ParseMultipartHeadersFromBody(base::span<const uint8_t> bytes,
 
   std::string mime_type, charset;
   response_headers->GetMimeTypeAndCharset(&mime_type, &charset);
-  response->SetMimeType(WebString::FromUTF8(mime_type));
-  response->SetTextEncodingName(WebString::FromUTF8(charset));
+  response->SetMimeType(AtomicString(String::FromUTF8(mime_type)));
+  response->SetTextEncodingName(AtomicString(String::FromUTF8(charset)));
 
   // Copy headers listed in replaceHeaders to the response.
   for (const AtomicString& header : ReplaceHeaders()) {
@@ -910,8 +910,7 @@ bool ParseMultipartHeadersFromBody(base::span<const uint8_t> bytes,
     Vector<AtomicString> values;
     while (response_headers->EnumerateHeader(&iterator, header_string_piece,
                                              &value)) {
-      const AtomicString atomic_value = WebString::FromLatin1(value);
-      values.push_back(atomic_value);
+      values.push_back(AtomicString(base::as_byte_span(value)));
     }
     response->AddHttpHeaderFieldWithMultipleValues(header, values);
   }
@@ -936,20 +935,20 @@ bool ParseMultipartFormHeadersFromBody(base::span<const uint8_t> bytes,
   std::string headers("HTTP/1.1 200 OK\r\n");
   headers.append(base::as_string_view(bytes.first(headers_end_pos)));
 
-  auto responseHeaders = base::MakeRefCounted<net::HttpResponseHeaders>(
+  auto response_headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(headers));
 
   // Copy selected header fields.
-  const AtomicString* const headerNamePointers[] = {
-      &http_names::kContentDisposition, &http_names::kContentType};
-  for (const AtomicString* headerNamePointer : headerNamePointers) {
-    StringUtf8Adaptor adaptor(*headerNamePointer);
+  const AtomicString* const kHeaderNames[] = {&http_names::kContentDisposition,
+                                              &http_names::kContentType};
+  for (const AtomicString* header_name : kHeaderNames) {
+    StringUtf8Adaptor adaptor(*header_name);
     size_t iterator = 0;
-    std::string_view headerNameStringPiece = adaptor.AsStringView();
+    std::string_view header_name_string_piece(adaptor.AsStringView());
     std::string value;
-    while (responseHeaders->EnumerateHeader(&iterator, headerNameStringPiece,
-                                            &value)) {
-      header_fields->Add(*headerNamePointer, WebString::FromUTF8(value));
+    while (response_headers->EnumerateHeader(
+        &iterator, header_name_string_piece, &value)) {
+      header_fields->Add(*header_name, AtomicString(String::FromUTF8(value)));
     }
   }
 
