@@ -4,38 +4,29 @@
 
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 
-#include "base/containers/to_vector.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/mock_autofill_manager_observer.h"
-#include "components/autofill/core/browser/foundations/test_autofill_client.h"
-#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
-#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
-using ::testing::_;
-using ::testing::NiceMock;
 using ::testing::Ref;
 
 class ScopedAutofillManagersObservationTest
     : public testing::Test,
       public WithTestAutofillClientDriverManager<> {
  public:
-  using Observer = AutofillManager::Observer;
   using enum AutofillManager::LifecycleState;
 
   ScopedAutofillManagersObservationTest() { InitAutofillClient(); }
 
  private:
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TestAutofillClient client_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(ScopedAutofillManagersObservationTest, SingleFrameObservation) {
