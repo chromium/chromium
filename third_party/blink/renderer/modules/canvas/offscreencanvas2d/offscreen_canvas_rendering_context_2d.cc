@@ -315,10 +315,9 @@ bool OffscreenCanvasRenderingContext2D::PushFrame() {
     return false;
 
   SkIRect damage_rect(dirty_rect_for_commit_);
-  FinalizeFrame(FlushReason::kOffscreenCanvasPushFrame);
-  bool ret = Host()->PushFrame(
-      ProduceCanvasResource(FlushReason::kOffscreenCanvasPushFrame),
-      damage_rect);
+  FinalizeFrame(FlushReason::kOther);
+  bool ret = Host()->PushFrame(ProduceCanvasResource(FlushReason::kOther),
+                               damage_rect);
   dirty_rect_for_commit_.setEmpty();
   GetOffscreenFontCache().PruneLocalFontCache(kMaxCachedFonts);
   return ret;

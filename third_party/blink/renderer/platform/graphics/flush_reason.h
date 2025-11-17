@@ -26,25 +26,20 @@ enum class FlushReason {
   // again.
   kClear = 3,
 
-  // `OffscreenCanvas` dispatched a frame to the compositor as part of the
-  // regular animation frame presentation flow.
-  // Should not happen while printing.
-  kOffscreenCanvasPushFrame = 4,
-
   // The canvas element dispatched a frame to the compositor
   // This inhibits vector printing.
-  kCanvasPushFrame = 5,
+  kCanvasPushFrame = 4,
 
   // The canvas element dispatched a frame to the compositor while printing
   // was in progress.
   // This does not prevent vector printing as long as the current frame is
   // clear.
-  kCanvasPushFrameWhilePrinting = 6,
+  kCanvasPushFrameWhilePrinting = 5,
 
   // The canvas is being printed.
-  kPrinting = 7,
+  kPrinting = 6,
 
-  kOther = 8,
+  kOther = 7,
 
   kMaxValue = kOther,
 };
