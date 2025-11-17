@@ -191,4 +191,20 @@ TEST_F(BookmarkBarPreloadPipelineManagerTest, PrefetchDisallowSearchUrl) {
   }
 }
 
+// Test that a non default search related url from a common search provider is
+// ignored by the prefetch BookmarkBar trigger.
+TEST_F(BookmarkBarPreloadPipelineManagerTest,
+       PrefetchDisallowSearchUrlOtherThanDefaultSearchProvider) {
+  base::HistogramTester histogram_tester;
+  GURL prefetch_url = GURL("https://www.google.co.jp/search?q=123");
+  TemplateURLServiceFactoryTestUtil factory_util(profile());
+  EXPECT_FALSE(
+      factory_util.model()->IsSearchResultsPageFromDefaultSearchProvider(
+          prefetch_url));
+  bookmarkbar_preload_manager()->StartPrefetch(prefetch_url);
+
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.Prefetch.IsPrefetchingSRPUrl.Embedder_BookmarkBar", true, 1);
+}
+
 }  // namespace
