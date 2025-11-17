@@ -48,12 +48,6 @@ class WebStateImpl::SerializedData {
   // pointer (thus it must be non-null).
   void TearDown();
 
-  // Getter and setter for the CRWSessionStorage; only available when the
-  // session serialization optimisation feature is disabled.
-  // TODO(crbug.com/40945317): remove once the feature is fully launched.
-  CRWSessionStorage* GetSessionStorage() const;
-  void SetSessionStorage(CRWSessionStorage* storage);
-
   // Serializes the metadata to `storage`.
   void SerializeMetadataToProto(proto::WebStateMetadataStorage& storage) const;
 
@@ -108,11 +102,6 @@ class WebStateImpl::SerializedData {
   // Callbacks used to load the full data about this WebState.
   WebStateStorageLoader storage_loader_;
   NativeSessionFetcher session_fetcher_;
-
-  // Serialized representation of the session; only available when the
-  // session serialization optimisation feature is disabled.
-  // TODO(crbug.com/40945317): remove once the feature is fully launched.
-  __strong CRWSessionStorage* session_storage_ = nil;
 };
 
 }  // namespace web

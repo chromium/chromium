@@ -35,7 +35,6 @@
 
 class GURL;
 
-@class CRWSessionStorage;
 @protocol CRWScrollableContent;
 @protocol CRWWebViewDownload;
 @protocol CRWFindInteraction;
@@ -207,15 +206,6 @@ class WebState : public base::SupportsUserData {
   static std::unique_ptr<WebState> Create(const CreateParams& params);
 
   // Creates a new WebState from a serialized representation of the session.
-  // `session_storage` must not be nil.
-  // TODO(crbug.com/40945317): remove when the optimised serialisation feature
-  // has been fully launched.
-  static std::unique_ptr<WebState> CreateWithStorageSession(
-      const CreateParams& params,
-      CRWSessionStorage* session_storage,
-      NativeSessionFetcher session_fetcher);
-
-  // Creates a new WebState from a serialized representation of the session.
   // The callbacks are used to load the complete serialized data from disk
   // when the WebState transition to the realized state.
   static std::unique_ptr<WebState> CreateWithStorage(
@@ -252,10 +242,10 @@ class WebState : public base::SupportsUserData {
   // Returns whether the WebState is realized.
   //
   // What does "realized" mean? When creating a WebState from session storage
-  // with `CreateWithStorageSession()` or `CreateWithStorage()`, it may not
-  // yet have been fully created. Instead, it has all information to fully
-  // instantiate it and its history available, but the underlying objects
-  // (WKWebView, NavigationManager, ...) have not been created.
+  // `CreateWithStorage()`, it may not yet have been fully created. Instead,
+  // it has all information to fully instantiate it and its history available,
+  // but the underlying objects (WKWebView, NavigationManager, ...) have not
+  // been created.
   //
   // This is an optimisation to reduce the amount of memory consumed by tabs
   // that have been restored after the browser has been shutdown. If the user

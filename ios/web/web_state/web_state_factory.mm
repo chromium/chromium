@@ -30,16 +30,6 @@ std::unique_ptr<WebState> WebState::Create(const CreateParams& params) {
 }
 
 /* static */
-std::unique_ptr<WebState> WebState::CreateWithStorageSession(
-    const CreateParams& params,
-    CRWSessionStorage* session_storage,
-    NativeSessionFetcher session_fetcher) {
-  DCHECK(session_storage);
-  return std::make_unique<ConcreteWebStateType>(params, session_storage,
-                                                std::move(session_fetcher));
-}
-
-/* static */
 std::unique_ptr<WebState> WebState::CreateWithStorage(
     BrowserState* browser_state,
     WebStateID unique_identifier,

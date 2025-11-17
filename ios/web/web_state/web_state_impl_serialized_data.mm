@@ -50,17 +50,6 @@ void WebStateImpl::SerializedData::TearDown() {
   }
 }
 
-CRWSessionStorage* WebStateImpl::SerializedData::GetSessionStorage() const {
-  DCHECK(session_storage_);
-  return session_storage_;
-}
-
-void WebStateImpl::SerializedData::SetSessionStorage(
-    CRWSessionStorage* storage) {
-  session_storage_ = storage;
-  DCHECK(session_storage_);
-}
-
 void WebStateImpl::SerializedData::SerializeMetadataToProto(
     proto::WebStateMetadataStorage& storage) const {
   storage.set_navigation_item_count(navigation_item_count_);

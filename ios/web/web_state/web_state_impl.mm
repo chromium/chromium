@@ -17,10 +17,8 @@
 #import "ios/web/js_messaging/web_frames_manager_impl.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/permissions/permissions.h"
-#import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/proto/metadata.pb.h"
 #import "ios/web/public/session/proto/storage.pb.h"
-#import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
 #import "ios/web/web_state/deprecated/global_web_state_event_tracker.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
@@ -66,19 +64,6 @@ void CheckForOverRealization() {
   }
 }
 
-// Serializes the `session_storage` to proto::WebStateStorage.
-std::optional<web::proto::WebStateStorage> SessionStorageToProto(
-    CRWSessionStorage* session_storage) {
-  web::proto::WebStateStorage storage;
-  [session_storage serializeToProto:storage];
-  return storage;
-}
-
-// Returns whether `web_state` has a SerializableUserDataManager.
-bool HasSerializableUserDataManager(const WebState* web_state) {
-  return SerializableUserDataManager::FromWebState(web_state) != nullptr;
-}
-
 // Key used to store an empty base::SupportsUserData::Data to all WebStateImpl
 // instances. Used by WebStateImpl::FromWebState(...) to assert the pointer is
 // pointing to a WebStateImpl instance and not another sub-class of WebState.
@@ -103,35 +88,6 @@ WebStateImpl::WebStateImpl(const CreateParams& params) {
                                               WebStateID::NewUnique());
   pimpl_->Init(params.browser_state, last_active_time,
                params.created_with_opener);
-
-  SendGlobalCreationEvent();
-}
-
-WebStateImpl::WebStateImpl(const CreateParams& params,
-                           CRWSessionStorage* session_storage,
-                           NativeSessionFetcher session_fetcher) {
-  AddWebStateImplMarker();
-
-  // Restore the serializable user data as user code may depend on accessing
-  // on those values even for an unrealized WebState.
-  if (session_storage.userData) {
-    SerializableUserDataManager::FromWebState(this)->SetUserDataFromSession(
-        session_storage.userData);
-  }
-
-  // Extract the metadata part from CRWSessionStorage to protobuf message.
-  // The callback convert the data to protobuf message to simulate loading
-  // from disk while using the non-optimised session storage serialization
-  // code.
-  proto::WebStateMetadataStorage metadata;
-  [session_storage serializeMetadataToProto:metadata];
-
-  saved_ = std::make_unique<SerializedData>(
-      this, params.browser_state, session_storage.uniqueIdentifier,
-      std::move(metadata),
-      base::BindOnce(&SessionStorageToProto, session_storage),
-      std::move(session_fetcher));
-  saved_->SetSessionStorage(session_storage);
 
   SendGlobalCreationEvent();
 }
@@ -550,14 +506,9 @@ WebState* WebStateImpl::ForceRealizedWithPolicy(RealizationPolicy policy) {
       // constructor (see AddWebStateImplMarker() method) in order to check
       // the cast from WebState* to WebStateImpl* is valid.
       //
-      // Additionally, if the legacy session storage is used then user data
-      // is attached to the instance via SerializableUserDataManager.
-      //
-      // This means that there should be at least one tab helpers attached
-      // to the current object, and at most two if legacy session storage
-      // is used (determined if a SerializableUserDataManager is attached).
-      const size_t expected = HasSerializableUserDataManager(this) ? 2u : 1u;
-      CHECK_EQ(UserDataCount(), expected, base::NotFatalUntil::M160);
+      // This means that there should be exactly one tab helpers attached
+      // to the current object at this point.
+      CHECK_EQ(UserDataCount(), 1u, base::NotFatalUntil::M160);
     }
 
     // Create the RealizedWebState. At this point the WebStateImpl has
