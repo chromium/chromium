@@ -199,6 +199,10 @@ IN_PROC_BROWSER_TEST_P(ProfileWindowCountBrowserTest,
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window);
 
   EXPECT_EQ(1, GetWindowCount());
+
+  // Close the opened window within the test for a cleaner shutdown.
+  CloseBrowserSynchronously(browser);
+  EXPECT_EQ(0, GetWindowCount());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, ProfileWindowCountBrowserTest, testing::Bool());
