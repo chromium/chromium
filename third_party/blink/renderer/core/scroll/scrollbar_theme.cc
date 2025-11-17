@@ -207,11 +207,10 @@ int ScrollbarTheme::ThumbLength(const Scrollbar& scrollbar) const {
   if (!scrollbar.Enabled())
     return 0;
 
-  float overhang = fabsf(scrollbar.ElasticOverscroll());
   float proportion = 0.0f;
   float total_size = scrollbar.TotalSize();
   if (total_size > 0.0f) {
-    proportion = (scrollbar.VisibleSize() - overhang) / total_size;
+    proportion = scrollbar.VisibleSize() / total_size;
   }
   int track_len = TrackLength(scrollbar);
   int length = round(proportion * track_len);

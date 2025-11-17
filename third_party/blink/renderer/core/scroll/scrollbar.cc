@@ -92,7 +92,6 @@ Scrollbar::Scrollbar(ScrollableArea* scrollable_area,
       scroll_timer_(scrollable_area->GetTimerTaskRunner(),
                     this,
                     &Scrollbar::AutoscrollTimerFired),
-      elastic_overscroll_(0),
       injected_gesture_scroll_begin_(false),
       scrollbar_manipulation_in_progress_on_cc_thread_(false),
       style_source_(style_source) {

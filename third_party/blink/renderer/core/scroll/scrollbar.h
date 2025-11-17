@@ -171,11 +171,6 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
 
   void MoveThumb(int pos, bool dragging_document = false);
 
-  float ElasticOverscroll() const { return elastic_overscroll_; }
-  void SetElasticOverscroll(float elastic_overscroll) {
-    elastic_overscroll_ = elastic_overscroll;
-  }
-
   // Use SetNeedsPaintInvalidation to cause the scrollbar (or parts thereof)
   // to repaint.
   bool TrackAndButtonsNeedRepaint() const {
@@ -284,8 +279,6 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   bool enabled_;
 
   HeapTaskRunnerTimer<Scrollbar> scroll_timer_;
-
-  float elastic_overscroll_;
 
  private:
   float ScrollableAreaCurrentPos() const;
