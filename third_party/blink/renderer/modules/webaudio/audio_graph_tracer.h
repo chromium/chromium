@@ -27,7 +27,7 @@ class MODULES_EXPORT AudioGraphTracer final
  public:
   static void ProvideAudioGraphTracerTo(Page&);
 
-  AudioGraphTracer(Page& page);
+  AudioGraphTracer() = default;
 
   void Trace(Visitor*) const override;
 
@@ -71,7 +71,6 @@ class MODULES_EXPORT AudioGraphTracer final
   static AudioGraphTracer* FromWindow(const LocalDOMWindow&);
 
  private:
-  Member<Page> page_;
   Member<InspectorWebAudioAgent> inspector_agent_;
   HeapHashSet<WeakMember<BaseAudioContext>> contexts_;
 };

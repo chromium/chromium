@@ -44,17 +44,16 @@ class CORE_EXPORT NoStatePrefetchClient
     : public GarbageCollected<NoStatePrefetchClient>,
       public GarbageCollectedMixin {
  public:
-  NoStatePrefetchClient(Page&, WebNoStatePrefetchClient*);
+  explicit NoStatePrefetchClient(WebNoStatePrefetchClient*);
   NoStatePrefetchClient(const NoStatePrefetchClient&) = delete;
   NoStatePrefetchClient& operator=(const NoStatePrefetchClient&) = delete;
 
   virtual bool IsPrefetchOnly();
-  void Trace(Visitor* visitor) const override { visitor->Trace(page_); }
+  void Trace(Visitor* visitor) const override {}
 
   static NoStatePrefetchClient* From(Page*);
 
  private:
-  Member<Page> page_;
   WebNoStatePrefetchClient* client_;
 };
 

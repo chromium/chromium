@@ -29,9 +29,8 @@ namespace {
 
 class MockNoStatePrefetchClient : public NoStatePrefetchClient {
  public:
-  MockNoStatePrefetchClient(Page& page, bool is_prefetch_only)
-      : NoStatePrefetchClient(page, nullptr),
-        is_prefetch_only_(is_prefetch_only) {}
+  explicit MockNoStatePrefetchClient(bool is_prefetch_only)
+      : NoStatePrefetchClient(nullptr), is_prefetch_only_(is_prefetch_only) {}
 
  private:
   bool IsPrefetchOnly() override { return is_prefetch_only_; }
@@ -145,8 +144,8 @@ TEST_P(HTMLDocumentParserTest, HasNoPendingWorkAfterDetach) {
 TEST_P(HTMLDocumentParserTest, AppendPrefetch) {
   auto& document = To<HTMLDocument>(GetDocument());
   ProvideNoStatePrefetchClientTo(
-      *document.GetPage(), MakeGarbageCollected<MockNoStatePrefetchClient>(
-                               *document.GetPage(), true));
+      *document.GetPage(),
+      MakeGarbageCollected<MockNoStatePrefetchClient>(true));
   EXPECT_TRUE(document.IsPrefetchOnly());
   HTMLDocumentParser* parser = CreateParser(document);
   ScopedParserDetacher detacher(parser);
