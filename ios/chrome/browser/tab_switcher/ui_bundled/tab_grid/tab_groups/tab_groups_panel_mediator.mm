@@ -321,6 +321,7 @@ NSString* CreationText(base::Time creation_date) {
   if (base::FeatureList::IsEnabled(kTabRecallNewTabGroupButton)) {
     // Start the tab group creation.
     [self.tabGroupsCommands showTabGroupCreationWithoutTabs];
+    base::RecordAction(base::UserMetricsAction("MobileTabGridCreateTabGroup"));
   } else {
     NOTREACHED() << "Should not be called in Tab Groups.";
   }

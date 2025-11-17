@@ -29468,6 +29468,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabGridCreateTabGroup">
+  <owner>bmcclure@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <description>
+    User tapped the New Tab Group button on the Tab Grid.
+  </description>
+</action>
+
 <action name="MobileTabGridDone">
   <owner>edchin@chromium.org</owner>
   <owner>marq@chromium.org</owner>
