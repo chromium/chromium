@@ -114,6 +114,9 @@ class AutofillWebDataService : public WebDataServiceBase {
   WebDataServiceBase::Handle GetEntityInstances(
       WebDataServiceRequestCallback consumer);
 
+  // Updates the `EntityInstance::EntityMetadata` related to the given `entity`.
+  void UpdateEntityMetadata(const EntityInstance& entity);
+
   // Retrieves LoyaltyCards from the database.
   WebDataServiceBase::Handle GetLoyaltyCards(
       WebDataServiceRequestCallback consumer);

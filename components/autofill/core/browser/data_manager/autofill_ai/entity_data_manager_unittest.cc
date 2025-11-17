@@ -243,9 +243,11 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, AddEntityInstanceNonGuidFormatId) {
 
 // Tests that recording an entity being used calls for a database entity update.
 TEST_F(EntityDataManagerTest_InitiallyEmpty, RecordEntityUsed) {
-  // TODO(crbug.com/402616006): This test should re-read the entity from the db
-  // and make sure the persisted information is the expected one. Update once db
-  // columns are updated.
+  MockEntityDataManagerObserver observer;
+  base::ScopedObservation<EntityDataManager, MockEntityDataManagerObserver>
+      observation{&observer};
+  observation.Observe(&entity_data_manager());
+
   EntityInstance pp =
       test::GetPassportEntityInstance({.use_date = base::Time::FromTimeT(0)});
   entity_data_manager().AddOrUpdateEntityInstance(pp);
@@ -255,12 +257,24 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, RecordEntityUsed) {
   base::Time use_date = base::Time::Now();
   helper().WaitUntilIdle();
   entity_data_manager().RecordEntityUsed(pp.guid(), use_date);
-  base::optional_ref<const EntityInstance> updated_passport =
-      GetInstance(pp.guid());
-  ASSERT_TRUE(updated_passport);
 
-  EXPECT_EQ(updated_passport->use_count(), 1u);
-  EXPECT_EQ(updated_passport->use_date(), use_date);
+  auto check_metadata = [&](const EntityInstance::EntityId& guid) {
+    base::optional_ref<const EntityInstance> entity = GetInstance(guid);
+    ASSERT_TRUE(entity);
+    EXPECT_EQ(entity->use_count(), 1u);
+    EXPECT_EQ(entity->use_date(), use_date);
+  };
+  check_metadata(pp.guid());
+
+  // Re-read entities from the DB.
+  EXPECT_CALL(observer, OnEntityInstancesChanged);
+  helper().autofill_webdata_service()->GetAutofillBackend(
+      base::BindOnce([](AutofillWebDataBackend* backend) {
+        backend->NotifyOnAutofillChangedBySync(
+            syncer::DataType::AUTOFILL_VALUABLE);
+      }));
+  helper().WaitUntilIdle();
+  check_metadata(pp.guid());
 }
 
 // Tests that AddOrUpdateEntityInstance() asynchronously updates entities.

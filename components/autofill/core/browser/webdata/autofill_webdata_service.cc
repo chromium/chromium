@@ -129,6 +129,14 @@ void AutofillWebDataService::AddOrUpdateEntityInstance(
                      std::move(on_success)));
 }
 
+void AutofillWebDataService::UpdateEntityMetadata(
+    const EntityInstance& entity) {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::UpdateEntityMetadata,
+                     autofill_backend_, entity));
+}
+
 void AutofillWebDataService::RemoveEntityInstance(
     EntityInstance entity,
     base::OnceCallback<void(EntityInstanceChange)> on_success) {

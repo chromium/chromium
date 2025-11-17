@@ -224,7 +224,7 @@ void EntityDataManager::RecordEntityUsed(const EntityInstance::EntityId& guid,
     return;
   }
   entity->RecordEntityUsed(use_date);
-  AddOrUpdateEntityInstance(*entity);
+  webdata_service_->UpdateEntityMetadata(*entity);
 }
 
 void EntityDataManager::NotifyEntityInstancesChanged() {

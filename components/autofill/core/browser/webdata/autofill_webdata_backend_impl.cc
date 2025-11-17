@@ -563,6 +563,25 @@ WebDatabase::State AutofillWebDataBackendImpl::AddOrUpdateEntityInstance(
   return WebDatabase::COMMIT_NEEDED;
 }
 
+WebDatabase::State AutofillWebDataBackendImpl::UpdateEntityMetadata(
+    const EntityInstance& entity,
+    WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  EntityTable* table = EntityTable::FromWebDatabase(db);
+  if (!table->AddOrUpdateEntityMetadata(entity.metadata())) {
+    ReportResult(Result::kAddOrUpdateEntityInstance_Failure);
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+
+  if (entity.IsServerInstance()) {
+    EntityInstanceMetadataChange change(EntityInstanceMetadataChange::UPDATE,
+                                        entity.guid(), entity.metadata());
+    NotifyOnServerEntityMetadataChanged(change);
+  }
+
+  return WebDatabase::COMMIT_NEEDED;
+}
+
 WebDatabase::State AutofillWebDataBackendImpl::RemoveEntityInstance(
     EntityInstance entity,
     base::OnceCallback<void(EntityInstanceChange)> on_success,

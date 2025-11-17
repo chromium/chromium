@@ -165,6 +165,10 @@ class AutofillWebDataBackendImpl
       WebDatabase* db);
   std::unique_ptr<WDTypedResult> GetEntityInstances(WebDatabase* db);
 
+  // Updates the `EntityInstance::EntityMetadata` related to the given `entity`.
+  WebDatabase::State UpdateEntityMetadata(const EntityInstance& entity,
+                                          WebDatabase* db);
+
   // Retrieves LoyaltyCards from the database.
   std::unique_ptr<WDTypedResult> GetLoyaltyCards(WebDatabase* db);
 
