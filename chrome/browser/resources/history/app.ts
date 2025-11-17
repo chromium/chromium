@@ -5,9 +5,10 @@
 import 'chrome://resources/cr_components/history_clusters/clusters.js';
 import 'chrome://resources/cr_components/history_embeddings/filter_chips.js';
 import 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
+import 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
-import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
+import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import './history_embeddings_promo.js';
 // <if expr="not is_chromeos">
 import './history_sync_promo.js';
@@ -15,7 +16,9 @@ import './history_sync_promo.js';
 import './history_list.js';
 import './history_toolbar.js';
 import './query_manager.js';
+import './router.js';
 import './side_bar.js';
+import './synced_device_manager.js';
 import '/strings.m.js';
 
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
@@ -33,7 +36,6 @@ import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_liste
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {getTrustedScriptURL} from 'chrome://resources/js/static_types.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -50,28 +52,6 @@ import {convertDateToQueryValue} from './query_manager.js';
 import {Page, TABBED_PAGES} from './router.js';
 import type {HistoryRouterElement} from './router.js';
 import type {FooterInfo, HistorySideBarElement} from './side_bar.js';
-
-let lazyLoadPromise: Promise<void>|null = null;
-export function ensureLazyLoaded(): Promise<void> {
-  if (!lazyLoadPromise) {
-    const script = document.createElement('script');
-    script.type = 'module';
-    script.src = getTrustedScriptURL`./lazy_load.js` as unknown as string;
-    document.body.appendChild(script);
-
-    lazyLoadPromise = Promise.all([
-      customElements.whenDefined('history-synced-device-manager'),
-      customElements.whenDefined('cr-action-menu'),
-      customElements.whenDefined('cr-button'),
-      customElements.whenDefined('cr-checkbox'),
-      customElements.whenDefined('cr-dialog'),
-      customElements.whenDefined('cr-drawer'),
-      customElements.whenDefined('cr-icon-button'),
-      customElements.whenDefined('cr-toolbar-selection-overlay'),
-    ]) as unknown as Promise<void>;
-  }
-  return lazyLoadPromise;
-}
 
 // Click/auxclick listeners to intercept any link clicks. If the link points
 // to a chrome: or file: url, then calls into the browser to do the
@@ -437,12 +417,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
       searchField.getSearchInput().focus();
     }
 
-    // Lazily load the remainder of the UI.
-    ensureLazyLoaded().then(function() {
-      requestIdleCallback(function() {
-        // https://github.com/microsoft/TypeScript/issues/13569
-        (document as any).fonts.load('bold 12px Roboto');
-      });
+    requestIdleCallback(function() {
+      // https://github.com/microsoft/TypeScript/issues/13569
+      (document as any).fonts.load('bold 12px Roboto');
     });
   }
 

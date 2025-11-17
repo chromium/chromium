@@ -38,7 +38,6 @@ build_webui("build") {
     "history_list.ts",
     "history_toolbar.html.ts",
     "history_toolbar.ts",
-    "lazy_load.ts",
     "query_manager.ts",
     "router.ts",
     "searched_label.ts",
@@ -70,9 +69,7 @@ build_webui("build") {
     "synced_device_manager.css",
   ]
   if (!is_chromeos) {
-    css_files += [
-      "history_sync_promo.css",
-    ]
+    css_files += [ "history_sync_promo.css" ]
   }
 
   icons_html_files = [ "shared_icons.html" ]
@@ -100,9 +97,6 @@ build_webui("build") {
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "history"
-    optimize_webui_in_files = [
-      "history.js",
-      "lazy_load.js",
-    ]
+    optimize_webui_in_files = [ "history.js" ]
   }
 }

@@ -5,7 +5,7 @@
 import 'chrome://history/history.js';
 
 import type {HistorySyncedDeviceManagerElement} from 'chrome://history/history.js';
-import {ensureLazyLoaded, HistorySignInState} from 'chrome://history/history.js';
+import {HistorySignInState} from 'chrome://history/history.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
@@ -18,13 +18,10 @@ suite('<history-synced-device-manager>', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    return ensureLazyLoaded().then(() => {
-      element = document.createElement('history-synced-device-manager');
-      element.signInState = HistorySignInState.SIGNED_IN_SYNCING_TABS;
-      element.searchTerm = '';
-      document.body.appendChild(element);
-    });
+    element = document.createElement('history-synced-device-manager');
+    element.signInState = HistorySignInState.SIGNED_IN_SYNCING_TABS;
+    element.searchTerm = '';
+    document.body.appendChild(element);
   });
 
   test('focus and keyboard nav', async () => {

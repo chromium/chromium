@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {HistoryAppElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl, ensureLazyLoaded} from 'chrome://history/history.js';
+import {BrowserServiceImpl} from 'chrome://history/history.js';
 import type {PageRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -27,10 +27,7 @@ suite('GoogleAccountFooter', function() {
   async function createApp() {
     app = document.createElement('history-app');
     document.body.appendChild(app);
-    return Promise.all([
-      testService.handler.whenCalled('queryHistory'),
-      ensureLazyLoaded(),
-    ]);
+    return testService.handler.whenCalled('queryHistory');
   }
 
   // Simulate the browser notifying the page about other forms of history

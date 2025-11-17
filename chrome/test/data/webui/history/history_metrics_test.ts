@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://history/history.js';
-import 'chrome://history/lazy_load.js';
 
 import type {HistoryAppElement, HistoryEntry, HistoryItemElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl, ensureLazyLoaded, HistoryPageViewHistogram, HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram, VisitContextMenuAction} from 'chrome://history/history.js';
+import {BrowserServiceImpl, HistoryPageViewHistogram, HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram, VisitContextMenuAction} from 'chrome://history/history.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -47,22 +46,16 @@ suite('Metrics', function() {
    * @param query The query to use in the QueryInfo.
    * @return Promise that resolves when initialization is complete.
    */
-  function finishSetup(
+  async function finishSetup(
       queryResults: HistoryEntry[], query?: string): Promise<void> {
     testService.handler.setResultFor('queryHistory', Promise.resolve({
       results: {info: createHistoryInfo(query), value: queryResults},
     }));
     document.body.appendChild(app);
-    return Promise
-        .all([
-          testService.handler.whenCalled('queryHistory'),
-          ensureLazyLoaded(),
-        ])
-        .then(function() {
-          webUIListenerCallback(
-              'sign-in-state-changed', HistorySignInState.SIGNED_OUT);
-          return microtasksFinished();
-        });
+    await testService.handler.whenCalled('queryHistory');
+    webUIListenerCallback(
+        'sign-in-state-changed', HistorySignInState.SIGNED_OUT);
+    return microtasksFinished();
   }
 
   /**

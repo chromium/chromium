@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {ForeignSession, HistorySyncedDeviceCardElement, HistorySyncedDeviceManagerElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl, ensureLazyLoaded, HistorySignInState} from 'chrome://history/history.js';
+import {BrowserServiceImpl, HistorySignInState} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -46,21 +46,17 @@ suite('<history-synced-device-manager>', function() {
     testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);
 
-    // Need to ensure lazy_load.html has been imported so that the device
-    // manager custom element is defined.
-    return ensureLazyLoaded().then(() => {
-      element = document.createElement('history-synced-device-manager');
-      // |signInState| is generally set after |searchTerm| in Polymer 2. Set in
-      // the same order in tests, in order to catch regressions like
-      // https://crbug.com/915641.
-      element.searchTerm = '';
-      element.configureSignInForTest({
-        signInState: HistorySignInState.SIGNED_IN_SYNCING_TABS,
-        signInAllowed: true,
-        guestSession: false,
-      });
-      document.body.appendChild(element);
+    element = document.createElement('history-synced-device-manager');
+    // |signInState| is generally set after |searchTerm| in Polymer 2. Set in
+    // the same order in tests, in order to catch regressions like
+    // https://crbug.com/915641.
+    element.searchTerm = '';
+    element.configureSignInForTest({
+      signInState: HistorySignInState.SIGNED_IN_SYNCING_TABS,
+      signInAllowed: true,
+      guestSession: false,
     });
+    document.body.appendChild(element);
   });
 
   test('single card, single window', async () => {
@@ -365,7 +361,7 @@ suite('<history-sync-optin>', function() {
   let element: HistorySyncedDeviceManagerElement;
   let testService: TestBrowserService;
 
-  setup(async function() {
+  setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     window.history.replaceState({}, '', '/');
     testService = new TestBrowserService();
@@ -377,9 +373,6 @@ suite('<history-sync-optin>', function() {
       replaceSyncPromosWithSignInPromos: true,
     });
 
-    // Need to ensure lazy_load.html has been imported so that the device
-    // manager custom element is defined.
-    await ensureLazyLoaded();
     element = document.createElement('history-synced-device-manager');
     // |signInState| is generally set after |searchTerm| in Polymer 2. Set in
     // the same order in tests, in order to catch regressions like

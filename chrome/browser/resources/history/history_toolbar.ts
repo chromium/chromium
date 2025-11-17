@@ -4,6 +4,7 @@
 
 import '/strings.m.js';
 import 'chrome://resources/cr_components/history_embeddings/icons.html.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.js';
 

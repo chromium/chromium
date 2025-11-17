@@ -17,7 +17,7 @@ export {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_c
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 export {CrRouter} from 'chrome://resources/js/cr_router.js';
 export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
-export {ensureLazyLoaded, HistoryAppElement} from './app.js';
+export {HistoryAppElement} from './app.js';
 export {BrowserService, BrowserServiceImpl, RemoveVisitsRequest} from './browser_service.js';
 export {HistoryPageViewHistogram, HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram, VisitContextMenuAction} from './constants.js';
 export {ForeignSession, ForeignSessionTab, ForeignSessionWindow} from './externs.js';
