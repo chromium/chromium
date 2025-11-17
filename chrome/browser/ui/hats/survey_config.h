@@ -87,8 +87,6 @@ extern const char kHatsSurveyTriggerWhatsNew[];
 extern const char kHatsSurveyTriggerAndroidStartupSurvey[];
 extern const char kHatsSurveyTriggerQuickDelete[];
 extern const char kHatsSurveyTriggerClearBrowsingData[];
-extern const char kHatsSurveyTriggerSafetyHubAndroid[];
-extern const char kHatsSurveyOrganicTriggerSafetyHubAndroid[];
 extern const char kHatsSurveyTriggerSigninFirstRun[];
 extern const char kHatsSurveyTriggerSigninWeb[];
 extern const char kHatsSurveyTriggerSigninNtpAvatar[];
