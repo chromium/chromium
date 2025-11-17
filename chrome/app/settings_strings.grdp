@@ -2234,7 +2234,7 @@
     You can use shortcuts in the address bar to quickly search a specific site or to use a different search engine
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_SEARCH" desc="Label for a text input placeholder allowing the user to search/filter the displayed search engines">
-    Search
+    Filter sites on page
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_SUBTITLE_FOR_POLICY" desc="Subtitle for a dialog that allows editing/viewing an existing search engine that is created by policy.">
     This setting is managed by your administrator
@@ -2367,7 +2367,10 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_DESCRIPTION" desc="Label for the button linking to the All Sites page.">
     View permissions and data stored across sites
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_SEARCH" desc="Placeholder text for the search text box that allows the user to filter the All Sites list with their search query.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_FILTER" desc="Placeholder text for the search text box that allows the user to filter the All Sites list with their search query.">
+    Filter sites on page
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_SEARCH" desc="Placeholder text for the filter text box that allows the user to filter the All Sites list with their search query.">
     Search
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_SORT" desc="Label on a selection menu to choose the sorting method to display the All Sites list by.">

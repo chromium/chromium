@@ -83,6 +83,9 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
       /** Setting a |searchLabel| will enable search. */
       searchLabel: String,
 
+      /** Setting a |searchIcon| will override the default search icon. */
+      searchIcon: String,
+
       searchTerm: {
         type: String,
         notify: true,
@@ -118,6 +121,7 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
   declare faviconSiteUrl: string;
   declare learnMoreUrl: string;
   declare searchLabel: string;
+  declare searchIcon: string;
   declare searchTerm: string;
   declare hideCloseButton: boolean;
   declare preserveSearchTerm: boolean;

@@ -83,7 +83,8 @@
   <settings-subpage
       page-title="$i18n{thirdPartyCookiesPageTitle}"
       learn-more-url="$i18n{cookiesSettingsHelpCenterURL}"
-      search-label="$i18n{siteSettingsAllSitesSearch}"
+      search-label="$i18n{siteSettingsAllSitesFilter}"
+      search-icon="settings20:filter-list"
       search-term="{{searchTerm}}" route-path$="[[routePath]]">
     <template is="dom-if" if="[[!is3pcdRedesignEnabled_]]">
       <div id="explanationText" class="secondary">
