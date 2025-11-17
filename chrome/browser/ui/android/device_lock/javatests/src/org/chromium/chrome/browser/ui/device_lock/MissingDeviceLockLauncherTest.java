@@ -17,9 +17,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
+import android.content.ContextWrapper;
 
 import androidx.test.filters.MediumTest;
 
@@ -163,15 +163,22 @@ public class MissingDeviceLockLauncherTest {
     public void testCheckPrivateDataIsProtectedByDeviceLock_showMissingDeviceLockDialog() {
         mActivityTestRule.setFinishActivity(true);
         mActivityTestRule.launchActivity(null);
-        Activity activity = Mockito.spy(mActivityTestRule.getActivity());
-
-        doReturn(mKeyguardManager).when(activity).getSystemService(eq(Context.KEYGUARD_SERVICE));
+        Context context =
+                new ContextWrapper(mActivityTestRule.getActivity()) {
+                    @Override
+                    public Object getSystemService(String name) {
+                        if (name.equals(Context.KEYGUARD_SERVICE)) {
+                            return mKeyguardManager;
+                        }
+                        return super.getSystemService(name);
+                    }
+                };
         doReturn(false).when(mKeyguardManager).isDeviceSecure();
         mSharedPreferencesManager.writeBoolean(
                 ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, true);
 
         MissingDeviceLockLauncher missingDeviceLockLauncher =
-                new MissingDeviceLockLauncher(activity, mProfile, mModalDialogManager);
+                new MissingDeviceLockLauncher(context, mProfile, mModalDialogManager);
         MissingDeviceLockCoordinator missingDeviceLockCoordinator =
                 missingDeviceLockLauncher.checkPrivateDataIsProtectedByDeviceLock();
         missingDeviceLockCoordinator.hideDialog(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
