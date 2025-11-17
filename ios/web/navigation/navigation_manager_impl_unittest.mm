@@ -27,7 +27,6 @@
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/reload_type.h"
-#import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/proto/navigation.pb.h"
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
@@ -3028,70 +3027,6 @@ TEST_F(NavigationManagerSerialisationTest, RestoreFromProto_LastItemIndex) {
   for (int index = 0; index < urls_count; ++index) {
     EXPECT_EQ(navigation_manager.GetItemAtIndex(index)->GetURL(),
               GURL(kTestURLs[index]));
-  }
-}
-
-// Tests that restoring a session works correctly even if the index of the
-// last committed item is invalid (a bug in M117 caused the application to
-// write sessions with an index past the end of items).
-TEST_F(NavigationManagerSerialisationTest, RestoreFromProto_IndexOutOfBound) {
-  // The code to fix the out-of-bound index is in the code that deserialize
-  // the CRWSessionStorage, so we have to serialize/deserialize the object.
-  CRWSessionStorage* session_storage = nil;
-  {
-    proto::WebStateStorage storage;
-    proto::NavigationStorage* navigation_storage = storage.mutable_navigation();
-    for (const char* url : kTestURLs) {
-      navigation_storage->add_items()->set_url(url);
-    }
-    // Set an out-of-bound value for last committed item index.
-    navigation_storage->set_last_committed_item_index(std::size(kTestURLs));
-    session_storage =
-        [[CRWSessionStorage alloc] initWithProto:storage
-                                uniqueIdentifier:web::WebStateID::NewUnique()
-                                stableIdentifier:[[NSUUID UUID] UUIDString]];
-  }
-
-  NSError* error = nil;
-  NSData* data = [NSKeyedArchiver archivedDataWithRootObject:session_storage
-                                       requiringSecureCoding:NO
-                                                       error:&error];
-  ASSERT_FALSE(error);
-
-  NSKeyedUnarchiver* unarchiver =
-      [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
-  unarchiver.requiresSecureCoding = NO;
-  ASSERT_FALSE(error);
-
-  session_storage = base::apple::ObjCCast<CRWSessionStorage>(
-      [unarchiver decodeObjectForKey:@"root"]);
-  ASSERT_TRUE(session_storage);
-
-  proto::WebStateStorage storage;
-  [session_storage serializeToProto:storage];
-
-  // Create a WebState with a real navigation proxy as this is required to
-  // perform a session restore and access the view to force instantiation
-  // of the WKWebView.
-  std::unique_ptr<web::WebStateImpl> web_state =
-      std::make_unique<web::WebStateImpl>(
-          web::WebState::CreateParams(browser_state()));
-  std::ignore = web_state->GetView();
-
-  NavigationManagerImpl& navigation_manager =
-      web_state->GetNavigationManagerImpl();
-
-  navigation_manager.RestoreFromProto(storage.navigation());
-
-  const int urls_count = static_cast<int>(std::size(kTestURLs));
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
-    return navigation_manager.GetItemCount() == urls_count;
-  }));
-  EXPECT_EQ(navigation_manager.GetLastCommittedItemIndex(), urls_count - 1);
-
-  for (int index = 0; index < urls_count; ++index) {
-    NavigationItem* item = navigation_manager.GetItemAtIndex(index);
-    EXPECT_EQ(item->GetURL(), GURL(kTestURLs[index]));
   }
 }
 
