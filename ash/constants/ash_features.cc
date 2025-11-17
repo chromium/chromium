@@ -1485,9 +1485,6 @@ BASE_FEATURE(kOobeJelly, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables OOBE Jelly modal features.
 BASE_FEATURE(kOobeJellyModal, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables lazy loading in OOBE's WebUI by prioritizing the first screen.
-BASE_FEATURE(kOobeLazyLoading, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables OOBE perks discovery feature.
 BASE_FEATURE(kOobePerksDiscovery, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -3151,10 +3148,6 @@ bool IsOobePreConsentMetricsEnabled() {
 
 bool IsOobeSoftwareUpdateEnabled() {
   return base::FeatureList::IsEnabled(kOobeSoftwareUpdate);
-}
-
-bool IsOobeLazyLoadingEnabled() {
-  return base::FeatureList::IsEnabled(kOobeLazyLoading);
 }
 
 bool IsOobePerksDiscoveryEnabled() {

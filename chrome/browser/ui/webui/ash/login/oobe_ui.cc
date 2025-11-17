@@ -311,8 +311,6 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
 
   source->AddBoolean("isOsInstallAllowed", switches::IsOsInstallAllowed());
   source->AddBoolean("isOobeFlow", is_oobe_flow);
-  source->AddBoolean("isOobeLazyLoadingEnabled",
-                     features::IsOobeLazyLoadingEnabled());
   source->AddBoolean("isOobeAiIntroEnabled", features::IsOobeAiIntroEnabled());
   source->AddBoolean("isJellyEnabled", features::IsOobeJellyEnabled());
   source->AddBoolean("isOobeJellyEnabled", features::IsOobeJellyEnabled());
