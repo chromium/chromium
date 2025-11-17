@@ -1137,8 +1137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.FencedFrameAutomaticBeaconEventType"
-    enum="FencedFrameAutomaticBeaconEventType" expires_after="2025-12-14">
-  <owner>lbrady@google.com</owner>
+    enum="FencedFrameAutomaticBeaconEventType" expires_after="2026-06-30">
   <owner>shivanisha@chromium.org</owner>
   <owner>chrome-fenced-frames-core@google.com</owner>
   <summary>
@@ -1148,8 +1147,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.FencedFrameBeaconReportingCountCrossOrigin"
-    units="beacons" expires_after="2025-11-30">
-  <owner>lbrady@google.com</owner>
+    units="beacons" expires_after="2026-06-30">
   <owner>shivanisha@chromium.org</owner>
   <owner>chrome-fenced-frames-core@google.com</owner>
   <summary>
@@ -1162,7 +1160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.FencedFrameBeaconReportingCountSameOrigin"
-    units="beacons" expires_after="2025-12-27">
+    units="beacons" expires_after="2026-06-30">
   <owner>xiaochenzh@chromium.org</owner>
   <owner>shivanisha@chromium.org</owner>
   <owner>chrome-fenced-frames-core@google.com</owner>
