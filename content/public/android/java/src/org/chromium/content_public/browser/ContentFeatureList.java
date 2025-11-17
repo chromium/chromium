@@ -136,5 +136,8 @@ public class ContentFeatureList {
     public static final MutableIntParamWithSafeDefault sAndroidDesktopZoomScalingFactor =
             sAndroidDesktopZoomScaling.newIntParam("desktop-zoom-scaling-factor", 100);
 
+    public static final MutableIntParamWithSafeDefault sAndroidMonitorZoomScalingFactor =
+            sAndroidDesktopZoomScaling.newIntParam("monitor-zoom-scaling-factor", 100);
+
     public static final List<CachedFlag> sCachedFlags = List.of(sJavalessRenderers);
 }

@@ -5119,17 +5119,20 @@ const FeatureEntry::FeatureVariation kProfilePickerTextVariations[] = {
 
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kAndroidDesktopZoomScalingFactorSmall[] = {
-    {"desktop-zoom-scaling-factor", "109"}};
+    {"desktop-zoom-scaling-factor", "109"},
+    {"monitor-zoom-scaling-factor", "120"}};
 const FeatureEntry::FeatureParam kAndroidDesktopZoomScalingFactorMedium[] = {
-    {"desktop-zoom-scaling-factor", "115"}};
+    {"desktop-zoom-scaling-factor", "115"},
+    {"monitor-zoom-scaling-factor", "125"}};
 const FeatureEntry::FeatureParam kAndroidDesktopZoomScalingFactorLarge[] = {
-    {"desktop-zoom-scaling-factor", "120"}};
+    {"desktop-zoom-scaling-factor", "120"},
+    {"monitor-zoom-scaling-factor", "130"}};
 const FeatureEntry::FeatureVariation kAndroidDesktopZoomScalingVariations[] = {
-    {"with 109 scaling", kAndroidDesktopZoomScalingFactorSmall,
+    {"with 109 scaling, 120 monitor", kAndroidDesktopZoomScalingFactorSmall,
      std::size(kAndroidDesktopZoomScalingFactorSmall), nullptr},
-    {"with 115 scaling", kAndroidDesktopZoomScalingFactorMedium,
+    {"with 115 scaling, 125 monitor", kAndroidDesktopZoomScalingFactorMedium,
      std::size(kAndroidDesktopZoomScalingFactorMedium), nullptr},
-    {"with 120 scaling", kAndroidDesktopZoomScalingFactorLarge,
+    {"with 120 scaling, 130 monitor", kAndroidDesktopZoomScalingFactorLarge,
      std::size(kAndroidDesktopZoomScalingFactorLarge), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 

@@ -1319,6 +1319,8 @@ BASE_FEATURE(kAccessibilityManageBroadcastReceiverOnBackground,
 BASE_FEATURE(kAndroidDesktopZoomScaling, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kAndroidDesktopZoomScalingFactor{
     &kAndroidDesktopZoomScaling, "desktop-zoom-scaling-factor", 100};
+const base::FeatureParam<int> kAndroidMonitorZoomScalingFactor{
+    &kAndroidDesktopZoomScaling, "monitor-zoom-scaling-factor", 100};
 
 // Enable open PDF inline on Android.
 BASE_FEATURE(kAndroidOpenPdfInline, base::FEATURE_ENABLED_BY_DEFAULT);
