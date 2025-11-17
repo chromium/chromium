@@ -93,7 +93,9 @@ class PersistentCachePerftest : public testing::Test {
   bool under_measurment_ = false;
 };
 
-#if !BUILDFLAG(IS_FUCHSIA)
+// Only compile and run these tests on configurations that are monitored.
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)) && \
+    !defined(ADDRESS_SANITIZER) && !defined(THREAD_SANITIZER)
 
 TEST_F(PersistentCachePerftest, OpenClose) {
   auto persistent_cache = CreateCache();
@@ -160,6 +162,7 @@ TEST_F(PersistentCachePerftest, Find) {
   ASSERT_EQ(success_count, kIterationCount);
 }
 
-#endif  // !BUILDFLAG(IS_FUCHSIA)
+#endif  // (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)) &&
+        // !defined(ADDRESS_SANITIZER) && !defined(THREAD_SANITIZER)
 
 }  // namespace persistent_cache
