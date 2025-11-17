@@ -142,10 +142,13 @@ skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions(
   options.fGpuBudgetInBytes = max_resource_cache_bytes;
   options.fGlyphCacheTextureMaximumBytes = glyph_cache_max_texture_bytes;
 
-  // msaa_is_slow_2 excludes new Intel >= Gen 11 GPUs. We're unconditionally
-  // enabling MSAA on those GPUs for Graphite instead of looking at the
-  // features::kEnableMSSAOnNewIntelGPUs experiment or gles2::MSAAIsSlow().
-  if (workarounds.msaa_is_slow_2) {
+  // `msaa_is_slow` is true for all Intel GPUs, while `msaa_is_slow_2` is
+  // true only for Intel GPUs older than Gen 11. This logic disables MSAA on
+  // older Intel GPUs, and on newer ones (Gen 11+) if the
+  // kSkiaGraphiteEnableMSAAOnNewerIntel feature is disabled.
+  if (workarounds.msaa_is_slow_2 ||
+      (workarounds.msaa_is_slow &&
+       !features::kSkiaGraphiteEnableMSAAOnNewerIntel.Get())) {
     // For single-sampling, currently Graphite falls back to the CPU-based
     // RasterPathAtlas, which is still a little slow and buggy now.
     options.fInternalMultisampleCount = 1;

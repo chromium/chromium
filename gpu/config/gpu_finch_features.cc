@@ -358,6 +358,9 @@ BASE_FEATURE_PARAM(bool,
                    "enable_deferred_submit",
                    true);
 
+const base::FeatureParam<bool> kSkiaGraphiteEnableMSAAOnNewerIntel{
+    &kSkiaGraphite, "enable_msaa_on_newer_intel", true};
+
 #if BUILDFLAG(IS_WIN)
 // Whether the we should DumpWithoutCrashing when D3D related errors are detected.
 const base::FeatureParam<bool> kSkiaGraphiteDawnDumpWCOnD3DError{
