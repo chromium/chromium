@@ -512,6 +512,7 @@ void AutofillBottomSheetTabHelper::DidFinishNavigation(
 void AutofillBottomSheetTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
   frames_manager_observation_.Reset();
+  web_state_ = nullptr;
 }
 
 // web::WebFramesManager::Observer:
