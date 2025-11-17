@@ -31,12 +31,11 @@ class ContentsRoundedCorner : public views::View {
   // views::View
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-
- private:
-  void Layout(PassKey) override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
+ private:
   const views::ShapeContextTokens corner_radius_token_;
   const base::RepeatingCallback<bool()> is_right_aligned_callback_;
 };

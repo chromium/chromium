@@ -42,8 +42,7 @@ gfx::Size ContentsRoundedCorner::CalculatePreferredSize(
   return gfx::Size(corner_size, corner_size);
 }
 
-void ContentsRoundedCorner::Layout(PassKey) {
-  LayoutSuperclass<views::View>(this);
+void ContentsRoundedCorner::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   SkPathBuilder path;
   const float corner_radius =
       GetLayoutProvider()->GetCornerRadiusMetric(corner_radius_token_);
@@ -68,6 +67,8 @@ void ContentsRoundedCorner::Layout(PassKey) {
     path.lineTo(0, local_bounds.height());
     path.lineTo(0, 0);
   }
+
+  // TODO(b:460890881): Clip canvas during repaint instead using a mask layer.
   SetClipPath(path.detach());
 }
 
