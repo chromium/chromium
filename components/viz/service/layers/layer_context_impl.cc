@@ -255,6 +255,7 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   }
 
   if (!wire.anchor_position_scroll_data_id) {
+    node.anchor_position_scroll_data_id = -1;
   } else if (*wire.anchor_position_scroll_data_id >=
              tree.anchor_position_scroll_data().size()) {
     return base::unexpected("Invalid anchor_position_scroll_data_id");
