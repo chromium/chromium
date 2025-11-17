@@ -54,6 +54,8 @@ BASE_FEATURE(kGlicBindOnlyForDaisyChainingFromFloatingUi,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicActorDaisyChainingFromFloatingUiDoesntClose,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicBindOnPinFromFloatingUiDoesntShowSidePanel,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 EmbedderKey CreateSidePanelEmbedderKey(tabs::TabInterface* tab) {
@@ -978,11 +980,23 @@ void GlicInstanceImpl::OnTabPinningStatusChanged(tabs::TabInterface* tab,
     return;
   }
 
-  if (auto* helper = GlicInstanceHelper::From(tab)) {
-    auto instance_id = helper->GetInstanceId();
-    if (!instance_id.has_value()) {
-      ShowInactiveSidePanelEmbedderFor(tab);
-    }
+  auto* helper = GlicInstanceHelper::From(tab);
+  if (!helper) {
+    return;
+  }
+
+  auto instance_id = helper->GetInstanceId();
+  if (instance_id.has_value()) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          kGlicBindOnPinFromFloatingUiDoesntShowSidePanel) &&
+      IsDetached()) {
+    // Bind without showing if floaty is open.
+    BindTab(tab);
+  } else {
+    ShowInactiveSidePanelEmbedderFor(tab);
   }
 }
 
