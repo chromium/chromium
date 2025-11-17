@@ -12,6 +12,11 @@
 #include "chrome/browser/apps/app_service/chrome_app_deprecation/proto/chrome_app_deprecation.pb.h"
 
 class Profile;
+
+namespace base {
+class FilePath;
+}
+
 namespace component_updater {
 class ComponentUpdateService;
 }

@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <vector>
+
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 

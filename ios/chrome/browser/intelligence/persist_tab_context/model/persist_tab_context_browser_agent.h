@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_PERSIST_TAB_CONTEXT_MODEL_PERSIST_TAB_CONTEXT_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_PERSIST_TAB_CONTEXT_MODEL_PERSIST_TAB_CONTEXT_BROWSER_AGENT_H_
 
+#import "base/files/file_path.h"
 #import "base/scoped_observation.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_state_agent.h"

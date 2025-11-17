@@ -12,6 +12,10 @@
 #include "base/json/json_value_converter.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 
+namespace base {
+class FilePath;
+}
+
 namespace supervised_user {
 
 // Entities for test account repository.

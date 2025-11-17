@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <vector>
+
 #import "base/apple/foundation_util.h"
 #import "base/memory/scoped_refptr.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/credential_details.h"

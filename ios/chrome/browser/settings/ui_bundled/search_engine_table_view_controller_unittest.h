@@ -4,9 +4,11 @@
 
 #ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_SEARCH_ENGINE_TABLE_VIEW_CONTROLLER_UNITTEST_H_
 #define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_SEARCH_ENGINE_TABLE_VIEW_CONTROLLER_UNITTEST_H_
+
 #import <UIKit/UIKit.h>
 
 #import <string>
+#import <vector>
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"

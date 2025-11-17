@@ -13,6 +13,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
