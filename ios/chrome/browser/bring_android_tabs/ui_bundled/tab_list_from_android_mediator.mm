@@ -11,10 +11,10 @@
 #import "ios/chrome/browser/bring_android_tabs/model/metrics.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/constants.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/tab_list_from_android_consumer.h"
-#import "ios/chrome/browser/bring_android_tabs/ui_bundled/tab_list_from_android_table_view_item.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
 #import "ios/chrome/browser/synced_sessions/model/synced_sessions_util.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
@@ -108,18 +108,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Returns an array of table view items corresponding to the user's tabs from
 // Android.
-- (NSArray<TabListFromAndroidTableViewItem*>*)tableViewItemArray {
-  NSMutableArray<TabListFromAndroidTableViewItem*>* itemArray =
-      [[NSMutableArray alloc] init];
+- (NSArray<TableViewURLItem*>*)tableViewItemArray {
+  NSMutableArray<TableViewURLItem*>* itemArray = [[NSMutableArray alloc] init];
   for (size_t idx = 0; idx < _bringAndroidTabsService->GetNumberOfAndroidTabs();
        idx++) {
     synced_sessions::DistantTab* distantTab =
         _bringAndroidTabsService->GetTabAtIndex(idx);
-    TabListFromAndroidTableViewItem* tabListItem =
-        [[TabListFromAndroidTableViewItem alloc] initWithType:TabItemType];
-    tabListItem.title = base::SysUTF16ToNSString(distantTab->title);
-    tabListItem.URL = [[CrURL alloc] initWithGURL:distantTab->virtual_url];
-    [itemArray addObject:tabListItem];
+    TableViewURLItem* tableViewItem =
+        [[TableViewURLItem alloc] initWithType:TabItemType];
+    tableViewItem.title = base::SysUTF16ToNSString(distantTab->title);
+    tableViewItem.URL = [[CrURL alloc] initWithGURL:distantTab->virtual_url];
+    [itemArray addObject:tableViewItem];
   }
   return itemArray;
 }

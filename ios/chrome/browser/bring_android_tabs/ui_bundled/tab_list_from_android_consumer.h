@@ -7,13 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
-@class TabListFromAndroidTableViewItem;
+@class TableViewURLItem;
 
 // Consumer for the Tab List From Android view.
 @protocol TabListFromAndroidConsumer
 
 // Sets the `items` displayed by this consumer.
-- (void)setTabListItems:(NSArray<TabListFromAndroidTableViewItem*>*)items;
+- (void)setTabListItems:(NSArray<TableViewURLItem*>*)items;
 
 @end
 

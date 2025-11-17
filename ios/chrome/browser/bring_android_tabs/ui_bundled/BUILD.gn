@@ -41,8 +41,6 @@ source_set("ui") {
   sources = [
     "bring_android_tabs_prompt_view_controller_delegate.h",
     "tab_list_from_android_consumer.h",
-    "tab_list_from_android_table_view_item.h",
-    "tab_list_from_android_table_view_item.mm",
     "tab_list_from_android_view_controller.h",
     "tab_list_from_android_view_controller.mm",
     "tab_list_from_android_view_controller_delegate.h",
