@@ -10,7 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
-#include "components/webapps/browser/android/app_banner_manager_android.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -37,22 +37,26 @@ const int kDataTimeoutInMilliseconds = 8000;
 // static
 jlong JNI_AddToHomescreenMediator_Initialize(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_ref) {
-  return reinterpret_cast<intptr_t>(new AddToHomescreenMediator(java_ref));
+    const JavaParamRef<jobject>& java_ref,
+    const JavaParamRef<jobject>& java_web_contents) {
+  return reinterpret_cast<intptr_t>(
+      new AddToHomescreenMediator(java_ref, java_web_contents));
 }
 
 AddToHomescreenMediator::AddToHomescreenMediator(
-    const JavaParamRef<jobject>& java_ref) {
+    const JavaParamRef<jobject>& java_ref,
+    const JavaParamRef<jobject>& java_web_contents) {
   java_ref_.Reset(java_ref);
+
+  web_contents_ = content::WebContents::FromJavaWebContents(java_web_contents)
+                      ->GetWeakPtr();
 }
 
 void AddToHomescreenMediator::StartForAppBanner(
-    base::WeakPtr<AppBannerManager> weak_manager,
     std::unique_ptr<AddToHomescreenParams> params,
     base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
                                  const AddToHomescreenParams&)>
         event_callback) {
-  weak_app_banner_manager_ = weak_manager;
   params_ = std::move(params);
   event_callback_ = std::move(event_callback);
   // Call UI_SHOWN early since the UI is already shown on Java coordinator
@@ -72,15 +76,10 @@ void AddToHomescreenMediator::StartForAppBanner(
   SetIcon(params_->primary_icon);
 }
 
-void AddToHomescreenMediator::StartForAppMenu(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& java_web_contents,
-    int app_menu_type) {
+void AddToHomescreenMediator::StartForAppMenu(JNIEnv* env, int app_menu_type) {
   app_menu_type_ = app_menu_type;
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(java_web_contents);
   data_fetcher_ = std::make_unique<AddToHomescreenDataFetcher>(
-      web_contents, kDataTimeoutInMilliseconds, this);
+      web_contents_.get(), kDataTimeoutInMilliseconds, this);
 
   // base::Unretained() is safe because the lifetime of this object is
   // controlled by its Java counterpart. It will be destroyed when the add to
@@ -94,7 +93,7 @@ void AddToHomescreenMediator::AddToHomescreen(
     JNIEnv* env,
     const JavaParamRef<jstring>& j_user_title,
     jint j_app_type) {
-  if (!params_ || GetWebContents() == nullptr) {
+  if (!params_ || !web_contents_) {
     return;
   }
   AppType selected_app_type = static_cast<AppType>(j_app_type);
@@ -120,7 +119,7 @@ void AddToHomescreenMediator::AddToHomescreen(
                                             params_->install_source);
   }
 
-  AddToHomescreenInstaller::Install(GetWebContents(), *params_,
+  AddToHomescreenInstaller::Install(web_contents_.get(), *params_,
                                     event_callback_);
 }
 
@@ -188,28 +187,27 @@ void AddToHomescreenMediator::OnDataAvailable(
     const InstallableStatusCode status_code) {
   params_ = std::make_unique<AddToHomescreenParams>(
       app_type, std::make_unique<ShortcutInfo>(info), display_icon, status_code,
-      InstallableMetrics::GetInstallSource(data_fetcher_->web_contents(),
+      InstallableMetrics::GetInstallSource(web_contents_.get(),
                                            InstallTrigger::MENU));
 
   SetIcon(display_icon);
 
   if (params_->IsWebApk()) {
     webapps::WebappsClient::Get()->OnWebApkInstallInitiatedFromAppMenu(
-        data_fetcher_->web_contents());
+        web_contents_.get());
   }
 }
 
 void AddToHomescreenMediator::RecordEventForAppMenu(
     AddToHomescreenInstaller::Event event,
     const AddToHomescreenParams& a2hs_params) {
-  content::WebContents* web_contents = GetWebContents();
-  if (!web_contents || a2hs_params.app_type == AppType::NATIVE) {
+  if (!web_contents_ || a2hs_params.app_type == AppType::NATIVE) {
     return;
   }
 
   if (event == AddToHomescreenInstaller::Event::INSTALL_REQUEST_FINISHED) {
     AppBannerManager* app_banner_manager =
-        AppBannerManager::FromWebContents(web_contents);
+        AppBannerManager::FromWebContents(web_contents_.get());
     // Fire the appinstalled event and do install time logging.
     if (app_banner_manager) {
       app_banner_manager->OnInstall(
@@ -217,16 +215,6 @@ void AddToHomescreenMediator::RecordEventForAppMenu(
           /*set_current_web_app_not_installable=*/false);
     }
   }
-}
-
-content::WebContents* AddToHomescreenMediator::GetWebContents() {
-  if (weak_app_banner_manager_.get())
-    return weak_app_banner_manager_->web_contents();
-
-  if (data_fetcher_)
-    return data_fetcher_->web_contents();
-
-  return nullptr;
 }
 
 }  // namespace webapps

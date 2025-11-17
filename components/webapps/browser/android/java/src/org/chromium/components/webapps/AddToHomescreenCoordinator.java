@@ -69,7 +69,7 @@ public class AddToHomescreenCoordinator {
             return false;
         }
 
-        buildMediatorAndShowDialog().startForAppMenu(mWebContents, type);
+        buildMediatorAndShowDialog().startForAppMenu(type);
         return true;
     }
 
@@ -108,7 +108,7 @@ public class AddToHomescreenCoordinator {
     private AddToHomescreenMediator buildMediatorAndShowDialog() {
         mModel = new PropertyModel.Builder(AddToHomescreenProperties.ALL_KEYS).build();
         AddToHomescreenMediator addToHomescreenMediator =
-                new AddToHomescreenMediator(mModel, mWindowAndroid);
+                new AddToHomescreenMediator(mModel, mWindowAndroid, mWebContents);
         PropertyModelChangeProcessor.create(
                 mModel, initView(addToHomescreenMediator), AddToHomescreenViewBinder::bind);
         return addToHomescreenMediator;

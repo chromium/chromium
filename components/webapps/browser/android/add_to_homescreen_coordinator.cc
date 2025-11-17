@@ -41,8 +41,7 @@ bool AddToHomescreenCoordinator::ShowForAppBanner(
   if (!mediator)
     return false;
 
-  mediator->StartForAppBanner(weak_manager, std::move(params),
-                              std::move(event_callback));
+  mediator->StartForAppBanner(std::move(params), std::move(event_callback));
   return true;
 }
 

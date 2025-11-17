@@ -11,14 +11,17 @@ import android.util.Pair;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -26,8 +29,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 public class AddToHomescreenMediatorTest {
 
+    @Rule public MockitoRule mRule = MockitoJUnit.rule();
+
     @Mock private AddToHomescreenMediator.Natives mNativeMock;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private WebContents mWebContents;
 
     private final PropertyModel mPropertyModel =
             new PropertyModel.Builder(AddToHomescreenProperties.ALL_KEYS).build();
@@ -36,16 +42,15 @@ public class AddToHomescreenMediatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         AddToHomescreenMediatorJni.setInstanceForTesting(mNativeMock);
-        when(mNativeMock.initialize(Mockito.any())).thenReturn(NATIVE_POINTER);
+        when(mNativeMock.initialize(Mockito.any(), Mockito.any())).thenReturn(NATIVE_POINTER);
     }
 
     @Test
     @Feature({"Webapp"})
     public void testNativeApp() {
         AddToHomescreenMediator addToHomescreenMediator =
-                new AddToHomescreenMediator(mPropertyModel, mWindowAndroid);
+                new AddToHomescreenMediator(mPropertyModel, mWindowAndroid, mWebContents);
 
         // Prepare test parameters.
         Bitmap icon = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
@@ -72,7 +77,7 @@ public class AddToHomescreenMediatorTest {
     @Feature({"Webapp"})
     public void testWebApp() {
         AddToHomescreenMediator addToHomescreenMediator =
-                new AddToHomescreenMediator(mPropertyModel, mWindowAndroid);
+                new AddToHomescreenMediator(mPropertyModel, mWindowAndroid, mWebContents);
 
         // Prepare test parameters.
         Bitmap icon = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);

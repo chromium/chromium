@@ -14,7 +14,6 @@
 #include "components/webapps/browser/android/add_to_homescreen_data_fetcher.h"
 #include "components/webapps/browser/android/add_to_homescreen_installer.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
-#include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -37,23 +36,21 @@ using AppType = AddToHomescreenParams::AppType;
 // This class is owned, constructed, and destroyed by its Java counter-part.
 class AddToHomescreenMediator : public AddToHomescreenDataFetcher::Observer {
  public:
-  // Initializes the mediator for a given reference to the Java side object.
+  // Initializes the mediator for a given reference to the Java side object and
+  // for a given WebContent.
   // After initialization, either StartForAppBanner or StartForAppMenu should be
   // called to update the UI accordingly.
-  explicit AddToHomescreenMediator(
-      const base::android::JavaParamRef<jobject>& java_ref);
+  AddToHomescreenMediator(
+      const base::android::JavaParamRef<jobject>& java_ref,
+      const base::android::JavaParamRef<jobject>& java_web_contents);
 
   void StartForAppBanner(
-      base::WeakPtr<AppBannerManager> weak_manager,
       std::unique_ptr<AddToHomescreenParams> params,
       base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
                                    const AddToHomescreenParams&)>
           event_callback);
 
-  void StartForAppMenu(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_web_contents,
-      int title_id);
+  void StartForAppMenu(JNIEnv* env, int app_menu_type);
 
   // Called from the Java side when the user accepts app installation from the
   // dialog.
@@ -95,12 +92,10 @@ class AddToHomescreenMediator : public AddToHomescreenDataFetcher::Observer {
   void RecordEventForAppMenu(AddToHomescreenInstaller::Event event,
                              const AddToHomescreenParams& a2hs_params);
 
-  content::WebContents* GetWebContents();
-
   // Points to the Java reference.
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 
-  base::WeakPtr<AppBannerManager> weak_app_banner_manager_;
+  base::WeakPtr<content::WebContents> web_contents_;
 
   // Fetches data required to add a shortcut.
   std::unique_ptr<AddToHomescreenDataFetcher> data_fetcher_;
