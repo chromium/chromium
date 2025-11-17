@@ -78,8 +78,6 @@ const CGFloat kGlowEffectWidth = 40.0f;
 
 /// The fade view width.
 const CGFloat kFadeViewWidth = 30.0f;
-/// The duration for the AIM button animation.
-const CGFloat kAIMButtonAnimationDuration = 0.25f;
 }  // namespace
 
 
@@ -91,9 +89,6 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 
 /// Whether the AI mode is enabled.
 @property(nonatomic, assign) BOOL AIModeEnabled;
-
-/// Whether the carousel is scrollable.
-@property(nonatomic, assign) BOOL shouldMinimizeAimButton;
 
 /// The width constraint for the AIM button.
 @property(nonatomic, strong) NSLayoutConstraint* aimButtonWidthConstraint;
@@ -201,7 +196,7 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
       _trailingCarouselFadeView.bounds;
   _leadingCarouselFadeView.layer.sublayers.firstObject.frame =
       _leadingCarouselFadeView.bounds;
-  [self updateInputPlateLayout];
+  [self updateCarouselFade];
 }
 
 #pragma mark - Public
@@ -241,7 +236,7 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   [_dataSource applySnapshot:snapshot
         animatingDifferences:YES
                   completion:^{
-                    [weakSelf updateInputPlateLayout];
+                    [weakSelf updateCarouselFade];
                   }];
 }
 
@@ -330,46 +325,6 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 
 - (void)stopGlowEffect {
   [_glowEffectView stopGlow];
-}
-
-- (void)updateInputPlateLayout {
-  // Determine if the AIM button should be minimized.
-  BOOL shouldMinimize = self.shouldMinimizeAimButton;
-
-  BOOL isCarouselScrollable =
-      _carouselView.contentSize.width > _carouselView.bounds.size.width;
-  if (isCarouselScrollable) {
-    // If the carousel is scrollable, the button must be minimized.
-    shouldMinimize = YES;
-  } else {
-    // Calculate the unused space available within the carousel's frame.
-    CGFloat availableSpace =
-        _carouselView.bounds.size.width - _carouselView.contentSize.width;
-    // Calculate the extra width the AIM button needs to change from its
-    // minimized (circular) to its full expanded state.
-    CGFloat expansionWidthNeeded = kAIMButtonWidth - kAIMButtonHeight;
-
-    // If the available space is greater than the space needed for the button
-    // to expand, the button should not be minimized.
-    if (availableSpace > expansionWidthNeeded) {
-      shouldMinimize = NO;
-    }
-  }
-
-  // If the minimization state has changed, update the button's appearance and
-  // animate the layout change.
-  if (self.shouldMinimizeAimButton != shouldMinimize) {
-    _shouldMinimizeAimButton = shouldMinimize;
-    [self updateAIMButtonAppearance];
-    if (shouldMinimize) {
-      [UIView animateWithDuration:kAIMButtonAnimationDuration
-                       animations:^{
-                         [self.view layoutIfNeeded];
-                       }];
-    }
-  }
-
-  [self updateCarouselFade];
 }
 
 #pragma mark - UICollectionViewDelegateFlowLayout
@@ -531,22 +486,18 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   config.image = CustomSymbolWithPointSize(kMagnifyingglassSparkSymbol,
                                            kAIMButtonSymbolPointSize);
 
-  if (self.shouldMinimizeAimButton) {
-    self.aimButtonWidthConstraint.constant = kAIMButtonHeight;
-  } else {
-    // Font setup
-    UIFont* font = [UIFont systemFontOfSize:kAIMButtonFontSize
-                                     weight:UIFontWeightMedium];
-    NSDictionary* attributes = @{NSFontAttributeName : font};
-    NSAttributedString* attributedTitle =
-        [[NSAttributedString alloc] initWithString:@"AI Mode"
-                                        attributes:attributes];
-    config.attributedTitle = attributedTitle;
+  // Font setup
+  UIFont* font = [UIFont systemFontOfSize:kAIMButtonFontSize
+                                   weight:UIFontWeightMedium];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSAttributedString* attributedTitle =
+      [[NSAttributedString alloc] initWithString:@"AI Mode"
+                                      attributes:attributes];
+  config.attributedTitle = attributedTitle;
 
-    config.contentInsets = NSDirectionalEdgeInsetsMake(5, 8, 5, 8);
-    config.imagePadding = 5;
-    self.aimButtonWidthConstraint.constant = kAIMButtonWidth;
-  }
+  config.contentInsets = NSDirectionalEdgeInsetsMake(5, 8, 5, 8);
+  config.imagePadding = 5;
+  self.aimButtonWidthConstraint.constant = kAIMButtonWidth;
 
   _aimButton.layer.borderWidth = 0;
   if (self.AIModeEnabled) {
