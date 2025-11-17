@@ -25808,6 +25808,21 @@
             ]
         }
     ],
+    "TreesInViz": [
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TreesInViz"
+                    ]
+                }
+            ]
+        }
+    ],
     "TriggerPasswordResyncWhenUndecryptablePasswordsDetected": [
         {
             "platforms": [
