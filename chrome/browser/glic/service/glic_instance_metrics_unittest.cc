@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -14,6 +15,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace glic {
 class GlicInstanceMetricsTest : public testing::Test {
@@ -25,6 +27,7 @@ class GlicInstanceMetricsTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   GlicInstanceMetrics metrics_;
   tabs::MockTabInterface mock_tab_;
+  base::UserActionTester user_action_tester_;
 };
 
 TEST_F(GlicInstanceMetricsTest, OnResponseStarted_WithoutInput_LogsError) {
@@ -132,6 +135,30 @@ TEST_F(GlicInstanceMetricsTest, OnUnbindEmbedder_WithoutOpening_LogsError) {
   histogram_tester_.ExpectUniqueSample(
       "Glic.Instance.Metrics.Error",
       GlicInstanceMetricsError::kTabUnbindWithoutOpen, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, OnUserResizeStarted) {
+  gfx::Size test_size(800, 600);
+  metrics_.OnUserResizeStarted(test_size);
+
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Glic.Instance.Floaty.UserResizeStarted"));
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.Floaty.UserResizeStarted.Width", test_size.width(), 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.Floaty.UserResizeStarted.Height", test_size.height(), 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, OnUserResizeEnded) {
+  gfx::Size test_size(1024, 768);
+  metrics_.OnUserResizeEnded(test_size);
+
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Glic.Instance.Floaty.UserResizeEnded"));
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.Floaty.UserResizeEnded.Width", test_size.width(), 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.Floaty.UserResizeEnded.Height", test_size.height(), 1);
 }
 
 }  // namespace glic

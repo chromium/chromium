@@ -359,12 +359,14 @@ void GlicFloatingUi::OnWidgetBoundsChanged(views::Widget* widget,
 
 void GlicFloatingUi::OnWidgetUserResizeStarted() {
   user_resizing_ = true;
+  instance_metrics_->OnUserResizeStarted(GetPanelSize());
   if (GlicWebClientAccess* client = delegate_->host().GetPrimaryWebClient()) {
     client->ManualResizeChanged(true);
   }
 }
 
 void GlicFloatingUi::OnWidgetUserResizeEnded() {
+  instance_metrics_->OnUserResizeEnded(GetPanelSize());
   if (GlicWebClientAccess* client = delegate_->host().GetPrimaryWebClient()) {
     client->ManualResizeChanged(false);
   }

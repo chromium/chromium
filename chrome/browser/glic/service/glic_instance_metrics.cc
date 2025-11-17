@@ -704,6 +704,24 @@ void GlicInstanceMetrics::OnTurnCompleted(mojom::WebClientModel model,
                                 duration);
 }
 
+void GlicInstanceMetrics::OnUserResizeStarted(const gfx::Size& start_size) {
+  base::RecordAction(
+      base::UserMetricsAction("Glic.Instance.Floaty.UserResizeStarted"));
+  base::UmaHistogramCounts10000("Glic.Instance.Floaty.UserResizeStarted.Width",
+                                start_size.width());
+  base::UmaHistogramCounts10000("Glic.Instance.Floaty.UserResizeStarted.Height",
+                                start_size.height());
+}
+
+void GlicInstanceMetrics::OnUserResizeEnded(const gfx::Size& end_size) {
+  base::RecordAction(
+      base::UserMetricsAction("Glic.Instance.Floaty.UserResizeEnded"));
+  base::UmaHistogramCounts10000("Glic.Instance.Floaty.UserResizeEnded.Width",
+                                end_size.width());
+  base::UmaHistogramCounts10000("Glic.Instance.Floaty.UserResizeEnded.Height",
+                                end_size.height());
+}
+
 void GlicInstanceMetrics::OnReaction(
     mojom::MetricUserInputReactionType reaction_type) {
   LogEvent(GlicInstanceEvent::kReaction);

@@ -14020,6 +14020,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Instance.Floaty.UserResizeEnded">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged when the user stops resizing the instance showing in a floaty
+    embedder.
+  </description>
+</action>
+
+<action name="Glic.Instance.Floaty.UserResizeStarted">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged when the user initiates a resize of the instance showing in a floaty
+    embedder.
+  </description>
+</action>
+
 <action name="Glic.Instance.Hide">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>

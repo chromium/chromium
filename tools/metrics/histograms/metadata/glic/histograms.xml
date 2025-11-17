@@ -22,6 +22,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="Dimension">
+  <variant name="Height" summary="height"/>
+  <variant name="Width" summary="width"/>
+</variants>
+
 <variants name="EmbedderType">
   <variant name="Floaty" summary="a floating embedder"/>
   <variant name="SidePanel" summary="a side panel embedder"/>
@@ -672,6 +677,28 @@ chromium-metrics-reviews@google.com.
     Records the source of the invocation that caused the floaty GlicInstance to
     be toggled. Recorded each time the instance is toggled.
   </summary>
+</histogram>
+
+<histogram name="Glic.Instance.Floaty.UserResizeEnded.{Dimension}" units="DIPs"
+    expires_after="2026-11-12">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the {Dimension} of the Glic instance in DIP when the user stops
+    resizing the instance showing in a floaty window.
+  </summary>
+  <token key="Dimension" variants="Dimension"/>
+</histogram>
+
+<histogram name="Glic.Instance.Floaty.UserResizeStarted.{Dimension}"
+    units="DIPs" expires_after="2026-11-12">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the {Dimension} of the Glic instance in DIP when the user starts
+    resizing the instance showing in a floaty window.
+  </summary>
+  <token key="Dimension" variants="Dimension"/>
 </histogram>
 
 <histogram name="Glic.Instance.HadEvent" enum="GlicInstanceEvent"
