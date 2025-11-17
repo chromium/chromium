@@ -423,6 +423,11 @@ BASE_FEATURE(kEnterpriseBadgingForNtpFooter, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnterpriseBadgingForLocalManagemenetNtpFooter,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables enterprise badging for managed browsers with local management only
+// AND 3 or more policies on the new tab page footer.
+BASE_FEATURE(kEnterpriseBadgingForNtpFooterWithOverThreePolicies,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the management notice in the NTP footer if the custom policies are
 // set. This acts as a kill switch for "EnterpriseCustomLabelForBrowser" and
 // "EnterpriseLogoUrlForBrowser".
