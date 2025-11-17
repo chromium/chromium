@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/web/navigation/navigation_manager_impl.h"
 
 #import <Foundation/Foundation.h>
@@ -215,7 +210,7 @@ void NavigationManagerImpl::SerializeToProto(
   DCHECK_LE(length + offset, items.size());
 
   storage.set_last_committed_item_index(last_committed_item_index);
-  for (const auto* item : base::span(items.begin() + offset, length)) {
+  for (const auto* item : base::span(items).subspan(offset, length)) {
     item->SerializeToProto(*storage.add_items());
   }
 }
