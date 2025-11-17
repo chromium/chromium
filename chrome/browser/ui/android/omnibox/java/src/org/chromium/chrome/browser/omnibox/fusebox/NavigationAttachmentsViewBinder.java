@@ -21,6 +21,7 @@ import androidx.constraintlayout.widget.ConstraintSet;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -187,6 +188,12 @@ class NavigationAttachmentsViewBinder {
                     null,
                     isCustomModeUsed ? res.getDrawable(R.drawable.btn_close) : null,
                     null);
+            views.requestType.setCompoundDrawableTintList(
+                    isImageGenerationUsed
+                            ? null
+                            : ColorStateList.valueOf(
+                                    SemanticColorUtils.getColorPrimary(
+                                            views.parentView.getContext())));
         } else {
             views.requestType.setVisibility(View.GONE);
         }

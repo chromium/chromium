@@ -393,4 +393,27 @@ public class NavigationAttachmentsViewBinderUnitTest {
         mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_ENABLED, false);
         assertFalse(mViewHolder.popup.mAddCurrentTab.isEnabled());
     }
+
+    @Test
+    public void requestTypeDrawableAndTint() {
+        mModel.set(
+                NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE,
+                AutocompleteRequestType.IMAGE_GENERATION);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[0]);
+        assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[1]);
+        assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
+        assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[3]);
+        assertNull(mViewHolder.requestType.getCompoundDrawableTintList());
+
+        mModel.set(
+                NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE,
+                AutocompleteRequestType.AI_MODE);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[0]);
+        assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[1]);
+        assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
+        assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[3]);
+        assertNotNull(mViewHolder.requestType.getCompoundDrawableTintList());
+    }
 }
