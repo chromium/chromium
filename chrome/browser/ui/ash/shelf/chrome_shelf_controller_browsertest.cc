@@ -203,7 +203,7 @@ void CloseBrowserWindow(Browser* browser,
   ui_test_utils::WaitForBrowserToClose(browser);
 }
 
-int64_t GetDisplayIdForBrowserWindow(BrowserWindow* window) {
+int64_t GetDisplayIdForBrowserWindow(ui::BaseWindow* window) {
   return display::Screen::Get()
       ->GetDisplayNearestWindow(window->GetNativeWindow())
       .id();
@@ -1067,22 +1067,25 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchAppFromDisplayWithoutFocus0) {
   // Ensures that display 0 has one browser with focus and display 1 has two
   // browsers. Each browser only has one tab.
   BrowserList* browser_list = BrowserList::GetInstance();
-  Browser* browser0 = browser();
-  Browser* browser1 = CreateBrowser(browser()->profile());
-  Browser* browser2 = CreateBrowser(browser()->profile());
-  browser0->window()->SetBounds(displays[0].work_area());
-  browser1->window()->SetBounds(displays[1].work_area());
-  browser2->window()->SetBounds(displays[1].work_area());
+  BrowserWindowInterface* const browser0 = browser();
+  BrowserWindowInterface* const browser1 = CreateBrowser(browser()->profile());
+  BrowserWindowInterface* const browser2 = CreateBrowser(browser()->profile());
+  browser0->GetWindow()->SetBounds(displays[0].work_area());
+  browser1->GetWindow()->SetBounds(displays[1].work_area());
+  browser2->GetWindow()->SetBounds(displays[1].work_area());
   // Ensures browser 2 is above browser 1 in display 1.
-  browser_list->SetLastActive(browser2);
-  browser_list->SetLastActive(browser0);
-  EXPECT_EQ(browser_list->size(), 3U);
-  EXPECT_EQ(displays[0].id(), GetDisplayIdForBrowserWindow(browser0->window()));
-  EXPECT_EQ(displays[1].id(), GetDisplayIdForBrowserWindow(browser1->window()));
-  EXPECT_EQ(displays[1].id(), GetDisplayIdForBrowserWindow(browser2->window()));
-  EXPECT_EQ(browser0->tab_strip_model()->count(), 1);
-  EXPECT_EQ(browser1->tab_strip_model()->count(), 1);
-  EXPECT_EQ(browser2->tab_strip_model()->count(), 1);
+  browser_list->SetLastActive(browser2->GetBrowserForMigrationOnly());
+  browser_list->SetLastActive(browser0->GetBrowserForMigrationOnly());
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 3U);
+  EXPECT_EQ(displays[0].id(),
+            GetDisplayIdForBrowserWindow(browser0->GetWindow()));
+  EXPECT_EQ(displays[1].id(),
+            GetDisplayIdForBrowserWindow(browser1->GetWindow()));
+  EXPECT_EQ(displays[1].id(),
+            GetDisplayIdForBrowserWindow(browser2->GetWindow()));
+  EXPECT_EQ(browser0->GetTabStripModel()->count(), 1);
+  EXPECT_EQ(browser1->GetTabStripModel()->count(), 1);
+  EXPECT_EQ(browser2->GetTabStripModel()->count(), 1);
 
   // Launches an app from the shelf of display 0 and expects a new tab is opened
   // in the uppermost browser in display 0.
@@ -1092,9 +1095,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchAppFromDisplayWithoutFocus0) {
       shortcut_id.app_id);
 
   SelectItem(shortcut_id, ui::EventType::kMousePressed, displays[1].id());
-  EXPECT_EQ(browser0->tab_strip_model()->count(), 1);
-  EXPECT_EQ(browser1->tab_strip_model()->count(), 1);
-  EXPECT_EQ(browser2->tab_strip_model()->count(), 2);
+  EXPECT_EQ(browser0->GetTabStripModel()->count(), 1);
+  EXPECT_EQ(browser1->GetTabStripModel()->count(), 1);
+  EXPECT_EQ(browser2->GetTabStripModel()->count(), 2);
 }
 
 // Tests behavior of launching app from shelf in the first display while the
@@ -1117,12 +1120,12 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchAppFromDisplayWithoutFocus1) {
 
   // Ensures that display 0 has one browser with focus and display 1 has no
   // browser. The browser only has one tab.
-  BrowserList* browser_list = BrowserList::GetInstance();
-  Browser* browser0 = browser();
-  browser0->window()->SetBounds(displays[0].work_area());
-  EXPECT_EQ(browser_list->size(), 1U);
-  EXPECT_EQ(displays[0].id(), GetDisplayIdForBrowserWindow(browser0->window()));
-  EXPECT_EQ(browser0->tab_strip_model()->count(), 1);
+  BrowserWindowInterface* const browser0 = browser();
+  browser0->GetWindow()->SetBounds(displays[0].work_area());
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1U);
+  EXPECT_EQ(displays[0].id(),
+            GetDisplayIdForBrowserWindow(browser0->GetWindow()));
+  EXPECT_EQ(browser0->GetTabStripModel()->count(), 1);
 
   // Launches an app from the shelf of display 0 and expects a new browser with
   // one tab is opened in display 0.
@@ -1133,7 +1136,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchAppFromDisplayWithoutFocus1) {
   SelectItem(shortcut_id, ui::EventType::kMousePressed, displays[1].id());
   BrowserWindowInterface* browser1 =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  EXPECT_EQ(browser_list->size(), 2U);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2U);
   EXPECT_NE(browser1, browser0);
   EXPECT_EQ(browser0->GetTabStripModel()->count(), 1);
   EXPECT_EQ(browser1->GetTabStripModel()->count(), 1);

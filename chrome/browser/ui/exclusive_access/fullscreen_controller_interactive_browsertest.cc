@@ -816,12 +816,11 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 
   // Open a popup, which is activated. The opener exits fullscreen to mitigate
   // usable security concerns. See WebContents::ForSecurityDropFullscreen().
-  BrowserList* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(1u, browser_list->size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   content::ExecuteScriptAsync(tab, "open('.', '', 'popup')");
-  Browser* popup = ui_test_utils::WaitForBrowserToOpen();
-  EXPECT_EQ(2u, browser_list->size());
+  BrowserWindowInterface* const popup = ui_test_utils::WaitForBrowserToOpen();
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   ui_test_utils::BrowserActivationWaiter(popup).WaitForActivation();
   EXPECT_TRUE(ui_test_utils::IsBrowserActive(popup));
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
@@ -884,13 +883,12 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   EXPECT_TRUE(tab->IsFullscreen());
 
   // Open a popup, which is activated. The opener remains fullscreen-within-tab.
-  BrowserList* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(1u, browser_list->size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   content::ExecuteScriptAsync(tab, "open('.', '', 'popup')");
-  Browser* popup = ui_test_utils::WaitForBrowserToOpen();
+  BrowserWindowInterface* const popup = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(popup);
   ui_test_utils::WaitUntilBrowserBecomeActive(popup);
-  EXPECT_EQ(2u, browser_list->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(tab->GetDelegate()->GetFullscreenState(tab).target_mode,
             content::FullscreenMode::kPseudoContent);
 }
@@ -1781,8 +1779,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
   content::WebContents* tab = SetUpWindowManagementTab();
   const display::Display original_display = GetCurrentDisplay(browser());
 
-  BrowserList* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(1u, browser_list->size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   blocked_content::PopupBlockerTabHelper* popup_blocker =
       blocked_content::PopupBlockerTabHelper::FromWebContents(tab);
   EXPECT_EQ(0u, popup_blocker->GetBlockedPopupsCount());
@@ -1806,12 +1803,12 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
     })();
   )";
   content::ExecuteScriptAsync(tab, script);
-  Browser* popup = ui_test_utils::WaitForBrowserToOpen();
+  BrowserWindowInterface* popup = ui_test_utils::WaitForBrowserToOpen();
   EXPECT_NE(popup, browser());
-  auto* popup_contents = popup->tab_strip_model()->GetActiveWebContents();
+  auto* popup_contents = popup->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(WaitForRenderFrameReady(popup_contents->GetPrimaryMainFrame()));
   EXPECT_EQ(0u, popup_blocker->GetBlockedPopupsCount());
-  EXPECT_EQ(2u, browser_list->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(original_display.id(), GetCurrentDisplay(browser()).id());
   EXPECT_NE(original_display.id(), GetCurrentDisplay(popup).id());
 
@@ -1842,8 +1839,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_FullscreenCompanionWindow) {
   content::WebContents* tab = SetUpWindowManagementTab();
 
-  BrowserList* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(1u, browser_list->size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   blocked_content::PopupBlockerTabHelper* popup_blocker =
       blocked_content::PopupBlockerTabHelper::FromWebContents(tab);
   EXPECT_EQ(0u, popup_blocker->GetBlockedPopupsCount());
@@ -1893,7 +1889,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
   BrowserWindowInterface* const popup = browser_created_observer.Wait();
   EXPECT_TRUE(IsWindowFullscreenForTabOrPending());
   EXPECT_EQ(0u, popup_blocker->GetBlockedPopupsCount());
-  EXPECT_EQ(2u, browser_list->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_NE(browser(), popup);
   EXPECT_NE(GetCurrentDisplay(browser()).id(), GetCurrentDisplay(popup).id());
 

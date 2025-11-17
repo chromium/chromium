@@ -10,7 +10,7 @@
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -72,13 +72,12 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, RecentTabsMenuTabDisposition) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
-  BrowserList* active_browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(2u, active_browser_list->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
   // Close the first browser.
   const int active_tab_index = browser()->tab_strip_model()->active_index();
   CloseBrowserSynchronously(browser());
-  EXPECT_EQ(1u, active_browser_list->size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Restore tabs using the browser's recent tabs menu.
   content::DOMMessageQueue queue;
@@ -93,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, RecentTabsMenuTabDisposition) {
 
   // There should be 3 restored tabs in the new browser. The active tab should
   // be loading.
-  EXPECT_EQ(2u, active_browser_list->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(3, restored_browser->GetTabStripModel()->count());
   EXPECT_TRUE(restored_browser->GetTabStripModel()
                   ->GetActiveWebContents()
@@ -188,13 +187,12 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, DelegateRestoreTabDisposition) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
   BrowserWindowInterface* const added_browser1 =
       browser_created_observer->Wait();
-  BrowserList* active_browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(2u, active_browser_list->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
   // Close the first browser.
   const int active_tab_index = browser()->tab_strip_model()->active_index();
   CloseBrowserSynchronously(browser());
-  EXPECT_EQ(1u, active_browser_list->size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Check the browser has a delegated restore service.
   sessions::TabRestoreService* service =
@@ -216,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, DelegateRestoreTabDisposition) {
   AwaitTabsReady(&queue, 2);
 
   // There should be 3 restored tabs in the new browser.
-  EXPECT_EQ(2u, active_browser_list->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(3, added_browser2->GetTabStripModel()->count());
   // The same as in RecentTabsMenuTabDisposition test case.
   // See there for the explanation.

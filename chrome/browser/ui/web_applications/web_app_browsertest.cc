@@ -2263,23 +2263,23 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, SubframeRedirectsToWebApp) {
 #if BUILDFLAG(IS_MAC)
 // TODO(crbug.com/402249843): Flaky on Mac. Debug and re-enable.
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DISABLED_NewAppWindow) {
-  BrowserList* const browser_list = BrowserList::GetInstance();
   const GURL app_url = GetSecureAppURL();
   const webapps::AppId app_id = InstallPWA(app_url);
-  Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
+  BrowserWindowInterface* const app_browser =
+      LaunchWebAppBrowserAndWait(app_id);
 
-  EXPECT_EQ(browser_list->size(), 2U);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2U);
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   EXPECT_TRUE(chrome::ExecuteCommand(app_browser, IDC_NEW_WINDOW));
-  Browser* const new_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* const new_browser = browser_created_observer.Wait();
 
   EXPECT_EQ(new_browser, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
-  EXPECT_EQ(browser_list->size(), 3U);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 3U);
   EXPECT_NE(new_browser, browser());
   EXPECT_NE(new_browser, app_browser);
-  EXPECT_TRUE(new_browser->is_type_app());
-  EXPECT_EQ(new_browser->app_controller()->app_id(), app_id);
+  EXPECT_EQ(new_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
+  EXPECT_EQ(AppBrowserController::From(new_browser)->app_id(), app_id);
 
   WebAppProvider::GetForTest(profile())
       ->sync_bridge_unsafe()

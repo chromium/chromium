@@ -13,7 +13,7 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -397,8 +397,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveTabsToNewWindow) {
   ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
   // Check that the two additional windows have been created.
-  BrowserList* active_browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(3u, active_browser_list->size());
+  EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
 
   // Check that the tabs made it to other windows.
   EXPECT_EQ(1, second_browser->GetTabStripModel()->count());
@@ -705,29 +704,30 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveActiveTabToNewWindow) {
   // Two tabs is enough for it to be meaningful to pop one out.
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_MOVE_TAB_TO_NEW_WINDOW));
 
-  BrowserList* browser_list = BrowserList::GetInstance();
   // Pre-command, assert that we have one browser, with two tabs, with the
   // url2 tab active.
-  EXPECT_EQ(browser_list->size(), 1u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
             url2);
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::ExecuteCommand(browser(), IDC_MOVE_TAB_TO_NEW_WINDOW);
-  Browser* active_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* const active_browser =
+      browser_created_observer.Wait();
   ui_test_utils::WaitUntilBrowserBecomeActive(active_browser);
 
   // Now we should have: two browsers, each with one tab (url1 in browser(),
   // and url2 in the new one).
-  EXPECT_EQ(browser_list->size(), 2u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
   EXPECT_NE(active_browser, browser());
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
-  EXPECT_EQ(active_browser->tab_strip_model()->count(), 1);
-  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), 1);
+  EXPECT_EQ(active_browser->GetTabStripModel()->count(), 1);
+  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveWebContents()->GetURL(),
             url1);
-  EXPECT_EQ(active_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
-            url2);
+  EXPECT_EQ(
+      active_browser->GetTabStripModel()->GetActiveWebContents()->GetURL(),
+      url2);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
@@ -747,23 +747,23 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::ExecuteCommand(browser(), IDC_MOVE_TAB_TO_NEW_WINDOW);
-  Browser* active_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* const active_browser =
+      browser_created_observer.Wait();
   ui_test_utils::WaitUntilBrowserBecomeActive(active_browser);
 
   // Now we should have two browsers:
   // The original, now with only a single tab: url2
   // The new one with the two tabs we moved: url1 and url3. This one should
   // be active.
-  BrowserList* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(browser_list->size(), 2u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
   EXPECT_NE(active_browser, browser());
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
-  ASSERT_EQ(active_browser->tab_strip_model()->count(), 2);
-  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 1);
+  ASSERT_EQ(active_browser->GetTabStripModel()->count(), 2);
+  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveWebContents()->GetURL(),
             url2);
-  EXPECT_EQ(active_browser->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
+  EXPECT_EQ(active_browser->GetTabStripModel()->GetWebContentsAt(0)->GetURL(),
             url1);
-  EXPECT_EQ(active_browser->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
+  EXPECT_EQ(active_browser->GetTabStripModel()->GetWebContentsAt(1)->GetURL(),
             url3);
 }
 

@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
@@ -294,13 +294,12 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
                        InactiveWindowStaysInactiveOnHover) {
   resource_coordinator::GetTabLifecycleUnitSource()
       ->SetFocusedTabStripModelForTesting(nullptr);
-  const BrowserList* active_browser_list = BrowserList::GetInstance();
 
   // Open a second browser window.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
-  ASSERT_EQ(2u, active_browser_list->size());
+  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
 
   // Choose one browser to be active; the other to be inactive.
   BrowserWindowInterface* const active_window =
