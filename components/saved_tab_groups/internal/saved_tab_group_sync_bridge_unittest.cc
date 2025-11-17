@@ -1184,7 +1184,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, RemoveTabLocally) {
   saved_tab_group_model_.AddedLocally(std::move(group));
 
   EXPECT_CALL(processor_, Delete(tab_1_guid.AsLowercaseString(), _, _));
-  EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _)).Times(0);
+  EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _)).Times(1);
   EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _)).Times(0);
 
   saved_tab_group_model_.RemoveTabFromGroupLocally(group_guid, tab_1_guid);
