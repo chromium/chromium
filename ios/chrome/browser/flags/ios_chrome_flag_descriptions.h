@@ -677,6 +677,9 @@ extern const char kNotificationSettingsMenuItemDescription[];
 extern const char kNtpAlphaBackgroundCollectionsName[];
 extern const char kNtpAlphaBackgroundCollectionsDescription[];
 
+extern const char kNtpComposeboxUsesChromeComposeClientName[];
+extern const char kNtpComposeboxUsesChromeComposeClientDescription[];
+
 extern const char kOmniboxDRSPrototypeName[];
 extern const char kOmniboxDRSPrototypeDescription[];
 

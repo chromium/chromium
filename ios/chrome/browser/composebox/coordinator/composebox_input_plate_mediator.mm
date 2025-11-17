@@ -28,6 +28,7 @@
 #import "base/unguessable_token.h"
 #import "components/lens/contextual_input.h"
 #import "components/lens/lens_bitmap_processing.h"
+#import "components/omnibox/common/omnibox_features.h"
 #import "components/omnibox/composebox/ios/composebox_file_upload_observer_bridge.h"
 #import "components/omnibox/composebox/ios/composebox_query_controller_ios.h"
 #import "components/search_engines/template_url_service.h"
@@ -320,7 +321,14 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)setAIModeEnabled:(BOOL)enabled {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (_AIModeEnabled == enabled) {
+    return;
+  }
   _AIModeEnabled = enabled;
+  if (base::FeatureList::IsEnabled(
+          omnibox::kComposeboxUsesChromeComposeClient)) {
+    [self.delegate reloadAutocompleteSuggestions];
+  }
   if (!_AIModeEnabled) {
     if (_composeboxQueryController) {
       _composeboxQueryController->ClearFiles();
@@ -814,6 +822,10 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 #pragma mark - ComposeboxOmniboxClientDelegate
+
+- (BOOL)isAIModeEnabled {
+  return _AIModeEnabled;
+}
 
 - (void)omniboxDidAcceptText:(const std::u16string&)text
               destinationURL:(const GURL&)destinationURL

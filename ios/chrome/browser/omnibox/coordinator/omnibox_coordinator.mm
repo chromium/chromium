@@ -350,6 +350,10 @@
   return self.viewController;
 }
 
+- (void)clearSuggestionsAndRestartAutocomplete {
+  [_omniboxAutocompleteController clearAndRestartAutocomplete];
+}
+
 - (id<EditViewAnimatee>)animatee {
   return self.viewController;
 }

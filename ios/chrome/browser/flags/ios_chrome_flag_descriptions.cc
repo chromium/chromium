@@ -1132,6 +1132,12 @@ const char kNtpAlphaBackgroundCollectionsName[] =
 const char kNtpAlphaBackgroundCollectionsDescription[] =
     "When enabled, the alpha background collections are available on the NTP.";
 
+const char kNtpComposeboxUsesChromeComposeClientName[] =
+    "Enable composebox to use the suggest chrome compose client";
+const char kNtpComposeboxUsesChromeComposeClientDescription[] =
+    "When enabled, the composebox will use the suggest chrome compose client "
+    "when AIM is enabled";
+
 const char kOmniboxDRSPrototypeName[] = "Enable the Omnibox DRS prototype";
 const char kOmniboxDRSPrototypeDescription[] =
     "Enables the omnibox dynamic response system prototype";

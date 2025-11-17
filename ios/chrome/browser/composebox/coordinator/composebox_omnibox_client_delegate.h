@@ -8,6 +8,9 @@
 /// Delegate for ComposeboxOmniboxClient.
 @protocol ComposeboxOmniboxClientDelegate
 
+/// Returns YES if AI Mode is enabled.
+- (BOOL)isAIModeEnabled;
+
 /// Omnibox did accept a suggestion with `text` and `destinationURL`.
 /// `isSearchType`: Whether the search type is text or a URL.
 - (void)omniboxDidAcceptText:(const std::u16string&)text

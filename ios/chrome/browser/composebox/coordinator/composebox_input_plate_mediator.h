@@ -24,6 +24,12 @@ class GURL;
 class PersistTabContextBrowserAgent;
 class WebStateList;
 
+// Delegate for the ComposeboxInputPlateMediator.
+@protocol ComposeboxInputPlateMediatorDelegate
+// Reloads the composebox autocomplete suggestions.
+- (void)reloadAutocompleteSuggestions;
+@end
+
 // Mediator for the composebox composebox.
 @interface ComposeboxInputPlateMediator
     : NSObject <ComposeboxOmniboxClientDelegate,
@@ -35,6 +41,8 @@ class WebStateList;
 
 @property(nonatomic, weak) id<ComposeboxInputPlateConsumer> consumer;
 @property(nonatomic, weak) id<ComposeboxURLLoader> URLLoader;
+// The delegate for this mediator.
+@property(nonatomic, weak) id<ComposeboxInputPlateMediatorDelegate> delegate;
 
 - (instancetype)
     initWithComposeboxQueryController:

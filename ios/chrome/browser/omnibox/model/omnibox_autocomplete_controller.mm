@@ -388,6 +388,29 @@ using base::UserMetricsAction;
 
 #pragma mark - OmniboxText events
 
+// Clears any existing suggestions and restarts the autocomplete process.
+// If there is text in the omnibox, it triggers a regular autocomplete request.
+// If the omnibox is empty, it triggers a zero-suggest request.
+- (void)clearAndRestartAutocomplete {
+  if (!_autocompleteController || !_omniboxTextModel) {
+    return;
+  }
+
+  [self stopAutocompleteWithClearSuggestions:YES];
+
+  // Restart autocomplete with the current text.
+  std::u16string text = _omniboxTextModel->user_text;
+  size_t cursorPosition = _omniboxTextModel->input.cursor_position();
+
+  if (text.length() != 0) {
+    [self startAutocompleteWithText:text
+                     cursorPosition:cursorPosition
+          preventInlineAutocomplete:NO];
+  } else {
+    [self startZeroSuggestRequestWithText:u"" userClobbered:NO];
+  }
+}
+
 - (void)startAutocompleteWithText:(const std::u16string&)text
                    cursorPosition:(size_t)cursorPosition
         preventInlineAutocomplete:(bool)preventInlineAutocomplete {

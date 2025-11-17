@@ -156,6 +156,11 @@ GURL ComposeboxOmniboxClient::GetNavigationEntryURL() const {
 
 metrics::OmniboxEventProto::PageClassification
 ComposeboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
+  if ([delegate_ isAIModeEnabled] &&
+      base::FeatureList::IsEnabled(
+          omnibox::kComposeboxUsesChromeComposeClient)) {
+    return metrics::OmniboxEventProto::NTP_COMPOSEBOX;
+  }
   return location_bar_->GetLocationBarModel()->GetPageClassification(
       is_prefetch);
 }

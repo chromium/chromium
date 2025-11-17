@@ -134,6 +134,10 @@ struct OmniboxTextModel;
 
 #pragma mark - OmniboxText events
 
+/// Clears the omnibox suggestions and starts autocomplete with the current
+/// input text.
+- (void)clearAndRestartAutocomplete;
+
 /// Starts autocomplete with `text`.
 - (void)startAutocompleteWithText:(const std::u16string&)text
                    cursorPosition:(size_t)cursorPosition

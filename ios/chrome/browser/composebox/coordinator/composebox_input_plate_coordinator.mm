@@ -56,6 +56,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 @interface ComposeboxInputPlateCoordinator () <
+    ComposeboxInputPlateMediatorDelegate,
     ComposeboxInputPlateViewControllerDelegate,
     LocationBarModelDelegateWebStateProvider,
     LocationBarURLLoader,
@@ -146,6 +147,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                                             FromBrowser(self.browser)];
   _mediator.URLLoader = _URLLoader;
   _mediator.consumer = _viewController;
+  _mediator.delegate = self;
+
   _tabPickerCoordinator.delegate = _mediator;
   _viewController.mutator = _mediator;
   _voiceSearchController.dispatcher = _mediator;
@@ -347,6 +350,12 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController*)picker {
   [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - ComposeboxInputPlateMediatorDelegate
+
+- (void)reloadAutocompleteSuggestions {
+  [_omniboxCoordinator clearSuggestionsAndRestartAutocomplete];
 }
 
 #pragma mark - LocationBarURLLoader
