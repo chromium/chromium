@@ -5,6 +5,7 @@
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/background/glic/glic_background_mode_manager.h"
 #include "chrome/browser/background/glic/glic_status_icon.h"
@@ -131,7 +132,13 @@ class GlicStatusIconUiTest : public test::InteractiveGlicTest,
 // context menu item in this case). This could naturally happen, racily, if the
 // show button is clicked before the button view is shown, but to reliably
 // reproduce the issue, we force the view to have zero bounds here.
-IN_PROC_BROWSER_TEST_P(GlicStatusIconUiTest, ShowClose) {
+// TODO(crbug.com/460824441): Enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ShowClose DISABLED_ShowClose
+#else
+#define MAYBE_ShowClose ShowClose
+#endif
+IN_PROC_BROWSER_TEST_P(GlicStatusIconUiTest, MAYBE_ShowClose) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     // TODO(b/453696965): Broken in multi-instance.
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";
