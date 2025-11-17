@@ -50,7 +50,6 @@
 #include "chrome/browser/webauthn/challenge_url_fetcher.h"
 #include "chrome/browser/webauthn/change_pin_controller_impl.h"
 #include "chrome/browser/webauthn/gpm_enclave_transaction.h"
-#include "chrome/browser/webauthn/gpm_user_verification_policy.h"
 #include "chrome/browser/webauthn/mechanism_sorter.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/password_credential_fetcher.h"
@@ -63,6 +62,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "components/webauthn/core/browser/gpm_user_verification_policy.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 #include "content/public/browser/render_frame_host.h"
@@ -772,7 +772,7 @@ void AuthenticatorRequestDialogController::TransitionToModalWebAuthnRequest() {
 
 void AuthenticatorRequestDialogController::
     StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection() {
-  const bool enclave_will_do_uv = GpmWillDoUserVerification(
+  const bool enclave_will_do_uv = webauthn::GpmWillDoUserVerification(
       transport_availability_.user_verification_requirement,
       transport_availability_.platform_has_biometrics);
   constexpr bool kIsMac = BUILDFLAG(IS_MAC);

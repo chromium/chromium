@@ -48,6 +48,8 @@ source_set("browser") {
 
 source_set("passkey_model") {
   sources = [
+    "gpm_user_verification_policy.cc",
+    "gpm_user_verification_policy.h",
     "passkey_model.cc",
     "passkey_model.h",
     "passkey_model_change.cc",

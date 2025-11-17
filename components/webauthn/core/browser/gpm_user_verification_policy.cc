@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/webauthn/gpm_user_verification_policy.h"
+#include "components/webauthn/core/browser/gpm_user_verification_policy.h"
 
 #include "build/build_config.h"
 #include "device/fido/fido_types.h"
+
+namespace webauthn {
 
 bool GpmWillDoUserVerification(device::UserVerificationRequirement requirement,
                                bool platform_has_biometrics) {
@@ -13,9 +15,7 @@ bool GpmWillDoUserVerification(device::UserVerificationRequirement requirement,
     case device::UserVerificationRequirement::kRequired:
       return true;
     case device::UserVerificationRequirement::kPreferred:
-#if BUILDFLAG(IS_WIN)
-      return platform_has_biometrics;
-#elif BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
       return platform_has_biometrics;
 #elif BUILDFLAG(IS_LINUX)
       return false;
@@ -27,3 +27,5 @@ bool GpmWillDoUserVerification(device::UserVerificationRequirement requirement,
       return false;
   }
 }
+
+}  // namespace webauthn

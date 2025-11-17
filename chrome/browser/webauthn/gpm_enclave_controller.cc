@@ -45,7 +45,6 @@
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/gpm_enclave_transaction.h"
-#include "chrome/browser/webauthn/gpm_user_verification_policy.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
@@ -60,6 +59,7 @@
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_crypto.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
+#include "components/webauthn/core/browser/gpm_user_verification_policy.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -253,7 +253,7 @@ EnclaveUserVerificationMethod PickEnclaveUserVerificationMethod(
     platform_has_biometrics = false;
   }
 
-  if (!GpmWillDoUserVerification(uv, platform_has_biometrics)) {
+  if (!webauthn::GpmWillDoUserVerification(uv, platform_has_biometrics)) {
     return EnclaveUserVerificationMethod::kUserPresenceOnly;
   }
 

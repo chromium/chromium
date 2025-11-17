@@ -4289,8 +4289,6 @@ static_library("browser") {
       "webauthn/enclave_manager_interface.cc",
       "webauthn/gpm_enclave_controller.cc",
       "webauthn/gpm_enclave_transaction.cc",
-      "webauthn/gpm_user_verification_policy.cc",
-      "webauthn/gpm_user_verification_policy.h",
       "webauthn/immediate_request_rate_limiter_factory.cc",
       "webauthn/immediate_request_rate_limiter_factory.h",
       "webauthn/mechanism_sorter.cc",
