@@ -156,7 +156,6 @@ static_library("apps") {
     "//chromeos/ash/components/channel",
     "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/install_attributes",
-    "//chromeos/ash/components/scalable_iph",
     "//chromeos/constants",
     "//chromeos/strings:strings_grit",
     "//components/content_settings/core/common",

@@ -6,80 +6,12 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos)
 
-static_library("scalable_iph") {
-  sources = [
-    "scalable_iph_delegate_impl.cc",
-    "scalable_iph_delegate_impl.h",
-  ]
-
-  public_deps = [
-    "//ash",
-    "//ash/public/cpp",
-    "//base",
-    "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ash/printing",
-    "//chrome/browser/profiles:profile",
-    "//chromeos/ash/components/phonehub",
-    "//chromeos/ash/components/scalable_iph",
-    "//chromeos/dbus/power",
-    "//chromeos/services/network_config/public/cpp",
-    "//chromeos/services/network_config/public/mojom",
-    "//components/keyed_service/core",
-    "//mojo/public/cpp/bindings",
-  ]
-
-  deps = [
-    "//apps",
-    "//ash/constants",
-    "//ash/webui/print_management/resources",
-    "//ash/webui/print_management/resources:resources_grit",
-    "//ash/webui/settings/public/constants:mojom",
-    "//build:buildflag_header_h",
-    "//chrome/app/theme:chrome_unscaled_resources",
-    "//chrome/app/theme:chrome_unscaled_resources_grit",
-    "//chrome/browser:browser_process",
-    "//chrome/browser/ash/app_list",
-    "//chrome/browser/ash/app_list/arc",
-    "//chrome/browser/ash/arc",
-    "//chrome/browser/ash/arc:arc_util",
-    "//chrome/browser/ash/login/session",
-    "//chrome/browser/ash/phonehub",
-    "//chrome/browser/ash/policy/core",
-    "//chrome/browser/ash/printing",
-    "//chrome/browser/ash/profiles",
-    "//chrome/browser/ash/system_web_apps/apps/help_app",
-    "//chrome/browser/feature_engagement",
-    "//chrome/browser/signin",
-    "//chromeos/ash/components/browser_context_helper",
-    "//chromeos/ash/components/install_attributes",
-    "//chromeos/ash/components/scalable_iph:buildflags",
-    "//chromeos/ash/resources",
-    "//chromeos/ash/resources:resources_grit",
-    "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
-    "//chromeos/ui/vector_icons",
-    "//components/variations/service",
-    "//net",
-    "//ui/base",
-    "//ui/gfx",
-    "//ui/message_center/public/cpp",
-    "//url",
-  ]
-
-  allow_circular_includes_from = [
-    "//chrome/browser/ash/app_list",
-    "//chrome/browser/ash/login/session",
-    "//chrome/browser/ash/printing",
-  ]
-}
-
 static_library("test_support") {
   testonly = true
 
   sources = [
     "customizable_test_env_browser_test_base.cc",
     "customizable_test_env_browser_test_base.h",
-    "mock_scalable_iph_delegate.cc",
-    "mock_scalable_iph_delegate.h",
   ]
 
   public_deps = [
@@ -92,7 +24,6 @@ static_library("test_support") {
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/policy/device_policy:test_support",
-    "//chromeos/ash/components/scalable_iph",
     "//chromeos/services/network_config/public/cpp:test_support",
     "//components/feature_engagement/test:test_support",
     "//components/keyed_service/core",
@@ -102,11 +33,9 @@ static_library("test_support") {
   ]
 
   deps = [
-    ":scalable_iph",
     "//ash/constants",
     "//chrome/browser",
     "//chrome/browser/ash/login/test:test_support",
-    "//chrome/browser/ash/scalable_iph",
     "//chrome/browser/signin",
     "//chrome/browser/ui",
     "//chromeos/ash/components/browser_context_helper",
