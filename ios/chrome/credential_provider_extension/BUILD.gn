@@ -134,6 +134,7 @@ source_set("passkey_util") {
     "//base",
     "//components/sync/protocol",
     "//components/webauthn/core/browser:passkey_model",
+    "//device/fido",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/credential_provider",
   ]

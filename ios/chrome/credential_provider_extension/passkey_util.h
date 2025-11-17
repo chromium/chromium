@@ -17,14 +17,6 @@ class WebauthnCredentialSpecifics_Encrypted;
 
 @protocol Credential;
 
-// Enum which represents possible user verification preferences.
-enum class UserVerificationPreference {
-  kRequired = 0,
-  kPreferred,
-  kDiscouraged,
-  kOther,
-};
-
 // Decrypts the credential's secrets, like the private key and the hmac secret.
 // Can be used to verify if any of the security_domain_secrets from the provided
 // array is valid. If the decryption is successful, the results will be stored

@@ -13,6 +13,7 @@
 #import "base/time/time.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
+#import "device/fido/fido_types.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/ASPasskeyCredentialIdentity+credential.h"
 #import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
@@ -139,31 +140,32 @@ void SaveToIdentityStore(id<Credential> credential,
       getCredentialIdentityStoreStateWithCompletion:stateCompletion];
 }
 
-// Returns the UserVerificationPreference based on the provided
+// Returns the UserVerificationRequirement based on the provided
 // `user_verification_preference_string`. The passed string is expected to match
 // one of the user verification preference options made available by the
 // WebAuthn API.
-UserVerificationPreference UserVerificationPreferenceFromString(
+std::optional<device::UserVerificationRequirement>
+UserVerificationRequirementFromString(
     ASAuthorizationPublicKeyCredentialUserVerificationPreference
         user_verification_preference_string) {
   if ([user_verification_preference_string
           isEqualToString:
               ASAuthorizationPublicKeyCredentialUserVerificationPreferenceRequired]) {
-    return UserVerificationPreference::kRequired;
+    return device::UserVerificationRequirement::kRequired;
   } else if (
       [user_verification_preference_string
           isEqualToString:
               ASAuthorizationPublicKeyCredentialUserVerificationPreferencePreferred]) {
-    return UserVerificationPreference::kPreferred;
+    return device::UserVerificationRequirement::kPreferred;
   } else if (
       [user_verification_preference_string
           isEqualToString:
               ASAuthorizationPublicKeyCredentialUserVerificationPreferenceDiscouraged]) {
-    return UserVerificationPreference::kDiscouraged;
+    return device::UserVerificationRequirement::kDiscouraged;
   } else {
     // Either indicates that the WebAuthn API changed, or that the website
     // provided an unexpected/empty string.
-    return UserVerificationPreference::kOther;
+    return std::nullopt;
   }
 }
 
@@ -324,18 +326,22 @@ BOOL ShouldPerformUserVerificationForPreference(
     return NO;
   }
 
-  UserVerificationPreference user_verification_preference =
-      UserVerificationPreferenceFromString(user_verification_preference_string);
+  std::optional<device::UserVerificationRequirement>
+      user_verification_requirement = UserVerificationRequirementFromString(
+          user_verification_preference_string);
 
-  switch (user_verification_preference) {
-    case UserVerificationPreference::kRequired:
+  if (!user_verification_requirement.has_value()) {
+    // Fall back to the default preference as per the WebAuthn spec.
+    user_verification_requirement =
+        device::UserVerificationRequirement::kPreferred;
+  }
+
+  switch (*user_verification_requirement) {
+    case device::UserVerificationRequirement::kRequired:
       return YES;
-    case UserVerificationPreference::kPreferred:
-    case UserVerificationPreference::kOther:  // Fall back to the default
-                                              // preference as per the WebAuthn
-                                              // spec.
+    case device::UserVerificationRequirement::kPreferred:
       return is_biometric_authentication_enabled;
-    case UserVerificationPreference::kDiscouraged:
+    case device::UserVerificationRequirement::kDiscouraged:
       return NO;
   }
 }
