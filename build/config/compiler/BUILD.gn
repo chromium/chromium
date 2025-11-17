@@ -1924,6 +1924,12 @@ config("libcxx_module") {
       # TODO(crbug.com/40440396): Clean up.
       "-Wno-modules-import-nested-redundant",
 
+      # This ensures that a diagnostic mismatch between a module and depender
+      # is not a config mismatch.
+      # For example, compiling libcxx without -Wfoo and then having another
+      # target which uses it declare -Wfoo should not be an error
+      "-fmodules-disable-diagnostic-validation",
+
       # Needed to allow using builtin modules when the headers are
       # unnecessarily using extern "C".
       "-Wno-module-import-in-extern-c",
