@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#import "components/webauthn/core/browser/gpm_user_verification_policy.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "device/fido/fido_types.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -336,14 +337,8 @@ BOOL ShouldPerformUserVerificationForPreference(
         device::UserVerificationRequirement::kPreferred;
   }
 
-  switch (*user_verification_requirement) {
-    case device::UserVerificationRequirement::kRequired:
-      return YES;
-    case device::UserVerificationRequirement::kPreferred:
-      return is_biometric_authentication_enabled;
-    case device::UserVerificationRequirement::kDiscouraged:
-      return NO;
-  }
+  return webauthn::GpmWillDoUserVerification(
+      *user_verification_requirement, is_biometric_authentication_enabled);
 }
 
 void SavePasskeyCredential(id<Credential> credential) {
