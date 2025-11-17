@@ -1239,12 +1239,6 @@ bool IsLocationBarBadgeMigrationEnabled() {
   return base::FeatureList::IsEnabled(kLocationBarBadgeMigration);
 }
 
-BASE_FEATURE(kIOSFusebox, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsIOSFuseboxEnabled() {
-  return base::FeatureList::IsEnabled(kIOSFusebox);
-}
-
 BASE_FEATURE(kComposeboxIOS, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsComposeboxIOSEnabled() {
