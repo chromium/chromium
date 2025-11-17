@@ -535,7 +535,9 @@ void AutofillAiSuggestionGenerator::FetchSuggestionData(
     return;
   }
 
-  if (SuppressSuggestionsForAutocompleteUnrecognizedField(
+  if (!GetFieldsFillableByAutofillAi(*form_structure, client)
+           .contains(trigger_field.global_id()) ||
+      SuppressSuggestionsForAutocompleteUnrecognizedField(
           *trigger_autofill_field)) {
     callback({SuggestionDataSource::kAutofillAi, {}});
     return;
