@@ -38,8 +38,6 @@ class TestContextProvider
   // Creates a context backed by TestGLES2Interface with no lock.
   static scoped_refptr<TestContextProvider> Create(
       std::string additional_extensions = std::string());
-  static scoped_refptr<TestContextProvider> Create(
-      std::unique_ptr<TestGLES2Interface> gl);
 
   // Creates a context backed by TestRasterInterface with no lock.
   static scoped_refptr<TestContextProvider> CreateRaster();
