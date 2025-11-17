@@ -9,7 +9,9 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_user_status_code.h"
 #include "chrome/browser/glic/glic_user_status_fetcher.h"
@@ -43,10 +45,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "chrome/browser/enterprise/util/managed_browser_utils.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 namespace glic {
 
@@ -104,11 +102,9 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
         ::prefs::kGeminiSettings,
         static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     disclaimer_service_resetter_ =
         enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
             profile());
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   }
 
   void TearDownOnMainThread() override {
@@ -270,8 +266,16 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, EnterpriseSignInEnabled) {
   EXPECT_FALSE(IsShareImageEnabled());
 }
 
+// TODO(460830699): Re-enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_EnterpriseSignInEnabledGeminiSettings \
+  DISABLED_EnterpriseSignInEnabledGeminiSettings
+#else
+#define MAYBE_EnterpriseSignInEnabledGeminiSettings \
+  EnterpriseSignInEnabledGeminiSettings
+#endif
 IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
-                       EnterpriseSignInEnabledGeminiSettings) {
+                       MAYBE_EnterpriseSignInEnabledGeminiSettings) {
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile()),
       policy::EnterpriseManagementAuthority::CLOUD);
@@ -657,7 +661,13 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
   EXPECT_FALSE(IsGlicEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, EnterpriseSignOut) {
+// TODO(460830699): Re-enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_EnterpriseSignOut DISABLED_EnterpriseSignOut
+#else
+#define MAYBE_EnterpriseSignOut EnterpriseSignOut
+#endif
+IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, MAYBE_EnterpriseSignOut) {
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile()),
       policy::EnterpriseManagementAuthority::CLOUD);
