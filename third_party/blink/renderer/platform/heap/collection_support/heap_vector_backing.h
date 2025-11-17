@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_VECTOR_BACKING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_VECTOR_BACKING_H_
 
 #include <type_traits>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/utils.h"
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -101,20 +97,21 @@ HeapVectorBacking<T, Traits>::~HeapVectorBacking()
   using ByteBuffer = uint8_t*;
   ByteBuffer payload = reinterpret_cast<ByteBuffer>(this);
 #ifdef ANNOTATE_CONTIGUOUS_CONTAINER
-  ANNOTATE_CHANGE_SIZE(payload, length * sizeof(T), 0, length * sizeof(T));
+  UNSAFE_TODO(
+      ANNOTATE_CHANGE_SIZE(payload, length * sizeof(T), 0, length * sizeof(T)));
 #endif  // ANNOTATE_CONTIGUOUS_CONTAINER
   // HeapVectorBacking calls finalizers for unused slots and expects them to be
   // no-ops.
   if (std::is_polymorphic<T>::value) {
     for (size_t i = 0; i < length; ++i) {
-      ByteBuffer element = payload + i * sizeof(T);
+      ByteBuffer element = UNSAFE_TODO(payload + i * sizeof(T));
       if (internal::VTableInitialized(element))
         reinterpret_cast<T*>(element)->~T();
     }
   } else {
     T* buffer = reinterpret_cast<T*>(payload);
     for (size_t i = 0; i < length; ++i)
-      buffer[i].~T();
+      UNSAFE_TODO(buffer[i]).~T();
   }
 }
 
@@ -176,13 +173,13 @@ struct TraceInCollectionTrait<kNoWeakHandling,
 #ifdef ANNOTATE_CONTIGUOUS_CONTAINER
     // As commented above, HeapVectorBacking can trace unused slots (which are
     // already zeroed out).
-    ANNOTATE_CHANGE_SIZE(array, length, 0, length);
+    UNSAFE_TODO(ANNOTATE_CHANGE_SIZE(array, length, 0, length));
 #endif  // ANNOTATE_CONTIGUOUS_CONTAINER
     if constexpr (IsTraceableV<T>) {
       for (unsigned i = 0; i < length; ++i) {
         if (!std::is_polymorphic_v<T> ||
-            internal::VTableInitialized(&array[i])) {
-          visitor->Trace(array[i]);
+            internal::VTableInitialized(&UNSAFE_TODO(array[i]))) {
+          visitor->Trace(UNSAFE_TODO(array[i]));
         }
       }
     }

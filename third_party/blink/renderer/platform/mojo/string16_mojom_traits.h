@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MOJO_STRING16_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MOJO_STRING16_MOJOM_TRAITS_H_
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -55,7 +51,7 @@ struct PLATFORM_EXPORT ArrayTraits<MaybeOwnedString16> {
     return input.data();
   }
   static const Element& GetAt(const MaybeOwnedString16& input, size_t index) {
-    return input.data()[index];
+    return UNSAFE_TODO(input.data()[index]);
   }
 };
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/peerconnection/h265_parameter_sets_tracker.h"
 
 #include <memory>
@@ -15,6 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "third_party/webrtc/common_video/h265/h265_common.h"
 #include "third_party/webrtc/common_video/h265/h265_pps_parser.h"
@@ -81,8 +77,9 @@ H265ParameterSetsTracker::MaybeFixBitstream(
       return {PacketAction::kRequestKeyframe};
     }
     const uint8_t* payload_start =
-        bitstream.data() + nalu_index.payload_start_offset;
-    const uint8_t* nalu_start = bitstream.data() + nalu_index.start_offset;
+        UNSAFE_TODO(bitstream.data() + nalu_index.payload_start_offset);
+    const uint8_t* nalu_start =
+        UNSAFE_TODO(bitstream.data() + nalu_index.start_offset);
     size_t nalu_size = nalu_index.payload_size +
                        nalu_index.payload_start_offset -
                        nalu_index.start_offset;
@@ -94,7 +91,7 @@ H265ParameterSetsTracker::MaybeFixBitstream(
     switch (nalu_type) {
       case webrtc::H265::NaluType::kVps:
         // H.265 parameter set parsers expect NALU header already stripped.
-        vps = webrtc::H265VpsParser::ParseVps(payload_start + 2,
+        vps = webrtc::H265VpsParser::ParseVps(UNSAFE_TODO(payload_start + 2),
                                               nalu_index.payload_size - 2);
         // Always replace VPS with the same ID. Same for other parameter sets.
         if (vps) {
@@ -107,14 +104,14 @@ H265ParameterSetsTracker::MaybeFixBitstream(
           }
           current_vps_data->size = nalu_size;
           uint8_t* vps_payload = new uint8_t[current_vps_data->size];
-          memcpy(vps_payload, nalu_start, current_vps_data->size);
+          UNSAFE_TODO(memcpy(vps_payload, nalu_start, current_vps_data->size));
           current_vps_data->payload.reset(vps_payload);
           vps_data_.Set(vps->id, std::move(current_vps_data));
         }
         prepend_vps = false;
         break;
       case webrtc::H265::NaluType::kSps:
-        sps = webrtc::H265SpsParser::ParseSps(payload_start + 2,
+        sps = webrtc::H265SpsParser::ParseSps(UNSAFE_TODO(payload_start + 2),
                                               nalu_index.payload_size - 2);
         if (sps) {
           std::unique_ptr<SpsData> current_sps_data =
@@ -126,14 +123,14 @@ H265ParameterSetsTracker::MaybeFixBitstream(
           current_sps_data->size = nalu_size;
           current_sps_data->vps_id = sps->vps_id;
           uint8_t* sps_payload = new uint8_t[current_sps_data->size];
-          memcpy(sps_payload, nalu_start, current_sps_data->size);
+          UNSAFE_TODO(memcpy(sps_payload, nalu_start, current_sps_data->size));
           current_sps_data->payload.reset(sps_payload);
           sps_data_.Set(sps->sps_id, std::move(current_sps_data));
         }
         prepend_sps = false;
         break;
       case webrtc::H265::NaluType::kPps:
-        if (webrtc::H265PpsParser::ParsePpsIds(payload_start + 2,
+        if (webrtc::H265PpsParser::ParsePpsIds(UNSAFE_TODO(payload_start + 2),
                                                nalu_index.payload_size - 2,
                                                &slice_pps_id, &slice_sps_id)) {
           auto current_sps_data = sps_data_.find(slice_sps_id);
@@ -150,7 +147,8 @@ H265ParameterSetsTracker::MaybeFixBitstream(
             current_pps_data->size = nalu_size;
             current_pps_data->sps_id = slice_sps_id;
             uint8_t* pps_payload = new uint8_t[current_pps_data->size];
-            memcpy(pps_payload, nalu_start, current_pps_data->size);
+            UNSAFE_TODO(
+                memcpy(pps_payload, nalu_start, current_pps_data->size));
             current_pps_data->payload.reset(pps_payload);
             pps_data_.Set(slice_pps_id, std::move(current_pps_data));
           }
@@ -203,17 +201,20 @@ H265ParameterSetsTracker::MaybeFixBitstream(
           size_t offset = 0;
 
           fixed.bitstream = webrtc::EncodedImageBuffer::Create(required_size);
-          memcpy(fixed.bitstream->data(), vps_data->value->payload.get(),
-                 vps_data->value->size);
+          UNSAFE_TODO(memcpy(fixed.bitstream->data(),
+                             vps_data->value->payload.get(),
+                             vps_data->value->size));
           offset += vps_data->value->size;
-          memcpy(fixed.bitstream->data() + offset,
-                 sps_data->value->payload.get(), sps_data->value->size);
+          UNSAFE_TODO(memcpy(fixed.bitstream->data() + offset,
+                             sps_data->value->payload.get(),
+                             sps_data->value->size));
           offset += sps_data->value->size;
-          memcpy(fixed.bitstream->data() + offset,
-                 pps_data->value->payload.get(), pps_data->value->size);
+          UNSAFE_TODO(memcpy(fixed.bitstream->data() + offset,
+                             pps_data->value->payload.get(),
+                             pps_data->value->size));
           offset += pps_data->value->size;
-          memcpy(fixed.bitstream->data() + offset, bitstream.data(),
-                 bitstream.size());
+          UNSAFE_TODO(memcpy(fixed.bitstream->data() + offset, bitstream.data(),
+                             bitstream.size()));
 
           fixed.action = PacketAction::kInsert;
         }

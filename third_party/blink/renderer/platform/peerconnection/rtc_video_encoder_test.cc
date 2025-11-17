@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder.h"
 
 #include <stdint.h>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -599,7 +595,7 @@ class RTCVideoEncoderTest {
         num_spatial_layers_ = num_spatial_layers;
         for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
           const int denom = 1 << (num_spatial_layers_ - (sid + 1));
-          webrtc::SpatialLayer& sl = codec.spatialLayers[sid];
+          webrtc::SpatialLayer& sl = UNSAFE_TODO(codec.spatialLayers[sid]);
           sl.width = kInputFrameWidth / denom;
           sl.height = kInputFrameHeight / denom;
           sl.maxFramerate = 24;
@@ -615,7 +611,7 @@ class RTCVideoEncoderTest {
         num_spatial_layers_ = num_spatial_layers;
         for (size_t sid = 0; sid < num_spatial_layers_; ++sid) {
           const int denom = 1 << (num_spatial_layers_ - (sid + 1));
-          webrtc::SpatialLayer& sl = codec.spatialLayers[sid];
+          webrtc::SpatialLayer& sl = UNSAFE_TODO(codec.spatialLayers[sid]);
           sl.width = kInputFrameWidth / denom;
           sl.height = kInputFrameHeight / denom;
           sl.maxFramerate = 24;
@@ -673,7 +669,7 @@ class RTCVideoEncoderTest {
         num_spatial_layers_ = 3;
         for (size_t sid = 0; sid < num_simulcast_streams; ++sid) {
           const int denom = 1 << (num_simulcast_streams - (sid + 1));
-          webrtc::SimulcastStream& sl = codec.simulcastStream[sid];
+          webrtc::SimulcastStream& sl = UNSAFE_TODO(codec.simulcastStream[sid]);
           sl.width = kInputFrameWidth / denom;
           sl.height = kInputFrameHeight / denom;
           sl.maxFramerate = 24;
@@ -838,21 +834,22 @@ class RTCVideoEncoderTest {
       case webrtc::VideoCodecType::kVideoCodecVP8:
       case webrtc::VideoCodecType::kVideoCodecH264: {
         for (int i = 0; i < codec.numberOfSimulcastStreams; ++i) {
-          if (!codec.simulcastStream[i].active) {
+          if (!UNSAFE_TODO(codec.simulcastStream[i]).active) {
             break;
           }
-          resolutions.emplace_back(codec.simulcastStream[i].width,
-                                   codec.simulcastStream[i].height);
+          resolutions.emplace_back(
+              UNSAFE_TODO(codec.simulcastStream[i]).width,
+              UNSAFE_TODO(codec.simulcastStream[i]).height);
         }
         break;
       }
       case webrtc::VideoCodecType::kVideoCodecVP9: {
         for (int i = 0; i < codec.VP9().numberOfSpatialLayers; ++i) {
-          if (!codec.spatialLayers[i].active) {
+          if (!UNSAFE_TODO(codec.spatialLayers[i]).active) {
             break;
           }
-          resolutions.emplace_back(codec.spatialLayers[i].width,
-                                   codec.spatialLayers[i].height);
+          resolutions.emplace_back(UNSAFE_TODO(codec.spatialLayers[i]).width,
+                                   UNSAFE_TODO(codec.spatialLayers[i]).height);
         }
         break;
       }
@@ -1621,8 +1618,10 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeSpatialLayer) {
         const auto& vp9_specific = codec_specific_info->codecSpecific.VP9;
         EXPECT_EQ(vp9_specific.num_spatial_layers, num_spatial_layers);
         for (size_t i = 0; i < num_spatial_layers; ++i) {
-          EXPECT_EQ(vp9_specific.width[i], codec_->spatialLayers[i].width);
-          EXPECT_EQ(vp9_specific.height[i], codec_->spatialLayers[i].height);
+          UNSAFE_TODO(
+              EXPECT_EQ(vp9_specific.width[i], codec_->spatialLayers[i].width));
+          UNSAFE_TODO(EXPECT_EQ(vp9_specific.height[i],
+                                codec_->spatialLayers[i].height));
         }
       }
 
@@ -2840,9 +2839,10 @@ class FakeH265ParameterSetsTracker : public H265ParameterSetsTracker {
     if (prefix_.size() > 0) {
       fixed.bitstream =
           webrtc::EncodedImageBuffer::Create(bitstream.size() + prefix_.size());
-      memcpy(fixed.bitstream->data(), prefix_.data(), prefix_.size());
-      memcpy(fixed.bitstream->data() + prefix_.size(), bitstream.data(),
-             bitstream.size());
+      UNSAFE_TODO(
+          memcpy(fixed.bitstream->data(), prefix_.data(), prefix_.size()));
+      UNSAFE_TODO(memcpy(fixed.bitstream->data() + prefix_.size(),
+                         bitstream.data(), bitstream.size()));
     }
     return fixed;
   }

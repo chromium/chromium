@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #if defined(THREAD_SANITIZER)
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
@@ -116,7 +112,7 @@ void RemoveFromMiddleOfCollection() {
     auto iterator = collection->begin();
     // Move iterator to middle of collection.
     for (size_t i = 0; i < collection->size() / 2; ++i) {
-      ++iterator;
+      UNSAFE_TODO(++iterator);
     }
     return iterator;
   });
@@ -126,7 +122,7 @@ template <typename C>
 void RemoveFromEndOfCollection() {
   RemoveFromCollectionAtLocation<C>([](C* collection) {
     auto iterator = collection->end();
-    return --iterator;
+    return UNSAFE_TODO(--iterator);
   });
 }
 

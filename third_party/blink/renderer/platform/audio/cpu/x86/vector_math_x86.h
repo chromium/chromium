@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_CPU_X86_VECTOR_MATH_X86_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_CPU_X86_VECTOR_MATH_X86_H_
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/cpu.h"
 #include "third_party/blink/renderer/platform/audio/cpu/x86/vector_math_avx.h"
 #include "third_party/blink/renderer/platform/audio/cpu/x86/vector_math_sse.h"
@@ -74,14 +70,14 @@ ALWAYS_INLINE static FrameCounts SplitFramesToProcess(
     counts.scalar_for_alignment = scalar_for_alignment;
     frames_to_process -= counts.scalar_for_alignment;
     // The remaining frames are SSE aligned.
-    DCHECK(sse::IsAligned(source_p + counts.scalar_for_alignment));
+    UNSAFE_TODO(DCHECK(sse::IsAligned(source_p + counts.scalar_for_alignment)));
 
     if (use_at_least_avx) {
       counts.sse_for_alignment = sse_for_alignment;
       frames_to_process -= counts.sse_for_alignment;
       // The remaining frames are AVX aligned.
-      DCHECK(avx::IsAligned(source_p + counts.scalar_for_alignment +
-                            counts.sse_for_alignment));
+      UNSAFE_TODO(DCHECK(avx::IsAligned(source_p + counts.scalar_for_alignment +
+                                        counts.sse_for_alignment)));
 
       // Process as many as possible of the remaining frames using AVX.
       counts.avx = frames_to_process & avx::kFramesToProcessMask;
@@ -160,20 +156,22 @@ ALWAYS_INLINE static void Vadd(const float* source1p,
                  frame_counts.scalar_for_alignment);
     size_t i = frame_counts.scalar_for_alignment;
     if (frame_counts.sse_for_alignment > 0u) {
-      sse::Vadd(source1p + i, source2p + i, dest_p + i,
-                frame_counts.sse_for_alignment);
+      sse::Vadd(UNSAFE_TODO(source1p + i), UNSAFE_TODO(source2p + i),
+                UNSAFE_TODO(dest_p + i), frame_counts.sse_for_alignment);
       i += frame_counts.sse_for_alignment;
     }
     if (frame_counts.avx > 0u) {
-      avx::Vadd(source1p + i, source2p + i, dest_p + i, frame_counts.avx);
+      avx::Vadd(UNSAFE_TODO(source1p + i), UNSAFE_TODO(source2p + i),
+                UNSAFE_TODO(dest_p + i), frame_counts.avx);
       i += frame_counts.avx;
     }
     if (frame_counts.sse > 0u) {
-      sse::Vadd(source1p + i, source2p + i, dest_p + i, frame_counts.sse);
+      sse::Vadd(UNSAFE_TODO(source1p + i), UNSAFE_TODO(source2p + i),
+                UNSAFE_TODO(dest_p + i), frame_counts.sse);
       i += frame_counts.sse;
     }
-    scalar::Vadd(source1p + i, 1, source2p + i, 1, dest_p + i, 1,
-                 frame_counts.scalar);
+    scalar::Vadd(UNSAFE_TODO(source1p + i), 1, UNSAFE_TODO(source2p + i), 1,
+                 UNSAFE_TODO(dest_p + i), 1, frame_counts.scalar);
     DCHECK_EQ(frames_to_process, i + frame_counts.scalar);
   } else {
     scalar::Vadd(source1p, source_stride1, source2p, source_stride2, dest_p,
@@ -196,20 +194,22 @@ ALWAYS_INLINE static void Vsub(const float* source1p,
                  frame_counts.scalar_for_alignment);
     size_t i = frame_counts.scalar_for_alignment;
     if (frame_counts.sse_for_alignment > 0u) {
-      sse::Vsub(source1p + i, source2p + i, dest_p + i,
-                frame_counts.sse_for_alignment);
+      sse::Vsub(UNSAFE_TODO(source1p + i), UNSAFE_TODO(source2p + i),
+                UNSAFE_TODO(dest_p + i), frame_counts.sse_for_alignment);
       i += frame_counts.sse_for_alignment;
     }
     if (frame_counts.avx > 0u) {
-      avx::Vsub(source1p + i, source2p + i, dest_p + i, frame_counts.avx);
+      avx::Vsub(UNSAFE_TODO(source1p + i), UNSAFE_TODO(source2p + i),
+                UNSAFE_TODO(dest_p + i), frame_counts.avx);
       i += frame_counts.avx;
     }
     if (frame_counts.sse > 0u) {
-      sse::Vsub(source1p + i, source2p + i, dest_p + i, frame_counts.sse);
+      sse::Vsub(UNSAFE_TODO(source1p + i), UNSAFE_TODO(source2p + i),
+                UNSAFE_TODO(dest_p + i), frame_counts.sse);
       i += frame_counts.sse;
     }
-    scalar::Vsub(source1p + i, 1, source2p + i, 1, dest_p + i, 1,
-                 frame_counts.scalar);
+    scalar::Vsub(UNSAFE_TODO(source1p + i), 1, UNSAFE_TODO(source2p + i), 1,
+                 UNSAFE_TODO(dest_p + i), 1, frame_counts.scalar);
     DCHECK_EQ(frames_to_process, i + frame_counts.scalar);
   } else {
     scalar::Vsub(source1p, source_stride1, source2p, source_stride2, dest_p,
@@ -232,22 +232,23 @@ ALWAYS_INLINE static void Vclip(const float* source_p,
                   frame_counts.scalar_for_alignment);
     size_t i = frame_counts.scalar_for_alignment;
     if (frame_counts.sse_for_alignment > 0u) {
-      sse::Vclip(source_p + i, low_threshold_p, high_threshold_p, dest_p + i,
-                 frame_counts.sse_for_alignment);
+      sse::Vclip(UNSAFE_TODO(source_p + i), low_threshold_p, high_threshold_p,
+                 UNSAFE_TODO(dest_p + i), frame_counts.sse_for_alignment);
       i += frame_counts.sse_for_alignment;
     }
     if (frame_counts.avx > 0u) {
-      avx::Vclip(source_p + i, low_threshold_p, high_threshold_p, dest_p + i,
-                 frame_counts.avx);
+      avx::Vclip(UNSAFE_TODO(source_p + i), low_threshold_p, high_threshold_p,
+                 UNSAFE_TODO(dest_p + i), frame_counts.avx);
       i += frame_counts.avx;
     }
     if (frame_counts.sse > 0u) {
-      sse::Vclip(source_p + i, low_threshold_p, high_threshold_p, dest_p + i,
-                 frame_counts.sse);
+      sse::Vclip(UNSAFE_TODO(source_p + i), low_threshold_p, high_threshold_p,
+                 UNSAFE_TODO(dest_p + i), frame_counts.sse);
       i += frame_counts.sse;
     }
-    scalar::Vclip(source_p + i, 1, low_threshold_p, high_threshold_p,
-                  dest_p + i, 1, frame_counts.scalar);
+    scalar::Vclip(UNSAFE_TODO(source_p + i), 1, low_threshold_p,
+                  high_threshold_p, UNSAFE_TODO(dest_p + i), 1,
+                  frame_counts.scalar);
     DCHECK_EQ(frames_to_process, i + frame_counts.scalar);
   } else {
     scalar::Vclip(source_p, source_stride, low_threshold_p, high_threshold_p,
@@ -266,18 +267,19 @@ ALWAYS_INLINE static void Vmaxmgv(const float* source_p,
     scalar::Vmaxmgv(source_p, 1, max_p, frame_counts.scalar_for_alignment);
     size_t i = frame_counts.scalar_for_alignment;
     if (frame_counts.sse_for_alignment > 0u) {
-      sse::Vmaxmgv(source_p + i, max_p, frame_counts.sse_for_alignment);
+      sse::Vmaxmgv(UNSAFE_TODO(source_p + i), max_p,
+                   frame_counts.sse_for_alignment);
       i += frame_counts.sse_for_alignment;
     }
     if (frame_counts.avx > 0u) {
-      avx::Vmaxmgv(source_p + i, max_p, frame_counts.avx);
+      avx::Vmaxmgv(UNSAFE_TODO(source_p + i), max_p, frame_counts.avx);
       i += frame_counts.avx;
     }
     if (frame_counts.sse > 0u) {
-      sse::Vmaxmgv(source_p + i, max_p, frame_counts.sse);
+      sse::Vmaxmgv(UNSAFE_TODO(source_p + i), max_p, frame_counts.sse);
       i += frame_counts.sse;
     }
-    scalar::Vmaxmgv(source_p + i, 1, max_p, frame_counts.scalar);
+    scalar::Vmaxmgv(UNSAFE_TODO(source_p + i), 1, max_p, frame_counts.scalar);
     DCHECK_EQ(frames_to_process, i + frame_counts.scalar);
   } else {
     scalar::Vmaxmgv(source_p, source_stride, max_p, frames_to_process);
@@ -299,20 +301,22 @@ ALWAYS_INLINE static void Vmul(const float* source1p,
                  frame_counts.scalar_for_alignment);
     size_t i = frame_counts.scalar_for_alignment;
     if (frame_counts.sse_for_alignment > 0u) {
-      sse::Vmul(source1p + i, source2p + i, dest_p + i,
-                frame_counts.sse_for_alignment);
+      sse::Vmul(UNSAFE_TODO(source1p + i), UNSAFE_TODO(source2p + i),
+                UNSAFE_TODO(dest_p + i), frame_counts.sse_for_alignment);
       i += frame_counts.sse_for_alignment;
     }
     if (frame_counts.avx > 0u) {
-      avx::Vmul(source1p + i, source2p + i, dest_p + i, frame_counts.avx);
+      avx::Vmul(UNSAFE_TODO(source1p + i), UNSAFE_TODO(source2p + i),
+                UNSAFE_TODO(dest_p + i), frame_counts.avx);
       i += frame_counts.avx;
     }
     if (frame_counts.sse > 0u) {
-      sse::Vmul(source1p + i, source2p + i, dest_p + i, frame_counts.sse);
+      sse::Vmul(UNSAFE_TODO(source1p + i), UNSAFE_TODO(source2p + i),
+                UNSAFE_TODO(dest_p + i), frame_counts.sse);
       i += frame_counts.sse;
     }
-    scalar::Vmul(source1p + i, 1, source2p + i, 1, dest_p + i, 1,
-                 frame_counts.scalar);
+    scalar::Vmul(UNSAFE_TODO(source1p + i), 1, UNSAFE_TODO(source2p + i), 1,
+                 UNSAFE_TODO(dest_p + i), 1, frame_counts.scalar);
     DCHECK_EQ(frames_to_process, i + frame_counts.scalar);
   } else {
     scalar::Vmul(source1p, source_stride1, source2p, source_stride2, dest_p,
@@ -334,19 +338,22 @@ ALWAYS_INLINE static void Vsma(const float* source_p,
                  frame_counts.scalar_for_alignment);
     size_t i = frame_counts.scalar_for_alignment;
     if (frame_counts.sse_for_alignment > 0u) {
-      sse::Vsma(source_p + i, scale, dest_p + i,
+      sse::Vsma(UNSAFE_TODO(source_p + i), scale, UNSAFE_TODO(dest_p + i),
                 frame_counts.sse_for_alignment);
       i += frame_counts.sse_for_alignment;
     }
     if (frame_counts.avx > 0u) {
-      avx::Vsma(source_p + i, scale, dest_p + i, frame_counts.avx);
+      avx::Vsma(UNSAFE_TODO(source_p + i), scale, UNSAFE_TODO(dest_p + i),
+                frame_counts.avx);
       i += frame_counts.avx;
     }
     if (frame_counts.sse > 0u) {
-      sse::Vsma(source_p + i, scale, dest_p + i, frame_counts.sse);
+      sse::Vsma(UNSAFE_TODO(source_p + i), scale, UNSAFE_TODO(dest_p + i),
+                frame_counts.sse);
       i += frame_counts.sse;
     }
-    scalar::Vsma(source_p + i, 1, scale, dest_p + i, 1, frame_counts.scalar);
+    scalar::Vsma(UNSAFE_TODO(source_p + i), 1, scale, UNSAFE_TODO(dest_p + i),
+                 1, frame_counts.scalar);
     DCHECK_EQ(frames_to_process, i + frame_counts.scalar);
   } else {
     scalar::Vsma(source_p, source_stride, scale, dest_p, dest_stride,
@@ -368,19 +375,22 @@ ALWAYS_INLINE static void Vsmul(const float* source_p,
                   frame_counts.scalar_for_alignment);
     size_t i = frame_counts.scalar_for_alignment;
     if (frame_counts.sse_for_alignment > 0u) {
-      sse::Vsmul(source_p + i, scale, dest_p + i,
+      sse::Vsmul(UNSAFE_TODO(source_p + i), scale, UNSAFE_TODO(dest_p + i),
                  frame_counts.sse_for_alignment);
       i += frame_counts.sse_for_alignment;
     }
     if (frame_counts.avx > 0u) {
-      avx::Vsmul(source_p + i, scale, dest_p + i, frame_counts.avx);
+      avx::Vsmul(UNSAFE_TODO(source_p + i), scale, UNSAFE_TODO(dest_p + i),
+                 frame_counts.avx);
       i += frame_counts.avx;
     }
     if (frame_counts.sse > 0u) {
-      sse::Vsmul(source_p + i, scale, dest_p + i, frame_counts.sse);
+      sse::Vsmul(UNSAFE_TODO(source_p + i), scale, UNSAFE_TODO(dest_p + i),
+                 frame_counts.sse);
       i += frame_counts.sse;
     }
-    scalar::Vsmul(source_p + i, 1, scale, dest_p + i, 1, frame_counts.scalar);
+    scalar::Vsmul(UNSAFE_TODO(source_p + i), 1, scale, UNSAFE_TODO(dest_p + i),
+                  1, frame_counts.scalar);
     DCHECK_EQ(frames_to_process, i + frame_counts.scalar);
   } else {
     scalar::Vsmul(source_p, source_stride, scale, dest_p, dest_stride,
@@ -402,19 +412,22 @@ ALWAYS_INLINE static void Vsadd(const float* source_p,
                   frame_counts.scalar_for_alignment);
     size_t i = frame_counts.scalar_for_alignment;
     if (frame_counts.sse_for_alignment > 0u) {
-      sse::Vsadd(source_p + i, addend, dest_p + i,
+      sse::Vsadd(UNSAFE_TODO(source_p + i), addend, UNSAFE_TODO(dest_p + i),
                  frame_counts.sse_for_alignment);
       i += frame_counts.sse_for_alignment;
     }
     if (frame_counts.avx > 0u) {
-      avx::Vsadd(source_p + i, addend, dest_p + i, frame_counts.avx);
+      avx::Vsadd(UNSAFE_TODO(source_p + i), addend, UNSAFE_TODO(dest_p + i),
+                 frame_counts.avx);
       i += frame_counts.avx;
     }
     if (frame_counts.sse > 0u) {
-      sse::Vsadd(source_p + i, addend, dest_p + i, frame_counts.sse);
+      sse::Vsadd(UNSAFE_TODO(source_p + i), addend, UNSAFE_TODO(dest_p + i),
+                 frame_counts.sse);
       i += frame_counts.sse;
     }
-    scalar::Vsadd(source_p + i, 1, addend, dest_p + i, 1, frame_counts.scalar);
+    scalar::Vsadd(UNSAFE_TODO(source_p + i), 1, addend, UNSAFE_TODO(dest_p + i),
+                  1, frame_counts.scalar);
     DCHECK_EQ(frames_to_process, i + frame_counts.scalar);
   } else {
     scalar::Vsadd(source_p, source_stride, addend, dest_p, dest_stride,
@@ -433,18 +446,19 @@ ALWAYS_INLINE static void Vsvesq(const float* source_p,
     scalar::Vsvesq(source_p, 1, sum_p, frame_counts.scalar_for_alignment);
     size_t i = frame_counts.scalar_for_alignment;
     if (frame_counts.sse_for_alignment > 0u) {
-      sse::Vsvesq(source_p + i, sum_p, frame_counts.sse_for_alignment);
+      sse::Vsvesq(UNSAFE_TODO(source_p + i), sum_p,
+                  frame_counts.sse_for_alignment);
       i += frame_counts.sse_for_alignment;
     }
     if (frame_counts.avx > 0u) {
-      avx::Vsvesq(source_p + i, sum_p, frame_counts.avx);
+      avx::Vsvesq(UNSAFE_TODO(source_p + i), sum_p, frame_counts.avx);
       i += frame_counts.avx;
     }
     if (frame_counts.sse > 0u) {
-      sse::Vsvesq(source_p + i, sum_p, frame_counts.sse);
+      sse::Vsvesq(UNSAFE_TODO(source_p + i), sum_p, frame_counts.sse);
       i += frame_counts.sse;
     }
-    scalar::Vsvesq(source_p + i, 1, sum_p, frame_counts.scalar);
+    scalar::Vsvesq(UNSAFE_TODO(source_p + i), 1, sum_p, frame_counts.scalar);
     DCHECK_EQ(frames_to_process, i + frame_counts.scalar);
   } else {
     scalar::Vsvesq(source_p, source_stride, sum_p, frames_to_process);
@@ -464,22 +478,30 @@ ALWAYS_INLINE static void Zvmul(const float* real1p,
                 frame_counts.scalar_for_alignment);
   size_t i = frame_counts.scalar_for_alignment;
   if (frame_counts.sse_for_alignment > 0u) {
-    sse::Zvmul(real1p + i, imag1p + i, real2p + i, imag2p + i, real_dest_p + i,
-               imag_dest_p + i, frame_counts.sse_for_alignment);
+    sse::Zvmul(UNSAFE_TODO(real1p + i), UNSAFE_TODO(imag1p + i),
+               UNSAFE_TODO(real2p + i), UNSAFE_TODO(imag2p + i),
+               UNSAFE_TODO(real_dest_p + i), UNSAFE_TODO(imag_dest_p + i),
+               frame_counts.sse_for_alignment);
     i += frame_counts.sse_for_alignment;
   }
   if (frame_counts.avx > 0u) {
-    avx::Zvmul(real1p + i, imag1p + i, real2p + i, imag2p + i, real_dest_p + i,
-               imag_dest_p + i, frame_counts.avx);
+    avx::Zvmul(UNSAFE_TODO(real1p + i), UNSAFE_TODO(imag1p + i),
+               UNSAFE_TODO(real2p + i), UNSAFE_TODO(imag2p + i),
+               UNSAFE_TODO(real_dest_p + i), UNSAFE_TODO(imag_dest_p + i),
+               frame_counts.avx);
     i += frame_counts.avx;
   }
   if (frame_counts.sse > 0u) {
-    sse::Zvmul(real1p + i, imag1p + i, real2p + i, imag2p + i, real_dest_p + i,
-               imag_dest_p + i, frame_counts.sse);
+    sse::Zvmul(UNSAFE_TODO(real1p + i), UNSAFE_TODO(imag1p + i),
+               UNSAFE_TODO(real2p + i), UNSAFE_TODO(imag2p + i),
+               UNSAFE_TODO(real_dest_p + i), UNSAFE_TODO(imag_dest_p + i),
+               frame_counts.sse);
     i += frame_counts.sse;
   }
-  scalar::Zvmul(real1p + i, imag1p + i, real2p + i, imag2p + i, real_dest_p + i,
-                imag_dest_p + i, frame_counts.scalar);
+  scalar::Zvmul(UNSAFE_TODO(real1p + i), UNSAFE_TODO(imag1p + i),
+                UNSAFE_TODO(real2p + i), UNSAFE_TODO(imag2p + i),
+                UNSAFE_TODO(real_dest_p + i), UNSAFE_TODO(imag_dest_p + i),
+                frame_counts.scalar);
   DCHECK_EQ(frames_to_process, i + frame_counts.scalar);
 }
 

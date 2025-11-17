@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <arm_neon.h>
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/delay.h"
 
@@ -95,8 +91,8 @@ std::tuple<unsigned, int> Delay::ProcessARateVector(
   int k = 0;
 
   for (int n = 0; n < number_of_loops; ++n, k += 4) {
-    const float32x4_t v_delay_time = vmaxq_f32(vld1q_f32(delay_times + k),
-                                               v_all_zeros);
+    const float32x4_t v_delay_time =
+        vmaxq_f32(UNSAFE_TODO(vld1q_f32(delay_times + k)), v_all_zeros);
     const float32x4_t v_desired_delay_frames =
         vmulq_f32(v_delay_time, v_sample_rate);
 
@@ -123,8 +119,8 @@ std::tuple<unsigned, int> Delay::ProcessARateVector(
     vst1q_s32(read_index2, v_read_index2);
 
     for (int m = 0; m < 4; ++m) {
-      sample1[m] = buffer[read_index1[m]];
-      sample2[m] = buffer[read_index2[m]];
+      UNSAFE_TODO(sample1[m]) = UNSAFE_TODO(buffer[read_index1[m])];
+      UNSAFE_TODO(sample2[m]) = UNSAFE_TODO(buffer[read_index2[m])];
     }
 
     const float32x4_t v_sample1 = vld1q_f32(sample1);
@@ -137,7 +133,7 @@ std::tuple<unsigned, int> Delay::ProcessARateVector(
     const float32x4_t sample = vaddq_f32(
         v_sample1,
         vmulq_f32(interpolation_factor, vsubq_f32(v_sample2, v_sample1)));
-    vst1q_f32(destination + k, sample);
+    UNSAFE_TODO(vst1q_f32(destination + k, sample));
   }
 
   // Update |w_index| based on how many frames we processed here, wrapping
@@ -160,7 +156,7 @@ void Delay::HandleNaN(float* delay_times,
 
   // This is approximately 4 times faster than the scalar version.
   for (int loop = 0; loop < number_of_loops; ++loop, k += 4) {
-    float32x4_t x = vld1q_f32(delay_times + k);
+    float32x4_t x = UNSAFE_TODO(vld1q_f32(delay_times + k));
     // x == x only fails when x is NaN.  Then cmp is set to 0. Otherwise
     // 0xffffffff
     uint32x4_t cmp = vceqq_f32(x, x);
@@ -184,13 +180,14 @@ void Delay::HandleNaN(float* delay_times,
     xint = vorrq_u32(xint, cmp);
 
     // Finally, save the float result.
-    vst1q_f32(delay_times + k, reinterpret_cast<float32x4_t>(xint));
+    UNSAFE_TODO(
+        vst1q_f32(delay_times + k, reinterpret_cast<float32x4_t>(xint)));
   }
 
   // Handle any frames not done in the loop above.
   for (; k < frames_to_process; ++k) {
-    if (std::isnan(delay_times[k])) {
-      delay_times[k] = max_time;
+    if (std::isnan(UNSAFE_TODO(delay_times[k]))) {
+      UNSAFE_TODO(delay_times[k]) = max_time;
     }
   }
 }

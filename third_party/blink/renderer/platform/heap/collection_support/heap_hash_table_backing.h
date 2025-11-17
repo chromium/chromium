@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_HASH_TABLE_BACKING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_HASH_TABLE_BACKING_H_
 
 #include <type_traits>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/utils.h"
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -88,8 +84,9 @@ HeapHashTableBacking<Table>::~HeapHashTableBacking()
   const size_t length = object_size / sizeof(Value);
   Value* table = reinterpret_cast<Value*>(this);
   for (unsigned i = 0; i < length; ++i) {
-    if (!Table::IsEmptyOrDeletedBucket(table[i]))
-      table[i].~Value();
+    if (!Table::IsEmptyOrDeletedBucket(UNSAFE_TODO(table[i]))) {
+      UNSAFE_TODO(table[i]).~Value();
+    }
   }
 }
 
@@ -199,7 +196,7 @@ struct TraceHashTableBackingInCollectionTrait {
     for (size_t i = 0; i < length; ++i) {
       if constexpr (Traits::kCanTraceConcurrently) {
         internal::ConcurrentBucket<Value> concurrent_bucket(
-            array[i], Extractor::ExtractKeyToMemory);
+            UNSAFE_TODO(array[i]), Extractor::ExtractKeyToMemory);
         if (!IsHashTraitsEmptyOrDeletedValue<typename Table::KeyTraitsType>(
                 *concurrent_bucket.key())) {
           blink::TraceCollectionIfEnabled<
@@ -215,9 +212,9 @@ struct TraceHashTableBackingInCollectionTrait {
         // in form of an `std::string` that uses container annotations to detect
         // OOB. A side effect is that we also avoid copying the key.
         if (!IsHashTraitsEmptyOrDeletedValue<typename Table::KeyTraitsType>(
-                Extractor::ExtractKey(array[i]))) {
+                Extractor::ExtractKey(UNSAFE_TODO(array[i])))) {
           blink::TraceCollectionIfEnabled<weak_handling, Value, Traits>::Trace(
-              visitor, &array[i]);
+              visitor, &UNSAFE_TODO(array[i]));
         }
       }
     }

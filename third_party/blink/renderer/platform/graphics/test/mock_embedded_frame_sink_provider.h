@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_TEST_MOCK_EMBEDDED_FRAME_SINK_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_TEST_MOCK_EMBEDDED_FRAME_SINK_PROVIDER_H_
 
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -92,8 +88,10 @@ class MockEmbeddedFrameSinkProvider
         TestingPlatformSupport::ScopedOverrideMojoInterface>(BindRepeating(
         [](mojo::Receiver<EmbeddedFrameSinkProvider>* receiver,
            const char* interface_name, mojo::ScopedMessagePipeHandle pipe) {
-          if (strcmp(interface_name, EmbeddedFrameSinkProvider::Name_))
+          if (UNSAFE_TODO(
+                  strcmp(interface_name, EmbeddedFrameSinkProvider::Name_))) {
             return;
+          }
           receiver->reset();
           receiver->Bind(mojo::PendingReceiver<EmbeddedFrameSinkProvider>(
               std::move(pipe)));
@@ -113,8 +111,10 @@ class MockEmbeddedFrameSinkProvider
         [](EmbeddedFrameSinkProvider* impl,
            mojo::ReceiverSet<EmbeddedFrameSinkProvider>* receivers,
            const char* interface_name, mojo::ScopedMessagePipeHandle pipe) {
-          if (strcmp(interface_name, EmbeddedFrameSinkProvider::Name_))
+          if (UNSAFE_TODO(
+                  strcmp(interface_name, EmbeddedFrameSinkProvider::Name_))) {
             return;
+          }
           receivers->Add(impl, mojo::PendingReceiver<EmbeddedFrameSinkProvider>(
                                    std::move(pipe)));
         },
