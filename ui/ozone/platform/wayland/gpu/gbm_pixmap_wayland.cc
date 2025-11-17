@@ -108,7 +108,7 @@ bool GbmPixmapWayland::InitializeBuffer(
 bool GbmPixmapWayland::InitializeBufferFromHandle(
     gfx::AcceleratedWidget widget,
     gfx::Size size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::NativePixmapHandle handle) {
   TRACE_EVENT0("wayland", "GbmPixmapWayland::InitializeBufferFromHandle");
   auto* gbm_device = buffer_manager_->GetGbmDevice();
@@ -119,14 +119,13 @@ bool GbmPixmapWayland::InitializeBufferFromHandle(
 
   // Create a buffer object from handle.
   gbm_bo_ = gbm_device->CreateBufferFromHandle(
-      GetFourCCFormatFromBufferFormat(format), size, std::move(handle));
+      GetFourCCFormatFromSharedImageFormat(format), size, std::move(handle));
   if (!gbm_bo_) {
-    LOG(ERROR) << "Cannot create bo with format="
-               << gfx::BufferFormatToString(format);
+    LOG(ERROR) << "Cannot create bo with format=" << format.ToString();
     return false;
   }
 
-  DVLOG(3) << "Created gbm bo. format=" << gfx::BufferFormatToString(format);
+  DVLOG(3) << "Created gbm bo. format=" << format.ToString();
 
   visible_area_size_ = size;
   return true;

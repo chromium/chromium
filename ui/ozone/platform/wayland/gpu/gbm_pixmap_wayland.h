@@ -50,7 +50,7 @@ class GbmPixmapWayland : public gfx::NativePixmap {
   // scheduled as an overlay.
   bool InitializeBufferFromHandle(gfx::AcceleratedWidget widget,
                                   gfx::Size size,
-                                  gfx::BufferFormat format,
+                                  viz::SharedImageFormat format,
                                   gfx::NativePixmapHandle handle);
 
   // gfx::NativePixmap overrides:
