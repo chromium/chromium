@@ -181,6 +181,7 @@ class SaveCardBottomSheetMediatorTest : public PlatformTest {
   }
 
   ~SaveCardBottomSheetMediatorTest() override {
+    model_ = nullptr;
     [mediator_ disconnect];
     EXPECT_OCMOCK_VERIFY((id)mock_autofill_commands_handler_);
     EXPECT_OCMOCK_VERIFY(mock_consumer_);
@@ -215,7 +216,7 @@ class SaveCardBottomSheetMediatorTest : public PlatformTest {
 
   std::unique_ptr<web::WebTaskEnvironment> task_environment_;
   id<AutofillCommands> mock_autofill_commands_handler_;
-  raw_ptr<MockSaveCardBottomSheetModel, DanglingUntriaged> model_ = nil;
+  raw_ptr<MockSaveCardBottomSheetModel> model_ = nil;
   SaveCardBottomSheetMediator* mediator_ = nil;
   id<SaveCardBottomSheetConsumer> mock_consumer_ =
       OCMProtocolMock(@protocol(SaveCardBottomSheetConsumer));
