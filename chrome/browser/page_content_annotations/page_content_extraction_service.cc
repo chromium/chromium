@@ -13,6 +13,7 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "components/page_content_annotations/core/page_content_cache.h"
 #include "components/page_content_annotations/core/page_content_cache_handler.h"
 #include "components/page_content_annotations/core/web_state_wrapper.h"
 #include "content/public/browser/browser_context.h"
@@ -143,6 +144,14 @@ void PageContentExtractionService::OnNewNavigation(
   if (is_page_content_cache_enabled_) {
     page_content_cache_handler_->OnNewNavigation(
         tab_id, ToWebStateWrapper(web_contents));
+  }
+}
+
+void PageContentExtractionService::RunCleanUpTasksWithActiveTabs(
+    const std::set<int64_t>& all_tab_ids) {
+  if (is_page_content_cache_enabled_) {
+    page_content_cache_handler_->page_content_cache()
+        ->RunCleanUpTasksWithActiveTabs(all_tab_ids);
   }
 }
 

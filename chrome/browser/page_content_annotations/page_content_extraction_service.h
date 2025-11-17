@@ -87,6 +87,10 @@ class PageContentExtractionService : public KeyedService,
   void OnNewNavigation(std::optional<int64_t> tab_id,
                        content::WebContents* web_contents);
 
+  // Called when all the tab models are initialized to perform cleanup of stale
+  // entries in the page content cache.
+  void RunCleanUpTasksWithActiveTabs(const std::set<int64_t>& all_tab_ids);
+
   // Disk cache for getting page contents for tabs without webcontents.
   PageContentCache* GetPageContentCache();
 

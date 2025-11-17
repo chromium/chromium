@@ -170,7 +170,7 @@ TEST_F(PageContentCacheTest, RecordMetrics) {
                                        base::Time::Now(), base::Time::Now(),
                                        TestContent("three"));
 
-  // 2. Call RecordMetrics.
+  // 2. Call RunCleanUpTasksWithActiveTabs.
   // Eligible tabs are 1, 3, 4.
   // Cached tabs are 1, 2, 3.
   // Cached and eligible: 1, 3 (count = 2)
@@ -178,12 +178,14 @@ TEST_F(PageContentCacheTest, RecordMetrics) {
   // Not cached eligible tabs: 4 (count = 1)
   base::StatisticsRecorder::HistogramWaiter waiter(
       "OptimizationGuide.PageContentCache.EligibleTabsCachedPercentage");
-  GetOrCreateCache()->RecordMetrics({1, 3, 4});
+  GetOrCreateCache()->RunCleanUpTasksWithActiveTabs({1, 3, 4});
+  task_environment_.FastForwardBy(base::Seconds(26));
 
   // 3. Wait for metrics calculation to complete.
   waiter.Wait();
 
-  // 4. Verify histograms.
+  // 4. Verify histograms, which reflects before the stale data clean up
+  // happens.
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentCache.TotalCacheSize", 1);
   histogram_tester.ExpectUniqueSample(
@@ -196,6 +198,32 @@ TEST_F(PageContentCacheTest, RecordMetrics) {
       "OptimizationGuide.PageContentCache.AvgPageSize", 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentCache.EligibleTabsCachedPercentage", 66, 1);
+}
+
+TEST_F(PageContentCacheTest, RunCleanUpTasksWithActiveTabs) {
+  // 1. Add some data to the cache.
+  GetOrCreateCache()->CachePageContent(1, GURL("https://one.com/"),
+                                       base::Time::Now(), base::Time::Now(),
+                                       TestContent("one"));
+  GetOrCreateCache()->CachePageContent(2, GURL("https://two.com/"),
+                                       base::Time::Now(), base::Time::Now(),
+                                       TestContent("two"));
+  GetOrCreateCache()->CachePageContent(3, GURL("https://three.com/"),
+                                       base::Time::Now(), base::Time::Now(),
+                                       TestContent("three"));
+
+  ASSERT_TRUE(GetContentForTab(1));
+  ASSERT_TRUE(GetContentForTab(2));
+  ASSERT_TRUE(GetContentForTab(3));
+
+  // 2. Call RunCleanUpTasksWithActiveTabs, which should clear out tab 2.
+  GetOrCreateCache()->RunCleanUpTasksWithActiveTabs({1, 3});
+  task_environment_.FastForwardBy(base::Seconds(26));
+
+  // 3. Verify that tab 2 is gone, but 1 and 3 remain.
+  EXPECT_FALSE(GetContentForTab(2));
+  EXPECT_TRUE(GetContentForTab(1));
+  EXPECT_TRUE(GetContentForTab(3));
 }
 
 }  // namespace page_content_annotations

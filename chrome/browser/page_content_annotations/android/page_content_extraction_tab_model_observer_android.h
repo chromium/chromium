@@ -53,8 +53,6 @@ class PageContentExtractionTabModelObserverAndroid
   void OnTabStateInitialized() override;
 
  private:
-  void RunStartupMetricsComputation();
-
   const raw_ptr<Profile> profile_;
   const raw_ptr<PageContentExtractionService> service_;
 

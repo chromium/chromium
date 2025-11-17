@@ -14,10 +14,6 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 
-namespace {
-constexpr base::TimeDelta kMetricsComputationDelay = base::Minutes(1);
-}  // namespace
-
 namespace page_content_annotations {
 
 PageContentExtractionTabModelObserverAndroid::
@@ -29,21 +25,11 @@ PageContentExtractionTabModelObserverAndroid::
   for (TabModel* tab_model : TabModelList::models()) {
     OnTabModelAdded(tab_model);
   }
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&PageContentExtractionTabModelObserverAndroid::
-                         RunStartupMetricsComputation,
-                     weak_ptr_factory_.GetWeakPtr()),
-      kMetricsComputationDelay);
 }
 
 PageContentExtractionTabModelObserverAndroid::
     ~PageContentExtractionTabModelObserverAndroid() {
   TabModelList::RemoveObserver(this);
-}
-
-void PageContentExtractionTabModelObserverAndroid::OnTabStateInitialized() {
-  // TODO(haileywang): Implement this.
 }
 
 void PageContentExtractionTabModelObserverAndroid::OnTabModelAdded(
@@ -75,8 +61,7 @@ void PageContentExtractionTabModelObserverAndroid::TabClosureUndone(
   service_->OnTabCloseUndone(tab->GetAndroidId());
 }
 
-void PageContentExtractionTabModelObserverAndroid::
-    RunStartupMetricsComputation() {
+void PageContentExtractionTabModelObserverAndroid::OnTabStateInitialized() {
   std::set<int64_t> active_tab_ids;
   for (TabModel* tab_model : TabModelList::models()) {
     if (tab_model->GetProfile() != profile_) {
@@ -85,8 +70,10 @@ void PageContentExtractionTabModelObserverAndroid::
     for (int i = 0; i < tab_model->GetTabCount(); ++i) {
       TabAndroid* tab = tab_model->GetTabAt(i);
       const GURL& url = tab->GetURL();
-      // This should ideally run eligibility check for APC. But, this is
-      // approximate and quick to get an idea of the overall cache stats.
+      // This computes a superset of eligible tabs since it does not check APC
+      // eligibility for the tabs. It is ok to include some ineligible tabs
+      // since it is used to clean up non-existant (stale) tabs from cache to
+      // reduce disk space.
       if (base::Time::Now() - tab->GetLastShownTimestamp() >
               base::Days(features::kPageContentCacheMaxCacheAgeInDays.Get()) ||
           !url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
@@ -97,7 +84,7 @@ void PageContentExtractionTabModelObserverAndroid::
     }
   }
   if (service_->GetPageContentCache()) {
-    service_->GetPageContentCache()->RecordMetrics(std::move(active_tab_ids));
+    service_->RunCleanUpTasksWithActiveTabs(std::move(active_tab_ids));
   }
 }
 
