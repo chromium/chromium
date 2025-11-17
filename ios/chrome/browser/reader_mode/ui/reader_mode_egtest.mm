@@ -300,7 +300,8 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 
 // Tests that swiping between a Reader Mode web state and a normal web
 // state shows the expected view.
-- (void)testSideSwipeReaderMode {
+// TODO(crbug.com/460745280): Test is flaky.
+- (void)FLAKY_testSideSwipeReaderMode {
   const GURL readerModeURL = self.testServer->GetURL("/article.html");
   [ChromeEarlGrey loadURL:readerModeURL];
   [ChromeEarlGrey waitForPageToFinishLoading];
