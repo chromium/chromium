@@ -5,9 +5,9 @@
 // https://github.com/WICG/ua-client-hints
 
 [Exposed=(Window,Worker)] interface NavigatorUAData {
-  [HighEntropy, MeasureAs=NavigatorUAData_Brands] readonly attribute FrozenArray<NavigatorUABrandVersion> brands;
-  [HighEntropy=Direct, MeasureAs=NavigatorUAData_Mobile]  readonly attribute boolean mobile;
-  [HighEntropy=Direct, MeasureAs=NavigatorUAData_Platform] readonly attribute DOMString platform;
-  [HighEntropy, CallWith=ScriptState, MeasureAs=NavigatorUAData_GetHighEntropyValues] Promise<UADataValues> getHighEntropyValues(sequence<DOMString> hints);
-  [HighEntropy, CallWith=ScriptState, MeasureAs=NavigatorUAData_toJSON] object toJSON();
+  [MeasureAs=NavigatorUAData_Brands] readonly attribute FrozenArray<NavigatorUABrandVersion> brands;
+  [MeasureAs=NavigatorUAData_Mobile]  readonly attribute boolean mobile;
+  [MeasureAs=NavigatorUAData_Platform] readonly attribute DOMString platform;
+  [CallWith=ScriptState, MeasureAs=NavigatorUAData_GetHighEntropyValues] Promise<UADataValues> getHighEntropyValues(sequence<DOMString> hints);
+  [CallWith=ScriptState, MeasureAs=NavigatorUAData_toJSON] object toJSON();
 };
