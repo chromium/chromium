@@ -1768,7 +1768,7 @@ inline constexpr char kWebRequestSecurityInfoName[] =
     "Enable SecurityInfo in WebRequest API";
 inline constexpr char kWebRequestSecurityInfoDescription[] =
     "Enables SecurityInfo in WebRequest API for extensions, allowing "
-    "them to retrieve certificate details.";
+    "listeners to retrieve certificate details of web requests.";
 
 inline constexpr char kEnableWindowsGamingInputDataFetcherName[] =
     "Enable Windows.Gaming.Input";
@@ -3146,6 +3146,12 @@ inline constexpr char
     kContextualSearchBoxUsesContextualSearchProviderDescription[] =
         "Enables the contextual search box to use the ContextualSearchProvider "
         "instead of the ZeroSuggestProvider as the source for suggestions.";
+
+inline constexpr char kControlledFrameWebRequestSecurityInfoName[] =
+    "Enable SecurityInfo in WebRequest API for ControlledFrame";
+inline constexpr char kControlledFrameWebRequestSecurityInfoDescription[] =
+    "Enables SecurityInfo in WebRequest API for ControlledFrames, allowing "
+    "listeners to retrieve certificate details of web requests.";
 
 inline constexpr char kContextualSearchOpenLensActionUsesThumbnailName[] =
     "Contextual search open Lens action uses thumbnail";

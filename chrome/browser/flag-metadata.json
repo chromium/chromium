@@ -2025,6 +2025,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "controlled-frame-web-request-security-info",
+    "owners": ["vkrot@google.com", "bhaskarsharma@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "cpa-spec-update",
     "owners": [ "eleanorlee@google.com", "wenyufu@chromium.org" ],
     "expiry_milestone": 145

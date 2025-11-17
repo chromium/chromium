@@ -13096,6 +13096,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMulticastInDirectSocketsName,
      flag_descriptions::kMulticastInDirectSocketsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kMulticastInDirectSockets)},
+    {"controlled-frame-web-request-security-info",
+     flag_descriptions::kControlledFrameWebRequestSecurityInfoName,
+     flag_descriptions::kControlledFrameWebRequestSecurityInfoDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         blink::features::kControlledFrameWebRequestSecurityInfo)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

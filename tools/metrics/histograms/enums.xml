@@ -16538,6 +16538,8 @@ from previous Chrome versions.
   <int value="836602086" label="LensSearchSidePanelNewFeedback:disabled"/>
   <int value="837350465" label="SystemProxyForSystemServices:enabled"/>
   <int value="838481357" label="SettingsSingleActivity:enabled"/>
+  <int value="838558293"
+      label="ControlledFrameWebRequestSecurityInfo:disabled"/>
   <int value="838887742" label="manual-enhanced-bookmarks"/>
   <int value="838944327" label="RoundedWindows:disabled"/>
   <int value="839230937" label="AutofillEnableCardNicknameUpstream:disabled"/>
@@ -20033,6 +20035,8 @@ from previous Chrome versions.
   <int value="2055184887" label="LocalHistoryZeroSuggestBeyondNTP:enabled"/>
   <int value="2056572020" label="EnableUsernameCorrection:disabled"/>
   <int value="2057084644" label="AndroidTabDeclutterArchiveTabGroups:disabled"/>
+  <int value="2057560522"
+      label="ControlledFrameWebRequestSecurityInfo:enabled"/>
   <int value="2058148069" label="UseMessagesStagingUrl:enabled"/>
   <int value="2058283872" label="CCTModuleCache:disabled"/>
   <int value="2058425230" label="LauncherNudgeSessionReset:enabled"/>

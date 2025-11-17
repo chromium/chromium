@@ -1175,6 +1175,13 @@
       status: "stable",
     },
     {
+      // Experimental support for requesting SecurityInfo
+      // in WebRequest API for controlled frames.
+      name: "ControlledFrameWebRequestSecurityInfo",
+      status: "test",
+      depends_on: ["ControlledFrame"],
+    },
+    {
       name: "CookieDeprecationFacilitatedTesting",
       base_feature: "none",
     },
