@@ -952,6 +952,14 @@ void ExecutionEngine::RequestToShowAutofillSuggestions(
       task_->id(), std::move(requests), std::move(callback));
 }
 
+void ExecutionEngine::InterruptFromTool() {
+  task_->Interrupt();
+}
+
+void ExecutionEngine::UninterruptFromTool() {
+  task_->Uninterrupt(ActorTask::State::kActing);
+}
+
 void ExecutionEngine::AddWritableMainframeOrigins(
     const ExecutionEngine::AllowedOriginSet& added_writable_mainframe_origins) {
   if (!base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating)) {

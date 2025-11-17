@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -58,13 +59,37 @@ class AttemptLoginTool : public Tool {
   void OnAllIconsFetched();
   void OnCredentialSelected(
       webui::mojom::SelectCredentialDialogResponsePtr response);
-  void OnAttemptLogin(actor_login::LoginStatusResultOrError login_status);
+  void OnAttemptLogin(actor_login::Credential selected_credential,
+                      bool should_store_permission,
+                      actor_login::LoginStatusResultOrError login_status);
+
+  // Callbacks for the various activation subscriptions.
+  void OnWillDetach(tabs::TabInterface* tab,
+                    tabs::TabInterface::DetachReason reason);
+  void HandleTabActivatedChange(tabs::TabInterface* tab);
+  void HandleWindowActivatedChange(BrowserWindowInterface* browser_window);
+
+  void ObserveTabToAwaitFocus();
+  void StopObservingTab();
+  void MaybeRetryCredentialNeedingFocus();
 
   actor_login::ActorLoginService& GetActorLoginService();
 
   // Holds the credentials after they are returned from the login service. The
   // credentials are cleared after the login attempt is made.
   std::vector<actor_login::Credential> credentials_;
+
+  // If present, the attempt to use this credential was temporarily rejected due
+  // to the need to focus the affected task. Once we have focus, we'll retry.
+  std::optional<
+      std::pair<actor_login::Credential, bool /*should_store_permission*/>>
+      credential_awaiting_task_focus_;
+
+  // These activation related subscriptions are to monitor for when we can retry
+  // `credential_awaiting_task_focus_`.
+  base::CallbackListSubscription will_detach_subscription_;
+  base::CallbackListSubscription tab_did_activate_subscription_;
+  base::CallbackListSubscription window_did_become_active_subscription_;
 
   // Stores the icons for each unique `source_site_or_app` in `credentials_`.
   // Populated by `OnIconFetched()`.

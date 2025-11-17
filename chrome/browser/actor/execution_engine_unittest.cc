@@ -709,7 +709,7 @@ TEST_F(ExecutionEngineTest, CompletedWithInterruptHistogram) {
   // Time that passes while paused should not be counted.
   task_environment()->FastForwardBy(base::Milliseconds(500));
 
-  task_->Uninterrupt();
+  task_->Uninterrupt(ActorTask::State::kReflecting);
 
   // Simulate the second active period
   const base::TimeDelta active_duration2 = base::Milliseconds(50);
@@ -830,7 +830,7 @@ TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationWithWaitingHistogram) {
   task_environment()->FastForwardBy(waiting_duration);
 
   // Uninterrupt the task.
-  task_->Uninterrupt();
+  task_->Uninterrupt(ActorTask::State::kReflecting);
 
   // Simulate more visible actuation.
   const base::TimeDelta visible_duration2 = base::Milliseconds(50);
