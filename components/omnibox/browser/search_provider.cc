@@ -900,6 +900,7 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
   }
   search_term_args.lens_overlay_suggest_inputs =
       input.lens_overlay_suggest_inputs();
+  search_term_args.aim_tool_mode = input.aim_tool_mode();
 
   const SearchTermsData& search_terms_data =
       client()->GetTemplateURLService()->search_terms_data();
