@@ -1,0 +1,16 @@
+Verify that Skippable Navigation Entry issue is generated.
+
+Inspector issue: {
+    issue : {
+        code : GenericIssue
+        details : {
+            genericIssueDetails : {
+                errorType : NavigationEntryMarkedSkippable
+                request : {
+                    url : https://devtools.test:8443/inspector-protocol/resources/navigation-entry-marked-skippable.html
+                }
+            }
+        }
+    }
+}
+

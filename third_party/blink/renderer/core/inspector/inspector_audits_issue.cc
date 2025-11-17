@@ -136,6 +136,9 @@ AuditsIssue::GenericIssueErrorTypeToProtocol(
     case mojom::blink::GenericIssueErrorType::kResponseWasBlockedByORB:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           ResponseWasBlockedByORB;
+    case mojom::blink::GenericIssueErrorType::kNavigationEntryMarkedSkippable:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          NavigationEntryMarkedSkippable;
   }
 }
 

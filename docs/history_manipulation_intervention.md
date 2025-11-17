@@ -76,3 +76,7 @@ guarantees the following invariants:
       `NavigationController::ShouldEnableForwardButton()` for details.
 3. The oldest `NavigationEntryImpl` that is marked as skippable is the one
    that is pruned if max entry count is reached.
+4. When a navigation entry is deemed as skippable,
+   `NavigationControllerImpl::SetSkippableForSameDocumentEntries()` is called
+   and logs the skipped entry to the DevTools Issues Panel,
+   along with an explanatory message.

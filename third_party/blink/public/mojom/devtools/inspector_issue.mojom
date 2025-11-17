@@ -328,6 +328,7 @@ enum GenericIssueErrorType {
   kFormLabelForMatchesNonExistingIdError,
   kFormInputHasWrongButWellIntendedAutocompleteValueError,
   kResponseWasBlockedByORB,
+  kNavigationEntryMarkedSkippable,
 };
 
 struct GenericIssueDetails {

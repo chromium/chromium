@@ -1017,6 +1017,33 @@ void OnNavigationRequestFailed(
                    protocol::Network::ResourceTypeEnum::Document, status);
 }
 
+void OnNavigationEntryMarkedSkippable(const GURL& url,
+                                      RenderFrameHostImpl* rfh) {
+  DCHECK(rfh);
+
+  auto request =
+      protocol::Audits::AffectedRequest::Create().SetUrl(url.spec()).Build();
+
+  auto generic_details =
+      protocol::Audits::GenericIssueDetails::Create()
+          .SetErrorType(protocol::Audits::GenericIssueErrorTypeEnum::
+                            NavigationEntryMarkedSkippable)
+          .SetRequest(std::move(request))
+          .Build();
+
+  auto details = protocol::Audits::InspectorIssueDetails::Create()
+                     .SetGenericIssueDetails(std::move(generic_details))
+                     .Build();
+
+  auto issue =
+      protocol::Audits::InspectorIssue::Create()
+          .SetCode(protocol::Audits::InspectorIssueCodeEnum::GenericIssue)
+          .SetDetails(std::move(details))
+          .Build();
+
+  ReportBrowserInitiatedIssue(rfh, std::move(issue));
+}
+
 bool ShouldBypassCSP(const NavigationRequest& nav_request) {
   DevToolsAgentHostImpl* agent_host =
       RenderFrameDevToolsAgentHost::GetFor(nav_request.frame_tree_node());
@@ -2576,6 +2603,9 @@ protocol::Audits::GenericIssueErrorType GenericIssueErrorTypeToProtocol(
     case blink::mojom::GenericIssueErrorType::kResponseWasBlockedByORB:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           ResponseWasBlockedByORB;
+    case blink::mojom::GenericIssueErrorType::kNavigationEntryMarkedSkippable:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          NavigationEntryMarkedSkippable;
   }
 }
 

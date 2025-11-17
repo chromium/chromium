@@ -411,6 +411,7 @@ experimental domain Audits
       FormLabelForMatchesNonExistingIdError
       FormInputHasWrongButWellIntendedAutocompleteValueError
       ResponseWasBlockedByORB
+      NavigationEntryMarkedSkippable
 
   # Depending on the concrete errorType, different properties are set.
   type GenericIssueDetails extends object

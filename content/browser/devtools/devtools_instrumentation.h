@@ -208,15 +208,29 @@ void OnNavigationRequestFailed(
     const NavigationRequest& nav_request,
     const network::URLLoaderCompletionStatus& status);
 
+// Entry function for creating, storing, and surfacing a
+// NavigationEntryMarkedSkippable generic issue in the DevTools panel
+//
+// The URL expected here should come from the FrameNavigationEntry that will be
+// skipped on back/forward navigation, due to the history manipulation
+// intervention. This is the URL of the document that will be skipped.
+//
+// The RenderFrameHost expected here is the one in which the navigation that
+// caused the skippable entry occurred. For example, if a navigation in an
+// iframe's document causes a history entry to be marked as skippable,
+// `rfh` would be the RenderFrameHost for that iframe's document.
+void OnNavigationEntryMarkedSkippable(const GURL& url,
+                                      RenderFrameHostImpl* rfh);
+
 // Logs fetch keepalive requests proxied via browser to Network panel.
 //
 // As the implementation requires a RenderFrameHost to locate a
-// RenderFrameDevToolsAgentHost to attach the logs to, `frame_free_node` must
-// not be nullptr. This doesn't really fit the whole need as such requests may
-// be sent after RenderFrameHost unload.
+// RenderFrameDevToolsAgentHost to attach the logs to, `frame_free_node`
+// must not be nullptr. This doesn't really fit the whole need as such
+// requests may be sent after RenderFrameHost unload.
 //
-// Caller also needs to make sure to avoid duplicated logging that may already
-// happens in the request initiator renderer.
+// Caller also needs to make sure to avoid duplicated logging that may
+// already happens in the request initiator renderer.
 void OnFetchKeepAliveRequestWillBeSent(
     FrameTreeNode* frame_tree_node,
     const std::string& request_id,

@@ -925,11 +925,18 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // Note that this function must be called before the new navigation entry is
   // inserted in |entries_| to make sure UKM reports the URL of the document
   // adding the entry.
+  // The parameter |source_rfh_for_report| is passed down from
+  // RenderDidNavigateToNewEntry() when the history manipulation intervention
+  // is triggered at the top level render frame host, and
+  // RenderDidNavigateToNewSubframe() when the intervention is triggered within
+  // a nested frame. This parameter will be used for surfacing an issue within
+  // the DevTools Issues panel. |source_rfh_for_report| should never be null.
   void SetShouldSkipOnBackForwardUIIfNeeded(
       bool replace_entry,
       bool previous_document_had_history_intervention_activation,
       bool is_renderer_initiated,
-      ukm::SourceId previous_page_load_ukm_source_id);
+      ukm::SourceId previous_page_load_ukm_source_id,
+      RenderFrameHostImpl* source_rfh_for_report);
 
   // This function sets all same document entries with the same value
   // of skippable flag. This is to avoid back button abuse by inserting
@@ -937,7 +944,13 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // on the document should apply to all same document history entries and none
   // should be skipped. All entries belonging to the same document as the entry
   // at |reference_index| will get their skippable flag set to |skippable|.
-  void SetSkippableForSameDocumentEntries(int reference_index, bool skippable);
+  // The parameter |source_rfh_for_report| should be non-null when the
+  // |skippable| flag has been set to True, and is utilized for surfacing the
+  // issue within the DevTools issue panel.
+  void SetSkippableForSameDocumentEntries(
+      int reference_index,
+      bool skippable,
+      RenderFrameHostImpl* source_rfh_for_report);
 
   // Called when one PendingEntryRef is deleted. When all of the refs for the
   // current pending entry have been deleted, this automatically discards the

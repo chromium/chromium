@@ -62,6 +62,7 @@
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/browser_url_handler_impl.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
@@ -2358,7 +2359,8 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
 
   SetShouldSkipOnBackForwardUIIfNeeded(
       replace_entry, previous_document_had_history_intervention_activation,
-      request->IsRendererInitiated(), request->GetPreviousPageUkmSourceId());
+      request->IsRendererInitiated(), request->GetPreviousPageUkmSourceId(),
+      rfh);
 
   // If this is a history navigation and the old entry has an existing
   // back/forward cache metrics object, keep using the old one so that the
@@ -2595,7 +2597,8 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
 
   SetShouldSkipOnBackForwardUIIfNeeded(
       replace_entry, previous_document_had_history_intervention_activation,
-      request->IsRendererInitiated(), request->GetPreviousPageUkmSourceId());
+      request->IsRendererInitiated(), request->GetPreviousPageUkmSourceId(),
+      rfh);
 
   // TODO(creis): Update this to add the frame_entry if we can't find the one
   // to replace, which can happen due to a unique name change. See
@@ -2905,7 +2908,12 @@ void NavigationControllerImpl::NotifyUserActivation() {
   // same document clear their skippable bit, so that the history manipulation
   // intervention does not apply to them.
   const bool can_go_back = CanGoBack();
-  SetSkippableForSameDocumentEntries(GetLastCommittedEntryIndex(), false);
+
+  // Because the |skippable| bit has been set to false, |source_rfh_for_report|
+  // won't be used in the following SetSkippableForSameDocumentEntries() call.
+  SetSkippableForSameDocumentEntries(GetLastCommittedEntryIndex(), false,
+                                     /*source_rfh_for_report=*/nullptr);
+
   // If the value of CanGoBack changes as a result of making some entries
   // non-skippable, then we must let the delegate know to update its UI state.
   // See https://crbug.com/1477784.
@@ -4837,7 +4845,8 @@ void NavigationControllerImpl::SetShouldSkipOnBackForwardUIIfNeeded(
     bool replace_entry,
     bool previous_document_had_history_intervention_activation,
     bool is_renderer_initiated,
-    ukm::SourceId previous_page_load_ukm_source_id) {
+    ukm::SourceId previous_page_load_ukm_source_id,
+    RenderFrameHostImpl* source_rfh_for_report) {
   // Note that for a subframe,
   // previous_document_had_history_intervention_activation is true if the
   // gesture happened in any subframe (propagated to main frame) or in the main
@@ -4850,7 +4859,8 @@ void NavigationControllerImpl::SetShouldSkipOnBackForwardUIIfNeeded(
     return;
   }
 
-  SetSkippableForSameDocumentEntries(last_committed_entry_index_, true);
+  SetSkippableForSameDocumentEntries(last_committed_entry_index_, true,
+                                     source_rfh_for_report);
 
   // Log UKM with the URL we are navigating away from.
   ukm::builders::HistoryManipulationIntervention(
@@ -4860,9 +4870,20 @@ void NavigationControllerImpl::SetShouldSkipOnBackForwardUIIfNeeded(
 
 void NavigationControllerImpl::SetSkippableForSameDocumentEntries(
     int reference_index,
-    bool skippable) {
+    bool skippable,
+    RenderFrameHostImpl* source_rfh_for_report) {
   auto* reference_entry = GetEntryAtIndex(reference_index);
   reference_entry->set_should_skip_on_back_forward_ui(skippable);
+  if (skippable) {
+    DCHECK(source_rfh_for_report);
+    DCHECK(GetLastCommittedEntry());
+    FrameNavigationEntry* frame_entry = GetLastCommittedEntry()->GetFrameEntry(
+        source_rfh_for_report->frame_tree_node());
+    if (frame_entry) {
+      devtools_instrumentation::OnNavigationEntryMarkedSkippable(
+          frame_entry->url(), source_rfh_for_report);
+    }
+  }
 
   int64_t document_sequence_number =
       reference_entry->root_node()->frame_entry->document_sequence_number();
