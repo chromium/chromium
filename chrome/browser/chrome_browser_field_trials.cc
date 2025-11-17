@@ -196,6 +196,10 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
       features::kAlwaysUseAudioManagerOutputFramesPerBuffer);
   // TODO(crbug.com/440210010): Remove when the feature experiment is done.
   feature_overrides.EnableFeature(features::kAudioStereoInputStreamParameters);
+  // Enables automatic picture-in-picture.
+  // TODO(crbug.com/421608904): Remove when rollout is complete to all form
+  // factors.
+  feature_overrides.EnableFeature(media::kAutoPictureInPictureAndroid);
   // Enables picture-in-picture in the right-click context menu.
   // TODO(crbug.com/403851785): Remove when the feature is verified to be stable
   // on desktop Android.
