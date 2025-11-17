@@ -177,7 +177,7 @@ class CALayerOverlayTest : public testing::Test {
     lock_set_for_external_use_.emplace(resource_provider_.get(),
                                        output_surface_.get());
 
-    child_provider_ = TestContextProvider::Create();
+    child_provider_ = TestContextProvider::CreateGLES();
     child_provider_->BindToCurrentSequence();
     child_resource_provider_ = std::make_unique<ClientResourceProvider>();
 

@@ -760,7 +760,7 @@ class TestGmbVideoFramePoolContext
     : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
  public:
   TestGmbVideoFramePoolContext()
-      : context_provider_(TestContextProvider::Create()) {}
+      : context_provider_(TestContextProvider::CreateGLES()) {}
   ~TestGmbVideoFramePoolContext() override = default;
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(

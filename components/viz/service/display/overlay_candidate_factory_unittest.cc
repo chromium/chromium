@@ -70,7 +70,7 @@ class OverlayCandidateFactoryTestBase : public testing::Test {
 
   ResourceId CreateResource(bool is_overlay_candidate, GrSurfaceOrigin origin) {
     scoped_refptr<RasterContextProvider> child_context_provider =
-        TestContextProvider::Create();
+        TestContextProvider::CreateGLES();
 
     child_context_provider->BindToCurrentSequence();
 

@@ -88,7 +88,7 @@ class OverlayProposedCandidateTest
 
   ResourceId CreateResource(bool is_overlay_candidate) {
     scoped_refptr<RasterContextProvider> child_context_provider =
-        TestContextProvider::Create();
+        TestContextProvider::CreateGLES();
 
     child_context_provider->BindToCurrentSequence();
 

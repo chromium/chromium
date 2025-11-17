@@ -53,7 +53,7 @@ TestResourceFactory::TestResourceFactory() {
   lock_set_for_external_use_.emplace(display_resource_provider_.get(),
                                      output_surface_.get());
 
-  client_context_provider_ = TestContextProvider::Create();
+  client_context_provider_ = TestContextProvider::CreateGLES();
   client_context_provider_->BindToCurrentSequence();
   client_resource_provider_ = std::make_unique<ClientResourceProvider>();
 }

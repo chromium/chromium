@@ -59,7 +59,7 @@ class FakeLayerTreeViewDelegate : public StubLayerTreeViewDelegate {
       return;
     }
 
-    auto context_provider = viz::TestContextProvider::Create();
+    auto context_provider = viz::TestContextProvider::CreateGLES();
     if (num_failures_since_last_success_ < num_failures_before_success_) {
       context_provider->UnboundTestContextGL()->LoseContextCHROMIUM(
           GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
@@ -452,7 +452,7 @@ class LayerTreeViewDelegateChangeTest : public testing::Test {
       did_request_frame_sink_ = true;
 
       if (service_frame_sink_request_) {
-        auto context_provider = viz::TestContextProvider::Create();
+        auto context_provider = viz::TestContextProvider::CreateGLES();
         std::move(callback).Run(
             cc::FakeLayerTreeFrameSink::Create3d(std::move(context_provider)),
             nullptr);

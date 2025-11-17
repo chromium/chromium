@@ -76,7 +76,7 @@ class MockExternalUseClient : public ExternalUseClient {
 class DisplayResourceProviderSkiaTest : public testing::Test {
  public:
   DisplayResourceProviderSkiaTest() {
-    child_context_provider_ = TestContextProvider::Create();
+    child_context_provider_ = TestContextProvider::CreateGLES();
     child_context_provider_->BindToCurrentSequence();
     child_resource_provider_ = std::make_unique<ClientResourceProvider>();
   }

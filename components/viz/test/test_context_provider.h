@@ -36,7 +36,7 @@ class TestContextProvider
       public RasterContextProvider {
  public:
   // Creates a context backed by TestGLES2Interface with no lock.
-  static scoped_refptr<TestContextProvider> Create(
+  static scoped_refptr<TestContextProvider> CreateGLES(
       std::string additional_extensions = std::string());
 
   // Creates a context backed by TestRasterInterface with no lock.

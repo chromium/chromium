@@ -363,7 +363,7 @@ class WebMediaPlayerImplTest
  public:
   WebMediaPlayerImplTest()
       : media_thread_("MediaThreadForTest"),
-        context_provider_(viz::TestContextProvider::Create()),
+        context_provider_(viz::TestContextProvider::CreateGLES()),
         audio_parameters_(media::TestAudioParameters::Normal()),
         memory_dump_manager_(
             base::trace_event::MemoryDumpManager::CreateInstanceForTesting()) {
@@ -471,7 +471,7 @@ class WebMediaPlayerImplTest
         provider.Unbind(),
         blink::BindOnce(&WebMediaPlayerImplTest::CreateMockSurfaceLayerBridge,
                         base::Unretained(this)),
-        viz::TestContextProvider::Create(),
+        viz::TestContextProvider::CreateGLES(),
         /*use_surface_layer=*/true, is_background_suspend_enabled_,
         is_background_video_playback_enabled_, true,
         std::move(demuxer_override), nullptr);

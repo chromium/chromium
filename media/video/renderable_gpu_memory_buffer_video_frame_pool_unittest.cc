@@ -45,7 +45,7 @@ gfx::ColorSpace GetColorSpaceForPixelFormat(media::VideoPixelFormat format) {
 class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
  public:
   FakeContext()
-      : context_provider_(viz::TestContextProvider::Create()),
+      : context_provider_(viz::TestContextProvider::CreateGLES()),
         weak_factory_(this) {}
   ~FakeContext() override = default;
 

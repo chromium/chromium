@@ -181,7 +181,8 @@ class DisplayTest : public testing::Test {
   }
 
   void SetUpGpuDisplay(const RendererSettings& settings) {
-    scoped_refptr<TestContextProvider> provider = TestContextProvider::Create();
+    scoped_refptr<TestContextProvider> provider =
+        TestContextProvider::CreateGLES();
     provider->BindToCurrentSequence();
     std::unique_ptr<FakeSkiaOutputSurface> skia_output_surface =
         FakeSkiaOutputSurface::Create3d(std::move(provider));
@@ -2187,7 +2188,8 @@ class DelegatedInkDisplayTest
       public testing::WithParamInterface<DelegatedInkType> {
  public:
   void SetUpGpuDisplaySkiaWithPlatformInk(const RendererSettings& settings) {
-    scoped_refptr<TestContextProvider> provider = TestContextProvider::Create();
+    scoped_refptr<TestContextProvider> provider =
+        TestContextProvider::CreateGLES();
     provider->BindToCurrentSequence();
     std::unique_ptr<FakeSkiaOutputSurface> skia_output_surface =
         FakeSkiaOutputSurface::Create3d(std::move(provider));

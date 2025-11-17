@@ -126,7 +126,7 @@ class TestGLES2InterfaceForContextProvider : public TestGLES2Interface {
 }  // namespace
 
 // static
-scoped_refptr<TestContextProvider> TestContextProvider::Create(
+scoped_refptr<TestContextProvider> TestContextProvider::CreateGLES(
     std::string additional_extensions) {
   constexpr bool support_locking = false;
   return new TestContextProvider(

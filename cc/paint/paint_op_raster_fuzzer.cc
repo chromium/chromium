@@ -163,7 +163,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
                               &locked_handles);
   }
 
-  auto context_provider_no_support = viz::TestContextProvider::Create();
+  auto context_provider_no_support = viz::TestContextProvider::CreateGLES();
   context_provider_no_support->BindToCurrentSequence();
   auto gr_context_no_support =
       GrDirectContexts::MakeGL(skia_bindings::CreateGLES2InterfaceBindings(
@@ -174,7 +174,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   Raster(gr_context_no_support.get(), font_manager->strike_client(),
          &paint_cache, raster_data, raster_size);
 
-  auto context_provider_with_support = viz::TestContextProvider::Create(
+  auto context_provider_with_support = viz::TestContextProvider::CreateGLES(
       std::string("GL_OES_standard_derivatives"));
   context_provider_with_support->BindToCurrentSequence();
   auto gr_context_with_support =
