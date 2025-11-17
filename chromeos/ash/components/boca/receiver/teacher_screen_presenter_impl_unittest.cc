@@ -181,6 +181,19 @@ TEST_F(TeacherScreenPresenterImplTest, OverlapStartShouldFail) {
   EXPECT_FALSE(start_future1.IsReady());
 }
 
+TEST_F(TeacherScreenPresenterImplTest, DestructorDuringStart) {
+  base::test::TestFuture<bool> start_future;
+  auto presenter = std::make_unique<TeacherScreenPresenterImpl>(
+      kTeacherDeviceId, std::move(crd_session_wrapper_),
+      url_loader_factory_.GetSafeWeakWrapper(),
+      identity_test_env_.identity_manager());
+
+  presenter->Start(kReceiverId, teacher_identity_, /*is_session_active=*/false,
+                   start_future.GetCallback(), base::DoNothing());
+  presenter.reset();
+  EXPECT_FALSE(start_future.Get());
+}
+
 class StartParamsTeacherScreenPresenterImplTest
     : public TeacherScreenPresenterImplTest,
       public testing::WithParamInterface<TeacherScreenPresenterStartTestCase> {

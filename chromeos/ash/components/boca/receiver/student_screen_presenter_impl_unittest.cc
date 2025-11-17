@@ -610,5 +610,35 @@ TEST_F(StudentScreenPresenterImplTest, StopBeforeStartReceiverResponse) {
   EXPECT_FALSE(stop_future.Get());
 }
 
+TEST_F(StudentScreenPresenterImplTest, DestructorDuringStart) {
+  base::test::TestFuture<bool> start_future;
+  auto presenter = std::make_unique<StudentScreenPresenterImpl>(
+      kSessionId, teacher_identity_, kTeacherDeviceId,
+      url_loader_factory_.GetSafeWeakWrapper(),
+      identity_test_env_.identity_manager());
+  presenter->Start(kReceiverId, student_identity_, kStudentDeviceId,
+                   start_future.GetCallback(), base::DoNothing());
+  presenter.reset();
+  EXPECT_FALSE(start_future.Get());
+}
+
+TEST_F(StudentScreenPresenterImplTest, DestructorDuringStop) {
+  base::test::TestFuture<bool> start_future;
+  base::test::TestFuture<bool> stop_future;
+  auto presenter = std::make_unique<StudentScreenPresenterImpl>(
+      kSessionId, teacher_identity_, kTeacherDeviceId,
+      url_loader_factory_.GetSafeWeakWrapper(),
+      identity_test_env_.identity_manager());
+  url_loader_factory_.AddResponse(GetStartReceiverUrl(kReceiverId).spec(),
+                                  kConnectionIdPair);
+  presenter->Start(kReceiverId, student_identity_, kStudentDeviceId,
+                   start_future.GetCallback(), base::DoNothing());
+  EXPECT_TRUE(start_future.Get());
+
+  presenter->Stop(stop_future.GetCallback());
+  presenter.reset();
+  EXPECT_FALSE(stop_future.Get());
+}
+
 }  // namespace
 }  // namespace ash::boca

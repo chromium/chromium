@@ -62,8 +62,7 @@ class StudentScreenPresenterImpl : public StudentScreenPresenter {
   bool IsPresenting(std::optional<std::string_view> student_id) override;
 
  private:
-  void OnStartResponse(base::OnceCallback<void(bool)> success_cb,
-                       std::optional<std::string> connection_id);
+  void OnStartResponse(std::optional<std::string> connection_id);
 
   void OnCheckConnectionResponse(std::optional<::boca::KioskReceiver> receiver);
 
@@ -86,6 +85,7 @@ class StudentScreenPresenterImpl : public StudentScreenPresenter {
   std::unique_ptr<google_apis::RequestSender> start_connection_request_sender_;
   std::unique_ptr<google_apis::RequestSender> get_receiver_request_sender_;
   std::unique_ptr<google_apis::RequestSender> update_connection_request_sender_;
+  base::OnceCallback<void(bool)> start_success_cb_;
   bool stop_request_in_progress_ = false;
   base::queue<base::OnceCallback<void(bool)>> stop_success_callbacks_;
   base::OneShotTimer stopped_check_timer_;

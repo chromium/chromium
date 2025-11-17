@@ -69,7 +69,12 @@ StudentScreenPresenterImpl::StudentScreenPresenterImpl(
       url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager) {}
 
-StudentScreenPresenterImpl::~StudentScreenPresenterImpl() = default;
+StudentScreenPresenterImpl::~StudentScreenPresenterImpl() {
+  if (start_success_cb_) {
+    std::move(start_success_cb_).Run(false);
+  }
+  NotifyStopSuccess(/*success=*/false);
+}
 
 void StudentScreenPresenterImpl::Start(
     std::string_view receiver_id,
@@ -85,6 +90,7 @@ void StudentScreenPresenterImpl::Start(
     std::move(success_cb).Run(false);
     return;
   }
+  start_success_cb_ = std::move(success_cb);
   receiver_id_ = receiver_id;
   student_id_ = student_identity.gaia_id();
   disconnected_cb_ = std::move(disconnected_cb);
@@ -97,8 +103,7 @@ void StudentScreenPresenterImpl::Start(
           teacher_device_id_, std::string(student_device_id),
           /*connection_code=*/std::nullopt, session_id_,
           base::BindOnce(&StudentScreenPresenterImpl::OnStartResponse,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         std::move(success_cb)));
+                         weak_ptr_factory_.GetWeakPtr()));
   auto start_request =
       std::make_unique<BocaRequest>(start_connection_request_sender_.get(),
                                     std::move(start_request_delegate));
@@ -170,20 +175,19 @@ bool StudentScreenPresenterImpl::IsPresenting(
 }
 
 void StudentScreenPresenterImpl::OnStartResponse(
-    base::OnceCallback<void(bool)> success_cb,
     std::optional<std::string> connection_id) {
   if (!connection_id.has_value()) {
     RecordPresentStudentScreenResult(/* failure */ false);
     RecordPresentStudentScreenFailureReason(
         BocaPresentStudentScreenFailureReason::
             kStartKioskConnectionRequestFailed);
-    std::move(success_cb).Run(false);
+    std::move(start_success_cb_).Run(false);
     Reset();
     return;
   }
   connection_id_ = connection_id;
   RecordPresentStudentScreenResult(/* success */ true);
-  std::move(success_cb).Run(true);
+  std::move(start_success_cb_).Run(true);
 }
 
 void StudentScreenPresenterImpl::OnCheckConnectionResponse(

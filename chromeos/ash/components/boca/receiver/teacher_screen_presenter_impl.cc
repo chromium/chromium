@@ -67,7 +67,11 @@ TeacherScreenPresenterImpl::TeacherScreenPresenterImpl(
       url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager) {}
 
-TeacherScreenPresenterImpl::~TeacherScreenPresenterImpl() = default;
+TeacherScreenPresenterImpl::~TeacherScreenPresenterImpl() {
+  if (start_success_cb_) {
+    std::move(start_success_cb_).Run(false);
+  }
+}
 
 void TeacherScreenPresenterImpl::Start(
     std::string_view receiver_id,
@@ -203,7 +207,6 @@ void TeacherScreenPresenterImpl::OnCrdSessionFinished() {
 
 void TeacherScreenPresenterImpl::Reset() {
   receiver_id_.reset();
-  start_success_cb_.Reset();
   disconnected_cb_.Reset();
 }
 
