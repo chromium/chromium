@@ -1661,7 +1661,6 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
   }
   ScopedRasterTimer timer(IsAccelerated() ? RasterInterface() : nullptr, *this,
                           always_enable_raster_timers_for_testing_);
-  DCHECK(reason != FlushReason::kNone);
   bool want_to_print = (IsPrinting() && reason != FlushReason::kClear) ||
                        reason == FlushReason::kPrinting ||
                        reason == FlushReason::kCanvasPushFrameWhilePrinting;

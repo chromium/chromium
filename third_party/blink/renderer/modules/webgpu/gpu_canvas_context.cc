@@ -1022,7 +1022,7 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
     return nullptr;
   }
 
-  return resource_provider->Snapshot(FlushReason::kNone);
+  return resource_provider->Snapshot(FlushReason::kOther);
 }
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>

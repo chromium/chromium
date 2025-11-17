@@ -1811,7 +1811,7 @@ gfx::SizeF HTMLCanvasElement::ElementSize(
     const RespectImageOrientationEnum) const {
   if (IsImageBitmapRenderingContext()) {
     scoped_refptr<Image> image =
-        RenderingContext()->GetImage(FlushReason::kNone);
+        RenderingContext()->GetImage(FlushReason::kOther);
     if (image) {
       return gfx::SizeF(image->width(), image->height());
     }
