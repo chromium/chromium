@@ -100,6 +100,7 @@ class AutocompleteSearchResultLabelSensitive {
 // Indexes:
 // - name, label_normalized, value_lower
 // - label_normalized, value_lower
+// - value, date_last_used
 // - name, label, value
 // -----------------------------------------------------------------------------
 class AutocompleteTableLabelSensitive : public WebDatabaseTable {

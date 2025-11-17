@@ -494,6 +494,11 @@ bool AutocompleteTableLabelSensitive::InitMainTable() {
            && CreateIndex(db(), kAutocompleteTableLabelSensitive,
                           {kLabelNormalized, kValueLower})
 
+           // Used by query in RemoveFormElement,
+           // GetCountOfValuesContainedBetween, AddFormFieldValueTime
+           && CreateIndex(db(), kAutocompleteTableLabelSensitive,
+                          {kValue, kDateLastUsed})
+
            // Used by query in GetAutocompleteEntryLabelSensitive
            && CreateIndex(db(), kAutocompleteTableLabelSensitive,
                           {kName, kLabel, kValue});
