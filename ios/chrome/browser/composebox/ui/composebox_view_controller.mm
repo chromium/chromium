@@ -89,6 +89,9 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   [super viewDidLayoutSubviews];
   [_presenter
       setKeyboardAttachedBottomOmniboxHeight:_inputViewController.inputHeight];
+  [_presenter setPreferredOmniboxPosition:_theme.isTopInputPlate
+                                              ? ToolbarType::kPrimary
+                                              : ToolbarType::kSecondary];
 }
 
 - (void)addInputViewController:

@@ -396,8 +396,11 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 }
 
 - (BOOL)useBottomOmniboxInPopup {
-  if (_presentationContext == OmniboxPresentationContext::kLensOverlay ||
-      _presentationContext == OmniboxPresentationContext::kComposebox) {
+  if (_presentationContext == OmniboxPresentationContext::kComposebox) {
+    return _preferredOmniboxPosition == ToolbarType::kSecondary;
+  }
+
+  if (_presentationContext == OmniboxPresentationContext::kLensOverlay) {
     return NO;
   }
 

@@ -54,12 +54,12 @@ const CGFloat kTrailingButtonIconPointSizeMedium = 15.0f;
 
 #pragma mark - private
 
-- (void)setUseBottomOmniboxInPopup:(BOOL)useBottomOmniboxInPopup {
-  if (useBottomOmniboxInPopup == _useBottomOmniboxInPopup) {
+- (void)setRefineQueryArrowDirectionDown:(BOOL)refineQueryArrowDirectionDown {
+  if (refineQueryArrowDirectionDown == _refineQueryArrowDirectionDown) {
     return;
   }
 
-  _useBottomOmniboxInPopup = useBottomOmniboxInPopup;
+  _refineQueryArrowDirectionDown = refineQueryArrowDirectionDown;
 
   [self updateButtonImageForCurrentState];
 }
@@ -82,11 +82,9 @@ const CGFloat kTrailingButtonIconPointSizeMedium = 15.0f;
         return;
       case TrailingIconType::kRefineQuery: {
         // The arrow should point in the direction of the omnibox.
-        BOOL pointDown =
-            _presentationContext == OmniboxPresentationContext::kComposebox ||
-            self.useBottomOmniboxInPopup;
-        NSString* iconName =
-            pointDown ? kRefineQueryDownSymbol : kRefineQuerySymbol;
+        NSString* iconName = self.refineQueryArrowDirectionDown
+                                 ? kRefineQueryDownSymbol
+                                 : kRefineQuerySymbol;
         icon = DefaultSymbolWithPointSize(
             iconName, kTrailingButtonIconPointSizeMedium * multiplier);
         self.accessibilityIdentifier =

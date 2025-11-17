@@ -46,8 +46,8 @@ extern const CGFloat kOmniboxPopupCellMinimumHeight;
 @property(nonatomic, weak) id<ImageRetriever> imageRetriever;
 /// The context in which the omnibox is presented.
 @property(nonatomic, assign) OmniboxPresentationContext presentationContext;
-/// Whether to show the omnibox in the bottom when the popup is open.
-@property(nonatomic, assign) BOOL useBottomOmniboxInPopup;
+/// Whether to point the arrow for refining a query downwards.
+@property(nonatomic, assign) BOOL refineQueryArrowDirectionDown;
 
 /// Returns the default configuration for a list cell.
 + (instancetype)cellConfiguration;

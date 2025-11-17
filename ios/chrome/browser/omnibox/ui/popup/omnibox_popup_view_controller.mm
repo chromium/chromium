@@ -902,7 +902,8 @@ const CGFloat kCloseButtonPadding = 16.0f;
 
       DCHECK(cell);
       DCHECK(configuration);
-      configuration.useBottomOmniboxInPopup = self.useBottomOmniboxInPopup;
+      configuration.refineQueryArrowDirectionDown =
+          self.useBottomOmniboxInPopup;
       configuration.suggestion = suggestion;
       configuration.delegate = self;
       configuration.indexPath = indexPath;
@@ -1053,7 +1054,11 @@ const CGFloat kCloseButtonPadding = 16.0f;
 #pragma mark - Private Methods
 
 - (BOOL)showCloseButton {
-  return _useBottomOmniboxInPopup && IsPortrait(self.view.window);
+  BOOL allowedInContext =
+      _presentationContext != OmniboxPresentationContext::kComposebox &&
+      _presentationContext != OmniboxPresentationContext::kLensOverlay;
+  return _useBottomOmniboxInPopup && IsPortrait(self.view.window) &&
+         allowedInContext;
 }
 
 - (void)updateCloseButtonVisibility {

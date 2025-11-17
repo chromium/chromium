@@ -137,8 +137,8 @@ const CGFloat kTopGradientColorOpacity = 0.85;
         [[OmniboxPopupRowTrailingButton alloc] initWithFrame:CGRectZero];
     _trailingButton.translatesAutoresizingMaskIntoConstraints = NO;
     _trailingButton.isAccessibilityElement = NO;
-    _trailingButton.useBottomOmniboxInPopup =
-        configuration.useBottomOmniboxInPopup;
+    _trailingButton.refineQueryArrowDirectionDown =
+        configuration.refineQueryArrowDirectionDown;
     [_trailingButton
         setContentCompressionResistancePriority:UILayoutPriorityRequired
                                         forAxis:
@@ -355,8 +355,8 @@ const CGFloat kTopGradientColorOpacity = 0.85;
   _trailingButton.presentationContext = configuration.presentationContext;
   _trailingButton.trailingIconType = configuration.trailingIconType;
   _trailingButton.isHighlighted = configuration.isBackgroundHighlighted;
-  _trailingButton.useBottomOmniboxInPopup =
-      configuration.useBottomOmniboxInPopup;
+  _trailingButton.refineQueryArrowDirectionDown =
+      configuration.refineQueryArrowDirectionDown;
   _textTrailingToButtonConstraint.active = !_trailingButton.hidden;
 
   // Separator.
