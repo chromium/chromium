@@ -15,18 +15,18 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 
 class Profile;
+class ProfileBrowserCollection;
 
 namespace enterprise_signin {
 
-class EnterpriseSigninService : public BrowserListObserver,
+class EnterpriseSigninService : public BrowserCollectionObserver,
                                 public KeyedService,
                                 public syncer::SyncServiceObserver {
  public:
@@ -34,8 +34,8 @@ class EnterpriseSigninService : public BrowserListObserver,
 
   ~EnterpriseSigninService() override;
 
-  // BrowserListObserver:
-  void OnBrowserSetLastActive(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -47,8 +47,8 @@ class EnterpriseSigninService : public BrowserListObserver,
   void OpenOrActivateGaiaReauthTab();
 
   raw_ptr<Profile> profile_;
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
 

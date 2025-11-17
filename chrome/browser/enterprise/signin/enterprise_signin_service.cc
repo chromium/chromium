@@ -14,8 +14,8 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/prefs/pref_service.h"
@@ -82,15 +82,13 @@ void EnterpriseSigninService::OnStateChanged(syncer::SyncService* sync) {
   if (last_transport_state_ == TransportState::PAUSED) {
     OpenOrActivateGaiaReauthTab();
   } else {
-    browser_list_observation_.Reset();
+    browser_collection_observation_.Reset();
   }
 }
 
-void EnterpriseSigninService::OnBrowserSetLastActive(Browser* browser) {
+void EnterpriseSigninService::OnBrowserActivated(
+    BrowserWindowInterface* browser) {
   DCHECK(browser);
-  if (browser->profile() != profile_.get()) {
-    return;
-  }
   VLOG(2) << "Browser just became active.";
   DCHECK(last_transport_state_ == TransportState::PAUSED);
   OpenOrActivateGaiaReauthTab();
@@ -123,14 +121,15 @@ void EnterpriseSigninService::OpenOrActivateGaiaReauthTab() {
   BrowserWindowInterface* browser = GetRecentBrowserForProfile(profile_.get());
   if (!browser) {
     VLOG(2) << "No browsers open.";
-    if (!browser_list_observation_.IsObserving()) {
+    if (!browser_collection_observation_.IsObserving()) {
       VLOG(2) << "Waiting for a browser to become active first...";
-      browser_list_observation_.Observe(BrowserList::GetInstance());
+      browser_collection_observation_.Observe(
+          ProfileBrowserCollection::GetForProfile(profile_.get()));
     }
     return;
   }
 
-  browser_list_observation_.Reset();
+  browser_collection_observation_.Reset();
 
   content::WebContents* tab =
       browser->GetFeatures().tab_strip_model()->GetActiveWebContents();
