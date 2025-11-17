@@ -731,6 +731,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Instance.Metrics.Error{Cause}"
+    enum="GlicInstanceMetricsError" expires_after="2026-11-12">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Recorded when an unusual sequence of events is seen by glic instance metrics
+    recorder. Usually replaces a real histogram event.
+
+    Limited to the following causes: {Cause}
+  </summary>
+  <token key="Cause">
+    <variant name="" summary="Cause not applicable"/>
+    <variant name=".ByUser" summary="User stopped the response"/>
+    <variant name=".Other"
+        summary="Other cause (infra) for stopping the response"/>
+    <variant name=".UnknownCause" summary="Unspecified stop reason"/>
+  </token>
+</histogram>
+
 <histogram name="Glic.Instance.PanelPresentationTime.{EmbedderType}" units="ms"
     expires_after="2026-11-01">
   <owner>birnie@google.com</owner>

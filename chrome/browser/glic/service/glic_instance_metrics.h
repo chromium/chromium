@@ -34,6 +34,24 @@ namespace glic {
 class GlicSharingManager;
 struct ShowOptions;
 
+// This enumerates a set of possible lifecycle errors which are logged when the
+// sequence of received events was not expected.
+// LINT.IfChange(GlicInstanceMetricsError)
+enum class GlicInstanceMetricsError {
+  kResponseStartWithoutInput = 0,
+  kResponseStopWithoutInput = 1,
+  kResponseStartWhileHidingOrHidden = 2,
+  kInputSubmittedWhileResponseInProgress = 3,
+  kSidePanelOpenedWhileAlreadyOpen = 4,
+  kFloatyOpenedWhileAlreadyOpen = 5,
+  kInputSubmittedWhileHidden = 6,
+  kTabUnbindWithoutOpen = 7,
+  kSidePanelClosedWithoutOpen = 8,
+  kFloatyClosedWithoutOpen = 9,
+  kMaxValue = kFloatyClosedWithoutOpen,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInstanceMetricsError)
+
 enum class DaisyChainSource {
   kUnknown = 0,
   kGlicContents = 1,

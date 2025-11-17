@@ -229,12 +229,24 @@ void GlicInstanceMetrics::OnShowInSidePanel(tabs::TabInterface* tab) {
   if (!tab) {
     return;
   }
+  if (side_panel_open_times_.contains(tab->GetHandle())) {
+    base::UmaHistogramEnumeration(
+        "Glic.Instance.Metrics.Error",
+        GlicInstanceMetricsError::kSidePanelOpenedWhileAlreadyOpen);
+    return;
+  }
   side_panel_open_times_[tab->GetHandle()] = base::TimeTicks::Now();
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Show.SidePanel"));
   LogEvent(GlicInstanceEvent::kSidePanelShown);
 }
 
 void GlicInstanceMetrics::OnShowInFloaty(const ShowOptions& options) {
+  if (!floaty_open_time_.is_null()) {
+    base::UmaHistogramEnumeration(
+        "Glic.Instance.Metrics.Error",
+        GlicInstanceMetricsError::kFloatyOpenedWhileAlreadyOpen);
+    return;
+  }
   current_ui_mode_ = EmbedderType::kFloaty;
   floaty_open_time_ = base::TimeTicks::Now();
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Show.Floaty"));
@@ -251,6 +263,9 @@ void GlicInstanceMetrics::OnShowInFloaty(const ShowOptions& options) {
 
 void GlicInstanceMetrics::OnFloatyClosed() {
   if (floaty_open_time_.is_null()) {
+    base::UmaHistogramEnumeration(
+        "Glic.Instance.Metrics.Error",
+        GlicInstanceMetricsError::kFloatyClosedWithoutOpen);
     return;
   }
   base::UmaHistogramCustomTimes("Glic.Instance.Floaty.OpenDuration",
@@ -265,6 +280,9 @@ void GlicInstanceMetrics::OnSidePanelClosed(tabs::TabInterface* tab) {
   tabs::TabHandle tab_handle = tab->GetHandle();
   auto it = side_panel_open_times_.find(tab_handle);
   if (it == side_panel_open_times_.end()) {
+    base::UmaHistogramEnumeration(
+        "Glic.Instance.Metrics.Error",
+        GlicInstanceMetricsError::kSidePanelClosedWithoutOpen);
     return;
   }
 
@@ -293,6 +311,10 @@ void GlicInstanceMetrics::OnUnbindEmbedder(EmbedderKey key) {
                                     base::TimeTicks::Now() - it->second,
                                     base::Milliseconds(1), base::Hours(1), 50);
       side_panel_open_times_.erase(it);
+    } else {
+      base::UmaHistogramEnumeration(
+          "Glic.Instance.Metrics.Error",
+          GlicInstanceMetricsError::kTabUnbindWithoutOpen);
     }
     tab_depths_.erase(tab_handle);
     if (bound_tab_count_ > 0) {
@@ -535,6 +557,18 @@ int GlicInstanceMetrics::GetEventCount(GlicInstanceEvent event) {
 }
 
 void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
+  if (turn_.response_started_) {
+    base::UmaHistogramEnumeration(
+        "Glic.Instance.Metrics.Error",
+        GlicInstanceMetricsError::kInputSubmittedWhileResponseInProgress);
+    return;
+  }
+  if (!visibility_tracker_->state()) {
+    base::UmaHistogramEnumeration(
+        "Glic.Instance.Metrics.Error",
+        GlicInstanceMetricsError::kInputSubmittedWhileHidden);
+    return;
+  }
   session_manager_.OnUserInputSubmitted(mode);
   LogEvent(GlicInstanceEvent::kUserInputSubmitted);
   turn_.input_submitted_time_ = base::TimeTicks::Now();
@@ -555,6 +589,16 @@ void GlicInstanceMetrics::OnResponseStarted() {
 
   // It doesn't make sense to record response start without input submission.
   if (turn_.input_submitted_time_.is_null()) {
+    base::UmaHistogramEnumeration(
+        "Glic.Instance.Metrics.Error",
+        GlicInstanceMetricsError::kResponseStartWithoutInput);
+    return;
+  }
+
+  if (!visibility_tracker_->state()) {
+    base::UmaHistogramEnumeration(
+        "Glic.Instance.Metrics.Error",
+        GlicInstanceMetricsError::kResponseStartWhileHidingOrHidden);
     return;
   }
 
@@ -596,7 +640,14 @@ void GlicInstanceMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
       break;
   }
 
-  if (!turn_.input_submitted_time_.is_null()) {
+  if (turn_.input_submitted_time_.is_null()) {
+    base::UmaHistogramEnumeration(
+        "Glic.Instance.Metrics.Error",
+        GlicInstanceMetricsError::kResponseStopWithoutInput);
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Glic.Instance.Metrics.Error", cause_suffix}),
+        GlicInstanceMetricsError::kResponseStopWithoutInput);
+  } else {
     base::TimeTicks now = base::TimeTicks::Now();
     base::UmaHistogramMediumTimes(
         base::StrCat({"Glic.Turn.ResponseStopTime", cause_suffix}),

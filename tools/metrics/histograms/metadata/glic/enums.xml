@@ -419,6 +419,23 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/glic_instance_metrics.h:GlicInstanceEvent) -->
 
+<!-- LINT.IfChange(GlicInstanceMetricsError) -->
+
+<enum name="GlicInstanceMetricsError">
+  <int value="0" label="Response start without input."/>
+  <int value="1" label="Response stop without input."/>
+  <int value="2" label="Response start while hiding or hidden."/>
+  <int value="3" label="Input submitted while response in progress."/>
+  <int value="4" label="Side panel opened while already open."/>
+  <int value="5" label="Floaty opened while already open."/>
+  <int value="6" label="Input submitted while hidden."/>
+  <int value="7" label="Tab unbind without open."/>
+  <int value="8" label="Side panel closed without open."/>
+  <int value="9" label="Floaty closed without open."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/service/glic_instance_metrics.h:GlicInstanceMetricsError) -->
+
 <!-- LINT.IfChange(GlicInvocationSource) -->
 
 <enum name="GlicInvocationSource">
