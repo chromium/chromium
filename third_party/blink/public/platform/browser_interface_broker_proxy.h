@@ -9,10 +9,9 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-shared.h"
-#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
+#include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
 

@@ -16,7 +16,6 @@
 #include "media/mojo/mojom/speech_recognition.mojom-blink.h"
 #include "media/mojo/mojom/speech_recognition_audio_forwarder.mojom-blink.h"
 #include "media/mojo/mojom/speech_recognizer.mojom-blink.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"

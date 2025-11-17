@@ -31,7 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CLIPBOARD_DATA_OBJECT_ITEM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CLIPBOARD_DATA_OBJECT_ITEM_H_
 
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-blink.h"
 #include "third_party/blink/public/platform/web_drag_data.h"

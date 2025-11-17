@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASESSION_MEDIA_SESSION_H_
 
 #include "base/memory/raw_ptr.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/mediasession/media_session.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_action.h"
 #include "third_party/blink/renderer/modules/modules_export.h"

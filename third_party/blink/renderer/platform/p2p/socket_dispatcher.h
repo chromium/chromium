@@ -29,7 +29,6 @@
 #include "base/synchronization/lock.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_interfaces.h"

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_BYTES_UPLOADER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_BYTES_UPLOADER_H_
 
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom-blink.h"

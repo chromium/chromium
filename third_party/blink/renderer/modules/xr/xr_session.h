@@ -12,7 +12,6 @@
 #include "device/vr/public/mojom/layer_id.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "device/vr/public/mojom/xr_session.mojom-blink.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
