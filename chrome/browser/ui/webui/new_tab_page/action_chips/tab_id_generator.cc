@@ -7,10 +7,16 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/tabs/public/tab_handle_factory.h"
+#include "components/tabs/public/tab_interface.h"
 
-SessionID TabIdGeneratorImpl::GenerateTabId(
-    content::WebContents* contents) const {
-  return sessions::SessionTabHelper::IdForTab(contents);
+using ::tabs::TabInterface;
+
+int32_t TabIdGeneratorImpl::GenerateTabHandleId(const TabInterface* tab) const {
+  if (tab == nullptr) {
+    return tabs::TabHandle::NullValue;
+  }
+  return tab->GetHandle().raw_value();
 }
 
 const TabIdGenerator* TabIdGeneratorImpl::Get() {

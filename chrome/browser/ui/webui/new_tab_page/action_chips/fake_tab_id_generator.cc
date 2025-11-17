@@ -7,9 +7,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/sessions/core/session_id.h"
 
-SessionID FakeTabIdGenerator::GenerateTabId(
-    content::WebContents* contents) const {
-  return SessionID::FromSerializedValue(
-      std::abs(static_cast<SessionID::id_type>(
-          base::PersistentHash(base::UTF16ToUTF8(contents->GetTitle())))));
+int32_t FakeTabIdGenerator::GenerateTabHandleId(
+    const tabs::TabInterface* tab) const {
+  return static_cast<int32_t>(
+      base::PersistentHash(base::UTF16ToUTF8(tab->GetContents()->GetTitle())));
 }

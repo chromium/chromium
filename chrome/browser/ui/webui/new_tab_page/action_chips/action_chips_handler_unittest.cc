@@ -110,7 +110,7 @@ ActionChipFields CreateStaticImageGenerationChip() {
 
 // Get the value used for tab_id.
 SessionID::id_type GetSessionID(std::string_view title) {
-  return std::abs(static_cast<SessionID::id_type>(base::PersistentHash(title)));
+  return static_cast<int32_t>(base::PersistentHash(title));
 }
 
 // Returns the value of Time at `index`-th element.
