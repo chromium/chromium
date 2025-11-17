@@ -1053,7 +1053,6 @@
 <translation id="1700517974991662022">Посетено</translation>
 <translation id="1703331064825191675">Никога повече не се тревожете за паролите си</translation>
 <translation id="1703666494654169921">Да не се разрешава на сайтовете да използват устройствата и данните за виртуална реалност</translation>
-<translation id="1703849276368677471">Инструменти</translation>
 <translation id="1704097193565924901">Изписване с главна първа буква</translation>
 <translation id="1704230497453185209">Да не се разрешава на сайтовете да възпроизвеждат звук</translation>
 <translation id="1706586824377653884">Добавено от администратора ви</translation>
@@ -2877,6 +2876,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2946640296642327832">Активиране на Bluetooth</translation>
 <translation id="2947281105969315778">За да споделяте или да се присъединявате към групи раздели, трябва да имате разрешение да влизате в профила си в Chrome</translation>
 <translation id="2947605845283690091">Сърфирането в мрежата трябва да е бързо. Отделете малко време, за <ph name="BEGIN_LINK" />да проверите разширенията си<ph name="END_LINK" /> сега.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Преместете файла тук}other{Преместете файловете тук}}</translation>
 <translation id="2948300991547862301">Към „<ph name="PAGE_TITLE" />“</translation>
 <translation id="29488703364906173">Бърз, опростен и сигурен уеб браузър, създаден за модерната мрежа.</translation>
 <translation id="2950666755714083615">Регистрирайте ме</translation>
@@ -4042,6 +4042,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3756578970075173856">Задаване на ПИН код</translation>
 <translation id="3756806135608816820">Сайтовете могат да извеждат запитвания за търсене на устройства с Bluetooth</translation>
 <translation id="3757567010566591880">Освобождаване от лентата с инструменти</translation>
+<translation id="3757645900890881944">Инструменти за търсене</translation>
 <translation id="3757733214359997190">Няма намерени сайтове</translation>
 <translation id="375841316537350618">Скриптът за прокси сървъра се изтегля...</translation>
 <translation id="3758887577462995665">Пояснение:</translation>
@@ -4277,7 +4278,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3898768766145818464">Пускане или поставяне на видеоклипа на пауза</translation>
 <translation id="389901847090970821">Изберете клавиатура</translation>
 <translation id="3899457911440165602">Грешка при изтриването на сертификата</translation>
-<translation id="3900568190483700096">Качете до <ph name="FILE_LIMIT" /> файла, които да използвате с въпроса си</translation>
 <translation id="3900966090527141178">Експортиране на паролите</translation>
 <translation id="3903187154317825986">Вградена клавиатура</translation>
 <translation id="3903696968689283281">Информация за собствениците в Wi-Fi Direct:</translation>
@@ -5268,6 +5268,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4606551464649945562">Да не се разрешава на сайтовете да създават триизмерна карта на заобикалящата ви среда или да следят позицията на камерата</translation>
 <translation id="4606933160360542263">Персонализирана клавишна комбинация: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Искате ли да изтриете групата раздели?}other{Искате ли да изтриете групите раздели?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Качете 1 файл, който да използвате с въпроса си}other{Качете до # файла, които да използвате с въпроса си}}</translation>
 <translation id="4608500690299898628">&amp;Търсене...</translation>
 <translation id="4609164937357979319">Избиране на профил</translation>
 <translation id="4610162781778310380">Възникна грешка в приставката <ph name="PLUGIN_NAME" /></translation>
@@ -11259,7 +11260,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="876161309768861172">Влизането в профила ви не бе успешно. Моля, опитайте отново</translation>
 <translation id="8761945298804995673">Този потребител вече съществува</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> се нуждае от актуализация</translation>
-<translation id="8763170551806710928">Показване на чиповете</translation>
 <translation id="8763927697961133303">USB устройство</translation>
 <translation id="8766156860774051068">Подбрани от вас</translation>
 <translation id="8766796754185931010">Котоери</translation>
@@ -11440,6 +11440,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8886745493279779790">Преглед на неактивните раздели</translation>
 <translation id="8888253246822647887">Приложението ще се отвори, щом надстройването завърши. Това може да отнеме няколко минути.</translation>
 <translation id="8888459276890791557">Можете да фиксирате този страничен панел за лесен достъп</translation>
+<translation id="8888621340860433230">Показване на опциите</translation>
 <translation id="8889294078294184559">Докато сърфирате, сайтовете могат да направят справка с Chrome и да потвърдят чрез по-рано посетен от вас сайт, че най-вероятно сте истински човек</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> може да редактира следните файлове и папки</translation>
 <translation id="8890170499370378450">Може да доведе до таксуване за мобилни данни</translation>
@@ -11835,7 +11836,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9140050311673642960">Разгледайте подробно нещо ново</translation>
 <translation id="9140067245205650184">Използвате неподдържан флаг за функция: <ph name="BAD_FLAG" />. Стабилността и сигурността ще пострадат.</translation>
 <translation id="914031120300235526">Потребителският профил не може да се отключи</translation>
-<translation id="9142221601471715336">Преместете файловете си тук</translation>
 <translation id="9142637293078737510">Псевдоним на образа</translation>
 <translation id="9143298529634201539">Да се премахне ли предложението?</translation>
 <translation id="9143922477019434797">Защитете паролите си</translation>

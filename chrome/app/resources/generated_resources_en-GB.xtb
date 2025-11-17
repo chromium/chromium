@@ -1056,7 +1056,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1700517974991662022">Visited</translation>
 <translation id="1703331064825191675">Never worry about your passwords</translation>
 <translation id="1703666494654169921">Don't allow sites to use virtual reality devices or data</translation>
-<translation id="1703849276368677471">Tools</translation>
 <translation id="1704097193565924901">Capitalise</translation>
 <translation id="1704230497453185209">Don't allow sites to play sound</translation>
 <translation id="1706586824377653884">Added by your administrator</translation>
@@ -2881,6 +2880,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2946640296642327832">Enable Bluetooth</translation>
 <translation id="2947281105969315778">To share or join tab groups, you must be able to sign in to Chrome</translation>
 <translation id="2947605845283690091">Web browsing should be fast. Take a moment to <ph name="BEGIN_LINK" />check your extensions<ph name="END_LINK" /> now.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Drop file here}other{Drop files here}}</translation>
 <translation id="2948300991547862301">Go to <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">A fast, simple and secure web browser, built for the modern web.</translation>
 <translation id="2950666755714083615">Sign me up</translation>
@@ -4046,6 +4046,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3756578970075173856">Set PIN</translation>
 <translation id="3756806135608816820">Sites can ask to look for Bluetooth devices</translation>
 <translation id="3757567010566591880">Unpin from Toolbar</translation>
+<translation id="3757645900890881944">Search tools</translation>
 <translation id="3757733214359997190">No sites found</translation>
 <translation id="375841316537350618">Downloading proxy script...</translation>
 <translation id="3758887577462995665">Tip:</translation>
@@ -4280,7 +4281,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3898768766145818464">Play or pause video</translation>
 <translation id="389901847090970821">Select keyboard</translation>
 <translation id="3899457911440165602">Error deleting certificate</translation>
-<translation id="3900568190483700096">Upload up to <ph name="FILE_LIMIT" /> files to use with your question</translation>
 <translation id="3900966090527141178">Export passwords</translation>
 <translation id="3903187154317825986">Built-in keyboard</translation>
 <translation id="3903696968689283281">Wi-Fi direct owners info:</translation>
@@ -5271,6 +5271,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4606551464649945562">Do not allow sites to create a 3D map of your surroundings or track camera position</translation>
 <translation id="4606933160360542263">Custom key combination: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Delete tab group?}other{Delete tab groups?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Upload 1 file to use with your question}other{Upload up to # files to use with your question}}</translation>
 <translation id="4608500690299898628">&amp;Find...</translation>
 <translation id="4609164937357979319">Account selection</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> has encountered an error</translation>
@@ -11261,7 +11262,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="876161309768861172">Couldn't sign you in, please try again</translation>
 <translation id="8761945298804995673">This user already exists</translation>
 <translation id="8762886931014513155">Your <ph name="DEVICE_TYPE" /> needs an update</translation>
-<translation id="8763170551806710928">Show chips</translation>
 <translation id="8763927697961133303">USB device</translation>
 <translation id="8766156860774051068">Curated by you</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
@@ -11442,6 +11442,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8886745493279779790">Review inactive tabs</translation>
 <translation id="8888253246822647887">Your app will open when the upgrade is finished. Upgrades can take a few minutes.</translation>
 <translation id="8888459276890791557">You can pin this side panel for easy access</translation>
+<translation id="8888621340860433230">Show options</translation>
 <translation id="8889294078294184559">As you keep browsing, sites can check with Chrome and verify with a previous site that you've visited that you're likely a real person</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> can edit the following files and folders</translation>
 <translation id="8890170499370378450">May incur mobile data charges</translation>
@@ -11837,7 +11838,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="9140050311673642960">Dive deep into something new</translation>
 <translation id="9140067245205650184">You are using an unsupported feature flag: <ph name="BAD_FLAG" />. Stability and security will suffer.</translation>
 <translation id="914031120300235526">Can't unlock the profile</translation>
-<translation id="9142221601471715336">Drop your files here</translation>
 <translation id="9142637293078737510">Image alias</translation>
 <translation id="9143298529634201539">Remove suggestion?</translation>
 <translation id="9143922477019434797">Protect your passwords</translation>

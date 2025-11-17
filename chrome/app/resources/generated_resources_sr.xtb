@@ -1054,7 +1054,6 @@
 <translation id="1700517974991662022">Посећено</translation>
 <translation id="1703331064825191675">Никада не брините о лозинкама</translation>
 <translation id="1703666494654169921">Не дозвољавај сајтовима да користе уређаје и податке виртуелне реалности</translation>
-<translation id="1703849276368677471">Алатке</translation>
 <translation id="1704097193565924901">Велика слова</translation>
 <translation id="1704230497453185209">Не дозвољавај сајтовима да пуштају звук</translation>
 <translation id="1706586824377653884">Додао администратор</translation>
@@ -2866,6 +2865,7 @@
 <translation id="2946640296642327832">Омогући Bluetooth</translation>
 <translation id="2947281105969315778">Да бисте делили групе картица или им се придружили, неопходно је да имате могућност да се пријавите у Chrome</translation>
 <translation id="2947605845283690091">Прегледање веба треба да буде брзо. Одвојите мало времена и <ph name="BEGIN_LINK" />проверите додатке<ph name="END_LINK" />.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Овде отпустите фајл}one{Овде отпустите фајлове}few{Овде отпустите фајлове}other{Овде отпустите фајлове}}</translation>
 <translation id="2948300991547862301">Иди на <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Брз, једноставан и безбедан веб-прегледач направљен за модерни веб.</translation>
 <translation id="2950666755714083615">Региструј ме</translation>
@@ -4031,6 +4031,7 @@
 <translation id="3756578970075173856">Подесите PIN</translation>
 <translation id="3756806135608816820">Сајтови имају дозволу да траже Bluetooth уређаје</translation>
 <translation id="3757567010566591880">Откачи са траке с алаткама</translation>
+<translation id="3757645900890881944">Алатке за претрагу</translation>
 <translation id="3757733214359997190">Није пронађен ниједан сајт</translation>
 <translation id="375841316537350618">Преузимање скрипте проксија...</translation>
 <translation id="3758887577462995665">Савет:</translation>
@@ -4265,7 +4266,6 @@
 <translation id="3898768766145818464">Пустите или паузирајте видео</translation>
 <translation id="389901847090970821">Изаберите тастатуру</translation>
 <translation id="3899457911440165602">Грешка при брисању сертификата</translation>
-<translation id="3900568190483700096">Максимални број фајлова које можете да отпремите, а које ћете користити уз питање је <ph name="FILE_LIMIT" /></translation>
 <translation id="3900966090527141178">Извезите лозинке</translation>
 <translation id="3903187154317825986">Уграђена тастатура</translation>
 <translation id="3903696968689283281">Информације о WiFi Direct власницима:</translation>
@@ -5256,6 +5256,7 @@
 <translation id="4606551464649945562">Не дозвољавајте сајтовима да праве 3D мапу окружења или да прате положај камере</translation>
 <translation id="4606933160360542263">Прилагођена комбинација тастера: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Желите да избришете групу картица?}one{Желите да избришете групе картица?}few{Желите да избришете групе картица?}other{Желите да избришете групе картица?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Отпремите 1 фајл који ћете користити уз питање}one{Отпремите највише # фајл који ћете користити уз питање}few{Отпремите највише # фајла које ћете користити уз питање}other{Отпремите највише # фајлова које ћете користити уз питање}}</translation>
 <translation id="4608500690299898628">&amp;Пронађи...</translation>
 <translation id="4609164937357979319">Избор налога</translation>
 <translation id="4610162781778310380">Додатна компонента <ph name="PLUGIN_NAME" /> је наишла на грешку</translation>
@@ -11249,7 +11250,6 @@
 <translation id="876161309768861172">Пријава није успела, пробајте поново</translation>
 <translation id="8761945298804995673">Овај корисник већ постоји</translation>
 <translation id="8762886931014513155">Треба да ажурирате <ph name="DEVICE_TYPE" /></translation>
-<translation id="8763170551806710928">Прикажи елементе</translation>
 <translation id="8763927697961133303">USB уређај</translation>
 <translation id="8766156860774051068">Припремили сте ви</translation>
 <translation id="8766796754185931010">Котоери</translation>
@@ -11432,6 +11432,7 @@
 <translation id="8886745493279779790">Прегледајте неактивне картице</translation>
 <translation id="8888253246822647887">Апликација ће се отворити када се надоградња заврши. Надоградње могу да трају пар минута.</translation>
 <translation id="8888459276890791557">Можете да закачите ову бочну таблу да бисте јој лако приступали</translation>
+<translation id="8888621340860433230">Прикажи опције</translation>
 <translation id="8889294078294184559">Док настављате са прегледањем, сајтови могу да проверавају у Chrome-у и да од претходног сајта који сте посетили добију потврду да сте вероватно стварна особа</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> може да мења датотеке и директоријуме у наставку</translation>
 <translation id="8890170499370378450">Можда ће доћи до трошкова за пренос података преко мобилног оператера</translation>
@@ -11827,7 +11828,6 @@
 <translation id="9140050311673642960">Зароните у нешто ново</translation>
 <translation id="9140067245205650184">Користите неподржану ознаку функције: <ph name="BAD_FLAG" />. Угрозићете стабилност и безбедност.</translation>
 <translation id="914031120300235526">Откључавање профила није успело</translation>
-<translation id="9142221601471715336">Отпустите фајлове овде</translation>
 <translation id="9142637293078737510">Псеудоним за слику</translation>
 <translation id="9143298529634201539">Желите ли да уклоните предлог?</translation>
 <translation id="9143922477019434797">Заштитите лозинке</translation>

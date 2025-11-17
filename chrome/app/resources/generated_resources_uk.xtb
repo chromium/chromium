@@ -1059,7 +1059,6 @@
 <translation id="1700517974991662022">Натиснуто</translation>
 <translation id="1703331064825191675">Не хвилюйтеся про свої паролі</translation>
 <translation id="1703666494654169921">Заборонити сайтам використовувати пристрої або дані віртуальної реальності</translation>
-<translation id="1703849276368677471">Інструменти</translation>
 <translation id="1704097193565924901">Почати з великої літери</translation>
 <translation id="1704230497453185209">Заборонити сайтам відтворювати звук</translation>
 <translation id="1706586824377653884">Додано адміністратором</translation>
@@ -2884,6 +2883,7 @@
 <translation id="2946640296642327832">Увімкнути Bluetooth</translation>
 <translation id="2947281105969315778">Щоб ділитися групами вкладок або приєднуватися до них, потрібно ввійти в Chrome</translation>
 <translation id="2947605845283690091">Перегляд веб-сторінок має бути швидким. <ph name="BEGIN_LINK" />Перевірте свої розширення<ph name="END_LINK" />.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Перетягніть файл сюди}one{Перетягніть файли сюди}few{Перетягніть файли сюди}many{Перетягніть файли сюди}other{Перетягніть файли сюди}}</translation>
 <translation id="2948300991547862301">Перейти в <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Швидкий, простий і надійний веб-переглядач, створений для сучасного Інтернету.</translation>
 <translation id="2950666755714083615">Зареєструватися</translation>
@@ -4049,6 +4049,7 @@
 <translation id="3756578970075173856">Налаштувати PIN-код</translation>
 <translation id="3756806135608816820">Сайти можуть просити дозвіл шукати пристрої з Bluetooth</translation>
 <translation id="3757567010566591880">Відкріпити від панелі інструментів</translation>
+<translation id="3757645900890881944">Інструменти пошуку</translation>
 <translation id="3757733214359997190">Не знайдено сайтів</translation>
 <translation id="375841316537350618">Завантаження сценарію проксі-сервера…</translation>
 <translation id="3758887577462995665">Підказка</translation>
@@ -4283,7 +4284,6 @@
 <translation id="3898768766145818464">Відтворити або призупинити відео</translation>
 <translation id="389901847090970821">Виберіть клавіатуру</translation>
 <translation id="3899457911440165602">Сталася помилка</translation>
-<translation id="3900568190483700096">Завантажте файли (щонайбільше <ph name="FILE_LIMIT" />), щоб додати їх до запитання</translation>
 <translation id="3900966090527141178">Експортувати паролі</translation>
 <translation id="3903187154317825986">Вбудована клавіатура</translation>
 <translation id="3903696968689283281">Інформація про власників Wi-Fi Direct:</translation>
@@ -5274,6 +5274,7 @@
 <translation id="4606551464649945562">Заборонити сайтам створювати 3D-карту вашого оточення або відстежувати положення камери</translation>
 <translation id="4606933160360542263">Власна комбінація клавіш: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Видалити групу вкладок?}one{Видалити групи вкладок?}few{Видалити групи вкладок?}many{Видалити групи вкладок?}other{Видалити групи вкладок?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Завантажте 1 файл, щоб додати його до запитання}one{Завантажте щонайбільше # файл, щоб додати їх до запитання}few{Завантажте щонайбільше # файли, щоб додати їх до запитання}many{Завантажте щонайбільше # файлів, щоб додати їх до запитання}other{Завантажте щонайбільше # файлу, щоб додати їх до запитання}}</translation>
 <translation id="4608500690299898628">&amp;Знайти...</translation>
 <translation id="4609164937357979319">Вибір облікового запису</translation>
 <translation id="4610162781778310380">У плагіні <ph name="PLUGIN_NAME" /> сталася помилка</translation>
@@ -11264,7 +11265,6 @@
 <translation id="876161309768861172">Не вдалося ввійти. Повторіть спробу.</translation>
 <translation id="8761945298804995673">Такий користувач уже існує</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> потребує оновлення</translation>
-<translation id="8763170551806710928">Показувати чипи</translation>
 <translation id="8763927697961133303">Пристрій USB</translation>
 <translation id="8766156860774051068">Вибрані вами</translation>
 <translation id="8766796754185931010">Котоері</translation>
@@ -11448,6 +11448,7 @@
 <translation id="8886745493279779790">Переглянути неактивні вкладки</translation>
 <translation id="8888253246822647887">Додаток відкриється, коли завершиться оновлення. Воно може тривати кілька хвилин.</translation>
 <translation id="8888459276890791557">Ви можете закріпити цю бічну панель для швидкого доступу</translation>
+<translation id="8888621340860433230">Показати варіанти</translation>
 <translation id="8889294078294184559">Завдяки цьому інші відвідувані вами сайти зможуть перевіряти в Chrome, що ви, імовірно, реальна людина</translation>
 <translation id="8889651696183044030">Сайт <ph name="ORIGIN" /> може змінювати вказані нижче файли й папки</translation>
 <translation id="8890170499370378450">Може стягуватися плата за мобільний трафік</translation>
@@ -11843,7 +11844,6 @@
 <translation id="9140050311673642960">Заглибтеся в нову галузь знань</translation>
 <translation id="9140067245205650184">Використовується непідтримувана позначка функції: <ph name="BAD_FLAG" />. Це вплине на стабільність і безпеку.</translation>
 <translation id="914031120300235526">Не вдалося розблокувати профіль</translation>
-<translation id="9142221601471715336">Перетягніть файли сюди</translation>
 <translation id="9142637293078737510">Псевдонім образу</translation>
 <translation id="9143298529634201539">Видалити пропозицію?</translation>
 <translation id="9143922477019434797">Захистіть паролі</translation>

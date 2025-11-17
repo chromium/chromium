@@ -1053,7 +1053,6 @@
 <translation id="1700517974991662022">Зочилсон</translation>
 <translation id="1703331064825191675">Нууц үгэндээ хэзээ ч бүү санаа зов</translation>
 <translation id="1703666494654169921">Сайтуудад виртуал бодит байдлын төхөөрөмжүүд эсвэл өгөгдөл ашиглахыг бүү зөвшөөр</translation>
-<translation id="1703849276368677471">Хэрэгсэл</translation>
 <translation id="1704097193565924901">Үсгийг томоор бичих</translation>
 <translation id="1704230497453185209">Сайтуудад дуу чимээ тоглуулахыг бүү зөвшөөр</translation>
 <translation id="1706586824377653884">Таны админ нэмсэн</translation>
@@ -2878,6 +2877,7 @@
 <translation id="2946640296642327832">Bluetooth-г идэвхжүүлнэ үү</translation>
 <translation id="2947281105969315778">Табын бүлэг хуваалцах эсвэл нэгдэхийн тулд та Chrome-д нэгдэх боломжтой байх ёстой</translation>
 <translation id="2947605845283690091">Веб хөтөч хурдан байх ёстой. Одоо <ph name="BEGIN_LINK" />өргөтгөлүүдээ шалгахын<ph name="END_LINK" /> тулд хэсэг хором зарцуулаарай.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Файлыг энд буулгана уу}other{Файлуудыг энд буулгана уу}}</translation>
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" /> руу очно уу</translation>
 <translation id="29488703364906173">Орчин үеийн веб-д зориулан бүтээгдсэн хурдан, энгийн, аюулгүй веб хөтөч.</translation>
 <translation id="2950666755714083615">Намайг бүртгэнэ үү</translation>
@@ -4043,6 +4043,7 @@
 <translation id="3756578970075173856">ПИН тохируулах</translation>
 <translation id="3756806135608816820">Сайтууд Bluetooth төхөөрөмж хайхыг хүсэх боломжтой</translation>
 <translation id="3757567010566591880">Самбарт бэхэлснийг болиулах</translation>
+<translation id="3757645900890881944">Хайлтын хэрэгсэл</translation>
 <translation id="3757733214359997190">Сайт олдсонгүй</translation>
 <translation id="375841316537350618">Прокси бичвэрийг татаж авч байна...</translation>
 <translation id="3758887577462995665">Зөвлөгөө:</translation>
@@ -4277,7 +4278,6 @@
 <translation id="3898768766145818464">Видео тоглуулах эсвэл түр зогсоох</translation>
 <translation id="389901847090970821">Гар сонгох</translation>
 <translation id="3899457911440165602">Сертификатыг устгахад алдаа гарлаа</translation>
-<translation id="3900568190483700096">Асуулттайгаа хамт ашиглах <ph name="FILE_LIMIT" /> хүртэлх файл байршуулна уу</translation>
 <translation id="3900966090527141178">Нууц үгийг экспортлох</translation>
 <translation id="3903187154317825986">Суурилагдсан гар</translation>
 <translation id="3903696968689283281">WiFi Direct-н өмчлөгчдийн мэдээлэл:</translation>
@@ -5267,6 +5267,7 @@
 <translation id="4606551464649945562">Сайтуудад таны эргэн тойрны 3D газрын зургийг үүсгэх эсвэл камерын хөдөлгөөнийг хянахыг үл зөвшөөрөх</translation>
 <translation id="4606933160360542263">Захиалгат товчийн хослол: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Табын бүлгийг устгах уу?}other{Табын бүлгүүдийг устгах уу?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Асуулттайгаа хамт ашиглах 1 файл байршуулна уу}other{Асуулттайгаа хамт ашиглах # хүртэлх файл байршуулна уу}}</translation>
 <translation id="4608500690299898628">&amp;Олох...</translation>
 <translation id="4609164937357979319">Бүртгэлийн сонголт</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" />-д алдаа гарлаа</translation>
@@ -11252,7 +11253,6 @@
 <translation id="876161309768861172">Таныг нэвтрүүлж чадсангүй. Дахин оролдоно уу</translation>
 <translation id="8761945298804995673">Ийм хэрэглэгч аль хэдийн байна</translation>
 <translation id="8762886931014513155">Таны <ph name="DEVICE_TYPE" />-г шинэчлэх шаардлагатай байна</translation>
-<translation id="8763170551806710928">Чипүүдийг харуулах</translation>
 <translation id="8763927697961133303">USB төхөөрөмж</translation>
 <translation id="8766156860774051068">Таны сонгосон</translation>
 <translation id="8766796754185931010">Японы оролтын аргачлал</translation>
@@ -11433,6 +11433,7 @@
 <translation id="8886745493279779790">Идэвхгүй табуудыг хянах</translation>
 <translation id="8888253246822647887">Таны апп шинэчлэлт дуусах үед нээгдэнэ. Шинэчлэлтэд хэсэг хугацаа шаардлагатай.</translation>
 <translation id="8888459276890791557">Та энэ хажуугийн самбарыг хялбар хандахад зориулж бэхлэх боломжтой</translation>
+<translation id="8888621340860433230">Сонголтуудыг харуулах</translation>
 <translation id="8889294078294184559">Таныг үргэлжлүүлэн үзэж байхад сайтууд Chrome-с шалгаж, таныг жинхэнэ хүн эсэхийг таны өмнө нь зочилсон сайтаас баталгаажуулах боломжтой</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> дараах файл болон фолдерыг засах боломжтой</translation>
 <translation id="8890170499370378450">Мобайл дата төлбөр гарч болзошгүй</translation>
@@ -11828,7 +11829,6 @@
 <translation id="9140050311673642960">Ямар нэг шинэ зүйлийг гүнзгий судлаарай</translation>
 <translation id="9140067245205650184">Та дэмжигдээгүй онцлогийн дарцгийг ашиглаж байна: <ph name="BAD_FLAG" />. Үүнээс болж аюулгүй байдал болон тогтвортой байдал алдагдах болно.</translation>
 <translation id="914031120300235526">Профайлын түгжээг тайлах боломжгүй</translation>
-<translation id="9142221601471715336">Файлуудаа энд буулгана уу</translation>
 <translation id="9142637293078737510">Системийн хуулбарын нууц нэр</translation>
 <translation id="9143298529634201539">Зөвлөмжийг устгах уу?</translation>
 <translation id="9143922477019434797">Нууц үгнүүдээ хамгаална уу</translation>

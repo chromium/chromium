@@ -1056,7 +1056,6 @@
 <translation id="1700517974991662022">己經去過</translation>
 <translation id="1703331064825191675">不用再擔心密碼問題</translation>
 <translation id="1703666494654169921">不允許網站使用虛擬實境﻿裝置或資料</translation>
-<translation id="1703849276368677471">工具</translation>
 <translation id="1704097193565924901">大寫</translation>
 <translation id="1704230497453185209">不允許網站播放音效</translation>
 <translation id="1706586824377653884">由管理員新增</translation>
@@ -2880,6 +2879,7 @@
 <translation id="2946640296642327832">啟用藍牙</translation>
 <translation id="2947281105969315778">你必須能夠登入 Chrome，才能分享或加入分頁群組</translation>
 <translation id="2947605845283690091">網絡瀏覽速度應該快速流暢。請花一點時間立即<ph name="BEGIN_LINK" />檢查您的擴充功能<ph name="END_LINK" />。</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{將檔案拖放到這裡}other{將檔案拖放到這裡}}</translation>
 <translation id="2948300991547862301">前往<ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">一款快速、簡單又安全的新世代網絡瀏覽器。</translation>
 <translation id="2950666755714083615">我要訂閱</translation>
@@ -4043,6 +4043,7 @@
 <translation id="3756578970075173856">設定 PIN</translation>
 <translation id="3756806135608816820">網站可要求尋找藍牙裝置</translation>
 <translation id="3757567010566591880">從「工具列」中取消固定</translation>
+<translation id="3757645900890881944">搜尋工具</translation>
 <translation id="3757733214359997190">找不到任何網站</translation>
 <translation id="375841316537350618">正在下載 Proxy 指令碼…</translation>
 <translation id="3758887577462995665">提示：</translation>
@@ -4277,7 +4278,6 @@
 <translation id="3898768766145818464">播放或者暫停影片</translation>
 <translation id="389901847090970821">選取鍵盤</translation>
 <translation id="3899457911440165602">刪除憑證時發生錯誤</translation>
-<translation id="3900568190483700096">上載最多 <ph name="FILE_LIMIT" /> 個檔案以助處理問題</translation>
 <translation id="3900966090527141178">匯出密碼</translation>
 <translation id="3903187154317825986">內置鍵盤</translation>
 <translation id="3903696968689283281">Wi-Fi Direct 擁有者資料：</translation>
@@ -5265,6 +5265,7 @@
 <translation id="4606551464649945562">不允許網站建立您身處環境的 3D 地圖或追蹤攝錄機位置</translation>
 <translation id="4606933160360542263">自訂按鍵組合：<ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{要刪除分頁群組嗎？}other{要刪除分頁群組嗎？}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{上載 1 個檔案以助處理問題}other{上載最多 # 個檔案以助處理問題}}</translation>
 <translation id="4608500690299898628">尋找(&amp;F)…</translation>
 <translation id="4609164937357979319">帳戶選擇</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> 發生錯誤</translation>
@@ -11247,7 +11248,6 @@
 <translation id="876161309768861172">無法登入，請再試一次</translation>
 <translation id="8761945298804995673">這位使用者已存在。</translation>
 <translation id="8762886931014513155">您的 <ph name="DEVICE_TYPE" /> 需要更新</translation>
-<translation id="8763170551806710928">顯示方塊</translation>
 <translation id="8763927697961133303">USB 裝置</translation>
 <translation id="8766156860774051068">由你精選</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
@@ -11424,6 +11424,7 @@
 <translation id="8886745493279779790">檢視閒置分頁</translation>
 <translation id="8888253246822647887">升級完成後，應用程式隨即啟動。升級過程可能需時幾分鐘。</translation>
 <translation id="8888459276890791557">你可固定此側面板以方便存取</translation>
+<translation id="8888621340860433230">顯示選項</translation>
 <translation id="8889294078294184559">您隨後瀏覽的網站可從 Chrome 取得前一個網站提供的資料，確認您應該是真人</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> 可編輯以下檔案和資料夾</translation>
 <translation id="8890170499370378450">您可能需要支付流動數據費用</translation>
@@ -11819,7 +11820,6 @@
 <translation id="9140050311673642960">深入探索新事物</translation>
 <translation id="9140067245205650184">您使用的功能分支切換 (<ph name="BAD_FLAG" />) 目前不受支援，有可能會影響穩定性和安全性。</translation>
 <translation id="914031120300235526">無法解鎖個人檔案</translation>
-<translation id="9142221601471715336">將檔案拖放到這裡</translation>
 <translation id="9142637293078737510">圖片別名</translation>
 <translation id="9143298529634201539">要移除建議嗎？</translation>
 <translation id="9143922477019434797">保護您的密碼</translation>

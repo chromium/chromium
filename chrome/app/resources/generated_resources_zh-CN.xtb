@@ -1050,7 +1050,6 @@
 <translation id="1700517974991662022">访问过</translation>
 <translation id="1703331064825191675">再也不必费心记住您的密码</translation>
 <translation id="1703666494654169921">不允许网站使用虚拟现实设备或数据</translation>
-<translation id="1703849276368677471">工具</translation>
 <translation id="1704097193565924901">大写</translation>
 <translation id="1704230497453185209">不允许网站播放声音</translation>
 <translation id="1706586824377653884">此图标是由管理员添加的</translation>
@@ -2860,6 +2859,7 @@
 <translation id="2946640296642327832">启用蓝牙</translation>
 <translation id="2947281105969315778">如需分享或加入标签页分组，您必须能够登录 Chrome</translation>
 <translation id="2947605845283690091">浏览网站，快才是王道。请花点时间立即<ph name="BEGIN_LINK" />检查一下您的扩展程序<ph name="END_LINK" />吧。</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{将文件拖放到此处}other{将文件拖放到此处}}</translation>
 <translation id="2948300991547862301">转到“<ph name="PAGE_TITLE" />”</translation>
 <translation id="29488703364906173">一款快速、简单且安全的网络浏览器，能很好满足现代网络对浏览器的要求。</translation>
 <translation id="2950666755714083615">立即注册</translation>
@@ -4023,6 +4023,7 @@
 <translation id="3756578970075173856">设置 PIN 码</translation>
 <translation id="3756806135608816820">网站可以请求寻找蓝牙设备</translation>
 <translation id="3757567010566591880">取消固定到工具栏</translation>
+<translation id="3757645900890881944">搜索工具</translation>
 <translation id="3757733214359997190">未找到任何网站</translation>
 <translation id="375841316537350618">正在下载代理脚本...</translation>
 <translation id="3758887577462995665">提示：</translation>
@@ -4257,7 +4258,6 @@
 <translation id="3898768766145818464">播放或暂停视频</translation>
 <translation id="389901847090970821">选择键盘</translation>
 <translation id="3899457911440165602">删除证书时出错</translation>
-<translation id="3900568190483700096">提问时最多可上传 <ph name="FILE_LIMIT" /> 个文件</translation>
 <translation id="3900966090527141178">导出密码</translation>
 <translation id="3903187154317825986">内置键盘</translation>
 <translation id="3903696968689283281">Wi-Fi 直连所有者信息：</translation>
@@ -5247,6 +5247,7 @@
 <translation id="4606551464649945562">不允许网站为您的周边环境创建 3D 地图或跟踪摄像头位置</translation>
 <translation id="4606933160360542263">自定义组合键：<ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{要删除标签页分组吗？}other{要删除标签页分组吗？}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{提问时最多可上传 1 个文件}other{提问时最多可上传 # 个文件}}</translation>
 <translation id="4608500690299898628">查找(&amp;F)...</translation>
 <translation id="4609164937357979319">账号选择</translation>
 <translation id="4610162781778310380">“<ph name="PLUGIN_NAME" />”遇到了错误</translation>
@@ -11232,7 +11233,6 @@
 <translation id="876161309768861172">无法登录，请重试</translation>
 <translation id="8761945298804995673">该用户已存在</translation>
 <translation id="8762886931014513155">您的 <ph name="DEVICE_TYPE" /> 需要更新</translation>
-<translation id="8763170551806710928">显示条状标签</translation>
 <translation id="8763927697961133303">USB 设备</translation>
 <translation id="8766156860774051068">由您挑选</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
@@ -11413,6 +11413,7 @@
 <translation id="8886745493279779790">查看闲置标签页</translation>
 <translation id="8888253246822647887">待完成升级后，您的应用即会打开。升级过程可能会持续几分钟。</translation>
 <translation id="8888459276890791557">您可以固定此侧边栏以方便访问</translation>
+<translation id="8888621340860433230">显示选项</translation>
 <translation id="8889294078294184559">随着您继续浏览，所访问的网站可从 Chrome 中获取上一个网站提供的相关信息来验证您可能是真实的用户</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> 可修改以下文件和文件夹</translation>
 <translation id="8890170499370378450">可能会产生移动数据费用</translation>
@@ -11808,7 +11809,6 @@
 <translation id="9140050311673642960">深入探索新事物</translation>
 <translation id="9140067245205650184">您使用的是不受支持的功能标记：<ph name="BAD_FLAG" />。稳定性和安全性会有所下降。</translation>
 <translation id="914031120300235526">无法解锁该个人资料</translation>
-<translation id="9142221601471715336">请将文件拖放到此处</translation>
 <translation id="9142637293078737510">映像别名</translation>
 <translation id="9143298529634201539">要移除推荐内容吗？</translation>
 <translation id="9143922477019434797">保护您的密码</translation>

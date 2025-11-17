@@ -1057,7 +1057,6 @@
 <translation id="1700517974991662022">देखा गया</translation>
 <translation id="1703331064825191675">अपने पासवर्ड की फ़िक्र छोड़ दें</translation>
 <translation id="1703666494654169921">साइटों को वर्चुअल रियलिटी वाले डिवाइसों या डेटा इस्तेमाल करने की अनुमति न दें</translation>
-<translation id="1703849276368677471">टूल</translation>
 <translation id="1704097193565924901">पहले अक्षर को बड़े अक्षर में बदलें</translation>
 <translation id="1704230497453185209">साइटों को ऑडियो चलाने की अनुमति न दें</translation>
 <translation id="1706586824377653884">आपके व्यवस्थापक ने जोड़ा</translation>
@@ -2882,6 +2881,7 @@
 <translation id="2946640296642327832">ब्लूटूथ सक्षम करें</translation>
 <translation id="2947281105969315778">टैब ग्रुप शेयर करने या उनमें शामिल होने के लिए, आपको Chrome में साइन इन करना होगा</translation>
 <translation id="2947605845283690091">वेब ब्राउज़िंग तेज़ होनी चाहिए. अभी <ph name="BEGIN_LINK" />अपने एक्सटेंशन की जांच करें.<ph name="END_LINK" /></translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{फ़ाइल यहां छोड़ें}one{फ़ाइल यहां छोड़ें}other{फ़ाइलें यहां छोड़ें}}</translation>
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" /> पर जाएं</translation>
 <translation id="29488703364906173">Chrome, आधुनिक वेब के लिए बनाया गया एक तेज़, आसान, और सुरक्षि‍त वेब ब्राउज़र है.</translation>
 <translation id="2950666755714083615">मुझे सदस्यता दें</translation>
@@ -4047,6 +4047,7 @@
 <translation id="3756578970075173856">पिन सेट करें</translation>
 <translation id="3756806135608816820">साइटें, ब्लूटूथ डिवाइसों को खोजने की अनुमति मांग सकती हैं</translation>
 <translation id="3757567010566591880">टूलबार से अनपिन करें</translation>
+<translation id="3757645900890881944">खोज टूल</translation>
 <translation id="3757733214359997190">कोई साइट नहीं मिली</translation>
 <translation id="375841316537350618">प्रॉक्सी स्क्रिप्ट डाउनलोड हो रही है...</translation>
 <translation id="3758887577462995665">सलाह:</translation>
@@ -4281,7 +4282,6 @@
 <translation id="3898768766145818464">वीडियो चलाएं या रोकें</translation>
 <translation id="389901847090970821">कीबोर्ड चुनें</translation>
 <translation id="3899457911440165602">सर्टिफ़िकेट मिटाने में गड़बड़ी हुई</translation>
-<translation id="3900568190483700096">अपने सवाल के साथ इस्तेमाल करने के लिए, ज़्यादा से ज़्यादा <ph name="FILE_LIMIT" /> फ़ाइलें अपलोड करें</translation>
 <translation id="3900966090527141178">पासवर्ड निर्यात करें</translation>
 <translation id="3903187154317825986">पहले से मौजूद कीबोर्ड</translation>
 <translation id="3903696968689283281">वाई-फ़ाई डायरेक्ट मालिकों की जानकारी:</translation>
@@ -5271,6 +5271,7 @@
 <translation id="4606551464649945562">साइटों को अपने आस-पास की जगह का 3D मैप बनाने या कैमरे की स्थिति ट्रैक करने की अनुमति न दें</translation>
 <translation id="4606933160360542263">अपनी ज़रूरत के मुताबिक बटन का कॉम्बिनेशन: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{क्या आपको टैब ग्रुप मिटाना है?}one{क्या आपको टैब ग्रुप मिटाना है?}other{क्या आपको टैब ग्रुप मिटाने हैं?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{अपने सवाल के साथ इस्तेमाल करने के लिए, 1 फ़ाइल अपलोड करें}one{अपने सवाल के साथ इस्तेमाल करने के लिए, ज़्यादा से ज़्यादा # फ़ाइल अपलोड करें}other{अपने सवाल के साथ इस्तेमाल करने के लिए, ज़्यादा से ज़्यादा # फ़ाइलें अपलोड करें}}</translation>
 <translation id="4608500690299898628">&amp;ढूंढें...</translation>
 <translation id="4609164937357979319">खाता चुनें</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> में कोई गड़बड़ी आई</translation>
@@ -11260,7 +11261,6 @@
 <translation id="876161309768861172">आपको साइन इन नहीं किया जा सका. कृपया फिर से कोशिश करें</translation>
 <translation id="8761945298804995673">यह उपयोगकर्ता पहले से मौजूद है</translation>
 <translation id="8762886931014513155">आपके <ph name="DEVICE_TYPE" /> को अपडेट की ज़रूरत है</translation>
-<translation id="8763170551806710928">चिप दिखाएं</translation>
 <translation id="8763927697961133303">USB डिवाइस</translation>
 <translation id="8766156860774051068">आपके बनाए गए शॉर्टकट</translation>
 <translation id="8766796754185931010">कोटोएरी</translation>
@@ -11442,6 +11442,7 @@
 <translation id="8886745493279779790">इनऐक्टिव टैब देखें</translation>
 <translation id="8888253246822647887">अपग्रेड पूरा होने पर आपका ऐप्लिकेशन खुल जाएगा. अपग्रेड में कुछ समय लग सकता है.</translation>
 <translation id="8888459276890791557">आसानी से ऐक्सेस करने के लिए, इस साइड पैनल को पिन किया जा सकता है</translation>
+<translation id="8888621340860433230">विकल्प दिखाएं</translation>
 <translation id="8889294078294184559">आपके ब्राउज़ करने के दौरान, साइटें Chrome की मदद से यह जांच कर सकती हैं कि आप असली उपयोगकर्ता हैं या नहीं. ऐसा, आपकी पहले विज़िट की गई साइट की जानकारी से किया जाता है</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> नीचे दी गई फ़ाइलों और फ़ोल्डर में बदलाव कर सकती है</translation>
 <translation id="8890170499370378450">हो सकता है कि आपको मोबाइल डेटा का शुल्क देना पड़े</translation>
@@ -11837,7 +11838,6 @@
 <translation id="9140050311673642960">किसी नए विषय के बारे में गहराई से जानें</translation>
 <translation id="9140067245205650184">आप एक काम नहीं करने वाले फ़ीचर फ़्लैग का उपयोग कर रहे हैं: <ph name="BAD_FLAG" />. स्थिरता और सुरक्षा पर इससे फ़र्क पड़ेगा.</translation>
 <translation id="914031120300235526">प्रोफ़ाइल अनलॉक नहीं की जा सकती</translation>
-<translation id="9142221601471715336">अपनी फ़ाइलें ड्रैग कर के यहां छोड़ें</translation>
 <translation id="9142637293078737510">इमेज का उपनाम</translation>
 <translation id="9143298529634201539">सुझाव हटाएं?</translation>
 <translation id="9143922477019434797">अपने पासवर्ड सुरक्षित रखें</translation>

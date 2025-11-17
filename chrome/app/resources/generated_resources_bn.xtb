@@ -1057,7 +1057,6 @@
 <translation id="1700517974991662022">ঘুরে দেখা হয়েছে</translation>
 <translation id="1703331064825191675">আপনার পাসওয়ার্ড সম্পর্কে কখনও চিন্তা করবেন না</translation>
 <translation id="1703666494654169921">সাইটগুলিকে ভার্চুয়াল রিয়েলিটি ডিভাইস বা ডেটা ব্যবহার করার অনুমতি দেয় না</translation>
-<translation id="1703849276368677471">টুল</translation>
 <translation id="1704097193565924901">বড় হাতের করুন</translation>
 <translation id="1704230497453185209">সাইটগুলিকে সাউন্ড চালানোর অনুমতি দেয় না</translation>
 <translation id="1706586824377653884">আপনার প্রশাসক দ্বারা যোগ করা হয়েছে</translation>
@@ -2882,6 +2881,7 @@
 <translation id="2946640296642327832">ব্লুটুথ সক্ষম করুন</translation>
 <translation id="2947281105969315778">ট্যাব গ্রুপ শেয়ার করতে বা তাতে যোগ দিতে হলে, আপনাকে Chrome-এ সাইন-ইন করতে হবে</translation>
 <translation id="2947605845283690091">ওয়েব ব্রাউজিং খুবই দ্রুত হতে হবে। একটু সময় নিয়ে এখনই <ph name="BEGIN_LINK" />আপনার এক্সটেনশন চেক করুন<ph name="END_LINK" />।</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{এখানে ফাইল টেনে নিয়ে আসুন}one{এখানে ফাইল টেনে নিয়ে আসুন}other{এখানে ফাইলগুলি টেনে নিয়ে আসুন}}</translation>
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" /> এ যান</translation>
 <translation id="29488703364906173">আধুনিক ওয়েবের জন্য তৈরি একটি দ্রুত, সহজ এবং সুরক্ষিত ওয়েব ব্রাউজার৷</translation>
 <translation id="2950666755714083615">আমি সাইন-আপ করতে চাই</translation>
@@ -4047,6 +4047,7 @@
 <translation id="3756578970075173856">পিন সেট করুন</translation>
 <translation id="3756806135608816820">সাইট ব্লুটুথ ডিভাইস খোঁজার জন্য বলতে পারে</translation>
 <translation id="3757567010566591880">টুলবার থেকে আনপিন করুন</translation>
+<translation id="3757645900890881944">সার্চ টুল</translation>
 <translation id="3757733214359997190">কোনও সাইট পাওয়া যায়নি</translation>
 <translation id="375841316537350618">প্রক্সি স্ক্রিপ্ট ডাউনলোড হচ্ছে...</translation>
 <translation id="3758887577462995665">পরামর্শ:</translation>
@@ -4281,7 +4282,6 @@
 <translation id="3898768766145818464">ভিডিও প্লে বা পজ করুন</translation>
 <translation id="389901847090970821">কীবোর্ড বেছে নিন</translation>
 <translation id="3899457911440165602">সার্টিফিকেট মোছার সময় সমস্যা হয়েছে</translation>
-<translation id="3900568190483700096">প্রশ্নের সাথে ব্যবহার করার জন্য, সর্বাধিক <ph name="FILE_LIMIT" />টি ফাইল আপলোড করুন</translation>
 <translation id="3900966090527141178">পাসওয়ার্ড এক্সপোর্ট করুন</translation>
 <translation id="3903187154317825986">আগে থেকেই তৈরি করা কীবোর্ড</translation>
 <translation id="3903696968689283281">ওয়াই ফাই ডাইরেক্ট মালিক সংক্রান্ত তথ্য:</translation>
@@ -5272,6 +5272,7 @@
 <translation id="4606551464649945562">কোনও সাইটকে আপনার আশেপাশের এলাকার একটি 3D ম্যাপ তৈরি করতে বা ক্যামেরার অবস্থান ট্র্যাক করতে দেবেন না</translation>
 <translation id="4606933160360542263">কাস্টম 'কী'-এর কম্বিনেশন: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ট্যাব গ্রুপ মুছবেন?}one{ট্যাব গ্রুপ মুছবেন?}other{ট্যাব গ্রুপ মুছবেন?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{আপনার প্রশ্নের সাথে ব্যবহার করার জন্য ১টি ফাইল আপলোড করুন}one{আপনার প্রশ্নের সাথে ব্যবহার করার জন্য সর্বাধিক #টি ফাইল আপলোড করুন}other{আপনার প্রশ্নের সাথে ব্যবহার করার জন্য সর্বাধিক #টি ফাইল আপলোড করুন}}</translation>
 <translation id="4608500690299898628">&amp;সন্ধান করুন...</translation>
 <translation id="4609164937357979319">অ্যাকাউন্ট বেছে নেওয়া</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> এ সমস্যা হয়েছে</translation>
@@ -11265,7 +11266,6 @@
 <translation id="876161309768861172">সাইন-ইন করানো যায়নি, আবার চেষ্টা করুন</translation>
 <translation id="8761945298804995673">এই ব্যবহারকারী আগে থেকেই আছেন</translation>
 <translation id="8762886931014513155">আপনার <ph name="DEVICE_TYPE" /> আপডেট করা প্রয়োজন</translation>
-<translation id="8763170551806710928">চিপ দেখুন</translation>
 <translation id="8763927697961133303">USB ডিভাইস</translation>
 <translation id="8766156860774051068">আপনার কিউরেট করা</translation>
 <translation id="8766796754185931010">কোটোয়েরি</translation>
@@ -11447,6 +11447,7 @@
 <translation id="8886745493279779790">ইনঅ্যাক্টিভ ট্যাবের পর্যালোচনা করুন</translation>
 <translation id="8888253246822647887">আপগ্রেড প্রক্রিয়া শেষ হওয়ার পরেই আপনার অ্যাপ চালু হবে। আপগ্রেড প্রক্রিয়াতে কয়েক মিনিট লাগতে পারে।</translation>
 <translation id="8888459276890791557">সহজে অ্যাক্সেস করার জন্য আপনি এই সাইড প্যানেলে পিন করতে পারেন</translation>
+<translation id="8888621340860433230">বিকল্প দেখুন</translation>
 <translation id="8889294078294184559">ব্রাউজ করা চালিয়ে গেলে, সাইট Chrome-এর মাধ্যমে চেক করতে পারে এবং আপনার দেখা কোনও সাইটের থেকে এটি যাচাই করতে পারে যে আপনি আসলে একজন ব্যক্তি, কোনও বট নন</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> নিচে উল্লেখ করা ফাইল এবং ফোল্ডার এডিট করতে পারবে</translation>
 <translation id="8890170499370378450">মোবাইল ডেটা খরচের জন্য আপনাকে চার্জ করা হতে পারে</translation>
@@ -11842,7 +11843,6 @@
 <translation id="9140050311673642960">নতুন কিছু সম্পর্কে খুঁটিয়ে জানুন</translation>
 <translation id="9140067245205650184">আপনি যে ফিচার ফ্ল্যাগটি ব্যবহার করছেন সেটি সমর্থিত নয়: <ph name="BAD_FLAG" />। স্থিতিশীলতা এবং নিরাপত্তা ব্যাহত হতে পারে।</translation>
 <translation id="914031120300235526">প্রোফাইল আনলক করা যায়নি</translation>
-<translation id="9142221601471715336">আপনার ফাইল এখানে রাখুন</translation>
 <translation id="9142637293078737510">ইমেজের উপনাম</translation>
 <translation id="9143298529634201539">সাজেশন সরিয়ে দিতে চান?</translation>
 <translation id="9143922477019434797">আপনার পাসওয়ার্ড সুরক্ষিত রাখুন</translation>

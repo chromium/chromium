@@ -1052,7 +1052,6 @@
 <translation id="1700517974991662022">Кірілген</translation>
 <translation id="1703331064825191675">Құпия сөздеріңіз жайлы уайымдамаңыз</translation>
 <translation id="1703666494654169921">Сайттардың виртуалдық шындық құрылғыларын немесе деректерді пайдалануына рұқсат бермеу</translation>
-<translation id="1703849276368677471">Құралдар</translation>
 <translation id="1704097193565924901">Бас әріпке өзгерту</translation>
 <translation id="1704230497453185209">Сайттардың дыбысты шығаруына рұқсат бермеу</translation>
 <translation id="1706586824377653884">Әкімші енгізген</translation>
@@ -2865,6 +2864,7 @@
 <translation id="2946640296642327832">Bluetooth қосу</translation>
 <translation id="2947281105969315778">Қойындылар топтарын бөлісу немесе оларға қосылу үшін Chrome-ға кіруге рұқсатыңыз болуы керек.</translation>
 <translation id="2947605845283690091">Веб-беттер жылдам ашылуы керек. Сәл уақытыңызды бөліп, <ph name="BEGIN_LINK" />кеңейтімдерді тексеріңіз<ph name="END_LINK" />.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Файлды осы жерге әкеліңіз}other{Файлдарды осы жерге әкеліңіз}}</translation>
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" /> бетіне өту</translation>
 <translation id="29488703364906173">Жылдам, қарапайым және заманауи ғаламтор үшін жасалған қауіпсіз веб-браузер.</translation>
 <translation id="2950666755714083615">Тіркелу</translation>
@@ -4028,6 +4028,7 @@
 <translation id="3756578970075173856">PIN кодын орнату</translation>
 <translation id="3756806135608816820">Сайттар Bluetooth құрылғыларын іздеуді сұрай алады.</translation>
 <translation id="3757567010566591880">Құралдар тақтасынан босату</translation>
+<translation id="3757645900890881944">Іздеу құралдары</translation>
 <translation id="3757733214359997190">Ешқандай сайт табылмады.</translation>
 <translation id="375841316537350618">Прокси сценарийі жүктелуде…</translation>
 <translation id="3758887577462995665">Кеңес:</translation>
@@ -4262,7 +4263,6 @@
 <translation id="3898768766145818464">Бейнені ойнату немесе кідірту</translation>
 <translation id="389901847090970821">Пернетақтаны таңдау</translation>
 <translation id="3899457911440165602">Сертификатты жою қатесі</translation>
-<translation id="3900568190483700096">Сұрағыңызға қосу үшін көп дегенде <ph name="FILE_LIMIT" /> файл жүктеп салыңыз.</translation>
 <translation id="3900966090527141178">Құпия сөздерді экспорттау</translation>
 <translation id="3903187154317825986">Ендірілген пернетақта</translation>
 <translation id="3903696968689283281">Wi-Fi Direct иелері туралы ақпарат:</translation>
@@ -5253,6 +5253,7 @@
 <translation id="4606551464649945562">Сайттарға айналаңыздың 3D картасын жасауға немесе камераңыздың орнын бақылауға рұқсат бермеу</translation>
 <translation id="4606933160360542263">Арнаулы пернелер тіркесімі: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Қойындылар тобын жою қажет пе?}other{Қойындылар топтарын жою қажет пе?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Сұрағыңызға қосу үшін 1 файл жүктеп салыңыз.}other{Сұрағыңызға қосу үшін көп дегенде # файл жүктеп салыңыз.}}</translation>
 <translation id="4608500690299898628">&amp;Табу…</translation>
 <translation id="4609164937357979319">Аккаунт таңдау</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> плагинінде қате шықты</translation>
@@ -11235,7 +11236,6 @@
 <translation id="876161309768861172">Аккаунтқа кіре алмадыңыз. Әрекетті қайталаңыз.</translation>
 <translation id="8761945298804995673">Бұл пайдаланушы бұрыннан бар.</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> құрылғысын жаңарту қажет</translation>
-<translation id="8763170551806710928">Чиптерді көрсету</translation>
 <translation id="8763927697961133303">USB құрылғысы</translation>
 <translation id="8766156860774051068">Сіз сұрыптаған</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
@@ -11416,6 +11416,7 @@
 <translation id="8886745493279779790">Әрекетсіз қойындыларды тексеру</translation>
 <translation id="8888253246822647887">Қолданба, жаңа нұсқа орнатылғаннан кейін, ашылады. Бұл бірнеше минутқа созылуы мүмкін.</translation>
 <translation id="8888459276890791557">Бұл бүйірлік панельді жылдам ашу үшін бекітіп қойсаңыз болады.</translation>
+<translation id="8888621340860433230">Опцияларды көрсету</translation>
 <translation id="8889294078294184559">Шолуды жалғастыра отырып, сайттар Chrome-мен тексеріп, шынайы адам екеніңізді алдыңғы кірген сайтпен растай алады</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> мына файлдар мен қалталарды өңдей алады.</translation>
 <translation id="8890170499370378450">Мобильдік интернет ақысы алынуы мүмкін.</translation>
@@ -11811,7 +11812,6 @@
 <translation id="9140050311673642960">Жаңа ақпаратты тереңінен зерттеу</translation>
 <translation id="9140067245205650184">Қолдау көрсетілмеген элемент жалаушасы қолданылуда: <ph name="BAD_FLAG" />. Тұрақтылық пен қауіпсіздікке зиян келеді.</translation>
 <translation id="914031120300235526">Профиль құлпын ашу мүмкін емес</translation>
-<translation id="9142221601471715336">Файлдарды осы жерге қойыңыз.</translation>
 <translation id="9142637293078737510">Сурет атауы</translation>
 <translation id="9143298529634201539">Ұсынысты өшіру керек пе?</translation>
 <translation id="9143922477019434797">Құпия сөздеріңізді қорғаңыз</translation>

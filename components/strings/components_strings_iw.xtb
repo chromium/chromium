@@ -2306,7 +2306,7 @@
 <translation id="4762097990764616058">להמשיך לשלם באמצעות <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">התנאים וההגבלות סופקו על ידי <ph name="URL" /></translation>
 <translation id="4764680219299728632">תנורים וכיריים</translation>
-<translation id="4764776831041365478">ייתכן שדף האינטרנט בכתובת <ph name="URL" /> אינו פעיל זמנית, או שהועבר לכתובת אינטרנט חדשה לצמיתות.</translation>
+<translation id="4764776831041365478">ניסית להיכנס לדף האינטרנט בכתובת <ph name="URL" />, אבל ככל הנראה הוא לא פעיל כרגע, או שהוא עבר לכתובת חדשה.</translation>
 <translation id="4766713847338118463">שתי סיכות הידוק בחלק התחתון</translation>
 <translation id="4768816584204270288">כשמשלמים בתשלומים, מוזן מספר כרטיס וירטואלי חד-פעמי. אפשר ללחוץ כדי להעתיק ולהדביק את פרטי הכרטיס לרכישה הזו.</translation>
 <translation id="4768864802656530630">יומני מערכת מפורטים. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>

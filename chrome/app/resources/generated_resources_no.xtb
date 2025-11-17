@@ -1053,7 +1053,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1700517974991662022">Besøkt.</translation>
 <translation id="1703331064825191675">Slutt å bekymre deg for passordene dine</translation>
 <translation id="1703666494654169921">Ikke la nettsteder bruke virtuell virkelighet-enheter eller -data</translation>
-<translation id="1703849276368677471">Verktøy</translation>
 <translation id="1704097193565924901">Gjør forbokstavene store</translation>
 <translation id="1704230497453185209">Ikke la nettsteder spille av lyd</translation>
 <translation id="1706586824377653884">Lagt til av administratoren din</translation>
@@ -2875,6 +2874,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2946640296642327832">Slå på Bluetooth</translation>
 <translation id="2947281105969315778">For å dele eller bli med i fanegrupper må du kunne logge på Chrome</translation>
 <translation id="2947605845283690091">Det skal gå raskt å surfe på nettet. Bruk et øyeblikk på å <ph name="BEGIN_LINK" />sjekke utvidelsene dine<ph name="END_LINK" /> nå.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Slipp filen her}other{Slipp filene her}}</translation>
 <translation id="2948300991547862301">Gå til <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">En rask, enkel og sikker nettleser, utviklet for et moderne Internett.</translation>
 <translation id="2950666755714083615">Registrer meg</translation>
@@ -4040,6 +4040,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3756578970075173856">Angi PIN-kode</translation>
 <translation id="3756806135608816820">Nettsteder kan be om å få se etter Bluetooth-enheter</translation>
 <translation id="3757567010566591880">Løsne fra verktøyraden</translation>
+<translation id="3757645900890881944">Søkeverktøy</translation>
 <translation id="3757733214359997190">Fant ingen nettsteder</translation>
 <translation id="375841316537350618">Laster ned mellomtjenerskript ...</translation>
 <translation id="3758887577462995665">Tips:</translation>
@@ -4274,7 +4275,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3898768766145818464">Spill av videoen eller sett den på pause</translation>
 <translation id="389901847090970821">Velg tastatur</translation>
 <translation id="3899457911440165602">Feil ved sletting av sertifikatet</translation>
-<translation id="3900568190483700096">Last opp opptil <ph name="FILE_LIMIT" /> filer som skal brukes med spørsmålet ditt</translation>
 <translation id="3900966090527141178">Eksportér passord</translation>
 <translation id="3903187154317825986">Innebygd tastatur</translation>
 <translation id="3903696968689283281">Informasjon om Wifi Direct-eiere:</translation>
@@ -5263,6 +5263,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4606551464649945562">Ikke la nettsteder lage 3D-kart av omgivelsene dine eller spore kameraposisjonen</translation>
 <translation id="4606933160360542263">Egendefinert tastekombinasjon: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Vil du slette fanegruppen?}other{Vil du slette fanegruppene?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Last opp én fil som skal brukes med spørsmålet ditt}other{Last opp opptil # filer som skal brukes med spørsmålet ditt}}</translation>
 <translation id="4608500690299898628">&amp;Finn</translation>
 <translation id="4609164937357979319">Kontovalg</translation>
 <translation id="4610162781778310380">Det oppsto en feil med <ph name="PLUGIN_NAME" /></translation>
@@ -11250,7 +11251,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="876161309768861172">Kunne ikke logge deg på. Prøv på nytt</translation>
 <translation id="8761945298804995673">Denne brukeren finnes allerede</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> trenger en oppdatering</translation>
-<translation id="8763170551806710928">Vis brikker</translation>
 <translation id="8763927697961133303">USB-enhet</translation>
 <translation id="8766156860774051068">Utvalgt av deg</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
@@ -11431,6 +11431,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8886745493279779790">Gjennomgå inaktive faner</translation>
 <translation id="8888253246822647887">Appen åpnes når oppgraderingen er ferdig. Oppgraderinger kan ta noen minutter.</translation>
 <translation id="8888459276890791557">Du kan feste dette sidepanelet for enkel tilgang</translation>
+<translation id="8888621340860433230">Vis alternativer</translation>
 <translation id="8889294078294184559">Når du fortsetter å surfe, kan nettsteder kontrollere denne informasjonen i Chrome og få bekreftet av nettsteder du har besøkt tidligere, at du sannsynligvis er en ekte person</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> kan redigere disse filene og mappene</translation>
 <translation id="8890170499370378450">Mobildatakostnader kan påløpe</translation>
@@ -11826,7 +11827,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9140050311673642960">Fordyp deg i noe nytt</translation>
 <translation id="9140067245205650184">Du bruker et funksjonsflagg som ikke støttes: <ph name="BAD_FLAG" />. Dette reduserer stabiliteten og sikkerheten.</translation>
 <translation id="914031120300235526">Kan ikke låse opp profilen</translation>
-<translation id="9142221601471715336">Slipp filene her</translation>
 <translation id="9142637293078737510">Avbildningsalias</translation>
 <translation id="9143298529634201539">Vil du fjerne forslaget?</translation>
 <translation id="9143922477019434797">Beskytt passordene dine</translation>

@@ -1057,7 +1057,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1700517974991662022">Visitado</translation>
 <translation id="1703331064825191675">Nunca se preocupe com suas senhas</translation>
 <translation id="1703666494654169921">Não permitir que os sites usem dispositivos ou dados de realidade virtual</translation>
-<translation id="1703849276368677471">Ferramentas</translation>
 <translation id="1704097193565924901">Iniciais em maiúscula</translation>
 <translation id="1704230497453185209">Não permitir que os sites toquem sons</translation>
 <translation id="1706586824377653884">Adicionado pelo seu administrador</translation>
@@ -2881,6 +2880,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2946640296642327832">Ativar Bluetooth</translation>
 <translation id="2947281105969315778">Para compartilhar ou participar de grupos de guias, é necessário fazer login no Chrome</translation>
 <translation id="2947605845283690091">A navegação da Web deverá ser rápida. Aproveite para <ph name="BEGIN_LINK" />verificar suas extensões<ph name="END_LINK" /> agora.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Solte o arquivo aqui}one{Solte o arquivo aqui}other{Solte os arquivos aqui}}</translation>
 <translation id="2948300991547862301">Ir para a página <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Um navegador da Web rápido, simples e seguro, desenvolvido para a Web moderna.</translation>
 <translation id="2950666755714083615">Fazer inscrição</translation>
@@ -4047,6 +4047,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3756578970075173856">Definir PIN</translation>
 <translation id="3756806135608816820">Os sites podem pedir para procurar dispositivos Bluetooth</translation>
 <translation id="3757567010566591880">Liberar da barra de ferramentas</translation>
+<translation id="3757645900890881944">Ferramentas de pesquisa</translation>
 <translation id="3757733214359997190">Nenhum site encontrado</translation>
 <translation id="375841316537350618">Fazendo o download do script de proxy...</translation>
 <translation id="3758887577462995665">Dica:</translation>
@@ -4281,7 +4282,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3898768766145818464">Iniciar ou pausar vídeo</translation>
 <translation id="389901847090970821">Selecionar teclado</translation>
 <translation id="3899457911440165602">Erro ao excluir o certificado</translation>
-<translation id="3900568190483700096">Faça upload de até <ph name="FILE_LIMIT" /> arquivos para usar com sua pergunta</translation>
 <translation id="3900966090527141178">Exportar senhas</translation>
 <translation id="3903187154317825986">Teclado integrado</translation>
 <translation id="3903696968689283281">Informações dos proprietários do Wi-Fi Direct:</translation>
@@ -5272,6 +5272,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4606551464649945562">Não permitir que os sites criem um mapa 3D do ambiente a sua volta ou acompanhem a posição da câmera</translation>
 <translation id="4606933160360542263">Combinação de teclas personalizada: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Excluir grupo de guias?}one{Excluir grupo de guias?}other{Excluir grupos de guias?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Faça upload de 1 arquivo para usar com sua pergunta}one{Faça upload de até # arquivo para usar com sua pergunta}other{Faça upload de até # arquivos para usar com sua pergunta}}</translation>
 <translation id="4608500690299898628">&amp;Localizar...</translation>
 <translation id="4609164937357979319">Seleção de conta</translation>
 <translation id="4610162781778310380">O plug-in <ph name="PLUGIN_NAME" /> encontrou um erro</translation>
@@ -11265,7 +11266,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="876161309768861172">Não foi possível fazer login. Tente de novo.</translation>
 <translation id="8761945298804995673">Esse usuário já existe</translation>
 <translation id="8762886931014513155">O <ph name="DEVICE_TYPE" /> precisa de uma atualização</translation>
-<translation id="8763170551806710928">Mostrar ícones</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8766156860774051068">Selecionados por você</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
@@ -11447,6 +11447,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8886745493279779790">Revisar guias inativas</translation>
 <translation id="8888253246822647887">O app será aberto após a conclusão do upgrade. Os upgrades podem levar alguns minutos.</translation>
 <translation id="8888459276890791557">Fixe este painel lateral para facilitar o acesso</translation>
+<translation id="8888621340860433230">Mostrar opções</translation>
 <translation id="8889294078294184559">Conforme você navega, eles podem verificar com o navegador e o site visitado anteriormente que você é uma pessoa real</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> pode editar os arquivos e as pastas a seguir</translation>
 <translation id="8890170499370378450">Sujeito a cobrança para dados móveis</translation>
@@ -11842,7 +11843,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9140050311673642960">Saiba mais sobre algo novo</translation>
 <translation id="9140067245205650184">Sinalizador de recurso incompatível usado: <ph name="BAD_FLAG" />. Estabilidade e segurança afetadas.</translation>
 <translation id="914031120300235526">Não é possível desbloquear o perfil</translation>
-<translation id="9142221601471715336">Solte seus arquivos aqui</translation>
 <translation id="9142637293078737510">Alias de imagem</translation>
 <translation id="9143298529634201539">Remover sugestão?</translation>
 <translation id="9143922477019434797">Proteger senhas</translation>
