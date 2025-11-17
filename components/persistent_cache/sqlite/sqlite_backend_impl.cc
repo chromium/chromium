@@ -69,6 +69,7 @@ SqliteBackendImpl::SqliteBackendImpl(SqliteVfsFileSet vfs_file_set)
               vfs_file_set_)),
       db_(std::in_place,
           sql::DatabaseOptions()
+              .set_read_only(vfs_file_set_.read_only())
               .set_exclusive_locking(false)
               .set_vfs_name_discouraged(
                   SqliteSandboxedVfsDelegate::kSqliteVfsName)
