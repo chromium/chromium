@@ -788,15 +788,17 @@ void ChromeAutofillClient::ShowAutofillSettings(
             autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown);
         chrome::ShowSettingsSubPage(browser, chrome::kAddressesSubPage);
         return;
-      case SuggestionType::kManageAutofillAi: {
-        std::string_view sub_page =
-            base::FeatureList::IsEnabled(
-                autofill::features::kYourSavedInfoSettingsPage)
-                ? chrome::kYourSavedInfoSubPage
-                : chrome::kAutofillAiSubPage;
-        chrome::ShowSettingsSubPage(browser, sub_page);
+      case SuggestionType::kManageAutofillAi:
+        if (base::FeatureList::IsEnabled(
+                autofill::features::kYourSavedInfoSettingsPage)) {
+          base::UmaHistogramEnumeration(
+              "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
+              autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown);
+          chrome::ShowSettingsSubPage(browser, chrome::kYourSavedInfoSubPage);
+        } else {
+          chrome::ShowSettingsSubPage(browser, chrome::kAutofillAiSubPage);
+        }
         return;
-      }
       case SuggestionType::kManagePlusAddress:
         CHECK(base::FeatureList::IsEnabled(
             plus_addresses::features::kPlusAddressesEnabled));
