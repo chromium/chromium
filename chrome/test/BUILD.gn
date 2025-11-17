@@ -7611,6 +7611,7 @@ test("unit_tests") {
       "//chrome/browser:chrome_process_finder",
       "//chrome/browser/os_crypt:unit_tests",
       "//chrome/browser/shortcuts",
+      "//chrome/browser/win:registry_watcher",
       "//chrome/browser/win/conflicts:unit_tests",
       "//chrome/chrome_elf:constants",
       "//chrome/common/notifications",

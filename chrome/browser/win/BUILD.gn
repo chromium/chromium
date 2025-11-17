@@ -24,3 +24,11 @@ source_set("cloud_synced_folder_checker") {
     "//chrome/common:constants",
   ]
 }
+
+source_set("registry_watcher") {
+  sources = [
+    "registry_watcher.cc",
+    "registry_watcher.h",
+  ]
+  deps = [ "//base" ]
+}

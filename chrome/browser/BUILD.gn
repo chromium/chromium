@@ -6486,8 +6486,6 @@ static_library("browser") {
       "win/jumplist_updater.h",
       "win/parental_controls.cc",
       "win/parental_controls.h",
-      "win/registry_watcher.cc",
-      "win/registry_watcher.h",
       "win/remove_app_compat_entries.cc",
       "win/remove_app_compat_entries.h",
       "win/settings_app_monitor.cc",
