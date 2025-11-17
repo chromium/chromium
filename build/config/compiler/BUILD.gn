@@ -1199,12 +1199,6 @@ config("compiler") {
     }
   }
 
-  # crbug.com/397463803: Set this until CrOS' user enumeration is done; its
-  # `lld` will complain otherwise. Should be removable by Q4 2025.
-  if (is_chromeos) {
-    rustenv += [ "CROSTC_IS_AWARE_OF_THIS_USECASE=1" ]
-  }
-
   # 64-bit Android sometimes defines __ARM_NEON but not __ARM_NEON__.
   # 32-bit Android builds and macOS, however, define __ARM_NEON__,
   # and code typically checks for this.
