@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/common/extensions/api/tabs.h"
+#include "chrome/common/extensions/api/windows.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/translate/core/browser/translate_driver.h"
 #include "components/zoom/zoom_controller.h"
@@ -206,6 +207,15 @@ class WindowsUpdateFunction : public ExtensionFunction {
   ~WindowsUpdateFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("windows.update", WINDOWS_UPDATE)
+
+ private:
+  // Applies the updates from `params` to the `browser` window.
+  void UpdateWindowState(const api::windows::Update::Params& params,
+                         BrowserWindowInterface* browser,
+                         WindowController* window_controller,
+                         ui::mojom::WindowShowState show_state,
+                         bool set_window_bounds,
+                         const gfx::Rect& window_bounds);
 };
 class WindowsRemoveFunction : public ExtensionFunction {
   ~WindowsRemoveFunction() override = default;

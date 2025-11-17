@@ -87,6 +87,73 @@ bool MatchesBool(const std::optional<bool>& boolean, bool value) {
   return !boolean || *boolean == value;
 }
 
+// Returns true if the given browser window is in locked fullscreen mode
+// (a special type of fullscreen where the user is locked into one browser
+// window).
+// TODO(https://crbug.com/432056907): Determine if we need locked-fullscreen
+// support on desktop android.
+bool IsLockedFullscreen(BrowserWindowInterface* browser) {
+#if BUILDFLAG(IS_CHROMEOS)
+  return platform_util::IsBrowserLockedFullscreen(
+      browser->GetBrowserForMigrationOnly());
+#else
+  return false;
+#endif
+}
+
+// Places the window in a special type of fullscreen where the user is locked
+// into one browser window based on `is_locked_fullscreen`.
+void MaybeSetLockedFullscreenState(const api::windows::Update::Params& params,
+                                   BrowserWindowInterface* browser,
+                                   bool is_locked_fullscreen) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // State will be WINDOW_STATE_NONE if the state parameter wasn't passed from
+  // the JS side, and in that case we don't want to change the locked state.
+  Browser* const target_browser = browser->GetBrowserForMigrationOnly();
+  if (target_browser) {
+    Profile* const browser_profile = target_browser->profile();
+    if (is_locked_fullscreen &&
+        params.update_info.state != windows::WindowState::kLockedFullscreen &&
+        params.update_info.state != windows::WindowState::kNone) {
+      ash::boca::LockedQuizSessionManagerFactory::GetInstance()
+          ->GetForBrowserContext(browser_profile)
+          ->SetLockedFullscreenState(target_browser,
+                                     /*pinned=*/false);
+    } else if (!is_locked_fullscreen &&
+               params.update_info.state ==
+                   windows::WindowState::kLockedFullscreen) {
+      ash::boca::LockedQuizSessionManagerFactory::GetInstance()
+          ->GetForBrowserContext(browser_profile)
+          ->SetLockedFullscreenState(target_browser,
+                                     /*pinned=*/true);
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+// Updates `window_bounds` from `params`. Returns true if bounds were set.
+bool UpdateWindowBoundsFromParams(const api::windows::Update::Params& params,
+                                  gfx::Rect& window_bounds) {
+  bool set_window_bounds = false;
+  if (params.update_info.left) {
+    window_bounds.set_x(*params.update_info.left);
+    set_window_bounds = true;
+  }
+  if (params.update_info.top) {
+    window_bounds.set_y(*params.update_info.top);
+    set_window_bounds = true;
+  }
+  if (params.update_info.width) {
+    window_bounds.set_width(*params.update_info.width);
+    set_window_bounds = true;
+  }
+  if (params.update_info.height) {
+    window_bounds.set_height(*params.update_info.height);
+    set_window_bounds = true;
+  }
+  return set_window_bounds;
+}
+
 }  // namespace
 
 namespace tabs_internal {
@@ -456,16 +523,7 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
   // Don't allow locked fullscreen operations on a window without the proper
   // permission (also don't allow any operations on a locked window if the
   // extension doesn't have the permission).
-  // TODO(https://crbug.com/432056907): Determine if we need locked-fullscreen
-  // support on desktop android.
-  const bool is_locked_fullscreen =
-#if BUILDFLAG(IS_CHROMEOS)
-      platform_util::IsBrowserLockedFullscreen(
-          browser->GetBrowserForMigrationOnly());
-#else
-      false;
-#endif
-
+  const bool is_locked_fullscreen = IsLockedFullscreen(browser);
   if ((params->update_info.state == windows::WindowState::kLockedFullscreen ||
        is_locked_fullscreen) &&
       !tabs_internal::ExtensionHasLockedFullscreenPermission(extension())) {
@@ -481,23 +539,8 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
   gfx::Rect window_bounds = browser_window->IsMinimized()
                                 ? browser_window->GetRestoredBounds()
                                 : browser_window->GetBounds();
-  bool set_window_bounds = false;
-  if (params->update_info.left) {
-    window_bounds.set_x(*params->update_info.left);
-    set_window_bounds = true;
-  }
-  if (params->update_info.top) {
-    window_bounds.set_y(*params->update_info.top);
-    set_window_bounds = true;
-  }
-  if (params->update_info.width) {
-    window_bounds.set_width(*params->update_info.width);
-    set_window_bounds = true;
-  }
-  if (params->update_info.height) {
-    window_bounds.set_height(*params->update_info.height);
-    set_window_bounds = true;
-  }
+  const bool set_window_bounds =
+      UpdateWindowBoundsFromParams(*params, window_bounds);
 
   if (set_window_bounds &&
       !tabs_internal::WindowBoundsIntersectDisplays(window_bounds)) {
@@ -527,30 +570,25 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
   }
 
   // Parameters are valid. Now to perform the actual updates.
+  MaybeSetLockedFullscreenState(*params, browser, is_locked_fullscreen);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // state will be WINDOW_STATE_NONE if the state parameter wasn't passed from
-  // the JS side, and in that case we don't want to change the locked state.
-  Browser* const target_browser = browser->GetBrowserForMigrationOnly();
-  if (target_browser) {
-    Profile* const browser_profile = target_browser->profile();
-    if (is_locked_fullscreen &&
-        params->update_info.state != windows::WindowState::kLockedFullscreen &&
-        params->update_info.state != windows::WindowState::kNone) {
-      ash::boca::LockedQuizSessionManagerFactory::GetInstance()
-          ->GetForBrowserContext(browser_profile)
-          ->SetLockedFullscreenState(target_browser,
-                                     /*pinned=*/false);
-    } else if (!is_locked_fullscreen &&
-               params->update_info.state ==
-                   windows::WindowState::kLockedFullscreen) {
-      ash::boca::LockedQuizSessionManagerFactory::GetInstance()
-          ->GetForBrowserContext(browser_profile)
-          ->SetLockedFullscreenState(target_browser,
-                                     /*pinned=*/true);
-    }
-  }
-#endif  // IS_CHROMEOS
+  UpdateWindowState(*params, browser, window_controller, show_state,
+                    set_window_bounds, window_bounds);
+
+  return RespondNow(
+      WithArguments(window_controller->CreateWindowValueForExtension(
+          extension(), WindowController::kDontPopulateTabs,
+          source_context_type())));
+}
+
+void WindowsUpdateFunction::UpdateWindowState(
+    const api::windows::Update::Params& params,
+    BrowserWindowInterface* browser,
+    WindowController* window_controller,
+    ui::mojom::WindowShowState show_state,
+    bool set_window_bounds,
+    const gfx::Rect& window_bounds) {
+  ui::BaseWindow* browser_window = browser->GetWindow();
 
   if (show_state != ui::mojom::WindowShowState::kFullscreen &&
       show_state != ui::mojom::WindowShowState::kDefault) {
@@ -583,22 +621,17 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
     browser_window->SetBounds(window_bounds);
   }
 
-  if (params->update_info.focused) {
-    if (*params->update_info.focused) {
+  if (params.update_info.focused) {
+    if (*params.update_info.focused) {
       browser_window->Activate();
     } else {
       browser_window->Deactivate();
     }
   }
 
-  if (params->update_info.draw_attention) {
-    browser_window->FlashFrame(*params->update_info.draw_attention);
+  if (params.update_info.draw_attention) {
+    browser_window->FlashFrame(*params.update_info.draw_attention);
   }
-
-  return RespondNow(
-      WithArguments(window_controller->CreateWindowValueForExtension(
-          extension(), WindowController::kDontPopulateTabs,
-          source_context_type())));
 }
 
 ExtensionFunction::ResponseAction WindowsRemoveFunction::Run() {
