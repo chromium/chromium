@@ -4,6 +4,7 @@
 
 #include "services/tracing/public/cpp/trace_event_args_allowlist.h"
 
+#include <array>
 #include <string_view>
 
 #include "base/compiler_specific.h"
@@ -99,10 +100,9 @@ constexpr auto kEventArgsAllowlist = std::to_array<AllowlistEntry>({
     {TRACE_DISABLED_BY_DEFAULT("memory-infra"), "*", kMemoryDumpAllowedArgs},
     {TRACE_DISABLED_BY_DEFAULT("system_stats"), "*", nullptr},
     {TRACE_DISABLED_BY_DEFAULT("v8.gc"), "*", kV8GCAllowedArgs},
-    {nullptr, nullptr, nullptr},
 });
 
-auto kMetadataAllowlist = std::to_array<const char*>({
+constexpr auto kMetadataAllowlist = std::to_array<const char*>({
     "chrome-bitness",
     "chrome-dcheck-on",
     "chrome-library-name",
@@ -122,7 +122,6 @@ auto kMetadataAllowlist = std::to_array<const char*>({
     "scenario_name",
     "trace-config",
     "user-agent",
-    nullptr,
 });
 
 }  // namespace
@@ -148,8 +147,7 @@ bool IsTraceEventArgsAllowlisted(
       UNSAFE_TODO(category_group_name + strlen(category_group_name)), ",");
   while (category_group_tokens.GetNext()) {
     std::string_view category_group_token = category_group_tokens.token_piece();
-    for (int i = 0; kEventArgsAllowlist[i].category_name != nullptr; ++i) {
-      const AllowlistEntry& allowlist_entry = kEventArgsAllowlist[i];
+    for (const auto& allowlist_entry : kEventArgsAllowlist) {
       DCHECK(allowlist_entry.event_name);
 
       if (base::MatchPattern(category_group_token,
@@ -168,8 +166,8 @@ bool IsTraceEventArgsAllowlisted(
 }
 
 bool IsMetadataAllowlisted(const std::string& metadata_name) {
-  for (size_t i = 0; kMetadataAllowlist[i] != nullptr; ++i) {
-    if (base::MatchPattern(metadata_name, kMetadataAllowlist[i])) {
+  for (const char* entry : kMetadataAllowlist) {
+    if (base::MatchPattern(metadata_name, entry)) {
       return true;
     }
   }
