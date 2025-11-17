@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/views/extensions/extension_permissions_view.h"
 
-#include "chrome/browser/extensions/install_prompt_permissions.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/extensions/expandable_container_view.h"
+#include "extensions/browser/install_prompt_permissions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"

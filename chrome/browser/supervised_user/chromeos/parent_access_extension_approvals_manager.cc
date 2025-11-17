@@ -9,12 +9,12 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/install_prompt_permissions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/install_prompt_permissions.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permission_set.h"

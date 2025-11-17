@@ -1,9 +1,9 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_INSTALL_PROMPT_PERMISSIONS_H_
-#define CHROME_BROWSER_EXTENSIONS_INSTALL_PROMPT_PERMISSIONS_H_
+#ifndef EXTENSIONS_BROWSER_INSTALL_PROMPT_PERMISSIONS_H_
+#define EXTENSIONS_BROWSER_INSTALL_PROMPT_PERMISSIONS_H_
 
 #include <string>
 #include <vector>
@@ -37,4 +37,4 @@ struct InstallPromptPermissions {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_INSTALL_PROMPT_PERMISSIONS_H_
+#endif  // EXTENSIONS_BROWSER_INSTALL_PROMPT_PERMISSIONS_H_

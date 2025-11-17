@@ -405,6 +405,8 @@ source_set("browser_sources") {
     "install_observer.h",
     "install_prefs_helper.cc",
     "install_prefs_helper.h",
+    "install_prompt_permissions.cc",
+    "install_prompt_permissions.h",
     "install_signer.cc",
     "install_signer.h",
     "install_stage.h",
