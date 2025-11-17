@@ -54,6 +54,9 @@ void OmniboxPopupPresenterBase::Hide() {
   // Only close if UI DevTools settings allow.
   if (widget_->ShouldHandleNativeWidgetActivationChanged(false)) {
     widget_->Hide();
+    if (auto* content = GetWebUIContent()) {
+      content->CloseUI();
+    }
   }
 }
 
