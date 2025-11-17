@@ -24,6 +24,8 @@ import {getHtml} from './context_menu_entrypoint.html.js';
 
 /** The width of the dropdown menu in pixels. */
 const MENU_WIDTH_PX = 190;
+/** The string value of the tall bottom context layout mode. */
+const TALL_BOTTOM_CONTEXT_LAYOUT_MODE = 'TallBottomContext';
 
 export interface ContextMenuEntrypointElement {
   $: {
@@ -66,11 +68,15 @@ export class ContextMenuEntrypointElement extends
       disabledTabIds: {type: Object},
       tabSuggestions: {type: Array},
       entrypointName: {type: String},
+      searchboxLayoutMode: {type: String},
 
       // =========================================================================
       // Protected properties
       // =========================================================================
-      enableMultiTabSelection_: {type: Boolean},
+      enableMultiTabSelection_: {
+        reflect: true,
+        type: Boolean,
+      },
       tabPreviewUrl_: {type: String},
       tabPreviewsEnabled_: {type: Boolean},
       showDeepSearch_: {
@@ -92,6 +98,7 @@ export class ContextMenuEntrypointElement extends
   accessor disabledTabIds: Map<number, UnguessableToken> = new Map();
   accessor tabSuggestions: TabInfo[] = [];
   accessor entrypointName: string = '';
+  accessor searchboxLayoutMode: string = '';
 
   protected accessor enableMultiTabSelection_: boolean =
       loadTimeData.getBoolean('composeboxContextMenuEnableMultiTabSelection');
@@ -109,9 +116,10 @@ export class ContextMenuEntrypointElement extends
     super();
   }
 
-  repositionMenu() {
-    if (this.$.menu.open && this.enableMultiTabSelection_) {
-      requestAnimationFrame(this.showMenuAtEntrypoint_.bind(this));
+  openMenuForMultiSelection() {
+    if (this.enableMultiTabSelection_ &&
+        this.searchboxLayoutMode !== TALL_BOTTOM_CONTEXT_LAYOUT_MODE) {
+      this.showMenuAtEntrypoint_();
     }
   }
 
@@ -188,6 +196,9 @@ export class ContextMenuEntrypointElement extends
 
   protected deleteTabContext_(uuid: UnguessableToken) {
     this.fire('delete-tab-context', {uuid: uuid});
+    if (this.searchboxLayoutMode === TALL_BOTTOM_CONTEXT_LAYOUT_MODE) {
+      this.$.menu.close();
+    }
   }
 
 
@@ -198,7 +209,8 @@ export class ContextMenuEntrypointElement extends
       url: tabInfo.url,
       delayUpload: false,
     });
-    if (!this.enableMultiTabSelection_ || this.entrypointName === 'Realbox') {
+    if (!this.enableMultiTabSelection_ || this.entrypointName === 'Realbox' ||
+        this.searchboxLayoutMode === TALL_BOTTOM_CONTEXT_LAYOUT_MODE) {
       this.$.menu.close();
     }
   }
