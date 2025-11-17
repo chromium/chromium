@@ -195,7 +195,7 @@ in third_party/OWNERS for help.
 
 See [Moving large files to Google Storage](https://goto.google.com/checking-in-large-files)
 
-# Standard directory structure for dependencies {standard-dep-structure}
+# Standard directory structure for dependencies {#standard-dep-structure}
 
 Regardless of how you import a dependency, you should use the following
 directory structure. This folder layout enforces separation between first and
