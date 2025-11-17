@@ -102,9 +102,21 @@ int GetSubtitleID(bool is_signin_promo,
         }
       } break;
       case signin::SignInPromoType::kExtension: {
-        return is_signin_promo
-                   ? IDS_EXTENSION_INSTALLED_PROMO_EXPLICIT_SIGNIN_MESSAGE
-                   : IDS_EXTENSION_INSTALLED_DICE_PROMO_SYNC_MESSAGE;
+        if (!is_signin_promo) {
+          return IDS_EXTENSION_INSTALLED_DICE_PROMO_SYNC_MESSAGE;
+        }
+
+        switch (signed_in_state) {
+          case SignedInState::kSignedOut:
+          case SignedInState::kWebOnlySignedIn:
+            return IDS_EXTENSION_INSTALLED_PROMO_EXPLICIT_SIGNIN_MESSAGE;
+          case SignedInState::kSignInPending:
+            return IDS_EXTENSION_VERIFY_PROMO_SUBTITLE;
+          case SignedInState::kSignedIn:
+          case SignedInState::kSyncing:
+          case SignedInState::kSyncPaused:
+            break;
+        }
       }
     }
   }

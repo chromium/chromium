@@ -324,7 +324,9 @@ class ShowSigninPromoTestWithFeatureFlags : public ShowPromoTest {
     ShowPromoTest::SetUp();
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {switches::kSyncEnableBookmarksInTransportMode},
+        {switches::kSyncEnableBookmarksInTransportMode,
+         syncer::kReplaceSyncPromosWithSignInPromos,
+         syncer::kUnoPhase2FollowUp},
         /*disabled_features=*/{});
     ON_CALL(*sync_service(), GetDataTypesForTransportOnlyMode())
         .WillByDefault(testing::Return(syncer::DataTypeSet::All()));
@@ -450,6 +452,15 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
 }
 
 TEST_F(ShowSigninPromoTestWithFeatureFlags, ShowExtensionsPromoWithNoAccount) {
+  EXPECT_TRUE(ShouldShowExtensionSignInPromo(*profile(), *CreateExtension()));
+}
+
+TEST_F(ShowSigninPromoTestWithFeatureFlags,
+       ShowExtensionsPromoWithSignInPendingAccount) {
+  MakePrimaryAccountAvailable(identity_manager(), "test@email.com",
+                              ConsentLevel::kSignin);
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager());
+
   EXPECT_TRUE(ShouldShowExtensionSignInPromo(*profile(), *CreateExtension()));
 }
 

@@ -5877,6 +5877,10 @@ are declared in tools/grit/grit_args.gni.
           To get your extensions on all your computers, turn on sync
         </message>
         <!-- End of Sync Promo strings for Desktop Identity Consistency. -->
+
+        <message name="IDS_EXTENSION_VERIFY_PROMO_SUBTITLE" desc="This is the body text of a confirmation message and means that the extension is in an account-pending storage. In other words, it's waiting to be uploaded to the user's Google Account. It appears when the user was signed in to Chrome with account storage for extensions enabled but their sign-in credentials have expired; now, they need to sign back in to Chrome. If the user wants to save this data to their Google Account, they can click the 'Verify it's you' button at the bottom of this message. The tone should be motivating.">
+          To get this extension on all your computers, verify it’s you
+        </message>
       </if>
 
       <!-- Directory access confirmation dialog -->

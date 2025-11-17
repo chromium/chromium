@@ -393,17 +393,19 @@ bool ShouldShowExtensionSyncPromo(Profile& profile,
     return false;
   }
 
-  // `ShouldShowSyncPromo()` does not check if extensions are syncing in
-  // transport mode. That's why `IsSyncingExtensionsEnabled()` is added so the
-  // sign in promo is not shown in that case.
-  if (extensions::sync_util::IsSyncingExtensionsEnabled(&profile)) {
-    return false;
-  }
+  if (!base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
+    // `ShouldShowSyncPromo()` does not check if extensions are syncing in
+    // transport mode. That's why `IsSyncingExtensionsEnabled()` is added so the
+    // sign in promo is not shown in that case.
+    if (extensions::sync_util::IsSyncingExtensionsEnabled(&profile)) {
+      return false;
+    }
 
-  // The promo is not shown to users that have explicitly signed in through the
-  // browser (even if extensions are not syncing).
-  if (profile.GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin)) {
-    return false;
+    // The promo is not shown to users that have explicitly signed in through
+    // the browser (even if extensions are not syncing).
+    if (profile.GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin)) {
+      return false;
+    }
   }
 
   return true;

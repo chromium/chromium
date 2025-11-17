@@ -507,10 +507,10 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
       "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
   histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
 
+  // It was recorded that the reauth sign in promo was shown and accepted.
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
       signin_metrics::AccessPoint::kPasswordBubble, 1);
-
   histogram_tester.ExpectUniqueSample(
       "Signin.SigninPending.Offered",
       signin_metrics::AccessPoint::kPasswordBubble, 1);
@@ -740,10 +740,10 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
       "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
   histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
 
+  // It was recorded that the reauth sign in promo was shown and accepted.
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
       signin_metrics::AccessPoint::kAddressBubble, 1);
-
   histogram_tester.ExpectUniqueSample(
       "Signin.SigninPending.Offered",
       signin_metrics::AccessPoint::kAddressBubble, 1);
@@ -1061,10 +1061,10 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
       "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
   histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
 
+  // It was recorded that the reauth sign in promo was shown and accepted.
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
       signin_metrics::AccessPoint::kBookmarkBubble, 1);
-
   histogram_tester.ExpectUniqueSample(
       "Signin.SigninPending.Offered",
       signin_metrics::AccessPoint::kBookmarkBubble, 1);
@@ -1214,6 +1214,88 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
 
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
+      signin_metrics::AccessPoint::kExtensionInstallBubble, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
+                       ExtensionSignInPromoWithAccountSignInPending) {
+  // Sign in with an account, and put its refresh token into an error
+  // state. This simulates the "sign in pending" state.
+  AccountInfo info = signin::MakePrimaryAccountAvailable(
+      identity_manager(), "test@email.com", signin::ConsentLevel::kSignin);
+  ExtendAccountInfo(info);
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager());
+
+  // Start recording metrics after signing in.
+  base::HistogramTester histogram_tester;
+
+  // Install an extension, which will add it to the pending account storage.
+  // Then trigger the extension bubble.
+  scoped_refptr<const Extension> extension = InstallExtension();
+  ASSERT_TRUE(extension);
+  ASSERT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
+            AccountExtensionTracker::Get(browser()->profile())
+                ->GetAccountExtensionType(extension->id()));
+
+  ExtensionInstallUIDesktop::ShowBubble(extension, browser(), SkBitmap());
+
+  // Click the sign in button.
+  RunTestSequence(
+      WaitForShow(kExtensionBubbleFrameViewId),
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshot can only run in pixel_tests on Windows."),
+      Screenshot(kExtensionBubbleFrameViewId, std::string(), "7146763"),
+      NameChildViewByType<views::MdTextButton>(
+          BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
+      PressButton(kButton).SetMustRemainVisible(false),
+      EnsureNotPresent(kExtensionBubbleFrameViewId));
+
+  // Check that clicking the sign in button navigated to a sign in page.
+  EXPECT_TRUE(IsSignInURL());
+
+  // Check that there is no helper attached to the sign in tab, because the
+  // extension will be moved automatically upon sign in.
+  EXPECT_FALSE(SigninPromoTabHelper::GetForWebContents(
+                   *browser()->tab_strip_model()->GetActiveWebContents())
+                   ->IsInitializedForTesting());
+
+  // This would try to move an extension to account storage. Should not be
+  // called.
+  std::vector<syncer::LocalDataItemModel::DataId> items{extension->id()};
+  EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
+                                       syncer::EXTENSIONS, items))
+      .Times(0);
+
+  // Set a new refresh token for the primary account, which verifies the
+  // user's identity and signs them back in. This would trigger the automatic
+  // upload.
+  ActivateSyncService();
+  identity_manager()->GetAccountsMutator()->AddOrUpdateAccount(
+      info.gaia, info.email, "dummy_refresh_token",
+      /*is_under_advanced_protection=*/false,
+      signin_metrics::AccessPoint::kExtensionInstallBubble,
+      signin_metrics::SourceForRefreshTokenOperation::
+          kDiceResponseHandler_Signin);
+
+  // Check that the sign in was successful.
+  EXPECT_TRUE(IsSignedIn());
+
+  // Signin metrics - nothing should be recorded for reauth.
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Completed", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered.WithDefault", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
+  histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
+
+  // It was recorded that the reauth sign in promo was shown and accepted.
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignInPromo.Accepted",
+      signin_metrics::AccessPoint::kExtensionInstallBubble, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninPending.Offered",
       signin_metrics::AccessPoint::kExtensionInstallBubble, 1);
 }
 
