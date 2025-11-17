@@ -65,12 +65,6 @@ void AudioCapturerChromeOs::SetAudioPlaybackMode(AudioPlaybackMode mode) {
   audio_playback_mode_ = mode;
 }
 
-void AudioCapturerChromeOs::Stop() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  packet_captured_callback_.Reset();
-  audio_helper_chromeos_.AsyncCall(&AudioHelperChromeOs::StopAudioStream);
-}
-
 void AudioCapturerChromeOs::HandleAudioData(
     std::unique_ptr<AudioPacket> packet) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -79,10 +73,9 @@ void AudioCapturerChromeOs::HandleAudioData(
   }
 }
 
-// TODO(crbug.com/450048643): Figure out error handling
 void AudioCapturerChromeOs::HandleAudioError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Stop();
+  packet_captured_callback_.Reset();
 }
 
 // static

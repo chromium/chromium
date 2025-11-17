@@ -87,7 +87,6 @@ void AudioHelperChromeOsImpl::StartAudioStream(
   base::UmaHistogramEnumeration(kAudioPlaybackModeHistogramName,
                                 audio_playback_mode);
 
-  // TODO(crbug.com/450048643): Figure out error handling
   if (stream_) {
     LOG(WARNING) << "Audio stream already started.";
     base::UmaHistogramEnumeration(
@@ -118,23 +117,21 @@ void AudioHelperChromeOsImpl::StartAudioStream(
         LOG(WARNING) << "Stream: " << msg;
       }));
 
-  // TODO(crbug.com/450048643): Figure out error handling
   if (!stream_) {
     LOG(ERROR) << "Failed to create input stream.";
-    ReportError();
+    NotifyFatalStreamError();
     base::UmaHistogramEnumeration(
         kStartAudioStreamHistogramName,
         AudioHelperStartStreamResult::kFailedToCreateStream);
     return;
   }
 
-  // TODO(crbug.com/450048643): Figure out error handling
   media::AudioInputStream::OpenOutcome open_outcome = stream_->Open();
   RecordOpenOutcome(open_outcome);
   if (open_outcome != media::AudioInputStream::OpenOutcome::kSuccess) {
     LOG(ERROR) << "Failed to open stream.";
     stream_ = nullptr;
-    ReportError();
+    NotifyFatalStreamError();
     base::UmaHistogramEnumeration(
         kStartAudioStreamHistogramName,
         AudioHelperStartStreamResult::kFailedToOpenStream);
@@ -190,10 +187,13 @@ void AudioHelperChromeOsImpl::OnError() {
   DCHECK(audio_runner_->RunsTasksInCurrentSequence());
   LOG(ERROR) << "AudioInputStream Error encountered.";
   base::UmaHistogramBoolean(kAudioStreamErrorHistogramName, /* sample= */ true);
-  ReportError();
+  NotifyFatalStreamError();
 }
 
-void AudioHelperChromeOsImpl::ReportError() {
+void AudioHelperChromeOsImpl::NotifyFatalStreamError() {
+  // Stop the current audio stream before notifying the audio capturer of the
+  // failure.
+  StopAudioStream();
   on_error_callback_.Run();
 }
 

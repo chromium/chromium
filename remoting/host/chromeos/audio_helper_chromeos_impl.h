@@ -70,8 +70,10 @@ class AudioHelperChromeOsImpl
               const media::AudioGlitchInfo& glitch_info) override;
   void OnError() override;
 
-  void StopAudioStream() override;
-  void ReportError();
+  void StopAudioStream();
+  // When a fatal error occurs this stops the stream then invokes the
+  // `on_error_callback_`.
+  void NotifyFatalStreamError();
 
   const scoped_refptr<base::SequencedTaskRunner> audio_runner_;
   OnDataCallback on_data_callback_;

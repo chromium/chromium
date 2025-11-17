@@ -49,8 +49,6 @@ class FakeAudioHelperChromeOs : public AudioHelperChromeOs {
     audio_stream_started_ = true;
   }
 
-  void StopAudioStream() override { ++stop_audio_stream_call_count_; }
-
   void SimulateData(std::unique_ptr<AudioPacket> packet) {
     on_data_callback_.Run(std::move(packet));
   }
@@ -219,35 +217,34 @@ TEST_F(AudioCapturerChromeOsTest, SimulateAudioPacket) {
 TEST_F(AudioCapturerChromeOsTest, SimulateError) {
   base::RunLoop run_loop;
 
-  // Simulate `audio_capturer_` being started by CRD on the "start" sequence.
-  base::OnceClosure start_capture_task = base::BindOnce(
-      base::IgnoreResult(&AudioCapturerChromeOs::Start),
-      base::Unretained(audio_capturer_.get()), base::DoNothing());
+  base::OnceClosure simulate_error_task =
+      base::BindOnce(&FakeAudioHelperChromeOs::SimulateError,
+                     base::Unretained(audio_helper_chromeos_.get()));
 
-  base::OnceClosure start_capture_reply = base::BindLambdaForTesting([&]() {
-    audio_runner_->PostTask(
-        FROM_HERE, base::BindLambdaForTesting([&]() {
-          // Simulate error via `audio_helper_chromeos_` on the `audio_runner_`.
-          audio_helper_chromeos_->SimulateError();
-
-          // Once error simulation is complete wait for the `audio_capturer_` to
-          // call AudioHelperChromeOs::StopAudioStream() on the `audio_runner_`
-          // sequence.
-          capture_runner_->PostTaskAndReply(
-              FROM_HERE, base::DoNothing(),
-              base::BindPostTask(
-                  capture_runner_, base::BindLambdaForTesting([&] {
-                    EXPECT_EQ(
-                        1,
-                        audio_helper_chromeos_->stop_audio_stream_call_count());
-                    run_loop.Quit();
-                  })));
-        }));
-  });
+  base::OnceClosure verify_packet_callback_reset_task = base::BindPostTask(
+      capture_runner_,
+      base::BindOnce(&FakeAudioHelperChromeOs::SimulateData,
+                     base::Unretained(audio_helper_chromeos_.get()),
+                     std::make_unique<remoting::AudioPacket>(AudioPacket()))
+          .Then(base::BindLambdaForTesting([&]() {
+            EXPECT_EQ(0u, captured_audio_packets_.size());
+            run_loop.Quit();
+          })));
 
   capture_runner_->PostTask(
-      FROM_HERE,
-      std::move(start_capture_task).Then(std::move(start_capture_reply)));
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        // Simulate `audio_capturer_` being started by CRD on the "start"
+        // sequence.
+        audio_capturer_->Start(base::BindRepeating(
+            &AudioCapturerChromeOsTest::OnAudioPacketCaptured,
+            base::Unretained(this)));
+
+        // Simulate error on `audio_helper_chromeos_` on the `audio_runner_`
+        // then verify error closed the stream and reset the packet callback.
+        audio_runner_->PostTaskAndReply(
+            FROM_HERE, std::move(simulate_error_task),
+            std::move(verify_packet_callback_reset_task));
+      }));
   run_loop.Run();
 }
 

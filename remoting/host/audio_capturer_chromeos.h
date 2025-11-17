@@ -38,8 +38,6 @@ class AudioCapturerChromeOs : public AudioCapturer {
   void HandleAudioData(std::unique_ptr<AudioPacket> packet);
   void HandleAudioError();
 
-  void Stop();
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   PacketCapturedCallback packet_captured_callback_;

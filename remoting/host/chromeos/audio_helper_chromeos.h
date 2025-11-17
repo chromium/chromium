@@ -33,7 +33,6 @@ class AudioHelperChromeOs {
   virtual void StartAudioStream(AudioPlaybackMode audio_playback_mode,
                                 OnDataCallback on_data_callback,
                                 OnErrorCallback on_error_callback) = 0;
-  virtual void StopAudioStream() = 0;
 };
 
 }  // namespace remoting
