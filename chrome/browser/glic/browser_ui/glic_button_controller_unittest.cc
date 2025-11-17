@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/glic/browser_ui/glic_button_controller_delegate.h"
@@ -137,7 +138,13 @@ class GlicButtonControllerTest : public testing::Test {
 
 // Test that settings changes are reflected in the show state of the controller
 // delegate.
-TEST_F(GlicButtonControllerTest, GlicSettings) {
+// TODO(crbug.com/461128291): Enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_GlicSettings DISABLED_GlicSettings
+#else
+#define MAYBE_GlicSettings GlicSettings
+#endif
+TEST_F(GlicButtonControllerTest, MAYBE_GlicSettings) {
   PrefService* prefs = profile()->GetPrefs();
 
   prefs->SetInteger(
