@@ -42,7 +42,9 @@ OmniboxPopupAimHandler::~OmniboxPopupAimHandler() = default;
 
 void OmniboxPopupAimHandler::OnShow(
     std::unique_ptr<SearchboxContextData::Context> context) {
-  page_->OnShow(ToSearchContext(std::move(context)));
+  auto page_context = ToSearchContext(std::move(context));
+  CHECK(page_context);
+  page_->OnShow(std::move(page_context));
 }
 
 void OmniboxPopupAimHandler::OnClose() {

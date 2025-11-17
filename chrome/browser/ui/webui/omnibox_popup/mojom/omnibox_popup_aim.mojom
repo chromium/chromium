@@ -34,7 +34,7 @@ interface Page {
 
   // Called when the widget in which the AIM popup view is embedded in appears.
   // `context` is the searchbox context that should be set on the composebox.
-  OnShow(searchbox.mojom.SearchContextStub? context);
+  OnShow(searchbox.mojom.SearchContextStub context);
 
   // Called when searchbox context is added outside of a OnShow call.
   AddContext(searchbox.mojom.SearchContextStub context);
