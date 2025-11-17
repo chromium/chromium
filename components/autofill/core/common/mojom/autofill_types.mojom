@@ -412,6 +412,8 @@ struct FormFieldDataPredictions {
   string host_form_signature;
   string signature;
   string heuristic_type;
+  // The type predicted by the Password Manager's ML model.
+  string pwm_ml_type;
   // Empty if server predictions have not arrived, yet.
   string? server_type;
   string html_type;

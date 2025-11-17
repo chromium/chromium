@@ -418,6 +418,11 @@ struct StructTraits<autofill::mojom::FormFieldDataPredictionsDataView,
     return r.heuristic_type;
   }
 
+  static const std::string& pwm_ml_type(
+      const autofill::FormFieldDataPredictions& r) {
+    return r.pwm_ml_type;
+  }
+
   static const std::optional<std::string>& server_type(
       const autofill::FormFieldDataPredictions& r) {
     return r.server_type;

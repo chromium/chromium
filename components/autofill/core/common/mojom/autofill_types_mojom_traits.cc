@@ -434,6 +434,9 @@ bool StructTraits<autofill::mojom::FormFieldDataPredictionsDataView,
   if (!data.ReadHeuristicType(&out->heuristic_type)) {
     return false;
   }
+  if (!data.ReadPwmMlType(&out->pwm_ml_type)) {
+    return false;
+  }
   if (!data.ReadServerType(&out->server_type)) {
     return false;
   }

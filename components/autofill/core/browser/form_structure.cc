@@ -256,6 +256,8 @@ FormDataPredictions FormStructure::GetFieldTypePredictions() const {
     annotated_field.signature = field->FieldSignatureAsStr();
     annotated_field.heuristic_type =
         FieldTypeToStringView(field->heuristic_type());
+    annotated_field.pwm_ml_type = FieldTypeToStringView(field->heuristic_type(
+        HeuristicSource::kPasswordManagerMachineLearning));
     if (!field->server_predictions().empty()) {
       annotated_field.server_type = FieldTypeToStringView(field->server_type());
     }
