@@ -54,7 +54,7 @@ class FormAutofillIssuesTest : public content::RenderViewTest {
   }
 };
 
-TEST_F(FormAutofillIssuesTest, FormLabelHasNeitherForNorNestedInput) {
+TEST_F(FormAutofillIssuesTest, FormLabelHasNeitherForNorNestedInputError) {
   LoadHTML(R"(
        <form id=target>
         <input>
@@ -66,7 +66,7 @@ TEST_F(FormAutofillIssuesTest, FormLabelHasNeitherForNorNestedInput) {
 
   EXPECT_TRUE(FormIssuesContainIssueType(
       form_issues,
-      GenericIssueErrorType::kFormLabelHasNeitherForNorNestedInput));
+      GenericIssueErrorType::kFormLabelHasNeitherForNorNestedInputError));
 }
 
 TEST_F(FormAutofillIssuesTest, FormDuplicateIdForInputError) {
@@ -90,7 +90,7 @@ TEST_F(FormAutofillIssuesTest, FormDuplicateIdForInputError) {
   EXPECT_EQ(duplicated_ids_issue_count, 3);
 }
 
-TEST_F(FormAutofillIssuesTest, FormAriaLabelledByToNonExistingId) {
+TEST_F(FormAutofillIssuesTest, FormAriaLabelledByToNonExistingIdError) {
   LoadHTML(R"(
       <form id=target>
         <input aria-labelledby=non_existing>
@@ -102,7 +102,8 @@ TEST_F(FormAutofillIssuesTest, FormAriaLabelledByToNonExistingId) {
   std::vector<FormIssue> form_issues_2 = GetFormIssuesForTesting(
       form_target.GetFormControlElements(), form_issues);
   EXPECT_TRUE(FormIssuesContainIssueType(
-      form_issues, GenericIssueErrorType::kFormAriaLabelledByToNonExistingId,
+      form_issues,
+      GenericIssueErrorType::kFormAriaLabelledByToNonExistingIdError,
       /*violating_attr=*/"aria-labelledby"));
 }
 

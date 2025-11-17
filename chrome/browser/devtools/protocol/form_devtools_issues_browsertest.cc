@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(
     FormHasInputWithAriaLabelledByAttributeThatLinksToNonExistingId) {
   NavigateToFormPageAndEnableAudits();
   base::Value::Dict notification =
-      WaitForGenericIssueAdded("FormAriaLabelledByToNonExistingId");
+      WaitForGenericIssueAdded("FormAriaLabelledByToNonExistingIdError");
   EXPECT_TRUE(notification
                   .FindIntByDottedPath(
                       "issue.details.genericIssueDetails.violatingNodeId")
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
                        FormHasLabelWithoutNeitherForNorNestedInput) {
   NavigateToFormPageAndEnableAudits();
   base::Value::Dict notification =
-      WaitForGenericIssueAdded("FormLabelHasNeitherForNorNestedInput");
+      WaitForGenericIssueAdded("FormLabelHasNeitherForNorNestedInputError");
   EXPECT_TRUE(notification
                   .FindIntByDottedPath(
                       "issue.details.genericIssueDetails.violatingNodeId")

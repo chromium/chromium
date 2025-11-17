@@ -2554,17 +2554,17 @@ protocol::Audits::GenericIssueErrorType GenericIssueErrorTypeToProtocol(
       return protocol::Audits::GenericIssueErrorTypeEnum::
           FormEmptyIdAndNameAttributesForInputError;
     case blink::mojom::GenericIssueErrorType::
-        kFormAriaLabelledByToNonExistingId:
+        kFormAriaLabelledByToNonExistingIdError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormAriaLabelledByToNonExistingId;
+          FormAriaLabelledByToNonExistingIdError;
     case blink::mojom::GenericIssueErrorType::
         kFormInputAssignedAutocompleteValueToIdOrNameAttributeError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           FormInputAssignedAutocompleteValueToIdOrNameAttributeError;
     case blink::mojom::GenericIssueErrorType::
-        kFormLabelHasNeitherForNorNestedInput:
+        kFormLabelHasNeitherForNorNestedInputError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormLabelHasNeitherForNorNestedInput;
+          FormLabelHasNeitherForNorNestedInputError;
     case blink::mojom::GenericIssueErrorType::
         kFormLabelForMatchesNonExistingIdError:
       return protocol::Audits::GenericIssueErrorTypeEnum::

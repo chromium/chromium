@@ -405,9 +405,9 @@ experimental domain Audits
       FormInputWithNoLabelError
       FormAutocompleteAttributeEmptyError
       FormEmptyIdAndNameAttributesForInputError
-      FormAriaLabelledByToNonExistingId
+      FormAriaLabelledByToNonExistingIdError
       FormInputAssignedAutocompleteValueToIdOrNameAttributeError
-      FormLabelHasNeitherForNorNestedInput
+      FormLabelHasNeitherForNorNestedInputError
       FormLabelForMatchesNonExistingIdError
       FormInputHasWrongButWellIntendedAutocompleteValueError
       ResponseWasBlockedByORB

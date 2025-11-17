@@ -1096,10 +1096,11 @@ Called by update_protocol_commands_enum.py.-->
   <int value="68" label="GenericIssue::FormAutocompleteAttributeEmptyError"/>
   <int value="69"
       label="GenericIssue::FormEmptyIdAndNameAttributesForInputError"/>
-  <int value="70" label="GenericIssue::FormAriaLabelledByToNonExistingId"/>
+  <int value="70" label="GenericIssue::FormAriaLabelledByToNonExistingIdError"/>
   <int value="71"
       label="GenericIssue::FormInputAssignedAutocompleteValueToIdOrNameAttributeError"/>
-  <int value="72" label="GenericIssue::FormLabelHasNeitherForNorNestedInput"/>
+  <int value="72"
+      label="GenericIssue::FormLabelHasNeitherForNorNestedInputError"/>
   <int value="73" label="GenericIssue::FormLabelForMatchesNonExistingIdError"/>
   <int value="74"
       label="GenericIssue::FormHasPasswordFieldWithoutUsernameFieldError"/>

@@ -114,17 +114,17 @@ AuditsIssue::GenericIssueErrorTypeToProtocol(
       return protocol::Audits::GenericIssueErrorTypeEnum::
           FormEmptyIdAndNameAttributesForInputError;
     case mojom::blink::GenericIssueErrorType::
-        kFormAriaLabelledByToNonExistingId:
+        kFormAriaLabelledByToNonExistingIdError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormAriaLabelledByToNonExistingId;
+          FormAriaLabelledByToNonExistingIdError;
     case mojom::blink::GenericIssueErrorType::
         kFormInputAssignedAutocompleteValueToIdOrNameAttributeError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           FormInputAssignedAutocompleteValueToIdOrNameAttributeError;
     case mojom::blink::GenericIssueErrorType::
-        kFormLabelHasNeitherForNorNestedInput:
+        kFormLabelHasNeitherForNorNestedInputError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormLabelHasNeitherForNorNestedInput;
+          FormLabelHasNeitherForNorNestedInputError;
     case mojom::blink::GenericIssueErrorType::
         kFormLabelForMatchesNonExistingIdError:
       return protocol::Audits::GenericIssueErrorTypeEnum::

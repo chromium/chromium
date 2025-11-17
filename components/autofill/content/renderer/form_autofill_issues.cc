@@ -70,7 +70,7 @@ void MaybeAppendLabelWithoutControlDevtoolsIssue(
   if (!label.HasAttribute(for_attr)) {
     // Label has neither for attribute nor a control element was found.
     form_issues.emplace_back(
-        GenericIssueErrorType::kFormLabelHasNeitherForNorNestedInput,
+        GenericIssueErrorType::kFormLabelHasNeitherForNorNestedInputError,
         label.GetDomNodeId());
   }
 }
@@ -87,7 +87,7 @@ void MaybeAppendAriaLabelledByDevtoolsIssue(
             return !element.GetDocument().GetElementById(WebString(id));
           })) {
     form_issues.emplace_back(
-        GenericIssueErrorType::kFormAriaLabelledByToNonExistingId,
+        GenericIssueErrorType::kFormAriaLabelledByToNonExistingIdError,
         element.GetDomNodeId(), aria_label_attr);
   }
 }
