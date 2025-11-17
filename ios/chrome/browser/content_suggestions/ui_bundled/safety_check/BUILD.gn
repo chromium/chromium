@@ -8,6 +8,7 @@ source_set("safety_check") {
     "safety_check_consumer_source.h",
     "safety_check_item_icon.h",
     "safety_check_item_icon.mm",
+    "safety_check_item_type.h",
     "safety_check_magic_stack_consumer.h",
     "safety_check_magic_stack_mediator.h",
     "safety_check_magic_stack_mediator.mm",
@@ -15,7 +16,6 @@ source_set("safety_check") {
     "safety_check_state.mm",
     "safety_check_view.h",
     "safety_check_view.mm",
-    "types.h",
     "utils.h",
     "utils.mm",
   ]
