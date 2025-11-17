@@ -1118,6 +1118,12 @@ export class ComposeboxElement extends I18nMixinLit
     const ghostHeight = smartCompose!.scrollHeight;
     const maxHeight = 190;
     this.$.input.style.height = `${Math.min(ghostHeight, maxHeight)}px`;
+    // If smart compose goes to two lines. The tab chip will be cut off as it
+    // has a height of 28px. Add 4px to show the whole tab chip.
+    if (ghostHeight > 48) {
+      this.$.input.style.minHeight = `68px`;
+      smartCompose!.style.minHeight = `68px`;
+    }
 
     // If the height of the input + smart complete hint is greater than the max
     // height, scroll the smart compose as the input will already scroll. Note
