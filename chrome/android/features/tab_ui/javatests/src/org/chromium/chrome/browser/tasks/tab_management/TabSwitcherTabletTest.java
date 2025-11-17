@@ -38,6 +38,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -46,9 +47,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
@@ -56,6 +58,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperMa
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -69,6 +72,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.TabStripUtils;
@@ -84,14 +88,12 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE, DeviceFormFactor.TABLET_OR_DESKTOP})
-// TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
-@Features.DisableFeatures({
+@DisableFeatures({
     ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
     ChromeFeatureList.ANDROID_THEME_MODULE,
-    ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION,
-    ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
+    ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION
 })
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherTabletTest {
@@ -100,6 +102,7 @@ public class TabSwitcherTabletTest {
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private WebPageStation mPage;
+    @Nullable private IncognitoNewTabPageStation mIncognitoPage;
 
     @Before
     public void setUp() throws ExecutionException {
@@ -163,6 +166,9 @@ public class TabSwitcherTabletTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/435241931): Remove this test once desktop-like incognito window feature is
+    // launched.
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testToggleIncognitoSwitcher() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabs(1, 1);
@@ -185,12 +191,12 @@ public class TabSwitcherTabletTest {
     @MediumTest
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40901097")
     public void testTabSwitcherScrim() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabs(1, 1);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabUiTestHelper.enterTabSwitcher(cta);
 
         ScrimManager scrimManager = cta.getRootUiCoordinatorForTesting().getScrimManager();
-        assertTrue(scrimManager.isShowingScrim());
+        assertTrue(scrimManager.getScrimVisibilitySupplier().get());
         assertEquals(
                 ChromeColors.getPrimaryBackgroundColor(cta, true),
                 cta.getRootUiCoordinatorForTesting()
@@ -227,6 +233,9 @@ public class TabSwitcherTabletTest {
     @Test
     @MediumTest
     @DisabledTest(message = "crbug.com/41484831")
+    // TODO(crbug.com/435241931): Remove this test once desktop-like incognito window feature is
+    // launched.
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testGridTabSwitcherToggleIncognitoWithNoRegularTab() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabModel regularModel = cta.getTabModelSelectorSupplier().get().getModel(false);
@@ -317,6 +326,9 @@ public class TabSwitcherTabletTest {
     @Test
     @MediumTest
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41484831")
+    // TODO(crbug.com/435241931): Remove this test once desktop-like incognito window feature is
+    // launched.
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testEmptyStateView_ToggleIncognito() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabs(1, 1);
@@ -400,7 +412,19 @@ public class TabSwitcherTabletTest {
 
     private void prepareTabs(int numTabs, int numIncognitoTabs) {
         TabUiTestHelper.createTabs(mActivityTestRule.getActivity(), false, numTabs);
-        TabUiTestHelper.createTabs(mActivityTestRule.getActivity(), true, numIncognitoTabs);
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow() && numIncognitoTabs > 0) {
+            mIncognitoPage = mPage.openNewIncognitoTabOrWindowFast();
+            for (int i = 0; i < numTabs - 1; i++) {
+                mIncognitoPage = mIncognitoPage.openNewIncognitoTabOrWindowFast();
+            }
+            mActivityTestRule
+                    .getActivityTestRule()
+                    .setActivity(
+                            (ChromeTabbedActivity)
+                                    ApplicationStatus.getLastTrackedFocusedActivity());
+        } else {
+            TabUiTestHelper.createTabs(mActivityTestRule.getActivity(), true, numIncognitoTabs);
+        }
     }
 
     private void exitSwitcherWithTabClick(int index) {
