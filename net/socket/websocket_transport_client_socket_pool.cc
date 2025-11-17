@@ -269,6 +269,10 @@ bool WebSocketTransportClientSocketPool::HasActiveSocket(
   NOTREACHED();
 }
 
+size_t WebSocketTransportClientSocketPool::SocketsInUse() const {
+  return pending_connects_.size() + handed_out_socket_count_;
+}
+
 bool WebSocketTransportClientSocketPool::IsStalled() const {
   return !stalled_request_queue_.empty();
 }
@@ -379,8 +383,7 @@ void WebSocketTransportClientSocketPool::InvokeUserCallback(
 }
 
 bool WebSocketTransportClientSocketPool::ReachedMaxSocketsLimit() const {
-  return handed_out_socket_count_ >= SocketSoftCap() ||
-         pending_connects_.size() >= SocketSoftCap() - handed_out_socket_count_;
+  return SocketsInUse() >= SocketSoftCap();
 }
 
 void WebSocketTransportClientSocketPool::HandOutSocket(

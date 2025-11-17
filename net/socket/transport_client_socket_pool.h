@@ -239,6 +239,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   base::Value GetInfoAsValue(const std::string& name,
                              const std::string& type) const override;
   bool HasActiveSocket(const GroupId& group_id) const override;
+  size_t SocketsInUse() const override;
 
   bool RequestInGroupWithHandleHasJobForTesting(
       const GroupId& group_id,

@@ -392,15 +392,21 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
 
   size_t SocketSoftCap() const { return socket_soft_cap_; }
 
+  // This should return the sockets the pool considers to be in-use (reserved)
+  // of the overall pool. This won't contain 'stalled' sockets as those have yet
+  // to have space reserved for themselves, but will include those pending
+  // connection, connected, or idle.
+  virtual size_t SocketsInUse() const = 0;
+
   const SocketPoolAdditionalCapacity& AdditionalCapacity() const {
     return additional_capacity_;
   }
 
   SocketPoolState State() const { return state_; }
 
-  void UpdateStateBeforeAllocation(size_t sockets_in_use);
+  void UpdateStateBeforeAllocation();
 
-  void UpdateStateAfterRelease(size_t sockets_in_use);
+  void UpdateStateAfterRelease();
 
  private:
   // This section tracks information related to the overall pool capacity.

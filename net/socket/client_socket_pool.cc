@@ -241,13 +241,13 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
       common_connect_job_params_, delegate);
 }
 
-void ClientSocketPool::UpdateStateBeforeAllocation(size_t sockets_in_use) {
+void ClientSocketPool::UpdateStateBeforeAllocation() {
   state_ = additional_capacity_.NextStateBeforeAllocation(
-      State(), sockets_in_use, SocketSoftCap());
+      State(), SocketsInUse(), SocketSoftCap());
 }
 
-void ClientSocketPool::UpdateStateAfterRelease(size_t sockets_in_use) {
-  state_ = additional_capacity_.NextStateAfterRelease(State(), sockets_in_use,
+void ClientSocketPool::UpdateStateAfterRelease() {
+  state_ = additional_capacity_.NextStateAfterRelease(State(), SocketsInUse(),
                                                       SocketSoftCap());
 }
 

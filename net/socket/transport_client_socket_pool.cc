@@ -218,16 +218,16 @@ TransportClientSocketPool::CallbackResultPair::operator=(
 TransportClientSocketPool::CallbackResultPair::~CallbackResultPair() = default;
 
 bool TransportClientSocketPool::IsStalled() const {
-  // If fewer than `SocketSoftCap()` are in use, then clearly `this` is not
-  // stalled.
-  if ((handed_out_socket_count_ + connecting_socket_count_) < SocketSoftCap()) {
+  // We don't count idle sockets here as they can be purged, so cannot be the
+  // reason this pool is stalled.
+  if ((SocketsInUse() - idle_socket_count_) < SocketSoftCap()) {
     return false;
   }
-  // So in order to be stalled, `this` must be using at least `SocketSoftCap()`
-  // AND `this` must have a request that is actually stalled on the global
-  // socket limit.  To find such a request, look for a group that has more
-  // requests than jobs AND where the number of sockets is less than
-  // `max_sockets_per_group_`.  (If the number of sockets is equal to
+  // Further, in order to be stalled `this` must be using at least
+  // `SocketSoftCap()` sockets AND `this` must have a request that is actually
+  // stalled on the global socket limit.  To find such a request, look for a
+  // group that has more requests than jobs AND where the number of sockets is
+  // less than `max_sockets_per_group_`.  (If the number of sockets is equal to
   // `max_sockets_per_group_`, then the request is stalled on the group limit,
   // which does not count.)
   for (const auto& it : group_map_) {
@@ -774,6 +774,12 @@ bool TransportClientSocketPool::HasActiveSocket(const GroupId& group_id) const {
   return HasGroup(group_id);
 }
 
+size_t TransportClientSocketPool::SocketsInUse() const {
+  // Each connecting socket will eventually connect and be handed out.
+  return handed_out_socket_count_ + connecting_socket_count_ +
+         idle_socket_count_;
+}
+
 bool TransportClientSocketPool::IdleSocket::IsUsable(
     const char** net_log_reason_utf8) const {
   DCHECK(net_log_reason_utf8);
@@ -1307,15 +1313,9 @@ void TransportClientSocketPool::CancelAllRequestsWithError(int error) {
 }
 
 bool TransportClientSocketPool::ReachedMaxSocketsLimit() const {
-  // Each connecting socket will eventually connect and be handed out.
-  size_t total =
-      handed_out_socket_count_ + connecting_socket_count_ + idle_socket_count_;
   // There can be more sockets than the limit since some requests can ignore
-  // the limit
-  if (total < SocketSoftCap()) {
-    return false;
-  }
-  return true;
+  // the limit.
+  return SocketsInUse() >= SocketSoftCap();
 }
 
 bool TransportClientSocketPool::CloseOneIdleSocketExceptInGroup(

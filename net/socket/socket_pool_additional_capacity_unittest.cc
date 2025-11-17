@@ -346,7 +346,7 @@ class MockClientSocketPool : public ClientSocketPool {
                          /*connect_job_factory*/ nullptr) {}
 
   SocketPoolState RequestSocket() {
-    UpdateStateBeforeAllocation(sockets_in_use_);
+    UpdateStateBeforeAllocation();
     if (State() == SocketPoolState::kUncapped) {
       ++sockets_in_use_;
     }
@@ -356,12 +356,12 @@ class MockClientSocketPool : public ClientSocketPool {
 
   SocketPoolState ReleaseSocket() {
     --sockets_in_use_;
-    UpdateStateAfterRelease(sockets_in_use_);
+    UpdateStateAfterRelease();
     CHECK_GE(sockets_in_use_, 0);
     return State();
   }
 
-  size_t SocketsInUse() { return sockets_in_use_; }
+  size_t SocketsInUse() const override { return sockets_in_use_; }
 
  private:
   int RequestSocket(

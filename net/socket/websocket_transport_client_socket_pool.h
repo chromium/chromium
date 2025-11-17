@@ -104,6 +104,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
   base::Value GetInfoAsValue(const std::string& name,
                              const std::string& type) const override;
   bool HasActiveSocket(const GroupId& group_id) const override;
+  size_t SocketsInUse() const override;
 
   // HigherLayeredPool implementation.
   bool IsStalled() const override;
