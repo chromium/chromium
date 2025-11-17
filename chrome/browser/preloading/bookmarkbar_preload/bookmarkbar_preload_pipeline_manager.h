@@ -40,6 +40,12 @@ class BookmarkBarPreloadPipelineManager : public content::WebContentsObserver {
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
+  // TODO(crbug.com/413259638): Instead of exporting
+  // StartPrefetch/StartPrerender directly to the embedder triggers, introduce
+  // another function taking the signal (MousePress/MouseHover) and the level of
+  // the signal to determine the proper preloading action.
+  // The ordering of prefetch and prerender can also be guaranteed by the
+  // design.
   void StartPrefetch(const GURL& url);
   void StartPrerender(const GURL& url);
 
