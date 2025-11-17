@@ -4,10 +4,6 @@
 
 #include "third_party/blink/renderer/modules/keyboard/keyboard_layout.h"
 
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -36,32 +32,7 @@ constexpr char kFeaturePolicyBlocked[] =
 constexpr char kKeyboardMapRequestFailedErrorMsg[] =
     "getLayoutMap() request could not be completed.";
 
-constexpr IdentifiableSurface kGetKeyboardLayoutMapSurface =
-    IdentifiableSurface::FromTypeAndToken(
-        IdentifiableSurface::Type::kWebFeature,
-        WebFeature::kKeyboardApiGetLayoutMap);
-
-IdentifiableToken ComputeLayoutValue(
-    const HashMap<String, String>& layout_map) {
-  IdentifiableTokenBuilder builder;
-  for (const auto& kv : layout_map) {
-    builder.AddToken(IdentifiabilityBenignStringToken(kv.key));
-    builder.AddToken(IdentifiabilityBenignStringToken(kv.value));
-  }
-  return builder.GetToken();
 }
-
-void RecordGetLayoutMapResult(ExecutionContext* context,
-                              IdentifiableToken value) {
-  if (!context)
-    return;
-
-  IdentifiabilityMetricBuilder(context->UkmSourceID())
-      .Add(kGetKeyboardLayoutMapSurface, value)
-      .Record(context->UkmRecorder());
-}
-
-}  // namespace
 
 KeyboardLayout::KeyboardLayout(ExecutionContext* context)
     : ExecutionContextClient(context), service_(context) {}
@@ -82,12 +53,6 @@ ScriptPromise<KeyboardLayoutMap> KeyboardLayout::GetKeyboardLayoutMap(
   }
 
   if (!EnsureServiceConnected()) {
-    if (IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
-            kGetKeyboardLayoutMapSurface)) {
-      RecordGetLayoutMapResult(ExecutionContext::From(script_state),
-                               IdentifiableToken());
-    }
-
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kKeyboardMapRequestFailedErrorMsg);
     return EmptyPromise();
@@ -123,23 +88,12 @@ void KeyboardLayout::GotKeyboardLayoutMap(
     mojom::blink::GetKeyboardLayoutMapResultPtr result) {
   DCHECK(script_promise_resolver_);
 
-  bool instrumentation_on =
-      IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
-          kGetKeyboardLayoutMapSurface);
-
   switch (result->status) {
     case mojom::blink::GetKeyboardLayoutMapStatus::kSuccess:
-      if (instrumentation_on) {
-        RecordGetLayoutMapResult(GetExecutionContext(),
-                                 ComputeLayoutValue(result->layout_map));
-      }
       resolver->Resolve(
           MakeGarbageCollected<KeyboardLayoutMap>(result->layout_map));
       break;
     case mojom::blink::GetKeyboardLayoutMapStatus::kFail:
-      if (instrumentation_on)
-        RecordGetLayoutMapResult(GetExecutionContext(), IdentifiableToken());
-
       resolver->Reject(V8ThrowDOMException::CreateOrDie(
           resolver->GetScriptState()->GetIsolate(),
           DOMExceptionCode::kInvalidStateError,
