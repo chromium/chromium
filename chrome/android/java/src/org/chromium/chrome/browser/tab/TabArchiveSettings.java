@@ -17,6 +17,7 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -161,9 +162,14 @@ public class TabArchiveSettings {
 
     /** Returns whether archiving of duplicate tabs is enabled. */
     public boolean isArchiveDuplicateTabsEnabled() {
+        // Default to true for phones, false for tablets and desktop.
+        boolean defaultValue =
+                !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                        ContextUtils.getApplicationContext());
         return getArchiveEnabled()
                 && mPrefsManager.readBoolean(
-                        ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS_ENABLED, true);
+                        ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS_ENABLED,
+                        defaultValue);
     }
 
     /** Sets whether archiving duplicate tabs is enabled in settings. */
