@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/web/web_state/ui/crw_web_controller.h"
 
 #import <WebKit/WebKit.h>
+
+#import <string_view>
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
@@ -102,6 +99,54 @@ CGRect GetScreenBounds() {
 
   // Fall back to UIScreen's -mainScreen if no key window is available.
   return UIScreen.mainScreen.bounds;
+}
+
+// For readability.
+using ConstBytesSpan = base::span<const uint8_t>;
+
+// Returns whether `span` starts by `prefix`.
+bool StartsWith(ConstBytesSpan span, ConstBytesSpan prefix) {
+  return span.size() >= prefix.size() && span.first(prefix.size()) == prefix;
+}
+
+// Old versions of chrome wrapped `interactionState` in a keyed archiver,
+// which was unnecessary (as it is an NSData* which can be serialized as
+// is).
+//
+// This helper function checks whether the NSData* starts by the keyed
+// archiver signature ("bplist00") and if this is the case, unwraps the
+// `interactionState` from the archive.
+//
+// Returns whether the operation was a success sets `interactionState`
+// to the extracted value.
+BOOL ExtractInteractionState(NSData* data, NSData** interactionState) {
+  constexpr std::string_view kArchiveHeader = "bplist00";
+  const auto data_span = base::apple::NSDataToSpan(data);
+  if (!StartsWith(data_span, base::as_byte_span(kArchiveHeader))) {
+    *interactionState = data;
+    return YES;
+  }
+
+  NSError* error = nil;
+  NSKeyedUnarchiver* unarchiver =
+      [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
+  if (!unarchiver || error) {
+    DLOG(WARNING) << "Error creating unarchiver for session state data: "
+                  << base::SysNSStringToUTF8([error description]);
+    return NO;
+  }
+
+  unarchiver.requiresSecureCoding = YES;
+  NSData* unarchived =
+      [unarchiver decodeObjectOfClass:[NSData class]
+                               forKey:NSKeyedArchiveRootObjectKey];
+  if (!unarchived) {
+    DLOG(WARNING) << "Error decoding interactionState.";
+    return NO;
+  }
+
+  *interactionState = unarchived;
+  return YES;
 }
 
 }  // namespace
@@ -837,32 +882,11 @@ CGRect GetScreenBounds() {
 }
 
 - (BOOL)setSessionStateData:(NSData*)data {
-  NSData* interactionState = data;
-
-  // Old versions of chrome wrapped interactionState in a keyed unarchiver.
-  // This step was unnecessary. Rather than migrate all blobs over, simply
-  // check for an unarchiver here. NSKeyed data will start with 'bplist00',
-  // which differs from the header of a WebKit session coding (0x00000002).
-  // This logic can be removed after this change has gone live for a while.
-  constexpr char kArchiveHeader[] = "bplist00";
-  if (data.length > strlen(kArchiveHeader) &&
-      memcmp(data.bytes, kArchiveHeader, strlen(kArchiveHeader)) == 0) {
-    NSError* error = nil;
-    NSKeyedUnarchiver* unarchiver =
-        [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
-    if (!unarchiver || error) {
-      DLOG(WARNING) << "Error creating unarchiver for session state data: "
-                    << base::SysNSStringToUTF8([error description]);
-      return NO;
-    }
-    unarchiver.requiresSecureCoding = NO;
-    interactionState =
-        [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
-    if (!interactionState) {
-      DLOG(WARNING) << "Error decoding interactionState.";
-      return NO;
-    }
+  NSData* interactionState = nil;
+  if (!ExtractInteractionState(data, &interactionState)) {
+    return NO;
   }
+
   [self ensureWebViewCreated];
   DCHECK_EQ(self.webView.backForwardList.currentItem, nil);
   self.navigationHandler.blockUniversalLinksOnNextDecidePolicy = true;
