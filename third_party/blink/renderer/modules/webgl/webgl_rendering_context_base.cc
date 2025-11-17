@@ -1668,8 +1668,7 @@ bool WebGLRenderingContextBase::PushFrameWithCopy() {
     const int height = GetDrawingBuffer()->Size().height();
     auto size = SkIRect::MakeWH(width, height);
     submitted_frame = Host()->PushFrame(
-        resource_provider->ProduceCanvasResource(FlushReason::kNon2DCanvas),
-        size);
+        resource_provider->ProduceCanvasResource(FlushReason::kOther), size);
     resource_provider_has_content_for_frame_push_ = false;
   }
   MarkLayerComposited();

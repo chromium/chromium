@@ -18,28 +18,24 @@ enum class FlushReason {
   // Used in C++ unit tests
   kTesting = 1,
 
-  // Call site may be flushing paint ops, but they're for a use case
-  // unrelated to Canvas rendering contexts. Does not impede vector printing.
-  kNon2DCanvas = 2,
-
   // Canvas contents were cleared. This makes the canvas vector printable
   // again.
-  kClear = 3,
+  kClear = 2,
 
   // The canvas element dispatched a frame to the compositor
   // This inhibits vector printing.
-  kCanvasPushFrame = 4,
+  kCanvasPushFrame = 3,
 
   // The canvas element dispatched a frame to the compositor while printing
   // was in progress.
   // This does not prevent vector printing as long as the current frame is
   // clear.
-  kCanvasPushFrameWhilePrinting = 5,
+  kCanvasPushFrameWhilePrinting = 4,
 
   // The canvas is being printed.
-  kPrinting = 6,
+  kPrinting = 5,
 
-  kOther = 7,
+  kOther = 6,
 
   kMaxValue = kOther,
 };
