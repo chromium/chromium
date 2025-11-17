@@ -5,7 +5,6 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 
 #include "base/functional/callback_helpers.h"
-#include "base/hash/sha1.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
@@ -24,7 +23,6 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/download_item_utils.h"
-#include "net/cert/x509_util.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
@@ -43,23 +41,6 @@ namespace {
 // File suffix for APKs.
 const base::FilePath::CharType kApkSuffix[] = FILE_PATH_LITERAL(".apk");
 #endif
-
-// Escapes a certificate attribute so that it can be used in a allowlist
-// entry.  Currently, we only escape slashes, since they are used as a
-// separator between attributes.
-std::string EscapeCertAttribute(const std::string& attribute) {
-  std::string escaped;
-  for (size_t i = 0; i < attribute.size(); ++i) {
-    if (attribute[i] == '%') {
-      escaped.append("%25");
-    } else if (attribute[i] == '/') {
-      escaped.append("%2F");
-    } else {
-      escaped.push_back(attribute[i]);
-    }
-  }
-  return escaped;
-}
 
 int ArchiveEntryWeight(const ClientDownloadRequest::ArchivedBinary& entry) {
   return FileTypePolicies::GetInstance()
@@ -176,60 +157,6 @@ bool IsDownloadReportGatedByExtendedReporting(
 
 ClientDownloadRequestModification NoModificationToRequestProto() {
   return base::DoNothing();
-}
-
-void GetCertificateAllowlistStrings(
-    const net::X509Certificate& certificate,
-    const net::X509Certificate& issuer,
-    std::vector<std::string>* allowlist_strings) {
-  // The allowlist paths are in the format:
-  // cert/<ascii issuer fingerprint>[/CN=common_name][/O=org][/OU=unit]
-  //
-  // Any of CN, O, or OU may be omitted from the allowlist entry, in which
-  // case they match anything.  However, the attributes that do appear will
-  // always be in the order shown above.  At least one attribute will always
-  // be present.
-
-  const net::CertPrincipal& subject = certificate.subject();
-  std::vector<std::string> ou_tokens;
-  for (size_t i = 0; i < subject.organization_unit_names.size(); ++i) {
-    ou_tokens.push_back(
-        "/OU=" + EscapeCertAttribute(subject.organization_unit_names[i]));
-  }
-
-  std::vector<std::string> o_tokens;
-  for (size_t i = 0; i < subject.organization_names.size(); ++i) {
-    o_tokens.push_back("/O=" +
-                       EscapeCertAttribute(subject.organization_names[i]));
-  }
-
-  std::string cn_token;
-  if (!subject.common_name.empty()) {
-    cn_token = "/CN=" + EscapeCertAttribute(subject.common_name);
-  }
-
-  std::set<std::string> paths_to_check;
-  if (!cn_token.empty()) {
-    paths_to_check.insert(cn_token);
-  }
-  for (size_t i = 0; i < o_tokens.size(); ++i) {
-    paths_to_check.insert(cn_token + o_tokens[i]);
-    paths_to_check.insert(o_tokens[i]);
-    for (size_t j = 0; j < ou_tokens.size(); ++j) {
-      paths_to_check.insert(cn_token + o_tokens[i] + ou_tokens[j]);
-      paths_to_check.insert(o_tokens[i] + ou_tokens[j]);
-    }
-  }
-  for (size_t i = 0; i < ou_tokens.size(); ++i) {
-    paths_to_check.insert(cn_token + ou_tokens[i]);
-    paths_to_check.insert(ou_tokens[i]);
-  }
-
-  std::string issuer_fp = base::HexEncode(
-      base::SHA1Hash(net::x509_util::CryptoBufferAsSpan(issuer.cert_buffer())));
-  for (auto it = paths_to_check.begin(); it != paths_to_check.end(); ++it) {
-    allowlist_strings->push_back("cert/" + issuer_fp + *it);
-  }
 }
 
 GURL GetFileSystemAccessDownloadUrl(const GURL& frame_url) {
