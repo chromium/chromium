@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "content/browser/devtools/protocol/audits.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 

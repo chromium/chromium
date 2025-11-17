@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace network {
 class ResourceRequestBody;

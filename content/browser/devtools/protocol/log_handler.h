@@ -7,7 +7,6 @@
 
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/log.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 

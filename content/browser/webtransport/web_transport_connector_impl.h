@@ -9,7 +9,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "content/browser/webtransport/web_transport_throttle_context.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_anonymization_key.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"

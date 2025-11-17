@@ -11,8 +11,6 @@
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/service_worker_client_info.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/storage_access_api/status.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"

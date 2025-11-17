@@ -16,7 +16,6 @@
 #include "content/common/content_export.h"
 #include "content/renderer/media/win/dcomp_texture_host.h"
 #include "gpu/command_buffer/common/mailbox.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
 namespace gpu {
 class GpuChannelHost;

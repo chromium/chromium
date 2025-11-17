@@ -14,7 +14,6 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "components/viz/test/test_frame_sink_manager.h"
 #include "content/browser/compositor/image_transport_factory.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/compositor/compositor.h"
 
 namespace content {

@@ -15,7 +15,6 @@
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 

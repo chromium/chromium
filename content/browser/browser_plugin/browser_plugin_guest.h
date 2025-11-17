@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "content/public/browser/browser_plugin_guest_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace content {
 class RenderFrameHostImpl;

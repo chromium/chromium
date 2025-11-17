@@ -17,7 +17,6 @@
 #include "base/scoped_observation.h"
 #include "content/common/content_export.h"
 #include "device/fido/virtual_fido_device.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 

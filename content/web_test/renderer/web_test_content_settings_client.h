@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "url/origin.h"
 

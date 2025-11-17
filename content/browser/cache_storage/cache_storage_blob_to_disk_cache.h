@@ -11,7 +11,6 @@
 #include "content/browser/cache_storage/scoped_writable_entry.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/net_adapters.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"

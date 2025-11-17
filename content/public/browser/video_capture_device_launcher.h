@@ -17,7 +17,6 @@
 #include "media/capture/video/video_capture_device_info.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video_capture_types.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "ui/gfx/native_ui_types.h"
 

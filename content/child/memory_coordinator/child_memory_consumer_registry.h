@@ -17,7 +17,6 @@
 #include "base/memory_coordinator/traits.h"
 #include "content/common/content_export.h"
 #include "content/common/memory_coordinator/mojom/memory_coordinator.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

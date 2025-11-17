@@ -9,7 +9,6 @@
 #include <optional>
 
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/early_hints.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"

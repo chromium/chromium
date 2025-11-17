@@ -22,7 +22,6 @@
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 
 #if BUILDFLAG(USE_ZYGOTE)

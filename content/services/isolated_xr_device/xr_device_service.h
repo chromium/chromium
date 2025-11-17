@@ -10,7 +10,6 @@
 #include "device/vr/public/mojom/test/browser_test_interfaces.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace device {
 

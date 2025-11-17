@@ -27,7 +27,6 @@
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/filter/source_stream_type.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"

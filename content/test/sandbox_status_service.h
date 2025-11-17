@@ -7,7 +7,6 @@
 
 #include "content/test/sandbox_status.test-mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace content {
 

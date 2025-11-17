@@ -18,7 +18,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "url/gurl.h"
 
 namespace base {

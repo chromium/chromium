@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_HANDWRITING_HANDWRITING_RECOGNIZER_IMPL_H_
 #define CONTENT_BROWSER_HANDWRITING_HANDWRITING_RECOGNIZER_IMPL_H_
 
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/handwriting/handwriting.mojom.h"
 
 namespace content {

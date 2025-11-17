@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "content/public/browser/preconnect_request.h"
 #include "content/public/browser/storage_partition_config.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"

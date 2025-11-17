@@ -30,7 +30,6 @@
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/browser/cache_storage/cache_storage_scheduler_types.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 

@@ -25,7 +25,6 @@
 #include "content/public/browser/prefetch_priority.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
 #include "content/public/browser/zoom_level_delegate.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/http/http_request_headers.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"

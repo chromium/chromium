@@ -11,7 +11,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/reload_type.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/service_manager/public/cpp/interface_provider.h"

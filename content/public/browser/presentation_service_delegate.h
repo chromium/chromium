@@ -13,8 +13,6 @@
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
 #include "media/base/flinging_controller.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 
 namespace content {

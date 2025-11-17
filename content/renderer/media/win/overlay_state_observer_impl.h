@@ -11,7 +11,6 @@
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "media/base/win/overlay_state_observer_subscription.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 

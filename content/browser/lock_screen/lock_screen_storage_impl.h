@@ -13,7 +13,6 @@
 #include "base/threading/sequence_bound.h"
 #include "content/public/browser/lock_screen_storage.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/lock_screen/lock_screen.mojom.h"
 
 namespace base {

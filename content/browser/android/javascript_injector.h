@@ -10,7 +10,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "components/origin_matcher/origin_matcher.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 
