@@ -57,7 +57,24 @@ PdfRect CalculateClipBoxBoundary(const PdfRect& media_box,
 gfx::Vector2dF CalculateScaledClipBoxOffset(const gfx::Rect& content_rect,
                                             const PdfRect& source_clip_box);
 
-// Calculate the clip box offset for a page that does not need to be scaled.
+// Calculate the clip box offset for a page that needs to be centered, but not
+// scaled, and the page size is bigger than the source clip box size.
+//
+// `rotation` specifies the source page rotation values which are N / 90
+// degrees.
+// `page_width` specifies the screen destination page width.
+// `page_height` specifies the screen destination page height.
+// `source_clip_box` specifies the source clip box positions, relative to the
+// origin.
+// Returns the final translation offsets for the source clip box, relative to
+// the origin.
+gfx::Vector2dF CalculateCenterClipBoxOffset(int rotation,
+                                            int page_width,
+                                            int page_height,
+                                            const PdfRect& source_clip_box);
+
+// Calculate the clip box offset for a page that does not need to be scaled or
+// centered.
 //
 // `rotation` specifies the source page rotation values which are N / 90
 // degrees.

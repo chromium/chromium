@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "pdf/pdf_rect.h"
 #include "ui/gfx/geometry/rect.h"
@@ -81,6 +82,22 @@ gfx::Vector2dF CalculateScaledClipBoxOffset(const gfx::Rect& content_rect,
                             content_rect.x() - source_clip_box.left(),
                         (content_rect.height() - source_clip_box.height()) / 2 +
                             content_rect.y() - source_clip_box.bottom());
+}
+
+gfx::Vector2dF CalculateCenterClipBoxOffset(int rotation,
+                                            int page_width,
+                                            int page_height,
+                                            const PdfRect& source_clip_box) {
+  if ((rotation % 2) == 1) {
+    std::swap(page_width, page_height);
+  }
+
+  // Center the source clip box only if it is smaller than the page size.
+  CHECK_GE(page_width, source_clip_box.width());
+  CHECK_GE(page_height, source_clip_box.height());
+
+  return gfx::Vector2dF((page_width - source_clip_box.width()) / 2,
+                        (page_height - source_clip_box.height()) / 2);
 }
 
 gfx::Vector2dF CalculateNonScaledClipBoxOffset(int rotation,

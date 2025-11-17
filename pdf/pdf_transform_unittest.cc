@@ -260,6 +260,31 @@ TEST(PdfTransformTest, CalculateNonScaledClipBoxOffset) {
   EXPECT_FLOAT_EQ(-170, offset.y());
 }
 
+TEST(PdfTransformTest, CalculateCenterClipBoxOffset) {
+  constexpr int kPageWidth = kDefaultWidth + 10;
+  constexpr int kPageHeight = kDefaultHeight + 20;
+
+  // Centering the smaller `clip_box`.
+  PdfRect clip_box;
+  InitializeBoxToDefaultPortraitValues(&clip_box);
+  gfx::Vector2dF offset = CalculateCenterClipBoxOffset(
+      /*rotation=*/0, kPageWidth, kPageHeight, clip_box);
+  EXPECT_FLOAT_EQ(5, offset.x());
+  EXPECT_FLOAT_EQ(10, offset.y());
+  offset = CalculateCenterClipBoxOffset(/*rotation=*/1, kPageHeight, kPageWidth,
+                                        clip_box);
+  EXPECT_FLOAT_EQ(5, offset.x());
+  EXPECT_FLOAT_EQ(10, offset.y());
+  offset = CalculateCenterClipBoxOffset(/*rotation=*/2, kPageWidth, kPageHeight,
+                                        clip_box);
+  EXPECT_FLOAT_EQ(5, offset.x());
+  EXPECT_FLOAT_EQ(10, offset.y());
+  offset = CalculateCenterClipBoxOffset(/*rotation=*/3, kPageHeight, kPageWidth,
+                                        clip_box);
+  EXPECT_FLOAT_EQ(5, offset.x());
+  EXPECT_FLOAT_EQ(10, offset.y());
+}
+
 // https://crbug.com/491160 and https://crbug.com/588757
 TEST(PdfTransformTest, ReversedMediaBox) {
   int page_width = kDefaultWidth;

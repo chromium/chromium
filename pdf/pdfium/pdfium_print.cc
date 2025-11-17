@@ -104,24 +104,39 @@ void TransformPDFPageForPrinting(
   const int actual_page_height =
       rotated ? page_size.width() : page_size.height();
 
+  enum class TransformType {
+    kNoScaleOrCenter,
+    kScaleToFit,
+    kCenterWithoutScale
+  };
+
+  TransformType transform_type = TransformType::kNoScaleOrCenter;
   gfx::Rect gfx_printed_rect;
-  bool fitted_scaling;
   switch (scaling_option) {
     case printing::mojom::PrintScalingOption::kFitToPrintableArea:
       gfx_printed_rect = gfx::Rect(content_rect.x(), content_rect.y(),
                                    content_rect.width(), content_rect.height());
-      fitted_scaling = true;
+      transform_type = TransformType::kScaleToFit;
       break;
     case printing::mojom::PrintScalingOption::kFitToPaper:
       gfx_printed_rect = gfx::Rect(page_size.width(), page_size.height());
-      fitted_scaling = true;
+      transform_type = TransformType::kScaleToFit;
+      break;
+    case printing::mojom::PrintScalingOption::kCenterShrinkToFitPaper:
+      if (src_page_size.width() > actual_page_width ||
+          src_page_size.height() > actual_page_height) {
+        gfx_printed_rect = gfx::Rect(page_size.width(), page_size.height());
+        transform_type = TransformType::kScaleToFit;
+      } else {
+        transform_type = TransformType::kCenterWithoutScale;
+      }
       break;
     default:
-      fitted_scaling = false;
+      transform_type = TransformType::kNoScaleOrCenter;
       break;
   }
 
-  if (fitted_scaling) {
+  if (transform_type == TransformType::kScaleToFit) {
     scale_factor =
         CalculateScaleFactor(gfx_printed_rect, src_page_size, rotated);
   }
@@ -141,11 +156,22 @@ void TransformPDFPageForPrinting(
   clip_box.Scale(scale_factor);
 
   // Calculate the translation offset values.
-  gfx::Vector2dF offset =
-      fitted_scaling ? CalculateScaledClipBoxOffset(gfx_printed_rect, clip_box)
-                     : CalculateNonScaledClipBoxOffset(
-                           src_page_rotation, actual_page_width,
-                           actual_page_height, clip_box);
+  gfx::Vector2dF offset;
+  switch (transform_type) {
+    case TransformType::kScaleToFit:
+      offset = CalculateScaledClipBoxOffset(gfx_printed_rect, clip_box);
+      break;
+    case TransformType::kCenterWithoutScale:
+      offset = CalculateCenterClipBoxOffset(
+          src_page_rotation, actual_page_width, actual_page_height, clip_box);
+      break;
+    case TransformType::kNoScaleOrCenter:
+      offset = CalculateNonScaledClipBoxOffset(
+          src_page_rotation, actual_page_width, actual_page_height, clip_box);
+      break;
+    default:
+      NOTREACHED();
+  }
 
   // Reset the media box and crop box. When the page has crop box and media box,
   // the plugin will display the crop box contents and not the entire media box.
