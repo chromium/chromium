@@ -119,7 +119,7 @@ BASE_FEATURE(kChromeIdentitySurveyFirstRunSignin,
 BASE_FEATURE(kChromeIdentitySurveyPasswordBubbleSignin,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kChromeIdentitySurveyProfileMenuDismissed,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kChromeIdentitySurveyProfileMenuSignin,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kChromeIdentitySurveyProfilePickerAddProfileSignin,
@@ -129,7 +129,7 @@ BASE_FEATURE(kChromeIdentitySurveySigninInterceptProfileSeparation,
 BASE_FEATURE(kChromeIdentitySurveySigninPromoBubbleDismissed,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kChromeIdentitySurveySwitchProfileFromProfileMenu,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kChromeIdentitySurveySwitchProfileFromProfilePicker,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

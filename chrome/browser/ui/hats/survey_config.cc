@@ -527,8 +527,9 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       std::vector<std::string>{}, identity_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveyProfileMenuDismissed,
-      kHatsSurveyTriggerIdentityProfileMenuDismissed, std::nullopt,
-      std::vector<std::string>{}, identity_string_psd_fields);
+      kHatsSurveyTriggerIdentityProfileMenuDismissed,
+      "AHS3hpM2h0ugnJ3q1cK0TTUsr4mM", std::vector<std::string>{},
+      identity_string_psd_fields);
   survey_configs.emplace_back(&switches::kChromeIdentitySurveyProfileMenuSignin,
                               kHatsSurveyTriggerIdentityProfileMenuSignin,
                               std::nullopt, std::vector<std::string>{},
@@ -555,8 +556,9 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       identity_dismissed_signin_bubble_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveySwitchProfileFromProfileMenu,
-      kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu, std::nullopt,
-      std::vector<std::string>{}, identity_string_psd_fields);
+      kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu,
+      "buPSkStWM0ugnJ3q1cK0RmiQgzK1", std::vector<std::string>{},
+      identity_string_psd_fields);
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveySwitchProfileFromProfilePicker,
       kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker, std::nullopt,
