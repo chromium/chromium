@@ -14,7 +14,7 @@ import type {DescriptorListElement} from './descriptor_list.js';
 import {Property} from './device.mojom-webui.js';
 import type {CharacteristicInfo} from './device.mojom-webui.js';
 import type {ExpandableListItemElement} from './expandable_list_item.js';
-import type {ObjectFieldSetElement} from './object_fieldset.js';
+import type {ObjectFieldsetElement} from './object_fieldset.js';
 import type {ValueControlElement} from './value_control.js';
 
 /** Property names for the CharacteristicInfo fieldset */
@@ -69,8 +69,8 @@ export class CharacteristicListItemElement extends CustomElement {
     const propertiesBtn =
         this.shadowRoot!.querySelector('.show-all-properties')!;
     const propertiesFieldSet =
-        this.shadowRoot!.querySelector<ObjectFieldSetElement>(
-            'object-field-set.properties')!;
+        this.shadowRoot!.querySelector<ObjectFieldsetElement>(
+            'object-fieldset.properties')!;
     propertiesBtn.addEventListener('click', () => {
       propertiesFieldSet.toggleAttribute(
           'show-all', !propertiesFieldSet.showAll);
@@ -91,8 +91,8 @@ export class CharacteristicListItemElement extends CustomElement {
 
     // Create content for display in expanded content container.
     const characteristicFieldSet =
-        this.shadowRoot!.querySelector<ObjectFieldSetElement>(
-            'object-field-set.characteristics')!;
+        this.shadowRoot!.querySelector<ObjectFieldsetElement>(
+            'object-fieldset.characteristics')!;
     characteristicFieldSet.dataset['nameMap'] =
         JSON.stringify(INFO_PROPERTY_NAMES);
     characteristicFieldSet.dataset['value'] = JSON.stringify({
@@ -102,8 +102,8 @@ export class CharacteristicListItemElement extends CustomElement {
     characteristicFieldSet.hidden = false;
 
     const propertiesFieldSet =
-        this.shadowRoot!.querySelector<ObjectFieldSetElement>(
-            'object-field-set.properties')!;
+        this.shadowRoot!.querySelector<ObjectFieldsetElement>(
+            'object-fieldset.properties')!;
     propertiesFieldSet.dataset['nameMap'] =
         JSON.stringify(PROPERTIES_PROPERTY_NAMES);
     propertiesFieldSet.dataset['value'] = JSON.stringify({

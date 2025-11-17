@@ -12,11 +12,11 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import type {CharacteristicListElement} from './characteristic_list.js';
 import type {ServiceInfo} from './device.mojom-webui.js';
 import type {ExpandableListItemElement} from './expandable_list_item.js';
-import type {ObjectFieldSetElement} from './object_fieldset.js';
+import type {ObjectFieldsetElement} from './object_fieldset.js';
 import {getTemplate} from './service_list_item.html.js';
 
 /**
- * Property names that will be displayed in the ObjectFieldSetElement which
+ * Property names that will be displayed in the ObjectFieldsetElement which
  * contains the ServiceInfo object.
  */
 const PROPERTY_NAMES = {
@@ -28,7 +28,7 @@ const PROPERTY_NAMES = {
 /**
  * A list item that displays the data in a ServiceInfo object. The brief
  * section contains the UUID of the given |serviceInfo|. The expanded section
- * contains an ObjectFieldSetElement that displays all of the properties in the
+ * contains an ObjectFieldsetElement that displays all of the properties in the
  * given |serviceInfo|. Data is not loaded until the ServiceListItem is
  * expanded for the first time.
  */
@@ -64,8 +64,8 @@ export class ServiceListItemElement extends CustomElement {
     headerValue.textContent = this.info.uuid.uuid;
 
     const serviceFieldSet =
-        this.shadowRoot!.querySelector<ObjectFieldSetElement>(
-            'object-field-set');
+        this.shadowRoot!.querySelector<ObjectFieldsetElement>(
+            'object-fieldset');
     assert(serviceFieldSet);
     serviceFieldSet.dataset['nameMap'] = JSON.stringify(PROPERTY_NAMES);
     serviceFieldSet.dataset['value'] = JSON.stringify({

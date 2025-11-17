@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '/strings.m.js';
+import './margin_control_container.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';

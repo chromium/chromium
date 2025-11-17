@@ -64,7 +64,7 @@ suite('bluetooth_internals', function() {
   });
 
   setup(function() {
-    adapterFieldSet = document.querySelector('#adapter object-field-set');
+    adapterFieldSet = document.querySelector('#adapter object-fieldset');
     deviceTable = document.querySelector('#devices device-table')
                       .shadowRoot.querySelector('table');
     sidebarNode = document.querySelector('#sidebar');
@@ -517,7 +517,7 @@ suite('bluetooth_internals', function() {
      'manufacturerDataMap',
     ].forEach(function(propName) {
       const valueCell =
-          detailsPage.querySelector('object-field-set')
+          detailsPage.querySelector('object-fieldset')
               .shadowRoot.querySelector(`fieldset [data-field="${propName}"]`);
 
       const parts = propName.split('.');

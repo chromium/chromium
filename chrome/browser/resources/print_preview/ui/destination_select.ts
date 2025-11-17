@@ -4,6 +4,7 @@
 
 import 'chrome://resources/js/util.js';
 import './icons.html.js';
+import './settings_section.js';
 import '/strings.m.js';
 
 import {IconsetMap} from 'chrome://resources/cr_elements/cr_icon/iconset_map.js';

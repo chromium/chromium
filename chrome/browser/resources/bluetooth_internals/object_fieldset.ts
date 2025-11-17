@@ -22,13 +22,13 @@ import {getTemplate} from './object_fieldset.html.js';
  * 'false'. All other types are converted to their string representation for
  * display.
  */
-export class ObjectFieldSetElement extends CustomElement {
+export class ObjectFieldsetElement extends CustomElement {
   static override get template() {
     return getTemplate();
   }
 
   static get is() {
-    return 'object-field-set';
+    return 'object-fieldset';
   }
 
   static get observedAttributes() {
@@ -90,4 +90,4 @@ export class ObjectFieldSetElement extends CustomElement {
   }
 }
 
-customElements.define('object-field-set', ObjectFieldSetElement);
+customElements.define('object-fieldset', ObjectFieldsetElement);

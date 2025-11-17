@@ -11,7 +11,7 @@ import './object_fieldset.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import type {AdapterInfo} from './adapter.mojom-webui.js';
-import type {ObjectFieldSetElement} from './object_fieldset.js';
+import type {ObjectFieldsetElement} from './object_fieldset.js';
 import {Page} from './page.js';
 
 const PROPERTY_NAMES = {
@@ -30,14 +30,14 @@ const PROPERTY_NAMES = {
  * Page that contains an ObjectFieldSet that displays the latest AdapterInfo.
  */
 export class AdapterPage extends Page {
-  adapterFieldSet: ObjectFieldSetElement;
+  adapterFieldSet: ObjectFieldsetElement;
   private refreshBtn_: HTMLButtonElement;
 
   constructor() {
     super('adapter', 'Adapter', 'adapter');
 
     this.adapterFieldSet =
-        document.createElement('object-field-set') as ObjectFieldSetElement;
+        document.createElement('object-fieldset') as ObjectFieldsetElement;
     this.adapterFieldSet.toggleAttribute('show-all', true);
     this.adapterFieldSet.dataset['nameMap'] = JSON.stringify(PROPERTY_NAMES);
     this.pageDiv.appendChild(this.adapterFieldSet);

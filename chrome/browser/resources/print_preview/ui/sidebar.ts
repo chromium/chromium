@@ -7,6 +7,7 @@ import './advanced_options_settings.js';
 import './button_strip.js';
 import './color_settings.js';
 import './copies_settings.js';
+import './destination_settings.js';
 import './dpi_settings.js';
 import './duplex_settings.js';
 import './header.js';

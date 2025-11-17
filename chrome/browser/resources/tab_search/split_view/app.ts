@@ -5,6 +5,7 @@
 import '/strings.m.js';
 import '../tab_search_item.js';
 import '../selectable_lazy_list.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

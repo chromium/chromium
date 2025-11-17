@@ -17,7 +17,7 @@ import {DeviceRemote} from './device.mojom-webui.js';
 import {connectToDevice} from './device_broker.js';
 import {ConnectionStatus} from './device_collection.js';
 import {formatManufacturerDataMap, formatServiceUuids} from './device_utils.js';
-import {ObjectFieldSetElement} from './object_fieldset.js';
+import {ObjectFieldsetElement} from './object_fieldset.js';
 import {Page} from './page.js';
 import {showSnackbar, SnackbarType} from './snackbar.js';
 
@@ -58,8 +58,8 @@ export class DeviceDetailsPage extends Page {
     /** @private {?DeviceRemote} */
     this.device_ = null;
 
-    /** @private {!ObjectFieldSetElement} */
-    this.deviceFieldSet_ = document.createElement('object-field-set');
+    /** @private {!ObjectFieldsetElement} */
+    this.deviceFieldSet_ = document.createElement('object-fieldset');
     this.deviceFieldSet_.toggleAttribute('show-all', true);
     this.deviceFieldSet_.dataset.nameMap = JSON.stringify(PROPERTY_NAMES);
 
