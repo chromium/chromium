@@ -13,19 +13,18 @@ namespace blink {
 
 ServiceWorkerRegistrationSync::ServiceWorkerRegistrationSync(
     ServiceWorkerRegistration* registration)
-    : Supplement(*registration) {}
+    : service_worker_registration_(*registration) {}
 
 ServiceWorkerRegistrationSync::~ServiceWorkerRegistrationSync() = default;
 
 ServiceWorkerRegistrationSync& ServiceWorkerRegistrationSync::From(
     ServiceWorkerRegistration& registration) {
   ServiceWorkerRegistrationSync* supplement =
-      Supplement<ServiceWorkerRegistration>::From<
-          ServiceWorkerRegistrationSync>(registration);
+      registration.GetServiceWorkerRegistrationSync();
   if (!supplement) {
     supplement =
         MakeGarbageCollected<ServiceWorkerRegistrationSync>(&registration);
-    ProvideTo(registration, supplement);
+    registration.SetServiceWorkerRegistrationSync(supplement);
   }
   return *supplement;
 }
@@ -38,10 +37,10 @@ SyncManager* ServiceWorkerRegistrationSync::sync(
 SyncManager* ServiceWorkerRegistrationSync::sync() {
   if (!sync_manager_) {
     ExecutionContext* execution_context =
-        GetSupplementable()->GetExecutionContext();
+        service_worker_registration_->GetExecutionContext();
     // TODO(falken): Consider defining a task source in the spec for this event.
     sync_manager_ = MakeGarbageCollected<SyncManager>(
-        GetSupplementable(),
+        service_worker_registration_,
         execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
   }
   return sync_manager_.Get();
@@ -55,10 +54,10 @@ PeriodicSyncManager* ServiceWorkerRegistrationSync::periodicSync(
 PeriodicSyncManager* ServiceWorkerRegistrationSync::periodicSync() {
   if (!periodic_sync_manager_) {
     ExecutionContext* execution_context =
-        GetSupplementable()->GetExecutionContext();
+        service_worker_registration_->GetExecutionContext();
     // TODO(falken): Consider defining a task source in the spec for this event.
     periodic_sync_manager_ = MakeGarbageCollected<PeriodicSyncManager>(
-        GetSupplementable(),
+        service_worker_registration_,
         execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
   }
   return periodic_sync_manager_.Get();
@@ -67,7 +66,7 @@ PeriodicSyncManager* ServiceWorkerRegistrationSync::periodicSync() {
 void ServiceWorkerRegistrationSync::Trace(Visitor* visitor) const {
   visitor->Trace(sync_manager_);
   visitor->Trace(periodic_sync_manager_);
-  Supplement<ServiceWorkerRegistration>::Trace(visitor);
+  visitor->Trace(service_worker_registration_);
 }
 
 }  // namespace blink

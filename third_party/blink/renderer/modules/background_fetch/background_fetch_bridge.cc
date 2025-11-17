@@ -20,13 +20,12 @@ BackgroundFetchBridge* BackgroundFetchBridge::From(
   DCHECK(service_worker_registration);
 
   BackgroundFetchBridge* bridge =
-      Supplement<ServiceWorkerRegistration>::From<BackgroundFetchBridge>(
-          service_worker_registration);
+      service_worker_registration->GetBackgroundFetchBridge();
 
   if (!bridge) {
     bridge = MakeGarbageCollected<BackgroundFetchBridge>(
         *service_worker_registration);
-    ProvideTo(*service_worker_registration, bridge);
+    service_worker_registration->SetBackgroundFetchBridge(bridge);
   }
 
   return bridge;
@@ -34,14 +33,14 @@ BackgroundFetchBridge* BackgroundFetchBridge::From(
 
 BackgroundFetchBridge::BackgroundFetchBridge(
     ServiceWorkerRegistration& registration)
-    : Supplement<ServiceWorkerRegistration>(registration),
+    : service_worker_registration_(registration),
       background_fetch_service_(registration.GetExecutionContext()) {}
 
 BackgroundFetchBridge::~BackgroundFetchBridge() = default;
 
 void BackgroundFetchBridge::Trace(Visitor* visitor) const {
   visitor->Trace(background_fetch_service_);
-  Supplement::Trace(visitor);
+  visitor->Trace(service_worker_registration_);
 }
 
 void BackgroundFetchBridge::GetIconDisplaySize(
@@ -57,8 +56,8 @@ void BackgroundFetchBridge::Fetch(
     mojom::blink::BackgroundFetchUkmDataPtr ukm_data,
     RegistrationCallback callback) {
   GetService()->Fetch(
-      GetSupplementable()->RegistrationId(), developer_id, std::move(requests),
-      std::move(options), icon, std::move(ukm_data),
+      service_worker_registration_->RegistrationId(), developer_id,
+      std::move(requests), std::move(options), icon, std::move(ukm_data),
       blink::BindOnce(&BackgroundFetchBridge::DidGetRegistration,
                       WrapPersistent(this), std::move(callback)));
 }
@@ -66,7 +65,7 @@ void BackgroundFetchBridge::Fetch(
 void BackgroundFetchBridge::GetRegistration(const String& developer_id,
                                             RegistrationCallback callback) {
   GetService()->GetRegistration(
-      GetSupplementable()->RegistrationId(), developer_id,
+      service_worker_registration_->RegistrationId(), developer_id,
       blink::BindOnce(&BackgroundFetchBridge::DidGetRegistration,
                       WrapPersistent(this), std::move(callback)));
 }
@@ -84,23 +83,22 @@ void BackgroundFetchBridge::DidGetRegistration(
   DCHECK_EQ(error, mojom::blink::BackgroundFetchError::NONE);
   BackgroundFetchRegistration* registration =
       MakeGarbageCollected<blink::BackgroundFetchRegistration>(
-          GetSupplementable(), std::move(registration_ptr));
+          service_worker_registration_, std::move(registration_ptr));
 
   std::move(callback).Run(error, registration);
 }
 
 void BackgroundFetchBridge::GetDeveloperIds(GetDeveloperIdsCallback callback) {
-  GetService()->GetDeveloperIds(GetSupplementable()->RegistrationId(),
+  GetService()->GetDeveloperIds(service_worker_registration_->RegistrationId(),
                                 std::move(callback));
 }
 
 mojom::blink::BackgroundFetchService* BackgroundFetchBridge::GetService() {
   if (!background_fetch_service_.is_bound()) {
     auto receiver = background_fetch_service_.BindNewPipeAndPassReceiver(
-        GetSupplementable()->GetExecutionContext()->GetTaskRunner(
+        service_worker_registration_->GetExecutionContext()->GetTaskRunner(
             TaskType::kBackgroundFetch));
-    GetSupplementable()
-        ->GetExecutionContext()
+    service_worker_registration_->GetExecutionContext()
         ->GetBrowserInterfaceBroker()
         .GetInterface(std::move(receiver));
   }

@@ -23,11 +23,8 @@ class BackgroundFetchRegistration;
 // Worker Registration.
 class BackgroundFetchBridge final
     : public GarbageCollected<BackgroundFetchBridge>,
-      public Supplement<ServiceWorkerRegistration> {
+      public GarbageCollectedMixin {
  public:
-  static constexpr auto kSupplementIndex =
-      ServiceWorkerRegistration::Supplements::kBackgroundFetchBridge;
-
   using GetDeveloperIdsCallback =
       base::OnceCallback<void(mojom::blink::BackgroundFetchError,
                               const Vector<String>&)>;
@@ -81,6 +78,7 @@ class BackgroundFetchBridge final
       mojom::blink::BackgroundFetchError error,
       mojom::blink::BackgroundFetchRegistrationPtr registration_ptr);
 
+  Member<ServiceWorkerRegistration> service_worker_registration_;
   HeapMojoRemote<mojom::blink::BackgroundFetchService>
       background_fetch_service_;
 };

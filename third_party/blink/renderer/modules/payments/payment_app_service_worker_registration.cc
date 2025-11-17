@@ -38,13 +38,12 @@ PaymentAppServiceWorkerRegistration::~PaymentAppServiceWorkerRegistration() =
 PaymentAppServiceWorkerRegistration& PaymentAppServiceWorkerRegistration::From(
     ServiceWorkerRegistration& registration) {
   PaymentAppServiceWorkerRegistration* supplement =
-      Supplement<ServiceWorkerRegistration>::From<
-          PaymentAppServiceWorkerRegistration>(registration);
+      registration.GetPaymentAppServiceWorkerRegistration();
 
   if (!supplement) {
     supplement = MakeGarbageCollected<PaymentAppServiceWorkerRegistration>(
         &registration);
-    ProvideTo(registration, supplement);
+    registration.SetPaymentAppServiceWorkerRegistration(supplement);
   }
 
   return *supplement;
@@ -73,23 +72,18 @@ PaymentManager* PaymentAppServiceWorkerRegistration::paymentManager(
 
   if (!payment_manager_) {
     payment_manager_ =
-        MakeGarbageCollected<PaymentManager>(GetSupplementable());
+        MakeGarbageCollected<PaymentManager>(service_worker_registration_);
   }
   return payment_manager_.Get();
 }
 
 void PaymentAppServiceWorkerRegistration::Trace(Visitor* visitor) const {
   visitor->Trace(payment_manager_);
-  Supplement<ServiceWorkerRegistration>::Trace(visitor);
+  visitor->Trace(service_worker_registration_);
 }
 
 PaymentAppServiceWorkerRegistration::PaymentAppServiceWorkerRegistration(
     ServiceWorkerRegistration* registration)
-    : Supplement(*registration) {}
-
-// static
-const unsigned PaymentAppServiceWorkerRegistration::kSupplementIndex =
-    static_cast<unsigned>(ServiceWorkerRegistration::Supplements::
-                              kPaymentAppServiceWorkerRegistration);
+    : service_worker_registration_(*registration) {}
 
 }  // namespace blink

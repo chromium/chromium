@@ -27,11 +27,8 @@ class V8PermissionState;
 //
 // TODO(peter): Use the PushMessaging Mojo service directly from here.
 class PushMessagingBridge final : public GarbageCollected<PushMessagingBridge>,
-                                  public Supplement<ServiceWorkerRegistration> {
+                                  public GarbageCollectedMixin {
  public:
-  static constexpr auto kSupplementIndex =
-      ServiceWorkerRegistration::Supplements::kPushMessagingBridge;
-
   static PushMessagingBridge* From(ServiceWorkerRegistration* registration);
 
   explicit PushMessagingBridge(ServiceWorkerRegistration& registration);
@@ -54,6 +51,7 @@ class PushMessagingBridge final : public GarbageCollected<PushMessagingBridge>,
   void DidGetPermissionState(ScriptPromiseResolver<V8PermissionState>* resolver,
                              mojom::blink::PermissionStatus status);
 
+  Member<ServiceWorkerRegistration> service_worker_registration_;
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 };
 

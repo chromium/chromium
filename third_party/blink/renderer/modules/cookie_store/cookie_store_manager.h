@@ -24,12 +24,10 @@ class ExceptionState;
 class ScriptState;
 
 class CookieStoreManager final : public ScriptWrappable,
-                                 public Supplement<ServiceWorkerRegistration> {
+                                 public GarbageCollectedMixin {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static constexpr auto kSupplementIndex =
-      ServiceWorkerRegistration::Supplements::kCookieStoreManager;
   // Web Exposed as registration.cookies
   static CookieStoreManager* cookies(ServiceWorkerRegistration& registration);
 
@@ -53,6 +51,7 @@ class CookieStoreManager final : public ScriptWrappable,
   void Trace(Visitor* visitor) const override;
 
  private:
+  Member<ServiceWorkerRegistration> service_worker_registration_;
   // The non-static callbacks keep CookieStoreManager alive during mojo calls.
   //
   // The browser-side implementation of the mojo calls assumes the SW

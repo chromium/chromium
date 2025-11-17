@@ -16,7 +16,7 @@ class ServiceWorkerRegistration;
 
 class ServiceWorkerRegistrationPush final
     : public GarbageCollected<ServiceWorkerRegistrationPush>,
-      public Supplement<ServiceWorkerRegistration> {
+      public GarbageCollectedMixin {
  public:
   static const unsigned kSupplementIndex;
 
@@ -37,6 +37,7 @@ class ServiceWorkerRegistrationPush final
   void Trace(Visitor* visitor) const override;
 
  private:
+  Member<ServiceWorkerRegistration> service_worker_registration_;
   Member<PushManager> push_manager_;
 };
 

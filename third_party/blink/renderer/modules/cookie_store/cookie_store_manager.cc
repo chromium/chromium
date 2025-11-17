@@ -87,18 +87,16 @@ KURL DefaultCookieURL(ServiceWorkerRegistration* registration) {
 // static
 CookieStoreManager* CookieStoreManager::cookies(
     ServiceWorkerRegistration& registration) {
-  auto* supplement =
-      Supplement<ServiceWorkerRegistration>::From<CookieStoreManager>(
-          registration);
+  CookieStoreManager* supplement = registration.GetCookieStoreManager();
   if (!supplement) {
     supplement = MakeGarbageCollected<CookieStoreManager>(registration);
-    ProvideTo(registration, supplement);
+    registration.SetCookieStoreManager(supplement);
   }
   return supplement;
 }
 
 CookieStoreManager::CookieStoreManager(ServiceWorkerRegistration& registration)
-    : Supplement<ServiceWorkerRegistration>(registration),
+    : service_worker_registration_(registration),
       registration_(&registration),
       backend_(registration.GetExecutionContext()),
       default_cookie_url_(DefaultCookieURL(&registration)) {
@@ -182,7 +180,7 @@ CookieStoreManager::getSubscriptions(ScriptState* script_state,
 void CookieStoreManager::Trace(Visitor* visitor) const {
   visitor->Trace(registration_);
   visitor->Trace(backend_);
-  Supplement<ServiceWorkerRegistration>::Trace(visitor);
+  visitor->Trace(service_worker_registration_);
   ScriptWrappable::Trace(visitor);
 }
 

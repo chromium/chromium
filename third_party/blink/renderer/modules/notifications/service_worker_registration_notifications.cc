@@ -28,7 +28,8 @@ namespace blink {
 ServiceWorkerRegistrationNotifications::ServiceWorkerRegistrationNotifications(
     ExecutionContext* context,
     ServiceWorkerRegistration* registration)
-    : Supplement(*registration), ExecutionContextLifecycleObserver(context) {}
+    : ExecutionContextLifecycleObserver(context),
+      service_worker_registration_(*registration) {}
 
 ScriptPromise<IDLUndefined>
 ServiceWorkerRegistrationNotifications::showNotification(
@@ -115,25 +116,20 @@ void ServiceWorkerRegistrationNotifications::ContextDestroyed() {
 
 void ServiceWorkerRegistrationNotifications::Trace(Visitor* visitor) const {
   visitor->Trace(loaders_);
-  Supplement<ServiceWorkerRegistration>::Trace(visitor);
+  visitor->Trace(service_worker_registration_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
-
-const unsigned ServiceWorkerRegistrationNotifications::kSupplementIndex =
-    static_cast<unsigned>(ServiceWorkerRegistration::Supplements::
-                              kServiceWorkerRegistrationNotifications);
 
 ServiceWorkerRegistrationNotifications&
 ServiceWorkerRegistrationNotifications::From(
     ExecutionContext* execution_context,
     ServiceWorkerRegistration& registration) {
   ServiceWorkerRegistrationNotifications* supplement =
-      Supplement<ServiceWorkerRegistration>::From<
-          ServiceWorkerRegistrationNotifications>(registration);
+      registration.GetServiceWorkerRegistrationNotifications();
   if (!supplement) {
     supplement = MakeGarbageCollected<ServiceWorkerRegistrationNotifications>(
         execution_context, &registration);
-    ProvideTo(registration, supplement);
+    registration.SetServiceWorkerRegistrationNotifications(supplement);
   }
   return *supplement;
 }
@@ -160,9 +156,9 @@ void ServiceWorkerRegistrationNotifications::DidLoadResources(
   DCHECK(loaders_.Contains(loader));
 
   NotificationManager::From(GetExecutionContext())
-      ->DisplayPersistentNotification(GetSupplementable()->RegistrationId(),
-                                      std::move(data), loader->GetResources(),
-                                      WrapPersistent(resolver));
+      ->DisplayPersistentNotification(
+          service_worker_registration_->RegistrationId(), std::move(data),
+          loader->GetResources(), WrapPersistent(resolver));
   loaders_.erase(loader);
 }
 

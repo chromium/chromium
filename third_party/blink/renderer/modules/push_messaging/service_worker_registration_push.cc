@@ -12,23 +12,18 @@ namespace blink {
 
 ServiceWorkerRegistrationPush::ServiceWorkerRegistrationPush(
     ServiceWorkerRegistration* registration)
-    : Supplement(*registration) {}
+    : service_worker_registration_(*registration) {}
 
 ServiceWorkerRegistrationPush::~ServiceWorkerRegistrationPush() = default;
-
-const unsigned ServiceWorkerRegistrationPush::kSupplementIndex =
-    static_cast<unsigned>(
-        ServiceWorkerRegistration::Supplements::kServiceWorkerRegistrationPush);
 
 ServiceWorkerRegistrationPush& ServiceWorkerRegistrationPush::From(
     ServiceWorkerRegistration& registration) {
   ServiceWorkerRegistrationPush* supplement =
-      Supplement<ServiceWorkerRegistration>::From<
-          ServiceWorkerRegistrationPush>(registration);
+      registration.GetServiceWorkerRegistrationPush();
   if (!supplement) {
     supplement =
         MakeGarbageCollected<ServiceWorkerRegistrationPush>(&registration);
-    ProvideTo(registration, supplement);
+    registration.SetServiceWorkerRegistrationPush(supplement);
   }
   return *supplement;
 }
@@ -40,13 +35,14 @@ PushManager* ServiceWorkerRegistrationPush::pushManager(
 
 PushManager* ServiceWorkerRegistrationPush::pushManager() {
   if (!push_manager_)
-    push_manager_ = MakeGarbageCollected<PushManager>(GetSupplementable());
+    push_manager_ =
+        MakeGarbageCollected<PushManager>(service_worker_registration_);
   return push_manager_.Get();
 }
 
 void ServiceWorkerRegistrationPush::Trace(Visitor* visitor) const {
   visitor->Trace(push_manager_);
-  Supplement<ServiceWorkerRegistration>::Trace(visitor);
+  visitor->Trace(service_worker_registration_);
 }
 
 }  // namespace blink
