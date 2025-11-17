@@ -3709,6 +3709,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="7050187094878475250">Üritasite jõuda domeenile <ph name="DOMAIN" />, kuid server esitas sertifikaadi, mille kehtivusaeg on liiga pikk, et olla usaldusväärne.</translation>
 <translation id="7053983685419859001">Blokeeri</translation>
 <translation id="7054717457611655239">Nüüdsest salvestage oma failid kohta <ph name="CLOUD_PROVIDER" />.</translation>
+<translation id="7057567173736333354">Kirjeldage oma pilti</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> kinnitas, et selle veebisaidi sertifikaadi andis välja <ph name="ISSUER" />.</translation>
 <translation id="7058774143982824355">Paroolide CSV-faili sõelumise teenus</translation>
 <translation id="706295145388601875">Lisage ja hallake Chrome'i seadetes aadresse</translation>

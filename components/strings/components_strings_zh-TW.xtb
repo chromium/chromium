@@ -3707,6 +3707,7 @@
 <translation id="7050187094878475250">您嘗試連線至 <ph name="DOMAIN" />，但伺服器提供的憑證有效期限太長，因此難以信任。</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7054717457611655239">從現在起，請將檔案儲存至「<ph name="CLOUD_PROVIDER" />」。</translation>
+<translation id="7057567173736333354">描述圖像</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> 已驗證這個網站的憑證是由「<ph name="ISSUER" />」所核發。</translation>
 <translation id="7058774143982824355">CSV 密碼剖析器服務</translation>
 <translation id="706295145388601875">在 Chrome 設定中新增及管理地址</translation>

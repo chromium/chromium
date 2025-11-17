@@ -3705,6 +3705,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7050187094878475250">Hai tentato di visitare il sito <ph name="DOMAIN" />, ma il server ha presentato un certificato con periodo di validità troppo lungo per poter essere ritenuto attendibile.</translation>
 <translation id="7053983685419859001">Blocca</translation>
 <translation id="7054717457611655239">D'ora in poi, salva i tuoi file su <ph name="CLOUD_PROVIDER" />.</translation>
+<translation id="7057567173736333354">Descrivi la tua immagine</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> ha verificato che <ph name="ISSUER" />ha rilasciato il certificato di questo sito web.</translation>
 <translation id="7058774143982824355">Servizio parser delle password CSV</translation>
 <translation id="706295145388601875">Aggiungi e gestisci indirizzi nelle impostazioni di Chrome</translation>

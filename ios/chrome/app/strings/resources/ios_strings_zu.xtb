@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zu">
+<translation id="1004825134262590729">{count,plural, =1{Ukhiye wokudlula ongu-{count}}one{Okhiye bokudlula abangu-{count}}other{Okhiye bokudlula abangu-{count}}}</translation>
 <translation id="1005023885865154304">Vula amasethingi Wokugcwalisa Iphasiwedi Okuzenzakalelayo</translation>
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">Ungabuya lapha futhi ukuze uphinde uvule amathebhu osanda kuwavala</translation>
@@ -2212,5 +2213,6 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="984275831282074731">Izindlela zokukhokha</translation>
 <translation id="985379595344853742">Vala wonke amathebhu we-Incognito</translation>
 <translation id="988141524645182168">Amanye amadivayisi</translation>
+<translation id="995174784802614337">{count,plural, =1{Ukhiye wokudlula o-{count} ungenisiwe}one{Okhiye bokudlula abangu-{count} bangenisiwe}other{Okhiye bokudlula abangu-{count} bangenisiwe}}</translation>
 <translation id="999768147936949692">Okwamanje, ungabelana ngamaphasiwedi namalungu womndeni kuphela. <ph name="BEGIN_LINK" />Mema amalungu omndeni<ph name="END_LINK" /> ukuba ajoyine iqembu lakho, futhi athole okwengeziwe emikhiqizweni yakho nobulungu ku-Google.</translation>
 </translationbundle>

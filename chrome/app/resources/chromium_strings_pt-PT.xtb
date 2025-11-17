@@ -325,7 +325,6 @@
 <translation id="4673151026126227699">Se também partilhar relatórios de utilização do Chromium, esses relatórios incluem os URLs que visita</translation>
 <translation id="4677944499843243528">O perfil parece estar a ser utilizado por outro processo do Chromium (<ph name="PROCESS_ID" />) noutro computador (<ph name="HOST_NAME" />). O Chromium bloqueou o perfil para que não seja danificado. Se tiver a certeza de que não existem outros processos a utilizar este perfil, pode desbloqueá-lo e reiniciar o Chromium.</translation>
 <translation id="4680828127924988555">Cancelar instalação</translation>
-<translation id="469259825538636168">Alguns dos seus dados do Chromium ainda não foram guardados na sua Conta Google. Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
 <translation id="4708193446201257833">Enquanto tiver sessão iniciada, pode usar as palavras-passe e muito mais da sua Conta Google no Chromium. <ph name="SHORTCUT" /> pode alterar as suas definições dos serviços Google.</translation>
 <translation id="4708774505295300557">Alguém iniciou sessão no Chromium neste computador anteriormente com a conta <ph name="ACCOUNT_EMAIL_LAST" />. Crie um novo utilizador do Chromium para manter as informações em separado.</translation>
 <translation id="4724676981607797757">A instalação falhou devido a um erro de protocolo não suportado.</translation>
@@ -629,7 +628,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="837460953767177950">Em seguida, tem de reiniciar o Chromium.</translation>
 <translation id="8397248745433792218">O Chromium recomenda que a remova. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões suportadas<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">A publicação desta extensão foi anulada pelo programador e pode não ser segura. Remova-a do Chromium para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
-<translation id="8416884904046428725">O Chromium precisa de validar a sua identidade antes de ser possível guardar alguns dados na sua Conta Google e usá-los em todos os seus dispositivos. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reinicie o Chromium dentro de um dia}other{Reinicie o Chromium dentro de # dias}}</translation>
 <translation id="8438543370129609977">Quando usa a pesquisa de imagens, o título, o URL e o conteúdo da página, incluindo PDFs, são enviados para o servidor. <ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">O arquivo do programa de instalação está corrompido ou não é válido. Descarregue novamente o Chromium.</translation>

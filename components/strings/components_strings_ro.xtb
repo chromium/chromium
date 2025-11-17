@@ -3709,6 +3709,7 @@
 <translation id="7050187094878475250">Ai încercat să accesezi <ph name="DOMAIN" />, dar serverul a prezentat un certificat a cărui perioadă de validitate este prea lungă pentru a fi de încredere.</translation>
 <translation id="7053983685419859001">Blochează</translation>
 <translation id="7054717457611655239">De acum înainte, salvează fișierele în <ph name="CLOUD_PROVIDER" />.</translation>
+<translation id="7057567173736333354">Descrie imaginea</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> s-a asigurat că certificatul acestui site a fost emis de <ph name="ISSUER" />.</translation>
 <translation id="7058774143982824355">Serviciul de analiză a parolelor din CSV</translation>
 <translation id="706295145388601875">Adaugă și gestionează adrese din setările Chrome</translation>

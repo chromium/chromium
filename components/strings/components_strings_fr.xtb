@@ -3709,6 +3709,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7050187094878475250">Vous avez essayé d'accéder à <ph name="DOMAIN" />, mais la durée de validité du certificat du serveur est trop longue pour être fiable.</translation>
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7054717457611655239">Désormais, enregistrez vos fichiers dans <ph name="CLOUD_PROVIDER" />.</translation>
+<translation id="7057567173736333354">Décrire votre image</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> a confirmé que le certificat de ce site Web a bien été émis par <ph name="ISSUER" />.</translation>
 <translation id="7058774143982824355">Service d'analyse des fichiers CSV de mots de passe</translation>
 <translation id="706295145388601875">Gérez les adresses et ajoutez-en dans les paramètres Chrome</translation>

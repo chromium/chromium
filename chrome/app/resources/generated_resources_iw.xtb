@@ -1052,6 +1052,7 @@
 <translation id="1699807488537653303">פתרון של שגיאה בסיסמה</translation>
 <translation id="1700201317341192482">הסרת הכרטיס הווירטואלי</translation>
 <translation id="1700517974991662022">הופעל</translation>
+<translation id="1701367827913789499">אפשר לקרוא בנוחות עם מינימום הסחות דעת באמצעות הכפתור "מצב קריאה" בסרגל הכלים</translation>
 <translation id="1703331064825191675">אין יותר צורך לדאוג לגבי הסיסמאות שלך</translation>
 <translation id="1703666494654169921">לא לאפשר לאתרים להשתמש במכשירי מציאות מדומה או בנתונים כאלה</translation>
 <translation id="1704097193565924901">אותיות רישיות</translation>
@@ -2970,6 +2971,7 @@
 <translation id="3008272652534848354">איפוס הרשאות</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{‏לפי הדרישה של <ph name="MANAGER" />, עליך להתחבר היום לרשת Wi-Fi כדי להוריד עדכון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).}one{‏לפי דרישת <ph name="MANAGER" />, עליך להתחבר ל-Wi-Fi ולהוריד עדכון לפני המועד האחרון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).}two{‏לפי דרישת <ph name="MANAGER" />, עליך להתחבר ל-Wi-Fi ולהוריד עדכון לפני המועד האחרון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).}other{‏לפי דרישת <ph name="MANAGER" />, עליך להתחבר ל-Wi-Fi ולהוריד עדכון לפני המועד האחרון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).}}</translation>
 <translation id="3008923556848076408">‏‫Gemini ימשיך לעבוד על המשימה</translation>
+<translation id="3008926075262837186">רוצה לקרוא בנוחות עם מינימום הסחות דעת?</translation>
 <translation id="3009178788565917040">פלט</translation>
 <translation id="3009352964623081324">‏מקש החיפוש + O, ואז S. אפשר להשתמש במקשי הקיצור האלה לצורך התקנה, ניהול והתאמה אישית של קולות.</translation>
 <translation id="3009779501245596802">מסדי נתונים שנוספו לאינדקס</translation>
@@ -8856,7 +8858,6 @@
 <translation id="7125148293026877011">‏מחיקה של Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="7125932261198019860">‏צריך לוודא שהמדפסת וה-Chromebook מחוברים לאותה רשת Wi-Fi או להשתמש בכבל USB. <ph name="LINK_BEGIN" />מידע נוסף על תאימות<ph name="LINK_END" /></translation>
-<translation id="7127286300357471051">‏אם משתפים את הכרטיסייה הנוכחית עם Gemini, התוכן המלא של הכרטיסייה וכתובת ה-URL שלה נשלחים אל Google.</translation>
 <translation id="7127980134843952133">היסטוריית הורדות</translation>
 <translation id="7128151990937044829">הצגה של חיווי בסרגל הכתובות כשהתראה נחסמת</translation>
 <translation id="7128842673552234514">‏יש לך חשבון Google נוסף?</translation>

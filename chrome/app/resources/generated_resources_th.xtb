@@ -8832,7 +8832,6 @@
 <translation id="7125148293026877011">ลบ Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="7125932261198019860">ตรวจสอบว่าเครื่องพิมพ์เชื่อมต่อเครือข่าย Wi-Fi เดียวกันกับ Chromebook หรือใช้สาย USB <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติมเกี่ยวกับความสามารถในการใช้งานร่วมกัน<ph name="LINK_END" /></translation>
-<translation id="7127286300357471051">เมื่อคุณเลือกแชร์แท็บปัจจุบันกับ Gemini ระบบจะส่งเนื้อหาและ URL เต็มของแท็บไปยัง Google</translation>
 <translation id="7127980134843952133">ประวัติการดาวน์โหลด</translation>
 <translation id="7128151990937044829">แสดงสัญญาณบอกสถานะในแถบที่อยู่เมื่อมีการบล็อกการแจ้งเตือน</translation>
 <translation id="7128842673552234514">หากมีบัญชี Google บัญชีอื่น</translation>

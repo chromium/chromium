@@ -428,6 +428,7 @@
 <translation id="1689333818294560261">اللقب</translation>
 <translation id="1692622044604477956">قوائم أفلام ومواعيد العروض في السينما</translation>
 <translation id="1697430960030447570">‏<ph name="BEGIN_BOLD" />كيف يمكنك إدارة بياناتك:<ph name="END_BOLD" /> يحذف Chrome تلقائيًا المواضيع التي يمر أكثر من 4 أسابيع على إضافتها إلى قائمة مواضيع الإعلانات. ومع استمرارك في التصفّح، قد يظهر موضوع في القائمة مجددًا. يمكنك أيضًا حظر المواضيع التي لا تريد أن يشاركها Chrome مع المواقع الإلكترونية، وإيقاف ميزة "مواضيع الإعلانات" متى شئت من خلال إعدادات Chrome.</translation>
+<translation id="1697808683313379647">‏تستخدم Google المعلومات من صفحة الدفع وغيرها من البيانات ذات الصلة لتوفير هذه الخيارات.</translation>
 <translation id="1699651774646344471">‏يمكنك الآن استخدام العناوين المحفوظة في حسابك على Google.</translation>
 <translation id="1700542542921501212">يمكنك استخدام <ph name="SEARCH_ENGINE_NAME" /> للبحث على الويب.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -3702,6 +3703,7 @@
 <translation id="7031646650991750659">‏تطبيقات Google Play التي ثبّتها</translation>
 <translation id="7035705295266423040">يحتاج المصرف إلى إثبات هويتك</translation>
 <translation id="7038063300915481831">‏<ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لإدارة إعدادات خصوصية حسابك على Google.</translation>
+<translation id="7042465939346919737">‏تستخدم Google المعلومات من صفحة الدفع وغيرها من البيانات ذات الصلة لتوفير هذه الخيارات. لإخفاء خيارات "الدفع لاحقًا"، يُرجى الانتقال إلى "<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />"</translation>
 <translation id="7042616127917168121">تحسين النتائج</translation>
 <translation id="7043552168914147882">ورق بملحقات</translation>
 <translation id="7044081119134178347">تم السماح باستخدام الكاميرا هذه المرّة.</translation>
@@ -3709,6 +3711,7 @@
 <translation id="7050187094878475250">لقد حاولت الوصول إلى <ph name="DOMAIN" />، ولكن الخادم قدم شهادة مدة صلاحيتها طويلة جدًا مما يجعلها غير جديرة بالثقة.</translation>
 <translation id="7053983685419859001">حظر</translation>
 <translation id="7054717457611655239">من الآن فصاعدًا، يمكنك حفظ ملفاتك في <ph name="CLOUD_PROVIDER" />.</translation>
+<translation id="7057567173736333354">وصف الصورة</translation>
 <translation id="7058163556978339998">لقد تحقّق متصفّح <ph name="BROWSER" /> من أن <ph name="ISSUER" /> أصدر شهادة الموقع الإلكتروني هذه.</translation>
 <translation id="7058774143982824355">‏خدمة التحليل اللغوي لكلمات المرور في ملف CSV</translation>
 <translation id="706295145388601875">‏إضافة عناوين وإدارتها في إعدادات متصفّح Chrome</translation>

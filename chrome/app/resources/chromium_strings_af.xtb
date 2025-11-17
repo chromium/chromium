@@ -327,7 +327,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4673151026126227699">As jy ook Chromium-gebruiksverslae deel, sluit daardie verslae die URL'e in wat jy besoek</translation>
 <translation id="4677944499843243528">Dit lyk of die profiel deur 'n ander Chromium-proses (<ph name="PROCESS_ID" />) op 'n ander rekenaar (<ph name="HOST_NAME" />) gebruik word. Chromium het jou profiel gesluit sodat dit nie gekorrupteer word nie. As jy seker is dat geen ander prosesse hierdie profiel gebruik nie, kan jy die profiel ontsluit en Chromium herbegin.</translation>
 <translation id="4680828127924988555">Kanselleer installering</translation>
-<translation id="469259825538636168">Sommige van jou Chromium-data is nog nie in jou Google-rekening gestoor nie. Probeer om ’n paar minute te wag voordat jy afmeld. As jy nou afmeld, sal hierdie data uitgevee word.</translation>
 <translation id="4708193446201257833">Terwyl jy aangemeld is, kan jy jou wagwoorde en meer van jou Google-rekening in Chromium gebruik. <ph name="SHORTCUT" /> kan jou Google-dienste-instellings verander.</translation>
 <translation id="4708774505295300557">Iemand het voorheen op hierdie rekenaar as <ph name="ACCOUNT_EMAIL_LAST" /> by Chromium aangemeld. Skep asseblief 'n nuwe Chromium-gebruiker om jou inligting apart te hou.</translation>
 <translation id="4724676981607797757">Installasie het misluk as gevolg van ’n ongesteunde protokolfout.</translation>
@@ -630,7 +629,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="837460953767177950">Jy sal dan Chromium moet herbegin.</translation>
 <translation id="8397248745433792218">Chromium beveel aan dat jy dit verwyder. <ph name="BEGIN_LINK" />Kry meer inligting oor gesteunde uitbreidings<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">Die ontwikkelaar van hierdie uitbreiding het dit gedepubliseer, en dit kan onveilig wees. Verwyder dit uit Chromium sodat dit nie meer jou data, insluitend jou persoonlike inligting, op werwe wat jy besoek kan sien en verander nie.</translation>
-<translation id="8416884904046428725">Chromium moet verifieer dat dit jy is voordat sommige data in jou Google-rekening gestoor kan word en op al jou toestelle gebruik kan word. As jy nou afmeld, sal hierdie data uitgevee word.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Herbegin Chromium binne 'n dag}other{Herbegin Chromium binne # dae}}</translation>
 <translation id="8438543370129609977">Wanneer jy Prentsoektog gebruik, word die bladsytitel, URL en inhoud, insluitend PDF’s, na die bediener toe gestuur. <ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">Die installeerderargief is korrup of ongeldig. Laai Chromium asseblief weer af.</translation>

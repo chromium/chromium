@@ -2949,6 +2949,7 @@
 <translation id="5813753398265398978">ရူပဗေဒ</translation>
 <translation id="5817918615728894473">တွဲချိတ်ပါ</translation>
 <translation id="5820625124144807242">သင့်မှာယူမှုကို စစ်ပြီးပါက <ph name="BNPL_ISSUER_NAME" /> ဖြင့် အကောင့်သို့ လက်မှတ်ထိုးဝင်ရမည် (သို့) အကောင့်ဖွင့်ရမည်။ ဤအကောင့်ကို Google Pay နှင့် အလိုအလျောက် လင့်ခ်ချိတ်ပါမည်။</translation>
+<translation id="5820751560028604030">စက်တွင်းဒေါင်းလုဒ်ကို ပိတ်ထားသည်</translation>
 <translation id="5826507051599432481">တူနေသည့် အမည် (CN)</translation>
 <translation id="5830698870816298009">ကင်မရာအသုံးပြုမှုနှင့် ရွေ့လျားမှု</translation>
 <translation id="5831217499016131155">Google ပိုက်ဆံအိတ်</translation>
@@ -3709,6 +3710,7 @@
 <translation id="7050187094878475250">သင် <ph name="DOMAIN" /> သို့ ရောက်ရန် ကြိုးပမ်းခဲ့သော်လည်း၊ ယုံကြည်နိုင်ရန်အလို့ငှာ ကာလလွန်စွာကြာမြင့်သော ခွင့်ပြုကာလပါသည့် အသိအမှတ်ပြုလက်မှတ်တစ်ခုအား ဆာဗာမှ ပြသခဲ့သည်။</translation>
 <translation id="7053983685419859001">ပိတ်ဆို့ရန်</translation>
 <translation id="7054717457611655239">ယခုမှစ၍ သင့်ဖိုင်များကို <ph name="CLOUD_PROVIDER" /> တွင် သိမ်းပါ။</translation>
+<translation id="7057567173736333354">သင့်ပုံကို ဖော်ပြပါ</translation>
 <translation id="7058163556978339998"><ph name="ISSUER" /> သည် ဤဝဘ်ဆိုက်၏ အသိအမှတ်ပြုလက်မှတ်ကို ထုတ်ပေးကြောင်း <ph name="BROWSER" /> က အတည်ပြုထားသည်။</translation>
 <translation id="7058774143982824355">CSV စကားဝှက် ပါဆာ ဝန်ဆောင်မှု</translation>
 <translation id="706295145388601875">Chrome ဆက်တင်များတွင် လိပ်စာများထည့်ရန်နှင့် စီမံရန်</translation>

@@ -327,7 +327,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="4673151026126227699">Ikiwa pia unashiriki ripoti za matumizi ya Chromium, ripoti hizo zinajumuisha URL unazotembelea</translation>
 <translation id="4677944499843243528">Wasifu unaonekana kuwa unatumika na mchakato mwingine wa Chromium (<ph name="PROCESS_ID" />) kwenye kompyuta nyingine (<ph name="HOST_NAME" />). Chromium imefunga wasifu huu ili usifisidiwe. Kama una uhakika hakuna michakato mingine inatumia wasifu huu, unaweza kufungua wasifu na uzindue tena Chromium.</translation>
 <translation id="4680828127924988555">Ghairi Usakinishaji</translation>
-<translation id="469259825538636168">Baadhi ya data yako ya Chromium bado haijahifadhiwa kwenye Akaunti yako ya Google. Jaribu kusubiri kwa dakika chache kabla ya kuondoka kwenye akaunti. Ukiondoka kwenye akaunti sasa, data hii itafutwa.</translation>
 <translation id="4708193446201257833">Wakati umeingia katika akaunti, unaweza kutumia manenosiri yako na mengineyo kwenye Akaunti yako ya Google katika Chromium. <ph name="SHORTCUT" /> inaweza kubadilisha mipangilio yako ya huduma za Google.</translation>
 <translation id="4708774505295300557">Kuna mtu aliingia katika Chromium kwenye kompyuta hii akitumia <ph name="ACCOUNT_EMAIL_LAST" />. Tafadhali ongeza wasifu mpya wa Chromium ili utenganishe maelezo yako.</translation>
 <translation id="4724676981607797757">Imeshindwa kusakinisha kwa sababu ya hitilafu ya itifaki isiyotumika.</translation>
@@ -631,7 +630,6 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="837460953767177950">Na utahitaji kuzima kisha uwashe Chromium.</translation>
 <translation id="8397248745433792218">Chromium inapendekeza ukiondoe. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu viendelezi vinavyotumika<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">Uchapishaji wa kiendelezi hiki ulibatilishwa na msanidi programu na huenda kisiwe salama. Kiondoe kwenye Chromium ili kisiweze tena kuona na kubadilisha data yako kwenye tovuti unazotembelea, ikiwa ni pamoja na taarifa zako binafsi.</translation>
-<translation id="8416884904046428725">Chromium inahitaji kuthibitisha kuwa ni wewe kabla ya kuhifadhi baadhi ya data kwenye Akaunti yako ya Google na kuitumia kwenye vifaa vyako vyote. Ukiondoka kwenye akaunti sasa, data hii itafutwa.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Fungua Chromium upya ndani ya siku moja}other{Fungua Chromium upya ndani ya siku #}}</translation>
 <translation id="8438543370129609977">Unapotumia kipengele cha Kutafuta kwa Picha, jina la ukurasa, URL na maudhui, ikiwa ni pamoja na PDF hutumwa kwenye seva. <ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">Kumbukumbu ya kisakinishi imeharibika au ni batili. Tafadhali pakua Chromium tena.</translation>

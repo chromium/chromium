@@ -3709,6 +3709,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7050187094878475250">Du prøvde å nå <ph name="DOMAIN" />. Tjeneren presenterte et sertifikat som har en gyldighetsperiode som er for lang til å være pålitelig.</translation>
 <translation id="7053983685419859001">Blokkér</translation>
 <translation id="7054717457611655239">Fra nå av kan du lagre filer i <ph name="CLOUD_PROVIDER" />.</translation>
+<translation id="7057567173736333354">Beskriv bildet</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> har bekreftet at sertifikatet for dette nettstedet er utstedt av <ph name="ISSUER" />.</translation>
 <translation id="7058774143982824355">Tjeneste for parsing av CSV-passord</translation>
 <translation id="706295145388601875">Legg til og administrer adresser i Chrome-innstillingene</translation>

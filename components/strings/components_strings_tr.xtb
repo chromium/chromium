@@ -3709,6 +3709,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7050187094878475250"><ph name="DOMAIN" /> alan adına erişmeyi denediniz, ancak sunucu, geçerlilik dönemi güvenilir olmayacak kadar uzun olan bir sertifika sundu.</translation>
 <translation id="7053983685419859001">Engelle</translation>
 <translation id="7054717457611655239">Artık dosyalarınızı <ph name="CLOUD_PROVIDER" /> sağlayıcısına kaydedebilirsiniz.</translation>
+<translation id="7057567173736333354">Resminizi tarif edin</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" />, bu web sitesinin sertifikasının <ph name="ISSUER" /> tarafından yayınlandığını doğruladı.</translation>
 <translation id="7058774143982824355">CSV Şifre Ayrıştırma Hizmeti</translation>
 <translation id="706295145388601875">Chrome ayarlarında adres ekleyip yönetin</translation>

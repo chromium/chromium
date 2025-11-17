@@ -3707,6 +3707,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7050187094878475250">Ön megpróbálta elérni a(z) <ph name="DOMAIN" /> domaint, de a szerver olyan tanúsítványt küldött, amelynek érvényességi ideje túl hosszú ahhoz, hogy megbízható legyen.</translation>
 <translation id="7053983685419859001">Letiltás</translation>
 <translation id="7054717457611655239">Mostantól mentse a fájlokat ide: <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="7057567173736333354">Írja le a képet</translation>
 <translation id="7058163556978339998">A <ph name="BROWSER" /> ellenőrizte, hogy a(z) <ph name="ISSUER" /> adta ki ezt a webhelytanúsítványt.</translation>
 <translation id="7058774143982824355">Jelszavakat tartalmazó CSV-fájlt elemző szolgáltatás</translation>
 <translation id="706295145388601875">Címek hozzáadása és kezelése a Chrome-beállítások között</translation>

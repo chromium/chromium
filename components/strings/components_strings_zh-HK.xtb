@@ -428,6 +428,7 @@
 <translation id="1689333818294560261">暱稱</translation>
 <translation id="1692622044604477956">電影場次和放映時間</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />您可如何管理資料：<ph name="END_BOLD" />Chrome 會自動刪除超過 4 星期的主題。隨著您持續瀏覽，清單可能會再次出現特定主題。此外，您亦可隨時在 Chrome 設定封鎖不希望 Chrome 與網站分享的主題，以及關閉廣告主題。</translation>
+<translation id="1697808683313379647">Google 會使用結帳頁面的資料和其他相關資料來提供這些選項。</translation>
 <translation id="1699651774646344471">您現可使用 Google 帳戶中的地址</translation>
 <translation id="1700542542921501212">你可使用 <ph name="SEARCH_ENGINE_NAME" /> 搜尋網絡。</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -2947,6 +2948,7 @@
 <translation id="5813753398265398978">物理</translation>
 <translation id="5817918615728894473">配對</translation>
 <translation id="5820625124144807242">檢查訂單後，你必須登入或建立 <ph name="BNPL_ISSUER_NAME" /> 帳戶。此帳戶會自動連結至 Google Pay。</translation>
+<translation id="5820751560028604030">已封鎖本機下載</translation>
 <translation id="5826507051599432481">真實姓名 (CN)</translation>
 <translation id="5830698870816298009">使用及調整攝錄機</translation>
 <translation id="5831217499016131155">Google 電子錢包</translation>
@@ -3701,6 +3703,7 @@
 <translation id="7031646650991750659">您已安裝的 Google Play 應用程式</translation>
 <translation id="7035705295266423040">銀行要驗證你的身分</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以管理 Google 帳戶私隱設定</translation>
+<translation id="7042465939346919737">Google 會使用結帳頁面的資料和其他相關資料來提供這些選項。如要隱藏「稍後付款」選項，請前往<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">修正搜尋結果</translation>
 <translation id="7043552168914147882">隔頁紙</translation>
 <translation id="7044081119134178347">呢次批准用相機</translation>
@@ -3708,6 +3711,7 @@
 <translation id="7050187094878475250">您曾嘗試前往 <ph name="DOMAIN" />，但其伺服器憑證有效期過長，並不值得信任。</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7054717457611655239">由現在起，請將你的檔案儲存到「<ph name="CLOUD_PROVIDER" />」。</translation>
+<translation id="7057567173736333354">描述圖片</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> 驗證到「<ph name="ISSUER" />」已發出此網站的憑證。</translation>
 <translation id="7058774143982824355">CSV 密碼剖析器服務</translation>
 <translation id="706295145388601875">在 Chrome 設定中新增並管理地址</translation>

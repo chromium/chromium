@@ -564,7 +564,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> gestiona Chrome</translation>
 <translation id="7288567540154601580">Pestañas y extensiones</translation>
 <translation id="7296210096911315575">Información importante sobre el uso y la seguridad</translation>
-<translation id="7302361266603927550">Algunos de tus datos de Chrome aún no se han guardado en tu cuenta de Google. Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora, estos datos se eliminarán.</translation>
 <translation id="7308322188646931570">Chrome necesita acceso de almacenamiento para descargar archivos</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="7352651011704765696">Se ha producido un problema</translation>
@@ -621,7 +620,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7801699035218095297">Google Chrome está intentando copiar contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="7804364787702057554">Tu cuenta en Chrome</translation>
 <translation id="7808348361785373670">Desinstalar de Chrome...</translation>
-<translation id="7827099906024714326">Chrome debe verificar que eres tú para poder guardar algunos datos en tu cuenta de Google y usarlos en todos tus dispositivos. Si cierras sesión ahora, estos datos se eliminarán.</translation>
 <translation id="7845233973568007926">Gracias por realizar la instalación. Debes reiniciar tu ordenador para poder usar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Continúa por donde lo dejaste: Chrome puede restaurar tus pestañas cada vez que lo reinicies. Para activar esta opción, ve a</translation>
 <translation id="7872446069773932638">Descargando... Segundos restantes: <ph name="SECONDS" />.</translation>

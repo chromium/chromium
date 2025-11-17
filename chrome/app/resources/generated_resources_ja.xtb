@@ -8415,7 +8415,7 @@
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{タブとグループを削除しますか？}=1{タブとグループを削除しますか？}other{タブとグループを削除しますか？}}</translation>
 <translation id="6833479554815567477">タブを <ph name="GROUP_NAME" /> グループから削除しました - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">バランス重視（推奨）</translation>
-<translation id="6835624277262316125">職場の住所は、関連性の高い検索結果や Google マップの経路の表示など、Google サービス全体の利便性の向上に役立ちます。住所は <ph name="BEGIN_LINK" />Google アカウント（<ph name="USERNAME" />）<ph name="END_LINK" />で編集、削除できます。</translation>
+<translation id="6835624277262316125">職場の住所は、関連性の高い検索結果や Google マップのルートの表示など、Google サービス全体の利便性の向上に役立ちます。住所は <ph name="BEGIN_LINK" />Google アカウント（<ph name="USERNAME" />）<ph name="END_LINK" />で編集、削除できます。</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> を更新するにはインターネットに接続してください。</translation>
 <translation id="6838992358006915573">ChromeVox のフォーカスに合わせて拡大鏡を動かす</translation>
 <translation id="6839916869147598086">ログインが変わりました</translation>
@@ -8824,7 +8824,6 @@
 <translation id="7125148293026877011">Crostini を削除</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="MODIFIER_THREE" />+<ph name="MODIFIER_FOUR" />+<ph name="KEY" /></translation>
 <translation id="7125932261198019860">プリンタが Chromebook と同じ Wi-Fi ネットワークに接続されていることを確認するか、USB ケーブルを使用します。<ph name="LINK_BEGIN" />互換性について<ph name="LINK_END" /></translation>
-<translation id="7127286300357471051">現在のタブを Gemini と共有すると、タブのコンテンツ全体と URL が Google に送信されます。</translation>
 <translation id="7127980134843952133">ダウンロード履歴</translation>
 <translation id="7128151990937044829">通知がブロックされたときにアドレスバーにインジケーターを表示する</translation>
 <translation id="7128842673552234514">他の　Google アカウントを使用しますか？</translation>
@@ -9786,7 +9785,7 @@
     付近のデバイスに「<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />」として表示されています...</translation>
 <translation id="7786889348652477777">アプリを再読み込み(&amp;R)</translation>
 <translation id="7787308148023287649">別の画面で表示</translation>
-<translation id="7789895198197042595">自宅の住所は、関連性の高い検索結果や Google マップの経路の表示など、Google サービス全体の利便性の向上に役立ちます。住所は <ph name="BEGIN_LINK" />Google アカウント（<ph name="USERNAME" />）<ph name="END_LINK" />で編集、削除できます。</translation>
+<translation id="7789895198197042595">自宅の住所は、関連性の高い検索結果や Google マップのルートの表示など、Google サービス全体の利便性の向上に役立ちます。住所は <ph name="BEGIN_LINK" />Google アカウント（<ph name="USERNAME" />）<ph name="END_LINK" />で編集、削除できます。</translation>
 <translation id="7791269138074599214">入力方法</translation>
 <translation id="7791429245559955092">このアプリケーションは、現在使用している Chrome プロフィールにインストールされます</translation>
 <translation id="7791436592012979144">逆スクロールは有効です</translation>

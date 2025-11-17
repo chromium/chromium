@@ -556,7 +556,6 @@
 <translation id="7285616922384953075">A <ph name="MANAGER" /> gere o Chrome</translation>
 <translation id="7288567540154601580">Separadores e extensões</translation>
 <translation id="7296210096911315575">Informações de utilização e segurança importantes</translation>
-<translation id="7302361266603927550">Alguns dos seus dados do Chrome ainda não foram guardados na sua Conta Google. Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
 <translation id="7308322188646931570">O Chrome necessita de acesso ao armazenamento para transferir ficheiros.</translation>
 <translation id="7339898014177206373">Nova janela</translation>
 <translation id="7352651011704765696">Algo correu mal</translation>
@@ -613,7 +612,6 @@
 <translation id="7801699035218095297">O Google Chrome está a tentar copiar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="7804364787702057554">A sua conta no Chrome</translation>
 <translation id="7808348361785373670">Remover do Chrome...</translation>
-<translation id="7827099906024714326">O Chrome precisa de validar a sua identidade antes de ser possível guardar alguns dados na sua Conta Google e usá-los em todos os seus dispositivos. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
 <translation id="7845233973568007926">Agradecemos a instalação. Tem de reiniciar o computador antes de usar o <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Continue a partir de onde ficou: o Chrome pode restaurar os seus separadores sempre que reiniciar. Para ativar esta opção, aceda às</translation>
 <translation id="7872446069773932638">A transferir… Falta(m) <ph name="SECONDS" /> segundo(s)</translation>

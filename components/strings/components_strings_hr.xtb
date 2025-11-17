@@ -3708,6 +3708,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="7050187094878475250">Pokušali ste pristupiti domeni <ph name="DOMAIN" />, ali je poslužitelj pružio certifikat koji nije pouzdan zbog predugog razdoblja valjanosti.</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7054717457611655239">Odsad spremajte datoteke na uslugu <ph name="CLOUD_PROVIDER" />.</translation>
+<translation id="7057567173736333354">Opišite svoju sliku</translation>
 <translation id="7058163556978339998">Preglednik <ph name="BROWSER" /> potvrdio je da je izdavač <ph name="ISSUER" /> izdao certifikat ove web-lokacije.</translation>
 <translation id="7058774143982824355">Usluga raščlanjivača CSV-a zaporki</translation>
 <translation id="706295145388601875">Dodajte adrese i upravljajte njima u postavkama Chromea</translation>

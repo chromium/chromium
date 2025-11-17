@@ -3711,6 +3711,7 @@
 <translation id="7050187094878475250">Вы попытались перейти на сайт <ph name="DOMAIN" />, но сервер предоставил не заслуживающий доверия сертификат со слишком долгим сроком действия.</translation>
 <translation id="7053983685419859001">Блокировать</translation>
 <translation id="7054717457611655239">Теперь сохраняйте файлы в сервисе "<ph name="CLOUD_PROVIDER" />".</translation>
+<translation id="7057567173736333354">Опишите изображение</translation>
 <translation id="7058163556978339998">Данные браузера <ph name="BROWSER" /> подтверждают, что сертификат сайта выпущен компанией <ph name="ISSUER" />.</translation>
 <translation id="7058774143982824355">Сервис синтаксического анализа паролей в файлах CSV</translation>
 <translation id="706295145388601875">Добавить и изменить адреса в настройках Chrome</translation>

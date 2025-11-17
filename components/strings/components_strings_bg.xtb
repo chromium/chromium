@@ -3709,6 +3709,7 @@
 <translation id="7050187094878475250">Опитахте да се свържете с/ъс <ph name="DOMAIN" />, но сървърът предостави сертификат, чийто период на валидност е твърде дълъг, за да е надежден.</translation>
 <translation id="7053983685419859001">Блокиране</translation>
 <translation id="7054717457611655239">От сега нататък запазвайте файловете си в(ъв) <ph name="CLOUD_PROVIDER" />.</translation>
+<translation id="7057567173736333354">Опишете изображението си</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> потвърди, че сертификатът на този уебсайт е издаден от <ph name="ISSUER" />.</translation>
 <translation id="7058774143982824355">Услуга за синтактичен анализ на пароли в CSV файл</translation>
 <translation id="706295145388601875">Добавяне на адреси и управлението им от настройките на Chrome</translation>

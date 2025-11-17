@@ -3710,6 +3710,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7050187094878475250">Próbujesz połączyć się z domeną <ph name="DOMAIN" />, ale serwer przedstawił certyfikat, którego okres ważności jest za długi, by był wiarygodny.</translation>
 <translation id="7053983685419859001">Blokuj</translation>
 <translation id="7054717457611655239">Od teraz zapisuj pliki w usłudze <ph name="CLOUD_PROVIDER" />.</translation>
+<translation id="7057567173736333354">Opisz obraz</translation>
 <translation id="7058163556978339998">W <ph name="BROWSER" /> sprawdzono, że wydawcą certyfikatu tej witryny jest <ph name="ISSUER" />.</translation>
 <translation id="7058774143982824355">Usługa parsera haseł w formacie CSV</translation>
 <translation id="706295145388601875">Dodaj adresy i zarządzaj nimi w ustawieniach Chrome</translation>

@@ -3709,6 +3709,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7050187094878475250">Du försökte nå <ph name="DOMAIN" />, men servern svarade med ett certifikat vars giltighetstid är för lång för att det ska vara trovärdigt.</translation>
 <translation id="7053983685419859001">Blockera</translation>
 <translation id="7054717457611655239">Spara dina filer i <ph name="CLOUD_PROVIDER" /> från och med nu.</translation>
+<translation id="7057567173736333354">Beskriv din bild</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> har verifierat att <ph name="ISSUER" /> har utfärdat webbplatsens certifikat.</translation>
 <translation id="7058774143982824355">Analystjänst för CSV-lösenord</translation>
 <translation id="706295145388601875">Lägg till och hantera adresser i inställningarna för Chrome</translation>

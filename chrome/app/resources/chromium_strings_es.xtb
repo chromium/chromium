@@ -327,7 +327,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4673151026126227699">Si también compartes informes de uso de Chromium, esos informes incluyen las URLs que visitas</translation>
 <translation id="4677944499843243528">Parece que otro proceso de Chromium (<ph name="PROCESS_ID" />) está utilizando el perfil en otro ordenador (<ph name="HOST_NAME" />). Chromium ha bloqueado el perfil para que no se dañe. Si estás seguro de que ningún otro proceso está utilizando este perfil, puedes desbloquearlo y volver a iniciar Chromium.</translation>
 <translation id="4680828127924988555">Cancelar instalación</translation>
-<translation id="469259825538636168">Algunos de tus datos de Chromium aún no se han guardado en tu cuenta de Google. Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora, estos datos se eliminarán.</translation>
 <translation id="4708193446201257833">Mientras tengas la sesión iniciada, puedes usar tus contraseñas y más de tu cuenta de Google en Chromium. <ph name="SHORTCUT" /> puede cambiar la configuración de tus servicios de Google.</translation>
 <translation id="4708774505295300557">Otro usuario ha iniciado sesión anteriormente en Chromium con la cuenta <ph name="ACCOUNT_EMAIL_LAST" /> a través de este ordenador. Debes crear un usuario de Chromium para proteger tu información.</translation>
 <translation id="4724676981607797757">No se ha podido realizar la instalación debido a un error de protocolo no admitido.</translation>
@@ -631,7 +630,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="837460953767177950">Después, tendrás que reiniciar Chromium.</translation>
 <translation id="8397248745433792218">Chromium te recomienda que la elimines. <ph name="BEGIN_LINK" />Más información sobre las extensiones compatibles<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">El desarrollador de esta extensión ha anulado su publicación y la extensión podría no ser segura. Elimínala de Chromium para que no pueda ver ni cambiar tus datos en los sitios que visites, incluida tu información personal.</translation>
-<translation id="8416884904046428725">Chromium debe verificar que eres tú para poder guardar algunos datos en tu cuenta de Google y usarlos en todos tus dispositivos. Si cierras sesión ahora, estos datos se eliminarán.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reinicia Chromium en el próximo día}other{Reinicia Chromium en los próximos # días}}</translation>
 <translation id="8438543370129609977">Cuando usas la búsqueda por imágenes, el título, la URL y el contenido de la página (incluidos los PDFs) se envían al servidor. <ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">El archivo de instalación está dañado o no es válido. Vuelve a descargar Chromium.</translation>

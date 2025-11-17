@@ -555,7 +555,6 @@
 <translation id="7285616922384953075"><ph name="MANAGER" /> gestionează Chrome</translation>
 <translation id="7288567540154601580">File și extensii</translation>
 <translation id="7296210096911315575">Informații importante cu privire la folosire și siguranță</translation>
-<translation id="7302361266603927550">Unele date Chrome nu au fost salvate încă în Contul Google. Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum, aceste date vor fi șterse.</translation>
 <translation id="7308322188646931570">Pentru a descărca fișiere, Chrome necesită acces la stocare</translation>
 <translation id="7339898014177206373">Fereastră nouă</translation>
 <translation id="7352651011704765696">A apărut o eroare</translation>
@@ -611,7 +610,6 @@
 <translation id="7801699035218095297">Google Chrome încearcă să copieze parolele. Pentru a permite acest lucru, introdu parola pentru Windows.</translation>
 <translation id="7804364787702057554">Contul tău în Chrome</translation>
 <translation id="7808348361785373670">Elimină din Chrome...</translation>
-<translation id="7827099906024714326">Chrome trebuie să-ți confirme identitatea pentru ca unele date să poată fi salvate în Contul Google și folosite pe toate dispozitivele. Dacă te deconectezi acum, aceste date vor fi șterse.</translation>
 <translation id="7845233973568007926">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești computerul.</translation>
 <translation id="7849037457735762883">Continuă de unde ai rămas: Chrome poate restabili filele de fiecare dată când repornești. Pentru a activa opțiunea, accesează</translation>
 <translation id="7872446069773932638">Se descarcă… Timp rămas: <ph name="SECONDS" /> secunde</translation>

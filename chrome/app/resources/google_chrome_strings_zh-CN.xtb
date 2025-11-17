@@ -555,7 +555,6 @@
 <translation id="7285616922384953075"><ph name="MANAGER" />负责管理 Chrome</translation>
 <translation id="7288567540154601580">标签页和扩展程序</translation>
 <translation id="7296210096911315575">重要用途和安全信息</translation>
-<translation id="7302361266603927550">部分 Chrome 数据尚未保存到您的 Google 账号。建议等待几分钟，然后再尝试退出账号。如果现在就退出账号，这些数据将被删除。</translation>
 <translation id="7308322188646931570">Chrome 需要获得存储空间使用权限，才能下载文件</translation>
 <translation id="7339898014177206373">打开新的窗口</translation>
 <translation id="7352651011704765696">出了点问题</translation>
@@ -612,7 +611,6 @@
 <translation id="7801699035218095297">Google Chrome 正在尝试复制密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="7804364787702057554">设置 Chrome 账号</translation>
 <translation id="7808348361785373670">从Chrome中移除…</translation>
-<translation id="7827099906024714326">Chrome 需要先验证您的身份，然后才能将某些数据保存到您的 Google 账号中，供您在所有设备上使用。如果现在就退出账号，这些数据将被删除。</translation>
 <translation id="7845233973568007926">感谢您完成安装。您必须重启计算机才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="7849037457735762883">从上次停下的地方继续：Chrome 可在您每次重启后恢复标签页。如需开启此功能，请前往</translation>
 <translation id="7872446069773932638">正在下载…还需 <ph name="SECONDS" /> 秒</translation>

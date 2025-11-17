@@ -3711,6 +3711,7 @@
 <translation id="7050187094878475250">Покушали сте да посетите <ph name="DOMAIN" />, али је сервер представио сертификат са периодом важења који је предугачак да би био поуздан.</translation>
 <translation id="7053983685419859001">Блокирај</translation>
 <translation id="7054717457611655239">Од сада чувајте фајлове у услузи <ph name="CLOUD_PROVIDER" />.</translation>
+<translation id="7057567173736333354">Опишите слику</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> је потврдио да је <ph name="ISSUER" /> издао сертификат овог веб-сајта.</translation>
 <translation id="7058774143982824355">Услуга рашчлањивача CSV лозинки</translation>
 <translation id="706295145388601875">Додајте адресе и управљајте њима у подешавањима Chrome-а</translation>

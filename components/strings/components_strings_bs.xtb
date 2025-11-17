@@ -3709,6 +3709,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7050187094878475250">Pokušali ste pristupiti domeni <ph name="DOMAIN" />, ali je server prikazao potvrdu čiji period važenja je predugačak da bi bio vjerodostojan.</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7054717457611655239">Odsad pohranjujte fajlove na uslugu <ph name="CLOUD_PROVIDER" />.</translation>
+<translation id="7057567173736333354">Opišite sliku</translation>
 <translation id="7058163556978339998">Preglednik <ph name="BROWSER" /> je potvrdio da je izdavač <ph name="ISSUER" /> izdao certifikat ovoj web lokaciji.</translation>
 <translation id="7058774143982824355">CSV usluga raščlanjivača lozinke</translation>
 <translation id="706295145388601875">Dodajte adrese i upravljajte njima u postavkama Chromea</translation>

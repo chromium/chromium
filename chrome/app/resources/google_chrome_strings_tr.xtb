@@ -556,7 +556,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7285616922384953075">Chrome'u <ph name="MANAGER" /> yönetiyor</translation>
 <translation id="7288567540154601580">Sekmeler ve uzantılar</translation>
 <translation id="7296210096911315575">Önemli kullanım ve güvenlik bilgileri</translation>
-<translation id="7302361266603927550">Chrome verilerinizden bazıları henüz Google Hesabınıza kaydedilmedi. Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsanız bu veriler silinir.</translation>
 <translation id="7308322188646931570">Dosya indirmek için Chrome'un depolama alanına erişmesi gerekiyor</translation>
 <translation id="7339898014177206373">Yeni pencere</translation>
 <translation id="7352651011704765696">Bir hata oluştu</translation>
@@ -612,7 +611,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7801699035218095297">Google Chrome şifreleri kopyalamaya çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="7804364787702057554">Chrome'daki hesabınız</translation>
 <translation id="7808348361785373670">Chrome'dan kaldır...</translation>
-<translation id="7827099906024714326">Bazı verilerin Google Hesabınıza kaydedilip tüm cihazlarınızda kullanılabilmesi için Chrome'un kimliğinizi doğrulaması gerekir. Oturumu şimdi kapatırsanız bu veriler silinir.</translation>
 <translation id="7845233973568007926">Yüklediğiniz için teşekkür ederiz. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce bilgisayarınızı yeniden başlatmanız gerekir.</translation>
 <translation id="7849037457735762883">Kaldığınız yerden devam edin: Chrome tarayıcısını kapatıp yeniden açtığınız her seferinde sekmeleriniz geri yüklenebilir. Bu özelliği etkinleştirmek için şuraya gidin:</translation>
 <translation id="7872446069773932638">İndiriliyor... <ph name="SECONDS" /> saniye kaldı</translation>

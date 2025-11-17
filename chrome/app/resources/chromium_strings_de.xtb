@@ -324,7 +324,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="4673151026126227699">Wenn du Chromium-Nutzungsberichte teilst, enthalten diese Berichte die von dir aufgerufenen URLs</translation>
 <translation id="4677944499843243528">Das Profil wird offenbar gerade von einem Chromium-Prozess (<ph name="PROCESS_ID" />) auf einem anderen Computer (<ph name="HOST_NAME" />) verwendet. Das Profil wurde von Chromium gesperrt, damit es nicht beschädigt wird. Wenn du sicher bist, dass das Profil nicht von anderen Prozessen verwendet wird, kannst du das Profil entsperren und Chromium neu starten.</translation>
 <translation id="4680828127924988555">Installation abbrechen</translation>
-<translation id="469259825538636168">Einige deiner Chromium-Daten wurden noch nicht in deinem Google-Konto gespeichert. Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="4708193446201257833">Solange du angemeldet bist, kannst du deine Passwörter und weitere Daten aus deinem Google‑Konto in Chromium verwenden. Mithilfe des Shortcuts <ph name="SHORTCUT" /> kannst du die Einstellungen für Google‑Dienste jederzeit ändern.</translation>
 <translation id="4708774505295300557">Auf diesem Computer war zuvor ein Nutzer mit dem Konto <ph name="ACCOUNT_EMAIL_LAST" /> in Chromium angemeldet. Erstelle einen neuen Chromium-Nutzer, um deine Daten getrennt zu verwenden.</translation>
 <translation id="4724676981607797757">Die Installation ist aufgrund eines Fehlers mit einem nicht unterstützten Protokoll fehlgeschlagen.</translation>
@@ -627,7 +626,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="837460953767177950">Du musst Chromium dann neu starten.</translation>
 <translation id="8397248745433792218">Chromium empfiehlt, sie zu entfernen. <ph name="BEGIN_LINK" />Weitere Informationen zu unterstützten Erweiterungen<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">Diese Erweiterung ist möglicherweise nicht sicher – ihre Veröffentlichung wurde vom Entwickler aufgehoben. Entferne sie aus Chromium, damit sie deine Daten auf von dir besuchten Websites nicht mehr abrufen oder ändern kann, auch nicht deine personenbezogenen Daten.</translation>
-<translation id="8416884904046428725">Chromium muss deine Identität bestätigen, damit einige Daten in deinem Google-Konto gespeichert und auf allen deinen Geräten verwendet werden können. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium innerhalb eines Tages neu starten}other{Chromium innerhalb von # Tagen neu starten}}</translation>
 <translation id="8438543370129609977">Wenn du die Bildersuche verwendest, werden der Seitentitel, die URL und der Inhalt, einschließlich PDFs, an den Server gesendet. <ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">Das Installationsarchiv ist beschädigt oder ungültig. Bitte lade Chromium erneut herunter.</translation>

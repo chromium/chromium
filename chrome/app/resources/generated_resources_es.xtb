@@ -8837,7 +8837,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7125148293026877011">Eliminar Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="7125932261198019860">Asegúrate de que la impresora esté conectada a la misma red Wi-Fi que tu Chromebook o usa un cable USB. <ph name="LINK_BEGIN" />Más información sobre la compatibilidad<ph name="LINK_END" /></translation>
-<translation id="7127286300357471051">Cuando decides compartir la pestaña actual con Gemini, el contenido completo y la URL de la pestaña se envían a Google.</translation>
 <translation id="7127980134843952133">Historial de descargas</translation>
 <translation id="7128151990937044829">Mostrar un indicador en la barra de direcciones cuando se bloquee una notificación</translation>
 <translation id="7128842673552234514">¿Tienes otra cuenta de Google?</translation>

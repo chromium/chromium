@@ -8829,7 +8829,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7125148293026877011">Crostini löschen</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="7125932261198019860">Der Drucker muss mit demselben WLAN wie Chromebook verbunden sein, du kannst aber auch ein USB-Kabel verwenden. <ph name="LINK_BEGIN" />Weitere Informationen zur Kompatibilität<ph name="LINK_END" /></translation>
-<translation id="7127286300357471051">Wenn du den aktuellen Tab mit Gemini teilst, werden der gesamte Inhalt und die URL des Tabs an Google gesendet.</translation>
 <translation id="7127980134843952133">Downloadverlauf</translation>
 <translation id="7128151990937044829">In der Adressleiste anzeigen, wenn Benachrichtigungen blockiert sind</translation>
 <translation id="7128842673552234514">Hast du ein anderes Google-Konto?</translation>

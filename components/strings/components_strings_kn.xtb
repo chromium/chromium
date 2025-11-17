@@ -427,6 +427,7 @@
 <translation id="1689333818294560261">ಅಡ್ಡಹೆಸರು</translation>
 <translation id="1692622044604477956">ಚಲನಚಿತ್ರ ಲಿಸ್ಟಿಂಗ್‌ಗಳು ಮತ್ತು ಥಿಯೇಟರ್ ಶೋಟೈಮ್‌ಗಳು</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />ನಿಮ್ಮ ಡೇಟಾವನ್ನು ನೀವು ಹೇಗೆ ನಿರ್ವಹಿಸಬಹುದು:<ph name="END_BOLD" /> Chrome 4 ವಾರಗಳಿಗಿಂತ ಹಳೆಯದಾದ ವಿಷಯಗಳನ್ನು ಸ್ವಯಂ-ಅಳಿಸುತ್ತದೆ. ನೀವು ಬ್ರೌಸ್ ಮಾಡುತ್ತಿದ್ದಂತೆ, ವಿಷಯವೊಂದು ಪಟ್ಟಿಯಲ್ಲಿ ಮತ್ತೆ ಕಾಣಿಸಿಕೊಳ್ಳಬಹುದು. ಸೈಟ್‌ಗಳೊಂದಿಗೆ Chrome ಹಂಚಿಕೊಳ್ಳಬಾರದೆಂದು ನೀವು ಬಯಸುವ ವಿಷಯಗಳನ್ನು ಸಹ ನೀವು ನಿರ್ಬಂಧಿಸಬಹುದು ಮತ್ತು Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಜಾಹೀರಾತು ವಿಷಯಗಳನ್ನು ಆಫ್ ಮಾಡಬಹುದು.</translation>
+<translation id="1697808683313379647">ಈ ಆಯ್ಕೆಗಳನ್ನು ನೀಡಲು ಚೆಕ್‌ಔಟ್ ಪುಟ ಮತ್ತು ಇತರ ಸಂಬಂಧಿತ ಡೇಟಾದಿಂದ ಮಾಹಿತಿಯನ್ನು Google ಬಳಸುತ್ತದೆ.</translation>
 <translation id="1699651774646344471">ಈಗ ನೀವು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿರುವ ವಿಳಾಸಗಳನ್ನು ಬಳಸಬಹುದು</translation>
 <translation id="1700542542921501212">ವೆಬ್‌ನಲ್ಲಿ ಹುಡುಕಲು ನೀವು <ph name="SEARCH_ENGINE_NAME" /> ಅನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -3700,6 +3701,7 @@
 <translation id="7031646650991750659">ನೀವು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿರುವ Google Play ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="7035705295266423040">ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ಇದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ Google ಖಾತೆಯ ಗೌಪ್ಯತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
+<translation id="7042465939346919737">ಈ ಆಯ್ಕೆಗಳನ್ನು ನೀಡಲು ಚೆಕ್‌ಔಟ್ ಪುಟ ಮತ್ತು ಇತರ ಸಂಬಂಧಿತ ಡೇಟಾದಿಂದ ಮಾಹಿತಿಯನ್ನು Google ಬಳಸುತ್ತದೆ. ನಂತರ ಪಾವತಿಸುವ ಆಯ್ಕೆಗಳನ್ನು ಮರೆಮಾಡಲು, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> ಗೆ ಹೋಗಿ</translation>
 <translation id="7042616127917168121">ಫಲಿತಾಂಶಗಳನ್ನು ರೀಫೈನ್ ಮಾಡಿ</translation>
 <translation id="7043552168914147882">ಟ್ಯಾಬ್ ಸ್ಟಾಕ್</translation>
 <translation id="7044081119134178347">ಈ ಬಾರಿ ಕ್ಯಾಮರಾವನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -3707,6 +3709,7 @@
 <translation id="7050187094878475250">ನೀವು <ph name="DOMAIN" /> ಅನ್ನು ತಲುಪಲು ಪ್ರಯತ್ನಿಸಿರುವಿರಿ, ಆದರೆ ಸರ್ವರ್ ವಿಶ್ವಾಸಾರ್ಹವಾಗಿರಲು ತುಂಬ ಉದ್ದವಾದ ವಾಯಿದೆ ಅವಧಿಯನ್ನು ಹೊಂದಿರುವ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಸಲ್ಲಿಸಿದೆ.</translation>
 <translation id="7053983685419859001">ನಿರ್ಬಂಧಿಸು</translation>
 <translation id="7054717457611655239">ಇಂದಿನಿಂದ, ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು <ph name="CLOUD_PROVIDER" /> ಗೆ ಸೇವ್ ಮಾಡಿ.</translation>
+<translation id="7057567173736333354">ನಿಮ್ಮ ಚಿತ್ರದ ಕುರಿತು ವಿವರಿಸಿ</translation>
 <translation id="7058163556978339998"><ph name="ISSUER" /> ಈ ವೆಬ್‌ಸೈಟ್‌ನ ಪ್ರಮಾಣಪತ್ರವನ್ನು ನೀಡಿದೆ ಎಂದು <ph name="BROWSER" /> ಪರಿಶೀಲಿಸಿದೆ.</translation>
 <translation id="7058774143982824355">CSV ಪಾಸ್‌ವರ್ಡ್ ವಿಶ್ಲೇಷಕ ಸೇವೆ</translation>
 <translation id="706295145388601875">Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ವಿಳಾಸಗಳನ್ನು ಸೇರಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>

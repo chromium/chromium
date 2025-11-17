@@ -57,7 +57,7 @@
 <translation id="1201402288615127009">Següent</translation>
 <translation id="1204075260022434100">{count,plural, =1{L'adreça d'interès s'ha desat a {title} al teu compte, {email}}other{{count} adreces d'interès s'han desat a {title} al teu compte, {email}}}</translation>
 <translation id="1207493287814084192">17:30</translation>
-<translation id="1217294226280635614">Visualització dividida</translation>
+<translation id="1217294226280635614">Vista dividida</translation>
 <translation id="1219674500290482172">No es pot connectar a Internet.</translation>
 <translation id="1223498995510244364">Resumeix</translation>
 <translation id="1227113644794103810">Pestanyes inactives</translation>
@@ -1595,7 +1595,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Estableix com a predeterminat a Configuració…</translation>
 <translation id="7007970306646738803">Tria què vols fer amb les dades de navegació que hi ha en aquest dispositiu, com ara les pestanyes, l'historial i les contrasenyes.</translation>
-<translation id="7015418667643980944">Visualització dividida</translation>
+<translation id="7015418667643980944">Vista dividida</translation>
 <translation id="7016070607649558507">Tens 1 contrasenya poc segura. Corregeix el problema per protegir-te.</translation>
 <translation id="7016958933495968912">Opcions per a Discover</translation>
 <translation id="7029809446516969842">Contrasenyes</translation>

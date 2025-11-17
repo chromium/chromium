@@ -3709,6 +3709,7 @@
 <translation id="7050187094878475250"><ph name="DOMAIN" />에 접속하려고 했지만 서버가 제시한 인증서의 유효 기간이 너무 길어서 신뢰할 수 없습니다.</translation>
 <translation id="7053983685419859001">차단</translation>
 <translation id="7054717457611655239">지금부터 파일을 <ph name="CLOUD_PROVIDER" />에 저장하세요.</translation>
+<translation id="7057567173736333354">이미지 설명 작성</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" />에서 <ph name="ISSUER" /> 업체가 이 웹사이트 인증서를 발급했음을 확인했습니다.</translation>
 <translation id="7058774143982824355">CSV 비밀번호 파서 서비스</translation>
 <translation id="706295145388601875">Chrome 설정에서 주소 추가 및 관리</translation>

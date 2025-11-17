@@ -556,7 +556,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7285616922384953075">Chrome 是由「<ph name="MANAGER" />」管理</translation>
 <translation id="7288567540154601580">分頁和擴充功能</translation>
 <translation id="7296210096911315575">重要的使用與安全資訊</translation>
-<translation id="7302361266603927550">部分 Chrome 資料尚未儲存到 Google 帳戶，請稍候幾分鐘後再登出。如果現在登出，系統將刪除這類資料。</translation>
 <translation id="7308322188646931570">Chrome 需要儲存空間存取權，才能下載檔案</translation>
 <translation id="7339898014177206373">開啟新視窗</translation>
 <translation id="7352651011704765696">發生錯誤</translation>
@@ -612,7 +611,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7801699035218095297">Google Chrome 正在嘗試複製密碼。如果你同意這項作業，請輸入你的 Windows 密碼。</translation>
 <translation id="7804364787702057554">你在 Chrome 中的帳戶</translation>
 <translation id="7808348361785373670">從 Chrome 中移除...</translation>
-<translation id="7827099906024714326">Chrome 必須先驗證身分，才能將這些資料儲存到 Google 帳戶，讓你在所有裝置上使用。如果現在登出，系統將刪除這類資料。</translation>
 <translation id="7845233973568007926">感謝你安裝本服務。你必須重新啟動電腦，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="7849037457735762883">接續上次的瀏覽內容：Chrome 每次重新啟動時都能還原分頁。如要開啟這項功能，請前往</translation>
 <translation id="7872446069773932638">下載中... 還剩 <ph name="SECONDS" /> 秒</translation>

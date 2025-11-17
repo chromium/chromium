@@ -3709,6 +3709,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7050187094878475250">Tentaches acceder a <ph name="DOMAIN" />, pero o servidor presentou un certificado cun período de validez demasiado longo para ser fiable.</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7054717457611655239">A partir de agora, garda os ficheiros en <ph name="CLOUD_PROVIDER" />.</translation>
+<translation id="7057567173736333354">Describe a imaxe</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> verificou que <ph name="ISSUER" /> emitiu o certificado deste sitio web.</translation>
 <translation id="7058774143982824355">Servizo de análise de ficheiros CSV de contrasinais</translation>
 <translation id="706295145388601875">Engadir e xestionar enderezos na configuración de Chrome</translation>

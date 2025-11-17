@@ -8850,7 +8850,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7125148293026877011">Изтриване на Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="7125932261198019860">Уверете се, че принтерът ви е свързан със същата Wi-Fi мрежа като вашия Chromebook, или използвайте USB кабел. <ph name="LINK_BEGIN" />Научете повече за съвместимостта<ph name="LINK_END" /></translation>
-<translation id="7127286300357471051">Когато изберете да споделите текущия раздел с Gemini, пълното съдържание и URL адресът на раздела се изпращат до Google.</translation>
 <translation id="7127980134843952133">История на изтеглянията</translation>
 <translation id="7128151990937044829">Показване на индикатор в адресната лента, когато известията са блокирани</translation>
 <translation id="7128842673552234514">Имате друг профил в Google?</translation>

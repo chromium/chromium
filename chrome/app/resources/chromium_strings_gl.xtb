@@ -327,7 +327,6 @@
 <translation id="4673151026126227699">Se, ademais, compartes os informes de uso de Chromium, neles inclúense os URL que visites</translation>
 <translation id="4677944499843243528">Parece que outro proceso de Chromium (<ph name="PROCESS_ID" />) está utilizando o perfil noutro ordenador (<ph name="HOST_NAME" />). Chromium bloqueou o perfil para que non se dane. Se estás seguro de que ningún outro proceso está utilizando este perfil, podes desbloquear o perfil e volver iniciar Chromium.</translation>
 <translation id="4680828127924988555">Cancelar instalación</translation>
-<translation id="469259825538636168">Algúns dos teus datos de Chromium aínda non se gardaron na túa Conta de Google. Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos eliminaranse.</translation>
 <translation id="4708193446201257833">Mentres teñas a sesión iniciada, poderás usar os teus contrasinais, ademais doutros datos da túa Conta de Google, en Chromium. <ph name="SHORTCUT" /> pode cambiar a túa configuración dos servizos de Google.</translation>
 <translation id="4708774505295300557">Anteriormente, alguén iniciou sesión como <ph name="ACCOUNT_EMAIL_LAST" /> en Chromium neste ordenador. Crea un novo usuario de Chromium para manter a túa información por separado.</translation>
 <translation id="4724676981607797757">Produciuse un erro na instalación debido a un erro de protocolo non compatible.</translation>
@@ -630,7 +629,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="837460953767177950">Terás que reiniciar Chromium.</translation>
 <translation id="8397248745433792218">Chromium recomenda que a quites. <ph name="BEGIN_LINK" />Máis información sobre as extensións admitidas<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">O programador anulou a publicación desta extensión, polo que poida que non sexa segura. Quítaa de Chromium para que non poida ver nin cambiar os teus datos (como a túa información persoal) nos sitios que visites.</translation>
-<translation id="8416884904046428725">Chromium necesita verificar a túa identidade antes de que algúns datos se garden na túa Conta de Google e se poidan usar en todos os teus dispositivos. Se pechas a sesión agora, estes datos eliminaranse.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reinicia Chromium en 1 día}other{Reinicia Chromium en # días}}</translation>
 <translation id="8438543370129609977">Cando usas a busca de imaxes, envíanse ao servidor o contido (incluídos os PDF), o URL e o título da páxina. <ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">O arquivo do instalador está danado ou non é válido. Volve descargar Chromium.</translation>

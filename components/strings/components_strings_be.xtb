@@ -3708,6 +3708,7 @@
 <translation id="7050187094878475250">Вы спрабавалі трапіць звярнуцца да дамена <ph name="DOMAIN" />, але сервер выдаў сертыфікат, чый тэрмін дзеяння занадта доўгі, каб быць надзейным.</translation>
 <translation id="7053983685419859001">Заблакіраваць</translation>
 <translation id="7054717457611655239">З гэтага моманту захоўвайце файлы ў воблаку "<ph name="CLOUD_PROVIDER" />".</translation>
+<translation id="7057567173736333354">Апішыце відарыс</translation>
 <translation id="7058163556978339998">Браўзер <ph name="BROWSER" /> спраўдзіў, што выдаўцом сертыфіката гэтага сайта з’яўляецца <ph name="ISSUER" />.</translation>
 <translation id="7058774143982824355">Сэрвіс аналізу пароляў у файлах CSV</translation>
 <translation id="706295145388601875">Дадавайце адрасы і кіруйце імі праз налады Chrome</translation>

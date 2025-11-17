@@ -3709,6 +3709,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7050187094878475250">Poskusili ste odpreti <ph name="DOMAIN" />, vendar je strežnik uporabil potrdilo, ki ima predolgo obdobje veljavnosti, da bi bilo verodostojno.</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7054717457611655239">Odslej datoteke shranjujte v storitev <ph name="CLOUD_PROVIDER" />.</translation>
+<translation id="7057567173736333354">Opišite sliko</translation>
 <translation id="7058163556978339998">Brskalnik <ph name="BROWSER" /> je preveril, ali je izdajatelj <ph name="ISSUER" /> izdal potrdilo tega spletnega mesta.</translation>
 <translation id="7058774143982824355">Storitev razčlenjevanja gesel CSV</translation>
 <translation id="706295145388601875">Dodajte in upravljajte naslove v Chromovih nastavitvah.</translation>

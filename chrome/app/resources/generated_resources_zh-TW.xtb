@@ -8826,7 +8826,6 @@
 <translation id="7125148293026877011">刪除 Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /> 鍵</translation>
 <translation id="7125932261198019860">確認印表機已連上 Chromebook 使用的 Wi-Fi 網路，或使用 USB 傳輸線。<ph name="LINK_BEGIN" />進一步瞭解相容性<ph name="LINK_END" /></translation>
-<translation id="7127286300357471051">選擇與 Gemini 分享目前分頁時，分頁的完整內容和網址都會傳送給 Google。</translation>
 <translation id="7127980134843952133">下載記錄</translation>
 <translation id="7128151990937044829">封鎖通知時，在網址列上顯示圖示</translation>
 <translation id="7128842673552234514">有其他 Google 帳戶嗎？</translation>

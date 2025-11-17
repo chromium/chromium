@@ -8852,7 +8852,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7125148293026877011">Radera Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="7125932261198019860">Kontrollera att skrivaren är ansluten till samma wifi-nätverk som din Chromebook eller använd en USB-kabel. <ph name="LINK_BEGIN" />Läs mer om kompatibilitet<ph name="LINK_END" /></translation>
-<translation id="7127286300357471051">När du väljer att dela den aktuella fliken med Gemini skickas flikens fullständiga innehåll och webbadress till Google.</translation>
 <translation id="7127980134843952133">Nedladdningshistorik</translation>
 <translation id="7128151990937044829">Visa en indikator i adressfältet när en avisering blockeras</translation>
 <translation id="7128842673552234514">Har du fler Google-konton?</translation>

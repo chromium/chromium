@@ -1661,6 +1661,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">तुमच्याकडे तुमच्या Google Password Manager मध्ये आधीपासून या खात्यांसाठीचे पासवर्ड आहेत. तुम्ही खालीलपैकी एखादा पासवर्ड इंपोर्ट करण्याचे ठरवल्यास, तो सद्य पासवर्डची जागा घेईल.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> टक्के डाउनलोड केले</translation>
+<translation id="7345061034321640811">इंपोर्ट करण्याची अनुमती नाही</translation>
 <translation id="7352651011704765696">काहीतरी चूक झाली</translation>
 <translation id="7363349185727752629">तुमच्या गोपनीयता निवडींचे मार्गदर्शक</translation>
 <translation id="7364796246159120393">फाइल निवडा</translation>
@@ -2202,6 +2203,7 @@
 <translation id="952704832371081537">रद्द करा</translation>
 <translation id="95332591904104970">कनेक्ट केलेली अ‍ॅप्स</translation>
 <translation id="954667170699278022">वाचन सूची</translation>
+<translation id="956066588046842680">तुमच्या संस्थेच्या धोरणानुसार हा डेटा इंपोर्ट करण्याची अनुमती नाही.</translation>
 <translation id="956218893102219091">सर्वात अचूक Gemini परिणामांसाठी तुमच्या आयपी अ‍ॅड्रेसवर आधारित अंदाजे स्थानाऐवजी, तुमचे नेमके स्थान वापरा. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">ब्राउझिंग डेटा हटवा</translation>
 <translation id="963102227019621224">वेब आणि ॲप ॲक्टिव्हिटी</translation>

@@ -8846,7 +8846,6 @@
 <translation id="7125148293026877011">Crostini ကို ဖျက်ရန်</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="7125932261198019860">ပရင်တာသည် သင့် Chromebook နှင့် Wi-Fi ကွန်ရက်တစ်ခုတည်းသို့ ချိတ်ဆက်ထားကြောင်း သေချာပါစေ (သို့) USB ကြိုး သုံးပါ။ <ph name="LINK_BEGIN" />တွဲဖက်သုံးနိုင်မှုအကြောင်း ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
-<translation id="7127286300357471051">လက်ရှိတဘ်ကို Gemini နှင့် မျှဝေရန် ရွေးလိုက်သောအခါ တဘ်၏ အကြောင်းအရာအပြည့်အစုံနှင့် URL ကို Google သို့ ပို့သည်။</translation>
 <translation id="7127980134843952133">ဒေါင်းလုဒ် မှတ်တမ်း</translation>
 <translation id="7128151990937044829">အကြောင်းကြားချက်ကို ပိတ်ထားသည့်အခါ လိပ်စာဘားတွင် အညွှန်းတစ်ခုပြရန်</translation>
 <translation id="7128842673552234514">အခြား Google Account ရှိသလား</translation>
@@ -10886,6 +10885,7 @@
 <translation id="8517759303731677493">ပြင်ဆင်ရန်…</translation>
 <translation id="8518809011298357036">ထိပ်ပိုင်းမြင်ကွင်းကို ပိတ်ရန်</translation>
 <translation id="8518942514525208851">ဆဲဆိုမှုကို ဖျောက်ရန်</translation>
+<translation id="8520238089740349550">မအောင်မြင်ပါ - စက်တွင်းဒေါင်းလုဒ်ကို ပိတ်ထားသည်</translation>
 <translation id="8523493869875972733">ပြောင်းလဲမှုများကို သိမ်းရန်</translation>
 <translation id="8523849605371521713">မူဝါဒအရ ထည့်သွင်းထားသည်</translation>
 <translation id="8524594273111932386">Search + အောက်ညွှန်မြား</translation>

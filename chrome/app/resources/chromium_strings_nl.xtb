@@ -326,7 +326,6 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="4673151026126227699">Als je ook Chromium-gebruiksrapporten deelt, bevatten die rapporten de URL's die je bezoekt</translation>
 <translation id="4677944499843243528">Het profiel lijkt te worden gebruikt door een ander proces in Chromium (<ph name="PROCESS_ID" />) op een andere computer (<ph name="HOST_NAME" />). Het profiel is vergrendeld zodat het niet wordt beschadigd. Als je zeker weet dat dit profiel niet door andere processen wordt gebruikt, kun je het profiel ontgrendelen en Chromium opnieuw starten.</translation>
 <translation id="4680828127924988555">Installatie annuleren</translation>
-<translation id="469259825538636168">Sommige van je Chromium-gegevens zijn nog niet opgeslagen in je Google-account. Wacht een paar minuten voordat je uitlogt. Als je nu uitlogt, worden deze gegevens verwijderd.</translation>
 <translation id="4708193446201257833">Als je bent ingelogd, kun je onder andere de wachtwoorden uit je Google-account gebruiken in Chromium. <ph name="SHORTCUT" /> kan de instellingen van je Google-services wijzigen.</translation>
 <translation id="4708774505295300557">Iemand heeft eerder bij Chromium op deze computer ingelogd als <ph name="ACCOUNT_EMAIL_LAST" />. Maak een nieuwe Chromium-gebruiker om je informatie gescheiden te houden.</translation>
 <translation id="4724676981607797757">De installatie is mislukt vanwege een fout met een niet-ondersteund protocol.</translation>
@@ -630,7 +629,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="837460953767177950">Start Chromium daarna opnieuw op.</translation>
 <translation id="8397248745433792218">Chromium raadt je aan deze extensie te verwijderen. <ph name="BEGIN_LINK" />Meer informatie over ondersteunde extensies<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">De publicatie van deze extensie is ongedaan gemaakt door de ontwikkelaar en deze is mogelijk onveilig. Verwijder de extensie van Chromium zodat deze je gegevens (waaronder je persoonlijke informatie) niet meer kan bekijken en wijzigen op sites die je bezoekt.</translation>
-<translation id="8416884904046428725">Chromium moet verifiëren dat jij het bent voordat bepaalde gegevens kunnen worden opgeslagen in je Google-account en op al je apparaten kunnen worden gebruikt. Als je nu uitlogt, worden deze gegevens verwijderd.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Start Chromium binnen een dag opnieuw}other{Start Chromium binnen # dagen opnieuw}}</translation>
 <translation id="8438543370129609977">Als je Zoeken met afbeelding gebruikt, worden de paginatitel, URL en content, waaronder pdf's, naar de server gestuurd. <ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">Het archief van het installatieprogramma is beschadigd of ongeldig. Download Chromium opnieuw.</translation>

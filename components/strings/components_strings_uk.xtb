@@ -3709,6 +3709,7 @@
 <translation id="7050187094878475250">Ви намагалися зв’язатися з доменом <ph name="DOMAIN" />, але сервер надав сертифікат із задовгим терміном дії.</translation>
 <translation id="7053983685419859001">Блокувати</translation>
 <translation id="7054717457611655239">Відтепер зберігайте файли в сервісі <ph name="CLOUD_PROVIDER" />.</translation>
+<translation id="7057567173736333354">Опишіть зображення</translation>
 <translation id="7058163556978339998">Веб-переглядач <ph name="BROWSER" /> підтвердив, що сертифікат цьому сайту надала компанія <ph name="ISSUER" />.</translation>
 <translation id="7058774143982824355">Сервіс для синтаксичного аналізу файлу CSV з паролями</translation>
 <translation id="706295145388601875">Додайте адреси та керуйте ними в налаштуваннях Chrome</translation>

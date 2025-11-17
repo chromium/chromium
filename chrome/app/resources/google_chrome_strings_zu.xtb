@@ -491,6 +491,7 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Inhlangano yakho ivala i-Chrome ngokuzenzekelayo uma ingasetshenziswanga umzuzu o-1. Idatha yokubhrawuza isuliwe. Lokhu kungase kuhlanganise umlando, ukugcwalisa ngokuzenzakalelayo, nokudawuniloda.}one{Inhlangano yakho ivala i-Chrome ngokuzenzekelayo uma ingasetshenziswanga imizuzu engu-#. Idatha yokubhrawuza isuliwe. Lokhu kungase kuhlanganise umlando, ukugcwalisa ngokuzenzakalelayo, nokudawuniloda.}other{Inhlangano yakho ivala i-Chrome ngokuzenzekelayo uma ingasetshenziswanga imizuzu engu-#. Idatha yokubhrawuza isuliwe. Lokhu kungase kuhlanganise umlando, ukugcwalisa ngokuzenzakalelayo, nokudawuniloda.}}</translation>
 <translation id="6418662306461808273">Shintshela kuphrofayela ye-Chrome ekhona kakade?</translation>
 <translation id="6426623519983252346">Uzobona umyalelo wokuzama okuthi <ph name="FEATURE_NAME" /> ngesikhathi esilandelayo lapho uvula iChrome iOS.</translation>
+<translation id="6434035853014503219">Siyabonga ngokukhetha iChrome njengebhrawuza yakho evuleka ngokuzenzekela!</translation>
 <translation id="6473905796280459355">Iya ekhasini elithi Mayelana neChrome</translation>
 <translation id="6481963882741794338">Linka i-Chrome namanye amasevisi e-Google ngokwenza ngokomuntu ngamunye nezinye izinjongo</translation>
 <translation id="648319183876919572">Ukubhrawuza Ngokuphepha Okugqamile kwenza okuningi ukukuvikela kumawebhusayithi ayingozi nakokudawunilodiwe</translation>
@@ -562,7 +563,6 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="7285616922384953075">I-<ph name="MANAGER" /> iphatha iChrome</translation>
 <translation id="7288567540154601580">Amathebhu nezandiso</translation>
 <translation id="7296210096911315575">Ukusebenzisa okubalulekile nolwazi lokuphepha</translation>
-<translation id="7302361266603927550">Enye idatha yakho yeChrome ayikalondolozwa kuGoogle Account. Zama ukulinda imizuzu embalwa ngaphambi kokuphuma ngemvume. Uma uphuma ngemvume manje, le datha izosulwa.</translation>
 <translation id="7308322188646931570">I-Chrome idinga ukufinyelela kusitoreji ukuze ilande amafayela</translation>
 <translation id="7339898014177206373">Iwindi elisha</translation>
 <translation id="7352651011704765696">Okuthile akuhambanga kahle</translation>
@@ -588,6 +588,7 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="756809126120519699">Idatha ye-Chrome esuliwe</translation>
 <translation id="7572537927358445944">Kuvaliwe • I-Chrome ayikwazi ukuqinisekisa ukuthi lesi sandiso sivela kuphi</translation>
 <translation id="7583399374488819119">Isifaki Se-<ph name="COMPANY_NAME" /></translation>
+<translation id="7596160425942761210">Ungasebenzisa iChrome noma nini uma uchofoza amalinki emilayezo, amadokhumenti, namanye ama-app</translation>
 <translation id="7602868996817972616">Buza iGoogle mayelana naleli khasi</translation>
 <translation id="760353356052806707">Olunye uhlelo kukhompuyutha yakho lungeze uhlelo lokusebenza olungaguqula indlela i-Chrome esebenza ngayo.
 
@@ -618,7 +619,6 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7801699035218095297">I-Google Chrome izama ukukopisha amaphasiwedi. Thayipha amaphasiwedi akho e-Windows ukuze uvumele lokhu.</translation>
 <translation id="7804364787702057554">I-akhawunti yakho kuChrome</translation>
 <translation id="7808348361785373670">Susa kusuka ku-Chrome...</translation>
-<translation id="7827099906024714326">IChrome idinga ukuqinisekisa ukuthi uwena ngaphambi kokuthi idatha ethile ilondolozwe kuGoogle Account yakho futhi isetshenziswe kuwo wonke amadivayisi akho. Uma uphuma ngemvume manje, le datha izosulwa.</translation>
 <translation id="7845233973568007926">Siyabonga ngokufaka. Kufanele uqalise kabusha ikhompyutha yakho ngaphambi kokusebenzisa i-<ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Qhubeka lapho ogcine khona: IChrome ingabuyisela amathebhu akho njalo lapho uqala kabusha Ukuze ukuvule lokhu, iya ku-</translation>
 <translation id="7872446069773932638">Iyadawuniloda... kusele imizuzwana engu-<ph name="SECONDS" /></translation>

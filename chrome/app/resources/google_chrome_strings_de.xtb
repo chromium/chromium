@@ -554,7 +554,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="7285616922384953075">Chrome wird von <ph name="MANAGER" /> verwaltet</translation>
 <translation id="7288567540154601580">Tabs und Erweiterungen</translation>
 <translation id="7296210096911315575">Wichtige Informationen zu Verwendung und Sicherheit</translation>
-<translation id="7302361266603927550">Einige deiner Chrome-Daten wurden noch nicht in deinem Google-Konto gespeichert. Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="7308322188646931570">Chrome benötigt Speicherzugriff, um Dateien herunterladen zu können</translation>
 <translation id="7339898014177206373">Neues Fenster</translation>
 <translation id="7352651011704765696">Ein Problem ist aufgetreten</translation>
@@ -610,7 +609,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="7801699035218095297">Google Chrome versucht, Passwörter zu kopieren. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="7804364787702057554">Mein Konto in Chrome</translation>
 <translation id="7808348361785373670">Aus Chrome entfernen...</translation>
-<translation id="7827099906024714326">Chrome muss deine Identität bestätigen, damit einige Daten in deinem Google-Konto gespeichert und auf allen deinen Geräten verwendet werden können. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="7845233973568007926">Vielen Dank für die Installation. Du musst deinen Computer neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
 <translation id="7849037457735762883">Mach dort weiter, wo du aufgehört hast: Chrome kann deine Tabs bei jedem Neustart wiederherstellen. Wenn du diese Funktion aktivieren möchtest, gehe zu</translation>
 <translation id="7872446069773932638">Wird heruntergeladen… Noch <ph name="SECONDS" /> Sekunde(n)</translation>

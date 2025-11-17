@@ -563,7 +563,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7285616922384953075"><ph name="MANAGER" />“ tvarko „Chrome“</translation>
 <translation id="7288567540154601580">Skirtukai ir plėtiniai</translation>
 <translation id="7296210096911315575">Svarbi naudojimo ir saugos informacija</translation>
-<translation id="7302361266603927550">Kai kurie „Chrome“ duomenys dar neišsaugoti „Google“ paskyroje. Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar, šie duomenys bus ištrinti.</translation>
 <translation id="7308322188646931570">„Chrome“ reikia prieigos prie saugyklos, kad būtų galima atsisiųsti failus</translation>
 <translation id="7339898014177206373">Naujas langas</translation>
 <translation id="7352651011704765696">Kažkas negerai</translation>
@@ -619,7 +618,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7801699035218095297">„Google Chrome“ bando kopijuoti slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
 <translation id="7804364787702057554">Jūsų paskyra naršyklėje „Chrome“</translation>
 <translation id="7808348361785373670">Pašalinti iš „Chrome“...</translation>
-<translation id="7827099906024714326">„Chrome“ turi patvirtinti jūsų tapatybę, kad kai kuriuos duomenis būtų galima išsaugoti „Google“ paskyroje ir naudoti visuose jūsų įrenginiuose. Jei dabar atsijungsite, šie duomenys bus ištrinti.</translation>
 <translation id="7845233973568007926">Dėkojame už diegimą. Turite iš naujo paleisti kompiuterį, prieš naudodami „<ph name="BUNDLE_NAME" />“.</translation>
 <translation id="7849037457735762883">Tęskite ten, kur baigėte: „Chrome“ gali atkurti skirtukus kiekvieną kartą, kai paleidžiate iš naujo. Jei norite tai įjungti, eikite į</translation>
 <translation id="7872446069773932638">Atsisiunčiama... Liko <ph name="SECONDS" /> sek.</translation>

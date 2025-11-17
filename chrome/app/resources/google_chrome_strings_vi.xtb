@@ -560,7 +560,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7285616922384953075"><ph name="MANAGER" /> quản lý Chrome</translation>
 <translation id="7288567540154601580">Thẻ và tiện ích</translation>
 <translation id="7296210096911315575">Thông tin quan trọng về sử dụng và an toàn</translation>
-<translation id="7302361266603927550">Một số dữ liệu Chrome của bạn chưa được lưu vào Tài khoản Google. Hãy đợi một vài phút trước khi đăng xuất. Nếu bạn đăng xuất ngay, dữ liệu này sẽ bị xoá.</translation>
 <translation id="7308322188646931570">Chrome cần quyền truy cập vào bộ nhớ để tải tệp xuống</translation>
 <translation id="7339898014177206373">Cửa sổ mới</translation>
 <translation id="7352651011704765696">Đã xảy ra lỗi</translation>
@@ -617,7 +616,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7801699035218095297">Google Chrome đang cố gắng sao chép mật khẩu. Hãy nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="7804364787702057554">Tài khoản của bạn trong Chrome</translation>
 <translation id="7808348361785373670">Xóa khỏi Chrome...</translation>
-<translation id="7827099906024714326">Chrome cần xác minh danh tính của bạn thì mới có thể lưu một số dữ liệu vào Tài khoản Google và cho phép bạn sử dụng dữ liệu đó trên tất cả các thiết bị. Nếu bạn đăng xuất bây giờ, dữ liệu này sẽ bị xoá.</translation>
 <translation id="7845233973568007926">Cảm ơn bạn đã cài đặt. Bạn phải khởi động lại máy tính trước khi sử dụng <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Tiếp tục từ nơi bạn đã dừng lại: Chrome có thể khôi phục các thẻ của bạn mỗi khi bạn khởi động lại. Để bật tính năng này, hãy chuyển đến</translation>
 <translation id="7872446069773932638">Đang tải xuống... Còn <ph name="SECONDS" /> giây</translation>

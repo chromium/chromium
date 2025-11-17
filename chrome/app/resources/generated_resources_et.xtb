@@ -8843,7 +8843,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7125148293026877011">Crostini kustutamine</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="7125932261198019860">Veenduge, et teie printer oleks ühendatud Chromebookiga samasse WiFi-võrku, või kasutage USB-kaablit. <ph name="LINK_BEGIN" />Lisateave ühilduvuse kohta<ph name="LINK_END" /></translation>
-<translation id="7127286300357471051">Kui otsustate praegust vahelehte Geminiga jagada, saadetakse Google'ile vahelehe kogu sisu ja URL.</translation>
 <translation id="7127980134843952133">Allalaadimiste ajalugu</translation>
 <translation id="7128151990937044829">Kuva märguande blokeerimisel aadressiribal indikaatorit</translation>
 <translation id="7128842673552234514">Kas teil on veel üks Google'i konto?</translation>

@@ -3711,6 +3711,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="7050187094878475250">Pokušali ste da posetite <ph name="DOMAIN" />, ali je server predstavio sertifikat sa periodom važenja koji je predugačak da bi bio pouzdan.</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7054717457611655239">Od sada čuvajte fajlove u usluzi <ph name="CLOUD_PROVIDER" />.</translation>
+<translation id="7057567173736333354">Opišite sliku</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> je potvrdio da je <ph name="ISSUER" /> izdao sertifikat ovog veb-sajta.</translation>
 <translation id="7058774143982824355">Usluga raščlanjivača CSV lozinki</translation>
 <translation id="706295145388601875">Dodajte adrese i upravljajte njima u podešavanjima Chrome-a</translation>

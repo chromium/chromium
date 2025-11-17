@@ -555,7 +555,6 @@
 <translation id="7285616922384953075"><ph name="MANAGER" /> gestiona Chrome</translation>
 <translation id="7288567540154601580">Pestanyes i extensions</translation>
 <translation id="7296210096911315575">Informació important d'ús i de seguretat</translation>
-<translation id="7302361266603927550">Algunes dades de Chrome encara no s'han desat al teu Compte de Google. Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sessió ara, aquestes dades se suprimiran.</translation>
 <translation id="7308322188646931570">Chrome necessita accedir a l'emmagatzematge per baixar fitxers</translation>
 <translation id="7339898014177206373">Finestra nova</translation>
 <translation id="7352651011704765696">S'ha produït un error</translation>
@@ -611,7 +610,6 @@
 <translation id="7801699035218095297">Google Chrome està provant de copiar les contrasenyes. Escriu la teva contrasenya de Windows per permetre-ho.</translation>
 <translation id="7804364787702057554">El teu compte a Chrome</translation>
 <translation id="7808348361785373670">Suprimeix de Chrome...</translation>
-<translation id="7827099906024714326">Chrome ha de verificar la teva identitat perquè algunes dades es puguin desar al teu Compte de Google i utilitzar-se en tots els teus dispositius. Si tanques la sessió ara, aquestes dades se suprimiran.</translation>
 <translation id="7845233973568007926">T'agraïm la instal·lació. Has de reiniciar l'equip abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Continua des d'on ho vas deixar: Chrome pot restaurar les teves pestanyes cada vegada que reiniciïs el navegador. Per activar-ho, ves a</translation>
 <translation id="7872446069773932638">S'està baixant… Queden <ph name="SECONDS" /> segons</translation>

@@ -325,7 +325,6 @@
 <translation id="4673151026126227699">Ako dijelite i izvješća o upotrebi Chromiuma, ta izvješća uključuju URL-ove koje posjećujete</translation>
 <translation id="4677944499843243528">Izgleda da neki drugi proces Chromiuma (<ph name="PROCESS_ID" />) na nekom drugom računalu (<ph name="HOST_NAME" />) upotrebljava taj profil. Chromium je zaključao profil da se profil ne bi promijenio. Ako ste sigurni da nijedan drugi proces ne upotrebljava taj profil, možete ga otključati i ponovo pokrenuti Chromium.</translation>
 <translation id="4680828127924988555">Otkaži instaliranje</translation>
-<translation id="469259825538636168">Neki vaši podaci iz Chromiuma još nisu spremljeni na vaš Google račun. Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi će se podaci izbrisati.</translation>
 <translation id="4708193446201257833">Dok ste prijavljeni, možete koristiti svoje zaporke i još mnogo toga sa svog Google računa u Chromiumu. Uz <ph name="SHORTCUT" /> možete promijeniti postavke Googleovih usluga.</translation>
 <translation id="4708774505295300557">Netko se prethodno prijavio na Chromium na ovom računalu kao <ph name="ACCOUNT_EMAIL_LAST" />. Izradite novog korisnika Chromiuma kako bi vaši podaci bili odvojeni.</translation>
 <translation id="4724676981607797757">Instalacija nije uspjela zbog pogreške nepodržanog protokola.</translation>
@@ -628,7 +627,6 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="837460953767177950">Tada ćete morati ponovo pokrenuti Chromium.</translation>
 <translation id="8397248745433792218">Chromium preporučuje da ga uklonite. <ph name="BEGIN_LINK" />Saznajte više o podržanim proširenjima<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">Razvojni programer poništio je objavljivanje tog proširenja i možda nije sigurno. Uklonite ga iz Chromiuma kako više ne bi moglo vidjeti i mijenjati vaše podatke na web-lokacijama koje posjećujete, uključujući vaše osobne podatke.</translation>
-<translation id="8416884904046428725">Chromium treba potvrditi da ste to vi da bi se neki podaci mogli spremiti na vaš Google račun i upotrebljavati na svim vašim uređajima. Ako se sada odjavite, ovi će se podaci izbrisati.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Ponovo pokrenite Chromium u roku od jednog dana}one{Ponovo pokrenite Chromium u roku od # dana}few{Ponovo pokrenite Chromium u roku od # dana}other{Ponovo pokrenite Chromium u roku od # dana}}</translation>
 <translation id="8438543370129609977">Kad upotrebljavate pretraživanje slika, naslov, URL i sadržaj stranice, uključujući PDF-ove, šalju se poslužitelju. <ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">Arhiva programa za instalaciju oštećena je ili nevažeća. Ponovo preuzmite Chromium.</translation>

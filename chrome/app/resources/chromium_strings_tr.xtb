@@ -322,7 +322,6 @@
 <translation id="4673151026126227699">Chrome kullanım raporlarını da paylaşıyorsanız, ziyaret ettiğiniz URL'ler de bu raporlar kapsamında paylaşılır</translation>
 <translation id="4677944499843243528">Profilin başka bir bilgisayarda (<ph name="HOST_NAME" />) başka bir Chromium işlemi (<ph name="PROCESS_ID" />) tarafından kullanıldığı anlaşılıyor. Chromium, profili bozulmaması için kilitledi. Bu profili başka hiçbir işlemin kullanmadığından eminseniz profilin kilidini açabilir ve Chromium'u tekrar başlatabilirsiniz.</translation>
 <translation id="4680828127924988555">Yüklemeyi İptal Et</translation>
-<translation id="469259825538636168">Chromium verilerinizden bazıları henüz Google Hesabınıza kaydedilmedi. Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsanız bu veriler silinir.</translation>
 <translation id="4708193446201257833">Oturumunuz açıkken Chromium'da Google Hesabınızdaki şifrelerinizi ve diğer öğeleri kullanabilirsiniz. <ph name="SHORTCUT" />, Google hizmetlerindeki ayarlarınızı değiştirebilir.</translation>
 <translation id="4708774505295300557">Birisi daha önce bu bilgisayarda <ph name="ACCOUNT_EMAIL_LAST" /> olarak Chromium oturumu açmış. Bilgilerinizi ayrı tutmak için yeni bir Chromium kullanıcısı oluşturun.</translation>
 <translation id="4724676981607797757">Desteklenmeyen bir protokol hatası nedeniyle yükleme işlemi başarısız oldu.</translation>
@@ -625,7 +624,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="837460953767177950">Ardından Chromium'u yeniden başlatmanız gerekir.</translation>
 <translation id="8397248745433792218">Chromium bunu kaldırmanızı öneriyor. <ph name="BEGIN_LINK" />Desteklenen uzantılar hakkında daha fazla bilgi edinin.<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">Bu uzantı, geliştiricisi tarafından yayından kaldırıldığı için güvenli olmayabilir. Kişisel bilgileriniz de dahil olmak üzere ziyaret ettiğiniz sitelerdeki verilerinizi artık görememesi ve değiştirememesi için bu uzantıyı Chromium'dan kaldırın.</translation>
-<translation id="8416884904046428725">Bazı verilerin Google Hesabınıza kaydedilip tüm cihazlarınızda kullanılabilmesi için Chromium'un kimliğinizi doğrulaması gerekir. Oturumu şimdi kapatırsanız bu veriler silinir.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium'u bir gün içinde yeniden başlatın}other{Chromium'u # gün içinde yeniden başlatın}}</translation>
 <translation id="8438543370129609977">Görsel Arama'yı kullandığınızda sayfa başlığı, URL'si ve içeriği (PDF'ler dahil) sunucuya gönderilir. <ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">Yükleyici arşivi bozuk veya geçersiz. Lütfen Chromium'u yeniden indirin.</translation>

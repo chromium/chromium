@@ -428,6 +428,7 @@
 <translation id="1689333818294560261">כינוי</translation>
 <translation id="1692622044604477956">רשימות סרטים בקולנוע וזמני הקרנה</translation>
 <translation id="1697430960030447570">‏<ph name="BEGIN_BOLD" />מה האפשרויות שזמינות לך לניהול הנתונים שלך:<ph name="END_BOLD" /> Chrome מוחק באופן אוטומטי נושאים שנוספו לפני יותר מ-4 שבועות. אם המשכת לגלוש לאותם אתרים, אחד הנושאים עשוי להופיע ברשימה מחדש. בכל שלב ניתן גם לחסום נושאים שלא רוצים ש-Chrome ישתף עם אתרים ולהשבית את נושאי המודעות דרך הגדרות Chrome.</translation>
+<translation id="1697808683313379647">‏‫Google משתמשת במידע מדף התשלום ובנתונים רלוונטיים אחרים כדי להציע את האפשרויות האלה.</translation>
 <translation id="1699651774646344471">‏עכשיו אפשר להשתמש בכתובות מחשבון Google שלך</translation>
 <translation id="1700542542921501212">ניתן לחפש באינטרנט באמצעות <ph name="SEARCH_ENGINE_NAME" />.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -2315,7 +2316,7 @@
 <translation id="4762097990764616058">להמשיך לשלם באמצעות <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">התנאים וההגבלות סופקו על ידי <ph name="URL" /></translation>
 <translation id="4764680219299728632">תנורים וכיריים</translation>
-<translation id="4764776831041365478">ייתכן שדף האינטרנט בכתובת <ph name="URL" /> אינו פעיל זמנית, או שהועבר לכתובת אינטרנט חדשה לצמיתות.</translation>
+<translation id="4764776831041365478">ניסית להיכנס לדף האינטרנט בכתובת <ph name="URL" />, אבל ככל הנראה הוא לא פעיל כרגע, או שהוא עבר לכתובת חדשה.</translation>
 <translation id="4766713847338118463">שתי סיכות הידוק בחלק התחתון</translation>
 <translation id="4768816584204270288">כשמשלמים בתשלומים, מוזן מספר כרטיס וירטואלי חד-פעמי. אפשר ללחוץ כדי להעתיק ולהדביק את פרטי הכרטיס לרכישה הזו.</translation>
 <translation id="4768864802656530630">יומני מערכת מפורטים. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
@@ -3708,6 +3709,7 @@ Del</translation>
 <translation id="7031646650991750659">‏אילו אפליקציות התקנת מ-Google Play.</translation>
 <translation id="7035705295266423040">הבנק מבקש לאמת את הזהות שלך</translation>
 <translation id="7038063300915481831">‏<ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי לנהל את הגדרות הפרטיות בחשבון Google.</translation>
+<translation id="7042465939346919737">‏‫Google משתמשת במידע מדף התשלום ובנתונים רלוונטיים אחרים כדי להציע את האפשרויות האלה. כדי להסתיר את האפשרויות לתשלום אחר כך, צריך לעבור אל <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">צמצום התוצאות</translation>
 <translation id="7043552168914147882">Tab Stock</translation>
 <translation id="7044081119134178347">יש אישור לשימוש חד-פעמי במצלמה</translation>
@@ -3715,6 +3717,7 @@ Del</translation>
 <translation id="7050187094878475250">ניסית להגיע אל <ph name="DOMAIN" />, אך השרת הציג אישור שתקופת התוקף שלו ארוכה מדי ולכן אינו מהימן.</translation>
 <translation id="7053983685419859001">חסימה</translation>
 <translation id="7054717457611655239">מעכשיו אפשר לשמור את הקבצים ב-<ph name="CLOUD_PROVIDER" />.</translation>
+<translation id="7057567173736333354">צריך לתאר את התמונה</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> אימת ש-<ph name="ISSUER" /> הנפיק את האישור של האתר הזה.</translation>
 <translation id="7058774143982824355">‏שירות לניתוח סיסמאות CSV</translation>
 <translation id="706295145388601875">‏ניתן להוסיף ולנהל כתובות בהגדרות Chrome</translation>

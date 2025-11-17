@@ -564,7 +564,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> upravlja Chrome-om</translation>
 <translation id="7288567540154601580">Kartice i dodaci</translation>
 <translation id="7296210096911315575">Važne informacije o upotrebi i bezbednosti</translation>
-<translation id="7302361266603927550">Neki Chrome podaci još nisu sačuvani na Google nalogu. Sačekajte nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi podaci će biti izbrisani.</translation>
 <translation id="7308322188646931570">Chrome traži pristup memorijskom prostoru da bi preuzimao datoteke</translation>
 <translation id="7339898014177206373">Novi prozor</translation>
 <translation id="7352651011704765696">Došlo je do greške</translation>
@@ -621,7 +620,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="7801699035218095297">Google Chrome pokušava da kopira lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
 <translation id="7804364787702057554">Vaš nalog u Chrome-u</translation>
 <translation id="7808348361785373670">Ukloni iz Chrome-a...</translation>
-<translation id="7827099906024714326">Chrome mora da verifikuje da ste to vi da bi neki podaci mogli da se čuvaju na Google nalogu i koriste na svim uređajima. Ako se odjavite odmah, ovi podaci će biti izbrisani.</translation>
 <translation id="7845233973568007926">Hvala vam na instalaciji. Morate da restartujete računar pre nego što počnete da koristite <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Nastavite tamo gde ste stali: Chrome može da vrati kartice svaki put kada ga restartujete. Da biste to uključili, idite u</translation>
 <translation id="7872446069773932638">Preuzima se... Još <ph name="SECONDS" /> sek</translation>

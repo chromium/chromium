@@ -327,7 +327,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4673151026126227699">Če delite tudi poročila o uporabi Chromiuma, so v teh poročilih vključeni URL-ji, ki jih obiščete.</translation>
 <translation id="4677944499843243528">Videti je, da profil uporablja drug Chromiumov proces (<ph name="PROCESS_ID" />) v drugem računalniku (<ph name="HOST_NAME" />). Chromium je zaklenil profil, da se ne poškoduje. Če ste prepričani, da tega profila ne uporabljajo nobeni drugi procesi, ga lahko odklenete in znova zaženete Chromium.</translation>
 <translation id="4680828127924988555">Prekliči namestitev</translation>
-<translation id="469259825538636168">Nekateri podatki v Chromiumu še niso shranjeni v računu Google. Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
 <translation id="4708193446201257833">Ko ste prijavljeni, lahko v Chromiumu uporabljate svoja gesla in drugo iz računa Google. <ph name="SHORTCUT" /> lahko spremeni nastavitve Googlovih storitev.</translation>
 <translation id="4708774505295300557">Nekdo se je prijavil v Chromium v tem računalniku kot <ph name="ACCOUNT_EMAIL_LAST" />. Ustvarite nov uporabniški profil za Chromium, če želite, da bodo vaši podatki ločeni.</translation>
 <translation id="4724676981607797757">Namestitev ni uspela zaradi napake, povezane z nepodprtim protokolom.</translation>
@@ -630,7 +629,6 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="837460953767177950">Nato boste morali znova zagnati Chromium.</translation>
 <translation id="8397248745433792218">Chromium priporoča, da jo odstranite. <ph name="BEGIN_LINK" />Preberite več o podprtih razširitvah.<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">Razvijalec je preklical objavo te razširitve in morda ni varna. Odstranite jo iz Chromiuma, da si ne bo mogla več ogledati vaših podatkov na obiskanih spletnih mestih, vključno z osebnimi podatki, in jih spreminjati.</translation>
-<translation id="8416884904046428725">Chromium mora preveriti vašo identiteto, preden bo mogoče nekatere podatke shraniti v račun Google in jih uporabiti v vseh vaših napravah. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium znova zaženite v enem dnevu}one{Chromium znova zaženite v # dnevu}two{Chromium znova zaženite v # dnevih}few{Chromium znova zaženite v # dnevih}other{Chromium znova zaženite v # dnevih}}</translation>
 <translation id="8438543370129609977">Če uporabljate slikovno iskanje, se naslov strani, URL in vsebina, vključno s datotekami PDF, pošljejo v strežnik. <ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">Arhiv namestitvenega programa je poškodovan ali neveljaven. Znova prenesite Chromium.</translation>

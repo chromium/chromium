@@ -327,7 +327,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4673151026126227699">Jei taip pat bendrinate „Chromium“ naudojimo ataskaitas, į tas ataskaitas įtraukiami URL, kuriais lankėtės</translation>
 <translation id="4677944499843243528">Atrodo, kad profilį naudoja kitas „Chromium“ procesas (<ph name="PROCESS_ID" />) kitame kompiuteryje (<ph name="HOST_NAME" />). „Chromium“ užrakino profilį, kad jis nebūtų sugadintas. Jei esate tikri, kad jokie kiti procesai nenaudoja šio profilio, galite atrakinti profilį ir iš naujo paleisti „Chromium“.</translation>
 <translation id="4680828127924988555">Atšaukti diegimą</translation>
-<translation id="469259825538636168">Kai kurie „Chromium“ duomenys dar neišsaugoti „Google“ paskyroje. Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar, šie duomenys bus ištrinti.</translation>
 <translation id="4708193446201257833">Kai esate prisijungę, galite naudoti slaptažodžius ir daugiau iš „Google“ paskyros „Chromium“ įrenginyje. Paspaudę <ph name="SHORTCUT" /> galite pakeisti „Google“ paslaugų nustatymus.</translation>
 <translation id="4708774505295300557">Kažkas anksčiau prisijungė prie „Chromium“ šiame kompiuteryje kaip <ph name="ACCOUNT_EMAIL_LAST" />. Sukurkite naują „Chromium“ naudotoją, kad apsaugotumėte savo informaciją.</translation>
 <translation id="4724676981607797757">Įdiegti nepavyko dėl nepalaikomo protokolo klaidos.</translation>
@@ -630,7 +629,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="837460953767177950">Tada turėsite iš naujo paleisti „Chromium“.</translation>
 <translation id="8397248745433792218">„Chromium“ rekomenduoja jį pašalinti. <ph name="BEGIN_LINK" />Sužinokite daugiau apie palaikomus plėtinius<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">Kūrėjas anuliavo šio plėtinio paskelbimą ir gali būti nesaugus. Pašalinkite jį iš „Chromium“, kad jis nebematytų ir negalėtų pakeisti jūsų duomenų svetainėse, kuriose lankotės, įskaitant jūsų asmens informaciją.</translation>
-<translation id="8416884904046428725">„Chromium“ turi patvirtinti jūsų tapatybę, kad tam tikrus duomenis būtų galima išsaugoti „Google“ paskyroje ir naudoti visuose jūsų įrenginiuose. Jei dabar atsijungsite, šie duomenys bus ištrinti.</translation>
 <translation id="8417404458978023919">{0,plural, =1{„Chromium“ paleidimas iš naujo po dienos}one{„Chromium“ paleidimas iš naujo po # dienos}few{„Chromium“ paleidimas iš naujo po # dienų}many{„Chromium“ paleidimas iš naujo po # dienos}other{„Chromium“ paleidimas iš naujo po # dienų}}</translation>
 <translation id="8438543370129609977">Kai naudojate vaizdų paiešką, puslapio pavadinimas, URL ir turinys, įskaitant PDF failus, siunčiami į serverį. <ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">Diegimo programos archyvas sugadintas arba negalioja. Atsisiųskite „Chromium“ dar kartą.</translation>

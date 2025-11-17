@@ -558,7 +558,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="7285616922384953075">Pārlūku Chrome pārvalda organizācija “<ph name="MANAGER" />”</translation>
 <translation id="7288567540154601580">Cilnes un paplašinājumi</translation>
 <translation id="7296210096911315575">Svarīga informācija par izmantošanu un drošību</translation>
-<translation id="7302361266603927550">Noteikti jūsu Chrome dati vēl nav saglabāti jūsu Google kontā. Pirms izrakstāties, uzgaidiet dažas minūtes. Ja izrakstīsieties tūlīt, šie dati tiks dzēsti.</translation>
 <translation id="7308322188646931570">Pārlūkam Chrome ir nepieciešama piekļuve krātuvei, lai varētu lejupielādēt failus.</translation>
 <translation id="7339898014177206373">Jauns logs</translation>
 <translation id="7352651011704765696">Radās problēma</translation>
@@ -614,7 +613,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="7801699035218095297">Google Chrome mēģina nokopēt paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
 <translation id="7804364787702057554">Jūsu konts pārlūkā Chrome</translation>
 <translation id="7808348361785373670">Noņemšana no pārlūka Chrome...</translation>
-<translation id="7827099906024714326">Pārlūkā Chrome ir jāverificē jūsu identitāte, lai noteiktus datus varētu saglabāt jūsu Google kontā un izmantot visās jūsu ierīcēs. Ja izrakstīsieties tūlīt, šie dati tiks dzēsti.</translation>
 <translation id="7845233973568007926">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē dators.</translation>
 <translation id="7849037457735762883">Turpiniet darbu no vietas, kur to pārtraucāt: pārlūkā Chrome var tikt atjaunotas jūsu cilnes ikreiz, kad to restartējat. Lai to ieslēgtu, pārejiet uz lapu</translation>
 <translation id="7872446069773932638">Notiek lejupielāde... Atlikušais laiks: <ph name="SECONDS" /> sekunde(-es).</translation>

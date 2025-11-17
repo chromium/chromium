@@ -73,6 +73,7 @@
 <translation id="311432875115153175">ಟ್ಯಾಬ್ ಗುಂಪು ಪಟ್ಟಿಯನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="3194464645767632461">ರೇಟಿಂಗ್</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{ಗುಂಪಿಗೆ <ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಸೇರಿಸಿ}one{ಗುಂಪಿಗೆ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}other{ಗುಂಪಿಗೆ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}}</translation>
+<translation id="3293080634164207409">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="3328308545011660196">ಸಲಹೆ: <ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳು ಸಂಬಂಧಿಸಿರುವ ಹಾಗೆ ಕಾಣುತ್ತಿದೆ. ಅವುಗಳನ್ನು ಗುಂಪು ಮಾಡಬೇಕೆ?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 ದಿನದ ನಿಷ್ಕ್ರಿಯತೆಯ ನಂತರ}one{<ph name="DAY_COUNT_MANY" /> ದಿನಗಳ ನಿಷ್ಕ್ರಿಯತೆಯ ನಂತರ}other{<ph name="DAY_COUNT_MANY" /> ದಿನಗಳ ನಿಷ್ಕ್ರಿಯತೆಯ ನಂತರ}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ಹೊಸ ಟ್ಯಾಬ್}one{<ph name="MANY_ADDED" /> ಹೊಸ ಟ್ಯಾಬ್‌ಗಳು}other{<ph name="MANY_ADDED" /> ಹೊಸ ಟ್ಯಾಬ್‌ಗಳು}}</translation>

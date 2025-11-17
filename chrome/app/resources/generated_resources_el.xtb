@@ -8853,7 +8853,6 @@
 <translation id="7125148293026877011">Διαγραφή Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="7125932261198019860">Βεβαιωθείτε ότι ο εκτυπωτής σας είναι συνδεδεμένος στο ίδιο δίκτυο Wi-Fi με το Chromebook ή χρησιμοποιήστε ένα καλώδιο USB. <ph name="LINK_BEGIN" />Μάθετε περισσότερα σχετικά με τη συμβατότητα<ph name="LINK_END" /></translation>
-<translation id="7127286300357471051">Όταν επιλέγετε να μοιραστείτε την τρέχουσα καρτέλα με το Gemini, το πλήρες περιεχόμενο και το URL της καρτέλας αποστέλλονται στην Google.</translation>
 <translation id="7127980134843952133">Ιστορικό λήψεων</translation>
 <translation id="7128151990937044829">Εμφάνιση κάποιας ένδειξης στη γραμμή διευθύνσεων για τις ειδοποιήσεις που έχουν αποκλειστεί</translation>
 <translation id="7128842673552234514">Έχετε άλλον Λογαριασμό Google;</translation>

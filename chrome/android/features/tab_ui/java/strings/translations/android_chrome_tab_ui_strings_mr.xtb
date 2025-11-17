@@ -73,6 +73,7 @@
 <translation id="311432875115153175">टॅब गट सूची बंद केली आहे</translation>
 <translation id="3194464645767632461">रेटिंग</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{गटामध्ये <ph name="TABS_COUNT_ONE" /> टॅब जोडा}other{गटामध्ये <ph name="TABS_COUNT_MANY" /> टॅब जोडा}}</translation>
+<translation id="3293080634164207409">टॅब जोडा</translation>
 <translation id="3328308545011660196">सूचना: <ph name="NUMBER_OF_TABS" /> टॅब संबंधित वाटतात. त्यांचा गट बनवायचा का?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{१ दिवस इनॅक्टिव्ह राहिल्यानंतर}other{<ph name="DAY_COUNT_MANY" /> दिवस इनॅक्टिव्ह राहिल्यानंतर}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> नवीन टॅब}other{<ph name="MANY_ADDED" /> नवीन टॅब}}</translation>

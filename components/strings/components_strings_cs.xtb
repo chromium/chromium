@@ -3704,6 +3704,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7050187094878475250">Pokusili jste se připojit k doméně <ph name="DOMAIN" />, ale server předložil certifikát, který má příliš dlouhé období platnosti a je proto nedůvěryhodný.</translation>
 <translation id="7053983685419859001">Blokovat</translation>
 <translation id="7054717457611655239">Od této chvíle ukládejte soubory do úložiště <ph name="CLOUD_PROVIDER" />.</translation>
+<translation id="7057567173736333354">Popište obrázek</translation>
 <translation id="7058163556978339998">Prohlížeč <ph name="BROWSER" /> ověřil, že certifikát tohoto webu byl vydán vydavatelem <ph name="ISSUER" />.</translation>
 <translation id="7058774143982824355">Služba analýzy hesel CSV</translation>
 <translation id="706295145388601875">Přidávejte a spravujte adresy v nastavení Chromu</translation>

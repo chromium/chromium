@@ -8823,7 +8823,6 @@
 <translation id="7125148293026877011">删除 Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="7125932261198019860">请确保您的打印机与 Chromebook 连接到同一 Wi-Fi 网络，或者使用 USB 线。<ph name="LINK_BEGIN" />详细了解兼容性<ph name="LINK_END" /></translation>
-<translation id="7127286300357471051">当您选择与 Gemini 分享当前标签页时，系统会将该标签页的完整内容和网址发送给 Google。</translation>
 <translation id="7127980134843952133">下载记录</translation>
 <translation id="7128151990937044829">当通知处于屏蔽状态时在地址栏中显示“已屏蔽”图标</translation>
 <translation id="7128842673552234514">有其他 Google 账号？</translation>

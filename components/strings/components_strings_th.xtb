@@ -3708,6 +3708,7 @@
 <translation id="7050187094878475250">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่เซิร์ฟเวอร์ได้แสดงใบรับรองที่มีระยะเวลาที่สามารถใช้ได้นานเกินกว่าที่จะเชื่อถือได้</translation>
 <translation id="7053983685419859001">บล็อก</translation>
 <translation id="7054717457611655239">นับจากนี้เป็นต้นไป ระบบจะบันทึกไฟล์ของคุณไปยัง <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="7057567173736333354">อธิบายรูปภาพของคุณ</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> ยืนยันว่า <ph name="ISSUER" /> ได้ออกใบรับรองของเว็บไซต์นี้</translation>
 <translation id="7058774143982824355">บริการโปรแกรมแยกวิเคราะห์รหัสผ่าน CSV</translation>
 <translation id="706295145388601875">เพิ่มและจัดการที่อยู่ในการตั้งค่า Chrome</translation>

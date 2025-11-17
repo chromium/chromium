@@ -3710,6 +3710,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7050187094878475250">Yritit muodostaa yhteyden verkkotunnukseen <ph name="DOMAIN" />, mutta palvelin esitti varmenteen, joka on voimassa liian kauan ollakseen luotettava.</translation>
 <translation id="7053983685419859001">Estä</translation>
 <translation id="7054717457611655239">Tallenna jatkossa tiedostosi tänne: <ph name="CLOUD_PROVIDER" />.</translation>
+<translation id="7057567173736333354">Kuvaile kuvaa</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> vahvisti, että <ph name="ISSUER" /> on myöntänyt tämän sivuston varmenteen.</translation>
 <translation id="7058774143982824355">CSV-salasanatiedoston jäsennyspalvelu</translation>
 <translation id="706295145388601875">Lisää ja muuta osoitteita Chromen asetuksista</translation>

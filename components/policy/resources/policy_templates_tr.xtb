@@ -2211,6 +2211,13 @@ Bu politika Yanlış değerine ayarlandığında İlgili Web Sitesi Grupları ö
           Bu politikaya yalnızca "DefaultSearchProviderEnabled" politikası etkinleştirilirse uyulur.</translation>
 <translation id="2563373001850981577"><ph name="PRODUCT_OS_NAME" /> Dosyalar uygulamasındaki çöp kutusuna (desteklenen dosya sistemlerinde) dosya gönderme özelliğini etkinleştir</translation>
 <translation id="256597156026041241">Giriş ekranında yapışkan tuşları devre dışı bırak</translation>
+<translation id="2568364558457964228"><ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME" /> Devre Dışı bırakılırsa politikayı ayarlamak, SSL hatası olan sitelere giden kullanıcıların, <ph name="PRODUCT_NAME" /> tarafından gösterilen uyarı sayfalarını hangi sitelerde atlayabileceklerini belirten kaynak kalıplarının olduğu bir liste yapmanıza olanak tanır. Kullanıcılar, bu listede olmayan kaynaklarda SSL uyarı sayfalarını atlayamaz.
+
+      <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME" />, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa bu politikanın bir işlevi olmaz.
+
+      Politika ayarlanmadan bırakılırsa <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME" /> bütün siteler için geçerli olur.
+
+      Geçerli giriş kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir. Bu politika, yalnızca kaynağa göre eşleşir. Dolayısıyla, URL kalıbındaki yollar yok sayılır.</translation>
 <translation id="2568488785376704318">Bu politika kullanımdan kaldırılmıştır. Lütfen bunun yerine <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" /> politikasını kullanın.</translation>
 <translation id="2570059561924004903">Sesli geri bildirimi dışı bırak</translation>
 <translation id="2570181623957732921">Üçüncü taraf alanlarının listesi için <ph name="DESK_API_NAME" /> öğesini etkinleştir</translation>
@@ -4296,6 +4303,9 @@ Bu politikanın ayarlanmadan veya boş bırakılması hiçbir web sitesinin kull
 <ph name="PRODUCT_OS_NAME" /> için bu politika, bir sertifikanın otomatik olarak oluşturulup sunucuya yüklendiği uzaktan onay işlemiyle ilgilidir. Onay akışının cihaz giriş ekranında kullanılması için lütfen <ph name="DEVICE_LOGIN_SCREEN_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> politikasını kullanın.
 
 Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://support.google.com/chrome/a?p=url_blocklist_filter_format adresine bakabilirsiniz.</translation>
+<translation id="406637577497776959">Politikanın ayarlanması, kalıpları istek yapan URL'nin güvenlik kaynağıyla eşleşen URL listesini sizin belirttiğiniz anlamına gelir. Eşleşme olması halinde istemde bulunulmadan video yakalama cihazlarına erişim izni verilir
+
+      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz. Ancak her URL'ye uyan "*" kalıbının bu politika tarafından desteklenmediğini unutmayın.</translation>
 <translation id="4070039109671307724">Çeşitli</translation>
 <translation id="4071922398488395340">Geçişli TOA işlevine oturum çerezlerini dahil et</translation>
 <translation id="4072225853834793549">Oturum açma ekranında erişilebilirlik kısayollarını devre dışı bırak</translation>
@@ -4856,6 +4866,15 @@ Politika ayarlanmadan bırakılırsa yalıtılmış web uygulaması kaynakları 
 <translation id="4483649828988077221">Otomatik Güncelleme'yi devre dışı bırak</translation>
 <translation id="4483738129334574255">Kayıtlı <ph name="PRODUCT_OS_NAME" /> cihazlarda dinozor paskalya yumurtası oyununu devre dışı bırak, diğer durumlarda etkinleştir</translation>
 <translation id="4484515651939984695">Erişim kodu veya QR koduyla seçilen bir yayın cihazının, <ph name="PRODUCT_NAME" /> menüsündeki yayın cihazları listesinde kaç saniye duracağını belirtir.</translation>
+<translation id="4485110452429739046">Bu politika, oturum açma ekranında SAML akışı sırasında cihaz kimliğinin uzaktan doğrulama kullanması için erişim izni verilecek URL'leri yapılandırır.
+
+      Özellikle bir URL bu politika aracılığıyla sağlanan kalıplardan biriyle eşleşirse bu URL'nin bir uzaktan doğrulama sorusunun yanıtını, onay veren cihaz kimliğini ve cihaz durumunu içeren bir HTTP üst bilgisi almasına izin verilir.
+
+      Bu politika ayarlanmaz veya boş bir listeye ayarlanırsa hiçbir URL'nin oturum açma ekranında uzaktan doğrulama kullanmasına izin verilmez.
+
+      URL'lerin HTTPS şeması olması gerekir, ör. "https://example.com".
+
+      Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz.</translation>
 <translation id="4485425108474077672">Yeni Sekme sayfasının URL'sini yapılandır</translation>
 <translation id="4488959486611931919">Not: Chrome'un M118'den itibaren bu çerezleri varsayılan olarak engellemeye başlamasından bu yana site kesintisi bildirilmediğinden, M127 sürümünden itibaren bu işlev yapılandırılamaz (ve bu politikanın herhangi bir geçerliliği olmayacaktır).
 
@@ -6455,6 +6474,27 @@ Bu politika:
 * Eski değerine ayarlanırsa yalnızca RC4 türüne izin verilir. RC4 güvenli değildir. Sadece çok özel durumlarda ihtiyaç duyulmalıdır. Mümkünse sunucuyu AES şifrelemesini destekleyecek şekilde yeniden yapılandırın.
 
 Ayrıca https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_client_encryption_types sayfasına da bakın.</translation>
+<translation id="5547367922423795226">URL kalıpları listesi belirtmenize olanak tanır. Bu liste, site sertifika isteğinde bulunursa SAML akışını barındıran çerçevedeki oturum açma ekranında bir istemci sertifikasının otomatik olarak seçileceği sitelerin belirtildiği bir listedir. SAML IdP'ye sunulması amacıyla cihaz genelinde bir sertifikanın yapılandırılması buna örnek olarak gösterilebilir.
+
+      <ph name="URL_PATTERN_PLACEHOLDER" /> içerik ayarı kalıbı olduğunda değer, her biri <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" /> biçiminde dizili JSON sözlükleri dizisidir. <ph name="FILTER_PLACEHOLDER" />, tarayıcının otomatik seçtiği istemci sertifikalarını sınırlandırır. Filtreden bağımsız olarak, yalnızca sunucunun sertifika isteğiyle eşleşen sertifikalar seçilir.
+
+      <ph name="FILTER_PLACEHOLDER" /> bölümünün kullanımına dair örnekler:
+
+      * <ph name="FILTER_PLACEHOLDER" /> değeri <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_FILTER_EXAMPLE" /> olarak ayarlandığında yalnızca CommonName <ph name="ISSUER_CN_PLACEHOLDER" /> olan bir sertifikanın verdiği istemci sertifikaları seçilir.
+
+      * <ph name="FILTER_PLACEHOLDER" /> değeri hem <ph name="ISSUER_STRING_VALUE" /> hem de <ph name="SUBJECT_STRING_VALUE" /> bölümlerini içerdiğinde yalnızca iki koşulu da karşılayan istemci sertifikaları seçilir.
+
+      * <ph name="FILTER_PLACEHOLDER" /> değeri, <ph name="FILTER_STRING_ORGANIZATION" /> değeri olan bir <ph name="SUBJECT_STRING_VALUE" /> bölümü içerdiğinde sertifika, seçilecek belirli değerle eşleşen en az bir kuruluş gerektirir.
+
+      * <ph name="FILTER_PLACEHOLDER" /> değeri, <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" /> değeri olan bir <ph name="SUBJECT_STRING_VALUE" /> bölümü içerdiğinde sertifika, seçilecek belirli değerle eşleşen en az bir kuruluş birimi gerektirir.
+
+      * <ph name="FILTER_PLACEHOLDER" /> değeri <ph name="EMPTY_DICTIONARY" /> olarak ayarlandığında istemci sertifikalarının seçimi ayrıca kısıtlanmaz. Web sunucusu tarafından sağlanan filtrelerin geçerli olmaya devam ettiğini unutmayın.
+
+
+
+      Bu politika ayarlanmadan bırakılırsa hiçbir site için otomatik seçim yapılmaz.
+
+      Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Giriş ekranında yüksek kontrastı etkinleştir</translation>
 <translation id="555077880566103058">Tüm sitelerin otomatik olarak <ph name="FLASH_PLUGIN_NAME" /> eklentisini çalıştırmasına izin ver</translation>
@@ -8567,6 +8607,23 @@ Politika, 2 değerine ayarlanırsa yalıtılmış web uygulaması kaynaklarını
 <translation id="6938524853892166974">Canlı Çeviri'yi devre dışı bırak</translation>
 <translation id="6940243892299228102">Kullanıcıların masa şablonları kullanmalarına izin verme</translation>
 <translation id="6943577887654905793">Mac/Linux tercih adı:</translation>
+<translation id="6944302005022384441"><ph name="SHOW_SUBAPPS_APP_API_NAME" />,
+<ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> ve
+<ph name="SHOW_SUBAPPS_LIST_API_NAME" /> web API'leri,
+güvenlik nedenleriyle önceki kullanıcının hareketinin
+("geçici etkinleştirme") çağrılmasını zorunlu kılar ve çağrılmadığı takdirde
+başarısız olur. Ayrıca, kullanıcıdan onay iletişim kutusu aracılığıyla
+işlemi onaylaması istenir.
+
+Bu politika ayarlandığında yöneticiler, önceki kullanıcının hareketi olmadan veya
+kullanıcıdan onay istemeden bu API'lerin çağrılabileceği kaynakları belirtebilir.
+
+Geçerli URL kalıpları hakkında ayrıntılı bilgi için
+https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz. * 
+bu politikada kabul edilen bir değer değildir.
+
+Bu politika ayarlanmazsa tüm kaynaklar, bu API'leri çağırmak için önceki kullanıcı
+hareketini zorunlu kılar ve kullanıcıya bir onay iletişim kutusu gösterir.</translation>
 <translation id="694602410134474029"><ph name="PRODUCT_NAME" /> öğesinin, yazıcı sürücüleriyle ayrı bir hizmet işleminden etkileşime geçip geçmediğini kontrol eder. Mevcut yazıcıları sorgulamak, yazdırma sürücüsü ayarlarını almak ve doküman göndererek yerel yazıcılara yazdırmak için yapılan platform yazdırma çağrıları, hizmet işleminden gerçekleştirilir. Bu tür çağrıları, tarayıcı işleminin dışına taşımak, kararlılığı iyileştirmeye ve Yazdırma Önizleme'deki donmuş kullanıcı arayüzü davranışını azaltmaya yardımcı olur.
 
 Bu politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, platform yazdırma görevleri için ayrı bir hizmet işlemi kullanır.
@@ -8669,6 +8726,11 @@ Politikayı ayarlamadan bırakırsanız görsellere izin verilir. Kullanıcılar
 <translation id="7003746348783715221"><ph name="PRODUCT_NAME" /> tercihleri</translation>
 <translation id="7007283257527015835">Protokol işleyicinin varsayılan olarak ayarlanıp ayarlanmayacağını gösteren bir boole flag'i.</translation>
 <translation id="7007403084376547341"><ph name="LACROS_NAME" /> tarayıcı ikili programı seç</translation>
+<translation id="7007606445961009611">İlişkili kullanıcılar için web sitesi etkinlik raporlamasını kontrol eden izin verilenler listesi.
+
+Politikanın ayarlanması, izin verilenler listesine eklenmiş URL'ler için web sitesinin URL'sinde açılan ve kapatılan etkinlik raporlamasını kontrol eder.
+Politika ayarlanmazsa web sitesi etkinlikleri raporlanmaz.
+Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz. Bu politika için yalnızca HTTP ve HTTPS URL'si şemalarına izin verilir.</translation>
 <translation id="7007704186032892878">Uygulama bazında kiosk etkin kablosuz ağ kimlik bilgilerini cihaz düzeyinde göster</translation>
 <translation id="7008308728445338159">DNS müdahale kontrolü etkin</translation>
 <translation id="7009043124653876961">Kullanıcılar yazarken emoji önerileri gösterilmesini devre dışı bırak</translation>
@@ -8866,6 +8928,15 @@ Bu politika etkinleştirilir veya ayarlanırsa kullanıcılar, tekrar girmeleri 
 
 Bu politika devre dışı bırakılırsa şifreler hiçbir zaman hatırlanmaz ve daha önce saklanan tüm şifreler silinir. Kullanıcılar, Kerberos sisteminde kimlik doğrulamaları gerektiğinde her zaman şifrelerini girmelidirler. Sunucu ayarlarına bağlı olarak, bu genellikle her 8 saatte bir ile birkaç ayda bir arasında olur.</translation>
 <translation id="7126928806195745404">JavaScript ayarları</translation>
+<translation id="7127108620894338616">Politikayı ayarlamak, kendisiyle aynı Kaynaklara sahip sekmeleri yakalayabilen URL kalıpları için bir liste yapmanıza olanak tanır.
+
+      Politika ayarlanmadan bırakılırsa siteler bu yakalama seviyesindeki geçersiz kılma için dikkate alınmaz.
+
+      Bu siteyle aynı kaynağa sahip pencereli Chrome Uygulamalarının yakalanmasına yine de izin verileceğini unutmayın.
+
+      Bir site bu politikadaki URL kalıbıyla eşleşirse şu politikalar dikkate alınmaz: <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
+
+      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz.  Bu politika, yalnızca kaynağa göre eşleşir. Dolayısıyla, URL kalıbındaki yollar yok sayılır.</translation>
 <translation id="7127732963662601239">Bu politika, ilk oturum açma sırasında insan varlığı sensörü ekranının kullanıcıya gösterilip gösterilmeyeceğini kontrol eder.
     Yanlış değerine ayarlanırsa insan varlığı sensörü ekranı gösterilmez.
     Doğru değerine ayarlanırsa insan varlığı sensörü ekranı gösterilir.
@@ -9122,6 +9193,7 @@ Bu politika devre dışı bırakılır veya ayarlanmazsa Kerberos Hesapları aya
 
       <ph name="MAC_OS_NAME" /> üzerinde <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> politikası Yanlış değerine ayarlanırsa bu politikanın etkisi olmaz.</translation>
 <translation id="7278854311116092134">Engellenenler listesinden muaf tutulacak yerel mesajlaşma ana makinelerinin adları</translation>
+<translation id="7283289959521910308">Bu sitelerde tam coğrafi konum kullanımına izin ver</translation>
 <translation id="7291084543582732020">Bu ayarı etkinleştirirseniz, Smart Lock ile ilgili koşullar karşılandığında kullanıcıların bu özelliği kullanmalarına izin verilir.
 
       Bu ayarı devre dışı bırakırsanız, kullanıcıların Smart Lock özelliğini kullanmalarına izin verilmez.

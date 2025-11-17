@@ -1332,7 +1332,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6674571176963658787">Para iniciar a sincronização, digite a senha longa</translation>
 <translation id="6676927815633975364">Faça login neste site e no Chrome</translation>
 <translation id="6684809838922667136">Melhorar o Chrome</translation>
-<translation id="6689436252814043643">O modo de leitura está indisponível</translation>
+<translation id="6689436252814043643">O Modo de Leitura está indisponível</translation>
 <translation id="6700279777779583398">Opções salvas</translation>
 <translation id="670498945988402717">Verificado ontem</translation>
 <translation id="6710213216561001401">Anterior</translation>
@@ -1605,6 +1605,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7708994397325774423">Acesse todas as suas senhas</translation>
 <translation id="7714077993070342304">Abrir menu do Google Chrome</translation>
 <translation id="7733878270780732638">Não há espaço suficiente no dispositivo.</translation>
+<translation id="7740287852186792672">Resultados da pesquisa</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, guia anônima de compartilhamento selecionada</translation>
 <translation id="774876555279732384">Os preenchimentos automáticos também são gerenciados nas <ph name="BEGIN_LINK" />Configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="7759809451544302770">Opcional</translation>

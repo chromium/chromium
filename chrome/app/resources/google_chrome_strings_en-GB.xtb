@@ -563,7 +563,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> manages Chrome</translation>
 <translation id="7288567540154601580">Tabs and extensions</translation>
 <translation id="7296210096911315575">Important use and safety information</translation>
-<translation id="7302361266603927550">Some of your Chrome data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
 <translation id="7308322188646931570">Chrome needs storage access to download files</translation>
 <translation id="7339898014177206373">New window</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
@@ -619,7 +618,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7801699035218095297">Google Chrome is trying to copy passwords. Type your Windows password to allow this.</translation>
 <translation id="7804364787702057554">Your account in Chrome</translation>
 <translation id="7808348361785373670">Remove from Chrome...</translation>
-<translation id="7827099906024714326">Chrome needs to verify that it's you before some data can be saved in your Google Account and used on all your devices. If you sign out now, this data will be deleted.</translation>
 <translation id="7845233973568007926">Thanks for installing. You must restart your computer before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Continue where you left off: Chrome can restore your tabs every time you restart. To turn this on, go to</translation>
 <translation id="7872446069773932638">Downloading… <ph name="SECONDS" /> second(s) remaining</translation>

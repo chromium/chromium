@@ -325,7 +325,6 @@
 <translation id="4673151026126227699">Hvis du også deler Chromium-bruksrapporter, inneholder disse rapportene nettadressene du besøker</translation>
 <translation id="4677944499843243528">Profilen ser ut til å være i bruk av en annen Chromium-prosess (<ph name="PROCESS_ID" />) på en annen datamaskin (<ph name="HOST_NAME" />). Chromium har låst profilen slik at den ikke blir infisert. Hvis du er sikker på at ingen andre prosesser bruker profilen, kan du låse opp profilen og starte Chromium på nytt.</translation>
 <translation id="4680828127924988555">Avbryt installasjon</translation>
-<translation id="469259825538636168">Noen av Chromium-dataene dine er ikke lagret i Google-kontoen din ennå. Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir disse dataene slettet.</translation>
 <translation id="4708193446201257833">Når du er logget på, kan du bruke passord med mer fra Google-kontoen din i Chromium. <ph name="SHORTCUT" /> kan endre innstillingene dine for Google-tjenester.</translation>
 <translation id="4708774505295300557">Noen har tidligere logget på Chromium på denne datamaskinen som <ph name="ACCOUNT_EMAIL_LAST" />. Opprett en ny Chromium-bruker for å holde informasjonen din atskilt.</translation>
 <translation id="4724676981607797757">Installasjonen mislyktes på grunn av en feil med ikke-støttet protokoll.</translation>
@@ -628,7 +627,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="837460953767177950">Deretter må du starte Chromium på nytt.</translation>
 <translation id="8397248745433792218">Chromium anbefaler at du fjerner den. <ph name="BEGIN_LINK" />Finn ut mer om utvidelser som støttes<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">Denne utvidelsen er avpublisert av utvikleren og kan være utrygg. Fjern den fra Chromium, slik at den ikke lenger kan se og endre dataene dine på nettsteder du besøker, inkludert personopplysningene dine.</translation>
-<translation id="8416884904046428725">Chromium må bekrefte at det er deg, før enkelte data kan lagres i Google-kontoen din og brukes på alle enhetene dine. Hvis du logger av nå, blir disse dataene slettet.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Start Chromium på nytt innen én dag}other{Start Chromium på nytt innen # dager}}</translation>
 <translation id="8438543370129609977">Når du bruker bildesøk, sendes sidens tittel, nettadresse og innhold, inkludert PDF-filer, til tjeneren. <ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">Installasjonsarkivet er skadet eller ugyldig. Last ned Chromium på nytt.</translation>

@@ -325,7 +325,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="4673151026126227699">Jika anda turut berkongsi laporan penggunaan Chromium, laporan tersebut menyertakan URL yang anda lawati</translation>
 <translation id="4677944499843243528">Nampaknya profil digunakan oleh proses Chromium lain (<ph name="PROCESS_ID" />) pada komputer lain (<ph name="HOST_NAME" />). Chromium telah mengunci profil supaya profil tidak rosak. Jika anda pasti tiada proses lain yang menggunakan profil ini, anda boleh membuka profil dan melancarkan semula Chromium.</translation>
 <translation id="4680828127924988555">Batalkan Pemasangan</translation>
-<translation id="469259825538636168">Sesetengah data Chromium anda belum disimpan dalam Google Account anda. Tunggu beberapa minit sebelum log keluar. Jika anda log keluar sekarang, data ini akan dipadamkan.</translation>
 <translation id="4708193446201257833">Semasa anda log masuk, anda boleh menggunakan kata laluan anda dan pelbagai lagi daripada Google Account anda dalam Chromium. <ph name="SHORTCUT" /> boleh menukar tetapan perkhidmatan Google anda.</translation>
 <translation id="4708774505295300557">Sebelum ini, seseorang telah log masuk ke Chromium pada komputer ini sebagai <ph name="ACCOUNT_EMAIL_LAST" />. Sila buat pengguna Chromium baharu untuk mengasingkan maklumat anda.</translation>
 <translation id="4724676981607797757">Pemasangan gagal akibat ralat protokol yang tidak disokong.</translation>
@@ -629,7 +628,6 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="837460953767177950">Kemudian, anda perlu memulakan semula Chromium.</translation>
 <translation id="8397248745433792218">Chromium mengesyorkan supaya anda mengalih keluar sambungan tersebut. <ph name="BEGIN_LINK" />Ketahui lebih lanjut tentang sambungan yang disokong<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">Sambungan ini telah dinyahterbitkan boleh pembangun dan mungkin tidak selamat. Alih keluar sambungan ini daripada Chromium supaya sambungan ini tidak dapat melihat dan mengubah data anda pada laman yang anda lawati lagi, termasuk maklumat peribadi anda.</translation>
-<translation id="8416884904046428725">Chromium perlu mengesahkan identiti anda sebelum sesetengah data boleh disimpan dalam Google Account anda dan digunakan pada semua peranti anda. Jika anda log keluar sekarang, data ini akan dipadamkan.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Lancarkan semula Chromium dalam masa sehari}other{Lancarkan semula Chromium dalam masa # hari}}</translation>
 <translation id="8438543370129609977">Apabila anda menggunakan Carian Imej, tajuk halaman, URL dan kandungan, termasuk PDF, akan dihantar kepada pelayan. <ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">Arkib pemasang rosak atau tidak sah. Sila muat turun Chromium sekali lagi.</translation>

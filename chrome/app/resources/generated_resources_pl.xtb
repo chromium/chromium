@@ -8818,7 +8818,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7125148293026877011">Usuń Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="7125932261198019860">Upewnij się, że drukarka jest połączona z tą samą siecią Wi-Fi co Chromebook lub użyj kabla USB. <ph name="LINK_BEGIN" />Więcej informacji o zgodności<ph name="LINK_END" /></translation>
-<translation id="7127286300357471051">Gdy zdecydujesz się udostępnić Gemini bieżącą kartę, jej pełna zawartość i adres URL zostaną wysłane do Google.</translation>
 <translation id="7127980134843952133">Historia pobierania</translation>
 <translation id="7128151990937044829">Jeśli powiadomienia są blokowane, pokaż wskaźnik na pasku adresu</translation>
 <translation id="7128842673552234514">Masz inne konto Google?</translation>

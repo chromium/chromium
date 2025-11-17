@@ -425,9 +425,11 @@
 <translation id="1682696192498422849">शॉर्ट एज प्रथम</translation>
 <translation id="168693727862418163">हे धोरण मूल्य त्याच्या स्कीमासोबत प्रमाणित करता आले नाही आणि त्याच्याकडे दुर्लक्ष केले जाईल.</translation>
 <translation id="168841957122794586">सर्व्हर सर्टिफिकेटमध्ये एक कमकुवत क्रिप्टोग्राफिक की आहे.</translation>
+<translation id="1688718429648938412">लॉयल्टी कार्ड Wallet मध्ये सेव्ह करा</translation>
 <translation id="1689333818294560261">टोपणनाव</translation>
 <translation id="1692622044604477956">चित्रपटाच्या सूची आणि चित्रपटगृहाचे शोटाइम</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />तुम्ही तुमचा डेटा कसा व्यवस्थापित करू शकता:<ph name="END_BOLD" /> Chrome हे चार आठवड्यांपेक्षा जुने विषय ऑटो-डिलीट करते. तुम्ही ब्राउझ करत असताना, विषय सूचीमध्ये पुन्हा दिसू शकतो. Chrome सेटिंग्जमध्ये, Chrome ने साइटसह शेअर करू नये असे तुम्हाला वाटत असलेले विषय तुम्ही ब्लॉकदेखील करू शकता आणि जाहिरातीचे विषय कधीही बंद करू शकता.</translation>
+<translation id="1697808683313379647">हे पर्याय देऊ करण्यासाठी Google चेकआउट पेजवरील माहिती आणि इतर सुसंबद्ध डेटा वापरते.</translation>
 <translation id="1699651774646344471">तुम्ही आता तुमच्या Google खाते मधील पत्ता वापरू शकता</translation>
 <translation id="1700542542921501212">तुम्ही वेबवर शोधण्यासाठी <ph name="SEARCH_ENGINE_NAME" /> वापरू शकता.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -3660,6 +3662,7 @@
 <translation id="6965978654500191972">डिव्हाइस</translation>
 <translation id="696703987787944103">पर्सेप्चुअल</translation>
 <translation id="6967851206780867018">आशयामुळे १ फाइल ब्लॉक केली गेली आहे</translation>
+<translation id="6968217325369275594">तुमच्या कोणत्याही डिव्हाइसवरून अपडेट मिळवण्यासाठी तुमची माहिती सेव्ह करा. तुमची माहिती <ph name="ACCOUNT" /> साठीच्या <ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" /> मध्ये सेव्ह केली आहे.</translation>
 <translation id="6970885655016700774">फॅब्रिक (आर्कायव्हल)</translation>
 <translation id="6971439137020188025">Slides मध्ये नवीन Google प्रेझेंटेशन झटपट तयार करा</translation>
 <translation id="6972629891077993081">HID डिव्हाइस</translation>
@@ -3702,6 +3705,7 @@
 <translation id="7031646650991750659">तुम्ही कोणती Google Play ॲप्स इंस्टॉल केली आहेत</translation>
 <translation id="7035705295266423040">हे तुम्हीच याची तुमच्या बॅंकला पडताळणी करायची आहे</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमच्या Google खाते ची गोपनीयता सेटिंग्ज व्यवस्थापित करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
+<translation id="7042465939346919737">हे पर्याय देऊ करण्यासाठी Google चेकआउट पेजवरील माहिती आणि इतर सुसंबद्ध डेटा वापरते. नंतर पेमेंट करण्याचे पर्याय लपवण्यासाठी, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> वर जा</translation>
 <translation id="7042616127917168121">परिणाम सुधारित करा</translation>
 <translation id="7043552168914147882">टॅब स्टॉक</translation>
 <translation id="7044081119134178347">यावेळी कॅमेराला अनुमती दिली आहे</translation>
@@ -3709,6 +3713,7 @@
 <translation id="7050187094878475250">तुम्ही <ph name="DOMAIN" /> वर पोहोचण्याचा प्रयत्न केला, परंतु सर्व्हरने एक सर्टिफिकेट सादर केले आहे ज्याचा वैधता कालावधी हा विश्वासार्हतेसाठी खूप मोठा आहे.</translation>
 <translation id="7053983685419859001">ब्लॉक करा</translation>
 <translation id="7054717457611655239">यापुढे, तुमच्या फाइल <ph name="CLOUD_PROVIDER" /> वर सेव्ह करा.</translation>
+<translation id="7057567173736333354">तुमच्या इमेजचे वर्णन करा</translation>
 <translation id="7058163556978339998"><ph name="ISSUER" /> ने या वेबसाइटचे सर्टिफिकेट जारी केले आहे हे <ph name="BROWSER" /> ने पडताळले.</translation>
 <translation id="7058774143982824355">CSV पासवर्ड पार्सर सेवा</translation>
 <translation id="706295145388601875">Chrome सेटिंग्जमध्ये ॲड्रेस जोडा आणि व्यवस्थापित करा</translation>

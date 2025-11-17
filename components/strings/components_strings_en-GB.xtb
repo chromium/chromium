@@ -3709,6 +3709,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7050187094878475250">You attempted to reach <ph name="DOMAIN" />, but the server presented a certificate whose validity period is too long to be trustworthy.</translation>
 <translation id="7053983685419859001">Block</translation>
 <translation id="7054717457611655239">From now on, save your files to <ph name="CLOUD_PROVIDER" />.</translation>
+<translation id="7057567173736333354">Describe your image</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> verified that <ph name="ISSUER" /> issued this website's certificate.</translation>
 <translation id="7058774143982824355">CSV password parser service</translation>
 <translation id="706295145388601875">Add and manage addresses in Chrome settings</translation>

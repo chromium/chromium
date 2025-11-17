@@ -8841,7 +8841,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7125148293026877011">Slett Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="7125932261198019860">Sørg for at skriveren er koblet til det samme wifi-nettverket som Chromebooken, eller bruk en USB-kabel. <ph name="LINK_BEGIN" />Finn ut mer om kompatibilitet<ph name="LINK_END" /></translation>
-<translation id="7127286300357471051">Når du velger å dele den aktive fanen med Gemini, sendes hele innholdet og nettadressen til Google.</translation>
 <translation id="7127980134843952133">Nedlastingslogg</translation>
 <translation id="7128151990937044829">Vis en indikator i adressefeltet når varsler blokkeres</translation>
 <translation id="7128842673552234514">Har du en annen Google-konto?</translation>
