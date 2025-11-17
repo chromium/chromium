@@ -16,9 +16,6 @@
 #import "ios/web/public/download/crw_web_view_download.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
-#import "ios/web/public/session/crw_navigation_item_storage.h"
-#import "ios/web/public/session/crw_session_storage.h"
-#import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/test/fakes/crw_fake_find_interaction.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
 #import "ios/web/web_state/policy_decision_state_tracker.h"
@@ -185,18 +182,6 @@ FakeWebState::GetSessionCertificatePolicyCache() const {
 SessionCertificatePolicyCache*
 FakeWebState::GetSessionCertificatePolicyCache() {
   return nullptr;
-}
-
-CRWSessionStorage* FakeWebState::BuildSessionStorage() const {
-  CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
-  session_storage.itemStorages = @[ [[CRWNavigationItemStorage alloc] init] ];
-  session_storage.stableIdentifier = stable_identifier_;
-  session_storage.uniqueIdentifier = unique_identifier_;
-  if (const SerializableUserDataManager* manager =
-          SerializableUserDataManager::FromWebState(this)) {
-    session_storage.userData = manager->GetUserDataForSession();
-  }
-  return session_storage;
 }
 
 void FakeWebState::SetNavigationManager(

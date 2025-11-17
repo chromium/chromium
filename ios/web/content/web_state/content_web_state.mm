@@ -422,18 +422,6 @@ ContentWebState::GetSessionCertificatePolicyCache() {
   return certificate_policy_cache_.get();
 }
 
-CRWSessionStorage* ContentWebState::BuildSessionStorage() const {
-  if (serialized_state_) {
-    return serialized_state_->session_storage();
-  }
-
-  web::proto::WebStateStorage storage;
-  SerializeContentStorage(this, navigation_manager_.get(), storage);
-  return [[CRWSessionStorage alloc] initWithProto:storage
-                                 uniqueIdentifier:unique_identifier_
-                                 stableIdentifier:[[NSUUID UUID] UUIDString]];
-}
-
 void ContentWebState::LoadData(NSData* data,
                                NSString* mime_type,
                                const GURL& url) {}

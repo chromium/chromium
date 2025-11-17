@@ -324,7 +324,6 @@ class WebStateImpl final : public WebState {
   const SessionCertificatePolicyCache* GetSessionCertificatePolicyCache()
       const final;
   SessionCertificatePolicyCache* GetSessionCertificatePolicyCache() final;
-  CRWSessionStorage* BuildSessionStorage() const final;
   void LoadData(NSData* data, NSString* mime_type, const GURL& url) final;
   void ExecuteUserJavaScript(NSString* javaScript) final;
   WebStateID GetUniqueIdentifier() const final;

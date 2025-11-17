@@ -364,10 +364,6 @@ class WebState : public base::SupportsUserData {
   GetSessionCertificatePolicyCache() const = 0;
   virtual SessionCertificatePolicyCache* GetSessionCertificatePolicyCache() = 0;
 
-  // Creates a serializable representation of the session. The returned value
-  // is autoreleased.
-  virtual CRWSessionStorage* BuildSessionStorage() const = 0;
-
   // Loads `data` of type `mime_type` and replaces last committed URL with the
   // given `url`.
   virtual void LoadData(NSData* data, NSString* mime_type, const GURL& url) = 0;

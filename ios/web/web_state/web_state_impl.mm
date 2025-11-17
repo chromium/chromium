@@ -739,36 +739,6 @@ WebStateImpl::GetSessionCertificatePolicyCache() {
   return &RealizedState()->GetSessionCertificatePolicyCache();
 }
 
-CRWSessionStorage* WebStateImpl::BuildSessionStorage() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CRWSessionStorage* session_storage = nil;
-  if (pimpl_) [[likely]] {
-    proto::WebStateStorage storage;
-    pimpl_->SerializeToProto(storage);
-
-    // Convert the proto::WebStateStorage to CRWSessionStorage as this
-    // is still the format used outside of //ios/web.
-    session_storage =
-        [[CRWSessionStorage alloc] initWithProto:storage
-                                uniqueIdentifier:GetUniqueIdentifier()
-                                stableIdentifier:[[NSUUID UUID] UUIDString]];
-  } else {
-    session_storage = saved_->GetSessionStorage();
-  }
-
-  // If a SerializableUserDataManager is attached to the WebState, the user
-  // may have changed its content. Thus, update the serializable user data
-  // if needed. Since `BuildSessionStorage()` is marked const, the manager
-  // will not be created if it does not exist.
-  const SerializableUserDataManager* user_data_manager =
-      SerializableUserDataManager::FromWebState(this);
-  if (user_data_manager) {
-    session_storage.userData = user_data_manager->GetUserDataForSession();
-  }
-
-  return session_storage;
-}
-
 void WebStateImpl::LoadData(NSData* data,
                             NSString* mime_type,
                             const GURL& url) {
