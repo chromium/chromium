@@ -192,6 +192,6 @@ const base::FeatureParam<bool> kDevToolsAiPromptApiAllowWithoutGpu{
 BASE_FEATURE(kDevToolsStartingStyleDebugging, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether Network panel should use Durable Messages to preserve network bodies.
-BASE_FEATURE(kDevToolsEnableDurableMessages, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsEnableDurableMessages, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
