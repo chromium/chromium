@@ -198,7 +198,6 @@ class ChromeAimEligibilityServiceBrowserTest
         {omnibox::kAimServerEligibilityChangedNotification, {}});
     enabled_features.push_back(
         {omnibox::kAimServerEligibilityForPrimaryAccountEnabled, {}});
-    enabled_features.push_back({omnibox::kAimServerEligibilityEnabled, {}});
     enabled_features.push_back(
         {omnibox::kAimServerRequestOnStartupEnabled, {}});
     enabled_features.push_back(
@@ -208,9 +207,7 @@ class ChromeAimEligibilityServiceBrowserTest
     disabled_features.push_back(
         omnibox::kAimStartupRequestDelayedUntilNetworkAvailableEnabled);
 
-    if (server_eligibility_enabled) {
-      enabled_features.push_back({omnibox::kAimServerEligibilityEnabled, {}});
-    } else {
+    if (!server_eligibility_enabled) {
       disabled_features.push_back(omnibox::kAimServerEligibilityEnabled);
     }
 
