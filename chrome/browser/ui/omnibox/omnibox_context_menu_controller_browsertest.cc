@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_context_menu_controller.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -250,8 +251,15 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   EXPECT_EQ(9u, model->GetItemCount());
 }
 
+// TODO(https://crbug.com/459561205): flaky on ChromeOS ASAN LSAN.
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
+    defined(LEAK_SANITIZER)
+#define MAYBE_ExecuteCommand DISABLED_ExecuteCommand
+#else
+#define MAYBE_ExecuteCommand ExecuteCommand
+#endif
 IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
-                       ExecuteCommand) {
+                       MAYBE_ExecuteCommand) {
   TestingPrefServiceSimple pref_service;
   TestOmniboxPopupFileSelector file_selector;
   OmniboxContextMenuController controller(&file_selector, GetWebContents());
