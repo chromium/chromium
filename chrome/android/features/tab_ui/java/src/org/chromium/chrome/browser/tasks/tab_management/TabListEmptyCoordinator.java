@@ -83,6 +83,16 @@ class TabListEmptyCoordinator {
                 (ViewGroup)
                         android.view.LayoutInflater.from(mContext)
                                 .inflate(R.layout.empty_state_view, null);
+
+        // Padding for search box.
+        int searchBoxPadding =
+                mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+        mEmptyView.setPadding(
+                mEmptyView.getPaddingLeft(),
+                searchBoxPadding,
+                mEmptyView.getPaddingRight(),
+                mEmptyView.getPaddingBottom());
+
         mEmptyStateHeading = mEmptyView.findViewById(R.id.empty_state_text_title);
         mEmptyStateSubheading = mEmptyView.findViewById(R.id.empty_state_text_description);
         mImageView = mEmptyView.findViewById(R.id.empty_state_icon);
