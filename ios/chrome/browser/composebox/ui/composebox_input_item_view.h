@@ -9,10 +9,12 @@
 
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 
+namespace composeboxAttachments {
 /// Image input item size.
-extern const CGSize kImageInputItemSize;
+const CGSize kImageInputItemSize = {86.0f, 44.0f};
 /// Tab/File input item size.
-extern const CGSize kTabFileInputItemSize;
+const CGSize kTabFileInputItemSize = {136.0f, 44.0f};
+}  // namespace composeboxAttachments
 
 // The aim input item view.
 @interface ComposeboxInputItemView : UIView

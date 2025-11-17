@@ -41,7 +41,7 @@ const CGFloat kInputPlateShadowRadius = 20.0f;
 /// The spacing between items in the carousel.
 const CGFloat kCarouselItemSpacing = 6.0f;
 /// The height of the carousel view.
-const CGFloat kCarouselHeight = 36.0f;
+const CGFloat kCarouselHeight = 44.0f;
 /// The height of the AIM mode button.
 const CGFloat kAIMButtonHeight = 36.0f;
 /// The width of the AIM mode button.
@@ -382,10 +382,10 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 
   if (!item ||
       item.type == ComposeboxInputItemType::kComposeboxInputItemTypeImage) {
-    return kImageInputItemSize;
+    return composeboxAttachments::kImageInputItemSize;
   }
 
-  return kTabFileInputItemSize;
+  return composeboxAttachments::kTabFileInputItemSize;
 }
 
 #pragma mark - Private

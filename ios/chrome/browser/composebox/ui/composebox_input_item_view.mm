@@ -7,29 +7,25 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-
-const CGSize kImageInputItemSize = {72.0f, 36.0f};
-const CGSize kTabFileInputItemSize = {136.0f, 36.0f};
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
 // The input item padding.
 const CGFloat kPadding = 10.0;
 // The leading icon size.
 const CGFloat kLeadingIconSize = 16;
-// The preview image corner radius.
-const CGFloat kPreviewImageCornerRadius = 9.0;
+// The close icon size.
+const CGFloat kCloseIconSize = 20;
 // The leading icon corner radius.
 const CGFloat kLeadingIconCornerRadius = 6.0;
 // Labels font size.
 const CGFloat kLabelFontSize = 13.0;
-// The preview image size.
-const CGFloat kPreviewImageSize = 28.0;
-// The preview image top and bottom padding.
-const CGFloat kPreviewImageTopBottomPadding = 4.0;
-/// The fade view width.
+// The fade view width.
 const CGFloat kFadeViewWidth = 20.0f;
-/// The title to button padding.
+// The title to button padding.
 const CGFloat kTitleCloseButtonPadding = 6.0;
+/// The close button trailing.
+const CGFloat kCloseButtonTrailing = 8.0;
 }  // namespace
 
 @interface ComposeboxInputItemView ()
@@ -149,7 +145,8 @@ const CGFloat kTitleCloseButtonPadding = 6.0;
   _previewImageView = [[UIImageView alloc] init];
   _previewImageView.translatesAutoresizingMaskIntoConstraints = NO;
   _previewImageView.contentMode = UIViewContentModeScaleAspectFill;
-  _previewImageView.layer.cornerRadius = kPreviewImageCornerRadius;
+  _previewImageView.layer.cornerRadius =
+      composeboxAttachments::kImageInputItemSize.height / 2;
   _previewImageView.clipsToBounds = YES;
   [self addSubview:_previewImageView];
 
@@ -157,8 +154,10 @@ const CGFloat kTitleCloseButtonPadding = 6.0;
 
   _closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
   UIImage* image = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kXMarkSymbol, kLeadingIconSize),
-      @[ [UIColor colorNamed:kTextSecondaryColor], UIColor.whiteColor ]);
+      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseIconSize), @[
+        [UIColor colorNamed:kTextSecondaryColor],
+        [UIColor colorNamed:kSecondaryBackgroundColor]
+      ]);
   [_closeButton setImage:image forState:UIControlStateNormal];
   _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -168,15 +167,18 @@ const CGFloat kTitleCloseButtonPadding = 6.0;
   [self addSubview:_closeButton];
 
   self.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-  self.layer.cornerRadius = self.frame.size.height / 2;
+  self.layer.cornerRadius =
+      composeboxAttachments::kTabFileInputItemSize.height / 2;
   self.clipsToBounds = YES;
 }
 
 - (void)setupConstraints {
   [NSLayoutConstraint activateConstraints:@[
-    [self.widthAnchor
-        constraintLessThanOrEqualToConstant:kTabFileInputItemSize.width],
-    [self.heightAnchor constraintEqualToConstant:kTabFileInputItemSize.height],
+    [self.widthAnchor constraintLessThanOrEqualToConstant:
+                          composeboxAttachments::kTabFileInputItemSize.width],
+    [self.heightAnchor
+        constraintEqualToConstant:composeboxAttachments::kTabFileInputItemSize
+                                      .height],
     // leading icon ImageView
     [_leadingIconImageView.leadingAnchor
         constraintEqualToAnchor:self.leadingAnchor
@@ -190,7 +192,7 @@ const CGFloat kTitleCloseButtonPadding = 6.0;
 
     // Close Button
     [_closeButton.trailingAnchor constraintEqualToAnchor:self.trailingAnchor
-                                                constant:-13],
+                                                constant:-kCloseButtonTrailing],
     [_closeButton.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
 
     // Title Label
@@ -208,22 +210,9 @@ const CGFloat kTitleCloseButtonPadding = 6.0;
     [_fadeView.topAnchor constraintEqualToAnchor:_titleLabel.topAnchor],
     [_fadeView.bottomAnchor constraintEqualToAnchor:_titleLabel.bottomAnchor],
     [_fadeView.widthAnchor constraintEqualToConstant:kFadeViewWidth],
-
-    // Leading Image View
-    [_previewImageView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
-                                                    constant:kPadding],
-    [_previewImageView.topAnchor
-        constraintEqualToAnchor:self.topAnchor
-                       constant:kPreviewImageTopBottomPadding],
-    [_previewImageView.bottomAnchor
-        constraintEqualToAnchor:self.bottomAnchor
-                       constant:-kPreviewImageTopBottomPadding],
-    [_previewImageView.widthAnchor constraintEqualToConstant:kPreviewImageSize],
-    [_previewImageView.heightAnchor
-        constraintEqualToConstant:kPreviewImageSize],
-    [_previewImageView.centerYAnchor
-        constraintEqualToAnchor:self.centerYAnchor],
   ]];
+
+  AddSameConstraints(_previewImageView, self);
 }
 
 @end
