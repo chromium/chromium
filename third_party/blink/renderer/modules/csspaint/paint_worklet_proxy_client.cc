@@ -33,7 +33,7 @@ namespace blink {
 
 // static
 PaintWorkletProxyClient* PaintWorkletProxyClient::From(WorkerClients* clients) {
-  return Supplement<WorkerClients>::From<PaintWorkletProxyClient>(clients);
+  return clients->GetPaintWorkletProxyClient();
 }
 
 // static
@@ -62,7 +62,7 @@ PaintWorkletProxyClient::PaintWorkletProxyClient(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner,
     base::WeakPtr<PaintWorkletPaintDispatcher> paint_dispatcher,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_host_queue)
-    : Supplement(nullptr),
+    : worker_clients_(nullptr),
       paint_dispatcher_(std::move(paint_dispatcher)),
       compositor_host_queue_(std::move(compositor_host_queue)),
       worklet_id_(worklet_id),
@@ -171,7 +171,7 @@ void PaintWorkletProxyClient::Dispose() {
 }
 
 void PaintWorkletProxyClient::Trace(Visitor* visitor) const {
-  Supplement<WorkerClients>::Trace(visitor);
+  visitor->Trace(worker_clients_);
   PaintWorkletPainter::Trace(visitor);
 }
 
@@ -246,7 +246,7 @@ void PaintWorkletProxyClient::UnregisterForNativePaintWorklet() {
 
 void ProvidePaintWorkletProxyClientTo(WorkerClients* clients,
                                       PaintWorkletProxyClient* client) {
-  clients->ProvideSupplement(client);
+  clients->SetPaintWorkletProxyClient(client);
 }
 
 }  // namespace blink

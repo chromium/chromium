@@ -27,11 +27,8 @@ class WorkletGlobalScope;
 // thread.
 class MODULES_EXPORT AnimationWorkletProxyClient
     : public GarbageCollected<AnimationWorkletProxyClient>,
-      public Supplement<WorkerClients>,
       public AnimationWorkletMutator {
  public:
-  static constexpr auto kSupplementIndex =
-      WorkerClients::Supplements::kAnimationWorkletProxyClient;
   static const int8_t kNumStatelessGlobalScopes;
 
   // This client is hooked to the given |mutatee|, on the given
@@ -70,6 +67,8 @@ class MODULES_EXPORT AnimationWorkletProxyClient
                            AnimationWorkletProxyClientConstruction);
   FRIEND_TEST_ALL_PREFIXES(AnimationWorkletProxyClientTest,
                            RegisteredAnimatorNameShouldSyncOnce);
+
+  Member<WorkerClients> worker_clients_;
 
   // The global scope periodically switches in order to enforce stateless
   // behavior. For stateless animators, prior state is lost on each switch to

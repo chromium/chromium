@@ -39,7 +39,7 @@ AnimationWorkletProxyClient::AnimationWorkletProxyClient(
     base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>
         main_thread_mutator_dispatcher,
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_mutator_runner)
-    : Supplement(nullptr),
+    : worker_clients_(nullptr),
       worklet_id_(worklet_id),
       state_(RunState::kUninitialized),
       next_global_scope_switch_countdown_(0),
@@ -59,7 +59,7 @@ AnimationWorkletProxyClient::AnimationWorkletProxyClient(
 }
 
 void AnimationWorkletProxyClient::Trace(Visitor* visitor) const {
-  Supplement<WorkerClients>::Trace(visitor);
+  visitor->Trace(worker_clients_);
   AnimationWorkletMutator::Trace(visitor);
 }
 
@@ -234,12 +234,12 @@ AnimationWorkletProxyClient* AnimationWorkletProxyClient::FromDocument(
 
 AnimationWorkletProxyClient* AnimationWorkletProxyClient::From(
     WorkerClients* clients) {
-  return Supplement<WorkerClients>::From<AnimationWorkletProxyClient>(clients);
+  return clients->GetAnimationWorkletProxyClient();
 }
 
 void ProvideAnimationWorkletProxyClientTo(WorkerClients* clients,
                                           AnimationWorkletProxyClient* client) {
-  clients->ProvideSupplement(client);
+  clients->SetAnimationWorkletProxyClient(client);
 }
 
 }  // namespace blink

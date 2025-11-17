@@ -243,8 +243,6 @@ WorkerOrWorkletGlobalScope::WorkerOrWorkletGlobalScope(
   GetSecurityContext().SetSecurityOrigin(std::move(origin));
 
   SetPolicyContainer(PolicyContainer::CreateEmpty());
-  if (worker_clients_)
-    worker_clients_->ReattachThread();
 }
 
 WorkerOrWorkletGlobalScope::~WorkerOrWorkletGlobalScope() = default;
@@ -592,11 +590,11 @@ void WorkerOrWorkletGlobalScope::FetchModuleScript(
   // credentials mode is credentials mode, and referrer policy is the empty
   // string.
   // Module worker scripts are fetched with fetchpriority kAuto.
-  ScriptFetchOptions options(
-      nonce, IntegrityMetadataSet(), integrity_attribute, parser_state,
-      credentials_mode, network::mojom::ReferrerPolicy::kDefault,
-      mojom::blink::FetchPriorityHint::kAuto,
-      RenderBlockingBehavior::kNonBlocking);
+  ScriptFetchOptions options(nonce, IntegrityMetadataSet(), integrity_attribute,
+                             parser_state, credentials_mode,
+                             network::mojom::ReferrerPolicy::kDefault,
+                             mojom::blink::FetchPriorityHint::kAuto,
+                             RenderBlockingBehavior::kNonBlocking);
 
   Modulator* modulator = Modulator::From(ScriptController()->GetScriptState());
   // Step 3. "Perform the internal module script graph fetching procedure ..."
