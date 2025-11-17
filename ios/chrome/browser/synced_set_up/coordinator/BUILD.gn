@@ -41,6 +41,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/synced_set_up/utils",
     "//ios/web/public",
     "//ui/base",
+    "//url",
   ]
 
   frameworks = [ "Foundation.framework" ]
@@ -83,5 +84,6 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",
+    "//url",
   ]
 }
