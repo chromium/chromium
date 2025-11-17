@@ -74,7 +74,7 @@ const base::FeatureParam<bool>
 BASE_FEATURE(kOverridePrivacySandboxSettingsLocalTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDisablePrivacySandboxPrompts, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDisablePrivacySandboxPrompts, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnforcePrivacySandboxAttestations,
              base::FEATURE_ENABLED_BY_DEFAULT);
