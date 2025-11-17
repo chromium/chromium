@@ -36,9 +36,6 @@ class AutofillDriver;
 //  private:
 //   ScopedAutofillManagersObservation autofill_managers_observation_{this};
 // };
-//
-// The unit test lives in //components/autofill/content/browser because there is
-// currently no TestAutofillDriverFactory.
 class ScopedAutofillManagersObservation final
     : public AutofillDriverFactory::Observer {
  public:
