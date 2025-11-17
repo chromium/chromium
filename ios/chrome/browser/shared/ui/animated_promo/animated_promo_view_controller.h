@@ -54,6 +54,23 @@
 @property(nonatomic, copy)
     NSDictionary<NSString*, NSString*>* animationTextProvider;
 
+// A dictionary that associate a keypath with a color, for the light/dark mode.
+// `useLegacyDarkMode` should be NO for this to be taken into account.
+@property(nonatomic, copy)
+    NSDictionary<NSString*, UIColor*>* lightModeColorProvider;
+@property(nonatomic, copy)
+    NSDictionary<NSString*, UIColor*>* darkModeColorProvider;
+
+// A boolean to indicate if the view controller should use the legacy mode for
+// dark mode (i.e. finding a json ending with _darkmode). Default is YES.
+@property(nonatomic, assign) BOOL useLegacyDarkMode;
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_ANIMATED_PROMO_ANIMATED_PROMO_VIEW_CONTROLLER_H_

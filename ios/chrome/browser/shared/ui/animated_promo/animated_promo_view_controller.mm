@@ -51,6 +51,14 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
   UINavigationBar* _navigationBar;
 }
 
+- (instancetype)init {
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    _useLegacyDarkMode = YES;
+  }
+  return self;
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -72,12 +80,23 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
   _alertScreen = alertScreen;
 
   _animationViewWrapper = [self createAnimation:_animationName];
-  _animationViewWrapperDarkMode = [self createAnimation:_animationNameDarkMode];
 
   // Set the text localization.
   [_animationViewWrapper setDictionaryTextProvider:_animationTextProvider];
-  [_animationViewWrapperDarkMode
-      setDictionaryTextProvider:_animationTextProvider];
+
+  if (self.useLegacyDarkMode) {
+    _animationViewWrapperDarkMode =
+        [self createAnimation:_animationNameDarkMode];
+    [_animationViewWrapperDarkMode
+        setDictionaryTextProvider:_animationTextProvider];
+  }
+
+  if (_animationBackgroundColor) {
+    _animationViewWrapper.animationView.backgroundColor =
+        _animationBackgroundColor;
+    _animationViewWrapperDarkMode.animationView.backgroundColor =
+        _animationBackgroundColor;
+  }
 
   [super viewDidLoad];
 
@@ -97,13 +116,16 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
   }
   [self configureAlertScreen];
   [self layoutAlertScreen];
-  // Set up UI with current trait first.
-  [self updateUIOnTraitChange];
 
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitVerticalSizeClass.class, UITraitUserInterfaceStyle.class ]);
-  [self registerForTraitChanges:traits
-                     withAction:@selector(updateUIOnTraitChange)];
+  // Set up UI with current trait first.
+  [self updateUIForSizeClass];
+  [self updateForDarkMode];
+
+  [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
+                     withAction:@selector(updateUIForSizeClass)];
+
+  [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                     withAction:@selector(updateForDarkMode)];
 }
 
 #pragma mark - Private
@@ -251,15 +273,19 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
 // Configures the animation view and its constraints.
 - (void)configureAndLayoutAnimationView {
   [self configureAndLayoutAnimationViewForWrapper:_animationViewWrapper];
-  [self
-      configureAndLayoutAnimationViewForWrapper:_animationViewWrapperDarkMode];
+  if (self.useLegacyDarkMode) {
+    [self configureAndLayoutAnimationViewForWrapper:
+              _animationViewWrapperDarkMode];
 
-  BOOL darkModeEnabled =
-      (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
+    BOOL darkModeEnabled =
+        (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
 
-  _animationViewWrapper.animationView.hidden = darkModeEnabled;
-  _animationViewWrapperDarkMode.animationView.hidden = !darkModeEnabled;
-  [self updateAnimationsPlaying];
+    _animationViewWrapper.animationView.hidden = darkModeEnabled;
+    _animationViewWrapperDarkMode.animationView.hidden = !darkModeEnabled;
+    [self updateAnimationsPlaying];
+  } else {
+    [_animationViewWrapper play];
+  }
 }
 
 // Helper method to configure the animation view and its constraints for the
@@ -306,24 +332,44 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
 
 // Called when the device is rotated or dark mode is enabled/disabled. (Un)Hide
 // the animations accordingly.
-- (void)updateUIOnTraitChange {
-  BOOL darkModeEnabled =
-      (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
+- (void)updateUIForSizeClass {
   BOOL hidden = ![self shouldShowAnimation];
 
-  _animationViewWrapper.animationView.hidden = hidden || darkModeEnabled;
-  _animationViewWrapperDarkMode.animationView.hidden =
-      hidden || !darkModeEnabled;
+  if (self.useLegacyDarkMode) {
+    BOOL darkModeEnabled =
+        (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
 
-  if (_animationBackgroundColor) {
-    _animationViewWrapper.animationView.backgroundColor =
-        _animationBackgroundColor;
-    _animationViewWrapperDarkMode.animationView.backgroundColor =
-        _animationBackgroundColor;
+    _animationViewWrapper.animationView.hidden = hidden || darkModeEnabled;
+    _animationViewWrapperDarkMode.animationView.hidden =
+        hidden || !darkModeEnabled;
+  } else {
+    _animationViewWrapper.animationView.hidden = hidden;
   }
 
   [self updateAnimationsPlaying];
   [self updateAlertScreenTopAnchorConstraint];
+}
+
+// Updates the animations for the styl used (light/dark mode).
+- (void)updateForDarkMode {
+  if (self.useLegacyDarkMode) {
+    [self updateUIForSizeClass];
+    return;
+  }
+  if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+    [self updateAnimationWithColorProvider:self.darkModeColorProvider];
+  } else {
+    [self updateAnimationWithColorProvider:self.lightModeColorProvider];
+  }
+}
+
+// Updates the _animationViewWrapper with colors from `colorProvider`.
+- (void)updateAnimationWithColorProvider:
+    (NSDictionary<NSString*, UIColor*>*)colorProvider {
+  for (NSString* keypath in colorProvider.allKeys) {
+    [_animationViewWrapper setColorValue:colorProvider[keypath]
+                              forKeypath:keypath];
+  }
 }
 
 @end

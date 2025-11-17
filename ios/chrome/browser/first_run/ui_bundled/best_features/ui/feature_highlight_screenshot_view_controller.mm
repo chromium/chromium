@@ -65,8 +65,14 @@ bool IsBestFeaturesLast() {
       IsBestFeaturesLast() ? IDS_IOS_BEST_FEATURES_START_BROWSING_BUTTON
                            : IDS_IOS_BEST_FEATURES_CONTINUE_BUTTON);
   self.animationName = _bestFeaturesItem.animationName;
-  self.animationNameDarkMode =
-      [_bestFeaturesItem.animationName stringByAppendingString:@"_darkmode"];
+  if (_bestFeaturesItem.lightModeColorProvider) {
+    self.useLegacyDarkMode = NO;
+    self.lightModeColorProvider = _bestFeaturesItem.lightModeColorProvider;
+    self.darkModeColorProvider = _bestFeaturesItem.darkModeColorProvider;
+  } else {
+    self.animationNameDarkMode =
+        [_bestFeaturesItem.animationName stringByAppendingString:@"_darkmode"];
+  }
   self.animationTextProvider = _bestFeaturesItem.textProvider;
   [super viewDidLoad];
   [self.view setBackgroundColor:[UIColor colorNamed:kSecondaryBackgroundColor]];
@@ -89,9 +95,5 @@ bool IsBestFeaturesLast() {
                     animated:(BOOL)animated {
   [navigationController setNavigationBarHidden:(viewController != self)];
 }
-
-#pragma mark - Private
-
-
 
 @end

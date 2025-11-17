@@ -27,23 +27,30 @@ enum class BestFeaturesItemType {
 @interface BestFeaturesItem : NSObject
 
 // Best Features type.
-@property(nonatomic, assign) BestFeaturesItemType type;
+@property(nonatomic, assign, readonly) BestFeaturesItemType type;
 // Best Features item title.
-@property(nonatomic, copy) NSString* title;
+@property(nonatomic, copy, readonly) NSString* title;
 // Best Features item subtitle for feature promo.
-@property(nonatomic, copy) NSString* subtitle;
+@property(nonatomic, copy, readonly) NSString* subtitle;
 // Best Features item caption for feature row.
-@property(nonatomic, copy) NSString* caption;
+@property(nonatomic, copy, readonly) NSString* caption;
 // Best Features item icon image.
-@property(nonatomic, copy) UIImage* iconImage;
+@property(nonatomic, copy, readonly) UIImage* iconImage;
 // Best Features item icon background color.
-@property(nonatomic, copy) UIColor* iconBackgroundColor;
+@property(nonatomic, copy, readonly) UIColor* iconBackgroundColor;
 // Best Features item animation name.
-@property(nonatomic, copy) NSString* animationName;
+@property(nonatomic, copy, readonly) NSString* animationName;
 // Best Features item animation text provider for localization.
-@property(nonatomic, copy) NSDictionary* textProvider;
+@property(nonatomic, copy, readonly) NSDictionary* textProvider;
 // Best Features item instruction steps.
-@property(nonatomic, copy) NSArray<NSString*>* instructionSteps;
+@property(nonatomic, copy, readonly) NSArray<NSString*>* instructionSteps;
+// A dictionary that associate a keypath with a color, for the light/dark mode.
+// If it is not nil, then only a single animation will be used (the _darkmode
+// one will not be used).
+@property(nonatomic, copy, readonly)
+    NSDictionary<NSString*, UIColor*>* lightModeColorProvider;
+@property(nonatomic, copy, readonly)
+    NSDictionary<NSString*, UIColor*>* darkModeColorProvider;
 
 // Initializes the item for BestFeaturesItemType `type`.
 - (instancetype)initWithType:(BestFeaturesItemType)type
