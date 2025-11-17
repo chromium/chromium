@@ -375,10 +375,11 @@ sk_sp<SkTypeface> FontDataManager::CreateTypefaceFromMatchResult(
       // multiple time.
       {
         base::AutoLock locked(lock_);
+
         const auto iter =
-            mapped_regions_.lower_bound(font_data_memory_region.GetGUID());
-        if (iter != mapped_regions_.end() &&
-            iter->first == font_data_memory_region.GetGUID()) {
+            mapped_regions_.find(font_data_memory_region.GetGUID());
+
+        if (iter != mapped_regions_.end()) {
           mapped_memory = iter->second.memory();
           mapped_size = iter->second.size();
         } else {
@@ -387,8 +388,8 @@ sk_sp<SkTypeface> FontDataManager::CreateTypefaceFromMatchResult(
           if (mapping.IsValid()) {
             mapped_memory = mapping.memory();
             mapped_size = mapping.size();
-            mapped_regions_.insert_or_assign(
-                iter, font_data_memory_region.GetGUID(), std::move(mapping));
+            mapped_regions_.emplace(font_data_memory_region.GetGUID(),
+                                    std::move(mapping));
           }
         }
       }

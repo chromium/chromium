@@ -21,6 +21,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/freetype_buildflags.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkFontStyle.h"
@@ -142,7 +143,8 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr {
   mutable base::Lock lock_;
 
   // Cache of the shared memory region by GUID to known font mappings.
-  mutable std::map<base::UnguessableToken, base::ReadOnlySharedMemoryMapping>
+  mutable absl::flat_hash_map<base::UnguessableToken,
+                              base::ReadOnlySharedMemoryMapping>
       mapped_regions_;
 
   // Cache of the memory mapped files to ensure the mapping lives.
@@ -156,7 +158,7 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr {
   // this map is never unmapped or replaced, as we have already given out
   // typeface objects that reference them which can be used for the entire
   // lifetime of the renderer process.
-  mutable std::map<uint64_t, std::unique_ptr<base::MemoryMappedFile>>
+  mutable absl::flat_hash_map<uint64_t, std::unique_ptr<base::MemoryMappedFile>>
       mapped_files_ GUARDED_BY(lock_);
 
   // A cache of all the font family names that could be returned by

@@ -134,13 +134,13 @@ class FontDataServiceImpl : public mojom::FontDataService {
   };
   // A mapping of a typeface's identifier to the index in the cache (i.e.,
   // assets_).
-  std::map<SkTypefaceID, MappedTypeface> typeface_to_asset_index_;
+  absl::flat_hash_map<SkTypefaceID, MappedTypeface> typeface_to_asset_index_;
 
   // A mapping from a font data's base address to its index in the primary font
   // cache (i.e., assets_).
-  std::map<intptr_t, size_t> address_to_asset_index_;
+  absl::flat_hash_map<intptr_t, size_t> address_to_asset_index_;
 
-  std::map<base::FilePath, size_t> unique_path_ids_;
+  absl::flat_hash_map<base::FilePath, size_t> unique_path_ids_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
