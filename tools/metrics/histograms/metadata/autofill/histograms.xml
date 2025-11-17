@@ -1199,7 +1199,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.Ai.Deduplication.NumberOfLocalEntitiesConsidered.AllEntities"
-    units="entities" expires_after="2026-03-01">
+    units="entities" expires_after="2026-06-01">
   <owner>brunobraga@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1211,7 +1211,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.Ai.Deduplication.NumberOfLocalEntitiesConsidered{EntityType}"
-    enum="Boolean" expires_after="2025-12-12">
+    enum="Boolean" expires_after="2026-06-01">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1224,7 +1224,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.Ai.Deduplication.NumberOfLocalEntitiesDeduped.AllEntities"
-    units="entities" expires_after="2026-03-01">
+    units="entities" expires_after="2026-06-01">
   <owner>brunobraga@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1235,7 +1235,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.Ai.Deduplication.NumberOfLocalEntitiesDeduped{EntityType}"
-    enum="Boolean" expires_after="2025-12-12">
+    enum="Boolean" expires_after="2026-06-01">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
