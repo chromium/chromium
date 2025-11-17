@@ -2830,7 +2830,6 @@ void ShelfView::EndDragCallback(
     const ui::DropTargetEvent& event,
     ui::mojom::DragOperation& output_drag_op,
     std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
-  // TODO(b/271601288): Hook up drop animation with the drag image icon.
   output_drag_op = ui::mojom::DragOperation::kMove;
   drag_image_layer_ = std::move(drag_image_layer_owner);
   EndDrag(false);
