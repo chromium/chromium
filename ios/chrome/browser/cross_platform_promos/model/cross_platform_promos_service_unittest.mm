@@ -98,24 +98,3 @@ TEST_F(CrossPlatformPromosServiceTest, OnAppDidBecomeActive) {
       prefs_->GetTime(prefs::kCrossPlatformPromosIOS16thActiveDay);
   EXPECT_TIME_WITHIN(active_16th_day, first_day, base::Days(1));
 }
-
-// Tests that ClearData() clears the relevant prefs.
-TEST_F(CrossPlatformPromosServiceTest, ClearData_ClearsPrefs) {
-  // Record 16 active days to ensure kCrossPlatformPromosIOS16thActiveDay is
-  // set.
-  for (int i = 0; i < 16; ++i) {
-    SimulateAppForegrounded();
-    task_environment_.FastForwardBy(base::Days(1));
-  }
-  EXPECT_EQ(16u, prefs_->GetList(prefs::kCrossPlatformPromosActiveDays).size());
-  EXPECT_NE(base::Time(),
-            prefs_->GetTime(prefs::kCrossPlatformPromosIOS16thActiveDay));
-
-  // Clear the data.
-  service_->ClearData();
-
-  // Verify that the prefs are cleared.
-  EXPECT_TRUE(prefs_->GetList(prefs::kCrossPlatformPromosActiveDays).empty());
-  EXPECT_EQ(base::Time(),
-            prefs_->GetTime(prefs::kCrossPlatformPromosIOS16thActiveDay));
-}

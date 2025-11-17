@@ -30,5 +30,5 @@ CrossPlatformPromosServiceFactory::~CrossPlatformPromosServiceFactory() =
 std::unique_ptr<KeyedService>
 CrossPlatformPromosServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
-  return std::make_unique<CrossPlatformPromosService>(profile->GetPrefs());
+  return std::make_unique<CrossPlatformPromosService>(profile);
 }

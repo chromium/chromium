@@ -14,13 +14,14 @@ namespace base {
 class Time;
 }  // namespace base
 
+class Browser;
 class PrefRegistrySimple;
-class PrefService;
+class ProfileIOS;
 
 // A KeyedService that tracks user activity for cross-platform promos.
 class CrossPlatformPromosService : public KeyedService {
  public:
-  explicit CrossPlatformPromosService(PrefService* profile_prefs);
+  explicit CrossPlatformPromosService(ProfileIOS* profile);
   ~CrossPlatformPromosService() override;
 
   // Registers the profile prefs used by this service.
@@ -29,10 +30,22 @@ class CrossPlatformPromosService : public KeyedService {
   // Called when the application enters the foreground.
   void OnApplicationWillEnterForeground();
 
-  // Clears the prefs used by this service.
-  void ClearData();
+  // Shows the Lens promo.
+  void ShowLensPromo(Browser* browser);
+
+  // Shows the Enhanced Safe Browsing promo.
+  void ShowESBPromo(Browser* browser);
+
+  // Shows the CPE promo.
+  void ShowCPEPromo(Browser* browser);
+
+  // Evaluates synced prefs to see whether a promo should be shown.
+  void MaybeShowPromo();
 
  private:
+  // Returns a regular, active browser, or nullptr if none is found.
+  Browser* GetActiveBrowser();
+
   // Records the current day as active, and updates the pref that stores the
   // 16th most recent day that the user was active.
   void Update16thActiveDay();
@@ -45,7 +58,7 @@ class CrossPlatformPromosService : public KeyedService {
   // and going to the oldest, and returns the Nth active day.
   base::Time FindActiveDay(size_t count);
 
-  raw_ptr<PrefService> profile_prefs_;
+  raw_ptr<ProfileIOS> profile_;
   base::WeakPtrFactory<CrossPlatformPromosService> weak_factory_{this};
 };
 

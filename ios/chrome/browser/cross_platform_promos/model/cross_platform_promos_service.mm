@@ -13,7 +13,13 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/tips_notifications/model/tips_notification_presenter.h"
+#import "ios/chrome/browser/tips_notifications/model/utils.h"
 
 using base::TimeToValue;
 using base::ValueToTime;
@@ -33,31 +39,66 @@ void CrossPlatformPromosService::RegisterProfilePrefs(
                              base::Time());
 }
 
-CrossPlatformPromosService::CrossPlatformPromosService(
-    PrefService* profile_prefs)
-    : profile_prefs_(profile_prefs) {}
+CrossPlatformPromosService::CrossPlatformPromosService(ProfileIOS* profile)
+    : profile_(profile) {
+  // TODO(crbug.com/460783437): Observe synced pref to see if promo should be
+  // shown.
+}
 
 CrossPlatformPromosService::~CrossPlatformPromosService() = default;
 
 void CrossPlatformPromosService::OnApplicationWillEnterForeground() {
   Update16thActiveDay();
+  MaybeShowPromo();
 }
 
-void CrossPlatformPromosService::ClearData() {
-  profile_prefs_->ClearPref(prefs::kCrossPlatformPromosActiveDays);
-  profile_prefs_->ClearPref(prefs::kCrossPlatformPromosIOS16thActiveDay);
+void CrossPlatformPromosService::ShowLensPromo(Browser* browser) {
+  TipsNotificationPresenter::Present(browser->AsWeakPtr(),
+                                     TipsNotificationType::kLens);
+}
+
+void CrossPlatformPromosService::ShowESBPromo(Browser* browser) {
+  TipsNotificationPresenter::Present(
+      browser->AsWeakPtr(), TipsNotificationType::kEnhancedSafeBrowsing);
+}
+
+void CrossPlatformPromosService::ShowCPEPromo(Browser* browser) {
+  TipsNotificationPresenter::Present(browser->AsWeakPtr(),
+                                     TipsNotificationType::kCPE);
+}
+
+void CrossPlatformPromosService::MaybeShowPromo() {
+  Browser* browser = GetActiveBrowser();
+  if (!browser) {
+    return;
+  }
+  // TODO(crbug.com/460783437): Check synced pref to see if promo should be
+  // shown.
+}
+
+Browser* CrossPlatformPromosService::GetActiveBrowser() {
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
+  if (browser_list) {
+    std::set<Browser*> browsers =
+        browser_list->BrowsersOfType(BrowserList::BrowserType::kRegular);
+    if (!browsers.empty()) {
+      return *browsers.begin();
+    }
+  }
+  return nullptr;
 }
 
 void CrossPlatformPromosService::Update16thActiveDay() {
   if (RecordActiveDay()) {
     base::Time day = FindActiveDay(16);
-    profile_prefs_->SetTime(prefs::kCrossPlatformPromosIOS16thActiveDay, day);
+    profile_->GetPrefs()->SetTime(prefs::kCrossPlatformPromosIOS16thActiveDay,
+                                  day);
   }
 }
 
 bool CrossPlatformPromosService::RecordActiveDay(base::Time day) {
   day = day.LocalMidnight();
-  ScopedListPrefUpdate update(profile_prefs_,
+  ScopedListPrefUpdate update(profile_->GetPrefs(),
                               prefs::kCrossPlatformPromosActiveDays);
   base::Value::List& active_days = update.Get();
 
@@ -88,7 +129,7 @@ base::Time CrossPlatformPromosService::FindActiveDay(size_t count) {
   }
 
   const base::Value::List& active_days =
-      profile_prefs_->GetList(prefs::kCrossPlatformPromosActiveDays);
+      profile_->GetPrefs()->GetList(prefs::kCrossPlatformPromosActiveDays);
 
   if (active_days.size() < count) {
     return base::Time();

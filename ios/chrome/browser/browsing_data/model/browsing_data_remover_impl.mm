@@ -44,8 +44,7 @@
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
 #import "ios/chrome/browser/browsing_data/model/system_snapshots_cleaner.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
-#import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service.h"
-#import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service_factory.h"
+#import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_data_remover.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -467,11 +466,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
 
     // Clear cross-platform promos data.
     if (IsMobilePromoOnDesktopNotificationsEnabled()) {
-      CrossPlatformPromosService* cross_platform_promos_service =
-          CrossPlatformPromosServiceFactory::GetForProfile(profile_);
-      if (cross_platform_promos_service) {
-        cross_platform_promos_service->ClearData();
-      }
+      CrossPlatformPromosDataRemover(profile_).Remove();
     }
   }
 
