@@ -42,6 +42,13 @@
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
+// TODO(crbug.com/461140208): Re-enable failing tests on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE(test_name) DISABLED_##test_name
+#else
+#define MAYBE(test_name) test_name
+#endif
+
 namespace {
 using testing::SizeIs;
 }  // namespace
@@ -220,20 +227,19 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          &TabStripActionContainerTest::GetParamName);
 
 #if BUILDFLAG(ENABLE_GLIC)
-// TODO(crbug.com/437141881): Fix flaky tests on Mac.
-TEST_P(TabStripActionContainerTest, GlicButtonDrawing) {
+TEST_P(TabStripActionContainerTest, MAYBE(GlicButtonDrawing)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
   EXPECT_TRUE(tab_strip_action_container_->GetGlicButton());
 }
 
-TEST_P(TabStripActionContainerTest, GlicButtonUnsupportedProfile) {
+TEST_P(TabStripActionContainerTest, MAYBE(GlicButtonUnsupportedProfile)) {
   BuildGlicContainer(/*use_otr_profile=*/true);
   EXPECT_FALSE(tab_strip_action_container_->GetGlicButton());
 }
-
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
-TEST_P(TabStripActionContainerTest, OrdersButtonsCorrectlyAtConstruction) {
+TEST_P(TabStripActionContainerTest,
+       MAYBE(OrdersButtonsCorrectlyAtConstruction)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
   ASSERT_EQ(tab_strip_action_container_->tab_declutter_button(),
             tab_strip_action_container_->children()[0]);
@@ -263,7 +269,7 @@ TEST_P(TabStripActionContainerTest, OrdersButtonsCorrectlyAtConstruction) {
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
-TEST_P(TabStripActionContainerTest, OrdersButtonsCorrectlyWhenShown) {
+TEST_P(TabStripActionContainerTest, MAYBE(OrdersButtonsCorrectlyWhenShown)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -308,7 +314,7 @@ TEST_P(TabStripActionContainerTest, OrdersButtonsCorrectlyWhenShown) {
 }
 
 #if BUILDFLAG(ENABLE_GLIC)
-TEST_P(TabStripActionContainerTest, GlicButtonUpdateLabel) {
+TEST_P(TabStripActionContainerTest, MAYBE(GlicButtonUpdateLabel)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
   glic_nudge_controller_->UpdateNudgeLabel(
       web_contents(), "TEST", /*prompt_suggestion=*/std::nullopt,
@@ -316,7 +322,7 @@ TEST_P(TabStripActionContainerTest, GlicButtonUpdateLabel) {
   ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(), u"TEST");
 }
 
-TEST_P(TabStripActionContainerTest, GlicButtonHideNudgeOnTabChange) {
+TEST_P(TabStripActionContainerTest, MAYBE(GlicButtonHideNudgeOnTabChange)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
   glic_nudge_controller_->SetDelegate(tab_strip_action_container_.get());
 
@@ -351,7 +357,7 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          ::testing::Bool(),
                          &TabStripActionContainerTest::GetParamName);
 
-TEST_P(TabStripActionContainerTestWithProduct, OrdersButtonsCorrectly) {
+TEST_P(TabStripActionContainerTestWithProduct, MAYBE(OrdersButtonsCorrectly)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
 
   ASSERT_EQ(tab_strip_action_container_->tab_declutter_button(),
