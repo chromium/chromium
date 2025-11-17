@@ -38,10 +38,10 @@ WebSocketTransportClientSocketPool::WebSocketTransportClientSocketPool(
     const CommonConnectJobParams* common_connect_job_params)
     : ClientSocketPool(socket_soft_cap,
                        additional_capacity,
+                       proxy_chain,
                        /*is_for_websockets=*/true,
                        common_connect_job_params,
-                       std::make_unique<ConnectJobFactory>()),
-      proxy_chain_(proxy_chain) {
+                       std::make_unique<ConnectJobFactory>()) {
   DCHECK(common_connect_job_params->websocket_endpoint_lock_manager);
 }
 
@@ -110,8 +110,8 @@ int WebSocketTransportClientSocketPool::RequestSocket(
                                            request_net_log);
 
   std::unique_ptr<ConnectJob> connect_job =
-      CreateConnectJob(group_id, params, proxy_chain_, proxy_annotation_tag,
-                       priority, SocketTag(), connect_job_delegate.get());
+      CreateConnectJob(group_id, params, proxy_annotation_tag, priority,
+                       SocketTag(), connect_job_delegate.get());
 
   int result = connect_job_delegate->Connect(std::move(connect_job));
 

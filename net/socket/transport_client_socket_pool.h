@@ -31,7 +31,6 @@
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/priority_queue.h"
-#include "net/base/proxy_chain.h"
 #include "net/base/request_priority.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_handle.h"
@@ -48,6 +47,7 @@ struct CommonConnectJobParams;
 class ConnectJobFactory;
 struct NetLogSource;
 struct NetworkTrafficAnnotationTag;
+class ProxyChain;
 
 // TransportClientSocketPool establishes network connections through using
 // ConnectJobs, and maintains a list of idle persistent sockets available for
@@ -821,8 +821,6 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   // The time to wait until closing idle sockets.
   const base::TimeDelta unused_idle_socket_timeout_;
   const base::TimeDelta used_idle_socket_timeout_;
-
-  const ProxyChain proxy_chain_;
 
   const bool cleanup_on_ip_address_change_;
 

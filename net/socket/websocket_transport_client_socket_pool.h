@@ -19,7 +19,6 @@
 #include "base/timer/timer.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
-#include "net/base/proxy_chain.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_pool.h"
 #include "net/socket/connect_job.h"
@@ -29,6 +28,7 @@ namespace net {
 
 struct CommonConnectJobParams;
 struct NetworkTrafficAnnotationTag;
+class ProxyChain;
 class StreamSocketHandle;
 
 // Identifier for a ClientSocketHandle to scope the lifetime of references.
@@ -215,7 +215,6 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
   void ActivateStalledRequest();
   bool DeleteStalledRequest(ClientSocketHandle* handle);
 
-  const ProxyChain proxy_chain_;
   std::set<ClientSocketHandleID> pending_callbacks_;
   PendingConnectsMap pending_connects_;
   StalledRequestQueue stalled_request_queue_;
