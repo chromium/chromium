@@ -69,7 +69,6 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -100,6 +99,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/profiles/profile_picker.h"
+#endif
+
 // This file runs the respective JS tests from
 // chrome/test/data/webui/glic/browser_tests/glic_api_browsertest.ts.
 
@@ -120,6 +123,13 @@
 // This skips a test for the multi-instance variant. It's a marker to remember
 // to revisit this test later.
 #define TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST() SKIP_TEST_FOR_MULTI_INSTANCE()
+
+// TODO(crbug.com/460826483): Disable failing tests on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE(test_name) DISABLED_##test_name
+#else
+#define MAYBE(test_name) test_name
+#endif
 
 namespace glic {
 namespace {
@@ -587,7 +597,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 
 // Checks that all tests in api_test.ts have a corresponding test case in this
 // file.
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testAllTestsAreRegistered) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE(testAllTestsAreRegistered)) {
   AssertAllTestsRegistered(GetTestSuiteNames());
 }
 
@@ -1203,6 +1213,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestRuntimeFeatureOff,
   ExecuteJsTest();
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+// No file picker on ChromeOS.
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testShowProfilePicker) {
   base::test::TestFuture<void> profile_picker_opened;
   ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
@@ -1211,6 +1223,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testShowProfilePicker) {
   ASSERT_TRUE(profile_picker_opened.Wait());
   // TODO(harringtond): Try to test changing profiles.
 }
+#endif
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testPanelActive) {
   browser_activator().SetMode(BrowserActivator::Mode::kFirst);
@@ -1287,7 +1300,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithMqlsIdGetterDisabled,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
-                       testGetZeroStateSuggestionsForFocusedTabApi) {
+                       MAYBE(testGetZeroStateSuggestionsForFocusedTabApi)) {
   EXPECT_CALL(*mock_cueing_service(),
               GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
       .Times(1);
@@ -1297,7 +1310,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
 
 IN_PROC_BROWSER_TEST_P(
     GlicApiTestWithOneTabAndContextualCueing,
-    testGetZeroStateSuggestionsForFocusedTabFailsWhenHidden) {
+    MAYBE(testGetZeroStateSuggestionsForFocusedTabFailsWhenHidden)) {
   EXPECT_CALL(*mock_cueing_service(),
               GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
       .Times(0);
@@ -1306,7 +1319,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
-                       testGetZeroStateSuggestionsApi) {
+                       MAYBE(testGetZeroStateSuggestionsApi)) {
   if (GetParam().multi_instance) {
     EXPECT_CALL(
         *mock_cueing_service(),
@@ -1324,7 +1337,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
 }
 
 // TODO(crbug.com/449897870): Flaky on Win-asan.
-#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+// TODO(crbug.com/460826483): Enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_testGetZeroStateSuggestionsMultipleNavigations \
   DISABLED_testGetZeroStateSuggestionsMultipleNavigations
 #else
@@ -1360,7 +1374,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
-                       testGetZeroStateSuggestionsFailsWhenHidden) {
+                       MAYBE(testGetZeroStateSuggestionsFailsWhenHidden)) {
   // TODO: zero state suggestions not yet implemented for multi-instance.
   SKIP_TEST_FOR_MULTI_INSTANCE();
   // Initial state.
@@ -1403,8 +1417,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndPreloading,
 }
 
 // TODO(crbug.com/457010934): Flaky on Linux.
+// TODO(crbug.com/460828109): Enable on ChromeOS.
 // Also flaky on linux-win-cross-rel.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_testNoExtractionWhileHidden DISABLED_testNoExtractionWhileHidden
 #else
 #define MAYBE_testNoExtractionWhileHidden testNoExtractionWhileHidden
@@ -2419,8 +2434,9 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
   ContinueJsTest();
 }
 
+// TODO(crbug.com/460826488): Enable on ChromeOS.
 // Win-asan is flaky.
-#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_testFetchInactiveTabScreenshotWhileMinimized \
   DISABLED_testFetchInactiveTabScreenshotWhileMinimized
 #else
