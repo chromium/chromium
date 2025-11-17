@@ -150,7 +150,7 @@ TEST_P(DatabaseTest, ConnectionLifecycle) {
 
   base::RunLoop run_loop;
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_connection;
-  EXPECT_CALL(request, MockedOpenSuccess)
+  EXPECT_CALL(request, MockedUpgradeNeeded)
       .WillOnce(
           testing::DoAll(MoveArgPointee<0>(&pending_connection),
                          ::base::test::RunClosure(run_loop.QuitClosure())));
@@ -161,7 +161,7 @@ TEST_P(DatabaseTest, ConnectionLifecycle) {
           std::move(non_associated)),
       std::make_unique<DatabaseCallbacks>(
           database_callbacks.BindNewEndpointAndPassDedicatedRemote()),
-      transaction_id1, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
+      transaction_id1, IndexedDBDatabaseMetadata::NO_VERSION,
       mojo::NullAssociatedReceiver());
   db_->ScheduleOpenConnection(std::move(connection1));
   db_ = nullptr;
@@ -185,7 +185,7 @@ TEST_P(DatabaseTest, ForcedClose) {
           std::move(non_associated)),
       std::make_unique<DatabaseCallbacks>(
           database_callbacks.BindNewEndpointAndPassDedicatedRemote()),
-      upgrade_transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
+      upgrade_transaction_id, IndexedDBDatabaseMetadata::NO_VERSION,
       mojo::NullAssociatedReceiver());
   db_->ScheduleOpenConnection(std::move(connection));
 
@@ -202,7 +202,7 @@ TEST_P(DatabaseTest, ForceCloseWithConnectionsInVariousStates) {
   MockMojoFactoryClient request;
   auto non_associated = request.CreateInterfacePtrAndBind();
   non_associated.EnableUnassociatedUsage();
-  EXPECT_CALL(request, MockedOpenSuccess);
+  EXPECT_CALL(request, MockedUpgradeNeeded);
 
   MockMojoDatabaseCallbacks database_callbacks;
   const int64_t transaction_id1 = 1;
@@ -211,13 +211,13 @@ TEST_P(DatabaseTest, ForceCloseWithConnectionsInVariousStates) {
           std::move(non_associated)),
       std::make_unique<DatabaseCallbacks>(
           database_callbacks.BindNewEndpointAndPassDedicatedRemote()),
-      transaction_id1, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
+      transaction_id1, IndexedDBDatabaseMetadata::NO_VERSION,
       mojo::NullAssociatedReceiver());
   db_->ScheduleOpenConnection(std::move(connection));
   RunPostedTasks();
 
   EXPECT_EQ(db_->ConnectionCount(), 1UL);
-  EXPECT_EQ(db_->ActiveOpenDeleteCount(), 0UL);
+  EXPECT_EQ(db_->ActiveOpenDeleteCount(), 1UL);
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 0UL);
 
   MockMojoFactoryClient request2;
@@ -239,7 +239,7 @@ TEST_P(DatabaseTest, ForceCloseWithConnectionsInVariousStates) {
 
   EXPECT_EQ(db_->ConnectionCount(), 1UL);
   EXPECT_EQ(db_->ActiveOpenDeleteCount(), 1UL);
-  EXPECT_EQ(db_->PendingOpenDeleteCount(), 0UL);
+  EXPECT_EQ(db_->PendingOpenDeleteCount(), 1UL);
 
   MockMojoFactoryClient request3;
   auto non_associated3 = request3.CreateInterfacePtrAndBind();
@@ -274,7 +274,7 @@ TEST_P(DatabaseTest, ForceCloseWithConnectionsInVariousStates) {
 
 // Verifies that a bad parameter (in this case, a version change transaction
 // type) passed in a mojo call will cause an error to be reported.
-TEST_P(DatabaseTest, GetWithInvalidParameter) {
+TEST_P(DatabaseTest, MojomWithInvalidParameter) {
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
   MockMojoDatabaseCallbacks database_callbacks;
@@ -284,7 +284,7 @@ TEST_P(DatabaseTest, GetWithInvalidParameter) {
 
   base::RunLoop run_loop;
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_connection;
-  EXPECT_CALL(request, MockedOpenSuccess)
+  EXPECT_CALL(request, MockedUpgradeNeeded)
       .WillOnce(
           testing::DoAll(MoveArgPointee<0>(&pending_connection),
                          ::base::test::RunClosure(run_loop.QuitClosure())));
@@ -295,7 +295,7 @@ TEST_P(DatabaseTest, GetWithInvalidParameter) {
           std::move(non_associated)),
       std::make_unique<DatabaseCallbacks>(
           database_callbacks.BindNewEndpointAndPassDedicatedRemote()),
-      transaction_id1, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
+      transaction_id1, IndexedDBDatabaseMetadata::NO_VERSION,
       mojo::NullAssociatedReceiver());
   db_->ScheduleOpenConnection(std::move(connection));
   db_ = nullptr;
@@ -306,12 +306,25 @@ TEST_P(DatabaseTest, GetWithInvalidParameter) {
   mojo::PendingAssociatedRemote<blink::mojom::IDBTransaction>
       pending_transaction;
   mojo_connection->CreateTransaction(
-      pending_transaction.InitWithNewEndpointAndPassReceiver(), 2, {},
-      blink::mojom::IDBTransactionMode::VersionChange,
+      pending_transaction.InitWithNewEndpointAndPassReceiver(),
+      /*transaction_id=*/2, {}, blink::mojom::IDBTransactionMode::VersionChange,
       blink::mojom::IDBTransactionDurability::Strict);
 
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return bad_message_observer.got_bad_message(); }));
+
+  // This test also verifies that a bad message which is received by the
+  // `Connection`, and which leads to killing the renderer, will not leak the
+  // `Connection`. This is a risk because the `Connection` is self-owned, but
+  // dispatching a bad message via `mojom::ReportBadMessage()` will not run
+  // a disconnect handler, including the one that `SelfOwnedAssociatedReceiver`
+  // uses to delete itself (and the `Connection`). A leak of `Connection` at the
+  // wrong moment is particularly pernicious as `Connection` owns transactions,
+  // which in the LevelDB world, can hold references to the `LevelDBState`,
+  // which in turn will block `BackingStore` teardown, causing this test to
+  // timeout during destruction.
+  //
+  // (The SQLite backing store does not have crazy reference counting issues.)
 }
 
 }  // namespace content::indexed_db

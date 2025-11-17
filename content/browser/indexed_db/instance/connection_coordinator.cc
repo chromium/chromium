@@ -251,21 +251,9 @@ class ConnectionCoordinator::OpenRequest
     base::ScopedClosureRunner scoped_tasks_available(tasks_available_callback_);
     const int64_t old_version = db_->version();
     int64_t& new_version = pending_->version;
-
+    CHECK(new_version >= 1 ||
+          new_version == IndexedDBDatabaseMetadata::NO_VERSION);
     bool is_new_database = old_version == IndexedDBDatabaseMetadata::NO_VERSION;
-
-    if (new_version == IndexedDBDatabaseMetadata::DEFAULT_VERSION) {
-      // For unit tests only - skip upgrade steps. (Calling from script with
-      // DEFAULT_VERSION throws exception.)
-      DCHECK(is_new_database);
-      OnOpenSuccess(db_->CreateConnection(
-          std::move(pending_->database_callbacks),
-          std::move(pending_->client_state_checker), pending_->client_token,
-          pending_->scheduling_priority));
-      bucket_context_handle_.Release();
-      state_ = RequestState::kDone;
-      return;
-    }
 
     if (!is_new_database &&
         (new_version == old_version ||
@@ -282,11 +270,11 @@ class ConnectionCoordinator::OpenRequest
     if (new_version == IndexedDBDatabaseMetadata::NO_VERSION) {
       // If no version is specified and no database exists, upgrade the
       // database version to 1.
-      DCHECK(is_new_database);
+      CHECK(is_new_database);
       new_version = 1;
     } else if (new_version < old_version) {
       // Requested version is lower than current version - fail the request.
-      DCHECK(!is_new_database);
+      CHECK(!is_new_database);
       std::move(factory_client_)
           ->Error(blink::mojom::IDBException::kVersionError,
                   base::ASCIIToUTF16(

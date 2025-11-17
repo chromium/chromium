@@ -27,6 +27,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
@@ -284,6 +285,10 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
   int scheduling_priority_;
 
   bool is_shutting_down_ = false;
+
+  // When connected, `this` is self-owned, but this reference to the self-owning
+  // helper is necessary.
+  mojo::SelfOwnedAssociatedReceiverRef<blink::mojom::IDBDatabase> receiver_;
 
   base::WeakPtrFactory<Connection> weak_factory_{this};
 };

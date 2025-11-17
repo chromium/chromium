@@ -458,14 +458,15 @@ class IndexedDBTest : public testing::Test,
     // It's necessary to hang onto the database connection or the connection
     // will shut itself down and there will be no `ForcedClosed()`.
     mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
-    EXPECT_CALL(client, MockedOpenSuccess)
+    EXPECT_CALL(client, MockedUpgradeNeeded)
         .WillOnce(
             testing::DoAll(MoveArgPointee<0>(&pending_database),
                            ::base::test::RunClosure(run_loop.QuitClosure())));
     mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
     factory_remote_->Open(client.CreateInterfacePtrAndBind(),
                           database_callbacks.CreateInterfacePtrAndBind(),
-                          u"opendb", /*version=*/0,
+                          u"opendb",
+                          blink::IndexedDBDatabaseMetadata::NO_VERSION,
                           transaction_remote.BindNewEndpointAndPassReceiver(),
                           /*host_transaction_id=*/0, /*priority=*/0);
     run_loop.Run();
@@ -1565,12 +1566,12 @@ TEST_P(IndexedDBTest, AvoidCrashAfterForceCloseDbAndThenOpen) {
           ::base::test::RunClosure(run_loop_for_first_open.QuitClosure()));
   MockMojoFactoryClient client;
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
-  EXPECT_CALL(client, MockedOpenSuccess)
+  EXPECT_CALL(client, MockedUpgradeNeeded)
       .WillOnce(MoveArgPointee<0>(&pending_database));
   mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
   factory_remote_->Open(client.CreateInterfacePtrAndBind(),
                         database_callbacks.CreateInterfacePtrAndBind(),
-                        u"opendb", /*version=*/0,
+                        u"opendb", blink::IndexedDBDatabaseMetadata::NO_VERSION,
                         transaction_remote.BindNewEndpointAndPassReceiver(),
                         /*host_transaction_id=*/0, /*priority=*/0);
 
@@ -1595,11 +1596,11 @@ TEST_P(IndexedDBTest, AvoidCrashAfterForceCloseDbAndThenOpen) {
       .WillOnce(
           ::base::test::RunClosure(run_loop_for_second_open.QuitClosure()));
   mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote2;
-  factory_remote_->Open(
-      client2.CreateInterfacePtrAndBind(),
-      database_callbacks2.CreateInterfacePtrAndBind(), u"opendb",
-      /*version=*/0, transaction_remote2.BindNewEndpointAndPassReceiver(),
-      /*host_transaction_id=*/42, /*priority=*/0);
+  factory_remote_->Open(client2.CreateInterfacePtrAndBind(),
+                        database_callbacks2.CreateInterfacePtrAndBind(),
+                        u"opendb", blink::IndexedDBDatabaseMetadata::NO_VERSION,
+                        transaction_remote2.BindNewEndpointAndPassReceiver(),
+                        /*host_transaction_id=*/42, /*priority=*/0);
 
   // Block until expectations are satisfied.
   run_loop_for_first_open.Run();
@@ -2078,12 +2079,12 @@ TEST_P(IndexedDBTest, DeleteDatabase) {
     MockMojoFactoryClient client;
     MockMojoDatabaseCallbacks database_callbacks;
     base::RunLoop run_loop;
-    EXPECT_CALL(client, MockedOpenSuccess)
+    EXPECT_CALL(client, MockedUpgradeNeeded)
         .WillOnce(::base::test::RunClosure(run_loop.QuitClosure()));
     mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
     factory_remote->Open(client.CreateInterfacePtrAndBind(),
                          database_callbacks.CreateInterfacePtrAndBind(), u"db",
-                         /*version=*/0,
+                         blink::IndexedDBDatabaseMetadata::NO_VERSION,
                          transaction_remote.BindNewEndpointAndPassReceiver(),
                          /*transaction_id=*/1, /*priority=*/0);
     run_loop.Run();
@@ -2225,14 +2226,14 @@ TEST_P(IndexedDBTest, GetDatabaseNames_NoFactory) {
   // It's necessary to hang onto the database connection or the connection
   // will shut itself down and the backing store will close on its own.
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
-  EXPECT_CALL(client, MockedOpenSuccess)
+  EXPECT_CALL(client, MockedUpgradeNeeded)
       .WillOnce(
           testing::DoAll(MoveArgPointee<0>(&pending_database),
                          ::base::test::RunClosure(run_loop.QuitClosure())));
   mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
   factory_remote->Open(client.CreateInterfacePtrAndBind(),
                        database_callbacks.CreateInterfacePtrAndBind(), u"db",
-                       /*version=*/0,
+                       blink::IndexedDBDatabaseMetadata::NO_VERSION,
                        transaction_remote.BindNewEndpointAndPassReceiver(),
                        /*transaction_id=*/1, /*priority=*/0);
   run_loop.Run();
@@ -2275,14 +2276,14 @@ TEST_P(IndexedDBTest, UpdatePriorityAfterForceClose) {
   MockMojoDatabaseCallbacks database_callbacks;
   base::RunLoop run_loop;
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
-  EXPECT_CALL(client, MockedOpenSuccess)
+  EXPECT_CALL(client, MockedUpgradeNeeded)
       .WillOnce(
           testing::DoAll(MoveArgPointee<0>(&pending_database),
                          ::base::test::RunClosure(run_loop.QuitClosure())));
   mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
   factory_remote->Open(client.CreateInterfacePtrAndBind(),
                        database_callbacks.CreateInterfacePtrAndBind(), u"db",
-                       /*version=*/0,
+                       blink::IndexedDBDatabaseMetadata::NO_VERSION,
                        transaction_remote.BindNewEndpointAndPassReceiver(),
                        /*transaction_id=*/1, /*priority=*/0);
   run_loop.Run();
@@ -2337,12 +2338,12 @@ TEST_P(IndexedDBTest, QuotaErrorOnDbOpenError) {
     MockMojoFactoryClient client;
     MockMojoDatabaseCallbacks database_callbacks;
     base::RunLoop run_loop;
-    EXPECT_CALL(client, MockedOpenSuccess)
+    EXPECT_CALL(client, MockedUpgradeNeeded)
         .WillOnce(::base::test::RunClosure(run_loop.QuitClosure()));
     mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
     factory_remote->Open(client.CreateInterfacePtrAndBind(),
                          database_callbacks.CreateInterfacePtrAndBind(), u"db2",
-                         /*version=*/0,
+                         blink::IndexedDBDatabaseMetadata::NO_VERSION,
                          transaction_remote.BindNewEndpointAndPassReceiver(),
                          /*transaction_id=*/1, /*priority=*/0);
     run_loop.Run();

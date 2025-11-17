@@ -112,7 +112,8 @@ mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase>
 Connection::MakeSelfOwnedReceiverAndBindRemote(
     std::unique_ptr<Connection> connection) {
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
-  mojo::MakeSelfOwnedAssociatedReceiver(
+  Connection* connection_ptr = connection.get();
+  connection_ptr->receiver_ = mojo::MakeSelfOwnedAssociatedReceiver(
       std::move(connection),
       pending_remote.InitWithNewEndpointAndPassReceiver());
   return pending_remote;
@@ -315,12 +316,12 @@ void Connection::CreateTransaction(
 
   if (mode != blink::mojom::IDBTransactionMode::ReadOnly &&
       mode != blink::mojom::IDBTransactionMode::ReadWrite) {
-    mojo::ReportBadMessage(kBadTransactionMode);
+    receiver_->ReportBadMessage(kBadTransactionMode);
     return;
   }
 
   if (GetTransaction(transaction_id)) {
-    mojo::ReportBadMessage(kTransactionAlreadyExists);
+    receiver_->ReportBadMessage(kTransactionAlreadyExists);
     return;
   }
 
@@ -454,7 +455,7 @@ void Connection::OpenCursor(
   if ((*transaction)->mode() !=
           blink::mojom::IDBTransactionMode::VersionChange &&
       task_type == blink::mojom::IDBTaskType::Preemptive) {
-    mojo::ReportBadMessage(
+    receiver_->ReportBadMessage(
         "OpenCursor with |Preemptive| task type must be called from a version "
         "change transaction.");
     return;
@@ -620,7 +621,7 @@ void Connection::CreateIndex(int64_t transaction_id,
                 return Status::InvalidArgument(
                     "Invalid object_store_id or index_id.");
               },
-              object_store_id, index.id, mojo::GetBadMessageCallback()));
+              object_store_id, index.id, receiver_->GetBadMessageCallback()));
 }
 
 void Connection::DeleteIndex(int64_t transaction_id,
@@ -758,7 +759,7 @@ Connection::GetTransactionAndVerifyState(
   if (required_mode.has_value() && (transaction->mode() != *required_mode)) {
     TRACE_EVENT_INSTANT(
         "IndexedDB", "Connection::GetTransactionAndVerifyState - Wrong mode");
-    mojo::ReportBadMessage("Called from wrong transaction type.");
+    receiver_->ReportBadMessage("Called from wrong transaction type.");
     return base::unexpected(DatabaseError(
         blink::mojom::IDBException::kUnknownError, "Wrong transaction type."));
   }

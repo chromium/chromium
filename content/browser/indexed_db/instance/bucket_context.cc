@@ -555,6 +555,12 @@ void BucketContext::Open(
     int scheduling_priority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB", "BucketContext::Open");
+
+  if (version < 1 && version != blink::IndexedDBDatabaseMetadata::NO_VERSION) {
+    mojo::ReportBadMessage("Invalid version");
+    return;
+  }
+
   // TODO(dgrogan): Don't let a non-existing database be opened (and therefore
   // created) if this origin is already over quota.
   mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client(
