@@ -177,7 +177,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   std::unique_ptr<MainThread> CreateMainThread() override;
   std::unique_ptr<WebAgentGroupScheduler> CreateWebAgentGroupScheduler()
       override;
-  void SetRendererHidden(bool hidden) override;
   void SetRendererBackgrounded(bool backgrounded) override;
 #if BUILDFLAG(IS_ANDROID)
   void PauseTimersForAndroidWebView() override;

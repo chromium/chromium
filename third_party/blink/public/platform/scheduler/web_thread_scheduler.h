@@ -64,11 +64,6 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler
   virtual std::unique_ptr<WebAgentGroupScheduler>
   CreateWebAgentGroupScheduler() = 0;
 
-  // Tells the scheduler about the change of renderer visibility status (e.g.
-  // "all widgets are hidden" condition). Used mostly for metric purposes.
-  // Must be called on the main thread.
-  virtual void SetRendererHidden(bool hidden);
-
   // Tells the scheduler about the change of renderer background status, i.e.,
   // there are no critical, user facing activities (visual, audio, etc...)
   // driven by this process. A stricter condition than |SetRendererHidden()|,

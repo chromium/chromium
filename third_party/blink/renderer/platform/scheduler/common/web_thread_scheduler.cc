@@ -55,10 +55,6 @@ std::unique_ptr<MainThread> WebThreadScheduler::CreateMainThread() {
   NOTREACHED();
 }
 
-void WebThreadScheduler::SetRendererHidden(bool hidden) {
-  NOTREACHED();
-}
-
 void WebThreadScheduler::SetRendererBackgrounded(bool backgrounded) {
   NOTREACHED();
 }

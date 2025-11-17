@@ -1303,23 +1303,13 @@ void RenderThreadImpl::SetProcessState(
           is_visible);
     }
 
-    if (is_visible)
+    if (is_visible) {
       OnRendererVisible();
-    else
+    } else {
       OnRendererHidden();
+    }
   }
 
-  if (process_priority_ != process_priority) {
-    TRACE_EVENT_END("renderer", process_priority_track_);
-    TRACE_EVENT_BEGIN("renderer", ProcessPriorityToString(process_priority),
-                      process_priority_track_);
-  }
-
-  if (visible_state_ != visible_state) {
-    TRACE_EVENT_END("renderer", process_visibility_track_);
-    TRACE_EVENT_BEGIN("renderer", ProcessVisibilityToString(visible_state),
-                      process_visibility_track_);
-  }
   process_priority_ = process_priority;
   visible_state_ = visible_state;
 }
@@ -1640,12 +1630,6 @@ void RenderThreadImpl::OnRendererHidden() {
   }
 
   blink_isolates_pressure_listener_.OnRendererHidden();
-
-  // TODO(rmcilroy): Remove IdleHandler and replace it with an IdleTask
-  // scheduled by the RendererScheduler - http://crbug.com/469210.
-  if (!GetContentClient()->renderer()->RunIdleHandlerWhenWidgetsHidden())
-    return;
-  main_thread_scheduler_->SetRendererHidden(true);
 }
 
 void RenderThreadImpl::OnRendererVisible() {
@@ -1654,12 +1638,7 @@ void RenderThreadImpl::OnRendererVisible() {
     blink::WebV8Features::SetIsolatePriority(
         base::Process::Priority::kUserBlocking);
   }
-
   blink_isolates_pressure_listener_.OnRendererVisible();
-
-  if (!GetContentClient()->renderer()->RunIdleHandlerWhenWidgetsHidden())
-    return;
-  main_thread_scheduler_->SetRendererHidden(false);
 }
 
 bool RenderThreadImpl::RendererIsBackgrounded() const {

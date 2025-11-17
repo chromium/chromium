@@ -928,6 +928,10 @@ void MainThreadSchedulerImpl::SetAllRenderWidgetsHidden(bool hidden) {
   end_renderer_hidden_idle_period_closure_.Cancel();
 
   if (hidden) {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
+                 "MainThreadSchedulerImpl::OnRendererVisible");
+    main_thread_only().renderer_hidden_metadata.reset();
+
     idle_helper_.EnableLongIdlePeriod();
 
     // Ensure that we stop running idle tasks after a few seconds of being
@@ -939,28 +943,18 @@ void MainThreadSchedulerImpl::SetAllRenderWidgetsHidden(bool hidden) {
         end_idle_when_hidden_delay);
     main_thread_only().renderer_hidden = true;
   } else {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
+                 "MainThreadSchedulerImpl::OnRendererHidden");
+    main_thread_only().renderer_hidden_metadata.emplace(
+        "MainThreadSchedulerImpl.RendererHidden", /* is_hidden */ 1,
+        base::SampleMetadataScope::kProcess);
+
     main_thread_only().renderer_hidden = false;
     EndIdlePeriod();
   }
 
   // TODO(alexclarke): Should we update policy here?
   CreateTraceEventObjectSnapshot();
-}
-
-void MainThreadSchedulerImpl::SetRendererHidden(bool hidden) {
-  if (hidden) {
-    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
-                 "MainThreadSchedulerImpl::OnRendererHidden");
-    main_thread_only().renderer_hidden_metadata.emplace(
-        "MainThreadSchedulerImpl.RendererHidden", /* is_hidden */ 1,
-        base::SampleMetadataScope::kProcess);
-  } else {
-    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
-                 "MainThreadSchedulerImpl::OnRendererVisible");
-    main_thread_only().renderer_hidden_metadata.reset();
-  }
-  helper_.CheckOnValidThread();
-  main_thread_only().renderer_hidden = hidden;
 }
 
 void MainThreadSchedulerImpl::SetRendererBackgrounded(bool backgrounded) {
