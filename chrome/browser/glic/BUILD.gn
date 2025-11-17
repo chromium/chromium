@@ -253,6 +253,7 @@ source_set("impl") {
     "//chrome/browser/resources/glic:resources",
     "//chrome/browser/resources/glic/fre:resources",
     "//chrome/browser/signin",
+    "//chrome/browser/subscription_eligibility",
     "//chrome/browser/themes",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:browser_list",

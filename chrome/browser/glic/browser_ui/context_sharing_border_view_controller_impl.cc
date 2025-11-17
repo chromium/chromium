@@ -248,7 +248,7 @@ bool ContextSharingBorderViewControllerImpl::ShouldShowBorderAnimation() {
 
   // For multi-instance we rely on the sharing manager signal for everything
   // else.
-  if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
+  if (GlicEnabling::IsMultiInstanceEnabled()) {
     return true;
   }
 

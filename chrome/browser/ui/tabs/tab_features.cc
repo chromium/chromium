@@ -309,7 +309,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           GetUserDataFactory().CreateInstance<glic::GlicTabIndicatorHelper>(
               tab, &tab);
     }
-    if (glic::GlicEnabling::IsMultiInstanceEnabledByFlags() &&
+    if (glic::GlicEnabling::IsMultiInstanceEnabled() &&
         glic::GlicKeyedService::Get(profile)) {
       glic_side_panel_coordinator_ =
           GetUserDataFactory().CreateInstance<glic::GlicSidePanelCoordinator>(

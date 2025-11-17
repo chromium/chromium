@@ -336,7 +336,7 @@ GlicAnnotationManager::AnnotationTask::AnnotationTask(
       &AnnotationTask::RemoteDisconnected, base::Unretained(this)));
 
   // Listens to the panel-closing notification.
-  if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
+  if (GlicEnabling::IsMultiInstanceEnabled()) {
     host_->AddPanelStateObserver(this);
   } else {
     service->GetSingleInstanceWindowController().AddStateObserver(this);
@@ -360,7 +360,7 @@ GlicAnnotationManager::AnnotationTask::~AnnotationTask() {
     std::move(scroll_to_callback_)
         .Run(mojom::ScrollToErrorReason::kNotSupported);
   }
-  if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
+  if (GlicEnabling::IsMultiInstanceEnabled()) {
     if (host_) {
       host_->RemovePanelStateObserver(this);
     }
@@ -457,7 +457,7 @@ void GlicAnnotationManager::AnnotationTask::ResetConnections() {
   annotation_agent_host_receiver_.reset();
   tab_change_subscription_ = base::CallbackListSubscription();
   content::WebContentsObserver::Observe(nullptr);
-  if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
+  if (GlicEnabling::IsMultiInstanceEnabled()) {
     if (host_) {
       host_->RemovePanelStateObserver(this);
     }

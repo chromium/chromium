@@ -81,7 +81,7 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsEnabledForProfile(browser->profile()) &&
       browser->is_type_normal() &&
-      !glic::GlicEnabling::IsMultiInstanceEnabledByFlags()) {
+      !glic::GlicEnabling::IsMultiInstanceEnabled()) {
     browser->browser_window_features()
         ->glic_side_panel_coordinator()
         ->CreateAndRegisterEntry(browser, window_registry);

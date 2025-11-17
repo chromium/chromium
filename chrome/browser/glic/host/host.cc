@@ -676,7 +676,7 @@ Host* HostManager::WebUIPageHandlerAdded(GlicPageHandler* page_handler) {
   // In multi-instance mode, no instance is used for now. We should consider
   // just creating new instances for these hosts.
   GlicInstance* glic_instance = nullptr;
-  if (!GlicEnabling::IsMultiInstanceEnabledByFlags()) {
+  if (!GlicEnabling::IsMultiInstanceEnabled()) {
     glic_instance =
         static_cast<GlicWindowControllerInterface*>(window_controller_.get());
   }

@@ -1092,7 +1092,7 @@ void RenderViewContextMenu::InitMenu() {
     // Add "Copy Link Address" menu option for Glic Multi instance. Link
     // options are not supported by default (since Glic uses WebView's context
     // menu).
-    if (glic::GlicEnabling::IsMultiInstanceEnabledByFlags() &&
+    if (glic::GlicEnabling::IsMultiInstanceEnabled() &&
         IsGlicWindow(this, browser_context_) && !params_.link_url.is_empty()) {
       AppendCopyLinkLocationItem();
       menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
@@ -3384,7 +3384,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
         auto* glic_service = glic::GlicKeyedService::Get(browser_context_);
         if (glic_service) {
           // TODO(crbug.com/454112198): Clean up after multi-instance launches.
-          if (glic::GlicEnabling::IsMultiInstanceEnabledByFlags()) {
+          if (glic::GlicEnabling::IsMultiInstanceEnabled()) {
             if (auto* rfh = GetRenderFrameHost()) {
               glic_service->Close(rfh->GetOutermostMainFrame());
             }

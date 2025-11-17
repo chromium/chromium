@@ -19,6 +19,8 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -322,6 +324,75 @@ bool GlicEnabling::IsShareImageEnabledForProfile(Profile* profile) {
     case signin::AccountManagedStatusFinderOutcome::kTimeout:
       return false;
   }
+}
+
+bool GlicEnabling::IsMultiInstanceEnabled() {
+  if (IsMultiInstanceEnabledByFlags()) {
+    return true;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          features::kGlicEnableMultiInstanceBasedOnTier)) {
+    return false;
+  }
+
+  // MultiTab feaure enablement should still gate multi-instance enablement when
+  // considering subscription tier.
+  if (!base::FeatureList::IsEnabled(mojom::features::kGlicMultiTab) ||
+      !base::FeatureList::IsEnabled(features::kGlicMultitabUnderlines)) {
+    LOG(ERROR) << "Multi-instance functions cannot be enabled without the "
+                  "kGlicMultiTab and kGlicMultitabUnderlines features. These "
+                  "features must be enabled to ensure proper behavior.";
+    return false;
+  }
+
+  return IsEligibleForGlicMultiInstanceTieredRolloutThisRun();
+}
+
+bool GlicEnabling::IsEligibleForGlicMultiInstanceTieredRolloutThisRun() {
+  // It is necessary that `is_eligible` does not change after the first call to
+  // this function during a run of Chrome, as multi-instance cannot be
+  // enabled/disabled dynamically.
+  static bool is_eligible =
+      GetAndUpdateEligibilityForGlicMultiInstanceTieredRollout(nullptr);
+
+  return is_eligible;
+}
+
+bool GlicEnabling::GetAndUpdateEligibilityForGlicMultiInstanceTieredRollout(
+    Profile* additional_profile) {
+  if (!g_browser_process->local_state() ||
+      !g_browser_process->profile_manager()) {
+    return false;
+  }
+
+  // If multi-instance was ever enabled by tier, ensure that it stays enabled.
+  if (g_browser_process->local_state()->GetBoolean(
+          prefs::kGlicMultiInstanceEnabledBySubscriptionTier)) {
+    return true;
+  }
+
+  // If `additional_profile` was specified, also check it.
+  std::vector<Profile*> available_profiles =
+      g_browser_process->profile_manager()->GetLoadedProfiles();
+  if (additional_profile) {
+    available_profiles.emplace_back(additional_profile);
+  }
+
+  for (Profile* profile : available_profiles) {
+    auto* subscription_eligibility_service = subscription_eligibility::
+        SubscriptionEligibilityServiceFactory::GetForProfile(profile);
+    int32_t profile_subscription_tier =
+        subscription_eligibility_service
+            ? subscription_eligibility_service->GetAiSubscriptionTier()
+            : 0;
+    if (profile_subscription_tier == 1 || profile_subscription_tier == 2) {
+      g_browser_process->local_state()->SetBoolean(
+          prefs::kGlicMultiInstanceEnabledBySubscriptionTier, true);
+      return true;
+    }
+  }
+  return false;
 }
 
 GlicEnabling::GlicEnabling(Profile* profile,

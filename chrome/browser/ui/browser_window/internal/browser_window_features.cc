@@ -656,7 +656,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
         std::make_unique<CommentsSidePanelCoordinator>(browser_view->browser());
   }
 #if BUILDFLAG(ENABLE_GLIC)
-  if (!glic::GlicEnabling::IsMultiInstanceEnabledByFlags() &&
+  if (!glic::GlicEnabling::IsMultiInstanceEnabled() &&
       glic::GlicKeyedService::Get(browser_view->GetProfile())) {
     glic_side_panel_coordinator_ =
         std::make_unique<glic::GlicLegacySidePanelCoordinator>(

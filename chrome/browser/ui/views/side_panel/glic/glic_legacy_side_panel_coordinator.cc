@@ -44,7 +44,7 @@ GlicLegacySidePanelCoordinator::GlicLegacySidePanelCoordinator(
       glic_action_(
           GetGlicActionItem(browser->GetActions()->root_action_item())),
       side_panel_coordinator_(side_panel_coordinator) {
-  DCHECK(!GlicEnabling::IsMultiInstanceEnabledByFlags());
+  DCHECK(!GlicEnabling::IsMultiInstanceEnabled());
 
   on_glic_enabled_changed_subscription_ =
       glic_service_->enabling().RegisterAllowedChanged(base::BindRepeating(

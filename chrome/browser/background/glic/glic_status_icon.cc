@@ -55,8 +55,7 @@ namespace {
 int GetTooltipMessageId(bool panel_showing) {
   // If GlicMultiInstance is enabled, show a single menu item and corresponding
   // tooltip for toggling the UI.
-  bool multi_instance_enabled =
-      glic::GlicEnabling::IsMultiInstanceEnabledByFlags();
+  bool multi_instance_enabled = glic::GlicEnabling::IsMultiInstanceEnabled();
 
   switch (chrome::GetChannel()) {
     case version_info::Channel::CANARY: {
@@ -259,7 +258,7 @@ void GlicStatusIcon::PanelStateChanged(
     const GlicWindowController::PanelStateContext& context) {
   // If GlicMultiInstance is enabled, show a single menu item for toggling the
   // UI and thus don't update based on state changes.
-  if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
+  if (GlicEnabling::IsMultiInstanceEnabled()) {
     return;
   }
   UpdateVisibilityOfShowAndCloseInContextMenu();
@@ -320,7 +319,7 @@ void GlicStatusIcon::UpdateVisibilityOfShowAndCloseInContextMenu() {
   // If GlicMultiInstance is enabled, always show a single menu item for
   // toggling the UI. Otherwise, show either the "Close" or "Show" menu item
   // accordingly.
-  if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
+  if (GlicEnabling::IsMultiInstanceEnabled()) {
     context_menu_->SetCommandIdVisible(IDC_GLIC_STATUS_ICON_MENU_TOGGLE, true);
     context_menu_->SetCommandIdVisible(IDC_GLIC_STATUS_ICON_MENU_CLOSE, false);
     context_menu_->SetCommandIdVisible(IDC_GLIC_STATUS_ICON_MENU_SHOW, false);

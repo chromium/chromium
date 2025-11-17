@@ -97,7 +97,7 @@ base::TimeDelta GetWarmingDelay() {
 }
 
 bool UseDefaultWindowController() {
-  return !GlicEnabling::IsMultiInstanceEnabledByFlags();
+  return !GlicEnabling::IsMultiInstanceEnabled();
 }
 
 std::unique_ptr<GlicWindowController> CreateWindowController(
@@ -106,6 +106,11 @@ std::unique_ptr<GlicWindowController> CreateWindowController(
     GlicKeyedService* glic_service,
     GlicEnabling* glic_enabling,
     contextual_cueing::ContextualCueingService* contextual_cueing_service) {
+  // Update eligibility state in case a new profile has been loaded that was not
+  // captured in the initial eligibility check.
+  GlicEnabling::GetAndUpdateEligibilityForGlicMultiInstanceTieredRollout(
+      profile);
+
   if (UseDefaultWindowController()) {
     return std::make_unique<GlicWindowControllerImpl>(
         profile, identity_manager, glic_service, glic_enabling);
@@ -228,7 +233,7 @@ GlicKeyedService* GlicKeyedService::Get(content::BrowserContext* context) {
 }
 
 void GlicKeyedService::Shutdown() {
-  if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
+  if (GlicEnabling::IsMultiInstanceEnabled()) {
     window_controller().Shutdown();
     fre_controller_->Shutdown();
   } else {
@@ -292,7 +297,7 @@ void GlicKeyedService::OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
 }
 
 void GlicKeyedService::CloseAndShutdown() {
-  CHECK(!GlicEnabling::IsMultiInstanceEnabledByFlags());
+  CHECK(!GlicEnabling::IsMultiInstanceEnabled());
   window_controller().Shutdown();
   host_manager().Shutdown();
   fre_controller_->Shutdown();
@@ -645,7 +650,7 @@ void GlicKeyedService::OnMemoryPressure(base::MemoryPressureLevel level) {
       (this == GlicProfileManager::GetInstance()->GetLastActiveGlic())) {
     return;
   }
-  if (!GlicEnabling::IsMultiInstanceEnabledByFlags()) {
+  if (!GlicEnabling::IsMultiInstanceEnabled()) {
     CloseAndShutdown();
   }
   // TODO(crbug.com/453747043): Handle Multi Instance.

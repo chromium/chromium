@@ -20,7 +20,7 @@ namespace glic {
 TabUnderlineViewControllerImpl::TabUnderlineViewControllerImpl() = default;
 
 TabUnderlineViewControllerImpl::~TabUnderlineViewControllerImpl() {
-  if (glic_service_ && !GlicEnabling::IsMultiInstanceEnabledByFlags()) {
+  if (glic_service_ && !GlicEnabling::IsMultiInstanceEnabled()) {
     glic_service_->GetSingleInstanceWindowController().RemoveStateObserver(
         this);
   }
@@ -36,7 +36,7 @@ void TabUnderlineViewControllerImpl::Initialize(
 
   GlicSharingManager& sharing_manager = glic_service_->sharing_manager();
 
-  if (!GlicEnabling::IsMultiInstanceEnabledByFlags()) {
+  if (!GlicEnabling::IsMultiInstanceEnabled()) {
     // Subscribe to changes in the focused tab.
     focus_change_subscription_ =
         sharing_manager.AddFocusedTabChangedCallback(base::BindRepeating(
@@ -214,8 +214,7 @@ void TabUnderlineViewControllerImpl::UpdateUnderlineView(
       // Underline should be hidden, with exception to pinned tabs while the
       // glic panel remains open.
       if (IsUnderlineTabPinned() &&
-          (GlicEnabling::IsMultiInstanceEnabledByFlags() ||
-           IsGlicWindowShowing())) {
+          (GlicEnabling::IsMultiInstanceEnabled() || IsGlicWindowShowing())) {
         break;
       }
       HideUnderline();
@@ -264,7 +263,7 @@ void TabUnderlineViewControllerImpl::UpdateUnderlineView(
       }
       break;
     case UpdateUnderlineReason::kPinnedTabsChanged_TabInPinnedSet:
-      if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
+      if (GlicEnabling::IsMultiInstanceEnabled()) {
         ShowAndAnimateUnderline();
       } else {
         // If `underline_view_` is not visible, then this tab was just added
@@ -342,7 +341,7 @@ void TabUnderlineViewControllerImpl::ShowOrAnimatePinnedUnderline() {
   }
   // For multi-instance, we rely on the umbrella sharing manager behavior to
   // determine when to show or not show underlines via the pinned tabs api.
-  if (!GlicEnabling::IsMultiInstanceEnabledByFlags()) {
+  if (!GlicEnabling::IsMultiInstanceEnabled()) {
     // Pinned underlines should never be visible if the glic window is closed.
     if (!IsGlicWindowShowing()) {
       return;

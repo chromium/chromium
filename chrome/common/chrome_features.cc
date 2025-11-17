@@ -525,6 +525,12 @@ const base::FeatureParam<int> kGlicMultiInstanceFloatyWidth{
 const base::FeatureParam<int> kGlicMultiInstanceFloatyHeight{
     &kGlicMultiInstance, "glic-multi-instance-floaty-height", 400};
 
+// Controls whether multiple instances for Glic should be enabled for users of
+// an eligible G1 subscription tier, regardless of whether `kGlicMultiInstance`
+// is enabled.
+BASE_FEATURE(kGlicEnableMultiInstanceBasedOnTier,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicDefaultToLastActiveConversation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
