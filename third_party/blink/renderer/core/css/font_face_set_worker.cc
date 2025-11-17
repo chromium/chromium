@@ -24,7 +24,7 @@
 namespace blink {
 
 FontFaceSetWorker::FontFaceSetWorker(WorkerGlobalScope& worker)
-    : FontFaceSet(worker), worker_global_scope_(worker) {}
+    : FontFaceSet(worker) {}
 
 FontFaceSetWorker::~FontFaceSetWorker() = default;
 
@@ -98,7 +98,6 @@ FontFaceSetWorker* FontFaceSetWorker::From(WorkerGlobalScope& worker) {
 }
 
 void FontFaceSetWorker::Trace(Visitor* visitor) const {
-  visitor->Trace(worker_global_scope_);
   FontFaceSet::Trace(visitor);
 }
 

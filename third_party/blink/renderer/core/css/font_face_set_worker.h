@@ -60,7 +60,6 @@ class CORE_EXPORT FontFaceSetWorker final : public FontFaceSet {
   const Font* ResolveFontStyle(const String&) override;
 
  private:
-  Member<WorkerGlobalScope> worker_global_scope_;
   void FireDoneEventIfPossible() override;
 };
 
