@@ -12,7 +12,10 @@
     document.body.innerHTML = '<img attributionsrc="wss://devtools.test:8443/">'
   `);
 
-  const issue = await dp.Audits.onceIssueAdded();
+  let issue;
+  do {
+    issue = await dp.Audits.onceIssueAdded();
+  } while (issue.params.issue.code !== 'AttributionReportingIssue');
 
   testRunner.log(issue.params.issue, 'Issue reported: ', ['violatingNodeId']);
   testRunner.completeTest();

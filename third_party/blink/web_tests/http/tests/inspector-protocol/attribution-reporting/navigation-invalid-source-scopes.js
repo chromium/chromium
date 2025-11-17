@@ -11,7 +11,10 @@
 
   session.evaluateAsyncWithUserGesture(`document.querySelector('a').click()`);
 
-  const issue = await dp.Audits.onceIssueAdded();
+  let issue;
+  do {
+    issue = await dp.Audits.onceIssueAdded();
+  } while (issue.params.issue.code !== 'AttributionReportingIssue');
 
   testRunner.log(issue.params.issue, 'Issue reported: ', ['request']);
 
