@@ -2376,6 +2376,80 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   EXPECT_EQ(1u, model->pinned_action_ids().size());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorTest,
+    OpeningContentsHeightSidePanelClosesToolbarHeightSidePanel) {
+  // Deregister and reregister kAboutThisSite side panel with kToolbar
+  // PanelType.
+  global_registry()->Deregister(
+      SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
+  auto* registry = browser()
+                       ->GetActiveTabInterface()
+                       ->GetTabFeatures()
+                       ->side_panel_registry();
+  std::unique_ptr<SidePanelEntry> entry = std::make_unique<SidePanelEntry>(
+      SidePanelEntry::PanelType::kToolbar,
+      SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite),
+      base::BindRepeating(
+          [](SidePanelEntryScope&) { return std::make_unique<views::View>(); }),
+      /*default_content_width_callback=*/base::NullCallback());
+  registry->Register(std::move(entry));
+  coordinator()->SetNoDelaysForTesting(true);
+
+  // Open the kAboutThisSite side panel and verify the toolbar height side panel
+  // is showing.
+  coordinator()->Show(SidePanelEntry::Id::kAboutThisSite);
+  EXPECT_TRUE(
+      browser()->GetBrowserView().toolbar_height_side_panel()->GetVisible());
+  EXPECT_FALSE(
+      browser()->GetBrowserView().contents_height_side_panel()->GetVisible());
+
+  // Open the kBookmarks side panel and verify the contents height side panel is
+  // opened and the toolbar height side panel is closed.
+  coordinator()->Show(SidePanelEntry::Id::kBookmarks);
+  EXPECT_TRUE(
+      browser()->GetBrowserView().contents_height_side_panel()->GetVisible());
+  EXPECT_FALSE(
+      browser()->GetBrowserView().toolbar_height_side_panel()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorTest,
+    OpeningToolbarHeightSidePanelClosesContentHeightSidePanel) {
+  // Deregister and reregister kAboutThisSite side panel with kToolbar
+  // PanelType.
+  global_registry()->Deregister(
+      SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
+  auto* registry = browser()
+                       ->GetActiveTabInterface()
+                       ->GetTabFeatures()
+                       ->side_panel_registry();
+  std::unique_ptr<SidePanelEntry> entry = std::make_unique<SidePanelEntry>(
+      SidePanelEntry::PanelType::kToolbar,
+      SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite),
+      base::BindRepeating(
+          [](SidePanelEntryScope&) { return std::make_unique<views::View>(); }),
+      /*default_content_width_callback=*/base::NullCallback());
+  registry->Register(std::move(entry));
+  coordinator()->SetNoDelaysForTesting(true);
+
+  // Open the kBookmarks side panel and verify the content height side panel is
+  // showing.
+  coordinator()->Show(SidePanelEntry::Id::kBookmarks);
+  EXPECT_TRUE(
+      browser()->GetBrowserView().contents_height_side_panel()->GetVisible());
+  EXPECT_FALSE(
+      browser()->GetBrowserView().toolbar_height_side_panel()->GetVisible());
+
+  // Open the kAboutThisSite side panel and verify the toolbar height side panel
+  // is opened and the content height side panel is closed.
+  coordinator()->Show(SidePanelEntry::Id::kAboutThisSite);
+  EXPECT_FALSE(
+      browser()->GetBrowserView().contents_height_side_panel()->GetVisible());
+  EXPECT_TRUE(
+      browser()->GetBrowserView().toolbar_height_side_panel()->GetVisible());
+}
+
 class SidePanelCoordinatorLensOverlayTest : public SidePanelCoordinatorTest {
  public:
   SidePanelCoordinatorLensOverlayTest() {

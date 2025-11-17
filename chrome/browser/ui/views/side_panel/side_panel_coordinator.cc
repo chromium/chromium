@@ -138,10 +138,12 @@ void SidePanelCoordinator::Show(
     SidePanelUtil::RecordSidePanelOpen(entry->type(), open_trigger);
 
     // If opening the toolbar height side panel, make sure the content height
-    // side panel is closed.
-    if (entry->type() == SidePanelEntry::PanelType::kToolbar &&
-        IsSidePanelShowing(SidePanelEntry::PanelType::kContent)) {
-      Close(/*suppress_animations=*/true, SidePanelEntry::PanelType::kContent,
+    // side panel is closed and vice versa.
+    if (auto other_type = entry->type() == SidePanelEntry::PanelType::kContent
+                              ? SidePanelEntry::PanelType::kToolbar
+                              : SidePanelEntry::PanelType::kContent;
+        IsSidePanelShowing(other_type)) {
+      Close(/*suppress_animations=*/true, other_type,
             SidePanelEntryHideReason::kSidePanelClosed);
     }
 
