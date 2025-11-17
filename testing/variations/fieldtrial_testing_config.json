@@ -14378,6 +14378,24 @@
             ]
         }
     ],
+    "InfobarRefresh": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InfobarRefresh"
+                    ]
+                }
+            ]
+        }
+    ],
     "InhibitSQLPreload": [
         {
             "platforms": [

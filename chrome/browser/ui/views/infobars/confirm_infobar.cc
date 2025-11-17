@@ -155,6 +155,7 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
   } else {
     AddContentChildView(std::move(link_unique_ptr));
   }
+  RecalculateLayoutBalancing();
 }
 ConfirmInfoBar::~ConfirmInfoBar() = default;
 

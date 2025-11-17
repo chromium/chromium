@@ -114,12 +114,12 @@ class InfoBarView : public infobars::InfoBar,
   // close button.
   void AddViewBeforeCloseButton(std::unique_ptr<views::View> view);
 
- private:
-  FRIEND_TEST_ALL_PREFIXES(InfoBarViewTest, GetDrawSeparator);
-
   // Recalculates the layout of the infobar's contents, ensuring that views are
   // balanced to fit within the available space inside the infobar container.
   void RecalculateLayoutBalancing();
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(InfoBarViewTest, GetDrawSeparator);
 
   // Make all AddChildView* overloads private so downstream subclasses
   // cannot call them directly.
