@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/desktop_capture/audio_capture_permission_checker_mac.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "media/audio/audio_device_description.h"
@@ -57,6 +58,8 @@ void AudioCapturePermissionCheckerMac::RunCheck() {
   if (audio_permission_state_ != State::kUnknown) {
     return;
   }
+  RecordUmaAudioCapturePermissionCheckerInteractions(
+      AudioCapturePermissionCheckerInteractions::kCheckInitiated);
   audio_permission_state_ = State::kChecking;
 
   mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory;
@@ -106,6 +109,10 @@ void AudioCapturePermissionCheckerMac::OnPermissionUpdate(bool has_permission) {
     input_ipc_->CloseStream();
     input_ipc_.reset();
   }
+  RecordUmaAudioCapturePermissionCheckerInteractions(
+      has_permission
+          ? AudioCapturePermissionCheckerInteractions::kPermissionGranted
+          : AudioCapturePermissionCheckerInteractions::kPermissionDenied);
   audio_permission_state_ = has_permission ? State::kGranted : State::kDenied;
   callback_.Run();
 }

@@ -8,6 +8,7 @@
 #include "base/mac/mac_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/desktop_capture/audio_capture_permission_checker.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -91,6 +92,12 @@ void AudioPermissionWarningView::VisibilityChanged(views::View* starting_from,
 }
 
 void AudioPermissionWarningView::OpenSystemSettings() {
+  if (!system_settings_opened_logged_) {
+    RecordUmaAudioCapturePermissionCheckerInteractions(
+        AudioCapturePermissionCheckerInteractions::
+            kSystemSettingsOpenedAfterDenial);
+    system_settings_opened_logged_ = true;
+  }
   base::ThreadPool::PostTask(
       FROM_HERE,
       base::BindOnce(

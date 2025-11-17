@@ -38,6 +38,8 @@ class AudioPermissionWarningView : public views::View {
   raw_ptr<views::Label> label_ = nullptr;
   raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
   raw_ptr<views::MdTextButton> system_settings_button_ = nullptr;
+
+  bool system_settings_opened_logged_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_AUDIO_PERMISSION_WARNING_VIEW_H_

@@ -103,6 +103,19 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Error during active capture"/>
 </enum>
 
+<enum name="AudioCapturePermissionCheckerInteractions">
+  <int value="0" label="kDisabled"/>
+  <int value="1" label="kEnabled"/>
+  <int value="2" label="kCheckInitiated"/>
+  <int value="3" label="kPermissionGranted"/>
+  <int value="4" label="kPermissionDenied"/>
+  <int value="5" label="kSystemSettingsOpenedAfterDenial"/>
+  <int value="6" label="kCancelSharingAfterDenial"/>
+  <int value="7" label="kShareWindowOrScreenWithAudioAfterDenial"/>
+  <int value="8" label="kShareWindowOrScreenWithoutAudioAfterDenial"/>
+  <int value="9" label="kShareTabAfterDenial"/>
+</enum>
+
 <enum name="AudioCaptureStartupResult">
   <int value="0" label="OK"/>
   <int value="1" label="Failed to create stream"/>

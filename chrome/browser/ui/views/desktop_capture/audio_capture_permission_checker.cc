@@ -7,8 +7,16 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/views/desktop_capture/audio_capture_permission_checker_mac.h"
-#endif
+
+void RecordUmaAudioCapturePermissionCheckerInteractions(
+    AudioCapturePermissionCheckerInteractions interaction) {
+  base::UmaHistogramEnumeration(
+      "Media.Ui.GetDisplayMedia.AudioCapturePermissionChecker.Interactions",
+      interaction);
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 std::unique_ptr<AudioCapturePermissionChecker>
 AudioCapturePermissionChecker::MaybeCreate(

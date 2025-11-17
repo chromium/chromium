@@ -477,6 +477,10 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
       AudioCapturePermissionChecker::MaybeCreate(base::BindRepeating(
           &DesktopMediaPickerDialogView::OnAudioPermissionUpdate,
           weak_factory_.GetWeakPtr()));
+  RecordUmaAudioCapturePermissionCheckerInteractions(
+      audio_capture_permission_checker_
+          ? AudioCapturePermissionCheckerInteractions::kEnabled
+          : AudioCapturePermissionCheckerInteractions::kDisabled);
 #endif
 
   SetModalType(params.modality);
@@ -1014,6 +1018,39 @@ void DesktopMediaPickerDialogView::RecordTabDiscardedStatusUma(
       "Media.Ui.GetDisplayMedia.BasicFlow.SelectedTabDiscardStatus", status);
 }
 
+#if BUILDFLAG(IS_MAC)
+void DesktopMediaPickerDialogView::RecordUserActionOnDeniedAudioPermissionUma(
+    std::optional<content::DesktopMediaID> source) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (request_source_ != RequestSource::kGetDisplayMedia) {
+    return;
+  }
+
+  if (!audio_capture_permission_checker_ ||
+      audio_capture_permission_checker_->GetState() !=
+          AudioCapturePermissionChecker::State::kDenied) {
+    return;
+  }
+
+  AudioCapturePermissionCheckerInteractions action;
+  if (!source) {
+    action =
+        AudioCapturePermissionCheckerInteractions::kCancelSharingAfterDenial;
+  } else if (source->type == DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
+    action = AudioCapturePermissionCheckerInteractions::kShareTabAfterDenial;
+  } else {
+    action = source->audio_share
+                 ? AudioCapturePermissionCheckerInteractions::
+                       kShareWindowOrScreenWithAudioAfterDenial
+                 : AudioCapturePermissionCheckerInteractions::
+                       kShareWindowOrScreenWithoutAudioAfterDenial;
+  }
+
+  RecordUmaAudioCapturePermissionCheckerInteractions(action);
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 std::optional<int> DesktopMediaPickerDialogView::CountSourcesOfType(
     DesktopMediaList::Type type) {
   std::optional<int> count;
@@ -1124,6 +1161,9 @@ bool DesktopMediaPickerDialogView::Accept() {
   RecordSourceCountsUma();
   RecordAudioToggleUma(source);
   RecordTabDiscardedStatusUma(source);
+#if BUILDFLAG(IS_MAC)
+  RecordUserActionOnDeniedAudioPermissionUma(source);
+#endif
 
   if (parent_) {
     parent_->NotifyDialogResult(source);
@@ -1138,6 +1178,9 @@ bool DesktopMediaPickerDialogView::Cancel() {
     RecordUmaCancellation(dialog_open_time_);
   }
   RecordSourceCountsUma();
+#if BUILDFLAG(IS_MAC)
+  RecordUserActionOnDeniedAudioPermissionUma(std::nullopt);
+#endif
 
   return views::DialogDelegateView::Cancel();
 }

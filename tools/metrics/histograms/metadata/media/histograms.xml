@@ -6601,6 +6601,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Media.Ui.GetDisplayMedia.AudioCapturePermissionChecker.Interactions"
+    enum="AudioCapturePermissionCheckerInteractions" expires_after="2026-11-11">
+  <owner>kron@chromium.org</owner>
+  <owner>video-cmi-apis@google.com</owner>
+  <summary>
+    Records the flow and user interactions related to checking system audio
+    capture permission on macOS during getDisplayMedia. This includes whether
+    the check is enabled, when it is initiated, the result of the check
+    (granted/denied), and the user's subsequent actions if permission is denied
+    (e.g., opening settings, cancelling, or sharing with/without audio).
+
+    Recorded at different stages: Enabled/Disabled: When the media picker dialog
+    is opened. CheckInitiated: When the permission check is started.
+    PermissionGranted/Denied: When the permission check completes.
+    SystemSettingsOpenedAfterDenial: The first time the open system settings
+    button is clicked. CancelSharingAfterDenial: When the user cancels the
+    dialog after a permission denial. Share...AfterDenial: When the user accepts
+    a selected source after a permission denial.
+  </summary>
+</histogram>
+
 <histogram name="Media.Ui.GetDisplayMedia.BasicFlow.AudioToggleState.{Type}"
     enum="GetDisplayMediaAudioToggleStatus" expires_after="2026-04-19">
   <owner>eladalon@chromium.org</owner>

@@ -194,6 +194,8 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   void RecordPermissionInteractionUma() const;
   void OnAudioSharingApprovedByUserUpdate();
   void OnAudioPermissionUpdate();
+  void RecordUserActionOnDeniedAudioPermissionUma(
+      std::optional<content::DesktopMediaID> source) const;
 #endif
 
   const raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
