@@ -655,6 +655,7 @@ void LensOverlayController::IssueEndTranslateModeRequestForTesting() {
 void LensOverlayController::IssueTranslateFullPageRequest(
     const std::string& source_language,
     const std::string& target_language) {
+  MaybeGrantLensOverlayPermissions();
   // Remove the selection thumbnail, if it exists.
   lens_search_controller_->ClearVisualSelectionThumbnail();
   ClearRegionSelection();
@@ -1228,6 +1229,18 @@ void LensOverlayController::OnSearchboxFocusChanged(bool focused) {
       // If the live page is showing and the searchbox becomes focused, showing
       // intent to issue a new query, upload the new page content for
       // contextualization.
+      GetContextualizationController()->TryUpdatePageContextualization(
+          base::BindOnce(&LensOverlayController::NotifyPageContentUpdated,
+                         weak_factory_.GetWeakPtr()));
+    }
+    if (lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
+        state() == State::kOverlay &&
+        !lens::DidUserGrantLensOverlayNeededPermissions(pref_service_)) {
+      // If the non-blocking privacy notice is enabled, grant permissions on
+      // searchbox focus, then restart the query flow and upload page content
+      // for contextualization.
+      lens::GrantLensOverlayNeededPermissions(pref_service_);
+      lens_overlay_query_controller_->MaybeRestartQueryFlow();
       GetContextualizationController()->TryUpdatePageContextualization(
           base::BindOnce(&LensOverlayController::NotifyPageContentUpdated,
                          weak_factory_.GetWeakPtr()));
@@ -2211,6 +2224,7 @@ void LensOverlayController::InfoRequestedByOverlay(
 void LensOverlayController::IssueLensRegionRequest(
     lens::mojom::CenterRotatedBoxPtr region,
     bool is_click) {
+  MaybeGrantLensOverlayPermissions();
   IssueLensRequest(/*query_start_time=*/base::Time::Now(), std::move(region),
                    is_click ? lens::TAP_ON_EMPTY : lens::REGION_SEARCH,
                    std::nullopt);
@@ -2219,6 +2233,7 @@ void LensOverlayController::IssueLensRegionRequest(
 void LensOverlayController::IssueLensObjectRequest(
     lens::mojom::CenterRotatedBoxPtr region,
     bool is_mask_click) {
+  MaybeGrantLensOverlayPermissions();
   IssueLensRequest(
       /*query_start_time=*/base::Time::Now(), std::move(region),
       is_mask_click ? lens::TAP_ON_REGION_GLEAM : lens::TAP_ON_OBJECT,
@@ -2229,6 +2244,7 @@ void LensOverlayController::IssueTextSelectionRequest(const std::string& query,
                                                       int selection_start_index,
                                                       int selection_end_index,
                                                       bool is_translate) {
+  MaybeGrantLensOverlayPermissions();
   initialization_data_->additional_search_query_params_.clear();
   lens_selection_type_ =
       is_translate ? lens::SELECT_TRANSLATED_TEXT : lens::SELECT_TEXT_HIGHLIGHT;
@@ -2242,6 +2258,7 @@ void LensOverlayController::IssueTranslateSelectionRequest(
     const std::string& content_language,
     int selection_start_index,
     int selection_end_index) {
+  MaybeGrantLensOverlayPermissions();
   initialization_data_->additional_search_query_params_.clear();
   lens::AppendTranslateParamsToMap(
       initialization_data_->additional_search_query_params_, query, "auto");
@@ -2256,6 +2273,7 @@ void LensOverlayController::IssueMathSelectionRequest(
     const std::string& formula,
     int selection_start_index,
     int selection_end_index) {
+  MaybeGrantLensOverlayPermissions();
   initialization_data_->additional_search_query_params_.clear();
   lens::AppendStickinessSignalForFormula(
       initialization_data_->additional_search_query_params_, formula);
@@ -2984,6 +3002,13 @@ void LensOverlayController::SetOverlayWebViewOpacity(float opacity) {
 
 bool LensOverlayController::IsResultsSidePanelShowing() {
   return GetLensOverlaySidePanelCoordinator()->IsEntryShowing();
+}
+
+void LensOverlayController::MaybeGrantLensOverlayPermissions() {
+  if (lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
+      !lens::DidUserGrantLensOverlayNeededPermissions(pref_service_)) {
+    lens::GrantLensOverlayNeededPermissions(pref_service_);
+  }
 }
 
 lens::LensSearchboxController*

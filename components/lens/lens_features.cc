@@ -119,6 +119,9 @@ BASE_FEATURE(kLensUpdatedFeedbackEntrypoint, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayOptimizationFilter, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayNonBlockingPrivacyNotice,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr base::FeatureParam<int> kLensUpdatedFeedbackToastTimeoutMs{
     &kLensUpdatedFeedbackEntrypoint, "feedback-toast-timeout-ms", 8000};
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
@@ -1264,6 +1267,12 @@ int GetLensUpdatedFeedbackToastTimeoutMs() {
 
 bool IsLensOverlayOptimizationFilterEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayOptimizationFilter);
+}
+
+bool IsLensOverlayNonBlockingPrivacyNoticeEnabled() {
+  // Do not enable if CSB is not enabled.
+  return base::FeatureList::IsEnabled(kLensOverlayNonBlockingPrivacyNotice) &&
+         base::FeatureList::IsEnabled(kLensOverlayContextualSearchbox);
 }
 
 }  // namespace lens::features

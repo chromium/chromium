@@ -13,7 +13,9 @@
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_permission_utils.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/variations/service/variations_service.h"
 
 namespace {
@@ -103,6 +105,23 @@ void IncrementLensOverlayEduActionChipShownCount(Profile* profile) {
   LensKeyedService* service = LensKeyedServiceFactory::GetForProfile(
       profile, /*create_if_necessary=*/true);
   service->IncrementActionChipShownCount();
+}
+
+bool DidUserGrantLensOverlayNeededPermissions(PrefService* pref_service) {
+  if (!CanSharePageScreenshotWithLensOverlay(pref_service)) {
+    return false;
+  }
+  if (IsLensOverlayContextualSearchboxEnabled()) {
+    return CanSharePageContentWithLensOverlay(pref_service);
+  }
+  return true;
+}
+
+void GrantLensOverlayNeededPermissions(PrefService* pref_service) {
+  if (lens::IsLensOverlayContextualSearchboxEnabled()) {
+    pref_service->SetBoolean(prefs::kLensSharingPageContentEnabled, true);
+  }
+  pref_service->SetBoolean(prefs::kLensSharingPageScreenshotEnabled, true);
 }
 
 }  // namespace lens

@@ -18183,6 +18183,7 @@ from previous Chrome versions.
   <int value="1363136936" label="VrCustomTabBrowsing:enabled"/>
   <int value="1363151585" label="SyncPseudoUSSAppList:enabled"/>
   <int value="1363283577" label="CrOSLateBootAudioFlexibleLoopback:enabled"/>
+  <int value="1364185019" label="LensOverlayNonBlockingPrivacyNotice:enabled"/>
   <int value="1364309298" label="SupportToolCopyTokenButton:enabled"/>
   <int value="1365642727" label="IdentityStatusConsistency:enabled"/>
   <int value="1365857480" label="WebUITabStripNewTabButtonInTabStrip:enabled"/>
@@ -20436,6 +20437,7 @@ from previous Chrome versions.
       label="TimeOfDayWallpaperForcedAutoSchedule:disabled"/>
   <int value="2139325088" label="ContextualPageActionTabGrouping:enabled"/>
   <int value="2139520082" label="EnableRestrictedWebApis:disabled"/>
+  <int value="2139920201" label="LensOverlayNonBlockingPrivacyNotice:disabled"/>
   <int value="2140205372" label="ScreenAI"/>
   <int value="2140453427"
       label="MigrateDefaultChromeAppToWebAppsGSuite:enabled"/>

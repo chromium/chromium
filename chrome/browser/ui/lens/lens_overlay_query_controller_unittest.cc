@@ -30,6 +30,8 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/lens/lens_overlay_permission_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_client.h"
@@ -475,6 +477,9 @@ class LensOverlayQueryControllerTest : public testing::Test {
     icu::Locale::setDefault(icu::Locale(kLocale), error_code);
     ASSERT_TRUE(U_SUCCESS(error_code));
     latest_suggest_inputs_.Clear();
+    PrefService* prefs = profile_->GetPrefs();
+    prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
+    prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, true);
 
     feature_list_.InitWithFeaturesAndParameters(
         {kDefaultLensOverlayContextualSearchboxParams}, {});

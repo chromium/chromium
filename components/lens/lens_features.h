@@ -175,6 +175,10 @@ BASE_DECLARE_FEATURE(kLensUpdatedFeedbackEntrypoint);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayOptimizationFilter);
 
+// Enables using the non-blocking privacy notice for the Lens overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayNonBlockingPrivacyNotice);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -1051,6 +1055,10 @@ std::string_view LensAimSuggestionModeToString(
 // Returns the number of AIM suggestions to show.
 COMPONENT_EXPORT(LENS_FEATURES)
 int GetLensAimSuggestionsCount();
+
+// Whether to use the non-blocking privacy notice for the Lens overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayNonBlockingPrivacyNoticeEnabled();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

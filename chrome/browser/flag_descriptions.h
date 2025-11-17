@@ -2632,6 +2632,11 @@ inline constexpr char kLensOverlayImageContextMenuActionsName[] =
 inline constexpr char kLensOverlayImageContextMenuActionsDescription[] =
     "Enables image context menu actions in the Lens overlay.";
 
+inline constexpr char kLensOverlayNonBlockingPrivacyNoticeName[] =
+    "Lens overlay non-blocking privacy notice";
+inline constexpr char kLensOverlayNonBlockingPrivacyNoticeDescription[] =
+    "Enables non-blocking privacy notice in the Lens overlay.";
+
 inline constexpr char kLensOverlayOmniboxEntryPointName[] =
     "Lens Overlay Omnibox entrypoint";
 inline constexpr char kLensOverlayOmniboxEntryPointDescription[] =
