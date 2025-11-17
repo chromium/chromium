@@ -34,8 +34,16 @@ MultiStep GlicActorToctouUiTest::NavigateFrame(
                                        "').src='", url.spec(), "';}"})));
 }
 
+// TODO(crbug.com/460825984): Re-enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ToctouCheckFailWhenCrossOriginTargetFrameChange \
+  DISABLED_ToctouCheckFailWhenCrossOriginTargetFrameChange
+#else
+#define MAYBE_ToctouCheckFailWhenCrossOriginTargetFrameChange \
+  ToctouCheckFailWhenCrossOriginTargetFrameChange
+#endif
 IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest,
-                       ToctouCheckFailWhenCrossOriginTargetFrameChange) {
+                       MAYBE_ToctouCheckFailWhenCrossOriginTargetFrameChange) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/two_iframes.html");
