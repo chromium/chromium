@@ -4,6 +4,9 @@
 
 #include "chrome/browser/tab/collection_storage_package.h"
 
+#include <string>
+#include <vector>
+
 #include "chrome/browser/tab/payload.h"
 
 namespace tabs {
@@ -15,14 +18,14 @@ CollectionStoragePackage::CollectionStoragePackage(
 
 CollectionStoragePackage::~CollectionStoragePackage() = default;
 
-std::string CollectionStoragePackage::SerializePayload() const {
+std::vector<uint8_t> CollectionStoragePackage::SerializePayload() const {
   return metadata_->SerializePayload();
 }
 
-std::string CollectionStoragePackage::SerializeChildren() const {
-  std::string payload;
-  children_.SerializeToString(&payload);
-  return payload;
+std::vector<uint8_t> CollectionStoragePackage::SerializeChildren() const {
+  std::vector<uint8_t> children_vec(children_.ByteSizeLong());
+  children_.SerializeToArray(children_vec.data(), children_vec.size());
+  return children_vec;
 }
 
 }  // namespace tabs

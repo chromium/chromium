@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_TAB_STORAGE_PACKAGE_H_
 
 #include <string>
+#include <vector>
 
 #include "chrome/browser/tab/payload.h"
 
@@ -15,8 +16,8 @@ namespace tabs {
 class StoragePackage : public Payload {
  public:
   // Serializes the identity and order of the direct children of the tab
-  // collection represented by this package into a string payload for storage.
-  virtual std::string SerializeChildren() const = 0;
+  // collection represented by this package into a vector payload for storage.
+  virtual std::vector<uint8_t> SerializeChildren() const = 0;
 };
 
 }  // namespace tabs

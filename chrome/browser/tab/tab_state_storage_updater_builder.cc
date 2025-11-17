@@ -36,8 +36,8 @@ class SaveNodeUpdateUnit : public StorageUpdateUnit {
 
   bool Execute(TabStateStorageDatabase* db,
                OpenTransaction* transaction) override {
-    std::string payload = package_->SerializePayload();
-    std::string children = package_->SerializeChildren();
+    std::vector<uint8_t> payload = package_->SerializePayload();
+    std::vector<uint8_t> children = package_->SerializeChildren();
     bool success = db->SaveNode(transaction, id_, std::move(window_tag_),
                                 is_off_the_record_, type_, std::move(payload),
                                 std::move(children));
@@ -62,7 +62,7 @@ class SavePayloadUpdateUnit : public StorageUpdateUnit {
 
   bool Execute(TabStateStorageDatabase* db,
                OpenTransaction* transaction) override {
-    std::string payload = payload_->SerializePayload();
+    std::vector<uint8_t> payload = payload_->SerializePayload();
     bool success = db->SaveNodePayload(transaction, id_, std::move(payload));
     if (!success) {
       DLOG(ERROR) << "Could not perform save node operation.";
@@ -82,7 +82,7 @@ class SaveChildrenUpdateUnit : public StorageUpdateUnit {
 
   bool Execute(TabStateStorageDatabase* db,
                OpenTransaction* transaction) override {
-    std::string serialized = children_->SerializePayload();
+    std::vector<uint8_t> serialized = children_->SerializePayload();
     bool success =
         db->SaveNodeChildren(transaction, id_, std::move(serialized));
     if (!success) {

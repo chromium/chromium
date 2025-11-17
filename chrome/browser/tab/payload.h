@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_TAB_PAYLOAD_H_
 #define CHROME_BROWSER_TAB_PAYLOAD_H_
 
-#include <string>
+#include <cstdint>
+#include <vector>
 
 namespace tabs {
 
@@ -14,9 +15,9 @@ class Payload {
  public:
   virtual ~Payload() = default;
 
-  // Serializes the data contained within this package into a string payload for
+  // Serializes the data contained within this package into a byte array for
   // storage.
-  virtual std::string SerializePayload() const = 0;
+  virtual std::vector<uint8_t> SerializePayload() const = 0;
 };
 
 }  // namespace tabs

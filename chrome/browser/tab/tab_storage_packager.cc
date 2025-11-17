@@ -4,8 +4,11 @@
 
 #include "chrome/browser/tab/tab_storage_packager.h"
 
+#include <cstdint>
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/token.h"
@@ -50,7 +53,7 @@ class ChildProcessor : public DirectChildWalker::Processor {
 class EmptyPayload : public Payload {
  public:
   EmptyPayload() = default;
-  std::string SerializePayload() const override { return ""; }
+  std::vector<uint8_t> SerializePayload() const override { return {}; }
 };
 
 // A payload representing the collection children.
@@ -59,8 +62,10 @@ class ChildrenPayload : public Payload {
   explicit ChildrenPayload(tabs_pb::Children children)
       : children_(std::move(children)) {}
 
-  std::string SerializePayload() const override {
-    return children_.SerializeAsString();
+  std::vector<uint8_t> SerializePayload() const override {
+    std::vector<uint8_t> payload_vec(children_.ByteSizeLong());
+    children_.SerializeToArray(payload_vec.data(), payload_vec.size());
+    return payload_vec;
   }
 
  private:
@@ -76,8 +81,11 @@ class SplitCollectionStorageData : public Payload {
 
   ~SplitCollectionStorageData() override = default;
 
-  std::string SerializePayload() const override {
-    return split_collection_state_.SerializeAsString();
+  std::vector<uint8_t> SerializePayload() const override {
+    std::vector<uint8_t> payload_vec(split_collection_state_.ByteSizeLong());
+    split_collection_state_.SerializeToArray(payload_vec.data(),
+                                             payload_vec.size());
+    return payload_vec;
   }
 
  private:
@@ -92,8 +100,10 @@ class TabGroupCollectionStorageData : public Payload {
 
   ~TabGroupCollectionStorageData() override = default;
 
-  std::string SerializePayload() const override {
-    return state_.SerializeAsString();
+  std::vector<uint8_t> SerializePayload() const override {
+    std::vector<uint8_t> payload_vec(state_.ByteSizeLong());
+    state_.SerializeToArray(payload_vec.data(), payload_vec.size());
+    return payload_vec;
   }
 
  private:

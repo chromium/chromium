@@ -57,7 +57,7 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
       JNIEnv* env,
       jlong timestamp_millis,
       const jni_zero::JavaParamRef<jobject>& web_contents_state_buffer,
-      std::string& opener_app_id,
+      std::optional<std::string> opener_app_id,
       jint theme_color,
       jlong last_navigation_committed_timestamp_millis,
       jboolean tab_has_sensitive_content,

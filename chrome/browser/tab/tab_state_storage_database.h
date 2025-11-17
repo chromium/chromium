@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_TAB_TAB_STATE_STORAGE_DATABASE_H_
 #define CHROME_BROWSER_TAB_TAB_STATE_STORAGE_DATABASE_H_
 
+#include <cstdint>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -22,10 +24,22 @@ namespace tabs {
 // Represents a row in the node table, to allow returning many rows of data.
 // Each row may be a tab or parent collection.
 struct NodeState {
+  NodeState(int id,
+            TabStorageType type,
+            std::vector<uint8_t> payload,
+            std::vector<uint8_t> children);
+  ~NodeState();
+
+  NodeState(const NodeState&) = delete;
+  NodeState& operator=(const NodeState&) = delete;
+
+  NodeState(NodeState&&) noexcept;
+  NodeState& operator=(NodeState&&) noexcept;
+
   int id;
   TabStorageType type;
-  std::string payload;
-  std::string children;
+  std::vector<uint8_t> payload;
+  std::vector<uint8_t> children;
 };
 
 // This class is responsible for all database operations.
@@ -73,20 +87,20 @@ class TabStateStorageDatabase {
                 std::string window_tag,
                 bool is_off_the_record,
                 TabStorageType type,
-                std::string payload,
-                std::string children);
+                std::vector<uint8_t> payload,
+                std::vector<uint8_t> children);
 
   // Saves a node payload to the database.
   // This will silently fail if the node does not already exist.
   bool SaveNodePayload(OpenTransaction* transaction,
                        int id,
-                       std::string payload);
+                       std::vector<uint8_t> payload);
 
   // Saves the children of a node to the database.
   // This will silently fail if the node does not already exist.
   bool SaveNodeChildren(OpenTransaction* transaction,
                         int id,
-                        std::string children);
+                        std::vector<uint8_t> children);
 
   // Removes a node from the database.
   // This will silently fail if the node does not already exist.

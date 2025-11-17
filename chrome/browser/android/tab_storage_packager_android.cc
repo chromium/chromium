@@ -6,8 +6,10 @@
 
 #include <jni.h>
 
+#include <cstdint>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_bytebuffer.h"
@@ -47,8 +49,10 @@ class TabStripCollectionStorageData : public Payload {
 
   ~TabStripCollectionStorageData() override = default;
 
-  std::string SerializePayload() const override {
-    return state_.SerializeAsString();
+  std::vector<uint8_t> SerializePayload() const override {
+    std::vector<uint8_t> payload_vec(state_.ByteSizeLong());
+    state_.SerializeToArray(payload_vec.data(), payload_vec.size());
+    return payload_vec;
   }
 
  private:
@@ -153,17 +157,16 @@ long TabStoragePackagerAndroid::ConsolidateTabData(
     JNIEnv* env,
     jlong timestamp_millis,
     const jni_zero::JavaParamRef<jobject>& web_contents_state_buffer,
-    std::string& opener_app_id,
+    std::optional<std::string> opener_app_id,
     jint theme_color,
     jlong last_navigation_committed_timestamp_millis,
     jboolean tab_has_sensitive_content,
     TabAndroid* tab) {
-  std::unique_ptr<std::string> web_contents_state_bytes;
+  std::optional<std::vector<uint8_t>> web_contents_state_bytes;
   if (web_contents_state_buffer) {
     base::span<const uint8_t> span =
         base::android::JavaByteBufferToSpan(env, web_contents_state_buffer);
-    web_contents_state_bytes =
-        std::make_unique<std::string>(span.begin(), span.end());
+    web_contents_state_bytes.emplace(span.begin(), span.end());
   }
 
   base::Token tab_group_id;
@@ -175,10 +178,9 @@ long TabStoragePackagerAndroid::ConsolidateTabData(
       std::make_unique<AndroidTabPackage>(
           kTabStoragePackagerAndroidVersion, tab->GetAndroidId(),
           tab->GetParentId(), timestamp_millis,
-          std::move(web_contents_state_bytes),
-          std::make_unique<std::string>(std::move(opener_app_id)), theme_color,
-          last_navigation_committed_timestamp_millis, tab_has_sensitive_content,
-          tab->GetTabLaunchTypeAtCreation());
+          std::move(web_contents_state_bytes), std::move(opener_app_id),
+          theme_color, last_navigation_committed_timestamp_millis,
+          tab_has_sensitive_content, tab->GetTabLaunchTypeAtCreation());
 
   TabStoragePackage* package_ptr =
       new TabStoragePackage(tab->GetUserAgent(), std::move(tab_group_id),

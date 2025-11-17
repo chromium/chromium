@@ -6,23 +6,26 @@
 #define CHROME_BROWSER_TAB_ANDROID_TAB_PACKAGE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <vector>
 
 namespace tabs {
 
 // C++ representation of platform-specific tab data for Android.
 struct AndroidTabPackage {
  public:
-  AndroidTabPackage(int version,
-                    int id,
-                    int parent_id,
-                    long timestamp_millis,
-                    std::unique_ptr<std::string> web_contents_state_bytes,
-                    std::unique_ptr<std::string> opener_app_id,
-                    int theme_color,
-                    long last_navigation_committed_timestamp_millis,
-                    bool tab_has_sensitive_content,
-                    int launch_type_at_creation);
+  AndroidTabPackage(
+      int version,
+      int id,
+      int parent_id,
+      long timestamp_millis,
+      std::optional<std::vector<uint8_t>> web_contents_state_bytes,
+      std::optional<std::string> opener_app_id,
+      int theme_color,
+      long last_navigation_committed_timestamp_millis,
+      bool tab_has_sensitive_content,
+      int launch_type_at_creation);
   ~AndroidTabPackage();
 
   AndroidTabPackage(const AndroidTabPackage&) = delete;
@@ -32,8 +35,8 @@ struct AndroidTabPackage {
   const int id_;
   const int parent_id_;
   const long timestamp_millis_;
-  const std::unique_ptr<std::string> web_contents_state_bytes_;
-  const std::unique_ptr<std::string> opener_app_id_;
+  const std::optional<std::vector<uint8_t>> web_contents_state_bytes_;
+  const std::optional<std::string> opener_app_id_;
   const int theme_color_;
   const long last_navigation_committed_timestamp_millis_;
   const bool tab_has_sensitive_content_;

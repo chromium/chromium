@@ -20,7 +20,7 @@ TabStoragePackage::TabStoragePackage(
 
 TabStoragePackage::~TabStoragePackage() = default;
 
-std::string TabStoragePackage::SerializePayload() const {
+std::vector<uint8_t> TabStoragePackage::SerializePayload() const {
   tabs_pb::TabState tab_state;
   const std::unique_ptr<AndroidTabPackage>& android_package =
       android_tab_package_;
@@ -30,7 +30,8 @@ std::string TabStoragePackage::SerializePayload() const {
     tab_state.set_timestamp_millis(android_package->timestamp_millis_);
     if (android_package->web_contents_state_bytes_) {
       tab_state.set_web_contents_state_bytes(
-          *android_package->web_contents_state_bytes_);
+          android_package->web_contents_state_bytes_->data(),
+          android_package->web_contents_state_bytes_->size());
     }
     tab_state.set_web_contents_state_version(android_package->version_);
     if (android_package->opener_app_id_) {
@@ -49,13 +50,13 @@ std::string TabStoragePackage::SerializePayload() const {
   tab_state.set_tab_group_id_low(tab_group_id_.low());
   tab_state.set_is_pinned(is_pinned_);
 
-  std::string payload;
-  tab_state.SerializeToString(&payload);
-  return payload;
+  std::vector<uint8_t> payload_vec(tab_state.ByteSizeLong());
+  tab_state.SerializeToArray(payload_vec.data(), payload_vec.size());
+  return payload_vec;
 }
 
-std::string TabStoragePackage::SerializeChildren() const {
-  return "";
+std::vector<uint8_t> TabStoragePackage::SerializeChildren() const {
+  return {};
 }
 
 }  // namespace tabs

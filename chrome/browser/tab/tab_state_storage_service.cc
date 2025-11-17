@@ -259,7 +259,8 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
     max_storage_id = std::max(max_storage_id, entry.id);
     if (entry.type == TabStorageType::kTab) {
       tabs_pb::TabState tab_state;
-      if (tab_state.ParseFromString(entry.payload)) {
+      if (tab_state.ParseFromArray(entry.payload.data(),
+                                   entry.payload.size())) {
         builder->RegisterTab(entry.id, tab_state);
         loaded_tabs_map.emplace(
             entry.id,
@@ -274,14 +275,16 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
             << "Multiple root nodes for window tag in the database.";
         root_storage_id = entry.id;
         tabs_pb::TabStripCollectionState tab_strip_state;
-        if (tab_strip_state.ParseFromString(entry.payload)) {
+        if (tab_strip_state.ParseFromArray(entry.payload.data(),
+                                           entry.payload.size())) {
           if (tab_strip_state.has_active_tab_storage_id()) {
             active_tab_storage_id = tab_strip_state.active_tab_storage_id();
           }
         }
       }
       tabs_pb::Children children;
-      if (children.ParseFromString(entry.children)) {
+      if (children.ParseFromArray(entry.children.data(),
+                                  entry.children.size())) {
         builder->RegisterCollection(entry.id, entry.type, children);
         const auto& storage_ids = children.storage_id();
         children_map.emplace(
@@ -290,7 +293,8 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
 
       if (entry.type == TabStorageType::kGroup) {
         tabs_pb::TabGroupCollectionState group_state;
-        if (group_state.ParseFromString(entry.payload)) {
+        if (group_state.ParseFromArray(entry.payload.data(),
+                                       entry.payload.size())) {
           loaded_groups.emplace_back(
               std::make_unique<TabGroupCollectionData>(group_state));
         }

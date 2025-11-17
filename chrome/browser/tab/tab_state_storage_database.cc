@@ -132,6 +132,19 @@ bool InitSchema(sql::Database* db, sql::MetaTable* meta_table) {
 
 }  // namespace
 
+NodeState::NodeState(int id,
+                     TabStorageType type,
+                     std::vector<uint8_t> payload,
+                     std::vector<uint8_t> children)
+    : id(id),
+      type(type),
+      payload(std::move(payload)),
+      children(std::move(children)) {}
+NodeState::~NodeState() = default;
+
+NodeState::NodeState(NodeState&&) noexcept = default;
+NodeState& NodeState::operator=(NodeState&&) noexcept = default;
+
 OpenTransaction::OpenTransaction(std::unique_ptr<sql::Transaction> transaction)
     : transaction_(std::move(transaction)) {}
 
@@ -197,8 +210,8 @@ bool TabStateStorageDatabase::SaveNode(OpenTransaction* transaction,
                                        std::string window_tag,
                                        bool is_off_the_record,
                                        TabStorageType type,
-                                       std::string payload,
-                                       std::string children) {
+                                       std::vector<uint8_t> payload,
+                                       std::vector<uint8_t> children) {
   CHECK(db_);
   DCHECK(OpenTransaction::IsValid(transaction));
 
@@ -224,7 +237,7 @@ bool TabStateStorageDatabase::SaveNode(OpenTransaction* transaction,
 
 bool TabStateStorageDatabase::SaveNodePayload(OpenTransaction* transaction,
                                               int id,
-                                              std::string payload) {
+                                              std::vector<uint8_t> payload) {
   CHECK(db_);
   DCHECK(OpenTransaction::IsValid(transaction));
 
@@ -246,7 +259,7 @@ bool TabStateStorageDatabase::SaveNodePayload(OpenTransaction* transaction,
 
 bool TabStateStorageDatabase::SaveNodeChildren(OpenTransaction* transaction,
                                                int id,
-                                               std::string children) {
+                                               std::vector<uint8_t> children) {
   CHECK(db_);
   DCHECK(OpenTransaction::IsValid(transaction));
 
@@ -335,13 +348,11 @@ std::vector<NodeState> TabStateStorageDatabase::LoadAllNodes(
   select_statement.BindString(0, window_tag);
   select_statement.BindInt(1, static_cast<int>(is_off_the_record));
   while (select_statement.Step()) {
-    NodeState entry = {
-        .id = select_statement.ColumnInt(0),
-        .type = static_cast<TabStorageType>(select_statement.ColumnInt(1)),
-        .payload = select_statement.ColumnBlobAsString(2),
-        .children = select_statement.ColumnBlobAsString(3),
-    };
-    entries.push_back(std::move(entry));
+    entries.emplace_back(
+        select_statement.ColumnInt(0),
+        static_cast<TabStorageType>(select_statement.ColumnInt(1)),
+        select_statement.ColumnBlobAsVector(2),
+        select_statement.ColumnBlobAsVector(3));
   }
   return entries;
 }

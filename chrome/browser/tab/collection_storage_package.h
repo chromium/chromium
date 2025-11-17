@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_TAB_COLLECTION_STORAGE_PACKAGE_H_
 #define CHROME_BROWSER_TAB_COLLECTION_STORAGE_PACKAGE_H_
 
-#include <string>
+#include <cstdint>
+#include <vector>
 
 #include "chrome/browser/tab/protocol/children.pb.h"
 #include "chrome/browser/tab/storage_package.h"
@@ -24,8 +25,8 @@ class CollectionStoragePackage : public StoragePackage {
   CollectionStoragePackage& operator=(const CollectionStoragePackage&) = delete;
 
   // StoragePackage:
-  std::string SerializePayload() const override;
-  std::string SerializeChildren() const override;
+  std::vector<uint8_t> SerializePayload() const override;
+  std::vector<uint8_t> SerializeChildren() const override;
 
  private:
   std::unique_ptr<Payload> metadata_;

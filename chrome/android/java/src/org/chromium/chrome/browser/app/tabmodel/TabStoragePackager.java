@@ -227,7 +227,7 @@ public class TabStoragePackager {
                 long nativeTabStoragePackagerAndroid,
                 long timestampMillis,
                 @Nullable ByteBuffer webContentsStateBuffer,
-                @Nullable @JniType("std::string") String openerAppId,
+                @Nullable @JniType("std::optional<std::string>") String openerAppId,
                 int themeColor,
                 long lastNavigationCommittedTimestampMillis,
                 boolean tabHasSensitiveContent,
