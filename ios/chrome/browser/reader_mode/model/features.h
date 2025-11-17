@@ -31,6 +31,9 @@ BASE_DECLARE_FEATURE(kEnableReaderModePageEligibilityForToolsMenu);
 // Feature to enable Readability heuristic for page triggering eligibility.
 BASE_DECLARE_FEATURE(kEnableReadabilityHeuristic);
 
+// Feature to enable optimization guide eligibility check.
+BASE_DECLARE_FEATURE(kEnableReaderModeOptimizationGuideEligibility);
+
 // Name to configure the duration string for heuristic page load delay. See
 // `base::TimeDeltaFromString` for valid duration string configurations.
 extern const char kReaderModeHeuristicPageLoadDelayDurationStringName[];
@@ -53,5 +56,8 @@ bool IsReaderModeOmniboxEntryPointEnabled();
 
 // Returns whether translation is enabled while in Reading Mode.
 bool IsReaderModeTranslationAvailable();
+
+// Returns whether optimization guide eligibility check is enabled.
+bool IsReaderModeOptimizationGuideEligibilityAvailable();
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_FEATURES_H_

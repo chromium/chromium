@@ -45,7 +45,9 @@ enum class ReaderModeHeuristicResult {
   kReaderModeNotEligibleContentOnly = 2,
   kReaderModeNotEligibleContentLength = 3,
   kReaderModeNotEligibleContentAndLength = 4,
-  kMaxValue = kReaderModeNotEligibleContentAndLength,
+  kReaderModeNotEligibleOptimizationGuideIneligible = 5,
+  kReaderModeNotEligibleOptimizationGuideUnknown = 6,
+  kMaxValue = kReaderModeNotEligibleOptimizationGuideUnknown,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeHeuristicResult)
 

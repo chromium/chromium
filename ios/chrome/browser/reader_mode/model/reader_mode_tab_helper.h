@@ -9,6 +9,9 @@
 #import "base/observer_list.h"
 #import "base/scoped_observation.h"
 #import "base/timer/timer.h"
+#import "components/optimization_guide/core/hints/optimization_guide_decider.h"
+#import "components/optimization_guide/core/hints/optimization_guide_decision.h"
+#import "components/optimization_guide/core/hints/optimization_metadata.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_delegate.h"
@@ -131,6 +134,11 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // logic.
   void HandleReadabilityHeuristicResult(const base::Value* result);
 
+  void OnOptimizationGuideDecision(
+      optimization_guide::OptimizationGuideDecision decision,
+      const optimization_guide::OptimizationMetadata& metadata);
+  void CompleteHeuristic(ReaderModeHeuristicResult result);
+
   // Trigger the heuristic to determine reader mode eligibility.
   void TriggerReaderModeHeuristic(const GURL& url);
 
@@ -216,6 +224,10 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
   raw_ptr<DistillerService> distiller_service_;
+
+  // The optimization guide decider for page metadata.
+  raw_ptr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_ = nullptr;
 
   std::unique_ptr<ReaderModeDistillerViewer> distiller_viewer_;
 

@@ -12,6 +12,8 @@
 #import "components/dom_distiller/core/extraction_utils.h"
 #import "components/language/ios/browser/language_detection_java_script_feature.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_scroll_anchor_java_script_feature.h"
@@ -37,13 +39,22 @@ void ReaderModeTest::SetUp() {
       /*enabled_features=*/
       {{kEnableReaderMode, custom_time_params}, {kEnableReaderModeInUS, {}}},
       /*disabled_features=*/{});
-  profile_ = TestProfileIOS::Builder().Build();
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(
+      OptimizationGuideServiceFactory::GetInstance(),
+      OptimizationGuideServiceFactory::GetDefaultFactory());
+  profile_ = std::move(builder).Build();
 
   web::test::OverrideJavaScriptFeatures(
       profile_.get(),
       {ReaderModeJavaScriptFeature::GetInstance(),
        ReaderModeScrollAnchorJavaScriptFeature::GetInstance(),
        language::LanguageDetectionJavaScriptFeature::GetInstance()});
+}
+
+void ReaderModeTest::TearDown() {
+  scoped_feature_list_.Reset();
+  PlatformTest::TearDown();
 }
 
 std::unique_ptr<web::FakeWebState> ReaderModeTest::CreateWebState() {
@@ -171,6 +182,10 @@ void ReaderModeTest::AddReadabilityHeuristicResultToFrame(
       break;
     case ReaderModeHeuristicResult::kReaderModeNotEligibleContentOnly:
     case ReaderModeHeuristicResult::kReaderModeNotEligibleContentLength:
+    case ReaderModeHeuristicResult::
+        kReaderModeNotEligibleOptimizationGuideIneligible:
+    case ReaderModeHeuristicResult::
+        kReaderModeNotEligibleOptimizationGuideUnknown:
       NOTREACHED();
   }
   web_frame->AddResultForExecutedJs(readability_heuristic_value_.get(),
@@ -191,5 +206,11 @@ std::string ReaderModeTest::TestParametersReaderModeHeuristicResultToString(
       return "ReaderModeNotEligibleContentLength";
     case ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength:
       return "ReaderModeNotEligibleContentAndLength";
+    case ReaderModeHeuristicResult::
+        kReaderModeNotEligibleOptimizationGuideIneligible:
+      return "ReaderModeNotEligibleOptimizationGuideIneligible";
+    case ReaderModeHeuristicResult::
+        kReaderModeNotEligibleOptimizationGuideUnknown:
+      return "ReaderModeNotEligibleOptimizationGuideUnknown";
   }
 }

@@ -113,7 +113,6 @@ class SideSwipeMediatorTest : public ReaderModeTest {
     active_web_state_index_.reset();
   }
 
-  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<Browser> browser_;
   UIView* view_;
   SideSwipeMediator* side_swipe_mediator_;

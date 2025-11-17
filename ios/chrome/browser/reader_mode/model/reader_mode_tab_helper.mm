@@ -25,6 +25,8 @@
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_page.h"
@@ -126,6 +128,17 @@ ReaderModeTabHelper::ReaderModeTabHelper(web::WebState* web_state,
       distiller_service_(distiller_service),
       metrics_helper_(web_state, distiller_service->GetDistilledPagePrefs()) {
   CHECK(web_state_);
+  if (IsReaderModeOptimizationGuideEligibilityAvailable()) {
+    OptimizationGuideService* optimization_guide_service =
+        OptimizationGuideServiceFactory::GetForProfile(
+            ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
+    if (optimization_guide_service) {
+      optimization_guide_service->RegisterOptimizationTypes(
+          {optimization_guide::proto::READER_MODE_ELIGIBLE});
+      optimization_guide_decider_ = optimization_guide_service;
+    }
+  }
+
   web_state_observation_.Observe(web_state_);
 }
 
@@ -395,6 +408,44 @@ void ReaderModeTabHelper::HandleReadabilityHeuristicResult(
 
 void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
     ReaderModeHeuristicResult result) {
+  if (result == ReaderModeHeuristicResult::kReaderModeEligible &&
+      optimization_guide_decider_ &&
+      IsReaderModeOptimizationGuideEligibilityAvailable()) {
+    // Do additional checks.
+    optimization_guide_decider_->CanApplyOptimization(
+        eligibility_heuristic_url_.value(),
+        optimization_guide::proto::READER_MODE_ELIGIBLE,
+        base::BindOnce(&ReaderModeTabHelper::OnOptimizationGuideDecision,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+  CompleteHeuristic(result);
+}
+
+void ReaderModeTabHelper::OnOptimizationGuideDecision(
+    optimization_guide::OptimizationGuideDecision decision,
+    const optimization_guide::OptimizationMetadata& metadata) {
+  ReaderModeHeuristicResult result;
+  switch (decision) {
+    case optimization_guide::OptimizationGuideDecision::kTrue: {
+      result = ReaderModeHeuristicResult::kReaderModeEligible;
+      break;
+    }
+    case optimization_guide::OptimizationGuideDecision::kFalse: {
+      result = ReaderModeHeuristicResult::
+          kReaderModeNotEligibleOptimizationGuideIneligible;
+      break;
+    }
+    case optimization_guide::OptimizationGuideDecision::kUnknown: {
+      result = ReaderModeHeuristicResult::
+          kReaderModeNotEligibleOptimizationGuideUnknown;
+      break;
+    }
+  }
+  return CompleteHeuristic(result);
+}
+
+void ReaderModeTabHelper::CompleteHeuristic(ReaderModeHeuristicResult result) {
   metrics_helper_.RecordReaderHeuristicCompleted(result);
 
   if (!eligibility_heuristic_url_.has_value() ||
@@ -405,6 +456,7 @@ void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
     eligibility_heuristic_url_.reset();
     return;
   }
+
   reader_mode_eligible_url_ =
       result == ReaderModeHeuristicResult::kReaderModeEligible
           ? eligibility_heuristic_url_.value()

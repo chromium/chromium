@@ -831,6 +831,9 @@ extern const char kReaderModeDescription[];
 extern const char kReaderModeNewCssName[];
 extern const char kReaderModeNewCssDescription[];
 
+extern const char kReaderModeOptimizationGuideEligibilityName[];
+extern const char kReaderModeOptimizationGuideEligibilityDescription[];
+
 extern const char kReaderModePageEligibilityHeuristicName[];
 extern const char kReaderModePageEligibilityHeuristicDescription[];
 

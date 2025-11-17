@@ -1393,6 +1393,11 @@ const char kReaderModeNewCssName[] = "Reader mode new CSS on iOS";
 const char kReaderModeNewCssDescription[] =
     "Enables the new CSS for Reader mode on iOS.";
 
+const char kReaderModeOptimizationGuideEligibilityName[] =
+    "Enables Reader Mode Optimization Guide Eligibility";
+const char kReaderModeOptimizationGuideEligibilityDescription[] =
+    "Enables the optimization guide eligibility check for Reader Mode.";
+
 const char kReaderModePageEligibilityHeuristicName[] =
     "Enables Reader Mode page eligibility heuristic";
 const char kReaderModePageEligibilityHeuristicDescription[] =

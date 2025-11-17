@@ -7,6 +7,7 @@ include_rules = [
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/language/model",
   "+ios/chrome/browser/link_to_text/model",
+  "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/overlays/model/public",
   "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/translate/model",

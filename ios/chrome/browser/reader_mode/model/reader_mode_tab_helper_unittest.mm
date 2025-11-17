@@ -6,9 +6,13 @@
 
 #import "base/scoped_observation.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/optimization_guide/proto/hints.pb.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"
 #import "ios/chrome/browser/browser_container/model/edit_menu_tab_helper.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_test.h"
@@ -68,7 +72,10 @@ class ReaderModeTabHelperTest : public ReaderModeTest {
     ukm::InitializeSourceUrlRecorderForWebState(web_state());
   }
 
-  void TearDown() override { test_ukm_recorder_.Purge(); }
+  void TearDown() override {
+    test_ukm_recorder_.Purge();
+    ReaderModeTest::TearDown();
+  }
 
   ReaderModeTabHelper* reader_mode_tab_helper() {
     return ReaderModeTabHelper::FromWebState(web_state());
@@ -98,7 +105,6 @@ class ReaderModeTabHelperTest : public ReaderModeTest {
 
  protected:
   std::unique_ptr<web::FakeWebState> web_state_;
-  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 };
@@ -691,6 +697,101 @@ TEST_F(ReaderModeTabHelperTest, MAYBE_TestDistillationCompletedAfterTimeout) {
   EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
               BucketsAre(Bucket(ReaderModeState::kReaderShown, 1)));
   EXPECT_TRUE(reader_mode_tab_helper()->IsActive());
+}
+
+class ReaderModeTabHelperOptimizationGuideTest
+    : public ReaderModeTabHelperTest {
+ public:
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        kEnableReaderModeOptimizationGuideEligibility);
+
+    ReaderModeTabHelperTest::SetUp();
+  }
+
+  void TearDown() override {
+    ReaderModeTabHelperTest::TearDown();
+    feature_list_.Reset();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that reader mode is eligible when the OptimizationGuideService provides
+// a hint on an eligible page.
+TEST_F(ReaderModeTabHelperOptimizationGuideTest, EligibilityForEligiblePage) {
+  GURL test_url("https://test.url/");
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+
+  // Prepare optimization guide metadata.
+  OptimizationGuideService* optimization_guide_service =
+      OptimizationGuideServiceFactory::GetForProfile(profile());
+  optimization_guide::proto::Any any_metadata;
+  optimization_guide::OptimizationMetadata metadata;
+  metadata.set_any_metadata(any_metadata);
+  optimization_guide_service->AddHintForTesting(
+      GURL(test_url), optimization_guide::proto::READER_MODE_ELIGIBLE,
+      metadata);
+
+  LoadWebpage(web_state(), test_url);
+  WaitForPageLoadDelayAndRunUntilIdle();
+
+  ASSERT_TRUE(reader_mode_tab_helper()->CurrentPageIsDistillable());
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeHeuristicResultHistogram),
+      BucketsAre(Bucket(ReaderModeHeuristicResult::kReaderModeEligible, 1)));
+}
+
+// Tests that reader mode is not eligible when the heuristic is not eligible
+// regardless of the OptimizationGuideService hint.
+TEST_F(ReaderModeTabHelperOptimizationGuideTest,
+       EligibilityForNotEligiblePage) {
+  GURL test_url("https://test.url/");
+  SetReaderModeState(
+      web_state(), test_url,
+      ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength, "");
+
+  // Prepare optimization guide metadata.
+  OptimizationGuideService* optimization_guide_service =
+      OptimizationGuideServiceFactory::GetForProfile(profile());
+  optimization_guide::proto::Any any_metadata;
+  optimization_guide::OptimizationMetadata metadata;
+  metadata.set_any_metadata(any_metadata);
+  optimization_guide_service->AddHintForTesting(
+      GURL(test_url), optimization_guide::proto::READER_MODE_ELIGIBLE,
+      metadata);
+
+  LoadWebpage(web_state(), test_url);
+  WaitForPageLoadDelayAndRunUntilIdle();
+
+  ASSERT_FALSE(reader_mode_tab_helper()->CurrentPageIsDistillable());
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeHeuristicResultHistogram),
+      BucketsAre(Bucket(
+          ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength,
+          1)));
+}
+
+// Tests that reader mode is not eligible when the OptimizationGuideService hint
+// returns ineligibility.
+TEST_F(ReaderModeTabHelperOptimizationGuideTest,
+       NotEligibleWithOptimizationGuide) {
+  GURL test_url("https://test.url/");
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+
+  // No optimization guide metadata provided.
+  LoadWebpage(web_state(), test_url);
+  WaitForPageLoadDelayAndRunUntilIdle();
+
+  ASSERT_FALSE(reader_mode_tab_helper()->CurrentPageIsDistillable());
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeHeuristicResultHistogram),
+      BucketsAre(Bucket(ReaderModeHeuristicResult::
+                            kReaderModeNotEligibleOptimizationGuideIneligible,
+                        1)));
 }
 
 class ReaderModeTabHelperWithEligibilityTest

@@ -1933,6 +1933,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Not eligible (content only)"/>
   <int value="3" label="Not eligible (length only)"/>
   <int value="4" label="Not eligible (content and length)"/>
+  <int value="5" label="Not eligible (optimization guide ineligible)"/>
+  <int value="6" label="Not eligible (optimization guide unknown)"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeHeuristicResult) -->
