@@ -461,8 +461,16 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       }));
 }
 
+// TODO(crbug.com/460831500): Enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_InvalidatedAccountWhileLoadingGlic \
+  DISABLED_InvalidatedAccountWhileLoadingGlic
+#else
+#define MAYBE_InvalidatedAccountWhileLoadingGlic \
+  InvalidatedAccountWhileLoadingGlic
+#endif
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       InvalidatedAccountWhileLoadingGlic) {
+                       MAYBE_InvalidatedAccountWhileLoadingGlic) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     // TODO(b/453696965): Broken in multi-instance.
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";
@@ -482,8 +490,16 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       WaitForWebUIState(mojom::WebUiState::kReady));
 }
 
+// TODO(crbug.com/460831500): Enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_InvalidatedAccountSignInOnGlicOpenFlow \
+  DISABLED_InvalidatedAccountSignInOnGlicOpenFlow
+#else
+#define MAYBE_InvalidatedAccountSignInOnGlicOpenFlow \
+  InvalidatedAccountSignInOnGlicOpenFlow
+#endif
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       InvalidatedAccountSignInOnGlicOpenFlow) {
+                       MAYBE_InvalidatedAccountSignInOnGlicOpenFlow) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     // TODO(b/453696965): Broken in multi-instance, requirements have changed.
     // Update this test.
@@ -744,10 +760,16 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerLocationMetricsUiTest,
   tester.ExpectBucketCount("Glic.PositionOnChrome.OnClose",
                            ChromeRelativePosition::kNoVisibleChromeBrowser, 1);
 }
+#endif  // BUILDFLAG(IS_MAC)
 
+// TODO(crbug.com/460831500): Enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PermanentlyDeleteProfile DISABLED_PermanentlyDeleteProfile
+#else
+#define MAYBE_PermanentlyDeleteProfile PermanentlyDeleteProfile
 #endif
-
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, PermanentlyDeleteProfile) {
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       MAYBE_PermanentlyDeleteProfile) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     // TODO(b/453696965): Broken in multi-instance.
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";
