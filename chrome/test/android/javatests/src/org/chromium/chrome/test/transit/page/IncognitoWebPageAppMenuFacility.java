@@ -32,7 +32,12 @@ public class IncognitoWebPageAppMenuFacility extends PageAppMenuFacility<WebPage
             mNewIncognitoWindow = declareMenuItem(items, NEW_INCOGNITO_WINDOW_ID);
         }
 
-        declareMenuItem(items, HISTORY_ID);
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            declareAbsentMenuItem(items, HISTORY_ID);
+        } else {
+            declareMenuItem(items, HISTORY_ID);
+        }
+
         declareAbsentMenuItem(items, DELETE_BROWSING_DATA_ID);
         declareMenuItem(items, DOWNLOADS_ID);
         mBookmarks = declareMenuItem(items, BOOKMARKS_ID);

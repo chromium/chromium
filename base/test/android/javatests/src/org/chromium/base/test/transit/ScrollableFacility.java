@@ -22,6 +22,7 @@ import androidx.test.espresso.Root;
 import androidx.test.espresso.action.ViewActions;
 
 import org.hamcrest.Matcher;
+import org.hamcrest.StringDescription;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.ScrollableFacility.Item.Presence;
@@ -397,7 +398,20 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
         for (ScrollableFacility<?>.Item item : getItems()) {
             if (item.getPresence() == Presence.PRESENT_AND_ENABLED
                     || item.getPresence() == Presence.PRESENT_AND_DISABLED) {
-                item.scrollToItemIfNeeded();
+                try {
+                    item.scrollToItemIfNeeded();
+                } catch (Exception e) {
+                    // Wrap exception to make clear which item was being scroll to
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Item [");
+                    sb.append(StringDescription.asString(item.getViewSpec().getViewMatcher()));
+                    if (item.mOffScreenDataMatcher != null) {
+                        sb.append(" / ");
+                        sb.append(StringDescription.asString(item.mOffScreenDataMatcher));
+                    }
+                    sb.append("] not present");
+                    throw new AssertionError(sb.toString(), e);
+                }
             }
         }
     }
