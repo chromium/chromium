@@ -42,10 +42,8 @@ class WorkerGlobalScope;
 
 class WorkerGlobalScopeCrypto final
     : public GarbageCollected<WorkerGlobalScopeCrypto>,
-      public Supplement<WorkerGlobalScope> {
+      public GarbageCollectedMixin {
  public:
-  static const unsigned kSupplementIndex;
-
   static WorkerGlobalScopeCrypto& From(WorkerGlobalScope&);
   static Crypto* crypto(WorkerGlobalScope&);
   Crypto* crypto() const;
@@ -55,6 +53,7 @@ class WorkerGlobalScopeCrypto final
   void Trace(Visitor*) const override;
 
  private:
+  Member<WorkerGlobalScope> worker_global_scope_;
   mutable Member<Crypto> crypto_;
 };
 
