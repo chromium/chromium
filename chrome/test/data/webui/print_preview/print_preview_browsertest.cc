@@ -411,6 +411,11 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, ScalingPdf) {
   RunTestCase("ScalingPdf");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest,
+                       ScalingPdfAlignPdfDefaultPrintSettingsWithHTML) {
+  RunTestCase("ScalingPdfAlignPdfDefaultPrintSettingsWithHTML");
+}
+
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, Rasterize) {
   RunTestCase("Rasterize");

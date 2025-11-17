@@ -12,6 +12,7 @@ import '/strings.m.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -686,10 +687,14 @@ export class PrintPreviewPreviewAreaElement extends
         100;
   }
 
+  /** @return Whether the scaling is for PDF. */
+  private isScalingPdf_(): boolean {
+    return this.getSetting('scalingTypePdf').available;
+  }
+
   /** @return Appropriate key for the scaling type setting. */
   private getScalingSettingKey_(): keyof Settings {
-    return this.getSetting('scalingTypePdf').available ? 'scalingTypePdf' :
-                                                         'scalingType';
+    return this.isScalingPdf_() ? 'scalingTypePdf' : 'scalingType';
   }
 
   /**
@@ -707,6 +712,19 @@ export class PrintPreviewPreviewAreaElement extends
     const scalingType = this.getSettingValue(this.getScalingSettingKey_());
     if (scalingType === lastTicket.scalingType) {
       return false;
+    }
+
+    // When 'alignPdfDefaultPrintSettingsWithHTML' is enabled,
+    // PDF documents use a different default scaling behavior:
+    //
+    // - OLD behavior: PDF default scaling = CUSTOM with a scale factor of 100
+    // - NEW behavior: PDF default scaling = kCenterShrinkToFitPaper
+    //
+    // This change means that switching the scaling type to PDF now indicates
+    // a scaling change.
+    if (this.isScalingPdf_() &&
+        loadTimeData.getBoolean('alignPdfDefaultPrintSettingsWithHTML')) {
+      return true;
     }
 
     // Scaling doesn't always change because of a scalingType change. Changing
