@@ -139,10 +139,8 @@ class OtpFormEventLoggerIntegrationTest
     one_time_tokens::OtpFetchReply reply = CreateOtpFetchReply(returns_otp);
     EXPECT_CALL(*backend, RetrieveSmsOtp)
         .WillRepeatedly([this, returns_otp, reply](auto callback) {
-          if (returns_otp && autofill_manager().GetMetricState().has_value()) {
-            autofill_manager()
-                .GetMetricState()
-                ->otp_form_event_logger.OnOtpAvailable();
+          if (returns_otp) {
+            autofill_manager().GetOtpFormEventLogger().OnOtpAvailable();
           }
           std::move(callback).Run(reply);
         });

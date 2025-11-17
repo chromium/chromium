@@ -196,9 +196,7 @@ void OtpManagerImpl::MaybeShowOtpSuggestions(
     suggestions.clear();
   }
 
-  if (owner_->GetMetricState().has_value()) {
-    owner_->GetMetricState()->otp_form_event_logger.OnOtpAvailable();
-  }
+  owner_->GetOtpFormEventLogger().OnOtpAvailable();
   std::move(last_pending_get_suggestions_callback_).Run(std::move(suggestions));
 }
 

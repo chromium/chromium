@@ -342,12 +342,16 @@ class BrowserAutofillManager : public AutofillManager {
   virtual autofill_metrics::CreditCardFormEventLogger&
   GetCreditCardFormEventLogger();
 
+  // This reference is not stable over the lifetime of BrowserAutofillManager.
+  autofill_metrics::OtpFormEventLogger& GetOtpFormEventLogger() {
+    return metrics_->otp_form_event_logger;
+  }
+
   // Returns an appropriate EventFormLogger, depending on the given `field`'s
   // type. May return nullptr.
+  // This pointer is not stable over the lifetime of BrowserAutofillManager.
   autofill_metrics::FormEventLoggerBase* GetEventFormLogger(
       const AutofillField& field);
-
-  std::optional<MetricsState>& GetMetricState() { return metrics_; }
 
  protected:
   // Returns the card image for `credit_card`. If the `credit_card` has a card
