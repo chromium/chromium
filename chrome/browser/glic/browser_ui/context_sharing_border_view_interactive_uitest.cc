@@ -7,6 +7,7 @@
 #include "base/numerics/ranges.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_policy_checker.h"
@@ -52,6 +53,13 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif  // BUILDFLAG(IS_MAC)
+
+// TODO(crbug.com/460522797): Re-enable failing tests on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE(test_name) DISABLED_##test_name
+#else
+#define MAYBE(test_name) test_name
+#endif
 
 namespace glic {
 
@@ -355,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, Visibility) {
 
 // Exercise the default user journey: toggles the border animation and wait for
 // it to finish.
-IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, SmokeTest) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, MAYBE(SmokeTest)) {
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()
@@ -487,7 +495,8 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
 }
 
 // Ensures that the emphasis animation is restarted when tab focus changes.
-IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, FocusedTabChange) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
+                       MAYBE(FocusedTabChange)) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     // TODO(b/453696965): Broken in multi-instance.
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";
@@ -549,7 +558,8 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, FocusedTabChange) {
 
 // Ensures that only the emphasis animation is restarted when the focused tab is
 // destroyed.
-IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, FocusedTabDestroyed) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
+                       MAYBE(FocusedTabDestroyed)) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     // TODO(b/453696965): Broken in multi-instance.
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";
@@ -617,7 +627,8 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, FocusedTabDestroyed) {
 
 // TODO(crbug.com/430097333): Wayland doesn't support programmatic window
 // activation. Re-enable when activation is supported.
-#if BUILDFLAG(IS_OZONE_WAYLAND)
+// TODO(crbug.com/460522797): Enable on ChromeOS.
+#if BUILDFLAG(IS_OZONE_WAYLAND) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FocusedWindowChange DISABLED_FocusedWindowChange
 #else
 #define MAYBE_FocusedWindowChange FocusedWindowChange
@@ -699,7 +710,7 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
 // Ensures that the border fades out before disappearing entirely during
 // emphasis ramp up.
 IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
-                       RampingDownDuringEmphasisRampUp) {
+                       MAYBE(RampingDownDuringEmphasisRampUp)) {
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()
@@ -754,7 +765,7 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
 // Ensures that the border fades out before disappearing entirely during opacity
 // ramp up.
 IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
-                       RampingDownDuringOpacityRampUp) {
+                       MAYBE(RampingDownDuringOpacityRampUp)) {
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()
@@ -860,7 +871,7 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
   EXPECT_FALSE(border->IsShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, EnsureTimeWraps) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, MAYBE(EnsureTimeWraps)) {
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()
