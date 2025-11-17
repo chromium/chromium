@@ -379,7 +379,7 @@ void GlicActorTaskManager::UninterruptActorTask(actor::TaskId task_id) {
                                                .Build());
     return;
   }
-  task->Uninterrupt(actor::ActorTask::State::kReflecting);
+  task->Uninterrupt();
 }
 
 void GlicActorTaskManager::CreateActorTab(
