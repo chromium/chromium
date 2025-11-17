@@ -105,9 +105,12 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
 
   private guestResizeEnabled: boolean = false;
 
-  // Width for non-resizable panel.
+  // Width and height for non-resizable panel.
   private defaultWidth: number = 400;
   private defaultHeight: number = 252;
+
+  // Height for floating loading panel.
+  private floatingLoadingHeight: number = 80;
 
   // Last seen width and height of guest panel.
   private lastWidth: number = 400;
@@ -545,6 +548,14 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
       // For the guest webview, use the most recently requested size.
       this.browserProxy.handler.resizeWidget(
           {width: this.lastWidth, height: this.lastHeight}, transitionDuration);
+    }
+    if (id === 'loadingPanel') {
+      this.browserProxy.handler.resizeWidget(
+          {
+            width: this.defaultWidth,
+            height: this.floatingLoadingHeight,
+          },
+          transitionDuration);
     } else {
       this.browserProxy.handler.resizeWidget(
           {
