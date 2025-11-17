@@ -4465,6 +4465,9 @@ shown properly on the user-facing crash UI.
   <int value="0" label="kSuccess"/>
   <int value="1" label="kMissingBlocklistFileError"/>
   <int value="2" label="kRulesetFormatError"/>
+  <int value="3" label="kDeletionSuccess"/>
+  <int value="4" label="kDeletionFailure"/>
+  <int value="5" label="kDeletionDirDoesNotExist"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/component_updater/afp_blocked_domain_list_component_installer:InstallationResult) -->

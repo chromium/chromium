@@ -144,7 +144,6 @@ void RegisterComponentsForUpdate() {
   RegisterTrustTokenKeyCommitmentsComponentIfTrustTokensEnabled(cus);
   RegisterFirstPartySetsComponent(cus);
   RegisterPrivacySandboxAttestationsComponent(cus);
-  RegisterAntiFingerprintingBlockedDomainListComponent(cus);
   if (history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
     RegisterHistorySearchStringsComponent(cus);
   }
@@ -162,6 +161,11 @@ void RegisterComponentsForUpdate() {
     if (!history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
       DeleteHistorySearchStringsComponent(path);
     }
+
+    // Clean up any remaining state for the blocked domain list component.
+    //
+    // TODO(crbug.com/456488732): Delete this call in M156.
+    UnregisterAntiFingerprintingBlockedDomainListComponent(cus, path);
 
 #if BUILDFLAG(IS_CHROMEOS)
     // Lacros is sunsetted. While rootfs Lacros was already taken care of,
