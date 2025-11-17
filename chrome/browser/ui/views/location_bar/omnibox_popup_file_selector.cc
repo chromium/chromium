@@ -81,16 +81,17 @@ void OmniboxPopupFileSelector::OpenFileUploadDialog(
                            gfx::NativeWindow());
 }
 
-std::string ReadFileAndProcess(const base::FilePath& local_path) {
-  std::string file_bytes;
+std::unique_ptr<FileData> ReadFileAndProcess(const base::FilePath& local_path) {
+  auto file_data = std::make_unique<FileData>();
 
-  if (!base::ReadFileToString(local_path, &file_bytes)) {
+  if (!base::ReadFileToString(local_path, &file_data->bytes)) {
     LOG(ERROR) << "Failed to read file from path: "
                << local_path.AsUTF8Unsafe();
-    return std::string();
   }
-
-  return file_bytes;
+  net::GetMimeTypeFromExtension(local_path.Extension().substr(1),
+                                &file_data->mime_type);
+  file_data->name = local_path.BaseName().AsUTF8Unsafe();
+  return file_data;
 }
 
 void OmniboxPopupFileSelector::FileSelected(const ui::SelectedFileInfo& file,
@@ -99,27 +100,25 @@ void OmniboxPopupFileSelector::FileSelected(const ui::SelectedFileInfo& file,
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ReadFileAndProcess, file.path()),
       base::BindOnce(&OmniboxPopupFileSelector::OnFileDataReady,
-                     weak_factory_.GetWeakPtr(), file.path()));
+                     weak_factory_.GetWeakPtr()));
   file_dialog_.reset();
 }
 
 void OmniboxPopupFileSelector::FileSelectionCanceled() {}
 
-void OmniboxPopupFileSelector::OnFileDataReady(base::FilePath file_path,
-                                               std::string file_bytes) {
+void OmniboxPopupFileSelector::OnFileDataReady(
+    std::unique_ptr<FileData> file_data) {
   if (!query_controller_) {
     return;
   }
 
   base::UnguessableToken file_token = base::UnguessableToken::Create();
 
-  std::string mime_string;
-  net::GetMimeTypeFromExtension(file_path.Extension().substr(1), &mime_string);
   lens::MimeType mime_type;
   std::optional<lens::ImageEncodingOptions> image_options = std::nullopt;
-  if (mime_string.find("pdf") != std::string::npos) {
+  if (file_data->mime_type.find("pdf") != std::string::npos) {
     mime_type = lens::MimeType::kPdf;
-  } else if (mime_string.find("image") != std::string::npos) {
+  } else if (file_data->mime_type.find("image") != std::string::npos) {
     mime_type = lens::MimeType::kImage;
     image_options = CreateImageEncodingOptions();
   } else {
@@ -132,7 +131,7 @@ void OmniboxPopupFileSelector::OnFileDataReady(base::FilePath file_path,
   input_data->primary_content_type = mime_type;
 
   base::span<const uint8_t> file_data_span =
-      base::as_bytes(base::span(file_bytes));
+      base::as_bytes(base::span(file_data->bytes));
   std::vector<uint8_t> file_data_vector(file_data_span.begin(),
                                         file_data_span.end());
   input_data->context_input->push_back(
@@ -143,28 +142,26 @@ void OmniboxPopupFileSelector::OnFileDataReady(base::FilePath file_path,
 
   std::string image_data_url;
   if (mime_type == lens::MimeType::kImage) {
-    image_data_url =
-        "data:" + mime_string + ";base64," + base::Base64Encode(file_bytes);
+    image_data_url = "data:" + file_data->mime_type + ";base64," +
+                     base::Base64Encode(file_data->bytes);
   }
 
-  UpdateSearchboxContextData(file_token, file_path, mime_type, image_data_url);
+  UpdateSearchboxContextData(file_token, mime_type, image_data_url,
+                             file_data->name, file_data->mime_type);
 
   edit_model_->OpenAiMode(false);
 }
 
 void OmniboxPopupFileSelector::UpdateSearchboxContextData(
     base::UnguessableToken file_token,
-    base::FilePath file_path,
     lens::MimeType mime_type,
-    const std::string& image_data_url) {
+    const std::string& image_data_url,
+    std::string file_name,
+    std::string mime_string) {
   auto file_attachment = searchbox::mojom::FileAttachmentStub::New();
   file_attachment->uuid = file_token;
-  file_attachment->name = file_path.BaseName().AsUTF8Unsafe();
-
-  std::string mime_type_string;
-  net::GetMimeTypeFromExtension(file_path.Extension().substr(1),
-                                &mime_type_string);
-  file_attachment->mime_type = mime_type_string;
+  file_attachment->name = file_name;
+  file_attachment->mime_type = mime_string;
 
   if (mime_type == lens::MimeType::kImage) {
     file_attachment->image_data_url = image_data_url;
