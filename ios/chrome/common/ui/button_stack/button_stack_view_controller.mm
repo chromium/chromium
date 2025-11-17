@@ -178,9 +178,8 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
           .height;
   if (stackHeight > 0) {
     stackHeight += [self contentViewBottomInset];
-    return stackHeight + self.actionStackBottomMargin;
   }
-  return 0;
+  return stackHeight + self.actionStackBottomMargin;
 }
 
 - (BOOL)hasVisibleButtons {
