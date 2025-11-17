@@ -259,6 +259,21 @@ TEST_P(AudioFileReaderTest, ReadPartialMP3) {
   RunTestPartialDecode("sfx.mp3");
 }
 
+TEST_P(AudioFileReaderTest, OpusOutputsF32Samples) {
+  RunTest("bear-opus.ogg", "3.64,0.30,0.34,-0.25,1.70,1.68,", 2, 48000,
+          base::Microseconds(2767022), 132818, 132169);
+}
+
+TEST_P(AudioFileReaderTest, OpusTrimmingTest) {
+  RunTest("opus-trimming-test.mp4", "-7.27,-6.96,-5.99,-5.58,-5.66,-6.27,", 1,
+          48000, base::Microseconds(12840001), 616321, 550785);
+}
+
+TEST_P(AudioFileReaderTest, OpusDecodeTest) {
+  RunTest("opus-test.opus", "0.67,-0.92,4.13,1.95,4.16,-1.02,", 2, 48000,
+          base::Microseconds(1016480), 48792, 48479);
+}
+
 // If Symphonia build support is enabled, test with both the Symphonia
 // audio decoder feature enabled and disabled. Otherwise, just provide a false
 // parameter so no duplicate tests are ran.

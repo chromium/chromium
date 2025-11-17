@@ -252,4 +252,9 @@ TEST_F(LegacyAudioFileReaderTest, ReadPartialMP3) {
   RunTestPartialDecode("sfx.mp3");
 }
 
+TEST_F(LegacyAudioFileReaderTest, OpusDecodeTest) {
+  RunTest("opus-test.opus", "0.67,-0.92,4.13,1.95,4.16,-1.02,", 2, 48000,
+          base::Microseconds(1016480), 48792, 48479);
+}
+
 }  // namespace media

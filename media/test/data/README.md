@@ -1793,6 +1793,13 @@ https://people.xiph.org/~greg/opus_testvectors/
 [libaom test vectors]: https://aomedia.googlesource.com/aom/+/master/test/test_vectors.cc
 [libaom LICENSE]: https://source.chromium.org/chromium/chromium/src/+/main:media/test/data/licenses/AOM-LICENSE
 
+### Opus test file
+
+* opus-test.opus
+
+Used in the webaudio opus web test, and copied here for use with the AudioFileReader
+directly. This helps separate test failures due to the file reader implementation
+from issues with the WebAudio implementation that consumes it.
 
 ### DTS Audio
 

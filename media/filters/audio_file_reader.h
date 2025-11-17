@@ -119,9 +119,6 @@ class MEDIA_EXPORT AudioFileReader {
   // Set once the decoder is opened.
   std::optional<AudioDecoderConfig> config_;
 
-  // Initially requested sample format.
-  SampleFormat sample_format_ = kUnknownSampleFormat;
-
   media::NullMediaLog media_log_;
 
   // Last timestamp starts at a valid value of zero.
