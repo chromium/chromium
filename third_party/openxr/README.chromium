@@ -45,6 +45,7 @@ Name: JNIPP
 Short Name: JNIPP
 URL: https://github.com/mitchdowd/jnipp
 Version: v1.0.0-13-gcdd6293
+Revision: cdd6293fca985993129f5ef5441709fc49ee507f
 Update Mechanism: Manual
 License: MIT
 License File: src/src/external/jnipp/LICENSE
