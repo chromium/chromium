@@ -56,7 +56,13 @@
 // Tests that the user can open the list of recent Android tabs by tapping the
 // "open" button on the confirmation alert modal. Afterwards, the modal would
 // not be shown again after the user restarts.
-- (void)testOpen {
+// TODO(crbug.com/461552843): This test is flaky on iPhone device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testOpen testOpen
+#else
+#define MAYBE_testOpen FLAKY_testOpen
+#endif
+- (void)MAYBE_testOpen {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
   }
@@ -114,7 +120,13 @@
 // Tests that the user can swipe down the confirmation alert modal to dismiss
 // it. The prompt would not be shown again when the user leaves the tab grid and
 // comes back, or restarts.
-- (void)testSwipeToDismiss {
+// TODO(crbug.com/461552843): This test is flaky on iPhone device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSwipeToDismiss testSwipeToDismiss
+#else
+#define MAYBE_testSwipeToDismiss FLAKY_testSwipeToDismiss
+#endif
+- (void)MAYBE_testSwipeToDismiss {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
   }
