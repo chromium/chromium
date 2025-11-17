@@ -151,6 +151,8 @@ struct AccessibilityStructureElement {
   std::vector<raw_ptr<AccessibilityTextRunInfo, VectorExperimental>>
       associated_text_runs_if_available;
 
+  std::unique_ptr<AccessibilityImageInfo> associated_image_if_available;
+
   std::vector<std::unique_ptr<AccessibilityStructureElement>> children;
   raw_ptr<AccessibilityStructureElement> parent = nullptr;
 };

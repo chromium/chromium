@@ -582,6 +582,7 @@ std::unique_ptr<AccessibilityStructureElement> PDFiumPage::GetStructureTree() {
   }
 
   CalculateTextRuns();
+  CalculateImages();
 
   auto tree_root = std::make_unique<AccessibilityStructureElement>();
   tree_root->type = PdfTagType::kPart;
@@ -642,9 +643,22 @@ std::unique_ptr<AccessibilityStructureElement> PDFiumPage::GetStructureSubtree(
         }
       }
 
-      // TODO(crbug.com/40707542): Add `associated_image_if_available` field to
-      // `AccessibilityStructureElement` and populate it here by looking up
-      // `marked_content_id` in `marked_content_id_to_images_map_`.
+      auto image_iter =
+          marked_content_id_to_images_map_.find(marked_content_id);
+      if (image_iter != marked_content_id_to_images_map_.end()) {
+        const Image& img = images_[image_iter->second];
+
+        auto accessibility_image = std::make_unique<AccessibilityImageInfo>();
+        accessibility_image->alt_text = img.alt_text;
+        // text_run_index is unused in structure tree mode (image positioning
+        // is determined by structure tree location, not text run proximity).
+        accessibility_image->text_run_index = 0;
+        accessibility_image->bounds = gfx::RectF(img.bounding_rect);
+        accessibility_image->page_object_index = img.page_object_index;
+
+        tree_node->associated_image_if_available =
+            std::move(accessibility_image);
+      }
     }
   }
 
