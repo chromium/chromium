@@ -2046,7 +2046,8 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   // It's safe to revert the secondary toolbar to the initial size only if the
   // user fully exited edit state.
   if (omnibox::ForceBottomOmniboxInEditState() ||
-      omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition()) {
+      omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition() ||
+      IsMultilineBrowserOmniboxEnabled()) {
     if (![self.toolbarCoordinator inEditState]) {
       [self
           adjustSecondaryToolbarForKeyboardHeight:0
