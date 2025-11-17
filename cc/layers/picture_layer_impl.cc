@@ -296,7 +296,7 @@ void PictureLayerImpl::AppendQuadsSpecialization(
       SkColor4f color;
       float width;
       if (*iter && iter->IsReadyToDraw()) {
-        TileDrawInfo::Mode mode = iter->draw_info().mode();
+        TileDrawInfo::Mode mode = iter->draw_mode();
         if (mode == TileDrawInfo::SOLID_COLOR_MODE) {
           color = DebugColors::SolidColorTileBorderColor();
           width = DebugColors::SolidColorTileBorderWidth(device_scale_factor);
