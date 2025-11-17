@@ -1043,4 +1043,35 @@ TEST_F(DevicePolicyDecoderTest, DeviceLoginScreenSecurityKeyPermitAttestation) {
       base::Value(std::move(list_items)));
 }
 
+TEST_F(DevicePolicyDecoderTest,
+       DecodeDeviceLoginScreenPreferSlowKexAlgorithms) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDeviceLoginScreenPreferSlowKexAlgorithms);
+
+  base::Value deviceloginscreenpreferslowkexalgorithms("cnsa2");
+  device_policy.mutable_deviceloginscreenpreferslowkexalgorithms()->set_value(
+      deviceloginscreenpreferslowkexalgorithms.GetString());
+
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceLoginScreenPreferSlowKexAlgorithms,
+      std::move(deviceloginscreenpreferslowkexalgorithms));
+}
+
+TEST_F(DevicePolicyDecoderTest, DecodeDeviceLoginScreenPreferSlowCiphers) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(device_policy,
+                                    key::kDeviceLoginScreenPreferSlowCiphers);
+
+  base::Value deviceloginscreenpreferslowciphers("cnsa");
+  device_policy.mutable_deviceloginscreenpreferslowciphers()->set_value(
+      deviceloginscreenpreferslowciphers.GetString());
+
+  DecodeDevicePolicyTestHelper(device_policy,
+                               key::kDeviceLoginScreenPreferSlowCiphers,
+                               std::move(deviceloginscreenpreferslowciphers));
+}
+
 }  // namespace policy

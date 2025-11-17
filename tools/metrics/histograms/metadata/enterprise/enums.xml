@@ -2346,6 +2346,8 @@ chromium-metrics-reviews@google.com.
   <int value="1411" label="GeolocationBlockedForUrls"/>
   <int value="1412" label="PdfXfaFormsEnabled"/>
   <int value="1413" label="CameraSaveLocation"/>
+  <int value="1414" label="DeviceLoginScreenPreferSlowKexAlgorithms"/>
+  <int value="1415" label="DeviceLoginScreenPreferSlowCiphers"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

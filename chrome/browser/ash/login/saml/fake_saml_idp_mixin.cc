@@ -31,6 +31,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/url_constants.h"
 
 namespace ash {
 namespace {
@@ -112,6 +113,17 @@ std::string GetRelayState(const HttpRequest& request) {
   return relay_state;
 }
 
+GURL GetTestServerURL(const net::EmbeddedTestServer& server,
+                      std::string_view host,
+                      std::string_view path,
+                      bool is_https = true) {
+  if (!server.Started()) {
+    return GURL{base::StrCat({is_https ? url::kHttpsScheme : url::kHttpScheme,
+                              url::kStandardSchemeSeparator, host, "/", path})};
+  }
+  return server.GetURL(host, path);
+}
+
 }  // namespace
 
 FakeSamlIdpMixin::FakeSamlIdpMixin(InProcessBrowserTestMixinHost* host,
@@ -146,9 +158,10 @@ void FakeSamlIdpMixin::SetUpCommandLine(base::CommandLine* command_line) {
         fake_saml_continue_response);
   }
 
-  saml_server_.SetCertHostnames({kIdPHost});
-  ASSERT_TRUE(saml_server_.Start());
-  ASSERT_TRUE(saml_http_server_.Start());
+  if (auto_start_saml_servers_) {
+    saml_server_.SetCertHostnames({kIdPHost});
+    ASSERT_TRUE(StartSamlServersNow());
+  }
 }
 
 void FakeSamlIdpMixin::SetUpOnMainThread() {
@@ -222,36 +235,53 @@ std::string FakeSamlIdpMixin::GetIdpSsoProfile() const {
   return kIdpSsoProfile;
 }
 
+// static
+net::EmbeddedTestServer::ServerCertificateConfig
+FakeSamlIdpMixin::GetServerCertConfig() {
+  net::EmbeddedTestServer::ServerCertificateConfig config;
+  config.dns_names = {std::string(kIdPHost)};
+  return config;
+}
+
 GURL FakeSamlIdpMixin::GetSamlPageUrl() const {
-  return saml_server_.GetURL(kIdPHost, std::string("/") + kSamlLoginPath);
+  return GetTestServerURL(saml_server_, kIdPHost,
+                          std::string("/") + kSamlLoginPath);
 }
 
 GURL FakeSamlIdpMixin::GetHttpSamlPageUrl() const {
-  return saml_http_server_.GetURL(kIdPHost, std::string("/") + kSamlLoginPath);
+  return GetTestServerURL(saml_http_server_, kIdPHost,
+                          std::string("/") + kSamlLoginPath,
+                          /*is_https=*/false);
 }
 
 GURL FakeSamlIdpMixin::GetSamlWithDeviceAttestationUrl() const {
-  return saml_server_.GetURL(
-      kIdPHost, std::string("/") + kSamlLoginWithDeviceAttestationPath);
+  return GetTestServerURL(
+      saml_server_, kIdPHost,
+      std::string("/") + kSamlLoginWithDeviceAttestationPath);
 }
 
 GURL FakeSamlIdpMixin::GetSamlWithDeviceTrustUrl() const {
-  return saml_server_.GetURL(kIdPHost,
-                             std::string("/") + kSamlLoginWithDeviceTrustPath);
+  return GetTestServerURL(saml_server_, kIdPHost,
+                          std::string("/") + kSamlLoginWithDeviceTrustPath);
 }
 
 GURL FakeSamlIdpMixin::GetSamlAuthPageUrl() const {
-  return saml_server_.GetURL(kIdPHost, std::string("/") + kSamlLoginAuthPath);
+  return GetTestServerURL(saml_server_, kIdPHost,
+                          std::string("/") + kSamlLoginAuthPath);
 }
 
 GURL FakeSamlIdpMixin::GetSamlWithCheckDeviceAnswerUrl() const {
-  return saml_server_.GetURL(
-      kIdPHost, std::string("/") + kSamlLoginCheckDeviceAnswerPath);
+  return GetTestServerURL(saml_server_, kIdPHost,
+                          std::string("/") + kSamlLoginCheckDeviceAnswerPath);
 }
 
 GURL FakeSamlIdpMixin::GetLinkedPageUrl() const {
-  return saml_server_.GetURL(kLinkedPageHost,
-                             std::string("/") + kLinkedPagePath);
+  return GetTestServerURL(saml_server_, kLinkedPageHost,
+                          std::string("/") + kLinkedPagePath);
+}
+
+bool FakeSamlIdpMixin::StartSamlServersNow() {
+  return saml_server_.Start() && saml_http_server_.Start();
 }
 
 std::unique_ptr<net::test_server::HttpResponse> FakeSamlIdpMixin::HandleRequest(

@@ -101,6 +101,15 @@ const DevicePolicyToUserPolicyMapEntry kDevicePoliciesWithPolicyOptionsMap[] = {
      key::kScreensaverLockScreenImages},
     {key::kDeviceLoginScreenSecurityKeyPermitAttestation,
      key::kSecurityKeyPermitAttestation},
+
+    // kPreferSlowKexAlgorithms and kPreferSlowCiphers are user policies that
+    // are primarily stored in local_state prefs (as they need to configure the
+    // SystemNetworkContextManager), but those same prefs when used with the
+    // ChromeOS device login screen are profile-level prefs that only apply
+    // to the login screen profile.
+    {key::kDeviceLoginScreenPreferSlowKexAlgorithms,
+     key::kPreferSlowKexAlgorithms},
+    {key::kDeviceLoginScreenPreferSlowCiphers, key::kPreferSlowCiphers},
 };
 
 const DevicePolicyToUserPolicyMapEntry kRecommendedDevicePoliciesMap[] = {

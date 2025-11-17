@@ -246,45 +246,6 @@ void PolicyChangedCallback(base::RepeatingClosure callback,
   callback.Run();
 }
 
-// Observes OOBE screens and can be queried to see if the error screen has been
-// displayed since ErrorScreenWatcher has been constructed.
-class ErrorScreenWatcher : public OobeUI::Observer {
- public:
-  ErrorScreenWatcher() {
-    OobeUI* oobe_ui = LoginDisplayHost::default_host()->GetOobeUI();
-    oobe_ui_observation_.Observe(oobe_ui);
-
-    if (oobe_ui->current_screen() == ErrorScreenView::kScreenId) {
-      has_error_screen_been_shown_ = true;
-    }
-  }
-
-  ErrorScreenWatcher(const ErrorScreenWatcher& other) = delete;
-  ErrorScreenWatcher& operator=(const ErrorScreenWatcher& other) = delete;
-
-  ~ErrorScreenWatcher() override = default;
-
-  bool has_error_screen_been_shown() const {
-    return has_error_screen_been_shown_;
-  }
-
-  // OobeUI::Observer:
-  void OnCurrentScreenChanged(OobeScreenId current_screen,
-                              OobeScreenId new_screen) override {
-    if (new_screen == ErrorScreenView::kScreenId) {
-      has_error_screen_been_shown_ = true;
-    }
-  }
-
-  // OobeUI::Observer:
-  void OnDestroyingOobeUI() override {}
-
- private:
-  base::ScopedObservation<OobeUI, OobeUI::Observer> oobe_ui_observation_{this};
-
-  bool has_error_screen_been_shown_ = false;
-};
-
 bool EqualsTestCert(const net::X509Certificate& cert,
                     const std::string& expected_test_cert_name) {
   const base::FilePath cert_file_name =
@@ -1548,7 +1509,10 @@ class WebviewLoginWithIframeTest
 };
 
 IN_PROC_BROWSER_TEST_P(WebviewLoginWithIframeTest, GaiaWithIframe) {
-  ErrorScreenWatcher error_screen_watcher;
+  // Observes OOBE screens and can be queried to see if the error screen has
+  // been displayed since it has been constructed.
+  test::OobeScreenWatcher<ErrorScreenView> error_screen_watcher(
+      LoginDisplayHost::default_host()->GetOobeUI());
 
   content::TestNavigationObserver navigation_observer(frame_url_);
   navigation_observer.StartWatchingNewWebContents();
@@ -1569,7 +1533,7 @@ IN_PROC_BROWSER_TEST_P(WebviewLoginWithIframeTest, GaiaWithIframe) {
   // screen is currently being replaced, because the error screen could have
   // been shown in the meantime (and then exited again because the "device" has
   // internet connectivity).
-  EXPECT_FALSE(error_screen_watcher.has_error_screen_been_shown());
+  EXPECT_FALSE(error_screen_watcher.has_target_screen_been_shown());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

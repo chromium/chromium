@@ -1412,6 +1412,9 @@ policies:
   1411: GeolocationBlockedForUrls
   1412: PdfXfaFormsEnabled
   1413: CameraSaveLocation
+  1414: DeviceLoginScreenPreferSlowKexAlgorithms
+  1415: DeviceLoginScreenPreferSlowCiphers
+
 atomic_groups:
   1: Homepage
   2: RemoteAccess

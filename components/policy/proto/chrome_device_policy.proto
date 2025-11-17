@@ -2128,4 +2128,6 @@ message ChromeDeviceSettingsProto {
       DeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled = 1375;
   optional StringListPolicyProto DeviceLoginScreenSecurityKeyPermitAttestation =
       1385;
+  optional StringPolicyProto DeviceLoginScreenPreferSlowKexAlgorithms = 1414;
+  optional StringPolicyProto DeviceLoginScreenPreferSlowCiphers = 1415;
 }

@@ -286,9 +286,12 @@ source_set("policy_specific_browser_tests") {
     deps += [
       "//chrome/browser/ash/login/lock:test_support",
       "//chrome/browser/ash/login/saml:test_support",
+      "//chrome/browser/ash/login/users",
       "//chrome/browser/ash/net",
+      "//chrome/browser/ash/policy/core:test_support",
       "//chrome/browser/policy:onc",
       "//chromeos:test_support",
+      "//chromeos/ash/components/browser_context_helper",
       "//chromeos/components/onc:test_support",
       "//components/onc",
       "//components/session_manager/core",

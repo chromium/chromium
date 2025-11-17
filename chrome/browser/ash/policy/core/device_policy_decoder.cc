@@ -923,6 +923,27 @@ void DecodeNetworkPolicies(const em::ChromeDeviceSettingsProto& policy,
                     nullptr);
     }
   }
+
+  if (policy.has_deviceloginscreenpreferslowkexalgorithms()) {
+    const em::StringPolicyProto& container(
+        policy.deviceloginscreenpreferslowkexalgorithms());
+    if (container.has_value()) {
+      policies->Set(key::kDeviceLoginScreenPreferSlowKexAlgorithms,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
+                    /*external_data_fetcher=*/nullptr);
+    }
+  }
+  if (policy.has_deviceloginscreenpreferslowciphers()) {
+    const em::StringPolicyProto& container(
+        policy.deviceloginscreenpreferslowciphers());
+    if (container.has_value()) {
+      policies->Set(key::kDeviceLoginScreenPreferSlowCiphers,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
+                    /*external_data_fetcher=*/nullptr);
+    }
+  }
 }
 
 void DecodeIntegerReportingPolicy(PolicyMap* policies,
