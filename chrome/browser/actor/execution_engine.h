@@ -126,6 +126,8 @@ class ExecutionEngine : public ToolDelegate {
   // Invalidated anytime `action_sequence_` is reset.
   base::WeakPtr<ExecutionEngine> GetWeakPtr();
 
+  bool HasActionSequence() const;
+
   // ToolDelegate:
   Profile& GetProfile() override;
   AggregatedJournal& GetJournal() override;

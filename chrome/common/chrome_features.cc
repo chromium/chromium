@@ -476,6 +476,9 @@ const base::FeatureParam<base::TimeDelta> kGlicActorMoveBeforeClickDelay{
     &kGlicActorMoveBeforeClick, "glic-actor-move-before-click-delay",
     base::Milliseconds(5)};
 
+// Kill switch for fix to UninterruptActorTask.
+BASE_FEATURE(kGlicActorUninterruptDuringAct, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether the Glic's act-on-web capability is checked for managed
 // trial clients.
 BASE_FEATURE(kGlicActOnWebCapabilityForManagedTrials,

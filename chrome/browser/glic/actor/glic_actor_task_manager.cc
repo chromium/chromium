@@ -379,7 +379,14 @@ void GlicActorTaskManager::UninterruptActorTask(actor::TaskId task_id) {
                                                .Build());
     return;
   }
-  task->Uninterrupt(actor::ActorTask::State::kReflecting);
+  actor::ActorTask::State next_state = actor::ActorTask::State::kReflecting;
+  if (base::FeatureList::IsEnabled(features::kGlicActorUninterruptDuringAct) &&
+      task->GetExecutionEngine() &&
+      task->GetExecutionEngine()->HasActionSequence()) {
+    // TODO(mcnee): Explicitly stash the old state instead of inferring it.
+    next_state = actor::ActorTask::State::kActing;
+  }
+  task->Uninterrupt(next_state);
 }
 
 void GlicActorTaskManager::CreateActorTab(

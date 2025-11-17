@@ -878,6 +878,10 @@ base::WeakPtr<ExecutionEngine> ExecutionEngine::GetWeakPtr() {
   return actions_weak_ptr_factory_.GetWeakPtr();
 }
 
+bool ExecutionEngine::HasActionSequence() const {
+  return !action_sequence_.empty();
+}
+
 favicon::FaviconService* ExecutionEngine::GetFaviconService() {
   return FaviconServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
