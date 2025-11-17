@@ -7,6 +7,7 @@
 
 #include <ostream>
 #include <string>
+#include <utility>
 #include <variant>
 
 #include "base/types/id_type.h"
@@ -140,6 +141,11 @@ struct GlobalId {
                           const GlobalId<RendererId>& rhs) = default;
   friend bool operator==(const GlobalId<RendererId>& lhs,
                          const GlobalId<RendererId>& rhs) = default;
+
+  template <typename H>
+  friend H AbslHashValue(H h, const GlobalId& id) {
+    return H::combine(std::move(h), id.frame_token, id.renderer_id);
+  }
 };
 
 }  // namespace internal
