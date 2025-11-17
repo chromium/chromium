@@ -228,6 +228,16 @@ TEST_F(LegacyAudioFileReaderTest, MidStreamConfigChangesFail) {
 }
 #endif
 
+TEST_F(LegacyAudioFileReaderTest, OpusOutputsF32Samples) {
+  RunTest("bear-opus.ogg", "3.64,0.30,0.34,-0.25,1.70,1.68,", 2, 48000,
+          base::Microseconds(2767022), 132818, 132169);
+}
+
+TEST_F(LegacyAudioFileReaderTest, OpusTrimmingTest) {
+  RunTest("opus-trimming-test.mp4", "-7.27,-6.96,-5.99,-5.58,-5.66,-6.27,", 1,
+          48000, base::Microseconds(12840001), 616321, 550785);
+}
+
 TEST_F(LegacyAudioFileReaderTest, VorbisValidChannelLayout) {
   RunTest("9ch.ogg", "111.68,13.19,59.65,58.66,66.99,20.36,", 9, 48000,
           base::Microseconds(100001), 4801, 4864);

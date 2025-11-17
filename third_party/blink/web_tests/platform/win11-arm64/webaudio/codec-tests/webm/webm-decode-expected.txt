@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Decoded WebM matches reference WAV within tolerance
-  assert_greater_than_equal: SNR for channel 0 expected a number greater than or equal to 110.97 but got 109.84518788831046
-Harness: the test ran to completion.
-

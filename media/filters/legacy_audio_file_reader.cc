@@ -96,6 +96,11 @@ bool LegacyAudioFileReader::OpenDecoder() {
     if (codec_context_->sample_fmt == AV_SAMPLE_FMT_S16P)
       codec_context_->request_sample_fmt = AV_SAMPLE_FMT_S16;
 
+    // Request float output for Opus to avoid extra conversion step.
+    if (codec->id == AV_CODEC_ID_OPUS) {
+      codec_context_->request_sample_fmt = AV_SAMPLE_FMT_FLT;
+    }
+
     const int result = avcodec_open2(codec_context_.get(), codec, nullptr);
     if (result < 0) {
       DLOG(WARNING) << "LegacyAudioFileReader::Open() : could not open codec -"
