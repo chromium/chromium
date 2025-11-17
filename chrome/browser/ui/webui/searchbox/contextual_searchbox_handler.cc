@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/google/core/common/google_util.h"
@@ -498,7 +499,17 @@ void ContextualSearchboxHandler::OnGetTabPageContext(
 void ContextualSearchboxHandler::OpenUrl(
     GURL url,
     const WindowOpenDisposition disposition) {
-  content::OpenURLParams params(url, content::Referrer(), disposition,
-                                ui::PAGE_TRANSITION_LINK, false);
-  web_contents_->OpenURL(params, base::DoNothing());
+  if (OmniboxPopupWebContentsHelper::FromWebContents(web_contents_.get())) {
+    auto* browser_window_interface =
+        webui::GetBrowserWindowInterface(web_contents_);
+    content::OpenURLParams params(url, content::Referrer(), disposition,
+                                  ui::PAGE_TRANSITION_LINK, false);
+    browser_window_interface->GetTabStripModel()
+        ->GetActiveWebContents()
+        ->OpenURL(params, base::DoNothing());
+  } else {
+    content::OpenURLParams params(url, content::Referrer(), disposition,
+                                  ui::PAGE_TRANSITION_LINK, false);
+    web_contents_->OpenURL(params, base::DoNothing());
+  }
 }
