@@ -816,6 +816,12 @@ void FirmwareUpdateManager::OnGetFile(const std::string& device_id,
     }
   }
 
+  if (inflight_update_.is_null()) {
+    FIRMWARE_LOG(ERROR) << "Unknown device ID: " << device_id;
+    std::move(callback).Run(MethodResult::kUnknownDeviceId);
+    return;
+  }
+
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&VerifyChecksum, std::move(file),

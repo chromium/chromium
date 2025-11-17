@@ -1173,6 +1173,36 @@ TEST_F(FirmwareUpdateManagerTest, BeginUpdateInvalidFile) {
             update_progress_observer.GetLatestUpdate()->state);
 }
 
+TEST_F(FirmwareUpdateManagerTest, BeginUpdateUnknownDeviceId) {
+  base::HistogramTester histogram_tester;
+
+  // Provide one device and update for RequestUpdates() call from SetupObserver.
+  CreateOneDeviceAndUpdateResponse();
+  // InstallUpdate success response.
+  dbus_responses_.push_back(dbus::ErrorResponse::CreateEmpty());
+  // For RequestAllUpdates() call after install completes.
+  PrepareForRefreshRemote();
+  CreateOneDeviceAndUpdateResponse();
+
+  FakeUpdateObserver update_observer;
+  SetupObserver(&update_observer);
+
+  const std::string fake_url =
+      std::string("https://faketesturl/") + kFakeUpdateFileNameForTesting;
+  SetFakeUrlForTesting(fake_url);
+  GetTestUrlLoaderFactory().AddResponse(fake_url, "");
+
+  EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
+  FakeUpdateProgressObserver update_progress_observer;
+  SetupProgressObserver(&update_progress_observer);
+  BeginUpdate("badDeviceId", base::FilePath(fake_url));
+
+  histogram_tester.ExpectUniqueSample("ChromeOS.FirmwareUpdateUi.InstallResult",
+                                      MethodResult::kUnknownDeviceId, 1);
+  EXPECT_EQ(ash::firmware_update::mojom::UpdateState::kFailed,
+            update_progress_observer.GetLatestUpdate()->state);
+}
+
 TEST_F(FirmwareUpdateManagerTest, OnPropertiesChangedResponse) {
   EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
   FakeUpdateProgressObserver update_progress_observer;

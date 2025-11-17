@@ -1064,6 +1064,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="InvalidPatchFile"/>
   <int value="10" label="InstallFailedTimeout"/>
   <int value="11" label="FailedToGetFirmwareFile"/>
+  <int value="12" label="UnknownDeviceId"/>
   <int value="100" label="InternalError"/>
   <int value="101" label="InstalledNewerFirmwareVersion"/>
   <int value="102" label="InstalledSameFirmwareVersion"/>
