@@ -465,7 +465,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     https_upgrade_service->ClearAllowlist(delete_begin, delete_end);
 
     // Clear cross-platform promos data.
-    if (IsMobilePromoOnDesktopNotificationsEnabled()) {
+    if (MobilePromoOnDesktopTypeEnabled() !=
+        MobilePromoOnDesktopPromoType::kDisabled) {
       CrossPlatformPromosDataRemover(profile_).Remove();
     }
   }
