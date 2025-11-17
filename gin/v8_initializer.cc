@@ -413,9 +413,6 @@ void SetFeatureFlags() {
     SetV8FlagsFormatted("--high-end-android-physical-memory-threshold=%i",
                         features::kV8HighEndAndroidMemoryThreshold.Get());
   }
-  SetV8FlagsIfOverridden(features::kV8IncrementalMarkingStartUserVisible,
-                         "--incremental-marking-start-user-visible",
-                         "--no-incremental-marking-start-user-visible");
   SetV8FlagsIfOverridden(features::kV8IdleGcOnContextDisposal,
                          "--idle-gc-on-context-disposal",
                          "--no-idle-gc-on-context-disposal");

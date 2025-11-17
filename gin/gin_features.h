@@ -43,7 +43,6 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kV8FlushEmbeddedBlobICache);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8HighEndAndroid);
 GIN_EXPORT extern const base::FeatureParam<int>
     kV8HighEndAndroidMemoryThreshold;
-GIN_EXPORT BASE_DECLARE_FEATURE(kV8IncrementalMarkingStartUserVisible);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8IdleGcOnContextDisposal);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8IgnitionElideRedundantTdzChecks);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8LazyFeedbackAllocation);

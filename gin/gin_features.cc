@@ -178,9 +178,6 @@ BASE_FEATURE(kV8UseLibmTrigFunctions, kFeatureDefaultStateControlledByV8);
 BASE_FEATURE(kV8UseOriginalMessageForStackTrace,
              kFeatureDefaultStateControlledByV8);
 
-BASE_FEATURE(kV8IncrementalMarkingStartUserVisible,
-             kFeatureDefaultStateControlledByV8);
-
 BASE_FEATURE(kV8IdleGcOnContextDisposal, kFeatureDefaultStateControlledByV8);
 
 // Elide redundant TDZ hole checks in bytecode. This only sets the V8 flag when
