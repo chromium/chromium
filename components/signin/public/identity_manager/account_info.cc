@@ -4,7 +4,9 @@
 
 #include "components/signin/public/identity_manager/account_info.h"
 
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
@@ -112,6 +114,77 @@ AccountInfo::AccountInfo(AccountInfo&& other) noexcept = default;
 AccountInfo& AccountInfo::operator=(const AccountInfo& other) = default;
 
 AccountInfo& AccountInfo::operator=(AccountInfo&& other) noexcept = default;
+
+std::optional<std::string_view> AccountInfo::GetFullName() const {
+  if (full_name.empty()) {
+    return std::nullopt;
+  }
+  return full_name;
+}
+
+std::optional<std::string_view> AccountInfo::GetGivenName() const {
+  if (given_name.empty()) {
+    return std::nullopt;
+  }
+  return given_name;
+}
+
+std::optional<std::string_view> AccountInfo::GetHostedDomain() const {
+  if (hosted_domain.empty()) {
+    return std::nullopt;
+  }
+  if (hosted_domain == kNoHostedDomainFound) {
+    return base::EmptyString();
+  }
+  return hosted_domain;
+}
+
+std::optional<std::string_view> AccountInfo::GetAvatarUrl() const {
+  if (picture_url.empty()) {
+    return std::nullopt;
+  }
+  if (picture_url == kNoPictureURLFound) {
+    return base::EmptyString();
+  }
+  return picture_url;
+}
+
+std::optional<std::string_view>
+AccountInfo::GetLastDownloadedAvatarUrlWithSize() const {
+  if (last_downloaded_image_url_with_size.empty()) {
+    return std::nullopt;
+  }
+  return last_downloaded_image_url_with_size;
+}
+
+std::optional<gfx::Image> AccountInfo::GetAvatarImage() const {
+  if (account_image.IsEmpty()) {
+    return std::nullopt;
+  }
+  return account_image;
+}
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+signin_metrics::AccessPoint AccountInfo::GetLastAuthenticationAccessPoint()
+    const {
+  return access_point;
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+const AccountCapabilities& AccountInfo::GetAccountCapabilities() const {
+  return capabilities;
+}
+
+signin::Tribool AccountInfo::IsChildAccount() const {
+  return is_child_account;
+}
+
+std::optional<std::string_view> AccountInfo::GetLocale() const {
+  if (locale.empty()) {
+    return std::nullopt;
+  }
+  return locale;
+}
 
 bool AccountInfo::IsEmpty() const {
   return CoreAccountInfo::IsEmpty() && hosted_domain.empty() &&

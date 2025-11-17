@@ -10,6 +10,7 @@
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 using signin::constants::kNoHostedDomainFound;
 
@@ -173,4 +174,60 @@ TEST_F(AccountInfoTest, UpdateWithDefaultValuesNoOverride) {
   EXPECT_FALSE(info.UpdateWith(other));
   EXPECT_EQ("test_domain", info.hosted_domain);
   EXPECT_EQ("test_url", info.picture_url);
+}
+
+TEST_F(AccountInfoTest, GettersEmptyAccountInfo) {
+  AccountInfo info;
+  EXPECT_EQ(info.GetFullName(), std::nullopt);
+  EXPECT_EQ(info.GetGivenName(), std::nullopt);
+  EXPECT_EQ(info.GetHostedDomain(), std::nullopt);
+  EXPECT_EQ(info.GetAvatarUrl(), std::nullopt);
+  EXPECT_EQ(info.GetLastDownloadedAvatarUrlWithSize(), std::nullopt);
+  EXPECT_EQ(info.GetAvatarImage(), std::nullopt);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  EXPECT_EQ(info.GetLastAuthenticationAccessPoint(),
+            signin_metrics::AccessPoint::kUnknown);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+  EXPECT_FALSE(info.GetAccountCapabilities().AreAnyCapabilitiesKnown());
+  EXPECT_EQ(info.IsChildAccount(), signin::Tribool::kUnknown);
+  EXPECT_EQ(info.GetLocale(), std::nullopt);
+}
+
+TEST_F(AccountInfoTest, GettersPopulatedAccountInfo) {
+  AccountInfo info;
+  info.full_name = "full_name";
+  info.given_name = "given_name";
+  info.hosted_domain = "hosted_domain";
+  info.picture_url = "picture_url";
+  info.last_downloaded_image_url_with_size = "picture_url_with_size";
+  info.account_image = gfx::test::CreateImage(/*size*/ 24);
+  info.access_point = signin_metrics::AccessPoint::kSettings;
+  AccountCapabilitiesTestMutator mutator(&info.capabilities);
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      true);
+  info.is_child_account = signin::Tribool::kFalse;
+  info.locale = "fr";
+
+  EXPECT_EQ(info.GetFullName(), "full_name");
+  EXPECT_EQ(info.GetGivenName(), "given_name");
+  EXPECT_EQ(info.GetHostedDomain(), "hosted_domain");
+  EXPECT_EQ(info.GetAvatarUrl(), "picture_url");
+  EXPECT_EQ(info.GetLastDownloadedAvatarUrlWithSize(), "picture_url_with_size");
+  EXPECT_NE(info.GetAvatarImage(), std::nullopt);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  EXPECT_EQ(info.GetLastAuthenticationAccessPoint(),
+            signin_metrics::AccessPoint::kSettings);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+  EXPECT_TRUE(info.GetAccountCapabilities().AreAnyCapabilitiesKnown());
+  EXPECT_EQ(info.IsChildAccount(), signin::Tribool::kFalse);
+  EXPECT_EQ(info.GetLocale(), "fr");
+}
+
+TEST_F(AccountInfoTest, DeprecatedSentinelValues) {
+  AccountInfo info;
+  info.hosted_domain = kNoHostedDomainFound;
+  info.picture_url = kNoPictureURLFound;
+
+  EXPECT_EQ(info.GetHostedDomain(), std::string());
+  EXPECT_EQ(info.GetAvatarUrl(), std::string());
 }

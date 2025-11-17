@@ -5,9 +5,12 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNT_INFO_H_
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNT_INFO_H_
 
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "build/build_config.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -50,7 +53,8 @@ struct CoreAccountInfo {
 };
 
 // Stores all the information known about an account. Part of the information
-// may only become available asynchronously.
+// may only become available asynchronously, which is indicated by optional
+// return values.
 struct AccountInfo : public CoreAccountInfo {
   AccountInfo();
   ~AccountInfo();
@@ -61,26 +65,48 @@ struct AccountInfo : public CoreAccountInfo {
   AccountInfo& operator=(const AccountInfo& other);
   AccountInfo& operator=(AccountInfo&& other) noexcept;
 
-  // Mandatory fields for `IsValid()` to return true:
-  std::string full_name;
-  std::string given_name;
-  std::string hosted_domain;
-  std::string picture_url;
+  // Returns the full name of the account.
+  // Returns std::nullopt if the value is unknown yet.
+  std::optional<std::string_view> GetFullName() const;
 
-  // Available once the account image is downloaded:
-  std::string last_downloaded_image_url_with_size;
-  gfx::Image account_image;
+  // Returns the given name of the account.
+  // Returns std::nullopt if the value is unknown yet.
+  std::optional<std::string_view> GetGivenName() const;
 
-  // Access point used to add the account, is also updated on reauth.
-  // The access point is not updated when signing in to Chrome, only when the
-  // token is updated or refreshed. This field is not consistently set on all
-  // platforms.
-  signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::kUnknown;
+  // Returns the hosted domain of the account. Might be empty if an account
+  // doesn't have a hosted domain.
+  // Returns std::nullopt if the value is unknown yet.
+  std::optional<std::string_view> GetHostedDomain() const;
 
-  AccountCapabilities capabilities;
-  signin::Tribool is_child_account = signin::Tribool::kUnknown;
-  std::string locale;
+  // Returns the URL of the account avatar. Might be empty if the account
+  // doesn't have a usable avatar.
+  // Returns std::nullopt if the value is unknown yet.
+  std::optional<std::string_view> GetAvatarUrl() const;
+
+  // Returns the last downloaded account avatar URL with size.
+  // Returns std::nullopt if the avatar image hasn't been downloaded yet.
+  std::optional<std::string_view> GetLastDownloadedAvatarUrlWithSize() const;
+
+  // Returns the account avatar image.
+  // Returns std::nullopt if the avatar image hasn't been downloaded yet.
+  std::optional<gfx::Image> GetAvatarImage() const;
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Returns access point used to add the account, which is also updated on
+  // reauth. The access point is not updated when signing in to Chrome, only
+  // when the token is updated or refreshed.
+  signin_metrics::AccessPoint GetLastAuthenticationAccessPoint() const;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+  // Returns the account capabilities.
+  const AccountCapabilities& GetAccountCapabilities() const;
+
+  // Returns whether this is a child account.
+  signin::Tribool IsChildAccount() const;
+
+  // Returns the locale of the account.
+  // Returns std::nullopt if the value is unknown yet.
+  std::optional<std::string_view> GetLocale() const;
 
   // Returns true if all fields in the account info are empty.
   bool IsEmpty() const;
@@ -88,6 +114,7 @@ struct AccountInfo : public CoreAccountInfo {
   // Returns true if all non-optional fields in this account info are filled.
   // Note: IsValid() does not check if `access_point`, `is_child_account`,
   // `capabilities` or `locale` are filled.
+  // Deprecated: check availability of specific fields instead.
   bool IsValid() const;
 
   // Updates the empty fields of |this| with |other|. Returns whether at least
@@ -121,6 +148,37 @@ struct AccountInfo : public CoreAccountInfo {
   // If `capabilities.can_have_email_address_displayed()` is unknown at the time
   // this function is called, the email address will be considered displayable.
   bool CanHaveEmailAddressDisplayed() const;
+
+  // The following struct members are going to be moved to the private section
+  // soon, do not use them directly.
+  // TODO(crbug.com/458409080): move all struct members to the private section.
+
+  // Mandatory fields for `IsValid()` to return true:
+  // Deprecated: Use GetFullName() instead.
+  std::string full_name;
+  // Deprecated: Use GetGivenName() instead.
+  std::string given_name;
+  // Deprecated: Use GetHostedDomain() instead.
+  std::string hosted_domain;
+  // Deprecated: Use GetAvatarUrl() instead.
+  std::string picture_url;
+
+  // Deprecated: Use GetLastDownloadedAvatarUrlWithSize() instead.
+  std::string last_downloaded_image_url_with_size;
+  // Deprecated: Use GetAvatarImage() instead.
+  gfx::Image account_image;
+
+  // Deprecated: Use GetLastAuthenticationAccessPoint() instead.
+  // The value is set consistently only on DICE platforms.
+  signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::kUnknown;
+
+  // Deprecated: Use GetAccountCapabilities() instead.
+  AccountCapabilities capabilities;
+  // Deprecated: Use IsChildAccount() instead.
+  signin::Tribool is_child_account = signin::Tribool::kUnknown;
+  // Deprecated: Use GetLocale() instead.
+  std::string locale;
 };
 
 bool operator==(const CoreAccountInfo& l, const CoreAccountInfo& r);
