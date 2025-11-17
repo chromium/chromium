@@ -16,7 +16,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/buildflag.h"
 #include "components/persistent_cache/backend.h"
-#include "components/persistent_cache/entry.h"
 #include "components/persistent_cache/sqlite/test_helper.h"
 #include "components/persistent_cache/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -151,10 +150,12 @@ TEST_F(PersistentCachePerftest, Find) {
 
   int success_count = 0;
   RunAndTimeTest("Find", kIterationCount, [&] {
-    success_count = std::ranges::count_if(
-        keys, [&cache = *persistent_cache](const auto& key) {
-          return cache.Find(key).has_value();
-        });
+    success_count = std::ranges::count_if(keys, [&cache = *persistent_cache](
+                                                    const auto& key) {
+      return cache
+          .Find(key, [](size_t content_size) { return base::span<uint8_t>(); })
+          .has_value();
+    });
   });
   ASSERT_EQ(success_count, kIterationCount);
 }

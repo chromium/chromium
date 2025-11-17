@@ -16,7 +16,6 @@
 #include "base/types/pass_key.h"
 #include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/backend_params.h"
-#include "components/persistent_cache/entry.h"
 #include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
 #include "components/persistent_cache/sqlite/vfs/sqlite_sandboxed_vfs.h"
 #include "sql/database.h"
@@ -37,8 +36,8 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
 
   // `Backend`:
   [[nodiscard]] bool Initialize() override;
-  [[nodiscard]] base::expected<std::unique_ptr<Entry>, TransactionError> Find(
-      std::string_view key) override;
+  [[nodiscard]] base::expected<std::optional<EntryMetadata>, TransactionError>
+  Find(std::string_view key, BufferProvider buffer_provider) override;
   base::expected<void, TransactionError> Insert(
       std::string_view key,
       base::span<const uint8_t> content,

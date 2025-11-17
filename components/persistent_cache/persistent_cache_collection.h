@@ -22,12 +22,12 @@
 #include "base/types/expected.h"
 #include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/backend_storage.h"
+#include "components/persistent_cache/buffer_provider.h"
 #include "components/persistent_cache/entry_metadata.h"
 
 namespace persistent_cache {
 
 struct BackendParams;
-class Entry;
 class PersistentCache;
 
 // Use PersistentCacheCollection to seamlessly access multiple PersistentCache
@@ -79,9 +79,10 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCacheCollection {
   // cache. `cache_id` must be a US-ASCII string consisting more-or-less of
   // lower-case letters, numbers, and select punctuation; see
   // `BaseNameFromCacheId()` below for gory details.
-  base::expected<std::unique_ptr<Entry>, TransactionError> Find(
+  base::expected<std::optional<EntryMetadata>, TransactionError> Find(
       const std::string& cache_id,
-      std::string_view key);
+      std::string_view key,
+      BufferProvider buffer_provider);
 
   base::expected<void, TransactionError> Insert(
       const std::string& cache_id,

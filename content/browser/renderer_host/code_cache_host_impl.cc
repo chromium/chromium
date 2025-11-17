@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
-#include "components/persistent_cache/entry.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -417,16 +416,18 @@ void CodeCacheHostImpl::FetchCachedCode(blink::mojom::CodeCacheType cache_type,
       return;
     }
 
-    std::unique_ptr<persistent_cache::Entry> entry =
-        generated_code_cache_context_->FindInPersistentCacheCollection(
-            context_key.value(), resource_key);
-
-    if (entry && entry->GetContentSize() > 0) {
+    if (auto metadata_and_content =
+            generated_code_cache_context_->FindInPersistentCacheCollection(
+                context_key.value(), resource_key);
+        metadata_and_content.has_value() &&
+        metadata_and_content->content.size() > 0) {
+      // Cache hit with content.
       std::move(callback).Run(
-          base::Time::FromDeltaSinceWindowsEpoch(
-              base::Microseconds(entry->GetMetadata().input_signature)),
-          mojo_base::BigBuffer(entry->GetContentSpan()));
+          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+              metadata_and_content->metadata.input_signature)),
+          std::move(metadata_and_content->content));
     } else {
+      // Cache miss or error.
       std::move(callback).Run(base::Time(), mojo_base::BigBuffer());
     }
 

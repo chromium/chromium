@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/persistent_cache/backend.h"
-#include "components/persistent_cache/entry.h"
 #include "components/persistent_cache/mock/mock_backend.h"
 #include "components/persistent_cache/mock/mock_backend_storage_delegate.h"
 #include "components/persistent_cache/transaction_error.h"

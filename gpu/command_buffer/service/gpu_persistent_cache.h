@@ -14,13 +14,13 @@
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/persistent_cache/backend_params.h"
+#include "components/persistent_cache/buffer_provider.h"
 #include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/skia/include/gpu/ganesh/GrContextOptions.h"
 
 namespace persistent_cache {
 class PersistentCache;
-class Entry;
 }  // namespace persistent_cache
 
 namespace gpu {
@@ -86,12 +86,14 @@ class GPU_GLES2_EXPORT GpuPersistentCache
                       const void* value,
                       int64_t value_size);
 
-  std::unique_ptr<persistent_cache::Entry> LoadEntry(std::string_view key);
+  bool LoadEntry(std::string_view key,
+                 persistent_cache::BufferProvider buffer_provider);
 
  private:
   struct DiskCache;
 
-  std::unique_ptr<persistent_cache::Entry> LoadImpl(std::string_view key);
+  bool LoadImpl(std::string_view key,
+                persistent_cache::BufferProvider buffer_provider);
   void StoreImpl(std::string_view key, base::span<const uint8_t> value);
 
   // Prefix to prepend to UMA histogram's name. e.g GraphiteDawn, WebGPU

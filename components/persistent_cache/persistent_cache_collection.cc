@@ -17,7 +17,6 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/persistent_cache/backend_storage.h"
-#include "components/persistent_cache/entry.h"
 #include "components/persistent_cache/lock_state.h"
 #include "components/persistent_cache/persistent_cache.h"
 #include "components/persistent_cache/transaction_error.h"
@@ -49,9 +48,10 @@ PersistentCacheCollection::PersistentCacheCollection(
 
 PersistentCacheCollection::~PersistentCacheCollection() = default;
 
-base::expected<std::unique_ptr<Entry>, TransactionError>
+base::expected<std::optional<EntryMetadata>, TransactionError>
 PersistentCacheCollection::Find(const std::string& cache_id,
-                                std::string_view key) {
+                                std::string_view key,
+                                BufferProvider buffer_provider) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto* cache = GetOrCreateCache(cache_id);
@@ -59,7 +59,7 @@ PersistentCacheCollection::Find(const std::string& cache_id,
     return base::unexpected(TransactionError::kPermanent);
   }
 
-  ASSIGN_OR_RETURN(auto entry, cache->Find(key),
+  ASSIGN_OR_RETURN(auto entry, cache->Find(key, buffer_provider),
                    [&cache_id, this](TransactionError error) {
                      return HandleTransactionError(cache_id, error);
                    });

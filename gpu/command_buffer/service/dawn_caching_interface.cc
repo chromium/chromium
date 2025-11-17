@@ -9,13 +9,13 @@
 #include <variant>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/trace_event.h"
-#include "components/persistent_cache/entry.h"
 #include "gpu/command_buffer/service/gpu_persistent_cache.h"
 #include "gpu/config/gpu_preferences.h"
 #include "net/base/io_buffer.h"
@@ -65,28 +65,60 @@ size_t DawnCachingInterface::LoadData(const void* key,
     return 0u;
   }
 
-  std::unique_ptr<persistent_cache::Entry> entry =
-      persistent_cache_->LoadEntry(key_str);
-  if (!entry) {
-    return 0u;
+  size_t discovered_size = 0;
+  base::HeapArray<uint8_t> content_for_memory_cache;
+
+  // A BufferProvider for PersistentCache that puts the size of the content, in
+  // bytes, into `discovered_size` and returns one of:
+  // 1.  a view into the buffer at `value_out` if it is big enough,
+  // 2.  a view into a new base::HeapArray (`content_for_memory_cache`) if the
+  //     memory cache exists, or
+  // 3.  an empty span.
+  // SAFETY: Caller provides either null `value_out` or `value_out` plus
+  // `value_size`.
+  auto buffer_provider = [value = UNSAFE_BUFFERS(base::span(
+                              static_cast<uint8_t*>(value_out), value_size)),
+                          with_memory_cache = memory_cache() != nullptr,
+                          &discovered_size,
+                          &content_for_memory_cache](size_t content_size) {
+    // Cache hit: retain the size.
+    discovered_size = content_size;
+
+    if (value.size() >= content_size) {
+      return value.first(content_size);  // Case 1.
+    }
+
+    if (content_size != 0 && with_memory_cache) {
+      content_for_memory_cache = base::HeapArray<uint8_t>::Uninit(content_size);
+      return base::span<uint8_t>(content_for_memory_cache);  // Case 2.
+    }
+
+    return base::span<uint8_t>();  // Case 3.
+  };
+
+  if (!persistent_cache_->LoadEntry(key_str, std::move(buffer_provider))) {
+    return 0;  // Cache miss or error.
   }
 
-  size_t bytes_copied = 0;
-  if (value_size > 0) {
-    bytes_copied = entry->CopyContentTo(
-        UNSAFE_TODO(base::span(static_cast<uint8_t*>(value_out), value_size)));
+  if (!discovered_size) {
+    return 0;  // Cache hit with zero data.
   }
+
+  // Cache hit. The content is already in `value_out` if it is big enough.
 
   if (memory_cache()) {
-    memory_cache()->StoreData(key_str, entry->GetContentSpan().data(),
-                              entry->GetContentSize());
+    if (!content_for_memory_cache.empty()) {
+      // The provider copied the content into a dedicated buffer for the memory
+      // cache.
+      memory_cache()->StoreData(key_str, content_for_memory_cache.data(),
+                                content_for_memory_cache.size());
+    } else if (value_size >= discovered_size) {
+      // Copy the content from `value_out` into the memory cache.
+      memory_cache()->StoreData(key_str, value_out, discovered_size);
+    }
   }
 
-  if (bytes_copied > 0) {
-    return bytes_copied;
-  }
-
-  return entry->GetContentSize();
+  return discovered_size;
 }
 
 void DawnCachingInterface::StoreData(const void* key,

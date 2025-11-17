@@ -13,6 +13,7 @@
 #include "components/persistent_cache/persistent_cache_collection.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 
 namespace content {
 
@@ -68,9 +69,18 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
       base::span<const uint8_t> content,
       persistent_cache::EntryMetadata metadata);
 
+  // A simple container for the metadata associated with an URL in the cache and
+  // the content that was cached. (The content is separate from the metadata so
+  // that consumers of PersistentCache can control allocation of the memory and
+  // the data type holding it.)
+  struct MetadataAndContent {
+    persistent_cache::EntryMetadata metadata;
+    mojo_base::BigBuffer content;
+  };
+
   // TODO(crbug.com/377475540): Use types that are not interchangeable for
   // `context_key` and `url` so that they cannot be mixed up by mistake.
-  std::unique_ptr<persistent_cache::Entry> FindInPersistentCacheCollection(
+  std::optional<MetadataAndContent> FindInPersistentCacheCollection(
       const std::string& context_key,
       std::string_view url);
 

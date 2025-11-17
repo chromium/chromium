@@ -10,7 +10,6 @@
 #include "base/notreached.h"
 #include "base/types/expected.h"
 #include "components/persistent_cache/backend.h"
-#include "components/persistent_cache/entry.h"
 
 namespace persistent_cache {
 
@@ -31,8 +30,8 @@ PersistentCache::~PersistentCache() {
   NOTREACHED();
 }
 
-base::expected<std::unique_ptr<Entry>, TransactionError> PersistentCache::Find(
-    std::string_view key) {
+base::expected<std::optional<EntryMetadata>, TransactionError>
+PersistentCache::Find(std::string_view key, BufferProvider buffer_provider) {
   NOTREACHED();
 }
 

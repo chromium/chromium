@@ -16,7 +16,6 @@
 #include "base/types/expected.h"
 #include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/backend_params.h"
-#include "components/persistent_cache/entry.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
 #include "components/persistent_cache/transaction_error.h"
 
@@ -55,22 +54,22 @@ PersistentCache::PersistentCache(std::unique_ptr<Backend> backend) {
 
 PersistentCache::~PersistentCache() = default;
 
-base::expected<std::unique_ptr<Entry>, TransactionError> PersistentCache::Find(
-    std::string_view key) {
+base::expected<std::optional<EntryMetadata>, TransactionError>
+PersistentCache::Find(std::string_view key, BufferProvider buffer_provider) {
   if (!backend_) {
     return base::unexpected(TransactionError::kPermanent);
   }
 
   std::optional<base::ElapsedTimer> timer = MaybeGetTimerForHistogram();
 
-  auto entry = backend_->Find(key);
+  auto entry_metadata = backend_->Find(key, buffer_provider);
 
   if (timer.has_value()) {
     base::UmaHistogramMicrosecondsTimes(GetFullHistogramName("Find"),
                                         timer->Elapsed());
   }
 
-  return entry;
+  return entry_metadata;
 }
 
 base::expected<void, TransactionError> PersistentCache::Insert(

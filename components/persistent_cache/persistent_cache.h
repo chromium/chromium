@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERSISTENT_CACHE_PERSISTENT_CACHE_H_
 #define COMPONENTS_PERSISTENT_CACHE_PERSISTENT_CACHE_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -18,12 +20,12 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "components/persistent_cache/backend_params.h"
+#include "components/persistent_cache/buffer_provider.h"
 #include "components/persistent_cache/entry_metadata.h"
 #include "components/persistent_cache/lock_state.h"
 
 namespace persistent_cache {
 
-class Entry;
 class Backend;
 enum class TransactionError;
 
@@ -42,19 +44,21 @@ enum class TransactionError;
 //    // Add a key-value pair.
 //    persistent_cache->Insert("foo", base::byte_span_from_cstring("1"));
 //
-//    // Retrieve a value. The presence of the key and its value are guaranteed
-//    // during the lifetime of `entry`.
+//    // Retrieve a value.
 //    {
-//      ASSIGN_OR_RETURN(auto entry, persistent_cache->Find("foo"),
+//      base::HeapArray<uint8_t> content;
+//      ASSIGN_OR_RETURN(
+//          auto metadata,
+//          persistent_cache->Find("foo", [&content](size_t size) {
+//              content = base::HeapArray<uint8_t>::Uninit(size);
+//              return base::span(content);
+//          }),
 //        [](persistent_cache::TransactionError error) {
 //          // Translate and handle error here.
 //        });
 //
-//      // Warning: The value may have changed since insertion (because the
-//      // cache is multi-thread/multi-process), been evicted by the backend, or
-//      // the initial insertion may have failed.
-//      if (entry) {
-//        UseEntry(entry);
+//      if (metadata.has_value()) {
+//        UseEntry(*std::move(metadata), std::move(content));
 //      }
 //    }
 //
@@ -102,14 +106,17 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCache {
   // case of failure.
   static std::unique_ptr<PersistentCache> Open(BackendParams backend_params);
 
-  // Used to get a handle to entry associated with `key`. Entry is `nullptr` if
-  // `key` is not found. Returned entry will remain valid and its contents will
-  // be accessible for its entire lifetime. Note: Persistent caches have to
-  // outlive entries they vend. See class comments regarding error management.
+  // Returns the metadata associated with `key` in the cache, or no value if not
+  // found. If `key` is found, `buffer_provider` will be called exactly once
+  // with the size of the content. If `buffer_provider` returns a non-empty span
+  // (which must be sized exactly to the given content size), the content will
+  // be written into it. If it returns an empty span, no data is copied. See
+  // class comments regarding error management.
   //
   // Thread-safe.
-  base::expected<std::unique_ptr<Entry>, TransactionError> Find(
-      std::string_view key);
+  base::expected<std::optional<EntryMetadata>, TransactionError> Find(
+      std::string_view key,
+      BufferProvider buffer_provider);
 
   // Used to add an entry containing `content` and associated with `key`.
   // Metadata associated with the entry can be provided in `metadata` or the

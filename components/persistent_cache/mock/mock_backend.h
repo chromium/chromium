@@ -6,7 +6,6 @@
 #define COMPONENTS_PERSISTENT_CACHE_MOCK_MOCK_BACKEND_H_
 
 #include "components/persistent_cache/backend.h"
-#include "components/persistent_cache/entry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace persistent_cache {
@@ -17,9 +16,9 @@ class MockBackend : public Backend {
   ~MockBackend() override;
 
   MOCK_METHOD(bool, Initialize, (), (override));
-  MOCK_METHOD((base::expected<std::unique_ptr<Entry>, TransactionError>),
+  MOCK_METHOD((base::expected<std::optional<EntryMetadata>, TransactionError>),
               Find,
-              (std::string_view),
+              (std::string_view, BufferProvider buffer_provider),
               (override));
   MOCK_METHOD((base::expected<void, TransactionError>),
               Insert,

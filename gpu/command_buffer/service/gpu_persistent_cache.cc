@@ -4,8 +4,10 @@
 
 #include "gpu/command_buffer/service/gpu_persistent_cache.h"
 
+#include <optional>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
@@ -17,7 +19,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected_macros.h"
-#include "components/persistent_cache/entry.h"
 #include "components/persistent_cache/persistent_cache.h"
 #include "components/persistent_cache/transaction_error.h"
 #include "ui/gl/gl_bindings.h"
@@ -142,7 +143,8 @@ struct GpuPersistentCache::DiskCache
       const GpuPersistentCache::AsyncDiskWriteOpts& async_write_options,
       scoped_refptr<RefCountedGpuProcessShmCount> use_shader_cache_shm_count);
 
-  std::unique_ptr<persistent_cache::Entry> Load(std::string_view key);
+  bool Load(std::string_view key,
+            persistent_cache::BufferProvider buffer_provider);
   void Store(std::string_view key, base::span<const uint8_t> value);
 
  private:
@@ -185,8 +187,9 @@ GpuPersistentCache::DiskCache::DiskCache(
 
 GpuPersistentCache::DiskCache::~DiskCache() = default;
 
-std::unique_ptr<persistent_cache::Entry> GpuPersistentCache::DiskCache::Load(
-    std::string_view key) {
+bool GpuPersistentCache::DiskCache::Load(
+    std::string_view key,
+    persistent_cache::BufferProvider buffer_provider) {
   ScopedHistogramTimer timer(GetHistogramName(cache_prefix_, "Load"));
   DiskCacheTraceScope trace_scope("GpuPersistentCache::DiskCache::Load");
 
@@ -194,15 +197,14 @@ std::unique_ptr<persistent_cache::Entry> GpuPersistentCache::DiskCache::Load(
       current_idle_id_.fetch_add(1, std::memory_order_relaxed) + 1;
   trace_scope.SetIdleId(idle_id);
 
-  ASSIGN_OR_RETURN(auto entry, cache_->Find(key),
-                   [&](persistent_cache::TransactionError error)
-                       -> std::unique_ptr<persistent_cache::Entry> {
+  ASSIGN_OR_RETURN(auto metadata, cache_->Find(key, buffer_provider),
+                   [&](persistent_cache::TransactionError error) {
                      HandlePersistentCacheError(
                          &use_shader_cache_shm_count_->data, error);
-                     return nullptr;
+                     return false;
                    });
 
-  return entry;
+  return metadata.has_value();  // Hit if present; miss otherwise.
 }
 
 void GpuPersistentCache::DiskCache::Store(std::string_view key,
@@ -313,31 +315,51 @@ size_t GpuPersistentCache::LoadData(const void* key,
                                     void* value,
                                     size_t value_size) {
   std::string_view key_str(static_cast<const char*>(key), key_size);
-  std::unique_ptr<persistent_cache::Entry> entry = LoadImpl(key_str);
-  if (!entry) {
-    return 0;
+  size_t discovered_size = 0;
+
+  // A BufferProvider for PersistentCache that puts the size of the content, in
+  // bytes, into `discovered_size` and returns a view into the buffer at
+  // `value_out` if it is big enough or an empty span otherwise.
+  // SAFETY: Caller provides either null `value` or `value` plus `value_size`.
+  auto buffer_provider = [value = UNSAFE_BUFFERS(base::span(
+                              static_cast<uint8_t*>(value), value_size)),
+                          &discovered_size](size_t content_size) {
+    // Cache hit: retain the size.
+    discovered_size = content_size;
+
+    if (value.size() >= content_size) {
+      return value.first(content_size);
+    }
+    return base::span<uint8_t>();
+  };
+
+  if (!LoadImpl(key_str, std::move(buffer_provider))) {
+    return 0;  // Cache miss or error.
   }
 
-  if (value_size > 0) {
-    return entry->CopyContentTo(
-        UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(value), value_size)));
-  }
-
-  return entry->GetContentSize();
+  return discovered_size;
 }
 
 sk_sp<SkData> GpuPersistentCache::load(const SkData& key) {
   std::string_view key_str(static_cast<const char*>(key.data()), key.size());
-  std::unique_ptr<persistent_cache::Entry> entry = LoadImpl(key_str);
-  if (!entry) {
-    return nullptr;
+  sk_sp<SkData> output_data;
+
+  // A BufferProvider for PersistentCache that allocates a new SkData to hold an
+  // entry's content and returns a view into it.
+  auto buffer_provider = [&output_data](size_t content_size) {
+    output_data = SkData::MakeUninitialized(content_size);
+    // SAFETY: SkData doesn't provide an API to get its buffer as a
+    // writeable span.
+    return UNSAFE_BUFFERS(
+        base::span(static_cast<uint8_t*>(output_data->writable_data()),
+                   output_data->size()));
+  };
+
+  if (!LoadImpl(key_str, std::move(buffer_provider))) {
+    return nullptr;  // Cache miss or error.
   }
 
-  sk_sp<SkData> output_data =
-      SkData::MakeUninitialized(entry->GetContentSize());
-  entry->CopyContentTo(UNSAFE_BUFFERS(
-      base::span(static_cast<uint8_t*>(output_data->writable_data()),
-                 output_data->size())));
+  // Cache hit. The content is in `output_data`.
   return output_data;
 }
 
@@ -348,26 +370,41 @@ int64_t GpuPersistentCache::GLBlobCacheGet(const void* key,
   CHECK_GE(key_size, 0);
   std::string_view key_str(static_cast<const char*>(key),
                            static_cast<size_t>(key_size));
-  std::unique_ptr<persistent_cache::Entry> entry = LoadImpl(key_str);
-  if (!entry) {
-    return 0;
+  size_t discovered_size = 0;
+
+  // A BufferProvider for PersistentCache that puts the size of the content, in
+  // bytes, into `discovered_size` and returns a view into the buffer at
+  // `value_out` if it is big enough or an empty span otherwise.
+  // SAFETY: Caller provides either null `value_out` or `value_out` plus
+  // `value_size`.
+  auto buffer_provider =
+      [value = UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(value_out),
+                                         static_cast<size_t>(value_size))),
+       &discovered_size](size_t content_size) {
+        // Cache hit: retain the size to return to the caller.
+        discovered_size = content_size;
+        if (value.size() >= content_size) {
+          return value.first(content_size);
+        }
+        return base::span<uint8_t>();
+      };
+
+  if (!LoadImpl(key_str, std::move(buffer_provider))) {
+    return 0;  // Cache miss or error.
   }
 
-  if (value_size > 0) {
-    return entry->CopyContentTo(UNSAFE_BUFFERS(base::span(
-        static_cast<uint8_t*>(value_out), static_cast<size_t>(value_size))));
-  }
-
-  return static_cast<GLsizeiptr>(entry->GetContentSize());
+  return static_cast<GLsizeiptr>(discovered_size);
 }
 
-std::unique_ptr<persistent_cache::Entry> GpuPersistentCache::LoadEntry(
-    std::string_view key) {
-  return LoadImpl(key);
+bool GpuPersistentCache::LoadEntry(
+    std::string_view key,
+    persistent_cache::BufferProvider buffer_provider) {
+  return LoadImpl(key, buffer_provider);
 }
 
-std::unique_ptr<persistent_cache::Entry> GpuPersistentCache::LoadImpl(
-    std::string_view key) {
+bool GpuPersistentCache::LoadImpl(
+    std::string_view key,
+    persistent_cache::BufferProvider buffer_provider) {
   const bool initialized = initialized_.IsSet();
   TRACE_EVENT1("gpu", "GpuPersistentCache::LoadImpl", "persistent_cache",
                initialized);
@@ -381,10 +418,10 @@ std::unique_ptr<persistent_cache::Entry> GpuPersistentCache::LoadImpl(
   }
 
   if (!initialized) {
-    return nullptr;
+    return false;
   }
 
-  return disk_cache_->Load(key);
+  return disk_cache_->Load(key, buffer_provider);
 }
 
 void GpuPersistentCache::StoreData(const void* key,

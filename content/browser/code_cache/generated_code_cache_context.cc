@@ -16,7 +16,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
-#include "components/persistent_cache/entry.h"
 #include "components/persistent_cache/persistent_cache_collection.h"
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -187,19 +186,37 @@ void GeneratedCodeCacheContext::InsertIntoPersistentCacheCollection(
       });
 }
 
-std::unique_ptr<persistent_cache::Entry>
+std::optional<GeneratedCodeCacheContext::MetadataAndContent>
 GeneratedCodeCacheContext::FindInPersistentCacheCollection(
     const std::string& context_key,
     std::string_view url) {
-  ASSIGN_OR_RETURN(auto entry,
-                   persistent_cache_collection_->Find(context_key, url),
+  mojo_base::BigBuffer content_buffer;
+
+  // A BufferProvider for PersistentCache that puts a new mojo_base::BugBuffer
+  // in `content_buffer` to hold an entry's content and returns a view into it.
+  auto buffer_provider = [&content_buffer](size_t content_size) {
+    content_buffer = mojo_base::BigBuffer(content_size);
+    return base::span(content_buffer);
+  };
+
+  ASSIGN_OR_RETURN(std::optional<persistent_cache::EntryMetadata> metadata,
+                   persistent_cache_collection_->Find(
+                       context_key, url, std::move(buffer_provider)),
+                   // An adapter that is invoked on error. Its return value
+                   // percolates up out of this function.
                    [](persistent_cache::TransactionError error)
-                       -> std::unique_ptr<persistent_cache::Entry> {
+                       -> std::optional<MetadataAndContent> {
                      // TODO(crbug.com/377475540): Handle or at least address
                      // permanent errors.
-                     return nullptr;
+                     return std::nullopt;
                    });
-  return entry;
+
+  if (!metadata.has_value()) {
+    return std::nullopt;  // Cache miss.
+  }
+
+  // Cache hit.
+  return MetadataAndContent{*std::move(metadata), std::move(content_buffer)};
 }
 
 void GeneratedCodeCacheContext::ShutdownOnThread() {

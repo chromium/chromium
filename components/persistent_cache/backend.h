@@ -14,13 +14,12 @@
 #include "base/containers/span.h"
 #include "base/types/expected.h"
 #include "components/persistent_cache/backend_params.h"
+#include "components/persistent_cache/buffer_provider.h"
 #include "components/persistent_cache/entry_metadata.h"
 #include "components/persistent_cache/lock_state.h"
 #include "components/persistent_cache/transaction_error.h"
 
 namespace persistent_cache {
-
-class Entry;
 
 // The persistence mechanism backing up the cache.
 class COMPONENT_EXPORT(PERSISTENT_CACHE) Backend {
@@ -41,8 +40,9 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) Backend {
   // Note: Backends have to outlive entries they vend.
   //
   // Thread-safe.
-  virtual base::expected<std::unique_ptr<Entry>, TransactionError> Find(
-      std::string_view key) = 0;
+  virtual base::expected<std::optional<EntryMetadata>, TransactionError> Find(
+      std::string_view key,
+      BufferProvider buffer_provider) = 0;
 
   // See `PersistentCache::Insert()`.
   // Thread-safe.

@@ -17,7 +17,6 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/persistent_cache/backend_params.h"
-#include "components/persistent_cache/sqlite/sqlite_entry_impl.h"
 #include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
 #include "components/persistent_cache/sqlite/vfs/sqlite_sandboxed_vfs.h"
 #include "components/persistent_cache/transaction_error.h"
@@ -113,8 +112,8 @@ bool SqliteBackendImpl::Initialize() {
   return true;
 }
 
-base::expected<std::unique_ptr<Entry>, TransactionError>
-SqliteBackendImpl::Find(std::string_view key) {
+base::expected<std::optional<EntryMetadata>, TransactionError>
+SqliteBackendImpl::Find(std::string_view key, BufferProvider buffer_provider) {
   base::AutoLock lock(lock_, base::subtle::LockTracking::kEnabled);
   CHECK(initialized_);
   CHECK_GT(key.length(), 0ull);
@@ -130,15 +129,20 @@ SqliteBackendImpl::Find(std::string_view key) {
 
   // Cache hit.
   if (stm.Step()) {
-    return SqliteEntryImpl::MakeUnique(
-        Passkey(), stm.ColumnString(0),
-        EntryMetadata{.input_signature = stm.ColumnInt64(1),
-                      .write_timestamp = stm.ColumnInt64(2)});
+    std::string_view content = stm.ColumnStringView(0);
+    // Get a buffer from the caller.
+    if (base::span<uint8_t> content_buffer = buffer_provider(content.size());
+        !content_buffer.empty()) {
+      // Copy the content into the caller's buffer.
+      content_buffer.copy_from_nonoverlapping(base::as_byte_span(content));
+    }
+    return EntryMetadata{.input_signature = stm.ColumnInt64(1),
+                         .write_timestamp = stm.ColumnInt64(2)};
   }
 
   // Cache miss.
   if (stm.Succeeded()) {
-    return base::ok(nullptr);
+    return std::nullopt;
   }
 
   // Error handling.
