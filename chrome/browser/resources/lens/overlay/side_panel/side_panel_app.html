@@ -7,6 +7,7 @@
     --aim-header-height: 66px;
     --context-carousel-inline-end-spacing: 24px;
     --context-carousel-inline-start-spacing: 24px;
+    --composebox-container-height: calc(var(--composebox-height) + var(--composebox-margin-bottom));
 
     background-color: var(--search-background-color);
     display: flex;
@@ -23,6 +24,7 @@
     --color-composebox-hover: #e9ebf0;
     --color-composebox-lens-button: #0a0a0a;
     --search-background-color: white;
+    --search-background-color-rgb: 255, 255, 255;
     --color-composebox-font-light: #0a0a0a;
     --color-composebox-font-dark: #0a0a0a;
   }
@@ -36,6 +38,7 @@
     --color-composebox-hover: #e9ebf0;
     --color-composebox-lens-button: #0a0a0a;
     --search-background-color: white;
+    --search-background-color-rgb: 255, 255, 255;
     --color-composebox-font-light: #0a0a0a;
     --color-composebox-font-dark: #0a0a0a;
   }
@@ -53,6 +56,7 @@
     --color-composebox-font-dark: #e6e8f0;
     --color-searchbox-results-background-hovered: #3c4043;
     --search-background-color: #1f1f1f;
+    --search-background-color-rgb: 36, 36, 36;
   }
 
   /* Dark mode on AIM results */
@@ -68,6 +72,7 @@
     --color-composebox-font-dark: #e6e8f0;
     --color-searchbox-results-background-hovered: #3c4043;
     --search-background-color: #101218;
+    --search-background-color-rgb: 36, 36, 36;
   }
 
   :host([is-on-aim-results]) {
@@ -272,6 +277,7 @@
 
   /* Composebox default colors are for light mode on AIM results. */
   #composeboxContainer {
+    --composebox-container-height: calc(var(--composebox-height) + var(--composebox-dropdown-height) + var(--composebox-margin-bottom));
     --color-composebox-scrim-background: var(--search-background-color);
     display: none;
     inset-block-end: 0;
@@ -352,9 +358,20 @@
   /* When the gradient is enabled, the container only spans the height of the composebox and dropdown. */
   :host([enable-lens-aim-suggestions][enable-lens-aim-suggestions-gradient-background][is-composebox-focused])
     #composeboxContainer:has(#composebox[show-dropdown_]) {
-    height: calc(var(--composebox-height) + var(--composebox-dropdown-height) + var(--composebox-margin-bottom));
+    height: var(--composebox-container-height);
     background-color: var(--search-background-color);
     inset-block-start: auto;
+  }
+
+  :host([enable-lens-aim-suggestions][enable-lens-aim-suggestions-gradient-background][is-composebox-focused])
+    #composeboxContainer:has(#composebox[show-dropdown_])::before {
+    /* The gradient should have more spread when the dropdown is showing. */
+      background: linear-gradient(to top,
+        rgba(var(--search-background-color-rgb), 1) 65vh,
+        rgba(var(--search-background-color-rgb), 0.9) 75vh,
+        transparent);
+    /* Calculates the height between the header and the composebox container. */
+    inset: calc(-1 * (100vh - var(--aim-header-height) - var(--composebox-container-height))) 0 0;
   }
 
   :host([enable-lens-aim-suggestions][is-composebox-focused])
