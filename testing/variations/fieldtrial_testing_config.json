@@ -28282,7 +28282,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "WebViewPrefetchHighestPrefetchPriorityBurstLimit": "1"
+                        "WebViewPrefetchHighestPrefetchPriorityBurstLimit": "10"
                     },
                     "enable_features": [
                         "WebViewPrefetchHighestPrefetchPriority"
