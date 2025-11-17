@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/frame/window_or_worker_global_scope.h"
 #include "third_party/blink/renderer/core/html/closewatcher/close_watcher.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
+#include "third_party/blink/renderer/platform/forward_declared_member.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -99,6 +100,9 @@ class V8FrameRequestCallback;
 struct WebPictureInPictureWindowOptions;
 class WindowAgent;
 
+template <typename T>
+class GlobalFetchImpl;
+
 namespace scheduler {
 class TaskAttributionInfo;
 }
@@ -116,7 +120,7 @@ class CORE_EXPORT LocalDOMWindow final
       public WindowOrWorkerGlobalScope,
       public UniversalGlobalScope,
       public WindowEventHandlers,
-      public Supplementable<LocalDOMWindow, 48> {
+      public Supplementable<LocalDOMWindow, 47> {
   USING_PRE_FINALIZER(LocalDOMWindow, Dispose);
 
  public:
@@ -159,15 +163,14 @@ class CORE_EXPORT LocalDOMWindow final
     kSpeechRecognitionController = 36,
     kSpeechSynthesis = 37,
     kGlobalStorageAccessHandle = 38,
-    kGlobalFetchImpl = 39,
+    kAudioRendererSinkCache = 39,
     kDOMWindowStorageController = 40,
     kDOMWindowStorage = 41,
     kWindowSharedStorageImpl = 42,
     kGlobalIndexedDBImpl = 43,
     kGlobalCacheStorageImpl = 44,
     kGlobalPerformanceImpl = 45,
-    kGlobalCookieStoreImpl = 46,
-    kAudioRendererSinkCache = 47
+    kGlobalCookieStoreImpl = 46
   };
 
   class CORE_EXPORT EventListenerObserver : public GarbageCollectedMixin {
@@ -615,6 +618,15 @@ class CORE_EXPORT LocalDOMWindow final
 
   void requestResize(ExceptionState&);
 
+  ForwardDeclaredMember<GlobalFetchImpl<LocalDOMWindow>> GetGlobalFetchImpl()
+      const {
+    return global_fetch_impl_;
+  }
+  void SetGlobalFetchImpl(ForwardDeclaredMember<GlobalFetchImpl<LocalDOMWindow>>
+                              global_fetch_impl) {
+    global_fetch_impl_ = global_fetch_impl;
+  }
+
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,
@@ -744,6 +756,8 @@ class CORE_EXPORT LocalDOMWindow final
   Member<CloseWatcher::WatcherStack> closewatcher_stack_;
 
   Member<SoftNavigationHeuristics> soft_navigation_heuristics_;
+
+  ForwardDeclaredMember<GlobalFetchImpl<LocalDOMWindow>> global_fetch_impl_;
 
   // If set, this window is a Document Picture in Picture window.
   // https://wicg.github.io/document-picture-in-picture/
