@@ -580,7 +580,6 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
 :host([searchbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(voice-icon) {
   margin-inline-end: calc(var(--cr-icon-button-size) + 12px);
   margin-inline-start: auto;
-  z-index: 100;
 }
 
 :host([ntp-realbox-next-enabled][searchbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(carousel-container) {
