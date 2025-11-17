@@ -55,12 +55,12 @@ class PackExtensionJob {
   static std::u16string StandardSuccessMessage(const base::FilePath& crx_file,
                                                const base::FilePath& key_file);
 
-  void set_synchronous() { run_mode_ = RunMode::SYNCHRONOUS; }
+  void set_synchronous() { run_mode_ = RunMode::kSynchronous; }
 
  private:
-  enum class RunMode { SYNCHRONOUS, ASYNCHRONOUS };
+  enum class RunMode { kSynchronous, kAsynchronous };
 
-  // If `run_mode_` is SYNCHRONOUS, this is run on whichever thread calls it.
+  // If `run_mode_` is kSynchronous, this is run on whichever thread calls it.
   void Run(scoped_refptr<base::SequencedTaskRunner> async_reply_task_runner);
   void ReportSuccessOnClientSequence(
       std::unique_ptr<base::FilePath> crx_file_out,
@@ -71,7 +71,7 @@ class PackExtensionJob {
   const raw_ptr<Client> client_;  // Owns us.
   base::FilePath root_directory_;
   base::FilePath key_file_;
-  RunMode run_mode_ = RunMode::ASYNCHRONOUS;
+  RunMode run_mode_ = RunMode::kAsynchronous;
   int run_flags_;  // Bitset of ExtensionCreator::RunFlags values - we always
                    // assume kRequireModernManifestVersion, though.
 
