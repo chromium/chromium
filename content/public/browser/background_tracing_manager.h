@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "base/token.h"
-#include "base/trace_event/trace_event_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/tracing_delegate.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/scenario_config.gen.h"

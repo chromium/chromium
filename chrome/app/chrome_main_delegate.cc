@@ -40,7 +40,6 @@
 #include "base/threading/hang_watcher.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/trace_event/trace_event_impl.h"
 #include "build/build_config.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"

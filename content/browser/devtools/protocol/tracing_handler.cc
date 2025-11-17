@@ -26,7 +26,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/memory_dump_manager.h"
-#include "base/trace_event/trace_event_impl.h"
+#include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/trace_event/tracing_agent.h"
 #include "base/values.h"
