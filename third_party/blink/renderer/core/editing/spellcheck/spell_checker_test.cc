@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 
+#include "third_party/blink/public/web/web_text_check_client.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -149,7 +150,8 @@ TEST_F(SpellCheckerTest,
   EphemeralRange range_to_check =
       EphemeralRange(Position(text, 0), Position(text, 8));
 
-  SpellCheckRequest* request = SpellCheckRequest::Create(range_to_check, 0);
+  SpellCheckRequest* request = SpellCheckRequest::Create(
+      range_to_check, /*num_request=*/0, /*should_force_refresh=*/false);
 
   TextCheckingResult result;
   result.decoration = TextDecorationType::kTextDecorationTypeSpelling;
@@ -175,7 +177,8 @@ TEST_F(SpellCheckerTest, MarkerContainsHideSuggestionWindowAttribute) {
   EphemeralRange range_to_check =
       EphemeralRange(Position(text, 0), Position(text, 8));
 
-  SpellCheckRequest* request = SpellCheckRequest::Create(range_to_check, 0);
+  SpellCheckRequest* request = SpellCheckRequest::Create(
+      range_to_check, /*num_request=*/0, /*should_force_refresh=*/false);
 
   TextCheckingResult result;
   result.decoration = TextDecorationType::kTextDecorationTypeSpelling;
@@ -202,7 +205,8 @@ TEST_F(SpellCheckerTest, MarkAndReplaceForHandlesMultipleReplacements) {
   EphemeralRange range_to_check =
       EphemeralRange(Position(text, 0), Position(text, 8));
 
-  SpellCheckRequest* request = SpellCheckRequest::Create(range_to_check, 0);
+  SpellCheckRequest* request = SpellCheckRequest::Create(
+      range_to_check, /*num_request=*/0, /*should_force_refresh=*/false);
 
   TextCheckingResult result;
   result.decoration = TextDecorationType::kTextDecorationTypeSpelling;

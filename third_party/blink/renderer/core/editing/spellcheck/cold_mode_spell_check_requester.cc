@@ -230,7 +230,8 @@ bool ColdModeSpellCheckRequester::RequestCheckingForNextChunk() {
           : std::min(extended_end, remaining_range.EndPosition());
   const EphemeralRange check_range(chunk_start, check_end);
 
-  GetSpellCheckRequester().RequestCheckingFor(check_range, chunk_index);
+  GetSpellCheckRequester().RequestCheckingFor(check_range, chunk_index,
+                                              /*should_force_refresh=*/false);
 
   last_chunk_index_ = chunk_index;
   remaining_check_range_->setStart(check_range.EndPosition());

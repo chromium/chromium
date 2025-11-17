@@ -69,6 +69,8 @@ class SpellCheckProvider : public content::RenderFrameObserver,
   // when typing in the middle of a word.
   void RequestTextChecking(
       const std::u16string& text,
+      blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
+          should_force_refresh,
       std::unique_ptr<blink::WebTextCheckingCompletion> completion);
 
   // The number of ongoing spell check host requests.
@@ -116,6 +118,8 @@ class SpellCheckProvider : public content::RenderFrameObserver,
       std::vector<blink::WebString>* optional_suggestions) override;
   void RequestCheckingOfText(
       const blink::WebString& text,
+      blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
+          should_force_refresh,
       std::unique_ptr<blink::WebTextCheckingCompletion> completion) override;
 
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)

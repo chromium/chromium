@@ -6978,6 +6978,7 @@ class TextCheckClient : public WebTextCheckClient {
   bool IsSpellCheckingEnabled() const override { return true; }
   void RequestCheckingOfText(
       const WebString&,
+      WebTextCheckClient::ShouldForceRefreshTextCheckService,
       std::unique_ptr<WebTextCheckingCompletion> completion) override {
     ++number_of_times_checked_;
     const int kMisspellingStartOffset = 1;
@@ -7123,6 +7124,7 @@ class StubbornTextCheckClient : public WebTextCheckClient {
   bool IsSpellCheckingEnabled() const override { return true; }
   void RequestCheckingOfText(
       const WebString&,
+      WebTextCheckClient::ShouldForceRefreshTextCheckService,
       std::unique_ptr<WebTextCheckingCompletion> completion) override {
     completion_ = std::move(completion);
   }

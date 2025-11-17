@@ -16,6 +16,7 @@
 #include "components/spellcheck/renderer/spellcheck.h"
 #include "components/spellcheck/renderer/spellcheck_language.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+#include "third_party/blink/public/web/web_text_check_client.h"
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 #include "base/files/file_path.h"
@@ -124,8 +125,11 @@ TestingSpellCheckProvider::~TestingSpellCheckProvider() {
 
 void TestingSpellCheckProvider::RequestTextChecking(
     const std::u16string& text,
+    blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
+        should_force_refresh,
     std::unique_ptr<blink::WebTextCheckingCompletion> completion) {
-  SpellCheckProvider::RequestTextChecking(text, std::move(completion));
+  SpellCheckProvider::RequestTextChecking(text, should_force_refresh,
+                                          std::move(completion));
   base::RunLoop().RunUntilIdle();
 }
 
