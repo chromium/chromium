@@ -6,6 +6,7 @@
 
 // Modules public for testing, don't expect stable API.
 mod cxx;
+pub mod decoder;
 pub mod dither;
 pub mod quant;
 pub mod selectors;
@@ -145,8 +146,8 @@ pub fn load_input_block(
 /// - 32-bit alignment is practical to get even on 32-bit platforms, whereas
 ///   64-bit values are not aligned to 8 bytes on 32-bit ARM.
 /// - We require extensive shuffling when loading inputs, but store to the
-///   output straight in the order of blocks. Dealing with unaligned buffers
-///   in the latter case is significantly easier.
+///   output straight in the order of blocks. Dealing with unaligned buffers in
+///   the latter case is significantly easier.
 pub fn compress_etc1(
     src: &[u32],
     dst: &mut [u8],
@@ -174,7 +175,8 @@ pub fn compress_etc1(
     // portable SIMD than schemes that heavily shuffles.
     for dst_y in 0..dst_height {
         for dst_x0 in (0..dst_width).step_by(SIMD_WIDTH) {
-            let data = load_input_block(src, src_width, src_height, src_row_width, dst_x0 * 4, dst_y * 4);
+            let data =
+                load_input_block(src, src_width, src_height, src_row_width, dst_x0 * 4, dst_y * 4);
             let data = dither(&data);
             let QuantResult { lo: hdr0, hi: hdr1, scaled0: ep0, scaled1: ep1 } =
                 quantize_averages(&data);

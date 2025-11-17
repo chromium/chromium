@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 use std::env;
+use std::fs;
 use std::fs::File;
 use std::io::{BufReader, BufWriter};
 use std::path::Path;
@@ -52,10 +53,9 @@ fn main() {
         etc1_data_width,
     );
 
-    // TODO: Encode & decode through the ETC1 codec before converting back to PNG.
     if let Some(etc1_output_path) = etc1_output_path {
-        // TODO: Save the ETC1 encoded blob to etc1_output_path for inspection.
         println!("ETC1 output will be saved to: {}", etc1_output_path.display());
+        fs::write(etc1_output_path, &etc1_data).expect("Failed to save intermediate ETC1 output");
     }
 
     let mut output_rgba = vec![0u32; (first_frame.height * first_frame.width) as usize];

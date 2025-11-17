@@ -986,6 +986,7 @@ if (enable_new_texture_compressor) {
     crate_root = "texture_compressor/lib.rs"
     sources = [
       "texture_compressor/cxx.rs",
+      "texture_compressor/decoder.rs",
       "texture_compressor/dither.rs",
       "texture_compressor/lib.rs",
       "texture_compressor/quant.rs",
@@ -1005,6 +1006,7 @@ if (enable_new_texture_compressor) {
     is_gtest_unittests = true
     crate_root = "texture_compressor/tests.rs"
     sources = [
+      "texture_compressor/decoder_tests.rs",
       "texture_compressor/lib_tests.rs",
       "texture_compressor/quant_tests.rs",
       "texture_compressor/selectors_tests.rs",
