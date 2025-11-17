@@ -3608,8 +3608,8 @@ crbug.com/426509690 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/
 crbug.com/426648863 [ Win11-arm64 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol.https.html [ Crash ]
 crbug.com/426648863 [ Win11-arm64 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol.tentative.https.html [ Timeout ]
 crbug.com/426648863 [ Win11-arm64 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/secure_context.html [ Crash ]
-# crbug.com/426164367 [ Win11-arm64 ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Skip Timeout ]
-# crbug.com/426164367 [ Win11-arm64 ] external/wpt/nav-tracking-mitigations/stateless-client-bounce.sub.https.html [ Crash ]
+crbug.com/426164367 [ Win11-arm64 ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Skip Timeout ]
+crbug.com/426164367 [ Win11-arm64 ] external/wpt/nav-tracking-mitigations/stateless-client-bounce.sub.https.html [ Crash ]
 crbug.com/426164366 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_fetch_error.tentative.html [ Crash ]
 crbug.com/426164366 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_verification_error.tentative.html [ Crash ]
 crbug.com/426164366 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-invalid_integrity_header.tentative.html [ Crash ]
@@ -3667,8 +3667,8 @@ crbug.com/421629752 [ Win10.20h2 ] external/wpt/html/cross-origin-opener-policy/
 crbug.com/421629752 [ Win10.20h2 ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-opener_coop-ro.https.html [ Crash ]
 crbug.com/421629752 [ Win10.20h2 ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-focus.https.html [ Crash ]
 crbug.com/421629752 [ Win10.20h2 ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/report-to-both_coop-ro.https.html [ Crash ]
-# crbug.com/421653974 [ Win10.20h2 ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Crash Timeout ]
-# crbug.com/421653974 [ Win10.20h2 ] external/wpt/nav-tracking-mitigations/stateless-client-bounce.sub.https.html [ Crash Timeout ]
+crbug.com/421653974 [ Win10.20h2 ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Crash Timeout ]
+crbug.com/421653974 [ Win10.20h2 ] external/wpt/nav-tracking-mitigations/stateless-client-bounce.sub.https.html [ Crash Timeout ]
 crbug.com/421653408 [ Win10.20h2 ] external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Timeout ]
 crbug.com/421653408 [ Win11 ] external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Timeout ]
 crbug.com/421653408 [ Win10.20h2 ] virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Timeout ]
@@ -4104,7 +4104,7 @@ crbug.com/378750944 [ Win10.20h2 ] external/wpt/html/webappapis/system-state-and
 crbug.com/378891970 [ Win10.20h2 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_parse_error.tentative.html [ Crash Timeout ]
 crbug.com/378891970 [ Win10.20h2 ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-navigation-ok-origin-referrer.tentative.html [ Crash ]
 crbug.com/378891966 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_sandbox_iframe_pdf_viewer.html [ Failure ]
-# crbug.com/378014598 [ Win11 ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Crash ]
+crbug.com/378014598 [ Win11 ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Crash ]
 crbug.com/378014599 [ Win11 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_parse_error-downgraded.tentative.html [ Crash Timeout ]
 crbug.com/378014599 [ Win10.20h2 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_verification_error-downgraded.tentative.html [ Crash Timeout ]
 crbug.com/378014599 [ Win11 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_verification_error-downgraded.tentative.html [ Crash Timeout ]
@@ -5143,14 +5143,6 @@ crbug.com/40551880 http/tests/devtools/sources/debugger/live-edit-no-reveal.js [
 crbug.com/181374 external/wpt/css/css-display/display-contents-dynamic-table-001-inline.html [ Failure ]
 
 # ====== End of display: contents tests ======
-
-# ====== Tests that rely on third-party cookies being blocked ======
-# These tests started failing after the 3PCD feature was removed from fieldtrial_testing_config.
-
-crbug.com/446634532 external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Skip Timeout ]
-crbug.com/446634532 external/wpt/nav-tracking-mitigations/stateless-client-bounce.sub.https.html [ Skip Timeout ]
-
-# ====== Tests that rely on third-party cookies being blocked end here ======
 
 crbug.com/930297 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/utf-16be.html?include=workers [ Skip Timeout ]
 crbug.com/930297 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/utf-16le.html?include=workers [ Skip Timeout ]
@@ -9551,8 +9543,8 @@ crbug.com/407865639 external/wpt/css/css-grid/grid-extrinsically-sized-mutations
 # Gardener 2025-04-08
 crbug.com/409032332 http/tests/inspector-protocol/no-crash-with-stack-id-and-stale-while-revalidate.js [ Crash Pass Timeout ]
 
-# crbug.com/411529366 [ Mac ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Crash Failure Pass ]
-# crbug.com/411529366 [ Mac ] external/wpt/nav-tracking-mitigations/stateless-client-bounce.sub.https.html [ Crash Failure Pass ]
+crbug.com/411529366 [ Mac ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Crash Failure Pass ]
+crbug.com/411529366 [ Mac ] external/wpt/nav-tracking-mitigations/stateless-client-bounce.sub.https.html [ Crash Failure Pass ]
 
 # Gardener 2025-04-21
 crbug.com/412321937 [ Mac ] media/controls/closed-captions-switch-track.html [ Crash Failure Pass Timeout ]
