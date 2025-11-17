@@ -639,6 +639,35 @@ android_library("httpengine_native_provider_java") {
     "java/src/org/chromium/net/impl/HttpEngineNativeProvider.java",
   ]
 
+  # Provide stubs for APIs that do not exist in Chromium yet.
+  #
+  # The Android SDK currently used in Chromium is not recent enough to know
+  # about the new HttpEngine proxy APIs. This means we can't build a proper
+  # AndroidProxyOptions wrapper in Chromium: the Android APIs it would need to
+  # reference, while wrapping, do not exist as far as Chromium is concerned.
+  # However, such code would build in the Android repo: that always contains the
+  # latest Android APIs, since they are developed there.
+  #
+  # This is not useful to actual users of HttpEngineNativeProvider, since they
+  # won't be receiving this code until Chromium can successfully compile it.
+  # Having said that, this is useful to testing: it allows the Cronet test
+  # suite (especially org.chromium.net.ProxyTest) to run against the new
+  # HttpEngine Proxy APIs when running within the Android repo, thus providing
+  # HttpEngine with test coverage.
+  #
+  # TODO(https://crbug.com/460408392): Clean this up once the new HttpEngine
+  # proxy APIs have made it to the Android SDK used in Chromium.
+  if (is_cronet_for_aosp_build) {
+    sources += [
+      "platform-only/org/chromium/net/AndroidProxy.java",
+      "platform-only/org/chromium/net/AndroidProxyHttpConnectCallback.java",
+      "platform-only/org/chromium/net/AndroidProxyHttpConnectCallbackRequest.java",
+      "platform-only/org/chromium/net/AndroidProxyOptions.java",
+    ]
+  } else {
+    sources += [ "java/src/org/chromium/net/impl/AndroidProxyOptions.java" ]
+  }
+
   deps = [
     ":cronet_api_java",
     ":cronet_impl_common_java",
