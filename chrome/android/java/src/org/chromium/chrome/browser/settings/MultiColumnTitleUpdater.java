@@ -18,6 +18,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.LocalizationUtils;
 
 /**
@@ -190,7 +191,11 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         }
 
         // Enable detailed page title.
-        mContainer.setVisibility(View.VISIBLE);
+        // TODO(crbug.com/444464896): Move title from toolbar to the detail content pane when search
+        //     is enabled to avoid the search bar and the title breadcrumb overlapping each other.
+        if (!ChromeFeatureList.sSearchInSettings.isEnabled()) {
+            mContainer.setVisibility(View.VISIBLE);
+        }
 
         // Set left margin to align with the detailed pane.
         View view = mMultiColumnSettings.getHeaderView();

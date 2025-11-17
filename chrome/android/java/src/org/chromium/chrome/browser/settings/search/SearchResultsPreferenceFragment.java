@@ -28,6 +28,7 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
     // All search results fragment instance share a title supplier. This keeps
     // |MultiColumnTitleUpdater| from adding titles every time a new fragment instance is created
     // and replaced with the existing one upon user keystrokes entering queries.
+    // TODO(crbug.com/444464896): Avoid using the static instance.
     private static @Nullable ObservableSupplier<String> sTitleSupplier;
 
     /** Interface for opening the setting selected from the search results. */
