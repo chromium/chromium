@@ -3551,7 +3551,7 @@ deps = {
 
   'src/chrome/browser/resources/settings/internal': {
       'url': Var('chrome_git') + '/chrome/browser/resources/settings_internal.git' + '@' +
-        'd0438c1afffa0285b5f0c7132b5150ee22880d04',
+        '27f38f851b668d7488dc35c41190c855fad3b770',
       'condition': 'checkout_src_internal',
   },
 

@@ -225,6 +225,9 @@
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_WHEN_ON_1" desc="First point in the 'when on' column of the 'default tab access' expands">
     You can easily ask Gemini questions about the tabs you’re sharing as you browse
   </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_WHEN_ON_2" translateable="false" desc="Part of the description of the 'Share current tab by default' setting. It informs the user about what information is going to be shared with Gemini.">
+    Tabs opened from a chat or a shared tab are also shared with Gemini. In Live mode, only the current tab is shared by default.
+  </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_CONSIDER_1" desc="First point in 'things to consider' column of the 'default tab access' expands">
     When tabs are shared, their page contents and URLs are sent to Google
   </message>
