@@ -8,6 +8,7 @@
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/actor/tools/window_management_tool_request.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -60,7 +61,7 @@ class NewWindowObserver : public BrowserListObserver {
 
 // Ensure CreateWindow creates a new window and makes it the active window.
 IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, CreateWindow) {
-  const size_t initial_browser_count = BrowserList::GetInstance()->size();
+  const size_t initial_browser_count = chrome::GetTotalBrowserCount();
 
   NewWindowObserver new_window_observer;
 
@@ -72,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, CreateWindow) {
   BrowserWindowInterface* new_window = new_window_observer.added_browser();
   EXPECT_TRUE(new_window);
 
-  EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
+  EXPECT_EQ(initial_browser_count + 1, chrome::GetTotalBrowserCount());
   ui_test_utils::WaitForBrowserSetLastActive(
       new_window->GetBrowserForMigrationOnly());
   EXPECT_EQ(new_window, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
@@ -130,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
 
 // Ensure CloseWindow closes the window with the given ID.
 IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, CloseWindow) {
-  const size_t initial_browser_count = BrowserList::GetInstance()->size();
+  const size_t initial_browser_count = chrome::GetTotalBrowserCount();
   BrowserWindowInterface* initial_active_browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
 
@@ -139,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, CloseWindow) {
   ActResultFuture create_result;
   actor_task().Act(ToRequestList(create_action), create_result.GetCallback());
   ExpectOkResult(create_result);
-  ASSERT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
+  ASSERT_EQ(initial_browser_count + 1, chrome::GetTotalBrowserCount());
 
   // Close the new window.
   const int32_t window_id_to_close =
@@ -150,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, CloseWindow) {
   actor_task().Act(ToRequestList(close_action), close_result.GetCallback());
   ExpectOkResult(close_result);
 
-  EXPECT_EQ(initial_browser_count, BrowserList::GetInstance()->size());
+  EXPECT_EQ(initial_browser_count, chrome::GetTotalBrowserCount());
   ui_test_utils::WaitForBrowserSetLastActive(
       initial_active_browser->GetBrowserForMigrationOnly());
   EXPECT_EQ(initial_active_browser,

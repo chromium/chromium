@@ -134,6 +134,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -1045,12 +1046,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
   }
   // Try to close browser window.
   {
-    EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+    EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
     chrome::CloseWindow(browser());
     AcceptModalDialog();
     CancelModalDialog();
     base::RunLoop().RunUntilIdle();
-    EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+    EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   }
   // Try to exit application.
   {

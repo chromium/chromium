@@ -427,7 +427,7 @@ class SigninUtilWinNoStartingWindowBrowserTest
             /*refresh_token=*/"lst-123456",
             /*expect_is_started=*/true)),
         keep_alive_(std::make_unique<ScopedKeepAlive>(
-            KeepAliveOrigin::BROWSER,
+            KeepAliveOrigin::APP_CONTROLLER,
             KeepAliveRestartOption::DISABLED)) {}
 
   bool IsFirstRunFinished() {

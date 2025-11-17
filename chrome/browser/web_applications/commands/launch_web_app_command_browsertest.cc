@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -208,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunch) {
 
   EXPECT_TRUE(AppBrowserController::IsWebApp(launch_browser.get()));
   EXPECT_NE(launch_browser.get(), browser());
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2ul);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2ul);
   EXPECT_EQ(launch_browser->tab_strip_model()->count(), 1);
   EXPECT_EQ(web_contents->GetVisibleURL(), kAppStartUrl);
 }
@@ -229,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunchAppConfig) {
 
   EXPECT_TRUE(AppBrowserController::IsWebApp(launch_browser.get()));
   EXPECT_NE(launch_browser.get(), browser());
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2ul);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2ul);
   EXPECT_EQ(launch_browser->tab_strip_model()->count(), 1);
   EXPECT_EQ(web_contents->GetVisibleURL(), kAppStartUrl);
 }
@@ -279,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, AppLaunchNoIntegration) {
   // Check the state is correct.
   EXPECT_TRUE(AppBrowserController::IsWebApp(
       launch_future.Get<base::WeakPtr<Browser>>().get()));
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2ul);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2ul);
   EXPECT_EQ(
       launch_future.Get<base::WeakPtr<content::WebContents>>()->GetVisibleURL(),
       kStartUrl);

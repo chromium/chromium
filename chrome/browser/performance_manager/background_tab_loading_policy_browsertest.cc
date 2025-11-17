@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -187,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest,
   chrome::OpenWindowWithRestoredTabs(browser()->profile());
   BrowserWindowInterface* const restored_browser =
       browser_created_observer->Wait();
-  ASSERT_EQ(2U, BrowserList::GetInstance()->size());
+  ASSERT_EQ(2U, chrome::GetTotalBrowserCount());
 
   EXPECT_EQ(kDesiredNumberOfTabs,
             restored_browser->GetTabStripModel()->count());

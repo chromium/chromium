@@ -11,6 +11,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -30,7 +31,7 @@ size_t CountAllTabs() {
 
 TEST_F(BrowserListTest, TabContentsIteratorVerifyCount) {
   // Make sure we have 1 window to start with.
-  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   EXPECT_EQ(0U, CountAllTabs());
 
@@ -47,7 +48,7 @@ TEST_F(BrowserListTest, TabContentsIteratorVerifyCount) {
       CreateBrowserWithTestWindowForParams(ash_params));
 
   // Sanity checks.
-  EXPECT_EQ(4U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(4U, chrome::GetTotalBrowserCount());
   EXPECT_EQ(0, browser()->tab_strip_model()->count());
   EXPECT_EQ(0, browser2->tab_strip_model()->count());
   EXPECT_EQ(0, browser3->tab_strip_model()->count());
@@ -80,7 +81,7 @@ TEST_F(BrowserListTest, TabContentsIteratorVerifyCount) {
 
 TEST_F(BrowserListTest, TabContentsIteratorVerifyBrowser) {
   // Make sure we have 1 window to start with.
-  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   // Create more browsers/windows.
   Browser::CreateParams native_params(profile(), true);
@@ -93,7 +94,7 @@ TEST_F(BrowserListTest, TabContentsIteratorVerifyBrowser) {
       CreateBrowserWithTestWindowForParams(ash_params));
 
   // Sanity checks.
-  EXPECT_EQ(3U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(3U, chrome::GetTotalBrowserCount());
   EXPECT_EQ(0, browser()->tab_strip_model()->count());
   EXPECT_EQ(0, browser2->tab_strip_model()->count());
   EXPECT_EQ(0, browser3->tab_strip_model()->count());

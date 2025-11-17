@@ -238,7 +238,7 @@ class BrowserAddedWaiter : public BrowserListObserver {
   ~BrowserAddedWaiter() override { BrowserList::RemoveObserver(this); }
 
   BrowserWindowInterface* Wait() {
-    if (BrowserList::GetInstance()->size() == total_count_) {
+    if (chrome::GetTotalBrowserCount() == total_count_) {
       return GetLastActiveBrowserWindowInterfaceWithAnyProfile();
     }
     run_loop_.Run();
@@ -249,7 +249,7 @@ class BrowserAddedWaiter : public BrowserListObserver {
  private:
   // BrowserListObserver implementation.
   void OnBrowserAdded(Browser* browser) override {
-    if (BrowserList::GetInstance()->size() != total_count_) {
+    if (chrome::GetTotalBrowserCount() != total_count_) {
       return;
     }
     browser_ = browser;
@@ -891,7 +891,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfile) {
   base::HistogramTester histogram_tester;
 
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
   // flow, resulting in sync confirmation screen getting displayed.
   GURL target_url =
@@ -952,7 +952,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfileWithCustomAccountTheme) {
   base::HistogramTester histogram_tester;
 
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
   // flow, resulting in sync confirmation screen getting displayed.
   GURL target_url =
@@ -1040,7 +1040,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   ClosePickerOnBrowserAddedObserver close_picker_on_browser_added;
 
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
   // flow, resulting in sync confirmation screen getting displayed.
   GURL target_url =
@@ -1106,7 +1106,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   base::CommandLine::ForCurrentProcess()->AppendArg("https://www.youtube.com");
   base::CommandLine::ForCurrentProcess()->AppendArg("https://www.gmail.com");
 
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   // Create a second profile.
   base::FilePath other_path = CreateNewProfileWithoutBrowser();
 
@@ -1139,7 +1139,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        MAYBE_CreateForceSignedInProfile) {
   signin_util::ScopedForceSigninSetterForTesting force_signin_setter{true};
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   ASSERT_EQ(1u, g_browser_process->profile_manager()->GetNumberOfProfiles());
 
   // Note: Observed some rare flakiness on some bots. Inclusing some logs to
@@ -1245,7 +1245,7 @@ class ForceSigninProfilePickerCreationFlowBrowserTest
 
 IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
                        ForceSigninSuccessful) {
-  size_t initial_browser_count = BrowserList::GetInstance()->size();
+  size_t initial_browser_count = chrome::GetTotalBrowserCount();
   // Create a new signin flow, sign-in, and wait for the Sync Comfirmation
   // promo.
   GURL target_url = IsParamFeatureEnabled() ? GetHistorySyncOptinURL()
@@ -1289,7 +1289,7 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
                        ForceSigninSyncDeclined) {
-  size_t initial_browser_count = BrowserList::GetInstance()->size();
+  size_t initial_browser_count = chrome::GetTotalBrowserCount();
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   // Only the default profile exists at this point.
   size_t initial_profile_count = 1u;
@@ -1387,7 +1387,7 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
 IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
                        PRE_PRE_ForceSigninSigninThenReauthSuccessful) {
   ASSERT_TRUE(signin_util::IsForceSigninEnabled());
-  ASSERT_EQ(BrowserList::GetInstance()->size(), 0u);
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), 0u);
 
   //----------------------------------------------------------------------------
   // By default the initial profile is locked and signed out, this is the only
@@ -1457,7 +1457,7 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
   ASSERT_EQ(profile_management_counter().user_profile_destroyed_count(), 1u);
 
   ASSERT_TRUE(ProfilePicker::IsOpen());
-  ASSERT_EQ(BrowserList::GetInstance()->size(), 0u);
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), 0u);
   std::vector<ProfileAttributesEntry*> entries =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
@@ -1481,7 +1481,7 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
   ASSERT_EQ(profile_management_counter().user_profile_destroyed_count(), 0u);
 
   ASSERT_TRUE(ProfilePicker::IsOpen());
-  ASSERT_EQ(BrowserList::GetInstance()->size(), 0u);
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), 0u);
   std::vector<ProfileAttributesEntry*> entries =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
@@ -1522,7 +1522,7 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
                        ForceSigninReauthInGlicModeShowsErrorDialog) {
-  size_t initial_browser_count = BrowserList::GetInstance()->size();
+  size_t initial_browser_count = chrome::GetTotalBrowserCount();
   ASSERT_EQ(initial_browser_count, 0u);
 
   const std::vector<Profile*> profiles =
@@ -1579,7 +1579,7 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
       ForceSigninUIError::ReauthNotSupportedByGlicFlow().GetErrorTexts();
   EXPECT_EQ(GetForceSigninErrorDialogTitleText(), errors.first);
   EXPECT_EQ(GetForceSigninErrorDialogBodyText(), errors.second);
-  EXPECT_EQ(BrowserList::GetInstance()->size(), initial_browser_count);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), initial_browser_count);
   EXPECT_TRUE(entry->IsSigninRequired());
 
   testing::Mock::VerifyAndClearExpectations(&mock_callback);
@@ -1590,7 +1590,7 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
                        ForceSigninReauthWithAnotherAccount) {
-  size_t initial_browser_count = BrowserList::GetInstance()->size();
+  size_t initial_browser_count = chrome::GetTotalBrowserCount();
   ASSERT_EQ(initial_browser_count, 0u);
 
   const std::vector<Profile*> profiles =
@@ -1647,7 +1647,7 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
       ForceSigninUIError::ReauthWrongAccount(email).GetErrorTexts();
   EXPECT_EQ(GetForceSigninErrorDialogTitleText(), errors.first);
   EXPECT_EQ(GetForceSigninErrorDialogBodyText(), errors.second);
-  EXPECT_EQ(BrowserList::GetInstance()->size(), initial_browser_count);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), initial_browser_count);
   EXPECT_TRUE(entry->IsSigninRequired());
   histogram_tester()->ExpectUniqueSample(
       kReauthResultHistogramName, ProfilePickerReauthResult::kErrorUsedNewEmail,
@@ -1696,12 +1696,12 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
 IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
                        ForceSigninReauthNavigateBackShouldAbort) {
   // Profile is locked and can be reauthed.
-  size_t initial_browser_count = BrowserList::GetInstance()->size();
+  size_t initial_browser_count = chrome::GetTotalBrowserCount();
   ASSERT_EQ(initial_browser_count, 0u);
   const std::string email(IsParamFeatureEnabled() ? "test@gmail.com"
                                                   : "test@managedchrome.com");
   ASSERT_TRUE(ProfilePicker::IsOpen());
-  ASSERT_EQ(BrowserList::GetInstance()->size(), 0u);
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), 0u);
   std::vector<ProfileAttributesEntry*> entries =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
@@ -1740,13 +1740,13 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
   WaitForLoadStop(GURL("chrome://profile-picker"));
   EXPECT_TRUE(ProfilePicker::IsOpen());
   EXPECT_FALSE(IsNativeToolbarVisible());
-  EXPECT_EQ(BrowserList::GetInstance()->size(), initial_browser_count);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), initial_browser_count);
   EXPECT_TRUE(entry->IsSigninRequired());
 }
 
 IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
                        ForceSigninLaunchInactiveDefaultProfile) {
-  size_t initial_browser_count = BrowserList::GetInstance()->size();
+  size_t initial_browser_count = chrome::GetTotalBrowserCount();
   ASSERT_EQ(initial_browser_count, 0u);
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -1884,7 +1884,7 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTestWithPRE,
                        SignedOutProfileCannotBeOpened) {
   ASSERT_TRUE(signin_util::IsForceSigninEnabled());
 
-  size_t initial_browser_count = BrowserList::GetInstance()->size();
+  size_t initial_browser_count = chrome::GetTotalBrowserCount();
   ASSERT_EQ(0u, initial_browser_count);
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -1907,7 +1907,7 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTestWithPRE,
   OpenProfileFromPicker(existing_entry->GetPath(), false);
 
   // Should not succeed.
-  EXPECT_EQ(initial_browser_count, BrowserList::GetInstance()->size());
+  EXPECT_EQ(initial_browser_count, chrome::GetTotalBrowserCount());
   // Error dialog is shown on top of the ProfilePicker.
   EXPECT_TRUE(IsForceSigninErrorDialogShown());
   // Check error dialog content.
@@ -1927,7 +1927,7 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
 // Regression test for crbug.com/1266415.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfileWithSyncEncryptionKeys) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   StartDiceSignIn();
 
   // It would be nicer to verify that HasEncryptionKeysApiForTesting()
@@ -1941,7 +1941,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 // Regression test for crbug.com/1196290.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfileAfterCancellingFirstAttempt) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
   // flow, resulting in sync confirmation screen getting displayed.
   GURL target_url =
@@ -2011,7 +2011,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CancelWhileSigningIn) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   Profile* profile_to_cancel = StartDiceSignIn();
   base::FilePath profile_to_cancel_path = profile_to_cancel->GetPath();
 
@@ -2032,7 +2032,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 // Regression test for crbug.com/1278726.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CancelWhileSigningInBeforeProfileCreated) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
       ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
   // Wait until webUI is fully initialized.
@@ -2053,14 +2053,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        PRE_CancelWhileSigningInWithNoOtherWindow) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   Profile* profile_to_cancel = StartDiceSignIn();
   base::FilePath profile_to_cancel_path = profile_to_cancel->GetPath();
 
   // First close all browser windows to make sure Chrome quits when closing the
   // flow.
   CloseBrowserSynchronously(browser());
-  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
 
   // Close the flow with the [X] button.
   widget()->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
@@ -2079,7 +2079,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                     .GetNumberOfProfiles());
 
   // Still no browser window is open.
-  EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
@@ -2093,7 +2093,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 // Tests dice-specific logic for keeping track of the new profile color.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfileDiceReenter) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   Profile* profile_being_created = StartDiceSignIn();
   EXPECT_TRUE(IsNativeToolbarVisible());
 
@@ -2177,7 +2177,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
     // The history optin screen does not have a settings button.
     GTEST_SKIP();
   }
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
   // flow, resulting in sync confirmation screen getting displayed.
   Profile* profile_being_created = SignInForNewProfile(
@@ -2218,7 +2218,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 // The following tests rely on dice specific logic.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfileOpenLink) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   StartDiceSignIn();
 
   // Simulate clicking on a link that opens in a new window.
@@ -2242,7 +2242,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 // TODO(crbug.com/40772284): Re-implement the test bases on the final fix.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfileSecurityInterstitials) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   StartDiceSignIn();
 
   // Simulate clicking on the settings link in a security interstitial (that
@@ -2256,7 +2256,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfileExtendedInfoTimeout) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   Profile* profile_being_created = StartDiceSignIn();
 
   signin::IdentityManager* identity_manager =
@@ -2337,7 +2337,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        MAYBE_CreateSignedInProfileExtendedInfoDelayed) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   Profile* profile_being_created = StartDiceSignIn();
 
   signin::IdentityManager* identity_manager =
@@ -2416,7 +2416,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfileWithSAML) {
   const GURL kNonGaiaURL("https://signin.saml-provider.com/");
 
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   Profile* profile_being_created = StartDiceSignIn();
 
   // Redirect the web contents to a non gaia url (simulating a SAML page).
@@ -2509,7 +2509,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 // Regression test for https://crbug.com/1467483
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        DiceSigninFailure) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   StartDiceSignIn();
 
   // Simulate Dice token exchange failure. This should not crash.
@@ -2572,7 +2572,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   auto scoped_iph_delay =
       AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
           base::Seconds(0));
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   // Create a second profile.
   base::FilePath other_path = CreateNewProfileWithoutBrowser();
 
@@ -2671,7 +2671,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   auto scoped_iph_delay =
       AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
           base::Seconds(0));
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   // Create a second profile.
   base::FilePath other_path = CreateNewProfileWithoutBrowser();
   // Open the picker.
@@ -2692,7 +2692,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        OpenURL_PickerClosed) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   const GURL kTargetURL("chrome://settings/help");
   // Create a profile.
   base::FilePath profile_path = CreateNewProfileWithoutBrowser();
@@ -2715,7 +2715,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   auto scoped_iph_delay =
       AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
           base::Seconds(0));
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   // Create a second profile.
   base::FilePath other_path = CreateNewProfileWithoutBrowser();
   // Open the picker.
@@ -2739,7 +2739,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 // Regression test for https://crbug.com/1144092.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CloseBrowserBeforeCreatingNewProfile) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Open the picker.
   ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
@@ -2750,19 +2750,19 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   BrowserList::GetInstance()->CloseAllBrowsersWithProfile(browser()->profile());
   ui_test_utils::WaitForBrowserToClose(browser());
   base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
 
   // Imitate creating a new profile through the profile picker.
   CreateLocalProfile();
 
   BrowserAddedWaiter(1u).Wait();
-  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   WaitForPickerClosed();
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateLocalProfile) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   ASSERT_EQ(1u, g_browser_process->profile_manager()
                     ->GetProfileAttributesStorage()
                     .GetNumberOfProfiles());
@@ -2817,7 +2817,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 #endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        MAYBE_CancelLocalProfileCreation) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   ASSERT_EQ(1u, g_browser_process->profile_manager()
                     ->GetProfileAttributesStorage()
                     .GetNumberOfProfiles());
@@ -3067,7 +3067,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserProfileIPHTest,
     GTEST_SKIP();
   }
 
-  size_t initial_browser_count = BrowserList::GetInstance()->size();
+  size_t initial_browser_count = chrome::GetTotalBrowserCount();
   auto scoped_iph_delay =
       AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
           base::Seconds(0));
@@ -3139,7 +3139,7 @@ class ProfilePickerEnterpriseCreationFlowBrowserTest
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
                        CreateSignedInProfile) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
   // flow, resulting in managed user notice screen getting displayed.
   // Consumer-looking gmail address avoids code that forces the sync service to
@@ -3205,7 +3205,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
                        LoginErrorWhenProfileNotAllowsCookies) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
 
   Profile* profile_being_created = StartDiceSignIn(false);
 
@@ -3234,7 +3234,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
                        CreateSignedInProfileSigninAlreadyExists_ConfirmSwitch) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   const GaiaId test_gaia_id =
       signin::GetTestGaiaIdForEmail("joe.consumer@gmail.com");
 
@@ -3302,7 +3302,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
                        CreateSignedInProfileSigninAlreadyExists_CancelSwitch) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   const GaiaId test_gaia_id =
       signin::GetTestGaiaIdForEmail("joe.consumer@gmail.com");
 
@@ -3352,7 +3352,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   observer.Wait();
 
   // Only one browser should be displayed.
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
 
   EXPECT_FALSE(contents_profile->IsSystemProfile());
   // The sign-in profile should be marked for deletion.
@@ -3368,7 +3368,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   const GURL kTwoFactorIntersitialUrl(
       "https://myaccount.google.com/interstitials/twosvrequired?query=value");
 
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
 
   Profile* profile_being_created = StartDiceSignIn();
 
@@ -3448,7 +3448,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 // TODO(crbug.com/40197102): Extend this test to support mirror.
 IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
                        CreateSignedInProfileWithSyncDisabled) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   Profile* profile_being_created = StartDiceSignIn();
 
   // Set the device as managed in prefs.
@@ -3514,7 +3514,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
     GTEST_SKIP();
   }
 
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
   // flow, resulting in managed user notice screen getting displayed.
   // Consumer-looking gmail address avoids code that forces the sync service to
@@ -3568,7 +3568,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest, Cancel) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
   // flow, resulting in managed user notice screen getting displayed.
   // Consumer-looking gmail address avoids code that forces the sync service to
@@ -3606,7 +3606,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest, Cancel) {
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
                        CancelFromPicker) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
   // flow, resulting in managed user notice screen getting displayed.
@@ -3740,7 +3740,7 @@ class ProfilePickerCreationFlowEphemeralProfileBrowserTest
 // still exists after restart.
 IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
                        MAYBE_PRE_Signin) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   ASSERT_EQ(1u, profile_manager()->GetNumberOfProfiles());
   ASSERT_TRUE(OriginalProfileExists());
 
@@ -3814,7 +3814,7 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
 // the signin flow.
 IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
                        MAYBE_PRE_ExitDuringSignin) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   ASSERT_EQ(1u, profile_manager()->GetNumberOfProfiles());
   ASSERT_TRUE(OriginalProfileExists());
   Profile* profile_being_created = StartDiceSignIn();
@@ -3883,7 +3883,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, GlicPickProfile) {
-  size_t initial_browser_count = BrowserList::GetInstance()->size();
+  size_t initial_browser_count = chrome::GetTotalBrowserCount();
 
   base::FilePath new_profile_path = CreateNewProfileAndUnload();
 
@@ -3921,7 +3921,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, GlicPickProfile) {
   WaitForPickerClosed();
 
   // No new browser were added.
-  EXPECT_EQ(initial_browser_count, BrowserList::GetInstance()->size());
+  EXPECT_EQ(initial_browser_count, chrome::GetTotalBrowserCount());
 }
 
 struct GlicTestParam {
@@ -3963,7 +3963,7 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerWithGlicParamBrowserTest,
   ProfileDestructionWaiter profile_destruction_waiter(browser()->profile());
   CloseBrowserSynchronously(browser());
   profile_destruction_waiter.Wait();
-  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
   ASSERT_THAT(g_browser_process->profile_manager()->GetLoadedProfiles(),
               testing::IsEmpty());
 
@@ -4023,7 +4023,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowRoamingProfileBrowserTest,
                        CreateSignedInProfile) {
   base::HistogramTester histogram_tester;
 
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   BrowserAddedWaiter browser_waiter = BrowserAddedWaiter(2u);
 
   Profile* profile_being_created =
@@ -4077,12 +4077,12 @@ class ProfilePickerToAllUsersBrowserTest : public ProfilePickerTestBase {
 IN_PROC_BROWSER_TEST_F(ProfilePickerToAllUsersBrowserTest,
                        PRE_StartupSingleProfile) {
   ASSERT_EQ(1u, g_browser_process->profile_manager()->GetNumberOfProfiles());
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
 }
 IN_PROC_BROWSER_TEST_F(ProfilePickerToAllUsersBrowserTest,
                        StartupSingleProfile) {
   ASSERT_EQ(1u, g_browser_process->profile_manager()->GetNumberOfProfiles());
 
   EXPECT_TRUE(ProfilePicker::IsOpen());
-  EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
 }

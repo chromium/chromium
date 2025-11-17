@@ -6,6 +6,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -109,13 +110,13 @@ IN_PROC_BROWSER_TEST_F(GlicActorWindowManagementUiTest, WindowManagementTools) {
       Do([&]() {
         initial_window = GetLastActiveBrowserWindowInterfaceWithAnyProfile();
         initial_window_session_id = initial_window->GetSessionID();
-        initial_window_count = BrowserList::GetInstance()->size();
+        initial_window_count = chrome::GetTotalBrowserCount();
       }),
 
       // Create a new window
       CreateWindowAction(task_id_),
       Check([&]() {
-              return BrowserList::GetInstance()->size() ==
+              return chrome::GetTotalBrowserCount() ==
                   initial_window_count + 1;
           },
           "New window was created"),
@@ -151,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorWindowManagementUiTest, WindowManagementTools) {
       // Close the new window
       CloseWindowAction(task_id_, created_window_session_id),
       Check([&]() {
-              return BrowserList::GetInstance()->size() == initial_window_count;
+              return chrome::GetTotalBrowserCount() == initial_window_count;
           },
           "Created window was closed"),
       CheckResult(

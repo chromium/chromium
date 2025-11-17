@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -240,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs, NonAppUrl) {
   InstallAndLaunchMockApp();
 
   // Check we have 2 browsers: |browser()| and |app_browser_|.
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
   EXPECT_NE(browser(), app_browser_);
   EXPECT_TRUE(browser()->is_type_normal());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
@@ -253,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs, NonAppUrl) {
 
   // Create tab2 with URL not from app, it will open in the NORMAL browser.
   chrome::AddTabAt(app_browser_, GURL(chrome::kChromeUINewTabURL), -1, true);
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
   EXPECT_NE(browser(), app_browser_);
   EXPECT_TRUE(browser()->is_type_normal());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
@@ -327,9 +328,9 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs,
                        ReuseBrowserForSystemAppPopup) {
   InstallAndLaunchMockPopup();
   // We should have the original browser for this BrowserTest, plus new popup.
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
   InstallAndLaunchMockPopup();
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs,
@@ -338,10 +339,10 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs,
   // We should have the original browser for this BrowserTest, plus a new one,
   // offset by a tasteful amount.
   EXPECT_NE(nullptr, first_browser);
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
   Browser* second_browser = LaunchMockSWA();
   EXPECT_NE(nullptr, second_browser);
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 3u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 3u);
 
   auto bounds1 = first_browser->window()->GetRestoredBounds();
   auto bounds2 = second_browser->window()->GetRestoredBounds();

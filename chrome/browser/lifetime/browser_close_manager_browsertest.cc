@@ -40,6 +40,7 @@
 #include "chrome/browser/sessions/tab_restore_service_load_waiter.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -757,7 +758,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
       WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
   BrowserWindowInterface* browser2 = browser_created_observer->Wait();
-  EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_TRUE(content::WaitForLoadStop(
       browser2->GetTabStripModel()->GetWebContentsAt(0)));
 
@@ -789,7 +790,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   content::RunAllPendingInMessageLoop();
 
   // Closing browser shouldn't happen because of beforeunload handler.
-  EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   // Add beforeunload handler for the 2nd (title2.html) tab which haven't had it
   // yet.
   ASSERT_TRUE(
@@ -805,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   // that could have an impact.
   content::RunAllPendingInMessageLoop();
   // It shouldn't close the whole window/browser.
-  EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(2, browser2->GetTabStripModel()->count());
   // Accept closing the second tab.
   base::MockCallback<BrowserWindowInterface::BrowserDidCloseCallback>
@@ -822,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   browser_created_observer.emplace();
   chrome::OpenWindowWithRestoredTabs(browser()->GetProfile());
   browser2 = browser_created_observer->Wait();
-  EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
   // Check the restored browser contents.
   EXPECT_EQ(2, browser2->GetTabStripModel()->count());

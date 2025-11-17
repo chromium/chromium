@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -211,7 +212,7 @@ TEST_F(BrowserViewTest, MAYBE_UpdateActiveBrowser) {
   // `BrowserView::Show()` has to be called first.
   ScopedBrowser scoped_browser(profile());
   Browser* browser2 = scoped_browser.browser();
-  EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(browser(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
   browser2->window()->Show();

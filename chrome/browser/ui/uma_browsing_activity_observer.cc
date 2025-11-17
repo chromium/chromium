@@ -22,6 +22,8 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
@@ -42,7 +44,8 @@ UMABrowsingActivityObserver* g_uma_browsing_activity_observer_instance =
 void UMABrowsingActivityObserver::Init() {
   DCHECK(!g_uma_browsing_activity_observer_instance);
   // Must be created before any Browsers are.
-  DCHECK_EQ(0U, chrome::GetTotalBrowserCount());
+  DCHECK(!KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::BROWSER));
   g_uma_browsing_activity_observer_instance = new UMABrowsingActivityObserver;
 }
 

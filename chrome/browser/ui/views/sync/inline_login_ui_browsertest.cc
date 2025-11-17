@@ -23,6 +23,7 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -489,9 +490,9 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   ASSERT_NE(entry, nullptr);
   entry->LockForceSigninProfile(true);
 
-  ASSERT_EQ(0ul, BrowserList::GetInstance()->size());
+  ASSERT_EQ(0ul, chrome::GetTotalBrowserCount());
   SimulateOnClientOAuthSuccess(helper, "refresh_token");
-  ASSERT_EQ(0ul, BrowserList::GetInstance()->size());
+  ASSERT_EQ(0ul, chrome::GetTotalBrowserCount());
   // if |force_sign_in_with_user_manager| is false, the profile should be
   // unlocked early and InlineLoginHelper won't try to do it again
   ASSERT_TRUE(entry->IsSigninRequired());
@@ -623,9 +624,9 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   ASSERT_NE(entry, nullptr);
   entry->LockForceSigninProfile(true);
 
-  ASSERT_EQ(0ul, BrowserList::GetInstance()->size());
+  ASSERT_EQ(0ul, chrome::GetTotalBrowserCount());
   SimulateOnClientOAuthSuccess(helper, "refresh_token");
-  ASSERT_EQ(1ul, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1ul, chrome::GetTotalBrowserCount());
   ASSERT_FALSE(entry->IsSigninRequired());
 }
 

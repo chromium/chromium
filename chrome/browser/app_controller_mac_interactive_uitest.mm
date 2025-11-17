@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
   SendOpenUrlToAppController(simple);
 
   Profile* profile = browser()->profile();
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
 
   // Load profile's History Service backend so it will be assigned to the
   // HistoryMenuBridge, or else this test will fail flaky.
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
 // Regression test for https://crbug.com/1371923
 IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
                        WhileIncognitoBrowserIsOpened_NewWindow) {
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
 
   // Close the current browser.
   Profile* profile = browser()->profile();
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
   // Create an incognito browser.
   Browser* incognito_browser = CreateIncognitoBrowser(profile);
   EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
   EXPECT_EQ(incognito_browser, chrome::FindLastActive());
 
   // Simulate click on "New Window".
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
 
   // Check that a new non-incognito browser is opened.
   Browser* new_browser = browser_created_observer.Wait();
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
   EXPECT_TRUE(new_browser->profile()->IsRegularProfile());
   EXPECT_EQ(profile, new_browser->profile());
 }
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerIncognitoSwitchInteractiveUITest,
   Profile* otr_profile = browser()->profile();
   EXPECT_EQ(otr_profile,
             otr_profile->GetPrimaryOTRProfile(/*create_if_needed=*/false));
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
   AppController* app_controller = AppController.sharedController;
 
   // The last profile is the incognito profile.

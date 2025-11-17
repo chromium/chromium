@@ -80,6 +80,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -132,7 +133,7 @@ class DelayLoadStartAndExecuteJavascript : public content::WebContentsObserver {
     explicit TabHelper(DelayLoadStartAndExecuteJavascript* owner)
         : owner_(owner) {
       // Assume only one window open, which is fine for these tests.
-      CHECK_EQ(BrowserList::GetInstance()->size(), 1u);
+      CHECK_EQ(chrome::GetTotalBrowserCount(), 1u);
       BrowserWindowInterface* const browser =
           GetLastActiveBrowserWindowInterfaceWithAnyProfile();
       browser->GetTabStripModel()->AddObserver(this);

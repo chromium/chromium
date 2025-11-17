@@ -1808,7 +1808,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
   Navigate(&params);
 
   restore_observer.Wait();
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
 
   ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(
       params.browser);
@@ -3234,7 +3234,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreWithIncompleteFileTest, LogsReadError) {
   // selected (mirrors that of TwoTabsSecondSelected). It has one extra tab as
   // the startup path appends a url to the commandline, which triggers another
   // tab. The first two tabs come from the saved session file.
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   ASSERT_EQ(3, browser()->tab_strip_model()->count());
   // Use ExtractFileName() as the path written to the restore file is from a
   // local build.
@@ -3654,7 +3654,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_BasicAppSessionRestore) {
   EXPECT_TRUE(app_browser->is_type_app());
 
   // At this point, we have a browser and an app.
-  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(1, CountBrowsersForType(BrowserWindowInterface::TYPE_APP));
   EXPECT_EQ(1, CountBrowsersForType(BrowserWindowInterface::TYPE_NORMAL));
 
@@ -3687,7 +3687,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_BasicAppSessionRestore) {
 
   // We should get +1 browser +1 app.
   // Ensure the apps are the same, and ensure the browsers are the same.
-  ASSERT_EQ(4u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(4u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(2, CountBrowsersForType(BrowserWindowInterface::TYPE_APP));
   EXPECT_EQ(2, CountBrowsersForType(BrowserWindowInterface::TYPE_NORMAL));
 
@@ -3775,7 +3775,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontTrackUnclosableApp) {
   CloseBrowserSynchronously(app_browser);
   CloseBrowserSynchronously(browser());
 
-  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
 
   // Now trigger a restore.
   // We need to start up the services again before restoring.
@@ -3792,7 +3792,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontTrackUnclosableApp) {
         EXPECT_NE(browser->GetType(), BrowserWindowInterface::TYPE_APP);
         return true;
       });
-  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   keep_alive.reset();
   profile_keep_alive.reset();
@@ -3840,7 +3840,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontRestoreUnclosableApp) {
   CloseBrowserSynchronously(app_browser);
   CloseBrowserSynchronously(browser());
 
-  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
 
   // Now trigger a restore.
   // We need to start up the services again before restoring.
@@ -3873,7 +3873,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontRestoreUnclosableApp) {
         EXPECT_NE(browser->GetType(), BrowserWindowInterface::TYPE_APP);
         return true;
       });
-  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   keep_alive.reset();
   profile_keep_alive.reset();
@@ -3914,7 +3914,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   web_app::LaunchWebAppBrowserAndWait(profile, app_id);  // #4
 
   // Verify there are 4 apps.
-  ASSERT_EQ(4u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(4u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(4, CountBrowsersForType(BrowserWindowInterface::TYPE_APP));
 
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
@@ -3936,7 +3936,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
       browser_created_observer.Wait();
 
   // Ensure there's 4 apps and 1 restored window
-  ASSERT_EQ(5u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(5u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(4, CountBrowsersForType(BrowserWindowInterface::TYPE_APP));
   EXPECT_EQ(1, CountBrowsersForType(BrowserWindowInterface::TYPE_NORMAL));
 
@@ -3987,7 +3987,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreAppMinimized) {
   CloseBrowserSynchronously(app_browser);
   CloseBrowserSynchronously(browser());
 
-  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
 
   StartupServices(profile);
 
@@ -4000,7 +4000,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreAppMinimized) {
   // It opens up the browser and the app.
   app_browser = nullptr;
   BrowserWindowInterface* normal_browser = nullptr;
-  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(1, CountBrowsersForType(BrowserWindowInterface::TYPE_APP));
   EXPECT_EQ(1, CountBrowsersForType(BrowserWindowInterface::TYPE_NORMAL));
 
@@ -4069,7 +4069,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreMaximizedApp) {
   CloseBrowserSynchronously(app_browser);
   CloseBrowserSynchronously(browser());
 
-  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
 
   // Now trigger a restore.
   // We need to start up the services again before restoring.
@@ -4106,7 +4106,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreMaximizedApp) {
   ASSERT_NE(app_browser, nullptr);
   ASSERT_NE(normal_browser, nullptr);
   profile = normal_browser->GetProfile();
-  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
 
   keep_alive.reset();
   profile_keep_alive.reset();
@@ -4139,7 +4139,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
 
   CloseBrowserSynchronously(browser());
 
-  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
 
   // Pretend to 'close the browser'.
   // Just shutdown the services as we would if the browser is shutting down for
@@ -4149,7 +4149,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   // 'open the browser' again
   StartupServices(profile);
 
-  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
 
   // Open a PWA.
   webapps::AppId app_id = InstallPWA(profile, example_url);
@@ -4157,7 +4157,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
 
   CloseBrowserSynchronously(app_browser);
 
-  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
 
   // Now restore.
   SessionRestore::RestoreSession(
@@ -4165,7 +4165,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
       SessionRestore::SYNCHRONOUS | SessionRestore::RESTORE_BROWSER, {});
 
   // There's just one window open at the moment.
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Check we got all the tabs back.
   const BrowserWindowInterface* const browser =
@@ -4206,7 +4206,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
 
   // App and 3 tab browser.
-  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
 
   // Don't kill the test.
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
@@ -4219,7 +4219,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   CloseBrowserSynchronously(browser());
   CloseBrowserSynchronously(app_browser);
 
-  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
 
   // Now open a browser window.
   // This should be treated the same as a browser opening when nothing,
@@ -4228,7 +4228,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   chrome::NewEmptyWindow(profile);
   restore_observer.Wait();
 
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Check we got all the tabs back.
   const BrowserWindowInterface* const browser =
@@ -4266,7 +4266,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   Browser* app_browser3 = web_app::LaunchWebAppBrowserAndWait(profile, app_id3);
 
   // 3 apps + basic browser.
-  ASSERT_EQ(4u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(4u, chrome::GetTotalBrowserCount());
 
   // Close all 3.
   CloseBrowserSynchronously(app_browser);
@@ -4274,7 +4274,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   CloseBrowserSynchronously(app_browser3);
 
   // Just the basic browser.
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Ctrl-Shift-T 3 times.
   chrome::RestoreTab(browser());
@@ -4285,7 +4285,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   bool app1_seen = false;
   bool app2_seen = false;
   bool app3_seen = false;
-  ASSERT_EQ(4u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(4u, chrome::GetTotalBrowserCount());
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&app1_seen, &app2_seen, &app3_seen, app_id, app_id2,
        app_id3](BrowserWindowInterface* browser) {
@@ -4325,7 +4325,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, NoAppRestore) {
   webapps::AppId app_id = InstallPWA(profile, app_url);
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
 
-  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
 
   // Don't kill the test.
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
@@ -4339,7 +4339,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, NoAppRestore) {
 
   CloseBrowserSynchronously(app_browser);
 
-  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
 
   // 'open the browser' again
   StartupServices(profile);
@@ -4349,7 +4349,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, NoAppRestore) {
       profile, nullptr,
       SessionRestore::SYNCHRONOUS | SessionRestore::RESTORE_BROWSER, {});
 
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Check we got all the tabs back.
   const BrowserWindowInterface* const browser =
@@ -4401,7 +4401,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, InvokeTwoAppsThenRestore) {
   restore_observer.Wait();
 
   // Check we got all the tabs back.
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   const BrowserWindowInterface* const browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   EXPECT_EQ(browser->GetTabStripModel()->count(), 2);
@@ -4515,7 +4515,7 @@ IN_PROC_BROWSER_TEST_F(TabbedAppSessionRestoreTest, RestorePinnedAppTab) {
   EXPECT_FALSE(tab_strip->IsTabPinned(1));
 
   // App browser and normal browser.
-  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
 
   // Pretend to 'close the browser'.
   // Just shutdown the services as we would if the browser is shutting down for
@@ -4531,7 +4531,7 @@ IN_PROC_BROWSER_TEST_F(TabbedAppSessionRestoreTest, RestorePinnedAppTab) {
   CloseBrowserSynchronously(app_browser);
   CloseBrowserSynchronously(browser());
 
-  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
 
   // Now trigger a restore.
   // We need to start up the services again before restoring.
@@ -4544,7 +4544,7 @@ IN_PROC_BROWSER_TEST_F(TabbedAppSessionRestoreTest, RestorePinnedAppTab) {
                                  {});
 
   // App and browser restored.
-  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
   // Check the tabbed app was restored with the pinned tab.
   bool app_checked = false;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(

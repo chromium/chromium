@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -121,7 +122,7 @@ class AppMenuModelInteractiveTest : public InteractiveBrowserTest {
     return Check(base::BindLambdaForTesting([default_browser]() {
       BrowserWindowInterface* new_browser = nullptr;
       if (BrowserList::GetIncognitoBrowserCount() == 1) {
-        EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+        EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
         ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
             [default_browser, &new_browser](BrowserWindowInterface* browser) {
               if (browser != default_browser) {
@@ -141,7 +142,7 @@ class AppMenuModelInteractiveTest : public InteractiveBrowserTest {
     return Check(base::BindLambdaForTesting([default_browser]() {
       BrowserWindowInterface* new_browser = nullptr;
       if (BrowserList::GetGuestBrowserCount() == 1) {
-        EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+        EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
         ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
             [default_browser, &new_browser](BrowserWindowInterface* browser) {
               if (browser != default_browser) {

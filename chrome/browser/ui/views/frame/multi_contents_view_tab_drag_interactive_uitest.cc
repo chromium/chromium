@@ -4,6 +4,7 @@
 
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
@@ -171,7 +172,7 @@ class MultiContentsViewTabDragEntrypointsUiTest
   DragStep WaitForDetachedWindow() {
     return base::BindOnce([](base::OnceClosure callback) {
       Poll(base::BindRepeating(
-               []() { return BrowserList::GetInstance()->size() == 2u; }),
+               []() { return chrome::GetTotalBrowserCount() == 2u; }),
            std::move(callback));
     });
   }

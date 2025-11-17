@@ -38,6 +38,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/metrics/usertype_by_devicetype_metrics_provider.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -458,7 +459,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
                   /*is_platform_app=*/false, WindowMode::kUnknown,
                   install_reason);
     std::unique_ptr<Browser> browser = CreateBrowserWithAuraWindow1();
-    EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+    EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
     return browser;
   }
 
@@ -1268,7 +1269,7 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmWithMultipleWindows) {
   InstallOneApp(app_constants::kChromeAppId, AppType::kChromeApp, "Chrome",
                 Readiness::kReady, InstallSource::kSystem);
   std::unique_ptr<Browser> browser1 = CreateBrowserWithAuraWindow1();
-  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   // Set the browser window1 active.
   ModifyInstance(app_constants::kChromeAppId,
@@ -1281,7 +1282,7 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmWithMultipleWindows) {
   task_environment_.FastForwardBy(base::Minutes(1));
 
   std::unique_ptr<Browser> browser2 = CreateBrowserWithAuraWindow2();
-  EXPECT_EQ(2U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
 
   // Set the browser window2 active.
   ModifyInstance(app_constants::kChromeAppId,

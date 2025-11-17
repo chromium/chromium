@@ -707,14 +707,14 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MoveTabsToNewWindow) {
 
   chrome::NewTab(app_browser);
 
-  size_t initial_browser_count = BrowserList::GetInstance()->size();
+  size_t initial_browser_count = chrome::GetTotalBrowserCount();
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::MoveTabsToNewWindow(app_browser, {1});
   Browser* new_browser = browser_created_observer.Wait();
   ASSERT_TRUE(new_browser);
 
-  EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
+  EXPECT_EQ(initial_browser_count + 1, chrome::GetTotalBrowserCount());
 
   // Check that the tab made it to a new window.
   EXPECT_NE(app_browser, new_browser);

@@ -1373,7 +1373,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_IncognitoRegular) {
   // Setup an incognito window.
   Browser* incognito = CreateIncognitoBrowser();
   ASSERT_TRUE(incognito);
-  int window_count = BrowserList::GetInstance()->size();
+  int window_count = chrome::GetTotalBrowserCount();
   EXPECT_EQ(2, window_count);
 
   download_items.clear();

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/autofill/payments/desktop_payments_window_manager.h"
 #include "chrome/browser/ui/autofill/payments/desktop_payments_window_manager_test_api.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -122,7 +123,7 @@ class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
   bool VerifyUi() override {
     // There should be two browsers present, the original browser and the
     // pop-up's browser.
-    if (BrowserList::GetInstance()->size() != 2U) {
+    if (chrome::GetTotalBrowserCount() != 2U) {
       return false;
     }
 
@@ -1144,7 +1145,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
 // accept callback and creates the pop-up.
 IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
                        DialogAccepted) {
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1U);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1U);
 
   RunTestSequence(
       TriggerDialogAndWaitForShow(views::DialogClientView::kOkButtonElementId),
@@ -1152,16 +1153,15 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
       // must be used.
       InSameContext(
           PressButton(views::DialogClientView::kOkButtonElementId),
-          AfterHide(PaymentsWindowUserConsentDialogView::kTopViewId, []() {
-            EXPECT_EQ(BrowserList::GetInstance()->size(), 2U);
-          })));
+          AfterHide(PaymentsWindowUserConsentDialogView::kTopViewId,
+                    []() { EXPECT_EQ(chrome::GetTotalBrowserCount(), 2U); })));
 }
 
 // Tests that the VCN 3DS consent dialog accepted histogram bucket is logged to
 // when the consent dialog is accepted.
 IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
                        DialogAccepted_AcceptedHistogramBucketLogs) {
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1U);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1U);
 
   RunTestSequence(
       TriggerDialogAndWaitForShow(views::DialogClientView::kOkButtonElementId),
@@ -1169,9 +1169,8 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
       // must be used.
       InSameContext(
           PressButton(views::DialogClientView::kOkButtonElementId),
-          AfterHide(
-              PaymentsWindowUserConsentDialogView::kTopViewId,
-              []() { EXPECT_EQ(BrowserList::GetInstance()->size(), 2U); }),
+          AfterHide(PaymentsWindowUserConsentDialogView::kTopViewId,
+                    []() { EXPECT_EQ(chrome::GetTotalBrowserCount(), 2U); }),
           Check([this]() {
             return histogram_tester_.GetBucketCount(
                        kVcn3dsFlowEventsHistogramName,

@@ -5,6 +5,7 @@
 #include "base/callback_list.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -146,9 +147,8 @@ class AccountChooserControllerInteractiveUiTest
 
   auto VerifyPopupOpened() {
     return Steps(
-        CheckResult(
-            []() -> size_t { return BrowserList::GetInstance()->size(); }, 2u,
-            "Expect two browsers."),
+        CheckResult([]() -> size_t { return chrome::GetTotalBrowserCount(); },
+                    2u, "Expect two browsers."),
         Check(
             []() {
               return ui_test_utils::FindMatchingBrowsers(
@@ -178,7 +178,7 @@ class AccountChooserControllerInteractiveUiTest
 
   auto VerifyPopupClosed() {
     return CheckResult(
-        []() -> size_t { return BrowserList::GetInstance()->size(); }, 1u,
+        []() -> size_t { return chrome::GetTotalBrowserCount(); }, 1u,
         "Expect one browser.");
   }
 

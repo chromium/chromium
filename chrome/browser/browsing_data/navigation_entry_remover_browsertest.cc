@@ -9,6 +9,7 @@
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/buildflags.h"
@@ -151,14 +152,14 @@ IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, AddTab) {
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, AddWindow) {
-  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   AddBrowser(browser(), {url_a_, url_b_});
-  EXPECT_EQ(2U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
   ExpectEntries({about_blank_, url_a_, url_b_}, GetEntries());
 
   AddBrowser(browser(), {url_c_, url_d_});
-  EXPECT_EQ(3U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(3U, chrome::GetTotalBrowserCount());
   ExpectEntries({about_blank_, url_a_, url_b_, url_c_, url_d_}, GetEntries());
 }
 

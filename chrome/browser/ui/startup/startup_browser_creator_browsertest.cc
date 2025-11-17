@@ -2172,11 +2172,11 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
   EXPECT_TRUE(browser_added_check_passed_);
   // Now close the original (and last alive) tabbed browser window
   // note: there is still an app open
-  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
   BrowserWindowInterface* const normal_browser =
       GetBrowsersForType(BrowserWindowInterface::Type::TYPE_NORMAL).front();
   CloseBrowserSynchronously(normal_browser);
-  ASSERT_EQ(1U, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1U, chrome::GetTotalBrowserCount());
 
   // Now hit the codepath that would get hit if someone opened chrome
   // from a desktop shortcut or similar.
@@ -2190,7 +2190,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
 
   // We expect a browser to open, but we should NOT get a duplicate app.
   // Note at this point, the profile IsRestarted() is still true.
-  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(
       1u, GetBrowsersForType(BrowserWindowInterface::Type::TYPE_NORMAL).size());
   EXPECT_EQ(1u,
@@ -2476,7 +2476,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorTestWithGuestParam,
   if (IsGuest()) {
     // The profile picker opens. There is no browser, the URL is not loaded.
     profiles::testing::WaitForPickerWidgetCreated();
-    EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+    EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
   } else {
     // The last used profile is reopened and the URL is loaded.
     Browser* browser = ui_test_utils::WaitForBrowserToOpen();
@@ -2487,7 +2487,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorTestWithGuestParam,
         tab_strip->GetWebContentsAt(tab_strip->count() - 1)->GetVisibleURL(),
         GetTestURL());
     EXPECT_FALSE(ProfilePicker::IsOpen());
-    EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+    EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
     EXPECT_EQ(last_profile, profile);
   }
 }
@@ -2548,7 +2548,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
 
   ASSERT_EQ(1u, chrome::GetBrowserCount(GetDefaultProfile()));
   ASSERT_EQ(1u, chrome::GetBrowserCount(&profile1));
-  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
@@ -2617,7 +2617,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
 
   // At this point, nothing is open except the basic browser.
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Trigger the restore via StartupBrowserCreator.
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
@@ -2628,7 +2628,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
                 /*restore_tabbed_browser=*/true);
 
   // We should get two windows from profile1.
-  ASSERT_EQ(3u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(3u, chrome::GetTotalBrowserCount());
   ASSERT_EQ(1u, chrome::GetBrowserCount(GetDefaultProfile()));
   ASSERT_EQ(2u, chrome::GetBrowserCount(&profile1));
 
@@ -2646,7 +2646,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
   BrowserWindowInterface* new_browser = nullptr;
 
   // 2x profile1, 1x default profile here.
-  ASSERT_EQ(3u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(3u, chrome::GetTotalBrowserCount());
   ASSERT_EQ(2u, chrome::GetBrowserCount(&profile1));
   ASSERT_EQ(1u, chrome::GetBrowserCount(GetDefaultProfile()));
   new_browser = FindOneOtherBrowserForProfile(&profile1, nullptr);

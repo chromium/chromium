@@ -232,6 +232,6 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerLoginTest, OpenBeforeLogin) {
       ash::ProfileHelper::GetSigninProfile());
 
   // We didn't crash, and nothing opened.
-  EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(0u, GetNumberOfSettingsWindows());
 }
