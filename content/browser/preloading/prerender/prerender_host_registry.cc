@@ -757,6 +757,17 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
       }
     }
 
+    // Since IsAllowedToStartPrerenderingForTrigger will check
+    // the number of the active PrerenderHosts triggered by the embedder, we
+    // need to tentatively move the reuse host out of the map first
+    // so that the count can be correctly calculated.
+    // The reuse_host is not yet deleted at this point and can be added back
+    // if the check failes.
+    std::unique_ptr<PrerenderHost> reuse_host;
+    if (base::FeatureList::IsEnabled(features::kPrerender2ReuseHost)) {
+      reuse_host = FindAndTakePrerenderHostToReuse(attributes);
+    }
+
     // CreateAndStartHost can be called in the newly created WebContents's
     // PrerenderHostRegistry for new tab triggers, rather than in initiator
     // WebContents's registry, while it is called in initiator ones for normal
@@ -790,26 +801,30 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
           break;
       }
       builder.RejectAsFailure(attributes, final_status);
+      // If we cannot start a new prerender, we should release the reuse host
+      // back to the pool.
+      if (reuse_host) {
+        prerender_host_by_frame_tree_node_id_[reuse_host
+                                                  ->frame_tree_node_id()] =
+            std::move(reuse_host);
+      }
       return FrameTreeNodeId();
     }
 
-    std::unique_ptr<PrerenderHost> reuse_host;
-    std::unique_ptr<PrerenderHost> prerender_host;
-    if (base::FeatureList::IsEnabled(features::kPrerender2ReuseHost)) {
-      reuse_host = FindAndTakePrerenderHostToReuse(attributes);
-    }
-    base::UmaHistogramBoolean("Prerender.Experimental.FoundReusePrerenderHost",
-                              reuse_host != nullptr);
-    if (!reuse_host) {
+    // If we find a reusable prerender host under the same site. We will
+    // take over its frame tree and initiate a new navigation to the new
+    // prerender URL.
+    if (reuse_host) {
+      reuse_host->NotifyReused();
+    } else {
       base::UmaHistogramCounts100(
           "Prerender.Experimental.ReusePrerenderHost.PrerenderHostCount.Failed",
           prerender_host_by_frame_tree_node_id_.size());
     }
-    // If we find a reusable prerender host under the same site. We will
-    // take over its frame tree and initiate a new navigation to the new
-    // prerender URL.
-    prerender_host = builder.Build(std::move(reuse_host), attributes,
-                                   prerender_web_contents);
+    base::UmaHistogramBoolean("Prerender.Experimental.FoundReusePrerenderHost",
+                              reuse_host != nullptr);
+    std::unique_ptr<PrerenderHost> prerender_host = builder.Build(
+        std::move(reuse_host), attributes, prerender_web_contents);
     frame_tree_node_id = prerender_host->frame_tree_node_id();
 
     CHECK(!base::Contains(prerender_host_by_frame_tree_node_id_,
@@ -2087,7 +2102,6 @@ PrerenderHostRegistry::FindAndTakePrerenderHostToReuse(
   if (iter != prerender_host_by_frame_tree_node_id_.end()) {
     std::unique_ptr<PrerenderHost> reuse_host = std::move(iter->second);
     prerender_host_by_frame_tree_node_id_.erase(iter);
-    reuse_host->NotifyReused();
     return reuse_host;
   }
   return nullptr;

@@ -1191,4 +1191,66 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   prerender_helper().WaitForPrerenderLoadCompletion(reuse_host_id);
 }
 
+IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
+                       EmbedderPrerenderCountLimitWithReuse) {
+  // Navigate to an initial page.
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+
+  // Prerender the prewarm page.
+  auto* prerender_manager =
+      PrerenderManager::FromWebContents(GetActiveWebContents());
+  EXPECT_TRUE(prerender_manager->MaybeStartPrewarmSearchResult());
+  content::FrameTreeNodeId host_id = GetPrewarmSearchResultHost();
+  ASSERT_TRUE(host_id);
+  prerender_helper().WaitForPrerenderLoadCompletion(host_id);
+
+  content::test::PrerenderHostObserver prerender_observer(
+      *GetActiveWebContents(), host_id);
+  // Trigger a new prerender under a new site.
+  GURL prerender_url_1 =
+      embedded_test_server()->GetURL("b.test", "/simple.html");
+  std::unique_ptr<content::PrerenderHandle> prerender_handle_1 =
+      prerender_helper().AddEmbedderTriggeredPrerenderAsync(
+          prerender_url_1, content::PreloadingTriggerType::kEmbedder,
+          prerender_utils::kDirectUrlInputMetricSuffix,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+  EXPECT_TRUE(prerender_handle_1);
+  content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+      *GetActiveWebContents(), prerender_url_1);
+
+  // Now there will be 2 prerender pages from the embedder in the
+  // PrerenderHostRegistry: The prewarm page and the prerendered page for
+  // b.test. We have reached the 2-pages upper limit for the embedder triggered
+  // prerenders.
+
+  // Verify that a new prerender request to another site will fail.
+  GURL prerender_url_2 =
+      embedded_test_server()->GetURL("c.test", "/simple.html");
+  std::unique_ptr<content::PrerenderHandle> prerender_handle_2 =
+      prerender_helper().AddEmbedderTriggeredPrerenderAsync(
+          prerender_url_2, content::PreloadingTriggerType::kEmbedder,
+          prerender_utils::kDirectUrlInputMetricSuffix,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+  EXPECT_FALSE(prerender_handle_2);
+
+  // Verify that a new prerender request reusing the prewarm page will succeed.
+  // The "?1" parameter is added to create a different URL with the prewarm
+  // page.
+  GURL prerender_url_3 = embedded_test_server()->GetURL("/simple.html?1");
+  std::unique_ptr<content::PrerenderHandle> prerender_handle_3 =
+      prerender_helper().AddEmbedderTriggeredPrerenderAsync(
+          prerender_url_3, content::PreloadingTriggerType::kEmbedder,
+          prerender_utils::kDirectUrlInputMetricSuffix,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+  EXPECT_TRUE(prerender_handle_3);
+  content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+      *GetActiveWebContents(), prerender_url_3);
+  content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+      *GetActiveWebContents(), prerender_url_3);
+}
+
 }  // namespace
