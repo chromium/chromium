@@ -217,9 +217,10 @@ class SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks
 };
 
 class SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks
-    : public SingleClientBookmarksSyncTest {
+    : public SyncTest {
  public:
-  SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks() {
+  SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks()
+      : SyncTest(SINGLE_CLIENT) {
     features_override_.InitWithFeatureState(switches::kSyncReuploadBookmarks,
                                             !content::IsPreTest());
   }
@@ -2330,10 +2331,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
 // On ChromeOS, Sync-the-feature gets started automatically once a primary
 // account is signed in and the transport mode is not a thing.
 #if !BUILDFLAG(IS_CHROMEOS)
-class SingleClientBookmarksWithAccountStorageSyncTest
-    : public SingleClientBookmarksSyncTest {
+class SingleClientBookmarksWithAccountStorageSyncTest : public SyncTest {
  public:
-  SingleClientBookmarksWithAccountStorageSyncTest() = default;
+  SingleClientBookmarksWithAccountStorageSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
   SingleClientBookmarksWithAccountStorageSyncTest(
       const SingleClientBookmarksWithAccountStorageSyncTest&) = delete;
