@@ -578,8 +578,18 @@ std::string_view LensAimSuggestionModeToString(
   }
 }
 
+const base::FeatureParam<int> kAimSuggestionsCount{
+    &kLensAimSuggestions, "number-of-aim-suggestions", 8};
+
 const base::FeatureParam<bool> kEnableAimTypeaheadSuggestions{
     &kLensAimSuggestions, "enable-typeahead-suggestions", false};
+
+int GetLensAimSuggestionsCount() {
+  if (!GetAimSuggestionsEnabled()) {
+    return 0;
+  }
+  return kAimSuggestionsCount.Get();
+}
 
 std::string GetHomepageURLForLens() {
   return kHomepageURLForLens.Get();
