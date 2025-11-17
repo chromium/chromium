@@ -117,18 +117,7 @@ class TestSigninClient : public SigninClient {
   void OnPrimaryAccountChanged(
       signin::PrimaryAccountChangeEvent event_details) override;
 
-  std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
-  CreateBoundSessionOAuthMultiloginDelegate() const override;
-
-  void SetBoundSessionOauthMultiloginDelegateFactory(
-      base::RepeatingCallback<
-          std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>()>
-          factory);
-
  private:
-  using BoundSessionOauthMultiloginDelegateFactory = base::RepeatingCallback<
-      std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>()>;
-
   std::unique_ptr<TestWaitForNetworkCallbackHelper>
       test_wait_for_network_callback_helper_;
   std::unique_ptr<network::TestURLLoaderFactory>
@@ -140,8 +129,6 @@ class TestSigninClient : public SigninClient {
   std::unique_ptr<network::mojom::NetworkContext> network_context_;
   bool are_signin_cookies_allowed_;
   bool are_signin_cookies_deleted_on_exit_ = false;
-
-  BoundSessionOauthMultiloginDelegateFactory bound_session_delegate_factory_;
 };
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_TEST_SIGNIN_CLIENT_H_
