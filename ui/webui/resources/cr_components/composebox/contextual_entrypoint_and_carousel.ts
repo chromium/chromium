@@ -49,7 +49,7 @@ export interface ContextualEntrypointAndCarouselElement {
 const FILE_VALIDATION_ERRORS_MAP = new Map<FileUploadErrorType, string>([
   [
     FileUploadErrorType.kImageProcessingError,
-    'composeboxFileUploadImageProcessingError',
+    'composeFileTypesAllowedError',
   ],
   [
     FileUploadErrorType.kUnknown,
@@ -65,6 +65,16 @@ const enum ComposeboxFileValidationError {
   FILE_EMPTY = 2,
   FILE_SIZE_TOO_LARGE = 3,
   MAX_VALUE = FILE_SIZE_TOO_LARGE,
+}
+
+// These values are sorted by precedence. The error with the highest value
+// will be the one shown to the user if multiple errors apply.
+enum ProcessFilesError {
+  NONE = 0,
+  INVALID_TYPE = 1,
+  FILE_TOO_LARGE = 2,
+  FILE_EMPTY = 3,
+  MAX_FILES_EXCEEDED = 4,
 }
 
 
@@ -287,7 +297,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
           this.addedTabsIds_ = new Map([...this.addedTabsIds_.entries()].filter(
             ([id, _]) => id !== file!.tabId));
         }
-
         switch (status) {
           case FileUploadStatus.kValidationFailed:
             errorMessage = this.i18n(
@@ -435,48 +444,80 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     this.fire('delete-context', {uuid: e.detail.uuid});
   }
 
-  protected processFiles_(files: FileList|null) {
-    // Multiple is set to false in the input so only one file is expected.
-    if (!files || files.length === 0) {
+  private handleProcessFilesError_(error: ProcessFilesError) {
+    if (error === ProcessFilesError.NONE) {
       return;
     }
-    if ((this.files_.size + files.length) > this.maxFileCount_) {
-      this.fire('on-file-validation-error', {
-        errorMessage: this.i18n('maxFilesReachedError'),
+
+    let metric = ComposeboxFileValidationError.NONE;
+    let errorMessage = '';
+
+    switch (error) {
+      case ProcessFilesError.MAX_FILES_EXCEEDED:
+        metric = ComposeboxFileValidationError.TOO_MANY_FILES;
+        errorMessage = 'maxFilesReachedError';
+        break;
+      case ProcessFilesError.FILE_EMPTY:
+        metric = ComposeboxFileValidationError.FILE_EMPTY;
+        errorMessage = 'composeboxFileUploadInvalidEmptySize';
+        break;
+      case ProcessFilesError.FILE_TOO_LARGE:
+        metric = ComposeboxFileValidationError.FILE_SIZE_TOO_LARGE;
+        errorMessage = 'composeboxFileUploadInvalidTooLarge';
+        break;
+      case ProcessFilesError.INVALID_TYPE:
+        errorMessage = 'composeFileTypesAllowedError';
+        break;
+      default:
+        break;
+    }
+
+    this.recordFileValidationMetric_(metric);
+    this.fire('on-file-validation-error', {
+        errorMessage: this.i18n(errorMessage),
       });
-      this.recordFileValidationMetric_(
-          ComposeboxFileValidationError.TOO_MANY_FILES);
+  }
+
+protected processFiles_(files: FileList|null) {
+    if (!files || files.length === 0) {
       return;
     }
 
     const filesToUpload: File[] = [];
+    let errorToDisplay = ProcessFilesError.NONE;
+
+    if (this.files_.size + files.length > this.maxFileCount_) {
+      errorToDisplay = ProcessFilesError.MAX_FILES_EXCEEDED;
+    }
+
     for (const file of files) {
       if (file.size === 0 || file.size > this.maxFileSize_) {
-        const fileIsEmpty = file.size === 0;
-        fileIsEmpty ? this.recordFileValidationMetric_(
-                          ComposeboxFileValidationError.FILE_EMPTY) :
-                      this.recordFileValidationMetric_(
-                          ComposeboxFileValidationError.FILE_SIZE_TOO_LARGE);
-        this.fire('on-file-validation-error', {
-            errorMessage: fileIsEmpty ?
-                this.i18n('composeboxFileUploadInvalidEmptySize') :
-                this.i18n('composeboxFileUploadInvalidTooLarge'),
-        });
-        return;
+        const sizeError = file.size === 0 ? ProcessFilesError.FILE_EMPTY :
+                                            ProcessFilesError.FILE_TOO_LARGE;
+        errorToDisplay = Math.max(errorToDisplay, sizeError);
+        continue;
+      }
+      // TODO(crbug.com/460228091): The current frontend check is broader than the
+      // backend's validation (e.g. allows SVGs). This can lead to a file
+      // reserving a slot here, only to be rejected by the backend later
+      // resulting in fewer files uploaded as expected.
+      // In the future, only reserve slots when the file upload is successful.
+      if (!file.type.includes('pdf') && !file.type.includes('image')) {
+        errorToDisplay = Math.max(errorToDisplay, ProcessFilesError.INVALID_TYPE);
+        continue;
       }
 
-      if (!file.type.includes('pdf') && !file.type.includes('image')) {
-        this.fire('on-file-validation-error', {
-          errorMessage:
-              // TODO(crbug.com/454730356): replace with translatable string
-              // that includes pdf and not just image.
-              this.i18n('composeboxFileUploadImageProcessingError'),
-        });
-        return;
+      if ((this.files_.size + filesToUpload.length) < this.maxFileCount_) {
+        filesToUpload.push(file);
       }
-      filesToUpload.push(file);
     }
-    this.addFileContext_(filesToUpload);
+
+    if (filesToUpload.length > 0) {
+      this.addFileContext_(filesToUpload);
+    }
+
+    this.handleProcessFilesError_(errorToDisplay);
+
   }
 
   protected onFileChange_(e: Event) {

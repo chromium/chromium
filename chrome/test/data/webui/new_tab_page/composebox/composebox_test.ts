@@ -1926,6 +1926,10 @@ suite('NewTabPageComposeboxTest', () => {
     loadTimeData.overrideValues({'composeboxFileMaxCount': 1});
     createComposeboxElement();
 
+    searchboxHandler.setResultMapperFor(ADD_FILE_CONTEXT_FN, () => {
+      return Promise.resolve({token: {low: BigInt(123), high: BigInt(0)}});
+    });
+
     const pngFile1 = new File(['foo'], 'foo1.png', {type: 'image/png'});
     const pngFile2 = new File(['foo'], 'foo2.png', {type: 'image/png'});
     const dataTransfer = new DataTransfer();
@@ -1942,11 +1946,12 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Act.
     composeboxElement.$.input.dispatchEvent(pasteEvent);
+    await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
     await microtasksFinished();
 
     // Assert.
-    // Check that no files were added.
-    assertEquals(0, searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN));
+    // Check that only one files were added.
+    assertEquals(1, searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN));
 
     // Check that the "too many files" metric was recorded (Enum value 1).
     assertEquals(
@@ -1989,7 +1994,7 @@ suite('NewTabPageComposeboxTest', () => {
     // Check that the correct error event was fired.
     const errorEvent = await errorEventPromise;
     assertEquals(
-        loadTimeData.getString('composeboxFileUploadImageProcessingError'),
+        loadTimeData.getString('composeFileTypesAllowedError'),
         errorEvent.detail.errorMessage);
 
     // Check that no files were added.
@@ -2082,6 +2087,105 @@ suite('NewTabPageComposeboxTest', () => {
             'PDF file should have null objectUrl');
       });
 
+  test('uploading 6 valid files when limit is 5 uploads 5 and shows error', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({'composeboxFileMaxCount': 5});
+    createComposeboxElement();
+
+    let i = 0;
+    searchboxHandler.setResultMapperFor(ADD_FILE_CONTEXT_FN, () => {
+      i++;
+      return Promise.resolve({token: {low: BigInt(i), high: BigInt(0)}});
+    });
+
+    const validFiles = Array.from({length: 6}, (_, i) =>
+        new File(['foo'], `good${i}.png`, {type: 'image/png'}));
+
+    const dataTransfer = new DataTransfer();
+    validFiles.forEach(file => dataTransfer.items.add(file));
+
+    const pasteEvent = new ClipboardEvent('paste', {
+      clipboardData: dataTransfer,
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+
+    const errorEventPromise =
+        eventToPromise('on-file-validation-error', composeboxElement.$.context);
+
+    // Act.
+    composeboxElement.$.input.dispatchEvent(pasteEvent);
+
+    await waitForAddFileCallCount(5);
+    await microtasksFinished();
+
+    // Assert.
+    assertEquals(5, composeboxElement.$.context.$.carousel.files.length);
+
+    const errorEvent = await errorEventPromise;
+    assertEquals(
+        loadTimeData.getString('maxFilesReachedError'),
+        errorEvent.detail.errorMessage);
+
+    assertEquals(
+        1,
+        metrics.count(
+            'NewTabPage.Composebox.File.WebUI.UploadAttemptFailure',
+             1));
+  });
+
+test('upload mixed files over limit prioritizes max files error and uploads valid ones', async () => {
+  // Arrange.
+  loadTimeData.overrideValues({'composeboxFileMaxCount': 3});
+    createComposeboxElement();
+
+  let i = 0;
+    searchboxHandler.setResultMapperFor(ADD_FILE_CONTEXT_FN, () => {
+      i++;
+      return Promise.resolve({token: {low: BigInt(i), high: BigInt(0)}});
+    });
+
+    const files = [
+      new File(['foo'], 'good1.png', {type: 'image/png'}),
+      new File(['foo'], 'good2.png', {type: 'image/png'}),
+      new File(['foo'], 'good3.png', {type: 'image/png'}),
+      new File(['foo'], 'bad.txt', {type: 'text/plain'}),
+    ];
+
+    const dataTransfer = new DataTransfer();
+    files.forEach(file => dataTransfer.items.add(file));
+
+    const pasteEvent = new ClipboardEvent('paste', {
+      clipboardData: dataTransfer,
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+
+    const errorEventPromise =
+        eventToPromise('on-file-validation-error', composeboxElement.$.context);
+
+    // Act.
+    composeboxElement.$.input.dispatchEvent(pasteEvent);
+
+    await waitForAddFileCallCount(3);
+    await microtasksFinished();
+
+    // Assert.
+    assertEquals(3, composeboxElement.$.context.$.carousel.files.length);
+
+    const errorEvent = await errorEventPromise;
+    assertEquals(
+        loadTimeData.getString('maxFilesReachedError'),
+        errorEvent.detail.errorMessage);
+
+    assertEquals(
+        1,
+        metrics.count(
+            'NewTabPage.Composebox.File.WebUI.UploadAttemptFailure',
+            1));
+  });
 
   test('isCollapsible attribute sets expanding state when true', async () => {
     createComposeboxElement();

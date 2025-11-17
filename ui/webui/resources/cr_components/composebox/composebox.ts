@@ -990,7 +990,9 @@ export class ComposeboxElement extends I18nMixinLit
     const {file, errorMessage} =
         this.$.context.updateFileStatus(token, status, errorType);
     if (errorMessage) {
-      this.$.errorScrim.setErrorMessage(errorMessage);
+      if (!this.$.errorScrim.isErrorScrimShowing()) {
+        this.$.errorScrim.setErrorMessage(errorMessage);
+      }
     } else if (file) {
       if (status === FileUploadStatus.kProcessingSuggestSignalsReady &&
           this.showZps &&
