@@ -9,12 +9,14 @@ import type {OmniboxAimAppElement} from './aim_app.js';
 export function getHtml(this: OmniboxAimAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<cr-composebox ntp-realbox-next-enabled
-    searchbox-layout-mode="${this.searchboxLayoutMode_}"
-    @context-menu-entrypoint-click="${this.onContextualEntryPointClicked_}"
-    @close-composebox="${this.onCloseComposebox_}"
-    entrypoint-name="Omnibox">
-</cr-composebox>
+<div id="content">
+  <cr-composebox ntp-realbox-next-enabled
+      searchbox-layout-mode="${this.searchboxLayoutMode_}"
+      @context-menu-entrypoint-click="${this.onContextualEntryPointClicked_}"
+      @close-composebox="${this.onCloseComposebox_}"
+      entrypoint-name="Omnibox">
+  </cr-composebox>
+</div>
 <!--_html_template_end_-->`;
   // clang-format on
 }

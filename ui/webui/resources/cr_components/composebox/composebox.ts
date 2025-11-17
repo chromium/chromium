@@ -370,6 +370,19 @@ export class ComposeboxElement extends I18nMixinLit
     return this.input_;
   }
 
+  playGlowAnimation() {
+    // If |animationState_| were still EXPANDING, this function would have no
+    // effect because nothing changes in CSS and therefore animations wouldn't
+    // be re-trigered. Resetting it to NONE forces the animation related styles
+    // to reset before switching to EXPANDING.
+    this.animationState = GlowAnimationState.NONE;
+    // Wait for the style change for NONE to commit. This ensures the browser
+    // detects a state change when we switch to EXPANDING.
+    requestAnimationFrame(() => {
+      this.animationState = GlowAnimationState.EXPANDING;
+    });
+  }
+
   setText(text: string) {
     this.input_ = text;
   }

@@ -11,6 +11,8 @@
 
 :host {
   --composebox-context-menu-entrypoint-button-color: var(--color-omnibox-composebox-primary-action);
+  --cr-composebox-expanded-border-radius: 16px;
+  --search-animated-glif-rotation-duration: 2000ms;
 }
 
 cr-composebox {
@@ -40,4 +42,6 @@ cr-composebox {
   --color-composebox-upload-button: var(--omnibox-results-chip-background);
   --color-composebox-upload-button-disabled: var(--color-omnibox-composebox-foreground-disabled);
   --composebox-context-menu-entrypoint-button-color: var(--color-omnibox-composebox-primary-action);
+
+  position: relative;
 }
