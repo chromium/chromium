@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_GEOLOCATION_HANDLER_H_
-#define CHROMEOS_ASH_COMPONENTS_NETWORK_GEOLOCATION_HANDLER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_GEOLOCATION_HANDLER_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_GEOLOCATION_HANDLER_IMPL_H_
 
 #include <stdint.h>
 
@@ -31,13 +31,13 @@ namespace ash {
 //   GetWifiAccessPoints();  // returns true + same data, requests update
 //   (Delay some amount of time after data did not change, ~2 mins)
 
-class COMPONENT_EXPORT(CHROMEOS_NETWORK) GeolocationHandler
+class COMPONENT_EXPORT(CHROMEOS_NETWORK) GeolocationHandlerImpl
     : public ShillPropertyChangedObserver {
  public:
-  GeolocationHandler(const GeolocationHandler&) = delete;
-  GeolocationHandler& operator=(const GeolocationHandler&) = delete;
+  GeolocationHandlerImpl(const GeolocationHandlerImpl&) = delete;
+  GeolocationHandlerImpl& operator=(const GeolocationHandlerImpl&) = delete;
 
-  ~GeolocationHandler() override;
+  ~GeolocationHandlerImpl() override;
 
   // This sends a request for geolocation (both wifi AP and cell tower) data.
   // If AP data is already available, fills |access_points| with the latest
@@ -61,10 +61,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) GeolocationHandler
 
  private:
   friend class NetworkHandler;
-  friend class GeolocationHandlerTest;
+  friend class GeolocationHandlerImplTest;
   friend class SystemLocationProviderWirelessTest;
 
-  GeolocationHandler();
+  GeolocationHandlerImpl();
 
   void Init();
 
@@ -93,9 +93,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) GeolocationHandler
   base::Time geolocation_received_time_;
 
   // For Shill client callbacks
-  base::WeakPtrFactory<GeolocationHandler> weak_ptr_factory_{this};
+  base::WeakPtrFactory<GeolocationHandlerImpl> weak_ptr_factory_{this};
 };
+
+// TODO(crbug.com/460379102): Clean up when GeolocationHandler interface is
+// extracted.
+using GeolocationHandler = GeolocationHandlerImpl;
 
 }  // namespace ash
 
-#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_GEOLOCATION_HANDLER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_GEOLOCATION_HANDLER_IMPL_H_

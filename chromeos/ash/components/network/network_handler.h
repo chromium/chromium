@@ -31,7 +31,10 @@ class EnterpriseManagedMetadataStore;
 class EphemeralNetworkConfigurationHandler;
 class EphemeralNetworkPoliciesEnablementHandler;
 class ESimPolicyLoginMetricsLogger;
-class GeolocationHandler;
+// TODO(crbug.com/460379102): Clean up when GeolocationHandler interface is
+// extracted.
+class GeolocationHandlerImpl;
+using GeolocationHandler = GeolocationHandlerImpl;
 class HiddenNetworkHandler;
 class HotspotAllowedFlagHandler;
 class HotspotCapabilitiesProvider;
@@ -210,7 +213,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   std::unique_ptr<NetworkSmsHandler> network_sms_handler_;
   std::unique_ptr<Network3gppHandler> network_3gpp_handler_;
   std::unique_ptr<TextMessageProvider> text_message_provider_;
-  std::unique_ptr<GeolocationHandler> geolocation_handler_;
+  std::unique_ptr<GeolocationHandlerImpl> geolocation_handler_;
   std::unique_ptr<UIProxyConfigService> ui_proxy_config_service_;
   std::unique_ptr<NetworkMetadataStore> network_metadata_store_;
   std::unique_ptr<EphemeralNetworkPoliciesEnablementHandler>

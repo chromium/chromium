@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/network/geolocation_handler.h"
+#include "chromeos/ash/components/network/geolocation_handler_impl.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -25,8 +25,9 @@ constexpr const char* kDevicePropertyNames[] = {
 
 std::string HexToDecimal(std::string hex_str) {
   int result;
-  if (!base::HexStringToInt(hex_str, &result))
+  if (!base::HexStringToInt(hex_str, &result)) {
     return std::string();
+  }
   return base::NumberToString(result);
 }
 
@@ -38,32 +39,36 @@ std::string FindStringOrEmpty(const base::Value::Dict& dict,
 
 }  // namespace
 
-GeolocationHandler::GeolocationHandler() = default;
+GeolocationHandlerImpl::GeolocationHandlerImpl() = default;
 
-GeolocationHandler::~GeolocationHandler() {
-  if (ShillManagerClient::Get())
+GeolocationHandlerImpl::~GeolocationHandlerImpl() {
+  if (ShillManagerClient::Get()) {
     ShillManagerClient::Get()->RemovePropertyChangedObserver(this);
+  }
 }
 
-void GeolocationHandler::Init() {
+void GeolocationHandlerImpl::Init() {
   ShillManagerClient::Get()->GetProperties(
-      base::BindOnce(&GeolocationHandler::ManagerPropertiesCallback,
+      base::BindOnce(&GeolocationHandlerImpl::ManagerPropertiesCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   ShillManagerClient::Get()->AddPropertyChangedObserver(this);
 }
 
-bool GeolocationHandler::GetWifiAccessPoints(
+bool GeolocationHandlerImpl::GetWifiAccessPoints(
     WifiAccessPointVector* access_points,
     int64_t* age_ms) {
-  if (!wifi_enabled_)
+  if (!wifi_enabled_) {
     return false;
+  }
   // Always request updated info.
   RequestGeolocationObjects();
   // If no data has been received, return false.
-  if (geolocation_received_time_.is_null() || wifi_access_points_.size() == 0)
+  if (geolocation_received_time_.is_null() || wifi_access_points_.size() == 0) {
     return false;
-  if (access_points)
+  }
+  if (access_points) {
     *access_points = wifi_access_points_;
+  }
   if (age_ms) {
     base::TimeDelta dtime = base::Time::Now() - geolocation_received_time_;
     *age_ms = dtime.InMilliseconds();
@@ -71,52 +76,60 @@ bool GeolocationHandler::GetWifiAccessPoints(
   return true;
 }
 
-bool GeolocationHandler::GetNetworkInformation(
+bool GeolocationHandlerImpl::GetNetworkInformation(
     WifiAccessPointVector* access_points,
     CellTowerVector* cell_towers) {
-  if (!cellular_enabled_ && !wifi_enabled_)
+  if (!cellular_enabled_ && !wifi_enabled_) {
     return false;
+  }
 
   // Always request updated info.
   RequestGeolocationObjects();
 
   // If no data has been received, return false.
-  if (geolocation_received_time_.is_null())
+  if (geolocation_received_time_.is_null()) {
     return false;
+  }
 
-  if (cell_towers)
+  if (cell_towers) {
     *cell_towers = cell_towers_;
-  if (access_points)
+  }
+  if (access_points) {
     *access_points = wifi_access_points_;
+  }
 
   return true;
 }
 
-void GeolocationHandler::OnPropertyChanged(const std::string& key,
-                                           const base::Value& value) {
+void GeolocationHandlerImpl::OnPropertyChanged(const std::string& key,
+                                               const base::Value& value) {
   HandlePropertyChanged(key, value);
 }
 
 //------------------------------------------------------------------------------
 // Private methods
 
-void GeolocationHandler::ManagerPropertiesCallback(
+void GeolocationHandlerImpl::ManagerPropertiesCallback(
     std::optional<base::Value::Dict> properties) {
-  if (!properties)
+  if (!properties) {
     return;
+  }
 
   const base::Value* value =
       properties->Find(shill::kEnabledTechnologiesProperty);
-  if (value)
+  if (value) {
     HandlePropertyChanged(shill::kEnabledTechnologiesProperty, *value);
+  }
 }
 
-void GeolocationHandler::HandlePropertyChanged(const std::string& key,
-                                               const base::Value& value) {
-  if (key != shill::kEnabledTechnologiesProperty)
+void GeolocationHandlerImpl::HandlePropertyChanged(const std::string& key,
+                                                   const base::Value& value) {
+  if (key != shill::kEnabledTechnologiesProperty) {
     return;
-  if (!value.is_list())
+  }
+  if (!value.is_list()) {
     return;
+  }
   bool wifi_was_enabled = wifi_enabled_;
   bool cellular_was_enabled = cellular_enabled_;
   cellular_enabled_ = false;
@@ -128,8 +141,9 @@ void GeolocationHandler::HandlePropertyChanged(const std::string& key,
     } else if (technology && *technology == shill::kTypeCellular) {
       cellular_enabled_ = true;
     }
-    if (wifi_enabled_ && cellular_enabled_)
+    if (wifi_enabled_ && cellular_enabled_) {
       break;
+    }
   }
 
   // Request initial location data.
@@ -139,13 +153,13 @@ void GeolocationHandler::HandlePropertyChanged(const std::string& key,
   }
 }
 
-void GeolocationHandler::RequestGeolocationObjects() {
+void GeolocationHandlerImpl::RequestGeolocationObjects() {
   ShillManagerClient::Get()->GetNetworksForGeolocation(
-      base::BindOnce(&GeolocationHandler::GeolocationCallback,
+      base::BindOnce(&GeolocationHandlerImpl::GeolocationCallback,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void GeolocationHandler::GeolocationCallback(
+void GeolocationHandlerImpl::GeolocationCallback(
     std::optional<base::Value::Dict> properties) {
   if (!properties) {
     LOG(ERROR) << "Failed to get Geolocation data";
@@ -191,7 +205,7 @@ void GeolocationHandler::GeolocationCallback(
   geolocation_received_time_ = base::Time::Now();
 }
 
-void GeolocationHandler::AddAccessPointFromDict(
+void GeolocationHandlerImpl::AddAccessPointFromDict(
     const base::Value::Dict& entry) {
   // Docs: developers.google.com/maps/documentation/business/geolocation
   WifiAccessPoint wap;
@@ -226,7 +240,8 @@ void GeolocationHandler::AddAccessPointFromDict(
   wifi_access_points_.push_back(wap);
 }
 
-void GeolocationHandler::AddCellTowerFromDict(const base::Value::Dict& entry) {
+void GeolocationHandlerImpl::AddCellTowerFromDict(
+    const base::Value::Dict& entry) {
   // Docs: developers.google.com/maps/documentation/business/geolocation
 
   // Create object.

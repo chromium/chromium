@@ -17,7 +17,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_request.h"
-#include "chromeos/ash/components/network/geolocation_handler.h"
+#include "chromeos/ash/components/network/geolocation_handler_impl.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 

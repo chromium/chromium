@@ -22,7 +22,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_request_test_monitor.h"
-#include "chromeos/ash/components/network/geolocation_handler.h"
+#include "chromeos/ash/components/network/geolocation_handler_impl.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "google_apis/api_key_cache.h"
 #include "google_apis/default_api_keys.h"

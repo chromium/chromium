@@ -29,7 +29,10 @@ class SharedURLLoaderFactory;
 
 namespace ash {
 
-class GeolocationHandler;
+// TODO(crbug.com/460379102): Clean up when GeolocationHandler interface is
+// extracted.
+class GeolocationHandlerImpl;
+using GeolocationHandler = GeolocationHandlerImpl;
 
 // Serves as the central authority and access point for all geolocation-related
 // matters for ChromeOS system services

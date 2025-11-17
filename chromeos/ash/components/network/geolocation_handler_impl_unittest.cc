@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/network/geolocation_handler.h"
+#include "chromeos/ash/components/network/geolocation_handler_impl.h"
 
 #include <memory>
 
@@ -19,23 +19,24 @@
 
 namespace ash {
 
-class GeolocationHandlerTest : public testing::Test {
+class GeolocationHandlerImplTest : public testing::Test {
  public:
-  GeolocationHandlerTest()
+  GeolocationHandlerImplTest()
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
 
-  GeolocationHandlerTest(const GeolocationHandlerTest&) = delete;
-  GeolocationHandlerTest& operator=(const GeolocationHandlerTest&) = delete;
+  GeolocationHandlerImplTest(const GeolocationHandlerImplTest&) = delete;
+  GeolocationHandlerImplTest& operator=(const GeolocationHandlerImplTest&) =
+      delete;
 
-  ~GeolocationHandlerTest() override = default;
+  ~GeolocationHandlerImplTest() override = default;
 
   void SetUp() override {
     shill_clients::InitializeFakes();
     // Get the test interface for manager / device.
     manager_test_ = ShillManagerClient::Get()->GetTestInterface();
     ASSERT_TRUE(manager_test_);
-    geolocation_handler_.reset(new GeolocationHandler());
+    geolocation_handler_.reset(new GeolocationHandlerImpl());
     geolocation_handler_->Init();
     base::RunLoop().RunUntilIdle();
   }
@@ -58,8 +59,7 @@ class GeolocationHandlerTest : public testing::Test {
   // Shill provides us Cell ID and LAC in hex, but all other fields in decimal.
   void AddAccessPoint(int idx) {
     std::string mac_address =
-        base::StringPrintf("%02X:%02X:%02X:%02X:%02X:%02X",
-                           idx, 0, 0, 0, 0, 0);
+        base::StringPrintf("%02X:%02X:%02X:%02X:%02X:%02X", idx, 0, 0, 0, 0, 0);
     std::string channel = base::NumberToString(idx);
     std::string strength = base::NumberToString(idx * 10);
 
@@ -94,14 +94,14 @@ class GeolocationHandlerTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<GeolocationHandler> geolocation_handler_;
+  std::unique_ptr<GeolocationHandlerImpl> geolocation_handler_;
   raw_ptr<ShillManagerClient::TestInterface, DanglingUntriaged> manager_test_ =
       nullptr;
   WifiAccessPointVector wifi_access_points_;
   CellTowerVector cell_towers_;
 };
 
-TEST_F(GeolocationHandlerTest, NoAccessPoints) {
+TEST_F(GeolocationHandlerImplTest, NoAccessPoints) {
   // Inititial call should return false.
   EXPECT_FALSE(GetWifiAccessPoints());
   EXPECT_FALSE(GetCellTowers());
@@ -111,7 +111,7 @@ TEST_F(GeolocationHandlerTest, NoAccessPoints) {
   EXPECT_FALSE(GetCellTowers());
 }
 
-TEST_F(GeolocationHandlerTest, OneAccessPoint) {
+TEST_F(GeolocationHandlerImplTest, OneAccessPoint) {
   // Add an access point.
   AddAccessPoint(1);
   base::RunLoop().RunUntilIdle();
@@ -125,7 +125,7 @@ TEST_F(GeolocationHandlerTest, OneAccessPoint) {
   EXPECT_EQ(1, wifi_access_points_[0].channel);
 }
 
-TEST_F(GeolocationHandlerTest, MultipleAccessPoints) {
+TEST_F(GeolocationHandlerImplTest, MultipleAccessPoints) {
   // Add several access points.
   AddAccessPoint(1);
   AddAccessPoint(2);
@@ -142,7 +142,7 @@ TEST_F(GeolocationHandlerTest, MultipleAccessPoints) {
   EXPECT_EQ(3, wifi_access_points_[2].channel);
 }
 
-TEST_F(GeolocationHandlerTest, OneCellTower) {
+TEST_F(GeolocationHandlerImplTest, OneCellTower) {
   // Add a cell tower.
   AddCellTower(1);
   base::RunLoop().RunUntilIdle();
@@ -160,7 +160,7 @@ TEST_F(GeolocationHandlerTest, OneCellTower) {
   EXPECT_EQ("101", cell_towers_[0].mnc);
 }
 
-TEST_F(GeolocationHandlerTest, MultipleCellTowers) {
+TEST_F(GeolocationHandlerImplTest, MultipleCellTowers) {
   // Add several cell towers.
   AddCellTower(1);
   AddCellTower(2);
@@ -178,7 +178,7 @@ TEST_F(GeolocationHandlerTest, MultipleCellTowers) {
   EXPECT_EQ("301", cell_towers_[2].mnc);
 }
 
-TEST_F(GeolocationHandlerTest, MultipleGeolocations) {
+TEST_F(GeolocationHandlerImplTest, MultipleGeolocations) {
   // Add both a cell tower and wifi AP.
   AddCellTower(1);
   AddCellTower(2);
