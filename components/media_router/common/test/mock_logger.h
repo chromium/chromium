@@ -6,7 +6,6 @@
 #define COMPONENTS_MEDIA_ROUTER_COMMON_TEST_MOCK_LOGGER_H_
 
 #include "components/media_router/common/mojom/logger.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

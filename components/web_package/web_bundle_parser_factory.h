@@ -10,8 +10,6 @@
 
 #include "base/files/file.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
 
 namespace web_package {

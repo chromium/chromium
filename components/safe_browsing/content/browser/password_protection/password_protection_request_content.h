@@ -21,12 +21,11 @@
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/browser/password_protection/password_protection_request.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "mojo/public/cpp/base/proto_wrapper_passkeys.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 

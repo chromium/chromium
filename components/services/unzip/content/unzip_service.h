@@ -7,8 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom-forward.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace unzip {
 

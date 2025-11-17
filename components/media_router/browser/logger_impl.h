@@ -15,7 +15,6 @@
 #include "components/media_router/common/mojom/logger.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace media_router {
 

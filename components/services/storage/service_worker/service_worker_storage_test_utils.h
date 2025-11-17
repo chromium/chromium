@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 
 namespace storage {

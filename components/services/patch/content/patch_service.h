@@ -6,7 +6,7 @@
 #define COMPONENTS_SERVICES_PATCH_CONTENT_PATCH_SERVICE_H_
 
 #include "components/services/patch/public/mojom/file_patcher.mojom-forward.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace patch {
 

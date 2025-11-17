@@ -22,7 +22,6 @@
 #include "components/safe_browsing/core/common/safe_browsing_url_checker.mojom.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "components/sessions/core/session_id.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_request_headers.h"
 #include "url/gurl.h"
 

@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "components/device_signals/core/browser/system_signals_service_host.h"
 #include "components/device_signals/core/common/mojom/system_signals.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
 #include "components/spellcheck/renderer/spelling_engine.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 class PlatformSpellingEngine : public SpellingEngine {
  public:

@@ -21,8 +21,6 @@
 #include "components/ui_devtools/dom.h"
 #include "components/ui_devtools/forward.h"
 #include "components/ui_devtools/protocol.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/server/http_server_request_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 

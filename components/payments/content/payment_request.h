@@ -20,7 +20,6 @@
 #include "components/payments/core/journey_logger.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "url/gurl.h"

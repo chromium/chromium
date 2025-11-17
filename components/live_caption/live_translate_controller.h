@@ -13,7 +13,6 @@
 #include "components/live_caption/translation_dispatcher.h"
 #include "components/live_caption/translation_util.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 class PrefChangeRegistrar;
 class PrefService;

@@ -28,7 +28,6 @@
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "storage/common/database/db_status.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 

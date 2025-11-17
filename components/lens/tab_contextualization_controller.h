@@ -17,7 +17,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "pdf/buildflags.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
