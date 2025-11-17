@@ -195,7 +195,7 @@ void OmniboxPopupViewWebUITest::WaitForHandler() {
 
   WebuiOmniboxHandler* handler =
       static_cast<OmniboxPopupUI*>(web_contents->GetWebUI()->GetController())
-          ->handler();
+          ->omnibox_handler();
   base::test::TestFuture<void> future;
   handler->set_page_is_bound_callback_for_testing(future.GetCallback());
   EXPECT_TRUE(future.Wait());

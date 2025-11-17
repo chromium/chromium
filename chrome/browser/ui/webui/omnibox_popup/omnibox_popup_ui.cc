@@ -169,11 +169,11 @@ void OmniboxPopupUI::BindInterface(
 
   MetricsReporterService* metrics_reporter_service =
       MetricsReporterService::GetFromWebContents(web_ui()->GetWebContents());
-  handler_ = std::make_unique<WebuiOmniboxHandler>(
+  omnibox_handler_ = std::make_unique<WebuiOmniboxHandler>(
       std::move(pending_page_handler),
       metrics_reporter_service->metrics_reporter(), omnibox_controller,
       web_ui());
-  handler_->SetEmbedder(embedder());
+  omnibox_handler_->SetEmbedder(embedder());
 }
 
 void OmniboxPopupUI::BindInterface(

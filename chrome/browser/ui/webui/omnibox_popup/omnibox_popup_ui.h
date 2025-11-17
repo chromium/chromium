@@ -95,7 +95,7 @@ class OmniboxPopupUI : public TopChromeWebUIController,
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler) override;
 
-  WebuiOmniboxHandler* handler() { return handler_.get(); }
+  WebuiOmniboxHandler* omnibox_handler() { return omnibox_handler_.get(); }
   OmniboxPopupAimHandler* popup_aim_handler() {
     return popup_aim_handler_.get();
   }
@@ -103,7 +103,7 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   static constexpr std::string_view GetWebUIName() { return "OmniboxPopup"; }
 
  private:
-  std::unique_ptr<WebuiOmniboxHandler> handler_;
+  std::unique_ptr<WebuiOmniboxHandler> omnibox_handler_;
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   raw_ptr<Profile> profile_;
 
