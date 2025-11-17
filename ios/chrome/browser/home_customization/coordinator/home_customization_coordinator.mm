@@ -159,8 +159,11 @@ CGFloat const kSheetCornerRadius = 30;
 
   [self dismissBackgroundPickerActionSheet];
 
-  [HandlerForProtocol(self.browser->GetCommandDispatcher(), SnackbarCommands)
-      dismissAllSnackbars];
+  if ([self.browser->GetCommandDispatcher()
+          dispatchingForProtocol:@protocol(SnackbarCommands)]) {
+    [HandlerForProtocol(self.browser->GetCommandDispatcher(), SnackbarCommands)
+        dismissAllSnackbars];
+  }
 
   _mediator = nil;
   _mainViewController = nil;
