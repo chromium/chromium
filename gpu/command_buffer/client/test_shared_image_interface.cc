@@ -224,7 +224,7 @@ scoped_refptr<ClientSharedImage> TestSharedImageInterface::CreateSharedImage(
   SharedImageInfo si_info_copy = si_info;
   // Set CPU read/write usage based on buffer usage.
   si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
-  if (use_test_gmb_) {
+  if (always_use_shmem_for_mappable_si_) {
     auto client_si = ClientSharedImage::CreateForTesting(
         mailbox, si_info_copy.meta, sync_token, buffer_usage, holder_);
     most_recent_mappable_shared_image_ = client_si.get();
@@ -257,7 +257,7 @@ TestSharedImageInterface::CreateSharedImage(
   SharedImageInfo si_info_copy = si_info;
   // Set CPU read/write usage based on buffer usage.
   si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
-  if (use_test_gmb_) {
+  if (always_use_shmem_for_mappable_si_) {
     return ClientSharedImage::CreateForTesting(
         mailbox, si_info_copy.meta, sync_token, buffer_usage, holder_);
   }

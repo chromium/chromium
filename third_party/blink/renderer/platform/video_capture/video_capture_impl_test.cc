@@ -71,7 +71,7 @@ TestingPlatformSupportWithGpuFactories::TestingPlatformSupportWithGpuFactories()
       media_thread_("TestingMediaThread") {
   // Ensure that any mappable SharedImages created via this testing platform
   // create fake GMBs internally.
-  sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
+  sii_->AlwaysBackMappableSharedImagesWithShMem();
   gpu_factories_->SetVideoFrameOutputFormat(
       media::GpuVideoAcceleratorFactories::OutputFormat::NV12);
   media_thread_.Start();

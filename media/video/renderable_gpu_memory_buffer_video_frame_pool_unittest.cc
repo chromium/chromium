@@ -59,7 +59,7 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
     DoCreateMappableSharedImage(size, buffer_usage, si_format, color_space,
                                 usage, sync_token);
     context_provider_->SharedImageInterface()
-        ->UseTestGMBInSharedImageCreationWithBufferUsage();
+        ->AlwaysBackMappableSharedImagesWithShMem();
     return context_provider_->SharedImageInterface()->CreateSharedImage(
         {si_format, size, color_space, usage,
          "RenderableGpuMemoryBufferVideoFramePoolTest"},

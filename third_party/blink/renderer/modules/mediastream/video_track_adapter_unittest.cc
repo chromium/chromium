@@ -227,7 +227,7 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
         frame_processed_(base::WaitableEvent::ResetPolicy::MANUAL,
                          base::WaitableEvent::InitialState::NOT_SIGNALED),
         test_sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()) {
-    test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
+    test_sii_->AlwaysBackMappableSharedImagesWithShMem();
   }
   ~VideoTrackAdapterFixtureTest() override = default;
 

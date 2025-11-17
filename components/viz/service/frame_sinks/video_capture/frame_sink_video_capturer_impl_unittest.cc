@@ -287,7 +287,7 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
       // Create a test GpuMemoryBuffer as these test don't run the code to
       // produce GPU frames. The mailbox values aren't important since
       // IsLetterboxedFrame does no verification for GMB VideoFrames.
-      test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
+      test_sii_->AlwaysBackMappableSharedImagesWithShMem();
 
       // Setting some default usage in order to get a mappable shared image.
       const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
@@ -771,7 +771,7 @@ class TestGmbVideoFramePoolContext
       gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) override {
     context_provider_->SharedImageInterface()
-        ->UseTestGMBInSharedImageCreationWithBufferUsage();
+        ->AlwaysBackMappableSharedImagesWithShMem();
     return context_provider_->SharedImageInterface()->CreateSharedImage(
         {si_format, size, color_space, usage,
          "FrameSinkVideoCapturerImplUnittest"},

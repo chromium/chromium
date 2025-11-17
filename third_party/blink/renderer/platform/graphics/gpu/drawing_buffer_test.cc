@@ -362,7 +362,7 @@ class DrawingBufferImageChromiumTest : public DrawingBufferTest,
     // relaxed usage validation.
     auto* sii = static_cast<gpu::TestSharedImageInterface*>(
         provider->SharedImageInterface());
-    sii->UseTestGMBInSharedImageCreationWithBufferUsage();
+    sii->AlwaysBackMappableSharedImagesWithShMem();
     GLES2InterfaceForTests* gl_ =
         static_cast<GLES2InterfaceForTests*>(provider->ContextGL());
     EXPECT_CALL(*gl_, CreateAndTexStorage2DSharedImageCHROMIUMMock(_)).Times(1);

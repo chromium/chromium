@@ -357,7 +357,7 @@ class V4l2CaptureDelegateGPUMemoryBufferTest
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kVideoCaptureUseGpuMemoryBuffer);
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-    test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
+    test_sii_->AlwaysBackMappableSharedImagesWithShMem();
     VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
         test_sii_);
   }

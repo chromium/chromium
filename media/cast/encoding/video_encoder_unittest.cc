@@ -102,7 +102,7 @@ class VideoEncoderTest : public ::testing::TestWithParam<VideoEncoderTestParam>,
           accelerator_task_runner_);
 
       sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-      sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
+      sii_->AlwaysBackMappableSharedImagesWithShMem();
       mock_gpu_factories_ =
           std::make_unique<MockGpuVideoAcceleratorFactories>(sii_.get());
       EXPECT_CALL(*mock_gpu_factories_, GetTaskRunner())

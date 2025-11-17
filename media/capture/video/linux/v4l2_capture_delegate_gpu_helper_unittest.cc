@@ -135,7 +135,7 @@ class V4l2CaptureDelegateGpuHelperTest
  public:
   void SetUp() override {
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-    test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
+    test_sii_->AlwaysBackMappableSharedImagesWithShMem();
     VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
         test_sii_);
     v4l2_gpu_helper_ = std::make_unique<V4L2CaptureDelegateGpuHelper>();

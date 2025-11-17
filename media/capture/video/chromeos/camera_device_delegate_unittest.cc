@@ -168,7 +168,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
 
   void SetUp() override {
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-    test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
+    test_sii_->AlwaysBackMappableSharedImagesWithShMem();
     VideoCaptureDeviceFactoryChromeOS::SetSharedImageInterface(test_sii_);
     camera_hal_delegate_ = std::make_unique<CameraHalDelegate>(ui_task_runner_);
     if (!camera_hal_delegate_->Init()) {
