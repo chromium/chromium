@@ -2,11 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#import "base/apple/foundation_util.h"
+#import "base/apple/scoped_cftyperef.h"
 #import "base/ios/ios_util.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -315,23 +312,22 @@ id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
                   green:(CGFloat*)green
                    blue:(CGFloat*)blue
                   alpha:(CGFloat*)alpha {
-  CFDataRef pixelData =
-      CGDataProviderCopyData(CGImageGetDataProvider(image.CGImage));
-  const UInt8* data = CFDataGetBytePtr(pixelData);
+  base::apple::ScopedCFTypeRef<CFDataRef> pixelData(
+      CGDataProviderCopyData(CGImageGetDataProvider(image.CGImage)));
+  base::span<const uint8_t> pixelDataSpan =
+      base::apple::NSDataToSpan((__bridge NSData*)pixelData.get());
 
   const NSUInteger bytesPerPixel = CGImageGetBitsPerPixel(image.CGImage) /
                                    CGImageGetBitsPerComponent(image.CGImage);
   const NSUInteger index =
       (CGImageGetWidth(image.CGImage) * point.y + point.x) * bytesPerPixel;
 
-  *red = ((CGFloat)data[index]) / 255.0f;
-  *green = ((CGFloat)data[index + 1]) / 255.0f;
-  *blue = ((CGFloat)data[index + 2]) / 255.0f;
-  *alpha = ((CGFloat)data[index + 3]) / 255.0f;
-
-  // Release CFDataRef explicitly because a Core Foundation object is not
-  // released automatically.
-  CFRelease(pixelData);
+  base::span<const uint8_t> pixelDataView =
+      pixelDataSpan.subspan(index, bytesPerPixel);
+  *red = CGFloat(pixelDataView[0]) / 255.0f;
+  *green = CGFloat(pixelDataView[1]) / 255.0f;
+  *blue = CGFloat(pixelDataView[2]) / 255.0f;
+  *alpha = CGFloat(pixelDataView[3]) / 255.0f;
 }
 
 @end
