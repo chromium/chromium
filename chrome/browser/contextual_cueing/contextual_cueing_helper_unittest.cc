@@ -96,7 +96,13 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ContextualCueingHelperTest, TabHelperStartsUp) {
+// TODO(crbug.com/461127918): Enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TabHelperStartsUp DISABLED_TabHelperStartsUp
+#else
+#define MAYBE_TabHelperStartsUp TabHelperStartsUp
+#endif
+TEST_F(ContextualCueingHelperTest, MAYBE_TabHelperStartsUp) {
   ContextualCueingHelper::MaybeCreateForWebContents(web_contents());
   auto* contextual_cueing_helper =
       ContextualCueingHelper::FromWebContents(web_contents());
@@ -126,7 +132,13 @@ class ContextualCueingHelperResponseCodeTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(ContextualCueingHelperResponseCodeTest, Committed404Page) {
+// TODO(crbug.com/461127918): Enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_Committed404Page DISABLED_Committed404Page
+#else
+#define MAYBE_Committed404Page Committed404Page
+#endif
+TEST_P(ContextualCueingHelperResponseCodeTest, MAYBE_Committed404Page) {
   ContextualCueingHelper::MaybeCreateForWebContents(web_contents());
   auto* contextual_cueing_helper =
       ContextualCueingHelper::FromWebContents(web_contents());
