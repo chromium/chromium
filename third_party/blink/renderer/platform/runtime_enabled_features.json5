@@ -4362,6 +4362,11 @@
       name: "ScreenDetailedHdrHeadroom",
       status: "experimental",
     },
+    {
+      // crbug.com/406917902
+      name: "ScriptBasedOnUnicodeBlock",
+      status: "stable",
+    },
     // WebSpeech API with both speech recognition and synthesis functionality
     // is not fully enabled on all platforms.
     {

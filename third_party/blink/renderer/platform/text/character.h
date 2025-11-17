@@ -257,7 +257,7 @@ class PLATFORM_EXPORT Character {
 
   // Returns whether a script code could be determined for the given character
   // and that script code is not USCRIPT_COMMON or USCRIPT_INHERITED.
-  static bool HasDefiniteScript(UChar32);
+  static bool HasLikelyScript(UChar32);
   static UScriptCode GetScriptBasedOnUnicodeBlock(UChar32);
 
   static bool IsModernGeorgianUppercase(UChar32 c) {

@@ -363,13 +363,23 @@ bool Character::IsNonCharacter(UChar32 character) {
   return U_IS_UNICODE_NONCHAR(character);
 }
 
-bool Character::HasDefiniteScript(UChar32 character) {
+bool Character::HasLikelyScript(UChar32 character) {
   ICUError err;
-  UScriptCode hint_char_script = uscript_getScript(character, &err);
+  UScriptCode script = uscript_getScript(character, &err);
+
   if (!U_SUCCESS(err))
     return false;
-  return hint_char_script != USCRIPT_INHERITED &&
-         hint_char_script != USCRIPT_COMMON;
+
+  if (RuntimeEnabledFeatures::ScriptBasedOnUnicodeBlockEnabled()) {
+    if (script == USCRIPT_INHERITED || script == USCRIPT_COMMON) {
+      // For characters whose ICU script is USCRIPT_INHERITED or
+      // USCRIPT_COMMON, infer a likely script based on their Unicode block.
+      // This helps select more accurate fallback fonts for
+      // inherited marks, punctuation, and similar characters.
+      script = GetScriptBasedOnUnicodeBlock(character);
+    }
+  }
+  return script != USCRIPT_COMMON && script != USCRIPT_INHERITED;
 }
 
 // There are a lot of characters in USCRIPT_COMMON that can be covered

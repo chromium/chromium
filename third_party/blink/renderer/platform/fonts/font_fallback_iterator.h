@@ -42,6 +42,7 @@ class PLATFORM_EXPORT FontFallbackIterator {
   // segmented font, i.e. one that requires the hint list to work out which
   // unicode range segment should be used.
   bool NeedsHintList() const;
+  static unsigned ChooseHintIndex(const FontFallbackIterator::HintCharList&);
 
   // Some system fallback APIs (Windows, Android) require a character, or a
   // portion of the string to be passed.  On Mac and Linux, we get a list of
