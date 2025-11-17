@@ -16,12 +16,19 @@
 // The name of the animation resource to be used in light mode.
 @property(nonatomic, copy) NSString* animationName;
 
-// The name of the animation resource to be used in dark mode.
+// The name of the animation resource to be used in dark mode. Must only be used
+// if the color providers are nil.
 @property(nonatomic, copy) NSString* animationNameDarkMode;
 
 // A dictionary that allows l18n of text within the animations.
 @property(nonatomic, copy)
     NSDictionary<NSString*, NSString*>* animationTextProvider;
+
+// A dictionary that associate a keypath with a color, for the light/dark mode.
+@property(nonatomic, copy)
+    NSDictionary<NSString*, UIColor*>* lightModeColorProvider;
+@property(nonatomic, copy)
+    NSDictionary<NSString*, UIColor*>* darkModeColorProvider;
 
 @end
 

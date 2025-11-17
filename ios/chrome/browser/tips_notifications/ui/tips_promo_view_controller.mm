@@ -77,15 +77,34 @@ const CGFloat kAnimationHeightPercent = 0.5;
 // Returns a stack view containing the animation image, the title, and the
 // subtitle.
 - (UIStackView*)createContentStack {
+  UIStackView* stack = [[UIStackView alloc] init];
+
+  stack.axis = UILayoutConstraintAxisVertical;
+  stack.translatesAutoresizingMaskIntoConstraints = NO;
+  stack.alignment = UIStackViewAlignmentFill;
+  stack.distribution = UIStackViewDistributionFill;
+  stack.spacing = UIStackViewSpacingUseSystem;
+
   _animationViewWrapper = [self createAnimation:self.animationName];
   UIView* animation = _animationViewWrapper.animationView;
   animation.translatesAutoresizingMaskIntoConstraints = NO;
   animation.contentMode = UIViewContentModeScaleAspectFit;
-  _animationViewWrapperDarkMode =
-      [self createAnimation:self.animationNameDarkMode];
-  UIView* animationDarkMode = _animationViewWrapperDarkMode.animationView;
-  animationDarkMode.translatesAutoresizingMaskIntoConstraints = NO;
-  animationDarkMode.contentMode = UIViewContentModeScaleAspectFit;
+  [stack addArrangedSubview:animation];
+  [stack setCustomSpacing:kCustomSpacingAfterAnimation afterView:animation];
+  if (self.animationNameDarkMode) {
+    CHECK(!self.lightModeColorProvider && !self.darkModeColorProvider);
+    _animationViewWrapperDarkMode =
+        [self createAnimation:self.animationNameDarkMode];
+    UIView* animationDarkMode = _animationViewWrapperDarkMode.animationView;
+    animationDarkMode.translatesAutoresizingMaskIntoConstraints = NO;
+    animationDarkMode.contentMode = UIViewContentModeScaleAspectFit;
+    [stack addArrangedSubview:animationDarkMode];
+    [stack setCustomSpacing:kCustomSpacingAfterAnimation
+                  afterView:animationDarkMode];
+    AddSameConstraints(animation, animationDarkMode);
+  } else {
+    [_animationViewWrapper play];
+  }
   [self updateAnimation];
 
   UILabel* title = [self createLabel:self.titleText
@@ -100,21 +119,9 @@ const CGFloat kAnimationHeightPercent = 0.5;
   self.titleText = nil;
   self.subtitleText = nil;
 
-  UIStackView* stack = [[UIStackView alloc] initWithArrangedSubviews:@[
-    animation,
-    animationDarkMode,
-    title,
-    subtitle,
-  ]];
-  stack.axis = UILayoutConstraintAxisVertical;
-  stack.translatesAutoresizingMaskIntoConstraints = NO;
-  stack.alignment = UIStackViewAlignmentFill;
-  stack.distribution = UIStackViewDistributionFill;
-  stack.spacing = UIStackViewSpacingUseSystem;
-  [stack setCustomSpacing:kCustomSpacingAfterAnimation afterView:animation];
-  [stack setCustomSpacing:kCustomSpacingAfterAnimation
-                afterView:animationDarkMode];
-  AddSameConstraints(animation, animationDarkMode);
+  [stack addArrangedSubview:title];
+  [stack addArrangedSubview:subtitle];
+
   return stack;
 }
 
@@ -136,14 +143,31 @@ const CGFloat kAnimationHeightPercent = 0.5;
 - (void)updateAnimation {
   BOOL dark =
       self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
-  [_animationViewWrapper stop];
-  [_animationViewWrapperDarkMode stop];
-  _animationViewWrapper.animationView.hidden = dark;
-  _animationViewWrapperDarkMode.animationView.hidden = !dark;
-  if (dark) {
-    [_animationViewWrapperDarkMode play];
+  if (self.lightModeColorProvider) {
+    if (dark) {
+      [self updateAnimationWithColorProvider:self.darkModeColorProvider];
+    } else {
+      [self updateAnimationWithColorProvider:self.lightModeColorProvider];
+    }
   } else {
-    [_animationViewWrapper play];
+    [_animationViewWrapper stop];
+    [_animationViewWrapperDarkMode stop];
+    _animationViewWrapper.animationView.hidden = dark;
+    _animationViewWrapperDarkMode.animationView.hidden = !dark;
+    if (dark) {
+      [_animationViewWrapperDarkMode play];
+    } else {
+      [_animationViewWrapper play];
+    }
+  }
+}
+
+// Updates the _animationViewWrapper with the colors from `colorProvider`.
+- (void)updateAnimationWithColorProvider:
+    (NSDictionary<NSString*, UIColor*>*)colorProvider {
+  for (NSString* keypath in colorProvider.allKeys) {
+    [_animationViewWrapper setColorValue:colorProvider[keypath]
+                              forKeypath:keypath];
   }
 }
 
