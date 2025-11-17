@@ -618,9 +618,13 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   [adaptiveToolbarCoordinator updateToolbarForSideSwipeSnapshot:webState];
   [self updateLocationBarForSideSwipeSnapshot:webState];
 
+  UIView* toolbarView = adaptiveToolbarCoordinator.viewController.view;
+  // The toolbar must be in the view hierarchy to be snapshotted.
+  if (!toolbarView.window) {
+    return nil;
+  }
   UIImage* toolbarSnapshot = CaptureViewWithOption(
-      adaptiveToolbarCoordinator.viewController.view,
-      [[UIScreen mainScreen] scale], kClientSideRendering);
+      toolbarView, [[UIScreen mainScreen] scale], kClientSideRendering);
 
   [adaptiveToolbarCoordinator resetToolbarAfterSideSwipeSnapshot];
   [self resetLocationBarAfterSideSwipeSnapshot];
