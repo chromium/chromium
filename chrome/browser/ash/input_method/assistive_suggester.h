@@ -120,15 +120,6 @@ class AssistiveSuggester : public SuggestionsSource {
 
   bool IsDiacriticsOnPhysicalKeyboardLongpressEnabled();
 
-  // Checks the text before cursor, emits metric if any assistive prefix is
-  // matched.
-  void RecordAssistiveMatchMetrics(
-      const std::u16string& text,
-      gfx::Range selection_range,
-      const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
-
-  void RecordAssistiveMatchMetricsForEmoji();
-
   // Only the first applicable reason in DisabledReason enum is returned.
   DisabledReason GetDisabledReasonForEmoji(
       const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);

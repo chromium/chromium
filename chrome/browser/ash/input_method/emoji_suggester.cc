@@ -40,8 +40,6 @@ using AssistiveSuggestionType = ime::AssistiveSuggestionType;
 using SuggestionsTextContext = ime::SuggestionsTextContext;
 
 const int kMaxCandidateSize = 5;
-const char kSpaceChar = ' ';
-constexpr char kTrimLeadingChars[] = "(";
 constexpr char kEmojiMapFilePathName[] = "/emoji/emoji-map.csv";
 const int kMaxSuggestionIndex = 31;
 const int kMaxSuggestionSize = kMaxSuggestionIndex + 1;
@@ -65,27 +63,6 @@ std::vector<std::string> SplitString(const std::string& str,
                                      const std::string& delimiter) {
   return base::SplitString(str, delimiter, base::TRIM_WHITESPACE,
                            base::SPLIT_WANT_NONEMPTY);
-}
-
-std::string GetLastWord(const std::string& str) {
-  // We only suggest if last char is a white space so search for last word from
-  // second last char.
-  DCHECK_EQ(kSpaceChar, str.back());
-  size_t last_pos_to_search = str.length() - 2;
-
-  auto space_before_last_word = str.find_last_of(" \n", last_pos_to_search);
-
-  // If not found, return the entire string up to the last position to search
-  // else return the last word.
-  const std::string last_word =
-      space_before_last_word == std::string::npos
-          ? str.substr(0, last_pos_to_search + 1)
-          : str.substr(space_before_last_word + 1,
-                       last_pos_to_search - space_before_last_word);
-
-  // Remove any leading special characters
-  return base::ToLowerASCII(
-      base::TrimString(last_word, kTrimLeadingChars, base::TRIM_LEADING));
 }
 
 }  // namespace
@@ -125,19 +102,6 @@ void EmojiSuggester::OnEmojiDataLoaded(const std::string& emoji_data) {
     }
     DCHECK_LE(static_cast<int>(emoji_map_[word].size()), kMaxSuggestionSize);
   }
-}
-
-bool EmojiSuggester::ShouldShowSuggestion(const std::u16string& text) {
-  if (text[text.length() - 1] != kSpaceChar) {
-    return false;
-  }
-
-  std::string last_word =
-      base::ToLowerASCII(GetLastWord(base::UTF16ToUTF8(text)));
-  if (!last_word.empty() && emoji_map_.count(last_word)) {
-    return true;
-  }
-  return false;
 }
 
 }  // namespace input_method

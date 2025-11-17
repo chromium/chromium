@@ -27,8 +27,6 @@ class EmojiSuggester {
   EmojiSuggester();
   ~EmojiSuggester();
 
-  bool ShouldShowSuggestion(const std::u16string& text);
-
   // TODO(crbug/1223666): Remove when we no longer need to prod private vars
   //     for unit testing.
   void LoadEmojiMapForTesting(const std::string& emoji_data);

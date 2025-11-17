@@ -1144,50 +1144,6 @@ TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
   InputMethodManager::Shutdown();
 }
 
-TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
-       RecordUkmAddsAssistiveMatchUkmEntry) {
-  GURL url("https://www.example.com/");
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
-                                                             url);
-
-  auto* testing_profile = static_cast<TestingProfile*>(browser_context());
-  testing::NiceMock<MockInputMethod> mock_input_method;
-  InputMethodManager::Initialize(
-      new TestInputMethodManager(&mock_input_method));
-  NativeInputMethodEngine engine;
-  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
-                    /*extension_id=*/"", testing_profile);
-  engine.get_assistive_suggester_for_testing()
-      ->get_emoji_suggester_for_testing()
-      ->LoadEmojiMapForTesting("happy,😀;😃;😄");
-
-  ui::FakeTextInputClient fake_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
-  fake_text_input_client.set_source_id(main_rfh()->GetPageUkmSourceId());
-
-  InputMethodAsh ime(nullptr);
-  ime.SetFocusedTextInputClient(&fake_text_input_client);
-  IMEBridge::Get()->SetInputContextHandler(&ime);
-
-  ukm::TestAutoSetUkmRecorder test_recorder;
-  test_recorder.UpdateRecording({ukm::UkmConsentType::MSBB});
-  ASSERT_EQ(0u, test_recorder.entries_count());
-
-  // Should not record when random text is entered.
-  engine.SetSurroundingText(u"random text ", gfx::Range(12), 0);
-  EXPECT_EQ(0u, test_recorder.entries_count());
-
-  // Should record when match is triggered.
-  engine.SetSurroundingText(u"happy ", gfx::Range(6), 0);
-  EXPECT_EQ(0u, test_recorder.sources_count());
-  EXPECT_EQ(1u, test_recorder.entries_count());
-  const auto entries =
-      test_recorder.GetEntriesByName("InputMethod.Assistive.Match");
-  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(entries[0], "Type",
-                                                 (int)AssistiveType::kEmoji);
-
-  InputMethodManager::Shutdown();
-}
-
 }  // namespace
 }  // namespace input_method
 }  // namespace ash
