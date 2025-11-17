@@ -1675,6 +1675,42 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.GetAccounts.Android.Result"
+    enum="GetAccountsAndroidResult" expires_after="2026-11-07">
+  <owner>mlbipin@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Records the outcome of fetching the list of accounts from the
+    platform-specific API that happens in the AccountManagerFacade. Android
+    only.
+  </summary>
+</histogram>
+
+<histogram name="Signin.GetAccounts.AndroidApiAvailability" enum="Boolean"
+    expires_after="2026-11-07">
+  <owner>mlbipin@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Records whether API that fetches the list of accounts is available for use.
+    Recorded when the availability check completes. Android only.
+  </summary>
+</histogram>
+
+<histogram
+    name="Signin.GetAccounts.AndroidApiAvailabilityLatency.{Availability}"
+    units="ms" expires_after="2026-11-07">
+  <owner>mlbipin@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Tracks the latency of the account list API availability check.Recorded when
+    the availability check completes. Android only.
+  </summary>
+  <token key="Availability">
+    <variant name="Available" summary="The API is available"/>
+    <variant name="Unavailable" summary="The API is unavailable"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.GetAccountsBackoffRetries" units="retries"
     expires_after="2026-04-01">
   <owner>samarchehade@google.com</owner>

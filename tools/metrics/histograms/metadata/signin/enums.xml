@@ -493,6 +493,13 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/signin/ios/browser/account_consistency_service.mm:GaiaPage) -->
 
+<enum name="GetAccountsAndroidResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="UserRecoverableAuthError"/>
+  <int value="2" label="GoogleAuthError"/>
+  <int value="3" label="OtherError"/>
+</enum>
+
 <!-- LINT.IfChange(GetAuthTokenResult) -->
 
 <enum name="GetAuthTokenResult">
