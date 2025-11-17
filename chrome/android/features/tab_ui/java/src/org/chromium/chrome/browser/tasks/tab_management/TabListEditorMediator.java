@@ -186,7 +186,7 @@ class TabListEditorMediator
                     @Override
                     public void onSelectionStateChange(
                             List<TabListEditorItemSelectionId> selectedItems) {
-                        updateDoneButtonVisibility();
+                        updateToolbar();
                     }
                 };
         mSelectionDelegate.addObserver(mSelectionObserver);
@@ -214,14 +214,15 @@ class TabListEditorMediator
         return mModel.get(TabListEditorProperties.IS_VISIBLE);
     }
 
-    private void updateDoneButtonVisibility() {
+    private void updateToolbar() {
         if (mCreationMode != CreationMode.ITEM_PICKER) {
             mModel.set(TabListEditorProperties.DONE_BUTTON_VISIBILITY, false);
             return;
         }
+        mModel.set(TabListEditorProperties.DONE_BUTTON_VISIBILITY, true);
 
         boolean hasSelection = !mSelectionDelegate.getSelectedItems().isEmpty();
-        mModel.set(TabListEditorProperties.DONE_BUTTON_VISIBILITY, hasSelection);
+        mModel.set(TabListEditorProperties.IS_DONE_BUTTON_ENABLED, hasSelection);
     }
 
     private void updateColors(boolean isIncognito) {
@@ -300,7 +301,7 @@ class TabListEditorMediator
                         : R.string.tab_selection_editor_toolbar_select_items;
         mModel.set(TabListEditorProperties.TOOLBAR_TITLE, mContext.getString(titleId));
 
-        updateDoneButtonVisibility();
+        updateToolbar();
 
         updateColors(
                 assumeNonNull(mCurrentTabGroupModelFilterSupplier.get())

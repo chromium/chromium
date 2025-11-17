@@ -46,12 +46,13 @@ public class TabListEditorActionViewLayout extends LinearLayout {
     private ListMenuButton mMenuButton;
 
     /**
-     * {@link View} for showing the done button. Only one of mMenuButton and mDoneButton will be
+     * {@link View} for showing the done button. Only one of mMenuButton and mDoneutton will be
      * visible.
      */
     private ButtonCompat mDoneButton;
 
-    private boolean mIsDoneButtonVisibile;
+    private boolean mIsDoneButtonVisible;
+    private boolean mIsDoneButtonEnabled;
     private final LinearLayout.LayoutParams mActionViewParams;
 
     private @Nullable ActionViewLayoutDelegate mDelegate;
@@ -102,8 +103,14 @@ public class TabListEditorActionViewLayout extends LinearLayout {
     }
 
     public void setDoneButtonVisibility(boolean isDoneButtonVisible) {
-        if (mIsDoneButtonVisibile == isDoneButtonVisible) return;
-        mIsDoneButtonVisibile = isDoneButtonVisible;
+        if (mIsDoneButtonVisible == isDoneButtonVisible) return;
+        mIsDoneButtonVisible = isDoneButtonVisible;
+        update();
+    }
+
+    public void setIsDoneButtonEnabled(boolean isDoneButtonEnabled) {
+        if (mIsDoneButtonEnabled == isDoneButtonEnabled) return;
+        mIsDoneButtonEnabled = isDoneButtonEnabled;
         update();
     }
 
@@ -202,9 +209,10 @@ public class TabListEditorActionViewLayout extends LinearLayout {
             // forced into the overflow menu.
             mDelegate.setVisibleActionViews(mVisibleActions);
         }
-        if (mIsDoneButtonVisibile) {
+        if (mIsDoneButtonVisible) {
             mDoneButton.setVisibility(View.VISIBLE);
             mMenuButton.setVisibility(View.GONE);
+            mDoneButton.setEnabled(mIsDoneButtonEnabled);
             mDoneButton.measure(childMeasureSpec, childMeasureSpec);
             requiredWidth += mDoneButton.getMeasuredWidth();
         } else if (mHasMenuOnlyItems || hasForcedAnyActionViewToMenu) {

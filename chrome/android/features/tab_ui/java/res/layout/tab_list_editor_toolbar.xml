@@ -24,11 +24,10 @@ found in the LICENSE file.
             android:layout_marginHorizontal="16dp"
             android:maxLines="1"
             android:text="@string/done_button_text"
-            android:background="?attr/selectableItemBackgroundBorderless"
             android:visibility="gone"
             android:gravity="center"
             android:layout_gravity="center_vertical|end"
-            android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary"
+            style="@style/TextButton"
             />
         <org.chromium.ui.listmenu.ListMenuButton
             style="@style/ToolbarMenuButton"
