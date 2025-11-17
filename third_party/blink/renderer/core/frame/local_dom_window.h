@@ -109,6 +109,8 @@ template <typename T>
 class GlobalCookieStoreImpl;
 template <typename T, typename P>
 class GlobalPerformanceImpl;
+template <typename T>
+class GlobalIndexedDBImpl;
 
 namespace scheduler {
 class TaskAttributionInfo;
@@ -127,7 +129,7 @@ class CORE_EXPORT LocalDOMWindow final
       public WindowOrWorkerGlobalScope,
       public UniversalGlobalScope,
       public WindowEventHandlers,
-      public Supplementable<LocalDOMWindow, 44> {
+      public Supplementable<LocalDOMWindow, 43> {
   USING_PRE_FINALIZER(LocalDOMWindow, Dispose);
 
  public:
@@ -173,8 +175,7 @@ class CORE_EXPORT LocalDOMWindow final
     kAudioRendererSinkCache = 39,
     kDOMWindowStorageController = 40,
     kDOMWindowStorage = 41,
-    kWindowSharedStorageImpl = 42,
-    kGlobalIndexedDBImpl = 43
+    kWindowSharedStorageImpl = 42
   };
 
   class CORE_EXPORT EventListenerObserver : public GarbageCollectedMixin {
@@ -663,6 +664,16 @@ class CORE_EXPORT LocalDOMWindow final
     global_performance_impl_ = global_performance_impl;
   }
 
+  ForwardDeclaredMember<GlobalIndexedDBImpl<LocalDOMWindow>>
+  GetGlobalIndexedDBImpl() const {
+    return global_indexed_db_impl_;
+  }
+  void SetGlobalIndexedDBImpl(
+      ForwardDeclaredMember<GlobalIndexedDBImpl<LocalDOMWindow>>
+          global_indexed_db_impl) {
+    global_indexed_db_impl_ = global_indexed_db_impl;
+  }
+
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,
@@ -801,6 +812,8 @@ class CORE_EXPORT LocalDOMWindow final
   ForwardDeclaredMember<
       GlobalPerformanceImpl<LocalDOMWindow, WindowPerformance>>
       global_performance_impl_;
+  ForwardDeclaredMember<GlobalIndexedDBImpl<LocalDOMWindow>>
+      global_indexed_db_impl_;
 
   // If set, this window is a Document Picture in Picture window.
   // https://wicg.github.io/document-picture-in-picture/

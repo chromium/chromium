@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/platform/feature_context.h"
+#include "third_party/blink/renderer/platform/forward_declared_member.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap_observer_list.h"
 #include "third_party/blink/renderer/platform/loader/fetch/https_state.h"
@@ -101,6 +102,9 @@ class ScriptState;
 class ScriptWrappable;
 class TrustedTypePolicyFactory;
 
+template <typename T>
+class GlobalIndexedDBImpl;
+
 enum ReasonForCallingCanExecuteScripts {
   kAboutToExecuteScript,
   kNotAboutToExecuteScript
@@ -131,7 +135,7 @@ enum ReferrerPolicySource { kPolicySourceHttpHeader, kPolicySourceMetaTag };
 // by an extension developer, but these share an ExecutionContext (the window)
 // in common.
 class CORE_EXPORT ExecutionContext
-    : public Supplementable<ExecutionContext, 34>,
+    : public Supplementable<ExecutionContext, 33>,
       public MojoBindingContext,
       public UseCounterAndConsoleLogger,
       public FeatureContext {
@@ -167,10 +171,9 @@ class CORE_EXPORT ExecutionContext
     kParsedFeaturePolicies = 27,
     kThrottlingController = 28,
     kDOMTimerCoordinator = 29,
-    kGlobalIndexedDBImpl = 30,
+    kCanvasResourceProviderCache = 30,
     kExecutionContextClipboardEventState = 31,
-    kCachedVideoFramePool = 32,
-    kCanvasResourceProviderCache = 33
+    kCachedVideoFramePool = 32
   };
 
   ExecutionContext(const ExecutionContext&) = delete;
@@ -525,6 +528,16 @@ class CORE_EXPORT ExecutionContext
     canvas_noise_token_ = token;
   }
 
+  ForwardDeclaredMember<GlobalIndexedDBImpl<ExecutionContext>>
+  GetGlobalIndexedDBImpl() const {
+    return global_indexed_db_impl_;
+  }
+  void SetGlobalIndexedDBImpl(
+      ForwardDeclaredMember<GlobalIndexedDBImpl<ExecutionContext>>
+          global_indexed_db_impl) {
+    global_indexed_db_impl_ = global_indexed_db_impl;
+  }
+
  protected:
   ExecutionContext(v8::Isolate* isolate, Agent* agent, bool is_window = false);
   ~ExecutionContext() override;
@@ -590,6 +603,9 @@ class CORE_EXPORT ExecutionContext
   bool require_trusted_types_ = false;
 
   std::optional<NoiseToken> canvas_noise_token_;
+
+  ForwardDeclaredMember<GlobalIndexedDBImpl<ExecutionContext>>
+      global_indexed_db_impl_;
 };
 
 }  // namespace blink
