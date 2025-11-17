@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
 
+#include "base/functional/callback.h"
 #include "third_party/blink/renderer/platform/bindings/binding_security_for_platform.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
