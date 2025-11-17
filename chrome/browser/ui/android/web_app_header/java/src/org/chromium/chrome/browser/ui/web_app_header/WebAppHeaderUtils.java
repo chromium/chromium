@@ -110,6 +110,23 @@ public class WebAppHeaderUtils {
     }
 
     /**
+     * Checks whether standalone display mode is enabled. This includes checking that the the
+     * standalone feature flag is enabled, as well as the type of web app of the intent.
+     *
+     * @param intentDataProvider contains intent data related to the current browser service.
+     * @return true when currently running a trusted web app in standalone mode, else return false.
+     */
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public static boolean isStandaloneEnabled(
+            BrowserServicesIntentDataProvider intentDataProvider) {
+        @DisplayMode.EnumType int displayMode = intentDataProvider.getResolvedDisplayMode();
+
+        return intentDataProvider.isTrustedWebActivity()
+                && displayMode == DisplayMode.STANDALONE
+                && ChromeFeatureList.sAndroidWebAppHeaderForStandaloneMode.isEnabled();
+    }
+
+    /**
      * Checks whether minimal ui feature flag is enabled on Android 15+ SDK.
      *
      * @return true if flag is enabled and running on SDK >= 35, false otherwise.
@@ -150,6 +167,7 @@ public class WebAppHeaderUtils {
     public static boolean isWebAppHeaderEnabled(
             BrowserServicesIntentDataProvider intentDataProvider) {
         return isMinimalUiEnabled(intentDataProvider)
+                || isStandaloneEnabled(intentDataProvider)
                 || isWindowControlsOverlayEnabled(intentDataProvider);
     }
 
