@@ -121,6 +121,21 @@ source_set("dom_node_geometry") {
   ]
 }
 
+source_set("actor_ui_interactive_base") {
+  sources = [
+    "actor_ui_interactive_browser_test.cc",
+    "actor_ui_interactive_browser_test.h",
+  ]
+  testonly = true
+  deps = [
+    "//base/test:test_support",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor:test_support",
+    "//chrome/browser/actor:types",
+    "//chrome/test:test_support_ui",
+  ]
+}
+
 source_set("test_support") {
   sources = [
     "mocks/mock_actor_ui_state_manager.cc",
@@ -262,10 +277,10 @@ source_set("interactive_ui_tests") {
   sources = [ "handoff_button_controller_interactive_uitest.cc" ]
 
   deps = [
+    ":actor_ui_interactive_base",
     ":ui",
     "//base/test:test_support",
     "//chrome/browser/actor",
-    "//chrome/browser/actor:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",

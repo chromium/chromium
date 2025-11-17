@@ -30,6 +30,7 @@
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #endif
 
+// TODO(chrstne): use ActorUiInteractiveBrowserTest instead
 class ActorTaskListBubbleInteractiveUiTest : public InteractiveBrowserTest {
  public:
   ActorTaskListBubbleInteractiveUiTest() {
