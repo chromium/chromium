@@ -1245,6 +1245,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.ChildProcessBinding.BatchScopeDurationOnMainThread"
+    units="ms" expires_after="2026-11-10">
+  <owner>kawasin@google.com</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Measures the duration of the ScopedServiceBindingBatch batching scope on the
+    main thread. This metric is recorded when the batching scope is closed. This
+    is recorded regardless of whether the service binding batching feature is
+    enabled. ScopedServiceBindingBatch can be nested. This metrics measures the
+    duration of the outermost batching scope.
+  </summary>
+</histogram>
+
 <histogram name="Android.ChildProcessBinding.BinderIPC.Count" units="calls"
     expires_after="2026-03-22">
   <owner>kawasin@google.com</owner>

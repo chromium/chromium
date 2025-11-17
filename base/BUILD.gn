@@ -4647,6 +4647,8 @@ if (is_android) {
       "android/java/src/org/chromium/base/process_launcher/RebindServiceConnection.java",
       "android/java/src/org/chromium/base/process_launcher/RebindingChildServiceConnectionController.java",
       "android/java/src/org/chromium/base/process_launcher/ScopedServiceBindingBatch.java",
+      "android/java/src/org/chromium/base/process_launcher/ScopedServiceBindingBatchDuration.java",
+      "android/java/src/org/chromium/base/process_launcher/ScopedServiceBindingBatchImpl.java",
     ]
   }
 
@@ -5730,7 +5732,7 @@ if (is_android) {
       "android/junit/src/org/chromium/base/metrics/CachingUmaRecorderTest.java",
       "android/junit/src/org/chromium/base/process_launcher/ChildConnectionAllocatorTest.java",
       "android/junit/src/org/chromium/base/process_launcher/ChildProcessConnectionTest.java",
-      "android/junit/src/org/chromium/base/process_launcher/ScopedServiceBindingBatchTest.java",
+      "android/junit/src/org/chromium/base/process_launcher/ScopedServiceBindingBatchImplTest.java",
       "android/junit/src/org/chromium/base/shared_preferences/KeyPrefixTest.java",
       "android/junit/src/org/chromium/base/shared_preferences/KnownPreferenceKeyRegistriesTest.java",
       "android/junit/src/org/chromium/base/shared_preferences/SharedPreferencesManagerTest.java",

@@ -48,7 +48,7 @@ import java.util.List;
     BaseFeatures.REBINDING_CHILD_SERVICE_CONNECTION_CONTROLLER,
     BaseFeatures.REBIND_SERVICE_BATCH_API
 })
-public class ScopedServiceBindingBatchTest {
+public class ScopedServiceBindingBatchImplTest {
     private static class FakeBindingRequestQueue implements BindingRequestQueue {
         private final List<ServiceConnection> mRebinds = new ArrayList<>();
         private final List<ServiceConnection> mUnbinds = new ArrayList<>();
@@ -89,9 +89,9 @@ public class ScopedServiceBindingBatchTest {
     @Before
     public void setUp() {
         mFakeBindingRequestQueue = new FakeBindingRequestQueue();
-        ScopedServiceBindingBatch.setBindingRequestQueueForTesting(mFakeBindingRequestQueue);
+        ScopedServiceBindingBatchImpl.setBindingRequestQueueForTesting(mFakeBindingRequestQueue);
 
-        // ScopedServiceBindingBatch uses a handler to post tasks to the launcher thread.
+        // ScopedServiceBindingBatchImpl uses a handler to post tasks to the launcher thread.
         // We can use a shadow looper to control the execution of these tasks.
         mLauncherLooper = ShadowLooper.getShadowMainLooper();
         mLauncherHandler = new Handler(Looper.getMainLooper());
@@ -99,18 +99,18 @@ public class ScopedServiceBindingBatchTest {
 
     @After
     public void tearDown() {
-        ScopedServiceBindingBatch.clearContextForTesting();
-        ScopedServiceBindingBatch.setBindingRequestQueueForTesting(null);
+        ScopedServiceBindingBatchImpl.clearContextForTesting();
+        ScopedServiceBindingBatchImpl.setBindingRequestQueueForTesting(null);
     }
 
     @Test
     @MinAndroidSdkLevel(VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testRebindService_queuesRequest() {
-        assertTrue(ScopedServiceBindingBatch.tryActivate(mLauncherHandler));
+        assertTrue(ScopedServiceBindingBatchImpl.tryActivate(mLauncherHandler));
         ServiceConnection conn = mock(ServiceConnection.class);
         int lastFlushCount;
-        try (ScopedServiceBindingBatch batch = ScopedServiceBindingBatch.scoped()) {
+        try (ScopedServiceBindingBatchImpl batch = ScopedServiceBindingBatchImpl.scoped()) {
             assertNotNull(batch);
             mLauncherLooper.runToEndOfTasks(); // Process beginOnLauncherThread
 
@@ -129,10 +129,10 @@ public class ScopedServiceBindingBatchTest {
 
     @Test
     public void testUnbindService_queuesRequest() {
-        assertTrue(ScopedServiceBindingBatch.tryActivate(mLauncherHandler));
+        assertTrue(ScopedServiceBindingBatchImpl.tryActivate(mLauncherHandler));
         ServiceConnection conn = mock(ServiceConnection.class);
         int lastFlushCount;
-        try (ScopedServiceBindingBatch batch = ScopedServiceBindingBatch.scoped()) {
+        try (ScopedServiceBindingBatchImpl batch = ScopedServiceBindingBatchImpl.scoped()) {
             assertNotNull(batch);
             mLauncherLooper.runToEndOfTasks(); // Process beginOnLauncherThread
 
@@ -152,20 +152,20 @@ public class ScopedServiceBindingBatchTest {
     @Test
     @MinAndroidSdkLevel(VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(VERSION_CODES.UPSIDE_DOWN_CAKE)
-    public void testNestedScopedServiceBindingBatchs() {
-        assertTrue(ScopedServiceBindingBatch.tryActivate(mLauncherHandler));
+    public void testNestedScopedServiceBindingBatchImpls() {
+        assertTrue(ScopedServiceBindingBatchImpl.tryActivate(mLauncherHandler));
         ServiceConnection conn1 = mock(ServiceConnection.class);
         ServiceConnection conn2 = mock(ServiceConnection.class);
         ServiceConnection conn3 = mock(ServiceConnection.class);
 
         int lastFlushCount;
-        try (ScopedServiceBindingBatch batch1 = ScopedServiceBindingBatch.scoped()) {
+        try (ScopedServiceBindingBatchImpl batch1 = ScopedServiceBindingBatchImpl.scoped()) {
             assertNotNull(batch1);
             mLauncherLooper.runToEndOfTasks(); // Process beginOnLauncherThread for batch1
 
             BindService.doRebindService(ContextUtils.getApplicationContext(), conn1, 0);
 
-            try (ScopedServiceBindingBatch batch2 = ScopedServiceBindingBatch.scoped()) {
+            try (ScopedServiceBindingBatchImpl batch2 = ScopedServiceBindingBatchImpl.scoped()) {
                 assertNotNull(batch2);
                 mLauncherLooper.runToEndOfTasks(); // Process beginOnLauncherThread for batch2
 
@@ -193,9 +193,9 @@ public class ScopedServiceBindingBatchTest {
     @Test
     @Features.DisableFeatures(BaseFeatures.REBIND_SERVICE_BATCH_API)
     public void testFeatureDisabled() {
-        assertFalse(ScopedServiceBindingBatch.tryActivate(mLauncherHandler));
+        assertFalse(ScopedServiceBindingBatchImpl.tryActivate(mLauncherHandler));
 
-        try (ScopedServiceBindingBatch batch = ScopedServiceBindingBatch.scoped()) {
+        try (ScopedServiceBindingBatchImpl batch = ScopedServiceBindingBatchImpl.scoped()) {
             assertNull(batch);
         }
 
