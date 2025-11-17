@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.CctPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.testhtmls.PopupOnClickPageStation;
@@ -71,6 +72,32 @@ public class PopupMultiwindowPTTest {
                 mCtaTestRule.tabsCount(/* incognito= */ false));
 
         TransitAsserts.assertFinalDestinations(page, popup);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.ONLY_TABLET)
+    public void testBasicIncognito() {
+        final IncognitoNewTabPageStation incognitoEntryPoint =
+                mEntryPage.openNewIncognitoTabOrWindowFast();
+
+        final PopupOnClickPageStation page =
+                PopupOnClickPageStation.loadInCurrentTab(
+                        mCtaTestRule.getActivityTestRule(), incognitoEntryPoint);
+        assertTrue(page.isIncognito());
+
+        final int initialTabCount = mCtaTestRule.tabsCount(/* incognito= */ true);
+
+        final CctPageStation popup = page.clickLinkToOpenPopupWithBoundsExpectNewWindow();
+
+        // Assert that no tab has been created in lieu of a window
+        assertEquals(
+                "The number of tabs in the original window is unexpected",
+                initialTabCount,
+                mCtaTestRule.tabsCount(/* incognito= */ true));
+
+        TransitAsserts.assertFinalDestinations(page, popup);
+        assertTrue(popup.isIncognito());
     }
 
     @Test

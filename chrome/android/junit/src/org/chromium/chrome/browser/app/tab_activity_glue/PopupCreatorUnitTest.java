@@ -41,7 +41,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.IncognitoCctCallerId;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -83,7 +85,7 @@ public class PopupCreatorUnitTest {
 
     private static final Insets LAST_RAW_WINDOW_INSETS = Insets.of(12, 34, 56, 78);
     private static final int CUSTOM_TABS_CONTROL_CONTAINER_HEIGHT = 20;
-    private static final int TOOLBAR_HAIRLIUNE_HEIGHT = 9;
+    private static final int TOOLBAR_HAIRLINE_HEIGHT = 9;
 
     @Before
     public void setup() {
@@ -116,7 +118,7 @@ public class PopupCreatorUnitTest {
         doReturn(CUSTOM_TABS_CONTROL_CONTAINER_HEIGHT)
                 .when(mResources)
                 .getDimensionPixelSize(R.dimen.custom_tabs_control_container_height);
-        doReturn(TOOLBAR_HAIRLIUNE_HEIGHT)
+        doReturn(TOOLBAR_HAIRLINE_HEIGHT)
                 .when(mResources)
                 .getDimensionPixelSize(R.dimen.toolbar_hairline_height);
     }
@@ -214,6 +216,39 @@ public class PopupCreatorUnitTest {
                         + " window features",
                 windowFeatures,
                 new WindowFeatures(sentIntent.getBundleExtra(EXTRA_REQUESTED_WINDOW_FEATURES)));
+    }
+
+    @Test
+    public void testIntentParams_incognitoOpener() {
+        final WindowFeatures windowFeatures = new WindowFeatures(12, 34, 56, null);
+        doReturn(true).when(mTab).isIncognitoBranded();
+        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+
+        final ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(mReparentingTask).begin(any(), captor.capture(), any(), any());
+        final Intent sentIntent = captor.getValue();
+
+        Assert.assertEquals(
+                "The intent sent to reparenting task is not targeted at CustomTabActivity.class",
+                new ComponentName(ContextUtils.getApplicationContext(), CustomTabActivity.class),
+                sentIntent.getComponent());
+        Assert.assertEquals(
+                "The intent sent to reparenting task doesn't specify POPUP CCT UI type",
+                CustomTabsUiType.POPUP,
+                sentIntent.getIntExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, -1));
+        Assert.assertEquals(
+                "The intent sent to reparenting task doesn't specify FLAG_ACTIVITY_NEW_TASK",
+                Intent.FLAG_ACTIVITY_NEW_TASK,
+                sentIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK);
+        Assert.assertEquals(
+                "The intent sent to reparenting task doesn't specify a correct Bundle of requested"
+                        + " window features",
+                windowFeatures,
+                new WindowFeatures(sentIntent.getBundleExtra(EXTRA_REQUESTED_WINDOW_FEATURES)));
+        Assert.assertEquals(
+                "The intent sent to reparenting task doesn't specify Incognito CCT Caller ID",
+                IncognitoCctCallerId.CONTEXTUAL_POPUP,
+                sentIntent.getIntExtra(IntentHandler.EXTRA_INCOGNITO_CCT_CALLER_ID, -1));
     }
 
     private ActivityOptions getActivityOptionsPassedToReparentingTask() {

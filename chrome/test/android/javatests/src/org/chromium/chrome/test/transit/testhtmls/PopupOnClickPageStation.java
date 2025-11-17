@@ -62,6 +62,7 @@ public class PopupOnClickPageStation extends WebPageStation {
                                 .withEntryPoint()
                                 .withExpectedUrlSubstring("simple.html")
                                 .withExpectedTitle("Simple")
+                                .withIncognito(mIsIncognito)
                                 .build());
     }
 

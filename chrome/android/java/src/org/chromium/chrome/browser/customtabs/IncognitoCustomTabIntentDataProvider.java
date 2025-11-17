@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.customtabs;
 
 import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_DEFAULT;
 
-import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.chrome.browser.app.tab_activity_glue.PopupCreator.EXTRA_REQUESTED_WINDOW_FEATURES;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.BUNDLE_ENTER_ANIMATION_RESOURCE;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.BUNDLE_EXIT_ANIMATION_RESOURCE;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.BUNDLE_PACKAGE_NAME;
@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabsFeatureUsage.CustomTabsFeature;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     private final boolean mShowShareItem;
     private final List<Pair<String, PendingIntent>> mMenuEntries = new ArrayList<>();
 
-    private final String mUrlToLoad;
+    private final @Nullable String mUrlToLoad;
     private final @Nullable String mSendersPackageName;
 
     /** Whether this CustomTabActivity was explicitly started by another Chrome Activity. */
@@ -76,7 +77,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     public IncognitoCustomTabIntentDataProvider(Intent intent, Context context, int colorScheme) {
         assert intent != null;
         mIntent = intent;
-        mUrlToLoad = assertNonNull(IntentHandler.getUrlFromIntent(intent));
+        mUrlToLoad = IntentHandler.getUrlFromIntent(intent);
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         mSession = token != null ? new SessionHolder<>(token) : null;
         mSendersPackageName = getClientPackageNameFromSessionOrCallingActivity(intent, mSession);
@@ -109,6 +110,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
 
     private static @CustomTabsUiType int getUiType(Intent intent) {
         if (isForReaderMode(intent)) return CustomTabsUiType.READER_MODE;
+        if (isForPopup(intent)) return CustomTabsUiType.POPUP;
 
         return CustomTabsUiType.DEFAULT;
     }
@@ -122,6 +124,12 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         final int requestedUiType =
                 IntentUtils.safeGetIntExtra(intent, EXTRA_UI_TYPE, CustomTabsUiType.DEFAULT);
         return (isIntentFromChrome(intent) && (requestedUiType == CustomTabsUiType.READER_MODE));
+    }
+
+    private static boolean isForPopup(Intent intent) {
+        final int requestedUiType =
+                IntentUtils.safeGetIntExtra(intent, EXTRA_UI_TYPE, CustomTabsUiType.DEFAULT);
+        return (isIntentFromChrome(intent) && (requestedUiType == CustomTabsUiType.POPUP));
     }
 
     private static boolean isIntentFromThirdPartyAllowed() {
@@ -246,7 +254,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     }
 
     @Override
-    public @Nullable Intent getIntent() {
+    public Intent getIntent() {
         return mIntent;
     }
 
@@ -347,5 +355,23 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
             list.add(pair.first);
         }
         return list;
+    }
+
+    @Override
+    public boolean isCloseButtonEnabled() {
+        return getUiType() != CustomTabsUiType.POPUP;
+    }
+
+    @Override
+    public @Nullable WindowFeatures getRequestedWindowFeatures() {
+        if (getUiType() != CustomTabsUiType.POPUP) {
+            return null;
+        }
+        final Bundle bundle =
+                IntentUtils.safeGetBundleExtra(getIntent(), EXTRA_REQUESTED_WINDOW_FEATURES);
+        if (bundle == null) {
+            return new WindowFeatures();
+        }
+        return new WindowFeatures(bundle);
     }
 }

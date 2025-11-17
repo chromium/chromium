@@ -127,6 +127,7 @@ public abstract class BrowserServicesIntentDataProvider {
         IncognitoCctCallerId.READ_LATER,
         IncognitoCctCallerId.EPHEMERAL_TAB,
         IncognitoCctCallerId.DOWNLOAD_HOME,
+        IncognitoCctCallerId.CONTEXTUAL_POPUP,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface IncognitoCctCallerId {
@@ -150,8 +151,11 @@ public abstract class BrowserServicesIntentDataProvider {
         // likewise be an Incognito tab.
         int DOWNLOAD_HOME = 6;
 
+        // Contextual popups launched with a |window.open()| JavaScript call.
+        int CONTEXTUAL_POPUP = 7;
+
         // Update {@link IncognitoCctCallerId} in enums.xml when adding new items.
-        int NUM_ENTRIES = 7;
+        int NUM_ENTRIES = 8;
     }
 
     /**

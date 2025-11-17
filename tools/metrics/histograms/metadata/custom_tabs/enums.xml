@@ -298,6 +298,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Chrome - Read later"/>
   <int value="5" label="Ephemeral Tab"/>
   <int value="6" label="Chrome - Download Home"/>
+  <int value="7" label="Chrome - Contextual Web API Popup"/>
 </enum>
 
 <enum name="MayLaunchUrlType">
