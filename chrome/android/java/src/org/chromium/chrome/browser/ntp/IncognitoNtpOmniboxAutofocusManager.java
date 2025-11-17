@@ -304,6 +304,21 @@ public class IncognitoNtpOmniboxAutofocusManager {
                 };
         for (TabModel model : mTabModelSelector.getModels()) {
             if (model.isIncognitoBranded()) {
+                // Handle already existing Incognito tabs, (e.g. that were added before observers
+                // were registered).
+                for (int i = 0; i < model.getCount(); i++) {
+                    Tab tab = model.getTabAt(i);
+                    if (tab == null) continue;
+
+                    ++mTabsPreviouslyOpenedCount;
+                    tab.addObserver(mTabObserver);
+
+                    // Handle already loaded NTPs.
+                    View ntpView = mNtpViewProvider.apply(tab);
+                    if (!tab.isLoading() && ntpView != null) {
+                        handlePageLoadFinished(tab);
+                    }
+                }
                 model.addObserver(mTabModelObserver);
             }
         }

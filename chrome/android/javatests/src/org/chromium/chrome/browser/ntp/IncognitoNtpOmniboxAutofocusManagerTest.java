@@ -231,6 +231,25 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
         verifyOmniboxFocusAndKeyboardVisibility(true, incognitoNtpTab3);
     }
 
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
+    public void whenAutofocusManagerInitializedWithExistingTab_autofocusSucceeds() {
+        // Autofocus works on a new launched Incognito tab.
+        final Tab incognitoNtpTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        verifyOmniboxFocusAndKeyboardVisibility(true, incognitoNtpTab);
+        clearOmniboxFocusOnIncognitoNtp();
+
+        // Unregister autofocus observers, by enabling accessibility.
+        setAccessibilityEnabled(true);
+
+        // Re-register autofocus observers. This simulates a new autofocus manager being created.
+        setAccessibilityEnabled(false);
+
+        // The manager should detect the existing Incognito NTP and trigger autofocus again.
+        verifyOmniboxFocusAndKeyboardVisibility(true, incognitoNtpTab);
+    }
+
     private void verifyOmniboxFocusAndKeyboardVisibility(boolean enabled, @Nullable Tab tab) {
         CriteriaHelper.pollUiThread(
                 () -> {
