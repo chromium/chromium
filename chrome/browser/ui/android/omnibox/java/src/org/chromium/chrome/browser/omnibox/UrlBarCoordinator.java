@@ -55,6 +55,7 @@ public class UrlBarCoordinator
     private final ObserverList<Callback<Boolean>> mTextWrapListeners = new ObserverList<>();
     private @Nullable Runnable mKeyboardHideTask;
     private boolean mHasFocus;
+    private boolean mTextIsWrapped;
 
     /**
      * Constructs a coordinator for the given UrlBar view.
@@ -110,6 +111,11 @@ public class UrlBarCoordinator
         mUrlBar.destroy();
     }
 
+    /** Returns whether the url bar currently contains more than a single line of text. */
+    public boolean isTextWrapped() {
+        return mTextIsWrapped;
+    }
+
     /**
      * Adds a listener for text wrapping changes.
      *
@@ -129,6 +135,7 @@ public class UrlBarCoordinator
     }
 
     private void onTextWrappingChanged(boolean isWrapped) {
+        mTextIsWrapped = isWrapped;
         for (Callback<Boolean> listener : mTextWrapListeners) {
             listener.onResult(isWrapped);
         }

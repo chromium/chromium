@@ -784,6 +784,7 @@ class LocationBarMediator
     /** Recalculates the visibility of the buttons inside the location bar. */
     /* package */ void updateButtonVisibility() {
         updateDeleteButtonVisibility();
+        updateNavigateButtonVisibility();
         updateInstallButtonVisibility();
         if (!mIsComposeplateEnabled || mIsComposeplateV2Enabled) {
             updateMicButtonVisibility();
@@ -1377,10 +1378,20 @@ class LocationBarMediator
 
     private void updateDeleteButtonVisibility() {
         mLocationBarLayout.setDeleteButtonVisibility(isUrlBarFocusedWithUserInput());
-        mLocationBarLayout.setNavigateButtonVisibility(
+    }
+
+    private void updateNavigateButtonVisibility() {
+        @AutocompleteRequestType
+        int autocompleteRequestType = mAutocompleteRequestTypeSupplier.get();
+        boolean isMultimodalEnabled = OmniboxFeatures.sOmniboxMultimodalInput.isEnabled();
+        boolean navigateButtonVisible =
                 isUrlBarFocusedWithUserInput()
-                        && mAutocompleteRequestTypeSupplier.get()
-                                == AutocompleteRequestType.AI_MODE);
+                        && isMultimodalEnabled
+                        && (mUrlCoordinator.isTextWrapped()
+                                || autocompleteRequestType == AutocompleteRequestType.AI_MODE
+                                || autocompleteRequestType
+                                        == AutocompleteRequestType.IMAGE_GENERATION);
+        mLocationBarLayout.setNavigateButtonVisibility(navigateButtonVisible);
     }
 
     /* package */ void onZoomLevelChanged() {

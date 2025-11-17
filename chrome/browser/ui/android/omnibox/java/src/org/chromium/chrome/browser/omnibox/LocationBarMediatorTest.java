@@ -1639,6 +1639,28 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void navigateButtonVisibility() {
+        mMediator.onFinishNativeInitialization();
+        Profile profile = mock(Profile.class);
+        mMediator.setProfile(profile);
+        doReturn(true).when(mUrlCoordinator).isTextWrapped();
+        doReturn("text").when(mUrlCoordinator).getTextWithAutocomplete();
+        mMediator.onUrlFocusChange(true);
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
+
+        verify(mLocationBarLayout).setNavigateButtonVisibility(true);
+
+        doReturn(false).when(mUrlCoordinator).isTextWrapped();
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
+        verify(mLocationBarLayout, times(2)).setNavigateButtonVisibility(true);
+
+        doReturn(false).when(mUrlCoordinator).isTextWrapped();
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.IMAGE_GENERATION);
+        verify(mLocationBarLayout, times(3)).setNavigateButtonVisibility(true);
+    }
+
+    @Test
     public void testDeleteButtonClicked() {
         mMediator.onFinishNativeInitialization();
         mMediator.deleteButtonClicked(null);
