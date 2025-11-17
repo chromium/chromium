@@ -847,8 +847,9 @@ void WorkerGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(browser_interface_broker_proxy_);
   visitor->Trace(global_fetch_impl_);
   visitor->Trace(global_cache_storage_impl_);
+  visitor->Trace(global_cookie_store_impl_);
   WorkerOrWorkletGlobalScope::Trace(visitor);
-  Supplementable<WorkerGlobalScope, 5>::Trace(visitor);
+  Supplementable<WorkerGlobalScope, 4>::Trace(visitor);
 }
 
 bool WorkerGlobalScope::HasPendingActivity() const {
