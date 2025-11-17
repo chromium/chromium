@@ -3815,6 +3815,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_NTP_RECENT_TABS_SYNC_PROMO_TITLE" desc="Header for the promo explaining how users can see the list of tabs open on their other devices">
         Other devices
       </message>
+      <message name="IDS_SIGNIN_PROMO_DESCRIPTION_RECENT_TABS_NO_ACCOUNTS" desc="This string is the title of a card that appears when the user opens Chrome's recent tabs page; the user is signed out of Chrome and there are no accounts available on the device." meaning="This message means that the user can get the recent tabs from their computer on their phone, and their phone's recent tabs on their computer. We want users to read this card and tap the 'Continue'/'Sign in' button and sign-in. The tone should be inviting.">
+        Sign in to get your tabs and more on all your devices
+      </message>
       <message name="IDS_NTP_RECENT_TABS_LAST_SYNCED" desc="Label for the time since a device was last synced">
         Last synced: <ph name="WHEN">%1$s<ex>4 hours ago</ex></ph>
       </message>

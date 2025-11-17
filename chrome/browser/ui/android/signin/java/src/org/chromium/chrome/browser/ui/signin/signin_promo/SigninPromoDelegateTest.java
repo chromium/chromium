@@ -114,8 +114,7 @@ public class SigninPromoDelegateTest {
 
         assertTrue(mDelegate.canShowPromo());
         assertEquals(
-                mDelegate.getTitle(true),
-                mContext.getString(R.string.signin_promo_title_bookmarks));
+                mDelegate.getTitle(), mContext.getString(R.string.signin_promo_title_bookmarks));
         assertEquals(
                 mDelegate.getDescription(null),
                 mContext.getString(R.string.signin_promo_description_bookmarks));
@@ -140,7 +139,7 @@ public class SigninPromoDelegateTest {
 
         assertTrue(mDelegate.canShowPromo());
         assertEquals(
-                mDelegate.getTitle(true),
+                mDelegate.getTitle(),
                 mContext.getString(R.string.signin_account_picker_bottom_sheet_title));
         assertEquals(
                 mDelegate.getDescription(profileData.getAccountEmail()),
@@ -158,8 +157,7 @@ public class SigninPromoDelegateTest {
         setupDelegate(SigninAccessPoint.BOOKMARK_MANAGER, TestAccounts.ACCOUNT1);
 
         assertTrue(mDelegate.canShowPromo());
-        assertEquals(
-                mDelegate.getTitle(true), mContext.getString(R.string.sync_promo_title_bookmarks));
+        assertEquals(mDelegate.getTitle(), mContext.getString(R.string.sync_promo_title_bookmarks));
         assertEquals(
                 mDelegate.getDescription(null),
                 mContext.getString(R.string.account_settings_promo_description_bookmarks));
@@ -215,8 +213,8 @@ public class SigninPromoDelegateTest {
 
         assertTrue(mDelegate.canShowPromo());
         assertEquals(
-                mDelegate.getTitle(false),
-                mContext.getString(R.string.signin_promo_title_ntp_sign_in_as_button));
+                mDelegate.getTitle(),
+                mContext.getString(R.string.signin_account_picker_bottom_sheet_title));
         assertEquals(
                 mDelegate.getDescription(null),
                 mContext.getString(R.string.custom_tabs_signed_out_message_subtitle));
@@ -288,8 +286,7 @@ public class SigninPromoDelegateTest {
 
         assertTrue(mDelegate.canShowPromo());
         assertEquals(
-                mDelegate.getTitle(/* hasAccountsOnDevice= */ true),
-                mContext.getString(R.string.signin_promo_title_bookmarks));
+                mDelegate.getTitle(), mContext.getString(R.string.signin_promo_title_bookmarks));
         assertEquals(
                 mDelegate.getDescription(/* accountEmail= */ TestAccounts.ACCOUNT1.getEmail()),
                 mContext.getString(
@@ -466,7 +463,7 @@ public class SigninPromoDelegateTest {
 
         assertTrue(mDelegate.canShowPromo());
         assertEquals(
-                mDelegate.getTitle(/* hasAccountsOnDevice= */ true),
+                mDelegate.getTitle(),
                 mContext.getString(R.string.signin_history_sync_promo_title_recent_tabs));
         assertEquals(
                 mDelegate.getDescription(/* accountEmail= */ TestAccounts.ACCOUNT1.getEmail()),

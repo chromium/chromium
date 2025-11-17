@@ -86,14 +86,13 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
-    String getTitle(boolean hasAccountsOnDevice) {
+    String getTitle() {
         @SigninFeatureMap.SeamlessSigninStringType
         int seamlessSigninStringType = SigninFeatureMap.getInstance().getSeamlessSigninStringType();
         if (seamlessSigninStringType == SigninFeatureMap.SeamlessSigninStringType.NON_SEAMLESS) {
             return mContext.getString(R.string.signin_promo_title_ntp_feed_top_promo);
         }
-        if (seamlessSigninStringType == SigninFeatureMap.SeamlessSigninStringType.SIGNIN_BUTTON
-                || !hasAccountsOnDevice) {
+        if (seamlessSigninStringType == SigninFeatureMap.SeamlessSigninStringType.SIGNIN_BUTTON) {
             // We reuse the same title string as in the case with the "Sign in as" button
             return mContext.getString(R.string.signin_promo_title_ntp_sign_in_as_button);
         }

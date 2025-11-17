@@ -78,7 +78,7 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
-    String getTitle(boolean hasAccountsOnDevice) {
+    String getTitle() {
         @SigninFeatureMap.SeamlessSigninStringType
         int seamlessSigninStringType = SigninFeatureMap.getInstance().getSeamlessSigninStringType();
         switch (mPromoState) {
@@ -107,8 +107,6 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
         switch (mPromoState) {
             case PromoState.SIGNIN:
                 if (accountEmail == null) {
-                    // TODO(https://crbug.com/451095549): replace this with the correct string for
-                    // the case with no accounts on the device
                     return mContext.getString(R.string.signin_promo_description_bookmarks);
                 }
                 if (seamlessSigninStringType

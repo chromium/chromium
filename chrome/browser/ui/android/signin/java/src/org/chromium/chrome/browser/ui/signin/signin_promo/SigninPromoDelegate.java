@@ -44,7 +44,7 @@ public abstract class SigninPromoDelegate {
     }
 
     /** Returns the title string for the promo. */
-    abstract String getTitle(boolean hasAccountsOnDevice);
+    abstract String getTitle();
 
     /** Returns the description string for the promo. */
     abstract String getDescription(@Nullable String accountEmail);
