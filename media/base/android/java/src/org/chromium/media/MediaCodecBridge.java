@@ -485,9 +485,7 @@ class MediaCodecBridge {
         mPendingErrorCode = errorCode;
         mPendingInputBuffers.clear();
         mPendingOutputBuffers.clear();
-        if (mNativeMediaCodecBridge != 0) {
-            MediaCodecBridgeJni.get().onError(mNativeMediaCodecBridge);
-        }
+        notifyBuffersAvailable();
     }
 
     public synchronized void onInputBufferAvailable(int index) {
@@ -1129,7 +1127,5 @@ class MediaCodecBridge {
     @NativeMethods
     interface Natives {
         void onBuffersAvailable(long nativeMediaCodecBridge);
-
-        void onError(long nativeMediaCodecBridge);
     }
 }
