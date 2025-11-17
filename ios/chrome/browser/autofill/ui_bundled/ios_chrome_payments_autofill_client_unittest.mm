@@ -194,9 +194,8 @@ class IOSChromePaymentsAutofillClientTest : public PlatformTest {
 
  protected:
   FakeAutofillCommands* autofill_commands_;
-  raw_ptr<AutofillBottomSheetTabHelper, DanglingUntriaged>
-      bottomsheet_tab_helper_;
   std::unique_ptr<web::WebState> web_state_;
+  raw_ptr<AutofillBottomSheetTabHelper> bottomsheet_tab_helper_;
 
  private:
   web::WebTaskEnvironment task_environment_;
