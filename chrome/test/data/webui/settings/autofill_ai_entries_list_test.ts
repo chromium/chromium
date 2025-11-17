@@ -784,6 +784,25 @@ suite('AutofillAiEntriesListUiTest', function() {
             '#addSpecificEntityType, #addEntityInstanceFromWallet');
     assertEquals(newTestEntityTypes.length, updatedAddEntityButtons.length);
   });
+
+  test('EntityTypesAreFilteredOnPersonalDataChangeCallback', async function() {
+    await createEntriesList(new Set([
+      0,  // Passport
+    ]));
+    const addButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
+        '#addEntityInstance');
+    assertTrue(!!addButton);
+
+    webUIListenerCallback('sync-status-changed');
+    await flushTasks();
+
+    addButton.click();
+    await flushTasks();
+    const addEntityButtons =
+        entriesList.shadowRoot!.querySelectorAll<HTMLElement>(
+            '#addSpecificEntityType, #addEntityInstanceFromWallet');
+    assertEquals(1, addEntityButtons.length);
+  });
 });
 
 suite('AutofillAiEntriesListLongLabelsUiTest', function() {

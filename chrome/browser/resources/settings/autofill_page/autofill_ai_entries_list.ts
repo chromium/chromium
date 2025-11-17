@@ -222,14 +222,7 @@ export class SettingsAutofillAiEntriesListElement extends
 
     this.entityDataManager_.getWritableEntityTypes().then(
         (entityTypes: EntityType[]) => {
-          // Filter only if the filter was set
-          const filteredEntities = this.allowedEntityTypes ?
-              entityTypes.filter(
-                  instance => this.allowedEntityTypes!.has(instance.typeName)) :
-              entityTypes;
-
-          this.completeEntityTypesList_ =
-              filteredEntities.sort(this.entityTypesComparator_);
+          this.updateEntittyTypesList_(entityTypes);
         });
 
     this.addWebUiListener(
@@ -243,6 +236,17 @@ export class SettingsAutofillAiEntriesListElement extends
     this.entityDataManager_.removeEntityInstancesChangedListener(
         this.entityInstancesChangedListener_);
     this.entityInstancesChangedListener_ = null;
+  }
+
+  private updateEntittyTypesList_(entityTypes: EntityType[]) {
+    // Filter only if the filter was set
+    const filteredEntities = this.allowedEntityTypes ?
+        entityTypes.filter(
+            instance => this.allowedEntityTypes!.has(instance.typeName)) :
+        entityTypes;
+
+    this.completeEntityTypesList_ =
+        filteredEntities.sort(this.entityTypesComparator_);
   }
 
   /*
@@ -393,8 +397,7 @@ export class SettingsAutofillAiEntriesListElement extends
   private onSyncStatusChanged_(_: SyncStatus) {
     this.entityDataManager_.getWritableEntityTypes().then(
         (entityTypes: EntityType[]) => {
-          this.completeEntityTypesList_ =
-              entityTypes.sort(this.entityTypesComparator_);
+          this.updateEntittyTypesList_(entityTypes);
         });
   }
 
