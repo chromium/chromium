@@ -565,6 +565,15 @@ public class PinnedTabStripMediatorTest {
                 .removeTabListItemSizeChangedObserver(mTabListItemSizeChangedObserver);
     }
 
+    @Test
+    public void testIsPinnedTabsBarVisible() {
+        mStripPropertyModel.set(PinnedTabStripProperties.IS_VISIBLE, true);
+        assertTrue(mMediator.isPinnedTabsBarVisible());
+
+        mStripPropertyModel.set(PinnedTabStripProperties.IS_VISIBLE, false);
+        assertFalse(mMediator.isPinnedTabsBarVisible());
+    }
+
     private ListItem createTabListItem(int id, boolean isPinned) {
         PropertyModel model =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)

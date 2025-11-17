@@ -1828,6 +1828,14 @@ public abstract class ChromeFeatureList {
 
     // Mutable*ParamWithSafeDefault instances.
     /* Alphabetical: */
+
+    public static final MutableBooleanParamWithSafeDefault sAndroidPinnedTabsSearchBoxMovement =
+            sAndroidPinnedTabs.newBooleanParam("search_box_movement", false);
+
+    public static final MutableBooleanParamWithSafeDefault
+            sAndroidPinnedTabsSearchBoxSquishAnimation =
+                    sAndroidPinnedTabs.newBooleanParam("search_box_squish_animation", false);
+
     public static final MutableIntParamWithSafeDefault sDisableInstanceLimitMemoryThresholdMb =
             sDisableInstanceLimit.newIntParam("max_instance_limit_memory_threshold_mb", 6500);
     public static final MutableIntParamWithSafeDefault sDisableInstanceLimitMaxCount =

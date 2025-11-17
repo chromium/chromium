@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.HubContainerView;
 import org.chromium.chrome.browser.hub.HubLayoutAnimationListener;
 import org.chromium.chrome.browser.hub.HubLayoutAnimatorProvider;
+import org.chromium.chrome.browser.hub.HubUtils;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneHubController;
@@ -240,6 +241,15 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     @Override
     public void setPaneHubController(@Nullable PaneHubController paneHubController) {
         mPaneHubController = paneHubController;
+
+        if (isFocused()) {
+            int screenWidthDp =
+                    mRootView.getContext().getResources().getConfiguration().screenWidthDp;
+            boolean isTablet = HubUtils.isScreenWidthTablet(screenWidthDp);
+            mHubSearchBoxVisibilitySupplier.set(!isTablet);
+        } else {
+            mHubSearchBoxVisibilitySupplier.set(false);
+        }
     }
 
     @Override
@@ -679,8 +689,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
 
     @Override
     public ObservableSupplier<Boolean> getHubSearchBoxVisibilitySupplier() {
-        // TODO(crbug.com/445195388): Implement search visibility supplier for tab switcher for
-        //  search box auto-roll.
         return mHubSearchBoxVisibilitySupplier;
     }
 
