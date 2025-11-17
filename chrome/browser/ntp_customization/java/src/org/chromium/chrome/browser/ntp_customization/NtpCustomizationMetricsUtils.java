@@ -52,7 +52,7 @@ public class NtpCustomizationMetricsUtils {
 
     /**
      * Records the type of theme selected for the New Tab Page background. This is logged once on
-     * cold startup and every time when user changes the type of theme for NTP background.
+     * cold startup.
      *
      * @param themeType The type of the NTP customization theme.
      */
