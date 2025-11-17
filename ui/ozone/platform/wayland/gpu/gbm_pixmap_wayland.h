@@ -40,7 +40,7 @@ class GbmPixmapWayland : public gfx::NativePixmap {
   bool InitializeBuffer(
       gfx::AcceleratedWidget widget,
       gfx::Size size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       NativePixmapUsageSet usage,
       std::optional<gfx::Size> visible_area_size = std::nullopt);
 
