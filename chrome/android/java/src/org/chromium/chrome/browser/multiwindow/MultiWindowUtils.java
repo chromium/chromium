@@ -500,11 +500,11 @@ public class MultiWindowUtils implements ActivityStateListener {
      * Returns the number of restorable Chrome instances of a given type.
      *
      * @param type The {@link PersistedInstanceType} of instances to count.
-     * @return The number of restorable Chrome instances; qn instance is considered restorable if it
+     * @return The number of restorable Chrome instances; an instance is considered restorable if it
      *     has tabs or is associated with a live task. If Robust Window Management is not enabled,
      *     the type is ignored and all instances, both active and inactive, are counted.
      */
-    // TODO (crbug.com/456833895): Remove resotrable instance check post-launch.
+    // TODO (crbug.com/456833895): Remove restorable instance check post-launch.
     public static int getInstanceCountWithFallback(@PersistedInstanceType int type) {
         if (sInstanceCountForTesting != null) {
             return sInstanceCountForTesting;
@@ -513,6 +513,35 @@ public class MultiWindowUtils implements ActivityStateListener {
             type = PersistedInstanceType.ANY;
         }
         Set<Integer> ids = MultiInstanceManagerApi31.getPersistedInstanceIds(type);
+        int count = 0;
+        for (Integer id : ids) {
+            if (isRestorableInstance(id)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Returns the number of restorable incognito instances.
+     *
+     * <p>This is a temporary method created to allow incognito window (IW) features to count
+     * incognito instances without being blocked by the {@code RobustWindowManagement} flag check in
+     * {@link #getInstanceCountWithFallback()}. This method should be removed after the Robust
+     * Window Management feature is fully launched, and callers should be migrated to a generic
+     * instance counting method.
+     *
+     * @param activeOnly If true, only counts active incognito instances. Otherwise, counts all
+     *     incognito instances (both active and inactive).
+     * @return The number of restorable incognito instances matching the criteria.
+     */
+    // TODO (crbug.com/461553972): Remove this method after Robust Window Management is launched.
+    public static int getIncognitoInstanceCount(boolean activeOnly) {
+        int instanceType = PersistedInstanceType.OFF_THE_RECORD;
+        if (activeOnly) {
+            instanceType |= PersistedInstanceType.ACTIVE;
+        }
+        Set<Integer> ids = MultiInstanceManagerApi31.getPersistedInstanceIds(instanceType);
         int count = 0;
         for (Integer id : ids) {
             if (isRestorableInstance(id)) {
