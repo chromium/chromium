@@ -18,8 +18,12 @@ component("geolocation") {
   sources = [
     "geoposition.cc",
     "geoposition.h",
+    "live_location_provider.cc",
+    "live_location_provider.h",
     "location_fetcher.cc",
     "location_fetcher.h",
+    "location_provider.cc",
+    "location_provider.h",
     "simple_geolocation_request.cc",
     "simple_geolocation_request.h",
     "simple_geolocation_request_test_monitor.cc",

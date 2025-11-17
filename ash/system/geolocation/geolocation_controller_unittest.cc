@@ -27,6 +27,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
+#include "chromeos/ash/components/geolocation/location_fetcher.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/prefs/pref_service.h"
@@ -205,6 +206,7 @@ class GeolocationControllerTest : public NoSessionAshTestBase {
     position_ = position;
     auto* factory = static_cast<TestGeolocationUrlLoaderFactory*>(
         SystemLocationProvider::GetInstance()
+            ->GetLocationProviderForTesting()
             ->GetLocationFetcherForTesting()
             ->GetSharedURLLoaderFactoryForTesting());
     factory->ClearResponses();

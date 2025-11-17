@@ -51,6 +51,8 @@
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
 #include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 #include "chromeos/ash/components/fwupd/fake_fwupd_download_client.h"
+#include "chromeos/ash/components/geolocation/live_location_provider.h"
+#include "chromeos/ash/components/geolocation/location_fetcher.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
 #include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
@@ -159,8 +161,9 @@ AshTestHelper::AshTestHelper(ui::ContextFactory* context_factory)
 
   // SystemLocationProvider has to be initialized before
   // GeolocationController, which is constructed during Shell::Init().
-  SystemLocationProvider::Initialize(std::make_unique<LocationFetcher>(
-      base::MakeRefCounted<TestGeolocationUrlLoaderFactory>()));
+  SystemLocationProvider::Initialize(
+      std::make_unique<LiveLocationProvider>(std::make_unique<LocationFetcher>(
+          base::MakeRefCounted<TestGeolocationUrlLoaderFactory>())));
 }
 
 AshTestHelper::~AshTestHelper() {

@@ -72,7 +72,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION) LocationFetcher {
   void RequestGeolocation(base::TimeDelta timeout,
                           bool use_wifi_scan,
                           bool use_cellular_scan,
-                          SimpleGeolocationRequest::ResponseCallback callback);
+                          LocationProvider::ResponseCallback callback);
 
   network::SharedURLLoaderFactory* GetSharedURLLoaderFactoryForTesting();
   void SetSharedUrlLoaderFactoryForTesting(
@@ -82,12 +82,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION) LocationFetcher {
   friend class LocationFetcherTest;
 
   // Geolocation response callback. Deletes request from requests_.
-  void OnGeolocationResponse(
-      SimpleGeolocationRequest* request,
-      SimpleGeolocationRequest::ResponseCallback callback,
-      const Geoposition& geoposition,
-      bool server_error,
-      const base::TimeDelta elapsed);
+  void OnGeolocationResponse(SimpleGeolocationRequest* request,
+                             LocationProvider::ResponseCallback callback,
+                             const Geoposition& geoposition,
+                             bool server_error,
+                             const base::TimeDelta elapsed);
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 

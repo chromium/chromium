@@ -16,8 +16,8 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
+#include "chromeos/ash/components/geolocation/location_provider.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_request.h"
-#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/network/geolocation_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_util.h"
@@ -58,7 +58,7 @@ void LocationFetcher::RequestGeolocation(
     base::TimeDelta timeout,
     bool use_wifi_scan,
     bool use_cellular_scan,
-    SimpleGeolocationRequest::ResponseCallback callback) {
+    LocationProvider::ResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto cell_vector = std::make_unique<CellTowerVector>();
@@ -84,7 +84,7 @@ void LocationFetcher::RequestGeolocation(
   // LocationFetcher owns all requests. It is safe to pass unretained
   // "this" because destruction of LocationFetcher cancels all
   // requests.
-  SimpleGeolocationRequest::ResponseCallback callback_tmp(
+  LocationProvider::ResponseCallback callback_tmp(
       base::BindOnce(&LocationFetcher::OnGeolocationResponse,
                      base::Unretained(this), request, std::move(callback)));
   request->MakeRequest(std::move(callback_tmp));
@@ -106,7 +106,7 @@ void LocationFetcher::SetSharedUrlLoaderFactoryForTesting(
 
 void LocationFetcher::OnGeolocationResponse(
     SimpleGeolocationRequest* request,
-    SimpleGeolocationRequest::ResponseCallback callback,
+    LocationProvider::ResponseCallback callback,
     const Geoposition& geoposition,
     bool server_error,
     const base::TimeDelta elapsed) {

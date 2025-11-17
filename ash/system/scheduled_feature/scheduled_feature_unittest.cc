@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/system/scheduled_feature/scheduled_feature.h"
+
 #include <cmath>
 #include <limits>
 #include <memory>
@@ -22,7 +24,6 @@
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/geolocation/geolocation_controller_test_util.h"
 #include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
-#include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "ash/system/time/time_of_day.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
@@ -44,6 +45,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "chromeos/ash/components/geolocation/location_fetcher.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -241,6 +243,7 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
     CHECK(SystemLocationProvider::GetInstance());
     return static_cast<TestGeolocationUrlLoaderFactory*>(
         SystemLocationProvider::GetInstance()
+            ->GetLocationProviderForTesting()
             ->GetLocationFetcherForTesting()
             ->GetSharedURLLoaderFactoryForTesting());
   }

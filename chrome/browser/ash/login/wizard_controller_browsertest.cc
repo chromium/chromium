@@ -118,6 +118,7 @@
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
+#include "chromeos/ash/components/geolocation/location_fetcher.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/http_auth_dialog/http_auth_dialog.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
@@ -538,6 +539,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
     wizard_controller->SetSharedURLLoaderFactoryForTesting(
         test_url_loader_factory_.GetSafeWeakWrapper());
     SystemLocationProvider::GetInstance()
+        ->GetLocationProviderForTesting()
         ->GetLocationFetcherForTesting()
         ->SetSharedUrlLoaderFactoryForTesting(
             test_url_loader_factory_.GetSafeWeakWrapper());
@@ -2127,6 +2129,7 @@ class WizardControllerOobeResumeTest : public WizardControllerTest {
     wizard_controller->SetSharedURLLoaderFactoryForTesting(
         test_url_loader_factory_.GetSafeWeakWrapper());
     SystemLocationProvider::GetInstance()
+        ->GetLocationProviderForTesting()
         ->GetLocationFetcherForTesting()
         ->SetSharedUrlLoaderFactoryForTesting(
             test_url_loader_factory_.GetSafeWeakWrapper());

@@ -21,6 +21,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
+#include "chromeos/ash/components/geolocation/live_location_provider.h"
 #include "chromeos/ash/components/geolocation/location_fetcher.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_request_test_monitor.h"
 #include "chromeos/ash/components/geolocation/test_utils.h"
@@ -89,6 +90,7 @@ class SystemLocationProviderTestBase {
 
   LocationFetcher* GetLocationFetcher() {
     return SystemLocationProvider::GetInstance()
+        ->GetLocationProviderForTesting()
         ->GetLocationFetcherForTesting();
   }
 
@@ -99,10 +101,11 @@ class SystemLocationProviderTest : public SystemLocationProviderTestBase,
                                    public testing::Test {
  protected:
   void SetUp() override {
-    SystemLocationProvider::Initialize(std::make_unique<LocationFetcher>(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &url_factory_),
-        GURL(utils::kTestGeolocationProviderUrl), nullptr));
+    SystemLocationProvider::Initialize(std::make_unique<LiveLocationProvider>(
+        std::make_unique<LocationFetcher>(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &url_factory_),
+            GURL(utils::kTestGeolocationProviderUrl), nullptr)));
   }
 
   void TearDown() override { SystemLocationProvider::DestroyForTesting(); }
@@ -178,10 +181,11 @@ class SystemLocationProviderAPIKeyTest : public SystemLocationProviderTestBase,
     url_factory_.Configure(
         GURL(LocationFetcher::kDefaultGeolocationProviderUrl), net::HTTP_OK,
         utils::kSimpleResponseBody, 0);
-    SystemLocationProvider::Initialize(std::make_unique<LocationFetcher>(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &url_factory_),
-        GURL(LocationFetcher::kDefaultGeolocationProviderUrl), nullptr));
+    SystemLocationProvider::Initialize(std::make_unique<LiveLocationProvider>(
+        std::make_unique<LocationFetcher>(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &url_factory_),
+            GURL(LocationFetcher::kDefaultGeolocationProviderUrl), nullptr)));
   }
 
   void TearDown() override { SystemLocationProvider::DestroyForTesting(); }
@@ -257,10 +261,12 @@ class SystemLocationProviderWirelessTest
                            0 /* require_retries */);
     geolocation_handler_.reset(new GeolocationHandlerImpl());
     geolocation_handler_->Init();
-    SystemLocationProvider::Initialize(std::make_unique<LocationFetcher>(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &url_factory_),
-        GURL(utils::kTestGeolocationProviderUrl), geolocation_handler_.get()));
+    SystemLocationProvider::Initialize(std::make_unique<LiveLocationProvider>(
+        std::make_unique<LocationFetcher>(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &url_factory_),
+            GURL(utils::kTestGeolocationProviderUrl),
+            geolocation_handler_.get())));
 
     base::RunLoop().RunUntilIdle();
   }

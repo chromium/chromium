@@ -51,8 +51,8 @@ std::string_view GetClientIdUmaName(
 }  // namespace
 
 SystemLocationProvider::SystemLocationProvider(
-    std::unique_ptr<LocationFetcher> location_fetcher)
-    : location_fetcher_(std::move(location_fetcher)) {}
+    std::unique_ptr<LocationProvider> location_provider)
+    : location_provider_(std::move(location_provider)) {}
 
 SystemLocationProvider::~SystemLocationProvider() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -60,11 +60,11 @@ SystemLocationProvider::~SystemLocationProvider() {
 
 // static
 void SystemLocationProvider::Initialize(
-    std::unique_ptr<LocationFetcher> location_fetcher) {
+    std::unique_ptr<LocationProvider> location_provider) {
   CHECK_EQ(g_geolocation_provider, nullptr);
 
   g_geolocation_provider =
-      new SystemLocationProvider(std::move(location_fetcher));
+      new SystemLocationProvider(std::move(location_provider));
 }
 
 // static
@@ -104,7 +104,7 @@ void SystemLocationProvider::RequestGeolocation(
     base::TimeDelta timeout,
     bool use_wifi_scan,
     bool use_cellular_scan,
-    SimpleGeolocationRequest::ResponseCallback callback,
+    LocationProvider::ResponseCallback callback,
     ClientId client_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   RecordClientIdUma(client_id);
@@ -115,8 +115,8 @@ void SystemLocationProvider::RequestGeolocation(
     return;
   }
 
-  location_fetcher_->RequestGeolocation(timeout, use_wifi_scan,
-                                        use_cellular_scan, std::move(callback));
+  location_provider_->RequestLocation(timeout, use_wifi_scan, use_cellular_scan,
+                                      std::move(callback));
 }
 
 // static
@@ -139,7 +139,7 @@ bool SystemLocationProvider::IsGeolocationUsageAllowedForSystem() {
 
 void SystemLocationProvider::OnGeolocationResponse(
     SimpleGeolocationRequest* request,
-    SimpleGeolocationRequest::ResponseCallback callback,
+    LocationProvider::ResponseCallback callback,
     const Geoposition& geoposition,
     bool server_error,
     const base::TimeDelta elapsed) {

@@ -19,7 +19,7 @@
 #include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/geolocation/location_fetcher.h"
+#include "chromeos/ash/components/geolocation/location_provider.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   // Initializes the global singleton instance and injects the core location
   // fetcher implementation.
   // NOTE: Must be called before accessing other members.
-  static void Initialize(std::unique_ptr<LocationFetcher> location_fetcher);
+  static void Initialize(std::unique_ptr<LocationProvider> location_provider);
 
   static SystemLocationProvider* GetInstance();
 
@@ -85,29 +85,28 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   void RequestGeolocation(base::TimeDelta timeout,
                           bool use_wifi_scan,
                           bool use_cellular_scan,
-                          SimpleGeolocationRequest::ResponseCallback callback,
+                          LocationProvider::ResponseCallback callback,
                           ClientId client_id);
 
   static void DestroyForTesting();
-  LocationFetcher* GetLocationFetcherForTesting() {
-    return location_fetcher_.get();
+  LocationProvider* GetLocationProviderForTesting() {
+    return location_provider_.get();
   }
 
  private:
   // This class is a singleton.
   explicit SystemLocationProvider(
-      std::unique_ptr<LocationFetcher> location_fetcher);
+      std::unique_ptr<LocationProvider> location_provider);
 
   FRIEND_TEST_ALL_PREFIXES(SystemLocationProviderWirelessTest, CellularExists);
   FRIEND_TEST_ALL_PREFIXES(SystemLocationProviderWirelessTest, WiFiExists);
 
   // Geolocation response callback. Deletes request from requests_.
-  void OnGeolocationResponse(
-      SimpleGeolocationRequest* request,
-      SimpleGeolocationRequest::ResponseCallback callback,
-      const Geoposition& geoposition,
-      bool server_error,
-      const base::TimeDelta elapsed);
+  void OnGeolocationResponse(SimpleGeolocationRequest* request,
+                             LocationProvider::ResponseCallback callback,
+                             const Geoposition& geoposition,
+                             bool server_error,
+                             const base::TimeDelta elapsed);
 
   void NotifyObservers();
 
@@ -117,9 +116,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   // and categorizing them into hourly buckets.
   void RecordClientIdUma(ClientId client_id);
 
-  // Responsible for coordinating and executing all Geolocation API Web Service
-  // requests.
-  std::unique_ptr<LocationFetcher> location_fetcher_;
+  // Encapsulating the location provision strategy.
+  std::unique_ptr<LocationProvider> location_provider_;
 
   // Source of truth for the current geolocation access level.
   // Takes into consideration geolocation policies, log-in and in-session

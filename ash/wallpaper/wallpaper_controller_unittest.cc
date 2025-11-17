@@ -90,6 +90,7 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
+#include "chromeos/ash/components/geolocation/location_fetcher.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -1042,6 +1043,7 @@ class WallpaperControllerAutoScheduleTest : public WallpaperControllerTest,
     geolocation_url_loader_factory->SetValidPosition(
         kSanJoseGeoposition.latitude, kSanJoseGeoposition.longitude, Now());
     SystemLocationProvider::GetInstance()
+        ->GetLocationProviderForTesting()
         ->GetLocationFetcherForTesting()
         ->SetSharedUrlLoaderFactoryForTesting(
             std::move(geolocation_url_loader_factory));
