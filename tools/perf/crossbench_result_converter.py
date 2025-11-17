@@ -58,6 +58,8 @@ def _get_crossbench_json_paths(out_dir: pathlib.Path) -> List[pathlib.Path]:
   probe_json_paths = []
   try:
     for probe, probe_data in browser_info.get('probes', {}).items():
+      if probe == 'trace_processor':
+        probe_data = results_info.get('probes', {}).get('trace_processor')
       if probe.startswith('cb.') or not probe_data:
         continue
       candidates = probe_data.get('json', [])
