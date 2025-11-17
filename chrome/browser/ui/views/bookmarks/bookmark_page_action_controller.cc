@@ -1,0 +1,94 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/bookmarks/bookmark_page_action_controller.h"
+
+#include "base/functional/bind.h"
+#include "chrome/browser/defaults.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
+#include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
+#include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/omnibox/browser/vector_icons.h"
+#include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+DEFINE_USER_DATA(BookmarkPageActionController);
+
+BookmarkPageActionController::BookmarkPageActionController(
+    tabs::TabInterface& tab,
+    PrefService* pref_service,
+    page_actions::PageActionController& page_action_controller)
+    : ContentsObservingTabFeature(tab),
+      page_action_controller_(page_action_controller),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
+  edit_bookmarks_enabled_.Init(
+      bookmarks::prefs::kEditBookmarksEnabled, pref_service,
+      base::BindRepeating(
+          &BookmarkPageActionController::UpdatePageActionVisibility,
+          base::Unretained(this)));
+  UpdatePageActionVisibility();
+  ObserveBookmarkTabHelper(tab.GetContents());
+}
+
+BookmarkPageActionController::~BookmarkPageActionController() = default;
+
+// static
+BookmarkPageActionController* BookmarkPageActionController::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+void BookmarkPageActionController::URLStarredChanged(
+    content::WebContents* web_contents,
+    bool starred) {
+  SetStarred(starred);
+}
+
+void BookmarkPageActionController::ObserveBookmarkTabHelper(
+    content::WebContents* contents) {
+  if (auto* bookmark_helper = BookmarkTabHelper::FromWebContents(contents)) {
+    tab_helper_observation_.Observe(bookmark_helper);
+    SetStarred(bookmark_helper->is_starred());
+  } else {
+    tab_helper_observation_.Reset();
+    SetStarred(false);
+  }
+}
+
+void BookmarkPageActionController::OnDiscardContents(
+    tabs::TabInterface* tab,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  ContentsObservingTabFeature::OnDiscardContents(tab, old_contents,
+                                                 new_contents);
+  ObserveBookmarkTabHelper(new_contents);
+}
+
+void BookmarkPageActionController::UpdatePageActionVisibility() {
+  if (browser_defaults::bookmarks_enabled &&
+      edit_bookmarks_enabled_.GetValue()) {
+    page_action_controller_->Show(kActionBookmarkThisTab);
+  } else {
+    page_action_controller_->Hide(kActionBookmarkThisTab);
+  }
+}
+
+void BookmarkPageActionController::SetStarred(bool starred) {
+  const std::u16string name = l10n_util::GetStringUTF16(
+      starred ? IDS_TOOLTIP_STARRED : IDS_TOOLTIP_STAR);
+  page_action_controller_->OverrideAccessibleName(kActionBookmarkThisTab, name);
+  page_action_controller_->OverrideTooltip(kActionBookmarkThisTab, name);
+
+  page_action_controller_->OverrideImage(
+      kActionBookmarkThisTab,
+      ui::ImageModel::FromVectorIcon(starred
+                                         ? omnibox::kStarActiveChromeRefreshIcon
+                                         : omnibox::kStarChromeRefreshIcon));
+}
