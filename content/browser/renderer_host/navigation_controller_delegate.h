@@ -5,15 +5,13 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_CONTROLLER_DELEGATE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_CONTROLLER_DELEGATE_H_
 
-#include <stdint.h>
-
 #include "content/public/browser/invalidate_type.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_details.h"
 
 namespace content {
 
+struct EntryChangedDetails;
 struct LoadCommittedDetails;
+struct PrunedDetails;
 
 // Interface for objects embedding a NavigationController to provide the
 // functionality NavigationController needs.
