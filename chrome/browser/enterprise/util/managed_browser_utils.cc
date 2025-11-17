@@ -469,7 +469,7 @@ BrowserManagementNoticeState GetManagementNoticeStateForNTPFooter(
       is_low_trust &&
       base::FeatureList::IsEnabled(
           features::kEnterpriseBadgingForNtpFooterWithOverThreePolicies) &&
-      policies_count >= 3;
+      policies_count > 3;
 
   if (show_for_high_trust || show_for_local_management ||
       show_for_three_or_more_policies_local_management) {
