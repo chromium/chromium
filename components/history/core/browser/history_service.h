@@ -867,14 +867,16 @@ class HistoryService : public KeyedService,
 
   // Observers ----------------------------------------------------------------
 
-  // Notify all HistoryServiceObservers registered that there's a `new_visit`
-  // for `url_row`. This happens when the user visited the URL on this machine,
-  // or if Sync has brought over a remote visit onto this device.
-  // The `local_navigation_id` will contain the unique navigation id from
-  // `content::NavigationHandle` and will be populated only during local visits.
-  void NotifyURLVisited(const URLRow& url_row,
-                        const VisitRow& new_visit,
-                        std::optional<int64_t> local_navigation_id);
+  // Notify all HistoryServiceObservers registered that there's a new visit.
+  // `visited_url_info` contains all the necessary information about
+  // the visit, including the url row, visit row, navigation ID, and response
+  // code category. This happens when the user visited the URL on this machine,
+  // or if Sync has brought over a remote visit onto this device. The
+  // `local_navigation_id` member of `visited_url_info` will contain the unique
+  // navigation id from `content::NavigationHandle` and will be populated only
+  // during local visits. The `reponse_code_category` member will indicate
+  // whether or not the visit had a 404 response.
+  void NotifyURLVisited(const VisitedURLInfo& visited_url_info);
 
   // Notify all HistoryServiceObservers registered that URLs have been added or
   // modified. `changed_urls` contains the list of affects URLs.

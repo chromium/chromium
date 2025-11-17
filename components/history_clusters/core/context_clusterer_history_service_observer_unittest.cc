@@ -4,11 +4,14 @@
 
 #include "components/history_clusters/core/context_clusterer_history_service_observer.h"
 
+#include <optional>
+
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
 #include "components/optimization_guide/core/hints/test_optimization_guide_decider.h"
 #include "components/search_engines/search_engines_test_environment.h"
@@ -224,7 +227,10 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
         (is_visible_visit ? ui::PAGE_TRANSITION_LINK
                           : ui::PAGE_TRANSITION_AUTO_SUBFRAME) |
         ui::PAGE_TRANSITION_CHAIN_END);
-    observer_->OnURLVisited(history_service_.get(), url_row, new_visit);
+    observer_->OnURLVisited(
+        history_service_.get(),
+        history::VisitedURLInfo(url_row, new_visit,
+                                history::VisitResponseCodeCategory::kNot404));
   }
 
   // Simulates deleting `urls` from history. If `urls` is empty, we will

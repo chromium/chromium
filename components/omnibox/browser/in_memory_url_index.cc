@@ -21,6 +21,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
@@ -142,12 +143,12 @@ void InMemoryURLIndex::DeleteURL(const GURL& url) {
   private_data_->DeleteURL(url);
 }
 
-void InMemoryURLIndex::OnURLVisited(history::HistoryService* history_service,
-                                    const history::URLRow& url_row,
-                                    const history::VisitRow& new_visit) {
+void InMemoryURLIndex::OnURLVisited(
+    history::HistoryService* history_service,
+    const history::VisitedURLInfo& visited_url_info) {
   DCHECK_EQ(history_service_, history_service);
-  private_data_->UpdateURL(history_service_, url_row, scheme_allowlist_,
-                           &private_data_tracker_);
+  private_data_->UpdateURL(history_service_, visited_url_info.url_row,
+                           scheme_allowlist_, &private_data_tracker_);
 }
 
 void InMemoryURLIndex::OnURLsModified(history::HistoryService* history_service,

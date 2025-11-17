@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -599,9 +600,9 @@ void HistoryMenuBridge::CancelFaviconRequest(HistoryItem* item) {
   }
 }
 
-void HistoryMenuBridge::OnURLVisited(history::HistoryService* history_service,
-                                     const history::URLRow& url_row,
-                                     const history::VisitRow& new_visit) {
+void HistoryMenuBridge::OnURLVisited(
+    history::HistoryService* history_service,
+    const history::VisitedURLInfo& visited_url_info) {
   OnHistoryChanged();
 }
 

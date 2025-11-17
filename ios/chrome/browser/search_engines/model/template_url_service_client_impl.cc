@@ -76,16 +76,15 @@ void TemplateURLServiceClientImpl::AddKeywordGeneratedVisit(const GURL& url) {
 
 void TemplateURLServiceClientImpl::OnURLVisited(
     history::HistoryService* history_service,
-    const history::URLRow& url_row,
-    const history::VisitRow& new_visit) {
+    const history::VisitedURLInfo& visited_url_info) {
   DCHECK_EQ(history_service, history_service_);
   if (!owner_) {
     return;
   }
 
   TemplateURLService::URLVisitedDetails details = {
-      url_row.url(),
-      ui::PageTransitionCoreTypeIs(new_visit.transition,
+      visited_url_info.url_row.url(),
+      ui::PageTransitionCoreTypeIs(visited_url_info.visit_row.transition,
                                    ui::PAGE_TRANSITION_KEYWORD),
   };
   owner_->OnHistoryURLVisited(details);

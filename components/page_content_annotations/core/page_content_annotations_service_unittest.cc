@@ -189,15 +189,19 @@ class PageContentAnnotationsServiceTest : public testing::Test {
                 history::VisitID visit_id,
                 std::optional<int64_t> local_navigation_id,
                 bool is_synced_visit = false,
-                base::Time timestamp = base::Time()) {
+                base::Time timestamp = base::Time(),
+                history::VisitResponseCodeCategory response_code_category =
+                    history::VisitResponseCodeCategory::kNot404) {
     history::URLRow url_row(url);
     url_row.set_title(title);
     history::VisitRow new_visit;
     new_visit.visit_id = visit_id;
     new_visit.visit_time = timestamp;
     new_visit.originator_cache_guid = is_synced_visit ? "otherdevice" : "";
-    service_->OnURLVisitedWithNavigationId(history_service_.get(), url_row,
-                                           new_visit, local_navigation_id);
+    service_->OnURLVisitedWithNavigationId(
+        history_service_.get(),
+        std::move(history::VisitedURLInfo(
+            url_row, new_visit, response_code_category, local_navigation_id)));
   }
 
   FakeOptimizationGuideDecider* optimization_guide_decider() {

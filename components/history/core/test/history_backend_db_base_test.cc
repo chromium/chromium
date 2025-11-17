@@ -17,6 +17,7 @@
 #include "components/history/core/browser/history_backend_client.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_database_params.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/in_memory_history_backend.h"
 #include "components/history/core/test/database_test_utils.h"
 #include "components/history/core/test/test_history_database.h"
@@ -45,9 +46,7 @@ class BackendDelegate : public HistoryBackend::Delegate {
   }
   void NotifyFaviconsChanged(const std::set<GURL>& page_urls,
                              const GURL& icon_url) override {}
-  void NotifyURLVisited(const URLRow& url_row,
-                        const VisitRow& visit_row,
-                        std::optional<int64_t> local_navigation_id) override {}
+  void NotifyURLVisited(VisitedURLInfo visited_url_info) override {}
   void NotifyURLsModified(const URLRows& changed_urls) override {}
   void NotifyDeletions(DeletionInfo deletion_info) override {}
   void NotifyVisitedLinksAdded(const HistoryAddPageArgs& args) override {}

@@ -450,9 +450,9 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   return add_page_args;
 }
 
-void HistoryTabHelper::OnURLVisited(history::HistoryService* history_service,
-                                    const history::URLRow& url_row,
-                                    const history::VisitRow& new_visit) {
+void HistoryTabHelper::OnURLVisited(
+    history::HistoryService* history_service,
+    const history::VisitedURLInfo& visited_url_info) {
   if (clear_app_id_after_first_commit_) {
     app_id_ = std::nullopt;
   }

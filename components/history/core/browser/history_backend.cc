@@ -1507,7 +1507,8 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
         response_code_category == VisitResponseCodeCategory::k404;
     UMA_HISTOGRAM_BOOLEAN("History.VisitAddedDueTo404", is_saved_due_to_404);
     // Broadcast a notification of the visit.
-    NotifyURLVisited(url_info, visit_info, local_navigation_id);
+    NotifyURLVisited(VisitedURLInfo(
+        url_info, visit_info, response_code_category, local_navigation_id));
   } else {
     DLOG(ERROR) << "Failed to build visit insert statement:  "
                 << "url_id = " << url_id;
@@ -3633,14 +3634,12 @@ void HistoryBackend::NotifyFaviconsChanged(const std::set<GURL>& page_urls,
   delegate_->NotifyFaviconsChanged(page_urls, icon_url);
 }
 
-void HistoryBackend::NotifyURLVisited(
-    const URLRow& url_row,
-    const VisitRow& visit_row,
-    std::optional<int64_t> local_navigation_id) {
+void HistoryBackend::NotifyURLVisited(VisitedURLInfo visited_url_info) {
   for (HistoryBackendObserver& observer : observers_)
-    observer.OnURLVisited(this, url_row, visit_row);
+    observer.OnURLVisited(this, visited_url_info.url_row,
+                          visited_url_info.visit_row);
 
-  delegate_->NotifyURLVisited(url_row, visit_row, local_navigation_id);
+  delegate_->NotifyURLVisited(visited_url_info);
 }
 
 void HistoryBackend::NotifyURLsModified(const URLRows& changed_urls,

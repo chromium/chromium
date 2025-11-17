@@ -45,6 +45,24 @@ VisitRow::~VisitRow() = default;
 
 VisitRow::VisitRow(const VisitRow&) = default;
 
+// VisitedURLInfo
+// --------------------------------------------------------------------
+
+VisitedURLInfo::VisitedURLInfo() = default;
+
+VisitedURLInfo::VisitedURLInfo(URLRow url_row,
+                               VisitRow visit_row,
+                               VisitResponseCodeCategory response_code_category,
+                               std::optional<int64_t> local_navigation_id)
+    : url_row(std::move(url_row)),
+      visit_row(std::move(visit_row)),
+      response_code_category(response_code_category),
+      local_navigation_id(local_navigation_id) {}
+
+VisitedURLInfo::~VisitedURLInfo() = default;
+
+VisitedURLInfo::VisitedURLInfo(const VisitedURLInfo& other) = default;
+
 // QueryResults ----------------------------------------------------------------
 
 QueryResults::QueryResults() = default;

@@ -163,10 +163,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
     // Notify HistoryService that the user is visiting a URL. The event will
     // be forwarded to the HistoryServiceObservers in the correct thread.
-    virtual void NotifyURLVisited(
-        const URLRow& url_row,
-        const VisitRow& visit_row,
-        std::optional<int64_t> local_navigation_id) = 0;
+    virtual void NotifyURLVisited(VisitedURLInfo visited_url_info) = 0;
 
     // Notify HistoryService that some URLs have been modified. The event will
     // be forwarded to the HistoryServiceObservers in the correct thread.
@@ -882,6 +879,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // `visit_context_ephemerality` represents whether our navigation came from a
   // credentialless iframe (which is an ephemeral context). When `kEphemeral`,
   // we want to avoid adding the visit into the VisitedLinkDatabase.
+  // `response_code_category` indicates whether or not the visit had a 404
+  // response and is used to notify observers of the visit status without
+  // writing to the database.
   //
   // This does not schedule database commits, it is intended to be used as a
   // subroutine for AddPage only. It also assumes the database is valid.
@@ -1045,9 +1045,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // HistoryBackendNotifier:
   void NotifyFaviconsChanged(const std::set<GURL>& page_urls,
                              const GURL& icon_url) override;
-  void NotifyURLVisited(const URLRow& url_row,
-                        const VisitRow& visit_row,
-                        std::optional<int64_t> local_navigation_id) override;
+  void NotifyURLVisited(VisitedURLInfo visited_url_info) override;
   void NotifyURLsModified(const URLRows& changed_urls,
                           bool is_from_expiration) override;
   void NotifyDeletions(DeletionInfo deletion_info) override;

@@ -122,9 +122,13 @@ void SimulateNotificationURLVisited(HistoryServiceObserver* observer,
     rows.push_back(*row3);
 
   for (const URLRow& row : rows) {
-    observer->OnURLVisited(nullptr, row, VisitRow());
-    observer->OnURLVisitedWithNavigationId(nullptr, row, VisitRow(),
-                                           std::nullopt);
+    observer->OnURLVisited(
+        nullptr, std::move(VisitedURLInfo(row, VisitRow(),
+                                          VisitResponseCodeCategory::kNot404)));
+    observer->OnURLVisitedWithNavigationId(
+        nullptr, std::move(VisitedURLInfo(row, VisitRow(),
+                                          VisitResponseCodeCategory::kNot404,
+                                          std::nullopt)));
   }
 }
 
@@ -204,9 +208,7 @@ class HistoryBackendTestDelegate : public HistoryBackend::Delegate {
       std::unique_ptr<InMemoryHistoryBackend> backend) override;
   void NotifyFaviconsChanged(const std::set<GURL>& page_urls,
                              const GURL& icon_url) override;
-  void NotifyURLVisited(const URLRow& url_row,
-                        const VisitRow& visit_row,
-                        std::optional<int64_t> local_navigation_id) override;
+  void NotifyURLVisited(const VisitedURLInfo visited_url_info) override;
   void NotifyURLsModified(const URLRows& changed_urls) override;
   void NotifyDeletions(DeletionInfo deletion_info) override;
   void NotifyVisitedLinksAdded(const HistoryAddPageArgs& args) override;
@@ -321,10 +323,11 @@ class HistoryBackendTestBase : public testing::Test {
       favicon_changed_notifications_icon_urls_.push_back(icon_url);
   }
 
-  void NotifyURLVisited(const URLRow& url_row, const VisitRow& new_visit) {
+  void NotifyURLVisited(VisitedURLInfo visited_url_info) {
     // Send the notifications directly to the in-memory database.
-    mem_backend_->OnURLVisited(nullptr, url_row, new_visit);
-    url_visited_notifications_.push_back(std::make_pair(url_row, new_visit));
+    mem_backend_->OnURLVisited(nullptr, visited_url_info);
+    url_visited_notifications_.push_back(
+        std::make_pair(visited_url_info.url_row, visited_url_info.visit_row));
   }
 
   void NotifyURLsModified(const URLRows& changed_urls) {
@@ -438,10 +441,8 @@ void HistoryBackendTestDelegate::NotifyFaviconsChanged(
 }
 
 void HistoryBackendTestDelegate::NotifyURLVisited(
-    const URLRow& url_row,
-    const VisitRow& new_visit,
-    std::optional<int64_t> local_navigation_id) {
-  test_->NotifyURLVisited(url_row, new_visit);
+    VisitedURLInfo visited_url_info) {
+  test_->NotifyURLVisited(visited_url_info);
 }
 
 void HistoryBackendTestDelegate::NotifyURLsModified(

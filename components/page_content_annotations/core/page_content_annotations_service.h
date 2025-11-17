@@ -185,9 +185,7 @@ class PageContentAnnotationsService
                       const history::URLRows& changed_urls) override;
   void OnURLVisitedWithNavigationId(
       history::HistoryService* history_service,
-      const history::URLRow& url_row,
-      const history::VisitRow& visit_row,
-      std::optional<int64_t> local_navigation_id) override;
+      const history::VisitedURLInfo& visited_url_info) override;
 
   // Overrides the PageContentAnnotator for testing. See
   // test_page_content_annotator.h for an implementation designed for testing.

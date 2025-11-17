@@ -41,6 +41,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/prefs/pref_service.h"
@@ -74,16 +75,13 @@ class MockHistoryServiceObserver : public history::HistoryServiceObserver {
   MOCK_METHOD(void,
               OnURLVisited,
               (history::HistoryService*,
-               const history::URLRow&,
-               const history::VisitRow&),
+               const history::VisitedURLInfo& visited_url_info),
               (override));
 
   MOCK_METHOD(void,
               OnURLVisitedWithNavigationId,
               (history::HistoryService*,
-               const history::URLRow&,
-               const history::VisitRow&,
-               std::optional<int64_t>),
+               const history::VisitedURLInfo& visited_url_info),
               (override));
 };
 
@@ -1053,12 +1051,16 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest,
   // visit.
   history::URLRow url_row;
   history::URLRow url_row2;
-  EXPECT_CALL(observer, OnURLVisited(history_service, _, _))
-      .WillOnce(testing::SaveArg<1>(&url_row));
-  EXPECT_CALL(observer, OnURLVisitedWithNavigationId(
-                            history_service, _, _,
-                            testing::Not(testing::Eq(std::nullopt))))
-      .WillOnce(testing::SaveArg<1>(&url_row2));
+  EXPECT_CALL(observer, OnURLVisited(history_service, _))
+      .WillOnce(
+          [&](history::HistoryService*, const history::VisitedURLInfo& info) {
+            url_row = info.url_row;
+          });
+  EXPECT_CALL(observer, OnURLVisitedWithNavigationId(history_service, _))
+      .WillOnce(
+          [&](history::HistoryService*, const history::VisitedURLInfo& info) {
+            url_row2 = info.url_row;
+          });
 
   GURL url = GetTestFileURL("landing.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -1067,12 +1069,16 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest,
   EXPECT_EQ(url_row.url(), url);
   EXPECT_EQ(url_row2.url(), url);
 
-  EXPECT_CALL(observer, OnURLVisited(history_service, _, _))
-      .WillOnce(testing::SaveArg<1>(&url_row));
-  EXPECT_CALL(observer, OnURLVisitedWithNavigationId(
-                            history_service, _, _,
-                            testing::Not(testing::Eq(std::nullopt))))
-      .WillOnce(testing::SaveArg<1>(&url_row2));
+  EXPECT_CALL(observer, OnURLVisited(history_service, _))
+      .WillOnce(
+          [&](history::HistoryService*, const history::VisitedURLInfo& info) {
+            url_row = info.url_row;
+          });
+  EXPECT_CALL(observer, OnURLVisitedWithNavigationId(history_service, _))
+      .WillOnce(
+          [&](history::HistoryService*, const history::VisitedURLInfo& info) {
+            url_row2 = info.url_row;
+          });
 
   GURL url2 = GetTestFileURL("target.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));

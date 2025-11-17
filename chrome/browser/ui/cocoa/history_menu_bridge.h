@@ -21,6 +21,7 @@
 #import "components/favicon/core/favicon_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
@@ -257,8 +258,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
 
   // history::HistoryServiceObserver:
   void OnURLVisited(history::HistoryService* history_service,
-                    const history::URLRow& url_row,
-                    const history::VisitRow& new_visit) override;
+                    const history::VisitedURLInfo& visited_url_info) override;
   void OnURLsModified(history::HistoryService* history_service,
                       const history::URLRows& changed_urls) override;
   void OnHistoryDeletions(history::HistoryService* history_service,

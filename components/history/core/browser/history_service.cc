@@ -129,13 +129,11 @@ class HistoryService::BackendDelegate : public HistoryBackend::Delegate {
                                   history_service_, page_urls, icon_url));
   }
 
-  void NotifyURLVisited(const URLRow& url_row,
-                        const VisitRow& visit_row,
-                        std::optional<int64_t> local_navigation_id) override {
+  void NotifyURLVisited(VisitedURLInfo visited_url_info) override {
     service_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&HistoryService::NotifyURLVisited, history_service_,
-                       url_row, visit_row, local_navigation_id));
+                       std::move(visited_url_info)));
   }
 
   void NotifyURLsModified(const URLRows& changed_urls) override {
@@ -1745,15 +1743,11 @@ void HistoryService::OnDBLoaded() {
   NotifyHistoryServiceLoaded();
 }
 
-void HistoryService::NotifyURLVisited(
-    const URLRow& url_row,
-    const VisitRow& new_visit,
-    std::optional<int64_t> local_navigation_id) {
+void HistoryService::NotifyURLVisited(const VisitedURLInfo& visited_url_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (HistoryServiceObserver& observer : observers_) {
-    observer.OnURLVisited(this, url_row, new_visit);
-    observer.OnURLVisitedWithNavigationId(this, url_row, new_visit,
-                                          local_navigation_id);
+    observer.OnURLVisited(this, visited_url_info);
+    observer.OnURLVisitedWithNavigationId(this, visited_url_info);
   }
 }
 

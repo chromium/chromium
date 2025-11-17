@@ -133,17 +133,12 @@ class MockHistoryServiceObserver : public history::HistoryServiceObserver {
 
   MOCK_METHOD(void,
               OnURLVisited,
-              (history::HistoryService*,
-               const history::URLRow&,
-               const history::VisitRow&),
+              (history::HistoryService*, const history::VisitedURLInfo&),
               (override));
 
   MOCK_METHOD(void,
               OnURLVisitedWithNavigationId,
-              (history::HistoryService*,
-               const history::URLRow&,
-               const history::VisitRow&,
-               std::optional<int64_t>),
+              (history::HistoryService*, const history::VisitedURLInfo&),
               (override));
 };
 
@@ -624,12 +619,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   // The History Service Observer should be called for the synced visit.
   history::VisitRow visit_row;
   history::VisitRow visit_row2;
-  EXPECT_CALL(mock_observer, OnURLVisited(history_service, _, _))
-      .WillOnce(testing::SaveArg<2>(&visit_row));
-  EXPECT_CALL(mock_observer,
-              OnURLVisitedWithNavigationId(history_service, _, _,
-                                           testing::Eq(std::nullopt)))
-      .WillOnce(testing::SaveArg<2>(&visit_row2));
+  EXPECT_CALL(mock_observer, OnURLVisited(history_service, _))
+      .WillOnce(
+          [&](history::HistoryService*, const history::VisitedURLInfo& info) {
+            visit_row = info.visit_row;
+          });
+  EXPECT_CALL(mock_observer, OnURLVisitedWithNavigationId(history_service, _))
+      .WillOnce(
+          [&](history::HistoryService*, const history::VisitedURLInfo& info) {
+            visit_row2 = info.visit_row;
+          });
 
   // Turn on Sync - this should cause the remote URL to get downloaded.
   ASSERT_TRUE(SetupSync());

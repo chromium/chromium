@@ -9,6 +9,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/functional/bind.h"
 #include "components/favicon/core/favicon_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 
 namespace {
@@ -159,11 +160,11 @@ void FaviconCache::InvokeRequestCallbackWithFavicon(const Request& request,
   pending_requests_.erase(it);
 }
 
-void FaviconCache::OnURLVisited(history::HistoryService* history_service,
-                                const history::URLRow& url_row,
-                                const history::VisitRow& new_visit) {
+void FaviconCache::OnURLVisited(
+    history::HistoryService* history_service,
+    const history::VisitedURLInfo& visited_url_info) {
   auto it = responses_without_favicons_.Peek(
-      {RequestType::kByPageUrl, url_row.url()});
+      {RequestType::kByPageUrl, visited_url_info.url_row.url()});
   if (it != responses_without_favicons_.end())
     responses_without_favicons_.Erase(it);
 }

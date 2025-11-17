@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/translate/core/browser/translate_driver.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -94,8 +95,7 @@ class HistoryTabHelper
 
   // history::HistoryServiceObserver.
   void OnURLVisited(history::HistoryService* history_service,
-                    const history::URLRow& url_row,
-                    const history::VisitRow& new_visit) override;
+                    const history::VisitedURLInfo& visited_url_info) override;
 
   // TranslateDriver::LanguageDetectionObserver implementation.
   void OnLanguageDetermined(

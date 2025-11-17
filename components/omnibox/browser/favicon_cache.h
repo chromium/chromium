@@ -122,8 +122,7 @@ class FaviconCache : public history::HistoryServiceObserver {
 
   // history::HistoryServiceObserver:
   void OnURLVisited(history::HistoryService* history_service,
-                    const history::URLRow& url_row,
-                    const history::VisitRow& new_visit) override;
+                    const history::VisitedURLInfo& visited_url_info) override;
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
   void OnFaviconsChanged(const std::set<GURL>& page_urls, const GURL& icon_url);

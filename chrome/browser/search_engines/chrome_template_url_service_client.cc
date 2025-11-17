@@ -4,6 +4,7 @@
 
 #include "chrome/browser/search_engines/chrome_template_url_service_client.h"
 
+#include "components/history/core/browser/history_types.h"
 #include "components/search_engines/template_url_service.h"
 
 ChromeTemplateURLServiceClient::ChromeTemplateURLServiceClient(
@@ -61,15 +62,14 @@ void ChromeTemplateURLServiceClient::AddKeywordGeneratedVisit(const GURL& url) {
 
 void ChromeTemplateURLServiceClient::OnURLVisited(
     history::HistoryService* history_service,
-    const history::URLRow& url_row,
-    const history::VisitRow& new_visit) {
+    const history::VisitedURLInfo& visited_url_info) {
   DCHECK_EQ(history_service_, history_service);
   if (!owner_)
     return;
 
   TemplateURLService::URLVisitedDetails visited_details;
-  visited_details.url = url_row.url();
+  visited_details.url = visited_url_info.url_row.url();
   visited_details.is_keyword_transition = ui::PageTransitionCoreTypeIs(
-      new_visit.transition, ui::PAGE_TRANSITION_KEYWORD);
+      visited_url_info.visit_row.transition, ui::PAGE_TRANSITION_KEYWORD);
   owner_->OnHistoryURLVisited(visited_details);
 }

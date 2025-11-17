@@ -153,8 +153,7 @@ ContextClustererHistoryServiceObserver::
 
 void ContextClustererHistoryServiceObserver::OnURLVisited(
     history::HistoryService* history_service,
-    const history::URLRow& url_row,
-    const history::VisitRow& new_visit) {
+    const history::VisitedURLInfo& visited_url_info) {
   TRACE_EVENT0("browser",
                "ContextClusteringHistoryServiceObserver::OnURLVisited");
 
@@ -162,6 +161,7 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
       VisitProcessingStage::kUrlVisited);
 
   // Update the normalized URL if it's a search URL.
+  const history::URLRow& url_row = visited_url_info.url_row;
   std::string normalized_url = url_row.url().possibly_invalid_spec();
   std::u16string search_terms;
   bool is_search_normalized_url = false;
@@ -175,6 +175,7 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
     }
   }
 
+  const history::VisitRow& new_visit = visited_url_info.visit_row;
   history::ClusterVisit cluster_visit =
       CreateClusterVisit(normalized_url, is_search_normalized_url, new_visit);
 

@@ -167,8 +167,7 @@ class HistoryClustersService : public base::SupportsUserData,
 
   // history::HistoryServiceObserver:
   void OnURLVisited(history::HistoryService* history_service,
-                    const history::URLRow& url_row,
-                    const history::VisitRow& visit_row) override;
+                    const history::VisitedURLInfo& visited_url_info) override;
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
 
