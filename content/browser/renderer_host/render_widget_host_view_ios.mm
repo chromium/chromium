@@ -169,6 +169,11 @@ void RenderWidgetHostViewIOS::CopyFromSurface(
       std::move(callback));
 }
 
+ui::FilteredGestureProvider*
+RenderWidgetHostViewIOS::GetFilteredGestureProviderForTesting() {
+  return &gesture_provider_;
+}
+
 void RenderWidgetHostViewIOS::InitAsChild(gfx::NativeView parent_view) {}
 void RenderWidgetHostViewIOS::SetSize(const gfx::Size& size) {}
 void RenderWidgetHostViewIOS::SetBounds(const gfx::Rect& rect) {}
@@ -882,6 +887,10 @@ void RenderWidgetHostViewIOS::ChildDidAckGestureEvent(
   // GestureEventAck, the invocation of ApplyRootScrollOffsetChanged here has
   // also been eliminated for now. We should address the GestureScrollUpdate
   // event after examining how the bug implements GestureEventAck.
+}
+
+void RenderWidgetHostViewIOS::OnUnconfirmedTapConvertedToTap() {
+  gesture_provider_.OnUnconfirmedTapConvertedToTap();
 }
 
 void RenderWidgetHostViewIOS::UpdateFrameBounds() {
