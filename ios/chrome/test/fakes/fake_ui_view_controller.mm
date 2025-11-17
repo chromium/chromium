@@ -4,6 +4,9 @@
 
 #import "ios/chrome/test/fakes/fake_ui_view_controller.h"
 
+#import "base/functional/callback_forward.h"
+#import "base/task/sequenced_task_runner.h"
+
 @implementation FakeUIViewController
 @synthesize presentedViewController = _presentedViewController;
 
@@ -18,6 +21,11 @@
 - (void)dismissViewControllerAnimated:(BOOL)flag
                            completion:(void (^)())completion {
   self.presentedViewController = nil;
+  if (completion) {
+    base::OnceClosure callback = base::BindOnce(completion);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
+  }
 }
 
 @end
