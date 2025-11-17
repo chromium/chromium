@@ -578,6 +578,9 @@ std::string_view LensAimSuggestionModeToString(
   }
 }
 
+const base::FeatureParam<bool> kEnableAimTypeaheadSuggestions{
+    &kLensAimSuggestions, "enable-typeahead-suggestions", false};
+
 std::string GetHomepageURLForLens() {
   return kHomepageURLForLens.Get();
 }
@@ -1075,6 +1078,10 @@ LensAimSuggestionsType GetLensAimSuggestionsType() {
     return LensAimSuggestionsType::kNone;
   }
   return kLensAimSuggestionsType.Get();
+}
+
+bool IsLensAimTypeAheadSuggestionsEnabled() {
+  return GetAimSuggestionsEnabled() && kEnableAimTypeaheadSuggestions.Get();
 }
 
 bool ShouldCloseOverlayOnAimTransition() {

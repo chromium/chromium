@@ -855,6 +855,10 @@ enum class LensAimSuggestionsType {
 COMPONENT_EXPORT(LENS_FEATURES)
 extern LensAimSuggestionsType GetLensAimSuggestionsType();
 
+// Whether to enable AIM type ahead suggestions.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensAimTypeAheadSuggestionsEnabled();
+
 // Whether to close the overlay when the user transitions to the AIM UI.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShouldCloseOverlayOnAimTransition();
