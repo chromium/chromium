@@ -20,7 +20,7 @@
   <message name="IDS_GLIC_PROMO_BODY" desc="Text for a promo pointing to the Gemini icon in Chrome.">
     Chat with voice or text to get answers, key takeaways, and more as you browse
   </message>
-  <if expr="is_win or is_linux">
+  <if expr="is_win or is_linux or is_chromeos">
     <message name="IDS_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT" desc="Menu text for the Gemini icon on the system try to open Chrome settings and change the keyboard shortcut for opening Gemini in Chrome.">
       Customize keyboard shortcut
     </message>
@@ -30,12 +30,12 @@
       Customize Keyboard Shortcut...
     </message>
   </if>
-  <if expr="is_win or is_linux">
+  <if expr="is_win or is_linux or is_chromeos">
     <message name="IDS_GLIC_STATUS_ICON_MENU_EXIT" desc="This is the menu item for exiting Chrome.">
       Exit
     </message>
   </if>
-  <if expr="is_win or is_linux">
+  <if expr="is_win or is_linux or is_chromeos">
     <message name="IDS_GLIC_STATUS_ICON_MENU_SETTINGS" desc="This is the menu item for opening the Gemini status icon settings.">
       Settings
     </message>
