@@ -32,6 +32,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Remoting.Host.ChromeOs.AudioStream.OnError"
+    enum="BooleanError" expires_after="2026-11-03">
+  <owner>gavinwill@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Recorded once whenever the CRAS AudioManager reports a fatal audio stream
+    error to AudioHelperChromeOsImpl::OnError() during a CRD session in CrOS. It
+    is recorded only when an error occurs, so to determine the overall error
+    rate against the total number of streaming attempts, refer to the
+    success/failure metric `Remoting.Host.ChromeOs.AudioStream.StartResult`.
+  </summary>
+</histogram>
+
 <histogram name="Remoting.Host.ChromeOs.AudioStream.OpenOutcome"
     enum="OpenOutcome" expires_after="2026-11-03">
   <owner>gavinwill@google.com</owner>

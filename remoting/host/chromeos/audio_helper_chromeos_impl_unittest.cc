@@ -40,6 +40,8 @@ constexpr int kFramesPerBuffer = kSampleRate / 100;
 
 constexpr char kAudioPlaybackModeHistogramName[] =
     "Remoting.Host.ChromeOs.AudioStream.AudioPlaybackMode";
+constexpr char kAudioStreamErrorHistogramName[] =
+    "Remoting.Host.ChromeOs.AudioStream.OnError";
 constexpr char kAudioStreamOpenOutcomeHistogramName[] =
     "Remoting.Host.ChromeOs.AudioStream.OpenOutcome";
 constexpr char kStartAudioStreamHistogramName[] =
@@ -304,6 +306,9 @@ TEST_F(AudioHelperChromeOsImplTest, SuccessfulStartWithStreamFailure) {
 
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return on_error_called_count_ == 1; }));
+  histogram_tester.ExpectUniqueSample(kAudioStreamErrorHistogramName,
+                                      /* sample= */ 1,
+                                      /* expected_bucket_count= */ 1);
 }
 
 TEST_F(AudioHelperChromeOsImplTest, FailedStartStreamNotCreated) {

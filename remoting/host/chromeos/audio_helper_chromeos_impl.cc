@@ -36,6 +36,8 @@ constexpr int kFramesPerBuffer = kSampleRate / 100;
 
 constexpr char kAudioPlaybackModeHistogramName[] =
     "Remoting.Host.ChromeOs.AudioStream.AudioPlaybackMode";
+constexpr char kAudioStreamErrorHistogramName[] =
+    "Remoting.Host.ChromeOs.AudioStream.OnError";
 constexpr char kAudioStreamOpenOutcomeHistogramName[] =
     "Remoting.Host.ChromeOs.AudioStream.OpenOutcome";
 constexpr char kStartAudioStreamHistogramName[] =
@@ -187,6 +189,7 @@ void AudioHelperChromeOsImpl::OnData(
 void AudioHelperChromeOsImpl::OnError() {
   DCHECK(audio_runner_->RunsTasksInCurrentSequence());
   LOG(ERROR) << "AudioInputStream Error encountered.";
+  base::UmaHistogramBoolean(kAudioStreamErrorHistogramName, /* sample= */ true);
   ReportError();
 }
 
