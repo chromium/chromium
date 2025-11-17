@@ -70,7 +70,8 @@ import java.util.function.Supplier;
 @EnableFeatures(ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
 @DisableFeatures({
     ChromeFeatureList.FORCE_WEB_CONTENTS_DARK_MODE,
-    ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN
+    ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN,
+    ChromeFeatureList.DOCUMENT_PICTURE_IN_PICTURE_API
 })
 public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Implements(WebContentsDarkModeController.class)

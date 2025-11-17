@@ -397,6 +397,17 @@ by a child template that "extends" this file.
             </intent-filter>
         </activity>
 
+        <activity android:name="org.chromium.chrome.browser.media.DocumentPictureInPictureActivity"
+            android:exported="false"
+            android:noHistory="true"
+            android:theme="@style/Theme.Chromium.Activity"
+            android:excludeFromRecents="true"
+            android:configChanges=
+                       "screenSize|smallestScreenSize|screenLayout|orientation"
+            {{ self.supports_video_persistence() }}
+        >
+        </activity>
+
         <activity android:name="org.chromium.chrome.browser.media.PictureInPictureActivity"
                   android:exported="false"
                   android:noHistory="true"

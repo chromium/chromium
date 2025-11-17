@@ -255,9 +255,23 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                 window != null
                         && PopupCreator.arePopupsEnabled(windowFeatures, window.getDisplay())
                         && (disposition == WindowOpenDisposition.NEW_POPUP);
+        boolean openingDocumentPip =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.DOCUMENT_PICTURE_IN_PICTURE_API)
+                        && disposition == WindowOpenDisposition.NEW_PICTURE_IN_PICTURE
+                        && window != null
+                        && PopupCreator.isTaskMoveAllowedOnDisplay(
+                                windowFeatures,
+                                window.getDisplay()); // Require task move enabled for docpip;
         if (disposition == WindowOpenDisposition.NEW_POPUP) {
             RecordHistogram.recordBooleanHistogram(
                     "Android.MultiWindowMode.PopupOpensInNewWindow", openingPopup);
+        }
+
+        if (openingDocumentPip) {
+            // Document pip doesn't require a tab to be created, so we can return early.
+            PopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
+                    webContents, windowFeatures);
+            return true;
         }
 
         // Auxiliary navigations starting in a PWA will always cause a tab reparenting, we
@@ -507,8 +521,8 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     }
 
     /**
-     * Redispatches unhandled media keys. This allows bluetooth headphones with play/pause or
-     * other buttons to function correctly.
+     * Redispatches unhandled media keys. This allows bluetooth headphones with play/pause or other
+     * buttons to function correctly.
      */
     private void handleMediaKey(KeyEvent e) {
         switch (e.getKeyCode()) {

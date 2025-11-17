@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.media.DocumentPictureInPictureActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.WindowFeatures;
@@ -44,7 +45,7 @@ import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.WindowInsetsUtils;
 
-/** Handles launching new popup windows as CCTs. */
+/** Handles launching new popup windows as CCTs and Document Picture-in-Picture windows. */
 @NullMarked
 public class PopupCreator {
     public static final String EXTRA_REQUESTED_WINDOW_FEATURES =
@@ -74,8 +75,49 @@ public class PopupCreator {
     }
 
     /**
-     * Checks if the windowing mode present on the display retrieved from the provided arguments is
-     * appropriate for hosting self-movable popup windows.
+     * Moves the given {@link WebContents} to a new Document Picture-in-Picture window.
+     *
+     * @param webContents The {@link WebContents} to move.
+     * @param windowFeatures The {@link WindowFeatures} to use for the new Document
+     *     Picture-in-Picture window.
+     */
+    public static void moveWebContentsToNewDocumentPictureInPictureWindow(
+            WebContents webContents, WindowFeatures windowFeatures) {
+        Intent intent = initializeDocumentPipIntent(webContents, windowFeatures);
+        ActivityOptions activityOptions =
+                createPopupActivityOptions(windowFeatures, webContents.getTopLevelNativeWindow());
+        ContextUtils.getApplicationContext().startActivity(intent, activityOptions.toBundle());
+    }
+
+    /**
+     * Checks if popups are enabled.
+     *
+     * <p>This method first checks if the {@link
+     * ChromeFeatureList#ANDROID_WINDOW_POPUP_LARGE_SCREEN} feature is enabled. If it is, it then
+     * checks if tasks can be moved on the target display by calling {@link
+     * #isTaskMoveAllowedOnDisplay}.
+     *
+     * @param windowFeatures The window features used to determine the target display.
+     * @param openerDisplay The display to check if {@code windowFeatures} do not resolve to a
+     *     specific display.
+     * @return {@code true} if the feature is enabled and tasks can be moved on the display, {@code
+     *     false} otherwise.
+     */
+    public static boolean arePopupsEnabled(
+            WindowFeatures windowFeatures, DisplayAndroid openerDisplay) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)) {
+            return false;
+        }
+
+        if (sArePopupsEnabledForTesting != null) {
+            return sArePopupsEnabledForTesting;
+        }
+
+        return isTaskMoveAllowedOnDisplay(windowFeatures, openerDisplay);
+    }
+
+    /**
+     * Checks if tasks can be moved on a display determined from the provided arguments.
      *
      * <p>If the provided {@code windowFeatures} resolve to unambiguous coordinates, this method
      * checks the display hosting those coordinates. Otherwise, it checks the {@code openerDisplay}.
@@ -88,16 +130,8 @@ public class PopupCreator {
      * @return {@code true} if {@link ActivityManager#isTaskMoveAllowedOnDisplay} returns true for
      *     the determined display, {@code false} otherwise.
      */
-    public static boolean arePopupsEnabled(
+    public static boolean isTaskMoveAllowedOnDisplay(
             WindowFeatures windowFeatures, DisplayAndroid openerDisplay) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)) {
-            return false;
-        }
-
-        if (sArePopupsEnabledForTesting != null) {
-            return sArePopupsEnabledForTesting;
-        }
-
         AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
         if (delegate == null) {
             return false;
@@ -390,6 +424,20 @@ public class PopupCreator {
         intent.setClass(ContextUtils.getApplicationContext(), CustomTabActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.POPUP);
+
+        return intent;
+    }
+
+    private static Intent initializeDocumentPipIntent(
+            WebContents webContents, WindowFeatures windowFeatures) {
+        Intent intent = new Intent();
+        intent.setClass(
+                ContextUtils.getApplicationContext(), DocumentPictureInPictureActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        intent.putExtra(DocumentPictureInPictureActivity.WEB_CONTENTS_KEY, webContents);
+        intent.putExtra(EXTRA_REQUESTED_WINDOW_FEATURES, windowFeatures.toBundle());
+
+        intent.setAction(Intent.ACTION_VIEW);
 
         return intent;
     }
