@@ -156,6 +156,57 @@ scoped_refptr<StaticBitmapImage> CanvasResourceProviderBitmap::Snapshot(
   return UnacceleratedSnapshot(orientation, reason);
 }
 
+scoped_refptr<StaticBitmapImage>
+CanvasResourceProviderBitmap::DoExternalDrawAndSnapshot(
+    base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
+    ImageOrientation orientation /*= ImageOrientationEnum::kDefault*/) {
+  draw_callback(Canvas());
+
+  if (!IsValid()) {
+    return nullptr;
+  }
+
+  // Getting the high entropy canvas operations should be done before
+  // flushing the canvas as flushing discards the recording (including the
+  // associated HighEntropyCanvasOpTypes).
+  HighEntropyCanvasOpType high_entropy_canvas_op_types =
+      GetRecorderHighEntropyCanvasOpTypes();
+
+  FlushCanvas(FlushReason::kOther);
+
+  cc::PaintImage paint_image;
+
+  auto sk_image = GetSkSurface()->makeImageSnapshot();
+  if (sk_image) {
+    auto last_snapshot_sk_image_id = snapshot_sk_image_id_;
+    snapshot_sk_image_id_ = sk_image->uniqueID();
+
+    // Ensure that a new PaintImage::ContentId is used only when the underlying
+    // SkImage changes. This is necessary to ensure that the same image results
+    // in a cache hit in cc's ImageDecodeCache.
+    if (snapshot_paint_image_content_id_ == PaintImage::kInvalidContentId ||
+        last_snapshot_sk_image_id != snapshot_sk_image_id_) {
+      snapshot_paint_image_content_id_ = PaintImage::GetNextContentId();
+    }
+
+    paint_image =
+        PaintImageBuilder::WithDefault()
+            .set_id(snapshot_paint_image_id_)
+            .set_image(std::move(sk_image), snapshot_paint_image_content_id_)
+            .TakePaintImage();
+  }
+
+  DCHECK(!paint_image.IsTextureBacked());
+  scoped_refptr<UnacceleratedStaticBitmapImage> snapshot =
+      UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
+                                             orientation);
+  if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,
+                                              IsAccelerated())) {
+    snapshot->SetHighEntropyCanvasOpTypes(high_entropy_canvas_op_types);
+  }
+  return snapshot;
+}
+
 sk_sp<SkSurface> CanvasResourceProviderBitmap::CreateSkSurface() const {
   TRACE_EVENT0("blink", "CanvasResourceProviderBitmap::CreateSkSurface");
 
