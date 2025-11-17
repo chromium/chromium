@@ -172,7 +172,7 @@ TEST_F(ExtensionErrorControllerUnitTest, ClosingAcknowledgesBlocklisted) {
   scoped_refptr<const Extension> extension = BuildExtension();
   ASSERT_TRUE(AddBlocklistedExtension(extension.get()));
 
-  service_->Init();
+  service()->Init();
 
   // Make sure that we created an error "ui" to warn about the blocklisted
   // extension.
@@ -201,7 +201,7 @@ TEST_F(ExtensionErrorControllerUnitTest, AcceptingAcknowledgesBlocklisted) {
   scoped_refptr<const Extension> extension = BuildExtension();
   ASSERT_TRUE(AddBlocklistedExtension(extension.get()));
 
-  service_->Init();
+  service()->Init();
 
   // Make sure that we created an error "ui" to warn about the blocklisted
   // extension.
@@ -222,7 +222,7 @@ TEST_F(ExtensionErrorControllerUnitTest, DontWarnForAcknowledgedBlocklisted) {
 
   GetPrefs()->AcknowledgeBlocklistedExtension(extension->id());
 
-  service_->Init();
+  service()->Init();
 
   // We should never have made an alert, because the extension should already
   // be acknowledged.
@@ -233,7 +233,7 @@ TEST_F(ExtensionErrorControllerUnitTest, DontWarnForAcknowledgedBlocklisted) {
 TEST_F(ExtensionErrorControllerUnitTest,
        ExtensionIsNotBlockedByEnterprisePolicy) {
   scoped_refptr<const Extension> extension = BuildExtension();
-  service_->Init();
+  service()->Init();
   registrar()->AddExtension(extension);
 
   EXPECT_FALSE(g_error_ui);
@@ -243,7 +243,7 @@ TEST_F(ExtensionErrorControllerUnitTest,
 // policy.
 TEST_F(ExtensionErrorControllerUnitTest, ExtensionIsBlockedByEnterprisePolicy) {
   scoped_refptr<const Extension> extension = BuildExtension();
-  service_->Init();
+  service()->Init();
   registrar()->AddExtension(extension);
   SetBlockExtensionPolicy(extension.get());
 
@@ -259,7 +259,7 @@ TEST_F(ExtensionErrorControllerUnitTest, ExtensionIsBlockedByEnterprisePolicy) {
 // updated or the extension is moved to the disabled list.
 TEST_F(ExtensionErrorControllerUnitTest, ExtensionIsUnblockedBeforeUIAccepted) {
   scoped_refptr<const Extension> extension = BuildExtension();
-  service_->Init();
+  service()->Init();
   registrar()->AddExtension(extension);
   SetBlockExtensionPolicy(extension.get());
 

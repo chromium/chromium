@@ -704,7 +704,7 @@ TEST_F(ExtensionAllowlistUnitTest, NoEnforcementOnPolicyForceInstall) {
   registrar()->AddExtension(extension.get());
 
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     pref.SetIndividualExtensionAutoInstalled(
         extension->id(), "http://example.com/update_url", true);
   }
@@ -770,7 +770,7 @@ TEST_F(ExtensionAllowlistWithFeatureDisabledUnitTest,
   registrar()->AddExtension(extension.get());
 
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     pref.SetIndividualExtensionAutoInstalled(
         extension->id(), "http://example.com/update_url", false);
   }
@@ -804,7 +804,7 @@ TEST_F(ExtensionAllowlistWithFeatureDisabledUnitTest,
   registrar()->AddExtension(extension.get());
 
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     pref.SetIndividualExtensionInstallationAllowed(extension->id(), true);
   }
 

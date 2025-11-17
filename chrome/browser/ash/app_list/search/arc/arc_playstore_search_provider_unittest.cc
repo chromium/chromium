@@ -56,7 +56,7 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
   void CreateSearch(int max_results) {
     search_controller_ = std::make_unique<TestSearchController>();
     auto provider = std::make_unique<ArcPlayStoreSearchProvider>(
-        max_results, profile_.get(), controller_.get());
+        max_results, profile(), controller_.get());
     provider_ = provider.get();
     search_controller_->AddProvider(std::move(provider));
   }

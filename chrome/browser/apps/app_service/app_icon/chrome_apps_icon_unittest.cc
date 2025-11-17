@@ -56,7 +56,7 @@ class ChromeAppsIconFactoryTest : public extensions::ExtensionServiceTestBase {
     ASSERT_TRUE(params.ConfigureByTestDataDirectory(
         data_dir().AppendASCII("app_list")));
     InitializeExtensionService(std::move(params));
-    service_->Init();
+    service()->Init();
 
     // Let any async services complete their set-up.
     base::RunLoop().RunUntilIdle();

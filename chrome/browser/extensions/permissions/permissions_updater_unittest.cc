@@ -119,7 +119,7 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
                                     ManifestPermissionSet(),
                                     std::move(default_hosts), URLPatternSet());
 
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile_.get());
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   std::unique_ptr<const PermissionSet> active_permissions;
   std::unique_ptr<const PermissionSet> granted_permissions;
 
@@ -139,9 +139,9 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
     PermissionSet delta(apis.Clone(), ManifestPermissionSet(), hosts.Clone(),
                         URLPatternSet());
 
-    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile_.get()));
-    PermissionsUpdater(profile_.get())
-        .GrantOptionalPermissions(*extension, delta, base::DoNothing());
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
+    PermissionsUpdater(profile()).GrantOptionalPermissions(*extension, delta,
+                                                           base::DoNothing());
     waiter.WaitForExtensionPermissionsUpdate(base::BindOnce(
         [](scoped_refptr<const Extension> extension, PermissionSet* delta,
            const Extension& actual_extension,
@@ -175,11 +175,9 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
     PermissionSet delta(apis.Clone(), ManifestPermissionSet(), hosts.Clone(),
                         URLPatternSet());
 
-    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile_.get()));
-    PermissionsUpdater(profile_.get())
-        .RevokeOptionalPermissions(*extension, delta,
-                                   PermissionsUpdater::REMOVE_SOFT,
-                                   base::DoNothing());
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
+    PermissionsUpdater(profile()).RevokeOptionalPermissions(
+        *extension, delta, PermissionsUpdater::REMOVE_SOFT, base::DoNothing());
     waiter.WaitForExtensionPermissionsUpdate(base::BindOnce(
         [](scoped_refptr<const Extension> extension, PermissionSet* delta,
            const Extension& actual_extension,

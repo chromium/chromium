@@ -28,13 +28,13 @@ void AppListSyncableServiceTestBase::SetUp() {
       std::make_unique<ProfileManagerWithoutInit>(temp_dir_.GetPath()));
 
   app_list_syncable_service_ =
-      std::make_unique<app_list::AppListSyncableService>(profile_.get());
+      std::make_unique<app_list::AppListSyncableService>(profile());
   content::RunAllTasksUntilIdle();
 }
 
 void AppListSyncableServiceTestBase::RestartSyncableService() {
   app_list_syncable_service_ =
-      std::make_unique<app_list::AppListSyncableService>(profile_.get());
+      std::make_unique<app_list::AppListSyncableService>(profile());
   content::RunAllTasksUntilIdle();
 }
 

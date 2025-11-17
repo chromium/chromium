@@ -993,7 +993,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest,
   std::unique_ptr<const PermissionSet> active_permissions;
   {
     // Grant the optional API permissions
-    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile_.get()));
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
     updater.GrantOptionalPermissions(*extension, delta, base::DoNothing());
     waiter.WaitForExtensionPermissionsUpdate();
     // Make sure the extension's active permissions reflect the change.
@@ -1006,7 +1006,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest,
   {
     // Revoking the optional permissions should remove the granted API
     // permission from the active set.
-    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile_.get()));
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
     updater.RevokeOptionalPermissions(
         *extension, delta, PermissionsUpdater::REMOVE_SOFT, base::DoNothing());
     waiter.WaitForExtensionPermissionsUpdate();
@@ -1073,7 +1073,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, RevokedOptionalHostPermissionsInfoTest) {
     PermissionSet delta(apis.Clone(), ManifestPermissionSet(),
                         URLPatternSet({host}), URLPatternSet());
 
-    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile_.get()));
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
     updater.GrantOptionalPermissions(*extension, delta, base::DoNothing());
     waiter.WaitForExtensionPermissionsUpdate();
 
@@ -1092,7 +1092,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, RevokedOptionalHostPermissionsInfoTest) {
     PermissionSet delta(apis.Clone(), ManifestPermissionSet(),
                         URLPatternSet({host}), URLPatternSet());
 
-    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile_.get()));
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
     updater.RevokeOptionalPermissions(
         *extension, delta, PermissionsUpdater::REMOVE_SOFT, base::DoNothing());
     waiter.WaitForExtensionPermissionsUpdate();

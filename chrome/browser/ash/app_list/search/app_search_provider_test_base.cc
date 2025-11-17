@@ -52,7 +52,7 @@ void AppSearchProviderTestBase::SetUp() {
 void AppSearchProviderTestBase::InitializeSearchProvider() {
   search_controller_ = std::make_unique<TestSearchController>();
   data_source_ =
-      std::make_unique<AppSearchDataSource>(profile_.get(), nullptr, &clock_);
+      std::make_unique<AppSearchDataSource>(profile(), nullptr, &clock_);
 
   std::unique_ptr<SearchProvider> app_search;
   if (zero_state_provider_) {

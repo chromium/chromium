@@ -78,10 +78,10 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
     InitializeEmptyExtensionService();
 
     if (is_child) {
-      profile_->SetIsSupervisedProfile();
+      testing_profile()->SetIsSupervisedProfile();
     }
 
-    service_->Init();
+    service()->Init();
 
     if (standalone) {
       external_externsions_overrides_ =
@@ -101,7 +101,7 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
 
     ProviderCollection providers;
     ExternalProviderImpl::CreateExternalProviders(external_provider_manager(),
-                                                  profile_.get(), &providers);
+                                                  profile(), &providers);
 
     for (std::unique_ptr<ExternalProviderInterface>& provider : providers) {
       external_provider_manager()->AddProviderForTesting(std::move(provider));
@@ -142,7 +142,7 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
 
     ProviderCollection providers;
     ExternalProviderImpl::CreateExternalProviders(external_provider_manager(),
-                                                  profile_.get(), &providers);
+                                                  profile(), &providers);
 
     EXPECT_EQ(providers.size(), expected_count);
   }
@@ -246,7 +246,8 @@ TEST_F(ExternalProviderImplChromeOSTest, PolicyDisabled) {
                                     signin::ConsentLevel::kSync);
 
   // Sync is dsabled by policy.
-  profile_->GetPrefs()->SetBoolean(syncer::prefs::internal::kSyncManaged, true);
+  profile()->GetPrefs()->SetBoolean(syncer::prefs::internal::kSyncManaged,
+                                    true);
 
   TestExtensionRegistryObserver observer(registry(), kStandaloneAppId);
 

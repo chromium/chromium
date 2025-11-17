@@ -132,9 +132,8 @@ class ThemeLocalDataBatchUploaderTestBase
     // TODO(crbug.com/425913203): Remove once usage of TestSyncService is
     // simplified.
     SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile_.get(),
-        base::BindRepeating([](content::BrowserContext* context)
-                                -> std::unique_ptr<KeyedService> {
+        profile(), base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
           return std::make_unique<syncer::TestSyncService>();
         }));
   }

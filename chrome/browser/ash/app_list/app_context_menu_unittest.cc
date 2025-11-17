@@ -258,8 +258,6 @@ class AppContextMenuTest : public AppListTestBase {
 
   FakeAppContextMenuDelegate* menu_delegate() { return menu_delegate_.get(); }
 
-  Profile* profile() { return profile_.get(); }
-
   void AddToStates(const AppServiceContextMenu& menu,
                    MenuState state,
                    std::vector<MenuState>* states) {

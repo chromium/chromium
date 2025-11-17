@@ -303,7 +303,7 @@ TEST_F(AppSearchProviderTest, FilterDuplicate) {
   arc_app_test().PostProfileSetUp(profile());
 
   extensions::ExtensionPrefs* extension_prefs =
-      extensions::ExtensionPrefs::Get(profile_.get());
+      extensions::ExtensionPrefs::Get(profile());
   ASSERT_TRUE(extension_prefs);
 
   AddExtension(extension_misc::kGmailAppId, kGmailExtensionName,
@@ -386,7 +386,8 @@ class AppSearchProviderCrostiniTest : public AppSearchProviderTest {
     // the ::TearDown method, but we need it to go away before shutting down
     // DBusThreadManager to ensure all keyed services that might rely on DBus
     // clients are destroyed.
-    profile_.reset();
+    DeleteProfile();
+
     user_manager_.Reset();
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
@@ -543,7 +544,7 @@ TEST_P(AppSearchProviderOemAppTest, OemResultsOnFirstBoot) {
 
   // OEM-installed apps should only appear as the first app results
   // if the profile is running for the first time on a device.
-  profile_->SetIsNewProfile(true);
+  testing_profile()->SetIsNewProfile(true);
   ASSERT_TRUE(profile()->IsNewProfile());
 
   extensions::ExtensionPrefs* const prefs =

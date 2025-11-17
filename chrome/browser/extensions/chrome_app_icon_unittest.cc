@@ -211,7 +211,7 @@ class ChromeAppIconTest : public ExtensionServiceTestBase {
     ASSERT_TRUE(params.ConfigureByTestDataDirectory(
         data_dir().AppendASCII("app_list")));
     InitializeExtensionService(std::move(params));
-    service_->Init();
+    service()->Init();
   }
 };
 
@@ -276,7 +276,8 @@ TEST_F(ChromeAppIconTest, IconRelease) {
   Shutdown();
 
   // Reset after service is stopped.
-  profile_.reset();
+  DeleteProfile();
+
   test_icon2.Reset();
 }
 

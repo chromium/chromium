@@ -70,11 +70,11 @@ class ExtensionGarbageCollectorChromeOSUnitTest
     GetFakeUserManager()->AddUser(user_manager::StubAccountId());
     GetFakeUserManager()->LoginUser(user_manager::StubAccountId());
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        GetFakeUserManager()->GetActiveUser(), profile_.get());
+        GetFakeUserManager()->GetActiveUser(), profile());
   }
 
   void GarbageCollectExtensions() {
-    ExtensionGarbageCollector::Get(profile_.get())
+    ExtensionGarbageCollector::Get(profile())
         ->GarbageCollectExtensionsForTest();
     // Wait for GarbageCollectExtensions task to complete.
     content::RunAllTasksUntilIdle();
@@ -124,9 +124,7 @@ class ExtensionGarbageCollectorChromeOSUnitTest
         .Build();
   }
 
-  ExtensionPrefs* GetExtensionPrefs() {
-    return ExtensionPrefs::Get(profile_.get());
-  }
+  ExtensionPrefs* GetExtensionPrefs() { return ExtensionPrefs::Get(profile()); }
 
   ash::FakeChromeUserManager* GetFakeUserManager() {
     return static_cast<ash::FakeChromeUserManager*>(

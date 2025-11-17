@@ -252,8 +252,6 @@ ExtensionServiceTestBase::ExtensionServiceTestBase()
 ExtensionServiceTestBase::ExtensionServiceTestBase(
     std::unique_ptr<content::BrowserTaskEnvironment> task_environment)
     : task_environment_(std::move(task_environment)),
-      service_(nullptr),
-      registry_(nullptr),
 #if BUILDFLAG(IS_CHROMEOS)
       user_manager_(std::make_unique<user_manager::UserManagerImpl>(
           std::make_unique<user_manager::FakeUserManagerDelegate>(),
@@ -276,13 +274,7 @@ ExtensionServiceTestBase::ExtensionServiceTestBase(
       extensions_features::kExtensionDisableUnsupportedDeveloper);
 }
 
-ExtensionServiceTestBase::~ExtensionServiceTestBase() {
-  // Why? Because |profile_| has to be destroyed before |at_exit_manager_|, but
-  // is declared above it in the class definition since it's protected.
-  // TODO(crbug.com/40205142): Since we're getting rid of at_exit_manager_,
-  // perhaps we don't need this call?
-  profile_.reset();
-}
+ExtensionServiceTestBase::~ExtensionServiceTestBase() = default;
 
 void ExtensionServiceTestBase::InitializeExtensionService(
     ExtensionServiceTestBase::ExtensionServiceInitParams params) {
@@ -474,6 +466,19 @@ content::BrowserContext* ExtensionServiceTestBase::browser_context() {
 
 Profile* ExtensionServiceTestBase::profile() {
   return profile_.get();
+}
+
+TestingProfile* ExtensionServiceTestBase::testing_profile() {
+  return profile_.get();
+}
+
+void ExtensionServiceTestBase::DeleteProfile() {
+  registrar_ = nullptr;
+  registry_ = nullptr;
+  service_ = nullptr;
+  extensions_install_dir_ = base::FilePath();
+  unpacked_install_dir_ = base::FilePath();
+  profile_.reset();
 }
 
 void ExtensionServiceTestBase::SetGuestSessionOnProfile(bool guest_session) {

@@ -37,13 +37,13 @@ class DualBadgeMapTest : public ExtensionServiceTestBase {
   DualBadgeMapTest(const DualBadgeMapTest&) = delete;
   DualBadgeMapTest& operator=(const DualBadgeMapTest&) = delete;
 
-  ~DualBadgeMapTest() override { profile_.reset(); }
+  ~DualBadgeMapTest() override = default;
 
   void SetUp() override {
     extensions::ExtensionServiceTestBase::SetUp();
     arc_app_test_.PreProfileSetUp();
     InitializeEmptyExtensionService();
-    arc_app_test_.PostProfileSetUp(profile_.get());
+    arc_app_test_.PostProfileSetUp(profile());
   }
 
   void TearDown() override {
@@ -51,8 +51,6 @@ class DualBadgeMapTest : public ExtensionServiceTestBase {
     extensions::ExtensionServiceTestBase::TearDown();
     arc_app_test_.PostProfileTearDown();
   }
-
-  Profile* profile() { return profile_.get(); }
 
  protected:
   arc::mojom::ArcPackageInfoPtr CreateArcPackage(

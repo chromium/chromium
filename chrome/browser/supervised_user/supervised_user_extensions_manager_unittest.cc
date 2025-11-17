@@ -98,9 +98,8 @@ TEST_F(SupervisedUserExtensionsManagerTest,
        ExtensionManagementPolicyProviderWithoutSUInitiatedInstalls) {
   MakeSupervisedUserExtensionsManager();
   supervised_user_test_util::
-      SetSupervisedUserExtensionsMayRequestPermissionsPref(profile_.get(),
-                                                           false);
-  ASSERT_TRUE(profile_->IsChild());
+      SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), false);
+  ASSERT_TRUE(profile()->IsChild());
 
   // Check that a supervised user can install and uninstall a theme even if
   // they are not allowed to install extensions.
@@ -138,12 +137,12 @@ TEST_F(SupervisedUserExtensionsManagerTest,
 TEST_F(SupervisedUserExtensionsManagerTest,
        ExtensionManagementPolicyProviderWithSUInitiatedInstalls) {
   MakeSupervisedUserExtensionsManager();
-    // Enable child users to initiate extension installs by simulating the
-    // toggling of "Skip parent approval to install extensions" to disabled.
-    supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
-        profile(), false);
+  // Enable child users to initiate extension installs by simulating the
+  // toggling of "Skip parent approval to install extensions" to disabled.
+  supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
+      profile(), false);
 
-  ASSERT_TRUE(profile_->IsChild());
+  ASSERT_TRUE(profile()->IsChild());
 
   // The supervised user should be able to load and uninstall the extensions
   // they install.
@@ -183,7 +182,7 @@ TEST_F(SupervisedUserExtensionsManagerTest,
 // when the SupervisedUserExtensionsManager is created for a supervised user.
 TEST_F(SupervisedUserExtensionsManagerTest,
        MigrateExtensionsToLocallyApproved) {
-  ASSERT_TRUE(profile_->IsChild());
+  ASSERT_TRUE(profile()->IsChild());
   base::HistogramTester histogram_tester;
 
   // Register the extensions.
@@ -242,7 +241,7 @@ TEST_F(SupervisedUserExtensionsManagerTest,
 // on their installation, when the "Extensions" Family Link toggle is ON.
 TEST_F(SupervisedUserExtensionsManagerTest,
        GrantParentApprovalOnInstallationWhenExtensionsToggleOn) {
-  ASSERT_TRUE(profile_->IsChild());
+  ASSERT_TRUE(profile()->IsChild());
   base::HistogramTester histogram_tester;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -322,7 +321,7 @@ TEST_F(SupervisedUserExtensionsManagerTest,
 // when the "Extensions" toggle is flipped to ON.
 TEST_F(SupervisedUserExtensionsManagerTest,
        GrantParentApprovalOnExtensionsWhenExtensionsToggleSetToOn) {
-  ASSERT_TRUE(profile_->IsChild());
+  ASSERT_TRUE(profile()->IsChild());
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // Mark the migration done to avoid any interference with the one-off
@@ -373,7 +372,7 @@ TEST_F(SupervisedUserExtensionsManagerTest,
 // Tests the local approval is revoked on uninstalling the extension or
 // when the extension gains normal parental approval.
 TEST_F(SupervisedUserExtensionsManagerTest, RevokeLocalApproval) {
-  ASSERT_TRUE(profile_->IsChild());
+  ASSERT_TRUE(profile()->IsChild());
 
   scoped_refptr<const Extension> locally_approved_extn1 =
       MakeExtension("extension_test_1");
@@ -466,7 +465,7 @@ TEST_P(AddingSupervisionTest,
        DisableExistingExtensionsOnProfileBecomingSupervised) {
   MaybeMarkLocalApprovalMigrationDone();
   profile()->AsTestingProfile()->SetIsSupervisedProfile(false);
-  ASSERT_TRUE(!profile_->IsChild());
+  ASSERT_TRUE(!profile()->IsChild());
 
   scoped_refptr<const Extension> existing_extension =
       MakeExtension("extension_test_2");
@@ -500,7 +499,7 @@ TEST_P(AddingSupervisionTest,
 
   // Make the user supervised.
   profile()->AsTestingProfile()->SetIsSupervisedProfile(true);
-  ASSERT_TRUE(profile_->IsChild());
+  ASSERT_TRUE(profile()->IsChild());
 
   const base::Value::Dict& local_approved_extensions_pref_post_migr =
       prefs->GetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions);

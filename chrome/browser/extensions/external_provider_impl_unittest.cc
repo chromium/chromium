@@ -125,7 +125,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
     // downloaded from the webstore, ignoring the url we pass to
     // kAppsGalleryUpdateURL, which would cause the external updates to never
     // finish install.
-    profile_->GetPrefs()->SetString(prefs::kPreinstalledApps, "");
+    profile()->GetPrefs()->SetString(prefs::kPreinstalledApps, "");
   }
 
   void InitServiceWithExternalProviders(
@@ -142,7 +142,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
 
     ProviderCollection providers;
     ExternalProviderImpl::CreateExternalProviders(external_provider_manager(),
-                                                  profile_.get(), &providers);
+                                                  profile(), &providers);
 
     for (std::unique_ptr<ExternalProviderInterface>& provider : providers)
       external_provider_manager()->AddProviderForTesting(std::move(provider));
@@ -173,8 +173,8 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
   }
 
   void SetExternalExtensionsBlockedByPolicy(const bool block_external) {
-    profile_->GetPrefs()->SetBoolean(pref_names::kBlockExternalExtensions,
-                                     block_external);
+    profile()->GetPrefs()->SetBoolean(pref_names::kBlockExternalExtensions,
+                                      block_external);
   }
 
   void InitializeExtensionServiceWithUpdaterAndPrefs() {
@@ -319,7 +319,7 @@ TEST_F(ExternalProviderImplTest, WebAppMigrationFlag) {
           external_provider_manager(),
           base::MakeRefCounted<ExternalTestingLoader>(
               json, base::FilePath(FILE_PATH_LITERAL("//absolute/path"))),
-          profile_.get(), mojom::ManifestLocation::kExternalPref,
+          profile(), mojom::ManifestLocation::kExternalPref,
           mojom::ManifestLocation::kExternalPrefDownload, Extension::NO_FLAGS));
 
   // App is not installed, we should not install if the flag is enabled.

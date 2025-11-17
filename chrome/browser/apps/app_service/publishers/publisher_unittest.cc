@@ -223,18 +223,18 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
 
   // ExtensionServiceTestBase:
   void SetUp() override {
+#if BUILDFLAG(IS_CHROMEOS)
+    ash::LoginState::Initialize();
+#endif  // BUILDFLAG(IS_CHROMEOS)
     extensions::ExtensionServiceTestBase::SetUp();
     InitializeExtensionService(ExtensionServiceInitParams());
     service()->Init();
     ConfigureWebAppProvider();
-#if BUILDFLAG(IS_CHROMEOS)
-    ash::LoginState::Initialize();
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void TearDown() override {
     extensions::ExtensionServiceTestBase::TearDown();
-    profile_.reset();
+    DeleteProfile();
 #if BUILDFLAG(IS_CHROMEOS)
     ash::LoginState::Shutdown();
 #endif  // BUILDFLAG(IS_CHROMEOS)

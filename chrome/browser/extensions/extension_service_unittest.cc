@@ -3890,7 +3890,7 @@ TEST_F(ExtensionServiceTest, UnloadBlocklistedExtensionPolicy) {
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
 
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     pref.SetIndividualExtensionInstallationAllowed(good_crx, true);
   }
 
@@ -4047,7 +4047,7 @@ TEST_F(ExtensionServiceTest, BlockAndUnblockPolicyExtension) {
   InitializeEmptyExtensionServiceWithTestingPrefs();
 
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     // Blocklist everything.
     pref.SetBlocklistedByDefault(true);
     // Mark good.crx for force-installation.
@@ -4166,7 +4166,7 @@ TEST_F(ExtensionServiceTest, BlocklistedByPolicyWillNotInstall) {
 
   // Blocklist everything.
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     pref.SetBlocklistedByDefault(true);
   }
 
@@ -4177,7 +4177,7 @@ TEST_F(ExtensionServiceTest, BlocklistedByPolicyWillNotInstall) {
 
   // Now allowlist this particular extension.
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     pref.SetIndividualExtensionInstallationAllowed(good_crx, true);
   }
 
@@ -4196,7 +4196,7 @@ TEST_F(ExtensionServiceTest, BlocklistedByPolicyRemovedIfRunning) {
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
 
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     // Blocklist this extension.
     pref.SetIndividualExtensionInstallationAllowed(good_crx, false);
   }
@@ -4212,7 +4212,7 @@ TEST_F(ExtensionServiceTest, ComponentExtensionAllowlisted) {
 
   // Blocklist everything.
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     pref.SetBlocklistedByDefault(true);
   }
 
@@ -4239,7 +4239,7 @@ TEST_F(ExtensionServiceTest, ComponentExtensionAllowlisted) {
 
   // Extension should not be uninstalled on blocklist changes.
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     pref.SetIndividualExtensionInstallationAllowed(good0, false);
   }
   task_environment()->RunUntilIdle();
@@ -4274,7 +4274,7 @@ TEST_F(ExtensionServiceTest, ComponentExtensionAllowlistedPermission) {
 
   // Component should not lose permissions on policy change.
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     pref.AddBlockedPermission(good0, "tabs");
   }
 
@@ -4295,7 +4295,7 @@ TEST_F(ExtensionServiceTest, PolicyInstalledExtensionsAllowlisted) {
   InitializeEmptyExtensionServiceWithTestingPrefs();
 
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     // Blocklist everything.
     pref.SetBlocklistedByDefault(true);
     // Mark good.crx for force-installation.
@@ -4319,7 +4319,7 @@ TEST_F(ExtensionServiceTest, PolicyInstalledExtensionsAllowlisted) {
 
   // Blocklist update should not uninstall the extension.
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     pref.SetIndividualExtensionInstallationAllowed(good0, false);
   }
   task_environment()->RunUntilIdle();
@@ -4348,7 +4348,7 @@ TEST_F(ExtensionServiceTest, NonCWSForceInstalledDisabledOnNonDomainJoin) {
   registrar()->AddExtension(extension);
 
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     // Mark good.crx for force-installation.
     pref.SetIndividualExtensionAutoInstalled(
         extension->id(), "http://example.com/update_url", true);
@@ -4376,7 +4376,7 @@ TEST_F(ExtensionServiceTest, NonCWSForceInstalledEnabledOnDomainJoin) {
   registrar()->AddExtension(extension);
 
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     // Mark good.crx for force-installation.
     pref.SetIndividualExtensionAutoInstalled(
         extension->id(), "http://example.com/update_url", true);
@@ -4589,7 +4589,7 @@ TEST_F(ExtensionServiceTest, PolicyBlockedPermissionNewExtensionInstall) {
 
   {
     // Update policy to block one of the required permissions of target.
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     pref.AddBlockedPermission("*", "tabs");
   }
 
@@ -4598,7 +4598,7 @@ TEST_F(ExtensionServiceTest, PolicyBlockedPermissionNewExtensionInstall) {
 
   {
     // Update policy to block one of the optional permissions instead.
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     pref.ClearBlockedPermissions("*");
     pref.AddBlockedPermission("*", "history");
   }
@@ -4610,7 +4610,7 @@ TEST_F(ExtensionServiceTest, PolicyBlockedPermissionNewExtensionInstall) {
   // unknown permission.
   UninstallExtension(id);
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     pref.ClearBlockedPermissions("*");
     pref.AddBlockedPermission("*", "unknown.permission.for.testing");
   }
@@ -4635,7 +4635,7 @@ TEST_F(ExtensionServiceTest, PolicyBlockedPermissionConflictsWithForceInstall) {
 
   {
     // Block one of the required permissions.
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     pref.AddBlockedPermission("*", "tabs");
   }
 
@@ -4656,7 +4656,7 @@ TEST_F(ExtensionServiceTest, PolicyBlockedPermissionConflictsWithForceInstall) {
 
   {
     // Clears the permission block list.
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     pref.ClearBlockedPermissions("*");
   }
 
@@ -4684,7 +4684,7 @@ TEST_F(ExtensionServiceTest, PolicyBlockedPermissionExtensionUpdate) {
 
   {
     // Block one of the required permissions of 'permissions_blocklist2'.
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     pref.AddBlockedPermission("*", "cookies");
   }
 
@@ -4753,7 +4753,7 @@ TEST_F(ExtensionServiceTest, PolicyBlockedPermissionPolicyUpdate) {
 
   // Set policy to block 'cookies' permission.
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     pref.AddBlockedPermission("*", "cookies");
   }
 
@@ -4988,7 +4988,7 @@ TEST_F(ExtensionServiceTest, ExternalExtensionBecomesEnabledIfForceInstalled) {
       TestManagementPolicyProvider::MUST_REMAIN_ENABLED);
   GetManagementPolicy()->RegisterProvider(&policy_provider);
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     // Mark good.crx for force-installation.
     pref.SetIndividualExtensionAutoInstalled(
         good_crx, "http://example.com/update_url", true);
@@ -7616,7 +7616,7 @@ TEST_F(ExtensionServiceTest, ExternalInstallInitiallyDisabled) {
 // As for components, only external component extensions can be disabled.
 TEST_F(ExtensionServiceTest, DisablingComponentExtensions) {
   InitializeEmptyExtensionService();
-  service_->Init();
+  service()->Init();
 
   scoped_refptr<const Extension> external_component_extension = CreateExtension(
       "external_component_extension",
@@ -8438,7 +8438,7 @@ TEST_F(ExtensionServiceTest, UserInstalledExtensionThenRequiredByPolicy) {
   EXPECT_EQ(kVersionStr, extension->VersionString());
 
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     // Mark good.crx for force-installation.
     pref.SetIndividualExtensionAutoInstalled(
         good_crx, "http://example.com/update_url", true);
@@ -8498,7 +8498,7 @@ TEST_F(ExtensionServiceTest,
   EXPECT_EQ(kVersionStr, extension->VersionString());
 
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     // Mark good.crx for force-installation.
     pref.SetIndividualExtensionAutoInstalled(
         good_crx, "http://example.com/update_url", true);
@@ -8547,7 +8547,7 @@ TEST_F(ExtensionServiceTest,
 TEST_F(ExtensionServiceTest, InstallingUnacknowledgedExternalExtension) {
   InitializeEmptyExtensionServiceWithTestingPrefs();
   {
-    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
     // Mark good.crx for recommended installation.
     pref.SetIndividualExtensionAutoInstalled(
         good_crx, "http://example.com/update_url", false);

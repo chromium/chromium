@@ -72,7 +72,7 @@ class ProfileCustomizationBubbleSyncControllerTest
 
     extensions::ExtensionServiceTestBase::SetUp();
     InitializeExtensionService(ExtensionServiceInitParams());
-    service_->Init();
+    service()->Init();
 
     // Create and add custom theme extension so the ThemeSyncableService can
     // find it.

@@ -51,7 +51,7 @@ TEST_F(AppZeroStateProviderTest, FetchRecommendations) {
   InitializeSearchProvider();
 
   extensions::ExtensionPrefs* prefs =
-      extensions::ExtensionPrefs::Get(profile_.get());
+      extensions::ExtensionPrefs::Get(profile());
 
   prefs->SetLastLaunchTime(kHostedAppId, MicrosecondsSinceEpoch(20));
   prefs->SetLastLaunchTime(kPackagedApp1Id, MicrosecondsSinceEpoch(10));
@@ -93,7 +93,7 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
 
   base::RunLoop().RunUntilIdle();
 
-  profile_->SetIsNewProfile(true);
+  testing_profile()->SetIsNewProfile(true);
   ASSERT_TRUE(profile()->IsNewProfile());
   // TODO(crbug.com/454468678): This should be called before profile is created.
   arc_app_test().PreProfileSetUp();
@@ -170,7 +170,7 @@ TEST_F(AppZeroStateProviderTest, FetchUnlaunchedRecommendations) {
   InitializeSearchProvider();
 
   extensions::ExtensionPrefs* prefs =
-      extensions::ExtensionPrefs::Get(profile_.get());
+      extensions::ExtensionPrefs::Get(profile());
 
   // The order of unlaunched recommendations should be based on the install time
   // order.
