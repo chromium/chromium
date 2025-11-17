@@ -30744,6 +30744,12 @@ should be able to be added at any place in this file.
     <variant name=".CloseTab.MultiTab"
         summary="User closed multiple tabs via the tab context menu on tab
                  strip on Android."/>
+    <variant name=".DuplicateTab"
+        summary="User duplicated a tab via the tab context menu on tab strip
+                 on Android."/>
+    <variant name=".DuplicateTab.MultiTab"
+        summary="User duplicated multiple tabs via the tab context menu on
+                 tab strip on Android."/>
     <variant name=".MoveTabToGroup"
         summary="User moved a tab to a synced tab group via the tab context
                  menu on tab strip on Android."/>

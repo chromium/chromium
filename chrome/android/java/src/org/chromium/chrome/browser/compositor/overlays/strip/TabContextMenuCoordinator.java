@@ -260,6 +260,11 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 shareDelegateSupplier
                         .get()
                         .share(tabs.get(0), /* shareDirectly= */ false, TAB_STRIP_CONTEXT_MENU);
+            } else if (menuId == R.id.duplicate_tab_menu_id) {
+                for (Tab tab : tabs) {
+                    tabModel.duplicateTab(tab);
+                }
+                tabModel.clearMultiSelection(/* notifyObservers= */ true);
             } else if (menuId == R.id.pin_tab_menu_id) {
                 for (Tab tab : tabs) {
                     tabModel.pinTab(tab.getId(), /* showUngroupDialog= */ tabs.size() == 1);
@@ -379,6 +384,9 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             // Share is only available for single tab selection.
             itemList.add(createShareItem(isIncognito));
         }
+        if (ChromeFeatureList.sAndroidContextMenuDuplicateTabs.isEnabled()) {
+            itemList.add(createDuplicateTabsItem(isIncognito));
+        }
         if (isTabPinningFromStripEnabled()) {
             itemList.add(createPinUnpinTabItem(tabs, isIncognito));
         }
@@ -400,6 +408,9 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         List<ListItem> reorderItems = createReorderItems(anchorInfo);
         if (!reorderItems.isEmpty()) itemList.addAll(reorderItems);
         itemList.add(buildMenuDivider(isIncognito));
+        if (ChromeFeatureList.sAndroidContextMenuDuplicateTabs.isEnabled()) {
+            itemList.add(createDuplicateTabsItem(isIncognito));
+        }
         if (isTabPinningFromStripEnabled()) {
             itemList.add(createPinUnpinTabItem(tabs, isIncognito));
         }
@@ -504,6 +515,16 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         return buildListItem(R.string.share, R.id.share_tab, isIncognito);
     }
 
+    private ListItem createDuplicateTabsItem(boolean isIncognito) {
+        String title = mActivity.getResources().getString(R.string.duplicate_tab_menu_item);
+
+        return new ListItemBuilder()
+                .withTitle(title)
+                .withMenuId(R.id.duplicate_tab_menu_id)
+                .withIsIncognito(isIncognito)
+                .build();
+    }
+
     private ListItem createPinUnpinTabItem(List<Tab> tabs, boolean isIncognito) {
         boolean showUnpin = true;
         for (Tab tab : tabs) {
@@ -581,6 +602,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             recordUserAction("MuteSite", isMultipleTabs);
         } else if (menuId == R.id.unmute_site_menu_id) {
             recordUserAction("UnmuteSite", isMultipleTabs);
+        } else if (menuId == R.id.duplicate_tab_menu_id) {
+            recordUserAction("DuplicateTab", isMultipleTabs);
         } else {
             assert false : "Unknown menu id: " + menuId;
         }

@@ -447,4 +447,9 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     public @Nullable TabStripCollection getTabStripCollection() {
         return mDelegateModel.getTabStripCollection();
     }
+
+    @Override
+    public @Nullable Tab duplicateTab(Tab tab) {
+        return mDelegateModel.duplicateTab(tab);
+    }
 }

@@ -167,6 +167,11 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         return TabModelJniBridgeJni.get().getSessionIdForTesting(mNativeTabModelJniBridge);
     }
 
+    @Override
+    public Tab duplicateTab(Tab tab) {
+        return TabModelJniBridgeJni.get().duplicateTab(mNativeTabModelJniBridge, tab);
+    }
+
     /**
      * Called by subclasses when a Tab is added to the TabModel.
      *
@@ -176,12 +181,6 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         if (isNativeInitialized()) {
             TabModelJniBridgeJni.get().tabAddedToModel(mNativeTabModelJniBridge, tab);
         }
-    }
-
-    protected Tab duplicateTabForTesting(Tab tab) {
-        return TabModelJniBridgeJni.get()
-                .duplicateTabForTesting( // IN-TEST
-                        mNativeTabModelJniBridge, tab);
     }
 
     protected void moveTabToWindowForTesting(
@@ -651,8 +650,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                 boolean mute);
 
         @JniType("TabAndroid*")
-        Tab duplicateTabForTesting( // IN-TEST
-                long nativeTabModelJniBridge, @JniType("TabAndroid*") Tab tab);
+        Tab duplicateTab(long nativeTabModelJniBridge, @JniType("TabAndroid*") Tab tab);
 
         void moveTabToWindowForTesting( // IN-TEST
                 long nativeTabModelJniBridge,

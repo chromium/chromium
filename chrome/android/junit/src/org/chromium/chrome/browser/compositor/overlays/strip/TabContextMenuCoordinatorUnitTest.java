@@ -8,8 +8,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -1537,6 +1539,102 @@ public class TabContextMenuCoordinatorUnitTest {
                 listView.getSelectedItemPosition());
 
         mTabContextMenuCoordinator.destroyMenuForTesting();
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_CONTEXT_MENU_DUPLICATE_TABS,
+        ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP
+    })
+    public void testListMenuItems_singleTab_duplicateTab_featureEnabled() {
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        // Items are: add to group, remove from group, divider, share, duplicate, close.
+        assertEquals("Number of items in the list menu is incorrect", 6, modelList.size());
+        ListItem duplicateItem = findItemByMenuId(modelList, R.id.duplicate_tab_menu_id);
+        assertNotNull(duplicateItem);
+        assertEquals(
+                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
+                duplicateItem.model.get(ListMenuItemProperties.TITLE));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @DisableFeatures({ChromeFeatureList.ANDROID_CONTEXT_MENU_DUPLICATE_TABS})
+    @EnableFeatures({ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP})
+    public void testListMenuItems_singleTab_duplicateTab_featureDisabled() {
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        // Items are: add to group, remove from group, divider, share, close.
+        assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
+        assertNull(findItemByMenuId(modelList, R.id.duplicate_tab_menu_id));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testDuplicateTab_singleTab() {
+        mOnItemClickedCallback.onClick(
+                R.id.duplicate_tab_menu_id,
+                new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)),
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
+        verify(mTabModel, times(1)).duplicateTab(mTab1);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING,
+        ChromeFeatureList.ANDROID_CONTEXT_MENU_DUPLICATE_TABS,
+        ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP
+    })
+    public void testListMenuItems_multipleTabs_duplicateTabs_featureEnabled() {
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
+
+        // Items are: add to group, remove from group, divider, duplicate, close.
+        assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
+        ListItem duplicateItem = findItemByMenuId(modelList, R.id.duplicate_tab_menu_id);
+        assertNotNull(duplicateItem);
+        assertEquals(
+                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
+                duplicateItem.model.get(ListMenuItemProperties.TITLE));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING,
+        ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP
+    })
+    @DisableFeatures({ChromeFeatureList.ANDROID_CONTEXT_MENU_DUPLICATE_TABS})
+    public void testListMenuItems_multipleTabs_duplicateTabs_featureDisabled() {
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
+
+        // Items are: add to group, remove from group, divider, duplicate, close.
+        assertEquals("Number of items in the list menu is incorrect", 4, modelList.size());
+        assertNull(findItemByMenuId(modelList, R.id.duplicate_tab_menu_id));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testDuplicateTabs_multipleTabs() {
+        doReturn(null).when(mTabModel).duplicateTab(any());
+        mOnItemClickedCallback.onClick(
+                R.id.duplicate_tab_menu_id,
+                new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)),
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
+        verify(mTabModel, times(1)).duplicateTab(mTab1);
+        verify(mTabModel, times(1)).duplicateTab(mTab2);
     }
 
     @Test

@@ -293,4 +293,7 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
         // Return an invalid type for the implementation to fail tests by default.
         return -1;
     }
+
+    /** Duplicates the given tab. */
+    @Nullable Tab duplicateTab(Tab tab);
 }

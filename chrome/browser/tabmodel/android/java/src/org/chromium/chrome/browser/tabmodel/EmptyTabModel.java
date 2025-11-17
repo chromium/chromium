@@ -282,4 +282,9 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public @Nullable TabStripCollection getTabStripCollection() {
         return null;
     }
+
+    @Override
+    public @Nullable Tab duplicateTab(Tab tab) {
+        return null;
+    }
 }
