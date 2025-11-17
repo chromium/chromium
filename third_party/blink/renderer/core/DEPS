@@ -167,7 +167,6 @@ specific_include_rules = {
         "+content/renderer/compositor",
         "+content/test",
         # Unit tests may use gpu/ for mocking and faking and for config tweaks.
-        "+gpu/command_buffer/client/raster_implementation_gles.h",
         "+gpu/config",
         "+testing/perf/perf_test.h",
         "+testing/perf/perf_result_reporter.h",

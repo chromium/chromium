@@ -287,8 +287,6 @@ source_set("raster_sources") {
     "raster_implementation.cc",
     "raster_implementation.h",
     "raster_implementation_autogen.h",
-    "raster_implementation_gles.cc",
-    "raster_implementation_gles.h",
     "raster_implementation_impl_autogen.h",
   ]
 }
