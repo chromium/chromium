@@ -114,6 +114,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/app/tabmodel/TabStateStore.java",
   "java/src/org/chromium/chrome/browser/app/tabmodel/TabStoragePackager.java",
   "java/src/org/chromium/chrome/browser/app/tabmodel/TabbedModeTabModelOrchestrator.java",
+  "java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerObserver.java",
   "java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
   "java/src/org/chromium/chrome/browser/app/usb/UsbNotificationServiceImpl.java",
   "java/src/org/chromium/chrome/browser/app/xsurface_provider/ProcessScopeDependencyProviderFactoryImpl.java",

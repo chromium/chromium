@@ -42,6 +42,10 @@ PageContentExtractionTabModelObserverAndroid::
   TabModelList::RemoveObserver(this);
 }
 
+void PageContentExtractionTabModelObserverAndroid::OnTabStateInitialized() {
+  // TODO(haileywang): Implement this.
+}
+
 void PageContentExtractionTabModelObserverAndroid::OnTabModelAdded(
     TabModel* tab_model) {
   if (tab_model->GetProfile() != profile_) {

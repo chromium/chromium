@@ -33,6 +33,7 @@ source_set("extraction_service") {
     deps += [
       ":factory_jni_headers",
       ":service_jni_headers",
+      "//chrome/browser/tabwindow",
     ]
   }
 }

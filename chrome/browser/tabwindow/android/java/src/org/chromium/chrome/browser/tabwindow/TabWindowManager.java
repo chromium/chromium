@@ -62,7 +62,10 @@ public interface TabWindowManager {
 
     interface Observer {
         /** Called when a tab model selector is added for an activity opening. */
-        void onTabModelSelectorAdded(TabModelSelector selector);
+        default void onTabModelSelectorAdded(TabModelSelector selector) {}
+
+        /** Called when tab state is initialized. */
+        default void onTabStateInitialized() {}
     }
 
     /** Add an observer. */

@@ -9,6 +9,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
+#include "chrome/browser/tabwindow/tab_window_manager_observer.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
@@ -27,6 +28,7 @@ class PageContentExtractionService;
 class PageContentExtractionTabModelObserverAndroid
     : public TabModelListObserver,
       public TabModelObserver,
+      public tab_window::TabWindowManagerObserver,
       public base::SupportsUserData::Data {
  public:
   explicit PageContentExtractionTabModelObserverAndroid(
@@ -46,6 +48,9 @@ class PageContentExtractionTabModelObserverAndroid
   // TabModelObserver:
   void WillCloseTab(TabAndroid* tab) override;
   void TabClosureUndone(TabAndroid* tab) override;
+
+  // tab_window::TabWindowManagerObserver:
+  void OnTabStateInitialized() override;
 
  private:
   void RunStartupMetricsComputation();

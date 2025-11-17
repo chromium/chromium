@@ -33,3 +33,16 @@ android_library_factory("factory_java") {
 
   sources = [ "internal/android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerFactory.java" ]
 }
+
+static_library("tabwindow") {
+  sources = [
+    "tab_window_manager_observer.cc",
+    "tab_window_manager_observer.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/android:chrome_jni_headers",
+    "//chrome/browser/ui/android/tab_model",
+  ]
+}

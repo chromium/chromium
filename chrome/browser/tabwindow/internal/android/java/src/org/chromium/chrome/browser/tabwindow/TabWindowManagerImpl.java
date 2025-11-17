@@ -115,6 +115,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
 
     private @Nullable TabModelSelector mArchivedTabModelSelector;
     private boolean mKeepAllTabModelsLoaded;
+    private boolean mTabStateInitialized;
 
     TabWindowManagerImpl(
             TabModelSelectorFactory selectorFactory,
@@ -129,6 +130,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
     @Override
     public void addObserver(Observer observer) {
         mObservers.addObserver(observer);
+        if (mTabStateInitialized) observer.onTabStateInitialized();
     }
 
     @Override
@@ -609,6 +611,11 @@ public class TabWindowManagerImpl implements TabWindowManager {
         }
         TabModelUtils.runOnTabStateInitialized(
                 () -> {
+                    mTabStateInitialized = true;
+                    for (Observer observer : mObservers) {
+                        observer.onTabStateInitialized();
+                    }
+
                     TabModel model = tabModelSelectorList.get(0).getModel(/* incognito= */ false);
 
                     // TODO(https://crbug.com/420738506): Remove this post once the order is
