@@ -84,10 +84,10 @@ SyncErrorInfoBarDelegate::SyncErrorInfoBarDelegate(
     id<SyncPresenter> presenter,
     SyncErrorInfoBarTrigger trigger)
     : profile_(profile), presenter_(presenter), trigger_(trigger) {
-  DCHECK(!profile->IsOffTheRecord());
+  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M151);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
-  DCHECK(sync_service);
+  CHECK(sync_service, base::NotFatalUntil::M151);
   // Set all of the UI based on the sync state at the same time to ensure
   // they all correspond to the same sync error.
   error_state_ = sync_service->GetUserActionableError();
@@ -121,7 +121,7 @@ int SyncErrorInfoBarDelegate::GetButtons() const {
 
 std::u16string SyncErrorInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
-  DCHECK(button == BUTTON_OK);
+  CHECK(button == BUTTON_OK, base::NotFatalUntil::M151);
   return button_text_;
 }
 
@@ -132,7 +132,7 @@ bool SyncErrorInfoBarDelegate::Accept() {
       break;
 
     case syncer::SyncService::UserActionableError::kNone:
-      DCHECK(ShouldShowSyncSettings(error_state_));
+      CHECK(ShouldShowSyncSettings(error_state_), base::NotFatalUntil::M151);
       [presenter_ showAccountSettings];
       break;
 
