@@ -111,6 +111,8 @@ BlinkGCPluginConsumer::BlinkGCPluginConsumer(
 void BlinkGCPluginConsumer::HandleTranslationUnit(ASTContext& context) {
   llvm::TimeTraceScope TimeScope(
       "BlinkGCPluginConsumer::HandleTranslationUnit");
+  ApplyFilter(context);
+
   // Don't run the plugin if the compilation unit is already invalid.
   if (reporter_.hasErrorOccurred())
     return;

@@ -11,17 +11,17 @@
 #include "Config.h"
 #include "DiagnosticsReporter.h"
 #include "clang/AST/AST.h"
-#include "clang/AST/ASTConsumer.h"
 #include "clang/Basic/Diagnostic.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Lex/Pragma.h"
+#include "tools/clang/plugins/FilteredASTConsumer.h"
 
 class JsonWriter;
 class RecordInfo;
 
 // Main class containing checks for various invariants of the Blink
 // garbage collection infrastructure.
-class BlinkGCPluginConsumer : public clang::ASTConsumer {
+class BlinkGCPluginConsumer : public FilteredASTConsumer {
  public:
   BlinkGCPluginConsumer(clang::CompilerInstance& instance,
                         const BlinkGCPluginOptions& options);
