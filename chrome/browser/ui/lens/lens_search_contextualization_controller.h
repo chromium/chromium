@@ -325,6 +325,12 @@ class LensSearchContextualizationController {
       OnScreenshotTakenCallback callback,
       std::optional<uint32_t> pdf_current_page);
 
+  // Callback for when the screenshot is captured for a contextual update.
+  void OnScreenshotCapturedForUpdate(
+      int attempt_id,
+      base::OnceCallback<void(const SkBitmap&)> callback,
+      const viz::CopyOutputBitmapWithMetadata& result);
+
   // Handles the screenshot after it has been taken for the contextual flow.
   void OnScreenshotTakenForContextual(OnPageContextUpdatedCallback callback,
                                       const SkBitmap& bitmap,
