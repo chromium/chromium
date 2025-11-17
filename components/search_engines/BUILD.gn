@@ -120,17 +120,13 @@ static_library("search_engines") {
 
   if (is_android) {
     sources += [
-      "android/search_engines_feature_map.cc",
       "android/template_url_android.cc",
       "android/template_url_android.h",
       "android/template_url_service_android.cc",
       "android/template_url_service_android.h",
     ]
 
-    deps += [
-      "//components/search_engines/android:features_jni_headers",
-      "//components/search_engines/android:jni_headers",
-    ]
+    deps += [ "//components/search_engines/android:jni_headers" ]
   }
 
   deps += [

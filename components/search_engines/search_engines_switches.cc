@@ -44,10 +44,6 @@ const base::FeatureParam<std::string> kSearchEngineChoiceTriggerRepromptParams{
     /*name=*/"reprompt",
     /*default_value=*/kSearchEngineChoiceNoRepromptString};
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kSuppressDefaultBrowserPromoIfChoiceSet,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 BASE_FEATURE(kWipeChoicePrefsOnMissingDefaultSearchEngine,
              base::FEATURE_DISABLED_BY_DEFAULT);

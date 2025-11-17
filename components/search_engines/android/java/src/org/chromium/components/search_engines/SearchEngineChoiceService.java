@@ -297,37 +297,28 @@ public class SearchEngineChoiceService {
         Instant deviceBrowserSelectedTimestamp = mDelegate.getDeviceBrowserSelectedTimestamp();
         if (deviceBrowserSelectedTimestamp == null) return false;
 
-        long suppressionPeriodMillis;
-        if (SearchEnginesFeatures.isEnabled(
-                SearchEnginesFeatures.SUPPRESS_DEFAULT_BROWSER_PROMO_IF_CHOICE_SET)) {
-            // TODO(crbug.com/394235956): Go through the regional_capabilities component instead to
-            // get the delay type based on the program. This would require some refactoring to
-            // access the current profile or some other rearchitecturing to expose both
-            // application-scoped and profile-scoped APIs.
-            switch (mDelegate.getDefaultBrowserPromoSuppressionDelayType()) {
-                case DefaultBrowserPromoSuppressionDelayType.STANDARD:
-                    suppressionPeriodMillis =
+        // TODO(crbug.com/394235956): Go through the regional_capabilities component instead to
+        // get the delay type based on the program. This would require some refactoring to
+        // access the current profile or some other rearchitecturing to expose both
+        // application-scoped and profile-scoped APIs.
+        switch (mDelegate.getDefaultBrowserPromoSuppressionDelayType()) {
+            case DefaultBrowserPromoSuppressionDelayType.STANDARD:
+                try {
+                    long delayMillis =
                             SearchEnginesFeatureUtils
                                     .CHOICE_DIALOG_DEFAULT_BROWSER_PROMO_SUPPRESSED_MILLIS;
-                    break;
-                case DefaultBrowserPromoSuppressionDelayType.MAX:
-                    // There is no "infinite" long, so bypass comparison to the actual timestamp and
-                    // just always suppress the promo.
+                    return Instant.now()
+                            .isBefore(deviceBrowserSelectedTimestamp.plusMillis(delayMillis));
+                } catch (DateTimeException | ArithmeticException e) {
                     return true;
-                default:
-                    assert false;
-                    return true;
-            }
-        } else {
-            suppressionPeriodMillis =
-                    SearchEnginesFeatureUtils.CHOICE_DIALOG_DEFAULT_BROWSER_PROMO_SUPPRESSED_MILLIS;
-        }
-
-        try {
-            return Instant.now()
-                    .isBefore(deviceBrowserSelectedTimestamp.plusMillis(suppressionPeriodMillis));
-        } catch (DateTimeException | ArithmeticException e) {
-            return true;
+                }
+            case DefaultBrowserPromoSuppressionDelayType.MAX:
+                // There is no "infinite" long, so bypass comparison to the actual timestamp and
+                // just always suppress the promo.
+                return true;
+            default:
+                assert false;
+                return true;
         }
     }
 }
