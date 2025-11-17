@@ -788,7 +788,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbarTopSeparatorFrameInactive] =
       GetToolbarTopSeparatorColorTransform(kColorToolbar,
                                            ui::kColorFrameInactive);
-  mixer[kColorWebContentsBackground] = {kColorNewTabPageBackground};
+  mixer[kColorWebContentsBackground] =
+      ui::SetAlpha(kColorNewTabPageBackground, SK_AlphaOPAQUE);
   mixer[kColorWebContentsBackgroundLetterboxing] =
       ui::AlphaBlend(kColorWebContentsBackground, SK_ColorBLACK, 0x33);
   mixer[kColorWindowControlButtonBackgroundActive] = {ui::kColorFrameActive};

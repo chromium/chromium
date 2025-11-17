@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -736,7 +737,8 @@ void AppBrowserController::AddColorMixers(
   mixer[kColorPwaToolbarButtonIconDisabled] =
       ui::SetAlpha(kColorPwaToolbarButtonIcon, gfx::kDisabledControlAlpha);
   if (bg_color) {
-    mixer[kColorWebContentsBackground] = {kColorPwaBackground};
+    mixer[kColorWebContentsBackground] =
+        ui::SetAlpha(kColorPwaBackground, SK_AlphaOPAQUE);
   }
 
   mixer[kColorInfoBarBackground] = {kColorPwaToolbarBackground};
