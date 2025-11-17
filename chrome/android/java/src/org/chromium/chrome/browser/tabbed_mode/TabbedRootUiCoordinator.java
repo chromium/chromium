@@ -1341,6 +1341,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                                         false)
                                         && timeSinceLastBackgroundedMs > TimeUnit.HOURS.toMillis(3))
                                 || TipsUtils.shouldAlwaysShowOptInPromo()) {
+                            if (mActivity == null
+                                    || mActivity.isFinishing()
+                                    || mActivity.isDestroyed()) {
+                                return;
+                            }
                             mTipsOptInCoordinator =
                                     new TipsOptInCoordinator(mActivity, getBottomSheetController());
                             mTipsOptInCoordinator.showBottomSheet();
