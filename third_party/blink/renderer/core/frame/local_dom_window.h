@@ -102,6 +102,8 @@ class WindowAgent;
 
 template <typename T>
 class GlobalFetchImpl;
+template <typename T>
+class GlobalCacheStorageImpl;
 
 namespace scheduler {
 class TaskAttributionInfo;
@@ -120,7 +122,7 @@ class CORE_EXPORT LocalDOMWindow final
       public WindowOrWorkerGlobalScope,
       public UniversalGlobalScope,
       public WindowEventHandlers,
-      public Supplementable<LocalDOMWindow, 47> {
+      public Supplementable<LocalDOMWindow, 46> {
   USING_PRE_FINALIZER(LocalDOMWindow, Dispose);
 
  public:
@@ -168,9 +170,8 @@ class CORE_EXPORT LocalDOMWindow final
     kDOMWindowStorage = 41,
     kWindowSharedStorageImpl = 42,
     kGlobalIndexedDBImpl = 43,
-    kGlobalCacheStorageImpl = 44,
-    kGlobalPerformanceImpl = 45,
-    kGlobalCookieStoreImpl = 46
+    kGlobalCookieStoreImpl = 44,
+    kGlobalPerformanceImpl = 45
   };
 
   class CORE_EXPORT EventListenerObserver : public GarbageCollectedMixin {
@@ -627,6 +628,16 @@ class CORE_EXPORT LocalDOMWindow final
     global_fetch_impl_ = global_fetch_impl;
   }
 
+  ForwardDeclaredMember<GlobalCacheStorageImpl<LocalDOMWindow>>
+  GetGlobalCacheStorageImpl() const {
+    return global_cache_storage_impl_;
+  }
+  void SetGlobalCacheStorageImpl(
+      ForwardDeclaredMember<GlobalCacheStorageImpl<LocalDOMWindow>>
+          global_cache_storage_impl) {
+    global_cache_storage_impl_ = global_cache_storage_impl;
+  }
+
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,
@@ -758,6 +769,8 @@ class CORE_EXPORT LocalDOMWindow final
   Member<SoftNavigationHeuristics> soft_navigation_heuristics_;
 
   ForwardDeclaredMember<GlobalFetchImpl<LocalDOMWindow>> global_fetch_impl_;
+  ForwardDeclaredMember<GlobalCacheStorageImpl<LocalDOMWindow>>
+      global_cache_storage_impl_;
 
   // If set, this window is a Document Picture in Picture window.
   // https://wicg.github.io/document-picture-in-picture/
