@@ -220,36 +220,31 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
       SkColor4f color;
       float width;
       if (*iter && iter->IsReadyToDraw()) {
-        if (iter->solid_color()) {
+        TileDrawInfo::Mode mode = iter->draw_mode();
+        if (mode == TileDrawInfo::SOLID_COLOR_MODE) {
           color = DebugColors::SolidColorTileBorderColor();
           width = DebugColors::SolidColorTileBorderWidth(device_scale_factor);
-        } else if (iter->resource()) {
-          // NOTE: This is not exactly the same computation as is used by
-          // PictureLayerImpl, as high resolution tiles within PictureLayerImpl
-          // use `raster_contents_scale_`, which is not necessarily the ideal
-          // scale. However, we don't have the former field here, so use the
-          // ideal scale as an approximation.
-          // TODO(crbug.com/450651370): Determine whether we want to fix this.
-          if (MathUtil::IsFloatNearlyTheSame(
-                  iter.CurrentTiling()->contents_scale_key(),
-                  ideal_scale_key)) {
-            color = DebugColors::HighResTileBorderColor();
-            width = DebugColors::HighResTileBorderWidth(device_scale_factor);
-          } else if (iter.CurrentTiling()->contents_scale_key() >
-                     ideal_scale_key) {
-            color = DebugColors::AboveHighResTileBorderColor();
-            width =
-                DebugColors::AboveHighResTileBorderWidth(device_scale_factor);
-          } else {
-            color = DebugColors::BelowHighResTileBorderColor();
-            width =
-                DebugColors::BelowHighResTileBorderWidth(device_scale_factor);
-          }
-        } else if (iter->is_oom()) {
+        } else if (mode == TileDrawInfo::OOM_MODE) {
           color = DebugColors::OOMTileBorderColor();
           width = DebugColors::OOMTileBorderWidth(device_scale_factor);
+        } else if (MathUtil::IsFloatNearlyTheSame(
+                       iter.CurrentTiling()->contents_scale_key(),
+                       ideal_scale_key)) {
+          // NOTE: The above check is not exactly the same computation as is
+          // used by PictureLayerImpl, as high resolution tiles within
+          // PictureLayerImpl use `raster_contents_scale_`, which is not
+          // necessarily the ideal scale. However, we don't have the former
+          // field here, so use the ideal scale as an approximation.
+          // TODO(crbug.com/450651370): Determine whether we want to fix this.
+          color = DebugColors::HighResTileBorderColor();
+          width = DebugColors::HighResTileBorderWidth(device_scale_factor);
+        } else if (iter.CurrentTiling()->contents_scale_key() >
+                   ideal_scale_key) {
+          color = DebugColors::AboveHighResTileBorderColor();
+          width = DebugColors::AboveHighResTileBorderWidth(device_scale_factor);
         } else {
-          NOTREACHED();
+          color = DebugColors::BelowHighResTileBorderColor();
+          width = DebugColors::BelowHighResTileBorderWidth(device_scale_factor);
         }
       } else {
         color = DebugColors::MissingTileBorderColor();

@@ -16,6 +16,7 @@
 #include "cc/cc_export.h"
 #include "cc/layers/tile_based_layer_impl.h"
 #include "cc/mojom/missing_tile_reason.mojom.h"
+#include "cc/tiles/tile_draw_info.h"
 #include "cc/tiles/tile_index.h"
 #include "cc/tiles/tile_priority.h"
 #include "cc/tiles/tiling_coverage_iterator.h"
@@ -52,6 +53,18 @@ class CC_EXPORT TileDisplayLayerImpl : public TileBasedLayerImpl {
     explicit Tile(TileDisplayLayerImpl& layer, const TileContents& contents);
     ~Tile();
     Tile(Tile&&);
+
+    TileDrawInfo::Mode draw_mode() {
+      CHECK(IsReadyToDraw());
+      if (solid_color()) {
+        return TileDrawInfo::SOLID_COLOR_MODE;
+      } else if (is_oom()) {
+        return TileDrawInfo::OOM_MODE;
+      } else {
+        CHECK(resource());
+        return TileDrawInfo::RESOURCE_MODE;
+      }
+    }
 
     const TileContents& contents() const { return contents_; }
 
