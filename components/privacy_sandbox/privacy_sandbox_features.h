@@ -179,9 +179,6 @@ BASE_DECLARE_FEATURE(kPrivacySandboxActivityTypeStorage);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const char kPrivacySandboxActivityTypeStorageLastNLaunchesName[];
 
-// GetRequiredPrompt returns the NoticeService's output.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacySandboxGetPromptFromNoticeService);
 
 // Enables chrome://privacy-sandbox-internals/private-state-tokens DevUI
 // page. Relies on PrivacySandboxInternalsDevUI also being enabled.
