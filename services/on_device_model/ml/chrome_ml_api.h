@@ -578,7 +578,7 @@ struct ChromeMLAPI {
 };
 
 // Signature of the GetChromeMLAPI() function which the shared library exports.
-using ChromeMLAPIGetter = const ChromeMLAPI* (*)();
+using ChromeMLAPIGetter = const ChromeMLAPI* (*)(bool enable_litert_lm);
 
 }  // extern "C"
 

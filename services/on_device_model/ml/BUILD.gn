@@ -25,10 +25,11 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
     public = [ "chrome_ml_holder.h" ]
     sources = [ "chrome_ml_holder.cc" ]
 
+    deps = [ "//services/on_device_model/public/cpp" ]
+
     public_deps = [
       ":api",
       "//base",
-      "//skia",
     ]
   }
 
