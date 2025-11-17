@@ -135,10 +135,10 @@ class SidePanelBorder : public views::Border {
       canvas->Scale(dsf, dsf);
 
       const SkVector border_radii[4] = {
-          {border_radii_.upper_left(),  border_radii_.upper_left()},
+          {border_radii_.upper_left(), border_radii_.upper_left()},
           {border_radii_.upper_right(), border_radii_.upper_right()},
           {border_radii_.lower_right(), border_radii_.lower_right()},
-          {border_radii_.lower_left(),  border_radii_.lower_left()}};
+          {border_radii_.lower_left(), border_radii_.lower_left()}};
 
       const SkPath rounded_border_path = SkPath::RRect(SkRRect::MakeRectRadii(
           gfx::RectToSkRect(view.GetLocalBounds()), border_radii));
@@ -153,20 +153,20 @@ class SidePanelBorder : public views::Border {
       TopContainerBackground::PaintBackground(canvas, &view, browser_view_);
     }
 
-    if (outline_visible_) {
-      // Paint the inner border around SidePanel content. Since half the stroke
-      // gets painted in the clipped area, make this twice as thick, and scale
-      // the thickness by device scale factor since we're working in pixels.
-      const float stroke_thickness = views::Separator::kThickness * 2 * dsf;
+    // TODO(b/453702066): Avoid drawing a zero width rectangle.
+    // Paint the inner border around SidePanel content. Since half the stroke
+    // gets painted in the clipped area, make this twice as thick, and scale
+    // the thickness by device scale factor since we're working in pixels.
+    const float stroke_thickness =
+        outline_visible_ ? views::Separator::kThickness * 2 * dsf : 0;
 
-      cc::PaintFlags flags;
-      flags.setStrokeWidth(stroke_thickness);
-      flags.setColor(color().ResolveToSkColor(view.GetColorProvider()));
-      flags.setStyle(cc::PaintFlags::kStroke_Style);
-      flags.setAntiAlias(true);
+    cc::PaintFlags flags;
+    flags.setStrokeWidth(stroke_thickness);
+    flags.setColor(color().ResolveToSkColor(view.GetColorProvider()));
+    flags.setStyle(cc::PaintFlags::kStroke_Style);
+    flags.setAntiAlias(true);
 
-      canvas->sk_canvas()->drawRRect(rect, flags);
-    }
+    canvas->sk_canvas()->drawRRect(rect, flags);
   }
 
   gfx::Insets GetInsets() const override {
