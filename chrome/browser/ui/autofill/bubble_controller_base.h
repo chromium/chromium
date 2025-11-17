@@ -49,6 +49,9 @@ class BubbleControllerBase {
   virtual void ShowBubble() = 0;
 
   // Instructs the controller to hide the bubble view.
+  // TODO(crbug.com/432429605): `initiated_by_bubble_manager` can be removed,
+  // instead use BubbleManager's `HasPendingBubbleOfSameType` to determine if
+  // the bubble is still alive.
   virtual void HideBubble(bool initiated_by_bubble_manager) = 0;
 
   // Instructs the controller that its pending request to show has been
