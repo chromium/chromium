@@ -13779,14 +13779,16 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "EnableReadabilityHeuristic",
                         "EnableReaderMode",
-                        "EnableReaderModeInUS",
-                        "EnableReaderModeTranslation",
+                        "EnableReaderModeOmniboxEntryPoint",
                         "ReaderModeUseReadability"
                     ],
                     "disable_features": [
-                        "EnableReaderModePageEligibilityForToolsMenu"
+                        "EnableReadabilityHeuristic",
+                        "EnableReaderModeDefaultBrowserPromo",
+                        "EnableReaderModeInUS",
+                        "EnableReaderModePageEligibilityForToolsMenu",
+                        "EnableReaderModeTranslation"
                     ]
                 }
             ]
