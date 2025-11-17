@@ -1974,10 +1974,17 @@ protocol::Response InspectorDOMAgent::getAnchorElement(
         AtomicString(anchor_specifier.value()),
         &querying_object->GetDocument()));
   } else {
-    const ComputedStyle& style = box->StyleRef();
-    target_object = style.PositionAnchor()
-                        ? box->FindTargetAnchor(*style.PositionAnchor())
-                        : box->AcceptableImplicitAnchor();
+    const StylePositionAnchor& position_anchor =
+        box->StyleRef().PositionAnchor();
+    using Type = StylePositionAnchor::Type;
+    switch (position_anchor.GetType()) {
+      case Type::kAuto:
+        target_object = box->AcceptableImplicitAnchor();
+        break;
+      case Type::kName:
+        target_object = box->FindTargetAnchor(position_anchor.GetName());
+        break;
+    }
   }
 
   if (target_object) {

@@ -185,12 +185,12 @@ bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
   return (style_recalc_context.size_container ||
           style_recalc_context.has_anchored_container ||
           state.StyleBuilder().HasAnchorFunctions() ||
-          state.StyleBuilder().PositionAnchor() ||
+          state.StyleBuilder().PositionAnchor().IsName() ||
           state.GetElement().ImplicitAnchorElement() ||
           ((state.GetElement().IsPseudoElement() ||
             state.IsForPseudoElement()) &&
            (state.ParentStyle()->HasAnchorFunctions() ||
-            state.ParentStyle()->PositionAnchor())) ||
+            state.ParentStyle()->PositionAnchor().IsName())) ||
           state.StyleBuilder().GetPositionTryFallbacks() != nullptr) &&
          state.CanAffectAnimations();
 }

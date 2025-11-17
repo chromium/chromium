@@ -324,7 +324,8 @@ void StyleResolverState::SetTextOrientation(ETextOrientation text_orientation) {
   }
 }
 
-void StyleResolverState::SetPositionAnchor(ScopedCSSName* position_anchor) {
+void StyleResolverState::SetPositionAnchor(
+    const StylePositionAnchor& position_anchor) {
   if (StyleBuilder().PositionAnchor() != position_anchor) {
     StyleBuilder().SetPositionAnchor(position_anchor);
     css_to_length_conversion_data_.SetAnchorData(

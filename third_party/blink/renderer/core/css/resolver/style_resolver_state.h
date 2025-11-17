@@ -193,7 +193,7 @@ class CORE_EXPORT StyleResolverState {
   void SetWritingMode(WritingMode);
   void SetTextSizeAdjust(TextSizeAdjust);
   void SetTextOrientation(ETextOrientation);
-  void SetPositionAnchor(ScopedCSSName*);
+  void SetPositionAnchor(const StylePositionAnchor&);
   void SetPositionAreaOffsets(const std::optional<PositionAreaOffsets>&);
 
   // Return the writing-direction of the abs-pos container for an anchored

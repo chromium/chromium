@@ -119,6 +119,7 @@ blink_core_sources_style = [
   "style_path.h",
   "style_pending_image.cc",
   "style_pending_image.h",
+  "style_position_anchor.h",
   "style_ray.cc",
   "style_ray.h",
   "style_reflection.h",

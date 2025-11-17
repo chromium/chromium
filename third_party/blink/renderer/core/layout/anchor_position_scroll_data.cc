@@ -21,9 +21,14 @@ namespace {
 
 // Finds the LayoutObject of the anchor element given by position-anchor.
 const LayoutObject* PositionAnchorObject(const LayoutBox& box) {
-  const ComputedStyle& style = box.StyleRef();
-  return style.PositionAnchor() ? box.FindTargetAnchor(*style.PositionAnchor())
-                                : box.AcceptableImplicitAnchor();
+  const StylePositionAnchor& position_anchor = box.StyleRef().PositionAnchor();
+  using Type = StylePositionAnchor::Type;
+  switch (position_anchor.GetType()) {
+    case Type::kAuto:
+      return box.AcceptableImplicitAnchor();
+    case Type::kName:
+      return box.FindTargetAnchor(position_anchor.GetName());
+  }
 }
 
 const HeapVector<NonOverflowingScrollRange>* GetNonOverflowingScrollRanges(

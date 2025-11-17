@@ -258,8 +258,8 @@ class StyleBuilderConverter {
                                                    const CSSValue&);
   static ScopedCSSName* ConvertCustomIdent(StyleResolverState&,
                                            const CSSValue&);
-  static ScopedCSSName* ConvertPositionAnchor(StyleResolverState&,
-                                              const CSSValue&);
+  static StylePositionAnchor ConvertPositionAnchor(StyleResolverState&,
+                                                   const CSSValue&);
   static PositionVisibility ConvertPositionVisibility(StyleResolverState& state,
                                                       const CSSValue& value);
   static ScopedCSSNameList* ConvertAnchorName(StyleResolverState&,

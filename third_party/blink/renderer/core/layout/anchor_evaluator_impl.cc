@@ -219,7 +219,7 @@ LayoutUnit ResolveAnchorSizeValue(const PhysicalSize& anchor_size,
 
 std::optional<LayoutUnit> AnchorEvaluatorImpl::Evaluate(
     const AnchorQuery& anchor_query,
-    const ScopedCSSName* position_anchor,
+    const StylePositionAnchor& position_anchor,
     const std::optional<PositionAreaOffsets>& position_area_offsets) {
   switch (anchor_query.Type()) {
     case CSSAnchorQueryType::kAnchor:
@@ -235,30 +235,36 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::Evaluate(
 
 const PhysicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorReference(
     const AnchorSpecifierValue& anchor_specifier,
-    const ScopedCSSName* position_anchor) const {
-  if (!anchor_specifier.IsNamed() && !position_anchor && !implicit_anchor_) {
-    return nullptr;
-  }
+    const StylePositionAnchor& position_anchor) const {
   if (!anchor_map_) {
     return nullptr;
   }
+
   if (anchor_specifier.IsNamed()) {
     return anchor_map_->AnchorReference(
         *query_box_, query_box_actual_containing_block_,
         ToAnchorScopedName(anchor_specifier.GetName(), *query_box_));
   }
-  if (anchor_specifier.IsDefault() && position_anchor) {
-    return anchor_map_->AnchorReference(
-        *query_box_, query_box_actual_containing_block_,
-        ToAnchorScopedName(*position_anchor, *query_box_));
+
+  DCHECK(anchor_specifier.IsDefault());
+  using Type = StylePositionAnchor::Type;
+  switch (position_anchor.GetType()) {
+    case Type::kAuto:
+      if (!implicit_anchor_) {
+        return nullptr;
+      }
+      return anchor_map_->AnchorReference(
+          *query_box_, query_box_actual_containing_block_,
+          To<Element>(implicit_anchor_->GetNode()));
+    case Type::kName:
+      return anchor_map_->AnchorReference(
+          *query_box_, query_box_actual_containing_block_,
+          ToAnchorScopedName(position_anchor.GetName(), *query_box_));
   }
-  return anchor_map_->AnchorReference(*query_box_,
-                                      query_box_actual_containing_block_,
-                                      To<Element>(implicit_anchor_->GetNode()));
 }
 
 const LayoutObject* AnchorEvaluatorImpl::DefaultAnchor(
-    const ScopedCSSName* position_anchor) const {
+    const StylePositionAnchor& position_anchor) const {
   return cached_default_anchor_.Get(position_anchor, [&]() {
     const PhysicalAnchorReference* reference = ResolveAnchorReference(
         *AnchorSpecifierValue::Default(), position_anchor);
@@ -267,7 +273,7 @@ const LayoutObject* AnchorEvaluatorImpl::DefaultAnchor(
 }
 
 const PaintLayer* AnchorEvaluatorImpl::DefaultAnchorScrollContainerLayer(
-    const ScopedCSSName* position_anchor) const {
+    const StylePositionAnchor& position_anchor) const {
   return cached_default_anchor_scroll_container_layer_.Get(
       position_anchor, [&]() {
         return DefaultAnchor(position_anchor)
@@ -315,7 +321,7 @@ bool AnchorEvaluatorImpl::IsRightOrBottom() const {
 
 bool AnchorEvaluatorImpl::ShouldUseScrollAdjustmentFor(
     const LayoutObject* anchor,
-    const ScopedCSSName* position_anchor) const {
+    const StylePositionAnchor& position_anchor) const {
   if (!DefaultAnchor(position_anchor)) {
     return false;
   }
@@ -331,7 +337,7 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
     const AnchorSpecifierValue& anchor_specifier,
     CSSAnchorValue anchor_value,
     float percentage,
-    const ScopedCSSName* position_anchor,
+    const StylePositionAnchor& position_anchor,
     const std::optional<PositionAreaOffsets>& position_area_offsets) {
   if (!AllowAnchor()) {
     return std::nullopt;
@@ -374,7 +380,7 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
 std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
     const AnchorSpecifierValue& anchor_specifier,
     CSSAnchorSizeValue anchor_size_value,
-    const ScopedCSSName* position_anchor) {
+    const StylePositionAnchor& position_anchor) {
   if (!AllowAnchorSize()) {
     return std::nullopt;
   }
@@ -402,7 +408,7 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
 
 const PhysicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorForEvaluation(
     const AnchorSpecifierValue& anchor_specifier,
-    const ScopedCSSName* position_anchor) {
+    const StylePositionAnchor& position_anchor) {
   const PhysicalAnchorReference* anchor_reference =
       ResolveAnchorReference(anchor_specifier, position_anchor);
   if (!anchor_reference) {
@@ -530,7 +536,7 @@ std::optional<PhysicalOffset> AnchorEvaluatorImpl::ComputeAnchorCenterOffsets(
 
 std::optional<PositionAreaOffsets>
 AnchorEvaluatorImpl::ComputePositionAreaOffsetsForLayout(
-    const ScopedCSSName* position_anchor,
+    const StylePositionAnchor& position_anchor,
     PositionArea position_area) {
   CHECK(!position_area.IsNone());
 

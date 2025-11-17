@@ -22,7 +22,7 @@ namespace blink {
 class AnchorQuery;
 class AnchorScope;
 class ComputedStyleBuilder;
-class ScopedCSSName;
+class StylePositionAnchor;
 
 class CORE_EXPORT AnchorEvaluator {
   DISALLOW_NEW();
@@ -72,14 +72,15 @@ class CORE_EXPORT AnchorEvaluator {
   // axis.), in which case the fallback should be used.
   virtual std::optional<LayoutUnit> Evaluate(
       const AnchorQuery&,
-      const ScopedCSSName* position_anchor,
+      const StylePositionAnchor& position_anchor,
       const std::optional<PositionAreaOffsets>&) = 0;
 
   // Take the computed position-area and position-anchor and compute the
   // physical offsets to inset the containing block with.
   virtual std::optional<PositionAreaOffsets>
-  ComputePositionAreaOffsetsForLayout(const ScopedCSSName* position_anchor,
-                                      PositionArea position_area) = 0;
+  ComputePositionAreaOffsetsForLayout(
+      const StylePositionAnchor& position_anchor,
+      PositionArea position_area) = 0;
 
   // Take the computed position-area and position-anchor from the builder and
   // compute the physical offset for anchor-center

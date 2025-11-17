@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/style/position_area.h"
+#include "third_party/blink/renderer/core/style/style_position_anchor.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -272,17 +273,19 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
    public:
     AnchorData() = default;
     AnchorData(AnchorEvaluator*,
-               const ScopedCSSName* position_anchor,
+               const StylePositionAnchor& position_anchor,
                const std::optional<PositionAreaOffsets>&);
     AnchorEvaluator* GetEvaluator() const { return evaluator_; }
-    const ScopedCSSName* GetPositionAnchor() const { return position_anchor_; }
+    const StylePositionAnchor& GetPositionAnchor() const {
+      return position_anchor_;
+    }
     const std::optional<PositionAreaOffsets>& GetPositionAreaOffsets() const {
       return position_area_offsets_;
     }
 
    private:
     AnchorEvaluator* evaluator_ = nullptr;
-    const ScopedCSSName* position_anchor_ = nullptr;
+    StylePositionAnchor position_anchor_{StylePositionAnchor::Type::kAuto};
     std::optional<PositionAreaOffsets> position_area_offsets_;
   };
 
@@ -412,7 +415,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   AnchorEvaluator* GetAnchorEvaluator() const override {
     return anchor_data_.GetEvaluator();
   }
-  const ScopedCSSName* GetPositionAnchor() const override {
+  const StylePositionAnchor& GetPositionAnchor() const override {
     return anchor_data_.GetPositionAnchor();
   }
   std::optional<PositionAreaOffsets> GetPositionAreaOffsets() const override {

@@ -511,7 +511,7 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   bool MayUseImplicitAnchor() const {
-    return !PositionAnchor() && HasOutOfFlowPosition() &&
+    return PositionAnchor().IsAuto() && HasOutOfFlowPosition() &&
            (HasAnchorFunctions() ||
             AlignSelf().GetPosition() == ItemPosition::kAnchorCenter ||
             JustifySelf().GetPosition() == ItemPosition::kAnchorCenter);

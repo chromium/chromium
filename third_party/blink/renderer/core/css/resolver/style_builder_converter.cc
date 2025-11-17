@@ -2181,15 +2181,15 @@ ScopedCSSName* StyleBuilderConverter::ConvertCustomIdent(
       custom_ident.GetTreeScope());
 }
 
-ScopedCSSName* StyleBuilderConverter::ConvertPositionAnchor(
+StylePositionAnchor StyleBuilderConverter::ConvertPositionAnchor(
     StyleResolverState& state,
     const CSSValue& value) {
   DCHECK(value.IsScopedValue());
   if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kAuto);
-    return nullptr;
+    return StylePositionAnchor(StylePositionAnchor::Type::kAuto);
   }
-  return ConvertCustomIdent(state, value);
+  return StylePositionAnchor(ConvertCustomIdent(state, value));
 }
 
 PositionVisibility StyleBuilderConverter::ConvertPositionVisibility(

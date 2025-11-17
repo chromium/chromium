@@ -4073,12 +4073,12 @@ class NullAnchorEvaluator : public AnchorEvaluator {
  public:
   std::optional<LayoutUnit> Evaluate(
       const AnchorQuery&,
-      const ScopedCSSName* position_anchor,
+      const StylePositionAnchor& position_anchor,
       const std::optional<PositionAreaOffsets>&) override {
     return std::nullopt;
   }
   std::optional<PositionAreaOffsets> ComputePositionAreaOffsetsForLayout(
-      const ScopedCSSName*,
+      const StylePositionAnchor&,
       PositionArea) override {
     return PositionAreaOffsets();
   }
@@ -4360,7 +4360,7 @@ class TopAnchorEvaluator : public NullAnchorEvaluator {
  public:
   std::optional<LayoutUnit> Evaluate(
       const AnchorQuery&,
-      const ScopedCSSName* position_anchor,
+      const StylePositionAnchor& position_anchor,
       const std::optional<PositionAreaOffsets>&) override {
     if (GetMode() == Mode::kTop) {
       return LayoutUnit(1);

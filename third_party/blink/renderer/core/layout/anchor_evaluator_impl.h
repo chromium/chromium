@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/style/style_position_anchor.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
@@ -25,7 +26,6 @@ class LayoutBox;
 class LayoutObject;
 class PaintLayer;
 class PhysicalAnchorReference;
-class ScopedCSSName;
 
 class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   STACK_ALLOCATED();
@@ -70,11 +70,11 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   // (e.g., no target or wrong axis).
   std::optional<LayoutUnit> Evaluate(
       const AnchorQuery&,
-      const ScopedCSSName* position_anchor,
+      const StylePositionAnchor& position_anchor,
       const std::optional<PositionAreaOffsets>&) override;
 
   std::optional<PositionAreaOffsets> ComputePositionAreaOffsetsForLayout(
-      const ScopedCSSName* position_anchor,
+      const StylePositionAnchor& position_anchor,
       PositionArea position_area) override;
 
   std::optional<PhysicalOffset> ComputeAnchorCenterOffsets(
@@ -87,7 +87,8 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   const AnchorMap* GetAnchorMap() const { return anchor_map_; }
 
   // Given the computed value of `position-anchor`, returns the default anchor.
-  const LayoutObject* DefaultAnchor(const ScopedCSSName* position_anchor) const;
+  const LayoutObject* DefaultAnchor(
+      const StylePositionAnchor& position_anchor) const;
 
   // Returns the most recent anchor evaluated. If more than one anchor has been
   // evaluated so far, nullptr is returned. This is done to avoid extra noise
@@ -114,31 +115,32 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   // have a valid LayoutObject.
   const PhysicalAnchorReference* ResolveAnchorReference(
       const AnchorSpecifierValue& anchor_specifier,
-      const ScopedCSSName* position_anchor) const;
+      const StylePositionAnchor& position_anchor) const;
 
-  bool ShouldUseScrollAdjustmentFor(const LayoutObject* anchor,
-                                    const ScopedCSSName* position_anchor) const;
+  bool ShouldUseScrollAdjustmentFor(
+      const LayoutObject* anchor,
+      const StylePositionAnchor& position_anchor) const;
 
   std::optional<LayoutUnit> EvaluateAnchor(
       const AnchorSpecifierValue& anchor_specifier,
       CSSAnchorValue anchor_value,
       float percentage,
-      const ScopedCSSName* position_anchor,
+      const StylePositionAnchor& position_anchor,
       const std::optional<PositionAreaOffsets>&);
   std::optional<LayoutUnit> EvaluateAnchorSize(
       const AnchorSpecifierValue& anchor_specifier,
       CSSAnchorSizeValue anchor_size_value,
-      const ScopedCSSName* position_anchor);
+      const StylePositionAnchor& position_anchor);
   const PhysicalAnchorReference* ResolveAnchorForEvaluation(
       const AnchorSpecifierValue&,
-      const ScopedCSSName* position_anchor);
+      const StylePositionAnchor& position_anchor);
   PhysicalRect CalculateAnchorRectWithScrollOffset(
       const PhysicalAnchorReference&);
 
   void UpdateAccessibilityAnchor(const LayoutObject* anchor);
 
   const PaintLayer* DefaultAnchorScrollContainerLayer(
-      const ScopedCSSName* position_anchor) const;
+      const StylePositionAnchor& position_anchor) const;
 
   bool AllowAnchor() const;
   bool AllowAnchorSize() const;
@@ -182,15 +184,10 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   class CachedValue {
     STACK_ALLOCATED();
 
-    template <typename T>
-    static bool Equals(const T* a, const T* b) {
-      return base::ValuesEquivalent(a, b);
-    }
-
    public:
     template <typename CreationFunc>
     ValueType Get(KeyType key, CreationFunc create) {
-      if (value_.has_value() && Equals(key_, key)) {
+      if (key_ && *key_ == key) {
         DCHECK_EQ(value_.value(), create());
         return value_.value();
       }
@@ -200,16 +197,16 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
     }
 
    private:
-    KeyType key_{};
+    std::optional<KeyType> key_;
     std::optional<ValueType> value_;
   };
 
   // Caches most recent result of DefaultAnchor.
-  mutable CachedValue<const ScopedCSSName*, const LayoutObject*>
+  mutable CachedValue<StylePositionAnchor, const LayoutObject*>
       cached_default_anchor_;
 
   // Caches most recent result of DefaultAnchorScrollContainerLayer.
-  mutable CachedValue<const ScopedCSSName*, const PaintLayer*>
+  mutable CachedValue<StylePositionAnchor, const PaintLayer*>
       cached_default_anchor_scroll_container_layer_;
 
   bool needs_scroll_adjustment_in_x_ = false;

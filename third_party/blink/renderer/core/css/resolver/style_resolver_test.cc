@@ -3833,16 +3833,16 @@ TEST_F(StyleResolverTest, ScopedPositionAnchor) {
 
   EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>(AtomicString("--outer"),
                                                  &GetDocument()),
-            *outer_anchor->ComputedStyleRef().PositionAnchor());
+            outer_anchor->ComputedStyleRef().PositionAnchor().GetName());
   EXPECT_EQ(
       *MakeGarbageCollected<ScopedCSSName>(AtomicString("--host"), shadow),
-      *host->ComputedStyleRef().PositionAnchor());
+      host->ComputedStyleRef().PositionAnchor().GetName());
   EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>(AtomicString("--part"),
                                                  &GetDocument()),
-            *part->ComputedStyleRef().PositionAnchor());
+            part->ComputedStyleRef().PositionAnchor().GetName());
   EXPECT_EQ(
       *MakeGarbageCollected<ScopedCSSName>(AtomicString("--inner"), shadow),
-      *inner_anchor->ComputedStyleRef().PositionAnchor());
+      inner_anchor->ComputedStyleRef().PositionAnchor().GetName());
 }
 
 TEST_F(StyleResolverTest, NoAnchorFunction) {

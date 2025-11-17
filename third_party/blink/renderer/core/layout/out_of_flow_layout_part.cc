@@ -311,16 +311,21 @@ class OOFCandidateStyleIterator {
 
   bool ElementStyleDependsOnAnchor(const Element& element,
                                    const ComputedStyle& style) {
-    if (style.PositionAnchor() || element.ImplicitAnchorElement()) {
-      // anchor-center offsets may need to be updated since the layout of the
-      // anchor may have changed. anchor-center offsets are computed when a
-      // default anchor is present.
-      return true;
-    }
     if (style.HasAnchorFunctions()) {
       return true;
     }
-    return false;
+
+    // anchor-center offsets may need to be updated since the layout of the
+    // anchor may have changed. anchor-center offsets are computed when a
+    // default anchor is present.
+    const StylePositionAnchor& position_anchor = style.PositionAnchor();
+    using Type = StylePositionAnchor::Type;
+    switch (position_anchor.GetType()) {
+      case Type::kAuto:
+        return static_cast<bool>(element.ImplicitAnchorElement());
+      case Type::kName:
+        return true;
+    }
   }
 
   // Update the style using the specified index into `position_try_fallbacks_`
@@ -401,30 +406,38 @@ const Element* GetPositionAnchorElement(const BlockNode& node,
   if (!anchor_map) {
     return nullptr;
   }
-  if (const ScopedCSSName* specifier = style.PositionAnchor()) {
-    const LayoutBox& anchored_box = *node.GetLayoutBox();
 
-    // OOFs in fragmentation do not follow the actual containing block structure
-    // (instead they become direct children of a fragmentainer). We need to pass
-    // the actual (CSS) containing block in such cases, in order to determine
-    // which anchors in the list are acceptable.
-    const LayoutObject* actual_containing_block = nullptr;
-    if (anchored_box.MightBeInsideFragmentationContext()) {
-      actual_containing_block = anchored_box.Container();
-    }
+  const StylePositionAnchor& position_anchor = style.PositionAnchor();
+  using Type = StylePositionAnchor::Type;
+  switch (position_anchor.GetType()) {
+    case Type::kAuto:
+      if (const auto* element = DynamicTo<Element>(node.GetDOMNode())) {
+        return element->ImplicitAnchorElement();
+      }
+      return nullptr;
+    case Type::kName: {
+      const LayoutBox& anchored_box = *node.GetLayoutBox();
 
-    if (const PhysicalAnchorReference* reference = anchor_map->AnchorReference(
-            anchored_box, actual_containing_block,
-            ToAnchorScopedName(*specifier, anchored_box))) {
-      DCHECK(reference->GetLayoutObject());
-      return &reference->GetElement();
+      // OOFs in fragmentation do not follow the actual containing block
+      // structure (instead they become direct children of a fragmentainer). We
+      // need to pass the actual (CSS) containing block in such cases, in order
+      // to determine which anchors in the list are acceptable.
+      const LayoutObject* actual_containing_block = nullptr;
+      if (anchored_box.MightBeInsideFragmentationContext()) {
+        actual_containing_block = anchored_box.Container();
+      }
+
+      if (const PhysicalAnchorReference* reference =
+              anchor_map->AnchorReference(
+                  anchored_box, actual_containing_block,
+                  ToAnchorScopedName(position_anchor.GetName(),
+                                     anchored_box))) {
+        DCHECK(reference->GetLayoutObject());
+        return &reference->GetElement();
+      }
+      return nullptr;
     }
-    return nullptr;
   }
-  if (auto* element = DynamicTo<Element>(node.GetDOMNode())) {
-    return element->ImplicitAnchorElement();
-  }
-  return nullptr;
 }
 
 const LayoutObject* GetPositionAnchorObject(const BlockNode& node,
@@ -2426,8 +2439,8 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   // to end up with a candidate style with different values.
   DCHECK_EQ(node_info.node.Style().GetWritingDirection(),
             candidate_style.GetWritingDirection());
-  DCHECK(base::ValuesEquivalent(node_info.node.Style().PositionAnchor(),
-                                candidate_style.PositionAnchor()));
+  DCHECK(node_info.node.Style().PositionAnchor() ==
+         candidate_style.PositionAnchor());
 
   // If we have a valid default anchor, we use the scrollable containing-block:
   // https://drafts.csswg.org/css-position-4/#scrollable-containing-block

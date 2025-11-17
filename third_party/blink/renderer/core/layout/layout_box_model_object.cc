@@ -81,13 +81,17 @@ bool NeedsAnchorPositionScrollData(Element& element,
   if (!style.HasOutOfFlowPosition()) {
     return false;
   }
-  // There's an explicitly set default anchor.
-  if (style.PositionAnchor()) {
-    return true;
+  const StylePositionAnchor& position_anchor = style.PositionAnchor();
+  using Type = StylePositionAnchor::Type;
+  switch (position_anchor.GetType()) {
+    case Type::kAuto:
+      // Now we have `position-anchor: auto`. We need `AnchorPositionScrollData`
+      // only if there's an implicit anchor element to track.
+      return static_cast<bool>(element.ImplicitAnchorElement());
+    case Type::kName:
+      // There's an explicitly set default anchor.
+      return true;
   }
-  // Now we have `position-anchor: auto`. We need `AnchorPositionScrollData`
-  // only if there's an implicit anchor element to track.
-  return element.ImplicitAnchorElement();
 }
 
 }  // namespace

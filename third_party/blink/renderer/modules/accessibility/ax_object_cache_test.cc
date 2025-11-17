@@ -515,8 +515,11 @@ TEST_F(AccessibilityEnabledLaterTest, CSSAnchorPositioning) {
              ->AnchorName()
              ->GetNames()[0]
              ->GetName() == "--anchor-el");
-  DCHECK(GetElementById("2")->GetComputedStyle()->PositionAnchor()->GetName() ==
-         "--anchor-el");
+  DCHECK(GetElementById("2")
+             ->GetComputedStyle()
+             ->PositionAnchor()
+             .GetName()
+             .GetName() == "--anchor-el");
 
   EnableAccessibility();
   AXObject* anchor = GetAXObjectByElementId("1");

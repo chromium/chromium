@@ -205,10 +205,16 @@ const CSSValue* PositionAnchor::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (!style.PositionAnchor()) {
-    return CSSIdentifierValue::Create(CSSValueID::kAuto);
+  using Type = StylePositionAnchor::Type;
+
+  const StylePositionAnchor& position_anchor = style.PositionAnchor();
+  switch (position_anchor.GetType()) {
+    case Type::kAuto:
+      return CSSIdentifierValue::Create(CSSValueID::kAuto);
+    case Type::kName:
+      return MakeGarbageCollected<CSSCustomIdentValue>(
+          position_anchor.GetName());
   }
-  return MakeGarbageCollected<CSSCustomIdentValue>(*style.PositionAnchor());
 }
 
 void PositionAnchor::ApplyInitial(StyleResolverState& state) const {
