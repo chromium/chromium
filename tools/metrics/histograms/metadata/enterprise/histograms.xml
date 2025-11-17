@@ -2448,7 +2448,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.IdleTimeoutPolicies.ActionTime.{ActionType}"
-    units="ms" expires_after="2026-01-01">
+    units="ms" expires_after="2026-07-01">
   <owner>esalma@google.com</owner>
   <owner>nicolaso@chromium.org</owner>
   <summary>The time taken to run {ActionType} on idle timeout.</summary>
@@ -2460,7 +2460,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.IdleTimeoutPolicies.IdleTimeoutCase"
-    enum="IdleTimeoutCase" expires_after="2026-01-01">
+    enum="IdleTimeoutCase" expires_after="2026-07-01">
   <owner>esalma@google.com</owner>
   <owner>nicolaso@chromium.org</owner>
   <summary>
@@ -2472,7 +2472,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.IdleTimeoutPolicies.IdleTimeoutDialogEvent"
-    enum="IdleTimeoutDialogEvent" expires_after="2026-01-01">
+    enum="IdleTimeoutDialogEvent" expires_after="2026-07-01">
   <owner>esalma@google.com</owner>
   <owner>nicolaso@chromium.org</owner>
   <summary>
@@ -2484,7 +2484,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.IdleTimeoutPolicies.IdleTimeoutLaunchScreenEvent"
-    enum="IdleTimeoutLaunchScreenEvent" expires_after="2026-01-01">
+    enum="IdleTimeoutLaunchScreenEvent" expires_after="2026-07-01">
   <owner>esalma@google.com</owner>
   <owner>nicolaso@chromium.org</owner>
   <summary>
@@ -2495,7 +2495,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.IdleTimeoutPolicies.Success.{ActionType}"
-    enum="BooleanSuccess" expires_after="2026-01-01">
+    enum="BooleanSuccess" expires_after="2026-07-01">
   <owner>esalma@google.com</owner>
   <owner>nicolaso@chromium.Origin</owner>
   <summary>
