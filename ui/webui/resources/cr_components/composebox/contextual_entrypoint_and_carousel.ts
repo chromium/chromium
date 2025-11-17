@@ -12,8 +12,8 @@ import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {FileAttachmentStub, SearchContextStub, TabAttachmentStub, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {PageHandlerRemote as SearchboxPageHandlerRemote, SearchContextStub, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
@@ -103,6 +103,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       attachmentFileTypes_: {type: String},
       contextMenuEnabled_: {type: Boolean},
       files_: {type: Object},
+      pendingFiles_: {type: Object},
       addedTabsIds_: {type: Object},
       imageFileTypes_: {type: String},
       inputsDisabled_: {
@@ -152,6 +153,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       loadTimeData.getBoolean('composeboxShowContextMenu');
   protected accessor files_: Map<UnguessableToken, ComposeboxFile> = new Map();
   protected accessor addedTabsIds_: Map<number, UnguessableToken> = new Map();
+  protected accessor pendingFiles_: Map<UnguessableToken, FileUploadStatus> =
+      new Map();
   protected accessor imageFileTypes_: string =
       loadTimeData.getString('composeboxImageFileTypes');
   protected accessor inputsDisabled_: boolean = false;
@@ -310,6 +313,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         this.files_.set(token, file);
       }
       this.files_ = new Map([...this.files_]);
+    } else {
+      this.pendingFiles_.set(token, status);
     }
     return {file, errorMessage};
   }
@@ -367,46 +372,43 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     this.files_ = newFiles;
   }
 
-  async setStateFromSearchContext(
-      context: SearchContextStub,
-      searchboxHandler: SearchboxPageHandlerRemote) {
+  private addFileFromAttachment_(fileAttachment: FileAttachmentStub) {
+    const pendingStatus = this.pendingFiles_.get(fileAttachment.uuid);
+    const composeboxFile: ComposeboxFile = {
+      uuid: fileAttachment.uuid,
+      name: fileAttachment.name,
+      objectUrl: null,
+      dataUrl: fileAttachment.imageDataUrl ?? null,
+      type: fileAttachment.mimeType,
+      status: pendingStatus ?? FileUploadStatus.kNotUploaded,
+      url: null,
+      tabId: null,
+      isDeletable: true,
+    };
+    if (pendingStatus) {
+      this.pendingFiles_.delete(fileAttachment.uuid);
+    }
+    this.fire('add-file_context', {file: composeboxFile});
+  }
+
+  private addTabFromAttachment_(tabAttachment: TabAttachmentStub) {
+    // TODO(crbug.com/459920991): Figure out if we should delay upload.
+    this.addTabContext_(new CustomEvent('addTabContext', {
+      detail: {
+        id: tabAttachment.tabId,
+        title: tabAttachment.title,
+        url: tabAttachment.url,
+        delayUpload: /*delay_upload=*/ true,
+      },
+    }));
+  }
+
+  setStateFromSearchContext(context: SearchContextStub) {
     for (const attachment of context.attachments) {
       if (attachment.fileAttachment) {
-        const fileAttachment = attachment.fileAttachment;
-        const composeboxFile: ComposeboxFile = {
-          uuid: fileAttachment.uuid,
-          name: fileAttachment.name,
-          objectUrl: null,
-          dataUrl: fileAttachment.imageDataUrl ?? null,
-          type: fileAttachment.mimeType,
-          // TODO(crbug.com/459920356): Properly set the upload status and
-          // handle updates.
-          status: FileUploadStatus.kUploadSuccessful,
-          url: null,
-          tabId: null,
-          isDeletable: true,
-        };
-        this.onFileContextAdded(composeboxFile);
+        this.addFileFromAttachment_(attachment.fileAttachment);
       } else if (attachment.tabAttachment) {
-        const tabAttachment = attachment.tabAttachment;
-        const {token} = await searchboxHandler.addTabContext(
-            tabAttachment.tabId, /*delay_upload=*/ false);
-        if (!token) {
-          continue;
-        }
-
-        const composeboxFile: ComposeboxFile = {
-          uuid: token,
-          name: tabAttachment.title,
-          objectUrl: null,
-          dataUrl: null,
-          type: 'tab',
-          status: FileUploadStatus.kNotUploaded,
-          url: tabAttachment.url,
-          tabId: tabAttachment.tabId,
-          isDeletable: true,
-        };
-        this.onFileContextAdded(composeboxFile);
+        this.addTabFromAttachment_(attachment.tabAttachment);
       }
     }
 

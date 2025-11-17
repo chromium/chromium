@@ -260,6 +260,11 @@ export class ComposeboxElement extends I18nMixinLit
           this.showFileCarousel_ = this.contextFilesSize_ > 0;
           this.submitEnabled_ = this.computeSubmitEnabled_();
         });
+    this.eventTracker_.add(
+        this.$.context, 'add-file_context',
+        (e: CustomEvent<{file: ComposeboxFile}>) => {
+          this.$.context.onFileContextAdded(e.detail.file);
+        });
     this.focusInput();
     // For realbox next, the zps autocomplete query is triggered after
     // the state has been initialized.
@@ -851,13 +856,12 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
-  async setSearchContext(context: SearchContextStub|null) {
+  setSearchContext(context: SearchContextStub|null) {
     if (!context) {
       return;
     }
     this.input_ = context.input;
-    await this.$.context.setStateFromSearchContext(
-        context, this.searchboxHandler_);
+    this.$.context.setStateFromSearchContext(context);
   }
 
   private closeComposebox_() {
