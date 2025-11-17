@@ -675,6 +675,12 @@ _LINUX_R350_BENCHMARK_CONFIGS = PerfSuite(
         'rendering.desktop.notracing',
         'system_health.common_desktop',
     ])
+# For linux-perf, which runs benchmarks that are skipped on linux-r350-perf.
+_LINUX_GPU_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('rendering.desktop'),
+    _GetBenchmarkConfig('rendering.desktop.notracing'),
+    _GetBenchmarkConfig('system_health.common_desktop'),
+])
 _MAC_INTEL_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'v8.runtime_stats.top_25',
     'rendering.desktop',
@@ -885,6 +891,13 @@ _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
 
 
 # Linux
+LINUX = PerfPlatform('linux-perf',
+                     'Ubuntu-22.04, Precision 3930 Rack, NVIDIA GeForce GTX 1660',
+                     _LINUX_GPU_BENCHMARK_CONFIGS,
+                     10,
+                     'linux',
+                     executables=_LINUX_EXECUTABLE_CONFIGS,
+                     crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 LINUX_PGO = PerfPlatform('linux-perf-pgo',
                          'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
                          _LINUX_BENCHMARK_CONFIGS,

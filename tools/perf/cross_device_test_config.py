@@ -122,6 +122,11 @@ TARGET_DEVICES = {
             'Speedometer3': 8,
         },
     },
+    'linux-perf': {
+        'jetstream2.crossbench': 10,
+        'motionmark1.3.crossbench': 10,
+        'speedometer3.crossbench': 10,
+    },
     'linux-perf-fyi': {
         'speedometer2': 4,
         'speedometer2-minorms': 4,

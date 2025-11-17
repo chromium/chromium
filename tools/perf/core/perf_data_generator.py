@@ -131,6 +131,7 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset([
     'android-nissa-uldren-8gb-perf',
     'linux-builder-perf',
     'linux-falcon-rak-5070-perf',
+    'linux-perf',
     'linux-perf-fyi',
     'linux-perf-rel',
     'linux-processor-perf',
@@ -156,6 +157,7 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset([
 ])
 
 PUBLIC_PERF_BUILDERS = [
+    'linux-perf',  # ChromiumPerf
     'linux-perf-fyi',  # ChromiumPerfFyi
     'linux-r350-perf',  # ChromiumPerf
     'win-10-perf',  # ChromiumPerf
@@ -881,6 +883,23 @@ BUILDERS = {
             'os': 'Android',
             'device_type': 'wembley_2GB',
             'device_os_flavor': 'google',
+        },
+    },
+    'linux-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform': 'linux',
+        'dimension': {
+            'gpu': '10de:2184-580.95.05',
+            'os': 'Ubuntu-22.04',
+            'pool': 'chrome.tests.perf',
+            'synthetic_product_name': 'Precision 3930 Rack (Dell Inc.)'
         },
     },
     'linux-perf-pgo': {

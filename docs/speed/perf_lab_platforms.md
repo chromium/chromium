@@ -30,6 +30,7 @@
 ### Linux
 
  * [linux-falcon-rak-5070-perf](https://ci.chromium.org/p/chrome/builders/ci/linux-falcon-rak-5070-perf): Linux Falcon RAK 5070.
+ * [linux-perf](https://ci.chromium.org/p/chrome/builders/ci/linux-perf): Ubuntu-22.04, Precision 3930 Rack, NVIDIA GeForce GTX 1660.
  * [linux-perf-rel](https://ci.chromium.org/p/chrome/builders/ci/linux-perf-rel): Ubuntu-18.04, 8 core, NVIDIA Quadro P400.
  * [linux-r350-perf](https://ci.chromium.org/p/chrome/builders/ci/linux-r350-perf): Ubuntu-22.04, 16 core.
 
