@@ -1,15 +1,22 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
-import './shared_style.css.js';
-import './prefs/pref_toggle_button.js';
-import './user_utils_mixin.js';
-import '/shared/settings/controls/extension_controlled_indicator.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import './dialogs/disconnect_cloud_authenticator_dialog.js';
 import './dialogs/remove_actor_login_permission_dialog.js';
+import './full_data_reset.js';
+import './passwords_exporter.js';
+import './passwords_importer.js';
+import './prefs/pref_toggle_button.js';
+import '/shared/settings/controls/extension_controlled_indicator.js';
+import './shared_style.css.js';
+import './site_favicon.js';
+import './user_utils_mixin.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
