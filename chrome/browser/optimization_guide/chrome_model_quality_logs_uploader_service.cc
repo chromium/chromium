@@ -87,7 +87,9 @@ bool ChromeModelQualityLogsUploaderService::CanUploadLogs(
   }
 
   if (model_execution_feature_controller_) {
-    // Don't upload logs if logging is disabled by enterprise policy.
+    // Don't upload logs if logging is disabled by enterprise policy. Or, in
+    // case there is no enterprise policy set, disable logging if the user is
+    // enterprise.
     if (!model_execution_feature_controller_
              ->ShouldFeatureBeCurrentlyAllowedForLogging(metadata)) {
       RecordUploadStatusHistogram(

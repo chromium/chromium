@@ -20,6 +20,8 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -34,6 +36,17 @@
 namespace optimization_guide {
 
 using model_execution::prefs::ModelExecutionEnterprisePolicyValue;
+using policy::ScopedManagementServiceOverrideForTesting;
+
+class TestManagementService : public policy::ManagementService {
+ public:
+  TestManagementService() : policy::ManagementService({}) {}
+  void SetManagementStatusProviderForTesting(
+      std::vector<std::unique_ptr<policy::ManagementStatusProvider>>
+          providers) {
+    SetManagementStatusProvider(std::move(providers));
+  }
+};
 
 class ModelExecutionFeaturesControllerTest : public testing::Test {
  public:
@@ -56,7 +69,8 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
       bool is_official_build = true) {
     controller_ = std::make_unique<ModelExecutionFeaturesController>(
         pref_service_.get(), identity_test_env_.identity_manager(),
-        local_state_.get(), dogfood_status, is_official_build);
+        local_state_.get(), management_service(), dogfood_status,
+        is_official_build);
   }
 
   void EnableSignIn() {
@@ -108,12 +122,16 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
 
   PrefService* pref_service() { return pref_service_.get(); }
   PrefService* local_state() { return local_state_.get(); }
+  policy::ManagementService* management_service() {
+    return &management_service_;
+  }
 
  private:
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
+  TestManagementService management_service_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<ModelExecutionFeaturesController> controller_;
@@ -342,6 +360,33 @@ TEST_F(ModelExecutionFeaturesControllerTest, GraduatedFeatureIsVisible) {
       "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup."
       "WallpaperSearch",
       false, 1);
+}
+
+TEST_F(ModelExecutionFeaturesControllerTest,
+       EnterprisePolicyUnsetLoggingDisabledForEnterpriseUser) {
+  ScopedManagementServiceOverrideForTesting override(
+      management_service(),
+      policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+
+  CreateController();
+  EnableSignIn();
+  const MqlsFeatureMetadata* metadata =
+      MqlsFeatureRegistry::GetInstance().GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kActorLogin);
+  EXPECT_FALSE(
+      controller()->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
+}
+
+TEST_F(ModelExecutionFeaturesControllerTest,
+       EnterprisePolicyUnsetLoggingEnabledForNonEnterpriseUser) {
+  CreateController();
+  EnableSignIn();
+
+  const MqlsFeatureMetadata* metadata =
+      MqlsFeatureRegistry::GetInstance().GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kActorLogin);
+  EXPECT_TRUE(
+      controller()->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
 }
 
 TEST_F(ModelExecutionFeaturesControllerTest,

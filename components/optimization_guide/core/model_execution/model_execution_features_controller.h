@@ -23,6 +23,10 @@
 
 class PrefService;
 
+namespace policy {
+class ManagementService;
+}
+
 namespace optimization_guide {
 
 // Class that keeps track of user opt-in settings, including the visibility of
@@ -60,11 +64,13 @@ class ModelExecutionFeaturesController
   };
 
   // Must be created only for non-incognito browser contexts.
-  ModelExecutionFeaturesController(PrefService* browser_context_profile_service,
-                                   signin::IdentityManager* identity_manager,
-                                   PrefService* local_state,
-                                   DogfoodStatus dogfood_status,
-                                   bool is_official_build);
+  ModelExecutionFeaturesController(
+      PrefService* browser_context_profile_service,
+      signin::IdentityManager* identity_manager,
+      PrefService* local_state,
+      policy::ManagementService* management_service,
+      DogfoodStatus dogfood_status,
+      bool is_official_build);
 
   ~ModelExecutionFeaturesController() override;
 
@@ -213,6 +219,9 @@ class ModelExecutionFeaturesController
 
   // Set of features that are visible to unsigned users.
   base::flat_set<UserVisibleFeatureKey> features_allowed_for_unsigned_user_;
+
+  // To check if the user is enterprise or not.
+  raw_ptr<policy::ManagementService> management_service_;
 
   // Whether this client is a (likely) dogfood client.
   const DogfoodStatus dogfood_status_;

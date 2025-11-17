@@ -22,6 +22,7 @@
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "third_party/tflite/buildflags.h"
@@ -68,6 +69,7 @@ ModelExecutionFeaturesController::ModelExecutionFeaturesController(
     PrefService* browser_context_profile_service,
     signin::IdentityManager* identity_manager,
     PrefService* local_state,
+    policy::ManagementService* management_service,
     DogfoodStatus dogfood_status,
     bool is_official_build)
     : browser_context_profile_service_(browser_context_profile_service),
@@ -75,6 +77,7 @@ ModelExecutionFeaturesController::ModelExecutionFeaturesController(
       local_state_(local_state),
       features_allowed_for_unsigned_user_(
           features::internal::GetAllowedFeaturesForUnsignedUser()),
+      management_service_(management_service),
       dogfood_status_(dogfood_status),
       is_official_build_(is_official_build) {
   CHECK(browser_context_profile_service_);
@@ -141,8 +144,17 @@ bool ModelExecutionFeaturesController::
     return true;
   }
 
-  return metadata->enterprise_policy().GetValue(
-             browser_context_profile_service_) ==
+  std::optional<EnterprisePolicyPref> enterprise_policy =
+      metadata->enterprise_policy();
+  if (!enterprise_policy) {
+    if (!management_service_) {
+      return false;
+    }
+    // If the user is managed, logging is disabled by default.
+    return !management_service_->IsManaged();
+  }
+
+  return enterprise_policy->GetValue(browser_context_profile_service_) ==
          model_execution::prefs::ModelExecutionEnterprisePolicyValue::kAllow;
 }
 
