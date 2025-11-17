@@ -8,6 +8,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/corewm/tooltip_view_aura.h"
@@ -31,6 +32,8 @@ ShelfTooltipBubble::ShelfTooltipBubble(
 
   set_margins(gfx::Insets(0));
   SetPaintToLayer(ui::LAYER_TEXTURED);
+  layer()->SetFillsBoundsOpaquely(false);
+
   auto* tooltip_view = AddChildView(StyleUtil::CreateAshStyleTooltipView());
   tooltip_view->SetText(text);
 
