@@ -699,11 +699,15 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutFragmentationContext(
       DCHECK(!first_trailing_column_gap_idx_);
     }
 
+    // If we're done with one row, move to the next, by consuming any remaining
+    // space from the current row, and then past the following row gap. Also do
+    // this in the first iteration, if there's no room in the current row
+    // (because of a preceding spanner, typically). Make an exception for
+    // zero-height rows (which is a rather useless but supported concept) here,
+    // since they'll never be able to fit anything without overflowing anyway.
     if (!is_first_row ||
-        (ShouldWrapColumns() && HasRowHeight() &&
+        (ShouldWrapColumns() && HasRowHeight() && RowHeight() > LayoutUnit() &&
          RemainingRowHeightAtOffset(line_offset) <= LayoutUnit())) {
-      // Move to the next row, by consuming any remaining space from the current
-      // row, and then past the following row gap.
       line_offset += OffsetToNextRow(line_offset);
     }
 
