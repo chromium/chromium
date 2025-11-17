@@ -15,7 +15,7 @@ namespace {
 
 // These names are exposed to the proxy extension API. They must be in sync
 // with the constants of ProxyPrefs.
-auto kProxyModeNames = std::to_array<const char*>({
+constexpr auto kProxyModeNames = std::to_array<const char*>({
     kDirectProxyModeName,
     kAutoDetectProxyModeName,
     kPacScriptProxyModeName,

@@ -42,7 +42,7 @@ namespace gpu {
 
 namespace {
 
-auto kQualities = std::to_array<GLHelper::ScalerQuality>({
+constexpr auto kQualities = std::to_array<GLHelper::ScalerQuality>({
     GLHelper::SCALER_QUALITY_BEST,
     GLHelper::SCALER_QUALITY_GOOD,
     GLHelper::SCALER_QUALITY_FAST,

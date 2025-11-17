@@ -27,7 +27,7 @@ namespace policy {
 
 namespace {
 
-auto kExternalPolicyDataURLs = std::to_array<const char*>(
+constexpr auto kExternalPolicyDataURLs = std::to_array<const char*>(
     {"http://localhost/data_1", "http://localhost/data_2"});
 
 const int64_t kExternalPolicyDataMaxSize = 20;

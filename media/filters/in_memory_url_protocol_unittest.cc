@@ -11,7 +11,7 @@
 
 namespace media {
 
-auto kData = std::to_array<uint8_t>({0x01, 0x02, 0x03, 0x04});
+constexpr auto kData = std::to_array<uint8_t>({0x01, 0x02, 0x03, 0x04});
 
 TEST(InMemoryUrlProtocolTest, ReadFromLargeBuffer) {
   InMemoryUrlProtocol protocol(kData, false);

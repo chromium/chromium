@@ -33,7 +33,7 @@
 namespace viz {
 
 namespace {
-auto kYUVReadbackSizes = std::to_array<int>({2, 4, 14});
+constexpr auto kYUVReadbackSizes = std::to_array<int>({2, 4, 14});
 }
 
 class YUVReadbackTest : public testing::Test {

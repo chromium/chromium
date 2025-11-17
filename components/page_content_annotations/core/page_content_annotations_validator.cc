@@ -29,7 +29,7 @@ namespace page_content_annotations {
 
 namespace {
 
-auto kRandomNouns = std::to_array<const char*>({
+constexpr auto kRandomNouns = std::to_array<const char*>({
     "Airplane", "Boat",       "Book",          "Dinosaur",   "Earth",
     "Football", "Fork",       "Hummingbird",   "Magic Wand", "Mailbox",
     "Molecule", "Pizza",      "Record Player", "Skeleton",   "Soda",

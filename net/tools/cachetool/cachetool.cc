@@ -53,7 +53,7 @@ struct EntryData {
 constexpr int kResponseInfoIndex = 0;
 constexpr int kResponseContentIndex = 1;
 
-auto kCommandNames = std::to_array(
+constexpr auto kCommandNames = std::to_array(
     {"stop", "get_size", "list_keys", "get_stream", "delete_stream",
      "delete_key", "update_raw_headers", "list_dups", "set_header"});
 

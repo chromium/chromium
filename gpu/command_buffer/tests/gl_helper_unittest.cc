@@ -41,13 +41,13 @@ namespace gpu {
 
 namespace {
 
-auto kQualities = std::to_array<GLHelper::ScalerQuality>({
+constexpr auto kQualities = std::to_array<GLHelper::ScalerQuality>({
     GLHelper::SCALER_QUALITY_BEST,
     GLHelper::SCALER_QUALITY_GOOD,
     GLHelper::SCALER_QUALITY_FAST,
 });
 
-auto kQualityNames = std::to_array<const char*>({
+constexpr auto kQualityNames = std::to_array<const char*>({
     "best",
     "good",
     "fast",
@@ -1290,7 +1290,7 @@ TEST_F(GLHelperTest, BGRAASyncReadbackTest) {
   EXPECT_EQ(result, true);
 }
 
-auto kRGBReadBackSizes = std::to_array<int>({3, 6, 16});
+constexpr auto kRGBReadBackSizes = std::to_array<int>({3, 6, 16});
 
 class GLHelperPixelReadbackTest
     : public GLHelperPixelTest,

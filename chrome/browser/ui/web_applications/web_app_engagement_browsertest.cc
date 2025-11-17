@@ -77,7 +77,7 @@ enum HistogramIndex {
 };
 
 // The order (indices) must match HistogramIndex enum above
-auto kHistogramNames = std::to_array<const char*>({
+constexpr auto kHistogramNames = std::to_array<const char*>({
     "WebApp.Engagement.InTab",
     "WebApp.Engagement.InWindow",
     "WebApp.Engagement.DefaultInstalled.InTab",

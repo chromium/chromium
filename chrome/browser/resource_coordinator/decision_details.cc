@@ -15,7 +15,7 @@ namespace {
 // These are intended to be human readable descriptions of the various failure
 // reasons. They don't need to be localized as they are for a developer-only
 // WebUI.
-auto kDecisionFailureReasonStrings = std::to_array<const char*>({
+constexpr auto kDecisionFailureReasonStrings = std::to_array<const char*>({
     "Browser opted out via enterprise policy",
     "Tab opted out via origin trial",
     "Origin is in global disallowlist",
@@ -46,7 +46,7 @@ static_assert(std::size(kDecisionFailureReasonStrings) ==
                   static_cast<size_t>(DecisionFailureReason::MAX),
               "kDecisionFailureReasonStrings not up to date with enum");
 
-auto kDecisionSuccessReasonStrings = std::to_array<const char*>({
+constexpr auto kDecisionSuccessReasonStrings = std::to_array<const char*>({
     "Tab opted in via origin trial",
     "Origin is in global allowlist",
     "Origin has locally been observed to be safe via heuristic logic",

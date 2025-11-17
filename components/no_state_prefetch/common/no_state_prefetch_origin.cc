@@ -12,7 +12,7 @@ namespace prerender {
 
 namespace {
 
-auto kOriginNames = std::to_array<const char*>({
+constexpr auto kOriginNames = std::to_array<const char*>({
     "[Deprecated] Link Rel Prerender (original)",
     "[Deprecated] Omnibox (original)",
     "GWS Prerender",

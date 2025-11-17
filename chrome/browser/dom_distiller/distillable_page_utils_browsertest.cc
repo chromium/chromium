@@ -48,7 +48,7 @@ const char kSimpleArticleIFramePath[] =
 const char kArticlePath[] = "/dom_distiller/og_article.html";
 const char kNonArticlePath[] = "/dom_distiller/non_og_article.html";
 
-auto kAllPaths = std::to_array<const char*>({
+constexpr auto kAllPaths = std::to_array<const char*>({
     kSimpleArticlePath,
     kSimpleArticleIFramePath,
     kArticlePath,

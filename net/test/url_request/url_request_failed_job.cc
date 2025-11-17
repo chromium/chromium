@@ -25,7 +25,7 @@ namespace {
 const char kMockHostname[] = "mock.failed.request";
 
 // String names of failure phases matching FailurePhase enum.
-auto kFailurePhase = std::to_array<const char*>({
+constexpr auto kFailurePhase = std::to_array<const char*>({
     "start",      // START
     "readsync",   // READ_SYNC
     "readasync",  // READ_ASYNC
