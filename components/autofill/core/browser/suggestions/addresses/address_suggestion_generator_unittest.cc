@@ -870,6 +870,16 @@ TEST_F(AddressSuggestionGeneratorTest,
   EXPECT_EQ(u"+1 234-567-8910", suggestions[0].main_text.value);
 }
 
+// Tests that suggestions are not offered on non address fields.
+TEST_F(AddressSuggestionGeneratorTest,
+       GetSuggestionsForProfiles_NotAddressField) {
+  AutofillProfile profile1 = test::GetFullProfile();
+  address_data().AddProfile(profile1);
+
+  FormFieldData triggering_field;
+  EXPECT_THAT(GetSuggestionsForProfiles(triggering_field, PASSWORD), IsEmpty());
+}
+
 // Tests that suggestions are filtered by the triggering field's value.
 TEST_F(AddressSuggestionGeneratorTest,
        GetSuggestionsForProfiles_PrefixMatching) {

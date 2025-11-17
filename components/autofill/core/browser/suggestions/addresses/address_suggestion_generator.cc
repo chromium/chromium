@@ -1040,6 +1040,9 @@ AddressSuggestionGenerator::MaybeFetchRegularAddressSuggestionData(
   if (!form_structure || !trigger_autofill_field) {
     return {};
   }
+  if (trigger_autofill_field->Type().GetAddressType() == UNKNOWN_TYPE) {
+    return {};
+  }
   if (SuppressSuggestionsForAutocompleteUnrecognizedField(
           *trigger_autofill_field)) {
     return {};
