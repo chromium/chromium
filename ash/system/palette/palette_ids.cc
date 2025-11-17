@@ -19,8 +19,6 @@ PaletteTrayOptions PaletteToolIdToPaletteTrayOptions(PaletteToolId tool_id) {
       return PALETTE_MAGNIFY;
     case PaletteToolId::ENTER_CAPTURE_MODE:
       return PALETTE_ENTER_CAPTURE_MODE;
-    case PaletteToolId::MARKER_MODE:
-      return PALETTE_MARKER_MODE;
   }
 
   NOTREACHED();

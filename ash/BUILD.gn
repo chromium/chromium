@@ -2265,8 +2265,6 @@ component("ash") {
     "system/palette/tools/laser_pointer_mode.h",
     "system/palette/tools/magnifier_mode.cc",
     "system/palette/tools/magnifier_mode.h",
-    "system/palette/tools/marker_mode.cc",
-    "system/palette/tools/marker_mode.h",
     "system/pcie_peripheral/pcie_peripheral_notification_controller.cc",
     "system/pcie_peripheral/pcie_peripheral_notification_controller.h",
     "system/phonehub/app_stream_connection_error_dialog.cc",

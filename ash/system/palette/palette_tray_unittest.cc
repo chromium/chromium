@@ -898,18 +898,15 @@ TEST_F(PaletteTrayTestWithAnnotator,
       test_api_->palette_tool_manager()->GetActiveTool(PaletteGroup::MODE),
       PaletteToolId::LASER_POINTER);
 
-  // Activate marker tool.
-  test_api_->palette_tool_manager()->ActivateTool(PaletteToolId::MARKER_MODE);
   // Simulate activating marker in the controller.
   annotator_controller()->OnCanvasInitialized(true);
+  annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
+  annotator_controller()->CreateAnnotationOverlayForMarkerMode(
+      Shell::GetPrimaryRootWindow());
   annotator_controller()->EnableAnnotatorTool();
 
-  // Verify annotation tray is shown, palette tray is hidden, and the active
-  // tool is marker mode.
+  // Verify annotation tray is shown, palette tray is hidden.
   EXPECT_FALSE(palette_tray_->GetVisible());
-  EXPECT_EQ(
-      test_api_->palette_tool_manager()->GetActiveTool(PaletteGroup::MODE),
-      PaletteToolId::MARKER_MODE);
   EXPECT_TRUE(annotation_tray()->visible_preferred());
 
   // Disable annotator. Verify annotation tray is hidden, palette tray is shown
