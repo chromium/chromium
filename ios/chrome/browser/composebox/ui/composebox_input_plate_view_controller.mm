@@ -24,7 +24,9 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/glow_effect/glow_effect_api.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 /// The reuse identifier for the input item cells in the carousel.
@@ -140,6 +142,9 @@ const CGFloat kFadeViewWidth = 30.0f;
 
   // The theme of the composebox.
   ComposeboxTheme* _theme;
+
+  // The favicon for the current tab.
+  UIImage* _currentTabFavicon;
 }
 
 /// ComposeboxAnimationContextProvider
@@ -293,6 +298,11 @@ const CGFloat kFadeViewWidth = 30.0f;
   [self updateInputPlateStackView];
 }
 
+- (void)setCurrentTabFavicon:(UIImage*)favicon {
+  _currentTabFavicon = favicon;
+  [self updatePlusButtonItems];
+}
+
 #pragma mark - Actions
 
 - (void)galleryButtonTapped {
@@ -349,6 +359,10 @@ const CGFloat kFadeViewWidth = 30.0f;
   [self.delegate composeboxViewControllerDidTapAttachTabsButton:self];
 }
 
+- (void)handleAIMPressed {
+  self.AIModeEnabled = !self.AIModeEnabled;
+}
+
 - (void)updateCarouselFade {
   CGFloat contentOffsetX = _carouselView.contentOffset.x;
   CGFloat contentWidth = _carouselView.contentSize.width;
@@ -365,6 +379,7 @@ const CGFloat kFadeViewWidth = 30.0f;
   }
   _AIModeEnabled = AIModeEnabled;
   [self updateAIMButtonAppearance];
+  [self updatePlusButtonItems];
   [self.mutator setAIModeEnabled:_AIModeEnabled];
   [self triggerGlowEffect];
 }
@@ -641,9 +656,7 @@ const CGFloat kFadeViewWidth = 30.0f;
 
   __weak __typeof__(self) weakSelf = self;
   UIAction* galleryAction = [UIAction
-      // TODO(crbug.com/40280872): Localize this string.
-
-      actionWithTitle:@"Gallery"
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_GALLERY_ACTION)
                 image:DefaultSymbolWithPointSize(kPhotoSymbol,
                                                  kSymbolActionPointSize)
            identifier:nil
@@ -652,9 +665,7 @@ const CGFloat kFadeViewWidth = 30.0f;
                     composeboxViewControllerDidTapGalleryButton:weakSelf];
               }];
   UIAction* cameraAction = [UIAction
-      // TODO(crbug.com/40280872): Localize this string.
-
-      actionWithTitle:@"Camera"
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CAMERA_ACTION)
                 image:DefaultSymbolWithPointSize(kSystemCameraSymbol,
                                                  kSymbolActionPointSize)
            identifier:nil
@@ -664,8 +675,7 @@ const CGFloat kFadeViewWidth = 30.0f;
               }];
 
   UIAction* fileAction = [UIAction
-      // TODO(crbug.com/40280872): Localize this string.
-      actionWithTitle:@"File"
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_FILES_ACTION)
                 image:DefaultSymbolWithPointSize(kDocSymbol,
                                                  kSymbolActionPointSize)
            identifier:nil
@@ -674,33 +684,63 @@ const CGFloat kFadeViewWidth = 30.0f;
                     composeboxViewControllerDidTapFileButton:weakSelf];
               }];
 
-  UIAction* attachCurrentTabAction = [UIAction
-      // TODO(crbug.com/40280872): Localize this string.
-      actionWithTitle:@"Attach current tab"
-                image:DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
-                                                 kSymbolActionPointSize)
-           identifier:nil
-              handler:^(UIAction* action) {
-                [weakSelf.mutator attachCurrentTabContent];
-              }];
-
-  NSMutableArray* menuItems = [NSMutableArray
-      arrayWithObjects:fileAction, galleryAction, cameraAction, nil];
+  UIAction* attachCurrentTabAction =
+      [UIAction actionWithTitle:l10n_util::GetNSString(
+                                    IDS_IOS_COMPOSEBOX_ADD_CURRENT_TAB_ACTION)
+                          image:_currentTabFavicon
+                                    ?: DefaultSymbolWithPointSize(
+                                           kNewTabGroupActionSymbol,
+                                           kSymbolActionPointSize)
+                     identifier:nil
+                        handler:^(UIAction* action) {
+                          [weakSelf.mutator attachCurrentTabContent];
+                        }];
 
   UIAction* selectTabsAction = [UIAction
-      // TODO(crbug.com/40280872): Localize this string.
-      actionWithTitle:@"Attach tabs"
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_COMPOSEBOX_SELECT_TAB_ACTION)
                 image:DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
                                                  kSymbolActionPointSize)
            identifier:nil
               handler:^(UIAction* action) {
                 [weakSelf handleAttachTabs];
               }];
-  [menuItems addObject:selectTabsAction];
 
+  UIAction* aimAction = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_AIM_ACTION)
+                image:CustomSymbolWithPointSize(kMagnifyingglassSparkSymbol,
+                                                kSymbolActionPointSize)
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf handleAIMPressed];
+              }];
+
+  if (self.AIModeEnabled) {
+    [aimAction setState:UIMenuElementStateOn];
+  }
+
+  UIAction* createImageAction =
+      [UIAction actionWithTitle:l10n_util::GetNSString(
+                                    IDS_IOS_COMPOSEBOX_CREATE_IMAGE_ACTION)
+                          image:[self bananaIcon]
+                     identifier:nil
+                        handler:^(UIAction* action){
+                        }];
+
+  NSMutableArray* menuItems = [[NSMutableArray alloc] init];
   if (_canAttachCurrentTab) {
     [menuItems addObject:attachCurrentTabAction];
   }
+  [menuItems addObjectsFromArray:@[
+    selectTabsAction, cameraAction, galleryAction, fileAction
+  ]];
+
+  UIMenu* submenu = [UIMenu menuWithTitle:@""
+                                    image:nil
+                               identifier:nil
+                                  options:UIMenuOptionsDisplayInline
+                                 children:@[ aimAction, createImageAction ]];
+  [menuItems addObject:submenu];
 
   _plusButton.menu = [UIMenu menuWithTitle:@"" children:menuItems];
 }
@@ -819,6 +859,27 @@ const CGFloat kFadeViewWidth = 30.0f;
   }
 
   [_editView hideLeadingImage:self.isCompactMode];
+}
+
+- (UIImage*)bananaIcon {
+  CGFloat iconPadding = 4.0;
+  CGSize size = CGSizeMake(kSymbolActionPointSize + iconPadding,
+                           kSymbolActionPointSize + iconPadding);
+
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:size];
+  UIImage* image = [renderer
+      imageWithActions:^(UIGraphicsImageRendererContext* rendererContext) {
+        CGRect rect = CGRectMake(0, 0, size.width, size.height);
+        UIFont* font = [UIFont systemFontOfSize:kSymbolActionPointSize];
+        NSDictionary* attributes = @{
+          NSFontAttributeName : font,
+          NSForegroundColorAttributeName : UIColor.blackColor
+        };
+        [@"🍌" drawInRect:rect withAttributes:attributes];
+      }];
+
+  return image;
 }
 
 @end

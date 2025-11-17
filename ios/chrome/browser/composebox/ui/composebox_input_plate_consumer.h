@@ -34,6 +34,9 @@
 // Whether to present in compact (single line) mode.
 - (void)setIsCompactMode:(BOOL)isCompactMode;
 
+// Sets the favicon for the current tab.
+- (void)setCurrentTabFavicon:(UIImage*)favicon;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_CONSUMER_H_

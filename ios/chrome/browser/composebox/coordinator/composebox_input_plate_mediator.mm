@@ -245,6 +245,11 @@ CreateInputDataFromAnnotatedPageContent(
   }
 
   BOOL canAttachCurrentTab = [self updateOptionToAttachCurrentTab];
+
+  if (canAttachCurrentTab) {
+    [self extractFaviconForCurrentTab];
+  }
+
   if (base::FeatureList::IsEnabled(kComposeboxAutoattachTab) &&
       canAttachCurrentTab) {
     [self attachCurrentTabContent];
@@ -518,6 +523,28 @@ CreateInputDataFromAnnotatedPageContent(
     _composeboxQueryController->StartFileUploadFlow(
         token, std::move(input_data), image_options);
   }
+}
+
+- (void)extractFaviconForCurrentTab {
+  if (!_faviconLoader) {
+    return;
+  }
+  web::WebState* webState = _webStateList->GetActiveWebState();
+  if (!webState) {
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+
+  auto faviconLoadedBlock = ^(FaviconAttributes* attributes, bool cached) {
+    if (attributes.faviconImage) {
+      [weakSelf.consumer setCurrentTabFavicon:attributes.faviconImage];
+    }
+  };
+
+  _faviconLoader->FaviconForPageUrl(
+      webState->GetVisibleURL(), gfx::kFaviconSize, gfx::kFaviconSize,
+      /*fallback_to_google_server=*/true, faviconLoadedBlock);
 }
 
 - (void)attachCurrentTabContent {
