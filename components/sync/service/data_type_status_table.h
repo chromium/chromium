@@ -5,17 +5,16 @@
 #ifndef COMPONENTS_SYNC_SERVICE_DATA_TYPE_STATUS_TABLE_H_
 #define COMPONENTS_SYNC_SERVICE_DATA_TYPE_STATUS_TABLE_H_
 
-#include <map>
-
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_error.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace syncer {
 
 // Class to keep track of data types that have encountered an error during sync.
 class DataTypeStatusTable {
  public:
-  using TypeErrorMap = std::map<DataType, SyncError>;
+  using TypeErrorMap = absl::flat_hash_map<DataType, SyncError>;
 
   DataTypeStatusTable();
   DataTypeStatusTable(const DataTypeStatusTable& other);
