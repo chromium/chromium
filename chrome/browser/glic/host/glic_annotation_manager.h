@@ -53,8 +53,9 @@ class GlicAnnotationManager {
   // highlight is currently persisted until either the page with the highlight
   // is navigated from or ScrollTo() is called again.
   class AnnotationTask : public blink::mojom::AnnotationAgentHost,
-                         content::WebContentsObserver,
-                         PanelStateObserver {
+                         public content::WebContentsObserver,
+                         public PanelStateObserver,
+                         public Host::Observer {
    public:
     AnnotationTask(GlicAnnotationManager* manager,
                    mojo::Remote<blink::mojom::AnnotationAgent> annotation_agent,
@@ -128,6 +129,9 @@ class GlicAnnotationManager {
 
     // `pref_change_registrar_` callback.
     void OnTabContextPermissionChanged(const std::string& pref_name);
+
+    // Host::Observer:
+    void ContextAccessIndicatorChanged(bool enabled) override;
 
     // Uniquely owns `this`.
     base::raw_ref<GlicAnnotationManager> annotation_manager_;

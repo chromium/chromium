@@ -149,9 +149,12 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
   GlicAnnotationManagerUiTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kGlicScrollTo);
     // TODO(b/453696965): These tests need fixed to work with
-    // kGlicMultiInstance.
-    no_multi_instance_feature_list_.InitAndDisableFeature(
-        features::kGlicMultiInstance);
+    // kGlicMultiInstance. The permission tests also rely on the pref, so
+    // disable the default setting feature.
+    no_multi_instance_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kGlicMultiInstance,
+                               features::kGlicDefaultTabContextSetting});
   }
   ~GlicAnnotationManagerUiTest() override = default;
 
@@ -1344,9 +1347,12 @@ class GlicAnnotationManagerWithScrollToDisabledUiTest
   GlicAnnotationManagerWithScrollToDisabledUiTest() {
     scoped_feature_list_.InitAndDisableFeature(features::kGlicScrollTo);
     // TODO(b/453696965): These tests need fixed to work with
-    // kGlicMultiInstance.
-    no_multi_instance_feature_list_.InitAndDisableFeature(
-        features::kGlicMultiInstance);
+    // kGlicMultiInstance. The permission tests also rely on the pref, so
+    // disable the default setting feature.
+    no_multi_instance_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kGlicMultiInstance,
+                               features::kGlicDefaultTabContextSetting});
   }
   ~GlicAnnotationManagerWithScrollToDisabledUiTest() override = default;
 

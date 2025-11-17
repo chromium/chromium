@@ -19,6 +19,7 @@
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
@@ -63,6 +64,9 @@ void LogNudgeInteractionUKM(ukm::SourceId source_id,
 
 #if BUILDFLAG(ENABLE_GLIC)
 bool IsGlicTabContextEnabled(PrefService* pref_service) {
+  if (base::FeatureList::IsEnabled(features::kGlicDefaultTabContextSetting)) {
+    return true;
+  }
   return pref_service->GetBoolean(glic::prefs::kGlicTabContextEnabled);
 }
 

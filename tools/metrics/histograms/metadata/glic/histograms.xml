@@ -1764,7 +1764,8 @@ chromium-metrics-reviews@google.com.
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <summary>
-    Records the active tab's focus state at the moment when {Event}.
+    Records the active tab's focus state at the moment when {Event}. Note: This
+    is valid only for single instance.
   </summary>
   <token key="Event">
     <variant name="OnPanelOpenAndReady"
