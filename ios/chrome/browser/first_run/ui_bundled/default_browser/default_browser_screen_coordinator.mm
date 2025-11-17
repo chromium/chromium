@@ -13,8 +13,6 @@
 #import "ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
-#import "ios/chrome/browser/first_run/public/best_features_item.h"
-#import "ios/chrome/browser/first_run/ui_bundled/best_features/coordinator/best_features_instruction_steps_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/default_browser/default_browser_animated_screen_view_controller.h"
 #import "ios/chrome/browser/first_run/ui_bundled/default_browser/default_browser_screen_mediator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/default_browser/default_browser_screen_view_controller.h"
@@ -28,6 +26,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/common/ui/instructions_bottom_sheet/instructions_bottom_sheet_coordinator.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -43,7 +42,7 @@
   // necessary properties, but only one view is presented.
   DefaultBrowserScreenViewController* _staticViewController;
   DefaultBrowserAnimatedScreenViewController* _animatedViewController;
-  BestFeaturesInstructionStepsCoordinator* _instructionsCoordinator;
+  InstructionsBottomSheetCoordinator* _instructionsCoordinator;
   DefaultBrowserScreenMediator* _mediator;
   __weak id<FirstRunScreenDelegate> _delegate;
   TOSCoordinator* _TOSCoordinator;
@@ -126,8 +125,6 @@
   if (first_run::AnimatedDefaultBrowserPromoInFREExperimentTypeEnabled() ==
       first_run::AnimatedDefaultBrowserPromoInFREExperimentType::
           kAnimationWithShowMeHow) {
-    BestFeaturesItem* item = [[BestFeaturesItem alloc]
-        initWithType:BestFeaturesItemType::kLensSearch];
     NSMutableArray* defaultBrowserSteps = [[NSMutableArray alloc] init];
     if (IsDefaultAppsDestinationAvailable() &&
         IsUseDefaultAppsDestinationForPromosEnabled()) {
@@ -150,11 +147,11 @@
     [defaultBrowserSteps
         addObject:l10n_util::GetNSString(
                       IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP)];
-    item.instructionSteps = defaultBrowserSteps;
-    _instructionsCoordinator = [[BestFeaturesInstructionStepsCoordinator alloc]
+    _instructionsCoordinator = [[InstructionsBottomSheetCoordinator alloc]
         initWithBaseViewController:_animatedViewController
                            browser:self.browser
-                              item:item];
+                             title:nil
+                             steps:defaultBrowserSteps];
 
     [_instructionsCoordinator start];
   }

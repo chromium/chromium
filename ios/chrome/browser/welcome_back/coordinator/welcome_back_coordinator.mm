@@ -9,7 +9,6 @@
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
-#import "ios/chrome/browser/first_run/ui_bundled/best_features/coordinator/best_features_screen_detail_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -22,6 +21,7 @@
 #import "ios/chrome/browser/welcome_back/model/welcome_back_prefs.h"
 #import "ios/chrome/browser/welcome_back/ui/welcome_back_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/common/ui/instructions_bottom_sheet/instructions_bottom_sheet_coordinator.h"
 
 @interface WelcomeBackCoordinator () <ConfirmationAlertActionHandler,
                                       WelcomeBackActionHandler>
@@ -32,8 +32,8 @@
   WelcomeBackMediator* _mediator;
   // Base navigation controller.
   UINavigationController* _navigationController;
-  // The BestFeaturesScreenDetail coordinator.
-  BestFeaturesScreenDetailCoordinator* _detailScreenCoordinator;
+  // The InstructionsBottomSheetCoordinator.
+  InstructionsBottomSheetCoordinator* _detailScreenCoordinator;
   // Whether the user has tapped one of the Welcome Back items.
   BOOL _itemTapped;
 }
@@ -87,10 +87,11 @@
       ->NotifyEvent(feature_engagement::events::kIOSWelcomeBackPromoUsed);
   _itemTapped = YES;
 
-  _detailScreenCoordinator = [[BestFeaturesScreenDetailCoordinator alloc]
-      initWithBaseNavigationViewController:_navigationController
-                                   browser:self.browser
-                          bestFeaturesItem:item];
+  _detailScreenCoordinator = [[InstructionsBottomSheetCoordinator alloc]
+      initWithBaseViewController:_navigationController
+                         browser:self.browser
+                           title:item.title
+                           steps:item.instructionSteps];
 
   [_detailScreenCoordinator start];
 }

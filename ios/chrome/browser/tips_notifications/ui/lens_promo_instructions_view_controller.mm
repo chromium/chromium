@@ -17,19 +17,25 @@ NSString* const kLensPromoInstructionsAXID = @"kLensPromoInstructionsAXID";
 
 @implementation LensPromoInstructionsViewController
 
+- (instancetype)init {
+  self =
+      [super initWithTitle:l10n_util::GetNSString(
+                               IDS_IOS_LENS_PROMO_INSTRUCTIONS_TITLE)
+              instructions:@[
+                l10n_util::GetNSString(IDS_IOS_LENS_PROMO_INSTRUCTIONS_STEP1),
+                l10n_util::GetNSString(IDS_IOS_LENS_PROMO_INSTRUCTIONS_STEP2),
+                l10n_util::GetNSString(IDS_IOS_LENS_PROMO_INSTRUCTIONS_STEP3),
+              ]];
+  if (self) {
+    self.configuration.primaryActionString =
+        l10n_util::GetNSString(IDS_IOS_LENS_PROMO_PRIMARY_ACTION);
+  }
+  return self;
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  self.configuration.primaryActionString =
-      l10n_util::GetNSString(IDS_IOS_LENS_PROMO_PRIMARY_ACTION);
-  self.titleString =
-      l10n_util::GetNSString(IDS_IOS_LENS_PROMO_INSTRUCTIONS_TITLE);
-  self.steps = @[
-    l10n_util::GetNSString(IDS_IOS_LENS_PROMO_INSTRUCTIONS_STEP1),
-    l10n_util::GetNSString(IDS_IOS_LENS_PROMO_INSTRUCTIONS_STEP2),
-    l10n_util::GetNSString(IDS_IOS_LENS_PROMO_INSTRUCTIONS_STEP3),
-  ];
-
   [super viewDidLoad];
   self.view.accessibilityIdentifier = kLensPromoInstructionsAXID;
 }

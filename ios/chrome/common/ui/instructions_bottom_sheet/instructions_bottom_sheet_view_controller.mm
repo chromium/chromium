@@ -1,12 +1,28 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/tips_notifications/ui/instructions_bottom_sheet_view_controller.h"
+#import "ios/chrome/common/ui/instructions_bottom_sheet/instructions_bottom_sheet_view_controller.h"
 
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
 
-@implementation InstructionsBottomSheetViewController
+@implementation InstructionsBottomSheetViewController {
+  // The title of the instructions view.
+  NSString* _titleString;
+  // An array containing the strings of each step to display in the
+  // instructions.
+  NSArray<NSString*>* _steps;
+}
+
+- (instancetype)initWithTitle:(NSString*)title
+                 instructions:(NSArray<NSString*>*)instructions {
+  self = [super init];
+  if (self) {
+    _titleString = title;
+    _steps = instructions;
+  }
+  return self;
+}
 
 #pragma mark - UIViewController
 
@@ -29,10 +45,7 @@
   UILabel* label = [[UILabel alloc] init];
   label.translatesAutoresizingMaskIntoConstraints = NO;
   label.numberOfLines = 0;
-  label.text = self.titleString;
-  // Clear `titleString` so that ConfirmationAlertViewController doesn't use
-  // it to create a label.
-  self.titleString = nil;
+  label.text = _titleString;
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
   label.adjustsFontForContentSizeCategory = YES;
   label.textAlignment = NSTextAlignmentCenter;
@@ -43,7 +56,7 @@
 
 // Returns a view containing instructions to enable Enhanced Safe Browsing.
 - (InstructionView*)createInstructionView {
-  InstructionView* view = [[InstructionView alloc] initWithList:self.steps];
+  InstructionView* view = [[InstructionView alloc] initWithList:_steps];
   view.translatesAutoresizingMaskIntoConstraints = NO;
   return view;
 }

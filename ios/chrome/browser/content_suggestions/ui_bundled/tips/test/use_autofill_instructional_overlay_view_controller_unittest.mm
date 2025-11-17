@@ -29,14 +29,19 @@ class UseAutofillInstructionalOverlayViewControllerTest : public PlatformTest {
 // Tests that the strings and accessibility identifier are correctly set.
 TEST_F(UseAutofillInstructionalOverlayViewControllerTest,
        ShouldSetCorrectStringsAndAccessibilityIdentifier) {
-  EXPECT_EQ([view_controller_ steps].count, 3u);
-  EXPECT_NSEQ([view_controller_ steps][0],
+  NSString* title = [view_controller_ valueForKey:@"_titleString"];
+  EXPECT_NSEQ(title,
+              l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_TUTORIAL_TITLE));
+
+  NSArray<NSString*>* steps = [view_controller_ valueForKey:@"_steps"];
+  EXPECT_EQ(steps.count, 3u);
+  EXPECT_NSEQ(steps[0],
               l10n_util::GetNSString(
                   IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_TUTORIAL_STEP_1));
-  EXPECT_NSEQ([view_controller_ steps][1],
+  EXPECT_NSEQ(steps[1],
               l10n_util::GetNSString(
                   IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_TUTORIAL_STEP_2));
-  EXPECT_NSEQ([view_controller_ steps][2],
+  EXPECT_NSEQ(steps[2],
               l10n_util::GetNSString(
                   IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_TUTORIAL_STEP_3));
 

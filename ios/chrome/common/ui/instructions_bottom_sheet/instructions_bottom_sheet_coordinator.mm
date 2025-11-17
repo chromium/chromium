@@ -2,30 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/first_run/ui_bundled/best_features/coordinator/best_features_instruction_steps_coordinator.h"
+#import "ios/chrome/common/ui/instructions_bottom_sheet/instructions_bottom_sheet_coordinator.h"
 
-#import "ios/chrome/browser/first_run/public/best_features_item.h"
-#import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_instruction_steps_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/common/ui/instructions_bottom_sheet/instructions_bottom_sheet_view_controller.h"
 
-@interface BestFeaturesInstructionStepsCoordinator () <
+@interface InstructionsBottomSheetCoordinator () <
     ConfirmationAlertActionHandler,
     UIAdaptivePresentationControllerDelegate>
 @end
 
-@implementation BestFeaturesInstructionStepsCoordinator {
+@implementation InstructionsBottomSheetCoordinator {
   // The view controller for this coordinator.
-  BestFeaturesInstructionStepsViewController* _viewController;
-  // The item containing the instructions to be displayed.
-  BestFeaturesItem* _item;
+  InstructionsBottomSheetViewController* _viewController;
+  // The title of the bottom sheet.
+  NSString* _title;
+  // The instruction steps to be displayed.
+  NSArray<NSString*>* _steps;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                      item:(BestFeaturesItem*)item {
+                                     title:(NSString*)title
+                                     steps:(NSArray<NSString*>*)steps {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _item = item;
+    _title = [title copy];
+    _steps = [steps copy];
   }
   return self;
 }
@@ -36,7 +39,8 @@
   [super start];
 
   _viewController =
-      [[BestFeaturesInstructionStepsViewController alloc] initWithItem:_item];
+      [[InstructionsBottomSheetViewController alloc] initWithTitle:_title
+                                                      instructions:_steps];
   _viewController.actionHandler = self;
 
   self.baseViewController.presentationController.delegate = self;

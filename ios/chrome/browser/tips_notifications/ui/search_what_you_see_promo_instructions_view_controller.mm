@@ -19,19 +19,28 @@ NSString* const kSearchWhatYouSeePromoInstructionsAXID =
 
 @implementation SearchWhatYouSeePromoInstructionsViewController
 
+- (instancetype)init {
+  self = [super
+      initWithTitle:l10n_util::GetNSString(
+                        IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_INSTRUCTION_TITLE)
+       instructions:@[
+         l10n_util::GetNSString(
+             IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_INSTRUCTION_STEP_1),
+         l10n_util::GetNSString(
+             IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_INSTRUCTION_STEP_2),
+         l10n_util::GetNSString(
+             IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_INSTRUCTION_STEP_3),
+       ]];
+  if (self) {
+    self.configuration.secondaryActionString = l10n_util::GetNSString(
+        IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_INSTRUCTION_LEARN_MORE_ACTION);
+  }
+  return self;
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  self.configuration.secondaryActionString = l10n_util::GetNSString(
-      IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_INSTRUCTION_LEARN_MORE_ACTION);
-  self.titleString = l10n_util::GetNSString(
-      IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_INSTRUCTION_TITLE);
-  self.steps = @[
-    l10n_util::GetNSString(IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_INSTRUCTION_STEP_1),
-    l10n_util::GetNSString(IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_INSTRUCTION_STEP_2),
-    l10n_util::GetNSString(IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_INSTRUCTION_STEP_3),
-  ];
-
   [super viewDidLoad];
 
   self.view.accessibilityIdentifier = kSearchWhatYouSeePromoInstructionsAXID;

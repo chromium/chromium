@@ -8,7 +8,6 @@
 #import "base/notreached.h"
 #import "components/regional_capabilities/regional_capabilities_service.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/first_run/ui_bundled/best_features/coordinator/best_features_screen_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider+protected.h"

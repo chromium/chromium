@@ -18,20 +18,24 @@ NSString* const kUseAutofillInstructionalOverlayAXID =
 
 @implementation UseAutofillInstructionalOverlayViewController
 
+- (instancetype)init {
+  self =
+      [super initWithTitle:l10n_util::GetNSString(
+                               IDS_IOS_MAGIC_STACK_TIP_TUTORIAL_TITLE)
+              instructions:@[
+                l10n_util::GetNSString(
+                    IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_TUTORIAL_STEP_1),
+                l10n_util::GetNSString(
+                    IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_TUTORIAL_STEP_2),
+                l10n_util::GetNSString(
+                    IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_TUTORIAL_STEP_3),
+              ]];
+  return self;
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  self.titleString =
-      l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_TUTORIAL_TITLE);
-  self.steps = @[
-    l10n_util::GetNSString(
-        IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_TUTORIAL_STEP_1),
-    l10n_util::GetNSString(
-        IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_TUTORIAL_STEP_2),
-    l10n_util::GetNSString(
-        IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_TUTORIAL_STEP_3),
-  ];
-
   [super viewDidLoad];
 
   self.view.accessibilityIdentifier = kUseAutofillInstructionalOverlayAXID;

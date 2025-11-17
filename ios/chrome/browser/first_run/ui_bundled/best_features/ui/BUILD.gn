@@ -15,8 +15,6 @@ source_set("ui") {
     "best_features_cell.h",
     "best_features_cell.mm",
     "best_features_delegate.h",
-    "best_features_instruction_steps_view_controller.h",
-    "best_features_instruction_steps_view_controller.mm",
     "best_features_screen_consumer.h",
     "best_features_view_controller.h",
     "best_features_view_controller.mm",

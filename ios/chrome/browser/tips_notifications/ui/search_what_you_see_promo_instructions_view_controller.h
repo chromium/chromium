@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/tips_notifications/ui/instructions_bottom_sheet_view_controller.h"
+#import "ios/chrome/common/ui/instructions_bottom_sheet/instructions_bottom_sheet_view_controller.h"
 
 // A view controller to display a set of instructions for the Search What You
 // See feature.

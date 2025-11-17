@@ -4,8 +4,6 @@
 
 source_set("coordinator") {
   sources = [
-    "best_features_instruction_steps_coordinator.h",
-    "best_features_instruction_steps_coordinator.mm",
     "best_features_screen_coordinator.h",
     "best_features_screen_coordinator.mm",
     "best_features_screen_detail_coordinator.h",
@@ -34,6 +32,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/welcome_back/model:features",
     "//ios/chrome/browser/welcome_back/ui",
     "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/instructions_bottom_sheet",
     "//ios/chrome/common/ui/promo_style",
   ]
   frameworks = [ "UIKit.framework" ]
