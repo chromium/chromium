@@ -124,7 +124,7 @@ public class TabListEditorPinAction extends TabListEditorAction {
 
     @Override
     public boolean shouldHideEditorAfterAction() {
-        return false;
+        return true;
     }
 
     private void updateState(List<Tab> selectedTabs) {
