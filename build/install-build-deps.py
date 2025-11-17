@@ -533,6 +533,7 @@ def backwards_compatible_list(options):
 
   packages = [
       "7za",
+      "autoconf",
       "fonts-indic",
       "fonts-ipafont",
       "fonts-stix",
@@ -626,7 +627,6 @@ def backwards_compatible_list(options):
 
       # Packages to build NaCl, its toolchains, and its ports.
       "ant",
-      "autoconf",
       "bison",
       "cmake",
       "gawk",
