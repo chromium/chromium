@@ -266,7 +266,13 @@ class TabUnderlineViewUiTest : public test::InteractiveGlicTest {
 
 // Exercise the default user journey: toggles the underline animation and waits
 // for it to finish.
-IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest, SmokeTest) {
+// TODO(crbug.com/460833807): Re-enable the test in ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SmokeTest DISABLED_SmokeTest
+#else
+#define MAYBE_SmokeTest SmokeTest
+#endif
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest, MAYBE_SmokeTest) {
   auto* underline = GetUnderlineOfActiveTab();
   ASSERT_TRUE(underline);
   TesterImpl* tester = static_cast<TesterImpl*>(underline->tester());
