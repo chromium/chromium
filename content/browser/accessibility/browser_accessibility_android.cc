@@ -8,6 +8,7 @@
 
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
+#include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/break_iterator.h"
@@ -1539,8 +1540,11 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kPdfRoot:
     case ax::mojom::Role::kRowGroup:
     case ax::mojom::Role::kTableHeaderContainer:
-    case ax::mojom::Role::kWebView:
-      NOTREACHED();
+    case ax::mojom::Role::kWebView: {
+      ax::mojom::Role role = GetRole();
+      base::debug::Alias(&role);
+      NOTREACHED() << "Role: " << static_cast<int>(role);
+    }
 
     case ax::mojom::Role::kFigure:
       // Default is IDS_AX_ROLE_FIGURE.
