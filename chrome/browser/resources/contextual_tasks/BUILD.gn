@@ -36,6 +36,7 @@ build_webui("build") {
   mojo_files = [
     "$root_gen_dir/chrome/browser/contextual_tasks/contextual_tasks.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/contextual_tasks/contextual_tasks_internals.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/contextual_tasks/contextual_tasks_types.mojom-webui.ts",
   ]
 
   # Needed for browser_tests

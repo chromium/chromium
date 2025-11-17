@@ -169,7 +169,8 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
     base::OnceCallback<void(std::vector<content::WebContents*>)> callback) {
   base::TimeTicks now = tick_clock_->NowTicks();
 
-  AUTO_CONTEXT_LOG(base::StringPrintf("Processing query %s", query));
+  AUTO_CONTEXT_LOG(base::StringPrintf("Processing query %s in mode %d", query,
+                                      options.tab_selection_mode));
 
   if (!is_embedder_available_) {
     AUTO_CONTEXT_LOG("Embedder not available");
@@ -203,7 +204,7 @@ void ContextualTasksContextService::EmbedderMetadataUpdated(
 void ContextualTasksContextService::OnQueryEmbeddingReady(
     const std::string& query,
     base::TimeTicks start_time,
-    TabSelectionMode tab_selection_mode,
+    mojom::TabSelectionMode tab_selection_mode,
     const std::vector<GURL>& explicit_urls,
     base::OnceCallback<void(std::vector<content::WebContents*>)> callback,
     std::vector<std::string> passages,
@@ -267,11 +268,11 @@ ContextualTasksContextService::SelectRelevantTabs(
     const std::string& query,
     const passage_embeddings::Embedding& query_embedding,
     const std::vector<content::WebContents*>& all_tabs,
-    TabSelectionMode tab_selection_mode) {
+    mojom::TabSelectionMode tab_selection_mode) {
   switch (tab_selection_mode) {
-    case TabSelectionMode::kMultiSignalScoring:
+    case mojom::TabSelectionMode::kMultiSignalScoring:
       return SelectTabsByMultiSignalScore(query, query_embedding, all_tabs);
-    case TabSelectionMode::kEmbeddingsMatch:
+    case mojom::TabSelectionMode::kEmbeddingsMatch:
       return SelectTabsByEmbeddingsMatch(query, query_embedding, all_tabs);
   }
 }

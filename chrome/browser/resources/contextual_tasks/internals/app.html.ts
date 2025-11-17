@@ -10,12 +10,19 @@ export function getHtml(this: ContextualTasksInternalsAppElement) {
   // clang-format off
   return html`
 <h1>Contextual Tasks Internals</h1>
+<div class="model-options">
+  <select id="tabSelectionModeSelect" class="md-select"
+      value="${this.tabSelectionMode_}" @change="${this.onTabSelectionModeChanged_}">
+    <option value="kEmbeddingsMatch">Embeddings Match</option>
+    <option value="kMultiSignalScoring">Multi Signal Scoring</option>
+  </select>
+</div>
 <cr-textarea type="text" id="textInput" label="Query"
     placeholder="Type query here..."
     .value="${this.query_}" @value-changed="${this.onQueryChanged_}">
 </cr-textarea>
 <div>
-  <cr-button class="action-button" ?disabled="${!this.isQueryPending_}"
+  <cr-button class="action-button" ?disabled="${this.isQueryPending_}"
       @click="${this.onSubmitClick_}">
     Submit
   </cr-button>

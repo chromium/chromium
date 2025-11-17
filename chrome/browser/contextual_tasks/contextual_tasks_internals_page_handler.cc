@@ -33,7 +33,10 @@ void ContextualTasksInternalsPageHandler::GetRelevantContext(
   }
 
   context_service_->GetRelevantTabsForQuery(
-      /*options=*/{}, request->query,
+      {
+          .tab_selection_mode = request->tab_selection_mode,
+      },
+      request->query,
       /*explicit_urls=*/{},
       base::BindOnce(
           [](GetRelevantContextCallback callback,

@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = TabSelectionMode::kMultiSignalScoring},
+      {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
       "some text",
       /*explicit_urls=*/{GURL("https://notinrelevantset.com")},
       future.GetCallback());
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = TabSelectionMode::kMultiSignalScoring},
+      {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
       "some text", /*explicit_urls=*/{}, future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
 
@@ -453,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = TabSelectionMode::kMultiSignalScoring},
+      {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
       "some text", /*explicit_urls*/ {}, future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
 
@@ -485,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, NotRelevantTab) {
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = TabSelectionMode::kMultiSignalScoring},
+      {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
       "some text", /*explicit_urls*/ {}, future.GetCallback());
   EXPECT_EQ(0u, future.Get().size());
 }

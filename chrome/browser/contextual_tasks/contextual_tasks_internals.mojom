@@ -4,11 +4,14 @@
 
 module contextual_tasks.mojom;
 
+import "chrome/browser/contextual_tasks/contextual_tasks_types.mojom";
 import "url/mojom/url.mojom";
 
 struct GetRelevantContextRequest {
   // The query to get relevant context for.
   string query;
+  // The mode to use for tab selection.
+  TabSelectionMode tab_selection_mode;
 };
 
 // Represents the tab.

@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_types.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 
@@ -43,17 +44,10 @@ enum class ContextDeterminationStatus {
   kMaxValue = kQueryEmbeddingOutputMalformed,
 };
 
-enum TabSelectionMode {
-  // Selects tabs based on (query, tab) embeddings match.
-  kEmbeddingsMatch,
-  // Selects tabs based on score based on signals like (query, tab) semantic
-  // similarity, tab recency etc.
-  kMultiSignalScoring,
-};
-
 // Options to regulate tab selection behavior.
 struct TabSelectionOptions {
-  TabSelectionMode tab_selection_mode = TabSelectionMode::kEmbeddingsMatch;
+  mojom::TabSelectionMode tab_selection_mode =
+      mojom::TabSelectionMode::kEmbeddingsMatch;
 };
 
 // A service used to determine the relevant context for a given task.
@@ -90,7 +84,7 @@ class ContextualTasksContextService
   void OnQueryEmbeddingReady(
       const std::string& query,
       base::TimeTicks start_time,
-      TabSelectionMode tab_selection_mode,
+      mojom::TabSelectionMode tab_selection_mode,
       const std::vector<GURL>& explicit_urls,
       base::OnceCallback<void(std::vector<content::WebContents*>)> callback,
       std::vector<std::string> passages,
@@ -103,7 +97,7 @@ class ContextualTasksContextService
       const std::string& query,
       const passage_embeddings::Embedding& query_embedding,
       const std::vector<content::WebContents*>& all_tabs,
-      TabSelectionMode tab_selection_mode);
+      mojom::TabSelectionMode tab_selection_mode);
 
   // Selects tabs based on embeddings match.
   std::vector<content::WebContents*> SelectTabsByEmbeddingsMatch(

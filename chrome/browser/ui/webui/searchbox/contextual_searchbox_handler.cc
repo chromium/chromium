@@ -40,8 +40,6 @@
 
 namespace {
 
-using ::contextual_tasks::TabSelectionMode;
-
 constexpr int kThumbnailWidth = 125;
 constexpr int kThumbnailHeight = 200;
 
@@ -54,13 +52,6 @@ std::optional<lens::ImageEncodingOptions> CreateImageEncodingOptions() {
       .max_height = image_upload_config.downscale_max_image_height(),
       .max_width = image_upload_config.downscale_max_image_width(),
       .compression_quality = image_upload_config.image_compression_quality()};
-}
-
-contextual_tasks::TabSelectionOptions CreateTabSelectionOptions() {
-  // TODO(crbug.com/452036470): read from Finch FeatureConfig.
-  return contextual_tasks::TabSelectionOptions{
-      .tab_selection_mode = TabSelectionMode::kEmbeddingsMatch,
-  };
 }
 
 // Returns the ContextualSearchSessionHandle for the given WebContents, or
@@ -500,7 +491,7 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
       }
     }
     contextual_tasks_context_service_->GetRelevantTabsForQuery(
-        CreateTabSelectionOptions(), query_text, explicit_urls,
+        contextual_tasks::TabSelectionOptions(), query_text, explicit_urls,
         base::DoNothing());
   }
 #endif

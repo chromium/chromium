@@ -27,8 +27,10 @@ source_set("contextual_tasks") {
     "//components/keyed_service/core",
   ]
   if (!is_android) {
-    public_deps +=
-        [ "//components/passage_embeddings:passage_embeddings_types" ]
+    public_deps += [
+      ":mojo_bindings",
+      "//components/passage_embeddings:passage_embeddings_types",
+    ]
   }
 }
 
@@ -151,6 +153,7 @@ if (!is_android) {
     sources = [
       "contextual_tasks.mojom",
       "contextual_tasks_internals.mojom",
+      "contextual_tasks_types.mojom",
     ]
     webui_module_path = "/"
     public_deps = [
