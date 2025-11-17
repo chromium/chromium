@@ -16,10 +16,22 @@ inline constexpr char kProfileCreationInterceptionDeclined[] =
 // has been shown per profile while the user is signed out.
 inline constexpr char kPasswordSignInPromoShownCountPerProfile[] =
     "signin.PasswordSignInPromoShownCount";
+// Integer pref to store the number of times the password bubble signin promo
+// has been shown per profile while the user is signed out used for
+// SigninPromoLimitsExperiment.
+inline constexpr char
+    kPasswordSignInPromoShownCountPerProfileForLimitsExperiment[] =
+        "signin.PasswordSignInPromoShownCountForLimitsExperiment";
 // Integer pref to store the number of times the address bubble signin promo
 // has been shown per profile while the user is signed out.
 inline constexpr char kAddressSignInPromoShownCountPerProfile[] =
     "signin.AddressSignInPromoShownCount";
+// Integer pref to store the number of times the address bubble signin promo
+// has been shown per profile while the user is signed out used for
+// SigninPromoLimitsExperiment.
+inline constexpr char
+    kAddressSignInPromoShownCountPerProfileForLimitsExperiment[] =
+        "signin.AddressSignInPromoShownCountForLimitsExperiment";
 // Integer pref to store the number of times any autofill bubble signin promo
 // has been dismissed per profile while the user is signed out.
 inline constexpr char kAutofillSignInPromoDismissCountPerProfile[] =

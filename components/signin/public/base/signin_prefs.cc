@@ -60,9 +60,19 @@ constexpr char kChromeSigninInterceptionDismissCount[] =
 constexpr char kPasswordSignInPromoShownCount[] =
     "PasswordSignInPromoShownCount";
 
+// Pref to store the number of times the password bubble signin promo
+// has been shown per account used for SigninPromoLimitsExperiment.
+constexpr char kPasswordSignInPromoShownCountForLimitsExperiment[] =
+    "PasswordSignInPromoShownCountForLimitsExperiment";
+
 // Pref to store the number of times the address bubble signin promo
 // has been shown per account.
 constexpr char kAddressSignInPromoShownCount[] = "AddressSignInPromoShownCount";
+
+// Pref to store the number of times the address bubble signin promo
+// has been shown per account used for SigninPromoLimitsExperiment.
+constexpr char kAddressSignInPromoShownCountForLimitsExperiment[] =
+    "AddressSignInPromoShownCountForLimitsExperiment";
 
 // Pref to store the number of times any autofill bubble signin promo
 // has been dismissed per account.
@@ -266,22 +276,42 @@ int SigninPrefs::GetChromeSigninInterceptionDismissCount(
 
 void SigninPrefs::IncrementPasswordSigninPromoImpressionCount(
     const GaiaId& gaia_id) {
-  IncrementIntPrefForAccount(gaia_id, kPasswordSignInPromoShownCount);
+  IncrementIntPrefForAccount(
+      gaia_id,
+      base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
+          ? kPasswordSignInPromoShownCountForLimitsExperiment
+          : kPasswordSignInPromoShownCount
+  );
 }
 
 int SigninPrefs::GetPasswordSigninPromoImpressionCount(
     const GaiaId& gaia_id) const {
-  return GetIntPrefForAccount(gaia_id, kPasswordSignInPromoShownCount);
+  return GetIntPrefForAccount(
+      gaia_id,
+      base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
+          ? kPasswordSignInPromoShownCountForLimitsExperiment
+          : kPasswordSignInPromoShownCount
+  );
 }
 
 void SigninPrefs::IncrementAddressSigninPromoImpressionCount(
     const GaiaId& gaia_id) {
-  IncrementIntPrefForAccount(gaia_id, kAddressSignInPromoShownCount);
+  IncrementIntPrefForAccount(
+      gaia_id,
+      base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
+          ? kAddressSignInPromoShownCountForLimitsExperiment
+          : kAddressSignInPromoShownCount
+  );
 }
 
 int SigninPrefs::GetAddressSigninPromoImpressionCount(
     const GaiaId& gaia_id) const {
-  return GetIntPrefForAccount(gaia_id, kAddressSignInPromoShownCount);
+  return GetIntPrefForAccount(
+      gaia_id,
+      base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
+          ? kAddressSignInPromoShownCountForLimitsExperiment
+          : kAddressSignInPromoShownCount
+  );
 }
 
 void SigninPrefs::IncrementAutofillSigninPromoDismissCount(

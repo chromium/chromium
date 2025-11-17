@@ -760,6 +760,145 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
   EXPECT_TRUE(ShouldShowBookmarkSignInPromo(*profile.get()));
 }
 
+class ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment
+    : public ShowSigninPromoTestWithFeatureFlags {
+ public:
+  void SetUp() override {
+    ShowSigninPromoTestWithFeatureFlags::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(
+        switches::kSigninPromoLimitsExperiment);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
+       DoNotShowAddressPromoAfterTwentyTimesShown) {
+  ASSERT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+
+  profile()->GetPrefs()->SetInteger(
+      prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment, 20);
+
+  EXPECT_FALSE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+  EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
+}
+
+TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
+       DoNotShowPasswordPromoAfterTwentyTimesShown) {
+  ASSERT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
+
+  profile()->GetPrefs()->SetInteger(
+      prefs::kPasswordSignInPromoShownCountPerProfileForLimitsExperiment, 20);
+
+  EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile()));
+  EXPECT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+}
+
+TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
+       RecordSignInPromoShownWithoutAccount) {
+  // Add an account without cookies. The per-profile pref will be recorded.
+  AccountInfo account =
+      MakeAccountAvailable(identity_manager(), "test@email.com");
+
+  RecordSignInPromoShown(signin_metrics::AccessPoint::kPasswordBubble,
+                         profile());
+  RecordSignInPromoShown(signin_metrics::AccessPoint::kAddressBubble,
+                         profile());
+
+  EXPECT_EQ(
+      1,
+      profile()->GetPrefs()->GetInteger(
+          prefs::kPasswordSignInPromoShownCountPerProfileForLimitsExperiment));
+  EXPECT_EQ(
+      1,
+      profile()->GetPrefs()->GetInteger(
+          prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment));
+  EXPECT_EQ(0, SigninPrefs(*profile()->GetPrefs())
+                   .GetPasswordSigninPromoImpressionCount(account.gaia));
+  EXPECT_EQ(0, SigninPrefs(*profile()->GetPrefs())
+                   .GetAddressSigninPromoImpressionCount(account.gaia));
+
+  EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
+  EXPECT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+}
+
+TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
+       RecordSignInPromoShownWithAccount) {
+  // Test setup for adding an account with cookies.
+  network::TestURLLoaderFactory url_loader_factory =
+      network::TestURLLoaderFactory();
+
+  TestingProfile::Builder builder;
+  builder.AddTestingFactories(
+      IdentityTestEnvironmentProfileAdaptor::
+          GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+              {TestingProfile::TestingFactory{
+                  ChromeSigninClientFactory::GetInstance(),
+                  base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                      &url_loader_factory)}}));
+
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+  auto identity_test_env_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
+  auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
+  identity_test_env->SetTestURLLoaderFactory(&url_loader_factory);
+
+  // Add an account with cookies, which will record the per-account prefs.
+  AccountInfo account = identity_test_env->MakeAccountAvailable(
+      identity_test_env->CreateAccountAvailabilityOptionsBuilder()
+          .WithCookie(true)
+          .Build("test@email.com"));
+
+  RecordSignInPromoShown(signin_metrics::AccessPoint::kPasswordBubble,
+                         profile.get());
+  RecordSignInPromoShown(signin_metrics::AccessPoint::kAddressBubble,
+                         profile.get());
+
+  EXPECT_EQ(
+      0,
+      profile.get()->GetPrefs()->GetInteger(
+          prefs::kPasswordSignInPromoShownCountPerProfileForLimitsExperiment));
+  EXPECT_EQ(
+      0,
+      profile.get()->GetPrefs()->GetInteger(
+          prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment));
+  EXPECT_EQ(1, SigninPrefs(*profile.get()->GetPrefs())
+                   .GetPasswordSigninPromoImpressionCount(account.gaia));
+  EXPECT_EQ(1, SigninPrefs(*profile.get()->GetPrefs())
+                   .GetAddressSigninPromoImpressionCount(account.gaia));
+}
+
+TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
+       SkipCheckForNonExperimentNumberOfTimesShownForPasswordPromo) {
+  ASSERT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
+
+  profile()->GetPrefs()->SetInteger(
+      prefs::kPasswordSignInPromoShownCountPerProfile, INT_MAX);
+
+  EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
+}
+
+TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
+       SkipCheckForNonExperimentNumberOfTimesShownForAddressPromo) {
+  ASSERT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+
+  profile()->GetPrefs()->SetInteger(
+      prefs::kAddressSignInPromoShownCountPerProfile, INT_MAX);
+
+  EXPECT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+}
+
+TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
+       SkipCheckForNumberOfTimesDismissed) {
+  EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
+
+  profile()->GetPrefs()->SetInteger(
+      prefs::kAutofillSignInPromoDismissCountPerProfile, INT_MAX);
+
+  EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
+}
+
 class SyncPromoIdentityPillManagerTest : public testing::Test {
  public:
   SyncPromoIdentityPillManagerTest() {
