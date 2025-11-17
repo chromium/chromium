@@ -103,7 +103,11 @@ class GlicClientView : public views::ClientView {
 };
 
 bool ShouldCreateNonClientView() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return base::FeatureList::IsEnabled(features::kGlicUseNonClient);
+#else
   return base::FeatureList::IsEnabled(features::kGlicWindowDragRegions);
+#endif
 }
 
 display::Display GetDisplayForOpeningDetached() {
@@ -302,7 +306,7 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(views::WidgetDelegate* delegate,
   if (!base::FeatureList::IsEnabled(features::kGlicZOrderChanges)) {
     params.dont_show_in_taskbar = true;
   }
-  if (!base::FeatureList::IsEnabled(features::kGlicWindowDragRegions)) {
+  if (!ShouldCreateNonClientView()) {
     params.force_system_menu_for_frameless = true;
   }
 #endif  // BUILDFLAG(IS_WIN)
