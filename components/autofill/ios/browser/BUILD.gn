@@ -101,6 +101,7 @@ optimize_js("autofill_js") {
   deps = [
     "//components/autofill/ios/form_util:fill_js_dependencies",
     "//components/autofill/ios/form_util:fill_js_namespace",
+    "//components/autofill/ios/form_util:form_js",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
@@ -109,7 +110,10 @@ optimize_js("autofill_js") {
 optimize_ts("suggestion_controller_js") {
   sources = [ "resources/suggestion_controller.ts" ]
 
-  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
+  deps = [
+    "//components/autofill/ios/form_util:form_js",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
 }
 
 source_set("test_support") {

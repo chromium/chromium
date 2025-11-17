@@ -5,6 +5,7 @@
 import * as fill_constants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
+import {getFormElementFromIdentifier} from '//components/autofill/ios/form_util/resources/form.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -636,7 +637,7 @@ __gCrWeb.autofill.extractAutofillableElementsInForm = function(formElement) {
  */
 __gCrWeb.autofill['fillPredictionData'] = function(data) {
   for (const formName in data) {
-    const form = __gCrWeb.form.getFormElementFromIdentifier(formName);
+    const form = getFormElementFromIdentifier(formName);
     const formData = data[formName];
     const controlElements = __gCrWeb.form.getFormControlElements(form);
     for (let i = 0; i < controlElements.length; ++i) {

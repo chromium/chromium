@@ -386,7 +386,7 @@ function getFormIdentifier(form: Element|null): string {
  * @param name An ID string obtained via getFormIdentifier.
  * @return The original form element, if it can be determined.
  */
-function getFormElementFromIdentifier(name: string): HTMLFormElement|null {
+export function getFormElementFromIdentifier(name: string): HTMLFormElement|null {
   // First attempt is from the name / id supplied.
   const form = document.forms.namedItem(name);
   if (form) {
@@ -571,7 +571,6 @@ gCrWebLegacy.form = {
   getFieldIdentifier,
   getFieldName,
   getFormIdentifier,
-  getFormElementFromIdentifier,
   getFormElementFromRendererId,
   fieldWasEditedByUser,
   formSubmitted,
