@@ -242,38 +242,16 @@ bool Address::SetInfoWithVerificationStatus(const AutofillType& type,
                                             std::string_view locale,
                                             VerificationStatus status) {
   FieldType storable_type = type.GetAddressType();
-  if (storable_type == ADDRESS_HOME_COUNTRY && type.is_country_code()) {
-    std::string country_code =
-        base::IsStringASCII(value)
-            ? base::ToUpperASCII(base::UTF16ToASCII(value))
-            : std::string();
-    if (!data_util::IsValidCountryCode(country_code)) {
-      // To counteract the misuse of autocomplete=country attribute when used
-      // with full country names, if the supplied country code is not a valid,
-      // it is tested if a country code can be derived from the value when it is
-      // interpreted as a full country name. Otherwise an empty string is
-      // assigned to |country_code|.
-      CountryNames* country_names =
-          !value.empty() ? CountryNames::GetInstance() : nullptr;
-      country_code = country_names
-                         ? country_names->GetCountryCodeForLocalizedCountryName(
-                               value, locale)
-                         : std::string();
-    }
+
+  if (storable_type == ADDRESS_HOME_COUNTRY) {
+    // `ParseCountryCode` handles empty values, trying to parse the country from
+    // a country code or a country name
+    const std::string country_code = ParseCountryCode(type, value, locale);
 
     SetRawInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY,
                                      base::UTF8ToUTF16(country_code), status);
+    // Return true if a country code was successfully determined.
     return !country_code.empty();
-  }
-
-  if (storable_type == ADDRESS_HOME_COUNTRY && !value.empty()) {
-    std::string country_code =
-        CountryNames::GetInstance()->GetCountryCodeForLocalizedCountryName(
-            value, locale);
-
-    SetRawInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY,
-                                     base::UTF8ToUTF16(country_code), status);
-    return !GetRawInfo(ADDRESS_HOME_COUNTRY).empty();
   }
 
   SetRawInfoWithVerificationStatus(storable_type, value, status);

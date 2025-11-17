@@ -25,6 +25,8 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_regex_provider.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
+#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 
@@ -326,6 +328,38 @@ std::u16string NormalizeAndRewrite(const AddressCountryCode& country_code,
           keep_white_space ? normalization::WhitespaceSpec::kRetain
                            : normalization::WhitespaceSpec::kDiscard,
           country_code));
+}
+
+std::string ParseCountryCode(const AutofillType& type,
+                             std::u16string_view value,
+                             std::string_view app_locale) {
+  if (value.empty()) {
+    return std::string();
+  }
+
+  // First, try to interpret the value as a 2-letter country code.
+  // This handles autocomplete="country-code".
+  if (type.is_country_code()) {
+    std::string potential_code =
+        base::IsStringASCII(value)
+            ? base::ToUpperASCII(base::UTF16ToASCII(value))
+            : std::string();
+
+    if (data_util::IsValidCountryCode(potential_code)) {
+      return potential_code;
+    }
+  }
+
+  // If it's not a valid code (or wasn't supposed to be a code),
+  // try to interpret it as a full country name. This handles cases where
+  // a site incorrectly uses a full name (e.g., "Germany") in a code field
+  // (the fallback) or just provides a name (e.g., autocomplete="country").
+  // If there was no valid country name, returns an empty string.
+  if (CountryNames* country_names = CountryNames::GetInstance()) {
+    return country_names->GetCountryCodeForLocalizedCountryName(value,
+                                                                app_locale);
+  }
+  return std::string();
 }
 
 bool AreStringTokenEquivalent(std::u16string_view one,

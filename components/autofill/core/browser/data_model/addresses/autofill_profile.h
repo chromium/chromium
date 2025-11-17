@@ -457,6 +457,11 @@ class AutofillProfile : public FormGroup {
   void MergeFormGroupTokenQuality(const FormGroup& merged_group,
                                   const AutofillProfile& other_profile);
 
+  // Reacts to a profile country update. It informs the `NameInfo` of a country
+  // change.
+  void OnProfileCountryUpdate(const AddressCountryCode& old_country_code,
+                              const AddressCountryCode& new_country_code);
+
   // A globally unique ID for this object. It identifies the profile across
   // browser restarts and is used as the primary key in the database.
   // The `guid_` is unique across profile record types.

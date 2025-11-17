@@ -41,11 +41,13 @@
 #include "components/autofill/core/browser/data_model/addresses/phone_number.h"
 #include "components/autofill/core/browser/data_model/usage_history_information.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/geo/state_names.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -440,6 +442,13 @@ void AutofillProfile::SetRawInfoWithVerificationStatus(
     VerificationStatus status) {
   FormGroup* form_group = MutableFormGroupForType(type);
   if (form_group) {
+    if (type == ADDRESS_HOME_COUNTRY) {
+      auto old_country_code = GetAddressCountryCode();
+      form_group->SetRawInfoWithVerificationStatus(type, value, status);
+      OnProfileCountryUpdate(old_country_code, GetAddressCountryCode());
+      return;
+    }
+
     form_group->SetRawInfoWithVerificationStatus(type, value, status);
   }
 }
@@ -872,6 +881,16 @@ void AutofillProfile::MergeFormGroupTokenQuality(
   }
 }
 
+void AutofillProfile::OnProfileCountryUpdate(
+    const AddressCountryCode& old_country_code,
+    const AddressCountryCode& new_country_code) {
+  if (old_country_code == new_country_code) {
+    return;
+  }
+
+  name_.OnCountryChange(new_country_code);
+}
+
 // static
 std::vector<std::u16string> AutofillProfile::CreateDifferentiatingLabels(
     base::span<const AutofillProfile* const> profiles,
@@ -1084,6 +1103,14 @@ bool AutofillProfile::SetInfoWithVerificationStatus(const AutofillType& type,
   }
   std::u16string trimmed_value;
   base::TrimWhitespace(value, base::TRIM_ALL, &trimmed_value);
+
+  if (type.GetAddressType() == ADDRESS_HOME_COUNTRY) {
+    const AddressCountryCode old_country_code = GetAddressCountryCode();
+    const bool response = form_group->SetInfoWithVerificationStatus(
+        type, trimmed_value, app_locale, status);
+    OnProfileCountryUpdate(old_country_code, GetAddressCountryCode());
+    return response;
+  }
 
   return form_group->SetInfoWithVerificationStatus(type, trimmed_value,
                                                    app_locale, status);

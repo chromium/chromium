@@ -161,6 +161,11 @@ class NameInfo : public FormGroup {
   // become non-static.
   const AddressComponent* GetRootForType(FieldType type) const;
 
+  // Informs `this` that the country code of the owning `AutofillProfile`
+  // changed. When called creates or destroys the alternative name tree
+  // (depending on the support).
+  void OnCountryChange(const AddressCountryCode& new_country_code);
+
  private:
   // Returns the root node of either `name_` or `alternative_name_`
   // depending on the `type`.
@@ -169,6 +174,9 @@ class NameInfo : public FormGroup {
 
   // Returns if the `alternative_name_` tree exists.
   bool IsAlternativeNameSupported() const;
+
+  void CreateAlternativeNameTree();
+  void DeleteAlternativeNameTree();
 
   // Returns true if `this` and `other` have matching support for alternative
   // names (i.e. both support them, or neither supports them), returns false

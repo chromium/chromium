@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -36,6 +37,7 @@
 namespace autofill {
 
 using base::UTF8ToUTF16;
+using testing::IsEmpty;
 using ObservationType = ProfileTokenQuality::ObservationType;
 
 namespace {
@@ -900,6 +902,102 @@ TEST_F(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentNonStreetAddresses) {
   EXPECT_FALSE(profile2.IsSubsetOfForFieldSet(
       comparator, profile1,
       {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY}));
+}
+
+TEST_F(AutofillProfileTest, SetInfo_DynamicallyCreatingAlternativeNameTree) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillSupportPhoneticNameForJP};
+  // Initially the profile's country does not support alternative names, so
+  // setting it should do nothing.
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+  profile.SetInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"alt_name",
+                                        "en-US", VerificationStatus::kObserved);
+  ASSERT_THAT(profile.GetInfo(ALTERNATIVE_GIVEN_NAME, "en-US"), IsEmpty());
+
+  // Changing the profile's country does to one that supports alternative names
+  // should result in the value being stored correctly.
+  profile.SetInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY, u"JP", "en-US",
+                                        VerificationStatus::kObserved);
+  profile.SetInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"alt_name",
+                                        "en-US", VerificationStatus::kObserved);
+  EXPECT_THAT(profile.GetInfo(ALTERNATIVE_GIVEN_NAME, "en-US"), u"alt_name");
+}
+
+TEST_F(AutofillProfileTest, SetInfo_DynamicallyDeletingAlternativeNameTree) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillSupportPhoneticNameForJP};
+  // Initially the profile's country supports alternative names, so setting it
+  // should store the value as usual.
+  AutofillProfile profile(AddressCountryCode("JP"));
+  profile.SetInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"alt_name",
+                                        "en-US", VerificationStatus::kObserved);
+  ASSERT_THAT(profile.GetInfo(ALTERNATIVE_GIVEN_NAME, "en-US"), u"alt_name");
+
+  // Changing the profile's country to one that doesn't support alternative
+  // names should result in the value being wiped and not set in the future.
+  profile.SetInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY, u"XX", "en-US",
+                                        VerificationStatus::kObserved);
+  EXPECT_THAT(profile.GetInfo(ALTERNATIVE_GIVEN_NAME, "en-US"), IsEmpty());
+  profile.SetInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"alt_name",
+                                        "en-US", VerificationStatus::kObserved);
+  EXPECT_THAT(profile.GetInfo(ALTERNATIVE_GIVEN_NAME, "en-US"), IsEmpty());
+}
+
+TEST_F(AutofillProfileTest,
+       SetInfo_AlternativeNameTreeNotRecratedIfCountryDoesNotChange) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillSupportPhoneticNameForJP};
+  // Initially the profile's country supports alternative names, so setting it
+  // should store the value as usual.
+  AutofillProfile profile(AddressCountryCode("JP"));
+  profile.SetInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"alt_name",
+                                        "en-US", VerificationStatus::kObserved);
+  ASSERT_THAT(profile.GetInfo(ALTERNATIVE_GIVEN_NAME, "en-US"), u"alt_name");
+
+  // Setting the profile's country value to the existing one, shouldn't wipe the
+  // data in the tree.
+  profile.SetInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY, u"Japan", "en-US",
+                                        VerificationStatus::kObserved);
+  EXPECT_THAT(profile.GetInfo(ALTERNATIVE_GIVEN_NAME, "en-US"), u"alt_name");
+}
+
+TEST_F(AutofillProfileTest, SetRawInfo_DynamicallyCreatingAlternativeNameTree) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillSupportPhoneticNameForJP};
+  // Initially the profile's country does not support alternative names, so
+  // setting it should do nothing.
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"alt_name",
+                                           VerificationStatus::kObserved);
+  ASSERT_THAT(profile.GetInfo(ALTERNATIVE_GIVEN_NAME, "en-US"), IsEmpty());
+
+  // Changing the profile's country does to one that supports alternative names
+  // should result in the value being stored correctly.
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY, u"JP",
+                                           VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"alt_name",
+                                           VerificationStatus::kObserved);
+  EXPECT_THAT(profile.GetInfo(ALTERNATIVE_GIVEN_NAME, "en-US"), u"alt_name");
+}
+
+TEST_F(AutofillProfileTest, SetRawInfo_DynamicallyDeletingAlternativeNameTree) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillSupportPhoneticNameForJP};
+  // Initially the profile's country supports alternative names, so setting it
+  // should store the value as usual.
+  AutofillProfile profile(AddressCountryCode("JP"));
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"alt_name",
+                                           VerificationStatus::kObserved);
+  ASSERT_THAT(profile.GetInfo(ALTERNATIVE_GIVEN_NAME, "en-US"), u"alt_name");
+
+  // Changing the profile's country to one that doesn't support alternative
+  // names should result in the value being wiped and not set in the future.
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY, u"XX",
+                                           VerificationStatus::kObserved);
+  EXPECT_THAT(profile.GetInfo(ALTERNATIVE_GIVEN_NAME, "en-US"), IsEmpty());
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"alt_name",
+                                           VerificationStatus::kObserved);
+  EXPECT_THAT(profile.GetInfo(ALTERNATIVE_GIVEN_NAME, "en-US"), IsEmpty());
 }
 
 TEST_F(AutofillProfileTest,
