@@ -41,7 +41,7 @@ class MTPDeviceDelegateImpl : public MTPDeviceAsyncDelegate {
       const bool read_only,
       CreateMTPDeviceAsyncDelegateCallback);
 
-  enum InitializationState { UNINITIALIZED = 0, PENDING_INIT, INITIALIZED };
+  enum InitializationState { kUninitialized = 0, kPendingInit, kInitialized };
 
   // Used to represent pending task details.
   struct PendingTaskInfo {
@@ -458,7 +458,7 @@ class MTPDeviceDelegateImpl : public MTPDeviceAsyncDelegate {
   void EvictCachedPathToId(uint32_t id);
 
   // MTP device initialization state.
-  InitializationState init_state_ = UNINITIALIZED;
+  InitializationState init_state_ = kUninitialized;
 
   // Used to make sure only one task is in progress at any time.
   // Otherwise the browser will try to send too many requests at once and

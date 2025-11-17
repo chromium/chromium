@@ -1386,7 +1386,7 @@ void MTPDeviceDelegateImpl::RunDeleteObjectOnUIThread(
 
 void MTPDeviceDelegateImpl::EnsureInitAndRunTask(PendingTaskInfo task_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  if ((init_state_ == INITIALIZED) && !task_in_progress_) {
+  if ((init_state_ == kInitialized) && !task_in_progress_) {
     RunTask(std::move(task_info));
     return;
   }
@@ -1399,8 +1399,8 @@ void MTPDeviceDelegateImpl::EnsureInitAndRunTask(PendingTaskInfo task_info) {
     pending_tasks_.push_back(std::move(task_info));
   }
 
-  if (init_state_ == UNINITIALIZED) {
-    init_state_ = PENDING_INIT;
+  if (init_state_ == kUninitialized) {
+    init_state_ = kPendingInit;
     task_in_progress_ = true;
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -1412,7 +1412,7 @@ void MTPDeviceDelegateImpl::EnsureInitAndRunTask(PendingTaskInfo task_info) {
 
 void MTPDeviceDelegateImpl::RunTask(PendingTaskInfo task_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK_EQ(INITIALIZED, init_state_);
+  DCHECK_EQ(kInitialized, init_state_);
   DCHECK(!task_in_progress_);
   task_in_progress_ = true;
 
@@ -1484,7 +1484,7 @@ void MTPDeviceDelegateImpl::ProcessNextPendingRequest() {
 
 void MTPDeviceDelegateImpl::OnInitCompleted(bool succeeded) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  init_state_ = succeeded ? INITIALIZED : UNINITIALIZED;
+  init_state_ = succeeded ? kInitialized : kUninitialized;
   PendingRequestDone();
 }
 
