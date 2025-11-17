@@ -262,17 +262,6 @@ public class MultiWindowUtils implements ActivityStateListener {
         // Automotive is currently restricted to a single window.
         if (DeviceInfo.isAutomotive()) return false;
 
-        if (IncognitoUtils.shouldOpenIncognitoAsWindow()
-                && activity instanceof ChromeTabbedActivity) {
-            @SupportedProfileType
-            int supportedProfileType = ((ChromeTabbedActivity) activity).getSupportedProfileType();
-            int instanceType =
-                    supportedProfileType == SupportedProfileType.OFF_THE_RECORD
-                            ? PersistedInstanceType.ACTIVE | PersistedInstanceType.OFF_THE_RECORD
-                            : PersistedInstanceType.ACTIVE;
-            return MultiWindowUtils.getInstanceCountWithFallback(instanceType) > 1;
-        }
-
         return getOpenInOtherWindowActivity(activity) != null;
     }
 
@@ -511,11 +500,11 @@ public class MultiWindowUtils implements ActivityStateListener {
      * Returns the number of restorable Chrome instances of a given type.
      *
      * @param type The {@link PersistedInstanceType} of instances to count.
-     * @return The number of restorable Chrome instances; an instance is considered restorable if it
+     * @return The number of restorable Chrome instances; qn instance is considered restorable if it
      *     has tabs or is associated with a live task. If Robust Window Management is not enabled,
      *     the type is ignored and all instances, both active and inactive, are counted.
      */
-    // TODO (crbug.com/456833895): Remove restorable instance check post-launch.
+    // TODO (crbug.com/456833895): Remove resotrable instance check post-launch.
     public static int getInstanceCountWithFallback(@PersistedInstanceType int type) {
         if (sInstanceCountForTesting != null) {
             return sInstanceCountForTesting;

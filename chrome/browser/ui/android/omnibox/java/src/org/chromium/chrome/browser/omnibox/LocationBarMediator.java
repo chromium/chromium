@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.fusebox.NavigationAttachmentsCoordinator;
@@ -753,11 +752,8 @@ class LocationBarMediator
 
             TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
             if (omniboxLoadUrlParams.openInNewWindow && mMultiInstanceManager != null) {
-                mMultiInstanceManager.openUrlInOtherWindow(
-                        loadUrlParams,
-                        currentTab.getParentId(),
-                        /* preferNew= */ true,
-                        PersistedInstanceType.ACTIVE);
+                mMultiInstanceManager.openUrlInSelectedWindow(
+                        loadUrlParams, currentTab.getParentId(), /* preferNew= */ true);
             } else if (omniboxLoadUrlParams.openInNewTab && tabModelSelector != null) {
                 tabModelSelector.openNewTab(
                         loadUrlParams,

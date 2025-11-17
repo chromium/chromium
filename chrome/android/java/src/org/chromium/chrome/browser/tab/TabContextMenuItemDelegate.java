@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
@@ -289,13 +288,8 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
             loadUrlParams.setReferrer(referrer);
         }
         if (IncognitoUtils.shouldOpenIncognitoAsWindow() && mMultiInstanceManager != null) {
-            mMultiInstanceManager.openUrlInOtherWindow(
-                    loadUrlParams,
-                    mTab.getParentId(),
-                    /* preferNew= */ false,
-                    isIncognito
-                            ? PersistedInstanceType.ACTIVE | PersistedInstanceType.OFF_THE_RECORD
-                            : PersistedInstanceType.ACTIVE);
+            mMultiInstanceManager.openUrlInSelectedWindow(
+                    loadUrlParams, mTab.getParentId(), /* preferNew= */ false);
         } else {
             openInAnotherWindow(url, referrer, isIncognito);
         }
