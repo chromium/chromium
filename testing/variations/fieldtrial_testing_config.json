@@ -6230,21 +6230,6 @@
             ]
         }
     ],
-    "CleanupLegacyTabState": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CleanupLegacyTabState"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClearBrowsingDataAndroidSurvey": [
         {
             "platforms": [
