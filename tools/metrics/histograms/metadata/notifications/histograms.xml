@@ -984,6 +984,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Notifications.Tips.FeatureTipPromo.EventType{NotificationTipsFeatureType}"
+    enum="NotificationSchedulerUserActionType" expires_after="2026-03-05">
+  <owner>wylieb@google.com</owner>
+  <owner>bjfong@google.com</owner>
+  <summary>
+    Records user actions for a shown feature tip promo, when the promo is shown,
+    interacted with through dismissal, accepted on both the main and detail
+    pages, and backpressed on the detail page. This is for Android only.
+    {NotificationTipsFeatureType}
+  </summary>
+  <token key="NotificationTipsFeatureType">
+    <variant name=""/>
+    <variant name=".BottomOmnibox"/>
+    <variant name=".EnhancedBrowsing"/>
+    <variant name=".GoogleLens"/>
+    <variant name=".QuickDelete"/>
+  </token>
+</histogram>
+
+<histogram name="Notifications.Tips.OptInPromo.EventType"
+    enum="TipsNotificationsOptInPromoEventType" expires_after="2026-03-05">
+  <owner>wylieb@google.com</owner>
+  <owner>bjfong@google.com</owner>
+  <summary>
+    Records the event type for user actions on the Tips Opt In Promo. This is
+    recorded on show, on promo acceptance, and on promo ignore. Ignoring the
+    promo includes dismissal by scrim touch, backpress and swipe away and
+    includes the close button on the promo. This is for Android only.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.UsingSystemNotificationCenter"
     enum="BooleanSystemNotifications" expires_after="never">
 <!-- expires-never: core to the notification user experience. -->

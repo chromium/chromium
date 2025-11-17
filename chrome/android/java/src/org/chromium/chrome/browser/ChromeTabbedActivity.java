@@ -2630,8 +2630,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
                                     mRootUiCoordinator.getBottomSheetController(),
                                     getQuickDeleteController(),
                                     getWindowAndroid(),
-                                    getCurrentTabModel().isIncognito());
-                    mTipsPromoCoordinator.showBottomSheet(fromTipsNotifications);
+                                    getCurrentTabModel().isIncognito(),
+                                    fromTipsNotifications);
+                    mTipsPromoCoordinator.showBottomSheet();
                 }
                 break;
             case TabOpenType.OPEN_NEW_INCOGNITO_TAB:

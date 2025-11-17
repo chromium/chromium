@@ -229,12 +229,34 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Canceled by app terminating"/>
 </enum>
 
+<!-- LINT.IfChange(TipsNotificationsFeatureTipPromoEventType) -->
+
+<enum name="TipsNotificationsFeatureTipPromoEventType">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Dismissed"/>
+  <int value="2" label="Accepted"/>
+  <int value="3" label="Detail page clicked"/>
+  <int value="4" label="Detail page back button"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/notifications/tips/TipsPromoCoordinator.java:FeatureTipPromoEventType) -->
+
 <enum name="TipsNotificationsFeatureType">
   <int value="0" label="Enhanced Safe Browsing"/>
   <int value="1" label="Quick Delete"/>
   <int value="2" label="Google Lens"/>
   <int value="3" label="Bottom Omnibox"/>
 </enum>
+
+<!-- LINT.IfChange(TipsNotificationsOptInPromoEventType) -->
+
+<enum name="TipsNotificationsOptInPromoEventType">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Accepted"/>
+  <int value="2" label="Ignored"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/notifications/tips/TipsOptInCoordinator.java:OptInPromoEventType) -->
 
 <enum name="UNNotificationPermissionRequestResult">
   <int value="0" label="Permission request failed"/>
