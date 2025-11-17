@@ -19,6 +19,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "chrome/browser/headless/headless_mode_platform.h"
 #include "chrome/browser/headless/headless_mode_switches.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/common/content_switches.h"
@@ -69,6 +70,9 @@ class HeadlessModeHandleImpl : public HeadlessModeHandle {
   Initialize() {
     auto handle = std::make_unique<HeadlessModeHandleImpl>();
 
+#if BUILDFLAG(IS_MAC)
+    InitializePlatform();
+#endif
     if (std::string error = handle->SetUpCommandLine(); !error.empty()) {
       return base::unexpected(std::move(error));
     }

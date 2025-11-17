@@ -32,9 +32,6 @@ namespace chrome_browser_application_mac {
 // To be used to instantiate BrowserCrApplication from C++ code.
 void RegisterBrowserCrApp();
 
-// Provide additional initialization for headless mode from C++ code.
-void InitializeHeadlessMode();
-
 // Calls -[NSApp terminate:].
 void Terminate();
 

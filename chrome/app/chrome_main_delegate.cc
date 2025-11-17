@@ -1642,12 +1642,6 @@ std::optional<int> ChromeMainDelegate::PreBrowserMain() {
   // Initialize NSApplication using the custom subclass.
   chrome_browser_application_mac::RegisterBrowserCrApp();
 
-  // Perform additional initialization when running in headless mode: hide
-  // dock icon and menu bar.
-  if (headless::IsHeadlessMode()) {
-    chrome_browser_application_mac::InitializeHeadlessMode();
-  }
-
   if (l10n_util::GetLocaleOverride().empty()) {
     // The browser process only wants to support the language Cocoa will use,
     // so force the app locale to be overridden with that value. This must
