@@ -789,7 +789,8 @@ void WaitForFakeJoinFlowView() {
 }
 
 // Ensures the Recent Activity panel is showing the right information.
-- (void)testRecentActivity {
+// TODO(crbug.com/460746048): Test is flaky.
+- (void)FLAKY_testRecentActivity {
   AddSharedGroup(/*owner=*/NO, self.testServer);
 
   // Open the group view.
