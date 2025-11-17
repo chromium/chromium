@@ -22,6 +22,7 @@ constexpr SkColor kColorSysSurface_Light = SkColorSetRGB(0xFF, 0xFF, 0xFF);
 constexpr SkColor kColorSysStateHoverOnSubtle_Light = SkColorSetARGB(0x0F, 0x1F, 0x1F, 0x1F);
 constexpr SkColor kColorGemSysColorPrimary_Light =
     SkColorSetRGB(0x0B, 0x57, 0xD0);
+constexpr SkColor kColorSysTonalOutline_Light = SkColorSetRGB(0xA8, 0xC7, 0xFA);
 
 }  // namespace
 
@@ -80,8 +81,7 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorComposeboxOutlineHcm] = {
       dark_mode ? SkColorSetRGB(0xFF, 0xFF, 0xFF)
                 : SkColorSetRGB(0x00, 0x00, 0x00)};
-  mixer[kColorComposeboxRecentTabChipOutline] = {
-      ui::kColorSysTonalOutline};
+  mixer[kColorComposeboxRecentTabChipOutline] = {kColorSysTonalOutline_Light};
   mixer[kColorComposeboxScrimBackground] = {ui::kColorSysBase};
   mixer[kColorComposeboxSubmitButton] = {
       SkColorSetRGB(0x0B, 0x50, 0xD0)};
