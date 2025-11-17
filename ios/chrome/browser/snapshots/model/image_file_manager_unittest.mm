@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import <UIKit/UIKit.h>
+
+#import <array>
 
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
@@ -32,6 +29,84 @@ namespace {
 
 const NSUInteger kSnapshotCount = 10;
 const NSUInteger kSnapshotPixelSize = 8;
+
+// Guesses the order of the color channels in the image.
+// Supports RGB, BGR, RGBA, BGRA, ARGB, ABGR.
+// Returns the position of each channel between 0 and 3.
+void ComputeColorComponents(CGImageRef cgImage,
+                            int* red,
+                            int* green,
+                            int* blue) {
+  CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(cgImage);
+  CGBitmapInfo byteOrder =
+      CGImageGetBitmapInfo(cgImage) & kCGBitmapByteOrderInfoMask;
+
+  *red = 0;
+  *green = 1;
+  *blue = 2;
+
+  if (alphaInfo == kCGImageAlphaLast ||
+      alphaInfo == kCGImageAlphaPremultipliedLast ||
+      alphaInfo == kCGImageAlphaNoneSkipLast) {
+    *red = 1;
+    *green = 2;
+    *blue = 3;
+  }
+
+  if (byteOrder != kCGImageByteOrder32Host) {
+    int lastChannel = (CGImageGetBitsPerPixel(cgImage) == 24) ? 2 : 3;
+    *red = lastChannel - *red;
+    *green = lastChannel - *green;
+    *blue = lastChannel - *blue;
+  }
+}
+
+// Compares the first pixel of `image1` and `image2` and returns whether
+// they are similar enough (allow for a bit of variation caused by the
+// compression).
+void ExpectSimilarImages(CGImageRef image1, CGImageRef image2) {
+  ASSERT_TRUE(image1);
+  ASSERT_TRUE(image2);
+
+  // Number of color components (R, G, B).
+  static constexpr size_t kColorComponents = 3;
+
+  // Extract information about the first image.
+  std::array<int, kColorComponents> indices1;
+  ComputeColorComponents(image1, &indices1[0], &indices1[1], &indices1[2]);
+  base::apple::ScopedCFTypeRef<CFDataRef> image1_data(
+      CGDataProviderCopyData(CGImageGetDataProvider(image1)));
+  base::span<const uint8_t> image1_span =
+      base::apple::NSDataToSpan((__bridge NSData*)image1_data.get());
+
+  // Extract information about the second image.
+  std::array<int, kColorComponents> indices2;
+  ComputeColorComponents(image2, &indices2[0], &indices2[1], &indices2[2]);
+  base::apple::ScopedCFTypeRef<CFDataRef> image2_data(
+      CGDataProviderCopyData(CGImageGetDataProvider(image2)));
+  base::span<const uint8_t> image2_span =
+      base::apple::NSDataToSpan((__bridge NSData*)image2_data.get());
+
+  // Colors may not be axactly the same due to compression or roundind
+  // errors, thus allow a small difference.
+  for (size_t index = 0; index < kColorComponents; ++index) {
+    EXPECT_NEAR(image1_span[indices1[index]], image2_span[indices2[index]], 1);
+  }
+}
+
+// Loads image at `path` and compare it with `reference` image, returning
+// whether they similar enough (allow for a bit of variation caused by the
+// compression).
+//
+// Note that as images are composed of a single color, this only compare
+// the rgb values of the first pixel.
+void ExpectImageAtPathSimilarToReference(NSString* path, UIImage* reference) {
+  ASSERT_TRUE(reference);
+  UIImage* image = [UIImage imageWithContentsOfFile:path];
+  ASSERT_TRUE(image);
+
+  ExpectSimilarImages(image.CGImage, reference.CGImage);
+}
 
 class LegacyImageFileManagerTest : public PlatformTest {
  protected:
@@ -151,37 +226,6 @@ class LegacyImageFileManagerTest : public PlatformTest {
     EXPECT_FALSE(foundImage);
   }
 
-  // Guesses the order of the color channels in the image.
-  // Supports RGB, BGR, RGBA, BGRA, ARGB, ABGR.
-  // Returns the position of each channel between 0 and 3.
-  void ComputeColorComponents(CGImageRef cgImage,
-                              int* red,
-                              int* green,
-                              int* blue) {
-    CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(cgImage);
-    CGBitmapInfo byteOrder =
-        CGImageGetBitmapInfo(cgImage) & kCGBitmapByteOrderInfoMask;
-
-    *red = 0;
-    *green = 1;
-    *blue = 2;
-
-    if (alphaInfo == kCGImageAlphaLast ||
-        alphaInfo == kCGImageAlphaPremultipliedLast ||
-        alphaInfo == kCGImageAlphaNoneSkipLast) {
-      *red = 1;
-      *green = 2;
-      *blue = 3;
-    }
-
-    if (byteOrder != kCGImageByteOrder32Host) {
-      int lastChannel = (CGImageGetBitsPerPixel(cgImage) == 24) ? 2 : 3;
-      *red = lastChannel - *red;
-      *green = lastChannel - *green;
-      *blue = lastChannel - *blue;
-    }
-  }
-
   web::WebTaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_directory_;
   LegacyImageFileManager* image_file_manager_;
@@ -207,40 +251,8 @@ TEST_F(LegacyImageFileManagerTest, CheckImageColors) {
 
     // Check image colors by comparing the first pixel against the reference
     // image.
-    UIImage* image =
-        [UIImage imageWithContentsOfFile:base::SysUTF8ToNSString(path.value())];
-    CGImageRef cgImage = [image CGImage];
-    ASSERT_TRUE(cgImage != nullptr);
-
-    base::apple::ScopedCFTypeRef<CFDataRef> pixelData(
-        CGDataProviderCopyData(CGImageGetDataProvider(cgImage)));
-    const char* pixels =
-        reinterpret_cast<const char*>(CFDataGetBytePtr(pixelData.get()));
-    EXPECT_TRUE(pixels);
-
-    CGImageRef referenceCgImage = [reference_image CGImage];
-    base::apple::ScopedCFTypeRef<CFDataRef> referenceData(
-        CGDataProviderCopyData(CGImageGetDataProvider(referenceCgImage)));
-    const char* referencePixels =
-        reinterpret_cast<const char*>(CFDataGetBytePtr(referenceData.get()));
-    EXPECT_TRUE(referencePixels);
-
-    if (pixels != nil && referencePixels != nil) {
-      // Color components may not be in the same order,
-      // because of writing to disk and reloading.
-      int red, green, blue;
-      ComputeColorComponents(cgImage, &red, &green, &blue);
-
-      int referenceRed, referenceGreen, referenceBlue;
-      ComputeColorComponents(referenceCgImage, &referenceRed, &referenceGreen,
-                             &referenceBlue);
-
-      // Colors may not be exactly the same (compression or rounding errors)
-      // thus a small difference is allowed.
-      EXPECT_NEAR(referencePixels[referenceRed], pixels[red], 1);
-      EXPECT_NEAR(referencePixels[referenceGreen], pixels[green], 1);
-      EXPECT_NEAR(referencePixels[referenceBlue], pixels[blue], 1);
-    }
+    ExpectImageAtPathSimilarToReference(base::apple::FilePathToNSString(path),
+                                        reference_image);
   }
 }
 
@@ -510,37 +522,6 @@ class ImageFileManagerTest : public PlatformTest {
     EXPECT_FALSE(foundImage);
   }
 
-  // Guesses the order of the color channels in the image.
-  // Supports RGB, BGR, RGBA, BGRA, ARGB, ABGR.
-  // Returns the position of each channel between 0 and 3.
-  void ComputeColorComponents(CGImageRef cgImage,
-                              int* red,
-                              int* green,
-                              int* blue) {
-    CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(cgImage);
-    CGBitmapInfo byteOrder =
-        CGImageGetBitmapInfo(cgImage) & kCGBitmapByteOrderInfoMask;
-
-    *red = 0;
-    *green = 1;
-    *blue = 2;
-
-    if (alphaInfo == kCGImageAlphaLast ||
-        alphaInfo == kCGImageAlphaPremultipliedLast ||
-        alphaInfo == kCGImageAlphaNoneSkipLast) {
-      *red = 1;
-      *green = 2;
-      *blue = 3;
-    }
-
-    if (byteOrder != kCGImageByteOrder32Host) {
-      int lastChannel = (CGImageGetBitsPerPixel(cgImage) == 24) ? 2 : 3;
-      *red = lastChannel - *red;
-      *green = lastChannel - *green;
-      *blue = lastChannel - *blue;
-    }
-  }
-
   web::WebTaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_directory_;
   ImageFileManager* image_file_manager_;
@@ -570,39 +551,7 @@ TEST_F(ImageFileManagerTest, CheckImageColors) {
 
     // Check image colors by comparing the first pixel against the reference
     // image.
-    UIImage* image = [UIImage imageWithContentsOfFile:[image_url path]];
-    CGImageRef cgImage = [image CGImage];
-    ASSERT_TRUE(cgImage != nullptr);
-
-    base::apple::ScopedCFTypeRef<CFDataRef> pixelData(
-        CGDataProviderCopyData(CGImageGetDataProvider(cgImage)));
-    const char* pixels =
-        reinterpret_cast<const char*>(CFDataGetBytePtr(pixelData.get()));
-    EXPECT_TRUE(pixels);
-
-    CGImageRef referenceCgImage = [reference_image CGImage];
-    base::apple::ScopedCFTypeRef<CFDataRef> referenceData(
-        CGDataProviderCopyData(CGImageGetDataProvider(referenceCgImage)));
-    const char* referencePixels =
-        reinterpret_cast<const char*>(CFDataGetBytePtr(referenceData.get()));
-    EXPECT_TRUE(referencePixels);
-
-    if (pixels != nil && referencePixels != nil) {
-      // Color components may not be in the same order,
-      // because of writing to disk and reloading.
-      int red, green, blue;
-      ComputeColorComponents(cgImage, &red, &green, &blue);
-
-      int referenceRed, referenceGreen, referenceBlue;
-      ComputeColorComponents(referenceCgImage, &referenceRed, &referenceGreen,
-                             &referenceBlue);
-
-      // Colors may not be exactly the same (compression or rounding errors)
-      // thus a small difference is allowed.
-      EXPECT_NEAR(referencePixels[referenceRed], pixels[red], 1);
-      EXPECT_NEAR(referencePixels[referenceGreen], pixels[green], 1);
-      EXPECT_NEAR(referencePixels[referenceBlue], pixels[blue], 1);
-    }
+    ExpectImageAtPathSimilarToReference([image_url path], reference_image);
   }
 }
 
