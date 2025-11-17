@@ -425,8 +425,6 @@ crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test
 # Fuchsia failures #
 ####################
 
-crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/rendering/out-of-bounds-array-buffers.html [ Failure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/rendering/out-of-bounds-index-buffers.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/image-decoder-to-texture.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
