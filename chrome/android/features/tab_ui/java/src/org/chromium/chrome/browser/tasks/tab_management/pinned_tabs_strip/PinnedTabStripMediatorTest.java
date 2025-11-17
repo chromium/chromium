@@ -214,10 +214,13 @@ public class PinnedTabStripMediatorTest {
     @Test
     public void testUpdatePinnedTabsModel_AddNewTabs() {
         mTabListModel.add(createTabListItem(1, true));
-        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(1);
+        mTabListModel.add(createTabListItem(2, true));
+        mTabListModel.add(createTabListItem(3, true));
+        mTabListModel.add(createTabListItem(4, false));
+        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(3);
         mMediator.onScrolled();
-        assertEquals(1, mPinnedTabsModelList.size());
-        assertEquals(0, mStripPropertyModel.get(PinnedTabStripProperties.SCROLL_TO_POSITION));
+        assertEquals(3, mPinnedTabsModelList.size());
+        assertEquals(2, mStripPropertyModel.get(PinnedTabStripProperties.SCROLL_TO_POSITION));
     }
 
     @Test

@@ -315,8 +315,14 @@ public class PinnedTabStripMediator {
         }
 
         resizePinnedTabCards();
-        mStripPropertyModel.set(
-                PinnedTabStripProperties.SCROLL_TO_POSITION, mPinnedTabsModelList.size() - 1);
+
+        // We use -1 as a trigger to reset any previously set values to the property.
+        int scrollTo = -1;
+        if (mPinnedTabsModelList.size() > mTabGridListLayoutManager.getSpanCount()) {
+            scrollTo = mPinnedTabsModelList.size() - 1;
+        }
+
+        mStripPropertyModel.set(PinnedTabStripProperties.SCROLL_TO_POSITION, scrollTo);
     }
 
     private void onTabGridListItemSizeChanged(int spanCount, Size cardSize) {
