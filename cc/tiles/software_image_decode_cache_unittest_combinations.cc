@@ -16,7 +16,7 @@
 namespace cc {
 namespace {
 
-size_t kLockedMemoryLimitBytes = 128 * 1024 * 1024;
+constexpr size_t kLockedMemoryLimitBytes = 128 * 1024 * 1024;
 SkM44 CreateMatrix(const SkSize& scale, bool is_decomposable) {
   SkM44 matrix = SkM44::Scale(scale.width(), scale.height());
 

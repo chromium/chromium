@@ -45,7 +45,8 @@ constexpr char kMultipleDisplayIdsCollisionDetected[] =
 
 // A list of property names that are blocked from issuing a full display
 // configuration (modeset) via a udev display CHANGE event.
-const char* kBlockedEventsByTriggerProperty[] = {"Content Protection"};
+constexpr const char* kBlockedEventsByTriggerProperty[] = {
+    "Content Protection"};
 
 struct DrmDisplayParams {
   scoped_refptr<DrmDevice> drm;

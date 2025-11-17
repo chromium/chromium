@@ -17,7 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 
-int kThumbnailSize = 100;
+constexpr int kThumbnailSize = 100;
 
 using testing::AtLeast;
 using testing::DoDefault;

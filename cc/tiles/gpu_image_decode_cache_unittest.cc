@@ -228,7 +228,7 @@ SkM44 CreateMatrix(const SkSize& scale) {
   return SkM44::Scale(scale.width(), scale.height());
 }
 
-size_t kGpuMemoryLimitBytes = 96 * 1024 * 1024;
+constexpr size_t kGpuMemoryLimitBytes = 96 * 1024 * 1024;
 
 class GpuImageDecodeCacheTest
     : public ::testing::TestWithParam<

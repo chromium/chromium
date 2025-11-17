@@ -48,7 +48,7 @@ using RequestType = PerUserTopicSubscriptionManager::RequestType;
 
 namespace {
 
-size_t kInvalidationTopicsCount = 5;
+constexpr size_t kInvalidationTopicsCount = 5;
 
 const char kInvalidationRegistrationScope[] =
     "https://firebaseperusertopics-pa.googleapis.com";

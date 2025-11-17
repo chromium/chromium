@@ -43,7 +43,7 @@ const int kElevatedHostTimeoutSeconds = 300;
 #endif  // BUILDFLAG(IS_WIN)
 
 // Features supported in addition to the base protocol.
-const char* kSupportedFeatures[] = {
+constexpr const char* kSupportedFeatures[] = {
     "pairingRegistry",
     "oauthClient",
     "getRefreshTokenFromAuthCode",

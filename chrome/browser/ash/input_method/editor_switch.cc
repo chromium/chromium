@@ -41,7 +41,7 @@
 namespace ash::input_method {
 namespace {
 
-const char* kWorkspaceDomainsWithPathDenylist[][2] = {
+constexpr const char* kWorkspaceDomainsWithPathDenylist[][2] = {
     {"calendar.google", ""}, {"docs.google", ""},      {"drive.google", ""},
     {"keep.google", ""},     {"mail.google", "/chat"}, {"mail.google", "/mail"},
     {"meet.google", ""},     {"script.google", ""},    {"sites.google", ""},

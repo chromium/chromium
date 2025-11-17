@@ -21,7 +21,7 @@ namespace net::test_server {
 
 namespace {
 
-size_t kRequestSizeLimit = 64 * 1024 * 1024;  // 64 mb.
+constexpr size_t kRequestSizeLimit = 64 * 1024 * 1024;  // 64 mb.
 
 // Helper function used to trim tokens in http request headers.
 std::string Trim(const std::string& value) {

@@ -63,7 +63,7 @@ constexpr net::BackoffEntry::Policy kEnqueueRetryBackoffPolicy = {
 // List of commands that should be polled frequently. Any commands
 // being watched by watchdogs should be here.
 constexpr base::TimeDelta kDefaultCommandPollFrequency = base::Seconds(5);
-const char* kLocalCommandSourcesFastPoll[] = {
+constexpr const char* kLocalCommandSourcesFastPoll[] = {
     "lsusb -t",
 };
 
@@ -73,14 +73,14 @@ const char* kLocalCommandSourcesFastPoll[] = {
 // constant monitoring. Commands that are watched by a watchdog should
 // NOT be in this list.
 constexpr base::TimeDelta kExtendedCommandPollFrequency = base::Minutes(5);
-const char* kLocalCommandSourcesSlowPoll[] = {
+constexpr const char* kLocalCommandSourcesSlowPoll[] = {
     "df -h", "free -m", "nsenter --net=/run/netns/ip_periph ifconfig",
     // Hide kernelspace processes and show limited columns.
     // "ps -o pid,user,group,args --ppid 2 -p 2 -N --sort=pid",
 };
 
 constexpr base::TimeDelta kDefaultLogPollFrequency = base::Seconds(10);
-const char* kLocalLogSources[] = {
+constexpr const char* kLocalLogSources[] = {
     kCfmAuditLogFile,      kCfmBiosInfoLogFile,     kCfmChromeLogFile,
     kCfmChromeUserLogFile, kCfmCrosEcLogFile,       kCfmEventlogLogFile,
     kCfmFwupdLogFile,      kCfmPowerdLogFile,       kCfmSyslogLogFile,

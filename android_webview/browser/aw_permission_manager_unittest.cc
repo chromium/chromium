@@ -27,8 +27,8 @@ namespace android_webview {
 
 namespace {
 
-int kRenderProcessIDForTesting = 8;
-int kRenderFrameIDForTesting = 19;
+constexpr int kRenderProcessIDForTesting = 8;
+constexpr int kRenderFrameIDForTesting = 19;
 const char kEmbeddingOrigin[] = "https://www.google.com/";
 const char kRequestingOrigin1[] = "https://www.google.com/";
 const char kRequestingOrigin2[] = "https://www.chromium.org/";

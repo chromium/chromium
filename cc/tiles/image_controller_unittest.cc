@@ -174,7 +174,7 @@ class BlockingTask : public TileTask {
 
 // For tests that exercise image controller's thread, this is the timeout value
 // to allow the worker thread to do its work.
-int kDefaultTimeoutSeconds = 10;
+constexpr int kDefaultTimeoutSeconds = 10;
 
 DrawImage CreateDiscardableDrawImage(gfx::Size size) {
   return DrawImage(CreateDiscardablePaintImage(size), false,

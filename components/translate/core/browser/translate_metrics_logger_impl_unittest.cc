@@ -26,7 +26,7 @@ namespace testing {
 
 namespace {
 
-const char* kAllUkmMetricNames[] = {
+constexpr const char* kAllUkmMetricNames[] = {
     ukm::builders::TranslatePageLoad::kSequenceNumberName,
     ukm::builders::TranslatePageLoad::kTriggerDecisionName,
     ukm::builders::TranslatePageLoad::kRankerDecisionName,

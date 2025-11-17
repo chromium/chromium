@@ -160,9 +160,10 @@ const net::BackoffEntry::Policy kNoBackoffPolicy = {
 
 const char kAuthUserQueryKey[] = "authuser";
 
-int kExpectedLoadFlags = net::LOAD_DISABLE_CACHE;
+constexpr int kExpectedLoadFlags = net::LOAD_DISABLE_CACHE;
 
-int kExpectedLoadFlagsForDownloadWithCookies = net::LOAD_DISABLE_CACHE;
+constexpr int kExpectedLoadFlagsForDownloadWithCookies =
+    net::LOAD_DISABLE_CACHE;
 
 // Fake authentication constants
 const char kFakeOAuth2Token[] = "ce n'est pas un jeton";

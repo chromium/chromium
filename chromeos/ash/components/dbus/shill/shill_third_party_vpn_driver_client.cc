@@ -29,7 +29,7 @@ namespace ash {
 
 namespace {
 
-const char* kSetParametersKeyList[] = {
+constexpr const char* kSetParametersKeyList[] = {
     shill::kAddressParameterThirdPartyVpn,
     shill::kBroadcastAddressParameterThirdPartyVpn,
     shill::kExclusionListParameterThirdPartyVpn,

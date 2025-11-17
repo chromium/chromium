@@ -31,7 +31,7 @@ constexpr base::TimeDelta kSampleInterval = base::Seconds(1);
 
 // Size of moving-average filter which is used to smooth out variations in
 // speed-limit estimates.
-size_t kMovingAverageWindowSize = 10;
+constexpr size_t kMovingAverageWindowSize = 10;
 
 constexpr const char kPowerTraceCategory[] = TRACE_DISABLED_BY_DEFAULT("power");
 

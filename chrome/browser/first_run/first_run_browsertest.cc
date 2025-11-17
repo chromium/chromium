@@ -370,9 +370,9 @@ IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, Test) {
 
 // The trial and groups encoded in the above seed.
 constexpr char kTrialName[] = "UMA-Uniformity-Trial-10-Percent";
-const char* kTrialGroups[] = {"default",  "group_01", "group_02", "group_03",
-                              "group_04", "group_05", "group_06", "group_07",
-                              "group_08", "group_09"};
+constexpr const char* kTrialGroups[] = {
+    "default",  "group_01", "group_02", "group_03", "group_04",
+    "group_05", "group_06", "group_07", "group_08", "group_09"};
 
 IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, PRE_SecondRun) {
   // Check that the trial from the seed exists and is in one of the expected

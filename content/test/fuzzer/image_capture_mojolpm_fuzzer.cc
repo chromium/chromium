@@ -34,7 +34,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 
-const char* kCmdline[] = {"image_capture_mojolpm_fuzzer", nullptr};
+constexpr const char* kCmdline[] = {"image_capture_mojolpm_fuzzer", nullptr};
 
 content::mojolpm::FuzzerEnvironment& GetEnvironment() {
   static base::NoDestructor<content::mojolpm::FuzzerEnvironment> environment(

@@ -53,7 +53,7 @@ using kiosk::test::WaitKioskLaunched;
 
 namespace {
 
-const char* kTestUrlParams[] = {"", "https://www.test.com"};
+constexpr const char* kTestUrlParams[] = {"", "https://www.test.com"};
 
 bool GetPolicyValueInPrefs(Profile& profile) {
   return profile.GetPrefs()->GetBoolean(prefs::kNewWindowsInKioskAllowed);

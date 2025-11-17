@@ -80,7 +80,7 @@ media::VideoCaptureFormats GetDeviceSupportedFormats(AVCaptureDevice* device) {
 
 // Blocked devices are identified by a characteristic trailing substring of
 // uniqueId. At the moment these are just Blackmagic devices.
-const char* kBlockedCamerasIdSignature[] = {"-01FDA82C8A9C"};
+constexpr const char* kBlockedCamerasIdSignature[] = {"-01FDA82C8A9C"};
 
 bool IsDeviceBlockedForAVFoundation(const std::string& device_id) {
   bool is_device_blocked = false;

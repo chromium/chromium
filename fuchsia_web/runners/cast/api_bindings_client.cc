@@ -14,7 +14,7 @@
 
 namespace {
 
-uint64_t kBindingsIdStart = 0xFF0000;
+constexpr uint64_t kBindingsIdStart = 0xFF0000;
 
 }  // namespace
 

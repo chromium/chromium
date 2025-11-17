@@ -57,7 +57,7 @@ constexpr char kHintKey[] = "https://www.merchant.com/price_drop_product";
 constexpr char kBookmarkFoundHistogramName[] =
     "Commerce.PriceTracking.Untrack.BookmarkFound";
 std::string kBookmarkTitle = "My product title";
-uint64_t kClusterId = 12345L;
+constexpr uint64_t kClusterId = 12345L;
 constexpr char kPayloadValue[] = "value";
 NSString* kSerializedPayloadKey = @"op";
 NSString* kVisitSiteActionId = @"visit_site";

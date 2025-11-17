@@ -20,7 +20,7 @@ namespace media {
 
 namespace {
 
-uint32_t kDefaultDataPipeCapacityBytes = 512;
+constexpr uint32_t kDefaultDataPipeCapacityBytes = 512;
 
 class MojoDataPipeReadWrite {
  public:

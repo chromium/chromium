@@ -22,7 +22,7 @@ namespace tab_groups {
 namespace {
 
 // Invalid IDs are represented as -1 in the JNI bridge.
-int kInvalidTabId = -1;
+constexpr int kInvalidTabId = -1;
 
 }  // namespace
 

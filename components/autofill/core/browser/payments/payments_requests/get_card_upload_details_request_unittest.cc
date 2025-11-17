@@ -20,7 +20,7 @@ using ::testing::HasSubstr;
 namespace autofill::payments {
 namespace {
 
-int kAllDetectableValues =
+constexpr int kAllDetectableValues =
     CreditCardSaveManager::DetectedValue::CVC |
     CreditCardSaveManager::DetectedValue::CARDHOLDER_NAME |
     CreditCardSaveManager::DetectedValue::ADDRESS_NAME |

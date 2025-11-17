@@ -21,12 +21,12 @@ namespace {
 
 // The number of consecutive failed read attempts before the buffer is
 // determined to be in an invalid state.
-int kMaximumFailedReadAttempts = 10;
+constexpr int kMaximumFailedReadAttempts = 10;
 
 // The maximum size of a read/write window used by the underlying buffer. This
 // is the maximum size of the array which will be cached for upcoming use.
 // size_t type is used here to simplify comparison logic later on.
-size_t kWindowSizeBytes = 32;
+constexpr size_t kWindowSizeBytes = 32;
 
 }  // namespace
 

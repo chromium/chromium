@@ -51,7 +51,7 @@ namespace {
 // a more specific filter e.g. "chrome-extension://*".
 // The schemes are hardcoded here to avoid dependencies on //extensions and
 // //chrome.
-const char* kBypassBlocklistWildcardForSchemes[] = {
+constexpr const char* kBypassBlocklistWildcardForSchemes[] = {
     // For internal extension URLs e.g. the Bookmark Manager and the File
     // Manager on Chrome OS.
     "chrome-extension",

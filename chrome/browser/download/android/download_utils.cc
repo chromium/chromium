@@ -32,7 +32,7 @@ using base::android::ScopedJavaLocalRef;
 namespace {
 // If received bytes is more than the size limit and resumption will restart
 // from the beginning, throttle it.
-int kDefaultAutoResumptionSizeLimit = 10 * 1024 * 1024;  // 10 MB
+constexpr int kDefaultAutoResumptionSizeLimit = 10 * 1024 * 1024;  // 10 MB
 }  // namespace
 
 static jint JNI_DownloadUtils_GetResumeMode(

@@ -56,11 +56,11 @@ constexpr char kUnknownContentSettingsType[] = "unknown";
 // the time when the user regrants the permission through the unused site
 // permission module of Safete Check. The maximum number of days is determined
 // by `kRevocationCleanUpThreshold`.
-size_t kAllowAgainMetricsExclusiveMaxCount = 31;
+constexpr size_t kAllowAgainMetricsExclusiveMaxCount = 31;
 
 // Using a single bucket per day, following the value of
 // `kAllowAgainMetricsExclusiveMaxCount`.
-size_t kAllowAgainMetricsBuckets = 31;
+constexpr size_t kAllowAgainMetricsBuckets = 31;
 
 // Determines the time interval after which sites are considered to be unused
 // and their permissions will be revoked.

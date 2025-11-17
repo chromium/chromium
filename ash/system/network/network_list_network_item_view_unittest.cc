@@ -61,7 +61,7 @@ const char kWiFiDevicePath[] = "/device/wifi_device";
 const char kCellularDeviceName[] = "cellular_device";
 const char kCellularDevicePath[] = "/device/cellular_device";
 
-int kSignalStrength = 50;
+constexpr int kSignalStrength = 50;
 
 }  // namespace
 

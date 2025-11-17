@@ -118,7 +118,7 @@ std::string AssociatedStudyGroup(const base::Feature& feature) {
 // Create a filterable state for use in these tests.
 // This differs from |CreateDummyClientFilterableState()| by setting membership
 // of a specific google group (which some tests rely on).
-uint64_t kExampleGoogleGroup = 123456;
+constexpr uint64_t kExampleGoogleGroup = 123456;
 std::unique_ptr<ClientFilterableState> CreateTestClientFilterableState() {
   auto client_state = std::make_unique<ClientFilterableState>(
       base::BindOnce([] { return false; }), base::BindOnce([] {

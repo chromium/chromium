@@ -56,7 +56,7 @@ using AXRange = ui::AXPlatformNodeDelegate::AXRange;
 namespace {
 
 // Same length as web content/WebKit.
-int kLiveRegionDebounceMillis = 20;
+constexpr int kLiveRegionDebounceMillis = 20;
 
 using RoleMap = std::map<ax::mojom::Role, NSString*>;
 using EventMap = std::map<ax::mojom::Event, NSString*>;

@@ -34,7 +34,7 @@ sk_sp<SkColorSpace> DefaultSkColorSpace() {
   return DefaultTargetColorParams().color_space.ToSkColorSpace();
 }
 
-size_t kLockedMemoryLimitBytes = 128 * 1024 * 1024;
+constexpr size_t kLockedMemoryLimitBytes = 128 * 1024 * 1024;
 class TestSoftwareImageDecodeCache : public SoftwareImageDecodeCache {
  public:
   TestSoftwareImageDecodeCache()

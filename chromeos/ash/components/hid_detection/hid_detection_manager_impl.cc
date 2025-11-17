@@ -18,7 +18,7 @@ using InputState = HidDetectionManager::InputState;
 // In floss, a virtual device is created when a HID is bonded or paired.
 // We do not want to include this virtual device to our list of added devices.
 // (b/299955128)
-const char* kBlockedDeviceNames[] = {"VIRTUAL_SUSPEND_UHID"};
+constexpr const char* kBlockedDeviceNames[] = {"VIRTUAL_SUSPEND_UHID"};
 
 HidDetectionManagerImpl::InputDeviceManagerBinder&
 GetInputDeviceManagerBinderOverride() {

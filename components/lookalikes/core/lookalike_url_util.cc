@@ -57,14 +57,14 @@ const size_t kMinE2LDLengthForTargetEmbedding = 4;
 // We might not protect a domain whose e2LD is a common word in target embedding
 // based on the TLD that is paired with it. This list supplements words from
 // url_formatter::common_words::IsCommonWord().
-const char* kLocalAdditionalCommonWords[] = {"asahi", "hoteles", "jharkhand",
-                                             "nifty"};
+constexpr const char* kLocalAdditionalCommonWords[] = {"asahi", "hoteles",
+                                                       "jharkhand", "nifty"};
 
 // These domains are plausible lookalike targets, but they also use common words
 // in their names. Selectively prevent flagging embeddings where the embedder
 // ends in "-DOMAIN.TLD", since these tend to have higher false positive rates.
-const char* kDomainsPermittedInEndEmbeddings[] = {"office.com", "medium.com",
-                                                  "orange.fr"};
+constexpr const char* kDomainsPermittedInEndEmbeddings[] = {
+    "office.com", "medium.com", "orange.fr"};
 
 // What separators can be used to separate tokens in target embedding spoofs?
 // e.g. www-google.com.example.com uses "-" (www-google) and "." (google.com).
@@ -73,7 +73,8 @@ const char kTargetEmbeddingSeparators[] = "-.";
 // A small subset of private registries on the PSL that act like public
 // registries AND are a common source of false positives in lookalike checks. We
 // treat them as public for the purposes of lookalike checks.
-const char* kPrivateRegistriesTreatedAsPublic[] = {"com.de", "com.se"};
+constexpr const char* kPrivateRegistriesTreatedAsPublic[] = {"com.de",
+                                                             "com.se"};
 
 TopBucketDomainsParams* GetTopDomainParams() {
   static TopBucketDomainsParams params{
@@ -741,7 +742,7 @@ bool IsComboSquatting(
 
 // Hostnames containing these strings are considered unsafe due to ligature
 // rendering in some fonts.
-const char* kUnsafeLigatures[] = {
+constexpr const char* kUnsafeLigatures[] = {
     "g_logo", "o_logo", "l_logo", "e_logo",
     // google_logo is also unsafe, but e_logo is its substring.
     // super_g_logo is also unsafe, but g_logo is its substring.

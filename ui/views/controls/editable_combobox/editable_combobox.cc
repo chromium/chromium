@@ -75,8 +75,8 @@ namespace views {
 
 namespace {
 
-int kEditableComboboxButtonSize = 24;
-int kEditableComboboxControlsContainerInsets = 6;
+constexpr int kEditableComboboxButtonSize = 24;
+constexpr int kEditableComboboxControlsContainerInsets = 6;
 
 class Arrow : public Button {
   METADATA_HEADER(Arrow, Button)

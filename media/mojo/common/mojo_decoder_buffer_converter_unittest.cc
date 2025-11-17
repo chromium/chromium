@@ -21,7 +21,7 @@ namespace media {
 
 namespace {
 
-uint32_t kDefaultDataPipeCapacityBytes = 1024;
+constexpr uint32_t kDefaultDataPipeCapacityBytes = 1024;
 
 MATCHER_P(MatchesDecoderBuffer, buffer, "") {
   DCHECK(arg);

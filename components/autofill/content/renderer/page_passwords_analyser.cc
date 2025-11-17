@@ -42,11 +42,11 @@ namespace autofill {
 
 namespace {
 
-const char kDocumentationUrl[] = "https://goo.gl/9p2vKq";
-const char* kTypeAttributes[] = {"text", "email", "tel", "password"};
-const char* kTypeTextAttributes[] = {"text", "email", "tel"};
-char kTextFieldSignature = 'T';
-char kPasswordFieldSignature = 'P';
+constexpr const char kDocumentationUrl[] = "https://goo.gl/9p2vKq";
+constexpr const char* kTypeAttributes[] = {"text", "email", "tel", "password"};
+constexpr const char* kTypeTextAttributes[] = {"text", "email", "tel"};
+constexpr char kTextFieldSignature = 'T';
+constexpr char kPasswordFieldSignature = 'P';
 
 // Produce a relevant link to developer documentation regarding the warning or
 // error. If no particular reference is given, the default URL will be provided.

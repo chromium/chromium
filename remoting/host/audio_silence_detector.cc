@@ -17,7 +17,7 @@ namespace {
 // Silence period threshold in seconds. Silence intervals shorter than this
 // value are still encoded and sent to the client, so that we don't disrupt
 // playback by dropping them.
-int kSilencePeriodThresholdSeconds = 1;
+constexpr int kSilencePeriodThresholdSeconds = 1;
 
 }  // namespace
 

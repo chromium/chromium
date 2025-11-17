@@ -24,7 +24,7 @@ namespace data_decoder {
 
 namespace {
 
-int64_t kPadding = 64;
+constexpr int64_t kPadding = 64;
 
 void ResizeImage(SkBitmap* decoded_image,
                  bool shrink_to_fit,

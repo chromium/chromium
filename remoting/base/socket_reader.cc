@@ -15,7 +15,7 @@
 namespace remoting {
 
 namespace {
-int kReadBufferSize = 4096;
+constexpr int kReadBufferSize = 4096;
 }  // namespace
 
 SocketReader::SocketReader() : socket_(nullptr) {}

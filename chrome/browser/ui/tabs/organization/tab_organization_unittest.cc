@@ -37,7 +37,7 @@
 
 namespace {
 
-int kMinimumValidTabs = 2;
+constexpr int kMinimumValidTabs = 2;
 
 class FakeModelQualityLogEntry
     : public optimization_guide::ModelQualityLogEntry {

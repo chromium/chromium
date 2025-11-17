@@ -52,7 +52,7 @@ const int kAuthFailSleepMs = 100;
 // Log a warning after failing to authenticate for this many milliseconds.
 const int kLogAuthFailDelayMs = 1000;
 
-const char* kDisplayActionString[] = {
+constexpr const char* kDisplayActionString[] = {
     "ADD",
     "REMOVE",
     "CHANGE",

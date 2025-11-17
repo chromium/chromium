@@ -44,7 +44,7 @@ const char kPropertyVersion[] = "Version";
 
 // Property values.
 const char kPropertyValueStatusNormal[] = "normal";
-uint32_t kPropertyValueVersion = 3;
+constexpr uint32_t kPropertyValueVersion = 3;
 
 // Signals.
 const char kSignalItemsPropertiesUpdated[] = "ItemsPropertiesUpdated";

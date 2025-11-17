@@ -53,9 +53,9 @@ const char kUniqueId2[] = "FFFF-FF0F";
 const char kVendorName[] = "CompanyA";
 const char kFileSystemType[] = "exfat";
 
-uint64_t kDevice1SizeInBytes = 113048;
-uint64_t kDevice2SizeInBytes = 212312;
-uint64_t kSDCardSizeInBytes = 9000000;
+constexpr uint64_t kDevice1SizeInBytes = 113048;
+constexpr uint64_t kDevice2SizeInBytes = 212312;
+constexpr uint64_t kSDCardSizeInBytes = 9000000;
 
 std::string GetDCIMDeviceId(const std::string& unique_id) {
   return StorageInfo::MakeDeviceId(

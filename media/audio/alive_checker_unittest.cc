@@ -18,8 +18,8 @@
 namespace media {
 
 namespace {
-int kCheckIntervalMs = 10;
-int kTimeoutMs = 50;
+constexpr int kCheckIntervalMs = 10;
+constexpr int kTimeoutMs = 50;
 }  // namespace
 
 class MockPowerObserverHelper : public PowerObserverHelper {

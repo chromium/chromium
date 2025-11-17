@@ -12,18 +12,18 @@
 
 namespace blink {
 
-const char* kDimensionUnits[] = {"em",   "ex",   "cap", "ch",   "ic",  "rem",
-                                 "lh",   "rlh",  "vw",  "vh",   "vi",  "vb",
-                                 "vmin", "vmax", "deg", "grad", "rad", "turn",
-                                 "ms",   "ms",   "hz",  "khz"};
-const char* kValidAttrSyntax[] = {
+constexpr const char* kDimensionUnits[] = {
+    "em",  "ex",   "cap", "ch", "ic",   "rem",  "lh",  "rlh",
+    "vw",  "vh",   "vi",  "vb", "vmin", "vmax", "deg", "grad",
+    "rad", "turn", "ms",  "ms", "hz",   "khz"};
+constexpr const char* kValidAttrSyntax[] = {
     "type(<color>)",   "type(<length> | <percentage>)",
     "type(<angle>#)",  "type(<color>+ | <image>#)",
     "type(<color> )",  "type( <color>)",
     "type( <color> )", "type(<length>)   "};
-const char* kInvalidAttrSyntax[] = {"type(<number >)", "type(< angle>)",
-                                    "type(<length> +)", "type(<color> !)",
-                                    "type(!<color>)"};
+constexpr const char* kInvalidAttrSyntax[] = {
+    "type(<number >)", "type(< angle>)", "type(<length> +)", "type(<color> !)",
+    "type(!<color>)"};
 
 class CSSAttrTypeTest : public PageTestBase {};
 

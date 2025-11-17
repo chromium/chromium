@@ -15,7 +15,7 @@
 namespace network {
 namespace {
 
-uint32_t kNetLogSourceId = 123;
+constexpr uint32_t kNetLogSourceId = 123;
 std::optional<base::UnguessableToken> kThrottlingProfileId =
     base::UnguessableToken::Create();
 

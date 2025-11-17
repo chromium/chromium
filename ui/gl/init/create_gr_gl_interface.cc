@@ -285,7 +285,7 @@ const GLubyte* GetStringHook(const char* gl_version_string,
   }
 }
 
-const char* kBlocklistExtensions[] = {
+constexpr const char* kBlocklistExtensions[] = {
     "GL_APPLE_framebuffer_multisample",
     "GL_ARB_ES3_1_compatibility",
     "GL_ARB_draw_indirect",

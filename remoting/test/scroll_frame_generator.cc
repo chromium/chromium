@@ -11,7 +11,7 @@ namespace remoting {
 namespace test {
 
 namespace {
-int kScrollSpeedPixelsPerSecond = 500;
+constexpr int kScrollSpeedPixelsPerSecond = 500;
 }  // namespace
 
 ScrollFrameGenerator::ScrollFrameGenerator()

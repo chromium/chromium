@@ -22,7 +22,7 @@ namespace {
 
 // Delay video playback to achieve AV sync when video starts.
 // This value is based on experimental calculation.
-int64_t kSyncedPlaybackStartDelayUs = 20000;
+constexpr int64_t kSyncedPlaybackStartDelayUs = 20000;
 
 }  // namespace
 

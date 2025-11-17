@@ -46,7 +46,7 @@ namespace enterprise_data_protection {
 
 namespace {
 
-const char* kSkippedUrls[] = {
+constexpr const char* kSkippedUrls[] = {
     "chrome://version",
     "chrome-extension://abcdefghijklmnop",
 };

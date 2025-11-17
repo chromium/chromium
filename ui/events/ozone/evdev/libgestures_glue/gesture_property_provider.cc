@@ -394,8 +394,8 @@ namespace {
 const char kConfigurationFilePath[] = "/etc/gesture";
 
 // Special keywords for boolean values.
-const char* kTrue[] = {"on", "true", "yes"};
-const char* kFalse[] = {"off", "false", "no"};
+constexpr const char* kTrue[] = {"on", "true", "yes"};
+constexpr const char* kFalse[] = {"off", "false", "no"};
 
 // Check if a device falls into one device type category.
 bool IsDeviceOfType(const ui::GesturePropertyProvider::DevicePtr device,

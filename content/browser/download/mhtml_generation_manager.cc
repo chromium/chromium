@@ -56,7 +56,7 @@ using MHTMLWriteCompleteCallback =
 
 const char kContentLocation[] = "Content-Location: ";
 const char kContentType[] = "Content-Type: ";
-int kInvalidFileSize = -1;
+constexpr int kInvalidFileSize = -1;
 
 #if BUILDFLAG(IS_WIN)
 // Attempts to deny execute access to the file at `path`.

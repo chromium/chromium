@@ -37,7 +37,7 @@ namespace {
 // encompass every feature. This ensures that when developers add a new
 // feature, they consider whether it should be allowed for "simple override"
 // extensions.
-const char* kDisallowedFeatures[] = {
+constexpr const char* kDisallowedFeatures[] = {
     // Manifest constants.
     extensions::manifest_keys::kAction,
     extensions::manifest_keys::kApp,

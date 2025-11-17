@@ -29,7 +29,7 @@ namespace {
 gfx::Outsets kInternalPadding = gfx::Outsets::VH(4, 10);
 
 // The corners of the label are rounded,
-int kCornerRadius = 10;
+constexpr int kCornerRadius = 10;
 
 // Colors used by the badge.
 ui::ColorId kTextColor = cros_tokens::kCrosSysOnPrimaryContainer;

@@ -28,7 +28,7 @@ namespace ash {
 namespace test {
 
 namespace {
-int kDefaultSearchItems = 3;
+constexpr int kDefaultSearchItems = 3;
 
 // Preferred sizing for different types of search result views.
 constexpr int kPreferredWidth = 640;

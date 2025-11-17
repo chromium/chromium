@@ -43,7 +43,7 @@ namespace storage {
 
 namespace {
 
-int64_t kMinimumStatsCollectionIntervalHours = 1;
+constexpr int64_t kMinimumStatsCollectionIntervalHours = 1;
 
 // For type directory names in ObfuscatedFileUtil.
 // TODO(kinuko,nhiroki): Each type string registration should be done

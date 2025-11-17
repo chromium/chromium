@@ -49,10 +49,10 @@ const ClientId kTestClientId1(kTestClientNamespace, "1234");
 const ClientId kTestClientId2(kTestClientNamespace, "5678");
 const base::FilePath::CharType kFilePath[] =
     FILE_PATH_LITERAL("/offline_pages/example_com.mhtml");
-int64_t kFileSize = 234567LL;
-int64_t kOfflineId = 12345LL;
+constexpr int64_t kFileSize = 234567LL;
+constexpr int64_t kOfflineId = 12345LL;
 const char kTestRequestOrigin[] = "request.origin";
-int64_t kTestSystemDownloadId = 42LL;
+constexpr int64_t kTestSystemDownloadId = 42LL;
 const char kTestDigest[] = "test-digest";
 const base::Time kVisualsExpiration = store_utils::FromDatabaseTime(42);
 const char kTestSnippet[] = "test snippet";

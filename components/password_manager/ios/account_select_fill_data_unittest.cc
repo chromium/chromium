@@ -40,18 +40,18 @@ using ::testing::FieldsAre;
 
 namespace {
 // Test data.
-const char* kUrl = "http://example.com/";
-const char* kFormNames[] = {"form_name1", "form_name2"};
-const uint32_t kFormUniqueIDs[] = {0, 3};
-const char* kUsernameElements[] = {"username1", "username2"};
-const uint32_t kUsernameUniqueIDs[] = {1, 4};
-const char* kUsernames[] = {"user0", "u_s_e_r"};
-const char* kPasswordElements[] = {"password1", "password2"};
-const uint32_t kPasswordUniqueIDs[] = {2, 5};
-const char* kPasswords[] = {"password0", "secret"};
-const char16_t* kBackupPassword = u"backup_password";
-const char* kAdditionalUsernames[] = {"u$er2", nullptr};
-const char* kAdditionalPasswords[] = {"secret", nullptr};
+constexpr char kUrl[] = "http://example.com/";
+constexpr const char* kFormNames[] = {"form_name1", "form_name2"};
+constexpr uint32_t kFormUniqueIDs[] = {0, 3};
+constexpr const char* kUsernameElements[] = {"username1", "username2"};
+constexpr uint32_t kUsernameUniqueIDs[] = {1, 4};
+constexpr const char* kUsernames[] = {"user0", "u_s_e_r"};
+constexpr const char* kPasswordElements[] = {"password1", "password2"};
+constexpr uint32_t kPasswordUniqueIDs[] = {2, 5};
+constexpr const char* kPasswords[] = {"password0", "secret"};
+constexpr char16_t kBackupPassword[] = u"backup_password";
+constexpr const char* kAdditionalUsernames[] = {"u$er2", nullptr};
+constexpr const char* kAdditionalPasswords[] = {"secret", nullptr};
 
 // Returns a field renderer ID that isn't used in any testing data, which
 // represents an unexisting field renderer ID.

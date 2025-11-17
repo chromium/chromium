@@ -4574,20 +4574,12 @@ TEST_F(ConfiguredProxyResolutionServiceTest, OnShutdownFollowedByRequest) {
   EXPECT_TRUE(info.is_direct());
 }
 
-const char* kImplicityBypassedHosts[] = {
-    "localhost",
-    "localhost.",
-    "foo.localhost",
-    "127.0.0.1",
-    "127.100.0.2",
-    "[::1]",
-    "169.254.3.2",
-    "169.254.100.1",
-    "[FE80::8]",
-    "[feb8::1]",
+constexpr const char* kImplicityBypassedHosts[] = {
+    "localhost", "localhost.",  "foo.localhost", "127.0.0.1", "127.100.0.2",
+    "[::1]",     "169.254.3.2", "169.254.100.1", "[FE80::8]", "[feb8::1]",
 };
 
-const char* kUrlSchemes[] = {"http://", "https://", "ftp://"};
+constexpr const char* kUrlSchemes[] = {"http://", "https://", "ftp://"};
 
 TEST_F(ConfiguredProxyResolutionServiceTest,
        ImplicitlyBypassWithManualSettings) {

@@ -58,7 +58,7 @@
 namespace {
 
 // Time to wait for an app window to show before allowing Chrome to quit.
-int kAppWindowFirstShowTimeoutSeconds = 10;
+constexpr int kAppWindowFirstShowTimeoutSeconds = 10;
 
 bool disable_external_open_for_testing_ = false;
 

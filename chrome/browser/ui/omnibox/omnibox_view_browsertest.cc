@@ -124,7 +124,7 @@ const ui::KeyboardCode kInlineAutocompleteTextKeys[] = {
     ui::VKEY_D, ui::VKEY_E, ui::VKEY_F, ui::VKEY_UNKNOWN};
 
 // Hostnames that shall be blocked by host resolver.
-const char* kBlockedHostnames[] = {
+constexpr const char* kBlockedHostnames[] = {
     "foo", "*.foo.com", "bar",        "*.bar.com", "abc", "*.abc.com",
     "def", "*.def.com", "*.site.com", "history",   "z"};
 

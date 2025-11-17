@@ -28,8 +28,8 @@ int signum(T t) {
   return (T(0) < t) - (t < T(0));
 }
 
-bool kCleanupNeeded = true;
-bool kNonUserRequestsFound = true;
+constexpr bool kCleanupNeeded = true;
+constexpr bool kNonUserRequestsFound = true;
 
 #define CALL_MEMBER_FUNCTION(object, ptrToMember) ((object)->*(ptrToMember))
 }  // namespace

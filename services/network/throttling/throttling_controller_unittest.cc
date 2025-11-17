@@ -37,7 +37,7 @@ using net::MockTransaction;
 using net::TEST_MODE_SYNC_NET_START;
 
 const char kUploadData[] = "upload_data";
-int64_t kUploadIdentifier = 17;
+constexpr int64_t kUploadIdentifier = 17;
 
 class TestCallback {
  public:

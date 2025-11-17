@@ -123,7 +123,7 @@ std::string Print(const std::vector<std::string>& locales) {
   return result;
 }
 
-const char* kVPDInitialLocales[] = {
+constexpr const char* kVPDInitialLocales[] = {
     "ar",
     "ar,bg",
     "ar,bg,bn",

@@ -1296,10 +1296,9 @@ std::vector<PaintImage> test_images = {
 };
 
 #if BUILDFLAG(SKIA_SUPPORT_SKOTTIE)
-
-bool kIsSkottieSupported = true;
+constexpr bool kIsSkottieSupported = true;
 #else
-bool kIsSkottieSupported = false;
+constexpr bool kIsSkottieSupported = false;
 #endif
 
 // Writes as many ops in |buffer| as can fit in |output_size| to |output|.

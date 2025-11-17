@@ -58,7 +58,7 @@
 
 namespace {
 
-int kDefaultSearchItems = 3;
+constexpr int kDefaultSearchItems = 3;
 // SearchResultListViewType is 0 indexed so we need to add 1 here.
 const int kResultContainersCount =
     static_cast<int>(

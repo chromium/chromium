@@ -240,7 +240,7 @@ TestProvider kSiteSearchShortcutSameAsSearchAggregator = {
     .url = "https://work.com/q={searchTerms}&x",
     .favicon = "https://work.com/favicon.ico"};
 
-bool kMismatchedSearchAggregatorSettingsType = true;
+constexpr bool kMismatchedSearchAggregatorSettingsType = true;
 
 TestSearchAggregator kSearchAggregatorWithoutShortcut = {
     .name = "work name",

@@ -243,7 +243,7 @@ const size_t kAllDoneTaskPriority = 3u;
 
 // For correctness, |kTileTaskPriorityBase| must be greater than
 // all task set done task priorities.
-size_t kTileTaskPriorityBase = 10u;
+constexpr size_t kTileTaskPriorityBase = 10u;
 
 void InsertNodeForTask(TaskGraph* graph,
                        TileTask* task,

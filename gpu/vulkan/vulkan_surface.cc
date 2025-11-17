@@ -77,7 +77,7 @@ gfx::OverlayTransform FromVkSurfaceTransformFlag(
 }
 
 // Minimum VkImages in a vulkan swap chain.
-uint32_t kMinImageCount = 3u;
+constexpr uint32_t kMinImageCount = 3u;
 
 }  // namespace
 

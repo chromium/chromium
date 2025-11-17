@@ -37,7 +37,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 
-const char* kCmdline[] = {
+constexpr const char* kCmdline[] = {
     "media_stream_dispatcher_host_mojolpm_fuzzer",
     "--use-fake-device-for-media-stream",  // Make sure we use fake devices to
                                            // avoid long delays.

@@ -59,7 +59,7 @@ namespace {
 constexpr int kActionExampleVerticalSpacing = 3;
 constexpr int kActionExampleLeftPadding = 8;
 constexpr gfx::Insets kSeparatorPadding = gfx::Insets::TLBR(5, 0, 5, 0);
-const char* kBoolStrings[2] = {"false", "true"};
+constexpr const char* kBoolStrings[2] = {"false", "true"};
 
 #define MAP_ACTION_IDS_TO_STRINGS
 #include "ui/actions/action_id_macros.inc"

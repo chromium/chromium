@@ -98,7 +98,7 @@ constexpr char kAuthorizationHeaderPrefix[] = "Bearer ";
 constexpr char kApiKeyParam[] = "key";
 
 // List of URL prefix supported by `ProjectorXhrSender`.
-const char* kUrlAllowlist[] = {
+constexpr const char* kUrlAllowlist[] = {
     "https://www.googleapis.com/drive/v3/files/",
     "https://www.googleapis.com/upload/drive/v3/files/",
     // TODO(b/229792620): Remove this URL prefix once web component is updated

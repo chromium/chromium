@@ -12,7 +12,7 @@ namespace {
 
 // The default denylist of domains that will turn off autocorrect and multi word
 // suggestions.
-const char* kDefaultDomainDenylist[] = {
+constexpr const char* kDefaultDomainDenylist[] = {
     "amazon",
     "b.corp.google",
     "buganizer.corp.google",
@@ -35,9 +35,10 @@ const char* kDefaultDomainDenylist[] = {
 };
 
 // Exceptions where the features are enabled.
-const char* kAllowedDomainsWithPaths[][2] = {{"mail.google", "/chat"}};
+constexpr const char* kAllowedDomainsWithPaths[][2] = {
+    {"mail.google", "/chat"}};
 
-const char* kDefaultFileExtensionDenylist[] = {
+constexpr const char* kDefaultFileExtensionDenylist[] = {
     "pdf",
 };
 

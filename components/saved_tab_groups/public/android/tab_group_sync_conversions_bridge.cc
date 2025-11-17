@@ -29,7 +29,7 @@ namespace tab_groups {
 namespace {
 
 // Unspecified tab position is represented as -1 in Java.
-int kInvalidTabPosition = -1;
+constexpr int kInvalidTabPosition = -1;
 
 // Converts collaboration group ID to Java. If the collaboration group ID is
 // not present, null is returned.

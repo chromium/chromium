@@ -60,7 +60,7 @@ namespace {
 // to be of use for them.
 // A cleaner way could be checking the history for redirects but this requires
 // the page to be visited on the device.
-const char* kKnownGenericPagePrefixes[] = {
+constexpr const char* kKnownGenericPagePrefixes[] = {
     "m.", "mobile.",  // Common prefixes among popular sites.
     "edition.",       // Used among news papers (CNN, Independent, ...)
     "www.",           // Usually no-www domains redirect to www or vice-versa.

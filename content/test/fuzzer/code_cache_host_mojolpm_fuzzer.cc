@@ -32,7 +32,7 @@
 
 using url::Origin;
 
-const char* kCmdline[] = {"code_cache_host_mojolpm_fuzzer", nullptr};
+constexpr const char* kCmdline[] = {"code_cache_host_mojolpm_fuzzer", nullptr};
 
 content::mojolpm::FuzzerEnvironment& GetEnvironment() {
   static base::NoDestructor<

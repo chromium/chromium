@@ -24,7 +24,7 @@ namespace {
 namespace bluetooth_socket = extensions::api::bluetooth_socket;
 using extensions::BluetoothApiSocket;
 
-int kDefaultBufferSize = 4096;
+constexpr int kDefaultBufferSize = 4096;
 
 bluetooth_socket::ReceiveError MapReceiveErrorReason(
     BluetoothApiSocket::ErrorReason value) {

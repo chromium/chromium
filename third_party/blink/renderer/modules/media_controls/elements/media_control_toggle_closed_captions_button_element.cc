@@ -23,9 +23,10 @@ namespace {
 // The CSS class to use if we should use the closed captions icon.
 const char kClosedCaptionClass[] = "closed-captions";
 
-const char* kClosedCaptionLocales[] = {
+constexpr const char* kClosedCaptionLocales[] = {
     // English (United States)
-    "en", "en-US",
+    "en",
+    "en-US",
 
     // Spanish (Latin America and Caribbean)
     "es-419",
@@ -36,7 +37,7 @@ const char* kClosedCaptionLocales[] = {
 
 // Returns true if the default language should use the closed captions icon.
 bool UseClosedCaptionsIcon() {
-  for (auto*& locale : kClosedCaptionLocales) {
+  for (const char* locale : kClosedCaptionLocales) {
     if (locale == DefaultLanguage())
       return true;
   }

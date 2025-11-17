@@ -19,7 +19,7 @@
 #include "net/base/net_errors.h"
 
 namespace {
-int kDefaultBufferSize = 4096;
+constexpr int kDefaultBufferSize = 4096;
 }
 
 namespace extensions {

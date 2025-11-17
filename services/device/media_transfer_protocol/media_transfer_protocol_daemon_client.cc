@@ -25,7 +25,8 @@ namespace device {
 namespace {
 
 const char kInvalidResponseMsg[] = "Invalid Response: ";
-uint32_t kMaxChunkSize = 1024 * 1024;  // D-Bus has message size limits.
+// D-Bus has message size limits.
+constexpr uint32_t kMaxChunkSize = 1024 * 1024;
 
 mojom::MtpFileEntry GetMojoMtpFileEntryFromProtobuf(const MtpFileEntry& entry) {
   return mojom::MtpFileEntry(

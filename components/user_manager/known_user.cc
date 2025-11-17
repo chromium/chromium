@@ -112,31 +112,31 @@ const char kAuthFactorPresenceCache[] = "AuthFactorsPresenceCache";
 const char kObjGuidKeyObsolete[] = "obj_guid";
 
 // List containing all the known user preferences keys.
-const char* kReservedKeys[] = {kCanonicalEmail,
-                               kGAIAIdKey,
-                               kAccountTypeKey,
-                               kUsingSAMLKey,
-                               kIsUsingSAMLPrincipalsAPI,
-                               kDeviceId,
-                               kGAPSCookie,
-                               kReauthReasonKey,
-                               kProfileRequiresPolicy,
-                               kChallengeResponseKeys,
-                               kLastOnlineSignin,
-                               kOfflineSigninLimit,
-                               kIsEnterpriseManaged,
-                               kAccountManager,
-                               kLastInputMethod,
-                               kPinAutosubmitLength,
-                               kPinAutosubmitBackfillNeeded,
-                               kPasswordSyncToken,
-                               kOnboardingCompletedVersion,
-                               kPendingOnboardingScreen,
-                               kAuthFactorPresenceCache};
+constexpr const char* kReservedKeys[] = {kCanonicalEmail,
+                                         kGAIAIdKey,
+                                         kAccountTypeKey,
+                                         kUsingSAMLKey,
+                                         kIsUsingSAMLPrincipalsAPI,
+                                         kDeviceId,
+                                         kGAPSCookie,
+                                         kReauthReasonKey,
+                                         kProfileRequiresPolicy,
+                                         kChallengeResponseKeys,
+                                         kLastOnlineSignin,
+                                         kOfflineSigninLimit,
+                                         kIsEnterpriseManaged,
+                                         kAccountManager,
+                                         kLastInputMethod,
+                                         kPinAutosubmitLength,
+                                         kPinAutosubmitBackfillNeeded,
+                                         kPasswordSyncToken,
+                                         kOnboardingCompletedVersion,
+                                         kPendingOnboardingScreen,
+                                         kAuthFactorPresenceCache};
 
 // List containing all known user preference keys that used to be reserved and
 // are now obsolete.
-const char* kObsoleteKeys[] = {
+constexpr const char* kObsoleteKeys[] = {
     kMinimalMigrationAttemptedObsolete,
     kGaiaIdMigrationObsolete,
     kOfflineSigninLimitObsolete,
