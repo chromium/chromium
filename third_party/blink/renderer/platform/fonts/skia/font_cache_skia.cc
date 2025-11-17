@@ -93,6 +93,7 @@ const FontPlatformData* CreateFontPlatformDataForTypeface(
 }
 }  // namespace
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 // static
 const FontPlatformData* FontCache::CreateFontPlatformDataForCharacter(
     SkFontMgr* fm,
@@ -111,6 +112,7 @@ const FontPlatformData* FontCache::CreateFontPlatformDataForCharacter(
   return CreateFontPlatformDataForTypeface(std::move(typeface),
                                            font_description);
 }
+#endif
 
 void FontCache::PlatformInit() {}
 
@@ -224,12 +226,14 @@ const SimpleFontData* FontCache::GetLastResortFallbackFont(
   }
 #endif
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
   if (!font_platform_data) {
     // At least try to match locale.
     font_platform_data = FontCache::CreateFontPlatformDataForCharacter(
         &*FontManager(), ' ', description, nullptr,
         FontFallbackPriority::kText);
   }
+#endif
 
   if (!font_platform_data) {
     // Match anything.
