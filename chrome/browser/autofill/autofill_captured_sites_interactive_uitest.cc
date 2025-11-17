@@ -137,7 +137,7 @@ class FormSubmissionCounter : public AutofillManager::Observer {
     autofill_managers_observation_.Observe(
         ContentAutofillClient::FromWebContents(web_contents),
         ScopedAutofillManagersObservation::InitializationPolicy::
-            kObservePreexistingObjects);
+            kObservePreexistingManagers);
   }
   ~FormSubmissionCounter() override = default;
 

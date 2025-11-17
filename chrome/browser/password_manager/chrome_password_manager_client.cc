@@ -1830,7 +1830,7 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
   autofill_managers_observation_.Observe(
       autofill::ContentAutofillClient::FromWebContents(web_contents),
       autofill::ScopedAutofillManagersObservation::InitializationPolicy::
-          kObservePreexistingObjects);
+          kObservePreexistingManagers);
 }
 
 void ChromePasswordManagerClient::PrimaryPageChanged(content::Page& page) {

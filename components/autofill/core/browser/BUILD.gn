@@ -377,7 +377,7 @@ static_library("browser") {
     "foundations/form_forest.cc",
     "foundations/form_forest.h",
     "foundations/form_forest_util_inl.h",
-    "foundations/scoped_autofill_driver_ownees_observation.h",
+    "foundations/scoped_autofill_managers_observation.cc",
     "foundations/scoped_autofill_managers_observation.h",
     "geo/address_i18n.cc",
     "geo/address_i18n.h",

@@ -189,7 +189,7 @@ void ProactiveNudgeTracker::StartObserving(content::WebContents* web_contents) {
   autofill_managers_observation_.Observe(
       autofill::ContentAutofillClient::FromWebContents(web_contents),
       autofill::ScopedAutofillManagersObservation::InitializationPolicy::
-          kObservePreexistingObjects);
+          kObservePreexistingManagers);
 }
 
 ProactiveNudgeTracker::~ProactiveNudgeTracker() {

@@ -294,8 +294,9 @@ class FillingObserver final : public AutofillManager::Observer {
       : remaining_field_ids_(field_ids.begin(), field_ids.end()),
         callback_(std::move(callback)) {
     autofill_managers_observation_.Observe(
-        &autofill_client, ScopedAutofillManagersObservation::
-                              InitializationPolicy::kObservePreexistingObjects);
+        &autofill_client,
+        ScopedAutofillManagersObservation::InitializationPolicy::
+            kObservePreexistingManagers);
     // If `remaining_field_ids_` is empty, this will stop the observation and
     // execute `callback_`.
     FinalizeIfComplete();

@@ -856,7 +856,7 @@ void ClientSideDetectionHost::RegisterAutofillManager() {
   autofill_managers_observation_.Observe(
       autofill::ContentAutofillClient::FromWebContents(web_contents()),
       autofill::ScopedAutofillManagersObservation::InitializationPolicy::
-          kObservePreexistingObjects);
+          kObservePreexistingManagers);
 }
 
 void ClientSideDetectionHost::MaybeStartPreClassification(
