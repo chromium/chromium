@@ -473,7 +473,7 @@ void ExecutionEngine::SendUserConfirmationDialogRequest(
     return;
   }
   task_->delegate()->RequestToShowUserConfirmationDialog(
-      task_->id(), navigation_origin,
+      task_->id(), navigation_origin, for_blocklisted_origin,
       base::BindOnce(&ExecutionEngine::OnPromptUserToConfirmNavigationDecision,
                      GetWeakPtr(), navigation_origin, for_blocklisted_origin,
                      std::move(callback)));

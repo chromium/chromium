@@ -1977,16 +1977,19 @@ export declare interface SelectCredentialDialogResponse {
 }
 
 export declare interface UserConfirmationDialogRequest {
-  // These fields form a union type, only 1 must be set.
-  // Origin to request the actor navigate to.
+  // If present, the actor is requesting the user confirm that it can
+  // navigate or act on the provided origin.
   navigationOrigin?: string;
+  // If present, true when the navigationOrigin in a request is on the
+  // Optimization Guide blocklist.
+  forBlocklistedOrigin?: boolean;
+
   /**
    * @deprecated Unique integer ID for identifying downloads
    * for confirmation. We decided not to show user confirmation
    * dialog in that case.
    */
   downloadId?: number;
-  // End of union fields.
 
   // The WebClient must call this function to respond back to the browser when
   // the dialog is closed.

@@ -1829,12 +1829,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void RequestToShowUserConfirmationDialog(
       actor::TaskId task_id,
       const url::Origin& navigation_origin,
+      bool for_sensitive_origin,
       actor::ActorTaskDelegate::UserConfirmationDialogCallback callback)
       override {
     actor::webui::mojom::UserConfirmationDialogPayloadPtr payload = nullptr;
-    payload =
-        actor::webui::mojom::UserConfirmationDialogPayload::NewNavigationOrigin(
-            navigation_origin);
+    payload = actor::webui::mojom::UserConfirmationDialogPayload::New(
+        navigation_origin, for_sensitive_origin);
     web_client_->RequestToShowUserConfirmationDialog(
         actor::webui::mojom::UserConfirmationDialogRequest::New(
             std::move(payload)),

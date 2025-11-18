@@ -774,12 +774,13 @@ void GlicKeyedService::RequestToShowCredentialSelectionDialog(
 void GlicKeyedService::RequestToShowUserConfirmationDialog(
     actor::TaskId task_id,
     const url::Origin& navigation_origin,
+    bool for_blocklisted_origin,
     actor::ActorTaskDelegate::UserConfirmationDialogCallback callback) {
   CHECK(UseDefaultWindowController());
   auto* window_controller_impl =
       static_cast<GlicWindowControllerImpl*>(window_controller_.get());
   window_controller_impl->host().RequestToShowUserConfirmationDialog(
-      task_id, navigation_origin, std::move(callback));
+      task_id, navigation_origin, for_blocklisted_origin, std::move(callback));
 }
 
 void GlicKeyedService::RequestToConfirmNavigation(

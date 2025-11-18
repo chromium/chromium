@@ -2323,6 +2323,7 @@ function userConfirmationDialogRequestToClient(
     navigationOrigin: request.payload.navigationOrigin ?
         originToClient(request.payload.navigationOrigin) :
         undefined,
+    forBlocklistedOrigin: request.payload.forBlocklistedOrigin,
   };
 }
 
