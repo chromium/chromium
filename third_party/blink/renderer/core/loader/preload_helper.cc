@@ -834,6 +834,7 @@ void PreloadHelper::LoadLinksFromHeader(
         IsCompressionDictionaryLoadAllowed(mode);
     if (!is_network_hint_allowed && !is_resource_load_allowed &&
         !is_compression_dictionary_load_allowed) {
+      // Skip this `header`; it won't initiate any types of preloading.
       continue;
     }
 
