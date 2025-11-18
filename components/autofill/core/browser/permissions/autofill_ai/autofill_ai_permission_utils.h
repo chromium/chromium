@@ -25,8 +25,6 @@ class AutofillClient;
 enum class AutofillAiAction {
   // Add new locally stored AutofillAI data in settings.
   kAddLocalEntityInstanceInSettings,
-  // Add new server stored AutofillAI data in settings.
-  kAddServerEntityInstanceInSettings,
   // Emit AutofillAI-related crowdsourcing votes.
   kCrowdsourcingVote,
   // Edit and delete existing AutofillAI data in settings.

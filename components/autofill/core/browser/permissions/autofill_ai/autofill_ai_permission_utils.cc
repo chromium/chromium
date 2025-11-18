@@ -139,7 +139,6 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
 [[nodiscard]] bool IsRelevantForDataTransparency(AutofillAiAction action) {
   switch (action) {
     case AutofillAiAction::kAddLocalEntityInstanceInSettings:
-    case AutofillAiAction::kAddServerEntityInstanceInSettings:
     case AutofillAiAction::kCrowdsourcingVote:
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kImport:
@@ -170,9 +169,6 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   }
 
   switch (action) {
-    case AutofillAiAction::kAddServerEntityInstanceInSettings:
-      return is_enabled(features::kAutofillAiWalletVehicleRegistration) ||
-             is_enabled(features::kAutofillAiWalletFlightReservation);
     case AutofillAiAction::kIphForOptIn:
       return is_enabled(feature_engagement::kIPHAutofillAiOptInFeature);
     case AutofillAiAction::kServerClassificationModel:
@@ -201,7 +197,6 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     const syncer::SyncService* sync_service,
     std::string* debug_message) {
   switch (action) {
-    case AutofillAiAction::kAddServerEntityInstanceInSettings:
     case AutofillAiAction::kImportToWallet:
       return sync_service &&
              sync_service->GetUserSettings()->GetSelectedTypes().Has(
@@ -279,7 +274,6 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
     case AutofillAiAction::kAddLocalEntityInstanceInSettings:
-    case AutofillAiAction::kAddServerEntityInstanceInSettings:
     case AutofillAiAction::kCrowdsourcingVote:
     case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
     case AutofillAiAction::kListEntityInstancesInSettings:
@@ -343,7 +337,6 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
       return policy_pref_enabled && user_opted_in;
-    case AutofillAiAction::kAddServerEntityInstanceInSettings:
     case AutofillAiAction::kImportToWallet:
       return policy_pref_enabled && user_opted_in &&
              client.IsWalletStorageEnabled();
@@ -400,7 +393,6 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     }
     switch (action) {
       case AutofillAiAction::kAddLocalEntityInstanceInSettings:
-      case AutofillAiAction::kAddServerEntityInstanceInSettings:
       case AutofillAiAction::kCrowdsourcingVote:
       case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
       case AutofillAiAction::kFilling:
@@ -440,7 +432,6 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   // Off-the-record.
   switch (action) {
     case AutofillAiAction::kAddLocalEntityInstanceInSettings:
-    case AutofillAiAction::kAddServerEntityInstanceInSettings:
     case AutofillAiAction::kCrowdsourcingVote:
     case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
     case AutofillAiAction::kImport:
@@ -464,7 +455,6 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
 
   // Wallet-supported country.
   switch (action) {
-    case AutofillAiAction::kAddServerEntityInstanceInSettings:
     case AutofillAiAction::kImportToWallet:
       if (!IsWalletSupportedCountry(country_code)) {
         return false;
