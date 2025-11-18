@@ -18,7 +18,6 @@ import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
-import android.app.Activity;
 import android.os.Build;
 
 import androidx.test.espresso.Espresso;
@@ -36,26 +35,21 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.ActivityFinisher;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
-import org.chromium.base.test.transit.Station;
-import org.chromium.base.test.transit.TrafficControl;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.ActivityType;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.TestParams;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.ui.hats.SurveyClient;
@@ -121,29 +115,7 @@ public class IncognitoPermissionLeakageTest {
 
     @After
     public void tearDown() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> IncognitoDataTestUtils.closeTabs(mChromeActivityTestRule));
-        List<Station<?>> activeStations = TrafficControl.getActiveStations();
-        for (Station<?> station : activeStations) {
-            station.getActivity().finish();
-            // TODO(crbug.com/460433346): Close CTA Instances at the end of multiwindow tests
-            Activity activity = station.getActivity();
-            if (activity instanceof ChromeTabbedActivity cta) {
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            MultiInstanceManager mim = cta.getMultiInstanceMangerForTesting();
-                            mim.closeWindow(
-                                    cta.getWindowIdForTesting(),
-                                    MultiInstanceManager.CloseWindowAppSource.OTHER);
-                        });
-            } else {
-                station.getActivity().finishAndRemoveTask();
-            }
-        }
-        TrafficControl.hopOffPublicTransit();
-
-        // TODO(crbug.com/363311624): Temporary fix to close all CCT
-        ActivityFinisher.finishAll();
+        mChromeActivityTestRule.closeAllWindowsAndDeleteInstanceAndTabState();
     }
 
     private void requestLocationPermission(Tab tab) throws TimeoutException, ExecutionException {
