@@ -8,9 +8,6 @@
 #include <limits>
 
 #include "base/time/time.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -33,7 +30,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
-#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -406,16 +402,6 @@ bool MediaRecorder::isTypeSupported(ExecutionContext* context,
   bool result = handler->CanSupportMimeType(
       content_type.GetType(), content_type.Parameter("codecs"),
       MediaRecorderHandler::CanSupportMimeTypeCaller::kIsTypeSupported);
-  if (IdentifiabilityStudySettings::Get()->ShouldSampleType(
-          blink::IdentifiableSurface::Type::kMediaRecorder_IsTypeSupported)) {
-    blink::IdentifiabilityMetricBuilder(context->UkmSourceID())
-        .Add(blink::IdentifiableSurface::FromTypeAndToken(
-                 blink::IdentifiableSurface::Type::
-                     kMediaRecorder_IsTypeSupported,
-                 IdentifiabilityBenignStringToken(type)),
-             result)
-        .Record(context->UkmRecorder());
-  }
 
   return result;
 }
