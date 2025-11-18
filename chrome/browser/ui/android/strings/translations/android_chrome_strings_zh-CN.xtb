@@ -260,7 +260,7 @@
 <translation id="2138283760993967204">“管理”图标</translation>
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />，已选择的标签页，正在录制内容</translation>
 <translation id="2141396931810938595">根据您的使用情况</translation>
-<translation id="2145315049852051678">Chrome 会定期进行检查，确保您的浏览器使用的是最安全的设置。如有任何事项需要审核，我们会通知您。</translation>
+<translation id="2145315049852051678">Chrome 会定期检查，确保您的浏览器采用了最优安全设置。如需审核任何事项，我们会通知您。</translation>
 <translation id="2149973817440762519">修改书签</translation>
 <translation id="2163089732491971196">如要将 Chrome 数据保存在您的 Google 账号中并使用这些数据，请输入您的口令</translation>
 <translation id="2166228530126694506">版本 <ph name="VERSION_NUMBER" /></translation>
@@ -859,7 +859,7 @@
 <translation id="4769095993849849966">新文件名</translation>
 <translation id="4769632191812288342">您已获享标准保护</translation>
 <translation id="4773122030389014189">分享标签页分组“<ph name="GROUP_NAME" />”</translation>
-<translation id="4775646243557794597">已删除<ph name="TIME_PERIOD" />内的浏览记录</translation>
+<translation id="4775646243557794597">已删除<ph name="TIME_PERIOD" />的浏览记录</translation>
 <translation id="4777866634702576038">要删除标签页分组吗？</translation>
 <translation id="4778653490315793244">尚无可显示的内容</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" />是默认搜索引擎</translation>

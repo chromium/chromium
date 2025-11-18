@@ -213,7 +213,7 @@
 <translation id="17906873777101817">Ofrecer guardar cont./ll. acceso</translation>
 <translation id="1794893174442046596">Grupo de pestañas</translation>
 <translation id="1807893857950749072">Permitir notificaciones de seguimiento de precios…</translation>
-<translation id="1809929083618343438">Se quitará la información seleccionada de Chrome, pero no se borrará de tu Cuenta de Google.</translation>
+<translation id="1809929083618343438">La información seleccionada se quitará de Chrome, pero no se borrará de tu Cuenta de Google.</translation>
 <translation id="1810976980198522421">Cancelar</translation>
 <translation id="1815941218935345331">Contraseña</translation>
 <translation id="1818687879307252150">{count,plural, =0{No tienes contraseñas hackeadas}=1{{count} contraseña hackeada}other{{count} contraseñas hackeadas}}</translation>

@@ -1796,7 +1796,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2209841631181508629">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu <ph name="FIELDS_STRING" /> com este site. Veja os <ph name="BEGIN_LINK" />Termos de Serviço<ph name="END_LINK" /> desse site.</translation>
 <translation id="2210462644007531147">Não foi possível concluir a instalação</translation>
 <translation id="2211043920024403606">Informações do perfil</translation>
-<translation id="221297410904507041">Excluir histórico, cookies, cache e muito mais</translation>
+<translation id="221297410904507041">Exclua o histórico, os cookies, o cache e muito mais</translation>
 <translation id="2213410656650624348">Moderada</translation>
 <translation id="2214018885812055163">Pastas compartilhadas</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 linha não mostrada&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> linha não mostrada&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> linhas não mostradas&gt;}}</translation>
@@ -4580,7 +4580,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4104944259562794668">É possível ativar essa opção mais tarde em "Configurações &gt; Segurança e privacidade &gt; Tela de bloqueio e login"</translation>
 <translation id="4106054677122819586">Vamos organizar suas guias</translation>
 <translation id="4107048419833779140">Identificar e ejetar dispositivos de armazenamento</translation>
-<translation id="4107522742068568249">Acessar a Confirmação de segurança</translation>
+<translation id="4107522742068568249">Acessar a Confirmação de Segurança</translation>
 <translation id="4107793386654579933">Selecione um atalho para a ação <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">Mover janela para <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restaurar aviso</translation>
