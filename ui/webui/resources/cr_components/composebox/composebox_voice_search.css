@@ -19,19 +19,38 @@
 }
 
 #container {
-  display: flex;
-  width: 100%;
   align-items: flex-start;
   border-radius: var(--expanded-border-radius);
-  background-color: var(--cr-composebox-background-color);
-  box-shadow: var(--cr-searchbox-shadow);
+  box-sizing: border-box;
+  /* Transparent so background from animated-glow shows. */
+  background-color: transparent;
+  display: flex;
+  inset: 0;
+  padding: 7px 0;
+  position: absolute;
+  z-index: 4;
+}
+
+#input::-webkit-scrollbar {
+  display: none;
 }
 
 #input {
   background-color: transparent;
   border: none;
+  flex: 1;
+  height: 100%;
+  /* Overflow scroll blur. */
+  mask-image: linear-gradient(to bottom,
+      transparent 0px,
+      black 7px,
+      black calc(100% - 7px),
+      transparent 100%
+  );
   outline: none;
+  overflow-y: auto;
   resize: none;
+  width: 100%;
 }
 
 #input,
