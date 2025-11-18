@@ -902,10 +902,6 @@ int BrowserViewLayoutImpl::GetDialogTop(const ProposedLayout& layout) const {
           layout.GetBoundsFor(views().toolbar, browser_view)) {
     return toolbar_rect->bottom() - kConstrainedWindowOverlap;
   }
-  if (const auto webapp_toolbar_rect =
-          layout.GetBoundsFor(views().web_app_frame_toolbar, browser_view)) {
-    return webapp_toolbar_rect->bottom() - kConstrainedWindowOverlap;
-  }
   return kConstrainedWindowOverlap;
 }
 
@@ -918,20 +914,6 @@ int BrowserViewLayoutImpl::GetDialogBottom(const ProposedLayout& layout) const {
   return browser_view->height();
 }
 
-views::Span BrowserViewLayoutImpl::GetDialogHorizontalTarget(
-    const ProposedLayout& layout) const {
-  const auto* const browser_view = views().browser_view.get();
-  views::Span horizontal;
-  if (const auto contents_rect =
-          layout.GetBoundsFor(views().contents_container, browser_view)) {
-    horizontal.set_start(contents_rect->x());
-    horizontal.set_length(contents_rect->width());
-  } else {
-    horizontal.set_end(browser_view->width());
-  }
-  return horizontal;
-}
-
 gfx::Point BrowserViewLayoutImpl::GetDialogPosition(
     const gfx::Size& dialog_size) const {
   const auto params = delegate().GetBrowserLayoutParams();
@@ -939,9 +921,20 @@ gfx::Point BrowserViewLayoutImpl::GetDialogPosition(
     return gfx::Point();
   }
   const ProposedLayout layout = CalculateProposedLayout(params);
-  const auto horizontal = GetDialogHorizontalTarget(layout);
-  return gfx::Point(horizontal.start() + horizontal.length() / 2,
-                    GetDialogTop(layout));
+
+  // Calculate the dialog bounds in browser view space.
+  const int browser_width = params.visual_client_area.width();
+  const int dialog_x =
+      params.visual_client_area.x() + (browser_width - dialog_size.width()) / 2;
+  const int dialog_y = GetDialogTop(layout);
+  gfx::Rect dialog_rect(dialog_x, dialog_y, dialog_size.width(),
+                        dialog_size.height());
+
+  // Convert to widget coordinates.
+  dialog_rect = views().browser_view->ConvertRectToWidget(dialog_rect);
+
+  // TODO: consider whether this should change in RTL?
+  return gfx::Point(dialog_rect.origin());
 }
 
 gfx::Size BrowserViewLayoutImpl::GetMaximumDialogSize() const {
@@ -950,8 +943,10 @@ gfx::Size BrowserViewLayoutImpl::GetMaximumDialogSize() const {
     return gfx::Size();
   }
   const ProposedLayout layout = CalculateProposedLayout(params);
-  const auto horizontal = GetDialogHorizontalTarget(layout);
+
+  // This computation is irrespective of coordinate system (all coordinates
+  // happen to be in browser view space).
   const int top = GetDialogTop(layout);
   const int bottom = GetDialogBottom(layout);
-  return gfx::Size(horizontal.length(), bottom - top);
+  return gfx::Size(params.visual_client_area.width(), bottom - top);
 }

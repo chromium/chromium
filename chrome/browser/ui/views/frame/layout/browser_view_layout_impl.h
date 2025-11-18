@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_
 
+#include <optional>
 #include <utility>
 
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
@@ -74,12 +75,15 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
   };
   TopSeparatorType GetTopSeparatorType() const;
 
+  // Gets the top of the dialog anchoring area, in local coordinates.
+  int GetDialogTop(const ProposedLayout& layout) const;
+
+  // Gets the bottom of the dialog anchoring area, in local coordinates.
+  int GetDialogBottom(const ProposedLayout& layout) const;
+
   // BrowserViewLayout overrides:
   gfx::Point GetDialogPosition(const gfx::Size& dialog_size) const override;
   gfx::Size GetMaximumDialogSize() const override;
-  int GetDialogTop(const ProposedLayout& layout) const;
-  int GetDialogBottom(const ProposedLayout& layout) const;
-  views::Span GetDialogHorizontalTarget(const ProposedLayout& layout) const;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_
