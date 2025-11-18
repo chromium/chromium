@@ -285,14 +285,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(contents->GetRenderWidgetHostView()->HasFocus());
 }
 
-// Times out consistently on Win, http://crbug.com/45173.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_OverrideHistory DISABLED_OverrideHistory
-#else
-#define MAYBE_OverrideHistory OverrideHistory
-#endif  // BUILDFLAG(IS_WIN)
-
-IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, MAYBE_OverrideHistory) {
+IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideHistory) {
   ASSERT_TRUE(RunExtensionTest("override/history")) << message_;
   {
     ResultCatcher catcher;
