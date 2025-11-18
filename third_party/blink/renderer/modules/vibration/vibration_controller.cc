@@ -111,7 +111,6 @@ bool VibrationController::vibrate(Navigator& navigator,
 VibrationController::VibrationController(Navigator& navigator)
     : ExecutionContextLifecycleObserver(navigator.DomWindow()),
       PageVisibilityObserver(DomWindow()->GetFrame()->GetPage()),
-      navigator_(navigator),
       vibration_manager_(DomWindow()),
       timer_do_vibrate_(DomWindow()->GetTaskRunner(TaskType::kMiscPlatformAPI),
                         this,
@@ -260,7 +259,6 @@ void VibrationController::PageVisibilityChanged() {
 void VibrationController::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
-  visitor->Trace(navigator_);
   visitor->Trace(vibration_manager_);
   visitor->Trace(timer_do_vibrate_);
 }

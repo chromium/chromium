@@ -57,8 +57,6 @@ class ContactsManager final : public ScriptWrappable,
 
   const Vector<V8ContactProperty>& GetProperties(ScriptState* script_state);
 
-  Member<Navigator> navigator_;
-
   // Created lazily.
   HeapMojoRemote<mojom::blink::ContactsManager> contacts_manager_;
   bool contact_picker_in_use_ = false;

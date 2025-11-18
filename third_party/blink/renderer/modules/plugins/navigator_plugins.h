@@ -27,7 +27,7 @@ class NavigatorPlugins final : public GarbageCollected<NavigatorPlugins>,
 
   static bool javaEnabled(Navigator&);
 
-  explicit NavigatorPlugins(Navigator&);
+  NavigatorPlugins() = default;
 
   void Trace(Visitor*) const override;
 
@@ -36,7 +36,6 @@ class NavigatorPlugins final : public GarbageCollected<NavigatorPlugins>,
   DOMMimeTypeArray* mimeTypes(LocalDOMWindow*) const;
   bool pdfViewerEnabled(LocalDOMWindow* window) const;
 
-  Member<Navigator> navigator_;
   mutable Member<DOMPluginArray> plugins_;
   mutable Member<DOMMimeTypeArray> mime_types_;
 };

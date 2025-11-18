@@ -35,7 +35,7 @@ class MODULES_EXPORT AuthenticationCredentialsContainer final
       public GarbageCollectedMixin {
  public:
   static CredentialsContainer* credentials(Navigator&);
-  explicit AuthenticationCredentialsContainer(Navigator&);
+  AuthenticationCredentialsContainer() = default;
 
   // CredentialsContainer:
   ScriptPromise<IDLNullable<Credential>> get(ScriptState*,
@@ -68,8 +68,6 @@ class MODULES_EXPORT AuthenticationCredentialsContainer final
 
   class OtpRequestAbortAlgorithm;
   class PublicKeyRequestAbortAlgorithm;
-
-  Member<Navigator> navigator_;
 };
 
 }  // namespace blink

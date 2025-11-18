@@ -81,8 +81,6 @@ class MODULES_EXPORT VibrationController final
 
   bool Vibrate(const VibrationPattern&);
 
-  Member<Navigator> navigator_;
-
   // Remote to VibrationManager mojo interface. This is reset in
   // |contextDestroyed| and must not be called or recreated after it is reset.
   //

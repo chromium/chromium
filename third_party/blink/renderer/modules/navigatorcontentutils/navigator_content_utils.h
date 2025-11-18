@@ -64,9 +64,8 @@ class MODULES_EXPORT NavigatorContentUtils final
     : public GarbageCollected<NavigatorContentUtils>,
       public GarbageCollectedMixin {
  public:
-  NavigatorContentUtils(Navigator& navigator,
-                        NavigatorContentUtilsClient* client)
-      : navigator_(navigator), client_(client) {}
+  explicit NavigatorContentUtils(NavigatorContentUtilsClient* client)
+      : client_(client) {}
   ~NavigatorContentUtils();
 
   static void registerProtocolHandler(Navigator&,
@@ -89,7 +88,6 @@ class MODULES_EXPORT NavigatorContentUtils final
 
   NavigatorContentUtilsClient* Client() { return client_.Get(); }
 
-  Member<Navigator> navigator_;
   Member<NavigatorContentUtilsClient> client_;
 };
 

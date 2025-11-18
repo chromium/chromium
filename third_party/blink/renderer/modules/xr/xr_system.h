@@ -449,8 +449,6 @@ class XRSystem final : public EventTarget,
   // settings (controlled by enterprise policy).
   bool IsImmersiveArAllowed();
 
-  Member<Navigator> navigator_;
-
   // Indicates whether use of requestDevice has already been logged.
   bool did_log_supports_immersive_ = false;
 

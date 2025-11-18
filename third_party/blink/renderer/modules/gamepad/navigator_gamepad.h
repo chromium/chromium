@@ -100,8 +100,6 @@ class MODULES_EXPORT NavigatorGamepad final
                       GamepadTouchVector&,
                       base::span<const device::GamepadTouch>) override;
 
-  Member<Navigator> navigator_;
-
   // A reference to the buffer containing the last-received gamepad state. May
   // be nullptr if no data has been received yet. Do not overwrite this buffer
   // as it may have already been returned to the page. Instead, write to

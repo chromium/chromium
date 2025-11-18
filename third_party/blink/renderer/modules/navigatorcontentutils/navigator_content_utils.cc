@@ -167,7 +167,7 @@ NavigatorContentUtils& NavigatorContentUtils::From(Navigator& navigator,
       navigator.GetNavigatorContentUtils();
   if (!navigator_content_utils) {
     navigator_content_utils = MakeGarbageCollected<NavigatorContentUtils>(
-        navigator, MakeGarbageCollected<NavigatorContentUtilsClient>(&frame));
+        MakeGarbageCollected<NavigatorContentUtilsClient>(&frame));
     navigator.SetNavigatorContentUtils(navigator_content_utils);
   }
   return *navigator_content_utils;
@@ -276,7 +276,6 @@ void NavigatorContentUtils::unregisterProtocolHandler(
 
 void NavigatorContentUtils::Trace(Visitor* visitor) const {
   visitor->Trace(client_);
-  visitor->Trace(navigator_);
 }
 
 }  // namespace blink

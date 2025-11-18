@@ -1315,16 +1315,11 @@ CredentialsContainer* AuthenticationCredentialsContainer::credentials(
   AuthenticationCredentialsContainer* credentials =
       navigator.GetAuthenticationCredentialsContainer();
   if (!credentials) {
-    credentials =
-        MakeGarbageCollected<AuthenticationCredentialsContainer>(navigator);
+    credentials = MakeGarbageCollected<AuthenticationCredentialsContainer>();
     navigator.SetAuthenticationCredentialsContainer(credentials);
   }
   return credentials;
 }
-
-AuthenticationCredentialsContainer::AuthenticationCredentialsContainer(
-    Navigator& navigator)
-    : navigator_(navigator) {}
 
 ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
     ScriptState* script_state,
@@ -1975,7 +1970,6 @@ AuthenticationCredentialsContainer::preventSilentAccess(
 }
 
 void AuthenticationCredentialsContainer::Trace(Visitor* visitor) const {
-  visitor->Trace(navigator_);
   CredentialsContainer::Trace(visitor);
 }
 
