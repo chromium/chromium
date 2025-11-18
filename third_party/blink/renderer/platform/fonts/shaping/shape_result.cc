@@ -983,8 +983,9 @@ inline bool IsCursiveScript(hb_script_t script) {
 }
 }  // anonymous namespace
 
-float ShapeResult::ApplySpacingImpl(ShapeResultSpacing& spacing,
-                                    int text_start_offset) {
+float ShapeResult::ApplySpacingOrExpansion(ShapeResultSpacing& spacing,
+                                           bool is_expansion,
+                                           int text_start_offset) {
   float offset = 0;
   float total_advance = 0;
   TextRunLayoutUnit space;
@@ -1007,8 +1008,15 @@ float ShapeResult::ApplySpacingImpl(ShapeResultSpacing& spacing,
       ShapeResultSpacing::ComputeSpacingParameters parameters{
           .index = run_start_index + glyph_data.character_index,
           .original_advance = glyph_data.advance};
-      space = spacing.ComputeSpacing(parameters, offset,
-                                     IsCursiveScript(run->script_));
+      if (is_expansion) {
+        auto result = spacing.ComputeExpansion(parameters.index,
+                                               IsCursiveScript(run->script_));
+        offset = result.first;
+        space = result.second;
+      } else {
+        space = spacing.ComputeSpacing(parameters, offset,
+                                       IsCursiveScript(run->script_));
+      }
       glyph_data.AddAdvance(space);
       total_advance_for_run += glyph_data.advance;
 
@@ -1037,7 +1045,18 @@ float ShapeResult::ApplySpacing(ShapeResultSpacing& spacing,
   // time, please get rid of below |DCHECK()|.
   DCHECK(!is_applied_spacing_) << this;
   is_applied_spacing_ = true;
-  return ApplySpacingImpl(spacing, text_start_offset);
+  return ApplySpacingOrExpansion(spacing, /* is_expansion */ false,
+                                 text_start_offset);
+}
+
+float ShapeResult::ApplyExpansion(ShapeResultSpacing& spacing,
+                                  int text_start_offset) {
+  // For simplicity, we apply spacing once only. If you want to do multiple
+  // time, please get rid of below |DCHECK()|.
+  DCHECK(!is_applied_spacing_) << this;
+  is_applied_spacing_ = true;
+  return ApplySpacingOrExpansion(spacing, /* is_expansion */ true,
+                                 text_start_offset);
 }
 
 void ShapeResult::ApplyLeadingExpansion(LayoutUnit expansion) {

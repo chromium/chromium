@@ -133,7 +133,7 @@ float JustifyResults(const String& text_content,
       ShapeResult* shape_result = item_result.shape_result->CreateShapeResult();
       DCHECK_GE(item_result.StartOffset(), line_text_start_offset);
       DCHECK_EQ(shape_result->NumCharacters(), item_result.Length());
-      last_glyph_spacing = shape_result->ApplySpacing(
+      last_glyph_spacing = shape_result->ApplyExpansion(
           spacing, item_result.StartOffset() - line_text_start_offset -
                        shape_result->StartIndex());
       item_result.inline_size = shape_result->SnappedWidth();
@@ -143,12 +143,11 @@ float JustifyResults(const String& text_content,
       item_result.shape_result = ShapeResultView::Create(shape_result);
     } else if (item_result.item->Type() == InlineItem::kAtomicInline) {
       last_glyph_spacing = 0;
-      float spacing_before = 0.0f;
       DCHECK_LE(line_text_start_offset, item_result.StartOffset());
       const unsigned line_text_offset =
           item_result.StartOffset() - line_text_start_offset;
-      const float spacing_after =
-          spacing.ComputeSpacing(line_text_offset, spacing_before);
+      const auto [spacing_before, spacing_after] =
+          spacing.ComputeExpansion(line_text_offset);
       if (item_result.item->IsTextCombine()) [[unlikely]] {
         // |spacing_before| is non-zero if this |item_result| is after
         // non-CJK character. See "text-combine-justify.html".
@@ -176,19 +175,18 @@ float JustifyResults(const String& text_content,
             LayoutUnit(last_glyph_spacing);
       } else {
         last_glyph_spacing = 0;
-        [[maybe_unused]] float spacing_before = 0;
         unsigned offset = item_result.StartOffset() - line_text_start_offset;
         if (!item_result.ruby_column->is_continuation) {
           // Skip k*IsolateCharacter.
           offset += item_result.item->Length();
         }
-        [[maybe_unused]] const float spacing_after =
-            spacing.ComputeSpacing(offset, spacing_before);
+        [[maybe_unused]] const auto [spacing_before, spacing_after] =
+            spacing.ComputeExpansion(offset);
         // ShapeResultSpacing doesn't ask for adding space to OBJECT
         // REPLACEMENT CHARACTER, and asks for adding space to the next item
         // instead.
         DCHECK_EQ(spacing_before, 0.0f);
-        DCHECK_EQ(spacing_after, 0.0f);
+        DCHECK_EQ(spacing_after, TextRunLayoutUnit());
       }
       if (i + 1 < results.size()) {
         // Adjust line_text_start_offset because line_text is intermittent due

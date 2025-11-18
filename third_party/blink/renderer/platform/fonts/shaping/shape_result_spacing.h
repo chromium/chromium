@@ -78,6 +78,14 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
                                    float& offset,
                                    bool is_cursive_script);
 
+  // Returns a pair of
+  //  * Space amount to be added before the glyph, and
+  //  * Pixel amount to be added to the glyph's advance.
+  // Pixel amount to be added after the glyph is <the latter> - <the former>.
+  std::pair<float, TextRunLayoutUnit> ComputeExpansion(
+      unsigned index,
+      bool is_cursive_script = false);
+
  private:
   bool IsAfterExpansion() const { return is_after_expansion_; }
 

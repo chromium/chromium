@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/text/justification_opportunity.h"
+#include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 
 namespace blink {
 
@@ -128,23 +129,34 @@ TextRunLayoutUnit ShapeResultSpacing::ComputeSpacing(
     is_word_spacing_applied_ = true;
   }
 
-  if (!HasExpansion())
-    return spacing;
+  return spacing;
+}
+
+std::pair<float, TextRunLayoutUnit> ShapeResultSpacing::ComputeExpansion(
+    unsigned index,
+    bool is_cursive_script) {
+  if (!HasExpansion() || index >= text_.length()) {
+    return {0.0f, TextRunLayoutUnit()};
+  }
+  DCHECK(!normalize_space_);
+  DCHECK(!allow_tabs_);
+
+  float spacing_before = 0;
+  TextRunLayoutUnit spacing_after;
 
   bool opportunity_before = false;
   bool opportunity_after = false;
   if (text_.Is8Bit()) {
-    auto pair = CheckJustificationOpportunity8(justification_method_, character,
-                                               is_after_expansion_);
+    auto pair = CheckJustificationOpportunity8(
+        justification_method_, text_[index], is_after_expansion_);
     opportunity_before = pair.first;
     opportunity_after = pair.second;
   } else {
-    if (U16_IS_LEAD(character) && index + 1 < text_.length() &&
-        U16_IS_TRAIL(text_[index + 1])) {
-      character = U16_GET_SUPPLEMENTARY(character, text_[index + 1]);
-    }
-    auto pair = CheckJustificationOpportunity16(justification_method_,
-                                                character, is_after_expansion_);
+    VLOG(0) << __func__ << " size=" << text_.Span16().size()
+            << " index=" << index;
+    auto pair = CheckJustificationOpportunity16(
+        justification_method_, CodePointAt(text_.Span16(), index),
+        is_after_expansion_);
     opportunity_before = pair.first;
     opportunity_after = pair.second;
   }
@@ -153,16 +165,17 @@ TextRunLayoutUnit ShapeResultSpacing::ComputeSpacing(
     // Take the expansion opportunity before this ideograph.
     TextRunLayoutUnit expand_before = NextExpansion();
     if (expand_before) {
-      offset += expand_before.ToFloat();
-      spacing += expand_before;
+      spacing_before += expand_before.ToFloat();
+      spacing_after += expand_before;
     }
-    if (!HasExpansion())
-      return spacing;
+    if (!HasExpansion()) {
+      return {spacing_before, spacing_after};
+    }
   }
   if (opportunity_after) {
-    return spacing + NextExpansion();
+    return {spacing_before, spacing_after + NextExpansion()};
   }
-  return spacing;
+  return {spacing_before, spacing_after};
 }
 
 }  // namespace blink
