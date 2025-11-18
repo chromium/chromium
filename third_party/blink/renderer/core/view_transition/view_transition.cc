@@ -828,14 +828,16 @@ void ViewTransition::NotifyDOMCallbackFinished(bool success) {
 
 bool ViewTransition::NeedsViewTransitionEffectNode(
     const LayoutObject& object) const {
-  if (IsTerminalState(state_)) {
-    return false;
-  }
-
-  // For a document transition, the scope's effect node is associated with the
-  // LayoutView rather than the document element.
+  // The scope always needs an effect node, even if the scope element is not a
+  // participant in the transition. The reason for this is so that we can place
+  // the effect node for the ::view-transition pseudo-element as a sibling of
+  // the scope's effect. For a document transition, the scope's effect node is
+  // associated with the LayoutView rather than the document element.
   if (IsA<LayoutView>(object)) {
-    return has_document_scope_;
+    return has_document_scope_ && !IsTerminalState(state_);
+  }
+  if (!has_document_scope_ && object == scope_->GetLayoutObject()) {
+    return !IsTerminalState(state_);
   }
 
   // Otherwise check if the layout object has a transition element.

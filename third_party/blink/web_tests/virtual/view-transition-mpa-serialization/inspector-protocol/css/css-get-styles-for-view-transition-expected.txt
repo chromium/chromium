@@ -190,13 +190,13 @@ The test verifies functionality of querying style information for view-transitio
                                     [0] : {
                                         specificity : {
                                             a : 0
-                                            b : 1
+                                            b : 0
                                             c : 1
                                         }
-                                        text : :root::view-transition
+                                        text : ::view-transition
                                     }
                                 ]
-                                text : :root::view-transition
+                                text : ::view-transition
                             }
                             startingStyles : [
                             ]
@@ -2402,13 +2402,13 @@ Dumping styles for : ::view-transition with id undefined{
                             [0] : {
                                 specificity : {
                                     a : 0
-                                    b : 1
+                                    b : 0
                                     c : 1
                                 }
-                                text : :root::view-transition
+                                text : ::view-transition
                             }
                         ]
-                        text : :root::view-transition
+                        text : ::view-transition
                     }
                     startingStyles : [
                     ]

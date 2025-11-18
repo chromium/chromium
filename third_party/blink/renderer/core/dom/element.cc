@@ -4707,10 +4707,8 @@ bool Element::SkipStyleRecalcForContainer(
   // originating element's box and cannot be skipped if the originating element
   // is a size container because the pseudo-element and its box need to be
   // created before layout.
-  // The same applies to scoped view-transitions.
   if (!style.ScrollMarkerGroupNone() ||
       CanGeneratePseudoElement(kPseudoIdScrollButton) ||
-      CanGeneratePseudoElement(kPseudoIdViewTransition) ||
       HasSiblingBoxPseudoElements()) {
     return false;
   }
@@ -5721,25 +5719,16 @@ void Element::AttachOverscrollPseudoElements(AttachContext& context) {
 }
 
 void Element::AttachTransitionPseudoElements(AttachContext& context) {
-  ViewTransition* transition = ViewTransitionUtils::GetTransition(*this);
-  if (!transition) {
-    return;
-  }
-
+  // For a document transition, the LayoutObject for the ::view-transition
+  // pseudo-element is wrapped by the anonymous LayoutViewTransitionRoot,
+  // which represents the snapshot containing block.
+  //
+  // The LayoutViewTransitionRoot is a child of the LayoutView, and will be
+  // injected by LayoutView::AddChild.
   // See LayoutTreeBuilderTraversal::ParentLayoutObject.
   AttachContext children_context(context);
   if (context.parent && context.parent->IsDocumentElement()) {
-    // For a document transition, the LayoutObject for the ::view-transition
-    // pseudo-element is wrapped by the anonymous LayoutViewTransitionRoot,
-    // which represents the snapshot containing block.
-    //
-    // The LayoutViewTransitionRoot is a child of the LayoutView, and will be
-    // injected by LayoutView::AddChild.
     children_context.parent = GetDocument().GetLayoutView();
-  } else if (GetLayoutObject() && transition->Scope() == this) {
-    // The layout object for the ::view-transition() pseudo is a sibling
-    // of the scoped elements layout object.
-    children_context.parent = GetLayoutObject()->Parent();
   }
 
   auto attach_pseudo = [&](PseudoElement* pseudo_element) {
@@ -9883,8 +9872,13 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
 
   PseudoElement* pseudo_element =
       PseudoElement::Create(this, pseudo_id, pseudo_argument);
-  CHECK(pseudo_element);
-
+  if (RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
+    if (!pseudo_element) {
+      // TODO(crbug.com/405117185): Replace with DCHECK(pseudo_element) once we
+      // properly track per-scope view transition names.
+      return nullptr;
+    }
+  }
   EnsureElementRareData().SetPseudoElement(pseudo_id, pseudo_element,
                                            pseudo_argument);
   pseudo_element->InsertedInto(*this);
@@ -10369,8 +10363,7 @@ bool Element::HasSiblingBoxPseudoElements() const {
   for (PseudoId pseudo_id :
        {kPseudoIdScrollButtonBlockStart, kPseudoIdScrollButtonInlineStart,
         kPseudoIdScrollButtonInlineEnd, kPseudoIdScrollButtonBlockEnd,
-        kPseudoIdScrollMarkerGroupAfter, kPseudoIdScrollMarkerGroupBefore,
-        kPseudoIdViewTransition}) {
+        kPseudoIdScrollMarkerGroupAfter, kPseudoIdScrollMarkerGroupBefore}) {
     if (rare_data->GetPseudoElement(pseudo_id)) {
       return true;
     }
@@ -12088,7 +12081,6 @@ void Element::UpdateTransitionPseudoElements(
     }
 
     bool had_transition_pseudo = !!GetPseudoElement(kPseudoIdViewTransition);
-
     PseudoElement* transition_pseudo =
         UpdatePseudoElement(kPseudoIdViewTransition, style_recalc_change,
                             style_recalc_context, g_null_atom);
@@ -12877,15 +12869,6 @@ Element* Element::ImplicitAnchorElement() const {
         }
         return pseudo_element->UltimateOriginatingElement()
             .ImplicitAnchorElement();
-
-      case kPseudoIdViewTransition: {
-        Element* parent = parentElement();
-        if (!parent->IsDocumentElement()) {
-          return parent;
-        }
-        break;
-      }
-
       default:
         return nullptr;
     }

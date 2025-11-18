@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="match" href="empty-ref.html">
   <title>Scoped view-transition to scale 0</title>
   <!-- TODO update link -->
   <link rel="help" href="https://www.w3.org/TR/css-view-transitions-2/">
 </head>
+<script src="/common/reftest-wait.js"></script>
 <script src="/dom/events/scrolling/scroll_support.js"></script>
 <style>
   #target {
@@ -40,10 +42,10 @@
     const target = document.getElementById('target');
     await waitForCompositorReady();
     const vt = target.startViewTransition(() => {
-      // Transform becomes singular. Object is no longer rendered.
       target.classList.toggle('collapsed');
     });
-    await vt.finished;
+    await vt.ready;
+    requestAnimationFrame(takeScreenshot);
   };
 </script>
 </html>
