@@ -292,8 +292,10 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 }
 
 - (void)setLoadingProgressFraction:(double)progress {
-  [self.view.progressBar setProgress:progress
-                            animated:!self.view.progressBar.hidden];
+  BOOL isGoingBackward = self.view.progressBar.progress > progress;
+  [self.view.progressBar
+      setProgress:progress
+         animated:!self.view.progressBar.hidden && !isGoingBackward];
 }
 
 - (void)setTabCount:(int)tabCount addedInBackground:(BOOL)inBackground {
