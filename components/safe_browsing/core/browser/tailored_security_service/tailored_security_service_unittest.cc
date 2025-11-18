@@ -47,15 +47,8 @@ class TestingTailoredSecurityService : public TailoredSecurityService {
   TestingTailoredSecurityService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService* prefs,
-      syncer::SyncService* sync_service)
-      // NOTE: Simply pass null object for IdentityManager and SyncService.
-      // TailoredSecurityService's only usage of this object is to fetch access
-      // tokens via RequestImpl, and TestingTailoredSecurityService deliberately
-      // replaces this flow with TestRequest.
-      : TailoredSecurityService(/*identity_manager=*/nullptr,
-                                /*sync_service=*/sync_service,
-                                prefs),
-        url_loader_factory_(url_loader_factory) {}
+      syncer::SyncService* sync_service);
+
   ~TestingTailoredSecurityService() override;
 
   std::unique_ptr<TailoredSecurityService::Request> CreateRequest(
@@ -136,8 +129,6 @@ class TestingTailoredSecurityService : public TailoredSecurityService {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 
-TestingTailoredSecurityService::~TestingTailoredSecurityService() = default;
-
 // A testing request class that allows expected values to be filled in.
 class TestRequest : public TailoredSecurityService::Request {
  public:
@@ -199,6 +190,21 @@ class TestRequest : public TailoredSecurityService::Request {
   bool is_pending_;
   bool is_shut_down_ = false;
 };
+
+TestingTailoredSecurityService::TestingTailoredSecurityService(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    PrefService* prefs,
+    syncer::SyncService* sync_service)
+    // NOTE: Simply pass null object for IdentityManager and SyncService.
+    // TailoredSecurityService's only usage of this object is to fetch access
+    // tokens via RequestImpl, and TestingTailoredSecurityService deliberately
+    // replaces this flow with TestRequest.
+    : TailoredSecurityService(/*identity_manager=*/nullptr,
+                              /*sync_service=*/sync_service,
+                              prefs),
+      url_loader_factory_(url_loader_factory) {}
+
+TestingTailoredSecurityService::~TestingTailoredSecurityService() = default;
 
 // Overrides the production `CreateRequest` to support two modes of operation
 // for testing:
