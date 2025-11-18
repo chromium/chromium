@@ -2371,7 +2371,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
-  ASSERT_TRUE(GetClient(kSingleProfileIndex)->SignInPrimaryAccount());
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
   // Note: Depending on the state of feature flags (specifically
   // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
   // selected by default.
@@ -2435,7 +2435,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
-  ASSERT_TRUE(GetClient(kSingleProfileIndex)->SignInPrimaryAccount());
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
   // Note: Depending on the state of feature flags (specifically
   // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
   // selected by default.
@@ -2513,7 +2513,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
-  ASSERT_TRUE(GetClient(kSingleProfileIndex)->SignInPrimaryAccount());
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
   // Note: Depending on the state of feature flags (specifically
   // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
   // selected by default.
@@ -2582,7 +2582,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
-  ASSERT_TRUE(GetClient(kSingleProfileIndex)->SignInPrimaryAccount());
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
   // Note: Depending on the state of feature flags (specifically
   // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
   // selected by default.
@@ -2640,7 +2640,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
-  ASSERT_TRUE(GetClient(kSingleProfileIndex)->SignInPrimaryAccount());
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
   // Note: Depending on the state of feature flags (specifically
   // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
   // selected by default.
@@ -2699,7 +2699,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
-  ASSERT_TRUE(GetClient(kSingleProfileIndex)->SignInPrimaryAccount());
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
   // Note: Depending on the state of feature flags (specifically
   // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
   // selected by default.
@@ -2778,7 +2778,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
       ->SetBookmarksLimitForTesting(4);
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
-  ASSERT_TRUE(GetClient(kSingleProfileIndex)->SignInPrimaryAccount());
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
   // Note: Depending on the state of feature flags (specifically
   // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
   // selected by default.
@@ -2932,7 +2932,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Sign in again, but don't actually enable Sync-the-feature (so that Sync
   // will start in transport mode).
-  ASSERT_TRUE(GetClient(kSingleProfileIndex)->SignInPrimaryAccount());
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
   // Note: Depending on the state of feature flags (specifically
   // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
   // selected by default.
