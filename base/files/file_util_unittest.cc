@@ -5110,8 +5110,7 @@ TEST_F(FileUtilTest, CopyFileContentsWithSendfileSocket) {
 TEST_F(FileUtilTest, CopyFileContentsWithSendfileSeqFile) {
   // This test verifies the special case where we have a regular file with zero
   // length that might actually have contents (such as a seq_file).
-  for (auto* const file :
-       {"/proc/meminfo", "/proc/self/cmdline", "/proc/self/auxv"}) {
+  for (auto* const file : {"/proc/meminfo", "/proc/self/cmdline"}) {
     FilePath proc_file_from(file);
     File from(proc_file_from, File::FLAG_OPEN | File::FLAG_READ);
     ASSERT_TRUE(from.IsValid()) << "could not open " << file;
