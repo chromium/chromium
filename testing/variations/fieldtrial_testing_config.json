@@ -14028,6 +14028,21 @@
             ]
         }
     ],
+    "IOSTabGridDragAndDrop": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabGridDragAndDrop"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSTabResumptionShopCard": [
         {
             "platforms": [
