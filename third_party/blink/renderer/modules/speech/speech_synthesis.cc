@@ -28,10 +28,6 @@
 #include <tuple>
 
 #include "build/build_config.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -48,7 +44,6 @@
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_event.h"
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_voice.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 
 namespace blink {
 
@@ -100,30 +95,7 @@ void SpeechSynthesis::OnSetVoiceList(
 const HeapVector<Member<SpeechSynthesisVoice>>& SpeechSynthesis::getVoices() {
   // Kick off initialization here to ensure voice list gets populated.
   std::ignore = TryEnsureMojomSynthesis();
-  RecordVoicesForIdentifiability();
   return voice_list_;
-}
-
-void SpeechSynthesis::RecordVoicesForIdentifiability() const {
-  constexpr IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
-      IdentifiableSurface::Type::kWebFeature,
-      WebFeature::kSpeechSynthesis_GetVoices_Method);
-  if (!IdentifiabilityStudySettings::Get()->ShouldSampleSurface(surface))
-    return;
-  if (!local_dom_window_->GetFrame()) {
-    return;
-  }
-
-  IdentifiableTokenBuilder builder;
-  for (const auto& voice : voice_list_) {
-    builder.AddToken(IdentifiabilityBenignStringToken(voice->voiceURI()));
-    builder.AddToken(IdentifiabilityBenignStringToken(voice->lang()));
-    builder.AddToken(IdentifiabilityBenignStringToken(voice->name()));
-    builder.AddToken(voice->localService());
-  }
-  IdentifiabilityMetricBuilder(local_dom_window_->UkmSourceID())
-      .Add(surface, builder.GetToken())
-      .Record(local_dom_window_->UkmRecorder());
 }
 
 bool SpeechSynthesis::Speaking() const {
