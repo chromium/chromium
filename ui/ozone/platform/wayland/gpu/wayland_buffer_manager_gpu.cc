@@ -362,9 +362,10 @@ const std::vector<uint64_t> WaylandBufferManagerGpu::GetModifiersForFormat(
   return {};
 }
 
-bool WaylandBufferManagerGpu::AllowsImplicitModifierForBufferFormat(
-    gfx::BufferFormat buffer_format) const {
-  auto it = supported_buffer_formats_with_modifiers_.find(buffer_format);
+bool WaylandBufferManagerGpu::AllowsImplicitModifierForFormat(
+    viz::SharedImageFormat format) const {
+  auto it = supported_buffer_formats_with_modifiers_.find(
+      viz::SharedImageFormatToBufferFormat(format));
   if (it != supported_buffer_formats_with_modifiers_.end()) {
     return base::Contains(it->second, DRM_FORMAT_MOD_INVALID);
   }

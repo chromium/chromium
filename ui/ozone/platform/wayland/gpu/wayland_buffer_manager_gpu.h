@@ -175,8 +175,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   const std::vector<uint64_t> GetModifiersForFormat(
       viz::SharedImageFormat format) const;
   // Returns whether implicit modifier is allowed.
-  bool AllowsImplicitModifierForBufferFormat(
-      gfx::BufferFormat buffer_format) const;
+  bool AllowsImplicitModifierForFormat(viz::SharedImageFormat format) const;
 
   // Allocates a unique buffer ID.
   uint32_t AllocateBufferID();

@@ -55,7 +55,6 @@ bool GbmPixmapWayland::InitializeBuffer(
   if (!gbm_device)
     return false;
 
-  auto buffer_format = viz::SharedImageFormatToBufferFormat(format);
   const uint32_t fourcc_format = GetFourCCFormatFromSharedImageFormat(format);
   const uint32_t gbm_flags = ui::NativePixmapUsageToGbmFlags(usage);
   auto modifiers = buffer_manager_->GetModifiersForFormat(format);
@@ -86,8 +85,7 @@ bool GbmPixmapWayland::InitializeBuffer(
     // rendering, while wlroots would announce MOD_LINEAR and MOD_INVALID).
     // In such cases gbm_bo allocation may fail, where we should fallback to
     // creation without modifiers, and leave the choices to driver.
-    if (!gbm_bo_ &&
-        buffer_manager_->AllowsImplicitModifierForBufferFormat(buffer_format)) {
+    if (!gbm_bo_ && buffer_manager_->AllowsImplicitModifierForFormat(format)) {
       gbm_bo_ = gbm_device->CreateBuffer(fourcc_format, size, gbm_flags);
     }
   }
