@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerView
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -308,6 +309,11 @@ public class NavigationAttachmentsMediator {
         Intent intent;
         try {
             intent = new Intent(mContext, Class.forName(CHROME_ITEM_PICKER_ACTIVITY_CLASS));
+            if (mTabModelSelectorSupplier.get() != null
+                    && mTabModelSelectorSupplier.get().getCurrentTab() != null) {
+                ProfileIntentUtils.addProfileToIntent(
+                        mTabModelSelectorSupplier.get().getCurrentTab().getProfile(), intent);
+            }
         } catch (ClassNotFoundException e) {
             return;
         }

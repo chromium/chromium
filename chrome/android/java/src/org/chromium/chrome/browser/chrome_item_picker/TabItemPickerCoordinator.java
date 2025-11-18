@@ -155,7 +155,7 @@ public class TabItemPickerCoordinator {
     private void refreshTabsToShow() {
         // TODO(crbug.com/457858995): Use common tab filters.
         Profile profile = mProfileSupplier.get();
-        if (profile == null) {
+        if (profile == null || profile.isIncognitoBranded()) {
             onCachedTabIdsRetrieved(new long[0]);
             return;
         }
@@ -168,8 +168,15 @@ public class TabItemPickerCoordinator {
     private void onCachedTabIdsRetrieved(long[] tabIds) {
         if (mTabModelSelector == null) return;
 
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) {
+            showEditorUi(new ArrayList<>());
+            return;
+        }
+
         List<Tab> allTabs =
-                TabModelUtils.convertTabListToListOfTabs(mTabModelSelector.getModel(false));
+                TabModelUtils.convertTabListToListOfTabs(
+                        mTabModelSelector.getModel(profile.isIncognitoBranded()));
         if (tabIds == null || tabIds.length == 0) {
             showEditorUi(allTabs);
             return;
