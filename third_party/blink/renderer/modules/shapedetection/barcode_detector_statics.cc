@@ -4,16 +4,11 @@
 
 #include "third_party/blink/renderer/modules/shapedetection/barcode_detector_statics.h"
 
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
-#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/shapedetection/barcode_detector.h"
-#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 
 namespace blink {
 
@@ -94,19 +89,6 @@ void BarcodeDetectorStatics::OnEnumerateSupportedFormats(
         V8BarcodeFormat(BarcodeDetector::BarcodeFormatToEnum(format)));
   }
 
-  if (IdentifiabilityStudySettings::Get()->ShouldSampleWebFeature(
-          WebFeature::kBarcodeDetector_GetSupportedFormats)) {
-    IdentifiableTokenBuilder builder;
-    for (const auto& format : results) {
-      builder.AddToken(IdentifiabilityBenignStringToken(format.AsString()));
-    }
-
-    ExecutionContext* context = GetSupplementable();
-    IdentifiabilityMetricBuilder(context->UkmSourceID())
-        .AddWebFeature(WebFeature::kBarcodeDetector_GetSupportedFormats,
-                       builder.GetToken())
-        .Record(context->UkmRecorder());
-  }
   resolver->Resolve(std::move(results));
 }
 
