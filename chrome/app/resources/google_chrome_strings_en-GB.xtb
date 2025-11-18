@@ -492,6 +492,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Your organisation closes Chrome automatically when it isn't used for one minute. Browsing data is deleted. This could include history, autofill and downloads.}other{Your organisation closes Chrome automatically when it isn't used for # minutes. Browsing data is deleted. This could include history, autofill and downloads.}}</translation>
 <translation id="6418662306461808273">Switch to existing Chrome profile?</translation>
 <translation id="6426623519983252346">You'll see a prompt to try <ph name="FEATURE_NAME" /> next time you open Chrome iOS.</translation>
+<translation id="6434035853014503219">Thanks for choosing Chrome as your default browser!</translation>
 <translation id="6473905796280459355">Go to the About Chrome page</translation>
 <translation id="6481963882741794338">Link Chrome and other Google services for personalisation and other purposes</translation>
 <translation id="648319183876919572">Enhanced Safe Browsing does more to protect you against dangerous websites and downloads</translation>
@@ -588,6 +589,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="756809126120519699">Cleared Chrome data</translation>
 <translation id="7572537927358445944">Off • Chrome can't verify where this extension comes from</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> installer</translation>
+<translation id="7596160425942761210">You can use Chrome at any time that you click links in messages, documents and other apps</translation>
 <translation id="7602868996817972616">Ask Google about this page</translation>
 <translation id="760353356052806707">Another program on your computer added an app that may change the way Chrome works.
 
@@ -683,6 +685,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8601359445272098721">New! You can translate both text and images on your screen by selecting the 'translate screen' button</translation>
 <translation id="8614913330719544658">Google Chrome is unresponsive. Relaunch now?</translation>
 <translation id="861702415419836452">Chrome needs permission to access your camera to create a 3D map of your surroundings</translation>
+<translation id="8624541899164515475">Settings, opens in new tab.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome will relaunch in 1 minute}other{Chrome will relaunch in # minutes}}</translation>
 <translation id="8637932705841171563">To share your window, allow screen recording for Chrome in System Settings</translation>
 <translation id="8641606876632989680">Chrome will notify you when you sign in with a compromised password</translation>

@@ -4431,7 +4431,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Жайгашкан жерди так аныктоо жөнүндө кеңири маалымат<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Импорттолгон</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> жүктөлүп алынууда, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Дайындардын камдык көчүрмөсүн сактоо</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" /> колдонмосуна USB түзмөктөрүн көзөмөлдөө мүмкүнчүлүгүн бериңиз.</translation>
 <translation id="3994318741694670028">Тилекке каршы, компьютериңиз туура эмес форматтагы аппараттык камсыздоонун идентификатору менен конфигурацияланган. Ушундан улам, ChromeOS Flex эң акыркы коопсуздук чаралары менен жаңыртылбагандыктан, компьютериңиз <ph name="BEGIN_BOLD" />зыянкеч чабуулдардан коргоно албай калышы мүмкүн<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Телефонуңуздун кулпусун ачып туруп, <ph name="DEVICE_TYPE" /> түзмөгүн ачуу үчүн аны жакыныраак алып келиңиз.</translation>
@@ -7731,7 +7730,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6336038146639916978"><ph name="MANAGER" /> ADB аркылуу мүчүлүштүктөрдү оңдоону өчүрдү. Ушуну менен <ph name="DEVICE_TYPE" /> түзмөгүңүз 24 сааттын ичинде баштапкы абалга келет. Колдонгуңуз келген файлдардын камдык көчүрмөсүн сактаңыз.</translation>
 <translation id="6336194758029258346">Колдонмонун тили</translation>
 <translation id="6337543438445391085">Маалыматта айрым жеке маалыматтар болушу мүмкүн. Экспорттолгон файлдарды карап чыгыңыз.</translation>
-<translation id="6338554362382763574">Карап жатып, Gemini'га бөлүшүп жаткан өтмөктөр жөнүндө суроолорду оңой бере аласыз</translation>
 <translation id="6338968693068997776">USB түзмөгүн кошуу</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> үчүн жаңы профиль түзүү</translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8351,7 +8349,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
     <ph name="BEGIN_PARAGRAPH2" />Бул кызматты жөндөөлөрдөн өчүрсөңүз болот.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux'тун камдык көчүрмөсүн сактоо жокко чыгарылды</translation>
 <translation id="6782067259631821405">PIN код туура эмес</translation>
-<translation id="6782219876520622071">Бөлүшүлгөн өтмөктөр тууралуу сүйлөшүүлөрдү адистерибиз Gemini'ды жакшыртуу үчүн карап көрүшү мүмкүн</translation>
 <translation id="6783036716881942511">Бул түзмөк унутулсунбу?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive параметрлери</translation>
 <translation id="6784523122863989144">Профиль колдоого алынат</translation>
@@ -9548,7 +9545,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7620616707541471029">Улантуу үчүн аккаунт тандаңыз</translation>
 <translation id="7621382409404463535">Система түзмөктүн конфигурациясын сактай албай койду.</translation>
 <translation id="7621595347123595643">Сырсөзүңүздү же PIN кодуңузду унутуп калсаңыз, түзмөктөгү маалыматты калыбына келтире албай каласыз.</translation>
-<translation id="7621863462266622331">Өтмөктөр бөлүшүлгөндө, алардын беттеринин контенти, медиа жана URL даректери Google'га жөнөтүлөт</translation>
 <translation id="7622114377921274169">Кубатталууда.</translation>
 <translation id="7622768823216805500">Сайттар адатта төлөмдү жеңилдетүү сыяктуу сатып алуу функциялары үчүн төлөм иштеткичтерин орнотот</translation>
 <translation id="7622966771025050155">Тартылган өтмөккө которулуу</translation>
@@ -10893,6 +10889,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8517759303731677493">Түзөтүү…</translation>
 <translation id="8518809011298357036">Жогорку көрүнүштү жабуу</translation>
 <translation id="8518942514525208851">Адепсиздикти жашыруу</translation>
+<translation id="8520238089740349550">Ишке ашкан жок - Түзмөккө жүктөп алуу бөгөттөлдү</translation>
 <translation id="8523493869875972733">Өзгөрүүлөр сакталсын</translation>
 <translation id="8523849605371521713">Ишкана саясаты тарабынан кошулду</translation>
 <translation id="8524594273111932386">издөө + ылдый жебе</translation>

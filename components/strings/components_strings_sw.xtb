@@ -425,6 +425,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1682696192498422849">Pembe fupi kwanza</translation>
 <translation id="168693727862418163">Thamani ya sera hii imeshindwa kuthibitishwa kwenye taratibu yake na itapuuzwa.</translation>
 <translation id="168841957122794586">Cheti cha seva kina kitufe dhaifu cha kifichua msimbo.</translation>
+<translation id="1688718429648938412">Hifadhi kadi ya kutuza uaminifu kwenye Pochi</translation>
 <translation id="1689333818294560261">Jina la kuwakilisha</translation>
 <translation id="1692622044604477956">Orodha za Filamu na Ratiba za Maonyesho ya Ukumbini</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Jinsi unavyoweza kudhibiti data yako:<ph name="END_BOLD" /> Chrome hufuta kiotomatiki mada zilizohifadhiwa kwenye orodha kwa zaidi ya wiki 4. Kadiri unavyoendelea kuvinjari, mada inaweza kuonekana tena kwenye orodha. Pia, unaweza kuzuia mada ambazo hutaki Chrome ishiriki na tovuti na kuzima mada za matangazo wakati wowote kwenye mipangilio ya Chrome.</translation>
@@ -1723,7 +1724,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3792826587784915501">Filamu za Imani Fulani na Huru</translation>
 <translation id="3793574014653384240">Idadi na sababu za matukio ya hivi majuzi ya programu kuacha kufanya kazi</translation>
 <translation id="3795624560191557077">Ulibadilisha nenosiri hivi majuzi lililopatikana kwenye ufichuzi haramu wa data ya umma Iwapo utatatizika, Kidhibiti cha Manenosiri cha Google kinaweza kukusaidia kuingia katika akaunti.</translation>
-<translation id="3796181268473765083">Lipa kwa awamu 4 bila riba au awamu za kila mwezi (inategemea iwapo unatimiza masharti)</translation>
 <translation id="3799805948399000906">Imeomba fonti</translation>
 <translation id="3801297763951514916">Unatembelea mara kwa mara</translation>
 <translation id="380329542618494757">Jina</translation>
@@ -3662,6 +3662,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6965978654500191972">Kifaa</translation>
 <translation id="696703987787944103">Ubadilishaji rangi</translation>
 <translation id="6967851206780867018">Faili 1 imezuiwa kwa sababu ya maudhui</translation>
+<translation id="6968217325369275594">Hifadhi taarifa zako ili upate maelezo kutoka kwenye kifaa chako chochote. Taarifa zako za <ph name="ACCOUNT" /> zimehifadhiwa kwenye <ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" />.</translation>
 <translation id="6970885655016700774">Kitambaa (Cha Hifadhi)</translation>
 <translation id="6971439137020188025">Unda wasilisho jipya la Google katika huduma ya Slaidi za Google kwa haraka</translation>
 <translation id="6972629891077993081">Vifaa vya HID</translation>

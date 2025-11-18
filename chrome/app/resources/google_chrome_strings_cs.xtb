@@ -491,6 +491,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Vaše organizace Chrome po 1 minutě nečinnosti automaticky zavře. Údaje o prohlížení se vymažou. Může to zahrnovat historii, automatické vyplňování a stažené soubory.}few{Vaše organizace Chrome po # minutách nečinnosti automaticky zavře. Údaje o prohlížení se vymažou. Může to zahrnovat historii, automatické vyplňování a stažené soubory.}many{Vaše organizace Chrome po # minuty nečinnosti automaticky zavře. Údaje o prohlížení se vymažou. Může to zahrnovat historii, automatické vyplňování a stažené soubory.}other{Vaše organizace Chrome po # minutách nečinnosti automaticky zavře. Údaje o prohlížení se vymažou. Může to zahrnovat historii, automatické vyplňování a stažené soubory.}}</translation>
 <translation id="6418662306461808273">Přepnout na stávající profil Chrome?</translation>
 <translation id="6426623519983252346">Až příště otevřete Chrome pro iOS, zobrazí se výzva k vyzkoušení funkce <ph name="FEATURE_NAME" />.</translation>
+<translation id="6434035853014503219">Děkujeme, že jste si Chrome vybrali jako výchozí prohlížeč.</translation>
 <translation id="6473905796280459355">Přejít na stránku O aplikaci Chrome</translation>
 <translation id="6481963882741794338">Propojte Chrome a další služby Google pro personalizaci a další účely</translation>
 <translation id="648319183876919572">Vylepšené Bezpečné prohlížení vás chrání před nebezpečnými weby a soubory ke stažení</translation>
@@ -587,6 +588,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="756809126120519699">Vymazání údajů Chromu</translation>
 <translation id="7572537927358445944">Vypnuto • Chrome nedokáže ověřit, odkud toto rozšíření pochází</translation>
 <translation id="7583399374488819119">instalační program prohlížeče <ph name="COMPANY_NAME" /></translation>
+<translation id="7596160425942761210">Chrome můžete použít pokaždé, když kliknete na odkazy ve zprávách, dokumentech a dalších aplikacích</translation>
 <translation id="7602868996817972616">Zeptat se Googlu ohledně této stránky</translation>
 <translation id="760353356052806707">Jiný program ve vašem počítači nainstaloval aplikaci, která může měnit funkce Chromu.
 
@@ -682,6 +684,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="8601359445272098721">Novinka! Pomocí tlačítka Přeložit obrazovku můžete přeložit text i obrázky na obrazovce</translation>
 <translation id="8614913330719544658">Google Chrome neodpovídá. Restartovat?</translation>
 <translation id="861702415419836452">Chrome potřebuje oprávnění k přístupu k fotoaparátu, aby mohl vytvořit 3D mapu vašeho okolí</translation>
+<translation id="8624541899164515475">Nastavení, otevře se na nové kartě.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome se za 1 minutu restartuje}few{Chrome se za # minut restartuje}many{Chrome se za # minuty restartuje}other{Chrome se za # minut restartuje}}</translation>
 <translation id="8637932705841171563">Pokud chcete sdílet okno, v Nastavení systému povolte pro Chrome nahrávání obrazovky</translation>
 <translation id="8641606876632989680">Pokud se přihlásíte pomocí prolomeného hesla, Chrome vám to oznámí</translation>

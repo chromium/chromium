@@ -523,6 +523,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="705851970750939768">Update Chromium</translation>
 <translation id="7067091210845072982">If an image doesn’t have a useful description, Chromium will try to provide one for you. To create descriptions, images are sent to Google.</translation>
 <translation id="7141270731789036260">Customise Chrome for testing</translation>
+<translation id="7147227333672430807">You can use Chromium at any time that you click links in messages, documents and other apps</translation>
 <translation id="7163519456498498587">Remove <ph name="EXTENSION_NAME" /> from Chromium</translation>
 <translation id="7173822816570314652">Your organisation deletes Chromium data when it isn't used for <ph name="TIMEOUT_DURATION" />. This could include history, autofill and downloads.</translation>
 <translation id="718435575166326686">Chromium needs camera permission for this site</translation>
@@ -637,6 +638,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8471947159125090285">To use and save Chromium data in your Google Account, verify that it's you.</translation>
 <translation id="8482493977473846331">Shows prompts to sign in to Chromium</translation>
 <translation id="8493179195440786826">Chromium is Out of Date</translation>
+<translation id="850264194101621529">Thanks for choosing Chromium as your default browser!</translation>
 <translation id="8522801943730206384">Chromium can check your passwords when you save them</translation>
 <translation id="8555465886620020932">Service error: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">You can pin image search for easy access; click the Pin button at the top of the side panel</translation>
@@ -646,6 +648,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8601359445272098721">New! You can translate both text and images on your screen by selecting the 'translate screen' button</translation>
 <translation id="8619360774459241877">Launching Chromium...</translation>
+<translation id="8624541899164515475">Settings, opens in new tab.</translation>
 <translation id="8648201657708811153">Google Chrome for testing cannot be made your default browser.</translation>
 <translation id="8677922833187616101">Always show Google AI mode shortcut</translation>
 <translation id="8697124171261953979">It also controls what page is shown when you start Chromium or search from the Omnibox.</translation>

@@ -95,7 +95,7 @@
 <translation id="2091012649849228750">Per ricevere gli aggiornamenti futuri di Google Chrome, devi avere Windows 10 o versioni successive. Su questo computer è installato Windows 8.</translation>
 <translation id="2094648590148273905">Termini di ChromeOS Flex</translation>
 <translation id="2094919256425865063">Vuoi chiudere comunque Chrome?</translation>
-<translation id="2096213354152647998">Non hai visitato il sito di recente. Chrome ha rimosso <ph name="PERMISSION" />.</translation>
+<translation id="2096213354152647998">Non hai visitato il sito di recente. Chrome ha rimosso le seguenti autorizzazioni: <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">La realizzazione di ChromeOS Flex è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo, noto come <ph name="BEGIN_LINK_LINUX_OSS" />ambiente di sviluppo Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Disattiva l'esecuzione di Chrome in background per le app</translation>
 <translation id="2120620239521071941">Verranno eliminati <ph name="ITEMS_COUNT" /> elementi da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chrome come <ph name="USER_EMAIL" />.</translation>
@@ -483,6 +483,7 @@
 <translation id="6417690341895039567">{COUNT,plural, =1{La tua organizzazione chiude automaticamente Chrome quando non viene utilizzato per 1 minuto. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}other{La tua organizzazione chiude automaticamente Chrome quando non viene utilizzato per # minuti. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}}</translation>
 <translation id="6418662306461808273">Vuoi passare a un profilo Chrome esistente?</translation>
 <translation id="6426623519983252346">La prossima volta che aprirai Chrome su iOS, ti verrà chiesto di provare <ph name="FEATURE_NAME" />.</translation>
+<translation id="6434035853014503219">Grazie per aver scelto Chrome come browser predefinito.</translation>
 <translation id="6473905796280459355">Vai alla pagina Informazioni su Chrome</translation>
 <translation id="6481963882741794338">Collega Chrome e altri servizi Google per la personalizzazione e altri scopi</translation>
 <translation id="648319183876919572">Navigazione sicura avanzata fa di più per proteggerti da download e siti web pericolosi</translation>
@@ -579,6 +580,7 @@
 <translation id="756809126120519699">Dati di Chrome cancellati</translation>
 <translation id="7572537927358445944">Off • Chrome non può verificare la provenienza dell'estensione</translation>
 <translation id="7583399374488819119">Programma di installazione di <ph name="COMPANY_NAME" /></translation>
+<translation id="7596160425942761210">Puoi usare Chrome ogni volta che fai clic sui link in messaggi, documenti e altre app</translation>
 <translation id="7602868996817972616">Chiedi a Google informazioni su questa pagina</translation>
 <translation id="760353356052806707">Un altro programma sul computer ha aggiunto un'app che potrebbe modificare il funzionamento di Chrome.
 
@@ -674,6 +676,7 @@
 <translation id="8601359445272098721">Novità. Puoi tradurre sia testo che immagini sullo schermo selezionando il pulsante "Traduzione schermata"</translation>
 <translation id="8614913330719544658">Google Chrome non risponde. Riavviarlo ora?</translation>
 <translation id="861702415419836452">Chrome ha bisogno dell'autorizzazione ad accedere alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
+<translation id="8624541899164515475">Impostazioni, si apre in una nuova scheda.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome verrà riavviato tra 1 minuto}other{Chrome verrà riavviato tra # minuti}}</translation>
 <translation id="8637932705841171563">Per condividere la finestra, consenti la Registrazione dello schermo per Chrome nelle Impostazioni di sistema.</translation>
 <translation id="8641606876632989680">Chrome ti invierà una notifica quando esegui l'accesso con una password compromessa</translation>

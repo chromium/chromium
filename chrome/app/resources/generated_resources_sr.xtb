@@ -4416,7 +4416,6 @@
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Сазнајте више о Прецизности локације<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Увезени</translation>
 <translation id="3992008114154328194">Преузима се <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Направите резервну копију података</translation>
 <translation id="3994075804072562819">Дозволите да <ph name="SPECIFIC_NAME" /> контролише USB уређаје.</translation>
 <translation id="3994318741694670028">Нажалост, рачунар је конфигурисан помоћу погрешно форматираног ИД-а хардвера. То спречава да се Chrome OS Flex ажурира најновијим безбедносним исправкама и рачунар <ph name="BEGIN_BOLD" />може да буде подложан злонамерним нападима<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Откључајте телефон и приближите га да бисте откључали <ph name="DEVICE_TYPE" />.</translation>
@@ -7715,7 +7714,6 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> је онемогућио ADB отклањање грешака. То ће ресетовати <ph name="DEVICE_TYPE" /> за 24 сата. Направите резервне копије свих фајлова које желите да задржите.</translation>
 <translation id="6336194758029258346">Језик апликације</translation>
 <translation id="6337543438445391085">Неки лични подаци и даље могу да буду уврштени у податке. Обавезно прегледајте извезене фајлове.</translation>
-<translation id="6338554362382763574">Док прегледате, можете лако да постављате Gemini-ју питања о картицама које делите</translation>
 <translation id="6338968693068997776">Додајте USB уређај</translation>
 <translation id="6339668969738228384">Отвори нови профил за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Интернет протокол за штампање (IPPS)</translation>
@@ -8339,7 +8337,6 @@
     <ph name="BEGIN_PARAGRAPH2" />Можете да искључите ову услугу у Подешавањима.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Прављење резервне копије за Linux је отказано</translation>
 <translation id="6782067259631821405">Неважећи PIN</translation>
-<translation id="6782219876520622071">Конверзације о дељеним картицама могу да виде особе које прегледају ради побољшања Gemini-ја</translation>
 <translation id="6783036716881942511">Желите да заборавите овај уређај?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive подешавања</translation>
 <translation id="6784523122863989144">Профил је подржан</translation>
@@ -9537,7 +9534,6 @@
 <translation id="7620616707541471029">Одаберите налог да бисте наставили</translation>
 <translation id="7621382409404463535">Систем није успео да сачува конфигурацију уређаја.</translation>
 <translation id="7621595347123595643">Нећете моћи да повратите локалне податке ако заборавите лозинку или PIN.</translation>
-<translation id="7621863462266622331">Када се деле картице, њихови садржај, медији и URL-ови се шаљу Google-у</translation>
 <translation id="7622114377921274169">Пуни се.</translation>
 <translation id="7622768823216805500">Сајтови обично инсталирају обрађиваче плаћања за потребе функција куповине попут лакшег плаћања</translation>
 <translation id="7622966771025050155">Пређи на снимљену картицу</translation>

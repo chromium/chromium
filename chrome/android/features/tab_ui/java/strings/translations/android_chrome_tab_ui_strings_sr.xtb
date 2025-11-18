@@ -194,6 +194,7 @@
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Оцена <ph name="CURRENT_RATING" /> од <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> рецензија}one{Оцена <ph name="CURRENT_RATING" /> од <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> рецензија}few{Оцена <ph name="CURRENT_RATING" /> од <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> рецензије}other{Оцена <ph name="CURRENT_RATING" /> од <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> рецензија}}</translation>
 <translation id="7885132941432959125">Преместите картицу удесно</translation>
+<translation id="7887334752153342268">Направи дупликат</translation>
 <translation id="7939917283308035850">Нисте изабрали боју <ph name="COLOR_NAME" /></translation>
 <translation id="7961015016161918242">Никад</translation>
 <translation id="7966321538264951561">Одбаците предлоге.</translation>

@@ -194,6 +194,7 @@
 <translation id="7853202427316060426">Aktivnost</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Ocena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> recenzija}one{Ocena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzija}few{Ocena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzije}other{Ocena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzija}}</translation>
 <translation id="7885132941432959125">Premestite karticu udesno</translation>
+<translation id="7887334752153342268">Napravi duplikat</translation>
 <translation id="7939917283308035850">Niste izabrali boju <ph name="COLOR_NAME" /></translation>
 <translation id="7961015016161918242">Nikad</translation>
 <translation id="7966321538264951561">Odbacite predloge.</translation>

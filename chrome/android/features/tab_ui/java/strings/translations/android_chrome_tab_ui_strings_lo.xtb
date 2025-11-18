@@ -73,6 +73,7 @@
 <translation id="311432875115153175">ປິດລາຍຊື່ກຸ່ມແຖບແລ້ວ</translation>
 <translation id="3194464645767632461">ການຈັດອັນດັບ</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{ເພີ່ມ <ph name="TABS_COUNT_ONE" /> ແຖບໃສ່ກຸ່ມ}other{ເພີ່ມ <ph name="TABS_COUNT_MANY" /> ແຖບໃສ່ກຸ່ມ}}</translation>
+<translation id="3293080634164207409">ເພີ່ມແຖບ</translation>
 <translation id="3328308545011660196">ຄຳແນະນຳ: ເບິ່ງຄືວ່າມີ <ph name="NUMBER_OF_TABS" /> ແຖບທີ່ກ່ຽວຂ້ອງກັນ. ຈັດກຸ່ມພວກມັນບໍ?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{ຫຼັງຈາກບໍ່ເຄື່ອນໄຫວ 1 ມື້}other{ຫຼັງຈາກບໍ່ເຄື່ອນໄຫວ <ph name="DAY_COUNT_MANY" /> ມື້}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ແຖບໃໝ່}other{<ph name="MANY_ADDED" /> ແຖບໃໝ່}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">ການເຄື່ອນໄຫວ</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ ການຈັດອັນດັບ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> ຄຳຕິຊົມ}other{ການຈັດອັນດັບ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ຄຳຕິຊົມ}}</translation>
 <translation id="7885132941432959125">ຍ້າຍແຖບໄປເບື້ອງຂວາ</translation>
+<translation id="7887334752153342268">ຈໍາລອງ</translation>
 <translation id="7939917283308035850">ບໍ່ໄດ້ເລືອກ <ph name="COLOR_NAME" /></translation>
 <translation id="7961015016161918242">ບໍ່​ເລີຍ</translation>
 <translation id="7966321538264951561">ປິດການແນະນຳໄວ້.</translation>

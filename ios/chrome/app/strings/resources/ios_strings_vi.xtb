@@ -42,6 +42,7 @@
 <translation id="1122068467107743258">Công việc</translation>
 <translation id="1126696498560056882">Quản lý các tài khoản trên thiết bị này</translation>
 <translation id="1126809382673880764">Không bảo vệ bạn trước các trang web, tệp đã tải xuống và tiện ích nguy hiểm. Bạn sẽ vẫn được bảo vệ bằng tính năng Duyệt web an toàn (nếu có) ở các dịch vụ khác của Google, chẳng hạn như Gmail và Tìm kiếm.</translation>
+<translation id="1133418583142946603">Thêm thẻ hiện tại</translation>
 <translation id="1136104150802877429">Hiện bài đánh giá sản phẩm</translation>
 <translation id="1142371195993008685">Tắt thông báo cho <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Đã đăng nhập bằng tên <ph name="USER" /></translation>
@@ -78,6 +79,7 @@
 <translation id="1285320974508926690">Không bao giờ dịch trang web này</translation>
 <translation id="1287229685519872919">Dữ liệu trong Google Workspace</translation>
 <translation id="1291506870746876680">Các quyền của <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> sẽ được đặt lại thành tắt khi bạn rời khỏi trang web này.</translation>
+<translation id="1293556467332435079">Tệp</translation>
 <translation id="129553762522093515">Các thẻ đã đóng gần đây</translation>
 <translation id="1296581780163690620">Tải tệp xuống? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Nhằm đảm bảo bạn luôn có thể sử dụng mật khẩu trong Tài khoản Google, hãy xác minh danh tính của bạn.</translation>
@@ -1044,6 +1046,7 @@
 <translation id="5055015094595227120">Vị trí chính xác</translation>
 <translation id="5055551113846164633">Thao tác này sẽ xoá các địa chỉ đã lưu trên thiết bị này. Các địa chỉ đã lưu trong Tài khoản Google <ph name="USER_EMAIL" /> của bạn cũng sẽ bị xoá</translation>
 <translation id="5056446788882570708">Đã phát hiện thấy sự cố <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">Tạo hình ảnh</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Cài đặt Google Drive</translation>
 <translation id="5067540696062462445">Tệp đã tải xuống</translation>
@@ -1505,6 +1508,7 @@
 <translation id="6659660757330712663">Bạn có thể vuốt thanh công cụ để chuyển đổi giữa các thẻ.</translation>
 <translation id="6663529247339810546">Không thể lưu ảnh</translation>
 <translation id="6668619169535738264">Chỉnh sửa dấu trang</translation>
+<translation id="6670729408462528018">Thư viện</translation>
 <translation id="6671294218820966278">Đánh dấu là đã đọc</translation>
 <translation id="6672697278890207089">Nhập cụm mật khẩu của bạn</translation>
 <translation id="6674917187596384849">Bạn có thể dễ dàng chuyển đổi giữa các tài khoản</translation>
@@ -1661,6 +1665,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Bạn đã có mật khẩu cho các tài khoản này trong Trình quản lý mật khẩu của Google. Nếu bạn chọn nhập một trong các mật khẩu dưới đây, mật khẩu đó sẽ thay thế mật khẩu hiện tại.</translation>
 <translation id="7336264872878993241">Đã tải xuống <ph name="PERCENT" /> phần trăm</translation>
+<translation id="7345061034321640811">Không được phép nhập</translation>
 <translation id="7352651011704765696">Đã xảy ra lỗi</translation>
 <translation id="7363349185727752629">Hướng dẫn về các lựa chọn liên quan đến quyền riêng tư</translation>
 <translation id="7364796246159120393">Chọn tệp</translation>
@@ -2202,6 +2207,7 @@
 <translation id="952704832371081537">Huỷ</translation>
 <translation id="95332591904104970">Ứng dụng đã kết nối</translation>
 <translation id="954667170699278022">Danh sách đọc</translation>
+<translation id="956066588046842680">Chính sách của tổ chức bạn không cho phép nhập dữ liệu này.</translation>
 <translation id="956218893102219091">Sử dụng thông tin vị trí chính xác của bạn để nhận được kết quả chính xác nhất từ Gemini, thay vì vị trí ước đoán dựa trên địa chỉ IP của bạn. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Xoá dữ liệu duyệt web</translation>
 <translation id="963102227019621224">Hoạt động trên web và ứng dụng</translation>

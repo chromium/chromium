@@ -42,6 +42,7 @@
 <translation id="1122068467107743258">工作单位</translation>
 <translation id="1126696498560056882">管理此设备上的账号</translation>
 <translation id="1126809382673880764">不会防范危险的网站、下载内容和扩展程序。在 Gmail 和 Google 搜索等其他 Google 服务中，若安全浏览保护可用，您仍将获得该保护。</translation>
+<translation id="1133418583142946603">添加当前标签页</translation>
 <translation id="1136104150802877429">显示商品评价</translation>
 <translation id="1142371195993008685">关闭“<ph name="FEATURE_NAME" />”的通知</translation>
 <translation id="1147031633655575115">目前的登录者是：<ph name="USER" /></translation>
@@ -78,6 +79,7 @@
 <translation id="1285320974508926690">一律不翻译此网站</translation>
 <translation id="1287229685519872919">Google Workspace 数据</translation>
 <translation id="1291506870746876680">您离开<ph name="BEGIN_BOLD" />“<ph name="SITE_NAME" />”<ph name="END_BOLD" />后，这个网站的权限将重置为停用。</translation>
+<translation id="1293556467332435079">文件</translation>
 <translation id="129553762522093515">最近关闭的标签页</translation>
 <translation id="1296581780163690620">下载文件？(<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">为了确保您可以一直使用 Google 账号的密码，请验证是您本人在操作。</translation>
@@ -1044,6 +1046,7 @@
 <translation id="5055015094595227120">精确位置信息</translation>
 <translation id="5055551113846164633">此操作会删除保存在此设备上的地址，还会删除 Google 账号 <ph name="USER_EMAIL" /> 中保存的地址。</translation>
 <translation id="5056446788882570708"><ph name="TIME" />发现了问题。</translation>
+<translation id="5056587122125565772">创建图片</translation>
 <translation id="5059136629401106827">知道了</translation>
 <translation id="5062321486222145940">安装Google云端硬盘</translation>
 <translation id="5067540696062462445">下载内容</translation>
@@ -1505,6 +1508,7 @@
 <translation id="6659660757330712663">您可以滑动工具栏以切换标签页。</translation>
 <translation id="6663529247339810546">无法保存图片</translation>
 <translation id="6668619169535738264">修改书签</translation>
+<translation id="6670729408462528018">图库</translation>
 <translation id="6671294218820966278">标为已读</translation>
 <translation id="6672697278890207089">请输入密码</translation>
 <translation id="6674917187596384849">您可以轻松地在账号之间切换</translation>
@@ -1661,6 +1665,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">您的 Google 密码管理工具中已有这些账号的密码。如果选择导入以下某个密码，则导入的密码会替换现有密码。</translation>
 <translation id="7336264872878993241">已下载<ph name="PERCENT" />%</translation>
+<translation id="7345061034321640811">不得导入</translation>
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7363349185727752629">隐私控制选项指南</translation>
 <translation id="7364796246159120393">选择文件</translation>
@@ -2202,6 +2207,7 @@
 <translation id="952704832371081537">取消</translation>
 <translation id="95332591904104970">关联的应用</translation>
 <translation id="954667170699278022">阅读清单</translation>
+<translation id="956066588046842680">您所属组织的政策不允许导入此数据。</translation>
 <translation id="956218893102219091">使用您的精确位置信息，而非基于 IP 地址的估计位置信息，以便获得最准确的 Gemini 结果。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">删除浏览数据</translation>
 <translation id="963102227019621224">网络与应用活动记录</translation>

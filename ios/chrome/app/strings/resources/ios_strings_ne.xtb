@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
+<translation id="1004825134262590729">{count,plural, =1{{count} पासकी}other{{count} वटा पासकी}}</translation>
 <translation id="1005023885865154304">अटोफिल पासवर्डसम्बन्धी सेटिङ खोल्नुहोस्</translation>
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">तपाईं पछि यहाँ फर्केर आफूले हालसालै बन्द गरेका ट्याबहरू पुनः खोल्न सक्नुहुन्छ</translation>
@@ -41,6 +42,7 @@
 <translation id="1122068467107743258">वर्क प्रोफाइल</translation>
 <translation id="1126696498560056882">यो डिभाइसका खाताहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1126809382673880764">तपाईंलाई जोखिमपूर्ण वेबसाइट, डाउनलोड वा एक्स्टेन्सनहरूविरुद्ध सुरक्षा प्रदान गर्दैन। उपलब्ध भएसम्म तपाईं अझै पनि Gmail र खोज जस्ता Google का अन्य सेवाहरूमा सुरक्षित ब्राउजिङको सुरक्षा प्राप्त गर्नु हुने छ।</translation>
+<translation id="1133418583142946603">हालको ट्याब थप्नुहोस्</translation>
 <translation id="1136104150802877429">यसले उत्पादनसम्बन्धी रिभ्यूहरू देखाउँछ</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" /> सम्बन्धी नोटिफिकेसन प्राप्त गर्ने सुविधा अफ गर्नुहोस्</translation>
 <translation id="1147031633655575115">तपाईंले <ph name="USER" /> का नामबाट साइन इन गर्नुभएको छ</translation>
@@ -77,6 +79,7 @@
 <translation id="1285320974508926690">यो साइट कहिले पनि अनुवाद नगर्नुहोस्</translation>
 <translation id="1287229685519872919">Google Workspace को डेटा</translation>
 <translation id="1291506870746876680">तपाईं <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> बाट बाहिरिनुभयो भने यो साइटसम्बन्धी अनुमति रिसेट गरी अफ गरिने छ।</translation>
+<translation id="1293556467332435079">फाइलहरू</translation>
 <translation id="129553762522093515">हालैमा बन्द गरिएको</translation>
 <translation id="1296581780163690620">फाइल डाउनलोड गर्ने हो? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">आफ्नो Google खातामा सेभ गरिएका पासवर्डहरू सधैँ प्रयोग गर्न सकियोस् भन्नाका लागि आफ्नो पहिचान पुष्टि गर्नुहोस्।</translation>
@@ -1043,6 +1046,7 @@
 <translation id="5055015094595227120">सटीक लोकेसन</translation>
 <translation id="5055551113846164633">तपाईंले यसो गर्नुभयो भने यो डिभाइसमा सेभ गरिएका ठेगानाहरू मेटिन्छन्। यसका साथै तपाईंको Google खाता <ph name="USER_EMAIL" /> मा सेभ गरिएका ठेगानाहरू पनि मेटिन्छन्।</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> वटा समस्या भेटिए।</translation>
+<translation id="5056587122125565772">फोटो बनाउनुहोस्</translation>
 <translation id="5059136629401106827">ठिक छ</translation>
 <translation id="5062321486222145940">Google ड्राइभ स्थापना गर्नुहोस्</translation>
 <translation id="5067540696062462445">डाउनलोड गरिएका सामग्रीहरू</translation>
@@ -1504,6 +1508,7 @@
 <translation id="6659660757330712663">तपाईं एउटा ट्याबबाट अर्को ट्याबमा जान टुलबार स्वाइप गर्न सक्नुहुन्छ।</translation>
 <translation id="6663529247339810546">फोटो सेभ गर्न सकिएन</translation>
 <translation id="6668619169535738264">पुस्तक चिन्ह सम्पादन गर्नुहोस्</translation>
+<translation id="6670729408462528018">ग्यालेरी</translation>
 <translation id="6671294218820966278">पढिसकिएको सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
 <translation id="6672697278890207089">आफ्नो पासफ्रेज हाल्नुहोस्</translation>
 <translation id="6674917187596384849">तपाईं सजिलै खाताहरू अदलबदल गर्न सक्नुहुन्छ</translation>
@@ -1660,6 +1665,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">तपाईंको Google पासवर्ड म्यानेजरमा यी खाताहरूका पासवर्ड सेभ गरिसकिएका छन्। तपाईंले तल सूचीकृत कुनै पासवर्ड इम्पोर्ट गर्नुभयो भने सो पासवर्डले हालको पासवर्ड प्रतिस्थापन गर्ने छ।</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> प्रतिशत डाउनलोड भयो</translation>
+<translation id="7345061034321640811">इम्पोर्ट गर्ने अनुमति दिइएको छैन</translation>
 <translation id="7352651011704765696">कुनै त्रुटि भयो</translation>
 <translation id="7363349185727752629">तपाईंको गोपनीयतासम्बन्धी विकल्पहरूका बारेमा मार्गदर्शन</translation>
 <translation id="7364796246159120393">फाइल छान्नुहोस्</translation>
@@ -2201,6 +2207,7 @@
 <translation id="952704832371081537">रद्द गर्नुहोस्</translation>
 <translation id="95332591904104970">कनेक्ट गरिएका एपहरू</translation>
 <translation id="954667170699278022">रिडिङ लिस्ट</translation>
+<translation id="956066588046842680">यो डेटा तपाईंको सङ्गठनले तोकेको नीतिअनुसार इम्पोर्ट गर्न पाइँदैन।</translation>
 <translation id="956218893102219091">Gemini ले उपलब्ध गराउने सबैभन्दा सटीक परिणामहरू प्राप्त गर्न आफ्नो IP एड्रेसमा आधारित अनुमानित लोकेसन प्रयोग गर्नुको साटो आफ्नो सटीक लोकेसन प्रयोग गर्नुहोस्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">ब्राउजिङ डेटा मेटाउनुहोस्</translation>
 <translation id="963102227019621224">वेब तथा एपसम्बन्धी गतिविधि</translation>
@@ -2212,5 +2219,6 @@
 <translation id="984275831282074731">भुक्तानी विधिहरू</translation>
 <translation id="985379595344853742">सबै इन्कोग्निटो ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="988141524645182168">अन्य डिभाइसहरू</translation>
+<translation id="995174784802614337">{count,plural, =1{{count} पासकी इम्पोर्ट गरिएको छ}other{{count} वटा पासकी इम्पोर्ट गरिएका छन्}}</translation>
 <translation id="999768147936949692">तपाईं अहिले पारिवारिक सदस्यहरूसँग मात्र पासवर्ड सेयर गर्न सक्नुहुन्छ। <ph name="BEGIN_LINK" />परिवारका सदस्यहरूलाई आफ्नो समूहमा सामेल हुन निम्तो गर्नुहोस्<ph name="END_LINK" /> र आफूले प्रयोग गर्ने Google का उत्पादन तथा आफ्ना सदस्यताहरूबाट अझ बढी फाइदा लिनुहोस्।</translation>
 </translationbundle>

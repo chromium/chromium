@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
+<translation id="1004825134262590729">{count,plural, =1{{count} passkey}other{{count} passkey}}</translation>
 <translation id="1005023885865154304">Apri le impostazioni di Compila automaticamente le password</translation>
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Puoi tornare più tardi per riaprire le schede che hai chiuso di recente</translation>
@@ -41,6 +42,7 @@
 <translation id="1122068467107743258">Lavoro</translation>
 <translation id="1126696498560056882">Gestisci gli account su questo dispositivo</translation>
 <translation id="1126809382673880764">Non ti protegge da estensioni, download e siti web pericolosi. La protezione di Navigazione sicura, se disponibile, sarà ancora attiva in altri servizi Google, come Gmail e Ricerca.</translation>
+<translation id="1133418583142946603">Aggiungi scheda corrente</translation>
 <translation id="1136104150802877429">Mostra recensioni prodotto</translation>
 <translation id="1142371195993008685">Disattiva notifiche per <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Accesso eseguito come <ph name="USER" /></translation>
@@ -77,6 +79,7 @@
 <translation id="1285320974508926690">Non tradurre mai questo sito</translation>
 <translation id="1287229685519872919">Dati di Google Workspace</translation>
 <translation id="1291506870746876680">Le autorizzazioni del sito <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> verranno disattivate quando uscirai dal sito.</translation>
+<translation id="1293556467332435079">File</translation>
 <translation id="129553762522093515">Chiuse di recente</translation>
 <translation id="1296581780163690620">Vuoi scaricare il file? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Verifica la tua identità per assicurarti di poter usare sempre le password nel tuo Account Google.</translation>
@@ -1043,6 +1046,7 @@
 <translation id="5055015094595227120">Posizione esatta</translation>
 <translation id="5055551113846164633">Questa azione elimina gli indirizzi salvati su questo dispositivo. Vengono eliminati anche gli indirizzi salvati nel tuo Account Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Sono stati riscontrati problemi <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">Crea immagine</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installa Google Drive</translation>
 <translation id="5067540696062462445">Download</translation>
@@ -1504,6 +1508,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6659660757330712663">Puoi far scorrere la barra degli strumenti per passare da una scheda all'altra.</translation>
 <translation id="6663529247339810546">Impossibile salvare l'immagine</translation>
 <translation id="6668619169535738264">Modifica preferito</translation>
+<translation id="6670729408462528018">Galleria</translation>
 <translation id="6671294218820966278">Segna come letta</translation>
 <translation id="6672697278890207089">Inserisci la passphrase</translation>
 <translation id="6674917187596384849">Puoi passare facilmente da un account all'altro</translation>
@@ -1660,6 +1665,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Hai già le password per questi account nel Gestore delle password di Google. Se scegli di importare una delle password seguenti, quella esistente sostituirà quella esistente.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% scaricato</translation>
+<translation id="7345061034321640811">Importazione non consentita</translation>
 <translation id="7352651011704765696">Si è verificato un problema</translation>
 <translation id="7363349185727752629">Una guida alle scelte relative alla tua privacy</translation>
 <translation id="7364796246159120393">Scegli file</translation>
@@ -2201,6 +2207,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="952704832371081537">Annulla</translation>
 <translation id="95332591904104970">App connesse</translation>
 <translation id="954667170699278022">Elenco di lettura</translation>
+<translation id="956066588046842680">L'importazione di questi dati non è consentita dalla policy della tua organizzazione.</translation>
 <translation id="956218893102219091">Per ottenere i risultati più precisi di Gemini, invece di una posizione stimata in base al tuo indirizzo IP, usa la tua posizione esatta. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Elimina dati navigazione</translation>
 <translation id="963102227019621224">Attività web e app</translation>
@@ -2212,5 +2219,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="984275831282074731">Metodi di pagamento</translation>
 <translation id="985379595344853742">Chiudi tutte le schede di navigazione in incognito</translation>
 <translation id="988141524645182168">Altri dispositivi</translation>
+<translation id="995174784802614337">{count,plural, =1{{count} passkey importata}other{{count} passkey importate}}</translation>
 <translation id="999768147936949692">Al momento puoi condividere le password solo con i membri del gruppo Famiglia. <ph name="BEGIN_LINK" />Invita membri del gruppo Famiglia<ph name="END_LINK" /> a unirsi al tuo gruppo e usa al meglio i tuoi prodotti e abbonamenti su Google.</translation>
 </translationbundle>

@@ -491,6 +491,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6417690341895039567">{COUNT,plural, =1{Organizata jote e mbyll automatikisht Chrome kur ai nuk përdoret për 1 minutë. Të dhënat e shfletimit do të fshihen. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.}other{Organizata jote e mbyll automatikisht Chrome kur ai nuk përdoret për # minuta. Të dhënat e shfletimit do të fshihen. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.}}</translation>
 <translation id="6418662306461808273">Të kalohet te profili ekzistues i Chrome?</translation>
 <translation id="6426623519983252346">Do të shikosh një kërkesë për të provuar <ph name="FEATURE_NAME" /> herën tjetër kur të hapësh Chrome për iOS.</translation>
+<translation id="6434035853014503219">Faleminderit që zgjodhe Chrome si shfletuesin tënd të parazgjedhur!</translation>
 <translation id="6473905796280459355">Shko te faqja "Rreth Chrome"</translation>
 <translation id="6481963882741794338">Lidh Chrome dhe shërbimet e tjera të Google për personalizimin dhe qëllime të tjera</translation>
 <translation id="648319183876919572">"Shfletimi i sigurt i përmirësuar" bën më shumë për të të mbrojtur nga uebsajtet dhe shkarkimet e rrezikshme</translation>
@@ -587,6 +588,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="756809126120519699">Të dhënat e Chrome u pastruan</translation>
 <translation id="7572537927358445944">Joaktive • Chrome nuk mund të verifikojë se nga vjen kjo shtesë</translation>
 <translation id="7583399374488819119">Instaluesi i <ph name="COMPANY_NAME" /></translation>
+<translation id="7596160425942761210">Mund të përdorësh Chrome sa herë që klikon te lidhjet në mesazhe, dokumente dhe aplikacione të tjera</translation>
 <translation id="7602868996817972616">Pyet Google rreth kësaj faqeje</translation>
 <translation id="760353356052806707">Një program tjetër në kompjuterin tënd shtoi një aplikacion që mund të ndryshojë mënyrën e funksionimit të Chrome.
 
@@ -682,6 +684,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8601359445272098721">E re! Mund të përkthesh tekstet dhe imazhet në ekranin tënd duke zgjedhur butonin "përkthe ekranin"</translation>
 <translation id="8614913330719544658">Google Chrome nuk përgjigjet. Dëshiron ta hapësh sërish tani?</translation>
 <translation id="861702415419836452">Chrome ka nevojë për leje për t'u qasur te kamera jote për të krijuar një hartë 3D të ambientit tënd rrethues</translation>
+<translation id="8624541899164515475">Cilësimet, hapet në një skedë të re.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome do të hapet përsëri për 1 minutë}other{Chrome do të hapet përsëri për # minuta}}</translation>
 <translation id="8637932705841171563">Për të ndarë dritaren tënde, lejo regjistrimin e ekranit për Chrome te "Cilësimet e sistemit"</translation>
 <translation id="8641606876632989680">Chrome do të të njoftojë kur të identifikohesh me një fjalëkalim të komprometuar</translation>

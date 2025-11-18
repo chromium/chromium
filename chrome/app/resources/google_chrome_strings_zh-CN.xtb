@@ -141,7 +141,7 @@
 <translation id="259935314519650377">未能缓存所下载的安装程序。错误：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
 <translation id="2620436844016719705">系统</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
-<translation id="2649768380733403658">Chrome 会定期进行检查，以确保您的浏览器使用最安全的设置。如有任何事项需要您审核，我们会通知您。</translation>
+<translation id="2649768380733403658">Chrome 会定期检查，确保您的浏览器采用了最优安全设置。如需审核任何事项，我们会通知您。</translation>
 <translation id="2652691236519827073">在 Chrome 新标签页中打开链接(&amp;T)</translation>
 <translation id="2665296953892887393">将崩溃报告和<ph name="UMA_LINK" />发送给Google，帮助我们完善Google Chrome。</translation>
 <translation id="2668094785979141847">点击即可退出 Google 智能镜头</translation>
@@ -676,6 +676,7 @@
 <translation id="8601359445272098721">新功能！您可以选择“翻译屏幕”按钮，翻译屏幕上的文字和图片</translation>
 <translation id="8614913330719544658">Google Chrome 未响应。是否立即重新启动？</translation>
 <translation id="861702415419836452">Chrome 需要获得相应权限，才能使用您的摄像头为您的周边环境创建 3D 地图</translation>
+<translation id="8624541899164515475">“设置”页面，在新标签页中打开。</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 将在 1 分钟后重新启动}other{Chrome 将在 # 分钟后重新启动}}</translation>
 <translation id="8637932705841171563">若要共享窗口，请在“系统设置”中为 Chrome 启用屏幕录制功能</translation>
 <translation id="8641606876632989680">当您使用已泄露的密码登录时，Chrome 会通知您</translation>

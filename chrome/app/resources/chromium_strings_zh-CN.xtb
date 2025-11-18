@@ -635,7 +635,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8471947159125090285">如要使用 Chromium 数据并将其保存在您的 Google 账号中，请验证是您本人在操作</translation>
 <translation id="8482493977473846331">显示登录 Chromium 的提示</translation>
 <translation id="8493179195440786826">Chromium版本太旧</translation>
-<translation id="850264194101621529">感谢您选择将 Chromium 设为默认浏览器！</translation>
+<translation id="850264194101621529">感谢您选择 Chromium 作为默认浏览器！</translation>
 <translation id="8522801943730206384">您需要先保存密码，然后才能使用 Chromium 的密码检查功能</translation>
 <translation id="8555465886620020932">发生了服务错误：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8556420416730706394">您可以固定图片搜索功能以方便访问，点击侧边栏顶部的“固定”按钮即可</translation>
@@ -645,6 +645,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8586442755830160949">版权所有<ph name="YEAR" /> The Chromium Authors。保留所有权利。</translation>
 <translation id="8601359445272098721">新功能！您可以选择“翻译屏幕”按钮，翻译屏幕上的文字和图片</translation>
 <translation id="8619360774459241877">正在启动 Chromium…</translation>
+<translation id="8624541899164515475">“设置”页面，在新标签页中打开。</translation>
 <translation id="8648201657708811153">您无法将 Google Chrome for Testing 设为默认浏览器。</translation>
 <translation id="8677922833187616101">始终显示 Google AI 模式快捷方式</translation>
 <translation id="8697124171261953979">它还能够控制您启动Chromium后或通过多功能框进行搜索时系统显示的页面。</translation>

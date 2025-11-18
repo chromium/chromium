@@ -521,6 +521,7 @@ Sebagian fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda at
 <translation id="705851970750939768">Perbarui Chromium</translation>
 <translation id="7067091210845072982">Jika gambar tidak memiliki deskripsi yang berguna, Chromium akan mencoba memberikan deskripsi untuk Anda. Untuk membuat deskripsi, gambar akan dikirim ke Google.</translation>
 <translation id="7141270731789036260">Sesuaikan Chrome for Testing</translation>
+<translation id="7147227333672430807">Anda dapat menggunakan Chromium kapan saja dengan mengklik link di pesan, dokumen, dan aplikasi lainnya</translation>
 <translation id="7163519456498498587">Hapus <ph name="EXTENSION_NAME" /> dari Chromium</translation>
 <translation id="7173822816570314652">Organisasi Anda akan menghapus data Chromium jika tidak digunakan selama <ph name="TIMEOUT_DURATION" />. Data ini dapat mencakup histori, isi otomatis, dan download.</translation>
 <translation id="718435575166326686">Chromium memerlukan izin kamera untuk situs ini</translation>
@@ -635,6 +636,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8471947159125090285">Untuk menggunakan dan menyimpan data Chromium di Akun Google Anda, verifikasi diri Anda</translation>
 <translation id="8482493977473846331">Menampilkan dialog untuk login ke Chromium</translation>
 <translation id="8493179195440786826">Chromium Terlalu Lawas</translation>
+<translation id="850264194101621529">Terima kasih telah memilih Chromium sebagai browser default Anda.</translation>
 <translation id="8522801943730206384">Chromium dapat memeriksa sandi jika Anda menyimpannya</translation>
 <translation id="8555465886620020932">Error layanan: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Anda dapat menyematkan Penelusuran Gambar agar mudah diakses; klik tombol Sematkan di bagian atas panel samping</translation>
@@ -644,6 +646,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Semua hak dilindungi undang-undang.</translation>
 <translation id="8601359445272098721">Baru! Anda dapat menerjemahkan teks dan gambar di layar dengan memilih tombol "terjemahkan layar"</translation>
 <translation id="8619360774459241877">Meluncurkan Chromium...</translation>
+<translation id="8624541899164515475">Setelan, terbuka di tab baru.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing tidak dapat dijadikan sebagai browser default.</translation>
 <translation id="8677922833187616101">Selalu Tampilkan Pintasan Mode AI Google</translation>
 <translation id="8697124171261953979">Juga mengontrol halaman apa yang ditampilkan saat Anda memulai Chromium atau menelusuri dari Omnibox.</translation>

@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Skirtukų grupių sąrašas uždarytas</translation>
 <translation id="3194464645767632461">įvertinimas</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Pridėti <ph name="TABS_COUNT_ONE" /> skirtuką prie grupės}one{Pridėti <ph name="TABS_COUNT_MANY" /> skirtuką prie grupės}few{Pridėti <ph name="TABS_COUNT_MANY" /> skirtukus prie grupės}many{Pridėti <ph name="TABS_COUNT_MANY" /> skirtuko prie grupės}other{Pridėti <ph name="TABS_COUNT_MANY" /> skirtukų prie grupės}}</translation>
+<translation id="3293080634164207409">Pridėkite skirtukų</translation>
 <translation id="3328308545011660196">Pasiūlymas: skirtukai (iš viso: <ph name="NUMBER_OF_TABS" />) atrodo susiję. Grupuoti juos?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Po vienos neaktyvumo dienos}one{Po <ph name="DAY_COUNT_MANY" /> neaktyvumo dienos}few{Po <ph name="DAY_COUNT_MANY" /> neaktyvumo dienų}many{Po <ph name="DAY_COUNT_MANY" /> neaktyvumo dienos}other{Po <ph name="DAY_COUNT_MANY" /> neaktyvumo dienų}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> naujas skirtukas}one{<ph name="MANY_ADDED" /> naujas skirtukas}few{<ph name="MANY_ADDED" /> nauji skirtukai}many{<ph name="MANY_ADDED" /> naujo skirtuko}other{<ph name="MANY_ADDED" /> naujų skirtukų}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">Veikla</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> atsiliepimas}one{Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> atsiliepimas}few{Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> atsiliepimai}many{Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> atsiliepimo}other{Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> atsiliepimų}}</translation>
 <translation id="7885132941432959125">Perkelti skirtuką į dešinę</translation>
+<translation id="7887334752153342268">Dubliuoti</translation>
 <translation id="7939917283308035850">Nepasirinkta: <ph name="COLOR_NAME" /></translation>
 <translation id="7961015016161918242">Niekada</translation>
 <translation id="7966321538264951561">Atsisakyti pasiūlymo.</translation>

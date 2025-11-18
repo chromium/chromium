@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
+<translation id="1004825134262590729">{count,plural, =1{{count} clave de acceso}other{{count} claves de acceso}}</translation>
 <translation id="1005023885865154304">Abre a configuración de AutoFill Password (Autocompletar contrasinal)</translation>
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Podes volver aquí para abrir de novo as pestanas que pechaches recentemente</translation>
@@ -41,6 +42,7 @@
 <translation id="1122068467107743258">Traballo</translation>
 <translation id="1126696498560056882">Xestionar contas deste dispositivo</translation>
 <translation id="1126809382673880764">Non te protexe contra sitios web, descargas e extensións perigosos. Continuarás dispoñendo da protección da función Navegación segura, sempre que estea dispoñible, noutros servizos de Google (como Gmail e a Busca).</translation>
+<translation id="1133418583142946603">Engadir pestana actual</translation>
 <translation id="1136104150802877429">Mostrar recensións de produtos</translation>
 <translation id="1142371195993008685">Desactivar notificacións para <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Tes a sesión iniciada como <ph name="USER" /></translation>
@@ -77,6 +79,7 @@
 <translation id="1285320974508926690">Non traducir nunca este sitio</translation>
 <translation id="1287229685519872919">Datos de Google Workspace</translation>
 <translation id="1291506870746876680">Os permisos de <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> volverán desactivarse cando saias deste sitio.</translation>
+<translation id="1293556467332435079">Ficheiros</translation>
 <translation id="129553762522093515">Pechado recentemente</translation>
 <translation id="1296581780163690620">Queres descargar o ficheiro? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Para asegurarte de poder usar sempre os contrasinais na túa Conta de Google, verifica a túa identidade.</translation>
@@ -1043,6 +1046,7 @@
 <translation id="5055015094595227120">Localización precisa</translation>
 <translation id="5055551113846164633">Con esta acción, elimínanse os enderezos gardados neste dispositivo. Tamén se eliminan os gardados na túa Conta de Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="5056446788882570708">Atopáronse problemas <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">Crear imaxe</translation>
 <translation id="5059136629401106827">Aceptar</translation>
 <translation id="5062321486222145940">Instalar Google Drive</translation>
 <translation id="5067540696062462445">Descargas</translation>
@@ -1504,6 +1508,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6659660757330712663">Podes pasar o dedo pola barra de ferramentas para cambiar de pestana.</translation>
 <translation id="6663529247339810546">Non se puido gardar a imaxe</translation>
 <translation id="6668619169535738264">Editar marcador</translation>
+<translation id="6670729408462528018">Galería</translation>
 <translation id="6671294218820966278">Marcar como elemento lido</translation>
 <translation id="6672697278890207089">Introduce a frase de acceso</translation>
 <translation id="6674917187596384849">Podes cambiar de conta facilmente</translation>
@@ -1660,6 +1665,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Xa tes contrasinais para estas contas no teu xestor de contrasinais de Google. Se decides importar un dos contrasinais que se mostran máis abaixo, substituirá o actual.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> por cento descargado</translation>
+<translation id="7345061034321640811">Non se permite a importación</translation>
 <translation id="7352651011704765696">Produciuse un erro</translation>
 <translation id="7363349185727752629">Unha guía das túas opcións de privacidade</translation>
 <translation id="7364796246159120393">Seleccionar ficheiro</translation>
@@ -2201,6 +2207,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="952704832371081537">Cancelar</translation>
 <translation id="95332591904104970">Aplicacións conectadas</translation>
 <translation id="954667170699278022">Lista de lectura</translation>
+<translation id="956066588046842680">A política da túa organización non permite importar estes datos.</translation>
 <translation id="956218893102219091">Usa a túa localización precisa en lugar dunha localización estimada baseada no teu enderezo IP para obter os resultados máis precisos de Gemini. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Eliminar datos navegación</translation>
 <translation id="963102227019621224">Actividade web e das aplicacións</translation>
@@ -2212,5 +2219,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="984275831282074731">Métodos de pago</translation>
 <translation id="985379595344853742">Pechar todas as pestanas do modo de incógnito</translation>
 <translation id="988141524645182168">Outros dispositivos</translation>
+<translation id="995174784802614337">{count,plural, =1{Importouse {count} clave de acceso}other{Importáronse {count} claves de acceso}}</translation>
 <translation id="999768147936949692">Polo de agora, só podes compartir contrasinais cos membros da familia. <ph name="BEGIN_LINK" />Invita os membros da familia<ph name="END_LINK" /> a unirse ao teu grupo e aproveita os teus produtos e subscricións de Google.</translation>
 </translationbundle>

@@ -1052,6 +1052,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1699807488537653303">Correggi l'errore relativo alla password</translation>
 <translation id="1700201317341192482">Rimuovi la carta virtuale</translation>
 <translation id="1700517974991662022">Visitato</translation>
+<translation id="1701367827913789499">Leggi comodamente con distrazioni minime utilizzando il pulsante Modalità Lettura nella barra degli strumenti</translation>
 <translation id="1703331064825191675">Non preoccuparti delle tue password</translation>
 <translation id="1703666494654169921">Non consentire ai siti di usare dati o dispositivi per realtà virtuale</translation>
 <translation id="1704097193565924901">Scrivi in maiuscolo</translation>
@@ -2958,6 +2959,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3008272652534848354">Reimposta le autorizzazioni</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> richiede la connessione a una rete Wi-Fi per scaricare un aggiornamento oggi stesso. In alternativa, puoi eseguire il download tramite una connessione a consumo (potrebbero essere applicati costi).}other{<ph name="MANAGER" /> richiede la connessione a una rete Wi-Fi per scaricare un aggiornamento prima della scadenza. In alternativa, puoi eseguire il download tramite una connessione a consumo (potrebbero essere applicati costi).}}</translation>
 <translation id="3008923556848076408">Gemini continuerà a lavorare sulla tua attività</translation>
+<translation id="3008926075262837186">Leggi comodamente con distrazioni minime</translation>
 <translation id="3009178788565917040">Uscita</translation>
 <translation id="3009352964623081324">Tasto per la ricerca + O, poi S. Usa questa scorciatoia per installare, gestire e personalizzare voci.</translation>
 <translation id="3009779501245596802">Indexed databases</translation>
@@ -4416,7 +4418,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Scopri di più sulla precisione della posizione<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Importati</translation>
 <translation id="3992008114154328194">È in corso il download del file <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Esegui il backup dei dati</translation>
 <translation id="3994075804072562819">Concedi a <ph name="SPECIFIC_NAME" /> il controllo sui dispositivi USB.</translation>
 <translation id="3994318741694670028">Purtroppo il tuo computer è configurato con un ID hardware non valido. Questo impedisce l'aggiornamento di ChromeOS Flex con le ultime correzioni relative alla sicurezza e il tuo computer <ph name="BEGIN_BOLD" />potrebbe essere vulnerabile ad attacchi dannosi<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Sblocca il telefono e avvicinalo al dispositivo <ph name="DEVICE_TYPE" /> per sbloccarlo.</translation>
@@ -5659,7 +5660,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4878718769565915065">Impossibile aggiungere un'impronta a questo token di sicurezza</translation>
 <translation id="4879491255372875719">Automatica (impostazione predefinita)</translation>
 <translation id="4880315242806573837">Gli aggiornamenti della sicurezza stanno per terminare. Passa a un nuovo Chromebook.</translation>
-<translation id="4880827082731008257">Cerca nella cronologia</translation>
+<translation id="4880827082731008257">Cronologia delle ricerche</translation>
 <translation id="4881685975363383806">Non visualizzare più il promemoria</translation>
 <translation id="4881695831933465202">Apri</translation>
 <translation id="4882312758060467256">Ha accesso a questo sito</translation>
@@ -7712,7 +7713,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ha disattivato il debug ADB. Tra 24 ore il tuo dispositivo <ph name="DEVICE_TYPE" /> verrà reimpostato. Effettua il backup di tutti i file che vuoi mantenere.</translation>
 <translation id="6336194758029258346">Lingua dell'app</translation>
 <translation id="6337543438445391085">Alcune informazioni personali potrebbero comunque essere incluse nei dati. Assicurati di rivedere i file esportati.</translation>
-<translation id="6338554362382763574">Puoi facilmente fare domande a Gemini sulle schede che stai condividendo mentre navighi</translation>
 <translation id="6338968693068997776">Aggiungi dispositivo USB</translation>
 <translation id="6339668969738228384">Crea un nuovo profilo per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocollo di stampa Internet (IPPS)</translation>
@@ -8332,7 +8332,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
     <ph name="BEGIN_PARAGRAPH2" />Puoi disattivare questo servizio nelle Impostazioni.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Backup di Linux annullato</translation>
 <translation id="6782067259631821405">PIN non valido</translation>
-<translation id="6782219876520622071">Le conversazioni sulle schede condivise potrebbero essere visualizzate da revisori per migliorare Gemini</translation>
 <translation id="6783036716881942511">Rimuovere questo dispositivo?</translation>
 <translation id="6783667414610055871">Impostazioni di Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Il profilo è supportato</translation>
@@ -9530,7 +9529,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7620616707541471029">Scegli un account per continuare</translation>
 <translation id="7621382409404463535">Il sistema non è riuscito a salvare la configurazione del dispositivo.</translation>
 <translation id="7621595347123595643">Non potrai recuperare i dati locali se non ricordi la password o il PIN.</translation>
-<translation id="7621863462266622331">Quando le schede vengono condivise, i contenuti, i file multimediali e gli URL delle pagine vengono inviati a Google</translation>
 <translation id="7622114377921274169">In carica.</translation>
 <translation id="7622768823216805500">In genere, i siti installano gestori dei pagamenti per funzionalità di acquisto come il pagamento semplificato</translation>
 <translation id="7622966771025050155">Passa alla scheda acquisita</translation>
@@ -10876,6 +10874,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8517759303731677493">Modifica…</translation>
 <translation id="8518809011298357036">Chiudi visualizzazione dall'alto</translation>
 <translation id="8518942514525208851">Nascondi linguaggio volgare</translation>
+<translation id="8520238089740349550">Operazione non riuscita - Download locale bloccato</translation>
 <translation id="8523493869875972733">Mantieni le modifiche</translation>
 <translation id="8523849605371521713">Aggiunta in base alle norme</translation>
 <translation id="8524594273111932386">Ricerca + Freccia giù</translation>

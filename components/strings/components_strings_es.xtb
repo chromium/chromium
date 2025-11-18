@@ -425,9 +425,11 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1682696192498422849">Borde corto primero</translation>
 <translation id="168693727862418163">No se ha podido validar el valor de esta política con su esquema y se ignorará.</translation>
 <translation id="168841957122794586">El certificado del servidor contiene una clave criptográfica no segura.</translation>
+<translation id="1688718429648938412">Guardar tarjeta de fidelización en Wallet</translation>
 <translation id="1689333818294560261">Sobrenombre</translation>
 <translation id="1692622044604477956">Carteleras y horarios de cines</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cómo puedes gestionar tus datos:<ph name="END_BOLD" /> Chrome elimina automáticamente los temas que tienen una antigüedad superior a 4 semanas. A medida que sigas navegando, los temas pueden volver a aparecer en la lista. Además, puedes bloquear los temas que no quieras que Chrome comparta con los sitios, así como desactivar los temas de anuncios en cualquier momento desde la configuración de Chrome.</translation>
+<translation id="1697808683313379647">Google usa información de la página de tramitación de la compra y otros datos relevantes para ofrecer estas opciones.</translation>
 <translation id="1699651774646344471">Ya puedes usar direcciones de tu cuenta de Google</translation>
 <translation id="1700542542921501212">Puedes usar <ph name="SEARCH_ENGINE_NAME" /> para buscar en la Web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1722,7 +1724,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3792826587784915501">Películas de culto e independientes</translation>
 <translation id="3793574014653384240">La cantidad y las causas de los bloqueos que han ocurrido recientemente</translation>
 <translation id="3795624560191557077">Hace poco has cambiado una contraseña que se ha encontrado en una brecha de seguridad de datos públicos. Si tienes problemas, el Gestor de contraseñas de Google puede ayudarte a iniciar sesión.</translation>
-<translation id="3796181268473765083">Pagar en 4 cuotas mensuales o sin intereses (sujeto a requisitos)</translation>
 <translation id="3799805948399000906">Fuente solicitada</translation>
 <translation id="3801297763951514916">Lo visitas a menudo</translation>
 <translation id="380329542618494757">Nombre</translation>
@@ -3661,6 +3662,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6965978654500191972">Dispositivo</translation>
 <translation id="696703987787944103">Perceptual</translation>
 <translation id="6967851206780867018">1 archivo se ha bloqueado debido al contenido</translation>
+<translation id="6968217325369275594">Guarda tu información para recibir actualizaciones de cualquiera de tus dispositivos. La información se guarda en <ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" /> para <ph name="ACCOUNT" />.</translation>
 <translation id="6970885655016700774">Tela (archivo)</translation>
 <translation id="6971439137020188025">Crea una nueva Presentación de Google rápidamente</translation>
 <translation id="6972629891077993081">Dispositivos HID</translation>
@@ -3703,6 +3705,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7031646650991750659">Qué aplicaciones de Google Play tienes instaladas</translation>
 <translation id="7035705295266423040">Tu banco quiere verificar tu identidad</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />: pulsa Tabulador y, después, Intro para gestionar la configuración de privacidad de tu cuenta de Google.</translation>
+<translation id="7042465939346919737">Google usa información de la página de tramitación de la compra y otros datos relevantes para ofrecer estas opciones. Para ocultar las opciones de pago aplazado, ve a <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="7042616127917168121">Acotar los resultados</translation>
 <translation id="7043552168914147882">Stock de fichas</translation>
 <translation id="7044081119134178347">Cámara permitida esta vez</translation>

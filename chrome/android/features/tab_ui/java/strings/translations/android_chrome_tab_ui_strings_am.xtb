@@ -73,6 +73,7 @@
 <translation id="311432875115153175">የትር ቡድን ዝርዝር ተዘግቷል</translation>
 <translation id="3194464645767632461">የተሰጡ ደረጃዎች</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ትርን ወደ ቡድን ያክሉ}one{<ph name="TABS_COUNT_MANY" /> ትርን ወደ ቡድን ያክሉ}other{<ph name="TABS_COUNT_MANY" /> ትሮችን ወደ ቡድን ያክሉ}}</translation>
+<translation id="3293080634164207409">ትሮችን ያክሉ</translation>
 <translation id="3328308545011660196">የአስተያየት ጥቆማ፦ <ph name="NUMBER_OF_TABS" /> ትሮች የሚዛመዱ ይመስላሉ። ይቦደኑ?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{ከ1 የቦዘነ ቀን በኋላ}one{ከ<ph name="DAY_COUNT_MANY" /> የቦዘነ ቀን በኋላ}other{ከ<ph name="DAY_COUNT_MANY" /> የቦዘኑ ቀናት በኋላ}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> አዲስ ትር}one{<ph name="MANY_ADDED" /> አዲስ ትር}other{<ph name="MANY_ADDED" /> አዲስ ትሮች}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">እንቅስቃሴ</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ፣ <ph name="REVIEWS_COUNT_ONE" /> ግምገማ}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ፣<ph name="REVIEWS_COUNT_MANY" /> ግምገማዎች}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ፣<ph name="REVIEWS_COUNT_MANY" /> ግምገማዎች}}</translation>
 <translation id="7885132941432959125">ቅርን ወደ ቀኝ አንቀሳቅስ</translation>
+<translation id="7887334752153342268">አባዛ</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> አልተመረጠም</translation>
 <translation id="7961015016161918242">በፍጹም</translation>
 <translation id="7966321538264951561">ጥቆማ ሐሳቦችን ያሰናብቱ።</translation>

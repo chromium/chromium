@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
+<translation id="1004825134262590729">{count,plural, =1{พาสคีย์ {count} รายการ}other{พาสคีย์ {count} รายการ}}</translation>
 <translation id="1005023885865154304">เปิดการตั้งค่าการป้อนรหัสผ่านอัตโนมัติ</translation>
 <translation id="1005230401424685968">ปปปป</translation>
 <translation id="1013952917065545813">คุณกลับมาที่นี่เพื่อเปิดแท็บที่เพิ่งปิดไปอีกครั้งได้</translation>
@@ -38,9 +39,10 @@
 <translation id="1112015203684611006">การพิมพ์ล้มเหลว</translation>
 <translation id="1118569444314402022">ยินดีต้อนรับกลับมา <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">รูปภาพ</translation>
-<translation id="1122068467107743258">งาน</translation>
+<translation id="1122068467107743258">ที่ทำงาน</translation>
 <translation id="1126696498560056882">จัดการบัญชีในอุปกรณ์เครื่องนี้</translation>
 <translation id="1126809382673880764">ไม่ปกป้องคุณจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย คุณจะยังคงได้รับการปกป้องจาก Google Safe Browsing ในบริการอื่นๆ ของ Google ที่มีฟีเจอร์นี้ เช่น Gmail และ Search</translation>
+<translation id="1133418583142946603">เพิ่มแท็บปัจจุบัน</translation>
 <translation id="1136104150802877429">แสดงรีวิวสินค้า</translation>
 <translation id="1142371195993008685">ปิดการแจ้งเตือนสำหรับ<ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">ลงชื่อเข้าใช้ด้วย <ph name="USER" /></translation>
@@ -77,6 +79,7 @@
 <translation id="1285320974508926690">ไม่ต้องแปลเว็บไซต์นี้</translation>
 <translation id="1287229685519872919">ข้อมูล Google Workspace</translation>
 <translation id="1291506870746876680">สิทธิ์ของ <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> จะรีเซ็ตเป็นปิดเมื่อคุณออกจากเว็บไซต์นี้</translation>
+<translation id="1293556467332435079">ไฟล์</translation>
 <translation id="129553762522093515">เพิ่งปิด</translation>
 <translation id="1296581780163690620">ดาวน์โหลดไฟล์ใช่ไหม (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">โปรดยืนยันว่าเป็นคุณเพื่อให้ใช้รหัสผ่านในบัญชี Google ได้เสมอ</translation>
@@ -1043,6 +1046,7 @@
 <translation id="5055015094595227120">ตำแหน่งที่แน่นอน</translation>
 <translation id="5055551113846164633">การดำเนินการนี้จะลบที่อยู่ที่บันทึกไว้ในอุปกรณ์นี้ นอกจากนี้ยังจะลบที่อยู่ที่บันทึกไว้ในบัญชี Google <ph name="USER_EMAIL" /> ด้วย</translation>
 <translation id="5056446788882570708">พบปัญหาเมื่อ <ph name="TIME" /></translation>
+<translation id="5056587122125565772">สร้างรูปภาพ</translation>
 <translation id="5059136629401106827">ตกลง</translation>
 <translation id="5062321486222145940">ติดตั้ง Google ไดรฟ์</translation>
 <translation id="5067540696062462445">รายการดาวน์โหลด</translation>
@@ -1504,6 +1508,7 @@
 <translation id="6659660757330712663">คุณสามารถปัดแถบเครื่องมือเพื่อสลับระหว่างแท็บได้</translation>
 <translation id="6663529247339810546">บันทึกรูปภาพไม่ได้</translation>
 <translation id="6668619169535738264">แก้ไขบุ๊กมาร์ก</translation>
+<translation id="6670729408462528018">แกลเลอรี</translation>
 <translation id="6671294218820966278">ทำเครื่องหมายว่าอ่านแล้ว</translation>
 <translation id="6672697278890207089">ป้อนรหัสผ่านของคุณ</translation>
 <translation id="6674917187596384849">คุณสลับระหว่างบัญชีต่างๆ ได้อย่างง่ายดาย</translation>
@@ -1660,6 +1665,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">คุณมีรหัสผ่านสำหรับบัญชีเหล่านี้อยู่แล้วในเครื่องมือจัดการรหัสผ่านบน Google หากคุณเลือกนำเข้ารหัสผ่านด้านล่าง รหัสผ่านดังกล่าวจะแทนที่รหัสผ่านที่มีอยู่</translation>
 <translation id="7336264872878993241">ดาวน์โหลดแล้ว <ph name="PERCENT" /> เปอร์เซ็นต์</translation>
+<translation id="7345061034321640811">ไม่อนุญาตให้นำเข้า</translation>
 <translation id="7352651011704765696">มีข้อผิดพลาดเกิดขึ้น</translation>
 <translation id="7363349185727752629">คู่มือแนะนำตัวเลือกด้านความเป็นส่วนตัวของคุณ</translation>
 <translation id="7364796246159120393">เลือกไฟล์</translation>
@@ -2190,7 +2196,7 @@
 <translation id="926455622548529175">เปลี่ยนและลบ</translation>
 <translation id="929748059769569925">ข้อความที่ไฮไลต์</translation>
 <translation id="932305336591073205">{count,plural, =1{ปิดแท็บ}other{ปิดแท็บ}}</translation>
-<translation id="932327136139879170">หน้าแรก</translation>
+<translation id="932327136139879170">บ้าน</translation>
 <translation id="939472100615258482">เว็บไซต์ปัจจุบัน</translation>
 <translation id="939598580284253335">ป้อนรหัสผ่าน</translation>
 <translation id="939736085109172342">โฟลเดอร์ใหม่</translation>
@@ -2201,6 +2207,7 @@
 <translation id="952704832371081537">ยกเลิก</translation>
 <translation id="95332591904104970">แอปที่เชื่อมต่อ</translation>
 <translation id="954667170699278022">เรื่องรออ่าน</translation>
+<translation id="956066588046842680">นโยบายขององค์กรไม่อนุญาตให้นำเข้าข้อมูลนี้</translation>
 <translation id="956218893102219091">ใช้ตำแหน่งที่แน่นอนเพื่อให้ Gemini แสดงผลลัพธ์ที่แม่นยำที่สุด แทนที่จะใช้ตำแหน่งโดยประมาณตามที่อยู่ IP ของคุณ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">ลบข้อมูลการท่องเว็บ</translation>
 <translation id="963102227019621224">กิจกรรมบนเว็บและแอป</translation>
@@ -2212,5 +2219,6 @@
 <translation id="984275831282074731">วิธีการชำระเงิน</translation>
 <translation id="985379595344853742">ปิดแท็บที่ไม่ระบุตัวตนทั้งหมด</translation>
 <translation id="988141524645182168">อุปกรณ์อื่นๆ</translation>
+<translation id="995174784802614337">{count,plural, =1{นำเข้าพาสคีย์ {count} รายการแล้ว}other{นำเข้าพาสคีย์ {count} รายการแล้ว}}</translation>
 <translation id="999768147936949692">ตอนนี้คุณจะแชร์รหัสผ่านกับสมาชิกในครอบครัวได้เท่านั้น <ph name="BEGIN_LINK" />เชิญสมาชิกในครอบครัว<ph name="END_LINK" />เข้าร่วมกลุ่ม และรับประโยชน์เพิ่มเติมจากผลิตภัณฑ์และการสมัครใช้บริการต่างๆ ของ Google</translation>
 </translationbundle>

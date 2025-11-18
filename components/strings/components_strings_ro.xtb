@@ -428,6 +428,7 @@
 <translation id="1689333818294560261">Pseudonim</translation>
 <translation id="1692622044604477956">Filme și programe de cinema</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cum îți poți gestiona datele:<ph name="END_BOLD" /> Chrome șterge automat subiectele mai vechi de patru săptămâni. Pe măsură ce navighezi, un subiect poate să reapară în listă. În plus, poți să blochezi subiectele pe care nu vrei să le trimită Chrome la site-uri și să dezactivezi oricând subiectele anunțurilor din setările Chrome.</translation>
+<translation id="1697808683313379647">Pentru a oferi aceste opțiuni, Google folosește informații din pagina de finalizare a achiziției și alte date relevante.</translation>
 <translation id="1699651774646344471">Acum poți folosi adrese din Contul Google</translation>
 <translation id="1700542542921501212">Poți folosi <ph name="SEARCH_ENGINE_NAME" /> pentru a căuta pe web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1722,7 +1723,6 @@
 <translation id="3792826587784915501">Filme cult și indie</translation>
 <translation id="3793574014653384240">Numărul și cauzele blocărilor apărute recent</translation>
 <translation id="3795624560191557077">Ai schimbat recent o parolă găsită într-o încălcare a securității datelor publice. În caz de probleme, Managerul de parole Google te poate ajuta să te conectezi.</translation>
-<translation id="3796181268473765083">Plătește în patru rate lunare sau fără dobândă (în funcție de eligibilitate)</translation>
 <translation id="3799805948399000906">Font solicitat</translation>
 <translation id="3801297763951514916">Accesezi des</translation>
 <translation id="380329542618494757">Nume</translation>
@@ -2948,6 +2948,7 @@
 <translation id="5813753398265398978">Fizică</translation>
 <translation id="5817918615728894473">Asociază</translation>
 <translation id="5820625124144807242">După ce examinezi comanda, trebuie să te conectezi la cont sau să creezi un cont <ph name="BNPL_ISSUER_NAME" />. Contul va fi conectat automat la Google Pay.</translation>
+<translation id="5820751560028604030">Descărcarea locală a fost blocată</translation>
 <translation id="5826507051599432481">Nume comun (CN)</translation>
 <translation id="5830698870816298009">folosirea și mișcarea camerei</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3702,6 +3703,7 @@
 <translation id="7031646650991750659">aplicațiile Google Play instalate.</translation>
 <translation id="7035705295266423040">Banca dorește să-ți confirme identitatea</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona setările de confidențialitate ale Contului Google</translation>
+<translation id="7042465939346919737">Pentru a oferi aceste opțiuni, Google folosește informații din pagina de finalizare a achiziției și alte date relevante. Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Rafinează rezultatele</translation>
 <translation id="7043552168914147882">Separator din carton</translation>
 <translation id="7044081119134178347">Camera foto este permisă de data aceasta</translation>

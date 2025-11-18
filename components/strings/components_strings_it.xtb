@@ -425,9 +425,11 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1682696192498422849">Prima il lato corto</translation>
 <translation id="168693727862418163">Impossibile convalidare il valore della policy in base al relativo schema. Il valore verrà ignorato.</translation>
 <translation id="168841957122794586">Il certificato del server contiene una chiave crittografica debole.</translation>
+<translation id="1688718429648938412">Salva la carta fedeltà in Wallet</translation>
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="1692622044604477956">Film in programmazione e orari dei cinema</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Come puoi gestire i tuoi dati:<ph name="END_BOLD" /> Chrome elimina automaticamente gli argomenti più vecchi di 4 settimane. Mentre continui a navigare, un argomento potrebbe riapparire nell'elenco. Puoi anche bloccare gli argomenti che non vuoi che Chrome condivida con i siti e disattivare gli argomenti degli annunci in qualsiasi momento nelle impostazioni di Chrome.</translation>
+<translation id="1697808683313379647">Per offrire queste opzioni, Google utilizza le informazioni della pagina di pagamento e altri dati pertinenti.</translation>
 <translation id="1699651774646344471">Ora puoi usare gli indirizzi presenti nel tuo Account Google</translation>
 <translation id="1700542542921501212">Puoi utilizzare <ph name="SEARCH_ENGINE_NAME" /> per eseguire ricerche sul web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1719,7 +1721,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3792826587784915501">Film cult e indie</translation>
 <translation id="3793574014653384240">Numero e cause degli arresti anomali che si sono verificati di recente</translation>
 <translation id="3795624560191557077">Di recente hai modificato una password compromessa nell'ambito di una violazione dei dati pubblici. In caso di problemi, Gestore delle password di Google può aiutarti ad accedere.</translation>
-<translation id="3796181268473765083">Paga in 4 rate senza interessi o in rate mensili (soggette a idoneità)</translation>
 <translation id="3799805948399000906">Nome carattere richiesto</translation>
 <translation id="3801297763951514916">Visiti spesso questa pagina</translation>
 <translation id="380329542618494757">Nome</translation>
@@ -2383,7 +2384,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4877521229462766300">Vuoi consentire i contenuti incorporati?</translation>
 <translation id="4879491255372875719">Automatica (impostazione predefinita)</translation>
 <translation id="4880328155169081699">Aggiornare la carta di identità?</translation>
-<translation id="4880827082731008257">Cerca nella cronologia</translation>
+<translation id="4880827082731008257">Cronologia delle ricerche</translation>
 <translation id="4881695831933465202">Apri</translation>
 <translation id="4881808915112408168">24 x 31,5 in</translation>
 <translation id="4882314601499260499">Nessuna policy relativa agli utenti applicata. Per aggiungere policy relative agli utenti, la tua organizzazione deve <ph name="LINK_BEGIN" />verificare il tuo dominio<ph name="LINK_END" />.</translation>
@@ -2945,6 +2946,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5813753398265398978">Fisica</translation>
 <translation id="5817918615728894473">Accoppia</translation>
 <translation id="5820625124144807242">Dopo aver esaminato l'ordine, devi accedere o creare un account con <ph name="BNPL_ISSUER_NAME" />. Questo account verrà collegato automaticamente a Google Pay.</translation>
+<translation id="5820751560028604030">Download locale bloccato</translation>
 <translation id="5826507051599432481">Nome comune (CN)</translation>
 <translation id="5830698870816298009">uso e movimento della videocamera</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3656,6 +3658,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6965978654500191972">Dispositivo</translation>
 <translation id="696703987787944103">Percettivo</translation>
 <translation id="6967851206780867018">È stato bloccato 1 file a causa dei contenuti</translation>
+<translation id="6968217325369275594">Salva le tue informazioni per ricevere aggiornamenti da tutti i tuoi dispositivi. Le tue informazioni sono salvate su <ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" /> per <ph name="ACCOUNT" />.</translation>
 <translation id="6970885655016700774">Tessuto (archivio)</translation>
 <translation id="6971439137020188025">Crea rapidamente una nuova presentazione Google in Presentazioni</translation>
 <translation id="6972629891077993081">Dispositivi HID</translation>
@@ -3698,6 +3701,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7031646650991750659">Le app Google Play che hai installato</translation>
 <translation id="7035705295266423040">La tua banca vuole verificare la tua identità</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per gestire le impostazioni sulla privacy del tuo Account Google.</translation>
+<translation id="7042465939346919737">Per offrire queste opzioni, Google utilizza le informazioni della pagina di pagamento e altri dati pertinenti. Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Perfeziona risultati</translation>
 <translation id="7043552168914147882">Carta con linguetta</translation>
 <translation id="7044081119134178347">Fotocamera consentita questa volta</translation>

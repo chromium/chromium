@@ -194,6 +194,7 @@
 <translation id="7853202427316060426">செயல்பாடு</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ ரேட்டிங்: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> மதிப்புரை}other{ரேட்டிங்: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> மதிப்புரைகள்}}</translation>
 <translation id="7885132941432959125">தாவலை வலதுபுறம் நகர்த்து</translation>
+<translation id="7887334752153342268">பிரதி எடு</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> தேர்ந்தெடுக்கப்படவில்லை</translation>
 <translation id="7961015016161918242">எப்போதும் இல்லை</translation>
 <translation id="7966321538264951561">பரிந்துரைகளை நிராகரிக்கும்.</translation>

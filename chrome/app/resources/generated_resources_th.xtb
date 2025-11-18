@@ -185,7 +185,7 @@
 <translation id="1118738876271697201">ระบบระบุรุ่นหรือหมายเลขซีเรียลของอุปกรณ์ไม่สำเร็จ</translation>
 <translation id="111897705806685148">ใช้พาสคีย์จากอุปกรณ์อื่น</translation>
 <translation id="1119447706177454957">ข้อผิดพลาดภายใน</translation>
-<translation id="1122068467107743258">งาน</translation>
+<translation id="1122068467107743258">ที่ทำงาน</translation>
 <translation id="1122198203221319518">&amp;เครื่องมือ</translation>
 <translation id="1122242684574577509">การตรวจสอบสิทธิ์ล้มเหลว คลิกเพื่อไปที่หน้าการเข้าสู่ระบบสำหรับเครือข่าย Wi-Fi ที่คุณกำลังใช้อยู่ (<ph name="NETWORK_ID" />)</translation>
 <translation id="1122587596907914265">จัดรูปแบบวอลเปเปอร์ที่ไม่เหมือนใคร</translation>
@@ -1052,6 +1052,7 @@
 <translation id="1699807488537653303">แก้ไขข้อผิดพลาดเกี่ยวกับรหัสผ่าน</translation>
 <translation id="1700201317341192482">นำบัตรเสมือนออก</translation>
 <translation id="1700517974991662022">เคยเข้าชม</translation>
+<translation id="1701367827913789499">อ่านได้อย่างสบายตาโดยมีสิ่งรบกวนน้อยที่สุดด้วยปุ่มโหมดการอ่านในแถบเครื่องมือ</translation>
 <translation id="1703331064825191675">ไม่ต้องกังวลเกี่ยวกับรหัสผ่านอีกต่อไป</translation>
 <translation id="1703666494654169921">ไม่อนุญาตให้เว็บไซต์ใช้อุปกรณ์หรือข้อมูลเทคโนโลยีความจริงเสมือน (VR)</translation>
 <translation id="1704097193565924901">Capitalize</translation>
@@ -2958,6 +2959,7 @@
 <translation id="3008272652534848354">รีเซ็ตสิทธิ์</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> กำหนดให้คุณเชื่อมต่อ Wi-Fi วันนี้เพื่อดาวน์โหลดอัปเดต หรือดาวน์โหลดจากการเชื่อมต่อที่มีการวัดปริมาณอินเทอร์เน็ต (อาจมีค่าบริการ)}other{<ph name="MANAGER" /> กำหนดให้คุณเชื่อมต่อ Wi-Fi และดาวน์โหลดอัปเดตก่อนเวลาที่กำหนด หรือดาวน์โหลดจากการเชื่อมต่อที่มีการวัดปริมาณอินเทอร์เน็ต (อาจมีค่าบริการ)}}</translation>
 <translation id="3008923556848076408">Gemini จะทำงานตามที่คุณขอต่อไป</translation>
+<translation id="3008926075262837186">อ่านได้อย่างสบายตาโดยมีสิ่งรบกวนน้อยที่สุด</translation>
 <translation id="3009178788565917040">เอาต์พุต</translation>
 <translation id="3009352964623081324">ค้นหา + O ตามด้วย S ใช้เพื่อติดตั้ง จัดการ และปรับแต่งเสียง</translation>
 <translation id="3009779501245596802">ฐานข้อมูลที่มีการจัดทำดัชนี</translation>
@@ -4414,7 +4416,6 @@
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติมเกี่ยวกับความแม่นยำของตำแหน่ง<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">นำเข้า</translation>
 <translation id="3992008114154328194">กำลังดาวน์โหลด <ph name="FILE_NAME" /> <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">สำรองข้อมูล</translation>
 <translation id="3994075804072562819">ให้ <ph name="SPECIFIC_NAME" /> ควบคุมอุปกรณ์ USB</translation>
 <translation id="3994318741694670028">ขออภัย คอมพิวเตอร์ของคุณกำหนดค่าด้วยรหัสฮาร์ดแวร์ที่มีรูปแบบไม่ถูกต้อง ซึ่งทำให้ Chrome OS Flex อัปเดตการแก้ไขปัญหาความปลอดภัยล่าสุดไม่ได้ และคอมพิวเตอร์<ph name="BEGIN_BOLD" />อาจเสี่ยงต่อการโจมตีที่เป็นอันตราย<ph name="END_BOLD" /></translation>
 <translation id="3994374631886003300">ปลดล็อกโทรศัพท์และนำเข้ามาใกล้ๆ เพื่อปลดล็อก <ph name="DEVICE_TYPE" /></translation>
@@ -7709,7 +7710,6 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> ปิดใช้การแก้ไขข้อบกพร่อง ADB ซึ่งจะเป็นการรีเซ็ต <ph name="DEVICE_TYPE" /> ของคุณใน 24 ชั่วโมง โปรดสำรองข้อมูลไฟล์ที่ต้องการเก็บไว้</translation>
 <translation id="6336194758029258346">ภาษาของแอป</translation>
 <translation id="6337543438445391085">ข้อมูลส่วนบุคคลบางอย่างอาจยังรวมอยู่ในข้อมูลดังกล่าว โปรดอย่าลืมตรวจสอบไฟล์ที่ส่งออก</translation>
-<translation id="6338554362382763574">ให้คุณถามคำถามกับ Gemini เกี่ยวกับแท็บที่กำลังแชร์ได้อย่างง่ายดายขณะท่องเว็บ</translation>
 <translation id="6338968693068997776">เพิ่มอุปกรณ์ USB</translation>
 <translation id="6339668969738228384">สร้างโปรไฟล์ใหม่สำหรับ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">โปรโตคอลการพิมพ์ผ่านอินเทอร์เน็ต (IPPS)</translation>
@@ -8329,7 +8329,6 @@
     <ph name="BEGIN_PARAGRAPH2" />คุณปิดบริการนี้ได้ในการตั้งค่า<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">ยกเลิกการสำรองข้อมูล Linux แล้ว</translation>
 <translation id="6782067259631821405">PIN ไม่ถูกต้อง</translation>
-<translation id="6782219876520622071">เจ้าหน้าที่ตรวจสอบอาจเห็นการสนทนาเกี่ยวกับแท็บที่แชร์เพื่อนำไปใช้ปรับปรุง Gemini</translation>
 <translation id="6783036716881942511">เลิกจำอุปกรณ์นี้ใช่ไหม</translation>
 <translation id="6783667414610055871">การตั้งค่า Microsoft OneDrive</translation>
 <translation id="6784523122863989144">รองรับโปรไฟล์นี้</translation>
@@ -9526,7 +9525,6 @@
 <translation id="7620616707541471029">เลือกบัญชีเพื่อดำเนินการต่อ</translation>
 <translation id="7621382409404463535">ระบบบันทึกการกำหนดค่าอุปกรณ์ไม่สำเร็จ</translation>
 <translation id="7621595347123595643">คุณจะกู้คืนข้อมูลในเครื่องไม่ได้หากลืมรหัสผ่านหรือ PIN</translation>
-<translation id="7621863462266622331">เมื่อแชร์แท็บ ระบบจะส่งเนื้อหา สื่อ และ URL ของหน้าเว็บไปยัง Google</translation>
 <translation id="7622114377921274169">กำลังชาร์จ</translation>
 <translation id="7622768823216805500">โดยปกติแล้วเว็บไซต์จะติดตั้งเครื่องจัดการการชำระเงินเพื่อดำเนินการตามฟีเจอร์สำหรับช็อปปิ้ง เช่น การชำระเงินสะดวกขึ้น</translation>
 <translation id="7622966771025050155">เปลี่ยนเป็นแท็บที่ถูกจับภาพ</translation>
@@ -10872,6 +10870,7 @@
 <translation id="8517759303731677493">แก้ไข…</translation>
 <translation id="8518809011298357036">ปิดมุมมองด้านบน</translation>
 <translation id="8518942514525208851">ซ่อนคำหยาบคาย</translation>
+<translation id="8520238089740349550">ไม่สำเร็จ - บล็อกการดาวน์โหลดในเครื่องแล้ว</translation>
 <translation id="8523493869875972733">เก็บการเปลี่ยนแปลงไว้</translation>
 <translation id="8523849605371521713">เพิ่มตามนโยบาย</translation>
 <translation id="8524594273111932386">ค้นหา + ลูกศรลง</translation>
@@ -11927,7 +11926,7 @@
 <translation id="930991362911221750">อนุญาตให้ <ph name="APP_NAME" /> ดูแท็บนี้ไหม</translation>
 <translation id="931273044114601262">อนุญาตในเว็บไซต์นี้</translation>
 <translation id="93140074055951850">แอป Android หยุดทำงาน</translation>
-<translation id="932327136139879170">หน้าแรก</translation>
+<translation id="932327136139879170">บ้าน</translation>
 <translation id="932508678520956232">ไม่สามารถเริ่มพิมพ์</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{ไฟล์นี้ใหญ่เกินไปสำหรับการตรวจสอบความปลอดภัย คุณอัปโหลดไฟล์ได้ไม่เกิน 50 MB}other{ไฟล์เหล่านี้บางไฟล์ใหญ่เกินไปสำหรับการตรวจสอบความปลอดภัย คุณอัปโหลดไฟล์ได้ไม่เกิน 50 MB}}</translation>
 <translation id="93343527085570547">ไปที่<ph name="BEGIN_LINK1" />หน้าความช่วยเหลือทางกฎหมาย<ph name="END_LINK1" />เพื่อขอเปลี่ยนแปลงเนื้อหาด้วยเหตุผลทางกฎหมาย ระบบอาจส่งข้อมูลบัญชีและข้อมูลระบบบางส่วนไปยัง Google เราจะใช้ข้อมูลที่คุณให้มาเพื่อช่วยแก้ปัญหาด้านเทคนิคและปรับปรุงบริการโดยเป็นไปตาม<ph name="BEGIN_LINK2" />นโยบายความเป็นส่วนตัว<ph name="END_LINK2" />และ<ph name="BEGIN_LINK3" />ข้อกำหนดในการให้บริการ<ph name="END_LINK3" /></translation>

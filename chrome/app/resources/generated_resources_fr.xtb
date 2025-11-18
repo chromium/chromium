@@ -1053,6 +1053,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1699807488537653303">Corriger l'erreur de mot de passe</translation>
 <translation id="1700201317341192482">Supprimer votre carte virtuelle</translation>
 <translation id="1700517974991662022">Consulté</translation>
+<translation id="1701367827913789499">Lisez confortablement avec un minimum de distractions grâce au bouton Mode Lecture de la barre d'outils</translation>
 <translation id="1703331064825191675">Ne vous souciez plus jamais de vos mots de passe</translation>
 <translation id="1703666494654169921">Ne pas autoriser les sites à utiliser des données ni des appareils de réalité virtuelle</translation>
 <translation id="1704097193565924901">Mettre une majuscule</translation>
@@ -2959,6 +2960,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3008272652534848354">Réinitialiser les autorisations</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi aujourd'hui afin de télécharger une mise à jour. Vous pouvez aussi la télécharger via une connexion facturée à l'usage (susceptible d'entraîner des frais).}one{<ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi pour télécharger une mise à jour avant la date limite. Vous pouvez aussi la télécharger via une connexion facturée à l'usage (susceptible d'entraîner des frais).}other{<ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi pour télécharger une mise à jour avant la date limite. Vous pouvez aussi la télécharger via une connexion facturée à l'usage (susceptible d'entraîner des frais).}}</translation>
 <translation id="3008923556848076408">Gemini continuera à travailler sur votre tâche</translation>
+<translation id="3008926075262837186">Lisez confortablement avec un minimum de distractions</translation>
 <translation id="3009178788565917040">Sortie</translation>
 <translation id="3009352964623081324">Utilisez la touche Recherche+O puis S pour installer, gérer et personnaliser les voix.</translation>
 <translation id="3009779501245596802">Bases de données indexées</translation>
@@ -4415,7 +4417,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />En savoir plus sur la précision de la localisation<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Importés</translation>
 <translation id="3992008114154328194">Téléchargement en cours de <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Sauvegarde des données</translation>
 <translation id="3994075804072562819">Autoriser <ph name="SPECIFIC_NAME" /> à contrôler les appareils USB.</translation>
 <translation id="3994318741694670028">Malheureusement, votre ordinateur est configuré avec un ID matériel incorrect. Cela empêche l'installation des derniers correctifs de sécurité sur ChromeOS Flex et rend votre ordinateur <ph name="BEGIN_BOLD" />potentiellement vulnérable aux attaques malveillantes<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Déverrouillez votre téléphone et rapprochez-le de votre <ph name="DEVICE_TYPE" /> pour le déverrouiller.</translation>
@@ -7714,7 +7715,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> a désactivé le débogage ADB. Votre <ph name="DEVICE_TYPE" /> sera donc réinitialisé dans 24 heures. Sauvegardez les fichiers que vous souhaitez conserver.</translation>
 <translation id="6336194758029258346">Langue de l'appli</translation>
 <translation id="6337543438445391085">Certaines informations personnelles peuvent encore figurer parmi les données. Vérifiez bien les fichiers exportés.</translation>
-<translation id="6338554362382763574">Vous pouvez facilement poser des questions à Gemini sur les onglets que vous partagez pendant que vous naviguez</translation>
 <translation id="6338968693068997776">Ajouter un appareil USB</translation>
 <translation id="6339668969738228384">Créer un profil pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocole d'impression Internet (IPPS)</translation>
@@ -8336,7 +8336,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
     <ph name="BEGIN_PARAGRAPH2" />Vous pouvez désactiver ce service dans les paramètres.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Sauvegarde Linux annulée</translation>
 <translation id="6782067259631821405">Code incorrect</translation>
-<translation id="6782219876520622071">Les conversations concernant les onglets partagés peuvent être consultées par des réviseurs humains afin d'améliorer Gemini</translation>
 <translation id="6783036716881942511">Supprimer cet appareil ?</translation>
 <translation id="6783667414610055871">Paramètres Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Profil accepté</translation>
@@ -9534,7 +9533,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7620616707541471029">Sélectionnez un compte pour continuer</translation>
 <translation id="7621382409404463535">Échec de l'enregistrement de la configuration de l'appareil.</translation>
 <translation id="7621595347123595643">Vous ne pourrez pas récupérer de données locales si vous oubliez votre mot de passe ou votre code.</translation>
-<translation id="7621863462266622331">Lorsque des onglets sont partagés, le contenu de leurs pages, leur contenu multimédia et leurs URL sont envoyés à Google</translation>
 <translation id="7622114377921274169">En charge.</translation>
 <translation id="7622768823216805500">Les sites installent généralement des gestionnaires de paiement pour proposer certaines fonctionnalités d'achat, comme un règlement plus simple</translation>
 <translation id="7622966771025050155">Ouvrir l'onglet capturé</translation>
@@ -10880,6 +10878,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8517759303731677493">Modifier…</translation>
 <translation id="8518809011298357036">Fermer la vue du haut</translation>
 <translation id="8518942514525208851">Masquer le langage vulgaire</translation>
+<translation id="8520238089740349550">Échec : téléchargement local bloqué</translation>
 <translation id="8523493869875972733">Conserver les modifications</translation>
 <translation id="8523849605371521713">Ajoutée en raison des règles</translation>
 <translation id="8524594273111932386">Recherche+Flèche vers le bas</translation>

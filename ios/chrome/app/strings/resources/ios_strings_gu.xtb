@@ -42,6 +42,7 @@
 <translation id="1122068467107743258">કાર્ય</translation>
 <translation id="1126696498560056882">આ ડિવાઇસ પરના એકાઉન્ટ મેનેજ કરો</translation>
 <translation id="1126809382673880764">જોખમકારક વેબસાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે તમારું રક્ષણ કરતું નથી. Gmail અને Search જેવી Googleની અન્ય સેવાઓમાં, જ્યાં ઉપલબ્ધ હોય, ત્યાં તમને હજી પણ Safe Browsing સંરક્ષણ મળશે.</translation>
+<translation id="1133418583142946603">વર્તમાન ટૅબ ઉમેરો</translation>
 <translation id="1136104150802877429">પ્રોડક્ટના રિવ્યૂ બતાવો</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" /> માટેના નોટિફિકેશન બંધ કરો</translation>
 <translation id="1147031633655575115"><ph name="USER" /> તરીકે સાઇન ઇન થયા</translation>
@@ -78,6 +79,7 @@
 <translation id="1285320974508926690">આ સાઇટનો ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="1287229685519872919">Google Workspaceનો ડેટા</translation>
 <translation id="1291506870746876680">જ્યારે તમે સાઇટમાંથી બહાર નીકળી જશો, ત્યારે <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> સંબંધિત પરવાનગીઓ બંધ પર રીસેટ કરવામાં આવશે.</translation>
+<translation id="1293556467332435079">Files</translation>
 <translation id="129553762522093515">તાજેતરમાં બંધ કરેલા</translation>
 <translation id="1296581780163690620">ફાઇલ ડાઉનલોડ કરીએ? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">તમે હંમેશાં તમારા Google એકાઉન્ટમાં પાસવર્ડનો ઉપયોગ કરી શકો તેની ખાતરી કરવા માટે આ તમે જ છો તેની ચકાસણી કરો.</translation>
@@ -1044,6 +1046,7 @@
 <translation id="5055015094595227120">સચોટ લોકેશન</translation>
 <translation id="5055551113846164633">આનાથી આ ડિવાઇસ પર સાચવેલા સરનામા ડિલીટ કરવામાં આવે છે. તે તમારા <ph name="USER_EMAIL" /> Google એકાઉન્ટમાં સાચવેલા સરનામા પણ ડિલીટ કરે છે.</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> સમસ્યાઓ મળી.</translation>
+<translation id="5056587122125565772">છબી બનાવો</translation>
 <translation id="5059136629401106827">ઓકે</translation>
 <translation id="5062321486222145940">Google ડ્રાઇવ ઇન્સ્ટોલ કરો</translation>
 <translation id="5067540696062462445">ડાઉનલોડ</translation>
@@ -1505,6 +1508,7 @@
 <translation id="6659660757330712663">એક ટૅબ પરથી બીજા પર સ્વિચ કરવા માટે, તમે ટૂલબાર સ્વાઇપ કરી શકો છો.</translation>
 <translation id="6663529247339810546">છબી સાચવી શકતા નથી</translation>
 <translation id="6668619169535738264">બુકમાર્કમાં ફેરફાર કરો</translation>
+<translation id="6670729408462528018">Gallery</translation>
 <translation id="6671294218820966278">વાંચેલી તરીકે માર્ક કરો</translation>
 <translation id="6672697278890207089">તમારો પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="6674917187596384849">તમે સરળતાથી એકાઉન્ટ વચ્ચે સ્વિચ કરી શકો છો</translation>

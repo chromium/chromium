@@ -42,6 +42,7 @@
 <translation id="1122068467107743258">עבודה</translation>
 <translation id="1126696498560056882">ניהול החשבונות במכשיר הזה</translation>
 <translation id="1126809382673880764">‏במצב הזה המערכת לא מגינה עליך מפני אתרים, הורדות ותוספים מסוכנים. גלישה בטוחה עדיין תגן עליך בשירותים אחרים של Google שבהם היא זמינה, כמו Gmail והחיפוש.</translation>
+<translation id="1133418583142946603">הוספה של הכרטיסייה הנוכחית</translation>
 <translation id="1136104150802877429">מוצגות ביקורות על מוצרים</translation>
 <translation id="1142371195993008685">השבתת ההודעות עבור <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">נכנסת כ-<ph name="USER" /></translation>
@@ -78,6 +79,7 @@
 <translation id="1285320974508926690">אל תתרגמו את האתר הזה</translation>
 <translation id="1287229685519872919">‏נתוני Google Workspace</translation>
 <translation id="1291506870746876680">ההרשאות לאתר <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> יאופסו לאחר היציאה ממנו.</translation>
+<translation id="1293556467332435079">קבצים</translation>
 <translation id="129553762522093515">נסגרו לאחרונה</translation>
 <translation id="1296581780163690620">להוריד את הקובץ? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">‏כדי לוודא שתמיד תהיה לך אפשרות להשתמש בסיסמאות בחשבון Google שלך, עליך לאמת את הזהות שלך.</translation>
@@ -1044,6 +1046,7 @@
 <translation id="5055015094595227120">מיקום מדויק</translation>
 <translation id="5055551113846164633">‏הפעולה הזו תמחק את הכתובות ששמורות במכשיר הזה. הפעולה הזו גם תמחק את הכתובות ששמורות בחשבון שלך ב-Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">נמצאו בעיות <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">יצירת תמונה</translation>
 <translation id="5059136629401106827">אישור</translation>
 <translation id="5062321486222145940">‏התקנת Google Drive</translation>
 <translation id="5067540696062462445">הורדות</translation>
@@ -1505,6 +1508,7 @@
 <translation id="6659660757330712663">אפשר להחליק על סרגל הכלים כדי לעבור בין כרטיסיות.</translation>
 <translation id="6663529247339810546">לא ניתן לשמור את התמונה</translation>
 <translation id="6668619169535738264">עריכת סימנייה</translation>
+<translation id="6670729408462528018">גלריה</translation>
 <translation id="6671294218820966278">סימון כפריט שנקרא</translation>
 <translation id="6672697278890207089">הזן את משפט הסיסמה</translation>
 <translation id="6674917187596384849">אפשר לעבור בקלות בין חשבונות</translation>

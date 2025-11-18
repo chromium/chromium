@@ -42,6 +42,7 @@
 <translation id="1122068467107743258">Ish</translation>
 <translation id="1126696498560056882">Bu qurilmadagi hisoblarni boshqarish</translation>
 <translation id="1126809382673880764">Zararli sayt, yuklanma va kengaytmalardan himoya qila olmaydi. Gmail va Qidiruv kabi Google xizmatlarida Saytlarni xavfsiz kezish himoyasi ostida boʻlasiz.</translation>
+<translation id="1133418583142946603">Joriy varaqqa kiritish</translation>
 <translation id="1136104150802877429">Mahsulot sharhlarini chiqarish</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" /> kanaliga oid bildirishnomalarni faolsizlantirish</translation>
 <translation id="1147031633655575115"><ph name="USER" /> sifatida kirgansiz</translation>
@@ -78,6 +79,7 @@
 <translation id="1285320974508926690">Bu sayt hech qachon tarjima qilinmasin</translation>
 <translation id="1287229685519872919">Google Workspace maʼlumotlaringiz</translation>
 <translation id="1291506870746876680">Bu sayt yopilganda <ph name="BEGIN_BOLD" />“<ph name="SITE_NAME" />”<ph name="END_BOLD" /> ruxsatlari asliga qaytariladi.</translation>
+<translation id="1293556467332435079">Fayllar</translation>
 <translation id="129553762522093515">Yaqinda yopilganlar</translation>
 <translation id="1296581780163690620">Fayl yuklab olinsinmi? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Google hisobingizdagi parollardan istalgan vaqt foydalanish uchun shaxsingizni tasdiqlang.</translation>
@@ -1044,6 +1046,7 @@
 <translation id="5055015094595227120">Aniq joylashuv</translation>
 <translation id="5055551113846164633">Bunda mazkur qurilmada saqlangan manzillar oʻchib ketadi. Shuningdek, Google hisobingizda (<ph name="USER_EMAIL" />) saqlangan manzillar ham oʻchiriladi.</translation>
 <translation id="5056446788882570708">Muammolar aniqlandi <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">Rasm yaratish</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Google Drive’ni o‘rnatish</translation>
 <translation id="5067540696062462445">Yuklanmalar</translation>
@@ -1505,6 +1508,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6659660757330712663">Varaqlarni almashtirish uchun asboblar panelini yonga suring.</translation>
 <translation id="6663529247339810546">Rasm saqlanmadi</translation>
 <translation id="6668619169535738264">Bukmarkni tahrirlash</translation>
+<translation id="6670729408462528018">Galereya</translation>
 <translation id="6671294218820966278">Oʻqilgan deb belgilash</translation>
 <translation id="6672697278890207089">Kodli iborani kiriting</translation>
 <translation id="6674917187596384849">Hisoblarni oson almashtirish mumkin</translation>
@@ -1661,6 +1665,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Mazkur hisoblar uchun parollar Google Parollar menejerida allaqachon mavjud. Quyidagi parollardan biri import qilinsa, mavjud parol yangilanadi.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% yuklab olindi</translation>
+<translation id="7345061034321640811">Import qilish mumkin emas</translation>
 <translation id="7352651011704765696">Xatolik yuz berdi.</translation>
 <translation id="7363349185727752629">Maxfiylik sozlamalaringizga oid qoʻllanma</translation>
 <translation id="7364796246159120393">Fayl tanlang</translation>
@@ -2202,6 +2207,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="952704832371081537">Bekor qilish</translation>
 <translation id="95332591904104970">Ulangan ilovalar</translation>
 <translation id="954667170699278022">Saqlangan sahifalar</translation>
+<translation id="956066588046842680">Tashkilotingiz siyosati bu maʼlumotlarni import qilishni taqiqlaydi.</translation>
 <translation id="956218893102219091">Taxminiy yoki IP manzil asosidagi sozlamalar oʻrniga Gemini natijalarida aniq joylashuv ishlatilsin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Brauzer maʼlumotlarini oʻchirish</translation>
 <translation id="963102227019621224">Veb va ilovalardagi faoliyat tarixi</translation>

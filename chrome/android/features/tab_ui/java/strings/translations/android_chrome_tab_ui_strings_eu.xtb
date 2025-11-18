@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Itxi da fitxa taldeen zerrenda</translation>
 <translation id="3194464645767632461">balorazioa</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Gehitu fitxa <ph name="TABS_COUNT_ONE" /> taldean}other{Gehitu <ph name="TABS_COUNT_MANY" /> fitxa taldean}}</translation>
+<translation id="3293080634164207409">Gehitu fitxak</translation>
 <translation id="3328308545011660196">Iradokizuna: <ph name="NUMBER_OF_TABS" /> fitxa erlazionatuta daude. Taldekatu nahi al dituzu?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Egun batez inaktibo egon ostean}other{<ph name="DAY_COUNT_MANY" /> egunez inaktibo egon ostean}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> fitxa berri}other{<ph name="MANY_ADDED" /> fitxa berri}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">Jarduerak</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Balorazioa: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. Iritzi kopurua: <ph name="REVIEWS_COUNT_ONE" />.}other{Balorazioa: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. Iritzi kopurua: <ph name="REVIEWS_COUNT_MANY" />.}}</translation>
 <translation id="7885132941432959125">Eraman fitxa eskuinera</translation>
+<translation id="7887334752153342268">Bikoiztu</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> ez dago hautatuta</translation>
 <translation id="7961015016161918242">Inoiz ez</translation>
 <translation id="7966321538264951561">Baztertu iradokizunak.</translation>

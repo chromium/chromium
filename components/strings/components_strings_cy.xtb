@@ -428,6 +428,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1689333818294560261">Llysenw</translation>
 <translation id="1692622044604477956">Rhestrau Ffilmiau ac Amserau Sioe Theatr</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Sut gallwch reoli eich data:<ph name="END_BOLD" /> Mae Chrome yn awtoddileu pynciau sy'n hŷn na 4 wythnos. Wrth i chi barhau i bori, mae'n bosib y gall pwnc ailymddangos ar y rhestr. Gallwch hefyd rwystro pynciau nad ydych chi am i Chrome eu rhannu â gwefannau a diffodd pynciau hysbysebion ar unrhyw adeg yng ngosodiadau Chrome.</translation>
+<translation id="1697808683313379647">Mae Google yn defnyddio gwybodaeth o'r dudalen dalu a data perthnasol eraill i gynnig yr opsiynau hyn.</translation>
 <translation id="1699651774646344471">Gallwch bellach ddefnyddio cyfeiriadau o'ch Cyfrif Google</translation>
 <translation id="1700542542921501212">Gallwch ddefnyddio <ph name="SEARCH_ENGINE_NAME" /> i chwilio'r we.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1722,7 +1723,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3792826587784915501">Ffilmiau Cwlt ac Indie</translation>
 <translation id="3793574014653384240">Niferoedd ac achosion y toriadau sydd wedi digwydd yn ddiweddar</translation>
 <translation id="3795624560191557077">Yn ddiweddar, fe wnaethoch chi newid cyfrinair a ganfuwyd mewn achos o dor data cyhoeddus. Mewn achos o drafferth, gall Rheolwr Cyfrinair Google eich helpu i fewngofnodi.</translation>
-<translation id="3796181268473765083">Talu mewn 4 rhandaliad di-log neu fisol (yn amodol ar gymhwysedd)</translation>
 <translation id="3799805948399000906">Y ffont a geisiwyd</translation>
 <translation id="3801297763951514916">Rydych yn ymweld yn aml</translation>
 <translation id="380329542618494757">Enw</translation>
@@ -2948,6 +2948,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5813753398265398978">Ffiseg</translation>
 <translation id="5817918615728894473">Paru</translation>
 <translation id="5820625124144807242">Ar ôl i chi adolygu'ch archeb, rhaid i chi fewngofnodi neu greu cyfrif gyda <ph name="BNPL_ISSUER_NAME" />. Bydd y cyfrif hwn yn gysylltiedig â Google Pay yn awtomatig.</translation>
+<translation id="5820751560028604030">Lawrlwythiad lleol wedi'i rwystro</translation>
 <translation id="5826507051599432481">Enw Cyffredin (CN)</translation>
 <translation id="5830698870816298009">symudiad a defnydd camera</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3702,6 +3703,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="7031646650991750659">Pa apiau Google Play rydych wedi'u gosod</translation>
 <translation id="7035705295266423040">Mae eich banc eisiau cadarnhau mai chi sydd yno</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pwyswch Tab yna Enter i reoli gosodiadau preifatrwydd eich Cyfrif Google.</translation>
+<translation id="7042465939346919737">Mae Google yn defnyddio gwybodaeth o'r dudalen dalu a data perthnasol eraill i gynnig yr opsiynau hyn. I guddio opsiynau talu'n ddiweddarach, ewch i <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Mireinio canlyniadau</translation>
 <translation id="7043552168914147882">Stoc Tab</translation>
 <translation id="7044081119134178347">Caniateir y camera y tro hwn</translation>

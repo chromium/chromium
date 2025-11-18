@@ -1052,6 +1052,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1699807488537653303">Şifre hatasını düzelt</translation>
 <translation id="1700201317341192482">Sanal kartımı kaldır</translation>
 <translation id="1700517974991662022">Ziyaret edildi</translation>
+<translation id="1701367827913789499">Araç çubuğundaki Okuma Modu düğmesini kullanarak dikkatiniz dağılmadan rahatça okuyun.</translation>
 <translation id="1703331064825191675">Şifreleriniz için hiç kaygılanmayın</translation>
 <translation id="1703666494654169921">Sitelerin sanal gerçeklik cihazlarını veya verileri kullanmasına izin verme</translation>
 <translation id="1704097193565924901">Büyük Harf Kullan</translation>
@@ -2956,6 +2957,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3008272652534848354">İzinleri sıfırla</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" />, güncelleme indirmek için bugün kablosuz ağa bağlanmanızı zorunlu tutuyor. İsterseniz sayaçlı bir bağlantı üzerinden indirebilirsiniz (bunun için ödeme alınabilir).}other{<ph name="MANAGER" />, kablosuz ağa bağlanıp son tarihten önce güncelleme indirmenizi zorunlu tutuyor. İsterseniz sayaçlı bir bağlantı üzerinden indirebilirsiniz (bunun için ödeme alınabilir).}}</translation>
 <translation id="3008923556848076408">Gemini, göreviniz üzerinde çalışmaya devam edecek</translation>
+<translation id="3008926075262837186">Dikkatiniz dağılmadan rahatça okuyun</translation>
 <translation id="3009178788565917040">Çıkış</translation>
 <translation id="3009352964623081324">Ara + O, ardından S. Sesleri yüklemek, yönetmek ve özelleştirmek için kullanın.</translation>
 <translation id="3009779501245596802">Dizine alınmış veritabanları</translation>
@@ -4412,7 +4414,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Konum Doğruluğu hakkında daha fazla bilgi<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">İçe aktarılanlar</translation>
 <translation id="3992008114154328194">İndiriliyor <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Verileri yedekleyin</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" /> uygulamasına USB cihazlarını kontrol etme sunun.</translation>
 <translation id="3994318741694670028">Maalesef bilgisayarınız, hatalı oluşturulmuş bir donanım kimliğiyle yapılandırılmış. Bu durum ChromeOS Flex'in en son güvenlik düzeltmeleriyle güncellenmesini engeller ve bilgisayarınız <ph name="BEGIN_BOLD" />kötü niyetli saldırılara<ph name="END_BOLD" /> açık duruma gelebilir.</translation>
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" /> cihazınızın kilidini açmak için telefonunuzun kilidini açın ve cihaza yaklaştırın.</translation>
@@ -7712,7 +7713,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" />, ADB hata ayıklama işlevini devre dışı bıraktı. Bu işlem, 24 saat içinde <ph name="DEVICE_TYPE" /> cihazınızı sıfırlar. Saklamak istediğiniz dosyaları yedekleyin.</translation>
 <translation id="6336194758029258346">Uygulama dili</translation>
 <translation id="6337543438445391085">Bazı kişisel bilgiler yine de verilere eklenmiş olabilir. Dışa aktarılan dosyaları mutlaka inceleyin.</translation>
-<translation id="6338554362382763574">Göz atarken paylaştığınız sekmelerle ilgili Gemini'a kolayca soru sorabilirsiniz</translation>
 <translation id="6338968693068997776">USB cihazı ekleyin</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> için yeni profil oluştur</translation>
 <translation id="6340071272923955280">İnternet Yazdırma Protokolü (IPPS)</translation>
@@ -8332,7 +8332,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
     <ph name="BEGIN_PARAGRAPH2" />Bu hizmeti Ayarlar'dan kapatabilirsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux yedeklemesi iptal edildi</translation>
 <translation id="6782067259631821405">Geçersiz PIN</translation>
-<translation id="6782219876520622071">Paylaşılan sekmelerle ilgili sohbetler, Gemini'ı iyileştirmek için inceleme uzmanları tarafından görüntülenebilir.</translation>
 <translation id="6783036716881942511">Bu cihaz unutulsun mu?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive ayarları</translation>
 <translation id="6784523122863989144">Profil destekleniyor</translation>
@@ -9529,7 +9528,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7620616707541471029">Devam etmek için bir hesap seçin</translation>
 <translation id="7621382409404463535">Sistem cihaz yapılandırmasını kaydedemedi.</translation>
 <translation id="7621595347123595643">Şifrenizi veya PIN'inizi unutursanız yerel verileri kurtaramazsınız.</translation>
-<translation id="7621863462266622331">Paylaşılan sekmelerin sayfa içerikleri ve URL'leri Google'a gönderilir.</translation>
 <translation id="7622114377921274169">Şarj oluyor.</translation>
 <translation id="7622768823216805500">Daha kolay ödeme gibi alışveriş özelliklerinin kullanılması için siteler genellikle ödeme işleyiciler yükler</translation>
 <translation id="7622966771025050155">Yakalanan sekmeye geç</translation>
@@ -10875,6 +10873,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8517759303731677493">Düzenle…</translation>
 <translation id="8518809011298357036">Üst görünümü kapat</translation>
 <translation id="8518942514525208851">Küfürlü içeriği gizle</translation>
+<translation id="8520238089740349550">Başarısız - Yerel indirme engellendi</translation>
 <translation id="8523493869875972733">Değişiklikleri Koru</translation>
 <translation id="8523849605371521713">Politika tarafından eklendi</translation>
 <translation id="8524594273111932386">arama + aşağı ok</translation>

@@ -1056,6 +1056,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1699807488537653303">Odpravljanje napake z geslom</translation>
 <translation id="1700201317341192482">Odstranitev navidezne kartice</translation>
 <translation id="1700517974991662022">Obiskano</translation>
+<translation id="1701367827913789499">Udobno branje z minimalnimi motnjami z gumbom za način za branje v orodni vrstici</translation>
 <translation id="1703331064825191675">Naj vas nikoli ne skrbi glede gesel</translation>
 <translation id="1703666494654169921">Spletnim mestom ni dovoljena uporaba naprav ali podatkov za navidezno resničnost.</translation>
 <translation id="1704097193565924901">Začni z veliko začetnico</translation>
@@ -2974,6 +2975,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3008272652534848354">Ponastavi dovoljenja</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> zahteva, da se še danes povežete z omrežjem Wi-Fi in prenesete posodobitev. Prenesete jo lahko tudi prek povezave z omejenim prenosom podatkov (prenos podatkov se morda zaračuna).}one{<ph name="MANAGER" /> zahteva, da se povežete z omrežjem Wi-Fi in prenesete posodobitev pred rokom. Prenesete jo lahko tudi prek povezave z omejenim prenosom podatkov (prenos podatkov se morda zaračuna).}two{<ph name="MANAGER" /> zahteva, da se povežete z omrežjem Wi-Fi in prenesete posodobitev pred rokom. Prenesete jo lahko tudi prek povezave z omejenim prenosom podatkov (prenos podatkov se morda zaračuna).}few{<ph name="MANAGER" /> zahteva, da se povežete z omrežjem Wi-Fi in prenesete posodobitev pred rokom. Prenesete jo lahko tudi prek povezave z omejenim prenosom podatkov (prenos podatkov se morda zaračuna).}other{<ph name="MANAGER" /> zahteva, da se povežete z omrežjem Wi-Fi in prenesete posodobitev pred rokom. Prenesete jo lahko tudi prek povezave z omejenim prenosom podatkov (prenos podatkov se morda zaračuna).}}</translation>
 <translation id="3008923556848076408">Gemini se bo še naprej ukvarjal z vašim opravilom</translation>
+<translation id="3008926075262837186">Udobno branje z minimalnimi motnjami</translation>
 <translation id="3009178788565917040">Izhod</translation>
 <translation id="3009352964623081324">Tipka za iskanje + O, nato S. Uporabite za nameščanje, upravljanje in prilagajanje glasov.</translation>
 <translation id="3009779501245596802">Indeksirane zbirke podatkov</translation>
@@ -4432,7 +4434,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Preberite več o natančnosti zaznavanja lokacije<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Uvoženo</translation>
 <translation id="3992008114154328194">Prenašanje datoteke <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Varnostno kopiranje podatkov</translation>
 <translation id="3994075804072562819">Aplikaciji <ph name="SPECIFIC_NAME" /> omogočite nadzor nad napravami USB.</translation>
 <translation id="3994318741694670028">Vaš računalnik je konfiguriran s popačenim ID-jem strojne opreme. Zaradi tega ChromeOS Flex ne more namestiti najnovejših varnostnih popravkov in vaš računalnik <ph name="BEGIN_BOLD" />je lahko še bolj izpostavljen zlonamernim napadom<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Odklenite telefon in ga približajte napravi <ph name="DEVICE_TYPE" />, če jo želite odkleniti.</translation>
@@ -7734,7 +7735,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6336038146639916978">Domena <ph name="MANAGER" /> je onemogočila most za odpravljanje težav s sistemom Android (ADB). S tem bo naprava <ph name="DEVICE_TYPE" /> v 24 urah ponastavljena. Varnostno kopirajte datoteke, ki jih želite obdržati.</translation>
 <translation id="6336194758029258346">Jezik aplikacije</translation>
 <translation id="6337543438445391085">Nekateri osebni podatki so morda še vedno vključeni v podatke. Preglejte izvožene datoteke.</translation>
-<translation id="6338554362382763574">Med brskanjem lahko Geminiju preprosto zastavljate vprašanja o zavihkih, ki jih delite</translation>
 <translation id="6338968693068997776">Dodajanje naprave USB</translation>
 <translation id="6339668969738228384">Ustvarjanje novega profila za uporabnika <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8135,6 +8135,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6619990499523117484">Potrdite kodo PIN</translation>
 <translation id="6620000730890558421">Poskrbite za urejenost zavihkov z umetno inteligenco</translation>
 <translation id="6620254580880484313">Ime vsebnika</translation>
+<translation id="6621282332208609777">Vprašajte Google ali vnesite URL</translation>
 <translation id="6621391692573306628">Če želite ta zavihek poslati v drugo napravo, se v obeh napravah prijavite v Chrome.</translation>
 <translation id="6622980291894852883">Še naprej blokiraj slike</translation>
 <translation id="6624036901798307345">V načinu tabličnega računalnika se dotaknite gumba za štetje zavihkov v orodni vrstici, če želite odpreti nov trak z zavihki, ki prikazuje sličice posameznih zavihkov.</translation>
@@ -8359,7 +8360,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
     <ph name="BEGIN_PARAGRAPH2" />To storitev lahko izklopite v nastavitvah.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Varnostno kopiranje vsebnika za Linux je bilo preklicano</translation>
 <translation id="6782067259631821405">Neveljavna koda PIN</translation>
-<translation id="6782219876520622071">Pogovore o deljenih zavihkih lahko vidijo pregledovalci zaradi izboljšanja Geminija</translation>
 <translation id="6783036716881942511">Ali želite pozabiti to napravo?</translation>
 <translation id="6783667414610055871">Nastavitve za Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Profil je podprt.</translation>
@@ -10902,6 +10902,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8517759303731677493">Uredi …</translation>
 <translation id="8518809011298357036">Zapiranje pogleda z vrha</translation>
 <translation id="8518942514525208851">Skrij psovke</translation>
+<translation id="8520238089740349550">Neuspešno – lokalni prenos je blokiran</translation>
 <translation id="8523493869875972733">Ohranitev sprememb</translation>
 <translation id="8523849605371521713">Dodano s pravilnikom</translation>
 <translation id="8524594273111932386">tipka za iskanje + puščica navzdol</translation>
@@ -11776,6 +11777,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="909554839118732438">Zapri anonimna okna</translation>
 <translation id="9095819602391364796">Spletnim mestom ne dovoli upravljanja in reprogramiranja naprav MIDI</translation>
 <translation id="9096053102600371572">Nadzorovano pomikanje <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Primerjava možnosti</translation>
 <translation id="9096776523567481218">ni lokalno nameščeno</translation>
 <translation id="9098860402274800697">Odstranitev Googla Play in aplikacij za Android</translation>
 <translation id="9099220545925418560">Na podlagi zgodovine brskanja. Ta nastavitev je izklopljena.</translation>

@@ -428,6 +428,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1689333818294560261">Apzīmējums</translation>
 <translation id="1692622044604477956">Filmu seansi un teātru programmas</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Kā varat pārvaldīt savus datus:<ph name="END_BOLD" /> pārlūkā Chrome tiek automātiski dzēstas tēmas, kas ir vecākas par četrām nedēļām. Turpinot pārlūkošanu, tēma var tikt atkārtoti iekļauta sarakstā. Chrome iestatījumos jebkurā brīdī varat bloķēt tēmas, ko nevēlaties kopīgot ar vietnēm, un izslēgt reklāmu tēmas.</translation>
+<translation id="1697808683313379647">Lai piedāvātu šīs iespējas, Google izmanto informāciju no norēķināšanās lapas un citus atbilstošus datus.</translation>
 <translation id="1699651774646344471">Tagad varat izmantot adreses no sava Google konta.</translation>
 <translation id="1700542542921501212">Varat izmantot meklētājprogrammu <ph name="SEARCH_ENGINE_NAME" />, lai veiktu meklēšanu tīmeklī.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1721,7 +1722,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3792826587784915501">Kulta un neatkarīgās (indie) filmas</translation>
 <translation id="3793574014653384240">Nesen notikušo avāriju skaits un cēloņi</translation>
 <translation id="3795624560191557077">Jūs nesen nomainījāt paroli, jo tā tika atklāta publiska datu aizsardzības pārkāpuma dēļ. Ja rodas problēmas, Google paroļu pārvaldnieks var palīdzēt jums pierakstīties.</translation>
-<translation id="3796181268473765083">Veiciet četrus nomaksas maksājumus bez procentiem vai ikmēneša maksājumus (tiek pārbaudīta piemērotība)</translation>
 <translation id="3799805948399000906">Tika pieprasīts fonts</translation>
 <translation id="3801297763951514916">Jūs bieži apmeklējat</translation>
 <translation id="380329542618494757">Vārds, uzvārds</translation>
@@ -2946,6 +2946,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5813753398265398978">Fizika</translation>
 <translation id="5817918615728894473">Savienot pārī</translation>
 <translation id="5820625124144807242">Pēc pasūtījuma pārskatīšanas jums ir jāpierakstās <ph name="BNPL_ISSUER_NAME" /> kontā vai jāizveido šāds konts. Šis konts tiks automātiski saistīts ar pakalpojumu Google Pay.</translation>
+<translation id="5820751560028604030">Lokālā lejupielāde ir bloķēta</translation>
 <translation id="5826507051599432481">Kopējais nosaukums (CN)</translation>
 <translation id="5830698870816298009">Kameras lietojums un kustība</translation>
 <translation id="5831217499016131155">Google maks</translation>
@@ -3700,6 +3701,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="7031646650991750659">Kuras Google Play lietotnes esat instalējis</translation>
 <translation id="7035705295266423040">Banka vēlas apstiprināt jūsu identitāti</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai pārvaldītu sava Google konta konfidencialitātes iestatījumus, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
+<translation id="7042465939346919737">Lai piedāvātu šīs iespējas, Google izmanto informāciju no norēķināšanās lapas un citus atbilstošus datus. Lai paslēptu iespējas maksāšanai vēlāk, pārejiet uz <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="7042616127917168121">Uzlabot rezultātus</translation>
 <translation id="7043552168914147882">Izciļņa starpkarte</translation>
 <translation id="7044081119134178347">Ir atļauts šoreiz izmantot kameru</translation>

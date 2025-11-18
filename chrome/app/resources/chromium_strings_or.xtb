@@ -522,6 +522,7 @@
 <translation id="705851970750939768">Chromiumକୁ ଅପ୍‌ଡେଟ୍ କରନ୍ତୁ</translation>
 <translation id="7067091210845072982">ଯଦି ଗୋଟିଏ ଛବିରେ ବ୍ୟବହାରଯୋଗ୍ୟ ବିବରଣୀ ନାହିଁ, ତେବେ Chromium ଆପଣଙ୍କ ପାଇଁ ଏକ ବିବରଣୀ ପ୍ରଦାନ କରିବାକୁ ଚେଷ୍ଟା କରିବ। ବିବରଣୀ ତିଆରି କରିବାକୁ, ଛବିଗୁଡ଼ିକ Googleକୁ ପଠାଇ ଦିଆଯାଇଛି।</translation>
 <translation id="7141270731789036260">Chrome for Testingକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
+<translation id="7147227333672430807">ଆପଣ ମେସେଜ, ଡକ୍ୟୁମେଣ୍ଟ ଏବଂ ଅନ୍ୟ ଆପ୍ସରେ ଥିବା ଲିଙ୍କଗୁଡ଼ିକରେ କ୍ଲିକ କରି ଯେ କୌଣସି ସମୟରେ Chromium ବ୍ୟବହାର କରିପାରିବେ</translation>
 <translation id="7163519456498498587">Chromiumରୁ <ph name="EXTENSION_NAME" />କୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="7173822816570314652"><ph name="TIMEOUT_DURATION" /> ପାଇଁ Chromium ଡାଟାକୁ ବ୍ୟବହାର କରାନଗଲେ ଆପଣଙ୍କ ସଂସ୍ଥା ଏହାକୁ ଡିଲିଟ କରିଥାଏ। ଏଥିରେ ଇତିହାସ, ଅଟୋଫିଲ ଏବଂ ଡାଉନଲୋଡଗୁଡ଼ିକ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।</translation>
 <translation id="718435575166326686">ଏହି ସାଇଟ୍ ପାଇଁ Chromium କ୍ୟାମେରା ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
@@ -636,6 +637,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="8471947159125090285">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chromium ଡାଟାକୁ ବ୍ୟବହାର ଏବଂ ସେଭ କରିବା ପାଇଁ ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8482493977473846331">Chromiumରେ ସାଇନ ଇନ କରିବାକୁ ପ୍ରମ୍ପ୍ଟଗୁଡ଼ିକ ଦେଖାଏ</translation>
 <translation id="8493179195440786826">Chromiumର ସମୟସୀମା ଶେଷ ହୋଇଛି</translation>
+<translation id="850264194101621529">ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ Chromiumକୁ ବାଛିଥିବା ଯୋଗୁଁ ଧନ୍ୟବାଦ!</translation>
 <translation id="8522801943730206384">ଆପଣ ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସେଭ କଲେ Chromium ସେଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ</translation>
 <translation id="8555465886620020932">ସେବା ତ୍ରୁଟି: <ph name="SERVICE_ERROR" />।</translation>
 <translation id="8556420416730706394">ସହଜରେ ଆକ୍ସେସ କରିବା ପାଇଁ ଆପଣ ଇମେଜ ସର୍ଚ୍ଚକୁ ପିନ କରିପାରିବେ; ସାଇଡ ପେନେଲର ଶୀର୍ଷରେ ଥିବା 'ପିନ କରନ୍ତୁ' ବଟନରେ କ୍ଲିକ କରିପାରିବେ</translation>
@@ -645,6 +647,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="8586442755830160949">କପିରାଇଟ୍ <ph name="YEAR" /> Chromium ଲେଖକ। ସମସ୍ତ ଅଧିକାର ସଂରକ୍ଷିତ ଅଛି।</translation>
 <translation id="8601359445272098721">ନୂଆ! ଆପଣ "ସ୍କ୍ରିନକୁ ଅନୁବାଦ କରନ୍ତୁ" ବଟନକୁ ଚୟନ କରି ଆପଣଙ୍କ ସ୍କ୍ରିନର ଉଭୟ ଟେକ୍ସଟ ଏବଂ ଇମେଜଗୁଡ଼ିକୁ ଅନୁବାଦ କରିପାରିବେ</translation>
 <translation id="8619360774459241877">Chromium ଲଞ୍ଚ୍ ହେଉଛି...</translation>
+<translation id="8624541899164515475">ସେଟିଂସ, ନୂଆ ଟାବରେ ଖୋଲେ।</translation>
 <translation id="8648201657708811153">Google Chrome for Testingକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="8677922833187616101">ସର୍ବଦା Google AI ମୋଡ ସର୍ଟକଟ ଦେଖାନ୍ତୁ</translation>
 <translation id="8697124171261953979">ଯେତେବେଳେ ଆପଣ Chromium ଆରମ୍ଭ କରନ୍ତି କିମ୍ବା Omniboxରୁ ସର୍ଚ୍ଚ କରନ୍ତି, ସେତେବେଳେ କେଉଁ ପୃଷ୍ଠା ଦେଖାଯିବ ତାହା ମଧ୍ୟ ଏହା ନିୟନ୍ତ୍ରଣ କରେ।</translation>

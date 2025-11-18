@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
+<translation id="1004825134262590729">{count,plural, =1{‫{count} پاس کی}other{‫{count} پاس کیز}}</translation>
 <translation id="1005023885865154304">'پاس ورڈز آٹو فل کریں' کی ترتیبات کھولیں</translation>
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">آپ ان ٹیبز کو دوبارہ کھولنے کے لیے یہاں واپس آ سکتے ہیں جنہیں آپ نے حال ہی میں بند کر دیا ہے</translation>
@@ -41,6 +42,7 @@
 <translation id="1122068467107743258">دفتر</translation>
 <translation id="1126696498560056882">اس آلے پر اکاؤنٹس کا نظم کریں</translation>
 <translation id="1126809382673880764">‏خطرناک ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے آپ کی حفاظت نہیں کرتی ہے۔ آپ کو اب بھی Gmail اور تلاش جیسی Google کی دیگر سروسز میں جہاں بھی دستیاب ہوگا محفوظ براؤزنگ کا تحفظ ملے گا۔</translation>
+<translation id="1133418583142946603">موجودہ ٹیب شامل کریں</translation>
 <translation id="1136104150802877429">پروڈکٹ کے جائزے دکھاتا ہے</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" /> کیلئے اطلاعات آف کریں</translation>
 <translation id="1147031633655575115"><ph name="USER" /> کے بطور سائن ان ہیں</translation>
@@ -77,6 +79,7 @@
 <translation id="1285320974508926690">اس سائٹ کا ترجمہ کبھی نہ کریں</translation>
 <translation id="1287229685519872919">‏‫Google Workspace ڈیٹا</translation>
 <translation id="1291506870746876680">جب آپ اس سائٹ کو چھوڑ دیتے ہیں تو <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> اجازتیں ری سیٹ ہو جائیں گی۔</translation>
+<translation id="1293556467332435079">فائلیں</translation>
 <translation id="129553762522093515">حال ہی میں بند کردہ</translation>
 <translation id="1296581780163690620">فائل ڈاؤن لوڈ کریں؟ (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">‏یہ یقینی بنانے کیلئے کہ آپ ہمیشہ اپنے Google اکاؤنٹ میں پاس ورڈز استعمال کر سکتے ہیں، تصدیق کریں کہ یہ آپ ہی ہیں۔</translation>
@@ -1043,6 +1046,7 @@
 <translation id="5055015094595227120">قطعی مقام</translation>
 <translation id="5055551113846164633">‏اس سے اس آلہ پر محفوظ کردہ پتے حذف ہو جاتے ہیں۔ اس سے آپ کے Google اکاؤنٹ <ph name="USER_EMAIL" /> میں محفوظ کردہ پتے بھی حذف ہو جاتے ہیں۔</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> مسائل کا پتا چلا۔</translation>
+<translation id="5056587122125565772">تصویر تخلیق کریں</translation>
 <translation id="5059136629401106827">ٹھیک ہے</translation>
 <translation id="5062321486222145940">‏Google Drive انسٹال کریں</translation>
 <translation id="5067540696062462445">ڈاؤن لوڈز</translation>
@@ -1504,6 +1508,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6659660757330712663">آپ ٹیبز کے درمیان سوئچ کرنے کے لیے ٹول بار کو سوائپ کر سکتے ہیں۔</translation>
 <translation id="6663529247339810546">تصویر کو محفوظ نہیں کر سکتے ہیں</translation>
 <translation id="6668619169535738264">بُک مارک میں ترمیم کریں</translation>
+<translation id="6670729408462528018">گیلری</translation>
 <translation id="6671294218820966278">پڑھا ہوا کے بطور نشان زد کریں</translation>
 <translation id="6672697278890207089">اپنا پاس فریز درج کریں</translation>
 <translation id="6674917187596384849">آپ آسانی سے اکاؤنٹس کے درمیان سوئچ کر سکتے ہیں</translation>
@@ -1660,6 +1665,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">‏آپ کے پاس اپنے Google پاس ورڈ مینیجر میں پہلے سے ہی ان اکاؤنٹس کے پاس ورڈز موجود ہیں۔ اگر آپ ذیل میں سے کسی ایک پاس ورڈ کو درآمد کرنے کا انتخاب کرتے ہیں تو یہ موجودہ پاس ورڈ کو تبدیل کر دے گا۔</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> فیصد ڈاؤن لوڈ ہوگئی۔</translation>
+<translation id="7345061034321640811">درآمد کرنے کی اجازت نہیں ہے</translation>
 <translation id="7352651011704765696">کچھ غلط ہو گیا</translation>
 <translation id="7363349185727752629">آپ کی رازداری کے انتخابات کی گائیڈ</translation>
 <translation id="7364796246159120393">فائل کا انتخاب کریں</translation>
@@ -2201,6 +2207,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="952704832371081537">منسوخ کریں</translation>
 <translation id="95332591904104970">منسلک ایپس</translation>
 <translation id="954667170699278022">پڑھنے کی فہرست</translation>
+<translation id="956066588046842680">آپ کی تنظیم کی پالیسی کے مطابق، اس ڈیٹا کو درآمد کرنے کی اجازت نہیں ہے۔</translation>
 <translation id="956218893102219091">‏اپنے IP پتہ کی بنیاد پر تخمینی مقام کے بجائے، انتہائی درست Gemini نتائج کے لیے اپنے قطعی مقام کا استعمال کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">براؤزنگ ڈیٹا حذف کریں</translation>
 <translation id="963102227019621224">ویب اور ایپ سرگرمی</translation>
@@ -2212,5 +2219,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="984275831282074731">ادائیگی کے طریقے</translation>
 <translation id="985379595344853742">سبھی پوشیدگی ٹیبز بند کریں</translation>
 <translation id="988141524645182168">دیگر آلات</translation>
+<translation id="995174784802614337">{count,plural, =1{‫{count} پاس کی درآمد کی گئی}other{‫{count} پاس کیز درآمد کی گئیں}}</translation>
 <translation id="999768147936949692">‏ابھی کے لیے، آپ صرف فیملی ممبرز کے ساتھ ہی پاس ورڈز کا اشتراک کر سکتے ہیں۔ <ph name="BEGIN_LINK" />فیملی ممبرز<ph name="END_LINK" /> کو اپنے گروپ میں شامل ہونے کے لیے مدعو کریں، ساتھ ہی Google پر اپنے پروڈکٹس اور سبسکرپشنز سے مزید استفادہ بھی کریں۔</translation>
 </translationbundle>

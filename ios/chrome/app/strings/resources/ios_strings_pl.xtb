@@ -42,6 +42,7 @@
 <translation id="1122068467107743258">Służbowy</translation>
 <translation id="1126696498560056882">Zarządzaj kontami na tym urządzeniu</translation>
 <translation id="1126809382673880764">Nie chroni przed niebezpiecznymi stronami, pobieranymi plikami ani rozszerzeniami. Funkcja Bezpieczne przeglądanie nadal będzie chronić Cię w innych usługach Google, w których jest dostępna (takich jak Gmail i wyszukiwarka).</translation>
+<translation id="1133418583142946603">Dodaj bieżącą kartę</translation>
 <translation id="1136104150802877429">Wyświetla opinie o produktach</translation>
 <translation id="1142371195993008685">Wyłącz powiadomienia funkcji <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Używasz konta <ph name="USER" /></translation>
@@ -78,6 +79,7 @@
 <translation id="1285320974508926690">Nigdy nie tłumacz tej witryny</translation>
 <translation id="1287229685519872919">dane Google Workspace</translation>
 <translation id="1291506870746876680">Gdy opuścisz tę stronę, uprawnienia witryny <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />”<ph name="END_BOLD" /> zostaną wyłączone.</translation>
+<translation id="1293556467332435079">Pliki</translation>
 <translation id="129553762522093515">Ostatnio zamknięte</translation>
 <translation id="1296581780163690620">Pobrać plik? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Aby móc zawsze używać haseł na koncie Google, potwierdź swoją tożsamość.</translation>
@@ -1044,6 +1046,7 @@
 <translation id="5055015094595227120">Dokładna lokalizacja</translation>
 <translation id="5055551113846164633">Spowoduje to usunięcie adresów zapisanych na tym urządzeniu. Usunięte zostaną też adresy zapisane na koncie Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Znaleziono problemy <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">Utwórz obraz</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Zainstaluj Dysk Google</translation>
 <translation id="5067540696062462445">Pobrane</translation>
@@ -1505,6 +1508,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6659660757330712663">Aby przełączać się między kartami, możesz przesuwać palcem po pasku narzędzi.</translation>
 <translation id="6663529247339810546">Nie można zapisać obrazu</translation>
 <translation id="6668619169535738264">Edytuj zakładkę</translation>
+<translation id="6670729408462528018">Galeria</translation>
 <translation id="6671294218820966278">Oznacz jako przeczytane</translation>
 <translation id="6672697278890207089">Wprowadź swoje hasło</translation>
 <translation id="6674917187596384849">Możesz łatwo przełączać się między kontami</translation>
@@ -1661,6 +1665,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Menedżer haseł Google przechowuje już hasła do tych kont. Jeśli zechcesz zaimportować jedno z poniższych haseł, zastąpi ono dotychczasowe.</translation>
 <translation id="7336264872878993241">Pobrano <ph name="PERCENT" /> procent</translation>
+<translation id="7345061034321640811">Import niedozwolony</translation>
 <translation id="7352651011704765696">Coś poszło nie tak</translation>
 <translation id="7363349185727752629">Przewodnik po ustawieniach prywatności</translation>
 <translation id="7364796246159120393">Wybierz plik</translation>
@@ -2202,6 +2207,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="952704832371081537">Anuluj</translation>
 <translation id="95332591904104970">Połączone aplikacje</translation>
 <translation id="954667170699278022">Do przeczytania</translation>
+<translation id="956066588046842680">Importowania tych danych zabrania zasada organizacji.</translation>
 <translation id="956218893102219091">Aby wyniki uzyskiwane w Gemini były jak najbardziej trafne, używaj dokładnej lokalizacji (a nie orientacyjnej, szacowanej na podstawie adresu IP). <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Usuń dane przeglądania</translation>
 <translation id="963102227019621224">Aktywność w internecie i aplikacjach</translation>

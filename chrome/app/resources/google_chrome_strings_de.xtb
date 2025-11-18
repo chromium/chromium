@@ -483,6 +483,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="6417690341895039567">{COUNT,plural, =1{Deine Organisation hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser eine Minute lang nicht verwendet wird. Browserdaten werden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.}other{Deine Organisation hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser # Minuten lang nicht verwendet wird. Browserdaten werden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.}}</translation>
 <translation id="6418662306461808273">Zu bestehendem Chrome-Profil wechseln?</translation>
 <translation id="6426623519983252346">Wenn du Chrome unter iOS das nächste Mal öffnest, wirst du aufgefordert, die Funktion „<ph name="FEATURE_NAME" />“ auszuprobieren.</translation>
+<translation id="6434035853014503219">Danke, dass du Chrome als Standardbrowser festgelegt hast.</translation>
 <translation id="6473905796280459355">Zur Seite „Über Chrome“</translation>
 <translation id="6481963882741794338">Chrome und andere Google-Dienste zur Personalisierung und für andere Zwecke verknüpfen</translation>
 <translation id="648319183876919572">Erweitertes Safe Browsing schützt dich besser vor gefährlichen Websites und Downloads</translation>
@@ -579,6 +580,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="756809126120519699">Gelöschte Chrome-Daten</translation>
 <translation id="7572537927358445944">Deaktiviert • Chrome kann nicht bestätigen, woher diese Erweiterung stammt</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" />-Installationsprogramm</translation>
+<translation id="7596160425942761210">Du kannst Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und Apps auf Links klickst</translation>
 <translation id="7602868996817972616">Google Fragen zu dieser Seite stellen</translation>
 <translation id="760353356052806707">Ein anderes Programm auf Ihrem Computer hat eine App hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.
 
@@ -674,6 +676,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="8601359445272098721">Neu! Du kannst sowohl Text als auch Bilder auf deinem Bildschirm übersetzen, indem du den Button „Bildschirm übersetzen“ auswählst</translation>
 <translation id="8614913330719544658">Google Chrome reagiert nicht. Jetzt neu starten?</translation>
 <translation id="861702415419836452">Chrome benötigt Zugriff auf die Kamera, um eine 3D-Karte deiner Umgebung zu erstellen</translation>
+<translation id="8624541899164515475">Einstellungen, werden in neuem Tab geöffnet.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome wird in einer Minute neu gestartet}other{Chrome wird in # Minuten neu gestartet}}</translation>
 <translation id="8637932705841171563">Wenn du dein Fenster teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chrome zulassen</translation>
 <translation id="8641606876632989680">Wenn du dich mit einem Passwort anmeldest, das gehackt wurde, benachrichtigt dich Chrome entsprechend.</translation>

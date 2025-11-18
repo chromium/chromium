@@ -1051,6 +1051,7 @@
 <translation id="1699807488537653303">ແກ້ໄຂຂໍ້ຜິດພາດລະຫັດຜ່ານ</translation>
 <translation id="1700201317341192482">ລຶບບັດສະເໝືອນຂອງທ່ານອອກ</translation>
 <translation id="1700517974991662022">ເຂົ້າເບິ່ງແລ້ວ</translation>
+<translation id="1701367827913789499">ອ່ານໄດ້ຢ່າງສະດວກສະບາຍໂດຍມີສິ່ງລົບກວນໜ້ອຍທີ່ສຸດດ້ວຍປຸ່ມໂໝດການອ່ານຢູ່ແຖບເຄື່ອງມື</translation>
 <translation id="1703331064825191675">ບໍ່ກັງວົນກ່ຽວກັບລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="1703666494654169921">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ອຸປະກອນເວີຊົວ ຣິອາລິຕີ ຫຼື ຂໍ້ມູນ</translation>
 <translation id="1704097193565924901">ໃຊ້ຕົວພິມໃຫຍ່</translation>
@@ -2970,6 +2971,7 @@
 <translation id="3008272652534848354">ຣີເຊັດການອະນຸຍາດ</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> ກຳນົດໃຫ້ທ່ານເຊື່ອມຕໍ່ກັບ Wi-Fi ມື້ນີ້ເພື່ອດາວໂຫຼດການອັບເດດ. ຫຼື ດາວໂຫຼດຈາກການເຊື່ອມຕໍ່ແບບວັດແທກປະລິມານອິນເຕີເນັດ (ອາດເກັບຄ່າບໍລິການ).}other{<ph name="MANAGER" /> ກຳນົດໃຫ້ທ່ານເຊື່ອມຕໍ່ກັບ Wi-Fi ແລະ ດາວໂຫຼດການອັບເດດກ່ອນເວລາທີ່ກຳນົດໄວ້. ຫຼື ດາວໂຫຼດຈາກການເຊື່ອມຕໍ່ແບບວັດແທກປະລິມານອິນເຕີເນັດ (ອາດເກັບຄ່າບໍລິການ).}}</translation>
 <translation id="3008923556848076408">Gemini ຈະສືບຕໍ່ເຮັດໜ້າວຽກຂອງທ່ານ</translation>
+<translation id="3008926075262837186">ອ່ານໄດ້ຢ່າງສະດວກສະບາຍໂດຍມີສິ່ງລົບກວນໜ້ອຍທີ່ສຸດ</translation>
 <translation id="3009178788565917040">ຜົນອອກມາ</translation>
 <translation id="3009352964623081324">ຊອກຫາ + O, ຈາກນັ້ນ S. ໃຊ້ເພື່ອຕິດຕັ້ງ, ຈັດການ ແລະ ປັບແຕ່ງສຽງ.</translation>
 <translation id="3009779501245596802">ຖານ​ຂໍ້​ມູນ​ເຂົ້າດັດ​ຊະ​ນີແລ້ວ</translation>
@@ -4428,7 +4430,6 @@
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄວາມຖືກຕ້ອງຂອງສະຖານທີ່<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">ນໍາ​ເຂົ້າແລ້ວ</translation>
 <translation id="3992008114154328194">ກຳລັງດາວໂຫຼດ <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">ສຳຮອງຂໍ້ມູນ</translation>
 <translation id="3994075804072562819">ໃຫ້ <ph name="SPECIFIC_NAME" /> ຄວບຄຸມອຸປະກອນ USB.</translation>
 <translation id="3994318741694670028">ຢ່າງໃດກໍຕາມ, ຄອມພິວເຕີຂອງທ່ານຖືກຕັ້ງຄ່າດ້ວຍ ID ຮາດແວທີ່ຜິດຮູບແບບ. ນີ້ປ້ອງກັນບໍ່ໃຫ້ ChromeOS Flex ອັບເດດການແກ້ໄຂຄວາມປອດໄພຫຼ້າສຸດໄດ້ ແລະ ຄອມພິວເຕີຂອງທ່ານ <ph name="BEGIN_BOLD" />ອາດສ່ຽງຕໍ່ການໂຈມຕີທີ່ປະສົງຮ້າຍ<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">ປົດລັອກໂທລະສັບຂອງງທ່ານ ແລະ ຈັບມັນເຂົ້າມາໃກ້ໆເພື່ອປົດລັອກ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ.</translation>
@@ -7727,7 +7728,6 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> ໄດ້ປິດການນຳໃຊ້ການດີບັກ ADB ແລ້ວ. ນີ້ຈະຣີເຊັດ <ph name="DEVICE_TYPE" /> ໃນ 24 ຊົ່ວໂມງ. ສຳຮອງຂໍ້ມູນໄຟລ໌ຕ່າງໆທີ່ທ່ານຕ້ອງຮັກສາໄວ້</translation>
 <translation id="6336194758029258346">ພາສາແອັບ</translation>
 <translation id="6337543438445391085">ຂໍ້ມູນສ່ວນຕົວບາງຢ່າງອາດຍັງຄົງຖືກຮວມຢູ່ໃນຂໍ້ມູນຢູ່. ຢ່າລືມກວດສອບໄຟລ໌ທີ່ສົ່ງອອກໄປແລ້ວ.</translation>
-<translation id="6338554362382763574">ທ່ານສາມາດຖາມຄຳຖາມ Gemini ກ່ຽວກັບແຖບທີ່ທ່ານກຳລັງແບ່ງປັນໄດ້ຢ່າງງ່າຍດາຍໃນຂະນະທີ່ທ່ານເລືອກເບິ່ງ</translation>
 <translation id="6338968693068997776">ເພີ່ມອຸປະກອນ USB</translation>
 <translation id="6339668969738228384">ສ້າງໂປຣໄຟລ໌ໃໝ່ສຳລັບ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">ໂປຣໂຕຄໍການພິມຜ່ານອິນເຕີເນັດ (IPPS)</translation>
@@ -8347,7 +8347,6 @@
     <ph name="BEGIN_PARAGRAPH2" />ທ່ານສາມາດປິດບໍລິການນີ້ໄດ້ໃນການຕັ້ງຄ່າ.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">ຍົກເລີກການສຳຮອງຂໍ້ມູນ Linux ແລ້ວ</translation>
 <translation id="6782067259631821405">ລະຫັດ PIN ບໍ່ຖືກຕ້ອງ</translation>
-<translation id="6782219876520622071">ທີມງານກວດສອບອາດເຫັນການສົນທະນາກ່ຽວກັບແຖບທີ່ແບ່ງປັນເພື່ອນຳໄປໃຊ້ປັບປຸງ Gemini</translation>
 <translation id="6783036716881942511">ເຊົາຈື່ອຸປະກອນນີ້ບໍ?</translation>
 <translation id="6783667414610055871">ການຕັ້ງຄ່າ Microsoft OneDrive</translation>
 <translation id="6784523122863989144">ຮອງຮັບໂປຣໄຟລ໌</translation>
@@ -9543,7 +9542,6 @@
 <translation id="7620616707541471029">ເລືອກບັນຊີເພື່ອດຳເນີນການຕໍ່</translation>
 <translation id="7621382409404463535">ລະບົບບັນທຶກການກຳນົດຄ່າອຸປະກອນບໍ່ສຳເລັດ.</translation>
 <translation id="7621595347123595643">ທ່ານຈະບໍ່ສາມາດກູ້ຄືນຂໍ້ມູນໃນເຄື່ອງໄດ້ຫາກທ່ານລືມລະຫັດຜ່ານ ຫຼື PIN ຂອງທ່ານ.</translation>
-<translation id="7621863462266622331">ເມື່ອແບ່ງປັນແຖບ, ລະບົບຈະສົ່ງເນື້ອຫາ, ສື່ ແລະ URL ຂອງໜ້າເວັບໄປຫາ Google</translation>
 <translation id="7622114377921274169">ກຳລັງສາກໄຟ.</translation>
 <translation id="7622768823216805500">ໂດຍປົກກະຕິແລ້ວ ເວັບໄຊຈະຕິດຕັ້ງຕົວຈັດການການຈ່າຍເງິນສຳລັບຄຸນສົມບັດການຊື້ເຄື່ອງ ເຊັ່ນ: ການຈ່າຍຄ່າສິນຄ້າທີ່ງ່າຍກວ່າ</translation>
 <translation id="7622966771025050155">ສະຫຼັບໄປຫາແຖບທີ່ບັນທຶກໄວ້</translation>
@@ -10888,6 +10886,7 @@
 <translation id="8517759303731677493">ແກ້ໄຂ…</translation>
 <translation id="8518809011298357036">ປິດມຸມມອງທາງເທິງ</translation>
 <translation id="8518942514525208851">ເຊື່ອງຄຳຫຍາບຄາຍ</translation>
+<translation id="8520238089740349550">ບໍ່ສຳເລັດ - ບລັອກການດາວໂຫຼດໃນເຄື່ອງແລ້ວ</translation>
 <translation id="8523493869875972733">ຮັກສາການປ່ຽນແປງ</translation>
 <translation id="8523849605371521713">ເພີ່ມໂດຍນະໂຍບາຍ</translation>
 <translation id="8524594273111932386">ຊອກຫາ + ລູກສອນລົງ</translation>

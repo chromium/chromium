@@ -522,6 +522,7 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër profili os
 <translation id="705851970750939768">Përditëso Chromium</translation>
 <translation id="7067091210845072982">Nëse një imazh nuk ka një përshkrim të dobishëm, Chromium do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google.</translation>
 <translation id="7141270731789036260">Personalizo Chrome for Testing</translation>
+<translation id="7147227333672430807">Mund të përdorësh Chromium sa herë që klikon te lidhjet në mesazhe, dokumente dhe aplikacione të tjera</translation>
 <translation id="7163519456498498587">Hiq <ph name="EXTENSION_NAME" /> nga Chromium</translation>
 <translation id="7173822816570314652">Organizata jote i fshin të dhënat e Chromium kur ato nuk përdoren për <ph name="TIMEOUT_DURATION" />. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.</translation>
 <translation id="718435575166326686">Chromium ka nevojë për lejen e kamerës për këtë sajt</translation>
@@ -636,6 +637,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8471947159125090285">Për të përdorur dhe për të ruajtur të dhënat e Chromium në "Llogarinë tënde të Google", verifiko që je ti</translation>
 <translation id="8482493977473846331">Shfaq kërkesat për t'u identifikuar në Chromium</translation>
 <translation id="8493179195440786826">Chromium nuk është i përditësuar</translation>
+<translation id="850264194101621529">Faleminderit që zgjodhe Chromium si shfletuesin tënd të parazgjedhur!</translation>
 <translation id="8522801943730206384">Chromium mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato</translation>
 <translation id="8555465886620020932">Gabim shërbimi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Mund të gozhdosh "Kërkimin nëpërmjet imazheve" për qasje të lehtë; kliko te butoni "Gozhdo" në krye të panelit anësor</translation>
@@ -645,6 +647,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8586442755830160949">Të drejtat e autorit <ph name="YEAR" /> Autorët e Chromium. Të gjitha të drejtat të rezervuara.</translation>
 <translation id="8601359445272098721">E re! Mund të përkthesh tekstet dhe imazhet në ekranin tënd duke zgjedhur butonin "përkthe ekranin"</translation>
 <translation id="8619360774459241877">Po hapet Chromium...</translation>
+<translation id="8624541899164515475">Cilësimet, hapet në një skedë të re.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing nuk mund të bëhet shfletuesi yt i parazgjedhur.</translation>
 <translation id="8677922833187616101">Shfaq gjithmonë shkurtoren e "Modalitetit të IA-së së Google"</translation>
 <translation id="8697124171261953979">Kontrollon po ashtu se cila faqe shfaqet kur nis Chromium ose kur kërkon nga Omnibox.</translation>

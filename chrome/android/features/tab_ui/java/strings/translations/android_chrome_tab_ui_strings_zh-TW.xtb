@@ -73,6 +73,7 @@
 <translation id="311432875115153175">分頁群組清單已關閉</translation>
 <translation id="3194464645767632461">評分</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{將 <ph name="TABS_COUNT_ONE" /> 個分頁加入群組}other{將 <ph name="TABS_COUNT_MANY" /> 個分頁加入群組}}</translation>
+<translation id="3293080634164207409">新增分頁</translation>
 <translation id="3328308545011660196">建議：似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要將這些分頁加入群組嗎？</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{閒置 1 天後}other{閒置 <ph name="DAY_COUNT_MANY" /> 天後}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{新增 <ph name="ONE_ADDED" /> 個分頁}other{新增 <ph name="MANY_ADDED" /> 個分頁}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">活動</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{<ph name="CURRENT_RATING" /> 分 (滿分 <ph name="RATING_BASELINE" />)，有 <ph name="REVIEWS_COUNT_ONE" /> 則評論}other{<ph name="CURRENT_RATING" /> 分 (滿分 <ph name="RATING_BASELINE" />)，有 <ph name="REVIEWS_COUNT_MANY" /> 則評論}}</translation>
 <translation id="7885132941432959125">將分頁向右移</translation>
+<translation id="7887334752153342268">複製</translation>
 <translation id="7939917283308035850">未選取<ph name="COLOR_NAME" /></translation>
 <translation id="7961015016161918242">一律不要</translation>
 <translation id="7966321538264951561">關閉建議項目。</translation>

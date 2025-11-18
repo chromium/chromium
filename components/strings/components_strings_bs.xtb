@@ -425,9 +425,11 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1682696192498422849">Najprije kratka strana</translation>
 <translation id="168693727862418163">Vrijednost ovog pravila u odnosu na njegovu šemu nije potvrđena pa će biti zanemareno.</translation>
 <translation id="168841957122794586">Potvrda servera sadrži slab kriptografski ključ.</translation>
+<translation id="1688718429648938412">Spremite karticu vjernosti u Wallet</translation>
 <translation id="1689333818294560261">Nadimak</translation>
 <translation id="1692622044604477956">Liste filmova i vremena prikazivanja u kinima</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Kako možete upravljati podacima:<ph name="END_BOLD" /> Chrome automatski briše teme starije od 4 sedmice. Kako nastavljate pregledati, tema se može ponovo pojaviti na listi. Također možete blokirati teme koje ne želite da Chrome dijeli s web lokacijama i isključiti teme oglasa u bilo kojem trenutku u postavkama Chromea.</translation>
+<translation id="1697808683313379647">Google koristi informacije sa stranice za plaćanje i druge relevantne podatke da ponudi ove opcije.</translation>
 <translation id="1699651774646344471">Sada možete koristiti adrese s Google računa</translation>
 <translation id="1700542542921501212">Pomoću pretraživača <ph name="SEARCH_ENGINE_NAME" /> možete pretraživati web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1722,7 +1724,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3792826587784915501">Kultni i indie filmovi</translation>
 <translation id="3793574014653384240">Broj nedavnih padova aplikacija i uzroci</translation>
 <translation id="3795624560191557077">Nedavno ste promijenili lozinku pronađenu u javnom narušavanju podataka. U slučaju problema vam Google upravitelj lozinki može pomoći da se prijavite.</translation>
-<translation id="3796181268473765083">Platite u 4 beskamatne ili mjesečne rate (podložno je ispunjavanju uslova)</translation>
 <translation id="3799805948399000906">Font je zatražen</translation>
 <translation id="3801297763951514916">Često posjećujete</translation>
 <translation id="380329542618494757">Ime</translation>
@@ -2948,6 +2949,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5813753398265398978">Fizika</translation>
 <translation id="5817918615728894473">Upari</translation>
 <translation id="5820625124144807242">Nakon što pregledate narudžbu, morate se prijaviti na <ph name="BNPL_ISSUER_NAME" /> račun ili ga kreirati. Račun će se automatski povezati s Google Payom.</translation>
+<translation id="5820751560028604030">Lokalno preuzimanje je blokirano</translation>
 <translation id="5826507051599432481">Uobičajeni naziv (CN)</translation>
 <translation id="5830698870816298009">korištenje kamere i kretanje</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3660,6 +3662,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6965978654500191972">Uređaj</translation>
 <translation id="696703987787944103">Perceptivno</translation>
 <translation id="6967851206780867018">1 fajl je blokiran zbog sadržaja</translation>
+<translation id="6968217325369275594">Spremite svoje podatke da biste primali ažuriranja na bilo kojem od svojih uređaja. Vaši se podaci spremaju na uslugu <ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" /> za račun <ph name="ACCOUNT" /></translation>
 <translation id="6970885655016700774">Tkanina (arhivska)</translation>
 <translation id="6971439137020188025">Brzo kreirate novu Google prezentaciju u Prezentacijama</translation>
 <translation id="6972629891077993081">HID uređaji</translation>
@@ -3702,6 +3705,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7031646650991750659">Koje Google Play aplikacije ste instalirali</translation>
 <translation id="7035705295266423040">Banka želi potvrditi vaš identitet</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da upravljate postavkama privatnosti Google računa</translation>
+<translation id="7042465939346919737">Google koristi informacije sa stranice za plaćanje i druge relevantne podatke da ponudi ove opcije. Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Preciziranje rezultata</translation>
 <translation id="7043552168914147882">Papir s jezičkom</translation>
 <translation id="7044081119134178347">Kamera je dozvoljena ovaj put</translation>

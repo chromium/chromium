@@ -1055,6 +1055,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1699807488537653303">Ispravite grešku s lozinkom</translation>
 <translation id="1700201317341192482">Uklonite virtuelnu karticu</translation>
 <translation id="1700517974991662022">Posjećeno</translation>
+<translation id="1701367827913789499">Udobno čitanje uz minimalna ometanja pomoću dugmeta načina rada za čitanje na alatnoj traci</translation>
 <translation id="1703331064825191675">Nemojte nikada brinuti zbog svojih lozinki</translation>
 <translation id="1703666494654169921">Nemoj dozvoliti web lokacijama korištenje uređaja ili podataka virtuelne realnosti</translation>
 <translation id="1704097193565924901">Veliko početno slovo</translation>
@@ -2970,6 +2971,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3008272652534848354">Poništi odobrenja</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Domena <ph name="MANAGER" /> zahtijeva da se danas povežete s WiFi mrežom radi preuzimanja ažuriranja. Možete ga preuzeti i putem veze s naplatom (mogu nastati troškovi).}one{Domena <ph name="MANAGER" /> zahtijeva da se povežete s WiFi mrežom i preuzmete ažuriranje prije isteka roka. Možete ga preuzeti i putem veze s naplatom (mogu nastati troškovi).}few{Domena <ph name="MANAGER" /> zahtijeva da se povežete s WiFi mrežom i preuzmete ažuriranje prije isteka roka. Možete ga preuzeti i putem veze s naplatom (mogu nastati troškovi).}other{Domena <ph name="MANAGER" /> zahtijeva da se povežete s WiFi mrežom i preuzmete ažuriranje prije isteka roka. Možete ga preuzeti i putem veze s naplatom (mogu nastati troškovi).}}</translation>
 <translation id="3008923556848076408">Gemini će nastaviti raditi na vašem zadatku</translation>
+<translation id="3008926075262837186">Čitajte udobno uz minimalna ometanja</translation>
 <translation id="3009178788565917040">Izlaz</translation>
 <translation id="3009352964623081324">Tipka za pretraživanje + O, a zatim S. Koristite da instalirate, upravljate i prilagodite glasove.</translation>
 <translation id="3009779501245596802">Baza indeksa</translation>
@@ -4428,7 +4430,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Saznajte više o preciznosti lokacije<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Uvezeno</translation>
 <translation id="3992008114154328194">Preuzimanje fajla <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Napravite sigurnosnu kopiju podataka</translation>
 <translation id="3994075804072562819">Omogućite aplikaciji <ph name="SPECIFIC_NAME" /> da upravlja USB uređajima.</translation>
 <translation id="3994318741694670028">Nažalost, računar je konfiguriran s neispravnim ID-om hardvera. Ovim se sprečava da se ChromeOS Flex ažurira najnovijim sigurnosnim ispravkama i vaš računar <ph name="BEGIN_BOLD" />može biti izložen zlonamjernim napadima<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Otključajte telefon i primaknite ga da otključate svoj <ph name="DEVICE_TYPE" />.</translation>
@@ -7728,7 +7729,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6336038146639916978">Domena <ph name="MANAGER" /> je onemogućila otklanjanje grešaka putem ADB-a. Ovim će se <ph name="DEVICE_TYPE" /> vratiti na zadano za 24 sata. Napravite kopiju svih fajlova koje želite sačuvati.</translation>
 <translation id="6336194758029258346">Jezik aplikacije</translation>
 <translation id="6337543438445391085">Neke lične informacije će možda i dalje biti uključene u podatke. Obavezno pregledajte izvezene fajlove.</translation>
-<translation id="6338554362382763574">Možete lako Geminiju postavljati pitanja o karticama koje dijelite dok pregledate</translation>
 <translation id="6338968693068997776">Dodajte USB uređaj</translation>
 <translation id="6339668969738228384">Kreirajte novi profil za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internetski protokol za štampanje (IPPP)</translation>
@@ -8127,7 +8127,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6619990499523117484">Potvrdite PIN</translation>
 <translation id="6620000730890558421">Organizirajte kartice putem AI-ja</translation>
 <translation id="6620254580880484313">Naziv spremnika</translation>
-<translation id="6621282332208609777">Postavite pitanje Googleu ili unesite URL</translation>
+<translation id="6621282332208609777">Pitajte Google ili upišite URL</translation>
 <translation id="6621391692573306628">Da pošaljete ovu karticu na drugi uređaj, prijavite se na Chrome na oba uređaja</translation>
 <translation id="6622980291894852883">Nastavi blokirati slike</translation>
 <translation id="6624036901798307345">U načinu rada tableta dodirnite dugme alatne trake brojača kartica da otvorite novu traku kartice koja prikazuje sličice svake kartice.</translation>
@@ -8352,7 +8352,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
     <ph name="BEGIN_PARAGRAPH2" />Ovu uslugu možete isključiti u Postavkama.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Izrada sigurnosne kopije za Linux je otkazana</translation>
 <translation id="6782067259631821405">Nevažeći PIN</translation>
-<translation id="6782219876520622071">Razgovore o dijeljenim karticama će možda pregledati osobe koje vrše pregled radi poboljšavanja Geminija</translation>
 <translation id="6783036716881942511">Zaboraviti ovaj uređaj?</translation>
 <translation id="6783667414610055871">Postavke Microsoft OneDrivea</translation>
 <translation id="6784523122863989144">Profil je podržan</translation>
@@ -9550,7 +9549,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7620616707541471029">Odaberite račun da nastavite</translation>
 <translation id="7621382409404463535">Sistem nije uspio sačuvati konfiguraciju uređaja.</translation>
 <translation id="7621595347123595643">Ako zaboravite lozinku ili PIN, nećete moći vratiti lokalne podatke.</translation>
-<translation id="7621863462266622331">Kad se kartice dijele, njihov sadržaj, mediji i URL-ovi šalju se Googleu</translation>
 <translation id="7622114377921274169">Punjenje.</translation>
 <translation id="7622768823216805500">Web lokacije obično instaliraju obrađivače plaćanja za funkcije kupovine, naprimjer, za lakše plaćanje</translation>
 <translation id="7622966771025050155">Pređi na snimljenu karticu</translation>
@@ -10896,6 +10894,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8517759303731677493">Uredite…</translation>
 <translation id="8518809011298357036">Zatvori gornji prikaz</translation>
 <translation id="8518942514525208851">Sakrij vulgarnost</translation>
+<translation id="8520238089740349550">Nije uspjelo – lokalno preuzimanje je blokirano</translation>
 <translation id="8523493869875972733">Zadrži izmjene</translation>
 <translation id="8523849605371521713">Dodano pravilom</translation>
 <translation id="8524594273111932386">tipka za pretraživanje + strelica nadolje</translation>
@@ -11769,7 +11768,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="909554839118732438">Zatvori anonimni način rada</translation>
 <translation id="9095819602391364796">Nemoj dozvoliti web lokacijama da kontroliraju i reprogramiraju MIDI uređaje</translation>
 <translation id="9096053102600371572">Kontrolirano klizanje <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
-<translation id="9096221857560878399">Usporedite opcije</translation>
+<translation id="9096221857560878399">Uporedite opcije</translation>
 <translation id="9096776523567481218">nije lokalno instalirano</translation>
 <translation id="9098860402274800697">Uklonite Google Play i Android aplikacije</translation>
 <translation id="9099220545925418560">Na osnovu vaše historije pregledanja. Postavka je isključena.</translation>

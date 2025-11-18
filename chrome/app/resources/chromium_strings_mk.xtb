@@ -523,6 +523,7 @@
 <translation id="705851970750939768">Ажурирај го Chromium</translation>
 <translation id="7067091210845072982">Ако сликата нема корисен опис, Chromium ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google.</translation>
 <translation id="7141270731789036260">Приспособете го „Chrome за тестирање“</translation>
+<translation id="7147227333672430807">Може да го користите Chromium секогаш кога ќе кликнете линкови во пораки, документи и други апликации</translation>
 <translation id="7163519456498498587">Отстрани ја <ph name="EXTENSION_NAME" /> од Chromium</translation>
 <translation id="7173822816570314652">Вашата организација ги брише податоците на Chromium кога не се користи <ph name="TIMEOUT_DURATION" />. Тоа може да ги опфати историјата, автоматското пополнување и преземањата.</translation>
 <translation id="718435575166326686">На Chromium му треба дозвола за камерата за сајтов</translation>
@@ -637,6 +638,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8471947159125090285">За да користите и зачувувате податоци од Chromium во вашата сметка на Google, потврдете го вашиот идентитет</translation>
 <translation id="8482493977473846331">Прикажува prompts за најава на Chromium</translation>
 <translation id="8493179195440786826">Chromium е застарен</translation>
+<translation id="850264194101621529">Фала што го избравте Chromium како ваш стандарден прелистувач!</translation>
 <translation id="8522801943730206384">Chromium може да ги проверува вашите лозинки ако ги зачувате</translation>
 <translation id="8555465886620020932">Грешка на услугата: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8556420416730706394">Може да ја закачите „Пребарување со слики“ за лесен пристап. Само кликнете го копчето „Закачи“ најгоре на страничната табла</translation>
@@ -646,6 +648,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8586442755830160949">Авторски права <ph name="YEAR" /> на Авторите на Chromium. Сите права се задржани.</translation>
 <translation id="8601359445272098721">Ново! Може да ги преведувате и текстот и сликите на екранот така што ќе го изберете копчето „Преведи го екранот“</translation>
 <translation id="8619360774459241877">Се стартува Chromium…</translation>
+<translation id="8624541899164515475">Поставки, се отвора во нова картичка.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing не може да се направи да биде ваш стандарден прелистувач.</translation>
 <translation id="8677922833187616101">Секогаш прикажувај ја кратенката за „AI-режим“ на Google</translation>
 <translation id="8697124171261953979">Контролира и која страница се прикажува кога го стартувате Chromium или ако пребарувате од лентата за адреси.</translation>

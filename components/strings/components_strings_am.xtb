@@ -428,6 +428,7 @@
 <translation id="1689333818294560261">ቅጽል ስም</translation>
 <translation id="1692622044604477956">የፊልም ዝርዝሮች እና የቲያትር ማሳያ ሰዓቶች</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />ውሂብዎን እንዴት ማስተዳደር እንደሚችሉ፦<ph name="END_BOLD" /> Chrome ከ4 ሳምንታት በላይ የቆዩ ርዕሶችን በራስ-ሰር ይሰርዛል። እርስዎ ማሰስ ሲቀጥሉ በዝርዝሩ ላይ አንድ ርዕስ እንደገና ሊታይ ይችላል። እንዲሁም Chrome ለጣቢያዎች እንዲያጋራቸው የማይፈልጓቸውን ርዕሶች ማገድ እና በማንኛውም ጊዜ በChrome ቅንብሮች ውስጥ የማስታወቂያ ቅንብሮችን ማጥፋት ይችላሉ።</translation>
+<translation id="1697808683313379647">Google እነዚህን አማራጮች ለማቅረብ ከክፍያ ማጠናቀቂያ ገጽ እና ሌሎች አግባብነት ያላቸው መረጃዎችን ይጠቀማል።</translation>
 <translation id="1699651774646344471">አሁን ከGoogle መለያዎ ላይ አድራሻዎችን መጠቀም ይችላሉ።</translation>
 <translation id="1700542542921501212">ድሩን ለመፈለግ <ph name="SEARCH_ENGINE_NAME" />ን መጠቀም ይችላሉ።</translation>
 <translation id="1702815194757674443">አርኦሲ 16ኬ</translation>
@@ -1721,7 +1722,6 @@
 <translation id="3792826587784915501">የአምልኮ እና ኢንዲ ፊልሞች</translation>
 <translation id="3793574014653384240">በቅርቡ ያጋጠሙ ብልሽቶች ብዛት እና ምክንያታቸው</translation>
 <translation id="3795624560191557077">በይፋዊ የውሂብ ጥሰት ውስጥ የተገኘ የይለፍ ቃልን በቅርብ ጊዜ ለውጠዋል። ችግር ካጋጠመ Google የይለፍ ቃል አስተዳዳሪ በመለያ እንዲገቡ ሊያግዝዎት ይችላል።</translation>
-<translation id="3796181268473765083">በ4 ከወለድ-ነጻ ወይም በተከታታይ ወርሃዊ ክፍያዎች ይክፈሉ (ለብቁነት ተገዢ ነው)</translation>
 <translation id="3799805948399000906">ቅርጸ-ቁምፊ ተጠይቋል</translation>
 <translation id="3801297763951514916">እርስዎ አብዛኛውን ጊዜ የሚጎበኙት</translation>
 <translation id="380329542618494757">ስም</translation>
@@ -2947,6 +2947,7 @@
 <translation id="5813753398265398978">ፊዚክስ</translation>
 <translation id="5817918615728894473">አጣምር</translation>
 <translation id="5820625124144807242">ትዕዛዝዎን ከገመገሙ በኋላ በመለያ መግባት ወይም በ<ph name="BNPL_ISSUER_NAME" /> መለያ መፍጠር አለብዎት። ይህ መለያ ከGoogle Pay ጋር በራስ-ሰር ይገናኛል።</translation>
+<translation id="5820751560028604030">አካባቢያዊ ውርድ ታግዷል</translation>
 <translation id="5826507051599432481">የጋር ስም (CN)</translation>
 <translation id="5830698870816298009">የካሜራ አጠቃቀም እና እንቅስቃሴ</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3701,6 +3702,7 @@
 <translation id="7031646650991750659">የትኛዎቹን የGoogle Play መተግበሪያዎች እንደጫኑ</translation>
 <translation id="7035705295266423040">ባንክዎ እርስዎ መሆንዎን ማረጋገጥ ይፈልጋል</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ የGoogle መለያ ግላዊነት ቅንብሮችን ለማስተዳደር ትርን ከዚያ አስገባን ይጫኑ</translation>
+<translation id="7042465939346919737">Google እነዚህን አማራጮች ለማቅረብ ከክፍያ ማጠናቀቂያ ገጽ እና ሌሎች አግባብነት ያላቸው መረጃዎችን ይጠቀማል። የበኋላ ላይ መክፈል አማራጮችን ለመደበቅ ወደ <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> ይሂዱ</translation>
 <translation id="7042616127917168121">ውጤቶችን አጥራ</translation>
 <translation id="7043552168914147882">የትር ክምችት</translation>
 <translation id="7044081119134178347">ካሜራ ለዚህ ጊዜ ይፈቀዳል</translation>

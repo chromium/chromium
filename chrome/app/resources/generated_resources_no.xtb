@@ -1050,6 +1050,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1699807488537653303">Løs passordfeilen</translation>
 <translation id="1700201317341192482">Fjern det virtuelle kortet</translation>
 <translation id="1700517974991662022">Besøkt.</translation>
+<translation id="1701367827913789499">Les komfortabelt med færrest mulig forstyrrelser ved å bruke Lesemodus-knappen på verktøylinjen</translation>
 <translation id="1703331064825191675">Slutt å bekymre deg for passordene dine</translation>
 <translation id="1703666494654169921">Ikke la nettsteder bruke virtuell virkelighet-enheter eller -data</translation>
 <translation id="1704097193565924901">Gjør forbokstavene store</translation>
@@ -2965,6 +2966,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3008272652534848354">Tilbakestill tillatelser</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> krever at du kobler til wifi i dag og laster ned en oppdatering. Eller last ned via en tilkobling med datamåling (kostnader kan påløpe).}other{<ph name="MANAGER" /> krever at du kobler til wifi og laster ned en oppdatering før tidsfristen. Eller last ned via en tilkobling med datamåling (kostnader kan påløpe).}}</translation>
 <translation id="3008923556848076408">Gemini fortsetter å jobbe med oppgaven</translation>
+<translation id="3008926075262837186">Les komfortabelt med færrest mulig forstyrrelser</translation>
 <translation id="3009178788565917040">Utdata</translation>
 <translation id="3009352964623081324">Søk + O og deretter S. Bruk for å installere, administrere og tilpasse stemmer.</translation>
 <translation id="3009779501245596802">Indekserte databaser</translation>
@@ -4421,7 +4423,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Finn ut mer om Posisjonsnøyaktighet<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Importert</translation>
 <translation id="3992008114154328194">Laster ned <ph name="FILE_NAME" /> – <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Sikkerhetskopier data</translation>
 <translation id="3994075804072562819">Gi <ph name="SPECIFIC_NAME" /> kontroll over USB-enheter.</translation>
 <translation id="3994318741694670028">Dessverre er datamaskinen konfigurert med en feilformatert maskinvare-ID. Dette forhindrer ChromeOS Flex fra å ta i bruk de siste sikkerhetsoppdateringene, og datamaskinen <ph name="BEGIN_BOLD" />kan være sårbar for skadelige angrep<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Lås opp telefonen, og hold den nærmere for å låse opp <ph name="DEVICE_TYPE" />-enheten.</translation>
@@ -7718,7 +7719,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> har slått av ADB-feilsøking. <ph name="DEVICE_TYPE" /> blir tilbakestilt om 24 timer. Sikkerhetskopiér eventuelle filer du vil ta vare på.</translation>
 <translation id="6336194758029258346">Appspråk</translation>
 <translation id="6337543438445391085">Det kan fremdeles hende at dataene inneholder enkelte personopplysninger. Sørg for å gjennomgå de eksporterte filene.</translation>
-<translation id="6338554362382763574">Når du surfer kan du enkelt stille Gemini spørsmål om fanene du deler.</translation>
 <translation id="6338968693068997776">Legg til USB-enhet</translation>
 <translation id="6339668969738228384">Opprett en ny profil for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8338,7 +8338,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
     <ph name="BEGIN_PARAGRAPH2" />Du kan slå av denne tjenesten i innstillingene.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Sikkerhetskopieringen av Linux er avbrutt</translation>
 <translation id="6782067259631821405">Ugyldig PIN-kode</translation>
-<translation id="6782219876520622071">Samtaler om delte faner kan bli sett av menneskelige evaluerere for å forbedre Gemini</translation>
 <translation id="6783036716881942511">Vil du glemme denne enheten?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive-innstillinger</translation>
 <translation id="6784523122863989144">Profilen støttes</translation>
@@ -9536,7 +9535,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7620616707541471029">Velg en konto for å fortsette</translation>
 <translation id="7621382409404463535">Systemet kunne ikke lagre enhetskonfigurasjonen.</translation>
 <translation id="7621595347123595643">Du kan ikke gjenopprette lokale data hvis du glemmer passordet eller PIN-koden.</translation>
-<translation id="7621863462266622331">Når faner deles, sendes sideinnhold, media og nettadresser til Google</translation>
 <translation id="7622114377921274169">Lader.</translation>
 <translation id="7622768823216805500">Nettsteder installerer vanligvis betalingsbehandlere for å kunne tilby shoppingfunksjoner, som enklere betaling</translation>
 <translation id="7622966771025050155">Bytt til fanen som tas opp</translation>
@@ -10882,6 +10880,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8517759303731677493">Endre …</translation>
 <translation id="8518809011298357036">Lukk øverste visning</translation>
 <translation id="8518942514525208851">Skjul stygt språk</translation>
+<translation id="8520238089740349550">Mislyktes – lokal nedlasting er blokkert</translation>
 <translation id="8523493869875972733">Behold endringene</translation>
 <translation id="8523849605371521713">Lagt til som følge av retningslinjer</translation>
 <translation id="8524594273111932386">søketasten + nedoverpil</translation>

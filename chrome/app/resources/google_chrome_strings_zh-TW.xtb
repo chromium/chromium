@@ -485,6 +485,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{根據貴機構規定，Chrome 閒置 1 分鐘就會自動關閉。屆時系統將刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。}other{根據貴機構規定，Chrome 閒置 # 分鐘就會自動關閉。屆時系統將刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。}}</translation>
 <translation id="6418662306461808273">要切換至現有的 Chrome 設定檔嗎？</translation>
 <translation id="6426623519983252346">下次開啟 iOS 版 Chrome 時，系統會提示你試用「<ph name="FEATURE_NAME" />」。</translation>
+<translation id="6434035853014503219">感謝你選擇 Chrome 為預設瀏覽器！</translation>
 <translation id="6473905796280459355">前往「關於 Chrome」頁面</translation>
 <translation id="6481963882741794338">連結 Chrome 和其他 Google 服務，用於個人化等用途</translation>
 <translation id="648319183876919572">安全瀏覽強化防護功能可進一步協助你防範危險的網站和下載內容</translation>
@@ -581,6 +582,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="756809126120519699">已清除 Chrome 資料</translation>
 <translation id="7572537927358445944">已關閉 • Chrome 無法驗證這個擴充功能的來源</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安裝程式</translation>
+<translation id="7596160425942761210">隨時在訊息、文件和其他應用程式中點選連結，都能使用 Chrome 開啟</translation>
 <translation id="7602868996817972616">向 Google 詢問與本頁相關的資訊</translation>
 <translation id="760353356052806707">電腦中的其他程式新增了一個應用程式，可能會使 Chrome 的運作方式發生變更。
 
@@ -676,6 +678,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8601359445272098721">新功能！點選「翻譯畫面」按鈕即可翻譯畫面上的文字和圖片</translation>
 <translation id="8614913330719544658">Google Chrome 沒有回應，要立即重新啟動嗎？</translation>
 <translation id="861702415419836452">Chrome 需要取得攝影機權限，才能根據你的周遭環境建立 3D 地圖</translation>
+<translation id="8624541899164515475">設定，在新分頁中開啟。</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 將在 1 分鐘後重新啟動}other{Chrome 將在 # 分鐘後重新啟動}}</translation>
 <translation id="8637932705841171563">如要分享視窗內容，請前往「系統設定」允許 Chrome 螢幕錄影</translation>
 <translation id="8641606876632989680">如果你使用遭外洩的密碼登入帳戶，Chrome 會通知你</translation>

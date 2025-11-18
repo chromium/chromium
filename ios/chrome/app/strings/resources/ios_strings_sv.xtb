@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
+<translation id="1004825134262590729">{count,plural, =1{{count} nyckel}other{{count} nycklar}}</translation>
 <translation id="1005023885865154304">Öppna inställningarna för automatisk ifyllnad av lösenord</translation>
 <translation id="1005230401424685968">ÅÅÅÅ</translation>
 <translation id="1013952917065545813">Du kan återkomma hit och öppna nyligen stängda flikar</translation>
@@ -41,6 +42,7 @@
 <translation id="1122068467107743258">Arbete</translation>
 <translation id="1126696498560056882">Hantera konton på den här enheten</translation>
 <translation id="1126809382673880764">Skyddar inte mot farliga webbplatser, nedladdningar och tillägg. Där funktionen är tillgänglig får du fortfarande skydd med Säker webbsökning i andra tjänster från Google, till exempel Gmail och Sök.</translation>
+<translation id="1133418583142946603">Lägg till aktuell flik</translation>
 <translation id="1136104150802877429">Visar produktrecensioner</translation>
 <translation id="1142371195993008685">Inaktivera aviseringar för <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Inloggad som <ph name="USER" /></translation>
@@ -77,6 +79,7 @@
 <translation id="1285320974508926690">Översätt aldrig den här webbplatsen</translation>
 <translation id="1287229685519872919">Google Workspace-data</translation>
 <translation id="1291506870746876680">Behörigheterna för <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> inaktiveras igen när du lämnar webbplatsen.</translation>
+<translation id="1293556467332435079">Filer</translation>
 <translation id="129553762522093515">Nyligen stängda</translation>
 <translation id="1296581780163690620">Vill du ladda ned filen? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Verifiera din identitet så att du alltid kan använda lösenorden i Google-kontot.</translation>
@@ -1043,6 +1046,7 @@
 <translation id="5055015094595227120">Exakt plats</translation>
 <translation id="5055551113846164633">Detta raderar adresser som har sparats på den här enheten. Adresser som har sparats i Google-kontot <ph name="USER_EMAIL" /> raderas också.</translation>
 <translation id="5056446788882570708">Problem hittades för <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">Skapa bild</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installera Google Drive</translation>
 <translation id="5067540696062462445">Nedladdningar</translation>
@@ -1504,6 +1508,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6659660757330712663">Du kan svepa i verktygsfältet för att byta mellan flikar.</translation>
 <translation id="6663529247339810546">Bilden sparades inte</translation>
 <translation id="6668619169535738264">Redigera bokmärke</translation>
+<translation id="6670729408462528018">Galleri</translation>
 <translation id="6671294218820966278">Markera som läst</translation>
 <translation id="6672697278890207089">Ange din lösenfras</translation>
 <translation id="6674917187596384849">Du kan enkelt byta mellan konton</translation>
@@ -1660,6 +1665,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Du har redan lösenord för dessa konton i Google Lösenordshantering. Om du väljer att importera ett av lösenorden nedan ersätts det befintliga.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> procent har laddats ned</translation>
+<translation id="7345061034321640811">Import tillåts inte</translation>
 <translation id="7352651011704765696">Något gick fel</translation>
 <translation id="7363349185727752629">En guide över dina integritetsval</translation>
 <translation id="7364796246159120393">Välj fil</translation>
@@ -2201,6 +2207,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="952704832371081537">Avbryt</translation>
 <translation id="95332591904104970">Anslutna appar</translation>
 <translation id="954667170699278022">Läslista</translation>
+<translation id="956066588046842680">Import av denna data tillåts inte enligt organisationens princip.</translation>
 <translation id="956218893102219091">Använd din exakta plats för att få Gemini-resultat som är så specifika som möjligt i stället för en ungefärlig plats baserat på din IP-adress. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Radera webbinformation</translation>
 <translation id="963102227019621224">Webb- och appaktivitet</translation>
@@ -2212,5 +2219,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="984275831282074731">Betalningsmetoder</translation>
 <translation id="985379595344853742">Stäng alla inkognitoflikar</translation>
 <translation id="988141524645182168">Övriga enheter</translation>
+<translation id="995174784802614337">{count,plural, =1{{count} nyckel har importerats}other{{count} nycklar har importerats}}</translation>
 <translation id="999768147936949692">För närvarande kan du bara dela lösenord med familjemedlemmar. <ph name="BEGIN_LINK" />Bjud in familjemedlemmar<ph name="END_LINK" /> att gå med i gruppen så att du får ut mer av dina produkter och prenumerationer på Google.</translation>
 </translationbundle>

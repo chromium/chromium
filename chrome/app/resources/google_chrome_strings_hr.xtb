@@ -484,6 +484,7 @@
 <translation id="6417690341895039567">{COUNT,plural, =1{Kad se Chrome ne koristi jednu minutu, vaša ga organizacija automatski zatvara. Podaci o pregledavanju se brišu. To može uključivati povijest, automatsko popunjavanje i preuzimanja.}one{Kad se Chrome ne koristi # minutu, vaša ga organizacija automatski zatvara. Podaci o pregledavanju se brišu. To može uključivati povijest, automatsko popunjavanje i preuzimanja.}few{Kad se Chrome ne koristi # minute, vaša ga organizacija automatski zatvara. Podaci o pregledavanju se brišu. To može uključivati povijest, automatsko popunjavanje i preuzimanja.}other{Kad se Chrome ne koristi # minuta, vaša ga organizacija automatski zatvara. Podaci o pregledavanju se brišu. To može uključivati povijest, automatsko popunjavanje i preuzimanja.}}</translation>
 <translation id="6418662306461808273">Želite li prijeći na postojeći profil u Chromeu?</translation>
 <translation id="6426623519983252346">Sljedeći put kad otvorite Chrome za iOS, prikazat će vam se upit da isprobate značajku <ph name="FEATURE_NAME" />.</translation>
+<translation id="6434035853014503219">Hvala što ste odabrali Chrome kao zadani preglednik!</translation>
 <translation id="6473905796280459355">Otvorite stranicu O Chromeu</translation>
 <translation id="6481963882741794338">Povezivanje Chromea i drugih Googleovih usluga radi personalizacije i u druge svrhe</translation>
 <translation id="648319183876919572">Poboljšano sigurno pregledavanje pruža vam više zaštite od opasnih web-lokacija i preuzimanja</translation>
@@ -580,6 +581,7 @@
 <translation id="756809126120519699">Chromeovi su podaci izbrisani</translation>
 <translation id="7572537927358445944">Isključeno • Chrome ne može provjeriti odakle dolazi ovo proširenje</translation>
 <translation id="7583399374488819119">Program za instalaciju <ph name="COMPANY_NAME" /></translation>
+<translation id="7596160425942761210">Chrome možete upotrebljavati svaki put kad kliknete veze u porukama, dokumentima i drugim aplikacijama</translation>
 <translation id="7602868996817972616">Postavite pitanje Googleu o ovoj stranici</translation>
 <translation id="760353356052806707">Drugi program na vašem računalu dodao je aplikaciju koja može promijeniti Chromeov način rada.
 
@@ -675,6 +677,7 @@
 <translation id="8601359445272098721">Novo! Možete prevesti tekst i slike na zaslonu tako da odaberete gumb Prevedi zaslon</translation>
 <translation id="8614913330719544658">Google Chrome ne reagira. Ponovo pokrenuti sada?</translation>
 <translation id="861702415419836452">Chrome treba dopuštenje za pristup kameri radi izrade 3D karte vašeg okruženja</translation>
+<translation id="8624541899164515475">Postavke, otvara se na novoj kartici.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome će se ponovo pokrenuti za jednu minutu}one{Chrome će se ponovo pokrenuti za # min}few{Chrome će se ponovo pokrenuti za # min}other{Chrome će se ponovo pokrenuti za # min}}</translation>
 <translation id="8637932705841171563">Da biste dijelili prozor, u postavkama sustava dopustite snimanje zaslona za Chrome.</translation>
 <translation id="8641606876632989680">Chrome će vas obavijestiti kada se prijavite ugroženom zaporkom</translation>

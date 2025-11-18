@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Ciļņu grupu saraksts ir aizvērts.</translation>
 <translation id="3194464645767632461">vērtējums</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Pievienot grupai <ph name="TABS_COUNT_ONE" /> cilni}zero{Pievienot grupai <ph name="TABS_COUNT_MANY" /> cilnes}one{Pievienot grupai <ph name="TABS_COUNT_MANY" /> cilni}other{Pievienot grupai <ph name="TABS_COUNT_MANY" /> cilnes}}</translation>
+<translation id="3293080634164207409">Pievienot cilnes</translation>
 <translation id="3328308545011660196">Ieteikums: šķiet, ka <ph name="NUMBER_OF_TABS" /> cilnes ir saistītas. Vai grupēt tās?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Pēc vienas neaktivitātes dienas}zero{Pēc <ph name="DAY_COUNT_MANY" /> neaktivitātes dienām}one{Pēc <ph name="DAY_COUNT_MANY" /> neaktivitātes dienas}other{Pēc <ph name="DAY_COUNT_MANY" /> neaktivitātes dienām}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> jauna cilne}zero{<ph name="MANY_ADDED" /> jaunu ciļņu}one{<ph name="MANY_ADDED" /> jauna cilne}other{<ph name="MANY_ADDED" /> jaunas cilnes}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">Aktivitāte</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_ONE" /> atsauksme}zero{Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_MANY" /> atsauksmju}one{Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_MANY" /> atsauksme}other{Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_MANY" /> atsauksmes}}</translation>
 <translation id="7885132941432959125">Pārvietot cilni pa labi</translation>
+<translation id="7887334752153342268">Izveidot dublikātu</translation>
 <translation id="7939917283308035850">Nav atlasīta: <ph name="COLOR_NAME" /></translation>
 <translation id="7961015016161918242">Nekad</translation>
 <translation id="7966321538264951561">Nerādīt ieteikumus.</translation>

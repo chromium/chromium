@@ -521,6 +521,7 @@ Certaines fonctionnalités seront peut-être indisponibles. Veuillez spécifier 
 <translation id="705851970750939768">Mettre à jour Chromium</translation>
 <translation id="7067091210845072982">Si une image n'est pas accompagnée d'une description utile, Chromium essaiera de vous en proposer une. Pour nous permettre de créer des descriptions, les images sont envoyées à Google.</translation>
 <translation id="7141270731789036260">Personnaliser Chrome for Testing</translation>
+<translation id="7147227333672430807">Vous pouvez utiliser Chromium chaque fois que vous cliquez sur des liens dans des messages, des documents et d'autres applis</translation>
 <translation id="7163519456498498587">Retirer <ph name="EXTENSION_NAME" /> de Chromium</translation>
 <translation id="7173822816570314652">Votre organisation supprime les données Chromium lorsqu'elles ne sont pas utilisées pendant <ph name="TIMEOUT_DURATION" />. Il peut s'agir de l'historique, de la saisie automatique et des téléchargements.</translation>
 <translation id="718435575166326686">Chromium a besoin de l'autorisation d'accéder à la caméra pour ce site</translation>
@@ -635,6 +636,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="8471947159125090285">Pour utiliser et enregistrer des données Chromium dans votre compte Google, confirmez votre identité</translation>
 <translation id="8482493977473846331">Affiche des invites de connexion à Chromium</translation>
 <translation id="8493179195440786826">Version de Chromium obsolète</translation>
+<translation id="850264194101621529">Merci d'avoir choisi Chromium comme navigateur par défaut.</translation>
 <translation id="8522801943730206384">Chromium ne peut vérifier vos mots de passe que si vous les enregistrez</translation>
 <translation id="8555465886620020932">Erreur du service : <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Vous pouvez épingler la recherche dans des images pour y accéder facilement. Pour cela, cliquez sur le bouton "Épingler" en haut du panneau latéral.</translation>
@@ -644,6 +646,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="8586442755830160949">Copyright Auteurs de Chromium <ph name="YEAR" />. Tous droits réservés.</translation>
 <translation id="8601359445272098721">Nouveau ! Vous pouvez traduire du texte et des images sur votre écran en sélectionnant le bouton "Traduire l'écran".</translation>
 <translation id="8619360774459241877">Lancement de Chromium…</translation>
+<translation id="8624541899164515475">Paramètres, s'ouvre dans un nouvel onglet.</translation>
 <translation id="8648201657708811153">Impossible de définir Google Chrome for Testing comme navigateur par défaut.</translation>
 <translation id="8677922833187616101">Toujours afficher le raccourci vers le Mode IA de Google</translation>
 <translation id="8697124171261953979">Elle contrôle également la page qui s'affiche au démarrage de Chromium ou lorsque vous effectuez une recherche dans l'omnibox.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
+<translation id="1004825134262590729">{count,plural, =1{{count} passnøkkel}other{{count} passnøkler}}</translation>
 <translation id="1005023885865154304">Åpne innstillingene for autofylling av passord</translation>
 <translation id="1005230401424685968">ÅÅÅÅ</translation>
 <translation id="1013952917065545813">Du kan komme tilbake hit for å gjenåpne faner du nylig har lukket</translation>
@@ -41,6 +42,7 @@
 <translation id="1122068467107743258">Jobb</translation>
 <translation id="1126696498560056882">Administrer kontoer på denne enheten</translation>
 <translation id="1126809382673880764">Beskytter deg ikke mot farlige nettsteder, nedlastinger eller utvidelser. Du får fremdeles beskyttelse fra Safe Browsing der dette er tilgjengelig, på andre Google-tjenester, som Gmail og Søk.</translation>
+<translation id="1133418583142946603">Legg til gjeldende fane</translation>
 <translation id="1136104150802877429">Viser produktanmeldelser</translation>
 <translation id="1142371195993008685">Slå av varsler for <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Pålogget som <ph name="USER" /></translation>
@@ -77,6 +79,7 @@
 <translation id="1285320974508926690">Oversett aldri dette nettstedet</translation>
 <translation id="1287229685519872919">Google Workspace-data</translation>
 <translation id="1291506870746876680">Tillatelsene for <ph name="BEGIN_BOLD" />«<ph name="SITE_NAME" />»<ph name="END_BOLD" /> blir tilbakestilt til å være avslått når du forlater dette nettstedet.</translation>
+<translation id="1293556467332435079">Filer</translation>
 <translation id="129553762522093515">Nylig lukket</translation>
 <translation id="1296581780163690620">Vil du laste ned filen? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">For å sikre at du alltid kan bruke passordene i Google-kontoen din, må du bekrefte at det er deg.</translation>
@@ -1043,6 +1046,7 @@
 <translation id="5055015094595227120">Nøyaktig posisjon</translation>
 <translation id="5055551113846164633">Dette sletter adresser som er lagret på denne enheten. Den sletter også adresser som er lagret i Google-kontoen din, <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Fant problemer <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">Lag bilde</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installer Google Disk</translation>
 <translation id="5067540696062462445">Nedlastinger</translation>
@@ -1504,6 +1508,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6659660757330712663">Du kan sveipe på verktøylinjen for å bytte mellom faner.</translation>
 <translation id="6663529247339810546">Kan ikke lagre bildet</translation>
 <translation id="6668619169535738264">Rediger bokmerke</translation>
+<translation id="6670729408462528018">Galleri</translation>
 <translation id="6671294218820966278">Merk som lest</translation>
 <translation id="6672697278890207089">Angi passordfrasen din</translation>
 <translation id="6674917187596384849">Du kan enkelt bytte mellom kontoer</translation>
@@ -1660,6 +1665,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Du har allerede passord for disse kontoene i Google Passordlagring. Hvis du velger å importere et av passordene nedenfor, erstattes det eksisterende passordet.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> prosent fullført</translation>
+<translation id="7345061034321640811">Import er ikke tillatt</translation>
 <translation id="7352651011704765696">Noe gikk galt</translation>
 <translation id="7363349185727752629">En veiledning i personvernvalgene dine</translation>
 <translation id="7364796246159120393">Velg fil</translation>
@@ -2201,6 +2207,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="952704832371081537">Avbryt</translation>
 <translation id="95332591904104970">Tilknyttede apper</translation>
 <translation id="954667170699278022">Leseliste</translation>
+<translation id="956066588046842680">Organisasjonens retningslinjer tillater ikke import av disse dataene.</translation>
 <translation id="956218893102219091">Bruk den nøyaktige posisjonen din for å få de mest nøyaktige Gemini-resultatene, i stedet for en anslått posisjon basert på IP-adressen din. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Slett nettlesingsdata</translation>
 <translation id="963102227019621224">Nett- og appaktivitet</translation>
@@ -2212,5 +2219,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="984275831282074731">Betalingsmåter</translation>
 <translation id="985379595344853742">Lukk alle inkognitofaner</translation>
 <translation id="988141524645182168">Andre enheter</translation>
+<translation id="995174784802614337">{count,plural, =1{Importerte {count} passnøkkel}other{Importerte {count} passnøkler}}</translation>
 <translation id="999768147936949692">Foreløpig kan du bare dele passord med familiemedlemmer. <ph name="BEGIN_LINK" />Inviter familiemedlemmer<ph name="END_LINK" /> til å bli med i gruppen, og få mer ut av Google-produktene og -abonnementene dine.</translation>
 </translationbundle>

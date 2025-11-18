@@ -1053,6 +1053,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1699807488537653303">Maak wagwoordfout reg</translation>
 <translation id="1700201317341192482">Verwyder jou virtuele kaart</translation>
 <translation id="1700517974991662022">Besoek</translation>
+<translation id="1701367827913789499">Lees gemaklik met minimale afleidings deur die Leesmodus-knoppie op die nutsbalk te gebruik</translation>
 <translation id="1703331064825191675">Moet nooit oor jou wagwoorde bekommerd wees nie</translation>
 <translation id="1703666494654169921">Moenie werwe toelaat om virtuelerealiteittoestelle of data te gebruik nie</translation>
 <translation id="1704097193565924901">Hoofletters</translation>
@@ -2971,6 +2972,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3008272652534848354">Stel toestemmings terug</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereis dat jy vandag aan wi-fi koppel om 'n opdatering af te laai. Of laai oor 'n beperkte verbinding af (heffings kan geld).}other{<ph name="MANAGER" /> vereis dat jy voor die sperdatum aan wi-fi koppel en 'n opdatering aflaai. Of laai oor 'n beperkte verbinding af (heffings kan geld).}}</translation>
 <translation id="3008923556848076408">Gemini sal aanhou om aan jou taak te werk</translation>
+<translation id="3008926075262837186">Lees gemaklik met minimale afleidings</translation>
 <translation id="3009178788565917040">Uitvoer</translation>
 <translation id="3009352964623081324">Soek + O, dan S. Gebruik om stemme te installeer, te bestuur en te pasmaak.</translation>
 <translation id="3009779501245596802">Geïndekseerde databasisse</translation>
@@ -4429,7 +4431,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Kry meer inligting oor Liggingakkuraatheid<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Ingevoer</translation>
 <translation id="3992008114154328194">Laai tans <ph name="FILE_NAME" /> af; <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Rugsteun data</translation>
 <translation id="3994075804072562819">Gee <ph name="SPECIFIC_NAME" /> beheer oor USB-toestelle.</translation>
 <translation id="3994318741694670028">Ongelukkig is jou rekenaar opgestel met ’n misvormde hardeware-ID. Dit verhinder Chrome OS Flex om met die nuutste sekuriteitsoplossings op te dateer, en jou rekenaar <ph name="BEGIN_BOLD" />kan blootgestel wees aan kwaadwillige aanvalle<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Ontsluit jou foon en bring dit nader om jou <ph name="DEVICE_TYPE" /> te ontsluit.</translation>
@@ -7730,7 +7731,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> het ADB-ontfouting gedeaktiveer. Dit sal jou <ph name="DEVICE_TYPE" /> oor 24 uur terugstel. Rugsteun enige lêers wat jy wil hou.</translation>
 <translation id="6336194758029258346">Apptaal</translation>
 <translation id="6337543438445391085">Sommige persoonlike inligting kan steeds in die data ingesluit word. Maak seker dat u die uitgevoerde lêers hersien.</translation>
-<translation id="6338554362382763574">Jy kan maklik vir Gemini vrae vra oor die oortjies wat jy deel terwyl jy blaai</translation>
 <translation id="6338968693068997776">Voeg USB-toestel by</translation>
 <translation id="6339668969738228384">Skep 'n nuwe profiel vir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internetdrukkerprotokol (IPPS)</translation>
@@ -8350,7 +8350,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
     <ph name="BEGIN_PARAGRAPH2" />Jy kan hierdie diens in Instellings afskakel.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux-rugsteun is gekanselleer</translation>
 <translation id="6782067259631821405">Ongeldige PIN</translation>
-<translation id="6782219876520622071">Gesprekke oor gedeelde oortjies kan deur mense wat kontrolering uitvoer gesien word om Gemini te verbeter</translation>
 <translation id="6783036716881942511">Vergeet hierdie toestel?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive-instellings</translation>
 <translation id="6784523122863989144">Profiel word gesteun</translation>
@@ -9547,7 +9546,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7620616707541471029">Kies ’n rekening om voort te gaan</translation>
 <translation id="7621382409404463535">Die stelsel het nie toestelopstelling gestoor nie.</translation>
 <translation id="7621595347123595643">Jy sal nie plaaslike data kan terugstel as jy jou wagwoord of PIN vergeet nie.</translation>
-<translation id="7621863462266622331">Wanneer oortjies gedeel word, word hul bladsyinhoud, media en URL’e na Google toe gestuur</translation>
 <translation id="7622114377921274169">Laai tans.</translation>
 <translation id="7622768823216805500">Werwe installeer gewoonlik betalinghanteerders vir inkopiekenmerke soos makliker betaalpunte</translation>
 <translation id="7622966771025050155">Skakel oor na oortjie wat vasgevang is</translation>
@@ -10892,6 +10890,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8517759303731677493">Wysig …</translation>
 <translation id="8518809011298357036">Maak boaansig toe</translation>
 <translation id="8518942514525208851">Versteek vloektaal</translation>
+<translation id="8520238089740349550">Misluk – Plaaslike aflaai is geblokkeer</translation>
 <translation id="8523493869875972733">Hou veranderings</translation>
 <translation id="8523849605371521713">Bygevoeg volgens beleid</translation>
 <translation id="8524594273111932386">soek + afpyl</translation>

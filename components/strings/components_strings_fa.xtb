@@ -428,6 +428,7 @@
 <translation id="1689333818294560261">نام مستعار</translation>
 <translation id="1692622044604477956">فهرستگان فیلم‌ها و زمان‌های پخش تئاتر</translation>
 <translation id="1697430960030447570">‏<ph name="BEGIN_BOLD" />چگونه می‌توانید داده‌هایتان را مدیریت کنید:<ph name="END_BOLD" /> Chrome موضوع‌های قدیمی‌تر از ۴ هفته را به‌طور خودکار حذف می‌کند. همان‌طور که به مرور ادامه می‌دهید، ممکن است موضوعی دوباره در فهرست پیدا شود. همچنین می‌توانید موضوع‌هایی را که نمی‌خواهید Chrome با سایت‌ها هم‌رسانی کند مسدود کنید و هر زمان بخواهید موضوع‌های آگهی را در تنظیمات Chrome خاموش کنید.</translation>
+<translation id="1697808683313379647">‏‫Google از اطلاعات صفحه تسویه‌حساب و دیگر داده‌های مربوط برای ارائه این گزینه‌ها استفاده می‌کند.</translation>
 <translation id="1699651774646344471">‏اکنون می‌توانید از نشانی‌های ذخیره‌شده در «حساب Google» خود استفاده کنید</translation>
 <translation id="1700542542921501212">می‌توانید از <ph name="SEARCH_ENGINE_NAME" /> برای جستجو در وب استفاده کنید.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1722,7 +1723,6 @@
 <translation id="3792826587784915501">فیلم کالت و مستقل</translation>
 <translation id="3793574014653384240">تعداد و دلیل خرابی‌هایی که اخیراً اتفاق افتاده است</translation>
 <translation id="3795624560191557077">‏اخیراً گذرواژه‌ای را تغییر داده‌اید که در سرقت عمومی اطلاعات شبکه پیدا شده است. درصورت بروز مشکل، «مدیر گذرواژه Google» می‌تواند به شما کمک کند به سیستم وارد شوید.</translation>
-<translation id="3796181268473765083">در ۴ قسط بدون سود یا با اقساط ماهانه پرداخت کنید (مشروط به واجدشرایط بودن)</translation>
 <translation id="3799805948399000906">قلم درخواست شد</translation>
 <translation id="3801297763951514916">اغلب بازدید می‌کنید</translation>
 <translation id="380329542618494757">نام</translation>
@@ -2948,6 +2948,7 @@
 <translation id="5813753398265398978">فیزیک</translation>
 <translation id="5817918615728894473">مرتبط‌سازی</translation>
 <translation id="5820625124144807242">‏پس‌از بررسی سفارشتان، باید به سیستم وارد شوید یا با <ph name="BNPL_ISSUER_NAME" /> حساب ایجاد کنید. این حساب به‌طور خودکار به Google Pay پیوند داده خواهد شد.</translation>
+<translation id="5820751560028604030">بارگیری محلی مسدود شد</translation>
 <translation id="5826507051599432481">‏نام مشترک (CN)</translation>
 <translation id="5830698870816298009">استفاده و حرکت دوربین</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3702,6 +3703,7 @@
 <translation id="7031646650991750659">‏برنامه‌های Google Play که نصب کرده‌اید</translation>
 <translation id="7035705295266423040">بانک شما می‌خواهد هویتتان را تأیید کند</translation>
 <translation id="7038063300915481831">‏<ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت تنظیمات حریم خصوصی «حساب Google» خود، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
+<translation id="7042465939346919737">‏‫Google از اطلاعات صفحه تسویه‌حساب و دیگر داده‌های مربوط برای ارائه این گزینه‌ها استفاده می‌کند. برای پنهان کردن گزینه‌های «بعداً پرداخت شود»، به <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> بروید</translation>
 <translation id="7042616127917168121">پالایش نتایج</translation>
 <translation id="7043552168914147882">دسته برگ</translation>
 <translation id="7044081119134178347">دوربین این بار مجاز شد</translation>

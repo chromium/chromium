@@ -428,6 +428,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1689333818294560261">Gælunafn</translation>
 <translation id="1692622044604477956">Kvikmyndir í sýningu og sýningartímar</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />hvernig þú getur stjórnað gögnunum þínum:<ph name="END_BOLD" /> Chrome eyðir umfjöllunarefnum sem eru eldri en 4 vikna sjálfkrafa. Þegar þú heldur áfram að vafra gæti umfjöllunarefni birst aftur á listanum. Þú getur einnig lokað á umfjöllunarefni sem þú vilt ekki að Chrome deili með vefsvæðum og slökkt á umfjöllunarefnum auglýsinga hvenær sem er í stillingum Chrome.</translation>
+<translation id="1697808683313379647">Google notar upplýsingar af greiðslusíðunni og önnur viðeigandi gögn til að bjóða upp á þessa valkosti.</translation>
 <translation id="1699651774646344471">Nú geturðu notað heimilisföng af Google-reikningnum þínum</translation>
 <translation id="1700542542921501212">Þú getur notað <ph name="SEARCH_ENGINE_NAME" /> til að leita á vefnum.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1722,7 +1723,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3792826587784915501">Költ- og indímyndir</translation>
 <translation id="3793574014653384240">Fjöldi nýlegra hruntilvika og orsakir þeirra</translation>
 <translation id="3795624560191557077">Aðgangsorðið þitt, sem þú skiptir nýlega um, fannst í opinberu öryggisbroti. Google-aðgangsorðastjórnun getur hjálpað þér að skrá inn ef þú lendir í vandræðum.</translation>
-<translation id="3796181268473765083">Þú greiðir í fjórum vaxtalausum eða mánaðarlegum afborgunum (háð gjaldgengi)</translation>
 <translation id="3799805948399000906">Beðið um leturgerð</translation>
 <translation id="3801297763951514916">Þú skoðar oft</translation>
 <translation id="380329542618494757">Nafn</translation>
@@ -2948,6 +2948,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5813753398265398978">Eðlisfræði</translation>
 <translation id="5817918615728894473">Para</translation>
 <translation id="5820625124144807242">Þegar þú hefur farið yfir pöntunina þína þarftu að skrá þig inn á eða stofna reikning hjá <ph name="BNPL_ISSUER_NAME" />. Þessi reikningur verður sjálfkrafa tengdur við Google Pay.</translation>
+<translation id="5820751560028604030">Lokað á staðbundið niðurhal</translation>
 <translation id="5826507051599432481">Almennt heiti (CN)</translation>
 <translation id="5830698870816298009">notkun og hreyfing myndavélar</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3702,6 +3703,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7031646650991750659">Hvaða Google Play forrit þú hefur sett upp</translation>
 <translation id="7035705295266423040">Bankinn þinn vill staðfesta að þetta sért þú</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að stjórna persónuverndarstillingum Google reikningsins</translation>
+<translation id="7042465939346919737">Google notar upplýsingar af greiðslusíðunni og önnur viðeigandi gögn til að bjóða upp á þessa valkosti. Farðu í <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> til að fela valkosti greiðslufrests</translation>
 <translation id="7042616127917168121">Fínstilla niðurstöður</translation>
 <translation id="7043552168914147882">Flipaprentun</translation>
 <translation id="7044081119134178347">Myndavél leyfð í þetta skipti</translation>

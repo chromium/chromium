@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Seznam skupin zavihkov je zaprt</translation>
 <translation id="3194464645767632461">ocena</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Dodaj <ph name="TABS_COUNT_ONE" /> zavihek skupini}one{Dodaj <ph name="TABS_COUNT_MANY" /> zavihek skupini}two{Dodaj <ph name="TABS_COUNT_MANY" /> zavihka skupini}few{Dodaj <ph name="TABS_COUNT_MANY" /> zavihke skupini}other{Dodaj <ph name="TABS_COUNT_MANY" /> zavihkov skupini}}</translation>
+<translation id="3293080634164207409">Dodaj zavihke</translation>
 <translation id="3328308545011660196">Predlog: Videti je, da je toliko sorodnih zavihkov: <ph name="NUMBER_OF_TABS" />. Jih želite uvrstiti v skupino?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Po 1 dnevu neaktivnosti}one{Po <ph name="DAY_COUNT_MANY" /> dnevu neaktivnosti}two{Po <ph name="DAY_COUNT_MANY" /> dnevih neaktivnosti}few{Po <ph name="DAY_COUNT_MANY" /> dnevih neaktivnosti}other{Po <ph name="DAY_COUNT_MANY" /> dnevih neaktivnosti}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nov zavihek}one{<ph name="MANY_ADDED" /> nov zavihek}two{<ph name="MANY_ADDED" /> nova zavihka}few{<ph name="MANY_ADDED" /> novi zavihki}other{<ph name="MANY_ADDED" /> novih zavihkov}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">Dejavnost</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> mnenje}one{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> mnenje}two{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> mnenji}few{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> mnenja}other{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> mnenj}}</translation>
 <translation id="7885132941432959125">Premakni zavihek v desno</translation>
+<translation id="7887334752153342268">Podvoji</translation>
 <translation id="7939917283308035850">Ni izbrano: <ph name="COLOR_NAME" /></translation>
 <translation id="7961015016161918242">Nikoli</translation>
 <translation id="7966321538264951561">Opustitev predlogov.</translation>

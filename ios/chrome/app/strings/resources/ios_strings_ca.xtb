@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="1004825134262590729">{count,plural, =1{{count} clau d'accés}other{{count} claus d'accés}}</translation>
 <translation id="1005023885865154304">Obre la configuració d'Emplenament automàtic de contrasenyes</translation>
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Pots tornar aquí per obrir de nou les pestanyes que has tancat fa poc</translation>
@@ -41,6 +42,7 @@
 <translation id="1122068467107743258">Feina</translation>
 <translation id="1126696498560056882">Gestiona els comptes en aquest dispositiu</translation>
 <translation id="1126809382673880764">No et protegeix contra baixades, extensions ni llocs web perillosos. Continuaràs obtenint protecció mitjançant Navegació segura, sempre que estigui disponible, en altres serveis de Google, com ara Gmail i la Cerca.</translation>
+<translation id="1133418583142946603">Afegeix la pestanya actual</translation>
 <translation id="1136104150802877429">Mostra les ressenyes de productes</translation>
 <translation id="1142371195993008685">Desactiva les notificacions de <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Has iniciat la sessió com a <ph name="USER" /></translation>
@@ -77,6 +79,7 @@
 <translation id="1285320974508926690">No tradueixis mai aquest lloc</translation>
 <translation id="1287229685519872919">dades de Google Workspace</translation>
 <translation id="1291506870746876680">Els permisos per a <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> es restabliran a l'estat desactivat quan surtis d'aquest lloc web.</translation>
+<translation id="1293556467332435079">Fitxers</translation>
 <translation id="129553762522093515">Tancades recentment</translation>
 <translation id="1296581780163690620">Vols baixar el fitxer? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Per assegurar-te que puguis fer servir sempre les contrasenyes del teu Compte de Google, verifica la teva identitat.</translation>
@@ -1043,6 +1046,7 @@
 <translation id="5055015094595227120">Ubicació precisa</translation>
 <translation id="5055551113846164633">Se suprimiran les adreces desades en aquest dispositiu. També se suprimiran les adreces desades al teu Compte de Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">S'han trobat errors <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">Crea una imatge</translation>
 <translation id="5059136629401106827">D'acord</translation>
 <translation id="5062321486222145940">Instal. de Google Drive</translation>
 <translation id="5067540696062462445">Baixades</translation>
@@ -1504,6 +1508,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6659660757330712663">Pots fer lliscar la barra d'eines per canviar d'una pestanya a una altra.</translation>
 <translation id="6663529247339810546">No es pot desar la imatge</translation>
 <translation id="6668619169535738264">Edita l'adreça d'interès</translation>
+<translation id="6670729408462528018">Galeria</translation>
 <translation id="6671294218820966278">Marca com a llegit</translation>
 <translation id="6672697278890207089">Introduïu la vostra contrasenya</translation>
 <translation id="6674917187596384849">Pots canviar fàcilment d'un compte a un altre</translation>
@@ -1660,6 +1665,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Ja tens contrasenyes per a aquests comptes al gestor de contrasenyes de Google. Si decideixes importar una de les contrasenyes següents, substituirà l'existent.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> per cent baixat</translation>
+<translation id="7345061034321640811">No es permet la importació</translation>
 <translation id="7352651011704765696">S'ha produït un error</translation>
 <translation id="7363349185727752629">Guia de les teves opcions de privadesa</translation>
 <translation id="7364796246159120393">Tria un fitxer</translation>
@@ -2201,6 +2207,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="952704832371081537">Cancel·la</translation>
 <translation id="95332591904104970">Aplicacions connectades</translation>
 <translation id="954667170699278022">Llista de lectura</translation>
+<translation id="956066588046842680">La política de la teva organització no permet importar aquestes dades.</translation>
 <translation id="956218893102219091">Utilitza la teva ubicació precisa per obtenir resultats de Gemini més acurats, en lloc de fer servir una ubicació estimada basada en l'adreça IP. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Suprimeix dades de navegació</translation>
 <translation id="963102227019621224">Activitat al web i en aplicacions</translation>
@@ -2212,5 +2219,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="984275831282074731">Formes de pagament</translation>
 <translation id="985379595344853742">Tanca totes les pestanyes d'incògnit</translation>
 <translation id="988141524645182168">Altres dispositius</translation>
+<translation id="995174784802614337">{count,plural, =1{S'ha importat {count} clau d'accés}other{S'han importat {count} claus d'accés}}</translation>
 <translation id="999768147936949692">De moment, només pots compartir les contrasenyes amb membres de la família. <ph name="BEGIN_LINK" />Convida membres de la família<ph name="END_LINK" /> a unir-se al teu grup i treu més profit dels teus productes i subscripcions de Google.</translation>
 </translationbundle>

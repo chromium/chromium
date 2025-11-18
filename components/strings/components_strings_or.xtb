@@ -428,6 +428,7 @@
 <translation id="1689333818294560261">ଡାକନାମ</translation>
 <translation id="1692622044604477956">ମୁଭି ତାଲିକା ଏବଂ ଥିଏଟର ଶୋ'ଟାଇମଗୁଡ଼ିକ</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />ଆପଣ ଆପଣଙ୍କ ଡାଟାକୁ କିପରି ପରିଚାଳନା କରିପାରିବେ:<ph name="END_BOLD" /> 4 ସପ୍ତାହରୁ ଅଧିକ ପୁରୁଣା ବିଷୟଗୁଡ଼ିକୁ Chrome ସ୍ୱତଃ-ଡିଲିଟ କରେ। ଆପଣ ବ୍ରାଉଜ କରିବା ଜାରି ରଖିବା ସମୟରେ, ତାଲିକାରେ କୌଣସି ବିଷୟ ପୁଣି ଦେଖାଯାଇପାରେ। Chrome ଯେଉଁ ବିଷୟଗୁଡ଼ିକୁ ସାଇଟଗୁଡ଼ିକ ସହ ସେୟାର କରୁ ବୋଲି ଆପଣ ଚାହୁଁନାହାଁନ୍ତି, ଯେ କୌଣସି ସମୟରେ Chrome ସେଟିଂସରେ, ଆପଣ ସେଗୁଡ଼ିକୁ ମଧ୍ୟ ବ୍ଲକ କରିପାରିବେ ଏବଂ ବିଜ୍ଞାପନ ବିଷୟଗୁଡ଼ିକୁ ବନ୍ଦ କରିପାରିବେ।</translation>
+<translation id="1697808683313379647">ଏହି ବିକଳ୍ପଗୁଡ଼ିକ ଅଫର କରିବା ପାଇଁ Google ଚେକଆଉଟ ପୃଷ୍ଠାରୁ ସୂଚନା ଏବଂ ଅନ୍ୟ ପ୍ରାସଙ୍ଗିକ ଡାଟାକୁ ବ୍ୟବହାର କରେ।</translation>
 <translation id="1699651774646344471">ଆପଣ ବର୍ତ୍ତମାନ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରୁ ଠିକଣାଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="1700542542921501212">ୱେବରେ ସର୍ଚ୍ଚ କରିବାକୁ ଆପଣ <ph name="SEARCH_ENGINE_NAME" />କୁ ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1719,7 +1720,6 @@
 <translation id="3792826587784915501">କଲ୍ଟ ଏବଂ ଇଣ୍ଡି ମୁଭିଗୁଡ଼ିକ</translation>
 <translation id="3793574014653384240">ବର୍ତ୍ତମାନ ଘଟିଥିବା କ୍ରାସଗୁଡ଼ିକର ସଂଖ୍ୟା ଏବଂ କାରଣଗୁଡ଼ିକ</translation>
 <translation id="3795624560191557077">ଆପଣ ବର୍ତ୍ତମାନ ଏକ ପବ୍ଲିକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ମିଳିଥିବା ଏକ ପାସୱାର୍ଡକୁ ପରିବର୍ତ୍ତନ କରିଛନ୍ତି। ସମସ୍ୟା ହେଲେ, Google Password Manager ଆପଣଙ୍କୁ ସାଇନ ଇନ କରିବାରେ ସାହାଯ୍ୟ କରିପାରିବ।</translation>
-<translation id="3796181268473765083">4ଟି ସୁଧମୁକ୍ତ କିମ୍ବା ମାସିକ କିସ୍ତିରେ ପେମେଣ୍ଟ କରନ୍ତୁ (ଯୋଗ୍ୟତା ଉପରେ ନିର୍ଭର କରେ)</translation>
 <translation id="3799805948399000906">ଅନୁରୋଧ କରାଯାଇଥିବା ଫଣ୍ଟ</translation>
 <translation id="3801297763951514916">ଆପଣ ପ୍ରାୟ ଭିଜିଟ କରନ୍ତି</translation>
 <translation id="380329542618494757">ନାମ</translation>
@@ -2945,6 +2945,7 @@
 <translation id="5813753398265398978">ପଦାର୍ଥ ବିଜ୍ଞାନ</translation>
 <translation id="5817918615728894473">ପେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="5820625124144807242">ଆପଣଙ୍କ ଅର୍ଡରର ରିଭ୍ୟୁ କରିବା ପରେ, ଆପଣ <ph name="BNPL_ISSUER_NAME" />ରେ ସାଇନ ଇନ କରିବା କିମ୍ବା ଏକ ଆକାଉଣ୍ଟ ତିଆରି କରିବା ଆବଶ୍ୟକ। ଏହି ଆକାଉଣ୍ଟ ସ୍ୱତଃ Google Pay ସହ ଲିଙ୍କ ହୋଇଯିବ।</translation>
+<translation id="5820751560028604030">ସ୍ଥାନୀୟ ଡାଉନଲୋଡକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="5826507051599432481">ସାଧାରଣ ନାମ (CN)</translation>
 <translation id="5830698870816298009">କ୍ୟାମେରାର ବ୍ୟବହାର ଓ ଗତିବିଧି</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3698,6 +3699,7 @@
 <translation id="7031646650991750659">ଆପଣ କେଉଁ Google Play ଆପ୍ସ ଇନଷ୍ଟଲ୍ କରିଛନ୍ତି</translation>
 <translation id="7035705295266423040">ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଆପଣଙ୍କ ବ୍ୟାଙ୍କ ଯାଞ୍ଚ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟର ଗୋପନୀୟତା ସେଟିଂସକୁ ପରିଚାଳନା କରିବା ପାଇଁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
+<translation id="7042465939346919737">ଏହି ବିକଳ୍ପଗୁଡ଼ିକ ଅଫର କରିବା ପାଇଁ Google ଚେକଆଉଟ ପୃଷ୍ଠାରୁ ସୂଚନା ଏବଂ ଅନ୍ୟ ପ୍ରାସଙ୍ଗିକ ଡାଟାକୁ ବ୍ୟବହାର କରେ। 'ପରେ ପେମେଣ୍ଟ କରନ୍ତୁ' ବିକଳ୍ପଗୁଡ଼ିକୁ ଲୁଚାଇବା ପାଇଁ, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="7042616127917168121">ଫଳାଫଳକୁ ରିଫାଇନ କରନ୍ତୁ</translation>
 <translation id="7043552168914147882">ଟାବ ଷ୍ଟକ</translation>
 <translation id="7044081119134178347">ଏହି ଥର କେମେରାକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>

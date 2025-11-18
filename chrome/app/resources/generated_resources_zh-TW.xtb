@@ -185,7 +185,7 @@
 <translation id="1118738876271697201">系統無法判別裝置型號或序號。</translation>
 <translation id="111897705806685148">使用其他裝置的密碼金鑰</translation>
 <translation id="1119447706177454957">內部錯誤</translation>
-<translation id="1122068467107743258">工作</translation>
+<translation id="1122068467107743258">公司</translation>
 <translation id="1122198203221319518">工具(&amp;T)</translation>
 <translation id="1122242684574577509">驗證失敗。按一下即可造訪目前所用 Wi-Fi 網路 (<ph name="NETWORK_ID" />) 的登入頁面。</translation>
 <translation id="1122587596907914265">設計獨特桌布樣式</translation>
@@ -1052,6 +1052,7 @@
 <translation id="1699807488537653303">修正密碼錯誤</translation>
 <translation id="1700201317341192482">移除虛擬卡片</translation>
 <translation id="1700517974991662022">曾經造訪過</translation>
+<translation id="1701367827913789499">使用工具列的「閱讀模式」按鈕盡量減少干擾，閱讀網頁真舒適</translation>
 <translation id="1703331064825191675">再也不必費心記住你的密碼</translation>
 <translation id="1703666494654169921">禁止網站使用虛擬實境裝置或資料</translation>
 <translation id="1704097193565924901">大小寫設定</translation>
@@ -2958,6 +2959,7 @@
 <translation id="3008272652534848354">重設權限</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你在今天內透過 Wi-Fi 連線下載更新，或使用計量付費連線下載更新 (可能要支付流量費用)。}other{<ph name="MANAGER" /> 要求你在期限內透過 Wi-Fi 連線下載更新，或使用計量付費連線下載更新 (可能要支付流量費用)。}}</translation>
 <translation id="3008923556848076408">Gemini 會繼續處理你的工作</translation>
+<translation id="3008926075262837186">盡量減少干擾，閱讀網頁真舒適</translation>
 <translation id="3009178788565917040">輸出</translation>
 <translation id="3009352964623081324">搜尋鍵 + O 鍵，然後按下 S 鍵，用途是安裝、管理及自訂語音。</translation>
 <translation id="3009779501245596802">索引資料庫</translation>
@@ -4412,7 +4414,6 @@
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />進一步瞭解「定位精確度」<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">已匯入</translation>
 <translation id="3992008114154328194">正在下載「<ph name="FILE_NAME" />」，<ph name="STATUS" /></translation>
-<translation id="3993259701827857030">備份資料</translation>
 <translation id="3994075804072562819">授權「<ph name="SPECIFIC_NAME" />」控制 USB 裝置。</translation>
 <translation id="3994318741694670028">很抱歉，你的電腦是由格式錯誤的硬體 ID 所設定。這導致 ChromeOS Flex 無法使用最新的安全性修正程式進行更新，你的電腦也可能因此<ph name="BEGIN_BOLD" />容易遭受惡意攻擊<ph name="END_BOLD" />。</translation>
 <translation id="3994374631886003300">解除手機的鎖定狀態，並且讓你的手機與 <ph name="DEVICE_TYPE" /> 更靠近，即可進入解鎖模式。</translation>
@@ -7703,7 +7704,6 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 偵錯，這會讓系統在 24 小時後重設 <ph name="DEVICE_TYPE" />。請備份你要保留的檔案。</translation>
 <translation id="6336194758029258346">應用程式語言</translation>
 <translation id="6337543438445391085">資料仍可能會包含部分個人資訊，請務必檢查匯出的檔案。</translation>
-<translation id="6338554362382763574">瀏覽網頁時，可以輕鬆向 Gemini 詢問分享的分頁相關問題</translation>
 <translation id="6338968693068997776">新增 USB 裝置</translation>
 <translation id="6339668969738228384">為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的個人資料</translation>
 <translation id="6340071272923955280">網際網路列印通訊協定 (IPPS)</translation>
@@ -8323,7 +8323,6 @@
     <ph name="BEGIN_PARAGRAPH2" />您可以在「設定」中關閉這項服務。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">已取消 Linux 備份作業</translation>
 <translation id="6782067259631821405">PIN 碼無效</translation>
-<translation id="6782219876520622071">為提升 Gemini 服務品質，人工審查員可能會查看分享的分頁相關對話</translation>
 <translation id="6783036716881942511">要刪除此裝置嗎？</translation>
 <translation id="6783667414610055871">Microsoft OneDrive 設定</translation>
 <translation id="6784523122863989144">支援設定檔</translation>
@@ -9520,7 +9519,6 @@
 <translation id="7620616707541471029">請選擇帳戶繼續登入</translation>
 <translation id="7621382409404463535">系統無法儲存裝置設定。</translation>
 <translation id="7621595347123595643">如果忘記密碼或 PIN 碼，就無法復原本機資料。</translation>
-<translation id="7621863462266622331">分享分頁時，系統會將網頁內容、媒體和網址傳送給 Google</translation>
 <translation id="7622114377921274169">充電中。</translation>
 <translation id="7622768823216805500">網站通常會安裝付款處理常式，以便提供相關的購物功能 (例如更方便的結帳方式)</translation>
 <translation id="7622966771025050155">切換至已擷取的分頁</translation>
@@ -10866,6 +10864,7 @@
 <translation id="8517759303731677493">編輯…</translation>
 <translation id="8518809011298357036">關閉上方畫面</translation>
 <translation id="8518942514525208851">隱藏不雅用語</translation>
+<translation id="8520238089740349550">失敗 - 已封鎖本機下載作業</translation>
 <translation id="8523493869875972733">保留變更</translation>
 <translation id="8523849605371521713">依政策新增</translation>
 <translation id="8524594273111932386">搜尋鍵 + 向下鍵</translation>
@@ -11921,7 +11920,7 @@
 <translation id="930991362911221750">要允許「<ph name="APP_NAME" />」查看這個分頁嗎？</translation>
 <translation id="931273044114601262">允許在這個網站執行</translation>
 <translation id="93140074055951850">Android 應用程式已停止</translation>
-<translation id="932327136139879170">首頁</translation>
+<translation id="932327136139879170">住家</translation>
 <translation id="932508678520956232">無法初始化列印作業。</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{這個檔案的大小過大，無法進行安全性檢查。可上傳的檔案大小上限為 50 MB。}other{部分檔案的大小過大，無法進行安全性檢查。可上傳的檔案大小上限為 50 MB。}}</translation>
 <translation id="93343527085570547">如要基於法律原因提出內容變更要求，請前往<ph name="BEGIN_LINK1" />法律說明頁面<ph name="END_LINK1" />。系統可能會將部分帳戶和系統資訊傳送給 Google。我們會使用您提供的資訊處理技術問題及改良服務，且相關過程適用於《<ph name="BEGIN_LINK2" />隱私權政策<ph name="END_LINK2" />》和《<ph name="BEGIN_LINK3" />服務條款<ph name="END_LINK3" />》。</translation>

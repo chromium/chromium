@@ -73,6 +73,7 @@
 <translation id="311432875115153175">ट्याब समूहको सूची बन्द गरियो</translation>
 <translation id="3194464645767632461">मूल्याङ्कन</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{समूहमा <ph name="TABS_COUNT_ONE" /> ट्याब हाल्नुहोस्}other{समूहमा <ph name="TABS_COUNT_MANY" /> वटा ट्याब हाल्नुहोस्}}</translation>
+<translation id="3293080634164207409">ट्याबहरू हाल्नुहोस्</translation>
 <translation id="3328308545011660196">सुझाव: <ph name="NUMBER_OF_TABS" /> ट्याबहरू एकअर्कासँग सम्बन्धित देखिन्छन्। यिनलाई एउटै समूहमा राख्ने हो?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{१ दिनदेखि निष्क्रिय भएपछि}other{<ph name="DAY_COUNT_MANY" /> दिनदेखि निष्क्रिय भएपछि}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> नयाँ ट्याब}other{<ph name="MANY_ADDED" /> वटा नयाँ ट्याब}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">गतिविधि</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> मूल्याङ्कन, <ph name="REVIEWS_COUNT_ONE" /> समीक्षा}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> मूल्याङ्कन, <ph name="REVIEWS_COUNT_MANY" /> वटा समीक्षा}}</translation>
 <translation id="7885132941432959125">ट्याब सारेर दायाँतिर लैजानुहोस्</translation>
+<translation id="7887334752153342268">नक्कल बनाउनुहोस्</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> चयन गरिएको छैन</translation>
 <translation id="7961015016161918242">कहिल्यै पनि होइन</translation>
 <translation id="7966321538264951561">सिफारिसहरू खारेज गर्नुहोस्।</translation>

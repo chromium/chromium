@@ -1054,6 +1054,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1699807488537653303">Novērsiet paroles kļūdu</translation>
 <translation id="1700201317341192482">Virtuālās kartes noņemšana</translation>
 <translation id="1700517974991662022">Apmeklēta</translation>
+<translation id="1701367827913789499">Ērti lasiet ar minimāliem traucējumiem, izmantojot rīkjoslā esošo pogu Lasīšanas režīms.</translation>
 <translation id="1703331064825191675">Nekad neraizējieties par parolēm</translation>
 <translation id="1703666494654169921">Neļaut vietnēm izmantot jūsu virtuālās realitātes ierīces vai datus</translation>
 <translation id="1704097193565924901">Sākt katru vārdu ar lielo burtu</translation>
@@ -2960,6 +2961,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3008272652534848354">Atiestatīt atļaujas</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> pieprasa, lai jūs šodien izveidotu savienojumu ar Wi-Fi tīklu un lejupielādētu atjauninājumu. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}zero{<ph name="MANAGER" /> pieprasa izveidot savienojumu ar Wi-Fi tīklu un lejupielādēt atjauninājumu pirms noteiktā termiņa beigām. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}one{<ph name="MANAGER" /> pieprasa izveidot savienojumu ar Wi-Fi tīklu un lejupielādēt atjauninājumu pirms noteiktā termiņa beigām. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}other{<ph name="MANAGER" /> pieprasa izveidot savienojumu ar Wi-Fi tīklu un lejupielādēt atjauninājumu pirms noteiktā termiņa beigām. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}}</translation>
 <translation id="3008923556848076408">Gemini turpinās darbu ar jūsu uzdevumu</translation>
+<translation id="3008926075262837186">Ērti lasiet ar minimāliem traucējumiem</translation>
 <translation id="3009178788565917040">Izvade</translation>
 <translation id="3009352964623081324">Search+O, pēc tam S. Izmantojiet, lai instalētu, pārvaldītu un pielāgotu balsis.</translation>
 <translation id="3009779501245596802">Rādītājā iekļautās datu bāzes</translation>
@@ -4416,7 +4418,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Uzzināt vairāk par atrašanās vietas precizitāti<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Importēts</translation>
 <translation id="3992008114154328194">Notiek faila <ph name="FILE_NAME" /> lejupielāde; <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Datu dublēšana</translation>
 <translation id="3994075804072562819">Atļaujiet <ph name="SPECIFIC_NAME" /> kontrolēt USB ierīces.</translation>
 <translation id="3994318741694670028">Diemžēl jūsu datora konfigurācijā tika izmantots nepareizi veidots aparatūras ID. Tādēļ operētājsistēmu Chrome OS Flex nevarēja atjaunināt, izmantojot jaunākos drošības labojumus, un jūsu dators, <ph name="BEGIN_BOLD" />iespējams, nav aizsargāts pret ļaunprātīgiem uzbrukumiem<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Atbloķējiet tālruni un pietuviniet to, lai atbloķētu savu ierīci (<ph name="DEVICE_TYPE" />).</translation>
@@ -7712,7 +7713,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6336038146639916978"><ph name="MANAGER" /> atspējoja ADB atkļūdošanu. Tādēļ 24 stundu laikā tiks atiestatīta jūsu <ph name="DEVICE_TYPE" /> ierīce. Dublējiet visus failus, ko vēlaties paturēt.</translation>
 <translation id="6336194758029258346">Lietotnes valoda</translation>
 <translation id="6337543438445391085">Datos tik un tā var būt iekļauta personas informācija. Noteikti pārskatiet eksportētos failus.</translation>
-<translation id="6338554362382763574">Pārlūkošanas laikā varat ērti uzdot Gemini jautājumus par cilnēm, ko kopīgojat.</translation>
 <translation id="6338968693068997776">USB ierīces pievienošana</translation>
 <translation id="6339668969738228384">Izveidot profilu kontam <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8111,6 +8111,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6619990499523117484">Apstipriniet PIN kodu</translation>
 <translation id="6620000730890558421">Uzturiet kārtību cilnēs, izmantojot MI</translation>
 <translation id="6620254580880484313">Konteinera nosaukums</translation>
+<translation id="6621282332208609777">Jautājiet Google vai ievadiet URL</translation>
 <translation id="6621391692573306628">Lai nosūtītu šo cilni uz citu ierīci, abās ierīcēs pierakstieties pārlūkā Chrome</translation>
 <translation id="6622980291894852883">Turpināt bloķēt attēlus</translation>
 <translation id="6624036901798307345">Planšetdatora režīmā pieskarieties ciļņu skaitītāja rīkjoslas pogai, lai atvērtu jaunu ciļņu joslu, kurā būs redzams katras cilnes sīktēls.</translation>
@@ -8335,7 +8336,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
     <ph name="BEGIN_PARAGRAPH2" />Šo pakalpojumu varat izslēgt iestatījumos.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux dublējums atcelts</translation>
 <translation id="6782067259631821405">Nederīgs PIN</translation>
-<translation id="6782219876520622071">Lai uzlabotu Gemini, pārskatītāji var skatīt sarunas par kopīgotajām cilnēm.</translation>
 <translation id="6783036716881942511">Vai aizmirst šo ierīci?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive iestatījumi</translation>
 <translation id="6784523122863989144">Profils tiek atbalstīts</translation>
@@ -10878,6 +10878,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8517759303731677493">Rediģēt…</translation>
 <translation id="8518809011298357036">Aizvērt augšdaļas skatu</translation>
 <translation id="8518942514525208851">Paslēpt rupjības</translation>
+<translation id="8520238089740349550">Neizdevās — lokālā lejupielāde ir bloķēta</translation>
 <translation id="8523493869875972733">Saglabāt izmaiņas</translation>
 <translation id="8523849605371521713">Pievienots, jo iestatīts politikā</translation>
 <translation id="8524594273111932386">meklēšanas taustiņš+lejupvērstā bultiņa</translation>
@@ -11751,6 +11752,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="909554839118732438">Aizvērt inkognito režīma logus</translation>
 <translation id="9095819602391364796">Neatļaut vietnēm kontrolēt un pārprogrammēt jūsu MIDI ierīces</translation>
 <translation id="9096053102600371572">Kontrolēta ritināšana. <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Salīdziniet opcijas</translation>
 <translation id="9096776523567481218">nav lokāli instalēta</translation>
 <translation id="9098860402274800697">Noņemt Google Play un Android lietotnes</translation>
 <translation id="9099220545925418560">Pamatā ir jūsu pārlūkošanas vēsture. Šis iestatījums ir izslēgts.</translation>

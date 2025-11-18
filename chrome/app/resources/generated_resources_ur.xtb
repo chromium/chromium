@@ -1052,6 +1052,7 @@
 <translation id="1699807488537653303">پاس ورڈ کی خرابی کو درست کریں</translation>
 <translation id="1700201317341192482">آپ کا ورچوئل کارڈ ہٹائیں</translation>
 <translation id="1700517974991662022">ملاحظہ کردہ</translation>
+<translation id="1701367827913789499">ٹول بار پر ریڈنگ موڈ بٹن کا استعمال کرتے ہوئے کم سے کم خلل انگیزیوں کے ساتھ آسانی سے پڑھیں</translation>
 <translation id="1703331064825191675">اپنے پاس ورڈز کے تعلق سے کبھی فکرمند نہ ہوں</translation>
 <translation id="1703666494654169921">سائٹس کو ورچوئل رئیلٹی آلات یا ڈیٹا کا استعمال کرنے کی اجازت نہ دیں</translation>
 <translation id="1704097193565924901">بڑے حرف میں لکھیں</translation>
@@ -2960,6 +2961,7 @@
 <translation id="3008272652534848354">اجازتیں دوبارہ ترتیب دیں</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{‏<ph name="MANAGER" /> کا تقاضہ ہے کہ آج آپ Wi-Fi سے منسلک ہوں اور ایک اپ ڈیٹ ڈاؤن لوڈ کریں۔ یا میٹرڈ کنکشن سے ڈاؤن لوڈ کریں (چارجز لاگو ہو سکتے ہیں)۔}other{‏<ph name="MANAGER" /> کا تقاضہ ہے کہ آپ آخری تاریخ سے پہلے Wi-Fi سے منسلک ہوں اور ایک اپ ڈیٹ ڈاؤن لوڈ کریں۔ یا میٹرڈ کنکشن سے ڈاؤن لوڈ کریں (چارجز لاگو ہو سکتے ہیں)۔}}</translation>
 <translation id="3008923556848076408">‏‫Gemini آپ کے ٹاسک پر کام کرتا رہے گا</translation>
+<translation id="3008926075262837186">کم سے کم خلل انگیزیوں کے ساتھ آرام سے پڑھیں</translation>
 <translation id="3009178788565917040">آؤٹ پٹ</translation>
 <translation id="3009352964623081324">‏Search + O، پھر S۔ آوازوں کو انسٹال، ان کا نظم کرنے اور حسب ضرورت بنانے کے لیے استعمال کریں</translation>
 <translation id="3009779501245596802">انڈیکس کردہ ڈیٹا بیسز</translation>
@@ -4416,7 +4418,6 @@
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />مقام کی درستگی کے بارے میں مزید جانیں<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">درآمد کردہ</translation>
 <translation id="3992008114154328194">ڈاؤن لوڈ جاری ہے <ph name="FILE_NAME" />، <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">ڈیٹا کا بیک اپ لیں</translation>
 <translation id="3994075804072562819">‏‫<ph name="SPECIFIC_NAME" /> کو USB آلات پر کنٹرول دیں۔</translation>
 <translation id="3994318741694670028">‏بدقسمتی سے، آپ کا کمپیوٹر خراب ہارڈ ویئر ID کے ساتھ کنفیگر کیا ہوا ہے۔ یہ ChromeOS Flex کو تازہ ترین سیکیورٹی اصلاحات کے ساتھ اپ ڈیٹ ہونے سے روکتا ہے اور آپ کے کمپیوٹر کو <ph name="BEGIN_BOLD" />نقصان دہ حملوں سے خطرہ ہو سکتا ہے<ph name="END_BOLD" />۔</translation>
 <translation id="3994374631886003300">اپنا فون غیر مقفل کریں اور اپنا <ph name="DEVICE_TYPE" /> غیر مقفل کرنے کیلئے اسے قریب کریں۔</translation>
@@ -7713,7 +7714,6 @@
 <translation id="6336038146639916978">‏<ph name="MANAGER" /> نے ADB ڈیبگنگ کو غیر فعال کر دیا ہے۔ یہ آپ کے <ph name="DEVICE_TYPE" /> کو 24 گھنٹوں میں ری سیٹ کر دے گا۔ کوئی بھی فائل کا بیک اپ لیں جسے آپ رکھنا چاہتے ہیں۔</translation>
 <translation id="6336194758029258346">ایپ کی زبان</translation>
 <translation id="6337543438445391085">کچھ ذاتی معلومات کو اب بھی ڈیٹا میں شامل کیا جا سکتا ہے۔ برآمد شدہ فائلوں کا جائزہ لینا یقینی بنائیں۔</translation>
-<translation id="6338554362382763574">‏براؤز کرتے وقت آپ آسانی سے اپنے اشتراک کردہ ٹیبز کے بارے میں Gemini سے سوالات پوچھ سکتے ہیں</translation>
 <translation id="6338968693068997776">‏USB آلہ شامل کریں</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> کیلئے ایک نیا پروفائل بنائیں</translation>
 <translation id="6340071272923955280">‏انٹرنیٹ پرنٹنگ پروٹوکول (IPPS)</translation>
@@ -8108,6 +8108,7 @@
 <translation id="6619990499523117484">‏اپنے PIN کی توثیق کریں</translation>
 <translation id="6620000730890558421">‏‫AI کے ساتھ اپنے ٹیبز کو صاف رکھیں</translation>
 <translation id="6620254580880484313">کنٹینر کا نام</translation>
+<translation id="6621282332208609777">‏‫Google سے پوچھیں یا URL ٹائپ کریں</translation>
 <translation id="6621391692573306628">‏اس ٹیب کو کسی اور آلے میں بھیجنے کے لیے دونوں آلات پر Chrome میں سائن ان کریں</translation>
 <translation id="6622980291894852883">تصاویر کو مسدود کرنا جاری رکھیں</translation>
 <translation id="6624036901798307345">ٹیبلیٹ موڈ میں، ٹیب کاؤنٹر ٹول بار کے بٹن پر تھپتھپائیں تاکہ نئی ٹیب کی اسٹرپ کھل سکے جو ہر ٹیب کے تھمب نیلز دکھاتی ہے۔</translation>
@@ -8332,7 +8333,6 @@
     <ph name="BEGIN_PARAGRAPH2" />آپ اس سروس کو ترتیبات میں جا کر آف کر سکتے ہیں۔<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">‏Linux کا بیک اپ منسوخ ہو گیا</translation>
 <translation id="6782067259631821405">‏غلط PIN</translation>
-<translation id="6782219876520622071">‏‫Gemini کو بہتر بنانے کے لیے مشترکہ ٹیبز کے بارے میں گفتگوئیں انسان جائزہ کاران دیکھ سکتے ہیں</translation>
 <translation id="6783036716881942511">اس آلے کو بھول جائیں؟</translation>
 <translation id="6783667414610055871">‏Microsoft OneDrive کی ترتیبات</translation>
 <translation id="6784523122863989144">پروفائل تعاون یافتہ ہے</translation>
@@ -10873,6 +10873,7 @@
 <translation id="8517759303731677493">ترمیم کریں…</translation>
 <translation id="8518809011298357036">اوپر کے منظر کو بند کریں</translation>
 <translation id="8518942514525208851">بے حُرمتی چھپائيں</translation>
+<translation id="8520238089740349550">ناکام - مقامی ڈاؤن لوڈ مسدود ہو گیا</translation>
 <translation id="8523493869875972733">تبدیلیاں برقرار رکھیں</translation>
 <translation id="8523849605371521713">پالیسی کے ذریعے شامل کیا گیا</translation>
 <translation id="8524594273111932386">‏search + نیچے تیر کا نشان</translation>
@@ -11744,6 +11745,7 @@
 <translation id="909554839118732438">پوشیدگی ونڈوز بند کریں</translation>
 <translation id="9095819602391364796">‏سائٹس کو اپنے MIDI آلات کو کنٹرول اور دوبارہ پروگرام کرنے کی اجازت نہ دیں</translation>
 <translation id="9096053102600371572">زیر کنٹرول اسکرولنگ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">اختیارات کا موازنہ کریں</translation>
 <translation id="9096776523567481218">مقامی طور پر انسٹال نہیں</translation>
 <translation id="9098860402274800697">‏Google Play اور Android ایپس ہٹائیں</translation>
 <translation id="9099220545925418560">آپ کی براؤزنگ کی سرگزشت کی بنیاد پر۔ یہ ترتیب آف ہے۔</translation>

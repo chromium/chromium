@@ -1049,6 +1049,7 @@
 <translation id="1699807488537653303">ପାସୱାର୍ଡ ତ୍ରୁଟିର ସମାଧାନ କରନ୍ତୁ</translation>
 <translation id="1700201317341192482">ଆପଣଙ୍କ ଭର୍ଚୁଆଲ କାର୍ଡ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="1700517974991662022">ଯାଇଥିବା ସ୍ଥାନ</translation>
+<translation id="1701367827913789499">ଟୁଲବାରରେ ଥିବା ରିଡିଂ ମୋଡ ବଟନକୁ ବ୍ୟବହାର କରି ସର୍ବନିମ୍ନ ଡିସଟ୍ରାକ୍ସନ ସହ ଆରାମରେ ପଢ଼ନ୍ତୁ</translation>
 <translation id="1703331064825191675">ଆପଣଙ୍କର ପାସ୍‍ୱାର୍ଡଗୁଡ଼ିକ ବିଷୟରେ କେବେ ବି ଚିନ୍ତା କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="1703666494654169921">ଭର୍ଚୁଆଲ୍ ରିଆଲିଟୀ ଡିଭାଇସ୍ କିମ୍ବା ଡାଟା ବ୍ୟବହାର କରିବାକୁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="1704097193565924901">କ୍ୟାପିଟାଲାଇଜ କରନ୍ତୁ</translation>
@@ -2956,6 +2957,7 @@
 <translation id="3008272652534848354">ଅନୁମତି ରିସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> ପାଇଁ ଆପଣଙ୍କୁ ଏକ ଅପଡେଟ୍ ଡାଉନଲୋଡ୍ କରିବାକୁ ଆଜି ୱାଇ-ଫାଇ ସହ ସଂଯୋଗ କରିବାର ଆବଶ୍ୟକତା ଅଛି। କିମ୍ବା, ଏକ ମିଟର ହୋଇଥିବା ସଂଯୋଗରୁ ଡାଉନଲୋଡ୍ କରନ୍ତୁ (ଚାର୍ଜ ଲାଗୁ ହୋଇପାରେ)।}other{<ph name="MANAGER" /> ପାଇଁ ଆପଣଙ୍କୁ ସମୟସୀମା ପୂର୍ବରୁ ୱାଇ-ଫାଇ ସହ ସଂଯୋଗ କରି ଏକ ଅପଡେଟ୍ ଡାଉନଲୋଡ୍ କରିବା ଆବଶ୍ୟକ। କିମ୍ବା, ଏକ ମିଟର ହୋଇଥିବା ସଂଯୋଗରୁ ଡାଉନଲୋଡ୍ କରନ୍ତୁ (ଚାର୍ଜ ଲାଗୁ ହୋଇପାରେ)।}}</translation>
 <translation id="3008923556848076408">Gemini ଆପଣଙ୍କ ଟାସ୍କଗୁଡ଼ିକ ଉପରେ କାମ କରିବା ଜାରି ରଖିବ</translation>
+<translation id="3008926075262837186">ସର୍ବନିମ୍ନ ବିଭ୍ରାନ୍ତି ସହ ଆରାମରେ ପଢ଼ନ୍ତୁ</translation>
 <translation id="3009178788565917040">ଆଉଟ୍‌ପୁଟ୍</translation>
 <translation id="3009352964623081324">"ସର୍ଚ୍ଚ କରନ୍ତୁ" ବଟନ + O, ତାପରେ S। ଇନଷ୍ଟଲ, ପରିଚାଳନା ଏବଂ ଭଏସ କଷ୍ଟମାଇଜ କରିବାକୁ ଏହି ସର୍ଟକଟ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="3009779501245596802">ସୂଚୀବଦ୍ଧ ଡାଟାବେସ୍</translation>
@@ -4413,7 +4415,6 @@
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />ଲୋକେସନ ସଠିକତା ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">ଆମୋଦିତ ହୋଇଛି</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> ଡାଉନଲୋଡ ହେଉଛି, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">ଡାଟାର ବେକଅପ ନିଅନ୍ତୁ</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" />କୁ USB ଡିଭାଇସଗୁଡ଼ିକର ନିୟନ୍ତ୍ରଣ ଦିଅନ୍ତୁ।</translation>
 <translation id="3994318741694670028">ଦୁର୍ଭାଗ୍ୟବଶତଃ, ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରକୁ ଏକ ତ୍ରୁଟିପୂର୍ଣ୍ଣ ହାର୍ଡୱେର IDରେ କନଫିଗର କରାଯାଇଛି। ଏହା ChromeOS Flexରେ ନବୀନତମ ସୁରକ୍ଷା ସମାଧାନଗୁଡ଼ିକୁ ଅପଡେଟ କରିବାରେ ପ୍ରତିରୋଧ କରେ ଏବଂ ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରକୁ <ph name="BEGIN_BOLD" />କ୍ଷତିକାରକ ଆକ୍ରମଣଗୁଡ଼ିକର ସମ୍ଭାବନା ଥାଇପାରେ<ph name="END_BOLD" />।</translation>
 <translation id="3994374631886003300">ଆପଣଙ୍କର ଫୋନ୍‌ ଅନ୍‌ଲକ୍‌ କରନ୍ତୁ ଏବଂ ଆପଣଙ୍କର <ph name="DEVICE_TYPE" />କୁ ଅନ୍‌ଲକ୍‌ କରିବାକୁ ଏହାକୁ ନିକଟତର କରନ୍ତୁ।</translation>
@@ -7709,7 +7710,6 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> ADB ଡିବଗିଂକୁ ଅକ୍ଷମ କରିଛି। ଏହା ଦ୍ୱାରା ଆପଣଙ୍କ <ph name="DEVICE_TYPE" /> 24 ଘଣ୍ଟାରେ ରିସେଟ୍ ହୋଇଯିବ। ଆପଣ ରଖିବାକୁ ଚାହୁଁଥିବା ଯେ କୌଣସି ଫାଇଲର ବ୍ୟାକଅପ୍ ନିଅନ୍ତୁ।</translation>
 <translation id="6336194758029258346">ଆପ ଭାଷା</translation>
 <translation id="6337543438445391085">କିଛି ବ୍ୟକ୍ତିଗତ ସୂଚନା ଏବେ ବି ଡାଟାରେ ଅନ୍ତର୍ଭୁକ୍ତ ଥାଇପାରେ। ଏକ୍ସପୋର୍ଟ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକର ସମୀକ୍ଷା କରିବାକୁ ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
-<translation id="6338554362382763574">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ସେୟାର କରୁଥିବା ଟାବଗୁଡ଼ିକ ବିଷୟରେ ସହଜରେ Geminiକୁ ପ୍ରଶ୍ନ ପଚାରିପାରିବେ</translation>
 <translation id="6338968693068997776">USB ଡିଭାଇସ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" />ପାଇଁ ଗୋଟିଏ ନୂଆ ପ୍ରୋଫାଇଲ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="6340071272923955280">ଇଣ୍ଟର୍ନେଟ୍ ପ୍ରିଣ୍ଟିଂ ପ୍ରୋଟୋକଲ୍ (IPPS)</translation>
@@ -8105,6 +8105,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6619990499523117484">ଆପଣଙ୍କର PIN ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="6620000730890558421">AI ମାଧ୍ୟମରେ ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକୁ ଶୃଙ୍ଖଳିତ ରଖନ୍ତୁ</translation>
 <translation id="6620254580880484313">କଣ୍ଟେନର ନାମ</translation>
+<translation id="6621282332208609777">Googleକୁ ପଚାରନ୍ତୁ କିମ୍ବା ଏକ URL ଟାଇପ କରନ୍ତୁ</translation>
 <translation id="6621391692573306628">ଏହି ଟାବକୁ ଅନ୍ୟ ଏକ ଡିଭାଇସକୁ ପଠାଇବା ପାଇଁ ଉଭୟ ଡିଭାଇସରେ Chromeକୁ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="6622980291894852883">ଛବି ବ୍ଲକ୍ କରିବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="6624036901798307345">ଟାବଲେଟ ମୋଡରେ, ପ୍ରତ୍ୟେକ ଟାବର ଥମ୍ବନେଲକୁ ଦେଖାଉଥିବା ନୂଆ ଟାବ ଷ୍ଟ୍ରିପକୁ ଖୋଲିବା ପାଇଁ ଟାବ କାଉଣ୍ଟର ଟୁଲବାର ବଟନରେ ଟାପ କରନ୍ତୁ।</translation>
@@ -8330,7 +8331,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
     <ph name="BEGIN_PARAGRAPH2" />ଆପଣ ସେଟିଂସରେ ଏହି ସେବାକୁ ବନ୍ଦ କରିପାରିବେ।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linuxର ବ୍ୟାକ୍‌ଅପ୍ ବାତିଲ୍ କରାଯାଇଛି</translation>
 <translation id="6782067259631821405">ଅବୈଧ PIN</translation>
-<translation id="6782219876520622071">Geminiକୁ ଉନ୍ନତ କରିବା ପାଇଁ ସେୟାର କରାଯାଇଥିବା ଟାବଗୁଡ଼ିକ ବିଷୟରେ ବାର୍ତ୍ତାଳାପଗୁଡ଼ିକୁ ମାନବ ରିଭ୍ୟୁଅରମାନେ ଦେଖିପାରନ୍ତି</translation>
 <translation id="6783036716881942511">ଏହି ଡିଭାଇସକୁ ଭୁଲି ଯିବେ?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive ସେଟିଂସ</translation>
 <translation id="6784523122863989144">ପ୍ରୋଫାଇଲ୍ ସମର୍ଥିତ ଅଟେ</translation>
@@ -10870,6 +10870,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8517759303731677493">ଏଡିଟ କରନ୍ତୁ…</translation>
 <translation id="8518809011298357036">ଟପ ଭ୍ୟୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8518942514525208851">ଅଶ୍ଳୀଳ ଭାଷା ଲୁଚାନ୍ତୁ</translation>
+<translation id="8520238089740349550">ବିଫଳ ହୋଇଛି - ସ୍ଥାନୀୟ ଡାଉନଲୋଡକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="8523493869875972733">ପରିବର୍ତ୍ତନ ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="8523849605371521713">ନୀତି ଦ୍ୱାରା ଯୋଗ କରାଯାଇଛି</translation>
 <translation id="8524594273111932386">ସର୍ଚ୍ଚ + ଡାଉନ ତୀର</translation>
@@ -11741,6 +11742,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="909554839118732438">ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="9095819602391364796">ଆପଣଙ୍କର MIDI ଡିଭାଇସଗୁଡ଼ିକୁ ନିୟନ୍ତ୍ରଣ କରି ପୁଣି ପ୍ରୋଗ୍ରାମ କରିବାକୁ ସାଇଟକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="9096053102600371572">ନିୟନ୍ତ୍ରିତ ସ୍କ୍ରୋଲିଂ <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">ବିକଳ୍ପଗୁଡ଼ିକୁ ତୁଳନା କରନ୍ତୁ</translation>
 <translation id="9096776523567481218">ସ୍ଥାନୀୟ ଭାବେ ଇନଷ୍ଟଲ କରାଯାଇନାହିଁ</translation>
 <translation id="9098860402274800697">Google Play ଏବଂ Android ଆପ୍ସକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="9099220545925418560">ଆପଣଙ୍କର ବ୍ରାଉଜିଂ ଇତିହାସ ଆଧାରରେ। ଏହି ସେଟିଂ ବନ୍ଦ ଅଛି।</translation>

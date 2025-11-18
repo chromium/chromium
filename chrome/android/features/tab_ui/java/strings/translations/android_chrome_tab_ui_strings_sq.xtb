@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Lista e grupeve të skedave u mbyll</translation>
 <translation id="3194464645767632461">vlerësimi</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Shto <ph name="TABS_COUNT_ONE" /> skedë te grupi}other{Shto <ph name="TABS_COUNT_MANY" /> skeda te grupi}}</translation>
+<translation id="3293080634164207409">Shto skedat</translation>
 <translation id="3328308545011660196">Sugjerim: <ph name="NUMBER_OF_TABS" /> skeda duken të lidhura. Dëshiron t'i gruposh?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Pas 1 dite pa aktivitet}other{Pas <ph name="DAY_COUNT_MANY" /> ditësh pa aktivitet}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{Skeda të reja: <ph name="ONE_ADDED" />}other{Skeda të reja: <ph name="MANY_ADDED" />}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">Aktiviteti</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Vlerësimi <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> koment}other{Vlerësimi <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> komente}}</translation>
 <translation id="7885132941432959125">Lëviz skedën djathtas</translation>
+<translation id="7887334752153342268">Dublikatë</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> - nuk është zgjedhur</translation>
 <translation id="7961015016161918242">Asnjëherë</translation>
 <translation id="7966321538264951561">Largo sugjerimet.</translation>

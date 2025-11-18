@@ -42,6 +42,7 @@
 <translation id="1122068467107743258">Werk</translation>
 <translation id="1126696498560056882">Accounts op dit apparaat beheren</translation>
 <translation id="1126809382673880764">Beschermt je niet tegen gevaarlijke websites, downloads en extensies. Je wordt voor andere services, zoals Gmail en Zoeken, nog steeds beschermd door Safe Browsing als dat beschikbaar is.</translation>
+<translation id="1133418583142946603">Huidig tabblad toevoegen</translation>
 <translation id="1136104150802877429">Toont productreviews</translation>
 <translation id="1142371195993008685">Meldingen uitzetten voor <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Ingelogd als <ph name="USER" /></translation>
@@ -78,6 +79,7 @@
 <translation id="1285320974508926690">Deze site nooit vertalen</translation>
 <translation id="1287229685519872919">Google Workspace-gegevens</translation>
 <translation id="1291506870746876680">De rechten voor <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> worden weer uitgezet als je deze site verlaat.</translation>
+<translation id="1293556467332435079">Bestanden</translation>
 <translation id="129553762522093515">Recent gesloten</translation>
 <translation id="1296581780163690620">Bestand downloaden? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Bevestig dat jij het bent zodat je de wachtwoorden in je Google-account altijd kunt gebruiken.</translation>
@@ -1044,6 +1046,7 @@
 <translation id="5055015094595227120">Exacte locatie</translation>
 <translation id="5055551113846164633">Hiermee worden adressen verwijderd die zijn opgeslagen op dit apparaat. Ook worden adressen verwijderd die zijn opgeslagen in je Google-account <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Problemen gevonden (<ph name="TIME" />).</translation>
+<translation id="5056587122125565772">Afbeelding maken</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Google Drive installeren</translation>
 <translation id="5067540696062462445">Downloads</translation>
@@ -1505,6 +1508,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6659660757330712663">Je kunt over de werkbalk swipen om van tabblad te wisselen.</translation>
 <translation id="6663529247339810546">Kan afbeelding niet opslaan</translation>
 <translation id="6668619169535738264">Bookmark bewerken</translation>
+<translation id="6670729408462528018">Galerij</translation>
 <translation id="6671294218820966278">Markeren als gelezen</translation>
 <translation id="6672697278890207089">Je wachtwoordzin invoeren</translation>
 <translation id="6674917187596384849">Je kunt makkelijk wisselen tussen accounts</translation>
@@ -1661,6 +1665,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Je hebt al wachtwoorden voor deze accounts in je Google Wachtwoordmanager. Als je ervoor kiest een van de wachtwoorden hieronder te importeren, vervangt dit het bestaande wachtwoord.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> procent gedownload</translation>
+<translation id="7345061034321640811">Importeren niet toegestaan</translation>
 <translation id="7352651011704765696">Er is iets misgegaan</translation>
 <translation id="7363349185727752629">Een gids met je privacykeuzes</translation>
 <translation id="7364796246159120393">Bestand kiezen</translation>
@@ -2202,6 +2207,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="952704832371081537">Annuleren</translation>
 <translation id="95332591904104970">Gekoppelde apps</translation>
 <translation id="954667170699278022">Leeslijst</translation>
+<translation id="956066588046842680">Het beleid van je organisatie staat niet toe dat je deze gegevens importeert.</translation>
 <translation id="956218893102219091">Gebruik je exacte locatie voor de nauwkeurigste Gemini-resultaten in plaats van een geschatte locatie op basis van je IP-adres. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Browsegegevens verwijderen</translation>
 <translation id="963102227019621224">Web- en app-activiteit</translation>

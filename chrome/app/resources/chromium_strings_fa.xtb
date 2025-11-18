@@ -520,6 +520,7 @@
 <translation id="705851970750939768">‏به‌روزرسانی Chromium</translation>
 <translation id="7067091210845072982">‏اگر تصویری توضیح مفیدی نداشته باشد، Chromium توضیحی برای شما ارائه خواهد کرد. برای ایجاد توضیحات، تصاویر به Google ارسال می‌شود.</translation>
 <translation id="7141270731789036260">‏سفارشی‌سازی Chrome for Testing</translation>
+<translation id="7147227333672430807">‏می‌توانید پیوندهای موجود در پیام‌ها، سندها، و برنامه‌های دیگر را همیشه بااستفاده از Chromium باز کنید</translation>
 <translation id="7163519456498498587">‏حذف <ph name="EXTENSION_NAME" /> از Chromium</translation>
 <translation id="7173822816570314652">‏اگر <ph name="TIMEOUT_DURATION" /> از Chromium استفاده نشود، سازمانتان داده‌های آن را حذف می‌کند. این داده‌ها می‌تواند شامل سابقه، تکمیل خودکار، و بارگیری‌ها شود.</translation>
 <translation id="718435575166326686">‏Chromium برای این سایت به اجازه دوربین نیاز دارد</translation>
@@ -633,6 +634,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8471947159125090285">‏برای ذخیره کردن داده‌های Chromium در «حساب Google» خود و استفاده کردن از آن‌ها، هویتتان را درستی‌سنجی کنید</translation>
 <translation id="8482493977473846331">‏پیام‌واره‌های ورود به سیستم Chromium را نشان می‌دهد</translation>
 <translation id="8493179195440786826">‏نسخه Chromium قدیمی است</translation>
+<translation id="850264194101621529">‏از اینکه Chromium را به‌عنوان مرورگر پیش‌فرض خود انتخاب کردید سپاس‌گزاریم!</translation>
 <translation id="8522801943730206384">‏‫Chromium زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که آن‌ها را ذخیره کرده باشید</translation>
 <translation id="8555465886620020932">خطای سرویس: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">می‌توانید «جستجوی تصویر» را برای دسترسی آسان سنجاق کنید؛ روی دکمه «سنجاق کردن» در بالای پانل کناری کلیک کنید</translation>
@@ -642,6 +644,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8586442755830160949">‏حق نشر <ph name="YEAR" /> نویسندگان Chromium. کلیه حقوق محفوظ است.</translation>
 <translation id="8601359445272098721">جدید! با انتخاب دکمه «ترجمه کردن صفحه‌نمایش»، می‌توانید هم نوشتار و هم تصاویر روی صفحه‌نمایش را ترجمه کنید</translation>
 <translation id="8619360774459241877">‏درحال راه‌اندازی Chromium…</translation>
+<translation id="8624541899164515475">«تنظیمات»، در زبانه جدیدی باز می‌شود.</translation>
 <translation id="8648201657708811153">‏نمی‌توان Google Chrome for Testing را به‌عنوان مرورگر پیش‌فرض تنظیم کرد.</translation>
 <translation id="8677922833187616101">‏همیشه میان‌بر «حالت هوش مصنوعی Google» نشان داده شود</translation>
 <translation id="8697124171261953979">‏این برنامه همچنین صفحه‌ای را که هنگام راه‌اندازی Chromium یا جستجو از Omnibox نشان داده می‌شود، کنترل می‌کند.</translation>

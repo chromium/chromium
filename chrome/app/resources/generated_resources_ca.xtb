@@ -1052,6 +1052,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1699807488537653303">Corregeix l'error de contrasenya</translation>
 <translation id="1700201317341192482">Suprimeix la targeta virtual</translation>
 <translation id="1700517974991662022">Visitat</translation>
+<translation id="1701367827913789499">Llegeix còmodament amb el mínim de distraccions utilitzant el botó Mode de lectura de la barra d'eines</translation>
 <translation id="1703331064825191675">No et preocupis mai per les teves contrasenyes</translation>
 <translation id="1703666494654169921">No permetis que els llocs web utilitzin dades o dispositius de realitat virtual</translation>
 <translation id="1704097193565924901">Posa en majúscula</translation>
@@ -2958,6 +2959,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3008272652534848354">Restableix els permisos</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requereix que et connectis a la Wi-Fi avui per baixar una actualització. També pots baixar-la amb una connexió d'ús mesurat, però és possible que s'apliquin càrrecs.}other{<ph name="MANAGER" /> requereix que et connectis a la Wi-Fi i que baixis una actualització abans del termini establert. També pots baixar-la amb una connexió d'ús mesurat, però és possible que s'apliquin càrrecs.}}</translation>
 <translation id="3008923556848076408">Gemini continuarà treballant en la teva tasca</translation>
+<translation id="3008926075262837186">Llegeix còmodament amb el mínim de distraccions</translation>
 <translation id="3009178788565917040">Sortida</translation>
 <translation id="3009352964623081324">Cerca+O i, després, S. Fes-ho servir per instal·lar, gestionar i personalitzar veus.</translation>
 <translation id="3009779501245596802">Bases de dades indexades</translation>
@@ -4413,7 +4415,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Més informació sobre la precisió de la ubicació<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Importats</translation>
 <translation id="3992008114154328194">S'està baixant <ph name="FILE_NAME" /> (<ph name="STATUS" />)</translation>
-<translation id="3993259701827857030">Crea una còpia de seguretat de les dades</translation>
 <translation id="3994075804072562819">Dona a <ph name="SPECIFIC_NAME" /> el control sobre els dispositius USB.</translation>
 <translation id="3994318741694670028">Malauradament, l'ordinador està configurat amb un identificador de maquinari que té un format incorrecte. Això impedeix a ChromeOS Flex actualitzar-se amb les darreres correccions de seguretat i <ph name="BEGIN_BOLD" />pot ser que l'ordinador sigui vulnerable a atacs maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Desbloqueja el telèfon i acosta'l per desbloquejar <ph name="DEVICE_TYPE" />.</translation>
@@ -7710,7 +7711,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ha desactivat la depuració d'ADB. Aquesta acció restablirà el teu dispositiu <ph name="DEVICE_TYPE" /> en un termini de 24 hores. Fes una còpia de seguretat de tots els fitxers que vols conservar.</translation>
 <translation id="6336194758029258346">Idioma de l'aplicació</translation>
 <translation id="6337543438445391085">Pot ser que part de la teva informació personal encara s'inclogui a les dades. Assegura't de revisar els fitxers exportats.</translation>
-<translation id="6338554362382763574">Pots fer preguntes a Gemini sobre les pestanyes que comparteixes mentre navegues</translation>
 <translation id="6338968693068997776">Afegeix un dispositiu USB</translation>
 <translation id="6339668969738228384">Crea un perfil nou per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocol d'impressió per Internet (IPPS)</translation>
@@ -8330,7 +8330,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
     <ph name="BEGIN_PARAGRAPH2" />Pots desactivar aquest servei a Configuració.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">S'ha cancel·lat la còpia de seguretat de Linux</translation>
 <translation id="6782067259631821405">El PIN no és vàlid</translation>
-<translation id="6782219876520622071">És possible que revisors humans vegin les converses sobre pestanyes compartides per millorar Gemini</translation>
 <translation id="6783036716881942511">Vols oblidar aquest dispositiu?</translation>
 <translation id="6783667414610055871">Configuració de Microsoft OneDrive</translation>
 <translation id="6784523122863989144">El perfil s'admet</translation>
@@ -9528,7 +9527,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7620616707541471029">Selecciona un compte per continuar</translation>
 <translation id="7621382409404463535">El sistema no ha pogut desar la configuració del dispositiu.</translation>
 <translation id="7621595347123595643">No podràs recuperar les dades locals si oblides la contrasenya o el PIN.</translation>
-<translation id="7621863462266622331">Quan es comparteixen pestanyes, el contingut, el contingut multimèdia i els URL de les pàgines s'envien a Google</translation>
 <translation id="7622114377921274169">S'està carregant.</translation>
 <translation id="7622768823216805500">Els llocs web solen instal·lar gestors de pagament per a funcions de compra com ara una tramitació més senzilla</translation>
 <translation id="7622966771025050155">Canvia a la pestanya capturada</translation>
@@ -10875,6 +10873,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8517759303731677493">Edita…</translation>
 <translation id="8518809011298357036">Tanca la visualització superior</translation>
 <translation id="8518942514525208851">Amaga el llenguatge obscè</translation>
+<translation id="8520238089740349550">Error: s'ha bloquejat la baixada local</translation>
 <translation id="8523493869875972733">Mantén els canvis</translation>
 <translation id="8523849605371521713">Afegida per la política</translation>
 <translation id="8524594273111932386">Cerca+fletxa avall</translation>

@@ -428,6 +428,7 @@
 <translation id="1689333818294560261">别名</translation>
 <translation id="1692622044604477956">上映影片与放映时间</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />您可以如何管理自己的数据<ph name="END_BOLD" />：Chrome 会自动删除保留时长超过 4 周的主题。随着您继续浏览，某个主题可能会再次出现在列表中。您还可以随时在 Chrome 设置中屏蔽不希望 Chrome 与网站分享的主题，以及停用广告主题功能。</translation>
+<translation id="1697808683313379647">这些选项是 Google 依据结账页中的信息和其他相关数据提供的。</translation>
 <translation id="1699651774646344471">您现在可以使用您 Google 账号中的地址</translation>
 <translation id="1700542542921501212">您可以使用 <ph name="SEARCH_ENGINE_NAME" /> 在网络上搜索。</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1718,7 +1719,6 @@
 <translation id="3792826587784915501">邪典电影与独立电影</translation>
 <translation id="3793574014653384240">近期发生崩溃的次数和原因</translation>
 <translation id="3795624560191557077">您最近更改的密码已在某次公开数据泄露事件中外泄。如果您遇到问题，Google 密码管理工具可以帮助您登录。</translation>
-<translation id="3796181268473765083">分 4 期免息付款或按月分期付款（需满足资格要求）</translation>
 <translation id="3799805948399000906">请求的字体</translation>
 <translation id="3801297763951514916">您经常访问</translation>
 <translation id="380329542618494757">姓名</translation>
@@ -3698,6 +3698,7 @@
 <translation id="7031646650991750659">您已安装的 Google Play 应用</translation>
 <translation id="7035705295266423040">银行想要验证您的身份</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可管理您的 Google 账号隐私设置</translation>
+<translation id="7042465939346919737">这些选项是 Google 依据结账页中的信息和其他相关数据提供的。若要隐藏“先买后付”相关选项，请前往<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">优化结果</translation>
 <translation id="7043552168914147882">隔页纸</translation>
 <translation id="7044081119134178347">这次可以使用摄像头</translation>
@@ -4948,7 +4949,7 @@
 <translation id="9101630580131696064">纸匣 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> 通常会使用加密技术来保护您的信息。Chromium 此次尝试连接到 <ph name="SITE" /> 时，此网站发回了异常的错误凭据。这可能是因为有攻击者在试图冒充 <ph name="SITE" />，或 Wi-Fi 登录屏幕中断了此次连接。请放心，您的信息仍然是安全的，因为 Chromium 尚未进行任何数据交换便停止了连接。</translation>
 <translation id="9107199998619088551"><ph name="MANAGER" />负责管理您的资料</translation>
-<translation id="9107467864910557787">您的浏览器由 <ph name="MANAGER" /> 管理</translation>
+<translation id="9107467864910557787">浏览器由 <ph name="MANAGER" /> 管理</translation>
 <translation id="91108059142052966">管理员政策禁止在屏幕显示机密内容时与<ph name="APPLICATION_TITLE" />共享屏幕</translation>
 <translation id="9114101423898634479">添加已知旅客编号</translation>
 <translation id="9114524666733003316">正在确认信用卡…</translation>

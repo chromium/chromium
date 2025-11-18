@@ -523,6 +523,7 @@ Nekatere funkcije morda ne bodo na voljo. Določite drug imenik profila ali upor
 <translation id="705851970750939768">Posodobi Chromium</translation>
 <translation id="7067091210845072982">Če slika nima koristnega opisa, ga bo Chromium poskušal zagotoviti. Opisi se ustvarijo tako, da se slike pošljejo Googlu.</translation>
 <translation id="7141270731789036260">Prilagajanje različice Chrome for Testing</translation>
+<translation id="7147227333672430807">Chromium lahko uporabljate ob vsakem kliku povezav v sporočilih, dokumentih in drugih aplikacijah</translation>
 <translation id="7163519456498498587">Odstranitev razširitve <ph name="EXTENSION_NAME" /> iz Chromiuma</translation>
 <translation id="7173822816570314652">Organizacija izbriše podatke v Chromiumu, če se ne uporablja <ph name="TIMEOUT_DURATION" />. To lahko vključuje zgodovino, samodejno izpolnjene podatke in prenose.</translation>
 <translation id="718435575166326686">Chromium potrebuje dovoljenje za fotoaparat za to spletno mesto.</translation>
@@ -637,6 +638,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8471947159125090285">Če želite v računu Google uporabljati in shranjevati podatke iz Chromiuma, potrdite, da ste to vi</translation>
 <translation id="8482493977473846331">Pokaže pozive za prijavo v Chromium</translation>
 <translation id="8493179195440786826">Chromium je zastarel</translation>
+<translation id="850264194101621529">Hvala, ker ste izbrali Chromium kot privzeti brskalnik.</translation>
 <translation id="8522801943730206384">Chromium lahko preveri gesla, če jih shranite</translation>
 <translation id="8555465886620020932">Napaka storitve: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Slikovno iskanje lahko pripnete za preprost dostop. Kliknite gumb za pripenjanje na vrhu stranskega podokna.</translation>
@@ -646,6 +648,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ustvarjalci Chromiuma. Vse pravice pridržane.</translation>
 <translation id="8601359445272098721">Novo! Besedilo in slike na zaslonu lahko prevedete tako, da izberete gumb za prevod vsebine zaslona.</translation>
 <translation id="8619360774459241877">Zagon Chromiuma …</translation>
+<translation id="8624541899164515475">Nastavitve, odpre se na novem zavihku.</translation>
 <translation id="8648201657708811153">Brskalnika Google Chrome for Testing ni mogoče nastaviti kot privzetega brskalnika.</translation>
 <translation id="8677922833187616101">Vedno pokaži bližnjico do Googlovega načina umetne inteligence</translation>
 <translation id="8697124171261953979">Določa tudi, katera stran je prikazana, ko zaženete Chromium ali iščete v naslovni vrstici.</translation>

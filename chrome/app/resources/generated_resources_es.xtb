@@ -1052,6 +1052,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1699807488537653303">Corregir error de contraseña</translation>
 <translation id="1700201317341192482">Quitar tu tarjeta virtual</translation>
 <translation id="1700517974991662022">Visitado</translation>
+<translation id="1701367827913789499">Lee cómodamente y con las mínimas distracciones usando el botón de modo Lectura de la barra de herramientas</translation>
 <translation id="1703331064825191675">No vuelvas a preocuparte por tus contraseñas</translation>
 <translation id="1703666494654169921">No permitir que los sitios usen datos ni dispositivos de realidad virtual</translation>
 <translation id="1704097193565924901">Mayúsculas</translation>
@@ -2959,6 +2960,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3008272652534848354">Restablecer permisos</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requiere que te conectes a una red Wi‑Fi hoy para descargar una actualización. También puedes descargarla con una conexión de uso medido (sujeto a cargos).}other{<ph name="MANAGER" /> requiere que te conectes a una red Wi‑Fi y descargues una actualización antes de la fecha límite. También puedes descargarla con una conexión de uso medido (sujeto a cargos).}}</translation>
 <translation id="3008923556848076408">Gemini seguirá trabajando en tu tarea</translation>
+<translation id="3008926075262837186">Lee cómodamente y con las mínimas distracciones</translation>
 <translation id="3009178788565917040">Salida</translation>
 <translation id="3009352964623081324">Tecla de búsqueda + O y, después, S. Se usa para instalar, gestionar y personalizar voces.</translation>
 <translation id="3009779501245596802">Bases de datos indexadas</translation>
@@ -4416,7 +4418,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Más información sobre la precisión de la ubicación<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Importados</translation>
 <translation id="3992008114154328194">Descargando <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Copia de seguridad de datos</translation>
 <translation id="3994075804072562819">Permite a <ph name="SPECIFIC_NAME" /> controlar los dispositivos USB.</translation>
 <translation id="3994318741694670028">Lamentablemente, tu ordenador está configurado con un identificador de hardware incorrecto. Esto impide que ChromeOS Flex se actualice con los últimos parches de seguridad y hace que el ordenador <ph name="BEGIN_BOLD" />pueda ser vulnerable a ataques maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Desbloquea el teléfono y acércalo para desbloquear tu <ph name="DEVICE_TYPE" />.</translation>
@@ -7714,7 +7715,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6336038146639916978"><ph name="MANAGER" /> ha inhabilitado la depuración ADB. Se restablecerá tu <ph name="DEVICE_TYPE" /> dentro de 24 horas. Haz copias de seguridad de los archivos que quieras conservar.</translation>
 <translation id="6336194758029258346">Idioma de la aplicación</translation>
 <translation id="6337543438445391085">Es posible que alguna información personal siga estando incluida en los datos. Revisa los archivos exportados.</translation>
-<translation id="6338554362382763574">Puedes hacer preguntas fácilmente a Gemini sobre las pestañas que compartes mientras navegas</translation>
 <translation id="6338968693068997776">Añadir dispositivo USB</translation>
 <translation id="6339668969738228384">Crear un perfil para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocolo de impresión en Internet (IPPS)</translation>
@@ -8334,7 +8334,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
     <ph name="BEGIN_PARAGRAPH2" />Puedes desactivar este servicio en Ajustes.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Copia de seguridad de Linux cancelada</translation>
 <translation id="6782067259631821405">PIN no válido</translation>
-<translation id="6782219876520622071">Puede que las conversaciones sobre pestañas compartidas las vean revisores humanos para mejorar Gemini</translation>
 <translation id="6783036716881942511">¿Olvidar este dispositivo?</translation>
 <translation id="6783667414610055871">Ajustes de Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Perfil admitido</translation>
@@ -9532,7 +9531,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7620616707541471029">Selecciona una cuenta para continuar</translation>
 <translation id="7621382409404463535">El sistema no ha podido guardar la configuración del dispositivo.</translation>
 <translation id="7621595347123595643">No podrás recuperar los datos locales si olvidas tu contraseña o PIN.</translation>
-<translation id="7621863462266622331">Cuando se comparten pestañas, el contenido de sus páginas, el contenido multimedia y las URLs se envían a Google</translation>
 <translation id="7622114377921274169">Cargando.</translation>
 <translation id="7622768823216805500">Los sitios suelen instalar controladores de pago para utilizarlos en funciones relacionadas con compras, como facilitar los pagos.</translation>
 <translation id="7622966771025050155">Cambiar a pestaña capturada</translation>

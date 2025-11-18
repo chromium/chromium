@@ -492,6 +492,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Mae eich sefydliad yn cau Chrome yn awtomatig pan na chaiff ei ddefnyddio am 1 funud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau.}zero{Mae eich sefydliad yn cau Chrome yn awtomatig pan na chaiff ei ddefnyddio am # munud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau.}two{Mae eich sefydliad yn cau Chrome yn awtomatig pan na chaiff ei ddefnyddio am # funud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau.}few{Mae eich sefydliad yn cau Chrome yn awtomatig pan na chaiff ei ddefnyddio am # munud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau.}many{Mae eich sefydliad yn cau Chrome yn awtomatig pan na chaiff ei ddefnyddio am # munud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau.}other{Mae eich sefydliad yn cau Chrome yn awtomatig pan na chaiff ei ddefnyddio am # munud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau.}}</translation>
 <translation id="6418662306461808273">Newid i broffil Chrome presennol?</translation>
 <translation id="6426623519983252346">Byddwch yn gweld anogwr i roi cynnig ar <ph name="FEATURE_NAME" /> y tro nesaf y byddwch yn agor Chrome iOS.</translation>
+<translation id="6434035853014503219">Diolch am ddewis Chrome fel eich porwr diofyn!</translation>
 <translation id="6473905796280459355">Mynd i'r dudalen Ynghylch Chrome</translation>
 <translation id="6481963882741794338">Cysylltwch Chrome a gwasanaethau Google eraill at ddibenion personoleiddio a dibenion eraill</translation>
 <translation id="648319183876919572">Mae Pori'n Ddiogel Uwch yn gwneud rhagor i'ch amddiffyn rhag lawrlwythiadau a gwefannau peryglus</translation>
@@ -588,6 +589,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="756809126120519699">Wedi clirio data Chrome</translation>
 <translation id="7572537927358445944">Wedi diffodd • Nid yw Chrome yn gallu dilysu o ble mae'r estyniad hwn yn dod</translation>
 <translation id="7583399374488819119">Gosodwr <ph name="COMPANY_NAME" /></translation>
+<translation id="7596160425942761210">Gallwch ddefnyddio Chrome unrhyw bryd y byddwch yn clicio dolenni mewn negeseuon, dogfennau ac apiau eraill</translation>
 <translation id="7602868996817972616">Gofyn i Google am y dudalen hon</translation>
 <translation id="760353356052806707">Ychwanegodd rhaglen arall ar eich cyfrifiadur ap a allai newid y ffordd y mae Chrome yn gweithio.
 
@@ -683,6 +685,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="8601359445272098721">Newydd! Gallwch gyfieithu testun a delweddau ar eich sgrin trwy ddewis y botwm "cyfieithu sgrîn".</translation>
 <translation id="8614913330719544658">Nid yw Google Chrome yn ymateb. Ail-lansio nawr?</translation>
 <translation id="861702415419836452">Mae angen caniatâd ar Chrome i gael mynediad at eich camera i greu map 3D o'ch amgylchoedd</translation>
+<translation id="8624541899164515475">Gosodiadau, yn agor mewn tab newydd.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Bydd Chrome yn ail-lansio mewn 1 funud}zero{Bydd Chrome yn ail-lansio mewn # munud}two{Bydd Chrome yn ail-lansio mewn # funud}few{Bydd Chrome yn ail-lansio mewn # munud}many{Bydd Chrome yn ail-lansio mewn # munud}other{Bydd Chrome yn ail-lansio mewn # munud}}</translation>
 <translation id="8637932705841171563">I rannu'ch ffenestr, caniatewch recordio sgrîn ar gyfer Chrome yn y Gosodiadau System</translation>
 <translation id="8641606876632989680">Bydd Chrome yn eich hysbysu pan fyddwch yn mewngofnodi gyda chyfrinair sydd dan fygythiad</translation>

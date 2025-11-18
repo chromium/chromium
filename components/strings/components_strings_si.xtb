@@ -428,6 +428,7 @@
 <translation id="1689333818294560261">අපනාමය</translation>
 <translation id="1692622044604477956">චිත්‍රපට ලැයිස්තුගත කිරීම් සහ රඟහල දර්ශන වේලා</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />ඔබට ඔබේ දත්ත කළමනාකරණය කළ හැකි ආකාරය:<ph name="END_BOLD" /> Chrome සති 4කට වඩා පැරණි මාතෘකා ස්වයංව මකා දමයි. ඔබ දිගටම බ්‍රවුස් කරන විට, මාතෘකාවක් ලැයිස්තුවෙහි නැවත දිස් විය හැක. ඔබට Chrome විසින් අඩවි සමග බෙදා ගැනීමට අවශ්‍ය නැති මාතෘකා අවහිර කිරීමට සහ Chrome සැකසීම් තුළ ඕනෑම වේලාවක දැන්වීම් මාතෘකා ක්‍රියා විරහිත කිරීමට ද හැක.</translation>
+<translation id="1697808683313379647">මෙම විකල්ප පිරිනැමීමට Google ගෙවා පිටවීමේ පිටුවෙන් සහ වෙනත් අදාළ දත්තවලින් තොරතුරු භාවිත කරයි.</translation>
 <translation id="1699651774646344471">ඔබට දැන් ඔබේ Google ගිණුමෙන් ලිපින භාවිතා කළ හැක</translation>
 <translation id="1700542542921501212">ඔබට වෙබය සෙවීමට <ph name="SEARCH_ENGINE_NAME" /> භාවිතා කළ හැක.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1722,7 +1723,6 @@
 <translation id="3792826587784915501">කල්ට් සහ ඉන්ඩී චිත්‍රපට</translation>
 <translation id="3793574014653384240">මෑතදී සිදු වූ බිඳ වැටීම් සංඛ්‍යාව සහ හේතු</translation>
 <translation id="3795624560191557077">ඔබ මෑතක දී පොදු දත්ත කඩ කිරීමක දී හමු වූ මුරපදයක් වෙනස් කළා. ගැටලුවක් ඇති වුවහොත්, Google මුරපද කළමනාකරු හට ඔබට පුරනය වීමට උදවු කළ හැක.</translation>
-<translation id="3796181268473765083">පොලී රහිත හෝ මාසික වාරික 4කින් ගෙවන්න (සුදුසුකම් වලට යටත්ව)</translation>
 <translation id="3799805948399000906">අකුරු වර්ගය ඉල්ලුවා</translation>
 <translation id="3801297763951514916">ඔබ නිතර පැමිණෙයි</translation>
 <translation id="380329542618494757">නම</translation>
@@ -2948,6 +2948,7 @@
 <translation id="5813753398265398978">භෞතික විද්‍යාව</translation>
 <translation id="5817918615728894473">යුගල කරන්න</translation>
 <translation id="5820625124144807242">ඔබේ ඇණවුම සමාලෝචනය කිරීමෙන් පසු, ඔබ <ph name="BNPL_ISSUER_NAME" /> සමග පුරනය විය යුතු හෝ ගිණුමක් නිර්මාණය කළ යුතු යි. මෙම ගිණුම Google Pay වෙත ස්වයංක්‍රීයව සම්බන්ධ වනු ඇත.</translation>
+<translation id="5820751560028604030">දේශීය බාගැනීම අවහිර කර ඇත</translation>
 <translation id="5826507051599432481">පොදු නම (CN)</translation>
 <translation id="5830698870816298009">කැමරා භාවිතය සහ චලනය</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3702,6 +3703,7 @@
 <translation id="7031646650991750659">ඔබ ස්ථාපන කර ඇති Google Play යෙදුම් මොනවාද</translation>
 <translation id="7035705295266423040">ඔබේ බැංකුවට ඒ ඔබ බව සත්‍යාපනය කිරීමට අවශ්‍යයි</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ඔබගේ Google ගිණුම් පෞද්ගලිකත්ව සැකසීම් කළමනාකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
+<translation id="7042465939346919737">මෙම විකල්ප පිරිනැමීමට Google ගෙවා පිටවීමේ පිටුවෙන් සහ වෙනත් අදාළ දත්තවලින් තොරතුරු භාවිත කරයි. පසුව ගෙවීමේ විකල්ප සැඟවීමට, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> වෙත යන්න</translation>
 <translation id="7042616127917168121">ප්‍රතිඵල ප්‍රසාදනය කරන්න</translation>
 <translation id="7043552168914147882">පටිති තොගය</translation>
 <translation id="7044081119134178347">මෙම අවස්ථාවේ දී කැමරාවට ඉඩ දී ඇත</translation>

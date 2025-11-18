@@ -1052,6 +1052,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1699807488537653303">Wachtwoordfout oplossen</translation>
 <translation id="1700201317341192482">Je virtuele kaart verwijderen</translation>
 <translation id="1700517974991662022">Bezocht</translation>
+<translation id="1701367827913789499">Lees comfortabel met minimale afleiding met de knop Leesmodus op de werkbalk</translation>
 <translation id="1703331064825191675">Maak je nooit meer zorgen over je wachtwoorden</translation>
 <translation id="1703666494654169921">Niet toestaan dat sites virtualreality-apparaten of -gegevens gebruiken</translation>
 <translation id="1704097193565924901">Beginhoofdletters van maken</translation>
@@ -2958,6 +2959,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3008272652534848354">Rechten resetten</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereist dat je vandaag verbinding maakt met wifi om een update te downloaden. Je kunt de update ook downloaden via een verbinding met datalimiet (er kunnen kosten van toepassing zijn).}other{<ph name="MANAGER" /> vereist dat je vóór de deadline verbinding maakt met wifi en een update downloadt. Je kunt de update ook downloaden via een verbinding met datalimiet (er kunnen kosten van toepassing zijn).}}</translation>
 <translation id="3008923556848076408">Gemini blijft aan je taak werken</translation>
+<translation id="3008926075262837186">Lees comfortabel met minimale afleiding</translation>
 <translation id="3009178788565917040">Uitgang</translation>
 <translation id="3009352964623081324">Zoeken + O, dan S. Gebruik dit om stemmen te installeren, te beheren en aan te passen.</translation>
 <translation id="3009779501245596802">Geïndexeerde databases</translation>
@@ -4414,7 +4416,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Meer informatie over Locatienauwkeurigheid<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Geïmporteerd</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> downloaden, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Back-up maken van gegevens</translation>
 <translation id="3994075804072562819">Geef <ph name="SPECIFIC_NAME" /> controle over USB-apparaten.</translation>
 <translation id="3994318741694670028">Je computer is ingesteld met een hardware-ID met een onjuiste notatie. Dit zorgt ervoor dat Chrome OS Flex niet kan worden geüpdatet met de nieuwste beveiligingsoplossingen, waardoor je computer <ph name="BEGIN_BOLD" />kwetsbaar kan zijn voor schadelijke aanvallen<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Ontgrendel je telefoon en plaatst deze dichterbij om je <ph name="DEVICE_TYPE" /> te ontgrendelen.</translation>
@@ -7708,7 +7709,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> heeft ADB-foutopsporing uitgezet. Hierdoor wordt je <ph name="DEVICE_TYPE" /> over 24 uur gereset. Maak een back-up van de bestanden die je wilt houden.</translation>
 <translation id="6336194758029258346">App-taal</translation>
 <translation id="6337543438445391085">Bepaalde persoonlijke informatie kan nog steeds in de gegevens zijn opgenomen. Check de geëxporteerde bestanden.</translation>
-<translation id="6338554362382763574">Je kunt Gemini makkelijk vragen stellen over de tabbladen die je deelt terwijl je browst</translation>
 <translation id="6338968693068997776">USB-apparaat toevoegen</translation>
 <translation id="6339668969738228384">Een nieuw profiel maken voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internetafdrukprotocol (IPPS)</translation>
@@ -8328,7 +8328,6 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
     <ph name="BEGIN_PARAGRAPH2" />Je kunt deze service uitzetten via Instellingen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Back-up voor Linux geannuleerd</translation>
 <translation id="6782067259631821405">Ongeldige pincode</translation>
-<translation id="6782219876520622071">Gesprekken over gedeelde tabbladen kunnen worden bekeken door menselijke reviewers om Gemini te verbeteren</translation>
 <translation id="6783036716881942511">Dit apparaat vergeten?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive-instellingen</translation>
 <translation id="6784523122863989144">Profiel wordt ondersteund</translation>
@@ -9525,7 +9524,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7620616707541471029">Kies een account om door te gaan</translation>
 <translation id="7621382409404463535">Het systeem kan de apparaatconfiguratie niet opslaan.</translation>
 <translation id="7621595347123595643">Als je je wachtwoord of pincode vergeet, kun je geen lokale gegevens herstellen.</translation>
-<translation id="7621863462266622331">Wanneer tabbladen worden gedeeld, worden de bijbehorende paginacontent, media en URL's naar Google gestuurd</translation>
 <translation id="7622114377921274169">Opladen.</translation>
 <translation id="7622768823216805500">Sites installeren betalingshandlers meestal voor winkelfuncties zoals gemakkelijk betalen</translation>
 <translation id="7622966771025050155">Overschakelen naar vastgelegd tabblad</translation>

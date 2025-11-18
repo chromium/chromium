@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
+<translation id="1004825134262590729">{count,plural, =1{{count} টা পাছকী}one{{count} টা পাছকী}other{{count} টা পাছকী}}</translation>
 <translation id="1005023885865154304">পাছৱৰ্ড স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ ছেটিং খোলক</translation>
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">আপুনি শেহতীয়াকৈ বন্ধ কৰা টেবসমূহ পুনৰ খুলিবলৈ আপুনি পাছত ইয়ালৈ উভতি আহিব পাৰে</translation>
@@ -41,6 +42,7 @@
 <translation id="1122068467107743258">কৰ্মস্থান</translation>
 <translation id="1126696498560056882">এই ডিভাইচটোত একাউণ্টসমূহ পৰিচালনা কৰক</translation>
 <translation id="1126809382673880764">আপোনাক বিপজ্জনক ৱেবছাইট, ডাউনল’ড অথবা এক্সটেনশ্বনসমূহৰ পৰা সুৰক্ষা প্ৰদান নকৰে। Gmail আৰু Searchৰ দৰে অন্য Google সেৱাসমূহ, য’ত সুৰক্ষিত ব্ৰাউজিঙৰ সুবিধাটো উপলব্ধ, সেইবিলাকত আপুনি তথাপি এই সুবিধাটো পাব।</translation>
+<translation id="1133418583142946603">বৰ্তমানৰ টেবটো যোগ দিয়ক</translation>
 <translation id="1136104150802877429">প্ৰ’ডাক্টৰ পর্যালোচনা দেখুৱায়</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" />ৰ বাবে জাননী অফ কৰক</translation>
 <translation id="1147031633655575115"><ph name="USER" /> হিচাপে ছাইন ইন কৰিছে</translation>
@@ -77,6 +79,7 @@
 <translation id="1285320974508926690">এই ছাইটটো কেতিয়াও অনুবাদ নকৰিব</translation>
 <translation id="1287229685519872919">Google Workspaceৰ ডেটা</translation>
 <translation id="1291506870746876680">আপুনি এই ছাইটটোৰ পৰা বাহিৰ ওলালে <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" />ৰ অনুমতিসমূহ অফ হিচাপে ৰিছেট কৰা হ’ব।</translation>
+<translation id="1293556467332435079">Files</translation>
 <translation id="129553762522093515">শেহতীয়াকৈ বন্ধ কৰা</translation>
 <translation id="1296581780163690620">ফাইল ডাউনল’ড কৰিবনে? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">আপোনাৰ Google একাউণ্টত আপুনি সদায়ে পাছৱৰ্ডসমূহ ব্যৱহাৰ কৰিব পৰাটো নিশ্চিত কৰিবলৈ, এয়া আপুনিয়েই বুলি সত্যাপন কৰক।</translation>
@@ -1043,6 +1046,7 @@
 <translation id="5055015094595227120">সঠিক অৱস্থান</translation>
 <translation id="5055551113846164633">এইটোৱে এই ডিভাইচটোত ছেভ হৈ থকা ঠিকনাবোৰ মচে। এইটোৱে লগতে আপোনাৰ Google একাউণ্ট <ph name="USER_EMAIL" />ত ছেভ হৈ থকা ঠিকনাবোৰো মচে।</translation>
 <translation id="5056446788882570708"><ph name="TIME" />ত সমস্যা পোৱা গৈছিল।</translation>
+<translation id="5056587122125565772">প্ৰতিচ্ছবি সৃষ্টি কৰক</translation>
 <translation id="5059136629401106827">ঠিক আছে</translation>
 <translation id="5062321486222145940">Google Drive ইনষ্টল কৰক</translation>
 <translation id="5067540696062462445">ডাউনল’ড</translation>
@@ -1504,6 +1508,7 @@
 <translation id="6659660757330712663">আপুনি টেবসমূহৰ মাজত সালসলনি কৰিবলৈ টুলবাৰ ছোৱাইপ কৰিব পাৰে।</translation>
 <translation id="6663529247339810546">প্ৰতিচ্ছবি ছেভ কৰিব নোৱাৰি</translation>
 <translation id="6668619169535738264">বুকমার্ক সম্পাদনা কৰক</translation>
+<translation id="6670729408462528018">গেলাৰী</translation>
 <translation id="6671294218820966278">পঢ়া হৈছে বুলি চিহ্নিত কৰক</translation>
 <translation id="6672697278890207089">আপোনাৰ পাছফ্ৰে’জটো দিয়ক</translation>
 <translation id="6674917187596384849">আপুনি সহজে একাউণ্টসমূহৰ মাজত সলনাসলনি কৰিব পাৰে</translation>
@@ -1660,6 +1665,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">আপোনাৰ Google Password Managerত এই একাউণ্টসমূহৰ বাবে ইতিমধ্যে পাছৱৰ্ড আছে। যদি আপুনি তলৰ পাছৱৰ্ডসমূহৰ এটা আমদানি কৰাটো বাছনি কৰে, তেন্তে ই ইতিমধ্যে থকাটো সলনি কৰিব।</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> শতাংশ ডাউনল’ড কৰা হ’ল</translation>
+<translation id="7345061034321640811">আমদানি কৰাৰ অনুমতি নাই</translation>
 <translation id="7352651011704765696">কিবা সমস্যা হৈছে</translation>
 <translation id="7363349185727752629">আপোনাৰ গোপনীয়তাৰ বাছনিসমূহৰ এক নিৰ্দেশনা</translation>
 <translation id="7364796246159120393">ফাইল বাছনি কৰক</translation>
@@ -2207,6 +2213,7 @@
 <translation id="952704832371081537">বাতিল কৰক</translation>
 <translation id="95332591904104970">সংযোজিত এপ্‌সমূহ</translation>
 <translation id="954667170699278022">পঢ়াৰ সূচী</translation>
+<translation id="956066588046842680">আপোনাৰ প্ৰতিষ্ঠানৰ নীতি অনুসৰি এই ডেটাখিনি আমদানি কৰাৰ অনুমতি নাই।</translation>
 <translation id="956218893102219091">Geminiৰ পৰা আটাইতকৈ সঠিক ফলাফল পাবলৈ আপোনাৰ আইপি ঠিকনাৰ ভিত্তিত কোনো আনুমানিক অৱস্থান ব্যৱহাৰ কৰাতকৈ নিজৰ সঠিক অৱস্থানটো ব্যৱহাৰ কৰক। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">ব্ৰাউজিঙৰ ডেটা মচক</translation>
 <translation id="963102227019621224">ৱেব আৰু এপৰ কাৰ্যকলাপ</translation>
@@ -2218,5 +2225,6 @@
 <translation id="984275831282074731">পৰিশোধ পদ্ধতি</translation>
 <translation id="985379595344853742">আটাইবোৰ ইনক’গনিট’ টেব বন্ধ কৰক</translation>
 <translation id="988141524645182168">অন্য ডিভাইচ</translation>
+<translation id="995174784802614337">{count,plural, =1{{count} টা পাছকী আমদানি কৰা হৈছে}one{{count} টা পাছকী আমদানি কৰা হৈছে}other{{count} টা পাছকী আমদানি কৰা হৈছে}}</translation>
 <translation id="999768147936949692">এতিয়াৰ বাবে, আপুনি পাছৱৰ্ডসমূহ কেৱল পৰিয়ালৰ সদস্যৰ সৈতেহে শ্বেয়াৰ কৰিব পাৰে। আপোনাৰ গোটত যোগদান কৰি সমগ্ৰ Googleত আপোনাৰ প্ৰ’ডাক্ট আৰু ছাবস্ক্ৰিপশ্বনৰ পৰা অধিক লাভ কৰিবলৈ <ph name="BEGIN_LINK" />পৰিয়ালৰ সদস্যসকলক আমন্ত্ৰণ জনাওক<ph name="END_LINK" />।</translation>
 </translationbundle>

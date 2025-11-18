@@ -521,6 +521,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="705851970750939768">Оновити Chromium</translation>
 <translation id="7067091210845072982">Якщо зображення не має корисного опису, Chromium спробує додати його. Для цього зображення надсилаються в Google.</translation>
 <translation id="7141270731789036260">Налаштувати Chrome for Testing</translation>
+<translation id="7147227333672430807">Ви можете відкривати в Chromium посилання з повідомлень, документів і інших додатків</translation>
 <translation id="7163519456498498587">Вилучити розширення <ph name="EXTENSION_NAME" /> з Chromium</translation>
 <translation id="7173822816570314652">Ваша організація видаляє дані Chromium, якщо вони не використовуються протягом <ph name="TIMEOUT_DURATION" />. Це може включати історію, дані автозаповнення й завантаження.</translation>
 <translation id="718435575166326686">Веб-переглядачу Chromium потрібен доступ до камери для цього сайту</translation>
@@ -635,6 +636,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8471947159125090285">Щоб зберігати й використовувати дані Chromium в обліковому записі Google, підтвердьте свою особу</translation>
 <translation id="8482493977473846331">Показувати підказки щодо входу в Chromium</translation>
 <translation id="8493179195440786826">Версія Chromium застаріла</translation>
+<translation id="850264194101621529">Дякуємо, що зробили Chromium вебпереглядачем за умовчанням.</translation>
 <translation id="8522801943730206384">Chromium зможе перевірити ваші паролі, коли ви їх збережете</translation>
 <translation id="8555465886620020932">Помилка сервісу: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Ви можете закріпити пошук за зображенням для швидкого доступу: для цього вгорі бічної панелі натисніть кнопку "Закріпити"</translation>
@@ -644,6 +646,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8586442755830160949">Авторське право <ph name="YEAR" /> Автори Chromium. Усі права захищено.</translation>
 <translation id="8601359445272098721">Новинка! Тепер ви можете перекладати текст і зображення на екрані, натиснувши кнопку "Перекласти вміст екрана".</translation>
 <translation id="8619360774459241877">Запускається Chromium…</translation>
+<translation id="8624541899164515475">Налаштування (відкриється в новій вкладці).</translation>
 <translation id="8648201657708811153">Google Chrome for Testing не можна зробити веб-переглядачем за умовчанням.</translation>
 <translation id="8677922833187616101">Завжди показувати ярлик режиму ШІ від Google</translation>
 <translation id="8697124171261953979">Розширення також змінило сторінку, яка відкривається під час запуску Chromium або пошуку в універсальному вікні пошуку.</translation>

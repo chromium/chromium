@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Se cerró la lista de grupos de pestañas</translation>
 <translation id="3194464645767632461">calificación</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Agregar <ph name="TABS_COUNT_ONE" /> pestaña al grupo}other{Agregar <ph name="TABS_COUNT_MANY" /> pestañas al grupo}}</translation>
+<translation id="3293080634164207409">Agregar pestañas</translation>
 <translation id="3328308545011660196">Sugerencia: <ph name="NUMBER_OF_TABS" /> pestañas parecen estar relacionadas. ¿Deseas agruparlas?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Después de 1 día de inactividad}other{Después de <ph name="DAY_COUNT_MANY" /> días de inactividad}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestaña nueva}other{<ph name="MANY_ADDED" /> pestañas nuevas}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">Actividad</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Calificación: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_ONE" /> opinión}other{Calificación: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_MANY" /> opiniones}}</translation>
 <translation id="7885132941432959125">Mover la pestaña a la derecha</translation>
+<translation id="7887334752153342268">Duplicar</translation>
 <translation id="7939917283308035850">No se seleccionó <ph name="COLOR_NAME" /></translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7966321538264951561">Descarta las sugerencias.</translation>

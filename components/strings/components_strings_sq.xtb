@@ -428,6 +428,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1689333818294560261">Pseudonimi</translation>
 <translation id="1692622044604477956">Listimet e filmave dhe oraret e shfaqjeve në kinema</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Si mund t'i menaxhosh të dhënat e tua:<ph name="END_BOLD" /> Chrome i fshin në mënyrë automatike temat që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një temë mund të shfaqet përsëri në listë. Mund t'i bllokosh po ashtu temat që nuk dëshiron që Chrome t'i ndajë me sajtet dhe të çaktivizosh temat e reklamave në çdo kohë te cilësimet e Chrome.</translation>
+<translation id="1697808683313379647">Google përdor informacionet nga faqja e përfundimit të blerjes dhe të dhëna të tjera përkatëse për të ofruar këto opsione.</translation>
 <translation id="1699651774646344471">Tani mund të përdorësh adresat nga "Llogaria jote e Google"</translation>
 <translation id="1700542542921501212">Mund të përdorësh <ph name="SEARCH_ENGINE_NAME" /> për të kërkuar në ueb.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1722,7 +1723,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3792826587784915501">Filma kult dhe të pavarur</translation>
 <translation id="3793574014653384240">Shifrat dhe shkaqet e përplasjeve që kanë ndodhur së fundi</translation>
 <translation id="3795624560191557077">Së fundi ke ndryshuar një fjalëkalim të gjetur në një nxjerrje të paautorizuar të të dhënave publike. Në rast se ke probleme, "Menaxheri i fjalëkalimeve i Google" mund të të ndihmojë të identifikohesh.</translation>
-<translation id="3796181268473765083">Paguaj në 4 këste pa interes ose këste mujore (objekt i kualifikueshmërisë)</translation>
 <translation id="3799805948399000906">Fonti i kërkuar</translation>
 <translation id="3801297763951514916">E viziton shpesh</translation>
 <translation id="380329542618494757">Emri</translation>
@@ -2948,6 +2948,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5813753398265398978">Fizika</translation>
 <translation id="5817918615728894473">Çifto</translation>
 <translation id="5820625124144807242">Pasi të rishikosh porosinë, duhet të identifikohesh ose të krijosh një llogari me <ph name="BNPL_ISSUER_NAME" />. Kjo llogari do të lidhet automatikisht me Google Pay.</translation>
+<translation id="5820751560028604030">Shkarkimi lokal u bllokua</translation>
 <translation id="5826507051599432481">Emri i zakonshëm (CN)</translation>
 <translation id="5830698870816298009">Përdorimi dhe lëvizja e kamerës</translation>
 <translation id="5831217499016131155">Portofoli i Google</translation>
@@ -3701,6 +3702,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7031646650991750659">Cilat aplikacione të Google Play ke instaluar</translation>
 <translation id="7035705295266423040">Banka jote dëshiron të verifikojë që je ti.</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të menaxhuar cilësimet e privatësisë së "Llogarisë sate të Google"</translation>
+<translation id="7042465939346919737">Google përdor informacionet nga faqja e përfundimit të blerjes dhe të dhëna të tjera përkatëse për të ofruar këto opsione. Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Rafino rezultatet</translation>
 <translation id="7043552168914147882">Karton i hollë me skeda</translation>
 <translation id="7044081119134178347">Kamera lejohet këtë herë</translation>

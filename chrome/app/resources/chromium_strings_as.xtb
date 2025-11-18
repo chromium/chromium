@@ -523,6 +523,7 @@
 <translation id="705851970750939768">Chromium আপডে’ট কৰক</translation>
 <translation id="7067091210845072982">যদি কোনো প্ৰতিচ্ছবিত উপযোগী বিৱৰণ নাই তেন্তে Chromiumএ আপোনাক সেয়া প্ৰদান কৰিবলৈ চেষ্টা কৰিব। বিৱৰণ সৃষ্টি কৰিবলৈ প্ৰতিচ্ছবি Googleলৈ প্ৰেৰণ কৰা হয়।</translation>
 <translation id="7141270731789036260">Chrome for Testing কাষ্টমাইজ কৰক</translation>
+<translation id="7147227333672430807">আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত যেতিয়াই লিংকত ক্লিক কৰে Chromium ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="7163519456498498587">Chromiumৰ পৰা <ph name="EXTENSION_NAME" /> আঁতৰাওক</translation>
 <translation id="7173822816570314652">Chromiumৰ ডেটা <ph name="TIMEOUT_DURATION" />ৰ বাবে ব্যৱহাৰ নকৰিলে আপোনাৰ প্ৰতিষ্ঠানে সেইবোৰ মচে। ইয়াৰ ভিতৰত ইতিহাস, স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধা আৰু ডাউনল’ড অন্তৰ্ভুক্ত হ’ব পাৰে।</translation>
 <translation id="718435575166326686">Chromiumক এই ছাইটটোৰ বাবে কেমেৰাৰ অনুমতিৰ আৱশ্যক</translation>
@@ -637,6 +638,7 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="8471947159125090285">আপোনাৰ Google একাউণ্টত Chromiumৰ ডেটাৰ ব্যৱহাৰ আৰু ছেভ কৰিবলৈ এয়া আপুনিয়েই বুলি সত্যাপন কৰক</translation>
 <translation id="8482493977473846331">Chromiumত ছাইন ইন কৰিবলৈ প্ৰ’ম্পট্‌ প্ৰদৰ্শন কৰে</translation>
 <translation id="8493179195440786826">Chromiumটো অতি পুৰণি</translation>
+<translation id="850264194101621529">আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে Chromium বাছনি কৰাৰ বাবে ধন্যবাদ!</translation>
 <translation id="8522801943730206384">আপুনি নিজৰ পাছৱৰ্ডসমূহ ছেভ কৰিলে Chromiumএ সেইবোৰ পৰীক্ষা কৰিব পাৰে</translation>
 <translation id="8555465886620020932">ছাৰ্ভাৰ সম্পৰ্কীয় আসোঁৱাহ: <ph name="SERVICE_ERROR" />।</translation>
 <translation id="8556420416730706394">সহজে এক্সেছ কৰিবলৈ আপুনি প্ৰতিচ্ছবিৰ সন্ধান সুবিধাটো পিন কৰিব পাৰে; ছাইডৰ পেনেলৰ একেবাৰে ওপৰত থকা পিন কৰক শীৰ্ষক বুটামটোত ক্লিক কৰক</translation>
@@ -646,6 +648,7 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="8586442755830160949">স্বত্ত্বাধিকাৰ <ph name="YEAR" /> The Chromium Authors. সর্বস্বত্ব সংৰক্ষিত।</translation>
 <translation id="8601359445272098721">নতুন! আপুনি "স্ক্ৰীন অনুবাদ কৰক" বুটামটো বাছনি কৰি আপোনাৰ স্ক্ৰীনত পাঠ আৰু প্ৰতিচ্ছবি দুয়োটা অনুবাদ কৰিব পাৰে</translation>
 <translation id="8619360774459241877">Chromium লঞ্চ কৰি থকা হৈছে...</translation>
+<translation id="8624541899164515475">ছেটিং, নতুন টেবত খোলে।</translation>
 <translation id="8648201657708811153">Google Chrome for Testing আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ কৰিব নোৱাৰি।</translation>
 <translation id="8677922833187616101">সদায়েই Google AI ম’ডৰ শ্বৰ্টকাট দেখুৱাওক</translation>
 <translation id="8697124171261953979">এইটোৱে আপুনি Chromiumৰ ব্যৱহাৰ আৰম্ভ কৰিলে বা Omniboxৰ পৰা সন্ধান কৰিলে কি পৃষ্ঠা খোল খাব সেয়া নিয়ন্ত্ৰণ কৰে।</translation>

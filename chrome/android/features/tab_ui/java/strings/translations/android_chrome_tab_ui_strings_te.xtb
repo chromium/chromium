@@ -73,6 +73,7 @@
 <translation id="311432875115153175">ట్యాబ్ గ్రూప్ లిస్ట్ మూసివేయండి</translation>
 <translation id="3194464645767632461">రేటింగ్</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌ను గ్రూప్‌నకు జోడించండి}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లను గ్రూప్‌నకు జోడించండి}}</translation>
+<translation id="3293080634164207409">ట్యాబ్‌లను జోడించండి</translation>
 <translation id="3328308545011660196">సూచన: <ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లు సంబంధించినవిగా అనిపిస్తున్నాయి. వాటిని గ్రూప్ చేయాలా?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 రోజు వరకు ఇన్‌యాక్టివ్‌గా ఉన్న తర్వాత}other{<ph name="DAY_COUNT_MANY" /> రోజుల వరకు ఇన్‌యాక్టివ్‌గా ఉన్న తర్వాత}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> కొత్త ట్యాబ్}other{<ph name="MANY_ADDED" /> కొత్త ట్యాబ్‌లు}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">కార్యాచరణ</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> రేటింగ్, <ph name="REVIEWS_COUNT_ONE" /> రివ్యూ}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> రేటింగ్, <ph name="REVIEWS_COUNT_MANY" /> రివ్యూలు}}</translation>
 <translation id="7885132941432959125">ట్యాబ్‌ను కుడి వైపునకు తరలించు</translation>
+<translation id="7887334752153342268">నకిలీ</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> ఎంచుకోబడలేదు</translation>
 <translation id="7961015016161918242">ఎప్పుడూ వద్దు</translation>
 <translation id="7966321538264951561">సూచనలను తీసివేయండి.</translation>

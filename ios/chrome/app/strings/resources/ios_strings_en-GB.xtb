@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="1004825134262590729">{count,plural, =1{{count} passkey}other{{count} passkeys}}</translation>
 <translation id="1005023885865154304">Open Autofill passwords settings</translation>
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">You can come back here to reopen tabs that you've recently closed</translation>
@@ -41,6 +42,7 @@
 <translation id="1122068467107743258">Work</translation>
 <translation id="1126696498560056882">Manage accounts on this device</translation>
 <translation id="1126809382673880764">Does not protect you against dangerous websites, downloads and extensions. You’ll still get Safe Browsing protection, where available, in other Google services, like Gmail and Search.</translation>
+<translation id="1133418583142946603">Add current tab</translation>
 <translation id="1136104150802877429">Shows product reviews</translation>
 <translation id="1142371195993008685">Turn off notifications for <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Signed in as <ph name="USER" /></translation>
@@ -77,6 +79,7 @@
 <translation id="1285320974508926690">Never translate this site</translation>
 <translation id="1287229685519872919">Google Workspace data</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />'<ph name="SITE_NAME" />'<ph name="END_BOLD" /> permissions will reset to off when you leave this site.</translation>
+<translation id="1293556467332435079">Files</translation>
 <translation id="129553762522093515">Recently closed</translation>
 <translation id="1296581780163690620">Download file? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">To make sure that you can always use the passwords in your Google Account, verify that it's you.</translation>
@@ -1043,6 +1046,7 @@
 <translation id="5055015094595227120">Precise location</translation>
 <translation id="5055551113846164633">This deletes addresses saved on this device. It also deletes addresses saved in your Google Account <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Issues found <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">Create image</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Install Google Drive</translation>
 <translation id="5067540696062462445">Downloads</translation>
@@ -1504,6 +1508,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6659660757330712663">You can swipe the toolbar to switch between tabs.</translation>
 <translation id="6663529247339810546">Cannot save image</translation>
 <translation id="6668619169535738264">Edit bookmark</translation>
+<translation id="6670729408462528018">Gallery</translation>
 <translation id="6671294218820966278">Mark as read</translation>
 <translation id="6672697278890207089">Enter your passphrase</translation>
 <translation id="6674917187596384849">You can easily switch between accounts</translation>
@@ -1660,6 +1665,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">You already have passwords for these accounts in your Google Password Manager. If you choose to import one of the passwords below, it will replace the existing one.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> percent downloaded</translation>
+<translation id="7345061034321640811">Import not allowed</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
 <translation id="7363349185727752629">A guide to your privacy choices</translation>
 <translation id="7364796246159120393">Choose file</translation>
@@ -2201,6 +2207,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="952704832371081537">Cancel</translation>
 <translation id="95332591904104970">Connected apps</translation>
 <translation id="954667170699278022">Reading list</translation>
+<translation id="956066588046842680">Importing this data is not allowed by your organisation's policy.</translation>
 <translation id="956218893102219091">Use your precise location for the most accurate Gemini results, instead of an estimated location based on your IP address. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Delete browsing data</translation>
 <translation id="963102227019621224">Web &amp; App Activity</translation>
@@ -2212,5 +2219,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="984275831282074731">Payment methods</translation>
 <translation id="985379595344853742">Close all Incognito tabs</translation>
 <translation id="988141524645182168">Other devices</translation>
+<translation id="995174784802614337">{count,plural, =1{Imported {count} passkey}other{Imported {count} passkeys}}</translation>
 <translation id="999768147936949692">For now, you can only share passwords with family members. <ph name="BEGIN_LINK" />Invite family members<ph name="END_LINK" /> to join your group and get more from your products and subscriptions across Google.</translation>
 </translationbundle>

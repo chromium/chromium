@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
+<translation id="1004825134262590729">{count,plural, =1{{count} криптографски клуч}one{{count} криптографски клуч}other{{count} криптографски клуча}}</translation>
 <translation id="1005023885865154304">Отворете ги поставките за автоматско пополнување лозинки</translation>
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">Може да се вратите тука и повторно да ги отворите картичките што сте ги затвориле неодамна</translation>
@@ -41,6 +42,7 @@
 <translation id="1122068467107743258">Работен</translation>
 <translation id="1126696498560056882">Управувајте со сметките на уредов</translation>
 <translation id="1126809382673880764">Не ве заштитува од опасни веб-сајтови, преземања и екстензии. Сѐ уште ќе имате заштита со „Безбедно прелистување“, каде што е достапно, во другите услуги на Google, како Gmail и „Пребарување“.</translation>
+<translation id="1133418583142946603">Додај ја моменталната картичка</translation>
 <translation id="1136104150802877429">Прикажува рецензии за производите</translation>
 <translation id="1142371195993008685">Исклучете ги известувањата за <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Најавени сте како: <ph name="USER" /></translation>
@@ -77,6 +79,7 @@
 <translation id="1285320974508926690">Никогаш не преведувај ја оваа локација</translation>
 <translation id="1287229685519872919">податоците од Google Workspace</translation>
 <translation id="1291506870746876680">Дозволите за <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />“<ph name="END_BOLD" /> ќе се исклучат кога ќе го напуштите сајтов.</translation>
+<translation id="1293556467332435079">Датотеки</translation>
 <translation id="129553762522093515">Неодамна затворено</translation>
 <translation id="1296581780163690620">Да се преземе датотеката? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">За да се уверите дека секогаш ќе може да ги користите лозинките во вашата сметка на Google, потврдете го вашиот идентитет.</translation>
@@ -1043,6 +1046,7 @@
 <translation id="5055015094595227120">Прецизна локација</translation>
 <translation id="5055551113846164633">Ова ги брише адресите зачувани на уредов. Ги брише и адресите зачувани во вашата сметка на Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Најдени се проблеми <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">Создавање слика</translation>
 <translation id="5059136629401106827">Во ред</translation>
 <translation id="5062321486222145940">Инсталирајте Диск на Google</translation>
 <translation id="5067540696062462445">Преземања</translation>
@@ -1504,6 +1508,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6659660757330712663">Може да го повлечете алатникот за да ги смените картичките.</translation>
 <translation id="6663529247339810546">Сликата не може да се зачува</translation>
 <translation id="6668619169535738264">Измени го обележувачот</translation>
+<translation id="6670729408462528018">Галерија</translation>
 <translation id="6671294218820966278">Означи како прочитано</translation>
 <translation id="6672697278890207089">Внесете ја вашата лозинка</translation>
 <translation id="6674917187596384849">Може лесно да ги менувате сметките</translation>
@@ -1660,6 +1665,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Веќе имате лозинки за сметкиве во вашата Google Password Manager. Ако изберете да увезете некоја од лозинките подолу, таа ќе ја замени постојната.</translation>
 <translation id="7336264872878993241">Преземено <ph name="PERCENT" /> проценти</translation>
+<translation id="7345061034321640811">Увезувањето не е дозволено</translation>
 <translation id="7352651011704765696">Нешто не е во ред</translation>
 <translation id="7363349185727752629">Упатство за вашите опции за приватноста</translation>
 <translation id="7364796246159120393">Избери датотека</translation>
@@ -2201,6 +2207,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="952704832371081537">Откажи</translation>
 <translation id="95332591904104970">Поврзани апликации</translation>
 <translation id="954667170699278022">Список за читање</translation>
+<translation id="956066588046842680">Увезувањето на податоциве не е дозволено со правилото на вашата организација.</translation>
 <translation id="956218893102219091">Користете ја вашата прецизна локација за да добивате најпрецизни резултати од Gemini, наместо приближна локација заснована на вашата IP-адреса. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Избришете го прелистувањето</translation>
 <translation id="963102227019621224">Активност на интернет и апликации</translation>
@@ -2212,5 +2219,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="984275831282074731">Начини на плаќање</translation>
 <translation id="985379595344853742">Затворете ги сите картички „Инкогнито“</translation>
 <translation id="988141524645182168">Други уреди</translation>
+<translation id="995174784802614337">{count,plural, =1{Увезен е {count} криптографски клуч}one{Увезени се {count} криптографски клуч}other{Увезени се {count} криптографски клуча}}</translation>
 <translation id="999768147936949692">Засега, лозинки може да споделувате само со членови на семејството. <ph name="BEGIN_LINK" />Испратете покани до членовите на семејството<ph name="END_LINK" /> за да се придружат на вашата група и да го извлечат максимумот од вашите производи и претплати на Google.</translation>
 </translationbundle>

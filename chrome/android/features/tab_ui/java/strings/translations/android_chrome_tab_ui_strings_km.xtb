@@ -194,6 +194,7 @@
 <translation id="7853202427316060426">សកម្មភាព</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ ការវាយតម្លៃដោយដាក់ផ្កាយ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, មតិវាយតម្លៃ <ph name="REVIEWS_COUNT_ONE" />}other{ការវាយតម្លៃដោយដាក់ផ្កាយ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, មតិវាយតម្លៃ <ph name="REVIEWS_COUNT_MANY" />}}</translation>
 <translation id="7885132941432959125">ផ្លាស់ទី​ផ្ទាំង​ទៅ​ខាងស្ដាំ</translation>
+<translation id="7887334752153342268">ចម្លង</translation>
 <translation id="7939917283308035850">មិនបាន​ជ្រើសរើសពណ៌<ph name="COLOR_NAME" />ទេ</translation>
 <translation id="7961015016161918242">មិនដែល</translation>
 <translation id="7966321538264951561">ច្រានចោល​ការណែនាំ​។</translation>

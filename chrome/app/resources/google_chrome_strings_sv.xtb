@@ -492,6 +492,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisationen avslutar Chrome automatiskt när det inte har använts på 1 minut. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}other{Organisationen avslutar Chrome automatiskt när det inte har använts på # minuter. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}}</translation>
 <translation id="6418662306461808273">Vill du byta till en befintlig Chrome-profil?</translation>
 <translation id="6426623519983252346">Du får en uppmaning om att testa <ph name="FEATURE_NAME" /> nästa gång du öppnar Chrome för iOS.</translation>
+<translation id="6434035853014503219">Tack för att du väljer Chrome som standardwebbläsare!</translation>
 <translation id="6473905796280459355">Öppna sidan Om Chrome</translation>
 <translation id="6481963882741794338">Länka Chrome och andra tjänster från Google för anpassning och andra syften</translation>
 <translation id="648319183876919572">Förbättrad säker webbsökning gör mer för att skydda dig mot farliga webbplatser och nedladdningar</translation>
@@ -588,6 +589,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="756809126120519699">Data i Chrome har rensats</translation>
 <translation id="7572537927358445944">Av • Chrome kan inte verifiera var tillägget kommer från</translation>
 <translation id="7583399374488819119">Installationsprogram för <ph name="COMPANY_NAME" /></translation>
+<translation id="7596160425942761210">Du kan använda Chrome varje gång du klickar på länkar i meddelanden, dokument och andra appar</translation>
 <translation id="7602868996817972616">Fråga Google om den här sidan</translation>
 <translation id="760353356052806707">Ett annat program i datorn har lagt till en app som kan ändra hur Chrome fungerar.
 
@@ -683,6 +685,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="8601359445272098721">Nyhet! Du kan översätta både text och bilder på skärmen genom att välja knappen Översätt skärm</translation>
 <translation id="8614913330719544658">Google Chrome svarar inte. Vill du starta om nu?</translation>
 <translation id="861702415419836452">Du behöver ge Chrome behörighet att använda kameran om du vill skapa en 3D-karta över dina omgivningar</translation>
+<translation id="8624541899164515475">Inställningar, öppnas på en ny flik.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Om en minut startas Chrome om}other{Om # minuter startas Chrome om}}</translation>
 <translation id="8637932705841171563">För att dela fönstret tillåter du skärminspelning för Chrome i systeminställningarna</translation>
 <translation id="8641606876632989680">Chrome aviserar dig om du loggar in med ett utsatt lösenord</translation>

@@ -1049,6 +1049,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1699807488537653303">Rregullo gabimin e fjalëkalimit</translation>
 <translation id="1700201317341192482">Hiq kartën virtuale</translation>
 <translation id="1700517974991662022">E vizituar</translation>
+<translation id="1701367827913789499">Lexo në qetësi dhe me sa më pak shpërqendrime duke përdorur butonin e "Modalitetit të leximit" në shiritin e veglave</translation>
 <translation id="1703331064825191675">Mos u shqetëso asnjëherë për fjalëkalime e tua</translation>
 <translation id="1703666494654169921">Mos lejo që sajtet të përdorin të dhënat ose pajisjet e realitetit virtual</translation>
 <translation id="1704097193565924901">Kapitalizo</translation>
@@ -2956,6 +2957,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3008272652534848354">Rivendos autorizimet</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kërkon që të lidhesh me Wi-Fi sot për të shkarkuar një përditësim. Ose shkarko nga një lidhje me matje (mund të zbatohen tarifat).}other{<ph name="MANAGER" /> kërkon që të lidhesh me Wi-Fi dhe të shkarkosh një përditësim para afatit. Ose shkarko nga një lidhje me matje (mund të zbatohen tarifat).}}</translation>
 <translation id="3008923556848076408">Gemini do të vazhdojë të punojë për detyrën tënde</translation>
+<translation id="3008926075262837186">Lexo në qetësi dhe me shpërqendrime minimale</translation>
 <translation id="3009178788565917040">Dalja</translation>
 <translation id="3009352964623081324">Tasti "Search" + O, më pas S. Përdore për të instaluar, menaxhuar dhe personalizuar zërat.</translation>
 <translation id="3009779501245596802">Databazat e indeksuara</translation>
@@ -4412,7 +4414,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Mëso më shumë për "Saktësinë e vendndodhjes"<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Të importuara</translation>
 <translation id="3992008114154328194">Po shkarkohet <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Rezervo të dhënat</translation>
 <translation id="3994075804072562819">Jepi <ph name="SPECIFIC_NAME" /> kontrollin mbi pajisjet USB.</translation>
 <translation id="3994318741694670028">Fatkeqësisht, kompjuteri yt është konfiguruar me një ID hardueri të keqformuar. Kjo parandalon përditësimin e Chrome OS Flex me rregullimet më të fundit të sigurisë dhe kompjuteri yt <ph name="BEGIN_BOLD" />mund të jetë i cenueshëm ndaj sulmeve keqdashëse<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Shkyçe telefonin dhe afroje më shumë për të shkyçur pajisjen tënde <ph name="DEVICE_TYPE" />.</translation>
@@ -7710,7 +7711,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ka çaktivizuar korrigjimin e ADB-së. Kjo do ta rivendosë pajisjen tënde <ph name="DEVICE_TYPE" /> brenda 24 orësh. Rezervo çdo skedar që dëshiron ta mbash.</translation>
 <translation id="6336194758029258346">Gjuha e aplikacionit</translation>
 <translation id="6337543438445391085">Disa informacione personale mund të përfshihen përsëri te të dhënat. Sigurohu që të rishikosh skedarët e eksportuar.</translation>
-<translation id="6338554362382763574">Mund t'i bësh me lehtësi pyetje Gemini për skedat që po ndan ndërsa shfleton</translation>
 <translation id="6338968693068997776">Shto një pajisje USB</translation>
 <translation id="6339668969738228384">Krijo një profil të ri për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protokolli i printimit në internet (IPPS)</translation>
@@ -8105,6 +8105,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6619990499523117484">Konfirmo kodin tënd PIN</translation>
 <translation id="6620000730890558421">Mbaji skedat të organizuara me IA-në</translation>
 <translation id="6620254580880484313">Emri i kontejnerit</translation>
+<translation id="6621282332208609777">Pyet Google ose shkruaj një URL</translation>
 <translation id="6621391692573306628">Për ta dërguar këtë skedë te një pajisje tjetër, identifikohu në Chrome në të dyja pajisjet</translation>
 <translation id="6622980291894852883">Vazhdo bllokimin e imazheve</translation>
 <translation id="6624036901798307345">Në modalitetin e tabletit, trokit në butonin e shiritit të veglave të numëruesit të skedave për të hapur një shirit të ri skedash që shfaq miniaturat e çdo skede.</translation>
@@ -8329,7 +8330,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
     <ph name="BEGIN_PARAGRAPH2" />Këtë shërbim mund ta çaktivizosh te "Cilësimet".<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Rezervimi i Linux u anulua</translation>
 <translation id="6782067259631821405">Kod PIN i pavlefshëm</translation>
-<translation id="6782219876520622071">Bisedat për skedat e ndara mund të shikohen nga shqyrtues njerëzorë për të përmirësuar Gemini</translation>
 <translation id="6783036716881942511">Të harrohet kjo pajisje?</translation>
 <translation id="6783667414610055871">Cilësimet e Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Profili mbështetet</translation>
@@ -10870,6 +10870,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8517759303731677493">Modifiko…</translation>
 <translation id="8518809011298357036">Mbyll pamjen lart</translation>
 <translation id="8518942514525208851">Fshih fjalët blasfemuese</translation>
+<translation id="8520238089740349550">Dështoi - Shkarkimi lokal u bllokua</translation>
 <translation id="8523493869875972733">Mbaji ndryshimet</translation>
 <translation id="8523849605371521713">Shtuar sipas politikës</translation>
 <translation id="8524594273111932386">kërko + shigjeta poshtë</translation>
@@ -11741,6 +11742,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="909554839118732438">Mbyll dritaret e fshehta</translation>
 <translation id="9095819602391364796">Mos lejo që sajtet të kontrollojnë dhe të riprogramojnë pajisjet e tua MIDI</translation>
 <translation id="9096053102600371572">Lëvizja e kontrolluar <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Krahaso opsionet</translation>
 <translation id="9096776523567481218">nuk është instaluar në nivel lokal</translation>
 <translation id="9098860402274800697">Hiq Google Play dhe aplikacionet për Android</translation>
 <translation id="9099220545925418560">Bazuar në historikun tënd të shfletimit. Ky cilësim është joaktiv.</translation>

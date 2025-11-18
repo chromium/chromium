@@ -4421,7 +4421,6 @@
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />مزيد من المعلومات عن الإعداد "دقة الموقع الجغرافي"<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">المستوردة</translation>
 <translation id="3992008114154328194">جارٍ تنزيل "<ph name="FILE_NAME" />"، <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">الاحتفاظ بنسخة احتياطية من البيانات</translation>
 <translation id="3994075804072562819">‏يُرجى منح "<ph name="SPECIFIC_NAME" />" الإذن بالتحكّم في أجهزة USB.</translation>
 <translation id="3994318741694670028">‏تم إعداد جهاز الكمبيوتر باستخدام معرّف جهاز غير صحيح. ويؤدي ذلك إلى منع تحديث نظام التشغيل ChromeOS Flex وتوفير أحدث الإصلاحات المتعلّقة بالأمان، وقد يكون جهاز الكمبيوتر <ph name="BEGIN_BOLD" />عرضة للهجمات الضارة<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">ألغِ قفل هاتفك وقرِّبه لإلغاء قفل جهاز <ph name="DEVICE_TYPE" />.</translation>
@@ -7721,7 +7720,6 @@
 <translation id="6336038146639916978">‏أوقَف <ph name="MANAGER" /> إعداد "تصحيح الأخطاء عبر ADB". وسيؤدي هذا إلى إعادة ضبط الجهاز <ph name="DEVICE_TYPE" /> خلال 24 ساعة. يُرجى الاحتفاظ بنسخة احتياطية من كل الملفات التي تريدها.</translation>
 <translation id="6336194758029258346">لغة التطبيق</translation>
 <translation id="6337543438445391085">قد يحتوي ملف البيانات على بعض المعلومات الشخصية. يُرجى التأكّد من مراجعة الملفات التي تم تصديرها.</translation>
-<translation id="6338554362382763574">‏يمكنك بسهولة طرح أسئلة على Gemini حول علامات التبويب التي تتم مشاركتها أثناء التصفّح</translation>
 <translation id="6338968693068997776">‏إضافة جهاز USB</translation>
 <translation id="6339668969738228384">إنشاء ملف شخصي جديد لـ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">‏بروتوكول الطباعة على الإنترنت (IPPS)</translation>
@@ -8349,7 +8347,6 @@
     <ph name="BEGIN_PARAGRAPH2" />يمكنك إيقاف هذه الخدمة من خلال الإعدادات.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">‏تم إلغاء عملية الاحتفاظ بنسخة احتياطية من Linux</translation>
 <translation id="6782067259631821405">رقم التعريف الشخصي غير صالح</translation>
-<translation id="6782219876520622071">‏في إطار جهود تحسين Gemini، قد يطّلع فريق من المراجعين على المحادثات المتعلّقة بعلامات التبويب التي تمت مشاركتها</translation>
 <translation id="6783036716881942511">هل تريد حذف هذا الجهاز؟</translation>
 <translation id="6783667414610055871">‏إعدادات Microsoft OneDrive</translation>
 <translation id="6784523122863989144">توافق الملف الشخصي</translation>
@@ -9547,7 +9544,6 @@
 <translation id="7620616707541471029">اختيار حساب للمتابعة</translation>
 <translation id="7621382409404463535">تعذّر على النظام حفظ ضبط الجهاز.</translation>
 <translation id="7621595347123595643">لن تتمكّن من استرداد البيانات المحلّية في حال نسيان كلمة المرور أو رقم التعريف الشخصي.</translation>
-<translation id="7621863462266622331">‏عند مشاركة علامات التبويب، يتم إرسال محتواها والوسائط وعناوين URL الخاصة بها إلى Google</translation>
 <translation id="7622114377921274169">جارٍ الشحن.</translation>
 <translation id="7622768823216805500">تعمل المواقع الإلكترونية عادةً على تثبيت معالجات الدفع لتتيح ميزات التسوّق، مثل الدفع بسهولة.</translation>
 <translation id="7622966771025050155">التبديل إلى علامة التبويب التي يتم تسجيلها</translation>
@@ -10894,6 +10890,7 @@
 <translation id="8517759303731677493">تعديل…</translation>
 <translation id="8518809011298357036">إغلاق العرض العلوي</translation>
 <translation id="8518942514525208851">إخفاء اللغة النابية</translation>
+<translation id="8520238089740349550">تعذَّر التنزيل - تم حظر التنزيل على الجهاز</translation>
 <translation id="8523493869875972733">الإبقاء على التغييرات</translation>
 <translation id="8523849605371521713">تمت الإضافة من قبل السياسة</translation>
 <translation id="8524594273111932386">مفتاح البحث + السهم المتّجه للأسفل</translation>

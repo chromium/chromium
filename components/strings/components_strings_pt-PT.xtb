@@ -425,6 +425,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1682696192498422849">Margem estreita primeiro</translation>
 <translation id="168693727862418163">Ocorreu um erro na validação desta política em relação ao respetivo esquema e a mesma será ignorada.</translation>
 <translation id="168841957122794586">O certificado do servidor contém uma chave criptográfica fraca.</translation>
+<translation id="1688718429648938412">Guarde o cartão de fidelidade na Carteira</translation>
 <translation id="1689333818294560261">Alcunha</translation>
 <translation id="1692622044604477956">Listagens de filmes e espetáculos de teatro</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Como pode gerir os seus dados:<ph name="END_BOLD" /> o Chrome elimina automaticamente os tópicos com mais de 4 semanas. À medida que navega, um tópico pode voltar a ser apresentado na lista. Também pode bloquear tópicos que não quer que o Chrome partilhe com sites e desativar os tópicos de anúncios em qualquer altura nas definições do Chrome.</translation>
@@ -1723,7 +1724,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3792826587784915501">Filmes de culto e indie</translation>
 <translation id="3793574014653384240">Números e causas das falhas de sistema que ocorreram recentemente.</translation>
 <translation id="3795624560191557077">Alterou recentemente uma palavra-passe encontrada numa violação de dados pública. Em caso de problemas, o Gestor de Palavras-passe da Google pode ajudar a iniciar sessão.</translation>
-<translation id="3796181268473765083">Pagar em 4 prestações sem juros ou em prestações mensais (sujeito a elegibilidade)</translation>
 <translation id="3799805948399000906">Tipo de letra solicitado</translation>
 <translation id="3801297763951514916">Visita frequentemente</translation>
 <translation id="380329542618494757">Nome</translation>
@@ -3662,6 +3662,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6965978654500191972">Dispositivo</translation>
 <translation id="696703987787944103">Percetual</translation>
 <translation id="6967851206780867018">1 ficheiro foi bloqueado devido ao conteúdo</translation>
+<translation id="6968217325369275594">Guarde as suas informações para receber atualizações de qualquer um dos seus dispositivos. As suas informações são guardadas na <ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" /> de <ph name="ACCOUNT" />.</translation>
 <translation id="6970885655016700774">Tecido (de arquivo)</translation>
 <translation id="6971439137020188025">Crie rapidamente uma nova apresentação Google no Slides</translation>
 <translation id="6972629891077993081">Dispositivos HID</translation>

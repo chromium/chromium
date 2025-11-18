@@ -73,6 +73,7 @@
 <translation id="311432875115153175">တဘ်အုပ်စုစာရင်း ပိတ်လိုက်သည်</translation>
 <translation id="3194464645767632461">အဆင့်သတ်မှတ်ခြင်း</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို အုပ်စုတွင် ထည့်ရန်}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို အုပ်စုတွင် ထည့်ရန်}}</translation>
+<translation id="3293080634164207409">တဘ်များထည့်ရန်</translation>
 <translation id="3328308545011660196">အကြံပြုချက်- တဘ် <ph name="NUMBER_OF_TABS" /> ခုက ဆက်စပ်ပုံပေါ်သည်။ ၎င်းတို့ကို အုပ်စုဖွဲ့မလား။</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{၁ ရက်ကြာ အသုံးမပြုသည့်နောက်}other{<ph name="DAY_COUNT_MANY" /> ရက်ကြာ အသုံးမပြုသည့်နောက်}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{တဘ်အသစ် <ph name="ONE_ADDED" /> ခု}other{တဘ်အသစ် <ph name="MANY_ADDED" /> ခု}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">လုပ်ဆောင်ချက်</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> အဆင့်သတ်မှတ်ချက်၊ သုံးသပ်ချက် <ph name="REVIEWS_COUNT_ONE" /> ခု}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> အဆင့်သတ်မှတ်ချက်၊ သုံးသပ်ချက် <ph name="REVIEWS_COUNT_MANY" /> ခု}}</translation>
 <translation id="7885132941432959125">တဘ်ကို ညာဘက်သို့ ရွှေ့ရန်</translation>
+<translation id="7887334752153342268">မူပွားယူရန်</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> ရွေးမထားပါ</translation>
 <translation id="7961015016161918242">ဘယ်သောအခါမှ</translation>
 <translation id="7966321538264951561">အကြံပြုချက်များကို ပယ်ပါ။</translation>

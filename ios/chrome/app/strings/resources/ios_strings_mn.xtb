@@ -42,6 +42,7 @@
 <translation id="1122068467107743258">Ажил</translation>
 <translation id="1126696498560056882">Энэ төхөөрөмж дээрх бүртгэлүүдийг удирдах</translation>
 <translation id="1126809382673880764">Таныг аюултай вебсайт, таталт болон өргөтгөлөөс хамгаалахгүй. Гэхдээ та Аюулгүй үзэх хамгаалалтыг Gmail, Хайлт зэрэг Google-н боломжтой бусад үйлчилгээнд авсан хэвээр байна.</translation>
+<translation id="1133418583142946603">Одоогийн таб нэмэх</translation>
 <translation id="1136104150802877429">Бүтээгдэхүүний шүүмжийг харуулна</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" />-н мэдэгдлийг унтраах</translation>
 <translation id="1147031633655575115"><ph name="USER" />-р нэвтэрсэн</translation>
@@ -78,6 +79,7 @@
 <translation id="1285320974508926690">Энэ сайтыг хэзээ ч бүү хөрвүүл</translation>
 <translation id="1287229685519872919">Google Workspace-н өгөгдөл</translation>
 <translation id="1291506870746876680">Таныг энэ сайтаас гарах үед <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" />-н зөвшөөрлийг унтраасан болгож шинэчилнэ.</translation>
+<translation id="1293556467332435079">Файлууд</translation>
 <translation id="129553762522093515">Саяхан хаагдсан</translation>
 <translation id="1296581780163690620">Файлыг татах уу? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Та нууц үгнүүдийг Google Бүртгэлдээ үргэлж ашиглах боломжтой болохоо баталгаажуулахын тулд өөрийгөө мөн болохыг бататгана уу.</translation>
@@ -1044,6 +1046,7 @@
 <translation id="5055015094595227120">Нарийвчилсан байршил</translation>
 <translation id="5055551113846164633">Энэ нь уг төхөөрөмж дээр хадгалсан хаягийг устгана. Энэ нь мөн таны <ph name="USER_EMAIL" /> Google Бүртгэлд хадгалсан хаягийг устгана.</translation>
 <translation id="5056446788882570708">Асуудлыг <ph name="TIME" />-д олсон</translation>
+<translation id="5056587122125565772">Зураг үүсгэх</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Google Drive суулгах</translation>
 <translation id="5067540696062462445">Татаж авсан файл</translation>
@@ -1505,6 +1508,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6659660757330712663">Та табуудын хооронд сэлгэхийн тулд самбарыг шудрах боломжтой.</translation>
 <translation id="6663529247339810546">Зургийг хадгалах боломжгүй</translation>
 <translation id="6668619169535738264">Хавчуургыг засах</translation>
+<translation id="6670729408462528018">Зургийн цомог</translation>
 <translation id="6671294218820966278">Уншсан гэж тэмдэглэх</translation>
 <translation id="6672697278890207089">Нэвтрэх үгээ оруулна уу</translation>
 <translation id="6674917187596384849">Та бүртгэлүүдийн хооронд хялбархан сэлгэх боломжтой</translation>

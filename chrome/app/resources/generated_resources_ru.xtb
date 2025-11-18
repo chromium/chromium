@@ -4420,7 +4420,6 @@
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Подробнее о точности геолокации…<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Выполнен импорт</translation>
 <translation id="3992008114154328194">Скачивание файла "<ph name="FILE_NAME" />" (<ph name="STATUS" />)</translation>
-<translation id="3993259701827857030">Резервное копирование</translation>
 <translation id="3994075804072562819">Разрешить <ph name="SPECIFIC_NAME" /> управлять USB-устройствами</translation>
 <translation id="3994318741694670028">В настройках компьютера указан неверный аппаратный идентификатор устройства. Chrome OS Flex не сможет устанавливать обновления системы безопасности для защиты компьютера от <ph name="BEGIN_BOLD" />вредоносных атак<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Разблокируйте телефон и поднесите его к устройству <ph name="DEVICE_TYPE" />.</translation>
@@ -7719,7 +7718,6 @@
 <translation id="6336038146639916978">Отладка с помощью ADB отключена администратором (<ph name="MANAGER" />). Настройки устройства <ph name="DEVICE_TYPE" /> будут сброшены через 24 часа. Чтобы сохранить нужные файлы, создайте их резервную копию.</translation>
 <translation id="6336194758029258346">Язык приложения</translation>
 <translation id="6337543438445391085">В этих данных могут остаться некоторые личные сведения. Обязательно проверьте экспортированные файлы.</translation>
-<translation id="6338554362382763574">Вы можете легко задавать Gemini вопросы о просматриваемых вкладках, которыми вы поделились.</translation>
 <translation id="6338968693068997776">Добавление USB-устройства</translation>
 <translation id="6339668969738228384">Создать профиль для <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8345,7 +8343,6 @@
     <ph name="BEGIN_PARAGRAPH2" />Вы можете отключить эту функцию в настройках.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Резервное копирование контейнера Linux отменено.</translation>
 <translation id="6782067259631821405">Неверный PIN-код.</translation>
-<translation id="6782219876520622071">Наши специалисты могут просматривать информацию о вкладках, которыми вы поделились, чтобы улучшать Gemini.</translation>
 <translation id="6783036716881942511">Удалить устройство?</translation>
 <translation id="6783667414610055871">Настройки Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Профиль поддерживается.</translation>
@@ -9542,7 +9539,6 @@
 <translation id="7620616707541471029">Чтобы продолжить, выберите аккаунт</translation>
 <translation id="7621382409404463535">Не удалось сохранить конфигурацию устройства.</translation>
 <translation id="7621595347123595643">Вы не сможете восстановить локальные данные, если забудете пароль или PIN-код.</translation>
-<translation id="7621863462266622331">Когда вы делитесь вкладками, их содержимое и URL отправляются в Google.</translation>
 <translation id="7622114377921274169">Зарядка…</translation>
 <translation id="7622768823216805500">Обычно сайты устанавливают обработчики платежей, чтобы использовать такие функции, как упрощенная оплата покупок.</translation>
 <translation id="7622966771025050155">Перейти на записанную вкладку</translation>

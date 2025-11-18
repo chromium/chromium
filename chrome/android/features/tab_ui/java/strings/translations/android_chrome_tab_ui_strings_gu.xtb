@@ -194,6 +194,7 @@
 <translation id="7853202427316060426">પ્રવૃત્તિ</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ, <ph name="REVIEWS_COUNT_ONE" /> રિવ્યૂ}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ, <ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ, <ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ}}</translation>
 <translation id="7885132941432959125">ટૅબને જમણે ખસેડો</translation>
+<translation id="7887334752153342268">ડુપ્લિકેટ</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> પસંદ કરેલો નથી</translation>
 <translation id="7961015016161918242">ક્યારેય નહીં</translation>
 <translation id="7966321538264951561">સૂચનોને છોડી દો.</translation>

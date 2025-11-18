@@ -4431,7 +4431,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Ketahui lebih lanjut tentang Ketepatan Lokasi<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Diimport</translation>
 <translation id="3992008114154328194">Memuat turun <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Sandarkan data</translation>
 <translation id="3994075804072562819">Berikan <ph name="SPECIFIC_NAME" /> kawalan terhadap peranti USB.</translation>
 <translation id="3994318741694670028">Malangnya, komputer anda dikonfigurasi dengan ID perkakasan tidak sempurna. Hal ini menghalang Chrome OS Flex daripada mengemas kini kepada pembetulan keselamatan terbaharu dan komputer anda <ph name="BEGIN_BOLD" />mungkin terdedah kepada serangan berniat jahat<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Buka kunci telefon anda dan rapatkan untuk membuka kunci <ph name="DEVICE_TYPE" /> anda.</translation>
@@ -7731,7 +7730,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> telah melumpuhkan penyahpepijatan ADB. Tindakan ini akan menetapkan semula <ph name="DEVICE_TYPE" /> anda dalam masa 24 jam. Sandarkan mana-mana fail yang ingin anda simpan.</translation>
 <translation id="6336194758029258346">Bahasa apl</translation>
 <translation id="6337543438445391085">Beberapa maklumat peribadi mungkin masih disertakan dalam data. Pastikan anda menyemak fail yang dieksport.</translation>
-<translation id="6338554362382763574">Anda boleh bertanya soalan kepada Gemini tentang tab yang anda kongsi dengan mudah semasa anda menyemak imbas</translation>
 <translation id="6338968693068997776">Tambah peranti USB</translation>
 <translation id="6339668969738228384">Buat profil baharu untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protokol Cetakan Internet (IPPS)</translation>
@@ -8351,7 +8349,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
     <ph name="BEGIN_PARAGRAPH2" />Anda boleh mematikan perkhidmatan ini dalam Tetapan.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Sandaran Linux dibatalkan</translation>
 <translation id="6782067259631821405">PIN tidak sah</translation>
-<translation id="6782219876520622071">Perbualan tentang tab dikongsi mungkin dilihat oleh jurusemak untuk meningkatkan Gemini</translation>
 <translation id="6783036716881942511">Lupakan peranti ini?</translation>
 <translation id="6783667414610055871">Tetapan Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Profil disokong</translation>
@@ -9549,7 +9546,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7620616707541471029">Pilih akaun untuk meneruskan proses</translation>
 <translation id="7621382409404463535">Sistem gagal menyimpan konfigurasi peranti.</translation>
 <translation id="7621595347123595643">Anda tidak akan dapat memulihkan data setempat jika anda terlupa kata laluan atau PIN anda.</translation>
-<translation id="7621863462266622331">Apabila tab dikongsi, kandungan halaman, media dan URL tab tersebut akan dihantar kepada Google</translation>
 <translation id="7622114377921274169">Mengecas.</translation>
 <translation id="7622768823216805500">Tapak biasanya memasang pengendali pembayaran untuk ciri beli-belah seperti daftar keluar yang lebih mudah</translation>
 <translation id="7622966771025050155">Beralih kepada tab yang ditangkap</translation>

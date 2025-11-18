@@ -42,6 +42,7 @@
 <translation id="1122068467107743258">Kazini</translation>
 <translation id="1126696498560056882">Dhibiti akaunti kwenye kifaa hiki</translation>
 <translation id="1126809382673880764">Haikulindi dhidi ya tovuti, viendelezi na faili hatari zinazopakuliwa. Bado utapata ulinzi wa kipengele cha Kuvinjari Salama, kinapopatikana, katika huduma nyingine za Google kama vile Gmail na Tafuta na Google.</translation>
+<translation id="1133418583142946603">Weka kichupo cha sasa</translation>
 <translation id="1136104150802877429">Huonyesha maoni kuhusu bidhaa</translation>
 <translation id="1142371195993008685">Zima arifa za <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Umeingia katika akaunti kama <ph name="USER" /></translation>
@@ -78,6 +79,7 @@
 <translation id="1285320974508926690">Kamwe usitafsiri tovuti hii</translation>
 <translation id="1287229685519872919">Data ya Google Workspace</translation>
 <translation id="1291506870746876680">Ruhusa za <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> zitazimwa utakapoondoka kwenye tovuti hii.</translation>
+<translation id="1293556467332435079">Faili</translation>
 <translation id="129553762522093515">Vilivyofungwa hivi karibuni</translation>
 <translation id="1296581780163690620">Ungependa kupakua faili? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Ili uhakikishe kuwa unaweza kutumia manenosiri katika Akaunti yako ya Google kila wakati, thibitisha kuwa ni wewe.</translation>
@@ -1044,6 +1046,7 @@
 <translation id="5055015094595227120">Eneo mahususi</translation>
 <translation id="5055551113846164633">Hatua hii hufuta anwani ulizohifadhi kwenye kifaa hiki. Pia, inafuta anwani ulizohifadhi kwenye Akaunti yako ya Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Matatizo yalipatikana <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">Buni picha</translation>
 <translation id="5059136629401106827">Sawa</translation>
 <translation id="5062321486222145940">Pakua Hifadhi ya Google</translation>
 <translation id="5067540696062462445">Vipakuliwa</translation>
@@ -1505,6 +1508,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6659660757330712663">Unaweza kutelezesha kidole kwenye upau wa vidhibiti ili ubadili kati ya vichupo.</translation>
 <translation id="6663529247339810546">Imeshindwa kuhifadhjii picha</translation>
 <translation id="6668619169535738264">Badilisha Alamisho</translation>
+<translation id="6670729408462528018">Matunzio</translation>
 <translation id="6671294218820966278">Tia alama kuwa Imesomwa</translation>
 <translation id="6672697278890207089">Weka kauli yako ya siri</translation>
 <translation id="6674917187596384849">Unaweza kubadilisha akaunti kwa urahisi</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
+<translation id="1004825134262590729">{count,plural, =1{{count} κλειδί πρόσβασης}other{{count} κλειδιά πρόσβασης}}</translation>
 <translation id="1005023885865154304">Άνοιγμα ρυθμίσεων Αυτόματης συμπλήρωσης κωδικών πρόσβασης</translation>
 <translation id="1005230401424685968">ΕΕΕΕ</translation>
 <translation id="1013952917065545813">Μπορείτε να επιστρέψετε εδώ για να ανοίξετε ξανά τις καρτέλες που κλείσατε πρόσφατα.</translation>
@@ -41,6 +42,7 @@
 <translation id="1122068467107743258">Εργασία</translation>
 <translation id="1126696498560056882">Διαχείριση λογαριασμών σε αυτή τη συσκευή</translation>
 <translation id="1126809382673880764">Δεν σας προστατεύει από επικίνδυνους ιστοτόπους, λήψεις και επεκτάσεις. Θα εξακολουθείτε να λαμβάνετε προστασία από την Ασφαλή περιήγηση, όπου είναι διαθέσιμη, σε άλλες Υπηρεσίες Google, όπως το Gmail και η Αναζήτηση.</translation>
+<translation id="1133418583142946603">Προσθήκη τρέχουσας καρτέλας</translation>
 <translation id="1136104150802877429">Εμφάνιση κριτικών προϊόντων</translation>
 <translation id="1142371195993008685">Απενεργοποίηση ειδοποιήσεων για τη λειτουργία <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Έχετε συνδεθεί ως <ph name="USER" /></translation>
@@ -77,6 +79,7 @@
 <translation id="1285320974508926690">Να μην γίνεται ποτέ μετάφραση αυτού του ιστότοπου</translation>
 <translation id="1287229685519872919">Δεδομένα Google Workspace</translation>
 <translation id="1291506870746876680">Οι άδειες για τον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> θα απενεργοποιηθούν μόλις αποχωρήσετε από τον ιστότοπο.</translation>
+<translation id="1293556467332435079">Αρχεία</translation>
 <translation id="129553762522093515">Έκλεισαν πρόσφατα</translation>
 <translation id="1296581780163690620">Λήψη αρχείου; (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Για να βεβαιωθείτε ότι θα μπορείτε να χρησιμοποιείτε πάντα τους κωδικούς πρόσβασης στον Λογαριασμό σας Google, επαληθεύστε την ταυτότητά σας.</translation>
@@ -1043,6 +1046,7 @@
 <translation id="5055015094595227120">Ακριβής τοποθεσία</translation>
 <translation id="5055551113846164633">Αυτή η ενέργεια διαγράφει τις διευθύνσεις που έχουν αποθηκευτεί σε αυτή τη συσκευή. Διαγράφει επίσης τις διευθύνσεις που έχουν αποθηκευτεί στον Λογαριασμό σας Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Εντοπίστηκαν προβλήματα <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">Δημιουργία εικόνας</translation>
 <translation id="5059136629401106827">ΟΚ</translation>
 <translation id="5062321486222145940">Εγκατάσταση Google Drive</translation>
 <translation id="5067540696062462445">Λήψεις</translation>
@@ -1505,6 +1509,7 @@
 <translation id="6659660757330712663">Μπορείτε να σύρετε τη γραμμή εργαλείων για εναλλαγή μεταξύ των καρτελών.</translation>
 <translation id="6663529247339810546">Αδύνατη αποθ.εικόνας</translation>
 <translation id="6668619169535738264">Επεξεργασία σελιδοδείκτη</translation>
+<translation id="6670729408462528018">Gallery</translation>
 <translation id="6671294218820966278">Επισήμανση ως αναγνωσμένο</translation>
 <translation id="6672697278890207089">Εισαγάγετε την φράση πρόσβασής σας</translation>
 <translation id="6674917187596384849">Μπορείτε να κάνετε εύκολα εναλλαγή μεταξύ λογαριασμών</translation>
@@ -1661,6 +1666,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Έχετε ήδη κωδικούς πρόσβασης για αυτούς τους λογαριασμούς στη Διαχείριση κωδικών πρόσβασης Google. Αν αποφασίσετε να εισαγάγετε έναν από τους παρακάτω κωδικούς πρόσβασης, θα αντικαταστήσει τον υπάρχοντα.</translation>
 <translation id="7336264872878993241">Έγινε λήψη του <ph name="PERCENT" /> τοις εκατό</translation>
+<translation id="7345061034321640811">Η εισαγωγή δεν επιτρέπεται</translation>
 <translation id="7352651011704765696">Παρουσιάστηκε κάποιο πρόβλημα</translation>
 <translation id="7363349185727752629">Ένας οδηγός για τις επιλογές απορρήτου σας</translation>
 <translation id="7364796246159120393">Επιλογή αρχείου</translation>
@@ -2202,6 +2208,7 @@
 <translation id="952704832371081537">Ακύρωση</translation>
 <translation id="95332591904104970">Συνδεδεμένες εφαρμογές</translation>
 <translation id="954667170699278022">Λίστα ανάγνωσης</translation>
+<translation id="956066588046842680">Η εισαγωγή αυτών των δεδομένων δεν επιτρέπεται από την πολιτική του οργανισμού σας.</translation>
 <translation id="956218893102219091">Χρησιμοποιήστε την ακριβή τοποθεσία σας για τα πιο ακριβή αποτελέσματα του Gemini, αντί για μια εκτιμώμενη τοποθεσία με βάση τη διεύθυνση IP σας. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Διαγραφή δεδομένων περιήγησης</translation>
 <translation id="963102227019621224">Δραστηριότητα ιστού και εφαρμογών</translation>
@@ -2213,5 +2220,6 @@
 <translation id="984275831282074731">Τρόποι πληρωμής</translation>
 <translation id="985379595344853742">Κλείσιμο όλων των καρτελών ανώνυμης περιήγησης</translation>
 <translation id="988141524645182168">Άλλες συσκευές</translation>
+<translation id="995174784802614337">{count,plural, =1{Έγινε εισαγωγή {count} κλειδιού πρόσβασης}other{Έγινε εισαγωγή {count} κλειδιών πρόσβασης}}</translation>
 <translation id="999768147936949692">Προς το παρόν, μπορείτε να μοιραστείτε κωδικούς πρόσβασης μόνο με τα μέλη της οικογένειας. <ph name="BEGIN_LINK" />Προσκαλέστε τα μέλη της οικογένειας<ph name="END_LINK" /> να συμμετάσχουν στην ομάδα σας και αξιοποιήστε περισσότερο τα προϊόντα και τις συνδρομές σας Google.</translation>
 </translationbundle>

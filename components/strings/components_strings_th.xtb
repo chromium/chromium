@@ -428,6 +428,7 @@
 <translation id="1689333818294560261">ชื่อเล่น</translation>
 <translation id="1692622044604477956">รายชื่อหนังและเวลาฉาย</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />วิธีที่คุณสามารถจัดการข้อมูลของตน:<ph name="END_BOLD" /> Chrome จะลบหัวข้อที่เก่ากว่า 4 สัปดาห์ออกโดยอัตโนมัติ ในขณะที่คุณท่องเว็บไปเรื่อยๆ บางหัวข้ออาจกลับมาปรากฏในรายการอีก นอกจากนี้ คุณยังสามารถบล็อกหัวข้อที่ไม่ต้องการให้ Chrome แชร์กับเว็บไซต์ และปิดหัวข้อโฆษณาได้ทุกเมื่อในการตั้งค่า Chrome</translation>
+<translation id="1697808683313379647">Google ใช้ข้อมูลจากหน้าชำระเงินและข้อมูลอื่นๆ ที่เกี่ยวข้องเพื่อเสนอตัวเลือกเหล่านี้</translation>
 <translation id="1699651774646344471">ตอนนี้คุณใช้ที่อยู่จากบัญชี Google ได้แล้ว</translation>
 <translation id="1700542542921501212">คุณใช้ <ph name="SEARCH_ENGINE_NAME" /> เพื่อค้นหาเว็บได้</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1721,7 +1722,6 @@
 <translation id="3792826587784915501">ภาพยนตร์แนวศิลปะและอินดี้</translation>
 <translation id="3793574014653384240">จำนวนและสาเหตุของการขัดข้องที่เกิดขึ้นเมื่อเร็วๆ นี้</translation>
 <translation id="3795624560191557077">คุณเพิ่งเปลี่ยนรหัสผ่านที่พบในการละเมิดข้อมูลสาธารณะ ในกรณีที่เกิดปัญหา เครื่องมือจัดการรหัสผ่านบน Google จะช่วยให้คุณลงชื่อเข้าใช้ได้</translation>
-<translation id="3796181268473765083">ผ่อนชำระ 4 งวดแบบไม่มีดอกเบี้ยหรือผ่อนชำระรายเดือน (ขึ้นอยู่กับสิทธิ์)</translation>
 <translation id="3799805948399000906">ขอแบบอักษรแล้ว</translation>
 <translation id="3801297763951514916">คุณเข้าชมบ่อย</translation>
 <translation id="380329542618494757">ชื่อ</translation>
@@ -2947,6 +2947,7 @@
 <translation id="5813753398265398978">ฟิสิกส์</translation>
 <translation id="5817918615728894473">จับคู่</translation>
 <translation id="5820625124144807242">หลังจากที่ตรวจสอบคำสั่งซื้อแล้ว คุณต้องลงชื่อเข้าใช้หรือสร้างบัญชีกับ <ph name="BNPL_ISSUER_NAME" /> ระบบจะลิงก์บัญชีนี้กับ Google Pay โดยอัตโนมัติ</translation>
+<translation id="5820751560028604030">บล็อกการดาวน์โหลดในเครื่องแล้ว</translation>
 <translation id="5826507051599432481">ชื่อทั่วไป (CN)</translation>
 <translation id="5830698870816298009">การใช้และขยับกล้อง</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3701,6 +3702,7 @@
 <translation id="7031646650991750659">แอปจาก Google Play ที่คุณติดตั้ง</translation>
 <translation id="7035705295266423040">ธนาคารต้องการยืนยันตัวตนของคุณ</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการการตั้งค่าความเป็นส่วนตัวของบัญชี Google</translation>
+<translation id="7042465939346919737">Google ใช้ข้อมูลจากหน้าชำระเงินและข้อมูลอื่นๆ ที่เกี่ยวข้องเพื่อเสนอตัวเลือกเหล่านี้ หากต้องการซ่อนตัวเลือกการชำระเงินภายหลัง ให้ไปที่<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">ปรับแต่งผลลัพธ์</translation>
 <translation id="7043552168914147882">แท็บสต็อก</translation>
 <translation id="7044081119134178347">อนุญาตให้ใช้กล้องในครั้งนี้</translation>

@@ -73,6 +73,7 @@
 <translation id="311432875115153175">ٹیب گروپ کی فہرست بند ہے</translation>
 <translation id="3194464645767632461">درجہ بندی</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{‫<ph name="TABS_COUNT_ONE" /> ٹیب کو گروپ میں شامل کریں}other{‫<ph name="TABS_COUNT_MANY" /> ٹیبز کو گروپ میں شامل کریں}}</translation>
+<translation id="3293080634164207409">ٹیبز شامل کریں</translation>
 <translation id="3328308545011660196">تجویز: <ph name="NUMBER_OF_TABS" /> ٹیبز متعلقہ معلوم ہوتے ہیں۔ ان کی گروپ بندی کریں؟</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{‫1 دن غیر فعال ہونے کے بعد}other{‫<ph name="DAY_COUNT_MANY" /> دن غیر فعال ہونے کے بعد}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{‫<ph name="ONE_ADDED" /> نیا ٹیب}other{‫<ph name="MANY_ADDED" /> نئے ٹیبز}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">سرگرمی</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> کی درجہ بندی، <ph name="REVIEWS_COUNT_ONE" /> جائزہ}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> کی درجہ بندی، <ph name="REVIEWS_COUNT_MANY" /> جائزے}}</translation>
 <translation id="7885132941432959125">ٹیب کو دائیں منتقل کریں</translation>
+<translation id="7887334752153342268">ڈپلیکیٹ</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> کا انتخاب نہیں کیا گیا</translation>
 <translation id="7961015016161918242">کبھی نہیں</translation>
 <translation id="7966321538264951561">تجاویز مسترد کریں۔</translation>

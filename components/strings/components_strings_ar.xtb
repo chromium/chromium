@@ -425,6 +425,7 @@
 <translation id="1682696192498422849">حافة قصيرة أولًا</translation>
 <translation id="168693727862418163">تعذّر التحقُّق من قيمة السياسة هذه وفقًا لمخططها وسيتم تجاهلها.</translation>
 <translation id="168841957122794586">تحتوي شهادة الخادم على مفتاح ترميز ضعيف.</translation>
+<translation id="1688718429648938412">‏حفظ بطاقة الولاء في "محفظة Google"</translation>
 <translation id="1689333818294560261">اللقب</translation>
 <translation id="1692622044604477956">قوائم أفلام ومواعيد العروض في السينما</translation>
 <translation id="1697430960030447570">‏<ph name="BEGIN_BOLD" />كيف يمكنك إدارة بياناتك:<ph name="END_BOLD" /> يحذف Chrome تلقائيًا المواضيع التي يمر أكثر من 4 أسابيع على إضافتها إلى قائمة مواضيع الإعلانات. ومع استمرارك في التصفّح، قد يظهر موضوع في القائمة مجددًا. يمكنك أيضًا حظر المواضيع التي لا تريد أن يشاركها Chrome مع المواقع الإلكترونية، وإيقاف ميزة "مواضيع الإعلانات" متى شئت من خلال إعدادات Chrome.</translation>
@@ -1723,7 +1724,6 @@
 <translation id="3792826587784915501">أفلام مستقلة وأفلام شعبية</translation>
 <translation id="3793574014653384240">أعداد الأعطال التي حدثت مؤخرًا على الجهاز وأسبابها</translation>
 <translation id="3795624560191557077">‏لقد غيّرْت مؤخرًا كلمة مرور تم رصدها في عملية اختراق علنية للبيانات. إذا واجهتك مشكلة، سيساعدك "مدير كلمات المرور في Google" في تسجيل الدخول.</translation>
-<translation id="3796181268473765083">يمكنك تسديد الدفعات على 4 أقساط شهرية أو بدون فوائد (وفقًا للأهلية)</translation>
 <translation id="3799805948399000906">الخط المطلوب</translation>
 <translation id="3801297763951514916">تزور هذا الموقع الإلكتروني كثيرًا</translation>
 <translation id="380329542618494757">الاسم</translation>
@@ -2949,6 +2949,7 @@
 <translation id="5813753398265398978">فيزياء</translation>
 <translation id="5817918615728894473">إقران</translation>
 <translation id="5820625124144807242">‏بعد مراجعة طلبك، عليك تسجيل الدخول أو إنشاء حساب باستخدام <ph name="BNPL_ISSUER_NAME" />. وسيتم ربط هذا الحساب تلقائيًا بخدمة Google Pay.</translation>
+<translation id="5820751560028604030">تم حظر التنزيل على الجهاز</translation>
 <translation id="5826507051599432481">‏الاسم الشائع (CN)</translation>
 <translation id="5830698870816298009">استخدام الكاميرا وتحريكها</translation>
 <translation id="5831217499016131155">‏محفظة Google</translation>
@@ -3661,6 +3662,7 @@
 <translation id="6965978654500191972">جهاز</translation>
 <translation id="696703987787944103">حِسّي</translation>
 <translation id="6967851206780867018">تم حظر ملف واحد بسبب المحتوى.</translation>
+<translation id="6968217325369275594">يمكنك حفظ معلوماتك في "<ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" />" ضِمن الحساب <ph name="ACCOUNT" /> لتلقّي الإشعارات من جميع أجهزتك.</translation>
 <translation id="6970885655016700774">نسيج (أرشفة)</translation>
 <translation id="6971439137020188025">‏إنشاء عرض تقديمي جديد من Google في "العروض التقديمية من Google" بسرعة</translation>
 <translation id="6972629891077993081">‏أجهزة HID</translation>

@@ -521,6 +521,7 @@ On võimalik, et mõni funktsioon ei ole saadaval. Määrake muu profiilikataloo
 <translation id="705851970750939768">Värskenda Chromiumi</translation>
 <translation id="7067091210845072982">Kui pildil puudub kasulik kirjeldus, üritab Chromium selle ise luua. Kirjelduste loomiseks saadetakse pildid Google'ile.</translation>
 <translation id="7141270731789036260">Chrome for Testingu kohandamine</translation>
+<translation id="7147227333672430807">Saate kasutada Chromiumi iga kord, kui klõpsate sõnumites, dokumentides ja teistes rakendustes linkidel.</translation>
 <translation id="7163519456498498587">Eemalda <ph name="EXTENSION_NAME" /> Chromiumist</translation>
 <translation id="7173822816570314652">Teie organisatsioon kustutab Chromiumi andmed, kui neid ei kasutata <ph name="TIMEOUT_DURATION" /> jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.</translation>
 <translation id="718435575166326686">Chromium vajab selle saidi puhul kaamera kasutamise luba</translation>
@@ -635,6 +636,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8471947159125090285">Chromiumi andmete kasutamiseks ja salvestamiseks oma Google’i kontole kinnitage, et see olete teie</translation>
 <translation id="8482493977473846331">Kuvatakse viibad Chromiumisse sisselogimiseks</translation>
 <translation id="8493179195440786826">Chromium on aegunud</translation>
+<translation id="850264194101621529">Täname, et valisite Chromiumi oma vaikebrauseriks!</translation>
 <translation id="8522801943730206384">Chromium saab teie paroole kontrollida, kui olete need salvestanud</translation>
 <translation id="8555465886620020932">Teenuse viga: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Saate pildiotsingu hõlpsaks juurdepääsuks kinnitada; klõpsake külgpaneeli ülaosas nupul Kinnita</translation>
@@ -644,6 +646,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8586442755830160949">Autoriõigus <ph name="YEAR" /> The Chromium Authors. Kõik õigused on kaitstud.</translation>
 <translation id="8601359445272098721">Uus! Saate tõlkida nii ekraanil olevat teksti kui ka pilte, valides nupu „Tõlgi kuva“</translation>
 <translation id="8619360774459241877">Chromiumi käivitamine …</translation>
+<translation id="8624541899164515475">Seaded, avaneb uuel vahelehel.</translation>
 <translation id="8648201657708811153">Brauserit Google Chrome for Testing ei saa teie vaikebrauseriks määrata.</translation>
 <translation id="8677922833187616101">Kuva alati Google'i AI-režiimi otsetee</translation>
 <translation id="8697124171261953979">Lisaks juhib see seda, mis leht kuvatakse Chromiumi käivitamisel või omnikastikeses otsingu tegemisel.</translation>

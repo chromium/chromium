@@ -73,6 +73,7 @@
 <translation id="311432875115153175">فهرست گروه زبانه بسته شد</translation>
 <translation id="3194464645767632461">رده‌بندی</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{افزودن <ph name="TABS_COUNT_ONE" /> زبانه به گروه}one{افزودن <ph name="TABS_COUNT_MANY" /> زبانه به گروه}other{افزودن <ph name="TABS_COUNT_MANY" /> زبانه به گروه}}</translation>
+<translation id="3293080634164207409">افزودن زبانه</translation>
 <translation id="3328308545011660196">پیشنهاد: به نظر می‌رسد <ph name="NUMBER_OF_TABS" /> برگه مرتبط باشند. گروه‌بندی شوند؟</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{پس‌از ۱ روز غیرفعال بودن}one{پس‌از <ph name="DAY_COUNT_MANY" /> روز غیرفعال بودن}other{پس‌از <ph name="DAY_COUNT_MANY" /> روز غیرفعال بودن}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{‫<ph name="ONE_ADDED" /> زبانه جدید}one{‫<ph name="MANY_ADDED" /> زبانه جدید}other{‫<ph name="MANY_ADDED" /> زبانه جدید}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">فعالیت</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />، <ph name="REVIEWS_COUNT_ONE" /> مرور}one{رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />، <ph name="REVIEWS_COUNT_MANY" /> مرور}other{رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />، <ph name="REVIEWS_COUNT_MANY" /> مرور}}</translation>
 <translation id="7885132941432959125">انتقال برگه به چپ</translation>
+<translation id="7887334752153342268">کپی‌برداری</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> انتخاب نشده است</translation>
 <translation id="7961015016161918242">هرگز</translation>
 <translation id="7966321538264951561">پیشنهادها رد شود.</translation>

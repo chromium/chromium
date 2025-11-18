@@ -1053,6 +1053,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1699807488537653303">Jelszóhiba kijavítása</translation>
 <translation id="1700201317341192482">Virtuális kártya eltávolítása</translation>
 <translation id="1700517974991662022">Felkeresett</translation>
+<translation id="1701367827913789499">Kényelmesen olvashat minimális zavaró tényezőkkel az eszköztáron található Olvasási mód gomb használatával</translation>
 <translation id="1703331064825191675">Sosem kell aggódnia jelszavai miatt</translation>
 <translation id="1703666494654169921">A webhelyek nem használhatnak virtuálisvalóság-eszközöket és -adatokat</translation>
 <translation id="1704097193565924901">Átalakítás nagy kezdőbetűssé</translation>
@@ -2970,6 +2971,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3008272652534848354">Engedélyek visszavonása</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{A(z) <ph name="MANAGER" /> megköveteli, hogy eszközével a mai napon Wi-Fi-hálózathoz csatlakozzon, és letöltse a szükséges frissítést. A letöltés forgalomkorlátos kapcsolaton is végrehajtható (ebben az esetben a szolgáltató díjat számíthat fel).}other{A(z) <ph name="MANAGER" /> megköveteli, hogy eszközével Wi-Fi-hálózathoz csatlakozzon, és letöltse a szükséges frissítést a határidő előtt. A letöltés forgalomkorlátos kapcsolaton is végrehajtható (ebben az esetben a szolgáltató díjat számíthat fel).}}</translation>
 <translation id="3008923556848076408">A Gemini folytatja a feladat végrehajtását</translation>
+<translation id="3008926075262837186">Kényelmesen olvashat minimális zavaró tényezőkkel</translation>
 <translation id="3009178788565917040">Kimenet</translation>
 <translation id="3009352964623081324">Keresés + O, majd S. Használja a hangok telepítéséhez, kezeléséhez és személyre szabásához.</translation>
 <translation id="3009779501245596802">Indexelt adatbázisok</translation>
@@ -4427,7 +4429,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />További információ a Helymeghatározás pontossága beállításról<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Importált</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> letöltése folyamatban; állapot: <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Adatok biztonsági mentése</translation>
 <translation id="3994075804072562819">Az USB-eszközök feletti irányítás átadása a következőnek: <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="3994318741694670028">Sajnos számítógépe nem megfelelő formátumú hardverazonosítóval van konfigurálva. Emiatt a ChromeOS Flex nem tud frissülni a legújabb biztonsági javításokkal, és számítógépe <ph name="BEGIN_BOLD" />sebezhető lehet a rosszindulatú támadásokkal szemben<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">A belépéshez oldja fel telefonja lezárását, és helyezze közelebb a(z) <ph name="DEVICE_TYPE" /> zárolásának feloldásához.</translation>
@@ -7728,7 +7729,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6336038146639916978">A(z) <ph name="MANAGER" /> letiltotta az ADB-hibakeresést. Ezzel visszaállítja <ph name="DEVICE_TYPE" /> eszközét 24 órán belül. Készítsen biztonsági másolatot a megőrizni kívánt fájlokról.</translation>
 <translation id="6336194758029258346">Az alkalmazás nyelve</translation>
 <translation id="6337543438445391085">Egyes személyes adatok továbbra is szerepelhetnek az adatokban. Mindenképpen tekintse át az exportált fájlokat.</translation>
-<translation id="6338554362382763574">Egyszerűen tehet fel kérdéseket a Gemininek az Ön által böngészés közben megosztott lapokról</translation>
 <translation id="6338968693068997776">USB-eszköz hozzáadása</translation>
 <translation id="6339668969738228384">Új profil létrehozása a következőhöz: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internetes nyomtatási protokoll (IPPS)</translation>
@@ -8348,7 +8348,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
     <ph name="BEGIN_PARAGRAPH2" />Ezt a szolgáltatást bármikor kikapcsolhatja a Beállításokban.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">A Linux biztonsági mentése meg lett szakítva</translation>
 <translation id="6782067259631821405">Érvénytelen PIN-kód</translation>
-<translation id="6782219876520622071">A megosztott lapokkal kapcsolatos beszélgetéseket felülvizsgálatot végző emberek láthatják a Gemini továbbfejlesztése érdekében</translation>
 <translation id="6783036716881942511">Elfelejteti az eszközt?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive-beállítások</translation>
 <translation id="6784523122863989144">Nem támogatott profil</translation>
@@ -9545,7 +9544,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7620616707541471029">Válasszon fiókot a folytatáshoz</translation>
 <translation id="7621382409404463535">A rendszer nem tudta menteni az eszközkonfigurációt.</translation>
 <translation id="7621595347123595643">Ha elfelejti jelszavát vagy PIN-kódját, akkor nem tudja majd helyreállítani a helyi adatokat.</translation>
-<translation id="7621863462266622331">A lapok megosztásakor a rendszer elküldi az oldalak tartalmát, médiatartalmait és URL-jét a Google-nak</translation>
 <translation id="7622114377921274169">Töltés.</translation>
 <translation id="7622768823216805500">A webhelyek általában fizetéskezelőket telepítenek bizonyos vásárlási funkciók (például az egyszerűbb fizetés) biztosítása érdekében</translation>
 <translation id="7622966771025050155">Váltás rögzített lapra</translation>

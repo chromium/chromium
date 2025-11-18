@@ -428,6 +428,7 @@
 <translation id="1689333818294560261">Прекар</translation>
 <translation id="1692622044604477956">Филмски репертоари и театарски претстави</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Како може да управувате со вашите податоци:<ph name="END_BOLD" /> Chrome автоматски ги брише темите што се постари од 4 седмици. Со понатамошното прелистување, некоја тема може одново да се појави на списокот. Може и да ги блокирате темите што не сакате Chrome да ги споделува со сајтови и да ги исклучите темите за реклами во секое време во поставките за Chrome.</translation>
+<translation id="1697808683313379647">За да ги понуди опцииве, Google ги користи податоците од страницата за наплата, а и други релевантни податоци.</translation>
 <translation id="1699651774646344471">Сега може да користите адреси од вашата сметка на Google</translation>
 <translation id="1700542542921501212">Може да користите <ph name="SEARCH_ENGINE_NAME" /> за пребарување на интернет.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1722,7 +1723,6 @@
 <translation id="3792826587784915501">Култни и независни филмови</translation>
 <translation id="3793574014653384240">Број на падови и причини за падовите што се случиле неодамна</translation>
 <translation id="3795624560191557077">Неодамна променивте лозинка најдена при јавен упад во податоци. Ако се соочите со проблем, Google Password Manager може да ви помогне да се најавите.</translation>
-<translation id="3796181268473765083">Плаќајте на 4 бескаматни или месечни рати (зависно од подобноста)</translation>
 <translation id="3799805948399000906">Побаран е фонт</translation>
 <translation id="3801297763951514916">Го отворате ова често</translation>
 <translation id="380329542618494757">Име</translation>
@@ -2948,6 +2948,7 @@
 <translation id="5813753398265398978">Физика</translation>
 <translation id="5817918615728894473">Спари</translation>
 <translation id="5820625124144807242">Откако ќе ја прегледате нарачката, мора да се најавите на сметката на <ph name="BNPL_ISSUER_NAME" /> или да ја создадете ако немате. Сметкава автоматски ќе се поврзе со Google Pay.</translation>
+<translation id="5820751560028604030">Локалното преземање е блокирано</translation>
 <translation id="5826507051599432481">Често име (CN)</translation>
 <translation id="5830698870816298009">користење и движење на камерата</translation>
 <translation id="5831217499016131155">Google Паричник</translation>
@@ -3702,6 +3703,7 @@
 <translation id="7031646650991750659">кои апликации од Google Play сте ги инсталирале</translation>
 <translation id="7035705295266423040">Вашата банка сака да го потврди вашиот идентитет</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да управувате со поставките за приватност на вашата сметка на Google</translation>
+<translation id="7042465939346919737">За да ги понуди опцииве, Google ги користи податоците од страницата за наплата, а и други релевантни податоци. За да ги скриете опциите за „Платете подоцна“, одете во <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Рафинирајте ги резултатите</translation>
 <translation id="7043552168914147882">Пакет хартија</translation>
 <translation id="7044081119134178347">Камерата е дозволена овој пат</translation>

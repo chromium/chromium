@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Välilehtiryhmälista suljettu</translation>
 <translation id="3194464645767632461">arvio</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Lisää ryhmään <ph name="TABS_COUNT_ONE" /> välilehti}other{Lisää ryhmään <ph name="TABS_COUNT_MANY" /> välilehteä}}</translation>
+<translation id="3293080634164207409">Lisää välilehtiä</translation>
 <translation id="3328308545011660196">Ehdotus: <ph name="NUMBER_OF_TABS" /> välilehteä vaikuttaa liittyvän toisiinsa. Lisätäänkö ne ryhmäksi?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Kun välilehti on ollut ei-aktiivinen 1 päivän}other{Kun välilehti on ollut ei-aktiivinen <ph name="DAY_COUNT_MANY" /> päivää}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> uusi välilehti}other{<ph name="MANY_ADDED" /> uutta välilehteä}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">Tapahtumat</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Arvio: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> arvostelu}other{Arvio: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> arvostelua}}</translation>
 <translation id="7885132941432959125">Siirrä välilehti oikealle</translation>
+<translation id="7887334752153342268">Monista</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" />, ei valittu</translation>
 <translation id="7961015016161918242">Ei koskaan</translation>
 <translation id="7966321538264951561">Ohita ehdotukset.</translation>

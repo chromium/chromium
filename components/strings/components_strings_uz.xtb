@@ -428,6 +428,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1689333818294560261">Nik</translation>
 <translation id="1692622044604477956">Filmlar roʻyxati va teatr tomoshalari</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Maʼlumotlaringizni qanday boshqarish mumkin:<ph name="END_BOLD" /> Chrome 4 haftadan eski mavzularni avtomatik ravishda oʻchirib tashlaydi. Takroriy tashriflar asosida mavzu roʻyxatga qayta kiritilishi mumkin. Chrome boshqa saytlarga ulashmasligi va aloqador reklamalar chiqmasligi uchun istalgan mavzuni Chrome sozlamalari orqali taqiqlash mumkin.</translation>
+<translation id="1697808683313379647">Google bu variantlarni taklif qilish uchun hisob-kitob sahifasidagi axborot va boshqa tegishli maʼlumotlardan foydalanadi.</translation>
 <translation id="1699651774646344471">Endi Google hisobingizdagi manzillardan foydalanishingiz mumkin</translation>
 <translation id="1700542542921501212">Internetdan qidirish uchun <ph name="SEARCH_ENGINE_NAME" /> xizmatidan foydalaning.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1718,7 +1719,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3792826587784915501">Kult va indi filmlar</translation>
 <translation id="3793574014653384240">Oxirgi ishdan chiqishlar va ularning sabablari</translation>
 <translation id="3795624560191557077">Yaqinda oʻzgartirilgan parolingiz ommaviy oshkor qilinganligi aniqlandi. Muammo yuz bersa, hisobga Google Paroller menejeri orqali kirishingiz mumkin.</translation>
-<translation id="3796181268473765083">Toʻlovni 4 qismda yoki muddatli toʻlang (muvofiqlik sharti bilan)</translation>
 <translation id="3799805948399000906">Shrift talabi qilindi</translation>
 <translation id="3801297763951514916">Tez-tez kirgansiz</translation>
 <translation id="380329542618494757">Ism</translation>
@@ -3699,6 +3699,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7031646650991750659">Google Play Marketdan oʻrnatilgan ilovalar</translation>
 <translation id="7035705295266423040">Bankingiz shaxsingizni tasdiqlamoqchi</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google hisobi maxfiylik sozlamalarini boshqarish uchun avval Tab, keyin Enter tugmasini bosing</translation>
+<translation id="7042465939346919737">Google bu variantlarni taklif qilish uchun hisob-kitob sahifasidagi axborot va boshqa tegishli maʼlumotlardan foydalanadi. Keyinroq toʻlash usullarini berkitish uchun <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> sahifasini oching.</translation>
 <translation id="7042616127917168121">Natijalarni aniqlashtirish</translation>
 <translation id="7043552168914147882">Ajratkich</translation>
 <translation id="7044081119134178347">Kameraga shu safar ruxsat berildi</translation>

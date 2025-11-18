@@ -428,6 +428,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1689333818294560261">Slapyvardis</translation>
 <translation id="1692622044604477956">Filmų sąrašai ir kino teatrų repertuaras</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Kaip galite tvarkyti savo duomenis:<ph name="END_BOLD" /> „Chrome“ automatiškai ištrina senesnes nei keturių savaičių temas. Jums naršant toliau, tema gali būti vėl rodoma sąraše. Taip pat galite blokuoti temas, kurių „Chrome“ neturėtų bendrinti su svetainėmis, ir bet kuriuo metu išjungti skelbimų temas „Chrome“ nustatymuose.</translation>
+<translation id="1697808683313379647">„Google“ naudoja informaciją iš atsiskaitymo puslapio ir kitus atitinkamus duomenis, kad galėtų pasiūlyti šias parinktis.</translation>
 <translation id="1699651774646344471">Dabar galite naudoti adresus iš „Google“ paskyros</translation>
 <translation id="1700542542921501212">Galite naudoti „<ph name="SEARCH_ENGINE_NAME" />“, jei norite ieškoti žiniatinklyje.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1723,7 +1724,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3792826587784915501">Kultiniai ir nepriklausomų kūrėjų filmai</translation>
 <translation id="3793574014653384240">Neseniai įvykusių strigčių skaičiai ir priežastys</translation>
 <translation id="3795624560191557077">Neseniai pakeitėte slaptažodį, kuris buvo rastas viešajame duomenų saugos pažeidime. Kilus problemų, „Google“ slaptažodžių tvarkyklė gali padėti prisijungti.</translation>
-<translation id="3796181268473765083">Išsimokėkite keturiomis įmokomis be palūkanų arba kas mėnesį (yra sąlygų)</translation>
 <translation id="3799805948399000906">Užklausa dėl šrifto</translation>
 <translation id="3801297763951514916">Dažnai lankotės</translation>
 <translation id="380329542618494757">Vardas ir pavardė</translation>
@@ -2949,6 +2949,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5813753398265398978">Fizika</translation>
 <translation id="5817918615728894473">Susieti</translation>
 <translation id="5820625124144807242">Peržiūrėję užsakymą turite prisijungti prie „<ph name="BNPL_ISSUER_NAME" />“ paskyros arba ją sukurti. Ši paskyra bus automatiškai susieta su „Google Pay“.</translation>
+<translation id="5820751560028604030">Vietinis atsisiuntimas užblokuotas</translation>
 <translation id="5826507051599432481">Bendrasis vardas (angl. „Common Name“) (CN)</translation>
 <translation id="5830698870816298009">vaizdo kameros naudojimas ir judinimas</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3703,6 +3704,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="7031646650991750659">Kurias „Google Play“ programas įdiegėte</translation>
 <translation id="7035705295266423040">Bankas nori patvirtinti jūsų tapatybę</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada – „Enter“, jei norite tvarkyti „Google“ paskyros privatumo nustatymus.</translation>
+<translation id="7042465939346919737">„Google“ naudoja informaciją iš atsiskaitymo puslapio ir kitus atitinkamus duomenis, kad galėtų pasiūlyti šias parinktis. Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Patikslinkite rezultatus</translation>
 <translation id="7043552168914147882">Biuro popierius</translation>
 <translation id="7044081119134178347">Vaizdo kamera leidžiama šį kartą</translation>

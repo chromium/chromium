@@ -1053,6 +1053,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1699807488537653303">Åtgärda lösenordsfel</translation>
 <translation id="1700201317341192482">Ta bort det virtuella kortet</translation>
 <translation id="1700517974991662022">Har besökts</translation>
+<translation id="1701367827913789499">Läs bekvämt med minimala störningsmoment med hjälp av knappen Läsläge i verktygsfältet</translation>
 <translation id="1703331064825191675">Tänk inte mer på dina lösenord</translation>
 <translation id="1703666494654169921">Tillåt inte att webbplatser använder VR-enheter eller VR-data</translation>
 <translation id="1704097193565924901">Använd versaler</translation>
@@ -2971,6 +2972,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3008272652534848354">Återställ behörigheter</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kräver att du ansluter till wifi och laddar ned en uppdatering i dag. Du kan även ladda ned via en anslutning med datapriser (avgifter kan tillkomma).}other{<ph name="MANAGER" /> kräver att du ansluter till wifi laddar ned en uppdatering före deadline. Du kan även ladda ned via en anslutning med datapriser (avgifter kan tillkomma).}}</translation>
 <translation id="3008923556848076408">Gemini fortsätter att arbeta med din uppgift</translation>
+<translation id="3008926075262837186">Läs bekvämt med minimala störningsmoment</translation>
 <translation id="3009178788565917040">Utgång</translation>
 <translation id="3009352964623081324">Sök + O, sedan S. Använd till att installera, hantera och anpassa röster.</translation>
 <translation id="3009779501245596802">Indexerade databaser</translation>
@@ -4429,7 +4431,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Läs mer om platsangivelsens exakthet<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Importerade</translation>
 <translation id="3992008114154328194">Laddar ned <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Säkerhetskopiera data</translation>
 <translation id="3994075804072562819">Ge <ph name="SPECIFIC_NAME" /> kontroll över USB-enheter.</translation>
 <translation id="3994318741694670028">Tyvärr är din dator konfigurerad med ett felaktigt hårdvaru-id. Detta förhindrar att ChromeOS Flex uppdateras med de senaste säkerhetskorrigeringarna och datorn <ph name="BEGIN_BOLD" />kan vara sårbar för angrepp<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Lås upp mobilen och håll den närmare din <ph name="DEVICE_TYPE" />.</translation>
@@ -5673,7 +5674,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4878718769565915065">Det gick inte att lägga till ett fingeravtryck på säkerhetsnyckeln</translation>
 <translation id="4879491255372875719">Automatiskt (standard)</translation>
 <translation id="4880315242806573837">Säkerhetsuppdateringar upphör snart. Uppgradera till en ny Chromebook.</translation>
-<translation id="4880827082731008257">Sök i historiken</translation>
+<translation id="4880827082731008257">Sökhistorik</translation>
 <translation id="4881685975363383806">Påminn mig inte nästa gång</translation>
 <translation id="4881695831933465202">Öppna</translation>
 <translation id="4882312758060467256">Har åtkomst till webbplatsen</translation>
@@ -7729,7 +7730,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> har inaktiverat felsökning med ADB. Detta återställer din <ph name="DEVICE_TYPE" /> inom 24 timmar. Säkerhetskopiera alla filer du vill spara.</translation>
 <translation id="6336194758029258346">Appspråk</translation>
 <translation id="6337543438445391085">Vissa personliga uppgifter kan fortfarande inkluderas i denna data. Granska de exporterade filerna.</translation>
-<translation id="6338554362382763574">Du kan enkelt ställa frågor till Gemini om flikarna du delar medan du surfar</translation>
 <translation id="6338968693068997776">Lägg till USB-enhet</translation>
 <translation id="6339668969738228384">Skapa en ny profil för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protokoll för internetutskrift (IPPS)</translation>
@@ -8349,7 +8349,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
     <ph name="BEGIN_PARAGRAPH2" />Du kan inaktivera den här tjänsten i Inställningar.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Säkerhetskopieringen av Linux har avbrutits</translation>
 <translation id="6782067259631821405">Ogiltig pinkod</translation>
-<translation id="6782219876520622071">Konversationer om delade flikar kan ses av mänskliga granskare för att förbättra Gemini</translation>
 <translation id="6783036716881942511">Vill du glömma den här enheten?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive-inställningar</translation>
 <translation id="6784523122863989144">Profilen stöds</translation>
@@ -9547,7 +9546,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7620616707541471029">Välj ett konto för att fortsätta</translation>
 <translation id="7621382409404463535">Det gick inte att spara enhetskonfigurationen.</translation>
 <translation id="7621595347123595643">Du kan inte återställa lokal data om du glömmer lösenordet eller pinkoden.</translation>
-<translation id="7621863462266622331">När flikar delas skickas deras sidinnehåll, media och webbadresser till Google</translation>
 <translation id="7622114377921274169">Laddas.</translation>
 <translation id="7622768823216805500">Att installera betalningshanterare brukar kunna behövas till exempel för att förenkla hanteringen i kassan på webbplatsen</translation>
 <translation id="7622966771025050155">Byt till inspelad flik</translation>
@@ -10893,6 +10891,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8517759303731677493">Redigera …</translation>
 <translation id="8518809011298357036">Stäng den övre vyn</translation>
 <translation id="8518942514525208851">Dölj svordomar</translation>
+<translation id="8520238089740349550">Misslyckades – lokal nedladdning blockerades</translation>
 <translation id="8523493869875972733">Behåll ändringarna</translation>
 <translation id="8523849605371521713">Har lagts till av en policy</translation>
 <translation id="8524594273111932386">sök + nedåtpil</translation>

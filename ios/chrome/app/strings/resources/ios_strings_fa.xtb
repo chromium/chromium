@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
+<translation id="1004825134262590729">{count,plural, =1{‫{count} گذرکلید}one{‫{count} گذرکلید}other{‫{count} گذرکلید}}</translation>
 <translation id="1005023885865154304">باز کردن تنظیمات «تکمیل خودکار گذرواژه‌ها»</translation>
 <translation id="1005230401424685968">yyyy</translation>
 <translation id="1013952917065545813">می‌توانید به اینجا برگردید و برگه‌هایی را که اخیراً بسته‌اید مجدداً باز کنید</translation>
@@ -41,6 +42,7 @@
 <translation id="1122068467107743258">محل کار</translation>
 <translation id="1126696498560056882">مدیریت حساب‌ها در این دستگاه</translation>
 <translation id="1126809382673880764">‏دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک از شما محافظت نمی‌کند. درصورت موجود بودن، همچنان ویژگی حفاظتی «مرور ایمن» را در سرویس‌های دیگر Google مثل Gmail و «جستجو» دریافت می‌کنید.</translation>
+<translation id="1133418583142946603">افزودن زبانه کنونی</translation>
 <translation id="1136104150802877429">نمایش دادن بازنگری‌های محصول</translation>
 <translation id="1142371195993008685">خاموش کردن اعلان‌های «<ph name="FEATURE_NAME" />»</translation>
 <translation id="1147031633655575115">با <ph name="USER" /> به سیستم وارد شده‌اید</translation>
@@ -77,6 +79,7 @@
 <translation id="1285320974508926690">این سایت هرگز ترجمه نشود</translation>
 <translation id="1287229685519872919">‏داده‌های Google Workspace</translation>
 <translation id="1291506870746876680">هرگاه این سایت را ترک کنید، اجازه‌های <ph name="BEGIN_BOLD" />«<ph name="SITE_NAME" />»<ph name="END_BOLD" /> به حالت خاموش برمی‌گردد.</translation>
+<translation id="1293556467332435079">Files</translation>
 <translation id="129553762522093515">اخیراً بسته‌شده</translation>
 <translation id="1296581780163690620">فایل بارگیری شود؟ (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">‏برای اطمینان از اینکه همیشه می‌توانید از گذرواژه‌های ذخیره‌شده در «حساب Google» خود استفاده کنید، هویتتان را درستی‌سنجی کنید.</translation>
@@ -1043,6 +1046,7 @@
 <translation id="5055015094595227120">مکان دقیق</translation>
 <translation id="5055551113846164633">‏این کار نشانی‌های ذخیره‌شده در این دستگاه را حذف می‌کند. این کار همچنین نشانی‌های ذخیره‌شده در «حساب Google» <ph name="USER_EMAIL" /> را حذف می‌کند.</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> مشکلاتی پیدا شد.</translation>
+<translation id="5056587122125565772">ساختن تصویر</translation>
 <translation id="5059136629401106827">خوب</translation>
 <translation id="5062321486222145940">‏نصب Google Drive</translation>
 <translation id="5067540696062462445">بارگیری‌ها</translation>
@@ -1504,6 +1508,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6659660757330712663">برای جابه‌جایی بین برگه‌ها، می‌توانید روی نوارابزار تند بکشید.</translation>
 <translation id="6663529247339810546">تصویر ذخیره نشد</translation>
 <translation id="6668619169535738264">ویرایش نشانک</translation>
+<translation id="6670729408462528018">گالری</translation>
 <translation id="6671294218820966278">علامت‌گذاری به‌عنوان خوانده‌شده</translation>
 <translation id="6672697278890207089">گذرعبارت را وارد کنید</translation>
 <translation id="6674917187596384849">به‌راحتی می‌توانید حساب را عوض کنید</translation>
@@ -1660,6 +1665,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">‏ازقبل گذرواژه‌هایی برای این حساب‌ها در «مدیر گذرواژه Google» خود دارید. اگر بخواهید یکی از گذرواژه‌های زیر را وارد کنید، آن گذرواژه جایگزین گذرواژه موجود می‌شود.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> درصد بارگیری شد</translation>
+<translation id="7345061034321640811">وارد کردن مجاز نیست</translation>
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
 <translation id="7363349185727752629">راهنمای گزینه‌های حریم خصوصی</translation>
 <translation id="7364796246159120393">انتخاب فایل</translation>
@@ -2201,6 +2207,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="952704832371081537">لغو</translation>
 <translation id="95332591904104970">برنامه‌های متصل‌شده</translation>
 <translation id="954667170699278022">فهرست خواندن</translation>
+<translation id="956066588046842680">خط‌مشی سازمانتان اجازه نمی‌دهد این داده‌ها را وارد کنید.</translation>
 <translation id="956218893102219091">‏برای دریافت دقیق‌ترین نتایج از Gemini، به‌جای استفاده از مکان تخمینی مبتنی بر نشانی IP، از مکان دقیق خود استفاده کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">حذف کردن داده‌های مرور</translation>
 <translation id="963102227019621224">فعالیت‌ها در وب و برنامه</translation>
@@ -2212,5 +2219,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="984275831282074731">روش‌های پرداخت</translation>
 <translation id="985379595344853742">بستن همه برگه‌های «ناشناس»</translation>
 <translation id="988141524645182168">دستگاه‌های دیگر</translation>
+<translation id="995174784802614337">{count,plural, =1{‫{count} گذرکلید وارد شد}one{‫{count} گذرکلید وارد شد}other{‫{count} گذرکلید وارد شد}}</translation>
 <translation id="999768147936949692">‏درحال‌حاضر، می‌توانید گذرواژه‌ها را فقط با اعضای خانواده هم‌رسانی کنید. <ph name="BEGIN_LINK" />از اعضای خانواده دعوت کنید<ph name="END_LINK" /> به گروهتان بپیوندند تا از محصولات و اشتراک‌ها در سراسر Google بهره بیشتری ببرید.</translation>
 </translationbundle>

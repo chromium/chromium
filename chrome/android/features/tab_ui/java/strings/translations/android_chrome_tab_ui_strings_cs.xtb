@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Seznam skupin karet uzavřen je zavřený</translation>
 <translation id="3194464645767632461">hodnocení</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Přidat <ph name="TABS_COUNT_ONE" /> kartu do skupiny}few{Přidat <ph name="TABS_COUNT_MANY" /> karty do skupiny}many{Přidat <ph name="TABS_COUNT_MANY" /> karty do skupiny}other{Přidat <ph name="TABS_COUNT_MANY" /> karet do skupiny}}</translation>
+<translation id="3293080634164207409">Přidání karet</translation>
 <translation id="3328308545011660196">Návrh: Některé karty (<ph name="NUMBER_OF_TABS" />) spolu pravděpodobně souvisejí. Chcete je seskupit?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Po 1 dni neaktivity}few{Po <ph name="DAY_COUNT_MANY" /> dnech neaktivity}many{Po <ph name="DAY_COUNT_MANY" /> dne neaktivity}other{Po <ph name="DAY_COUNT_MANY" /> dnech neaktivity}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nová karta}few{<ph name="MANY_ADDED" /> nové karty}many{<ph name="MANY_ADDED" /> nové karty}other{<ph name="MANY_ADDED" /> nových karet}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">Aktivita</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Hodnocení <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> recenze}few{Hodnocení <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenze}many{Hodnocení <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenze}other{Hodnocení <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzí}}</translation>
 <translation id="7885132941432959125">Přesunout kartu doprava</translation>
+<translation id="7887334752153342268">Duplikovat</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" />, nevybráno</translation>
 <translation id="7961015016161918242">Nikdy</translation>
 <translation id="7966321538264951561">Zavřít návrhy.</translation>

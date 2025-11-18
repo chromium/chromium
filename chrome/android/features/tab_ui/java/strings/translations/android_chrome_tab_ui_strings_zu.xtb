@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Uhlu lweqembu lethebhu luvaliwe</translation>
 <translation id="3194464645767632461">isilinganisela</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Faka ithebhu engu-<ph name="TABS_COUNT_ONE" /> eqenjini}one{Faka amathebhu angu-<ph name="TABS_COUNT_MANY" /> eqenjini}other{Faka amathebhu angu-<ph name="TABS_COUNT_MANY" /> eqenjini}}</translation>
+<translation id="3293080634164207409">Faka amathebhu</translation>
 <translation id="3328308545011660196">Isiphakamiso: amathebhu a-<ph name="NUMBER_OF_TABS" /> abonakala ahlobene. Wenze iqembu?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Ngemuva kosuku olu-1 lokungasebenzi}one{Ngemva kwezinsuku ezingu-<ph name="DAY_COUNT_MANY" /> kungasebenzi}other{Ngemva kwezinsuku ezingu-<ph name="DAY_COUNT_MANY" /> kungasebenzi}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{Ithebhu entsha engu-<ph name="ONE_ADDED" />}one{Amathebhu amasha angu-<ph name="MANY_ADDED" />}other{Amathebhu amasha angu-<ph name="MANY_ADDED" />}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">Umsebenzi</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> isilinganiso, <ph name="REVIEWS_COUNT_ONE" /> isibuyekezo}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> isilinganiso, <ph name="REVIEWS_COUNT_MANY" /> izibuyekezo}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> isilinganiso, <ph name="REVIEWS_COUNT_MANY" /> izibuyekezo}}</translation>
 <translation id="7885132941432959125">Yisa ithebhu kwesokudla</translation>
+<translation id="7887334752153342268">Impinda</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> Ayikhethiwe</translation>
 <translation id="7961015016161918242">Ngeke</translation>
 <translation id="7966321538264951561">Cashisa iziphakamiso.</translation>

@@ -1054,6 +1054,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1699807488537653303">Ayusin ang error sa password</translation>
 <translation id="1700201317341192482">Alisin ang iyong virtual card</translation>
 <translation id="1700517974991662022">Nabisita na</translation>
+<translation id="1701367827913789499">Magbasa nang kumportable na may kaunting abala gamit ang button na Reading mode sa toolbar</translation>
 <translation id="1703331064825191675">Huwag nang mag-alala sa iyong mga password</translation>
 <translation id="1703666494654169921">Huwag payagan ang mga site na gumamit ng mga virtual reality device o data</translation>
 <translation id="1704097193565924901">I-capitalize</translation>
@@ -2972,6 +2973,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3008272652534848354">I-reset ang mga pahintulot</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Hinihiling sa iyo ng <ph name="MANAGER" /> na kumonekta sa Wi-Fi ngayong araw para mag-download ng update. O kaya, mag-download mula sa isang nakametrong koneksyon (posibleng magkaroon ng mga singil).}one{Hinihiling sa iyo ng <ph name="MANAGER" /> na kumonekta sa Wi-Fi at mag-download ng update bago ang deadline. O kaya, mag-download mula sa isang nakametrong koneksyon (posibleng magkaroon ng mga singil).}other{Hinihiling sa iyo ng <ph name="MANAGER" /> na kumonekta sa Wi-Fi at mag-download ng update bago ang deadline. O kaya, mag-download mula sa isang nakametrong koneksyon (posibleng magkaroon ng mga singil).}}</translation>
 <translation id="3008923556848076408">Patuloy na gagawin ng Gemini ang iyong gawain</translation>
+<translation id="3008926075262837186">Magbasa nang kumportable na may kaunting abala</translation>
 <translation id="3009178788565917040">Output</translation>
 <translation id="3009352964623081324">Search + O, pagkatapos ay S. Gamitin para mag-install, mamahala, at mag-customize ng mga boses.</translation>
 <translation id="3009779501245596802">Mga naka-index na database</translation>
@@ -4430,7 +4432,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Matuto pa tungkol sa Katumpakan ng Lokasyon<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Na-import</translation>
 <translation id="3992008114154328194">Dina-download ang <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">I-back up ang data</translation>
 <translation id="3994075804072562819">Bigyan ang <ph name="SPECIFIC_NAME" /> ng kontrol sa mga USB device.</translation>
 <translation id="3994318741694670028">Sa kasamaang-palad, na-configure ang iyong computer gamit ang isang hardware ID na mali ang pagkakabuo. Pinipigilan nito ang ChromeOS Flex na mag-update sa mga pinakabagong pag-aayos sa seguridad at <ph name="BEGIN_BOLD" />posibleng maging mahina sa mga nakakapinsalang pag-atake<ph name="END_BOLD" /> ang iyong computer.</translation>
 <translation id="3994374631886003300">I-unlock ang iyong telepono at ilapit pa ito upang ma-unlock ang <ph name="DEVICE_TYPE" /> mo.</translation>
@@ -7730,7 +7731,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6336038146639916978">Na-disable ng <ph name="MANAGER" /> ang pag-debug ng ADB. Ire-reset nito ang iyong <ph name="DEVICE_TYPE" /> pagkalipas ng 24 na oras. I-back up ang anumang file na gusto mong panatilihin.</translation>
 <translation id="6336194758029258346">Wika ng app</translation>
 <translation id="6337543438445391085">Posibleng may ilang personal na impormasyon pa ring kasama sa data. Tiyaking suriin ang mga na-export na file.</translation>
-<translation id="6338554362382763574">Madali kang makakapagtanong sa Gemini tungkol sa mga tab na shine-share mo habang nagba-browse ka</translation>
 <translation id="6338968693068997776">Magdagdag ng USB device</translation>
 <translation id="6339668969738228384">Gumawa ng bagong profile para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8352,7 +8352,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
     <ph name="BEGIN_PARAGRAPH2" />Puwede mong i-off ang serbisyong ito sa Mga Setting.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Nakansela ang pag-back up ng Linux</translation>
 <translation id="6782067259631821405">Invalid ang PIN</translation>
-<translation id="6782219876520622071">Posibleng makita ng mga taong tagasuri ang mga pag-uusap tungkol sa mga naka-share na tab para mapahusay ang Gemini</translation>
 <translation id="6783036716881942511">Kalimutan ang device na ito?</translation>
 <translation id="6783667414610055871">Mga setting ng Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Sinusuportahan ang profile</translation>
@@ -9550,7 +9549,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7620616707541471029">Pumili ng account para magpatuloy</translation>
 <translation id="7621382409404463535">Hindi na-save ng system ang configuration ng device.</translation>
 <translation id="7621595347123595643">Hindi mo mare-recover ang lokal na data kung makakalimutan mo ang iyong password o PIN.</translation>
-<translation id="7621863462266622331">Kapag na-share ang mga tab, ipapadala sa Google ang mga content ng page, media, at mga URL ng mga ito</translation>
 <translation id="7622114377921274169">Nagcha-charge.</translation>
 <translation id="7622768823216805500">Karaniwang nag-i-install ang mga site ng mga tagapangasiwa ng pagbabayad para sa mga feature sa pamimili gaya ng mas madaling pag-check out</translation>
 <translation id="7622966771025050155">Lumipat sa na-capture na tab</translation>
@@ -10897,6 +10895,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8517759303731677493">I-edit…</translation>
 <translation id="8518809011298357036">Isara ang View sa Itaas</translation>
 <translation id="8518942514525208851">I-hide ang pagmumura</translation>
+<translation id="8520238089740349550">Hindi nagtagumpay - Na-block ang lokal na pag-download</translation>
 <translation id="8523493869875972733">Panatilihin ang Mga Pagbabago</translation>
 <translation id="8523849605371521713">Idinagdag ng patakaran</translation>
 <translation id="8524594273111932386">search + pababang arrow</translation>

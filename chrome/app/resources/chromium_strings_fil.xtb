@@ -523,6 +523,7 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 <translation id="705851970750939768">I-update ang Chromium</translation>
 <translation id="7067091210845072982">Kung hindi sapat ang deskripsyon ng isang larawan, susubukan ng Chromium na ayusin ito para sa iyo. Para gumawa ng mga deskripsyon, ipinapadala ang mga larawan sa Google.</translation>
 <translation id="7141270731789036260">I-customize ang Chrome for Testing</translation>
+<translation id="7147227333672430807">Magagamit mo ang Chromium sa tuwing magki-click ka ng mga link sa mga mensahe, dokumento, at iba pang app</translation>
 <translation id="7163519456498498587">Alisin ang <ph name="EXTENSION_NAME" /> sa Chromium</translation>
 <translation id="7173822816570314652">Nagde-delete ang iyong organisasyon ng data ng Chromium kapag hindi ito ginagamit sa loob ng <ph name="TIMEOUT_DURATION" />. Posibleng kasama rito ang history, autofill, at mga download.</translation>
 <translation id="718435575166326686">Kailangan ng Chromium ng pahintulot sa camera para sa site na ito</translation>
@@ -637,6 +638,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8471947159125090285">Para magamit at ma-save ang data ng Chromium sa iyong Google Account, i-verify na ikaw ito</translation>
 <translation id="8482493977473846331">Nagpapakita ng mga prompt na mag-sign in sa Chromium</translation>
 <translation id="8493179195440786826">Luma na ang Chromium</translation>
+<translation id="850264194101621529">Salamat sa pagpili sa Chromium bilang iyong default browser!</translation>
 <translation id="8522801943730206384">Masusuri ng Chromium ang iyong mga password kapag na-save mo ang mga ito</translation>
 <translation id="8555465886620020932">Error sa serbisyo: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Puwede mong i-pin ang Paghahanap ng Larawan para madali itong ma-access; i-click ang button na I-pin sa itaas ng panel sa gilid</translation>
@@ -646,6 +648,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ang Mga May-akda ng Chromium. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="8601359445272098721">Bago! Puwede kang magsalin ng text at mga larawan sa iyong screen sa pamamagitan ng pagpili sa button na "isalin ang screen"</translation>
 <translation id="8619360774459241877">Inilulunsad ang Chromium...</translation>
+<translation id="8624541899164515475">Mga setting, magbubukas sa bagong tab.</translation>
 <translation id="8648201657708811153">Hindi puwedeng gawing default na browser mo ang Google Chrome na Pang-test.</translation>
 <translation id="8677922833187616101">Palaging Ipakita ang Shortcut ng Google AI Mode</translation>
 <translation id="8697124171261953979">Kinokontrol din nito kung anong pahina ang ipinapakita kapag sinimulan mo ang Chromium o naghanap mula sa Omnibox.</translation>

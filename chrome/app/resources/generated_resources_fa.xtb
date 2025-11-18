@@ -1051,6 +1051,7 @@
 <translation id="1699807488537653303">رفع خطای گذرواژه</translation>
 <translation id="1700201317341192482">حذف کارت مجازی</translation>
 <translation id="1700517974991662022">بازدیدشده</translation>
+<translation id="1701367827913789499">بااستفاده از دکمه «حالت خواندن» در نوارابزار، با حداقل حواس‌پرتی به‌راحتی بخوانید</translation>
 <translation id="1703331064825191675">هرگز نگران گذرواژه‌هایتان نباشید</translation>
 <translation id="1703666494654169921">به سایت‌ها اجازه داده نشود از داده‌ها یا دستگاه‌های واقعیت مجازی استفاده کنند</translation>
 <translation id="1704097193565924901">بزرگ‌نویسی</translation>
@@ -2968,6 +2969,7 @@
 <translation id="3008272652534848354">بازنشانی اجازه‌ها</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{‏<ph name="MANAGER" /> از شما می‌خواهد امروز به Wi-Fi متصل شوید و به‌روزرسانی را بارگیری کنید. یا آن را ازطریق اتصال محدود بارگیری کنید (ممکن است هزینه اعمال شود).}one{‏<ph name="MANAGER" /> از شما می‌خواهد به Wi-Fi متصل شوید و به‌روزرسانی را پیش‌از مهلت تعیین‌شده بارگیری کنید. یا آن را ازطریق اتصال محدود بارگیری کنید (ممکن است هزینه اعمال شود).}other{‏<ph name="MANAGER" /> از شما می‌خواهد به Wi-Fi متصل شوید و به‌روزرسانی را پیش‌از مهلت تعیین‌شده بارگیری کنید. یا آن را ازطریق اتصال محدود بارگیری کنید (ممکن است هزینه اعمال شود).}}</translation>
 <translation id="3008923556848076408">‏‫Gemini همچنان روی این تکلیف کار خواهد کرد</translation>
+<translation id="3008926075262837186">با حداقل حواس‌پرتی به‌راحتی بخوانید</translation>
 <translation id="3009178788565917040">خروجی</translation>
 <translation id="3009352964623081324">‏Search + O، سپس S برای نصب، مدیریت، و سفارشی‌سازی صداها استفاده کنید.</translation>
 <translation id="3009779501245596802">پایگاه‌های داده فهرست‌بندی شده</translation>
@@ -4426,7 +4428,6 @@
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />درباره «دقت مکان» بیشتر بدانید<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">وارد شده</translation>
 <translation id="3992008114154328194">درحال بارگیری <ph name="FILE_NAME" />، <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">پشتیبان‌گیری از داده‌ها</translation>
 <translation id="3994075804072562819">‏به <ph name="SPECIFIC_NAME" /> امکان داده می‌شود دستگاه‌های USB را کنترل کند.</translation>
 <translation id="3994318741694670028">‏متأسفانه، رایانه شما با شناسه سخت‌افزار ناقص پیکربندی شده است. این موضوع مانع از به‌روزرسانی ChromeOS Flex با آخرین اصلاحات امنیتی می‌شود و <ph name="BEGIN_BOLD" />می‌تواند رایانه‌تان را دربرابر حملات مخرب آسیب‌پذیر کند<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">برای باز کردن قفل <ph name="DEVICE_TYPE" />، قفل تلفنتان را باز کنید و آن را نزدیک‌تر بیاورید.</translation>
@@ -6173,7 +6174,7 @@
     نمایان با نام <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5238301240406177137">ذخیره در حساب</translation>
 <translation id="523862956770478816">اجازه‌های سایت</translation>
-<translation id="5240247138804326767">مرتب کردن نمای دونیمه</translation>
+<translation id="5240247138804326767">مرتب کردن «نمای تقسیم‌شده»</translation>
 <translation id="5240931875940563122">‏ورود به سیستم با تلفن Android</translation>
 <translation id="5241689948221696942">برای برخی محصولات، نظرات جمع‌آوری‌شده از سراسر وب به‌صورت خلاصه در جدول‌های مقایسه نمایش داده می‌شود</translation>
 <translation id="5242724311594467048">«<ph name="EXTENSION_NAME" />» فعال شود؟</translation>
@@ -7480,7 +7481,7 @@
 <translation id="6165508094623778733">بیشتر بدانید</translation>
 <translation id="6169040057125497443">لطفاً میکروفون را بررسی کنید.</translation>
 <translation id="6169967265765719844">‏اجازه‌های مربوط به بازی‌ها و برنامه‌های نصب‌شده ازطریق Steam را می‌توان در <ph name="LINK_BEGIN" />تنظیمات برنامه Steam<ph name="LINK_END" /> مدیریت کرد.</translation>
-<translation id="6170313103929479668">مرتب کردن نمای دونیمه</translation>
+<translation id="6170313103929479668">مرتب کردن «نمای تقسیم‌شده»</translation>
 <translation id="6170470584681422115">ساندویچ</translation>
 <translation id="6170498031581934115">‏اشکال‌زدایی ADB (پل اشکال‌زدایی ‌Android) فعال نشد. به تنظیمات بروید و دوباره امتحان کنید.</translation>
 <translation id="6170675927290506430">رفتن به تنظیمات اعلان</translation>
@@ -7726,7 +7727,6 @@
 <translation id="6336038146639916978">‏<ph name="MANAGER" /> اشکال‌زدایی «پل اشکال‌زدایی Android» ‏(ADB) را غیرفعال کرده است. با این کار، <ph name="DEVICE_TYPE" /> ظرف ۲۴ ساعت بازنشانی خواهد شد. از فایل‌هایی که مایلید نگه دارید پشتیبان‌گیری کنید.</translation>
 <translation id="6336194758029258346">زبان برنامه</translation>
 <translation id="6337543438445391085">ممکن است مقداری اطلاعات شخصی همچنان در این داده‌ها وجود داشته باشد. حتماً فایل‌های صادرشده را مرور کنید.</translation>
-<translation id="6338554362382763574">‏هنگام مرور، می‌توانید به‌راحتی درباره زبانه‌هایی که هم‌رسانی می‌کنید از Gemini سؤال بپرسید</translation>
 <translation id="6338968693068997776">‏دستگاه USB اضافه کنید</translation>
 <translation id="6339668969738228384">ایجاد نمایه جدیدی برای <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">‏پروتکل چاپ اینترنتی (IPPS)</translation>
@@ -8188,7 +8188,7 @@
 <translation id="6667187897999649121">‏درحال‌حاضر، می‌توانید گذرواژه‌ها را فقط با اعضای خانواده هم‌رسانی کنید. <ph name="BEGIN_LINK" />گروه خانواده‌ای با حداکثر ۶ عضو ایجاد کنید<ph name="END_LINK" /> و بهره بیشتری از محصولات و اشتراک‌ها در Google ببرید.</translation>
 <translation id="666731172850799929">باز کردن در <ph name="APP_NAME" /></translation>
 <translation id="6669195257625975787">با داده‌ها و سایتی که درحال مشاهده هستید یکسان رفتار می‌شود</translation>
-<translation id="6669865825859209286">برای جدا کردن یا مرتب کردن نمای دونیمه، اینجا کلیک کنید</translation>
+<translation id="6669865825859209286">برای جدا کردن یا مرتب کردن نمای تقسیم‌شده، اینجا کلیک کنید</translation>
 <translation id="6670142487971298264">‫<ph name="APP_NAME" /> اکنون دردسترس است</translation>
 <translation id="6670767097276846646">‏بعضی‌از افزونه‌ها می‌توانند موتور جستجو به Chrome اضافه کنند</translation>
 <translation id="6670983860904543332">با به‌روزرسانی‌های خودکار می‌توانید جدیدترین ویژگی‌ها را داشته باشید. ویژگی‌های برجسته مربوط به‌روزرسانی‌های اخیر را کاوش کنید.</translation>
@@ -8348,7 +8348,6 @@
     <ph name="BEGIN_PARAGRAPH2" />می‌توانید این سرویس را در «تنظیمات خاموش» کنید.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">‏پشتیبان‌گیری Linux لغو شد</translation>
 <translation id="6782067259631821405">پین نامعتبر است</translation>
-<translation id="6782219876520622071">‏افراد بازبین ممکن است مکالمه‌های مربوط به زبانه‌های هم‌رسانی‌شده را برای بهبود دادن Gemini ببینند</translation>
 <translation id="6783036716881942511">این دستگاه فراموش شود؟</translation>
 <translation id="6783667414610055871">‏تنظیمات Microsoft OneDrive</translation>
 <translation id="6784523122863989144">نمایه پشتیبانی می‌شود</translation>
@@ -9546,7 +9545,6 @@
 <translation id="7620616707541471029">برای ادامه دادن، حسابی را انتخاب کنید</translation>
 <translation id="7621382409404463535">سیستم نتوانست پیکربندی دستگاه را ذخیره کند.</translation>
 <translation id="7621595347123595643">اگر گذرواژه یا پین را فراموش کنید، نمی‌توانید داده‌های محلی را بازیابی کنید.</translation>
-<translation id="7621863462266622331">‏وقتی‌که زبانه‌ها هم‌رسانی می‌شوند، محتوای صفحه، رسانه، و نشانی وب آن‌ها به Google ارسال می‌شوند</translation>
 <translation id="7622114377921274169">درحال شارژ شدن.</translation>
 <translation id="7622768823216805500">سایت‌ها معمولاً کنترل‌کننده‌های پرداخت را برای ارائه ویژگی‌های خرید، مانند تسویه‌حساب آسان‌تر، نصب می‌کنند</translation>
 <translation id="7622966771025050155">رفتن به زبانه ضبط‌شده</translation>
@@ -9634,7 +9632,7 @@
 <translation id="7670434942695515800">‏برای بهترین عملکرد، به آخرین نسخه ارتقا دهید. توصیه می‌کنیم از فایل‌هایتان پشتیبان‌گیری کنید تا اگر ارتقا باموفقیت کامل نشود با مشکل روبرو نشوید. به‌محض شروع ارتقا، Linux خاموش خواهد شد. پیش‌از ادامه دادن، فایل‌های باز را ذخیره کنید. <ph name="LINK_START" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">زیرنویس</translation>
 <translation id="7671130400130574146">استفاده از نوار عنوان سیستم و مرزها</translation>
-<translation id="7671139479636735732">برای تصویرسازی آسان از ایده‌هایتان، کلیک راست کنید</translation>
+<translation id="7671139479636735732">برای دیداری‌سازی آسان از ایده‌هایتان، کلیک‌راست کنید</translation>
 <translation id="767127784612208024">برای تأیید بازنشانی، لمس کنید</translation>
 <translation id="7671472752213333268">‫«<ph name="EXTENSION_NAME" />» می‌خواهد ازطریق «<ph name="SCANNER_NAME" />» اسکن کند.</translation>
 <translation id="7672504401554182757">انتخاب کنید کدام دستگاه حاوی گذرکلید <ph name="APP_NAME" /> است</translation>
@@ -10892,6 +10890,7 @@
 <translation id="8517759303731677493">ویرایش…</translation>
 <translation id="8518809011298357036">بستن نمای بالا</translation>
 <translation id="8518942514525208851">پنهان کردن ناسزا</translation>
+<translation id="8520238089740349550">ناموفق - بارگیری محلی مسدود شد</translation>
 <translation id="8523493869875972733">حفظ تغییرات</translation>
 <translation id="8523849605371521713">به‌موجب خط‌مشی اضافه شد</translation>
 <translation id="8524594273111932386">جستجو + کلید پایین‌بر</translation>

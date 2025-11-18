@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Lapcsoportlista bezárva</translation>
 <translation id="3194464645767632461">értékelés</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap hozzáadása csoporthoz}other{<ph name="TABS_COUNT_MANY" /> lap hozzáadása csoporthoz}}</translation>
+<translation id="3293080634164207409">Lapok hozzáadása</translation>
 <translation id="3328308545011660196">Javaslat: Úgy tűnik, <ph name="NUMBER_OF_TABS" /> lap kapcsolódik egymáshoz. Csoportosítja őket?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 nap inaktivitás után}other{<ph name="DAY_COUNT_MANY" /> nap inaktivitás után}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> új lap}other{<ph name="MANY_ADDED" /> új lap}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">Aktivitás</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Értékelés: <ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" />, <ph name="REVIEWS_COUNT_ONE" /> vélemény}other{Értékelés: <ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" />, <ph name="REVIEWS_COUNT_MANY" /> vélemény}}</translation>
 <translation id="7885132941432959125">Lap mozgatása jobbra</translation>
+<translation id="7887334752153342268">Másodpéldány</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" />: nincs kiválasztva</translation>
 <translation id="7961015016161918242">Soha</translation>
 <translation id="7966321538264951561">Javaslatok elvetése.</translation>

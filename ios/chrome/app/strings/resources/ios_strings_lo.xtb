@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
+<translation id="1004825134262590729">{count,plural, =1{ກະແຈຜ່ານ {count} ລາຍການ}other{ກະແຈຜ່ານ {count} ລາຍການ}}</translation>
 <translation id="1005023885865154304">ເປີດການຕັ້ງຄ່າການຕື່ມລະຫັດຜ່ານອັດຕະໂນມັດ</translation>
 <translation id="1005230401424685968">ປປປປ</translation>
 <translation id="1013952917065545813">ທ່ານສາມາດກັບມາບ່ອນນີ້ເພື່ອເປີດແຖບຄືນໃໝ່ທີ່ທ່ານໄດ້ປິດເມື່ອບໍ່ດົນມານີ້</translation>
@@ -41,6 +42,7 @@
 <translation id="1122068467107743258">ວຽກ</translation>
 <translation id="1126696498560056882">ຈັດການບັນຊີໃນອຸປະກອນນີ້</translation>
 <translation id="1126809382673880764">ບໍ່ປົກປ້ອງທ່ານຈາກເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ເປັນອັນຕະລາຍ. ທ່ານຈະຍັງໄດ້ຮັບການປົກປ້ອງຈາກ Safe Browsing ຢູ່ບ່ອນທີ່ໃຊ້ໄດ້, ຢູ່ໃນການບໍລິການອື່ນຂອງ Google ເຊັ່ນ: Gmail ແລະ ຊອກຫາ.</translation>
+<translation id="1133418583142946603">ເພີ່ມແຖບປັດຈຸບັນ</translation>
 <translation id="1136104150802877429">ສະແດງຄຳຕິຊົມສິນຄ້າ</translation>
 <translation id="1142371195993008685">ປິດການແຈ້ງເຕືອນສຳລັບ <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">ເຂົ້າສູ່ລະບົບເປັນ <ph name="USER" /></translation>
@@ -77,6 +79,7 @@
 <translation id="1285320974508926690">ຢ່າແປເວັບ​ໄຊ​ທ໌ນີ້</translation>
 <translation id="1287229685519872919">ຂໍ້ມູນ Google Workspace</translation>
 <translation id="1291506870746876680">ການອະນຸຍາດ <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> ຈະຖືກຣີເຊັດໄປເປັນປິດເມື່ອທ່ານອອກຈາກເວັບໄຊນີ້.</translation>
+<translation id="1293556467332435079">ໄຟລ໌</translation>
 <translation id="129553762522093515">ປິດ​ບໍ່​ດົນ​ມາ​ນີ້</translation>
 <translation id="1296581780163690620">ດາວໂຫຼດໄຟລ໌ບໍ? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">ເພື່ອກວດສອບໃຫ້ແນ່ໃຈວ່າທ່ານສາມາດໃຊ້ລະຫັດຜ່ານໃນບັນຊີ Google ຂອງທ່ານໄດ້ສະເໝີ, ກະລຸນາຢັ້ງຢືນວ່າແມ່ນທ່ານ.</translation>
@@ -1043,6 +1046,7 @@
 <translation id="5055015094595227120">ສະຖານທີ່ແບບລະອຽດ</translation>
 <translation id="5055551113846164633">ສິ່ງນີ້ຈະລຶບທີ່ຢູ່ທີ່ບັນທຶກໄວ້ຢູ່ອຸປະກອນຂອງທ່ານ. ນອກຈາກນັ້ນ, ມັນຍັງລຶບທີ່ຢູ່ທີ່ບັນທຶກໄວ້ໃນບັນຊີ Google <ph name="USER_EMAIL" /> ຂອງທ່ານນຳ.</translation>
 <translation id="5056446788882570708">ພົບ <ph name="TIME" /> ບັນຫາ.</translation>
+<translation id="5056587122125565772">ສ້າງຮູບ</translation>
 <translation id="5059136629401106827">ຕົກລົງ</translation>
 <translation id="5062321486222145940">ຕິດ​ຕັ້ງ Google Drive</translation>
 <translation id="5067540696062462445">ດາວໂຫຼດ</translation>
@@ -1504,6 +1508,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6659660757330712663">ທ່ານສາມາດປັດແຖບ​ເຄື່ອງ​ມືເພື່ອສະຫຼັບໄປມາລະຫວ່າງແຖບຕ່າງໆໄດ້.</translation>
 <translation id="6663529247339810546">ບໍ່ສາມາດບັນທຶກຮູບໄດ້</translation>
 <translation id="6668619169535738264">ແກ້ໄຂບຸກມາກ</translation>
+<translation id="6670729408462528018">ຄັງ</translation>
 <translation id="6671294218820966278">ໝາຍວ່າອ່ານແລ້ວ</translation>
 <translation id="6672697278890207089">ໃສ່ລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="6674917187596384849">ທ່ານສາມາດສະຫຼັບບັນຊີໄດ້ຢ່າງງ່າຍດາຍ</translation>
@@ -1660,6 +1665,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">ທ່ານມີລະຫັດຜ່ານສຳລັບບັນຊີເຫຼົ່ານີ້ໃນຕົວຈັດການລະຫັດຜ່ານ Google ຂອງທ່ານຢູ່ກ່ອນແລ້ວ. ຫາກທ່ານເລືອກນຳເຂົ້າໜຶ່ງໃນລະຫັດຜ່ານຂ້າງລຸ່ມ, ລະຫັດຜ່ານດັ່ງກ່າວຈະປ່ຽນແທນລະຫັດຜ່ານທີ່ມີຢູ່.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> ເປີ​ເຊັນ​ຖືກ​ດາວ​ໂຫຼດ​ແລ້ວ</translation>
+<translation id="7345061034321640811">ບໍ່ອະນຸຍາດໃຫ້ນຳເຂົ້າ</translation>
 <translation id="7352651011704765696">ມີ​ບາງ​ອັນ​ຜິດ​ພາດ</translation>
 <translation id="7363349185727752629">ຄຳແນະນຳຕົວເລືອກຄວາມເປັນສ່ວນຕົວຂອງທ່ານ</translation>
 <translation id="7364796246159120393">ເລືອກ​ໄຟລ​໌</translation>
@@ -2201,6 +2207,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="952704832371081537">ຍົກເລີກ</translation>
 <translation id="95332591904104970">ແອັບທີ່ເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="954667170699278022">ລາຍຊື່ການອ່ານ</translation>
+<translation id="956066588046842680">ນະໂຍບາຍຂອງອົງກອນຂອງທ່ານບໍ່ອະນຸຍາດໃຫ້ນຳເຂົ້າຂໍ້ມູນນີ້.</translation>
 <translation id="956218893102219091">ໃຊ້ສະຖານທີ່ແບບລະອຽດຂອງທ່ານເພື່ອໃຫ້ Gemini ສະແດງຜົນການຊອກຫາທີ່ຖືກຕ້ອງທີ່ສຸດ, ແທນທີ່ຈະໃຊ້ສະຖານທີ່ໂດຍປະມານຕາມທີ່ຢູ່ IP ຂອງທ່ານ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">ລຶບຂໍ້ມູນການທ່ອງເວັບ</translation>
 <translation id="963102227019621224">ການເຄື່ອນໄຫວເວັບ ແລະ ແອັບ</translation>
@@ -2212,5 +2219,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="984275831282074731">ວິທີການຈ່າຍເງິນ</translation>
 <translation id="985379595344853742">ປິດແຖບບໍ່ເປີດເຜີຍຕົວຕົນທັງໝົດ</translation>
 <translation id="988141524645182168">ອຸ​ປະ​ກອນ​ອື່ນໆ</translation>
+<translation id="995174784802614337">{count,plural, =1{ກະແຈຜ່ານທີ່ນຳເຂົ້າ {count} ລາຍການ}other{ກະແຈຜ່ານທີ່ນຳເຂົ້າ {count} ລາຍການ}}</translation>
 <translation id="999768147936949692">ສຳລັບຕອນນີ້, ທ່ານສາມາດແບ່ງປັນລະຫັດຜ່ານກັບສະມາຊິກຄອບຄົວໄດ້ເທົ່ານັ້ນ. <ph name="BEGIN_LINK" />ເຊີນສະມາຊິກຄອບຄົວ<ph name="END_LINK" /> ເພື່ອເຂົ້າຮ່ວມກຸ່ມຂອງທ່ານ ແລະ ຮັບປະໂຫຍດເພີ່ມເຕີມຈາກຜະລິດຕະພັນ ແລະ ການສະໝັກໃຊ້ຂອງທ່ານໃນທົ່ວ Google.</translation>
 </translationbundle>

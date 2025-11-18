@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Спіс груп укладак закрыты</translation>
 <translation id="3194464645767632461">ацэнка</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Дадаць <ph name="TABS_COUNT_ONE" /> укладку ў групу}one{Дадаць <ph name="TABS_COUNT_MANY" /> укладку ў групу}few{Дадаць <ph name="TABS_COUNT_MANY" /> укладкі ў групу}many{Дадаць <ph name="TABS_COUNT_MANY" /> укладак у групу}other{Дадаць <ph name="TABS_COUNT_MANY" /> укладкі ў групу}}</translation>
+<translation id="3293080634164207409">Дадайце ўкладкі</translation>
 <translation id="3328308545011660196">Прапанова: здаецца, гэтыя ўкладкі (<ph name="NUMBER_OF_TABS" />) звязаныя паміж сабой. Згрупаваць іх?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Праз 1 дзень бяздзейнасці}one{Праз <ph name="DAY_COUNT_MANY" /> дзень бяздзейнасці}few{Праз <ph name="DAY_COUNT_MANY" /> дні бяздзейнасці}many{Праз <ph name="DAY_COUNT_MANY" /> дзён бяздзейнасці}other{Праз <ph name="DAY_COUNT_MANY" /> дня бяздзейнасці}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> новая ўкладка}one{<ph name="MANY_ADDED" /> новая ўкладка}few{<ph name="MANY_ADDED" /> новыя ўкладкі}many{<ph name="MANY_ADDED" /> новых укладак}other{<ph name="MANY_ADDED" /> новай укладкі}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">Дзеянні</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> водгук}one{Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> водгук}few{Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> водгукі}many{Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> водгукаў}other{Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> водгуку}}</translation>
 <translation id="7885132941432959125">Перамясціць укладку ўправа</translation>
+<translation id="7887334752153342268">Дубліраваць</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> колер не выбраны</translation>
 <translation id="7961015016161918242">Ніколі</translation>
 <translation id="7966321538264951561">Адхіліць прапановы.</translation>

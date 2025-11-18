@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1004825134262590729">{count,plural, =1{{count} cheie de acces}few{{count} chei de acces}other{{count} de chei de acces}}</translation>
 <translation id="1005023885865154304">Deschide setările pentru completarea automată a parolelor</translation>
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Poți să revii aici mai târziu ca să redeschizi file pe care le-ai închis recent.</translation>
@@ -41,6 +42,7 @@
 <translation id="1122068467107743258">Serviciu</translation>
 <translation id="1126696498560056882">Gestionează conturile de pe acest dispozitiv</translation>
 <translation id="1126809382673880764">Nu te protejează împotriva site-urilor, descărcărilor și extensiilor periculoase. Te vei bucura în continuare de protecția oferită de Navigarea sigură, dacă este disponibilă, în alte servicii Google, cum ar fi Gmail și Căutarea.</translation>
+<translation id="1133418583142946603">Adaugă fila actuală</translation>
 <translation id="1136104150802877429">Afișează recenziile produselor</translation>
 <translation id="1142371195993008685">Dezactivează notificările pentru <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Te-ai conectat ca <ph name="USER" /></translation>
@@ -77,6 +79,7 @@
 <translation id="1285320974508926690">Nu traduce niciodată acest site</translation>
 <translation id="1287229685519872919">Date Google Workspace</translation>
 <translation id="1291506870746876680">Permisiunile pentru <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> vor fi resetate la starea dezactivat când părăsești site-ul.</translation>
+<translation id="1293556467332435079">Fișiere</translation>
 <translation id="129553762522093515">Închise recent</translation>
 <translation id="1296581780163690620">Descarci fișierul? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Pentru a te asigura că poți folosi oricând parolele din Contul Google, confirmă-ți identitatea.</translation>
@@ -1043,6 +1046,7 @@
 <translation id="5055015094595227120">Locația exactă</translation>
 <translation id="5055551113846164633">Astfel, sunt șterse adresele salvate pe acest dispozitiv. Sunt șterse și adresele salvate în Contul Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">S-au găsit mai multe probleme <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">Creează o imagine</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Instalează Google Drive</translation>
 <translation id="5067540696062462445">Descărcări</translation>
@@ -1504,6 +1508,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6659660757330712663">Glisează bara de instrumente pentru a trece de la o filă la alta.</translation>
 <translation id="6663529247339810546">Imaginea nu s-a salvat</translation>
 <translation id="6668619169535738264">Editează marcajul</translation>
+<translation id="6670729408462528018">Galerie</translation>
 <translation id="6671294218820966278">Marchează drept citită</translation>
 <translation id="6672697278890207089">Introduceți expresia de acces</translation>
 <translation id="6674917187596384849">Poți comuta cu ușurință între conturi</translation>
@@ -1660,6 +1665,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Ai deja parole pentru aceste conturi în Managerul de parole Google. Dacă alegi să imporți una dintre parolele de mai jos, aceasta o va înlocui pe cea existentă.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% descărcat</translation>
+<translation id="7345061034321640811">Importarea nu este permisă</translation>
 <translation id="7352651011704765696">A apărut o eroare</translation>
 <translation id="7363349185727752629">Un ghid pentru opțiunile de confidențialitate</translation>
 <translation id="7364796246159120393">Alege fișierul</translation>
@@ -2201,6 +2207,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="952704832371081537">Anulează</translation>
 <translation id="95332591904104970">Aplicații conectate</translation>
 <translation id="954667170699278022">Listă de lecturi</translation>
+<translation id="956066588046842680">Importarea acestor date nu este permisă de politica organizației.</translation>
 <translation id="956218893102219091">Folosește locația exactă pentru cele mai precise rezultate Gemini, în locul unei locații estimate pe baza adresei IP. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Șterge datele de navigare</translation>
 <translation id="963102227019621224">Activitatea de pe web și din aplicații</translation>
@@ -2212,5 +2219,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="984275831282074731">Metode de plată</translation>
 <translation id="985379595344853742">Închide toate filele incognito</translation>
 <translation id="988141524645182168">Alte dispozitive</translation>
+<translation id="995174784802614337">{count,plural, =1{A fost importată {count} cheie de acces}few{Au fost importate {count} chei de acces}other{Au fost importate {count} de chei de acces}}</translation>
 <translation id="999768147936949692">Momentan, poți permite accesul la parole doar membrilor familiei. <ph name="BEGIN_LINK" />Invită membrii familiei<ph name="END_LINK" /> să se alăture grupului și profită la maximum de produsele și abonamentele tale de pe Google.</translation>
 </translationbundle>

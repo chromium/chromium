@@ -42,6 +42,7 @@
 <translation id="1122068467107743258">Práca</translation>
 <translation id="1126696498560056882">Spravovať účty v tomto zariadení</translation>
 <translation id="1126809382673880764">Nechráni vás pred nebezpečnými webmi, stiahnutými súbormi ani rozšíreniami. Ochrana Bezpečného prehliadania vám bude poskytovaná v náležitých prípadoch v ďalších službách Googlu, ako sú napríklad Gmail alebo Vyhľadávanie.</translation>
+<translation id="1133418583142946603">Pridať aktuálnu kartu</translation>
 <translation id="1136104150802877429">Zobrazujú sa recenzie výrobkov</translation>
 <translation id="1142371195993008685">Vypnúť upozornenia funkcie <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Prihlásený účet: <ph name="USER" /></translation>
@@ -78,6 +79,7 @@
 <translation id="1285320974508926690">Nikdy neprekladať tieto webové stránky</translation>
 <translation id="1287229685519872919">údaje v službe Google Workspace</translation>
 <translation id="1291506870746876680">Keď web <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> opustíte, povolenia preň sa resetujú na možnosť Vypnuté.</translation>
+<translation id="1293556467332435079">Súbory</translation>
 <translation id="129553762522093515">Nedávno zatvorené</translation>
 <translation id="1296581780163690620">Chcete súbor stiahnuť? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Ak sa chcete uistiť, že vo svojom účte Google môžete kedykoľvek použiť heslá, overte svoju totožnosť.</translation>
@@ -1044,6 +1046,7 @@
 <translation id="5055015094595227120">Presná poloha</translation>
 <translation id="5055551113846164633">Týmto odstránite adresy uložené v tomto zariadení. Odstránia sa aj tie, ktoré máte uložené v účte Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Problémy boli nájdené o <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">Vytvoriť obrázok</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Nainštalovať Disk Google</translation>
 <translation id="5067540696062462445">Stiahnuté</translation>
@@ -1505,6 +1508,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6659660757330712663">Medzi kartami môžete prepínať potiahnutím po paneli s nástrojmi.</translation>
 <translation id="6663529247339810546">Obrázok sa nedá uložiť</translation>
 <translation id="6668619169535738264">Upraviť záložku</translation>
+<translation id="6670729408462528018">Galéria</translation>
 <translation id="6671294218820966278">Označiť ako prečítané</translation>
 <translation id="6672697278890207089">Zadajte svoju prístupovú frázu</translation>
 <translation id="6674917187596384849">Medzi účtami môžete jednoducho prepínať</translation>
@@ -1661,6 +1665,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Heslá týchto účtov už máte v Správcovi hesiel Google. Ak importujete jedno z hesiel uvedených nižšie, nahradí existujúce.</translation>
 <translation id="7336264872878993241">Stiahnuté: <ph name="PERCENT" /> percent</translation>
+<translation id="7345061034321640811">Import nie je povolený</translation>
 <translation id="7352651011704765696">Niečo sa pokazilo</translation>
 <translation id="7363349185727752629">Sprievodca vašimi voľbami ochrany súkromia</translation>
 <translation id="7364796246159120393">Vybrať súbor</translation>
@@ -2202,6 +2207,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="952704832371081537">Zrušiť</translation>
 <translation id="95332591904104970">Pripojené aplikácie</translation>
 <translation id="954667170699278022">Čitateľský zoznam</translation>
+<translation id="956066588046842680">Import týchto údajov nepovoľujú pravidlá vašej organizácie.</translation>
 <translation id="956218893102219091">Získavajte od Gemini presnejšie výsledky vychádzajúce z presnej polohy, nie z odhadovanej polohy na základe adresy IP. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Odstrániť dáta prehliadania</translation>
 <translation id="963102227019621224">Aktivita na internete a v aplikáciách</translation>

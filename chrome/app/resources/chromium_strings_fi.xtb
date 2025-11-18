@@ -521,6 +521,7 @@ Kaikki ominaisuudet eivät ehkä ole käytettävissä. Määritä jokin muu prof
 <translation id="705851970750939768">Päivitä Chromium</translation>
 <translation id="7067091210845072982">Jos kuvalla ei ole hyödyllistä kuvausta, Chromium yrittää luoda sellaisen. Kuvat lähetetään Googlelle kuvausten luomista varten.</translation>
 <translation id="7141270731789036260">Yksilöi Chrome for Testing ‑versiota</translation>
+<translation id="7147227333672430807">Voit käyttää Chromiumia aina, kun klikkaat linkkejä viesteissä, dokumenteissa ja muissa sovelluksissa</translation>
 <translation id="7163519456498498587">Poista <ph name="EXTENSION_NAME" /> Chromiumista</translation>
 <translation id="7173822816570314652">Kun Chromium-data on ollut käyttämättömänä <ph name="TIMEOUT_DURATION" />, organisaatiosi poistaa sen. Data voi sisältää historian, automaattisen täytön ja lataukset.</translation>
 <translation id="718435575166326686">Chromium tarvitsee kameran luvan tällä sivustolla</translation>
@@ -635,6 +636,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8471947159125090285">Chromium-datan käyttö ja tallennus Google-tilillä edellyttää, että vahvistat henkilöllisyytesi</translation>
 <translation id="8482493977473846331">Näytä kehotteet kirjautua Chromiumiin</translation>
 <translation id="8493179195440786826">Chromium on vanhentunut</translation>
+<translation id="850264194101621529">Kiitos, että valitsit Chromiumin oletusselaimeksi.</translation>
 <translation id="8522801943730206384">Chromium voi tarkistaa salasanasi, kun tallennat niitä</translation>
 <translation id="8555465886620020932">Palveluvirhe: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Kiinnitä kuvahaku klikkaamalla sivupaneelin yläreunan Kiinnitä-painiketta, niin löydät sen helposti</translation>
@@ -644,6 +646,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Kaikki oikeudet pidätetään.</translation>
 <translation id="8601359445272098721">Uutta! Voit kääntää näytöllä näkyvän tekstin ja kuvat valitsemalla "Käännä näyttö" ‑painikkeen</translation>
 <translation id="8619360774459241877">Käynnistetään Chromiumia…</translation>
+<translation id="8624541899164515475">Asetukset, avautuu uudelle välilehdelle.</translation>
 <translation id="8648201657708811153">Google Chrome for Testingistä ei voi tehdä oletusselainta.</translation>
 <translation id="8677922833187616101">Näytä aina Googlen tekoälytilan pikakuvake</translation>
 <translation id="8697124171261953979">Määrittää myös Chromiumin ja omnibox-hakujen aloitussivun.</translation>

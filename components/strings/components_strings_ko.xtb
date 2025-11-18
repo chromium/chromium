@@ -428,6 +428,7 @@
 <translation id="1689333818294560261">닉네임</translation>
 <translation id="1692622044604477956">영화 상영작 목록 및 상영 시간</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />사용자가 데이터를 관리하는 방법:<ph name="END_BOLD" /> Chrome에서는 4주가 지난 주제를 자동 삭제합니다. 인터넷을 사용하다 보면 동일한 주제가 목록에 다시 표시될 수 있습니다. 사용자는 언제든지 Chrome 설정에서 Chrome이 사이트와 공유하길 원하지 않는 주제를 차단하고 광고 주제를 사용 중지할 수도 있습니다.</translation>
+<translation id="1697808683313379647">Google은 결제 페이지의 정보 및 기타 관련 데이터를 사용하여 이러한 옵션을 제공합니다.</translation>
 <translation id="1699651774646344471">이제 Google 계정의 주소를 사용할 수 있습니다</translation>
 <translation id="1700542542921501212"><ph name="SEARCH_ENGINE_NAME" />에서 웹을 검색할 수 있습니다.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1722,7 +1723,6 @@
 <translation id="3792826587784915501">컬트 및 독립 영화</translation>
 <translation id="3793574014653384240">최근 발생한 비정상 종료의 횟수 및 원인</translation>
 <translation id="3795624560191557077">최근에 공개 정보 유출로 인해 노출된 비밀번호를 변경했습니다. 문제가 발생하면 Google 비밀번호 관리자를 통해 로그인할 수 있습니다.</translation>
-<translation id="3796181268473765083">무이자 4회 할부 또는 월 할부 결제(자격 요건에 따라 다름)</translation>
 <translation id="3799805948399000906">글꼴 요청됨</translation>
 <translation id="3801297763951514916">자주 방문함</translation>
 <translation id="380329542618494757">이름</translation>
@@ -2948,6 +2948,7 @@
 <translation id="5813753398265398978">물리학</translation>
 <translation id="5817918615728894473">페어링</translation>
 <translation id="5820625124144807242">주문을 검토한 후에는 <ph name="BNPL_ISSUER_NAME" />에 로그인하거나 계정을 만들어야 합니다. 이 계정은 Google Pay에 자동으로 연결됩니다.</translation>
+<translation id="5820751560028604030">로컬 다운로드 차단됨</translation>
 <translation id="5826507051599432481">일반 이름(CN)</translation>
 <translation id="5830698870816298009">카메라 사용 및 이동</translation>
 <translation id="5831217499016131155">Google 월렛</translation>
@@ -3702,6 +3703,7 @@
 <translation id="7031646650991750659">내가 설치한 Google Play 앱</translation>
 <translation id="7035705295266423040">은행에서 본인 인증을 요청합니다</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google 계정 개인 정보 보호 설정을 관리하려면 Tab과 Enter를 차례로 누르세요</translation>
+<translation id="7042465939346919737">Google은 결제 페이지의 정보 및 기타 관련 데이터를 사용하여 이러한 옵션을 제공합니다. 후불 결제 옵션을 숨기려면 <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> 페이지로 이동하세요.</translation>
 <translation id="7042616127917168121">결과 세부 조정</translation>
 <translation id="7043552168914147882">탭 용지</translation>
 <translation id="7044081119134178347">현재 카메라 허용됨</translation>

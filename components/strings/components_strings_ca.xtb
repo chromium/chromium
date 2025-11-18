@@ -425,9 +425,11 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1682696192498422849">La vora curta primer</translation>
 <translation id="168693727862418163">No s'ha pogut validar el valor d'aquesta política comparant-lo amb l'esquema i, per tant, s'ignorarà.</translation>
 <translation id="168841957122794586">El certificat de servidor conté una clau criptogràfica dèbil.</translation>
+<translation id="1688718429648938412">Desa la targeta de fidelització a Wallet</translation>
 <translation id="1689333818294560261">Àlies</translation>
 <translation id="1692622044604477956">Cartelleres i horaris de cinemes</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Com pots gestionar les teves dades<ph name="END_BOLD" />: Chrome suprimeix automàticament els temes que tenen més de 4 setmanes. A mesura que continuïs navegant, és possible que reaparegui un tema a la llista. També pots bloquejar els temes que no vulguis que Chrome comparteixi amb els llocs web i desactivar els temes d'anunci en qualsevol moment a la configuració de Chrome.</translation>
+<translation id="1697808683313379647">Google utilitza la informació de la pàgina de tramitació de la compra i altres dades rellevants per oferir aquestes opcions.</translation>
 <translation id="1699651774646344471">Ara pots utilitzar les adreces del teu Compte de Google</translation>
 <translation id="1700542542921501212">Pots utilitzar <ph name="SEARCH_ENGINE_NAME" /> per fer cerques al web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1722,7 +1724,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3792826587784915501">Pel·lícules de culte i independents</translation>
 <translation id="3793574014653384240">Nombre i motius dels errors que s'han produït recentment</translation>
 <translation id="3795624560191557077">Fa poc vas canviar una contrasenya que es va fer pública a causa d'una violació de les dades. Si tens problemes, el gestor de contrasenyes de Google et pot ajudar a iniciar la sessió.</translation>
-<translation id="3796181268473765083">Paga mensualment o en 4 terminis sense interessos (subjecte a idoneïtat)</translation>
 <translation id="3799805948399000906">Tipus de lletra sol·licitat</translation>
 <translation id="3801297763951514916">Hi accedeixes sovint</translation>
 <translation id="380329542618494757">Nom</translation>
@@ -2948,6 +2949,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5813753398265398978">Física</translation>
 <translation id="5817918615728894473">Vincula</translation>
 <translation id="5820625124144807242">Després de revisar la comanda, has d'iniciar la sessió al compte de <ph name="BNPL_ISSUER_NAME" /> o crear-ne un. Aquest compte s'enllaçarà automàticament a Google Pay.</translation>
+<translation id="5820751560028604030">S'ha bloquejat la baixada local</translation>
 <translation id="5826507051599432481">Nom comú (CN)</translation>
 <translation id="5830698870816298009">ús i moviment de la càmera</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3660,6 +3662,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6965978654500191972">Dispositiu</translation>
 <translation id="696703987787944103">Perceptiu</translation>
 <translation id="6967851206780867018">S'ha bloquejat 1 fitxer a causa del contingut</translation>
+<translation id="6968217325369275594">Desa la teva informació per rebre actualitzacions des de qualsevol dels teus dispositius. La informació es desa a <ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" /> per a <ph name="ACCOUNT" />.</translation>
 <translation id="6970885655016700774">Tela (arxiu)</translation>
 <translation id="6971439137020188025">Crea una presentació ràpidament a Presentacions de Google</translation>
 <translation id="6972629891077993081">Dispositius d'interfície humana</translation>
@@ -3702,6 +3705,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7031646650991750659">Quines aplicacions de Google Play has instal·lat</translation>
 <translation id="7035705295266423040">El banc vol verificar la teva identitat</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per gestionar la configuració de privadesa del teu Compte de Google</translation>
+<translation id="7042465939346919737">Google utilitza la informació de la pàgina de tramitació de la compra i altres dades rellevants per oferir aquestes opcions. Per amagar les opcions de Paga més tard, ves a <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="7042616127917168121">Refina els resultats</translation>
 <translation id="7043552168914147882">Inventari d'etiquetes</translation>
 <translation id="7044081119134178347">S'ha permès l'ús de la càmera aquesta vegada</translation>

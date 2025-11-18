@@ -425,9 +425,11 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1682696192498422849">Kortsidan först</translation>
 <translation id="168693727862418163">Principen ignoreras eftersom den inte gick att validera mot schemat.</translation>
 <translation id="168841957122794586">Servercertifikatet innehåller en svag kryptografisk nyckel.</translation>
+<translation id="1688718429648938412">Spara stamkundskort i Wallet</translation>
 <translation id="1689333818294560261">Kortnamn</translation>
 <translation id="1692622044604477956">Film- och teaterutbud</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Så här kan du hantera dina uppgifter:<ph name="END_BOLD" /> Chrome raderar automatiskt ämnen som är äldre än fyra veckor. När du surfar kan ett ämne dyka upp på listan igen. Du kan även blockera ämnen som du inte vill att Chrome ska dela med webbplatser och inaktivera annonsämnen när som helst i inställningarna för Chrome.</translation>
+<translation id="1697808683313379647">Google använder information från kassasidan och annan relevant data för att erbjuda dessa alternativ.</translation>
 <translation id="1699651774646344471">Nu kan du använda adresser från ditt Google-konto</translation>
 <translation id="1700542542921501212">Du kan söka på webben med <ph name="SEARCH_ENGINE_NAME" />.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1722,7 +1724,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3792826587784915501">Kult- och indiefilm</translation>
 <translation id="3793574014653384240">Antal och orsaker till krascher som har skett nyligen</translation>
 <translation id="3795624560191557077">Du har nyligen ändrat ett lösenord som har hittats i ett offentligt dataintrång. Om du har problem kan Google Lösenordshanterare hjälpa dig att logga in.</translation>
-<translation id="3796181268473765083">Betala månadsvis eller dela upp i fyra räntefria avbetalningar (beroende på kvalificering)</translation>
 <translation id="3799805948399000906">Teckensnitt begärt</translation>
 <translation id="3801297763951514916">Du besöker ofta</translation>
 <translation id="380329542618494757">Namn</translation>
@@ -2386,7 +2387,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4877521229462766300">Vill du tillåta inbäddat innehåll?</translation>
 <translation id="4879491255372875719">Automatiskt (standard)</translation>
 <translation id="4880328155169081699">Vill du uppdatera id-kortet?</translation>
-<translation id="4880827082731008257">Sök i historiken</translation>
+<translation id="4880827082731008257">Sökhistorik</translation>
 <translation id="4881695831933465202">Öppna</translation>
 <translation id="4881808915112408168">24 x 31,5 tum</translation>
 <translation id="4882314601499260499">Inga användarpolicyer har tillämpats. Om du vill lägga till användarpolicyer måste organisationen <ph name="LINK_BEGIN" />verifiera domänen<ph name="LINK_END" />.</translation>
@@ -2948,6 +2949,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5813753398265398978">Fysik</translation>
 <translation id="5817918615728894473">Koppla</translation>
 <translation id="5820625124144807242">När du har granskat beställningen måste du logga in på eller skapa ett konto hos <ph name="BNPL_ISSUER_NAME" />. Kontot länkas automatiskt till Google Pay.</translation>
+<translation id="5820751560028604030">Lokal nedladdning har blockerats</translation>
 <translation id="5826507051599432481">Vanligt namn (CN)</translation>
 <translation id="5830698870816298009">använda och röra kameran</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3660,6 +3662,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6965978654500191972">Enhet</translation>
 <translation id="696703987787944103">Perceptuell</translation>
 <translation id="6967851206780867018">1 fil blockerades på grund av innehåll</translation>
+<translation id="6968217325369275594">Spara dina uppgifter så att du kan få uppdateringar från alla dina enheter. Din information sparas i <ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" /> för <ph name="ACCOUNT" />.</translation>
 <translation id="6970885655016700774">Tyg (arkiv)</translation>
 <translation id="6971439137020188025">Skapa en ny Google-presentation i Presentationer snabbt</translation>
 <translation id="6972629891077993081">HID-enheter</translation>
@@ -3702,6 +3705,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7031646650991750659">Vilka appar från Google Play som du har installerat</translation>
 <translation id="7035705295266423040">Din bank vill verifiera din identitet</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill hantera Google-kontots integritetsinställningar</translation>
+<translation id="7042465939346919737">Google använder information från kassasidan och annan relevant data för att erbjuda dessa alternativ. Gå till <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> om du vill dölja alternativen för att betala senare.</translation>
 <translation id="7042616127917168121">Finjustera resultatet</translation>
 <translation id="7043552168914147882">Flikpapper</translation>
 <translation id="7044081119134178347">Kameran tillåts den här gången</translation>

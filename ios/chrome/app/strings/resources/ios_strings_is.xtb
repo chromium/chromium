@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
+<translation id="1004825134262590729">{count,plural, =1{{count} aðgangslykill}one{{count} aðgangslykill}other{{count} aðgangslyklar}}</translation>
 <translation id="1005023885865154304">Opna stillingar sjálfvirkar útfyllingar aðgangsorða</translation>
 <translation id="1005230401424685968">ÁÁÁÁ</translation>
 <translation id="1013952917065545813">Þú getur farið aftur hingað til að opna flipa sem þú lokaðir nýlega</translation>
@@ -41,6 +42,7 @@
 <translation id="1122068467107743258">Vinna</translation>
 <translation id="1126696498560056882">Stjórna reikningum í þessu tæki</translation>
 <translation id="1126809382673880764">Ver þig ekki gegn hættulegum vefsvæðum, niðurhali eða viðbótum. Þú munt áfram geta notað örugga vefskoðun, þar sem hún er í boði, í annarri þjónustu Google á borð við Gmail og leit.</translation>
+<translation id="1133418583142946603">Bæta núverandi flipa við</translation>
 <translation id="1136104150802877429">Sýnir umsagnir um vörur</translation>
 <translation id="1142371195993008685">Slökkva á tilkynningum um <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Skráð(ur) inn sem <ph name="USER" /></translation>
@@ -77,6 +79,7 @@
 <translation id="1285320974508926690">Aldrei þýða þetta vefsvæði</translation>
 <translation id="1287229685519872919">Google Workspace-gögn</translation>
 <translation id="1291506870746876680">Heimildir <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />“<ph name="END_BOLD" /> verða endurstilltar á „slökkt“ þegar þú yfirgefur vefsvæðið.</translation>
+<translation id="1293556467332435079">Skrár</translation>
 <translation id="129553762522093515">Nýlega lokað</translation>
 <translation id="1296581780163690620">Sækja skrá? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Staðfestu að þetta sért þú til að ganga úr skugga um að geta alltaf notað aðgangsorðin á Google-reikningnum þínum.</translation>
@@ -1043,6 +1046,7 @@
 <translation id="5055015094595227120">Nákvæm staðsetning</translation>
 <translation id="5055551113846164633">Þetta eyðir vistuðum heimilisföngum í þessu tæki. Einnig eyðir þetta vistuðum heimilisföngum á Google-reikningnum <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Vandamál fundust <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">Búa til mynd</translation>
 <translation id="5059136629401106827">Í lagi</translation>
 <translation id="5062321486222145940">Setja upp Google Drive</translation>
 <translation id="5067540696062462445">Niðurhal</translation>
@@ -1504,6 +1508,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6659660757330712663">Þú getur strokið tækjastikuna til að skipta á milli flipa.</translation>
 <translation id="6663529247339810546">Ekki tókst að vista mynd</translation>
 <translation id="6668619169535738264">Breyta bókamerki</translation>
+<translation id="6670729408462528018">Gallerí</translation>
 <translation id="6671294218820966278">Merkja sem lesið</translation>
 <translation id="6672697278890207089">Sláðu inn aðgangsorðið þitt</translation>
 <translation id="6674917187596384849">Þú getur skipt um reikning með einföldum hætti</translation>
@@ -1660,6 +1665,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Þú ert þegar með aðgangsorð fyrir þessa reikninga í Google-aðgangsorðastjórnun. Ef þú velur að flytja inn eitthvert aðgangsorðanna hér að neðan mun það koma í stað fyrirliggjandi aðgangsorðs.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> prósent sótt</translation>
+<translation id="7345061034321640811">Innflutningur ekki leyfður</translation>
 <translation id="7352651011704765696">Eitthvað fór úrskeiðis</translation>
 <translation id="7363349185727752629">Leiðarvísir persónuverndarstillinga</translation>
 <translation id="7364796246159120393">Veldu skrá</translation>
@@ -2201,6 +2207,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="952704832371081537">Hætta við</translation>
 <translation id="95332591904104970">Tengd forrit</translation>
 <translation id="954667170699278022">Leslisti</translation>
+<translation id="956066588046842680">Reglur fyrirtækisins þíns leyfa ekki innflutning þessara gagna.</translation>
 <translation id="956218893102219091">Notaðu nákvæma staðsetningu til að fá sem nákvæmastar Gemini-niðurstöður frekar en áætlaða staðsetningu út frá IP-tölunni þinni. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Eyða vefskoðunargögnum</translation>
 <translation id="963102227019621224">Vef- og forritavirkni</translation>
@@ -2212,5 +2219,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="984275831282074731">Greiðslumátar</translation>
 <translation id="985379595344853742">Loka öllum huliðsflipum</translation>
 <translation id="988141524645182168">Önnur tæki</translation>
+<translation id="995174784802614337">{count,plural, =1{{count} aðgangslykill fluttur inn}one{{count} aðgangslykill fluttur inn}other{{count} aðgangslyklar fluttir inn}}</translation>
 <translation id="999768147936949692">Sem stendur geturðu aðeins deilt aðgangsorðum með fjölskyldumeðlimum. <ph name="BEGIN_LINK" />Bjóddu fjölskyldumeðlimum<ph name="END_LINK" /> að slást í hópinn og fáðu meira út úr vörunum þínum og áskriftum á Google.</translation>
 </translationbundle>

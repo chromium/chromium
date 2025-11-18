@@ -428,6 +428,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1689333818294560261">Nama panggilan</translation>
 <translation id="1692622044604477956">Daftar Film &amp; Jadwal Bioskop</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cara untuk mengelola data Anda:<ph name="END_BOLD" /> Chrome otomatis menghapus topik yang tersimpan lebih dari 4 minggu. Saat Anda menjelajah, suatu topik mungkin muncul kembali di daftar. Anda juga dapat memblokir topik dari Chrome yang tidak ingin Anda bagikan ke situs dan menonaktifkan topik iklan kapan saja di setelan Chrome.</translation>
+<translation id="1697808683313379647">Google menggunakan informasi dari halaman checkout dan data relevan lainnya untuk menawarkan opsi ini.</translation>
 <translation id="1699651774646344471">Anda sekarang dapat menggunakan alamat dari Akun Google Anda</translation>
 <translation id="1700542542921501212">Anda dapat menggunakan <ph name="SEARCH_ENGINE_NAME" /> untuk menelusuri web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1722,7 +1723,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3792826587784915501">Film Kultus &amp; Indie</translation>
 <translation id="3793574014653384240">Jumlah dan penyebab error yang terjadi baru-baru ini</translation>
 <translation id="3795624560191557077">Anda baru-baru ini mengubah sandi yang ditemukan dalam pelanggaran data publik. Jika terjadi masalah, Pengelola Sandi Google dapat membantu Anda login.</translation>
-<translation id="3796181268473765083">Bayar dalam 4 cicilan tanpa bunga atau cicilan bulanan (tergantung kelayakan)</translation>
 <translation id="3799805948399000906">Font diminta</translation>
 <translation id="3801297763951514916">Sering Anda buka</translation>
 <translation id="380329542618494757">Nama</translation>
@@ -2948,6 +2948,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5813753398265398978">Fisika</translation>
 <translation id="5817918615728894473">Sandingkan</translation>
 <translation id="5820625124144807242">Setelah meninjau pesanan, Anda harus login atau membuat akun dengan<ph name="BNPL_ISSUER_NAME" />. Akun ini akan otomatis ditautkan ke Google Pay.</translation>
+<translation id="5820751560028604030">Download lokal diblokir</translation>
 <translation id="5826507051599432481">Common Name (CN)</translation>
 <translation id="5830698870816298009">penggunaan &amp; gerakan kamera</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3702,6 +3703,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7031646650991750659">Aplikasi Google Play yang telah diinstal</translation>
 <translation id="7035705295266423040">Bank Anda ingin memverifikasi diri Anda</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab lalu Enter untuk mengelola setelan privasi Akun Google Anda</translation>
+<translation id="7042465939346919737">Google menggunakan informasi dari halaman checkout dan data relevan lainnya untuk menawarkan opsi ini. Untuk menyembunyikan opsi bayar nanti, buka <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Saring hasil</translation>
 <translation id="7043552168914147882">Stok Tab</translation>
 <translation id="7044081119134178347">Kamera diizinkan kali ini</translation>

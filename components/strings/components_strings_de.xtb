@@ -428,6 +428,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1689333818294560261">Alias</translation>
 <translation id="1692622044604477956">Kino- und Theaterprogramme</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />So kannst du deine Daten verwalten<ph name="END_BOLD" />: Themen, die älter als vier Wochen sind, werden in Chrome automatisch gelöscht. Je nach deinen Browseraktivitäten können die Themen wieder in der Liste erscheinen. Du kannst in den Einstellungen von Chrome auch Themen blockieren, die Chrome nicht mit Websites teilen soll, und Werbethemen deaktivieren.</translation>
+<translation id="1697808683313379647">Google verwendet Informationen von der Zahlungsseite und andere relevante Daten, um diese Optionen anzubieten.</translation>
 <translation id="1699651774646344471">Du kannst jetzt Adressen aus deinem Google-Konto verwenden</translation>
 <translation id="1700542542921501212">Du kannst mit <ph name="SEARCH_ENGINE_NAME" /> im Web suchen.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1720,7 +1721,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3792826587784915501">Kultklassiker und Indie-Filme</translation>
 <translation id="3793574014653384240">Anzahl und Ursachen der kürzlich aufgetretenen Abstürze</translation>
 <translation id="3795624560191557077">Du hast vor Kurzem ein Passwort geändert, das in einer öffentlichen Datenpanne gefunden wurde. Bei Problemen kann der Google Passwortmanager dir bei der Anmeldung helfen.</translation>
-<translation id="3796181268473765083">In 4 zinsfreien Raten oder monatlichen Raten zahlen (es gelten bestimmte Voraussetzungen)</translation>
 <translation id="3799805948399000906">Gewünschte Schriftart</translation>
 <translation id="3801297763951514916">Diese Seite besuchst du häufig</translation>
 <translation id="380329542618494757">Name</translation>
@@ -2946,6 +2946,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5813753398265398978">Physik</translation>
 <translation id="5817918615728894473">Koppeln</translation>
 <translation id="5820625124144807242">Nachdem du deine Bestellung geprüft hast, musst du dich mit <ph name="BNPL_ISSUER_NAME" /> in deinem Konto anmelden oder ein neues erstellen. Dieses Konto wird automatisch mit Google Pay verknüpft.</translation>
+<translation id="5820751560028604030">Lokaler Download blockiert</translation>
 <translation id="5826507051599432481">Allgemeiner Name (CN)</translation>
 <translation id="5830698870816298009">Kamera verwenden und bewegen</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3700,6 +3701,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="7031646650991750659">Welche Google Play-Apps du installiert hast</translation>
 <translation id="7035705295266423040">Deine Bank muss deine Identität bestätigen</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um die Datenschutzeinstellungen deines Google-Kontos zu verwalten</translation>
+<translation id="7042465939346919737">Google verwendet Informationen von der Zahlungsseite und andere relevante Daten, um diese Optionen anzubieten. Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> auf.</translation>
 <translation id="7042616127917168121">Ergebnisse verfeinern</translation>
 <translation id="7043552168914147882">Registerkartenvorrat</translation>
 <translation id="7044081119134178347">Kameraberechtigung einmal gewährt</translation>

@@ -423,6 +423,7 @@
 <translation id="1689333818294560261">మారుపేరు</translation>
 <translation id="1692622044604477956">సినిమా లిస్టింగ్‌లు &amp; థియేటర్ షోటైమ్‌లు</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />మీ డేటాను మీరు ఎలా మేనేజ్ చేయగలరు:<ph name="END_BOLD" /> 4 వారాల కంటే పాతవైన టాపిక్‌లను Chrome ఆటోమేటిక్‌గా తొలగిస్తుంది. మీరు బ్రౌజ్ చేస్తూ ఉన్నప్పుడు, లిస్ట్‌లో ఏదైనా ఒక టాపిక్ మళ్లీ కనిపించవచ్చు. Chrome ఏవైనా టాపిక్‌లను సైట్‌లతో షేర్ చేయకూడదు అని మీరు భావిస్తే, వాటిని మీరు బ్లాక్ చేయవచ్చు. అలాగే Chrome సెట్టింగ్‌లలో ఎప్పుడైనా యాడ్ టాపిక్‌లను ఆఫ్ చేయవచ్చు.</translation>
+<translation id="1697808683313379647">ఈ ఆప్షన్‌లను అందించడానికి Google చెక్ అవుట్ పేజీలోని సమాచారాన్ని, ఇతర సంబంధిత డేటాను ఉపయోగిస్తుంది.</translation>
 <translation id="1699651774646344471">మీరు ఇప్పుడు మీ Google ఖాతా నుండి అడ్రస్‌లను ఉపయోగించుకోవచ్చు</translation>
 <translation id="1700542542921501212">మీరు <ph name="SEARCH_ENGINE_NAME" />‌ను ఉపయోగించి వెబ్‌లో సెర్చ్ చేయవచ్చు.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1717,7 +1718,6 @@
 <translation id="3792826587784915501">కల్ట్ &amp; ఇండీ సినిమాలు</translation>
 <translation id="3793574014653384240">ఇటీవల ఏర్పడిన క్రాష్‌ల సంఖ్యలు, వాటికి గల కారణాలు</translation>
 <translation id="3795624560191557077">పబ్లిక్ డేటా ఉల్లంఘనలో బహిర్గతమైన పాస్‌వర్డ్‌ను మీరు ఇటీవల మార్చారు. సమస్యగా ఉంటే, సైన్ ఇన్ చేయడానికి Google Password Manager మీకు సహాయపడగలదు.</translation>
-<translation id="3796181268473765083">4 వడ్డీ రహిత లేదా నెలవారీ వాయిదాలలో పేమెంట్ చేయండి (అర్హత ఉందో లేదో చెక్ చేయాల్సి ఉంటుంది)</translation>
 <translation id="3799805948399000906">రిక్వెస్ట్ చేసిన ఫాంట్</translation>
 <translation id="3801297763951514916">మీరు తరచుగా సందర్శించినది</translation>
 <translation id="380329542618494757">పేరు</translation>
@@ -3698,6 +3698,7 @@
 <translation id="7031646650991750659">ఏ Google Play యాప్‌లు మీరు ఇన్‌స్టాల్ చేశారు</translation>
 <translation id="7035705295266423040">ఇది మీరేనని మీ బ్యాంక్ వెరిఫై చేయాలనుకుంటుంది</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Google ఖాతాకు సంబంధించిన గోప్యతా సెట్టింగ్‌లను మేనేజ్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
+<translation id="7042465939346919737">ఈ ఆప్షన్‌లను అందించడానికి Google చెక్ అవుట్ పేజీలోని సమాచారాన్ని, ఇతర సంబంధిత డేటాను ఉపయోగిస్తుంది. 'తర్వాత పే చేయండి' ఆప్షన్‌లను దాచడానికి, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />‌కు వెళ్లండి</translation>
 <translation id="7042616127917168121">ఫలితాలను మెరుగుపరుస్తుంది</translation>
 <translation id="7043552168914147882">ట్యాబ్ స్టాక్</translation>
 <translation id="7044081119134178347">ఈసారి కెమెరాకు అనుమతి ఉంది</translation>

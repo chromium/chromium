@@ -4418,7 +4418,6 @@
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />შეიტყვეთ მეტი მდებარეობის სიზუსტის შესახებ<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">იმპორტირებული</translation>
 <translation id="3992008114154328194">მიმდინარეობს <ph name="FILE_NAME" />-ის ჩამოტვირთვა, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">მონაცემთა სარეზერვო კოპირება</translation>
 <translation id="3994075804072562819">მიეცით <ph name="SPECIFIC_NAME" />-ს USB მოწყობილობების მართვის უფლება.</translation>
 <translation id="3994318741694670028">სამწუხაროდ, თქვენი კომპიუტერი კონფიგურირებულია აპარატურის არასწორად ფორმირებული ID-თი. ეს ხელს უშლის ChromeOS Flex-ში უსაფრთხოების უახლესი შესწორებების დაყენებას, რის გამოც თქვენი კომპიუტერი <ph name="BEGIN_BOLD" />შეიძლება გახდეს მავნე პროგრამების მხრიდან შეტევების ობიექტი<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" />-ის განსაბლოკად მოაახლოვეთ და განბლოკეთ თქვენი ტელეფონი.</translation>
@@ -7718,7 +7717,6 @@
 <translation id="6336038146639916978"><ph name="MANAGER" />-მა გაითიშა ADB გამართვა. ამის გამო თქვენი <ph name="DEVICE_TYPE" /> გადაიტვირთება 24 საათში. შექმენით იმ ფაილების სარეზერვო ასლები, რომელთა შენარჩუნებაც გსურთ.</translation>
 <translation id="6336194758029258346">აპის ენა</translation>
 <translation id="6337543438445391085">მონაცემებს, შესაძლოა, მაინც დაერთოს გარკვეული პერსონალური ინფორმაცია. აუცილებლად შეამოწმეთ ექსპორტირებული ფაილები.</translation>
-<translation id="6338554362382763574">დათვალიერების დროს შეგიძლიათ მარტივად დაუსვათ Gemini-ს კითხვები თქვენ მიერ გაზიარებული ჩანართების შესახებ</translation>
 <translation id="6338968693068997776">დაამატეთ USB მოწყობილობა</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" />-სთვის ახალი პროფილის შექმნა</translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8338,7 +8336,6 @@
     <ph name="BEGIN_PARAGRAPH2" />ამ სერვისის გამორთვა შეგიძლიათ პარამეტრებიდან.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux სარეზერვო კოპირება გაუქმდა</translation>
 <translation id="6782067259631821405">PIN-კოდი არასწორია</translation>
-<translation id="6782219876520622071">საუბრები გაზიარებული ჩანართების შესახებ შეიძლება ნახონ ადამიანმა მიმომხილველებმა Gemini-ს გაუმჯობესების მიზნით</translation>
 <translation id="6783036716881942511">გსურთ ამ მოწყობილობის დავიწყება?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive-ის პარამეტრები</translation>
 <translation id="6784523122863989144">პროფილი მხარდაჭერილია</translation>
@@ -9534,7 +9531,6 @@
 <translation id="7620616707541471029">გასაგრძელებლად აირჩიეთ ანგარიში</translation>
 <translation id="7621382409404463535">სისტემამ ვერ მოახერხა მოწყობილობის კონფიგურაციის შენახვა.</translation>
 <translation id="7621595347123595643">პაროლის ან PIN-კოდის დავიწყების შემთხვევაში, ადგილობრივი მონაცემების აღდგენას ვერ მოახერხებთ.</translation>
-<translation id="7621863462266622331">ჩანართების გაზიარებისას მათი კონტენტი, მედია და URL-ები ეგზავნება Google-ს</translation>
 <translation id="7622114377921274169">იტენება.</translation>
 <translation id="7622768823216805500">როგორც წესი, გადახდის დამმუშავებლები საიტების მიერ ინსტალირდება საყიდლებთან დაკავშირებული მიზნით, მაგალითად, უფრო მარტივი ანგარიშსწორებისთვის</translation>
 <translation id="7622966771025050155">აღბეჭდილ ჩანართზე გადართვა</translation>

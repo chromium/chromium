@@ -492,6 +492,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{A túa organización pechará Chrome automaticamente cando leve 1 minuto sen usarse. Os datos de navegación (entre os que se poderían incluír o historial, os datos da función de autocompletar e as descargas) eliminaranse.}other{A túa organización pechará Chrome automaticamente cando leve # minutos sen usarse. Os datos de navegación (entre os que se poderían incluír o historial, os datos da función de autocompletar e as descargas) eliminaranse.}}</translation>
 <translation id="6418662306461808273">Queres cambiar ao perfil existente de Chrome?</translation>
 <translation id="6426623519983252346">A próxima vez que abras Chrome en iOS, verás unha solicitude para probar <ph name="FEATURE_NAME" />.</translation>
+<translation id="6434035853014503219">Grazas por escoller Chrome como navegador predeterminado!</translation>
 <translation id="6473905796280459355">Ir á páxina Acerca de Chrome</translation>
 <translation id="6481963882741794338">Vincula Chrome e outros servizos de Google para beneficiarte da personalización, entre outras cousas</translation>
 <translation id="648319183876919572">Navegación segura mellorada é máis eficaz á hora de protexerte de descargas e sitios web perigosos</translation>
@@ -588,6 +589,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="756809126120519699">Borráronse os datos de Chrome</translation>
 <translation id="7572537927358445944">Desactivado • Chrome non pode verificar de onde procede esta extensión</translation>
 <translation id="7583399374488819119">Instalador de <ph name="COMPANY_NAME" /></translation>
+<translation id="7596160425942761210">Podes usar Chrome cada vez que fagas clic nas ligazóns de mensaxes, documentos e outras aplicacións</translation>
 <translation id="7602868996817972616">Pregúntalle a Google sobre esta páxina</translation>
 <translation id="760353356052806707">Outro programa do teu ordenador engadiu unha aplicación que pode cambiar o funcionamento de Chrome.
 
@@ -683,6 +685,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8601359445272098721">Novidade! Podes traducir texto e imaxes na túa pantalla co botón Traducir pantalla</translation>
 <translation id="8614913330719544658">Google Chrome non responde. Queres volver inicialo agora?</translation>
 <translation id="861702415419836452">Chrome necesita permiso de acceso á cámara co fin de crear un mapa 3D do que te rodea</translation>
+<translation id="8624541899164515475">Configuración (ábrese nunha pestana nova).</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome reiniciarase en 1 minuto}other{Chrome reiniciarase en # minutos}}</translation>
 <translation id="8637932705841171563">Para compartir a ventá, vai á configuración do sistema e activa a función de gravación de pantalla para Chrome</translation>
 <translation id="8641606876632989680">Chrome enviarache unha notificación cando inicies sesión cun contrasinal vulnerado</translation>

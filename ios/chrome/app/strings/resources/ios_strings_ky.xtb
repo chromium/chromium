@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
+<translation id="1004825134262590729">{count,plural, =1{{count} киргизүүчү ачкыч}other{{count} киргизүүчү ачкыч}}</translation>
 <translation id="1005023885865154304">Сырсөздөрдү автотолтуруу параметрлерин ачыңыз</translation>
 <translation id="1005230401424685968">ЖЖЖЖ</translation>
 <translation id="1013952917065545813">Бул жерге кайтып келип, жакында жабылган өтмөктөрдү кайра ача аласыз</translation>
@@ -41,6 +42,7 @@
 <translation id="1122068467107743258">Жумуш</translation>
 <translation id="1126696498560056882">Ушул түзмөктөгү аккаунттарды тескөө</translation>
 <translation id="1126809382673880764">Кооптуу вебсайттардан, жүктөлүп алынган файлдардан жана кеңейтүүлөрдөн коргобойт. Gmail жана Издөө сыяктуу Google'дун башка кызматтарында мүмкүн болгондо Коопсуз серептөө иштетилет.</translation>
+<translation id="1133418583142946603">Учурдагы түзмөктү кошуу</translation>
 <translation id="1136104150802877429">Товарлардын сын-пикирлерин көрсөтөт</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" /> каналындагы жаңылыктар тууралуу эскертмелерди өчүрүү</translation>
 <translation id="1147031633655575115"><ph name="USER" /> катары кирдиңиз</translation>
@@ -77,6 +79,7 @@
 <translation id="1285320974508926690">Бул сайт эч качан которулбасын</translation>
 <translation id="1287229685519872919">Google Workspace'теги маалымат</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> сайтынан чыкканыңызда ага берилген уруксаттар өчүрүлөт.</translation>
+<translation id="1293556467332435079">Файлдар</translation>
 <translation id="129553762522093515">Жакында жабылган</translation>
 <translation id="1296581780163690620">Файлды жүктөп аласызбы? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Google аккаунтуңуздагы сырсөздөрдү каалаган убакта колдонуу үчүн бул өзүңүз экениңизди ырастаңыз.</translation>
@@ -1043,6 +1046,7 @@
 <translation id="5055015094595227120">Так дарек</translation>
 <translation id="5055551113846164633">Бул түзмөктө сакталган даректер өчүрүлөт. Google аккаунтуңузда (<ph name="USER_EMAIL" />) сакталган даректер да өчүрүлөт.</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> маселелер табылды.</translation>
+<translation id="5056587122125565772">Сүрөт түзүү</translation>
 <translation id="5059136629401106827">Жарайт</translation>
 <translation id="5062321486222145940">Google Drive'ды орнотуу</translation>
 <translation id="5067540696062462445">Жүктөлүп алынгандар</translation>
@@ -1504,6 +1508,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6659660757330712663">Өтмөктөрдүн арасында которулуу үчүн куралдар тилкесин сүрүп коюңуз.</translation>
 <translation id="6663529247339810546">Сүрөт сакталбайт</translation>
 <translation id="6668619169535738264">Кыстарманы түзөтүү</translation>
+<translation id="6670729408462528018">Галерея</translation>
 <translation id="6671294218820966278">Окулган деп белгилөө</translation>
 <translation id="6672697278890207089">Сыр сүйлөмүңүздү жазыңыз</translation>
 <translation id="6674917187596384849">Аккаунттарды оңой которуштура аласыз</translation>
@@ -2214,5 +2219,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="984275831282074731">Төлөм ыкмалары</translation>
 <translation id="985379595344853742">Бардык жашыруун өтмөктөрдү жабуу</translation>
 <translation id="988141524645182168">Бшк түзмкт</translation>
+<translation id="995174784802614337">{count,plural, =1{{count} киргизүүчү ачкыч өткөрүлүп алынды}other{{count} киргизүүчү ачкыч өткөрүлүп алынды}}</translation>
 <translation id="999768147936949692">Азырынча сырсөздөрдү үй-бүлөлүк топтун мүчөлөрү менен гана бөлүшө аласыз. <ph name="BEGIN_LINK" />Үй-бүлөлүк топтун мүчөлөрүн<ph name="END_LINK" /> топко чакырып, Google кызматтарын жана жазылууларыңызды толук колдонуңуз.</translation>
 </translationbundle>

@@ -42,6 +42,7 @@
 <translation id="1122068467107743258">Posao</translation>
 <translation id="1126696498560056882">Upravljajte nalozima na ovom uređaju</translation>
 <translation id="1126809382673880764">Ne štiti vas od opasnih veb-sajtova, preuzimanja i dodataka. U drugim Google uslugama, kao što su Gmail i Pretraga, i dalje ćete imati zaštitu pomoću Bezbednog pregledanja kada je dostupna.</translation>
+<translation id="1133418583142946603">Dodaj aktuelnu karticu</translation>
 <translation id="1136104150802877429">Prikazuje recenzije proizvoda</translation>
 <translation id="1142371195993008685">Isključi obaveštenja za: <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Prijavljeni ste kao <ph name="USER" /></translation>
@@ -78,6 +79,7 @@
 <translation id="1285320974508926690">Nikad ne prevodi ovaj sajt</translation>
 <translation id="1287229685519872919">Google Workspace podaci</translation>
 <translation id="1291506870746876680">Dozvole za <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> će se resetovati i isključiti kad napustite ovaj sajt.</translation>
+<translation id="1293556467332435079">Fajlovi</translation>
 <translation id="129553762522093515">Nedavno zatvoreno</translation>
 <translation id="1296581780163690620">Želite da preuzmete fajl? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Da biste bili sigurni da uvek možete da koristite lozinke na Google nalogu, potvrdite svoj identitet.</translation>
@@ -1044,6 +1046,7 @@
 <translation id="5055015094595227120">Precizna lokacija</translation>
 <translation id="5055551113846164633">Ovim se brišu adrese sačuvane na ovom uređaju. Brišu se i adrese sačuvane na Google nalogu <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Problemi su pronađeni <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">Napravi sliku</translation>
 <translation id="5059136629401106827">Potvrdi</translation>
 <translation id="5062321486222145940">Instaliraj Google disk</translation>
 <translation id="5067540696062462445">Preuzimanja</translation>
@@ -1505,6 +1508,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6659660757330712663">Možete da prevlačite traku s alatkama da biste prelazili sa jedne kartice na drugu.</translation>
 <translation id="6663529247339810546">Čuvanje slike nije uspelo</translation>
 <translation id="6668619169535738264">Izmeni obeleživač</translation>
+<translation id="6670729408462528018">Galerija</translation>
 <translation id="6671294218820966278">Označi kao pročitano</translation>
 <translation id="6672697278890207089">Unos pristupne fraze</translation>
 <translation id="6674917187596384849">Možete lako da prelazite sa jednog naloga na drugi</translation>

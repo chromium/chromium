@@ -4433,7 +4433,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Få flere oplysninger om Lokationsnøjagtighed<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Importeret</translation>
 <translation id="3992008114154328194">Downloader <ph name="FILE_NAME" /> – <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Sikkerhedskopiér data</translation>
 <translation id="3994075804072562819">Giv <ph name="SPECIFIC_NAME" /> kontrol over USB-enheder.</translation>
 <translation id="3994318741694670028">Din computer er desværre konfigureret med et hardware-id i forkert format. Dette forhindrer ChromeOS Flex i at opdatere med de nyeste sikkerhedsrettelser, og din computer <ph name="BEGIN_BOLD" />kan være sårbar over for ondartede angreb<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Lås din telefon op, og flyt den tættere på din <ph name="DEVICE_TYPE" /> for at låse den op.</translation>
@@ -7733,7 +7732,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> har deaktiveret ADB-fejlretning. Dette medfører, at din <ph name="DEVICE_TYPE" /> nulstilles om 24 timer. Sikkerhedskopiér de filer, du vil beholde.</translation>
 <translation id="6336194758029258346">Appsprog</translation>
 <translation id="6337543438445391085">Visse personlige oplysninger medtages muligvis stadig i dataene. Sørg for at gennemgå de eksporterede filer.</translation>
-<translation id="6338554362382763574">Du kan nemt stille Gemini spørgsmål om de faner, du deler, mens du browser</translation>
 <translation id="6338968693068997776">Tilføj USB-enhed</translation>
 <translation id="6339668969738228384">Opret en ny profil for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8355,7 +8353,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
     <ph name="BEGIN_PARAGRAPH2" />Du kan deaktivere denne tjeneste i Indstillinger.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux-sikkerhedskopieringen blev annulleret</translation>
 <translation id="6782067259631821405">Ugyldig pinkode</translation>
-<translation id="6782219876520622071">Samtaler om delte faner kan blive set af menneskelige kontrollanter for at forbedre Gemini</translation>
 <translation id="6783036716881942511">Skal denne enhed glemmes?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive-indstillinger</translation>
 <translation id="6784523122863989144">Profilen understøttes</translation>
@@ -9553,7 +9550,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7620616707541471029">Vælg en konto for at fortsætte</translation>
 <translation id="7621382409404463535">Systemet kunne ikke gemme enhedskonfigurationen.</translation>
 <translation id="7621595347123595643">Du kan ikke gendanne lokale data, hvis du glemmer din adgangskode eller pinkode.</translation>
-<translation id="7621863462266622331">Når faner deles, sendes deres sideindhold, medier og webadresser til Google</translation>
 <translation id="7622114377921274169">Oplader.</translation>
 <translation id="7622768823216805500">Websites installerer normalt betalingshandlere til shoppingformål såsom nemmere betaling</translation>
 <translation id="7622966771025050155">Skift til den registrerede fane</translation>
@@ -10899,6 +10895,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8517759303731677493">Rediger…</translation>
 <translation id="8518809011298357036">Luk øverste visning</translation>
 <translation id="8518942514525208851">Skjul ukvemsord</translation>
+<translation id="8520238089740349550">Mislykket – Lokal download er blokeret</translation>
 <translation id="8523493869875972733">Behold ændringerne</translation>
 <translation id="8523849605371521713">Tilføjet af politik</translation>
 <translation id="8524594273111932386">søgetasten + pil ned</translation>

@@ -520,6 +520,7 @@ Alcune funzioni potrebbero non essere disponibili. Specifica un'altra directory 
 <translation id="705851970750939768">Aggiorna Chromium</translation>
 <translation id="7067091210845072982">Se un'immagine è senza descrizione utile, Chromium proverà a fornirne una. Per la creazione delle descrizioni, le immagini vengono inviate a Google.</translation>
 <translation id="7141270731789036260">Personalizza Chrome for Testing</translation>
+<translation id="7147227333672430807">Puoi usare Chromium ogni volta che fai clic sui link in messaggi, documenti e altre app</translation>
 <translation id="7163519456498498587">Rimuovi <ph name="EXTENSION_NAME" /> da Chromium</translation>
 <translation id="7173822816570314652">La tua organizzazione elimina i dati di Chromium quando non vengono utilizzati per <ph name="TIMEOUT_DURATION" />. Potrebbero essere inclusi cronologia, compilazione automatica e download.</translation>
 <translation id="718435575166326686">Chromium deve avere l'autorizzazione di accesso alla fotocamera per questo sito</translation>
@@ -634,6 +635,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8471947159125090285">Per usare e salvare i dati di Chromium nel tuo Account Google, verifica la tua identità</translation>
 <translation id="8482493977473846331">Mostra le richieste di accesso a Chromium</translation>
 <translation id="8493179195440786826">Chromium non è aggiornato</translation>
+<translation id="850264194101621529">Grazie per aver scelto Chromium come browser predefinito.</translation>
 <translation id="8522801943730206384">Chromium può controllare le password quando le salvi</translation>
 <translation id="8555465886620020932">Errore del servizio: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8556420416730706394">Puoi bloccare la ricerca immagini per un facile accesso; fai clic sul pulsante Blocca nella parte superiore del riquadro laterale</translation>
@@ -643,6 +645,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="8601359445272098721">Novità. Puoi tradurre sia testo che immagini sullo schermo selezionando il pulsante "Traduzione schermata"</translation>
 <translation id="8619360774459241877">Avvio di Chromium...</translation>
+<translation id="8624541899164515475">Impostazioni, si apre in una nuova scheda.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing non può essere impostato come browser predefinito.</translation>
 <translation id="8677922833187616101">Mostra sempre la scorciatoia di Google AI Mode</translation>
 <translation id="8697124171261953979">Controlla anche la pagina visualizzata all'avvio di Chromium o quando esegui ricerche dalla Omnibox.</translation>

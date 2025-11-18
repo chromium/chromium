@@ -521,6 +521,7 @@ Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilka
 <translation id="705851970750939768">Oppdater Chromium</translation>
 <translation id="7067091210845072982">Hvis et bilde ikke har noen nyttig beskrivelse, prøver Chromium å finne en til deg. For å opprette beskrivelser blir bilder sendt til Google.</translation>
 <translation id="7141270731789036260">Tilpass Chrome for testing</translation>
+<translation id="7147227333672430807">Du kan bruke Chromium hver gang du klikker på linker i meldinger, dokumenter og andre apper</translation>
 <translation id="7163519456498498587">Fjern <ph name="EXTENSION_NAME" /> fra Chromium</translation>
 <translation id="7173822816570314652">Organisasjonen din sletter Chromium-data når de ikke har vært i bruk på <ph name="TIMEOUT_DURATION" />. Dette kan omfatte loggen, autofyll og nedlastinger.</translation>
 <translation id="718435575166326686">Chromium trenger kameratillatelse for dette nettstedet</translation>
@@ -635,6 +636,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8471947159125090285">For å bruke og lagre Chromium-data i Google-kontoen din, bekreft at det er deg</translation>
 <translation id="8482493977473846331">Viser oppfordringer som ber deg logge på Chromium.</translation>
 <translation id="8493179195440786826">Chromium er utdatert</translation>
+<translation id="850264194101621529">Takk for at du har valgt Chromium som standardnettleser!</translation>
 <translation id="8522801943730206384">Chromium kan sjekke passordene dine når du lagrer dem</translation>
 <translation id="8555465886620020932">Tjenestefeil: ‏<ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Du kan feste bildesøk for enklere tilgang. Klikk på Fest-knappen øverst i sidepanelet.</translation>
@@ -644,6 +646,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – The Chromium Authors. Med enerett.</translation>
 <translation id="8601359445272098721">Nyhet! Du kan oversette både tekst og bilder på skjermen ved å velge «Oversett skjermen»-knappen</translation>
 <translation id="8619360774459241877">Starter Chromium ...</translation>
+<translation id="8624541899164515475">Innstillinger (åpnes i en ny fane).</translation>
 <translation id="8648201657708811153">Google Chrome for testing kan ikke brukes som standardnettleser.</translation>
 <translation id="8677922833187616101">Vis alltid snarveien til AI-modus fra Google</translation>
 <translation id="8697124171261953979">Den styrer også hvilken side som vises når du starter Chromium eller søker fra multifunksjonsfeltet.</translation>

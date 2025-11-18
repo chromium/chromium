@@ -521,6 +521,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="705851970750939768">Chromium'u güncəlləşdirin</translation>
 <translation id="7067091210845072982">Şəklin təsviri faydalı deyilsə, Chromium Sizin üçün təsviri təmin etməyə çalışacaq. Təsvir yaratmaq üçün şəkillər Google'a göndərilir.</translation>
 <translation id="7141270731789036260">Sınaq üçün Chrome-u fərdiləşdirin</translation>
+<translation id="7147227333672430807">İstənilən vaxt mesaj, sənəd və digər tətbiqlərdə keçidlərə kliklədikdə Chromium-dan istifadə edə bilərsiniz</translation>
 <translation id="7163519456498498587"><ph name="EXTENSION_NAME" /> artırmasını Chromium-dan silin</translation>
 <translation id="7173822816570314652">Chromium datası <ph name="TIMEOUT_DURATION" /> istifadə edilməsə, təşkilat onu silir. Bura tarixçə, avto doldurma və endirmələr daxil ola bilər.</translation>
 <translation id="718435575166326686">Chromium bu sayt üçün kamera icazəsi tələb edir</translation>
@@ -633,6 +634,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="8471947159125090285">Chromium datasını Google Hesabınızda istifadə etmək və yadda saxlamaq üçün kimliyinizi doğrulayın</translation>
 <translation id="8482493977473846331">Chromium-a giriş sorğularını göstərir</translation>
 <translation id="8493179195440786826">Chromium'um vaxtı keçib</translation>
+<translation id="850264194101621529">Chromium-u defolt brauzer seçdiyiniz üçün təşəkkür edirik!</translation>
 <translation id="8522801943730206384">Chromium yadda saxlanan parolları yoxlaya bilər</translation>
 <translation id="8555465886620020932">Xidmət xətası: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Asan giriş üçün Şəkil Axtarışını bərkidə bilərsiniz; yan panelin yuxarısındakı Bərkitmə düyməsinə klikləyin</translation>
@@ -642,6 +644,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="8586442755830160949">Müəlliflik Hüququ <ph name="YEAR" /> Chromium Müəllifləri. Bütün hüquqlar qorunur.</translation>
 <translation id="8601359445272098721">Yenilik! "Ekranı tərcümə edin" düyməsini seçməklə həm ekrandakı mətni, həm də təsvirləri tərcümə edə bilərsiniz</translation>
 <translation id="8619360774459241877">Chromium başlayır...</translation>
+<translation id="8624541899164515475">Ayarlar, yeni tabda açılır.</translation>
 <translation id="8648201657708811153">Sınaq üçün Google Chrome defolt brauzer ola bilməz.</translation>
 <translation id="8677922833187616101">Google Sİ rejimi qısayolu həmişə göstərilsin</translation>
 <translation id="8697124171261953979">O, həmçinin Chromium'u başlatdığınız zaman və ya Omnibox'dan axtarış etdiyiniz zaman göstərilən səhifəyə nəzarət edir.</translation>

@@ -484,6 +484,7 @@
 <translation id="6417690341895039567">{COUNT,plural, =1{Organizația ta închide automat Chrome dacă nu este folosit timp de un minut. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}few{Organizația ta închide automat Chrome dacă nu este folosit timp de # minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}other{Organizația ta închide automat Chrome dacă nu este folosit timp de # de minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}}</translation>
 <translation id="6418662306461808273">Schimbi la profilul Chrome existent?</translation>
 <translation id="6426623519983252346">Vei vedea o solicitare de a încerca <ph name="FEATURE_NAME" /> data viitoare când deschizi Chrome în iOS.</translation>
+<translation id="6434035853014503219">Mulțumim că ai ales Chrome ca browser prestabilit!</translation>
 <translation id="6473905796280459355">Accesează pagina Despre Chrome</translation>
 <translation id="6481963882741794338">Conectează Chrome și alte servicii Google pentru personalizare și alte scopuri</translation>
 <translation id="648319183876919572">Navigarea sigură îmbunătățită face mai multe pentru a te proteja împotriva site-urilor și a descărcărilor periculoase</translation>
@@ -580,6 +581,7 @@
 <translation id="756809126120519699">Datele Chrome au fost șterse</translation>
 <translation id="7572537927358445944">Dezactivată • Chrome nu poate verifica de unde provine această extensie</translation>
 <translation id="7583399374488819119">Program de instalare <ph name="COMPANY_NAME" /></translation>
+<translation id="7596160425942761210">Poți folosi Chrome oricând dai clic pe linkuri în mesaje, documente și alte aplicații</translation>
 <translation id="7602868996817972616">Întreabă Google despre această pagină</translation>
 <translation id="760353356052806707">Un alt program de pe computerul tău a adăugat o aplicație care poate schimba modul în care funcționează Chrome.
 
@@ -675,6 +677,7 @@
 <translation id="8601359445272098721">Nou! Poți traduce atât textul, cât și imaginile de pe ecran selectând butonul Tradu ecranul</translation>
 <translation id="8614913330719544658">Google Chrome nu mai răspunde. Îl repornești acum?</translation>
 <translation id="861702415419836452">Chrome are nevoie de permisiunea de a accesa camera foto pentru a crea o hartă 3D a lucrurilor din jurul tău</translation>
+<translation id="8624541899164515475">Setări, se deschide într-o filă nouă.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome se va relansa într-un minut}few{Chrome se va relansa în # minute}other{Chrome se va relansa în # de minute}}</translation>
 <translation id="8637932705841171563">Pentru a permite accesul la fereastră, permite înregistrarea ecranului pentru Chrome din Setări de sistem</translation>
 <translation id="8641606876632989680">Chrome te va anunța dacă te conectezi folosind o parolă compromisă</translation>

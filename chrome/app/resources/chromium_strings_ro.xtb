@@ -521,6 +521,7 @@ Este posibil ca unele funcții să nu fie disponibile. Specificați un director 
 <translation id="705851970750939768">Actualizează Chromium</translation>
 <translation id="7067091210845072982">Dacă o imagine nu are o descriere utilă, Chromium va încerca să o completeze. Pentru a crea descrieri, imaginile sunt trimise la Google.</translation>
 <translation id="7141270731789036260">Personalizează Chrome for Testing</translation>
+<translation id="7147227333672430807">Poți folosi Chromium oricând dai clic pe linkuri în mesaje, documente și alte aplicații</translation>
 <translation id="7163519456498498587">Elimină <ph name="EXTENSION_NAME" /> din Chromium</translation>
 <translation id="7173822816570314652">Organizația ta șterge datele Chromium dacă nu sunt folosite timp de <ph name="TIMEOUT_DURATION" />. Aici pot fi incluse istoricul, completările automate și descărcările.</translation>
 <translation id="718435575166326686">Chromium are nevoie de acces la cameră pentru acest site</translation>
@@ -635,6 +636,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8471947159125090285">Pentru a folosi și a salva datele Chromium în Contul Google, confirmă-ți identitatea</translation>
 <translation id="8482493977473846331">Afișează solicitări pentru conectarea la Chromium</translation>
 <translation id="8493179195440786826">Chromium nu este actualizat</translation>
+<translation id="850264194101621529">Mulțumim că ai ales Chromium ca browser prestabilit!</translation>
 <translation id="8522801943730206384">Chromium îți poate verifica parolele dacă le salvezi</translation>
 <translation id="8555465886620020932">Eroare de serviciu: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Poți să fixezi Căutarea de imagini pentru acces ușor. Dă clic pe butonul Fixează din partea de sus a panoului lateral.</translation>
@@ -644,6 +646,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="8601359445272098721">Nou! Poți traduce atât textul, cât și imaginile de pe ecran selectând butonul Tradu ecranul</translation>
 <translation id="8619360774459241877">Se lansează Chromium...</translation>
+<translation id="8624541899164515475">Setări, se deschide într-o filă nouă.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing nu poate fi setat ca browser prestabilit.</translation>
 <translation id="8677922833187616101">Afișează întotdeauna comanda rapidă pentru Modul Google AI</translation>
 <translation id="8697124171261953979">Stabilește și ce pagină se afișează când porniți Chromium sau când căutați din caseta polivalentă.</translation>

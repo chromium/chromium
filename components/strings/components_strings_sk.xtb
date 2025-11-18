@@ -428,6 +428,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1689333818294560261">Prezývka</translation>
 <translation id="1692622044604477956">Zoznamy filmov a časy divadelných predstavení</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Ako môžete spravovať svoje údaje:<ph name="END_BOLD" /> Chrome automaticky odstraňuje témy staršie ako štyri týždne. Počas ďalšieho prehliadania sa určitá téma môže v zozname znova zobraziť. V nastaveniach Chromu môžete navyše zablokovať témy, ktoré Chrome nemá zdieľať s webmi, a kedykoľvek témy reklám vypnúť.</translation>
+<translation id="1697808683313379647">Google ponúka tieto možnosti na základe informácií zo stránky platby a ďalších relevantných údajov.</translation>
 <translation id="1699651774646344471">Teraz môžete používať adresy zo svojho účtu Google</translation>
 <translation id="1700542542921501212">Na internete môžete vyhľadávať pomocou vyhľadávača <ph name="SEARCH_ENGINE_NAME" />.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1718,7 +1719,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3792826587784915501">Kultové a indie filmy</translation>
 <translation id="3793574014653384240">Počty a príčiny nedávnych zrútení</translation>
 <translation id="3795624560191557077">Nedávno ste zmenili heslo, ktoré bolo odhalené pri verejnom porušení ochrany údajov. Ak budete mať problémy, Správca hesiel Google vám pomôže prihlásiť sa.</translation>
-<translation id="3796181268473765083">Platiť budete mesačne alebo v štyroch bezúročných splátkach (platia podmienky oprávnenosti)</translation>
 <translation id="3799805948399000906">Písmo bolo vyžiadané</translation>
 <translation id="3801297763951514916">Často navštevujete</translation>
 <translation id="380329542618494757">Meno</translation>
@@ -3698,6 +3698,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7031646650991750659">Ktoré aplikácie Google Play máte nainštalované.</translation>
 <translation id="7035705295266423040">Vaša banka chce overiť, že ste to vy</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter spravujte nastavenia ochrany súkromia svojho účtu Google</translation>
+<translation id="7042465939346919737">Google ponúka tieto možnosti na základe informácií zo stránky platby a ďalších relevantných údajov. Ak chcete skryť možnosti platby neskôr, prejdite na <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="7042616127917168121">Spresnenie výsledkov</translation>
 <translation id="7043552168914147882">Papier so záložkami</translation>
 <translation id="7044081119134178347">Kamera je momentálne povolená</translation>

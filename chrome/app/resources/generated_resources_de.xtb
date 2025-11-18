@@ -1049,6 +1049,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1699807488537653303">Passwortfehler beheben</translation>
 <translation id="1700201317341192482">Virtuelle Karte entfernen</translation>
 <translation id="1700517974991662022">Besucht</translation>
+<translation id="1701367827913789499">Aktiviere den Lesemodus über den Button in der Symbolleiste, um Texte ungestört und in einem übersichtlichen Format lesen zu können</translation>
 <translation id="1703331064825191675">Du musst dir keine Sorgen mehr um deine Passwörter machen</translation>
 <translation id="1703666494654169921">Websites dürfen keine Virtual-Reality-Geräte oder ‑Daten verwenden</translation>
 <translation id="1704097193565924901">Großschreibung</translation>
@@ -2955,6 +2956,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3008272652534848354">Berechtigungen zurücksetzen</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Gemäß <ph name="MANAGER" /> ist es notwendig, sich heute mit einem WLAN zu verbinden und ein Update herunterzuladen. Das Update kann auch über eine kostenpflichtige Verbindung heruntergeladen werden (hierfür können zusätzliche Gebühren anfallen).}other{Gemäß <ph name="MANAGER" /> ist es notwendig, sich vor Ablauf der Frist mit einem WLAN zu verbinden und ein Update herunterzuladen. Das Update kann auch über eine kostenpflichtige Verbindung heruntergeladen werden (hierfür können zusätzliche Gebühren anfallen).}}</translation>
 <translation id="3008923556848076408">Gemini arbeitet weiter an deiner Aufgabe</translation>
+<translation id="3008926075262837186">Texte ungestört und in einem übersichtlichen Format lesen</translation>
 <translation id="3009178788565917040">Ausgang</translation>
 <translation id="3009352964623081324">Suchtaste + O, anschließend S. Zum Installieren, Verwalten und Personalisieren von Stimmen verwenden.</translation>
 <translation id="3009779501245596802">Indexierte Datenbanken</translation>
@@ -4411,7 +4413,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Weitere Informationen zur Standortgenauigkeit<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Importiert</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> wird heruntergeladen, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Daten sichern</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" /> erlauben, USB-Geräte zu steuern.</translation>
 <translation id="3994318741694670028">Dein Computer wurde mit einer ungültigen Hardware-ID konfiguriert. Daher kann Chrome OS Flex keine aktuellen Sicherheitsupdates installieren und dein Computer ist <ph name="BEGIN_BOLD" />möglicherweise anfällig für schädliche Angriffe<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Entsperre dein Smartphone und verringere den Abstand zu deinem <ph name="DEVICE_TYPE" />.</translation>
@@ -7706,7 +7707,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> hat die ADB-Fehlerbehebung deaktiviert. Dadurch wird <ph name="DEVICE_TYPE" /> in 24 Stunden zurückgesetzt. Sichere alle Dateien, die du behalten möchtest.</translation>
 <translation id="6336194758029258346">App-Sprache</translation>
 <translation id="6337543438445391085">Es können immer noch einige personenbezogene Daten enthalten sein. Überprüfe die exportierten Dateien.</translation>
-<translation id="6338554362382763574">Während du surfst, kannst du Gemini ganz einfach Fragen zu den Inhalten der Tabs stellen, die du gerade teilst</translation>
 <translation id="6338968693068997776">USB-Gerät hinzufügen</translation>
 <translation id="6339668969738228384">Neues Profil für <ph name="USER_EMAIL_ADDRESS" /> erstellen</translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8326,7 +8326,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
     <ph name="BEGIN_PARAGRAPH2" />Du kannst diesen Dienst in den Einstellungen deaktivieren.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux-Sicherung abgebrochen</translation>
 <translation id="6782067259631821405">Ungültige PIN</translation>
-<translation id="6782219876520622071">Unterhaltungen zu geteilten Tabs können von Prüfern angesehen werden, um Gemini zu verbessern</translation>
 <translation id="6783036716881942511">Dieses Gerät entfernen?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive-Einstellungen</translation>
 <translation id="6784523122863989144">Profil wird unterstützt</translation>
@@ -9524,7 +9523,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7620616707541471029">Konto auswählen, um fortzufahren</translation>
 <translation id="7621382409404463535">Das System konnte die Gerätekonfiguration nicht speichern.</translation>
 <translation id="7621595347123595643">Wenn du dein Passwort oder deine PIN vergisst, kannst du keine lokalen Daten wiederherstellen.</translation>
-<translation id="7621863462266622331">Wenn Tabs geteilt werden, werden ihre Seiteninhalte, Medien und URLs an Google gesendet</translation>
 <translation id="7622114377921274169">Wird aufgeladen.</translation>
 <translation id="7622768823216805500">Websites installieren normalerweise Zahlungs-Handler für Einkaufsfunktionen wie eine schnellere Bezahlung</translation>
 <translation id="7622966771025050155">Zum geteilten Tab wechseln</translation>
@@ -10870,6 +10868,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8517759303731677493">Bearbeiten…</translation>
 <translation id="8518809011298357036">Obere Ansicht schließen</translation>
 <translation id="8518942514525208851">Vulgäre Sprache ausblenden</translation>
+<translation id="8520238089740349550">Fehler – lokaler Download blockiert</translation>
 <translation id="8523493869875972733">Änderungen beibehalten</translation>
 <translation id="8523849605371521713">Per Richtlinie hinzugefügt</translation>
 <translation id="8524594273111932386">Suchtaste + Abwärtspfeil</translation>

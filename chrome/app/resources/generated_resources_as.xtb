@@ -1051,6 +1051,7 @@
 <translation id="1699807488537653303">পাছৱৰ্ড সম্পৰ্কীয় আসোঁৱাহ সমাধান কৰক</translation>
 <translation id="1700201317341192482">আপোনাৰ ভাৰ্চুৱেল কাৰ্ডখন আঁতৰাওক</translation>
 <translation id="1700517974991662022">আপুনি যোৱা ঠাইসমূহ</translation>
+<translation id="1701367827913789499">টুলবাৰত থকা ৰীডিং ম’ডৰ বুটামটো ব্যৱহাৰ কৰি ন্যূনতম ব্যাঘাতৰ সৈতে আৰামত পঢ়ক</translation>
 <translation id="1703331064825191675">আপোনাৰ পাছৱৰ্ডসমূহক লৈ কেতিয়াও চিন্তিত নহ’ব</translation>
 <translation id="1703666494654169921">ছাইটক ভাৰ্চুৱেল ৰিয়েলিটি ডিভাইচ অথবা ডেটা ব্যৱহাৰ কৰাৰ অনুমতি নিদিব</translation>
 <translation id="1704097193565924901">বৰফলাৰ কৰক</translation>
@@ -2969,6 +2970,7 @@
 <translation id="3008272652534848354">অনুমতি ৰিছেট কৰক</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{আপডে’ট ডাউনল’ড কৰিবলৈ <ph name="MANAGER" />ৰ বাবে আপুনি আজি এটা ৱাই-ফাই নেটৱৰ্কৰ সৈতে সংযোগ কৰাৰ আৱশ্যক। অথবা, এটা নিৰিখ-নিৰ্দিষ্ট সংযোগৰ পৰা ডাউনল’ড কৰক (মাচুল প্ৰযোজ্য হ’ব পাৰে)।}one{<ph name="MANAGER" />ৰ বাবে আপুনি ৱাই-ফাইৰ সৈতে সংযোগ কৰাৰ আৰু নিৰ্ধাৰিত সময়সীমা পাৰ হোৱাৰ পূৰ্বে এটা আপডে’ট ডাউনল’ড কৰাৰ আৱশ্যক। অথবা, এটা নিৰিখ-নিৰ্দিষ্ট সংযোগৰ পৰা ডাউনল’ড কৰক (মাচুল প্ৰযোজ্য হ’ব পাৰে)।}other{<ph name="MANAGER" />ৰ বাবে আপুনি ৱাই-ফাইৰ সৈতে সংযোগ কৰাৰ আৰু নিৰ্ধাৰিত সময়সীমা পাৰ হোৱাৰ পূৰ্বে এটা আপডে’ট ডাউনল’ড কৰাৰ আৱশ্যক। অথবা, এটা নিৰিখ-নিৰ্দিষ্ট সংযোগৰ পৰা ডাউনল’ড কৰক (মাচুল প্ৰযোজ্য হ’ব পাৰে)।}}</translation>
 <translation id="3008923556848076408">Geminiএ আপোনাৰ কাৰ্যসমূহ কৰি থাকিব</translation>
+<translation id="3008926075262837186">ন্যূনতম ব্যাঘাতৰ সৈতে আৰামত পঢ়ক</translation>
 <translation id="3009178788565917040">আউটপুট</translation>
 <translation id="3009352964623081324">Search + O, তাৰ পাছত S। কণ্ঠধ্বনিসমূহ ইনষ্টল, পৰিচালনা আৰু কাষ্টমাইজ কৰিবলৈ ব্যৱহাৰ কৰক।</translation>
 <translation id="3009779501245596802">ইনডেক্স কৰা ডেটাবেছ</translation>
@@ -4426,7 +4428,6 @@
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />অৱস্থানৰ সঠিকতাৰ বিষয়ে অধিক জানক<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">আমদানি কৰা</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> ডাউনল’ড কৰি থকা হৈছে, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">ডেটাৰ বেক আপ লওক</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" />ক ইউএছবি ডিভাইচসমূহৰ নিয়ন্ত্ৰণ প্ৰদান কৰক।</translation>
 <translation id="3994318741694670028">দুৰ্ভাগ্যবশতঃ, আপোনাৰ কম্পিউটাৰটো এটা ভুল হাৰ্ডৱেৰ আইডিৰ সৈতে কনফিগাৰ কৰা আছে। ই ChromeOS Flexক সুৰক্ষা সম্পৰ্কীয় শেহতীয়া সমস্যাৰ সমাধান ব্যৱহাৰ কৰি আপডে’ট কৰিবলৈ নিদিয়ে আৰু আপোনাৰ কম্পিউটাৰটো <ph name="BEGIN_BOLD" />ক্ষতিকাৰক আক্ৰমণৰ বলি হোৱাৰ সম্ভাৱনা থাকিব পাৰে<ph name="END_BOLD" />।</translation>
 <translation id="3994374631886003300">আপোনাৰ ফনটো আনলক কৰক আৰু আপোনাৰ <ph name="DEVICE_TYPE" /> আনলক কৰিবলৈ ওচৰলৈ আনক।</translation>
@@ -7726,7 +7727,6 @@
 <translation id="6336038146639916978"><ph name="MANAGER" />এ ADB ডিবাগিং অক্ষম কৰিছে। ই ২৪ ঘণ্টাত আপোনাৰ <ph name="DEVICE_TYPE" /> ৰিছেট কৰিব। আপুনি ৰাখিবলৈ বিচৰা যিকোনো ফাইলৰ বেক আপ লওক।</translation>
 <translation id="6336194758029258346">এপৰ ভাষা</translation>
 <translation id="6337543438445391085">কিছুমান ব্যক্তিগত তথ্য তথাপিও ডেটাত অন্তৰ্ভুক্ত কৰা হ’ব পাৰে। ৰপ্তানি কৰা ফাইলসমূহ পৰ্যালোচনা কৰাটো নিশ্চিত কৰক।</translation>
-<translation id="6338554362382763574">আপুনি ব্ৰাউজ কৰোঁত আপুনি শ্বেয়াৰ কৰি থকা টেবসমূহৰ বিষয়ে Geminiক সহজে প্ৰশ্ন সুধিব পাৰে</translation>
 <translation id="6338968693068997776">ইউএছবি ডিভাইচ যোগ দিয়ক</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" />ৰ বাবে এটা নতুন প্ৰ’ফাইল সৃষ্টি কৰক</translation>
 <translation id="6340071272923955280">ইণ্টাৰনেট প্ৰিণ্টিং প্ৰ্ৰ'টকল (IPPS)</translation>
@@ -8123,6 +8123,7 @@
 <translation id="6619990499523117484">আপোনাৰ পিন নিশ্চিত কৰক</translation>
 <translation id="6620000730890558421">AIৰ জৰিয়তে আপোনাৰ টেবসমূহ শংখলাবদ্ধ কৰি ৰাখক</translation>
 <translation id="6620254580880484313">কণ্টেনাৰৰ নাম</translation>
+<translation id="6621282332208609777">Googleক সোধক বা এটা URL টাইপ কৰক</translation>
 <translation id="6621391692573306628">অন্য এটা ডিভাইচলৈ এই টেবটো পঠিয়াবলৈ, দুয়োটা ডিভাইচতে Chromeত ছাইন ইন কৰক</translation>
 <translation id="6622980291894852883">প্ৰতিচ্ছবি অৱৰোধ কৰাটো অব্যাহত ৰাখক</translation>
 <translation id="6624036901798307345">টেবলেট ম’ডত, প্ৰতিটো টেবৰ বাবে থাম্বনেইল দেখুওৱা নতুন টেবৰ ষ্ট্ৰিপটো খুলিবলৈ টেব কাউণ্টাৰৰ টুলবাৰৰ বুটামটোত টিপক।</translation>
@@ -8347,7 +8348,6 @@
     <ph name="BEGIN_PARAGRAPH2" />আপুনি ছেটিঙত এই সেৱাটো অফ কৰিব পাৰে।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux বেক আপ বাতিল কৰা হৈছে</translation>
 <translation id="6782067259631821405">অমান্য পিন</translation>
-<translation id="6782219876520622071">Gemini উন্নত কৰিবলৈ মানৱ পৰ্যালোচকে শ্বেয়াৰ কৰা টেবৰ বিষয়ে হোৱা বাৰ্তালাপসমূহ চাব পাৰে</translation>
 <translation id="6783036716881942511">এই ডিভাইচটো পাহৰি যাবনে?</translation>
 <translation id="6783667414610055871">Microsoft OneDriveৰ ছেটিং</translation>
 <translation id="6784523122863989144">প্ৰ’ফাইল সমৰ্থিত</translation>
@@ -10888,6 +10888,7 @@
 <translation id="8517759303731677493">সম্পাদনা কৰক…</translation>
 <translation id="8518809011298357036">ওপৰৰ ভিউ বন্ধ কৰক</translation>
 <translation id="8518942514525208851">অশালীনতা লুকুৱাওক</translation>
+<translation id="8520238089740349550">বিফল হৈছে - স্থানীয় ডাউনল’ড অৱৰোধ কৰা হৈছে</translation>
 <translation id="8523493869875972733">সালসলনিসমূহ ৰাখক</translation>
 <translation id="8523849605371521713">নীতিয়ে যোগ দিয়া</translation>
 <translation id="8524594273111932386">ছাৰ্চ + তলমুৱা কাঁড়</translation>
@@ -11760,6 +11761,7 @@
 <translation id="909554839118732438">ইনক’গনিট’ ৱিণ্ড’ বন্ধ কৰক</translation>
 <translation id="9095819602391364796">ছাইটসমূহক আপোনাৰ MIDI ডিভাইচ নিয়ন্ত্ৰণ আৰু ৰিপ্ৰ’গ্ৰাম কৰিবলৈ অনুমতি নিদিব</translation>
 <translation id="9096053102600371572">নিয়ন্ত্ৰিতভাৱে স্ক্ৰ’ল কৰা <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">বিকল্প তুলনা কৰক</translation>
 <translation id="9096776523567481218">স্থানীয়ভাৱে ইনষ্টল হৈ থকা নাই</translation>
 <translation id="9098860402274800697">Google Play আৰু Android এপ্‌সমূহ আঁতৰাওক</translation>
 <translation id="9099220545925418560">আপোনাৰ ব্ৰাউজিঙৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি। এই ছেটিংটো অফ হৈ আছে।</translation>

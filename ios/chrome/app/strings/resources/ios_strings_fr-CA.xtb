@@ -42,6 +42,7 @@
 <translation id="1122068467107743258">Professionnel</translation>
 <translation id="1126696498560056882">Gérer les comptes sur cet appareil</translation>
 <translation id="1126809382673880764">Ce mode ne vous protège pas contre les téléchargements, les extensions ni les sites Web dangereux. Vous profitez toujours de la protection de navigation sécurisée, lorsqu'elle est offerte, dans d'autres services Google, comme Gmail et la recherche.</translation>
+<translation id="1133418583142946603">Ajouter l'onglet actuel</translation>
 <translation id="1136104150802877429">Affiche les avis sur les produits</translation>
 <translation id="1142371195993008685">Désactiver les notifications pour <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Connecté en tant que <ph name="USER" /></translation>
@@ -78,6 +79,7 @@
 <translation id="1285320974508926690">Ne jamais traduire ce site</translation>
 <translation id="1287229685519872919">données Google Workspace</translation>
 <translation id="1291506870746876680">Les autorisations de <ph name="BEGIN_BOLD" />« <ph name="SITE_NAME" /> »<ph name="END_BOLD" />» seront désactivées lorsque vous quitterez ce site.</translation>
+<translation id="1293556467332435079">Fichiers</translation>
 <translation id="129553762522093515">Récemment fermés</translation>
 <translation id="1296581780163690620">Télécharger le fichier? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Pour vous assurer de toujours pouvoir utiliser les mots de passe dans votre compte Google, vérifiez qu'il s'agit bien de vous.</translation>
@@ -1044,6 +1046,7 @@
 <translation id="5055015094595227120">Position exacte</translation>
 <translation id="5055551113846164633">Cette action supprime les adresses enregistrées sur cet appareil. Elle supprime également les adresses enregistrées dans votre compte Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> problèmes trouvés.</translation>
+<translation id="5056587122125565772">Créer une image</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installer Google Disque</translation>
 <translation id="5067540696062462445">Téléchargements</translation>
@@ -1505,6 +1508,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6659660757330712663">Vous pouvez faire glisser la barre d'outils pour basculer entre les onglets.</translation>
 <translation id="6663529247339810546">Impossible d'enregistrer l'image</translation>
 <translation id="6668619169535738264">Modifier le favori</translation>
+<translation id="6670729408462528018">Galerie</translation>
 <translation id="6671294218820966278">Marquer comme lue</translation>
 <translation id="6672697278890207089">Entrer votre phrase de passe</translation>
 <translation id="6674917187596384849">Vous pouvez facilement passer d'un compte à l'autre</translation>
@@ -1661,6 +1665,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Vous avez déjà des mots de passe pour ces comptes dans votre gestionnaire de mots de passe Google. Si vous choisissez d'importer l'un des mots de passe ci-dessous, il remplacera l'ancien.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> pour cent téléchargé(s)</translation>
+<translation id="7345061034321640811">Importation non autorisée</translation>
 <translation id="7352651011704765696">Une erreur s’est produite</translation>
 <translation id="7363349185727752629">Un guide de vos choix en matière de confidentialité</translation>
 <translation id="7364796246159120393">Sélectionner un fichier</translation>
@@ -2202,6 +2207,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="952704832371081537">Annuler</translation>
 <translation id="95332591904104970">Applis connectées</translation>
 <translation id="954667170699278022">Liste de lecture</translation>
+<translation id="956066588046842680">L'importation de ces données n'est pas autorisée par la politique de votre organisation.</translation>
 <translation id="956218893102219091">Utilisez votre position exacte plutôt qu'une position estimée en fonction de votre adresse IP pour optimiser la précision des résultats de Gemini. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Supp. données de navigation</translation>
 <translation id="963102227019621224">Activité sur le Web et dans les applis</translation>

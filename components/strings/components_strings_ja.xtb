@@ -425,6 +425,7 @@
 <translation id="1682696192498422849">短辺から</translation>
 <translation id="168693727862418163">このポリシーの値は、スキーマの検証でエラーとなったため無視されます。</translation>
 <translation id="168841957122794586">サーバー証明書に脆弱な暗号鍵が含まれています。</translation>
+<translation id="1688718429648938412">ポイントカードをウォレットに保存</translation>
 <translation id="1689333818294560261">ニックネーム</translation>
 <translation id="1692622044604477956">映画情報、劇場情報</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />データの管理方法:<ph name="END_BOLD" /> Chrome では、4 週間以上経過したトピックは自動的に削除されます。ウェブサイトを引き続き閲覧していると、トピックがリストに再度表示されることがあります。また Chrome の設定で、いつでもウェブサイトと共有しないトピックをブロックしたり、広告のトピックを無効にしたりすることができます。</translation>
@@ -1723,7 +1724,6 @@
 <translation id="3792826587784915501">カルト映画、インディーズ映画</translation>
 <translation id="3793574014653384240">最近発生した問題の件数と原因</translation>
 <translation id="3795624560191557077">一般に報告されているデータ侵害で検出されたパスワードを最近変更しました。問題が発生した場合は、Google パスワード マネージャーを使用してログインできます。</translation>
-<translation id="3796181268473765083">無利子分割払い（4 回）、または毎月の分割払いで支払いを行います（利用条件があります）</translation>
 <translation id="3799805948399000906">リクエストされたフォント</translation>
 <translation id="3801297763951514916">頻繁にアクセス</translation>
 <translation id="380329542618494757">名前</translation>
@@ -2949,6 +2949,7 @@
 <translation id="5813753398265398978">物理学</translation>
 <translation id="5817918615728894473">ペア設定</translation>
 <translation id="5820625124144807242">注文の確認が完了したら、<ph name="BNPL_ISSUER_NAME" /> のアカウントにログインするか、アカウントを作成する必要があります。このアカウントは自動的に Google Pay にリンクされます。</translation>
+<translation id="5820751560028604030">ローカルへのダウンロードがブロックされました</translation>
 <translation id="5826507051599432481">一般名（CN）</translation>
 <translation id="5830698870816298009">カメラの使用と移動</translation>
 <translation id="5831217499016131155">Google ウォレット</translation>
@@ -3661,6 +3662,7 @@
 <translation id="6965978654500191972">デバイス</translation>
 <translation id="696703987787944103">知覚的</translation>
 <translation id="6967851206780867018">コンテンツが原因で 1 個のファイルがブロックされました</translation>
+<translation id="6968217325369275594">情報を保存すると、お使いのどのデバイスからでも最新の情報にアクセスできます。情報は <ph name="ACCOUNT" /> の <ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" /> に保存されます。</translation>
 <translation id="6970885655016700774">布（アーカイバル）</translation>
 <translation id="6971439137020188025">スライドで新しい Google プレゼンテーションをすばやく作成します</translation>
 <translation id="6972629891077993081">HID デバイス</translation>

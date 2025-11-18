@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Η λίστα ομάδων καρτελών έκλεισε</translation>
 <translation id="3194464645767632461">αξιολόγηση</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Προσθήκη <ph name="TABS_COUNT_ONE" /> καρτέλας σε ομάδα}other{Προσθήκη <ph name="TABS_COUNT_MANY" /> καρτελών σε ομάδα}}</translation>
+<translation id="3293080634164207409">Προσθήκη καρτελών</translation>
 <translation id="3328308545011660196">Πρόταση: <ph name="NUMBER_OF_TABS" /> καρτέλες φαίνονται σχετικές. Να γίνει ομαδοποίηση;</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Μετά από 1 ημέρα αδράνειας}other{Μετά από <ph name="DAY_COUNT_MANY" /> ημέρες αδράνειας}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> νέα καρτέλα}other{<ph name="MANY_ADDED" /> νέες καρτέλες}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">Δραστηριότητα</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Αξιολόγηση <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> κριτική}other{Αξιολόγηση <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> κριτικές}}</translation>
 <translation id="7885132941432959125">Μετακίνηση καρτέλας δεξιά</translation>
+<translation id="7887334752153342268">Αντιγραφή</translation>
 <translation id="7939917283308035850">Επιλέχθηκε το <ph name="COLOR_NAME" /></translation>
 <translation id="7961015016161918242">Ποτέ</translation>
 <translation id="7966321538264951561">Παράβλεψη των προτάσεων.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
+<translation id="1004825134262590729">{count,plural, =1{{count} přístupový klíč}few{{count} přístupové klíče}many{{count} přístupového klíče}other{{count} přístupových klíčů}}</translation>
 <translation id="1005023885865154304">Otevřít nastavení automatického vyplňování hesel</translation>
 <translation id="1005230401424685968">RRRR</translation>
 <translation id="1013952917065545813">Tady můžete znovu otevřít karty, které jste nedávno zavřeli</translation>
@@ -41,6 +42,7 @@
 <translation id="1122068467107743258">Práce</translation>
 <translation id="1126696498560056882">Spravovat účty v tomto zařízení</translation>
 <translation id="1126809382673880764">Nebudete chráněni před nebezpečnými weby, soubory ke stažení a rozšířeními. V jiných službách Google, v nichž je ochrana pomocí Bezpečného prohlížení k dispozici (např. Gmail a Vyhledávání), ji budete mít i nadále.</translation>
+<translation id="1133418583142946603">Přidat aktuální kartu</translation>
 <translation id="1136104150802877429">Zobrazuje recenze produktů</translation>
 <translation id="1142371195993008685">Dočasně vypnout oznámení pro: <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Jste přihlášeni jako <ph name="USER" /></translation>
@@ -77,6 +79,7 @@
 <translation id="1285320974508926690">Tento web nikdy nepřekládat</translation>
 <translation id="1287229685519872919">Data Google Workspace</translation>
 <translation id="1291506870746876680">Až web <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />“<ph name="END_BOLD" /> opustíte, jeho oprávnění se resetují.</translation>
+<translation id="1293556467332435079">Soubory</translation>
 <translation id="129553762522093515">Nedávno zavřené</translation>
 <translation id="1296581780163690620">Stáhnout soubor? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Pokud chcete mít vždy možnost použít hesla ve svém účtu Google, ověřte svoji totožnost.</translation>
@@ -1043,6 +1046,7 @@
 <translation id="5055015094595227120">Přesná poloha</translation>
 <translation id="5055551113846164633">Tímto smažete adresy uložené na tomto zařízení. Smažou se i adresy uložené ve vašem účtu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Byly zjištěny problémy (<ph name="TIME" />).</translation>
+<translation id="5056587122125565772">Vytvořit obrázek</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Instalace Disku Google</translation>
 <translation id="5067540696062462445">Stažené soubory</translation>
@@ -1504,6 +1508,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6659660757330712663">Přejetím po liště můžete přepínat mezi kartami.</translation>
 <translation id="6663529247339810546">Obrázek nelze uložit</translation>
 <translation id="6668619169535738264">Upravit záložku</translation>
+<translation id="6670729408462528018">Galerie</translation>
 <translation id="6671294218820966278">Označit jako přečtené</translation>
 <translation id="6672697278890207089">Zadejte přístupové heslo</translation>
 <translation id="6674917187596384849">Můžete snadno přepínat mezi účty</translation>
@@ -1660,6 +1665,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Hesla pro tyto účty už ve Správci hesel Google máte. Pokud importujete některá z níže uvedených hesel, nahradí ta stávající.</translation>
 <translation id="7336264872878993241">Staženo <ph name="PERCENT" /> %</translation>
+<translation id="7345061034321640811">Import není povolen</translation>
 <translation id="7352651011704765696">Něco se pokazilo</translation>
 <translation id="7363349185727752629">Průvodce možnostmi ochrany soukromí</translation>
 <translation id="7364796246159120393">Vybrat soubor</translation>
@@ -2201,6 +2207,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="952704832371081537">Zrušit</translation>
 <translation id="95332591904104970">Připojené aplikace</translation>
 <translation id="954667170699278022">Seznam četby</translation>
+<translation id="956066588046842680">Import těchto dat není podle zásad vaší organizace povolen.</translation>
 <translation id="956218893102219091">Namísto polohy odhadované na základě IP adresy používat přesnou polohu, aby výsledky od Gemini byly co nejpřesnější. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Vymazat údaje o prohlížení</translation>
 <translation id="963102227019621224">Aktivita na webu a v aplikacích</translation>
@@ -2212,5 +2219,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="984275831282074731">Platební metody</translation>
 <translation id="985379595344853742">Zavřít všechny anonymní karty</translation>
 <translation id="988141524645182168">Jiná zařízení</translation>
+<translation id="995174784802614337">{count,plural, =1{Byl importován {count} přístupový klíč}few{Byly importovány {count} přístupové klíče}many{Bylo importováno {count} přístupového klíče}other{Bylo importováno {count} přístupových klíčů}}</translation>
 <translation id="999768147936949692">Prozatím můžete hesla sdílet pouze se členy rodiny. <ph name="BEGIN_LINK" />Pozvěte členy rodiny<ph name="END_LINK" /> do skupiny a využívejte své služby a předplatná na Googlu na plno.</translation>
 </translationbundle>

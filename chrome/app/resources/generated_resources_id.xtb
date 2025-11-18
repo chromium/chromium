@@ -1053,6 +1053,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1699807488537653303">Perbaiki error sandi</translation>
 <translation id="1700201317341192482">Hapus kartu virtual Anda</translation>
 <translation id="1700517974991662022">Dikunjungi</translation>
+<translation id="1701367827913789499">Baca dengan nyaman dengan gangguan minimal menggunakan tombol Mode baca di toolbar</translation>
 <translation id="1703331064825191675">Tidak perlu mengkhawatirkan sandi Anda</translation>
 <translation id="1703666494654169921">Jangan izinkan situs menggunakan perangkat atau data virtual reality</translation>
 <translation id="1704097193565924901">Huruf Besar di Awal Kata</translation>
@@ -2971,6 +2972,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3008272652534848354">Reset izin</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> mengharuskan Anda terhubung ke Wi-Fi hari ini untuk mendownload update. Atau, Anda dapat mendownload dengan koneksi berbayar (dapat dikenai biaya).}other{<ph name="MANAGER" /> mengharuskan Anda terhubung ke Wi-Fi dan mendownload update sebelum batas waktu. Atau, Anda dapat mendownload dengan koneksi berbayar (dapat dikenai biaya).}}</translation>
 <translation id="3008923556848076408">Gemini akan terus mengerjakan tugas Anda</translation>
+<translation id="3008926075262837186">Baca dengan nyaman dengan gangguan minimal</translation>
 <translation id="3009178788565917040">Keluaran</translation>
 <translation id="3009352964623081324">Search + O, lalu S. Gunakan untuk menginstal, mengelola, dan menyesuaikan suara.</translation>
 <translation id="3009779501245596802">Basis data yang diindeks</translation>
@@ -4429,7 +4431,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Pelajari lebih lanjut Akurasi Lokasi<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Diimpor</translation>
 <translation id="3992008114154328194">Mendownload <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Cadangkan data</translation>
 <translation id="3994075804072562819">Memberi <ph name="SPECIFIC_NAME" /> kontrol atas perangkat USB.</translation>
 <translation id="3994318741694670028">Sayangnya, komputer Anda dikonfigurasi dengan ID hardware yang salah. Hal ini mencegah ChromeOS Flex diupdate dengan perbaikan keamanan terbaru dan komputer Anda <ph name="BEGIN_BOLD" />mungkin rentan terhadap serangan berbahaya<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Buka kunci ponsel dan dekatkan untuk membuka kunci <ph name="DEVICE_TYPE" /> Anda.</translation>
@@ -7729,7 +7730,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> telah menonaktifkan proses debug ADB. Ini akan mereset <ph name="DEVICE_TYPE" /> Anda setelah 24 jam. Cadangkan file yang ingin Anda simpan.</translation>
 <translation id="6336194758029258346">Bahasa aplikasi</translation>
 <translation id="6337543438445391085">Beberapa informasi pribadi mungkin masih disertakan dalam data. Pastikan untuk meninjau file yang diekspor.</translation>
-<translation id="6338554362382763574">Anda dapat dengan mudah mengajukan pertanyaan kepada Gemini tentang tab yang Anda bagikan ketika menjelajah</translation>
 <translation id="6338968693068997776">Tambahkan perangkat USB</translation>
 <translation id="6339668969738228384">Buat profil baru untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protokol Pencetakan Internet (IPPS)</translation>
@@ -8349,7 +8349,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
     <ph name="BEGIN_PARAGRAPH2" />Anda dapat menonaktifkan layanan ini di Setelan.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Backup Linux dibatalkan</translation>
 <translation id="6782067259631821405">PIN tidak valid</translation>
-<translation id="6782219876520622071">Percakapan tentang tab yang dibagikan dapat dilihat oleh petugas peninjau untuk meningkatkan kualitas Gemini</translation>
 <translation id="6783036716881942511">Lupakan perangkat ini?</translation>
 <translation id="6783667414610055871">Setelan Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Profil didukung</translation>
@@ -9546,7 +9545,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7620616707541471029">Pilih akun untuk melanjutkan</translation>
 <translation id="7621382409404463535">Sistem gagal menyimpan konfigurasi ponsel.</translation>
 <translation id="7621595347123595643">Anda tidak akan dapat memulihkan data lokal jika Anda lupa sandi atau PIN.</translation>
-<translation id="7621863462266622331">Saat tab dibagikan, konten halaman, media, dan URL-nya akan dikirim ke Google</translation>
 <translation id="7622114377921274169">Mengisi daya.</translation>
 <translation id="7622768823216805500">Situs biasanya menginstal pengelola pembayaran untuk fitur belanja seperti pembayaran yang lebih mudah</translation>
 <translation id="7622966771025050155">Beralih ke tab yang telah direkam</translation>
@@ -10892,6 +10890,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8517759303731677493">Edit…</translation>
 <translation id="8518809011298357036">Tutup Tampilan Atas</translation>
 <translation id="8518942514525208851">Sembunyikan kata-kata tidak sopan</translation>
+<translation id="8520238089740349550">Gagal - Download lokal diblokir</translation>
 <translation id="8523493869875972733">Simpan Perubahan</translation>
 <translation id="8523849605371521713">Ditambahkan sesuai kebijakan</translation>
 <translation id="8524594273111932386">penelusuran + panah bawah</translation>

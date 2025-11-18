@@ -523,6 +523,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="705851970750939768">Atnaujinti „Chromium“</translation>
 <translation id="7067091210845072982">Jei nebus naudingo vaizdo aprašo, „Chromium“ bandys jums jį pateikti. Kad būtų galima kurti aprašus, vaizdai siunčiami į sistemą „Google“.</translation>
 <translation id="7141270731789036260">Tinkinti „Chrome for Testing“</translation>
+<translation id="7147227333672430807">Galite naudoti „Chromium“ bet kada spustelėję nuorodas pranešimuose, dokumentuose ir kitose programose</translation>
 <translation id="7163519456498498587">Pašalinti „<ph name="EXTENSION_NAME" />“ iš „Chromium“</translation>
 <translation id="7173822816570314652">Organizacija ištrina „Chromium“ duomenis, kai jie nenaudojami <ph name="TIMEOUT_DURATION" />. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai.</translation>
 <translation id="718435575166326686">„Chromium“ reikalingas fotoaparato leidimas šioje svetainėje</translation>
@@ -637,6 +638,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8471947159125090285">Jei norite naudoti ir išsaugoti „Chromium“ duomenis „Google“ paskyroje, patvirtinkite savo tapatybę</translation>
 <translation id="8482493977473846331">Rodomi raginimai prisijungti prie „Chromium“</translation>
 <translation id="8493179195440786826">„Chromium“ versija yra pasenusi</translation>
+<translation id="850264194101621529">Dėkojame, kad pasirinkote „Chromium“ kaip numatytąją naršyklę!</translation>
 <translation id="8522801943730206384">„Chromium“ gali tikrinti jūsų slaptažodžius, kai juos išsaugote</translation>
 <translation id="8555465886620020932">Paslaugos klaida: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Galite prisegti vaizdų paiešką, kad lengvai ją pasiektumėte; spustelėkite mygtuką „Prisegti“ šoninio skydelio viršuje</translation>
@@ -646,6 +648,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8586442755830160949">Autorių teisės priklauso „Chromium“ autoriams, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>
 <translation id="8601359445272098721">Naujiena! Galite versti tekstą ir vaizdus ekrane pasirinkę mygtuką „Išversti ekrano turinį“</translation>
 <translation id="8619360774459241877">Pristatoma „Chromium“...</translation>
+<translation id="8624541899164515475">Nustatymai, atidaroma naujame skirtuke.</translation>
 <translation id="8648201657708811153">„Google Chrome for Testing“ negali būti nustatyta kaip numatytoji naršyklė.</translation>
 <translation id="8677922833187616101">Visada rodyti „Google“ DI režimo spartųjį klavišą</translation>
 <translation id="8697124171261953979">Ji taip pat kontroliuoja, koks puslapis rodomas, kai paleidžiate „Chromium“ arba ieškote „Omnibox“.</translation>

@@ -427,6 +427,7 @@
 <translation id="1689333818294560261">暱稱</translation>
 <translation id="1692622044604477956">電影場次與放映時間</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />管理資料的方式：<ph name="END_BOLD" />Chrome 會自動刪除 4 週以前的主題。隨著你持續瀏覽內容，清單中可能會再次出現特定主題。你隨時可以在 Chrome 設定中封鎖不想讓 Chrome 與網站分享的主題，也可以關閉廣告主題設定。</translation>
+<translation id="1697808683313379647">Google 會使用結帳頁面中的資訊和其他相關資料，提供這些選項。</translation>
 <translation id="1699651774646344471">你現在可以使用 Google 帳戶中的地址</translation>
 <translation id="1700542542921501212">你可以使用「<ph name="SEARCH_ENGINE_NAME" />」搜尋網路。</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1720,7 +1721,6 @@
 <translation id="3792826587784915501">另類與獨立電影</translation>
 <translation id="3793574014653384240">最近發生當機情形的次數和原因</translation>
 <translation id="3795624560191557077">你最近變更的密碼已在公開的資料侵害事件中外洩。如有問題，Google 密碼管理工具可協助你登入。</translation>
-<translation id="3796181268473765083">分 4 期零利率付款或每月分期付款 (須符合資格)</translation>
 <translation id="3799805948399000906">要求的字型</translation>
 <translation id="3801297763951514916">經常造訪</translation>
 <translation id="380329542618494757">姓名</translation>
@@ -2946,6 +2946,7 @@
 <translation id="5813753398265398978">物理學</translation>
 <translation id="5817918615728894473">配對</translation>
 <translation id="5820625124144807242">確認訂單後，你必須登入「<ph name="BNPL_ISSUER_NAME" />」或建立帳戶。這個帳戶會自動連結至 Google Pay。</translation>
+<translation id="5820751560028604030">已封鎖本機下載作業</translation>
 <translation id="5826507051599432481">一般名稱 (CN)</translation>
 <translation id="5830698870816298009">使用及調整攝影機</translation>
 <translation id="5831217499016131155">Google 電子錢包</translation>
@@ -3700,6 +3701,7 @@
 <translation id="7031646650991750659">你安裝的 Google Play 應用程式</translation>
 <translation id="7035705295266423040">銀行想要驗證你的身分</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可管理 Google 帳戶隱私權設定</translation>
+<translation id="7042465939346919737">Google 會使用結帳頁面中的資訊和其他相關資料，提供這些選項。如要隱藏「先買後付」選項，請前往<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">修正結果</translation>
 <translation id="7043552168914147882">隔頁紙</translation>
 <translation id="7044081119134178347">這次允許使用相機</translation>

@@ -1054,6 +1054,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1699807488537653303">Napraw błąd hasła</translation>
 <translation id="1700201317341192482">Usuń kartę wirtualną</translation>
 <translation id="1700517974991662022">Kliknięty</translation>
+<translation id="1701367827913789499">Czytaj wygodnie i bez rozpraszania uwagi dzięki przyciskowi trybu czytania na pasku narzędzi</translation>
 <translation id="1703331064825191675">Nie musisz się już martwić o bezpieczeństwo swoich haseł</translation>
 <translation id="1703666494654169921">Nie zezwalaj witrynom na używanie urządzeń ani danych rzeczywistości wirtualnej</translation>
 <translation id="1704097193565924901">Od wielkiej litery</translation>
@@ -2944,6 +2945,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3008272652534848354">Zresetuj uprawnienia</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Domena <ph name="MANAGER" /> wymaga połączenia się z Wi-Fi i pobrania aktualizacji dzisiaj. Możesz też rozpocząć pobieranie za pomocą połączenia z pomiarem użycia danych (mogą zostać naliczone opłaty).}few{Domena <ph name="MANAGER" /> wymaga połączenia się z Wi-Fi i pobrania aktualizacji przed upływem wyznaczonego terminu. Możesz też rozpocząć pobieranie za pomocą połączenia z pomiarem użycia danych (mogą zostać naliczone opłaty).}many{Domena <ph name="MANAGER" /> wymaga połączenia się z Wi-Fi i pobrania aktualizacji przed upływem wyznaczonego terminu. Możesz też rozpocząć pobieranie za pomocą połączenia z pomiarem użycia danych (mogą zostać naliczone opłaty).}other{Domena <ph name="MANAGER" /> wymaga połączenia się z Wi-Fi i pobrania aktualizacji przed upływem wyznaczonego terminu. Możesz też rozpocząć pobieranie za pomocą połączenia z pomiarem użycia danych (mogą zostać naliczone opłaty).}}</translation>
 <translation id="3008923556848076408">Gemini będzie nadal pracować nad Twoim zadaniem</translation>
+<translation id="3008926075262837186">Czytaj wygodnie i bez rozpraszania uwagi</translation>
 <translation id="3009178788565917040">Urządzenie wyjściowe</translation>
 <translation id="3009352964623081324">Wyszukaj + O, a następnie S. Służy do instalowania i dostosowywania głosów oraz do zarządzania nimi.</translation>
 <translation id="3009779501245596802">Zindeksowane bazy danych</translation>
@@ -4396,7 +4398,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Więcej informacji o ustawieniu Dokładność lokalizacji<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Zaimportowane</translation>
 <translation id="3992008114154328194">Pobieram <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Kopia zapasowa danych</translation>
 <translation id="3994075804072562819">Zezwól aplikacji <ph name="SPECIFIC_NAME" /> na sterowanie urządzeniami USB.</translation>
 <translation id="3994318741694670028">Twój komputer jest skonfigurowany przy użyciu błędnie sformatowanego identyfikatora sprzętu. Uniemożliwia to zaktualizowanie ChromeOS Flex za pomocą najnowszych poprawek zabezpieczeń, a komputer <ph name="BEGIN_BOLD" />może być narażony na szkodliwe ataki<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Aby odblokować system, <ph name="DEVICE_TYPE" /> i odblokowany telefon muszą być bliżej siebie.</translation>
@@ -7693,7 +7694,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6336038146639916978">Domena <ph name="MANAGER" /> wyłączyła debugowanie ADB. W związku z tym za 24 godziny Twoje urządzenie <ph name="DEVICE_TYPE" /> zostanie zresetowane. Utwórz kopie zapasowe plików, które chcesz zachować.</translation>
 <translation id="6336194758029258346">Język aplikacji</translation>
 <translation id="6337543438445391085">Te dane nadal mogą zawierać niektóre dane osobowe. Pamiętaj, żeby przejrzeć wyeksportowane pliki.</translation>
-<translation id="6338554362382763574">Podczas przeglądania możesz łatwo zadawać Gemini pytania dotyczące udostępnianych kart</translation>
 <translation id="6338968693068997776">Dodaj urządzenie USB</translation>
 <translation id="6339668969738228384">Utwórz nowy profil dla adresu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8317,7 +8317,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
     <ph name="BEGIN_PARAGRAPH2" />Możesz wyłączyć tę usługę w Ustawieniach.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Tworzenie kopii zapasowej Linuksa zostało anulowane</translation>
 <translation id="6782067259631821405">Nieprawidłowy PIN</translation>
-<translation id="6782219876520622071">Rozmowy o udostępnionych kartach mogą być widoczne dla weryfikatorów pracujących nad ulepszaniem Gemini</translation>
 <translation id="6783036716881942511">Zapomnieć to urządzenie?</translation>
 <translation id="6783667414610055871">Ustawienia Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Profil jest obsługiwany</translation>
@@ -9512,7 +9511,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7620616707541471029">Wybierz konto, aby kontynuować</translation>
 <translation id="7621382409404463535">Systemowi nie udało się zapisać konfiguracji urządzenia.</translation>
 <translation id="7621595347123595643">Jeśli zapomnisz hasło lub kod PIN, nie będzie można odzyskać danych lokalnych.</translation>
-<translation id="7621863462266622331">Gdy karty są udostępniane, ich zawartość, multimedia i adresy URL są wysyłane do Google</translation>
 <translation id="7622114377921274169">Ładuję.</translation>
 <translation id="7622768823216805500">Strony zwykle instalują moduły obsługi płatności na przykład w celu ułatwienia płatności za zakupy</translation>
 <translation id="7622966771025050155">Przełącz na przechwyconą kartę</translation>

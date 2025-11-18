@@ -4431,7 +4431,6 @@
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />स्थान अचूकता याबद्दल अधिक जाणून घ्या<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">आयातीत</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> डाउनलोड करत आहे, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">डेटाचा बॅकअप घ्या</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" /> ला USB डिव्हाइसचे नियंत्रण द्या.</translation>
 <translation id="3994318741694670028">दुर्दैवाने, तुमचा कॉंप्युटर हा समस्या असलेला हार्डवेअर आयडी वापरून कॉन्फिगर केला गेला आहे. यामुळे ChromeOS Flex वर नवीनतम सुरक्षा निराकरणे अपडेट करणे रोखले जात आहे आणि तुमच्या कॉंप्युटरवर <ph name="BEGIN_BOLD" />दुर्भावनापूर्ण हल्ले होण्याची शक्यता आहे<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">तुमचा फोन अनलॉक करा आणि तुमचे <ph name="DEVICE_TYPE" /> अनलॉक करण्यासाठी तो जवळ आणा.</translation>
@@ -7732,7 +7731,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ने ADB डीबगिंग बंद केले आहे. यामुळे तुमचे <ph name="DEVICE_TYPE" /> २४ तासांमध्ये रीसेट होईल. तुम्हाला ठेवायच्या असलेल्या सर्व फाइलचा बॅकअप घ्या.</translation>
 <translation id="6336194758029258346">अ‍ॅपची भाषा</translation>
 <translation id="6337543438445391085">काही वैयक्तिक माहिती तरीही डेटामध्ये समाविष्ट असू शकते. एक्सपोर्ट केलेल्या फाइलचे पुनरावलोकन करण्याची खात्री करा.</translation>
-<translation id="6338554362382763574">तुम्ही ब्राउझ करत असताना Gemini ला तुम्ही शेअर करत असलेल्या टॅबबद्दल प्रश्न सहज विचारू शकता</translation>
 <translation id="6338968693068997776">USB डिव्हाइस जोडा</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> साठी एक नवीन प्रोफाइल तयार करा</translation>
 <translation id="6340071272923955280">इंटरनेट प्रिंट प्रोटोकॉल (IPPS)</translation>
@@ -8127,6 +8125,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6619990499523117484">आपल्या पिन ची पुष्टी करा</translation>
 <translation id="6620000730890558421">AI च्या मदतीने तुमचे टॅब व्यवस्थित ठेवा</translation>
 <translation id="6620254580880484313">कंटेनरचे नाव</translation>
+<translation id="6621282332208609777">Google ला विचारा किंवा URL टाइप करा</translation>
 <translation id="6621391692573306628">हा टॅब दुसर्‍या डिव्हाइसवर पाठवण्यासाठी, दोन्ही डिव्हाइसवर Chrome मध्ये साइन इन करा</translation>
 <translation id="6622980291894852883">इमेज ब्लॉक करणे सुरू ठेवा</translation>
 <translation id="6624036901798307345">प्रत्येक टॅबचे थंबनेल दाखवणारी नवीन टॅब स्ट्रिप उघडण्यासाठी टॅबलेट मोडमध्ये, टॅब काउंटर टूलबार बटणवर टॅप करा.</translation>
@@ -8351,7 +8350,6 @@ I feel - विटांची इमारत</translation>
     <ph name="BEGIN_PARAGRAPH2" />तुम्ही सेटिंग्ज मध्ये ही सेवा बंद करू शकता.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux बॅकअप रद्द केले</translation>
 <translation id="6782067259631821405">चुकीचा पिन</translation>
-<translation id="6782219876520622071">Gemini मध्ये सुधारणा करण्यासाठी शेअर केलेल्या टॅबबद्दलची संभाषणे मानवी परीक्षणकर्त्यांना दिसू शकतात</translation>
 <translation id="6783036716881942511">हे डिव्हाइस विसरायचे आहे का?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive सेटिंग्ज</translation>
 <translation id="6784523122863989144">प्रोफाइलला सपोर्ट नाही</translation>
@@ -10894,6 +10892,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8517759303731677493">संपादित करा…</translation>
 <translation id="8518809011298357036">वरून दिसणारे दृश्य बंद करा</translation>
 <translation id="8518942514525208851">असभ्य भाषा लपवा</translation>
+<translation id="8520238089740349550">पूर्ण झाले नाही - स्थानिक डाउनलोड ब्लॉक केला आहे</translation>
 <translation id="8523493869875972733">बदल राहू द्या</translation>
 <translation id="8523849605371521713">धोरणाने जोडले</translation>
 <translation id="8524594273111932386">search + डाउन अ‍ॅरो</translation>
@@ -11766,6 +11765,7 @@ I feel - विटांची इमारत</translation>
 <translation id="909554839118732438">गुप्त विंडो बंद करा</translation>
 <translation id="9095819602391364796">तुमची MIDI डिव्हाइस नियंत्रित आणि रीप्रोग्राम करण्यासाठी साइटना अनुमती देऊ नका</translation>
 <translation id="9096053102600371572">नियंत्रित स्क्रोलिंग <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">पर्यायांची तुलना करा</translation>
 <translation id="9096776523567481218">स्थानिकरीत्या इंस्टॉल केलेले नाही</translation>
 <translation id="9098860402274800697">Google Play आणि Android अ‍ॅप्स काढून टाका</translation>
 <translation id="9099220545925418560">तुमच्या ब्राउझिंग इतिहासावर आधारित. हे सेटिंग बंद आहे.</translation>

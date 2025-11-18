@@ -4417,7 +4417,6 @@
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />લોકેશનની સચોટતા વિશે વધુ જાણો<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">આયાત કરેલા</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> ડાઉનલોડ કરી રહ્યાં છીએ, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">ડેટાનું બૅકઅપ લો</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" />ને USB ડિવાઇસને નિયંત્રિત કરવાની સુવિધા આપો.</translation>
 <translation id="3994318741694670028">કમનસીબે, તમારું કમ્પ્યુટર દૂષિત હાર્ડવેર ID સાથે કન્ફિગર કરવામાં આવ્યું છે. આ ChromeOS Flexને નવીનતમ સુરક્ષા સુધારાની સાથે અપડેટ થતું અટકાવે છે અને તમારું કમ્પ્યુટર <ph name="BEGIN_BOLD" />દુર્ભાવનાપૂર્ણ હુમલાઓ પ્રત્યે સંવેદનશીલ હોઈ શકે છે<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">તમારો ફોન અનલૉક કરો અને તમારા <ph name="DEVICE_TYPE" />ને અનલૉક કરવા માટે તેને વધુ નજીક લાવો.</translation>
@@ -7719,7 +7718,6 @@ USB ડિવાઇસ</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> દ્વારા ADB ડિબગીંગ બંધ કરાયું છે. આમ કરવાથી 24 કલાકમાં તમારું <ph name="DEVICE_TYPE" /> રીસેટ થશે. તમે રાખવા માગતા હો તેવી કોઈપણ ફાઇલોનું બૅકઅપ લો.</translation>
 <translation id="6336194758029258346">ઍપની ભાષા</translation>
 <translation id="6337543438445391085">ડેટામાં હજી પણ અમુક વ્યક્તિગત માહિતી શામેલ હોઈ શકે છે. નિકાસ કરવામાં આવેલી ફાઇલોનો રિવ્યૂ કરવાની ખાતરી કરો.</translation>
-<translation id="6338554362382763574">બ્રાઉઝ કરતી વખતે તમે જે ટૅબ શેર કરી રહ્યા હો, તેના વિશે Geminiને સરળતાથી પ્રશ્નો પૂછી શકો છો</translation>
 <translation id="6338968693068997776">USB ડિવાઇસ ઉમેરો</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> માટે એક નવી પ્રોફાઇલ બનાવો</translation>
 <translation id="6340071272923955280">ઇન્ટરનેટ પ્રિંટિંગ પ્રોટોકોલ (IPPS)</translation>
@@ -8116,6 +8114,7 @@ USB ડિવાઇસ</translation>
 <translation id="6619990499523117484">તમારા PIN ની પુષ્ટિ કરો</translation>
 <translation id="6620000730890558421">AI વડે તમારા ટૅબ વ્યવસ્થિત રાખો</translation>
 <translation id="6620254580880484313">કન્ટેનરનું નામ</translation>
+<translation id="6621282332208609777">Googleને પૂછો અથવા કોઈ URL ટાઇપ કરો</translation>
 <translation id="6621391692573306628">આ ટૅબને અન્ય ડિવાઇસ પર મોકલવા માટે, બન્ને ડિવાઇસ પર Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="6622980291894852883">છબીઓને બ્લૉક કરવાનું ચાલુ રાખો</translation>
 <translation id="6624036901798307345">ટૅબ્લેટ મોડમાં, નવી ટૅબ સ્ટ્રિપ ખોલવા માટે ટૅબ કાઉન્ટર પરનું ટૂલબાર બટન પર ટૅપ કરો, જે પ્રત્યેક ટૅબની થંબનેલ બતાવે છે.</translation>
@@ -8340,7 +8339,6 @@ USB ડિવાઇસ</translation>
     <ph name="BEGIN_PARAGRAPH2" />તમે આ સેવાને સેટિંગમાંથી બંધ કરી શકો છો.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linuxનું બૅકઅપ રદ કર્યું</translation>
 <translation id="6782067259631821405">અમાન્ય પિન</translation>
-<translation id="6782219876520622071">Geminiને બહેતર બનાવવા માટે, શેર કરેલા ટૅબ વિશેની વાતચીતો માનવ રિવ્યૂઅર દ્વારા જોવામાં આવી શકે છે</translation>
 <translation id="6783036716881942511">આ ડિવાઇસને ભૂલી જઈએ?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive સેટિંગ</translation>
 <translation id="6784523122863989144">પ્રોફાઇલને સપોર્ટ આપવામાં આવે છે</translation>
@@ -11751,6 +11749,7 @@ USB ડિવાઇસ</translation>
 <translation id="909554839118732438">છૂપી વિન્ડો બંધ કરો</translation>
 <translation id="9095819602391364796">સાઇટને તમારા MIDI ડિવાઇસને નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="9096053102600371572">નિયંત્રિત સ્ક્રોલિંગ વિશે <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">વિકલ્પોની તુલના કરો</translation>
 <translation id="9096776523567481218">સ્થાનિક સ્તરે ઇન્સ્ટૉલ કરેલું નથી</translation>
 <translation id="9098860402274800697">Google Play અને Android ઍપ કાઢી નાખો</translation>
 <translation id="9099220545925418560">તમારા બ્રાઉઝિંગ ઇતિહાસના આધારે. આ સેટિંગ બંધ છે.</translation>

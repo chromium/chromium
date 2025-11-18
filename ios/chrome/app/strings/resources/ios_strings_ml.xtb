@@ -42,6 +42,7 @@
 <translation id="1122068467107743258">ഔദ്യോഗികം</translation>
 <translation id="1126696498560056882">ഈ ഉപകരണത്തിലെ അക്കൗണ്ടുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="1126809382673880764">അപകടകരമായ വെബ്‌സൈറ്റുകൾ ഡൗൺലോഡുകൾ, വിപുലീകരണങ്ങൾ എന്നിവയിൽ നിന്ന് നിങ്ങളെ പരിരക്ഷിക്കില്ല. Gmail, Search പോലുള്ള മറ്റ് Google സേവനങ്ങളിൽ ഉള്ള സുരക്ഷിത ബ്രൗസിംഗ് പരിരക്ഷ നിങ്ങൾക്ക് തുടർന്നും ലഭിക്കും.</translation>
+<translation id="1133418583142946603">നിലവിലെ ടാബ് ചേർക്കുക</translation>
 <translation id="1136104150802877429">ഉൽപ്പന്ന റിവ്യൂകൾ കാണിക്കുന്നു</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" /> എന്നതിനായുള്ള അറിയിപ്പുകൾ ഓഫാക്കുക</translation>
 <translation id="1147031633655575115"><ph name="USER" /> ആയി സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്നു</translation>
@@ -78,6 +79,7 @@
 <translation id="1285320974508926690">ഈ സൈറ്റ് ഒരിക്കലും വിവര്‍‌ത്തനം ചെയ്യരുത്</translation>
 <translation id="1287229685519872919">Google Workspace ഡാറ്റ</translation>
 <translation id="1291506870746876680">നിങ്ങൾ സൈറ്റിൽ നിന്ന് പുറത്ത് കടക്കുമ്പോൾ "<ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> അനുമതികൾ ഓഫാക്കി റീസെറ്റ് ചെയ്യും.</translation>
+<translation id="1293556467332435079">Files</translation>
 <translation id="129553762522093515">സമീപകാലത്ത് അടച്ചവ</translation>
 <translation id="1296581780163690620">ഫയൽ ഡൗൺലോഡ് ചെയ്യണോ? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">നിങ്ങളുടെ Google അക്കൗണ്ടിലെ പാസ്‌വേഡുകൾ എല്ലായ്‌പ്പോഴും ഉപയോഗിക്കാനാകുമെന്ന് ഉറപ്പാക്കാൻ, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക.</translation>
@@ -1044,6 +1046,7 @@
 <translation id="5055015094595227120">കൃത്യമായ ലൊക്കേഷൻ</translation>
 <translation id="5055551113846164633">ഈ ഉപകരണത്തിൽ സംരക്ഷിച്ച വിലാസങ്ങൾ ഇത് ഇല്ലാതാക്കുന്നു. ഇത്, നിങ്ങളുടെ Google Account ആയ <ph name="USER_EMAIL" /> -ൽ സംരക്ഷിച്ച വിലാസങ്ങൾ ഇല്ലാതാക്കുകയും ചെയ്യുന്നു.</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> പ്രശ്‌നങ്ങൾ കണ്ടെത്തി.</translation>
+<translation id="5056587122125565772">ചിത്രം സൃഷ്ടിക്കുക</translation>
 <translation id="5059136629401106827">ശരി</translation>
 <translation id="5062321486222145940">Google ഡ്രൈവ് ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
 <translation id="5067540696062462445">ഡൗൺലോഡുകൾ</translation>
@@ -1505,6 +1508,7 @@
 <translation id="6659660757330712663">ടാബുകൾക്കിടയിൽ മാറാൻ നിങ്ങൾക്ക് ടൂൾബാർ സ്വൈപ്പ് ചെയ്യാം.</translation>
 <translation id="6663529247339810546">ചിത്രം സംരക്ഷിക്കാൻ കഴിയില്ല</translation>
 <translation id="6668619169535738264">ബുക്ക്‌മാർക്ക് എഡിറ്റ് ചെയ്യുക</translation>
+<translation id="6670729408462528018">Gallery</translation>
 <translation id="6671294218820966278">വായിച്ചതായി അടയാളപ്പെടുത്തുക</translation>
 <translation id="6672697278890207089">നിങ്ങളുടെ പാസ്ഫ്രെയ്സ് നല്‍കുക</translation>
 <translation id="6674917187596384849">നിങ്ങൾക്ക് അക്കൗണ്ടുകൾക്കിടയിൽ എളുപ്പത്തിൽ മാറാനാകും</translation>

@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Daftar grup tab ditutup</translation>
 <translation id="3194464645767632461">rating</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Tambahkan <ph name="TABS_COUNT_ONE" /> tab ke grup}other{Tambahkan <ph name="TABS_COUNT_MANY" /> tab ke grup}}</translation>
+<translation id="3293080634164207409">Tambahkan tab</translation>
 <translation id="3328308545011660196">Saran: <ph name="NUMBER_OF_TABS" /> tab sepertinya berkaitan. Masukkan ke grup?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Setelah 1 hari tidak aktif}other{Setelah <ph name="DAY_COUNT_MANY" /> hari tidak aktif}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab baru}other{<ph name="MANY_ADDED" /> tab baru}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">Aktivitas</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> ulasan}other{Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ulasan}}</translation>
 <translation id="7885132941432959125">Pindahkan tab ke kanan</translation>
+<translation id="7887334752153342268">Duplikasikan</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> Tidak dipilih</translation>
 <translation id="7961015016161918242">Jangan pernah</translation>
 <translation id="7966321538264951561">Tutup saran.</translation>

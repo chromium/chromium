@@ -425,9 +425,11 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1682696192498422849">Cạnh ngắn trước</translation>
 <translation id="168693727862418163">Giá trị chính sách này không xác thực được dựa vào giản đồ và sẽ bị bỏ qua.</translation>
 <translation id="168841957122794586">Chứng chỉ máy chủ chứa khóa mật mã yếu.</translation>
+<translation id="1688718429648938412">Lưu thẻ khách hàng thân thiết vào Wallet</translation>
 <translation id="1689333818294560261">Biệt hiệu</translation>
 <translation id="1692622044604477956">Danh sách phim và lịch chiếu</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cách bạn có thể quản lý dữ liệu của mình:<ph name="END_BOLD" /> Chrome tự động xoá những chủ đề đã tồn tại hơn 4 tuần. Khi bạn tiếp tục duyệt web, một chủ đề có thể xuất hiện lại trên danh sách. Bất cứ lúc nào bạn cũng có thể chặn những chủ đề bạn không muốn Chrome chia sẻ với các trang web, cũng như tắt các chủ đề quảng cáo trong phần cài đặt trên Chrome.</translation>
+<translation id="1697808683313379647">Google sử dụng thông tin trên trang thanh toán và các dữ liệu liên quan khác để đưa ra những lựa chọn này.</translation>
 <translation id="1699651774646344471">Giờ đây, bạn có thể sử dụng các địa chỉ trong Tài khoản Google của mình</translation>
 <translation id="1700542542921501212">Bạn có thể sử dụng <ph name="SEARCH_ENGINE_NAME" /> để tìm kiếm trên web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1722,7 +1724,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3792826587784915501">Phim indie và phim kinh điển</translation>
 <translation id="3793574014653384240">Số lượng lỗi và nguyên nhân gây ra các lỗi gần đây</translation>
 <translation id="3795624560191557077">Bạn mới thay đổi một mật khẩu được tìm thấy trong một sự cố rò rỉ dữ liệu công khai. Trong trường hợp bạn gặp sự cố, Trình quản lý mật khẩu của Google có thể giúp bạn đăng nhập.</translation>
-<translation id="3796181268473765083">Thanh toán theo hình thức trả góp không tính lãi trong 4 đợt hoặc trả góp hằng tháng (tuỳ vào điều kiện)</translation>
 <translation id="3799805948399000906">Phông chữ đã yêu cầu</translation>
 <translation id="3801297763951514916">Bạn thường xuyên truy cập</translation>
 <translation id="380329542618494757">Tên</translation>
@@ -3661,6 +3662,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6965978654500191972">Thiết bị</translation>
 <translation id="696703987787944103">Cảm tính</translation>
 <translation id="6967851206780867018">1 tệp đã bị chặn do có nội dung không phù hợp</translation>
+<translation id="6968217325369275594">Hãy lưu thông tin để nhận nội dung cập nhật trên mọi thiết bị của bạn. Thông tin của bạn được lưu vào <ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" /> của tài khoản <ph name="ACCOUNT" />.</translation>
 <translation id="6970885655016700774">Vải (Lưu niệm)</translation>
 <translation id="6971439137020188025">Tạo nhanh một bản trình bày mới trong Google Trang trình bày</translation>
 <translation id="6972629891077993081">Thiết bị HID</translation>
@@ -3703,6 +3705,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7031646650991750659">Những ứng dụng bạn đã cài đặt bằng Google Play</translation>
 <translation id="7035705295266423040">Ngân hàng muốn xác minh danh tính của bạn</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để quản lý chế độ cài đặt về quyền riêng tư của Tài khoản Google của bạn</translation>
+<translation id="7042465939346919737">Google sử dụng thông tin trên trang thanh toán và các dữ liệu liên quan khác để đưa ra những lựa chọn này. Để ẩn các lựa chọn trả sau, hãy chuyển đến <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Tinh chỉnh kết quả</translation>
 <translation id="7043552168914147882">Giấy có nhãn ở rìa</translation>
 <translation id="7044081119134178347">Đã cho phép sử dụng máy ảnh cho lần này</translation>

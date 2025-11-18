@@ -492,6 +492,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organizacija samodejno zapre Chrome, če ga ne uporabljate 1 minuto. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}one{Organizacija samodejno zapre Chrome, če ga ne uporabljate # minuto. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}two{Organizacija samodejno zapre Chrome, če ga ne uporabljate # minuti. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}few{Organizacija samodejno zapre Chrome, če ga ne uporabljate # minute. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}other{Organizacija samodejno zapre Chrome, če ga ne uporabljate # minut. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}}</translation>
 <translation id="6418662306461808273">Želite preklopiti na obstoječi profil v Chromu?</translation>
 <translation id="6426623519983252346">Ko boste naslednjič odprli Chrome za iOS, bo prikazan poziv, da preizkusite funkcijo <ph name="FEATURE_NAME" />.</translation>
+<translation id="6434035853014503219">Hvala, ker ste izbrali Chrome kot privzeti brskalnik.</translation>
 <translation id="6473905796280459355">Odprite stran »O Chromu«</translation>
 <translation id="6481963882741794338">Povežite Chrome in druge Googlove storitve za osebno prilagajanje in druge namene</translation>
 <translation id="648319183876919572">Izboljšano varno brskanje vas še bolje varuje pred nevarnimi spletnimi mesti in prenosi</translation>
@@ -588,6 +589,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="756809126120519699">Chromovi podatki so izbrisani.</translation>
 <translation id="7572537927358445944">Izklopljeno • Chrome ne more preveriti, od kod izvira ta razširitev</translation>
 <translation id="7583399374488819119">Namestitveni program za <ph name="COMPANY_NAME" /></translation>
+<translation id="7596160425942761210">Chrome lahko uporabljate ob vsakem kliku povezav v sporočilih, dokumentih in drugih aplikacijah</translation>
 <translation id="7602868996817972616">Vprašajte Google o tej strani</translation>
 <translation id="760353356052806707">Drug program v računalniku je dodal aplikacijo, ki lahko spremeni način delovanja Chroma.
 
@@ -683,6 +685,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="8601359445272098721">Novo! Besedilo in slike na zaslonu lahko prevedete tako, da izberete gumb za prevod vsebine zaslona.</translation>
 <translation id="8614913330719544658">Google Chrome se ne odziva. Ga želite znova zagnati?</translation>
 <translation id="861702415419836452">Chrome potrebuje dovoljenje za dostop do fotoaparata zaradi ustvarjanja tridimenzionalnega zemljevida okolice.</translation>
+<translation id="8624541899164515475">Nastavitve, odpre se na novem zavihku.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome se bo znova zagnal čez eno minuto}one{Chrome se bo znova zagnal čez # minuto}two{Chrome se bo znova zagnal čez # minuti}few{Chrome se bo znova zagnal čez # minute}other{Chrome se bo znova zagnal čez # minut}}</translation>
 <translation id="8637932705841171563">Če želite deliti okno, v sistemskih nastavitvah omogočite snemanje zaslona za Chrome.</translation>
 <translation id="8641606876632989680">Chrome vas bo obvestil, če se prijavite z ogroženim geslom</translation>

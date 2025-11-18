@@ -485,6 +485,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6417690341895039567">{COUNT,plural, =1{Kuruluşunuz, 1 dakika kullanılmadığında Chrome'u otomatik olarak kapatır. Tarama verileri silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.}other{Kuruluşunuz, # dakika kullanılmadığında Chrome'u otomatik olarak kapatır. Tarama verileri silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.}}</translation>
 <translation id="6418662306461808273">Mevcut Chrome profiline geçilsin mi?</translation>
 <translation id="6426623519983252346">Chrome iOS'i bir sonraki açışınızda <ph name="FEATURE_NAME" /> özelliğini denemeniz için bir istem görürsünüz.</translation>
+<translation id="6434035853014503219">Chrome'u varsayılan tarayıcınız olarak seçtiğiniz için teşekkür ederiz.</translation>
 <translation id="6473905796280459355">Chrome hakkında sayfasına gidin</translation>
 <translation id="6481963882741794338">Kişiselleştirme ve diğer amaçlar için Chrome ile diğer Google hizmetlerini bağlayın</translation>
 <translation id="648319183876919572">Gelişmiş Güvenli Tarama sizi tehlikeli web sitelerinden ve indirmelerden korumak için daha fazlasını yapar</translation>
@@ -581,6 +582,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="756809126120519699">Chrome verileri temizlendi</translation>
 <translation id="7572537927358445944">Kapalı • Chrome, bu uzantının kaynağını doğrulayamıyor</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> Yükleyici</translation>
+<translation id="7596160425942761210">Mesajlardaki, belgelerdeki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chrome'u kullanabilirsiniz</translation>
 <translation id="7602868996817972616">Google'a bu sayfa hakkında soru sorun</translation>
 <translation id="760353356052806707">Bilgisayarınızdaki başka bir program, Chrome'un çalışma şeklini değiştirebilecek bir uygulama ekledi.
 
@@ -676,6 +678,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8601359445272098721">Yeni! "Ekrandaki yazıları çevir" düğmesini seçerek ekranınızdaki metinleri ve resimleri çevirebilirsiniz</translation>
 <translation id="8614913330719544658">Google Chrome yanıt vermiyor. Yeniden başlatılsın mı?</translation>
 <translation id="861702415419836452">Çevrenizin 3D haritasını oluşturmak için Chrome'un kameranıza erişim iznine ihtiyacı var</translation>
+<translation id="8624541899164515475">Ayarlar, yeni sekmede açılır.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 dakika içinde yeniden başlatılacak}other{Chrome # dakika içinde yeniden başlatılacak}}</translation>
 <translation id="8637932705841171563">Pencerenizi paylaşmak için Sistem Ayarları'nda Chrome'un ekranı kaydetmesine izin verin.</translation>
 <translation id="8641606876632989680">Chrome, güvenliği ihlal edilmiş bir şifreyle oturum açtığınızda size haber verir</translation>

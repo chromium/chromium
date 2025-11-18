@@ -42,6 +42,7 @@
 <translation id="1122068467107743258">Tempat kerja</translation>
 <translation id="1126696498560056882">Urus akaun pada peranti ini</translation>
 <translation id="1126809382673880764">Tidak melindungi anda daripada laman web, muat turun dan sambungan yang berbahaya. Anda akan mendapat perlindungan Penyemakan Imbas Selamat, jika tersedia, dalam perkhidmatan Google yang lain, seperti Gmail dan Carian.</translation>
+<translation id="1133418583142946603">Tambah tab semasa</translation>
 <translation id="1136104150802877429">Paparkan ulasan produk</translation>
 <translation id="1142371195993008685">Matikan pemberitahuan untuk <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Dilog masuk sebagai <ph name="USER" /></translation>
@@ -78,6 +79,7 @@
 <translation id="1285320974508926690">Jangan sekali-kali menterjemahkan tapak ini</translation>
 <translation id="1287229685519872919">Data Google Workspace</translation>
 <translation id="1291506870746876680">Kebenaran <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> akan ditetapkan semula kepada dimatikan apabila anda meninggalkan laman ini.</translation>
+<translation id="1293556467332435079">Fail</translation>
 <translation id="129553762522093515">Ditutup baru-baru ini</translation>
 <translation id="1296581780163690620">Muat turun fail? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Untuk memastikan anda boleh menggunakan kata laluan pada bila-bila masa dalam Google Account anda, sahkan identiti anda.</translation>
@@ -1044,6 +1046,7 @@
 <translation id="5055015094595227120">Lokasi tepat</translation>
 <translation id="5055551113846164633">Langkah ini memadamkan alamat yang disimpan pada peranti ini. Langkah ini juga memadamkan alamat yang disimpan dalam Google Account anda <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Isu ditemukan pada <ph name="TIME" /></translation>
+<translation id="5056587122125565772">Buat imej</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Pasang Google Drive</translation>
 <translation id="5067540696062462445">Muat turun</translation>
@@ -1505,6 +1508,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6659660757330712663">Anda boleh meleret bar alat untuk beralih antara tab.</translation>
 <translation id="6663529247339810546">Gagal menyimpan imej</translation>
 <translation id="6668619169535738264">Edit Penanda Halaman</translation>
+<translation id="6670729408462528018">Galeri</translation>
 <translation id="6671294218820966278">Tandai sebagai Dibaca</translation>
 <translation id="6672697278890207089">Masukkan ungkapan laluan anda</translation>
 <translation id="6674917187596384849">Anda boleh menukar antara akaun dengan mudah</translation>

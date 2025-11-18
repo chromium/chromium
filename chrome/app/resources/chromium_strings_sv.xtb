@@ -523,6 +523,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 <translation id="705851970750939768">Uppdatera Chromium</translation>
 <translation id="7067091210845072982">Om en bild inte har någon användbar beskrivning görs ett försök att beskriva den åt dig i Chromium. Bilderna skickas till Google så att beskrivningen kan genereras.</translation>
 <translation id="7141270731789036260">Anpassa Chrome för testning</translation>
+<translation id="7147227333672430807">Du kan använda Chromium varje gång du klickar på länkar i meddelanden, dokument och andra appar</translation>
 <translation id="7163519456498498587">Ta bort <ph name="EXTENSION_NAME" /> från Chromium</translation>
 <translation id="7173822816570314652">Organisationen raderar Chromium-data när den inte har använts på <ph name="TIMEOUT_DURATION" />. Detta kan innefatta historik, autofyll och nedladdningar.</translation>
 <translation id="718435575166326686">Du behöver ge Chromium kamerabehörighet för den här webbplatsen</translation>
@@ -637,6 +638,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8471947159125090285">Verifiera din identitet för att använda och spara Chromium-data i ditt Google-konto</translation>
 <translation id="8482493977473846331">Visar meddelanden om att logga in i Chromium</translation>
 <translation id="8493179195440786826">Den här versionen av Chromium är inaktuell</translation>
+<translation id="850264194101621529">Tack för att du valde Chromium som standardwebbläsare!</translation>
 <translation id="8522801943730206384">Chromium kan bara kontrollera dina lösenord om du sparar dem</translation>
 <translation id="8555465886620020932">Tjänstfel: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Du kan fästa Bildsökning för enkel åtkomst. Klicka på knappen Fäst högst upp på sidopanelen</translation>
@@ -646,6 +648,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8586442755830160949">Upphovsrätt <ph name="YEAR" /> The Chromium Authors. Med ensamrätt.</translation>
 <translation id="8601359445272098721">Nyhet! Du kan översätta både text och bilder på skärmen genom att välja knappen Översätt skärm</translation>
 <translation id="8619360774459241877">Chromium startas …</translation>
+<translation id="8624541899164515475">Inställningar, öppnas på en ny flik.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing kan inte användas som standardwebbläsare.</translation>
 <translation id="8677922833187616101">Visa alltid genvägen till Google AI-läget</translation>
 <translation id="8697124171261953979">Det styr också vilken sida som visas när du startar Chromium eller söker i adressfältet.</translation>

@@ -520,6 +520,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="705851970750939768">Atjaunināt Chromium</translation>
 <translation id="7067091210845072982">Ja attēlam nav vērtīga apraksta, pārlūks Chromium mēģinās jums tādu nodrošināt. Lai izveidotu aprakstus, attēli tiek nosūtīti uzņēmumam Google.</translation>
 <translation id="7141270731789036260">Pielāgot versiju Chrome for Testing</translation>
+<translation id="7147227333672430807">Varat izmantot pārlūku Chromium ikreiz, kad noklikšķināt uz saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
 <translation id="7163519456498498587">Noņemt paplašinājumu <ph name="EXTENSION_NAME" /> no pārlūka Chromium</translation>
 <translation id="7173822816570314652">Jūsu organizācija dzēš Chromium datus, ja šis pārlūks <ph name="TIMEOUT_DURATION" /> netiek izmantots. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes.</translation>
 <translation id="718435575166326686">Pārlūkam Chromium ir nepieciešama atļauja izmantot kameru šajā vietnē.</translation>
@@ -632,6 +633,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8471947159125090285">Lai izmantotu un saglabātu Chromium datus savā Google kontā, apstipriniet savu identitāti.</translation>
 <translation id="8482493977473846331">Tiek rādīti aicinājumi pierakstīties pārlūkā Chromium.</translation>
 <translation id="8493179195440786826">Chromium versija ir novecojusi</translation>
+<translation id="850264194101621529">Paldies, ka izvēlējāties Chromium kā noklusējuma pārlūku!</translation>
 <translation id="8522801943730206384">Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
 <translation id="8555465886620020932">Pakalpojuma kļūda: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Varat piespraust funkciju Attēlu meklēšana, lai ērti tai piekļūtu. Sānu paneļa augšdaļā noklikšķiniet uz pogas “Piespraust”.</translation>
@@ -641,6 +643,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8586442755830160949">Autortiesības <ph name="YEAR" /> Chromium autori. Visas tiesības paturētas.</translation>
 <translation id="8601359445272098721">Jaunums! Atlasot pogu “Tulkot ekrānu”, varat tulkot gan ekrānā redzamo tekstu, gan attēlus.</translation>
 <translation id="8619360774459241877">Notiek Chromium palaišana...</translation>
+<translation id="8624541899164515475">Iestatījumi; tiks atvērta jauna cilne.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing nevar iestatīt kā noklusējuma pārlūku.</translation>
 <translation id="8677922833187616101">Vienmēr rādīt Google MI režīma saīsni</translation>
 <translation id="8697124171261953979">Tas nosaka arī to, kāda lapa tiks rādīta, kad atvērsiet pārlūku Chromium vai meklēsiet, izmantojot universālo lodziņu.</translation>

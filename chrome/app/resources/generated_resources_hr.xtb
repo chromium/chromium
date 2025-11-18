@@ -1054,6 +1054,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1699807488537653303">Ispravite pogrešku zaporke</translation>
 <translation id="1700201317341192482">Uklonite virtualnu karticu</translation>
 <translation id="1700517974991662022">Posjećeno</translation>
+<translation id="1701367827913789499">Čitajte u miru uz minimalna ometanja pomoću gumba za način za čitanje na alatnoj traci</translation>
 <translation id="1703331064825191675">Ne morate se brinuti za svoje zaporke</translation>
 <translation id="1703666494654169921">Ne dopuštaj web-lokacijama korištenje uređaja ili podataka virtualne stvarnosti</translation>
 <translation id="1704097193565924901">Promijeni prvo slovo u veliko</translation>
@@ -2961,6 +2962,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3008272652534848354">Poništi dopuštenja</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> traži da se danas povežete s Wi-Fijem da biste preuzeli ažuriranje. Možete ga preuzeti i putem veze s ograničenim prometom (moguća je naplata naknada).}one{<ph name="MANAGER" /> traži da se povežete s Wi-Fijem i preuzmete ažuriranje prije roka. Možete ga preuzeti i putem veze s ograničenim prometom (moguća je naplata naknada).}few{<ph name="MANAGER" /> traži da se povežete s Wi-Fijem i preuzmete ažuriranje prije roka. Možete ga preuzeti i putem veze s ograničenim prometom (moguća je naplata naknada).}other{<ph name="MANAGER" /> traži da se povežete s Wi-Fijem i preuzmete ažuriranje prije roka. Možete ga preuzeti i putem veze s ograničenim prometom (moguća je naplata naknada).}}</translation>
 <translation id="3008923556848076408">Gemini će nastaviti raditi na vašem zadatku</translation>
+<translation id="3008926075262837186">Čitajte u miru uz minimalna ometanja</translation>
 <translation id="3009178788565917040">Izlaz</translation>
 <translation id="3009352964623081324">Pretraživanje + O, a zatim S. Koristite za instaliranje, upravljanje i prilagođavanje glasova.</translation>
 <translation id="3009779501245596802">Indeksirane baze podataka</translation>
@@ -4418,7 +4420,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Saznajte više o preciznosti lokacije<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Uvezeno</translation>
 <translation id="3992008114154328194">Preuzimanje <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Stvaranje sigurnosne kopije</translation>
 <translation id="3994075804072562819">Omogućite aplikaciji <ph name="SPECIFIC_NAME" /> kontrolu nad USB uređajima.</translation>
 <translation id="3994318741694670028">Nažalost, vaše je računalo konfigurirano pogrešno oblikovanim ID-jem hardvera. To sprječava ažuriranje ChromeOS Flexa najnovijim sigurnosnim popravcima pa bi vaše računalo <ph name="BEGIN_BOLD" />moglo biti ranjivo na zlonamjerne napade<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Otključajte telefon i približite ga da biste otključali svoj <ph name="DEVICE_TYPE" />.</translation>
@@ -7713,7 +7714,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6336038146639916978">Domena <ph name="MANAGER" /> onemogućila je ADB otklanjanje pogrešaka. Zbog toga će se uređaj <ph name="DEVICE_TYPE" /> vratiti na zadano za 24 sata. Sigurnosno kopirajte sve datoteke koje želite zadržati.</translation>
 <translation id="6336194758029258346">Jezik aplikacije</translation>
 <translation id="6337543438445391085">Neki osobni podaci i dalje mogu biti uključeni u podatke. Svakako pregledajte izvezene datoteke.</translation>
-<translation id="6338554362382763574">Dok pregledavate, možete jednostavno Geminiju postaviti pitanja o karticama koje dijelite</translation>
 <translation id="6338968693068997776">Dodavanje USB uređaja</translation>
 <translation id="6339668969738228384">Izradi novi profil za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8337,7 +8337,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
     <ph name="BEGIN_PARAGRAPH2" />Tu uslugu možete isključiti u postavkama.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Otkazano je sigurnosno kopiranje Linuxa</translation>
 <translation id="6782067259631821405">Nevažeći PIN</translation>
-<translation id="6782219876520622071">Razgovore o dijeljenim karticama mogu vidjeti pregledavatelji radi poboljšanja Geminija</translation>
 <translation id="6783036716881942511">Želite li zaboraviti ovaj uređaj?</translation>
 <translation id="6783667414610055871">Postavke Microsoft OneDrivea</translation>
 <translation id="6784523122863989144">Profil je podržan</translation>
@@ -9535,7 +9534,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7620616707541471029">Odaberite račun da biste nastavili</translation>
 <translation id="7621382409404463535">Sustav nije uspio spremiti konfiguraciju uređaja.</translation>
 <translation id="7621595347123595643">Nećete moći oporaviti lokalne podatke ako zaboravite zaporku ili PIN.</translation>
-<translation id="7621863462266622331">Kad se kartice dijele, njihov sadržaj, mediji i URL-ovi šalju se Googleu</translation>
 <translation id="7622114377921274169">Punjenje.</translation>
 <translation id="7622768823216805500">Web-lokacije obično instaliraju rukovatelje plaćanjem radi značajki kupnje poput jednostavnije naplate</translation>
 <translation id="7622966771025050155">Prijeđi na snimljenu karticu</translation>
@@ -10881,6 +10879,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8517759303731677493">Uredi…</translation>
 <translation id="8518809011298357036">Zatvori gornji prikaz</translation>
 <translation id="8518942514525208851">Sakrij vulgaran jezik</translation>
+<translation id="8520238089740349550">Nije uspjelo – lokalno preuzimanje je blokirano</translation>
 <translation id="8523493869875972733">Zadrži promjene</translation>
 <translation id="8523849605371521713">Dodala pravila</translation>
 <translation id="8524594273111932386">pretraživanje + strelica prema dolje</translation>

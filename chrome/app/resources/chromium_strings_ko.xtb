@@ -522,6 +522,7 @@
 <translation id="705851970750939768">Chromium 업데이트</translation>
 <translation id="7067091210845072982">이미지에 유용한 설명이 없으면 Chromium에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다.</translation>
 <translation id="7141270731789036260">Chrome for Testing 맞춤설정</translation>
+<translation id="7147227333672430807">언제든지 메시지, 문서, 기타 앱에서 링크를 클릭하여 Chromium을 사용할 수 있습니다.</translation>
 <translation id="7163519456498498587"><ph name="EXTENSION_NAME" /> 확장 프로그램을 Chromium에서 제거</translation>
 <translation id="7173822816570314652"><ph name="TIMEOUT_DURATION" /> 동안 사용하지 않으면 조직에서 Chromium 데이터를 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.</translation>
 <translation id="718435575166326686">Chromium에서 사이트에 대한 카메라 권한이 필요합니다.</translation>
@@ -636,6 +637,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8471947159125090285">Google 계정에서 Chromium 데이터를 사용하고 저장하려면 본인 인증을 완료하세요.</translation>
 <translation id="8482493977473846331">Chromium에 로그인하기 위한 메시지를 표시합니다.</translation>
 <translation id="8493179195440786826">Chromium이 이전 버전임</translation>
+<translation id="850264194101621529">Chromium을 기본 브라우저로 선택해 주셔서 감사합니다.</translation>
 <translation id="8522801943730206384">비밀번호를 저장하면 Chromium에서 확인할 수 있습니다</translation>
 <translation id="8555465886620020932">서비스 오류(<ph name="SERVICE_ERROR" />)가 발생했습니다.</translation>
 <translation id="8556420416730706394">측면 패널 상단의 고정 버튼을 클릭하여 이미지 검색을 고정하면 쉽게 액세스할 수 있습니다</translation>
@@ -645,6 +647,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8601359445272098721">New! '화면 번역' 버튼을 선택하여 화면의 텍스트와 이미지를 모두 번역할 수 있습니다.</translation>
 <translation id="8619360774459241877">Chromium 실행 중...</translation>
+<translation id="8624541899164515475">설정, 새 탭에서 열립니다.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing을 기본 브라우저로 설정할 수 없습니다.</translation>
 <translation id="8677922833187616101">Google AI 모드 바로가기 항상 표시</translation>
 <translation id="8697124171261953979">또한 Chromium을 시작하거나 검색주소창에서 검색할 때 표시되는 페이지를 설정합니다.</translation>

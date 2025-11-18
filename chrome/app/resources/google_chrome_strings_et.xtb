@@ -488,6 +488,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6417690341895039567">{COUNT,plural, =1{Teie organisatsioon sulgeb Chrome’i automaatselt, kui seda ei kasutata 1 minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}other{Teie organisatsioon sulgeb Chrome’i automaatselt, kui seda ei kasutata # minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}}</translation>
 <translation id="6418662306461808273">Kas lülituda olemasolevale Chrome'i profiilile?</translation>
 <translation id="6426623519983252346">Näete järgmisel korral Chrome'i iOS-i avamisel viipa, et proovida funktsiooni <ph name="FEATURE_NAME" />.</translation>
+<translation id="6434035853014503219">Täname, et valisite Chrome'i oma vaikebrauseriks!</translation>
 <translation id="6473905796280459355">Minemine lehele Teave Chrome’i kohta</translation>
 <translation id="6481963882741794338">Linkige Chrome ja teised Google’i teenused isikupärastamiseks ja muudel eesmärkidel</translation>
 <translation id="648319183876919572">Täiustatud ohutu sirvimine kaitseb teid paremini ohtlike veebisaitide ja allalaadimiste eest</translation>
@@ -584,6 +585,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="756809126120519699">Chrome'i andmed kustutati</translation>
 <translation id="7572537927358445944">Väljas • Chrome ei suuda tuvastada, kust see laiendus pärineb</translation>
 <translation id="7583399374488819119">Brauseri <ph name="COMPANY_NAME" /> installiprogramm</translation>
+<translation id="7596160425942761210">Saate kasutada Chrome'i iga kord, kui klõpsate sõnumites, dokumentides ja muudes rakendustes linkidel.</translation>
 <translation id="7602868996817972616">Küsige Google'ilt selle lehe kohta</translation>
 <translation id="760353356052806707">Muu arvutis olev programm lisas rakenduse, mis võib muuta Chrome'i tööd.
 
@@ -679,6 +681,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="8601359445272098721">Uus! Saate tõlkida nii ekraanil olevat teksti kui ka pilte, valides nupu „Tõlgi kuva“</translation>
 <translation id="8614913330719544658">Google Chrome ei reageeri. Kas soovite kohe taaskäivitada?</translation>
 <translation id="861702415419836452">Chrome vajab luba teie kaamerale juurdepääsemiseks, et luua teid ümbritsevast 3D-kaart</translation>
+<translation id="8624541899164515475">Seaded, avaneb uuel vahelehel.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome käivitatakse uuesti 1 minuti pärast}other{Chrome käivitatakse uuesti # minuti pärast}}</translation>
 <translation id="8637932705841171563">Oma akna jagamiseks lubage menüüs System Settings Chrome'i puhul ekraani salvestamine.</translation>
 <translation id="8641606876632989680">Chrome teavitab teid, kui logite sisse ohustatud parooliga</translation>

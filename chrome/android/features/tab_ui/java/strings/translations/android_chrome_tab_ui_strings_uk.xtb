@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Список груп вкладок закрито</translation>
 <translation id="3194464645767632461">оцінка</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Додати <ph name="TABS_COUNT_ONE" /> вкладку в групу}one{Додати <ph name="TABS_COUNT_MANY" /> вкладку в групу}few{Додати <ph name="TABS_COUNT_MANY" /> вкладки в групу}many{Додати <ph name="TABS_COUNT_MANY" /> вкладок у групу}other{Додати <ph name="TABS_COUNT_MANY" /> вкладки в групу}}</translation>
+<translation id="3293080634164207409">Додайте вкладки</translation>
 <translation id="3328308545011660196">Підказка: схоже, ви відкрили кілька пов'язаних вкладок (<ph name="NUMBER_OF_TABS" />). Додати їх у групу?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Через 1 день без активності}one{Через <ph name="DAY_COUNT_MANY" /> день без активності}few{Через <ph name="DAY_COUNT_MANY" /> дні без активності}many{Через <ph name="DAY_COUNT_MANY" /> днів без активності}other{Через <ph name="DAY_COUNT_MANY" /> дня без активності}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> нова вкладка}one{<ph name="MANY_ADDED" /> нова вкладка}few{<ph name="MANY_ADDED" /> нові вкладки}many{<ph name="MANY_ADDED" /> нових вкладок}other{<ph name="MANY_ADDED" /> нової вкладки}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">Дії</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> відгук}one{Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> відгук}few{Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> відгуки}many{Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> відгуків}other{Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> відгуку}}</translation>
 <translation id="7885132941432959125">Перемістити вкладку праворуч</translation>
+<translation id="7887334752153342268">Створити копію</translation>
 <translation id="7939917283308035850">Не вибрано: <ph name="COLOR_NAME" /></translation>
 <translation id="7961015016161918242">Ніколи</translation>
 <translation id="7966321538264951561">Закрити пропозицію.</translation>

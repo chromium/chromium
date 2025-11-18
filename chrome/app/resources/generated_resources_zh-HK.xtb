@@ -4427,7 +4427,6 @@
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />進一步瞭解「定位精確度」<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">已匯入</translation>
 <translation id="3992008114154328194">下載緊 <ph name="FILE_NAME" />，<ph name="STATUS" /></translation>
-<translation id="3993259701827857030">備份資料</translation>
 <translation id="3994075804072562819">授權「<ph name="SPECIFIC_NAME" />」控制 USB 裝置。</translation>
 <translation id="3994318741694670028">抱歉，您的電腦是由格式錯誤的硬件 ID 設定。這導致 ChromeOS Flex 無法使用最新的安全性修正程式進行更新，您的電腦亦可能因此<ph name="BEGIN_BOLD" />容易被惡意攻擊<ph name="END_BOLD" />。</translation>
 <translation id="3994374631886003300">解鎖手機並靠近您的 <ph name="DEVICE_TYPE" /> 即可解鎖。</translation>
@@ -7720,7 +7719,6 @@
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 偵錯。這會讓系統在 24 小時後重設您的 <ph name="DEVICE_TYPE" />。請備份您想保留的檔案。</translation>
 <translation id="6336194758029258346">應用程式語言</translation>
 <translation id="6337543438445391085">資料仍可能會包含部分個人資料，請務必檢查已匯出的檔案。</translation>
-<translation id="6338554362382763574">瀏覽網頁時，你可以輕鬆向 Gemini 詢問有關共用分頁的問題</translation>
 <translation id="6338968693068997776">新增 USB 裝置</translation>
 <translation id="6339668969738228384">為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的個人檔案</translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8340,7 +8338,6 @@
     <ph name="BEGIN_PARAGRAPH2" />您可在「設定」中關閉此服務。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">已取消 Linux 備份</translation>
 <translation id="6782067259631821405">PIN 無效</translation>
-<translation id="6782219876520622071">為提升 Gemini 品質，人手審查員可能會查看有關共用分頁的對話</translation>
 <translation id="6783036716881942511">要忘記此裝置嗎？</translation>
 <translation id="6783667414610055871">Microsoft OneDrive 設定</translation>
 <translation id="6784523122863989144">支援設定檔</translation>
@@ -9537,7 +9534,6 @@
 <translation id="7620616707541471029">選擇帳戶以便繼續操作</translation>
 <translation id="7621382409404463535">系統無法儲存裝置設定。</translation>
 <translation id="7621595347123595643">如果忘記密碼或 PIN，就無法復原本機資料。</translation>
-<translation id="7621863462266622331">共用分頁時，系統會將網頁內容、媒體和網址傳送給 Google</translation>
 <translation id="7622114377921274169">正在充電。</translation>
 <translation id="7622768823216805500">網站通常會安裝付款處理常式以提供購物功能，例如較易結帳</translation>
 <translation id="7622966771025050155">切換至已擷取的分頁</translation>

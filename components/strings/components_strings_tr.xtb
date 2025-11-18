@@ -428,6 +428,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1689333818294560261">Takma ad</translation>
 <translation id="1692622044604477956">Film Listeleri ve Sinema Gösteri Zamanları</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Verilerinizi nasıl yönetebilirsiniz?<ph name="END_BOLD" /> Chrome, 4 haftadan daha eski konuları otomatik olarak siler. Siz internette gezindikçe bir konu tekrar listede görünmeye başlayabilir. Chrome ayarlarından Chrome'un sitelerle paylaşmasını istemediğiniz konuları engelleyebilir, reklam konularını kapatabilirsiniz.</translation>
+<translation id="1697808683313379647">Google, bu seçenekleri sunmak için ödeme sayfasındaki bilgileri ve diğer ilgili verileri kullanır.</translation>
 <translation id="1699651774646344471">Artık Google Hesabınızdaki adresleri kullanabilirsiniz</translation>
 <translation id="1700542542921501212">Web'de arama yapmak için <ph name="SEARCH_ENGINE_NAME" /> arama motorunu kullanabilirsiniz.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1722,7 +1723,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3792826587784915501">Kült ve Bağımsız Filmler</translation>
 <translation id="3793574014653384240">Son zamanlarda meydana gelen kilitlenmelerin sayısı ve nedenleri</translation>
 <translation id="3795624560191557077">Yakın zamanda, herkese açık bir veri ihlalinde tespit edilen bir şifreyi değiştirdiniz. Sorun yaşamanız durumunda Google Şifre Yöneticisi oturum açmanıza yardımcı olabilir.</translation>
-<translation id="3796181268473765083">Vade farkı olmadan veya aylık plana göre 4 taksitle ödeyin (uygunluk koşullarına tabidir).</translation>
 <translation id="3799805948399000906">Yazı tipi istendi</translation>
 <translation id="3801297763951514916">Sık ziyaret ediyorsunuz</translation>
 <translation id="380329542618494757">Ad</translation>
@@ -2948,6 +2948,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5813753398265398978">Fizik</translation>
 <translation id="5817918615728894473">Eşle</translation>
 <translation id="5820625124144807242">Siparişinizi inceledikten sonra bir <ph name="BNPL_ISSUER_NAME" /> hesabında oturum açmanız veya hesap oluşturmanız gerekir. Bu hesap, Google Pay'e otomatik olarak bağlanır.</translation>
+<translation id="5820751560028604030">Yerel indirme engellendi</translation>
 <translation id="5826507051599432481">Genel Ad (CN)</translation>
 <translation id="5830698870816298009">kamera kullanma ve hareket ettirme</translation>
 <translation id="5831217499016131155">Google Cüzdan</translation>
@@ -3702,6 +3703,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7031646650991750659">Hangi Google Play uygulamalarını yüklediğiniz</translation>
 <translation id="7035705295266423040">Bankanız kimliğinizi doğrulamak istiyor</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Hesabınızın gizlilik ayarlarını yönetmek için Sekme'ye, ardından Enter'a basın</translation>
+<translation id="7042465939346919737">Google, bu seçenekleri sunmak için ödeme sayfasındaki bilgileri ve diğer ilgili verileri kullanır. Sonra ödeme seçeneklerini gizlemek için <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> bölümüne gidin</translation>
 <translation id="7042616127917168121">Sonuçları hassaslaştır</translation>
 <translation id="7043552168914147882">Tab Stok</translation>
 <translation id="7044081119134178347">Şu anda kameraya izin veriliyor</translation>

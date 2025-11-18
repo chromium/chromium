@@ -484,6 +484,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="6417690341895039567">{COUNT,plural, =1{Chrome 1 dəqiqə istifadə edilmədikdə təşkilat onu avtomatik bağlayır. Baxış datası silinir. Bura tarixçə, avto doldurma və endirmələr daxil ola bilər.}other{Chrome # dəqiqə istifadə edilmədikdə təşkilat onu avtomatik bağlayır. Baxış datası silinir. Bura tarixçə, avto doldurma və endirmələr daxil ola bilər.}}</translation>
 <translation id="6418662306461808273">Mövcud Chrome profilinə keçirilsin?</translation>
 <translation id="6426623519983252346">Növbəti dəfə Chrome iOS-u açdığınız zaman <ph name="FEATURE_NAME" /> tətbiqini sınamaq üçün göstəriş görəcəksiniz.</translation>
+<translation id="6434035853014503219">Chrome-u defolt brauzer kimi seçdiyiniz üçün təşəkkür edirik!</translation>
 <translation id="6473905796280459355">Chrome haqqında səhifəsinə keçin</translation>
 <translation id="6481963882741794338">Fərdiləşdirmə və digər məqsədlər üçün Chrome və digər Google xidmətlərini əlaqələndirin</translation>
 <translation id="648319183876919572">Qabaqcıl Güvənli Baxış təhlükəli veb-sayt və endirmələrə qarşı daha yaxşı qoruyur</translation>
@@ -580,6 +581,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="756809126120519699">Chrome datası təmizləndi</translation>
 <translation id="7572537927358445944">Sönülü • Chrome bu artırmanın mənbəyini doğrulaya bilmir</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> Quraşdırıcısı</translation>
+<translation id="7596160425942761210">İstənilən vaxt mesaj, sənəd və digər tətbiqlərdə keçidlərə kliklədikdə Chrome-dan istifadə edə bilərsiniz</translation>
 <translation id="7602868996817972616">Bu səhifə haqqında Google-dan soruşun</translation>
 <translation id="760353356052806707">Kompüterinizdə başqa bir proqram Chrome'un necə işlədiyini dəyişdirən tətbiq əlavə etdi. 
 
@@ -675,6 +677,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="8601359445272098721">Yenilik! "Ekranı tərcümə edin" düyməsini seçməklə həm ekrandakı mətni, həm də təsvirləri tərcümə edə bilərsiniz</translation>
 <translation id="8614913330719544658">Google Chrome cavab vermir. Yenidən başladılsın?</translation>
 <translation id="861702415419836452">Chrome ətrafınızın 3D xəritəsini yaratmaq üçün kameranıza giriş icazəsi tələb edir</translation>
+<translation id="8624541899164515475">Ayarlar, yeni tabda açılır.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 dəqiqəyə yenidən başlayacaq}other{Chrome # dəqiqəyə yenidən başlayacaq}}</translation>
 <translation id="8637932705841171563">Pəncərəni paylaşmaq üçün Sistem Ayarlarında Chrome üçün ekranın qeydə alınmasına icazə verin</translation>
 <translation id="8641606876632989680">Oğurlanmış parol ilə daxil olduqda Chrome sizə bildiriş göndərəcək</translation>

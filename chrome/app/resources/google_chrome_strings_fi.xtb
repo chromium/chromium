@@ -484,6 +484,7 @@
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisaatiosi sulkee Chromen automaattisesti, kun sitä ei ole käytetty 1 minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}other{Organisaatiosi sulkee Chromen automaattisesti, kun sitä ei ole käytetty # minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}}</translation>
 <translation id="6418662306461808273">Vaihdetaanko nykyiseen Chrome-profiiliin?</translation>
 <translation id="6426623519983252346">Näet kehotteen kokeilla <ph name="FEATURE_NAME" /> seuraavan kerran, kun avaat Chrome iOS:llä.</translation>
+<translation id="6434035853014503219">Kiitos, että valitsit Chromen oletusselaimeksi!</translation>
 <translation id="6473905796280459355">Siirry Tietoja Chromesta ‐sivulle</translation>
 <translation id="6481963882741794338">Linkitä Chrome ja muita Googlen palveluja esimerkiksi personointia varten</translation>
 <translation id="648319183876919572">Parannettu selaussuoja suojaa sinua entistä paremmin vaarallisilta sivustoilta ja latauksilta</translation>
@@ -580,6 +581,7 @@
 <translation id="756809126120519699">Chrome-tiedot tyhjennetty</translation>
 <translation id="7572537927358445944">Pois päältä • Chrome ei voi vahvistaa, mistä tämä laajennus on peräisin</translation>
 <translation id="7583399374488819119">Asennusohjelma: <ph name="COMPANY_NAME" /></translation>
+<translation id="7596160425942761210">Voit käyttää Chromea aina, kun klikkaat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa</translation>
 <translation id="7602868996817972616">Kysy Googlelta tästä sivusta</translation>
 <translation id="760353356052806707">Toinen tietokoneellasi oleva ohjelma on lisännyt sovelluksen, joka voi muuttaa Chromen toimintaa.
 
@@ -675,6 +677,7 @@
 <translation id="8601359445272098721">Uutta! Voit kääntää näytöllä näkyvän tekstin ja kuvat valitsemalla "Käännä näyttö" ‑painikkeen</translation>
 <translation id="8614913330719544658">Google Chrome ei vastaa. Käynnistetäänkö uudelleen?</translation>
 <translation id="861702415419836452">Chrome tarvitsee luvan käyttää kameraasi ympäristön 3D-kartoittamiseen</translation>
+<translation id="8624541899164515475">Asetukset, avautuu uudelle välilehdelle.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome käynnistetään uudelleen 1 minuutin kuluttua}other{Chrome käynnistetään uudelleen # minuutin kuluttua.}}</translation>
 <translation id="8637932705841171563">Jos haluat jakaa ikkunan, salli Chromen näytön tallennus järjestelmäasetuksista.</translation>
 <translation id="8641606876632989680">Chrome ilmoittaa, kun kirjaudut sisään vaarantuneella salasanalla</translation>

@@ -492,6 +492,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="6417690341895039567">{COUNT,plural, =1{ድርጅትዎ Chrome ለ1 ደቂቃ ጥቅም ላይ ሳይውል ሲቀር በራስ ሰር ይዘጋዋል። የአሰሳ ውሂብ ተሰርዟል። ይህ ታሪክን፣ ራስ-ሙላን እና ውርዶችን ሊያካትት ይችላል።}one{ድርጅትዎ Chrome ለ# ደቂቃ ጥቅም ላይ ሳይውል ሲቀር በራስ ሰር ይዘጋዋል። የአሰሳ ውሂብ ተሰርዟል። ይህ ታሪክን፣ ራስ-ሙላን እና ውርዶችን ሊያካትት ይችላል።}other{ድርጅትዎ Chrome ለ# ደቂቃዎች ጥቅም ላይ ሳይውል ሲቀር በራስ ሰር ይዘጋዋል። የአሰሳ ውሂብ ተሰርዟል። ይህ ታሪክን፣ ራስ-ሙላን እና ውርዶችን ሊያካትት ይችላል።}}</translation>
 <translation id="6418662306461808273">ወደ ነባር የChrome መገለጫ ይቀየር?</translation>
 <translation id="6426623519983252346">Chrome iOS በሚከፍቱበት ቀጣዩ ጊዜ <ph name="FEATURE_NAME" />ን ለመሞከር ጥያቄ ያያሉ።</translation>
+<translation id="6434035853014503219">Chromeን እንደ ነባሪ አሳሽዎ ስለመረጡ እናመሰግናለን!</translation>
 <translation id="6473905796280459355">ወደ ስለChrome ገጽ ይሂዱ</translation>
 <translation id="6481963882741794338">Chromeን እና ሌሎች የGoogle አገልግሎቶችን ግላዊነት ለማላበስ እና ለሌሎች ዓላማዎች ያገናኟቸው</translation>
 <translation id="648319183876919572">የተሻሻለ የደህንነት አሰሳ እርስዎን ከአደገኛ ድር ጣቢያዎች እና ውርዶች ለመጠበቅ ይበልጥ ያደርጋል</translation>
@@ -588,6 +589,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="756809126120519699">የChrome ውሂብ ጸድቷል</translation>
 <translation id="7572537927358445944">ጠፍቷል • Chrome ይህ ቅጥያ ከየት እንደመጣ ማረጋገጥ አይችልም</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> ጫኝ</translation>
+<translation id="7596160425942761210">በመልዕክቶች፣ ሰነዶች እና ሌሎች መተግበሪያዎች ውስጥ አገናኞች ላይ ጠቅ በሚያደርጉበት ማንኛውም ጊዜ Chrome መጠቀም ይችላሉ</translation>
 <translation id="7602868996817972616">Googleን ስለዚህ ገፅ ይጠይቁ</translation>
 <translation id="760353356052806707">Chrome የሚሰራበትን መንገድ የሚለውጥ መተግበሪያ ሌላ ፕሮግም በኮምፒውተርዎ ታክሏል።
 
@@ -683,6 +685,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8601359445272098721">አዲስ! «ማያ ገፅ ተርጉም» የሚለውን ቁልፍ በመምረጥ ሁለቱንም ጽሁፍ እና ምስሎች በማያ ገፁ ላይ መተርጎም ይችላሉ</translation>
 <translation id="8614913330719544658">Google Chrome መልስ አይሰጥም። አሁን ዳግም ይጀምር?</translation>
 <translation id="861702415419836452">Chrome የዙሪያዎ 3ል ካርታ መፍጠር እንዲችል ካሜራዎን የመድረስ ፈቃድ ያስፈልገዋል</translation>
+<translation id="8624541899164515475">ቅንብሮች፣ በአዲስ ትር ውስጥ ይከፈታል።</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome በ1 ደቂቃ ውስጥ ዳግም ይጀመራል}one{Chrome በ# ደቂቃዎች ውስጥ ዳግም ይጀመራል}other{Chrome በ# ደቂቃዎች ውስጥ ዳግም ይጀመራል}}</translation>
 <translation id="8637932705841171563">መስኮትዎን ለማጋራት በሥርዓት ምርጫዎች ውስጥ ለChrome የማያ ገፅ መቅረጽን ይፍቀዱ</translation>
 <translation id="8641606876632989680">እርስዎ በተጠለፈ የይለፍ ቅቃል ሲገቡ Chrome ያሳውቀዎታል</translation>

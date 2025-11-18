@@ -1053,6 +1053,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1699807488537653303">Korjaa salasanavirhe</translation>
 <translation id="1700201317341192482">Poista virtuaalinen kortti</translation>
 <translation id="1700517974991662022">Käyty</translation>
+<translation id="1701367827913789499">Lue mukavasti ja ilman häiriöitä työkalupalkin lukutilapainikkeella</translation>
 <translation id="1703331064825191675">Enää ei tarvitse huolehtia salasanoista</translation>
 <translation id="1703666494654169921">Älä salli sivustojen käyttää virtuaalitodellisuuslaitteita tai ‑dataa</translation>
 <translation id="1704097193565924901">Muuta alkukirjain isoksi</translation>
@@ -2970,6 +2971,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3008272652534848354">Nollaa luvat</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> edellyttää, että yhdistät Wi-Fi-verkkoon tänään ja lataat päivityksen. Voit myös ladata sen maksullisella yhteydellä (tästä voidaan veloittaa).}other{<ph name="MANAGER" /> edellyttää, että yhdistät Wi-Fi-verkkoon ja lataat päivityksen ennen määräaikaa. Voit myös ladata sen maksullisella yhteydellä (tästä voidaan veloittaa).}}</translation>
 <translation id="3008923556848076408">Gemini jatkaa tehtävän parissa</translation>
+<translation id="3008926075262837186">Lue mukavasti ja ilman häiriöitä</translation>
 <translation id="3009178788565917040">Äänentoisto</translation>
 <translation id="3009352964623081324">Haku + O ja sitten S. Käytä äänten asentamiseen, ylläpitämiseen ja muokkaamiseen.</translation>
 <translation id="3009779501245596802">Indeksoidut tietokannat</translation>
@@ -4425,7 +4427,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Lue lisää sijaintitietojen tarkkuudesta<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Tuotu</translation>
 <translation id="3992008114154328194">Lataus käynnissä: <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Datan varmuuskopiointi</translation>
 <translation id="3994075804072562819">Anna laitteelle (<ph name="SPECIFIC_NAME" />) pääsy USB-laitteisiin.</translation>
 <translation id="3994318741694670028">Tietokoneesi on valitettavasti määritetty virheellisellä laitteistotunnuksella. Tämän takia ChromeOS Flex ei voi asentaa uusimpia tietoturvapäivityksiä ja tietokoneesi <ph name="BEGIN_BOLD" />voi altistua hyökkäyksille<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Avaa laitteen <ph name="DEVICE_TYPE" /> lukitus avaamalla ensin puhelimesi ja tuomalla se lähelle laitetta.</translation>
@@ -7725,7 +7726,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6336038146639916978"><ph name="MANAGER" /> on poistanut ADB-virheenkorjauksen käytöstä. <ph name="DEVICE_TYPE" /> nollataan 24 tunnin kuluttua. Varmuuskopioi kaikki tiedostot, jotka haluat säilyttää.</translation>
 <translation id="6336194758029258346">Sovelluksen kieli</translation>
 <translation id="6337543438445391085">Osa henkilökohtaisista tiedoista voi silti sisältyä dataan. Tarkista viedyt tiedostot.</translation>
-<translation id="6338554362382763574">Voit helposti esittää Geminille kysymyksiä jakamistasi välilehdistä selailun aikana</translation>
 <translation id="6338968693068997776">USB-laitteen lisääminen</translation>
 <translation id="6339668969738228384">Luo uusi profiili käyttäjälle <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet-tulostusprotokolla (IPPS)</translation>
@@ -8345,7 +8345,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
     <ph name="BEGIN_PARAGRAPH2" />Voit poistaa tämän palvelun käytöstä asetuksissa.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux-varmuuskopiointi peruutettu</translation>
 <translation id="6782067259631821405">Virheellinen PIN-koodi</translation>
-<translation id="6782219876520622071">Tarkastajat voivat nähdä keskustelut jaetuista välilehdistä Geminin kehittämiseksi</translation>
 <translation id="6783036716881942511">Unohda tämä laite?</translation>
 <translation id="6783667414610055871">Microsoft OneDriven asetukset</translation>
 <translation id="6784523122863989144">Profiilia tuetaan</translation>
@@ -9543,7 +9542,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7620616707541471029">Jatka valitsemalla tili</translation>
 <translation id="7621382409404463535">Laitteen kokoonpanon tallentaminen järjestelmään epäonnistui.</translation>
 <translation id="7621595347123595643">Et voi palauttaa paikallista dataa, jos unohdat salasanan tai PIN-koodin.</translation>
-<translation id="7621863462266622331">Kun välilehtiä jaetaan, niiden sivusisältö, media ja URL-osoitteet lähetetään Googlelle</translation>
 <translation id="7622114377921274169">Ladataan</translation>
 <translation id="7622768823216805500">Sivustot asentavat yleensä maksunkäsittelijöitä tarjotakseen osto-ominaisuuksia, esim. helpomman maksamisen</translation>
 <translation id="7622966771025050155">Vaihda tallennetulle välilehdelle</translation>
@@ -10889,6 +10887,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8517759303731677493">Muokkaa…</translation>
 <translation id="8518809011298357036">Sulje ylänäkymä</translation>
 <translation id="8518942514525208851">Piilota hävyttömyys</translation>
+<translation id="8520238089740349550">Epäonnistui – paikallinen lataus estetty</translation>
 <translation id="8523493869875972733">Säilytä muutokset</translation>
 <translation id="8523849605371521713">Käytännön lisäämä</translation>
 <translation id="8524594273111932386">haku + alanuoli</translation>

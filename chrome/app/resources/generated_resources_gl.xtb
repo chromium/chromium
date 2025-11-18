@@ -1051,6 +1051,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1699807488537653303">Corrixe o erro de contrasinal</translation>
 <translation id="1700201317341192482">Quita a tarxeta virtual</translation>
 <translation id="1700517974991662022">Visitado</translation>
+<translation id="1701367827913789499">Le comodamente e con poucas distraccións usando o botón do modo de lectura da barra de ferramentas</translation>
 <translation id="1703331064825191675">Non te preocupes nunca polos teus contrasinais</translation>
 <translation id="1703666494654169921">Non permitir que os sitios utilicen datos nin dispositivos de realidade virtual</translation>
 <translation id="1704097193565924901">Usar maiúsculas</translation>
@@ -2957,6 +2958,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3008272652534848354">Restablecer permisos</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> require que te conectes hoxe á wifi para descargar unha actualización. Tamén podes descargala desde unha conexión de pago por consumo (pódense aplicar cargos).}other{<ph name="MANAGER" /> require que te conectes á wifi e descargues unha actualización antes de que acabe o prazo. Tamén podes descargala desde unha conexión de pago por consumo (pódense aplicar cargos).}}</translation>
 <translation id="3008923556848076408">Gemini seguirá traballando na túa tarefa</translation>
+<translation id="3008926075262837186">Le comodamente con poucas distraccións</translation>
 <translation id="3009178788565917040">Saída</translation>
 <translation id="3009352964623081324">Buscar + O e despois S. Utilízao para instalar, xestionar e personalizar as voces.</translation>
 <translation id="3009779501245596802">Bases de datos indexadas</translation>
@@ -3876,7 +3878,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3656328935986149999">Velocidade do cursor</translation>
 <translation id="3656701180077048004">Engade un atraso entre o momento no que premes unha tecla e o momento no que se activa</translation>
 <translation id="3658871634334445293">Aceleración de TrackPoint</translation>
-<translation id="3659483399659250379">Engade unha pestana e moito máis</translation>
+<translation id="3659483399659250379">Engadir unha pestana e moito máis</translation>
 <translation id="3659929705630080526">Metiches un código de acceso incorrecto demasiadas veces. Téntao de novo máis tarde</translation>
 <translation id="3661106764436337772">Escribe con máis rapidez e confianza</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Atopouse un contrasinal}other{Atopáronse {NUM_PASSWORDS} contrasinais}}</translation>
@@ -4418,7 +4420,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Máis información sobre Precisión da localización<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Importados</translation>
 <translation id="3992008114154328194">Descargando ficheiro <ph name="FILE_NAME" /> (<ph name="STATUS" />)</translation>
-<translation id="3993259701827857030">Copia de seguranza dos datos</translation>
 <translation id="3994075804072562819">Permite que <ph name="SPECIFIC_NAME" /> controle os dispositivos USB.</translation>
 <translation id="3994318741694670028">O ordenador está configurado cun ID de hardware incorrecto, polo que Chrome OS Flex non pode actualizarse coas correccións de seguranza máis recentes e <ph name="BEGIN_BOLD" />é posible que o teu ordenador quede exposto a ataques maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Desbloquea o teléfono e achégao ao <ph name="DEVICE_TYPE" /> para desbloquealo.</translation>
@@ -7715,7 +7716,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> desactivou a depuración de ADB. Esta acción restablecerá o dispositivo (<ph name="DEVICE_TYPE" />) en 24 horas. Crea copias de seguranza dos ficheiros que queiras conservar.</translation>
 <translation id="6336194758029258346">Idioma da aplicación</translation>
 <translation id="6337543438445391085">Aínda así, pode que algunha información persoal se inclúa nos datos. Asegúrate de revisar os ficheiros exportados.</translation>
-<translation id="6338554362382763574">Podes facerlle preguntas facilmente a Gemini sobre as pestanas que compartes mentres navegas</translation>
 <translation id="6338968693068997776">Engadir dispositivo USB</translation>
 <translation id="6339668969738228384">Crea un novo perfil para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocolo de impresión por Internet (IPPS)</translation>
@@ -8110,6 +8110,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6619990499523117484">Confirma o PIN</translation>
 <translation id="6620000730890558421">Mantén as pestanas organizadas coa IA</translation>
 <translation id="6620254580880484313">Nome do contedor</translation>
+<translation id="6621282332208609777">Pregúntalle a Google ou escribe un URL</translation>
 <translation id="6621391692573306628">Para enviar esta pestana a outro dispositivo, inicia sesión en Chrome nos dous dispositivos</translation>
 <translation id="6622980291894852883">Continuar bloqueando as imaxes</translation>
 <translation id="6624036901798307345">No modo de tableta, toca o botón do contador de pestanas que se atopa na barra de ferramentas para abrir a nova franxa de pestanas na que se mostra cadansúa miniatura.</translation>
@@ -8334,7 +8335,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
     <ph name="BEGIN_PARAGRAPH2" />Podes desactivar este servizo en Configuración.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Cancelouse a copia de seguranza de Linux</translation>
 <translation id="6782067259631821405">O PIN non é válido</translation>
-<translation id="6782219876520622071">O noso equipo pode revisar as conversas sobre as pestanas compartidas para mellorar Gemini</translation>
 <translation id="6783036716881942511">Queres que se esqueza este dispositivo?</translation>
 <translation id="6783667414610055871">Configuración de Microsoft OneDrive</translation>
 <translation id="6784523122863989144">O perfil é compatible</translation>
@@ -10875,6 +10875,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8517759303731677493">Editar…</translation>
 <translation id="8518809011298357036">Pechar vista superior</translation>
 <translation id="8518942514525208851">Ocultar palabras malsoantes</translation>
+<translation id="8520238089740349550">Produciuse un erro: Bloqueouse a descarga local</translation>
 <translation id="8523493869875972733">Manter cambios</translation>
 <translation id="8523849605371521713">Engadida pola política</translation>
 <translation id="8524594273111932386">busca + frecha abaixo</translation>
@@ -11746,6 +11747,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="909554839118732438">Pechar ventás do modo de incógnito</translation>
 <translation id="9095819602391364796">Non permitir que os sitios controlen e volvan programar os teus dispositivos MIDI</translation>
 <translation id="9096053102600371572">Desprazamento controlado. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Comparar opcións</translation>
 <translation id="9096776523567481218">non se instalou localmente</translation>
 <translation id="9098860402274800697">Quitar Google Play e aplicacións para Android</translation>
 <translation id="9099220545925418560">En función do teu historial de navegación. Esta opción de configuración está desactivada.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
+<translation id="1004825134262590729">{count,plural, =1{{count} pääsuvõti}other{{count} pääsuvõtit}}</translation>
 <translation id="1005023885865154304">Avage paroolide automaattäite seaded</translation>
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">Võite siia tagasi tulla, et avada hiljuti suletud vahelehti uuesti.</translation>
@@ -41,6 +42,7 @@
 <translation id="1122068467107743258">Töö</translation>
 <translation id="1126696498560056882">Selles seadmes olevate kontode haldamine</translation>
 <translation id="1126809382673880764">Ei kaitse teid ohtlike veebisaitide, allalaadimiste ega laienduste eest. Google'i ohutu sirvimine kaitseb teid siiski muudes Google'i teenustes, kus see saadaval on (nt Gmail ja Otsing).</translation>
+<translation id="1133418583142946603">Lisa praegune vaheleht</translation>
 <translation id="1136104150802877429">Kuva tootearvustusi</translation>
 <translation id="1142371195993008685">Lülita teenuse <ph name="FEATURE_NAME" /> märguanded välja</translation>
 <translation id="1147031633655575115">Sisse logitud kasutajana <ph name="USER" /></translation>
@@ -77,6 +79,7 @@
 <translation id="1285320974508926690">Ära kunagi seda saiti tõlgi</translation>
 <translation id="1287229685519872919">Google Workspace'i andmeid</translation>
 <translation id="1291506870746876680">Saidi <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />“<ph name="END_BOLD" /> load lähtestatakse väljalülitatud olekusse, kui saidilt lahkute.</translation>
+<translation id="1293556467332435079">Failid</translation>
 <translation id="129553762522093515">Viimati suletud</translation>
 <translation id="1296581780163690620">Kas laadida fail alla? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Selleks, et saaksite oma Google'i kontol alati kasutada paroole, kinnitage oma isik.</translation>
@@ -1043,6 +1046,7 @@
 <translation id="5055015094595227120">Täpne asukoht</translation>
 <translation id="5055551113846164633">See kustutab sellesse seadmesse salvestatud aadressid. See kustutab ka teie Google'i kontole <ph name="USER_EMAIL" /> salvestatud aadressid.</translation>
 <translation id="5056446788882570708">Probleemid leiti <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">Loo pilt</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installi Google Drive</translation>
 <translation id="5067540696062462445">Allalaadimised</translation>
@@ -1504,6 +1508,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6659660757330712663">Vahelehtede vahetamiseks saate tööriistaribal sõrmega tõmmata.</translation>
 <translation id="6663529247339810546">Ei saa salvestada</translation>
 <translation id="6668619169535738264">Järjehoidja muutmine</translation>
+<translation id="6670729408462528018">Galerii</translation>
 <translation id="6671294218820966278">Märgi loetuks</translation>
 <translation id="6672697278890207089">Parooli sisestamine</translation>
 <translation id="6674917187596384849">Saate hõlpsalt kontode vahel vahetada</translation>
@@ -1660,6 +1665,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Teil on nende kontode jaoks paroolid Google'i paroolihalduris juba olemas. Kui otsustate importida ühe allolevatest paroolidest, asendab see olemasoleva parooli.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> protsenti on alla laaditud</translation>
+<translation id="7345061034321640811">Importimine pole lubatud</translation>
 <translation id="7352651011704765696">Midagi läks valesti</translation>
 <translation id="7363349185727752629">Teie privaatsusvalikute juhend</translation>
 <translation id="7364796246159120393">Vali fail</translation>
@@ -2201,6 +2207,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="952704832371081537">Tühista</translation>
 <translation id="95332591904104970">Ühendatud rakendused</translation>
 <translation id="954667170699278022">Lugemisloend</translation>
+<translation id="956066588046842680">Teie organisatsiooni eeskirjad ei luba neid andmeid importida.</translation>
 <translation id="956218893102219091">Võimalikult täpsete Gemini tulemuste hankimiseks kasutatakse teie täpset asukohta, mitte IP-aadressil põhinevat hinnangulist asukohta. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Sirvimisandmete kustutamine</translation>
 <translation id="963102227019621224">Veebi- ja rakendustegevused</translation>
@@ -2212,5 +2219,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="984275831282074731">Makseviisid</translation>
 <translation id="985379595344853742">Sule kõik inkognito vahelehed</translation>
 <translation id="988141524645182168">Muud seadmed</translation>
+<translation id="995174784802614337">{count,plural, =1{Imporditi {count} pääsuvõti}other{Imporditi {count} pääsuvõtit}}</translation>
 <translation id="999768147936949692">Praegu saate paroole jagada ainult pereliikmetega. <ph name="BEGIN_LINK" />Kutsuge pereliikmeid<ph name="END_LINK" /> oma grupiga liituma ning saate oma toodetest ja tellimustest Google'is maksimumi võtta.</translation>
 </translationbundle>

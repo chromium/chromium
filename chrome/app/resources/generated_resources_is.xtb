@@ -1054,6 +1054,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1699807488537653303">Laga villu í aðgangsorði</translation>
 <translation id="1700201317341192482">Fjarlægja sýndarkortið</translation>
 <translation id="1700517974991662022">Opnað</translation>
+<translation id="1701367827913789499">Lestu á þægilegan hátt með lágmarkstruflunum með því að nota hnappinn fyrir lesstillingu á tækjastikunni</translation>
 <translation id="1703331064825191675">Losnaðu undan áhyggjum af aðgangsorðum</translation>
 <translation id="1703666494654169921">Ekki leyfa vefsvæðum að nota sýndarveruleikatæki eða -gögn</translation>
 <translation id="1704097193565924901">Nota upphafsstafi</translation>
@@ -2972,6 +2973,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3008272652534848354">Endurstilla heimildir</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> krefst þess að þú tengist Wi-Fi í dag til að sækja uppfærslu. Þú getur einnig hlaðið niður með gagnamældri tengingu (gjöld kunna að eiga við).}one{<ph name="MANAGER" /> krefst þess að þú tengist Wi-Fi og sækir uppfærslu áður en fresturinn er liðinn. Þú getur einnig hlaðið niður með gagnamældri tengingu (gjöld kunna að eiga við).}other{<ph name="MANAGER" /> krefst þess að þú tengist Wi-Fi og sækir uppfærslu áður en fresturinn er liðinn. Þú getur einnig hlaðið niður með gagnamældri tengingu (gjöld kunna að eiga við).}}</translation>
 <translation id="3008923556848076408">Gemini mun halda áfram að vinna í verkefninu</translation>
+<translation id="3008926075262837186">Lestu á þægilegan hátt með lágmarkstruflunum</translation>
 <translation id="3009178788565917040">Úttak</translation>
 <translation id="3009352964623081324">Leita + O og svo S. Notað til að setja upp, stjórna og sérstilla raddir.</translation>
 <translation id="3009779501245596802">Niðurskiptir gagnagrunnar</translation>
@@ -4430,7 +4432,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Nánar um staðsetningarnákvæmni<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Innflutt</translation>
 <translation id="3992008114154328194">Sækir <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Afrita gögn</translation>
 <translation id="3994075804072562819">Leyfa <ph name="SPECIFIC_NAME" /> að stjórna USB-tækjum.</translation>
 <translation id="3994318741694670028">Tölvan er því miður grunnstillt með gölluðu vélbúnaðarauðkenni. Þetta kemur í veg fyrir að ChromeOS Flex geti uppfært í nýjustu öryggisúrræði og tölvan <ph name="BEGIN_BOLD" />kann að vera berskjölduð gagnvart árásum<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Taktu símann úr lás og færðu hann nær <ph name="DEVICE_TYPE" /> til að taka úr lás.</translation>
@@ -7730,7 +7731,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> slökkti á ADB-villuleit. Þetta endurstillir <ph name="DEVICE_TYPE" /> eftir 24 klukkustundir. Afritaðu skrár sem þú vilt geyma.</translation>
 <translation id="6336194758029258346">Tungumál forrits</translation>
 <translation id="6337543438445391085">Einhverjar persónuupplýsingar kunna enn að vera hluti af gögnunum. Gættu þess að fara yfir skrárnar sem þú fluttir út.</translation>
-<translation id="6338554362382763574">Þú getur auðveldlega spurt Gemini spurninga um flipana sem þú deilir á meðan þú vafrar</translation>
 <translation id="6338968693068997776">Bæta við USB-tæki</translation>
 <translation id="6339668969738228384">Stofna nýjan prófíl fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8352,7 +8352,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Þú getur slökkt á þessari þjónustu í stillingunum.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Hætt við Linux-afritun</translation>
 <translation id="6782067259631821405">Ógilt PIN-númer</translation>
-<translation id="6782219876520622071">Mennskir yfirlesarar kunna að sjá samtöl um samnýtta flipa til að bæta Gemini</translation>
 <translation id="6783036716881942511">Gleyma þessu tæki?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive stillingar</translation>
 <translation id="6784523122863989144">Prófíll er studdur</translation>
@@ -9549,7 +9548,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7620616707541471029">Veldu reikning til að halda áfram</translation>
 <translation id="7621382409404463535">Kerfið gat ekki vistað stillingu tækisins.</translation>
 <translation id="7621595347123595643">Þú getur ekki endurheimt staðbundin gögn ef þú gleymir aðgangsorðinu þínu eða PIN-númerinu.</translation>
-<translation id="7621863462266622331">Þegar flipum er deilt er efni þeirra, margmiðlunarefni og vefslóðir send til Google</translation>
 <translation id="7622114377921274169">Í hleðslu.</translation>
 <translation id="7622768823216805500">Vefsvæði setja yfirleitt upp greiðslumiðlara fyrir verslunareiginleika eins og einfaldari greiðslu</translation>
 <translation id="7622966771025050155">Skipta yfir í flipa sem var tekinn upp</translation>
@@ -10894,6 +10892,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8517759303731677493">Breyta…</translation>
 <translation id="8518809011298357036">Loka efri yfirliti</translation>
 <translation id="8518942514525208851">Fela blótsyrði</translation>
+<translation id="8520238089740349550">Mistókst – Lokað á staðbundið niðurhal</translation>
 <translation id="8523493869875972733">Halda breytingum</translation>
 <translation id="8523849605371521713">Bætt við af stefnu</translation>
 <translation id="8524594273111932386">leitarlykill + ör niður</translation>

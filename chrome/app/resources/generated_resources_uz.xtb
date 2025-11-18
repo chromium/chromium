@@ -1050,6 +1050,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1699807488537653303">Xato parolni tuzating</translation>
 <translation id="1700201317341192482">Virtual kartani olib tashlash</translation>
 <translation id="1700517974991662022">Tashrif buyurilgan</translation>
+<translation id="1701367827913789499">Asboblar panelidagi Oʻqish rejimi tugmasi yordamida minimal chalgʻish bilan qulay oʻqing</translation>
 <translation id="1703331064825191675">Parollar haqida boshqa xavotir olmaysiz</translation>
 <translation id="1703666494654169921">Saytlarga virtual reallik qurilmalari yoki maʼlumotlardan foydalanishni taqiqlash</translation>
 <translation id="1704097193565924901">Bosh harflar</translation>
@@ -2960,6 +2961,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3008272652534848354">Ruxsatlarni qasliga qaytarish</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> domeni bugunoq Wi-Fi tarmoqqa ulanib, yangilanishni yuklab olishni talab qilmoqda. Yoki trafik hisoblanadigan ulanishdan foydalanib yuklab olish mumkin.}other{<ph name="MANAGER" /> Wi-Fi tarmoqqa ulanib, yangilanishni oxirgi muddatdan oldin yuklab olishni talab qilmoqda. Yoki trafik hisoblanadigan ulanishdan foydalanib yuklab olish mumkin.}}</translation>
 <translation id="3008923556848076408">Gemini vazifangizda ishlashda davom etadi</translation>
+<translation id="3008926075262837186">Minimal chalgʻish bilan qulay oʻqish</translation>
 <translation id="3009178788565917040">Chiqarish</translation>
 <translation id="3009352964623081324">Search + O, keyin S. Ovozlarni oʻrnatish, boshqarish va moslash uchun ishlatiladi.</translation>
 <translation id="3009779501245596802">Indekslangan ma’lumot omborlari</translation>
@@ -4416,7 +4418,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Joylashuv aniqligi haqida batafsil<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Import qilindi</translation>
 <translation id="3992008114154328194">Yuklab olinmoqda: <ph name="STATUS" /> (<ph name="FILE_NAME" />)</translation>
-<translation id="3993259701827857030">Maʼlumotlarni zaxiralang</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" /> ilovasiga USB qurilmalarini boshqarish ruxsatini bering.</translation>
 <translation id="3994318741694670028">Kompyuteringiz apparat identifikatori xato sozlangan. Buning natijasida ChromeOS Flex xavfsizlikka oid eng oxirgi tuzatishlar bilan yangilanmaydi va kompyuteringiz <ph name="BEGIN_BOLD" />zararli hujumlardan himoyalanmasligi mumkin<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Telefoningizni qulfdan chiqaring va uni <ph name="DEVICE_TYPE" /> qurilmasiga yaqinlashtiring.</translation>
@@ -7715,7 +7716,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6336038146639916978">ADB tuzatish vositasi <ph name="MANAGER" /> tomonidan faolsizlantirildi. Barcha <ph name="DEVICE_TYPE" /> parametrlari 24 soatdan keyin asl holatiga qaytariladi. Kerakli fayllarni saqlab qolish uchun ularni zaxiralang.</translation>
 <translation id="6336194758029258346">Ilova tili</translation>
 <translation id="6337543438445391085">Ayrim shaxsiy axborot hali ham maʼlumotlarga kiritilishi mumkin. Eksport qilingan fayllarni koʻrib chiqing.</translation>
-<translation id="6338554362382763574">Internetni kezish davomida Gemini bilan ulashilayotgan varaqlar haqida savol berish mumkin</translation>
 <translation id="6338968693068997776">USB qurilma qoʻshish</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> hisobi uchun yangi profil yaratilsin.</translation>
 <translation id="6340071272923955280">Internet orqali chop etish protokoli (IPPS)</translation>
@@ -8335,7 +8335,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
     <ph name="BEGIN_PARAGRAPH2" />Bu xizmatni Sozlamalar orqali oʻchirib qoʻyish mumkin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux tasvirini zaxiralash bekor qilindi</translation>
 <translation id="6782067259631821405">PIN kod xato</translation>
-<translation id="6782219876520622071">Gemini ishlashini yaxshilash maqsadida ulashilgan varaqlar haqidagi suhbatlarni odam muharrirlar koʻrishi mumkin</translation>
 <translation id="6783036716881942511">Bu qurilmani olib tashlansinmi?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive sozlamalari</translation>
 <translation id="6784523122863989144">Profil mos</translation>
@@ -9532,7 +9531,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7620616707541471029">Davom etish uchun hisobni tanlang</translation>
 <translation id="7621382409404463535">Tizim qurilma parametrlarini saqlay olmadi.</translation>
 <translation id="7621595347123595643">Parol yoki PIN kodni unutsangiz, qurilmadagi maʼlumotlarni tiklay olmaysiz.</translation>
-<translation id="7621863462266622331">Varaqlar ulashilganda ularning sahifa kontenti, mediafayli va URL manzillari Googlega yuboriladi</translation>
 <translation id="7622114377921274169">Quvvat olmoqda.</translation>
 <translation id="7622768823216805500">Saytlar odatda xaridlar vaqtida hisob-kitobni osonlashtirish uchun toʻlov vositalarini oʻrnatadi</translation>
 <translation id="7622966771025050155">Yozib olingan varaq</translation>

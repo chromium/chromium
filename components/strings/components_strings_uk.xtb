@@ -428,6 +428,7 @@
 <translation id="1689333818294560261">Псевдонім</translation>
 <translation id="1692622044604477956">Кіноафіші й години показу фільмів</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Як ви можете керувати своїми даними.<ph name="END_BOLD" /> Chrome автоматично видаляє теми через 4 тижні. Під час подальшого веб-перегляду тема може знову з’явитися в списку. Ви також можете будь-коли заблокувати теми оголошень, якими Chrome не має ділитись із сайтами, або вимкнути їх у налаштуваннях Chrome.</translation>
+<translation id="1697808683313379647">Google пропонує ці варіанти на основі інформації зі сторінки оформлення замовлення й інших відповідних даних.</translation>
 <translation id="1699651774646344471">Тепер ви можете використовувати адреси зі свого облікового запису Google</translation>
 <translation id="1700542542921501212">Ви можете використовувати <ph name="SEARCH_ENGINE_NAME" /> для пошуку інформації в Інтернеті.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1722,7 +1723,6 @@
 <translation id="3792826587784915501">Культові й альтернативні фільми</translation>
 <translation id="3793574014653384240">Кількість і причини останніх аварійних завершень роботи</translation>
 <translation id="3795624560191557077">Ви нещодавно змінили пароль, який було розкрито через порушення безпеки даних. Якщо виникнуть проблеми, Google Менеджер паролів допоможе вам увійти.</translation>
-<translation id="3796181268473765083">Сплачувати щомісяця або здійснити 4 безпроцентні платежі на виплат (за умови відповідності вимогам)</translation>
 <translation id="3799805948399000906">Запит на шрифт</translation>
 <translation id="3801297763951514916">Ви часто відвідуєте цю сторінку</translation>
 <translation id="380329542618494757">Повне ім’я</translation>
@@ -2948,6 +2948,7 @@
 <translation id="5813753398265398978">Фізика</translation>
 <translation id="5817918615728894473">Підключити</translation>
 <translation id="5820625124144807242">Переглянувши замовлення, увійдіть в обліковий запис <ph name="BNPL_ISSUER_NAME" /> або створіть новий. Цей обліковий запис буде автоматично зв’язано з Google Pay.</translation>
+<translation id="5820751560028604030">Завантаження на пристрій заблоковано</translation>
 <translation id="5826507051599432481">Загальне ім'я (CN)</translation>
 <translation id="5830698870816298009">використання й переміщення камери</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3702,6 +3703,7 @@
 <translation id="7031646650991750659">встановлені додатки Google Play.</translation>
 <translation id="7035705295266423040">Банку потрібне підтвердження вашої особи</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб керувати налаштуваннями конфіденційності облікового запису Google.</translation>
+<translation id="7042465939346919737">Google пропонує ці варіанти на основі інформації зі сторінки оформлення замовлення й інших відповідних даних. Щоб приховати опції пізнішої оплати, перейдіть на сторінку <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Уточнити результати</translation>
 <translation id="7043552168914147882">Роздільники</translation>
 <translation id="7044081119134178347">Надано разовий доступ до камери</translation>

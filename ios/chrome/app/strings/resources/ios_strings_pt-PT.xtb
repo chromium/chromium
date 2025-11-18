@@ -42,6 +42,7 @@
 <translation id="1122068467107743258">Trabalho</translation>
 <translation id="1126696498560056882">Gerir contas neste dispositivo</translation>
 <translation id="1126809382673880764">Não protege contra transferências, extensões ou Websites perigosos. Continuará a obter a proteção da Navegação segura, quando disponível, noutros Serviços Google, como o Gmail e a Pesquisa.</translation>
+<translation id="1133418583142946603">Adicionar separador atual</translation>
 <translation id="1136104150802877429">Mostra críticas sobre produtos</translation>
 <translation id="1142371195993008685">Desativar as notificações para <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Sessão iniciada como <ph name="USER" /></translation>
@@ -78,6 +79,7 @@
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
 <translation id="1287229685519872919">Dados do Google Workspace</translation>
 <translation id="1291506870746876680">As autorizações de <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> serão repostas para desativadas quando sair deste site.</translation>
+<translation id="1293556467332435079">Ficheiros</translation>
 <translation id="129553762522093515">Fechados recentemente</translation>
 <translation id="1296581780163690620">Transferir ficheiro? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Para se certificar de que pode sempre usar as palavras-passe na sua Conta Google, valide a sua identidade.</translation>
@@ -1044,6 +1046,7 @@
 <translation id="5055015094595227120">Localização exata</translation>
 <translation id="5055551113846164633">Esta ação elimina as moradas guardadas neste dispositivo. Também elimina as moradas guardadas na sua Conta Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Problemas encontrados <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">Criar imagem</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Instalar o Google Drive</translation>
 <translation id="5067540696062462445">Transferências</translation>
@@ -1505,6 +1508,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6659660757330712663">Pode deslizar rapidamente a barra de ferramentas para alternar entre separadores.</translation>
 <translation id="6663529247339810546">Não é possível guardar a imagem</translation>
 <translation id="6668619169535738264">Editar marcador</translation>
+<translation id="6670729408462528018">Galeria</translation>
 <translation id="6671294218820966278">Marcar como lido</translation>
 <translation id="6672697278890207089">Introduza a frase de acesso</translation>
 <translation id="6674917187596384849">Pode alternar facilmente entre contas</translation>

@@ -428,6 +428,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1689333818294560261">Pseudo</translation>
 <translation id="1692622044604477956">Infos sur les films et horaires des séances</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Comment vous pouvez gérer vos données<ph name="END_BOLD" /> : Chrome supprime automatiquement les thèmes qui datent de plus de quatre semaines. À mesure que vous continuez de naviguer, un thème peut réapparaître dans la liste. Vous pouvez aussi bloquer certains thèmes pour empêcher que Chrome les partage avec les sites, et désactiver les thèmes d'annonces à tout moment dans les paramètres Chrome.</translation>
+<translation id="1697808683313379647">Google utilise les informations de la page de paiement et d'autres données pertinentes pour proposer ces options.</translation>
 <translation id="1699651774646344471">Vous pouvez désormais utiliser les adresses de votre compte Google</translation>
 <translation id="1700542542921501212">Vous pouvez utiliser <ph name="SEARCH_ENGINE_NAME" /> pour effectuer une recherche sur le Web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1722,7 +1723,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3792826587784915501">Films cultes et indépendants</translation>
 <translation id="3793574014653384240">Nombre et causes des plantages survenus récemment</translation>
 <translation id="3795624560191557077">Vous avez récemment modifié un mot de passe qui a été exposé lors d'une violation de données publiques. En cas de problème, le Gestionnaire de mots de passe de Google peut vous aider à vous connecter.</translation>
-<translation id="3796181268473765083">Payez en versements mensuels ou en quatre fois sans intérêts (sous réserve d'éligibilité)</translation>
 <translation id="3799805948399000906">Police demandée</translation>
 <translation id="3801297763951514916">Vous le consultez fréquemment</translation>
 <translation id="380329542618494757">Nom</translation>
@@ -2287,7 +2287,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4732860731866514038">Téléchargement du module linguistique <ph name="LANGUAGE" /> (<ph name="PERCENT" /> %)...</translation>
 <translation id="4733082559415072992"><ph name="URL" /> souhaite utiliser la position de votre appareil</translation>
 <translation id="473414950835101501">Utiliser vos caméras</translation>
-<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Moteur de recherche par défaut actuel<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Utilisé par défaut<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Relancez Chromium</translation>
 <translation id="4736934858538408121">Carte virtuelle</translation>
 <translation id="473775607612524610">Mettre à jour</translation>
@@ -2948,6 +2948,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5813753398265398978">Physique</translation>
 <translation id="5817918615728894473">Associer</translation>
 <translation id="5820625124144807242">Après avoir vérifié votre commande, vous devez vous connecter à votre compte <ph name="BNPL_ISSUER_NAME" /> ou en créer un. Ce compte sera automatiquement associé à Google Pay.</translation>
+<translation id="5820751560028604030">Téléchargement local bloqué</translation>
 <translation id="5826507051599432481">Nom commun (CN)</translation>
 <translation id="5830698870816298009">Utiliser et bouger la caméra</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3702,6 +3703,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7031646650991750659">Les applications Google Play que vous avez installées</translation>
 <translation id="7035705295266423040">Votre banque souhaite valider votre identité</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour gérer les paramètres de confidentialité de votre compte Google</translation>
+<translation id="7042465939346919737">Google utilise les informations de la page de paiement et d'autres données pertinentes pour proposer ces options. Pour masquer les options de paiement différé, accédez aux <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="7042616127917168121">Affiner les résultats</translation>
 <translation id="7043552168914147882">Fiche intercalaire</translation>
 <translation id="7044081119134178347">Accès à l'appareil photo autorisé cette fois-ci</translation>

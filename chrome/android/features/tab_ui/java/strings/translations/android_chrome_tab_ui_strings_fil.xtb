@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Isinara ang listahan ng grupo ng tab</translation>
 <translation id="3194464645767632461">rating</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Magdagdag ng <ph name="TABS_COUNT_ONE" /> tab sa grupo}one{Magdagdag ng <ph name="TABS_COUNT_MANY" /> tab sa grupo}other{Magdagdag ng <ph name="TABS_COUNT_MANY" /> na tab sa grupo}}</translation>
+<translation id="3293080634164207409">Magdagdag ng mga tab</translation>
 <translation id="3328308545011660196">Suhestyon: Mukhang magkaugnay ang <ph name="NUMBER_OF_TABS" /> (na) tab. Igrupo ang mga ito?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Pagkalipas ng 1 araw na hindi aktibo}one{Pagkalipas ng <ph name="DAY_COUNT_MANY" /> araw na hindi aktibo}other{Pagkalipas ng <ph name="DAY_COUNT_MANY" /> na araw na hindi aktibo}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> bagong tab}one{<ph name="MANY_ADDED" /> bagong tab}other{<ph name="MANY_ADDED" /> na bagong tab}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">Aktibidad</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_ONE" /> review}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_MANY" /> review}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_MANY" /> na review}}</translation>
 <translation id="7885132941432959125">Ilipat ang tab sa kanan</translation>
+<translation id="7887334752153342268">Doblehin</translation>
 <translation id="7939917283308035850">Hindi pinili ang <ph name="COLOR_NAME" /></translation>
 <translation id="7961015016161918242">Hindi Kailanman</translation>
 <translation id="7966321538264951561">I-dismiss ang mga suhestyon.</translation>

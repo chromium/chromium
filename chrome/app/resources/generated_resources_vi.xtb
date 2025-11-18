@@ -1053,6 +1053,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1699807488537653303">Khắc phục lỗi về mật khẩu</translation>
 <translation id="1700201317341192482">Xoá thẻ ảo</translation>
 <translation id="1700517974991662022">Đã truy cập</translation>
+<translation id="1701367827913789499">Dùng nút Chế độ đọc trên thanh công cụ để đọc thuận tiện hơn và ít bị phân tâm</translation>
 <translation id="1703331064825191675">Không bao giờ phải lo lắng về mật khẩu của bạn</translation>
 <translation id="1703666494654169921">Không cho phép các trang web sử dụng dữ liệu hoặc thiết bị thực tế ảo</translation>
 <translation id="1704097193565924901">Viết hoa chữ cái đầu tiên</translation>
@@ -2971,6 +2972,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3008272652534848354">Đặt lại quyền</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> yêu cầu bạn kết nối Wi-Fi ngay hôm nay để tải bản cập nhật xuống, hoặc tải xuống qua một đường kết nối có đo lượng dữ liệu (cước phí có thể phát sinh).}other{<ph name="MANAGER" /> yêu cầu bạn kết nối Wi-Fi và tải bản cập nhật xuống trước thời hạn, hoặc tải xuống qua một đường kết nối có đo lượng dữ liệu (cước phí có thể phát sinh).}}</translation>
 <translation id="3008923556848076408">Gemini sẽ tiếp tục xử lý yêu cầu của bạn</translation>
+<translation id="3008926075262837186">Đọc thuận tiện hơn và ít bị phân tâm</translation>
 <translation id="3009178788565917040">Thiết bị ra</translation>
 <translation id="3009352964623081324">Nhấn tổ hợp phím Tìm kiếm + O, sau đó nhấn S. Dùng để cài đặt, quản lý và tùy chỉnh giọng nói.</translation>
 <translation id="3009779501245596802">Cơ sở dữ liệu được lập chỉ mục</translation>
@@ -4429,7 +4431,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Tìm hiểu thêm về Độ chính xác của vị trí<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Đã nhập</translation>
 <translation id="3992008114154328194">Đang tải <ph name="FILE_NAME" /> xuống, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Sao lưu dữ liệu</translation>
 <translation id="3994075804072562819">Cấp cho <ph name="SPECIFIC_NAME" /> quyền kiểm soát thiết bị USB.</translation>
 <translation id="3994318741694670028">Rất tiếc, máy tính của bạn được định cấu hình bằng một mã phần cứng không đúng định dạng. Tình trạng này ngăn ChromeOS Flex cập nhật các bản vá bảo mật mới nhất và máy tính của bạn <ph name="BEGIN_BOLD" />có nguy cơ bị tấn công<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Mở khóa điện thoại và mang điện thoại tới gần hơn để mở khóa <ph name="DEVICE_TYPE" /> của bạn.</translation>
@@ -7729,7 +7730,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> đã tắt tùy chọn gỡ lỗi ADB. Thao tác này sẽ đặt lại <ph name="DEVICE_TYPE" /> của bạn sau 24 giờ nữa. Hãy sao lưu mọi tệp bạn muốn giữ lại.</translation>
 <translation id="6336194758029258346">Ngôn ngữ ứng dụng</translation>
 <translation id="6337543438445391085">Dữ liệu vẫn có thể chứa một số thông tin cá nhân. Bạn hãy nhớ kiểm tra các tệp đã xuất.</translation>
-<translation id="6338554362382763574">Bạn có thể dễ dàng hỏi Gemini về các thẻ mà bạn chia sẻ khi đang duyệt xem</translation>
 <translation id="6338968693068997776">Thêm thiết bị USB</translation>
 <translation id="6339668969738228384">Tạo hồ sơ mới cho <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Giao thức in qua Internet (IPPS)</translation>
@@ -8349,7 +8349,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
     <ph name="BEGIN_PARAGRAPH2" />Bạn có thể tắt dịch vụ này trong phần Cài đặt.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Đã hủy quá trình sao lưu Linux</translation>
 <translation id="6782067259631821405">Mã PIN không hợp lệ</translation>
-<translation id="6782219876520622071">Nhân viên đánh giá có thể xem các cuộc trò chuyện về thẻ được chia sẻ để cải thiện Gemini</translation>
 <translation id="6783036716881942511">Xoá thiết bị này?</translation>
 <translation id="6783667414610055871">Cài đặt Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Hồ sơ không được hỗ trợ</translation>
@@ -9549,7 +9548,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7620616707541471029">Chọn một tài khoản để tiếp tục</translation>
 <translation id="7621382409404463535">Hệ thống không lưu được cấu hình thiết bị.</translation>
 <translation id="7621595347123595643">Bạn sẽ không thể khôi phục dữ liệu cục bộ nếu quên mật khẩu hoặc mã PIN.</translation>
-<translation id="7621863462266622331">Khi các thẻ được chia sẻ, nội dung trang, nội dung nghe nhìn và URL của các thẻ đó sẽ được gửi đến Google</translation>
 <translation id="7622114377921274169">Đang sạc.</translation>
 <translation id="7622768823216805500">Các trang web thường cài đặt trình xử lý thanh toán cho các tính năng mua sắm như quy trình thanh toán dễ dàng hơn</translation>
 <translation id="7622966771025050155">Chuyển sang thẻ được ghi hình</translation>

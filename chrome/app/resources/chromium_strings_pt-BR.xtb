@@ -517,6 +517,7 @@
 <translation id="705851970750939768">Atualizar o Chromium</translation>
 <translation id="7067091210845072982">Se uma imagem não tiver uma descrição útil, o Chromium tentará fornecer uma para você. As imagens serão enviadas ao Google para a criação de descrições.</translation>
 <translation id="7141270731789036260">Personalizar o Chrome for Testing</translation>
+<translation id="7147227333672430807">Você pode usar o Chromium sempre que clicar em links em mensagens, documentos e outros apps</translation>
 <translation id="7163519456498498587">Remover <ph name="EXTENSION_NAME" /> do Chromium</translation>
 <translation id="7173822816570314652">Sua organização exclui os dados do Chromium se eles não forem usados por <ph name="TIMEOUT_DURATION" />. Isso pode incluir o histórico, o preenchimento automático e os downloads.</translation>
 <translation id="718435575166326686">O Chromium precisa da permissão de acesso à câmera para este site</translation>
@@ -629,6 +630,7 @@
 <translation id="8471947159125090285">Confirme sua identidade para usar e salvar dados do Chromium na sua Conta do Google</translation>
 <translation id="8482493977473846331">Mostra solicitações para fazer login no Chromium</translation>
 <translation id="8493179195440786826">O Chromium está desatualizado</translation>
+<translation id="850264194101621529">Agradecemos por escolher o Chromium como seu navegador padrão.</translation>
 <translation id="8522801943730206384">O Chromium poderá verificar suas senhas quando elas forem salvas</translation>
 <translation id="8555465886620020932">Erro de serviço: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Você pode fixar a pesquisa por imagens para facilitar o acesso. Clique no botão "Fixar" na parte de cima do painel lateral</translation>
@@ -638,6 +640,7 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="8601359445272098721">Novidade! Agora você pode traduzir texto e imagens na sua tela selecionando o botão "Traduzir tela".</translation>
 <translation id="8619360774459241877">Iniciando o Chromium…</translation>
+<translation id="8624541899164515475">Configurações, abre em uma nova guia.</translation>
 <translation id="8648201657708811153">O Google Chrome for Testing não pode ser definido como seu navegador padrão.</translation>
 <translation id="8677922833187616101">Sempre mostrar o atalho do Modo IA do Google</translation>
 <translation id="8697124171261953979">Controla também qual página deve ser exibida quando você inicia o Chromium ou faz uma pesquisa na Omnibox.</translation>

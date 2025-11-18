@@ -428,6 +428,7 @@
 <translation id="1689333818294560261">Лақап ат</translation>
 <translation id="1692622044604477956">Кино мен театр афишалары</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Деректерді басқару жолы:<ph name="END_BOLD" /> Chrome 4 аптадан асқан тақырыптарды автоматты түрде жояды. Оны қайта қараған кезде, тақырып тізімде қайта шығуы мүмкін. Сонымен қатар Chrome браузері сайттармен бөліспейтін тақырыптарды бөгей және Chrome параметрлерінен жарнама тақырыптарын кез келген уақытта өшіре аласыз.</translation>
+<translation id="1697808683313379647">Google бұл опцияларды ұсыну үшін төлеу бетіндегі ақпаратты және басқа да тиісті деректерді пайдаланады.</translation>
 <translation id="1699651774646344471">Енді Google аккаунтыңыздағы мекенжайларды пайдалана аласыз</translation>
 <translation id="1700542542921501212">Интернеттен іздеу үшін <ph name="SEARCH_ENGINE_NAME" /> пайдалана аласыз.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1721,7 +1722,6 @@
 <translation id="3792826587784915501">Культ және инди фильмдері</translation>
 <translation id="3793574014653384240">Жақында болған бұзылудың сандары мен себептері</translation>
 <translation id="3795624560191557077">Баршаға ашық қолды болған деректерден табылған құпия сөзіңізді жақында өзгерттіңіз. Қиындық туындаса, Google Password Manager аккаунтқа кіруге көмектесе алады.</translation>
-<translation id="3796181268473765083">Пайызсыз 4 төлем арқылы немесе ай сайын бөліп төлеу (талаптарға сай болуы керек)</translation>
 <translation id="3799805948399000906">Қаріп сұралды</translation>
 <translation id="3801297763951514916">Жиі кіресіз</translation>
 <translation id="380329542618494757">Аты</translation>
@@ -2947,6 +2947,7 @@
 <translation id="5813753398265398978">Физика</translation>
 <translation id="5817918615728894473">Жұптау</translation>
 <translation id="5820625124144807242">Тапсырысыңызды тексергеннен кейін, <ph name="BNPL_ISSUER_NAME" /> аккаунтына кіруіңіз немесе жаңасын жасауыңыз керек. Бұл аккаунт Google Pay-мен автоматты түрде байланыстырылады.</translation>
+<translation id="5820751560028604030">Жергілікті жүктеп алу әрекеті блокталды.</translation>
 <translation id="5826507051599432481">Ортақ атау (CN)</translation>
 <translation id="5830698870816298009">Камераны пайдалану және жылжыту</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3701,6 +3702,7 @@
 <translation id="7031646650991750659">Google Play-дің қай қолданбаларын орнатқаныңызды.</translation>
 <translation id="7035705295266423040">Банктің жеке басыңызды растауы керек</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Google аккаунтының құпиялық параметрлерін басқару үшін Tab, сосын Enter пернесін басыңыз.</translation>
+<translation id="7042465939346919737">Google бұл опцияларды ұсыну үшін төлеу бетіндегі ақпаратты және басқа да тиісті деректерді пайдаланады. Кейін төлеу опцияларын жасыру үшін <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> бөліміне өтіңіз.</translation>
 <translation id="7042616127917168121">Нәтижелерді нақтылау</translation>
 <translation id="7043552168914147882">Қойындылар будасы</translation>
 <translation id="7044081119134178347">Бұл жолы камераға рұқсат берілген.</translation>

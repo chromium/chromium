@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
+<translation id="1004825134262590729">{count,plural, =1{{count} pristupni ključ}one{{count} pristupni ključ}few{{count} pristupna ključa}other{{count} pristupnih ključeva}}</translation>
 <translation id="1005023885865154304">Otvorite postavke automatskog popunjavanja zaporki</translation>
 <translation id="1005230401424685968">GGGG</translation>
 <translation id="1013952917065545813">Ovdje se možete vratiti da biste ponovo otvorili kartice koje ste nedavno zatvorili</translation>
@@ -41,6 +42,7 @@
 <translation id="1122068467107743258">Posao</translation>
 <translation id="1126696498560056882">Upravljajte računima na ovom uređaju</translation>
 <translation id="1126809382673880764">Ne štiti vas od opasnih web-lokacija, preuzimanja i proširenja. Na drugim Googleovim uslugama, kao što su Gmail i Pretraživanje, i dalje ste zaštićeni Sigurnim pregledavanjem, ako je dostupno.</translation>
+<translation id="1133418583142946603">Dodaj trenutačnu karticu</translation>
 <translation id="1136104150802877429">Prikazuje recenzije proizvoda</translation>
 <translation id="1142371195993008685">Isključi obavijesti za značajku <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Prijavljeni ste kao <ph name="USER" /></translation>
@@ -77,6 +79,7 @@
 <translation id="1285320974508926690">Nikad nemoj prevoditi ovu web-lokaciju</translation>
 <translation id="1287229685519872919">podatke s Google Workspacea</translation>
 <translation id="1291506870746876680">Dopuštenja <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> vratit će se na isključeno kad napustite ovu web-lokaciju.</translation>
+<translation id="1293556467332435079">Datoteke</translation>
 <translation id="129553762522093515">Nedavno zatvoreno</translation>
 <translation id="1296581780163690620">Preuzeti datoteku? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Da biste uvijek mogli upotrebljavati zaporke na svojem Google računu, potvrdite svoj identitet.</translation>
@@ -1043,6 +1046,7 @@
 <translation id="5055015094595227120">Točna lokacija</translation>
 <translation id="5055551113846164633">Time se brišu adrese spremljene na ovom uređaju. Brišu se i adrese spremljene na vašem Google računu <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Poteškoće su pronađene <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">Izradi sliku</translation>
 <translation id="5059136629401106827">U redu</translation>
 <translation id="5062321486222145940">Instaliraj Google disk</translation>
 <translation id="5067540696062462445">Preuzimanja</translation>
@@ -1504,6 +1508,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6659660757330712663">Možete prijeći prstom po alatnoj traci da biste se prebacivali između kartica.</translation>
 <translation id="6663529247339810546">Spremanje slike nije uspjelo</translation>
 <translation id="6668619169535738264">Uredi oznaku</translation>
+<translation id="6670729408462528018">Galerija</translation>
 <translation id="6671294218820966278">Označi kao pročitano</translation>
 <translation id="6672697278890207089">Unesite svoju zaporku</translation>
 <translation id="6674917187596384849">Možete se jednostavno prebacivati između računa</translation>
@@ -1660,6 +1665,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Već imate zaporke za te račune u Google upravitelju zaporki. Ako odlučite uvesti jednu od zaporki u nastavku, ona će zamijeniti postojeću.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> posto preuzeto</translation>
+<translation id="7345061034321640811">Uvoz nije dopušten</translation>
 <translation id="7352651011704765696">Nešto nije u redu</translation>
 <translation id="7363349185727752629">Vodič za vaše odabire u vezi s privatnošću</translation>
 <translation id="7364796246159120393">Odaberi datoteku</translation>
@@ -2201,6 +2207,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="952704832371081537">Odustani</translation>
 <translation id="95332591904104970">Povezane aplikacije</translation>
 <translation id="954667170699278022">Popis za čitanje</translation>
+<translation id="956066588046842680">Uvoz tih podataka nije dopušten prema pravilima vaše organizacije.</translation>
 <translation id="956218893102219091">Za najpreciznije rezultate Geminija umjesto približne lokacije na temelju IP adrese upotrebljavajte točnu lokaciju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Izbriši podatke o pregledavanju</translation>
 <translation id="963102227019621224">Aktivnost na webu i u aplikacijama</translation>
@@ -2212,5 +2219,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="984275831282074731">Načini plaćanja</translation>
 <translation id="985379595344853742">Zatvori sve anonimne kartice</translation>
 <translation id="988141524645182168">Ostali uređaji</translation>
+<translation id="995174784802614337">{count,plural, =1{Uvezen je {count} pristupni ključ}one{Uvezen je {count} pristupni ključ}few{Uvezena su {count} pristupna ključa}other{Uvezeno je {count} pristupnih ključeva}}</translation>
 <translation id="999768147936949692">Zasad zaporke možete dijeliti samo s članovima obitelji. <ph name="BEGIN_LINK" />Pozovite članove obitelji<ph name="END_LINK" /> da se pridruže vašoj grupi i još bolje iskoristite svoje proizvode i pretplate na Googleu.</translation>
 </translationbundle>

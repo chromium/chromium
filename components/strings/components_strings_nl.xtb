@@ -425,9 +425,11 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1682696192498422849">Korte zijde eerst</translation>
 <translation id="168693727862418163">Deze beleidswaarde kan niet worden gevalideerd op basis van het bijbehorende schema en wordt genegeerd.</translation>
 <translation id="168841957122794586">Het servercertificaat bevat een zwakke cryptografische sleutel.</translation>
+<translation id="1688718429648938412">Klantenkaart opslaan in Wallet</translation>
 <translation id="1689333818294560261">Bijnaam</translation>
 <translation id="1692622044604477956">Filmladder en bioscoopagenda</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Hoe je je gegevens kunt beheren:<ph name="END_BOLD" /> Chrome verwijdert automatisch onderwerpen die ouder zijn dan 4 weken. Als je blijft browsen, kan een onderwerp opnieuw in de lijst verschijnen. Je kunt ook onderwerpen blokkeren waarvan je niet wilt dat de Chrome ze deelt met sites, en advertentieonderwerpen op elk moment uitzetten via de Chrome-instellingen.</translation>
+<translation id="1697808683313379647">Google gebruikt informatie van de betaalpagina en andere relevante gegevens om deze opties aan te bieden.</translation>
 <translation id="1699651774646344471">Je kunt nu adressen uit je Google-account gebruiken</translation>
 <translation id="1700542542921501212">Je kunt <ph name="SEARCH_ENGINE_NAME" /> gebruiken om op internet te zoeken.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1717,7 +1719,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3792826587784915501">Cult- en indiefilms</translation>
 <translation id="3793574014653384240">Aantallen en oorzaken van de crashes die onlangs hebben plaatsgevonden</translation>
 <translation id="3795624560191557077">Je hebt recent een wachtwoord gewijzigd dat is gevonden bij een openbaar gegevenslek. Als je problemen ondervindt, kan Google Wachtwoordmanager je helpen inloggen.</translation>
-<translation id="3796181268473765083">Betaling in 4 rentevrije of maandelijkse termijnen (als u hiervoor in aanmerking komt)</translation>
 <translation id="3799805948399000906">Lettertype aangevraagd</translation>
 <translation id="3801297763951514916">Vaak bezocht</translation>
 <translation id="380329542618494757">Naam</translation>
@@ -3654,6 +3655,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6965978654500191972">Apparaat</translation>
 <translation id="696703987787944103">Op waarneming gebaseerd</translation>
 <translation id="6967851206780867018">1 bestand is geblokkeerd vanwege de content</translation>
+<translation id="6968217325369275594">Sla je informatie op om updates te krijgen op al je apparaten. Je informatie wordt opgeslagen in <ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" /> voor <ph name="ACCOUNT" />.</translation>
 <translation id="6970885655016700774">Stof (archief)</translation>
 <translation id="6971439137020188025">Snel een nieuwe Google-presentatie in Presentaties maken</translation>
 <translation id="6972629891077993081">HID-apparaten</translation>
@@ -3696,6 +3698,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7031646650991750659">Welke Google Play-apps je hebt geïnstalleerd</translation>
 <translation id="7035705295266423040">Je bank wil verifiëren dat jij het bent</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om de privacyinstellingen van je Google-account te beheren.</translation>
+<translation id="7042465939346919737">Google gebruikt informatie van de betaalpagina en andere relevante gegevens om deze opties aan te bieden. Ga naar <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> om opties voor achteraf betalen te verbergen</translation>
 <translation id="7042616127917168121">Resultaten verfijnen</translation>
 <translation id="7043552168914147882">Tabbladen</translation>
 <translation id="7044081119134178347">Camera deze keer toegestaan</translation>

@@ -73,6 +73,7 @@
 <translation id="311432875115153175">탭 그룹 목록 닫힘</translation>
 <translation id="3194464645767632461">평점</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{그룹에 탭 <ph name="TABS_COUNT_ONE" />개 추가}other{그룹에 탭 <ph name="TABS_COUNT_MANY" />개 추가}}</translation>
+<translation id="3293080634164207409">탭 추가</translation>
 <translation id="3328308545011660196">제안: 탭 <ph name="NUMBER_OF_TABS" />개가 서로 관련된 것으로 보입니다. 그룹화할까요?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1일 동안 비활성 상태인 경우}other{<ph name="DAY_COUNT_MANY" />일 동안 비활성 상태인 경우}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{새 탭 <ph name="ONE_ADDED" />개}other{새 탭 <ph name="MANY_ADDED" />개}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">활동</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ 평점 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />점, 리뷰 <ph name="REVIEWS_COUNT_ONE" />개}other{평점 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />점, 리뷰 <ph name="REVIEWS_COUNT_MANY" />개}}</translation>
 <translation id="7885132941432959125">탭을 오른쪽으로 이동</translation>
+<translation id="7887334752153342268">새 탭에서 보기</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> 선택되지 않음</translation>
 <translation id="7961015016161918242">사용하지 않음</translation>
 <translation id="7966321538264951561">추천을 닫습니다.</translation>

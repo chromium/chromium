@@ -523,6 +523,7 @@
 <translation id="705851970750939768">Actualizar Chromium</translation>
 <translation id="7067091210845072982">Se unha imaxe non ten unha descrición útil, Chromium tentará proporcionarche unha. Para crear descricións, envíanse imaxes a Google.</translation>
 <translation id="7141270731789036260">Personalizar Chrome for Testing</translation>
+<translation id="7147227333672430807">Podes usar Chromium cando fagas clic nas ligazóns de mensaxes, documentos e outras aplicacións</translation>
 <translation id="7163519456498498587">Eliminar <ph name="EXTENSION_NAME" /> de Chromium</translation>
 <translation id="7173822816570314652">A túa organización elimina os datos de Chromium cando non se usa durante <ph name="TIMEOUT_DURATION" />. Entre esa información, poden incluírse o historial, os datos da función de autocompletar e as descargas.</translation>
 <translation id="718435575166326686">Chromium necesita permiso de acceso á cámara para este sitio</translation>
@@ -637,6 +638,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8471947159125090285">Para usar e gardar os datos de Chromium na túa Conta de Google, verifica a túa identidade</translation>
 <translation id="8482493977473846331">Mostra solicitudes para iniciar sesión en Chromium</translation>
 <translation id="8493179195440786826">Chromium está desactualizado</translation>
+<translation id="850264194101621529">Grazas por escoller Chromium como navegador predeterminado!</translation>
 <translation id="8522801943730206384">Chromium pode comprobar os teus contrasinais cando os gardes</translation>
 <translation id="8555465886620020932">Produciuse un erro no servizo: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Podes fixar a busca de imaxes para acceder facilmente. Fai clic no botón Fixar que está na parte superior do panel lateral</translation>
@@ -646,6 +648,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" />, os autores de Chromium. Reservados todos os dereitos.</translation>
 <translation id="8601359445272098721">Novidade! Podes traducir texto e imaxes na túa pantalla co botón Traducir pantalla</translation>
 <translation id="8619360774459241877">Iniciando Chromium…</translation>
+<translation id="8624541899164515475">Configuración (ábrese nunha pestana nova).</translation>
 <translation id="8648201657708811153">Google Chrome for Testing non se pode converter no teu navegador predeterminado.</translation>
 <translation id="8677922833187616101">Mostrar sempre o atallo do modo IA de Google</translation>
 <translation id="8697124171261953979">Tamén controla a páxina que se mostra ao iniciar Chromium ou ao realizar unha busca desde Omnibox.</translation>

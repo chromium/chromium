@@ -428,6 +428,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1689333818294560261">Alcume</translation>
 <translation id="1692622044604477956">Carteleira e horarios de cines</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Como podes xestionar os teus datos?<ph name="END_BOLD" /> Chrome elimina automaticamente os temas que teñen máis de 4 semanas de antigüidade. Algúns poderían aparecer outra vez na lista ao seguires navegando. Tamén podes bloquear os temas que non queiras que Chrome comparta cos sitios, así como desactivar os temas de anuncios en calquera momento na configuración de Chrome.</translation>
+<translation id="1697808683313379647">Google usa a información da páxina de tramitación da compra e outros datos relevantes para ofrecer estas opcións.</translation>
 <translation id="1699651774646344471">Agora podes utilizar os enderezos da túa Conta de Google</translation>
 <translation id="1700542542921501212">Podes usar <ph name="SEARCH_ENGINE_NAME" /> para buscar contido na Web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1722,7 +1723,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3792826587784915501">Películas independentes e de culto</translation>
 <translation id="3793574014653384240">Número de fallos ocorridos recentemente e as súas causas</translation>
 <translation id="3795624560191557077">Recentemente cambiaches un contrasinal que se atopou nunha violación da seguranza dos datos pública. Se tes problemas, o xestor de contrasinais de Google pode axudarche a iniciar sesión.</translation>
-<translation id="3796181268473765083">Paga mensualmente ou en 4 cotas sen intereses (suxeito ao cumprimento dos requisitos)</translation>
 <translation id="3799805948399000906">Solicitouse a fonte</translation>
 <translation id="3801297763951514916">Acceso frecuente</translation>
 <translation id="380329542618494757">Nome</translation>
@@ -2948,6 +2948,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5813753398265398978">Física</translation>
 <translation id="5817918615728894473">Sincronizar</translation>
 <translation id="5820625124144807242">Unha vez que revises o pedido, debes iniciar sesión ou crear unha conta de <ph name="BNPL_ISSUER_NAME" />. Esta conta vincularase automaticamente a Google Pay.</translation>
+<translation id="5820751560028604030">Bloqueouse a descarga local</translation>
 <translation id="5826507051599432481">Nome común (NC)</translation>
 <translation id="5830698870816298009">uso e movemento da cámara</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3702,6 +3703,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7031646650991750659">As aplicacións de Google Play que teñas instaladas</translation>
 <translation id="7035705295266423040">O teu banco quere verificar a túa identidade</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para xestionar a configuración de privacidade da túa Conta de Google, preme Tabulador e, a continuación, Introducir</translation>
+<translation id="7042465939346919737">Google usa a información da páxina de tramitación da compra e outros datos relevantes para ofrecer estas opcións de pago aprazado. Para ocultalas, vai á <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Filtrar os resultados</translation>
 <translation id="7043552168914147882">Separador con pestana</translation>
 <translation id="7044081119134178347">Permítese o uso da cámara esta vez</translation>

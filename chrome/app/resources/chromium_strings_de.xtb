@@ -520,6 +520,7 @@ Einige Funktionen stehen möglicherweise nicht zur Verfügung. Gib bitte ein and
 <translation id="705851970750939768">Chromium aktualisieren</translation>
 <translation id="7067091210845072982">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chromium, eine für dich zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet.</translation>
 <translation id="7141270731789036260">Chrome for Testing personalisieren</translation>
+<translation id="7147227333672430807">Du kannst Chromium immer verwenden, wenn du auf Links in Nachrichten, Dokumenten und Apps klickst</translation>
 <translation id="7163519456498498587"><ph name="EXTENSION_NAME" /> aus Chromium entfernen</translation>
 <translation id="7173822816570314652">In deiner Organisation werden Chromium-Daten nach <ph name="TIMEOUT_DURATION" /> Inaktivität gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.</translation>
 <translation id="718435575166326686">Chromium benötigt die Kameraberechtigung für diese Website</translation>
@@ -634,6 +635,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8471947159125090285">Bestätige deine Identität, um Chromium-Daten in deinem Google-Konto zu verwenden und zu speichern</translation>
 <translation id="8482493977473846331">Aufforderungen für die Anmeldung in Chromium werden angezeigt</translation>
 <translation id="8493179195440786826">Chromium ist veraltet.</translation>
+<translation id="850264194101621529">Vielen Dank, dass du Chromium als Standardbrowser festgelegt hast.</translation>
 <translation id="8522801943730206384">Chromium kann deine Passwörter prüfen, wenn du sie speicherst</translation>
 <translation id="8555465886620020932">Dienstfehler: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Du kannst die Bildersuche anpinnen, um leichter darauf zuzugreifen. Klicke dazu oben in der Seitenleiste auf den Button „Anpinnen“.</translation>
@@ -643,6 +645,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Die Chromium-Autoren. Alle Rechte vorbehalten.</translation>
 <translation id="8601359445272098721">Neu! Du kannst sowohl Text als auch Bilder auf deinem Bildschirm übersetzen, indem du den Button „Bildschirm übersetzen“ auswählst</translation>
 <translation id="8619360774459241877">Chromium wird gestartet…</translation>
+<translation id="8624541899164515475">Einstellungen, werden in neuem Tab geöffnet.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing kann nicht als Standardbrowser festgelegt werden.</translation>
 <translation id="8677922833187616101">Verknüpfung zum KI-Modus von Google immer anzeigen</translation>
 <translation id="8697124171261953979">Die Erweiterung legt auch fest, welche Seite beim Start von Chromium oder bei der Suche über die Omnibox angezeigt wird.</translation>

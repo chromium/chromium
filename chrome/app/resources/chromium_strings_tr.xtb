@@ -518,6 +518,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="705851970750939768">Chromium'u güncelle</translation>
 <translation id="7067091210845072982">Bir resmin işe yarar bir açıklaması yoksa, Chromium sizin için bir açıklama sağlamaya çalışır. Açıklama oluşturmak için resimler Google'a gönderilir.</translation>
 <translation id="7141270731789036260">Chrome for Testing'i özelleştir</translation>
+<translation id="7147227333672430807">Mesajlardaki, belgelerdeki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chromium'u kullanabilirsiniz</translation>
 <translation id="7163519456498498587"><ph name="EXTENSION_NAME" /> uzantısını Chromium'dan kaldır</translation>
 <translation id="7173822816570314652"><ph name="TIMEOUT_DURATION" /> boyunca kullanılmadığında Chromium verileri kuruluşunuz tarafından silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.</translation>
 <translation id="718435575166326686">Bu site için Chromium'un kamera iznine ihtiyacı var</translation>
@@ -632,6 +633,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8471947159125090285">Chromium verilerini kullanmak ve Google Hesabınıza kaydetmek için kimliğinizi doğrulayın</translation>
 <translation id="8482493977473846331">Chromium'da oturum açmak için istekleri gösterir</translation>
 <translation id="8493179195440786826">Chromium Sürümü Eski</translation>
+<translation id="850264194101621529">Chrome'u varsayılan tarayıcınız olarak seçtiğiniz için teşekkür ederiz.</translation>
 <translation id="8522801943730206384">Chromium, kaydetmeniz halinde şifrelerinizi kontrol edebilir</translation>
 <translation id="8555465886620020932">Hizmet hatası: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Daha kolay erişmek için yan panelin üst kısmındaki Sabitle düğmesini tıklayarak Görsel Arama'yı sabitleyebilirsiniz</translation>
@@ -641,6 +643,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8586442755830160949">Telif Hakkı <ph name="YEAR" /> The Chromium Authors. Tüm hakları saklıdır.</translation>
 <translation id="8601359445272098721">Yeni! "Ekrandaki yazıları çevir" düğmesini seçerek ekranınızdaki metinleri ve resimleri çevirebilirsiniz</translation>
 <translation id="8619360774459241877">Chromium başlatılıyor...</translation>
+<translation id="8624541899164515475">Ayarlar, yeni sekmede açılır.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing varsayılan tarayıcınız olarak ayarlanamaz.</translation>
 <translation id="8677922833187616101">Google AI Modu Kısayolunu Her Zaman Göster</translation>
 <translation id="8697124171261953979">Ayrıca Chromium'u başlattığınızda veya Çok Amaçlı Adres Çubuğu'ndan arama yaptığınızda gösterilecek sayfayı da denetler.</translation>

@@ -484,6 +484,7 @@
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisasjonen din lukker Chrome-nettleseren automatisk når den ikke har vært i bruk på ett minutt. Nettlesingsdata slettes. Dette kan omfatte loggen, autofyll og nedlastinger.}other{Organisasjonen din lukker Chrome-nettleseren automatisk når den ikke har vært i bruk på # minutter. Nettlesingsdata slettes. Dette kan omfatte loggen, autofyll og nedlastinger.}}</translation>
 <translation id="6418662306461808273">Vil du bytte til den eksisterende Chrome-profilen?</translation>
 <translation id="6426623519983252346">Du får en forespørsel om å prøve <ph name="FEATURE_NAME" /> neste gang du åpner Chrome på iOS.</translation>
+<translation id="6434035853014503219">Takk for at du har valgt Chrome som standardnettleser!</translation>
 <translation id="6473905796280459355">Gå til Om Chrome-siden</translation>
 <translation id="6481963882741794338">Knytt sammen Chrome og andre Google-tjenester for personlig tilpasning og andre formål</translation>
 <translation id="648319183876919572">Safe Browsing med økt beskyttelse gjør mer for å beskytte deg mot farlige nettsteder og nedlastinger</translation>
@@ -580,6 +581,7 @@
 <translation id="756809126120519699">Chrome-dataene er slettet</translation>
 <translation id="7572537927358445944">Av • Chrome kan ikke bekrefte hvor denne utvidelsen kommer fra</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" />-installasjonsprogram</translation>
+<translation id="7596160425942761210">Du kan bruke Chrome hver gang du klikker på linker i meldinger, dokumenter og andre apper</translation>
 <translation id="7602868996817972616">Spør Google om denne siden</translation>
 <translation id="760353356052806707">Et annet program på datamaskinen la til en app som kan endre måten Chrome fungerer på.
 
@@ -675,6 +677,7 @@
 <translation id="8601359445272098721">Nyhet! Du kan oversette både tekst og bilder på skjermen ved å velge «Oversett skjermen»-knappen</translation>
 <translation id="8614913330719544658">Google Chrome svarer ikke. Vil du starte på nytt nå?</translation>
 <translation id="861702415419836452">Chrome trenger tilgang til kameraet for å lage et 3D-kart av omgivelsene</translation>
+<translation id="8624541899164515475">Innstillinger (åpnes i en ny fane).</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome startes på nytt om 1 minutt}other{Chrome startes på nytt om # minutter}}</translation>
 <translation id="8637932705841171563">For å dele vinduet, tillat skjermopptak for Chrome i Systeminnstillinger</translation>
 <translation id="8641606876632989680">Chrome varsler deg når du logger på med passord som er utsatt for sikkerhetsbrudd</translation>

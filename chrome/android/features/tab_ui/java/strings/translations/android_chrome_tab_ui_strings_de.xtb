@@ -73,6 +73,7 @@
 <translation id="311432875115153175">Liste der Tabgruppen geschlossen</translation>
 <translation id="3194464645767632461">Bewertung</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab zu Gruppe hinzufügen}other{<ph name="TABS_COUNT_MANY" /> Tabs zu Gruppe hinzufügen}}</translation>
+<translation id="3293080634164207409">Tabs hinzufügen</translation>
 <translation id="3328308545011660196">Vorschlag: <ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Nach 1 Tag Inaktivität}other{Nach <ph name="DAY_COUNT_MANY" /> Tagen Inaktivität}}</translation>
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> neuer Tab}other{<ph name="MANY_ADDED" /> neue Tabs}}</translation>
@@ -193,6 +194,7 @@
 <translation id="7853202427316060426">Aktivität</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> Rezension}other{Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> Rezensionen}}</translation>
 <translation id="7885132941432959125">Tab nach rechts verschieben</translation>
+<translation id="7887334752153342268">Duplizieren</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> nicht ausgewählt</translation>
 <translation id="7961015016161918242">Nie</translation>
 <translation id="7966321538264951561">Vorschläge ablehnen.</translation>

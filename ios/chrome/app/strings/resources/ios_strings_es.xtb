@@ -42,6 +42,7 @@
 <translation id="1122068467107743258">Trabajo</translation>
 <translation id="1126696498560056882">Gestionar las cuentas de este dispositivo</translation>
 <translation id="1126809382673880764">No te protege frente a descargas, extensiones ni sitios web peligrosos. Seguirás disfrutando de protección con la función Navegación segura, si está disponible, en otros servicios de Google, como Gmail y la Búsqueda.</translation>
+<translation id="1133418583142946603">Añadir pestaña actual</translation>
 <translation id="1136104150802877429">Mostrar reseñas de productos</translation>
 <translation id="1142371195993008685">Desactivar notificaciones de <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Has iniciado sesión como <ph name="USER" /></translation>
@@ -78,6 +79,7 @@
 <translation id="1285320974508926690">No traducir nunca este sitio</translation>
 <translation id="1287229685519872919">datos de Google Workspace</translation>
 <translation id="1291506870746876680">Los permisos de <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> se desactivarán cuando salgas de este sitio.</translation>
+<translation id="1293556467332435079">Archivos</translation>
 <translation id="129553762522093515">Cerrado recientemente</translation>
 <translation id="1296581780163690620">¿Descargar archivo? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Para asegurarte de que siempre puedas usar las contraseñas en tu cuenta de Google, debes verificar que eres tú.</translation>
@@ -1044,6 +1046,7 @@
 <translation id="5055015094595227120">Ubicación precisa</translation>
 <translation id="5055551113846164633">Se eliminarán las direcciones guardadas en este dispositivo. También se eliminan las direcciones guardadas en tu cuenta de Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Problemas detectados <ph name="TIME" />.</translation>
+<translation id="5056587122125565772">Crear imagen</translation>
 <translation id="5059136629401106827">Aceptar</translation>
 <translation id="5062321486222145940">Instalar Google Drive</translation>
 <translation id="5067540696062462445">Descargas</translation>
@@ -1505,6 +1508,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6659660757330712663">Puedes deslizar la barra de herramientas para cambiar de una pestaña a otra.</translation>
 <translation id="6663529247339810546">Imagen no guardada</translation>
 <translation id="6668619169535738264">Editar marcador</translation>
+<translation id="6670729408462528018">Galería</translation>
 <translation id="6671294218820966278">Marcar como leído</translation>
 <translation id="6672697278890207089">Introduce tu frase de contraseña</translation>
 <translation id="6674917187596384849">Puedes cambiar fácilmente de una cuenta a otra</translation>
@@ -1661,6 +1665,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Ya tienes contraseñas para estas cuentas en tu Gestor de contraseñas de Google. Si decides importar una de las contraseñas que se indican a continuación, se sustituirá la contraseña actual.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% descargado</translation>
+<translation id="7345061034321640811">Importación no permitida</translation>
 <translation id="7352651011704765696">Se ha producido un problema</translation>
 <translation id="7363349185727752629">Una guía de tus opciones de privacidad</translation>
 <translation id="7364796246159120393">Seleccionar archivo</translation>
@@ -2202,6 +2207,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="952704832371081537">Cancelar</translation>
 <translation id="95332591904104970">Aplicaciones conectadas</translation>
 <translation id="954667170699278022">Lista de lectura</translation>
+<translation id="956066588046842680">La política de tu organización no permite importar estos datos.</translation>
 <translation id="956218893102219091">Usa tu ubicación precisa para obtener los resultados de Gemini más precisos, en lugar de una ubicación estimada basada en tu dirección IP. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Borrar datos navegación</translation>
 <translation id="963102227019621224">Actividad en la Web y en Apps</translation>

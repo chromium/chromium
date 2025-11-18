@@ -425,9 +425,11 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1682696192498422849">Najpierw krótsza krawędź</translation>
 <translation id="168693727862418163">Nie udało się zweryfikować tej wartości zasady względem jej schematu. Będzie ona ignorowana.</translation>
 <translation id="168841957122794586">Certyfikat serwera ma słaby klucz kryptograficzny.</translation>
+<translation id="1688718429648938412">Zapisz kartę lojalnościową w Portfelu</translation>
 <translation id="1689333818294560261">Pseudonim</translation>
 <translation id="1692622044604477956">Recenzje filmów i repertuary kin</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />W jaki sposób możesz zarządzać swoimi danymi:<ph name="END_BOLD" /> Chrome automatycznie usuwa tematy, które mają ponad 4 tygodnie. Jeśli będziesz nadal przeglądać strony, powiązane z nimi tematy mogą ponownie pojawić się na liście. W dowolnej chwili w ustawieniach Chrome możesz też zablokować tematy, których nie chcesz udostępniać stronom odwiedzanym w Chrome, oraz wyłączyć tematy reklam.</translation>
+<translation id="1697808683313379647">Aby oferować te opcje, Google używa informacji ze strony płatności i innych odpowiednich danych.</translation>
 <translation id="1699651774646344471">Teraz możesz używać adresów ze swojego konta Google</translation>
 <translation id="1700542542921501212"><ph name="SEARCH_ENGINE_NAME" /> umożliwia wyszukiwanie w internecie.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1722,7 +1724,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3792826587784915501">Kultowe filmy i kino niezależne</translation>
 <translation id="3793574014653384240">Liczba i przyczyny niedawnych awarii</translation>
 <translation id="3795624560191557077">Ostatnio zmieniono hasło, które zostało ujawnione w wyniku naruszenia bezpieczeństwa danych. W razie problemów z logowaniem skorzystaj z pomocy Menedżera haseł Google.</translation>
-<translation id="3796181268473765083">Zapłać w 4 ratach bez odsetek lub płać co miesiąc (jeśli spełniasz wymagania)</translation>
 <translation id="3799805948399000906">Zażądano czcionki</translation>
 <translation id="3801297763951514916">Często odwiedzasz</translation>
 <translation id="380329542618494757">Imię i nazwisko</translation>
@@ -3661,6 +3662,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6965978654500191972">Urządzenie</translation>
 <translation id="696703987787944103">Percepcyjne</translation>
 <translation id="6967851206780867018">Zablokowano 1 plik z powodu treści</translation>
+<translation id="6968217325369275594">Zapisz swoje dane, aby otrzymywać aktualizacje na dowolnym urządzeniu. Twoje informacje są zapisane w usłudze <ph name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" /> na koncie <ph name="ACCOUNT" />.</translation>
 <translation id="6970885655016700774">Tkanina (archiwalna)</translation>
 <translation id="6971439137020188025">Szybko utwórz nową prezentację w Prezentacjach Google</translation>
 <translation id="6972629891077993081">Urządzenia HID</translation>
@@ -3703,6 +3705,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7031646650991750659">Zainstalowane przez Ciebie aplikacje z Google Play</translation>
 <translation id="7035705295266423040">Bank chce zweryfikować Twoją tożsamość.</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zarządzać ustawieniami prywatności konta Google, naciśnij Tab, a potem Enter</translation>
+<translation id="7042465939346919737">Aby oferować te opcje, Google używa informacji ze strony płatności i innych odpowiednich danych. Aby ukryć opcje płatności odroczonej, otwórz <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="7042616127917168121">Zawęź wyniki</translation>
 <translation id="7043552168914147882">Woskowany papier z naklejkami</translation>
 <translation id="7044081119134178347">Przyznano jednorazowy dostęp do aparatu</translation>
