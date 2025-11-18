@@ -4,6 +4,8 @@
 
 #include "chrome/browser/contextual_cueing/caching_zero_state_suggestions_manager.h"
 
+#include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/mock_contextual_cueing_service.h"
@@ -31,6 +33,9 @@ class TestContextualCueingService
       bool is_fre,
       std::optional<std::vector<std::string>> supported_tools,
       GlicSuggestionsCallback callback) override {
+    if (last_callback_) {
+      pending_callbacks_.push_back(std::move(last_callback_));
+    }
     last_callback_ = std::move(callback);
   }
 
@@ -40,12 +45,16 @@ class TestContextualCueingService
       std::optional<std::vector<std::string>> supported_tools,
       const content::WebContents* focused_tab,
       GlicSuggestionsCallback callback) override {
+    if (last_callback_) {
+      pending_callbacks_.push_back(std::move(last_callback_));
+    }
     last_callback_ = std::move(callback);
     return will_generate_pinned_tab_suggestions_;
   }
 
   bool will_generate_pinned_tab_suggestions_ = false;
   contextual_cueing::GlicSuggestionsCallback last_callback_;
+  std::vector<contextual_cueing::GlicSuggestionsCallback> pending_callbacks_;
 };
 
 class CachingContextualCueingServiceTest : public testing::Test {
@@ -151,6 +160,62 @@ TEST_F(CachingContextualCueingServiceTest, CacheMissTriggersNewRequest) {
   // This is implicitly checked by the fact that last_callback_ is updated.
   std::move(contextual_cueing_service.last_callback_).Run({"S2"});
   EXPECT_THAT(result2.Get(), testing::ElementsAre("S2"));
+}
+
+// Process enough requests to force an eviction. Each request gets a response
+// before eviction.
+TEST_F(CachingContextualCueingServiceTest, EvictCompleteCacheEntries) {
+  TestContextualCueingService contextual_cueing_service;
+  auto cache =
+      CreateCachingZeroStateSuggestionsManager(&contextual_cueing_service);
+  for (int i = 0; i < 12; ++i) {
+    auto focus = CreateWebContentsAt(
+        GURL("https://www.google.com/tab" + base::NumberToString(i)));
+    base::test::TestFuture<std::vector<std::string>> result;
+    std::string suggestion = "S" + base::NumberToString(i);
+    cache->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+        focus.get(), true, std::nullopt, result.GetCallback());
+    std::move(contextual_cueing_service.last_callback_).Run({suggestion});
+    EXPECT_THAT(result.Get(), testing::ElementsAre(suggestion));
+  }
+}
+
+// Process enough requests to force an eviction, but only complete requests at
+// the end. Evicted entries will invoke their callbacks before getting a
+// response.
+TEST_F(CachingContextualCueingServiceTest, EvictIncompleteCacheEntries) {
+  TestContextualCueingService contextual_cueing_service;
+  std::vector<std::string> suggestions_received;
+  auto callback =
+      base::BindLambdaForTesting([&](std::vector<std::string> suggestions) {
+        suggestions_received.push_back(suggestions.empty() ? "NONE"
+                                                           : suggestions[0]);
+      });
+
+  auto cache =
+      CreateCachingZeroStateSuggestionsManager(&contextual_cueing_service);
+  for (int i = 0; i < 12; ++i) {
+    auto focus = CreateWebContentsAt(
+        GURL("https://www.google.com/tab" + base::NumberToString(i)));
+    base::test::TestFuture<std::vector<std::string>> result;
+    cache->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+        focus.get(), true, std::nullopt, callback);
+  }
+
+  ASSERT_THAT(suggestions_received, testing::ElementsAre("NONE", "NONE"));
+
+  // Resolve all requests.
+  int i = 0;
+  for (auto& cb : contextual_cueing_service.pending_callbacks_) {
+    std::string suggestion = "S" + base::NumberToString(i++);
+    std::move(cb).Run({suggestion});
+  }
+  std::string suggestion = "S" + base::NumberToString(i++);
+  std::move(contextual_cueing_service.last_callback_).Run({suggestion});
+
+  ASSERT_THAT(suggestions_received,
+              testing::ElementsAre("NONE", "NONE", "S2", "S3", "S4", "S5", "S6",
+                                   "S7", "S8", "S9", "S10", "S11"));
 }
 
 }  // namespace
