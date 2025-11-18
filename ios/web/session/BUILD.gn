@@ -15,7 +15,6 @@ source_set("session") {
     "//net",
   ]
   sources = [
-    "crw_session_certificate_policy_cache_storage.mm",
     "crw_session_user_data.mm",
     "session_certificate.cc",
     "session_certificate.h",
@@ -48,7 +47,6 @@ source_set("unittests") {
     "//testing/gtest",
   ]
   sources = [
-    "crw_session_certificate_policy_cache_storage_unittest.mm",
     "serializable_user_data_manager_unittest.mm",
     "session_certificate_policy_cache_impl_unittest.mm",
   ]
