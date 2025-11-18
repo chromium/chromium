@@ -18,7 +18,6 @@
 {% block extra_application_attributes %}
 {{ super() }}
 android:multiArch="true"
-android:extractNativeLibs="false"
 {% if force_32_bit is defined and force_32_bit == 'true' %}
 android:use32bitAbi="true"
 {% endif %}

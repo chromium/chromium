@@ -92,8 +92,6 @@ def _ProcessManifest(path, disable_isolated_processes):
                     real_instrumentation_class)
 
   ret = ElementTree.tostring(doc.getroot(), encoding='UTF-8')
-  # Disable check for page-aligned native libraries.
-  ret = ret.replace(b'extractNativeLibs="false"', b'extractNativeLibs="true"')
   if disable_isolated_processes:
     ret = ret.replace(b'isolatedProcess="true"', b'isolatedProcess="false"')
     # externalService only matters for isolatedProcess="true". See:

@@ -88,7 +88,6 @@
       android:allowBackup="false"
       android:appComponentFactory="org.chromium.chrome.browser.base.SplitCompatAppComponentFactory"
       android:enableOnBackInvokedCallback="true"
-      android:extractNativeLibs="false"
       android:icon="@drawable/ic_launcher"
       android:label="@string/app_name"
       android:largeHeap="false"

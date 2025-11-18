@@ -206,13 +206,11 @@ def _CreateSectionNameSizeMap(so_path):
 
 
 def _ParseManifestAttributes(apk_path):
-  # Check if the manifest specifies whether or not to extract native libs.
+  # Parses minSdkVersion and on-demand module attributes from the manifest.
   output = cmd_helper.GetCmdOutput([
       _AAPT_PATH.read(), 'd', 'xmltree', apk_path, 'AndroidManifest.xml'])
 
   def parse_attr(namespace, name, default=None):
-    # android:extractNativeLibs(0x010104ea)=(type 0x12)0x0
-    # android:extractNativeLibs(0x010104ea)=(type 0x12)0xffffffff
     # dist:onDemand=(type 0x12)0xffffffff
     m = re.search(
         f'(?:{namespace}:)?{name}' + r'(?:\(.*?\))?=\(type .*?\)(\w+)', output)
@@ -220,14 +218,13 @@ def _ParseManifestAttributes(apk_path):
       return default
     return int(m.group(1), 16)
 
-  skip_extract_lib = not parse_attr('android', 'extractNativeLibs', default=1)
   sdk_version = parse_attr('android', 'minSdkVersion')
   is_feature_split = parse_attr('android', 'isFeatureSplit')
   # Can use <dist:on-demand>, or <module dist:onDemand="true">.
   on_demand = parse_attr('dist', 'onDemand') or 'on-demand' in output
   on_demand = bool(on_demand and is_feature_split)
 
-  return sdk_version, skip_extract_lib, on_demand
+  return sdk_version, on_demand
 
 
 def _NormalizeLanguagePaks(translations, factor):
@@ -387,8 +384,6 @@ def _AnalyzeInternal(apk_path,
     zipalign_overhead += sum(len(i.extra) for i in apk_contents)
     signing_block_size = _MeasureApkSignatureBlock(apk)
 
-  _, skip_extract_lib, _ = _ParseManifestAttributes(apk_path)
-
   # Pre-L: Dalvik - .odex file is simply decompressed/optimized dex file (~1x).
   # L, M: ART - .odex file is compiled version of the dex file (~4x).
   # N: ART - Uses Dalvik-like JIT for normal apps (~1x), full compilation for
@@ -435,7 +430,7 @@ def _AnalyzeInternal(apk_path,
       continue
     if filename.endswith('.so'):
       basename = posixpath.basename(filename)
-      should_extract_lib = not skip_extract_lib and basename.startswith('lib')
+      should_extract_lib = basename.startswith('lib')
       native_code.AddZipInfo(
           member, extracted_multiplier=int(should_extract_lib))
     elif filename.startswith('classes') and filename.endswith('.dex'):
@@ -719,7 +714,7 @@ def _AnalyzeApkOrApks(report_func, apk_path, out_dir):
   dex_stats_collector = method_count.DexStatsCollector()
 
   if apk_path.endswith('.apk'):
-    sdk_version, _, _ = _ParseManifestAttributes(apk_path)
+    sdk_version, _ = _ParseManifestAttributes(apk_path)
     _AnalyzeInternal(apk_path, sdk_version, report_func, dex_stats_collector,
                      out_dir)
   elif apk_path.endswith('.apks'):
@@ -733,7 +728,7 @@ def _AnalyzeApkOrApks(report_func, apk_path, out_dir):
         except KeyError:
           info = z.getinfo('splits/base-master.apk')
         _ExtractToTempFile(z, info.filename, f)
-        sdk_version, _, _ = _ParseManifestAttributes(f.name)
+        sdk_version, _ = _ParseManifestAttributes(f.name)
 
         orig_report_func = report_func
         report_func = _AccumulatingReporter()
@@ -762,7 +757,7 @@ def _AnalyzeApkOrApks(report_func, apk_path, out_dir):
         for subpath, split_name in _IterSplits(z.namelist()):
           if split_name != 'base':
             _ExtractToTempFile(z, subpath, f)
-            _, _, on_demand = _ParseManifestAttributes(f.name)
+            _, on_demand = _ParseManifestAttributes(f.name)
             do_measure(split_name, on_demand=on_demand)
 
         report_func.DumpReports(orig_report_func)
