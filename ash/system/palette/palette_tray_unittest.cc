@@ -909,6 +909,19 @@ TEST_F(PaletteTrayTestWithAnnotator,
   EXPECT_FALSE(palette_tray_->GetVisible());
   EXPECT_TRUE(annotation_tray()->visible_preferred());
 
+  // Reset Marker, verify annotation tray is hidden, both marker and palette
+  // tray is shown and the active tool is none.
+  annotator_controller()->ResetTools();
+  EXPECT_TRUE(annotation_tray()->visible_preferred());
+  EXPECT_TRUE(palette_tray_->GetVisible());
+  EXPECT_EQ(
+      test_api_->palette_tool_manager()->GetActiveTool(PaletteGroup::MODE),
+      PaletteToolId::NONE);
+
+  // Enable marker tools again.
+  annotator_controller()->OnCanvasInitialized(true);
+  annotator_controller()->EnableAnnotatorTool();
+
   // Disable annotator. Verify annotation tray is hidden, palette tray is shown
   // and the active tool is none.
   annotator_controller()->DisableAnnotator();

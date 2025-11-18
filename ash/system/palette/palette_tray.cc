@@ -515,11 +515,10 @@ void PaletteTray::OnAnnotatorStateChanged(bool enabled) {
   if (enabled) {
     // If the annotator is enabled, hide the palette tray. The marker remains
     // the active tool.
+    DeactivateActiveTool();
     SetVisiblePreferred(false);
   } else {
-    // Once the annotator gets disabled, deactivate the active tool and show the
-    // tray again.
-    DeactivateActiveTool();
+    // Once the annotator gets disabled, show the tray again.
     UpdateIconVisibility();
   }
 }

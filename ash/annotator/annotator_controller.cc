@@ -92,13 +92,15 @@ void AnnotatorController::SetAnnotatorTool(const AnnotatorTool& tool) {
 }
 
 void AnnotatorController::ResetTools() {
-  if (annotator_enabled_) {
+  if (!annotator_enabled_) {
+    return;
+  }
     DCHECK(client_);
     ToggleAnnotatorCanvas();
     annotator_enabled_ = false;
     client_->Clear();
     UpdateAnnotationTrayAccessibleName(/*is_annotator_enabled=*/false);
-  }
+    NotifyStateChanged();
 }
 
 void AnnotatorController::RegisterView(aura::Window* new_root) {
@@ -147,7 +149,6 @@ void AnnotatorController::EnableAnnotatorTool() {
 
 void AnnotatorController::DisableAnnotator() {
   ResetTools();
-  NotifyStateChanged();
   if (current_root_) {
     UnregisterView(current_root_);
   }
