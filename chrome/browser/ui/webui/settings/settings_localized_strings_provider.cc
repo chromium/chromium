@@ -3886,6 +3886,18 @@ void AddSystemStrings(content::WebUIDataSource* html_source) {
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_POLICY_LABEL,
           l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME)));
+  html_source->AddString(
+      "proxySettingsMultipleSourcesLabel",
+      l10n_util::GetStringUTF16(
+          IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_MULTIPLE_SOURCES_LABEL));
+  html_source->AddString(
+      "proxySettingsYourOrganization",
+      l10n_util::GetStringUTF16(
+          IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_YOUR_ORGANIZATION_LABEL));
+  html_source->AddString(
+      "proxySettingsYourDevice",
+      l10n_util::GetStringUTF16(
+          IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_YOUR_DEVICE_LABEL));
 
   // TODO(dbeam): we should probably rename anything involving "localized
   // strings" to "load time data" as all primitive types are used now.

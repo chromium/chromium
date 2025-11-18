@@ -1216,6 +1216,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   // Proxy settings.
   (*s_allowlist)[proxy_config::prefs::kProxy] =
       settings_api::PrefType::kDictionary;
+  // Proxy override rules.
+  (*s_allowlist)[proxy_config::prefs::kProxyOverrideRules] =
+      settings_api::PrefType::kList;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   (*s_allowlist)[::prefs::kUserFeedbackAllowed] =
