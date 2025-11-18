@@ -40,13 +40,13 @@ class ActorLoginQualityLogger
 
 #if defined(UNIT_TEST)
   const optimization_guide::proto::ActorLoginQuality& get_log_data() {
-    return log_data_;
+    return log_data_.actor_login().quality();
   }
 #endif  // defined(UNIT_TEST)
   base::WeakPtr<ActorLoginQualityLogger> AsWeakPtr();
 
  private:
-  optimization_guide::proto::ActorLoginQuality log_data_;
+  optimization_guide::proto::LogAiDataRequest log_data_;
   base::WeakPtrFactory<ActorLoginQualityLogger> weak_ptr_factory_{this};
 };
 

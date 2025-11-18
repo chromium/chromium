@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/metrics/metrics_state_manager.h"
@@ -45,6 +46,19 @@ class FakeLanguageModel : public language::LanguageModel {
   }
 };
 
+void VerifyUniqueLogDetails(
+    const std::vector<
+        std::unique_ptr<optimization_guide::proto::LogAiDataRequest>>& logs,
+    const GetCredentialsDetails& expected_details) {
+  ASSERT_EQ(logs.size(), 1u);
+
+  const auto& log_entry = logs[0];
+  ASSERT_TRUE(log_entry->has_actor_login());
+  ASSERT_TRUE(log_entry->actor_login().has_quality());
+  EXPECT_THAT(log_entry->actor_login().quality().get_credentials_details(),
+              ProtoEquals(expected_details));
+}
+
 }  // namespace
 
 class ActorLoginQualityLoggerTest : public testing::Test {
@@ -70,14 +84,12 @@ class ActorLoginQualityLoggerTest : public testing::Test {
 TEST_F(ActorLoginQualityLoggerTest, UploadFinalLogNoMetadata) {
   ActorLoginQualityLogger logger;
   logger.UploadFinalLog(logs_uploader_.get());
-  // Since the log has no metadata, no log is uploaded.
   EXPECT_EQ(0u, logs_uploader_->uploaded_logs().size());
 }
 
 TEST_F(ActorLoginQualityLoggerTest, UploadFinalLogHandlesNull) {
   ActorLoginQualityLogger logger;
   logger.UploadFinalLog(nullptr);
-  // No log is available because the service is null.
   EXPECT_TRUE(logs_uploader_->uploaded_logs().empty());
 }
 
@@ -98,6 +110,13 @@ TEST_F(ActorLoginQualityLoggerTest, SetsGetCredentialsDetails) {
       logger.get_log_data().get_credentials_details();
 
   EXPECT_THAT(get_credentials_details, ProtoEquals(expected_details));
+
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader_->WaitForLogUpload(log_uploaded_signal.GetCallback());
+  logger.UploadFinalLog(logs_uploader_.get());
+  ASSERT_TRUE(log_uploaded_signal.Wait());
+
+  VerifyUniqueLogDetails(logs_uploader_->uploaded_logs(), expected_details);
 }
 
 TEST_F(ActorLoginQualityLoggerTest, SetsDomainAndLanguage) {
