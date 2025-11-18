@@ -2607,6 +2607,24 @@
             ]
         }
     ],
+    "AutofillEnableLoyaltyCardsFieldParsingiOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableEmailOrLoyaltyCardsFilling",
+                        "AutofillEnableLoyaltyCardsFilling",
+                        "IPH_AutofillEnableLoyaltyCards",
+                        "SyncAutofillLoyaltyCard"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableNewFopDisplayDesktop": [
         {
             "platforms": [
