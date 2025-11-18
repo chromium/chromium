@@ -146,6 +146,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_new_tab_source.h:LensOverlayNewTabSource) -->
 
+<!-- LINT.IfChange(LensOverlayNonBlockingPrivacyNoticeUserAction) -->
+
+<enum name="LensOverlayNonBlockingPrivacyNoticeUserAction">
+  <summary>The user interaction with the non-blocking privacy notice</summary>
+  <int value="0" label="Lens interaction"/>
+  <int value="1" label="Composebox focus"/>
+  <int value="2" label="Closed without accepting"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/lens/lens_overlay_non_blocking_privacy_notice_user_action.h:LensOverlayNonBlockingPrivacyNoticeUserAction) -->
+
 <!-- LINT.IfChange(LensOverlaySelectionCloseButtonEvent) -->
 
 <enum name="LensOverlaySelectionCloseButtonEvent">
