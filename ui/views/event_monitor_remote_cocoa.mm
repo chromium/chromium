@@ -5,14 +5,14 @@
 #include "ui/views/event_monitor_remote_cocoa.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_observer.h"
-#include "ui/events/event_utils.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
 namespace views {
@@ -20,33 +20,38 @@ namespace views {
 EventMonitorRemoteCocoa::EventMonitorRemoteCocoa(
     ui::EventObserver* event_observer,
     gfx::NativeWindow target_native_window,
-    const std::set<ui::EventType>& types)
-    : types_(types), event_observer_(event_observer) {
-  CHECK(event_observer);
+    std::set<ui::EventType> types)
+    : event_observer_(event_observer), types_(std::move(types)) {
+  CHECK(event_observer_);
 
-  auto* host = views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+  auto* host = NativeWidgetMacNSWindowHost::GetFromNativeWindow(
       target_native_window);
-  CHECK(host);
+  CHECK(host) << "No NativeWidgetMacNSWindowHost for the given window.";
+
   event_monitor_ = host->AddEventMonitor(this);
+  DCHECK(event_monitor_);
 }
 
-void EventMonitorRemoteCocoa::NativeWidgetMacEventMonitorOnEvent(
-    ui::Event* ui_event,
-    bool target_is_this_window,
-    bool* was_handled) {
-  if (*was_handled || !ui_event) {
+EventMonitorRemoteCocoa::~EventMonitorRemoteCocoa() {
+  if (event_monitor_) {
+    event_monitor_->RemoveMonitor();
+  }
+}
+
+void EventMonitorRemoteCocoa::OnEvent(ui::Event* event,
+                                      bool target_is_this_window,
+                                      bool* was_handled) {
+  if (!event || *was_handled) {
     return;
   }
 
-  if (target_is_this_window && base::Contains(types_, ui_event->type())) {
-    event_observer_->OnEvent(*ui_event);
+  if (target_is_this_window && base::Contains(types_, event->type())) {
+    event_observer_->OnEvent(*event);
   }
 }
 
-EventMonitorRemoteCocoa::~EventMonitorRemoteCocoa() = default;
-
-gfx::Point EventMonitorRemoteCocoa::GetLastMouseLocation() {
-  return display::Screen::Get()->GetCursorScreenPoint();
+gfx::Point EventMonitorRemoteCocoa::GetLastMouseLocation() const {
+  return display::Screen::GetScreen()->GetCursorScreenPoint();
 }
 
-}  // namespace views
+}  
