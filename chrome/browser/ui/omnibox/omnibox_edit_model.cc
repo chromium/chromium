@@ -755,15 +755,33 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
 }
 
 void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
-  // If the omnibox hasn't been modified (changed selection or text), then AIM
-  // button should open AIM popup. Otherwise, it should navigate to Google AI
-  // page.
   if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup)) {
-    bool omnibox_not_modified_by_user =
+    // In general, adding a context will always open the AIM popup, while the
+    // AIM button will prefer to navigate to the AI page with a query
+    // prepopulated.
+    bool open_aim_popup = via_context_menu;
+    // When the default suggestion is selected and the text is unmodified or
+    // clobbered, then there is no text to prepopulate, so resort to opening the
+    // AIM popup. `kNoMatch` is used on NTP focus and some other edge cases.
+    open_aim_popup |=
         (popup_selection_.line == 0 ||
          popup_selection_.line == OmniboxPopupSelection::kNoMatch) &&
-        !user_input_in_progress_;
-    if (omnibox_not_modified_by_user || via_context_menu) {
+        (!user_input_in_progress_ || user_text_.empty());
+    // If a URL match has been selected, there are privacy concerns
+    // with prepopulating the URL when navigating to the AI page, so instead
+    // open the AIM popup. This also applies to when the default suggestion is
+    // still selected with a user edit that defaults a URL.
+    open_aim_popup |= !AutocompleteMatch::IsSearchType(current_match_.type);
+    // In summary:
+    // - Default suggestion selected:
+    //   - The text is unmodified -> AIM popup
+    //   - The text is clobbered -> AIM popup
+    //   - The text is modified, not empty, and defaults a URL -> AIM popup
+    //   - The text is modified, not empty, and defaults a search -> AI page
+    // - A non default suggestion is selected, regardless of user input state:
+    //   - if a URL suggestion is selected -> AIM popup
+    //   - if a search suggestion is selected -> AI page
+    if (open_aim_popup) {
       controller_->popup_state_manager()->SetPopupState(
           OmniboxPopupState::kAim);
       return;
